@@ -8,7 +8,11 @@ namespace Baxy.Providers.Windows.Infrastructure;
 /// </summary>
 public static class ModelAids
 {
-    /// <summary>E011: a calculator.expression.evaluate with no Calculator window says app_open can start it.</summary>
+    /// <summary>
+    /// E011: a calculator.expression.evaluate with no Calculator window says app_open can start it. Holdout v5 V5E021: a
+    /// bare number, when the person's words name one operation on what it shows, goes as that operator and the number
+    /// (Baxy.App.SaidVerbs).
+    /// </summary>
     public const string CalculatorNext = "calculator_next";
 
     /// <summary>Accessible mode: system.settings.set says what the mode changes and which modes do not exist yet.</summary>
@@ -112,12 +116,13 @@ public static class ModelAids
     /// <summary>
     /// Holdout v6 V6E041 (8 of 8 runs: file.write without append; in 6 the file was read and replaced under the hash the
     /// read gave by the new line alone, and the reply said «agregué»): a file.write that would replace a file of the
-    /// person's that has text with a text that keeps little of it (half of its words or less, and not all of it) is
-    /// refused once before any effect, saying how many lines and characters it has and the exact file_write call that
-    /// appends; the same replacement again goes on, and in normal mode the kernel asks the person first
-    /// (FilesystemHandler's preflight, LocalFilesystemProvider.ReplacementAsksFirst). Empty files and edits that keep
+    /// person's that has text with a text that keeps little of it (half of its words or less, and not all of it), under
+    /// the file's own hash, asks the person first in normal mode, bound to the call (FilesystemHandler's preflight,
+    /// LocalFilesystemProvider.ReplacementAsksFirst); without the hash its refusal says how many lines and characters
+    /// the file has and the exact file_write call that appends. Empty files and edits that keep
     /// most of the text go straight. V6E048: a file.edit that would leave its file with as little (TextLoss, the same
-    /// measure) asks the person first in normal mode (WindowsKnownFileAdapter's preflight).
+    /// measure) asks the person first in normal mode (WindowsKnownFileAdapter's preflight). And a file.write without append
+    /// over a file of the person's, when their words say to add to it, goes as an append (Baxy.App.SaidVerbs).
     /// </summary>
     public const string OverwriteGuard = "overwrite_guard";
 

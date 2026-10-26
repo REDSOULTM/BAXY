@@ -1,0 +1,21 @@
+{
+  "schema": "baxy.said-verbs.v1",
+  "note": "The person's verbs that pick what a call does when the model wrote it otherwise (SaidVerbs). Each entry is compared as folded words (lower case, no accents, single spaces: SaidFolders.Spoken). append: a file.write without append over a file of theirs that is there goes as an append when the turn says one of these and none of keepWhole. operators: a calculator.expression.evaluate of a bare number goes as that operator and the number when the turn says words of exactly one of them.",
+  "append": [
+    "agrega", "agregale", "agregalo", "agregala", "agregar", "agregarle", "agregue", "agreguele", "agregues", "agregame",
+    "anade", "anadele", "anadelo", "anadela", "anadir", "anadirle", "anada", "anadale",
+    "pon al final", "ponle al final", "ponlo al final", "escribe al final",
+    "append", "add the line", "add a line", "add this line", "add line", "add it to", "at the end", "to the end"
+  ],
+  "keepWhole": [
+    "sobrescribe", "sobreescribe", "sobrescribir", "sobreescribir", "sobrescribelo", "sobreescribelo",
+    "reemplaza", "reemplazar", "reemplazalo", "remplaza", "remplazalo", "borra todo", "deja solo", "deja solamente",
+    "overwrite", "replace"
+  ],
+  "operators": {
+    "+": ["sumale", "sumalo", "suma", "sumar", "sumarle", "agregale", "anadele", "mas", "add", "plus"],
+    "-": ["restale", "restalo", "resta", "restar", "restarle", "quitale", "menos", "subtract", "minus"],
+    "*": ["multiplicalo por", "multiplicala por", "multiplica por", "multiplicar por", "multiplicarlo por", "times", "multiply by", "multiplied by", "multiply it by"],
+    "/": ["dividelo entre", "dividelo por", "divide entre", "divide por", "dividir entre", "dividir por", "dividirlo entre", "dividirlo por", "divided by", "divide by", "divide it by"]
+  }
+}

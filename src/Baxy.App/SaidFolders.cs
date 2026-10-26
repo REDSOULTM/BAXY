@@ -124,6 +124,12 @@ internal sealed class SaidFolders
     /// <summary>A heartbeat or a new session: no words of the person's hold.</summary>
     internal void Clear() => Heard(string.Empty);
 
+    /// <summary>The one file of the person's the call names, when it is there (SaidVerbs: an append presupposes it).</summary>
+    internal string? FileThere(string operation, ProductOperationDescriptor descriptor, JsonObject arguments) =>
+        ReachOf(operation, descriptor, arguments) is { Sandbox: false, Items: [string file] } && File.Exists(file)
+            ? file
+            : null;
+
     /// <summary>
     /// The folders this turn's words name, read at each file call (most turns make none): a folder the turn made since
     /// the last one counts (holdout v5 V5E043: «crea la carpeta X y dentro un archivo» wrote the file beside it).

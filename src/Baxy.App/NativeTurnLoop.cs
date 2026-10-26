@@ -125,6 +125,7 @@ internal sealed class NativeTurnLoop
     private readonly NetworkEgress _egress = new();
     private readonly SaidFolders _said;
     private readonly SaidApplication _saidApp = new();
+    private readonly SaidVerbs _saidVerbs = new();
     // Práctica e2e E014: the place this turn's app.open asked for, told in a look at that application (TurnPlace).
     private readonly TurnPlace _turnPlace = new();
     private PendingOperationConfirmation? _pending;
@@ -198,11 +199,13 @@ internal sealed class NativeTurnLoop
         {
             _said.Answered(text);
             _saidApp.Answered(text);
+            _saidVerbs.Answered(text);
         }
         else
         {
             _said.Heard(text);
             _saidApp.Heard(text);
+            _saidVerbs.Heard(text);
             _turnPlace.NewTurn();
         }
 
@@ -337,6 +340,7 @@ internal sealed class NativeTurnLoop
         _beat = true;
         _said.Clear();
         _saidApp.Clear();
+        _saidVerbs.Clear();
         _turnPlace.NewTurn();
         _turnStarted = Stopwatch.GetTimestamp();
         try
@@ -364,6 +368,7 @@ internal sealed class NativeTurnLoop
         _egress.Reset();
         _said.Clear();
         _saidApp.Clear();
+        _saidVerbs.Clear();
         _turnPlace.NewTurn();
         if (!engineRestarted)
         {
@@ -577,6 +582,14 @@ internal sealed class NativeTurnLoop
         {
             arguments = owner.Arguments;
             said = (SaidApplication.NoteKey, owner.Note);
+        }
+
+        // The person's verb picks the call: «agrégale» an append, «súmale» the operator on what the Calculator shows
+        // (SaidVerbs).
+        if (_saidVerbs.Rule(operation, arguments, () => _said.FileThere(operation, descriptor, arguments)) is { } verb)
+        {
+            arguments = verb.Arguments;
+            said = said is { } folder ? (folder.Key, folder.Note + "; " + verb.Note) : (SaidVerbs.NoteKey, verb.Note);
         }
 
         ResolveUncertain(endedTurn: null);

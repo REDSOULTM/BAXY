@@ -15,9 +15,9 @@ namespace Baxy.Providers.Windows.Tests;
 /// <summary>
 /// Holdout v6 V6E041 («agrégale al file jugadores.txt … la línea: Matías, arquero», 8 of 8 runs file.write without
 /// append; in 6 the file was read and replaced by that line alone under its observed hash, and the reply said
-/// «agregué»): a file.write that would replace a file of the person's that has text with a text keeping little of it is
-/// refused once before any effect, with how much the file has and the exact call that appends; the same replacement
-/// again goes on, asking the person first in normal mode (aid overwrite_guard).
+/// «agregué»): a file.write that would replace a file of the person's that has text with a text keeping little of it,
+/// under the file's own hash, asks the person first in normal mode, bound to the call, and goes straight in bypass;
+/// without the hash its refusal says how much the file has and the exact call that appends (aid overwrite_guard).
 /// </summary>
 [TestFixture]
 public sealed class OverwriteGuardTests
@@ -95,25 +95,24 @@ public sealed class OverwriteGuardTests
         });
     }
 
-    // A replacement under the hash a read gave, with no refusal before it: refused once, before any effect, with the
-    // facts and the append call; the same call again asks the person, and with their yes it replaces the file, its
-    // previous version to the Recycle Bin.
+    // A replacement under the hash a read gave, with no refusal before it (V6E048 c3-final6b: refused first, the model
+    // asked the person itself and never called again): the first call asks the person, bound to it, nothing done before
+    // the yes, and with their yes it replaces the file, its previous version to the Recycle Bin.
     [Test]
-    public async Task AReplacementThatLosesTheTextIsRefusedOnceThenAsksAndRunsOnTheYes()
+    public async Task AReplacementThatLosesTheTextAsksFirstAndRunsOnTheYes()
     {
         using IDisposable setting = ModelAids.Use("all");
         using var place = new Place();
         FilesystemMutationResult original = place.Seed(Players);
         await using FileInvocationJournal journal = await place.Journal();
         using var engine = new MissionEngine(new OperationRegistry(FilesystemHandlers.Create(place.Provider)), journal);
-        string replace = $$"""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"Matías, arquero","folder":"documents","expectedSha256":"{{original.Sha256}}"}""";
+        OperationRequest replace = Request(
+            $$"""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"Matías, arquero","folder":"documents","expectedSha256":"{{original.Sha256}}"}""");
 
-        OperationResponse refused = await engine.ExecuteAsync(Request(replace), CancellationToken.None);
-        OperationRequest again = Request(replace);
-        OperationResponse asked = await engine.ExecuteAsync(again, CancellationToken.None);
+        OperationResponse asked = await engine.ExecuteAsync(replace, CancellationToken.None);
         string beforeTheYes = place.Text();
         OperationResponse confirmed = await engine.ExecuteAsync(
-            again with
+            replace with
             {
                 RequestId = Guid.NewGuid().ToString("D"),
                 ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString(),
@@ -122,21 +121,9 @@ public sealed class OverwriteGuardTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(refused.ErrorCode, Is.EqualTo("replacement_loses_text"));
-            Assert.That(refused.EffectMayHaveOccurred, Is.False);
-            JsonElement facts = refused.Result!.Value;
-            Assert.That(facts.GetProperty("currentSha256").GetString(), Is.EqualTo(original.Sha256));
-            Assert.That(facts.GetProperty("lines").GetInt32(), Is.EqualTo(3));
-            Assert.That(facts.GetProperty("next").GetString(), Is.EqualTo(
-                "nothing was written: jugadores.txt has 3 lines (48 characters), and this call would replace all of it "
-                + "with the text, which keeps none of its lines. If the person asked to add the text: file_write "
-                + "{\"relativePath\":\"Liga de Futbolito/jugadores.txt\",\"folder\":\"documents\",\"text\":\"Matías, "
-                + "arquero\",\"append\":true}, a new line at its end that keeps what it has. If the person asked to "
-                + "replace all it has: the same call again. Their words pick the call, so ask them nothing: in normal "
-                + "mode BAXY itself asks their yes before a replacement"));
             Assert.That(asked.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
             Assert.That(beforeTheYes, Is.EqualTo(Players));
-            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed), confirmed.ErrorCode);
             Assert.That(place.Text(), Is.EqualTo("Matías, arquero"));
             Assert.That(place.Bin.Recycled.Select(File.ReadAllText), Is.EqualTo(new[] { Players }));
         });
@@ -231,9 +218,9 @@ public sealed class OverwriteGuardTests
         });
     }
 
-    // Bypass asks nothing: the refusal still comes once, and the same call again replaces.
+    // Bypass asks nothing: the replacement under the file's own hash goes straight, its previous version to the bin.
     [Test]
-    public async Task InBypassTheRefusalComesOnceAndTheSameCallAgainReplaces()
+    public async Task InBypassTheReplacementGoesStraight()
     {
         using IDisposable setting = ModelAids.Use("all");
         using var place = new Place();
@@ -245,20 +232,19 @@ public sealed class OverwriteGuardTests
             new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Bypass });
         string replace = $$"""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"Matías, arquero","folder":"documents","expectedSha256":"{{original.Sha256}}"}""";
 
-        OperationResponse refused = await engine.ExecuteAsync(Request(replace), CancellationToken.None);
         OperationResponse replaced = await engine.ExecuteAsync(Request(replace), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(refused.ErrorCode, Is.EqualTo("replacement_loses_text"));
-            Assert.That(replaced.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(replaced.Status, Is.EqualTo(OperationStatuses.Completed), replaced.ErrorCode);
             Assert.That(place.Text(), Is.EqualTo("Matías, arquero"));
+            Assert.That(place.Bin.Recycled.Select(File.ReadAllText), Is.EqualTo(new[] { Players }));
         });
     }
 
     // What loses nothing, or is an edit, goes straight under its hash: an empty file (or only blanks), a text that holds
     // all the file had (a line added at the start or the end by rewriting it), and one that keeps more than half of its
-    // words (a line corrected, one of three taken out). One that keeps half or less is refused.
+    // words (a line corrected, one of three taken out). One that keeps half or less asks the person first.
     [TestCase("", "Matías, arquero", false)]
     [TestCase(" \r\n\r\n", "Matías, arquero", false)]
     [TestCase(Players, "Matías, arquero\r\n" + Players, false)]
@@ -268,24 +254,26 @@ public sealed class OverwriteGuardTests
     [TestCase(Players, "Benja, delantero\r\nMatías, arquero\r\n", true)]
     [TestCase("Benja, delantero\r\nTomi, defensa\r\n", "Benja, delantero\r\nMatías, arquero\r\n", true)]
     [TestCase(Players, "", true)]
-    public async Task WhatLosesNothingOrIsAnEditGoesStraight(string before, string text, bool refused)
+    public async Task WhatLosesNothingOrIsAnEditGoesStraight(string before, string text, bool asks)
     {
         using IDisposable setting = ModelAids.Use("all");
         using var place = new Place();
         FilesystemMutationResult original = place.Seed(before);
+        await using FileInvocationJournal journal = await place.Journal();
+        using var engine = new MissionEngine(new OperationRegistry(FilesystemHandlers.Create(place.Provider)), journal);
 
-        OperationOutcome outcome = await Handle(place.Provider, JsonSerializer.Serialize(new
+        OperationResponse response = await engine.ExecuteAsync(Request(JsonSerializer.Serialize(new
         {
             relativePath = Path,
             text,
             folder = "documents",
             expectedSha256 = original.Sha256,
-        }));
+        })), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(outcome.ErrorCode, Is.EqualTo(refused ? "replacement_loses_text" : null));
-            Assert.That(place.Text(), Is.EqualTo(refused ? before : text));
+            Assert.That(response.ErrorCode, Is.EqualTo(asks ? ConfirmationChallengeContract.RequiredErrorCode : null));
+            Assert.That(place.Text(), Is.EqualTo(asks ? before : text));
         });
     }
 
@@ -315,9 +303,10 @@ public sealed class OverwriteGuardTests
         });
     }
 
-    // A file that is not text (bytes that are no UTF-8) keeps nothing of itself in a text: it is refused once too.
+    // A file that is not text (bytes that are no UTF-8) keeps nothing of itself in a text: under its own hash it asks
+    // first too, and under another hash nothing is asked (the write is a version_conflict).
     [Test]
-    public async Task AFileThatIsNotTextIsRefusedOnce()
+    public void AFileThatIsNotTextAsksFirst()
     {
         using IDisposable setting = ModelAids.Use("all");
         using var place = new Place();
@@ -327,30 +316,21 @@ public sealed class OverwriteGuardTests
         string hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(full)))
             .ToLowerInvariant();
 
-        OperationOutcome outcome = await Handle(place.Provider, JsonSerializer.Serialize(new
-        {
-            relativePath = Path,
-            text = "hola",
-            folder = "documents",
-            expectedSha256 = hash,
-        }));
-
         Assert.Multiple(() =>
         {
-            Assert.That(outcome.ErrorCode, Is.EqualTo("replacement_loses_text"));
-            Assert.That(outcome.Result!.Value.TryGetProperty("lines", out _), Is.False);
-            Assert.That(outcome.Result!.Value.GetProperty("size").GetInt64(), Is.EqualTo(6));
+            Assert.That(place.Provider.ReplacementAsksFirst(Path, "hola", hash, "documents"), Is.True);
+            Assert.That(place.Provider.ReplacementAsksFirst(Path, "hola", new string('0', 64), "documents"), Is.False);
             Assert.That(File.ReadAllBytes(full), Has.Length.EqualTo(6));
         });
     }
 
-    // A long text is not repeated in the refusal: the append call names it as the same text.
+    // A long text is not repeated in the refusal of a call without the hash: the append call names it as the same text.
     [Test]
     public async Task ALongTextIsNotRepeatedInTheAppendCall()
     {
         using IDisposable setting = ModelAids.Use("all");
         using var place = new Place();
-        FilesystemMutationResult original = place.Seed(Players);
+        place.Seed(Players);
         string text = string.Concat(Enumerable.Repeat("palabra ", 100));
 
         OperationOutcome outcome = await Handle(place.Provider, JsonSerializer.Serialize(new
@@ -358,13 +338,12 @@ public sealed class OverwriteGuardTests
             relativePath = Path,
             text,
             folder = "documents",
-            expectedSha256 = original.Sha256,
         }));
 
         string next = outcome.Result!.Value.GetProperty("next").GetString()!;
         Assert.Multiple(() =>
         {
-            Assert.That(outcome.ErrorCode, Is.EqualTo("replacement_loses_text"));
+            Assert.That(outcome.ErrorCode, Is.EqualTo("version_conflict"));
             Assert.That(next, Does.Contain("file_write with the same relativePath, folder and text, and append true"));
             Assert.That(next, Does.Not.Contain("palabra palabra"));
         });
