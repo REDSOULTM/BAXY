@@ -25,7 +25,7 @@ test.afterAll(async () => { await unsize(app); await app.browser.close(); });
 // the clip groups each status label may show (the bridges «despertar» / «dormirse» are always allowed)
 const EXP: Record<string, string[]> = {
   Pensando: ['pensando'], Hablando: ['hablando'], Escuchando: ['escuchando'], 'En espera': ['reposo', 'contento'],
-  'Esperando tu ok': ['reposo', 'contento'], 'En reposo': ['dormido', 'dormirse'], 'No se entendió el audio': ['error'],
+  'Esperando tu ok': ['reposo', 'contento'], 'En reposo': ['dormido', 'dormirse'], 'Falló la escucha': ['error'],
 };
 interface Sample { t: number; lab: string; g: string | null; src: string | null; rs: number; n: number; seen: boolean }
 const now = (): Promise<Omit<Sample, 't'>> => page.evaluate(() => {

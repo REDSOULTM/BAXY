@@ -77,6 +77,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private string? _startupFailure;
     private string? _lastTurnFailure;
     private string? _voiceFailure;
+    // The person is speaking to BAXY (a dictation, or «Baxy» heard and its request not ended): the ear failing now
+    // failed them, and sounds once (Chime.ListenFailed); failing at rest bothers nobody.
+    private bool _voiceRequestOpen;
     private bool _isInitializing;
     private bool _isDisposed;
     private bool _turnExecutionActive;
@@ -263,7 +266,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>
     /// Why the last turn ended without an answer from the model (mind_unavailable, decision_unavailable). Each turn starts
-    /// it empty, so a turn that fails sets it once, and that sounds <see cref="FailedTurnSound"/> unless the owner
+    /// it empty, so a turn that fails sets it once, and that sounds <see cref="Chime.TurnFailed"/> unless the owner
     /// silenced BAXY's voice; a turn that answers or that was cancelled leaves it empty and sounds nothing.
     /// </summary>
     internal string? LastTurnFailure
@@ -275,24 +278,34 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (SetField(ref _lastTurnFailure, value))
             {
                 OnPropertyChanged(nameof(Failure));
-                if (failed && !Settings.VoiceMuted)
+                if (failed)
                 {
-                    FailedTurnSound();
+                    SoundUnlessMuted(Chime.TurnFailed);
                 }
             }
         }
     }
 
-    /// <summary>What a failed turn sounds (<see cref="Chime.TurnFailed"/>); the App's tests count it or keep quiet.</summary>
-    internal Action FailedTurnSound { get; init; } = Chime.TurnFailed.Play;
+    /// <summary>How the App plays its <see cref="Chime"/>s; the App's tests record them or keep quiet.</summary>
+    internal Action<Chime> Sound { get; init; } = static chime => chime.Play();
+
+    // A failure is heard unless the owner silenced BAXY's voice («Silenciar su voz»).
+    private void SoundUnlessMuted(Chime chime)
+    {
+        if (!Settings.VoiceMuted)
+        {
+            Sound(chime);
+        }
+    }
 
     /// <summary>What the interface shows as the failure: the engine's (retry_without_close, core_disconnected), else the last turn's.</summary>
     internal string? Failure => _startupFailure ?? _lastTurnFailure;
 
     /// <summary>
     /// The voice's last trouble, until it hears again: voice_dropped_busy (a transcript that arrived while a turn ran
-    /// started nothing), voice_error (the mind's listener failed on a block) or wake_unavailable (the wake word asked
-    /// for, at start or by the person, did not start).
+    /// started nothing; each one sounds <see cref="Chime.Wait"/>), voice_error (the mind's listener failed on a block or
+    /// the microphone sent nothing; <see cref="Chime.ListenFailed"/> once while the person speaks) or wake_unavailable
+    /// (the wake word asked for, at start or by the person, did not start).
     /// </summary>
     internal string? VoiceFailure
     {
@@ -1093,6 +1106,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             // Heard while a turn runs (or before BAXY is ready): it starts nothing, and that is a state, not silence.
             VoiceFailure = "voice_dropped_busy";
+            SoundUnlessMuted(Chime.Wait);
             return;
         }
 
@@ -1156,17 +1170,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 switch (eventName)
                 {
                     case "state":
+                        // A dictation is the person speaking; any other change of the voice ends a request heard after
+                        // «Baxy» (its transcript was told, or BAXY's own voice dropped it).
+                        _voiceRequestOpen = mode == "direct";
                         IsVoiceSpeaking = speaking ?? false;
                         IsWakeListening = mode == "wake";
                         IsListening = mode == "direct";
                         break;
                     case "wake_detected":
                         VoiceFailure = null;
+                        _voiceRequestOpen = true;
                         StatusDescription = "Te escucho…";
                         VoiceWake?.Invoke();
                         if (Settings.WakeSound)
                         {
-                            Chime.Wake.Play();
+                            Sound(Chime.Wake);
                         }
 
                         break;
@@ -1196,6 +1214,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         break;
                     case "error":
                         VoiceFailure = "voice_error";
+                        if (_voiceRequestOpen)
+                        {
+                            _voiceRequestOpen = false;
+                            SoundUnlessMuted(Chime.ListenFailed);
+                        }
+
                         break;
                 }
             },

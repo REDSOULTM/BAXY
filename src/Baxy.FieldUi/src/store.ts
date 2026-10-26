@@ -47,7 +47,7 @@ export interface BaxyStore {
   /** BAXY's last words (the captions), with a key that changes with every new reply. */
   sub: { text: string; key: string } | null;
   mood: Mood;
-  /** when the ear last failed on what it heard (voice_error), for the state «No se entendió el audio». */
+  /** when the ear last failed on what it heard (voice_error), for the state «Falló la escucha». */
   voiceErrorAt: number | null;
   /** when something heard was dropped because a turn ran (voice_dropped_busy), for a notice instead of silence. */
   voiceDroppedAt: number | null;
