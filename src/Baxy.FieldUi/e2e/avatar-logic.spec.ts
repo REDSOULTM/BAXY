@@ -60,6 +60,8 @@ test('cuando el recorrido del turno se reescribe, la cara camina el tramo nuevo 
     [['mente'], ['mente', 'web'], ['mente', 'web']],
     [['mente', 'web'], ['mente', 'web', 'verificar'], ['web', 'verificar']],
     [['mente', 'archivos', 'verificar', 'archivos'], ['mente', 'archivos', 'archivos', 'verificar'], ['archivos', 'verificar']],
+    // store.ts also drops a family repeated in a row: the new path is then a prefix of the one walked
+    [['mente', 'archivos', 'verificar', 'archivos'], ['mente', 'archivos', 'verificar'], ['archivos', 'verificar']],
     [['mente', 'apps', 'verificar'], ['mente', 'apps', 'verificar'], null],
   ];
   const wrong = cases.filter(([seen, path, want]) => JSON.stringify(bxSegment(seen, path)) !== JSON.stringify(want))

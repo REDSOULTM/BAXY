@@ -171,13 +171,15 @@ export function bxRoute(hubs: string[]): number[] {
 }
 
 /* the hubs of the walk's new segment when the turn's path changes from `seen` to `path` (null: nothing new): from
-   where the walk is now to what the path has after the part they share. The path is not only appended to: store.ts
-   moves «verificar» to its end each time the reply's words change. */
+   where the walk is now to what the path has after the part they share, or, when the new path is all shared (a
+   prefix of the one walked), to its last hub. The path is not only appended to: store.ts moves «verificar» to its end
+   each time the reply's words change and drops a family repeated in a row. */
 export function bxSegment(seen: string[], path: string[]): string[] | null {
+  if (!path.length) return null;
   let p = 0;
   while (p < seen.length && p < path.length && seen[p] === path[p]) p++;
-  if (p === path.length) return null;
-  const seg = [seen.length ? seen[seen.length - 1] : path[0], ...path.slice(p)].filter((h, i, a) => i === 0 || h !== a[i - 1]);
+  const tail = p < path.length ? path.slice(p) : [path[path.length - 1]];
+  const seg = [seen.length ? seen[seen.length - 1] : path[0], ...tail].filter((h, i, a) => i === 0 || h !== a[i - 1]);
   return seg.length > 1 ? seg : null;
 }
 
