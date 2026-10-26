@@ -51,6 +51,20 @@ public sealed class RiskPolicyWorldActsTests
     // A ribbon's tab named for sending asks too, as it did before this round: so no rule tries it blind
     // (tests/test_cu_v3_despliegue_pertinente.py, v3-07).
     [TestCase("Enviar y recibir", true)]
+    // Auditoría de identidad (nb-f4-identidad; 00_IDENTIDAD, aclaración del 2026-10-10: en modo normal confirma lo que
+    // sale al mundo, también instalar o desinstalar): a click on an installer's or a store's «Instalar» went unasked
+    // (desinstalar already asked). A state, a progress or putting it off installs nothing.
+    [TestCase("Instalar", true)]
+    [TestCase("Install", true)]
+    [TestCase("Instalar ahora", true)]
+    [TestCase("Install now", true)]
+    [TestCase("Instalar actualizaciones", true)]
+    [TestCase("Instalado", false)]
+    [TestCase("Installed", false)]
+    [TestCase("Instalando…", false)]
+    [TestCase("Instalar más tarde", false)]
+    [TestCase("Install later", false)]
+    [TestCase("Instalar automáticamente las actualizaciones de la aplicación", false)]
     // What stays in the computer, or belongs to another guard: playing is not broadcasting, recording writes a file,
     // «Iniciar sesión» is the account's (the mind's own veto), and the other buttons the model pressed in v3-53 and
     // in v3-08 / v3-09 send nothing out.
