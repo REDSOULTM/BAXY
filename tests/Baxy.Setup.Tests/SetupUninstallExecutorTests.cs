@@ -177,6 +177,38 @@ public sealed class SetupUninstallExecutorTests
     }
 
     [Test]
+    public void PurgeOfAReadOnlyHardLinkKeepsTheOutsideFileReadOnly()
+    {
+        using TemporaryTree tree = new();
+        string dataRoot = Path.Combine(tree.Root, "data");
+        string linked = Path.Combine(dataRoot, "b-linked.bin");
+        string outside = Path.Combine(tree.Root, "outside.bin");
+        Directory.CreateDirectory(dataRoot);
+        File.WriteAllText(outside, "outside");
+        File.SetAttributes(outside, FileAttributes.ReadOnly);
+        try
+        {
+            if (!CreateHardLink(linked, outside, 0))
+            {
+                Assert.Ignore("This volume cannot create the hard link the purge test needs.");
+            }
+
+            PathSafety.DeleteUserDataTreeFailClosed(tree.Root, dataRoot);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(Directory.Exists(dataRoot), Is.False);
+                Assert.That(File.ReadAllText(outside), Is.EqualTo("outside"));
+                Assert.That(File.GetAttributes(outside) & FileAttributes.ReadOnly, Is.EqualTo(FileAttributes.ReadOnly));
+            });
+        }
+        finally
+        {
+            File.SetAttributes(outside, FileAttributes.Normal);
+        }
+    }
+
+    [Test]
     public void PurgeNeverFollowsAReparsePointOutOfTheDataRoot()
     {
         using TemporaryTree tree = new();

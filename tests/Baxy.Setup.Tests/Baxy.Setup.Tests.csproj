@@ -11,4 +11,11 @@
     <PackageReference Include="NUnit3TestAdapter" />
     <ProjectReference Include="..\..\src\Baxy.Setup\Baxy.Setup.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- The real Field UI dist of this checkout, whatever the output or the contract build's dist override. -->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BaxyRepositoryFieldUiDist</_Parameter1>
+      <_Parameter2>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\src\Baxy.FieldUi\dist'))</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

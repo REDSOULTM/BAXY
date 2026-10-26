@@ -308,8 +308,15 @@ internal static partial class PathSafety
                 AssertSingleLink(path);
             }
 
-            ClearReadOnly(path, attributes);
-            File.Delete(path);
+            if ((attributes & FileAttributes.ReadOnly) != 0)
+            {
+                DeleteReadOnlyFileName(path);
+            }
+            else
+            {
+                File.Delete(path);
+            }
+
             return;
         }
 
@@ -318,16 +325,42 @@ internal static partial class PathSafety
             DeleteEntryFailClosed(child, attestOwnedEntries);
         }
 
-        ClearReadOnly(path, attributes);
-        Directory.Delete(path, recursive: false);
-    }
-
-    // Windows refuses to delete a read-only entry: a purge of the user's data would stop halfway on the first one.
-    private static void ClearReadOnly(string path, FileAttributes attributes)
-    {
+        // Windows refuses to delete a read-only entry: a purge of the user's data would stop halfway on the first one.
+        // A directory has a single name, so clearing its attribute touches nothing else.
         if ((attributes & FileAttributes.ReadOnly) != 0)
         {
             File.SetAttributes(path, attributes & ~FileAttributes.ReadOnly);
+        }
+
+        Directory.Delete(path, recursive: false);
+    }
+
+    // The read-only attribute belongs to the file, not to this name: clearing it would also change a hard-linked name
+    // outside the tree. The name is deleted by handle with FILE_DISPOSITION_FLAG_IGNORE_READONLY_ATTRIBUTE instead.
+    private static unsafe void DeleteReadOnlyFileName(string path)
+    {
+        const uint delete = 0x00010000;
+        const uint shareAll = 0x00000001 | 0x00000002 | 0x00000004;
+        const uint openExisting = 3;
+        const uint openReparsePoint = 0x00200000;
+        const int fileDispositionInfoEx = 21;
+        const uint dispositionDelete = 0x1;
+        const uint dispositionPosixSemantics = 0x2;
+        const uint dispositionIgnoreReadOnlyAttribute = 0x10;
+        using SafeFileHandle handle = CreateFile(path, delete, shareAll, 0, openExisting, openReparsePoint, 0);
+        if (handle.IsInvalid)
+        {
+            throw new InstallationSafetyException(
+                $"Unable to open a read-only file for deletion: {path}",
+                new Win32Exception(Marshal.GetLastWin32Error()));
+        }
+
+        uint flags = dispositionDelete | dispositionPosixSemantics | dispositionIgnoreReadOnlyAttribute;
+        if (!SetFileInformationByHandle(handle, fileDispositionInfoEx, (nint)(&flags), sizeof(uint)))
+        {
+            throw new InstallationSafetyException(
+                $"Windows refused to delete a read-only file: {path}",
+                new Win32Exception(Marshal.GetLastWin32Error()));
         }
     }
 
@@ -465,6 +498,14 @@ internal static partial class PathSafety
         uint creationDisposition,
         uint flagsAndAttributes,
         nint templateFile);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetFileInformationByHandle(
+        SafeFileHandle file,
+        int fileInformationClass,
+        nint fileInformation,
+        int bufferSize);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
