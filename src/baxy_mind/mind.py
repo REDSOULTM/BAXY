@@ -564,8 +564,9 @@ ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
                                             "above; it was not asked again: do with that answer what a tool can do, "
                                             "or say in one sentence that you don't do it"})
 # Aid «say_once» (uso real 2026-10-26): the same words came back turn after turn (the same greeting three times, the
-# same «¿te refieres a algo más?» to whatever followed). An answer of a turn with no call that is BAXY's last answer
-# again, letter for letter, is written once more with this note, words only.
+# same «¿te refieres a algo más?» to whatever followed; after searches that all failed, the answer of the turn before
+# as if they had found it). An answer that is BAXY's last answer again, letter for letter, in a turn where no call
+# completed, is written once more with this note, words only.
 SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder exactamente lo mismo que tu respuesta "
                    "anterior. No la repitas: responde a lo que dice ahora la persona, con otras palabras.]")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
@@ -2132,7 +2133,8 @@ class Mind:
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
             return self._next(request_id, stage, turn, final=True)
-        if (content and not turn.get("beat") and not turn.get("receipts") and not turn.get("said_again")
+        if (content and not turn.get("beat") and not turn.get("said_again")
+                and not any(r.get("completed") for r in turn.get("receipts") or [])
                 and _aid_on("say_once") and self._said_last(conv, content)):
             return self._say_otherwise(request_id, stage, turn, content, reply, started)
         if content and not turn.get("beat") and _aid_on("answer_check"):
@@ -2160,7 +2162,7 @@ class Mind:
 
     def _say_otherwise(self, request_id: Any, stage: str, turn: dict[str, Any], content: str, reply: dict | None,
                        started: float) -> dict[str, Any]:
-        """Aid «say_once» (SAID_AGAIN_NOTE): an answer of a turn with no call that is BAXY's last answer again is asked
+        """Aid «say_once» (SAID_AGAIN_NOTE): an answer that is BAXY's last answer again is asked
         once more, words only; the second one is spoken, whatever it says."""
         turn["said_again"] = True
         self._log("turn.repeat", started, None, content=None if turn.get("private") else content)
