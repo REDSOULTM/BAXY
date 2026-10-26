@@ -171,8 +171,7 @@ internal sealed partial class WindowsGpuStatusProbe : IGpuStatusProbe
         cancellationToken.ThrowIfCancellationRequested();
         ThrowIfDuplicateAdapterKeys(adapters);
 
-        nint query = 0;
-        uint status = PdhOpenQuery(null, 0, out query);
+        uint status = PdhOpenQuery(null, 0, out nint query);
         if (status != ErrorSuccess)
         {
             if (query != 0)

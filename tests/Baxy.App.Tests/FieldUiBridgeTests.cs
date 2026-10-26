@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Text.Json.Nodes;
 using System.Windows;
-using Baxy.App;
 using Microsoft.Web.WebView2.Wpf;
 using NUnit.Framework;
 

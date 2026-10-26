@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.Json;
-using Windows.Globalization;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;

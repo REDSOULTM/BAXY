@@ -47,8 +47,6 @@ internal enum StableSetupHostFaultPoint
     UpdateReplaced,
     PreviousDeleted,
     StagedTargetDeleted,
-    RestoreTargetBackupDurable,
-    PreviousRestored,
 }
 
 internal interface IStableSetupHostFaultInjector
@@ -305,46 +303,6 @@ internal sealed partial class StableSetupHostManager
             emptyState,
             "verify deletion of a staged Setup host target");
         return true;
-    }
-
-    internal void RestorePrevious(
-        StableSetupHostIdentity before,
-        StableSetupHostIdentity target)
-    {
-        StableSetupHostIdentity validatedBefore = ValidateIdentity(before, nameof(before));
-        StableSetupHostIdentity validatedTarget = ValidateIdentity(target, nameof(target));
-        AssertDistinctIdentities(validatedBefore, validatedTarget);
-        StableSetupHostInspection inspection = Inspect(validatedBefore, validatedTarget);
-        if (inspection.State == StableSetupHostRecoveryState.UpdateReplaced)
-        {
-            CopyExactCreateNew(
-                _paths.Stable,
-                _paths.Next,
-                validatedTarget,
-                "restored Setup host rollback target");
-            Checkpoint(StableSetupHostFaultPoint.RestoreTargetBackupDurable);
-            inspection = Inspect(validatedBefore, validatedTarget);
-        }
-
-        RequireState(
-            inspection,
-            StableSetupHostRecoveryState.RestoreBackupReady,
-            "restore a previous Setup host");
-        VerifyStableExact(validatedTarget);
-        VerifyExact(_paths.Previous, validatedBefore);
-        VerifyExact(_paths.Next, validatedTarget);
-        MoveFileVerified(
-            _paths.Previous,
-            _paths.Stable,
-            MoveFileReplaceExisting | MoveFileWriteThrough,
-            "restore the previous Setup host");
-        Checkpoint(StableSetupHostFaultPoint.PreviousRestored);
-        VerifyStableExact(validatedBefore);
-        VerifyExact(_paths.Next, validatedTarget);
-        RequireState(
-            Inspect(validatedBefore, validatedTarget),
-            StableSetupHostRecoveryState.UpdateStaged,
-            "verify restoration of a previous Setup host");
     }
 
     private static StableSetupHostPaths ValidatePaths(StableSetupHostPaths paths)

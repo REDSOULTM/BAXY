@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Baxy.App;
 using Baxy.Contracts;
 using NUnit.Framework;
 

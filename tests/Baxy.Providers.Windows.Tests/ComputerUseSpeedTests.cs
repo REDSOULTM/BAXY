@@ -1093,22 +1093,6 @@ public sealed class ComputerUseSpeedTests
     private static ValueTask<VisibleControlSurface.CapturedWindow?> NoCapture(
         nint window, bool? selfDrawn, CancellationToken cancellationToken) =>
         ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(null);
-
-    private sealed class CountingClickLocator : IVisibleControlLocator
-    {
-        internal int Calls { get; private set; }
-
-        public string Stage => "ocr";
-
-        public ValueTask<ExternalCapabilityReceipt?> TryClickAsync(
-            string operation,
-            string label,
-            CancellationToken cancellationToken)
-        {
-            Calls++;
-            return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
-        }
-    }
 }
 
 /// <summary>A keyboard that records what it was asked to send and accepts every event (or the first few).</summary>

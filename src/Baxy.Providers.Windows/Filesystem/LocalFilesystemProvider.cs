@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO.Enumeration;
 using System.Security.Cryptography;
 using System.Text;

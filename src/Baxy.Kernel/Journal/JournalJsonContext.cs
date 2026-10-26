@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using Baxy.Contracts;
 
 namespace Baxy.Kernel.Journal;
 

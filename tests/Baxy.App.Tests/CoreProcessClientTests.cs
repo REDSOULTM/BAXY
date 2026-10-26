@@ -1,5 +1,4 @@
 using System.IO;
-using Baxy.App;
 using NUnit.Framework;
 
 namespace Baxy.App.Tests;

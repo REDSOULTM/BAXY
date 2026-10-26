@@ -117,7 +117,7 @@ export const HUB_LABEL: Record<string, [number, number, CanvasTextAlign]> = {
 export interface MeshNode { x: number; y: number; hub?: string; ph: number }
 export interface Mesh { N: MeshNode[]; E: [number, number][]; adj: number[][]; hub: Record<string, number>; ring: number[] }
 
-export function bxBuildMesh(): Mesh {
+function bxBuildMesh(): Mesh {
   const rnd = seededRng(9091), N: MeshNode[] = [], E: [number, number][] = [], hub: Record<string, number> = {};
   Object.entries(HUBS).forEach(([k, p]) => { hub[k] = N.length; N.push({ x: p[0], y: p[1], hub: k, ph: 0 }); });
   const cols = 30;

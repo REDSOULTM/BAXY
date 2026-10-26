@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
-using Baxy.Providers.Windows.External;
 using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.SystemStatus;
 using NUnit.Framework;

@@ -1,4 +1,3 @@
-using Baxy.Contracts;
 using Baxy.Providers.Windows.Applications;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;

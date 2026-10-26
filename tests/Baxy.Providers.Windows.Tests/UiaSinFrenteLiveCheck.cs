@@ -290,8 +290,6 @@ public sealed class UiaSinFrenteLiveCheck
         public async Task RunAsync(CancellationToken token)
         {
             Stopwatch? away = null;
-            long began = 0;
-            nint who = 0;
             while (!token.IsCancellationRequested)
             {
                 nint front = GetForegroundWindow();
@@ -300,10 +298,8 @@ public sealed class UiaSinFrenteLiveCheck
                     if (away is null)
                     {
                         away = Stopwatch.StartNew();
-                        began = Now;
-                        who = front;
                         Excursions++;
-                        Note($"fuera desde {began} hwnd={who}");
+                        Note($"fuera desde {Now} hwnd={front}");
                     }
 
                     LongestMs = Math.Max(LongestMs, away.ElapsedMilliseconds);

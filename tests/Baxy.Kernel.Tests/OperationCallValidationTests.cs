@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.Json;
 using Baxy.Contracts;
-using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using NUnit.Framework;

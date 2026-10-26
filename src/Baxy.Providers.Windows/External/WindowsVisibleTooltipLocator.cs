@@ -661,7 +661,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
         Learned? learned = await LearnAsync(label, cancellationToken).ConfigureAwait(false);
         if (learned is not { } found)
             return null;
-        ExternalCapabilityReceipt? receipt = await PressAsync(operation, label, found, press, cancellationToken)
+        ExternalCapabilityReceipt? receipt = await PressAsync(operation, found, press, cancellationToken)
             .ConfigureAwait(false);
         if (!found.FromCache || receipt?.ErrorCode != NamedOther)
             return receipt;
@@ -670,7 +670,7 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
         _cache.Forget(found.Signature, found.Place);
         if (await LearnAsync(label, cancellationToken).ConfigureAwait(false) is not { } again)
             return null;
-        return await PressAsync(operation, label, again, press, cancellationToken).ConfigureAwait(false);
+        return await PressAsync(operation, again, press, cancellationToken).ConfigureAwait(false);
     }
 
     internal const string NamedOther = "visible_point_named_other";
@@ -1031,7 +1031,6 @@ internal sealed class WindowsVisibleTooltipLocator : IVisibleControlLocator
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt?> PressAsync(
         string operation,
-        string label,
         Learned learned,
         IPointPress? press,
         CancellationToken cancellationToken)

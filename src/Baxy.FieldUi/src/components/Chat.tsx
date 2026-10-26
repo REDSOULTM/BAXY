@@ -57,7 +57,7 @@ function mmss(ms: number): string {
   return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
 
-export function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; onNo: () => void }) {
+function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; onNo: () => void }) {
   const [now, setNow] = useState(() => Date.now());
   const live = c.status === 'pending';
   useEffect(() => {

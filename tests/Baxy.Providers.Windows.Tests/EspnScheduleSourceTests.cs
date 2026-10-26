@@ -1,4 +1,3 @@
-using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 using static Baxy.Providers.Windows.External.EspnScheduleSource;
 
