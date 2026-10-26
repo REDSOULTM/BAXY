@@ -610,3 +610,31 @@ def test_the_read_rule_is_an_aid_of_its_own(tmp_path: Path, monkeypatch, setting
     if checked:
         note = server.bodies[-1]["messages"][-1]["content"]
         assert "su resultado trae el texto entero de recado.txt" in note
+
+
+# ---- an output told that no result shows (uso real 2026-10-26) -------------------------------------------------------
+SENT = {"status": "completed", "verification": "delivered_only"}
+NO_WINDOW = {"status": "failed", "error": "window_not_found"}
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("Listo, el programa se ejecutó y salió «Hola mundo».", True),
+    ("Lo corrí e imprimió «42».", True),
+    ("Mandé el comando, pero no salió «Hola mundo» en nada que pudiera leer.", False),
+    ("Mandé el comando; no pude ver su salida.", False),
+])
+def test_an_output_quoted_that_no_result_shows_is_flagged(answer: str, flagged: bool) -> None:
+    receipts = [_r("shell.command.run", SENT, {"command": "python saludo.py"}),
+                _r("window.resolve", NO_WINDOW)]
+    assert ("output" in _rules(answer, receipts)) is flagged
+
+
+def test_an_output_a_result_shows_is_not_flagged() -> None:
+    receipts = [_r("shell.command.run", {"status": "completed", "verification": "output_only",
+                                         "observed": {"stdout": "Hola mundo\r\n", "exitCode": 0}})]
+    assert "output" not in _rules("Lo ejecuté y salió «Hola mundo».", receipts)
+
+
+def test_what_a_call_wrote_is_not_an_output_it_shows() -> None:
+    receipts = [_r("file.write", DONE, {"text": "print('Hola mundo')"}), _r("shell.command.run", SENT)]
+    assert "output" in _rules("Lo ejecuté y salió «Hola mundo».", receipts)
