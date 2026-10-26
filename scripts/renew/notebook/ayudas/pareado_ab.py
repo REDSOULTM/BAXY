@@ -29,6 +29,7 @@ def boot(d, n=10000):
     return m[int(.025 * n)], m[int(.975 * n)]
 
 a_pre, b_pre, seeds = sys.argv[1], sys.argv[2], [int(s) for s in sys.argv[3:]]
+print(f"runs: {RUNS} (banks {'BAXY_RENEW_BANKS' if os.environ.get('BAXY_RENEW_BANKS') else 'default'})", flush=True)  # PC-Q: another BAXY_RENEW_BANKS read other runs silently
 A = {s: rows(a_pre, s) for s in seeds}; B = {s: rows(b_pre, s) for s in seeds}
 for s in seeds:
     for arm, rr in (("A", A[s]), ("B", B[s])):

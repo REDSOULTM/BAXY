@@ -27,7 +27,8 @@ def test_with_no_line_to_check_it_says_so_instead_of_failing(tmp_path, monkeypat
     monkeypatch.setattr(chequeo_offline, "HAND", tmp_path / "none.json")
     monkeypatch.setattr(sys, "argv", ["chequeo_offline.py"])
     assert chequeo_offline.main() == 0
-    assert "líneas 0" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert out.startswith(f"runs: {tmp_path} (banks ") and "líneas 0" in out
 
 
 def test_the_runs_read_are_those_of_baxy_renew_banks(tmp_path, monkeypatch):
@@ -55,4 +56,5 @@ def test_the_notebooks_paired_ab_reads_the_runs_of_baxy_renew_banks(tmp_path):
                           encoding="utf-8", env={**os.environ, "BAXY_RENEW_BANKS": str(tmp_path)},
                           creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     assert done.returncode == 0, done.stderr
+    assert done.stdout.startswith(f"runs: {tmp_path / 'runs'} (banks BAXY_RENEW_BANKS)")
     assert "up ['E001']" in done.stdout
