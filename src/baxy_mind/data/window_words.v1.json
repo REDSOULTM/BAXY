@@ -1,0 +1,6 @@
+{
+ "schema": "baxy.window-words.v1",
+ "source": "Lo que nombra una ventana o el texto que muestra, para la regla «denial» de answer_check (ayuda check_denial, 2026-10-25): «no puedo leer el texto de X» con X una de estas palabras es el texto de una ventana, que una mirada (input.visible.controls) lee, no una nota ni un archivo. «generic»: palabras de cualquier ventana. «applications»: nombres de aplicaciones cuya ventana muestra un texto de la persona (V6E015 «No puedo leer el texto del bloc de notas», 3 respuestas de las 34 de la auditoría scripts/renew/ayudas/niego_auditoria.py); su nombre es una ventana aunque diga «notas». Datos, no código (00_IDENTIDAD.md, aclaración 2026-10-10): una aplicación nueva se agrega aquí. Se comparan plegadas (minúsculas, sin tildes), como palabras enteras.",
+ "generic": ["ventana", "ventanas", "pantalla", "window", "screen"],
+ "applications": ["notepad", "bloc de notas"]
+}
