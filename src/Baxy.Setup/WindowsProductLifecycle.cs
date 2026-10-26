@@ -987,7 +987,7 @@ internal sealed class WindowsProductLifecycle
 
             SafeFileTree tree = PathSafety.InspectTree(
                 application.WorkingDirectory,
-                PackageContract.MaximumVersionTreeEntries);
+                PackageContract.MaximumInstalledVersionTreeEntries);
             long total = 0;
             foreach (string relative in tree.Files)
             {
