@@ -143,7 +143,7 @@ apagar el equipo. Con dos modos:
 
 | Modo | Comportamiento |
 |---|---|
-| **Normal** (por defecto) | Confirma **sólo si destruye datos** — borrar, sobrescribir, cerrar sin guardar. Apagar o cerrar sesión van directos. |
+| **Normal** (por defecto) | Confirma **sólo lo destructivo o realmente peligroso** — borrar, sobrescribir, cerrar sin guardar, vaciar la papelera, forzar un cierre, instalar o desinstalar programas, comprar o pagar, enviar o publicar a otra persona. Abrir, cerrar con gracia, buscar, consultar, crear en lo propio, apagar o cerrar sesión van directos (decisión del dueño, 2026-10-25). |
 | **Bypass** | Sin frenos. Se activa con **un ajuste consciente** y queda encendido hasta que se apague. |
 
 La confirmación sigue ligada a la invocación exacta, no a la intención aproximada.
@@ -331,10 +331,11 @@ teclado**.
 Respondidas una por una al fijar la misión de estabilización
 (`computer-use/PROMPT_ESTABILIZACION_2026-10-10.md`). Donde afinan una decisión de arriba, vale ésta.
 
-- **Confirmación.** En modo Normal BAXY confirma lo que destruye datos **y también lo que sale al mundo**: enviar un
-  mensaje, entrar a un canal de voz, publicar, comprar, instalar o desinstalar. El modo bypass sigue sin frenos, y
-  las pruebas del producto se corren en bypass sobre blancos seguros. Decisión del dueño, 2026-10-25: buscar o
-  consultar la web nunca pide el sí aunque lleve texto o datos de la persona; sólo pide el sí lo realmente peligroso.
+- **Confirmación.** En modo Normal BAXY confirma sólo lo destructivo o realmente peligroso, lo que lista la tabla de
+  arriba: lo que destruye datos y, de lo que sale al mundo, enviar o publicar a otra persona, comprar o pagar, instalar
+  o desinstalar (decisión del dueño, 2026-10-25). El modo bypass sigue sin frenos, y las pruebas del producto se
+  corren en bypass sobre blancos seguros. Decisión del dueño, 2026-10-25: buscar o consultar la web nunca pide el sí
+  aunque lleve texto o datos de la persona; sólo pide el sí lo realmente peligroso.
 - **Estable antes que amplio.** No existe un computer use «mágico»: BAXY corre con un modelo local pequeño y hace,
   al máximo y siempre, lo que puede hacer con sus requisitos. Lo que no puede hacer de forma fiable no se fuerza ni
   se hardcodea: se declara límite y BAXY lo dice («Eso no lo hago») dejando a la persona lo más cerca posible.

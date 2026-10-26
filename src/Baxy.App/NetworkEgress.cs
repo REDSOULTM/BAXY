@@ -11,18 +11,19 @@ namespace Baxy.App;
 /// <summary>
 /// BAXY Renew al máximo 11.5 (identity: «puede entrar información, no puede salir contenido del usuario»; lethal
 /// trifecta, OWASP LLM01, CaMeL): in a turn the person opened, a call waits for their «sí» only for what is really
-/// dangerous. Two cases. A call that goes out of the PC to a host that came neither from this session's results (their
-/// address fields: a search result, a page fetched or read, a tab) nor from the person's words (the site's name,
-/// «youtube» for www.youtube.com), <c>host_not_from_session</c>: the way out for what a page told the model to send. A
-/// search followed by the fetch of one of its results never waits. An address literal (an IP) carries no words: a ping
-/// to one goes, and so does a page in the person's own network (loopback, private, link-local), but a page at any other
-/// IP waits unless the person wrote it or a result gave it (auditoría de la App, 2026-10-23: a fetch of
-/// «http://203.0.113.9/?d=…» left the PC unasked). And a game the person did not name, <c>game_title_not_said</c>.
-/// Searching or looking something up on the web never waits, whatever of the person's text or data it carries (owner's
-/// decision, 2026-10-25: only what is destructive or really dangerous asks; BAXY must not bother the person all the
-/// time). Which calls go out is the catalog's typed fact (al máximo 5.1: the network effect, with the call's exact
-/// arguments), and the address is the call's <c>url</c> or <c>host</c>. A heartbeat holds every such call already
-/// (NativeTurnLoop.BeatProposes).
+/// dangerous. Two cases. A page address that carries something (a path past «/», a query, a fragment, a name before
+/// «@») to a host that came neither from this session's results (their address fields: a search result, a page fetched
+/// or read, a tab) nor from the person's words (the site's name, «youtube» for www.youtube.com),
+/// <c>host_not_from_session</c>: the way out for what a page told the model to send. And a game the person did not
+/// name, <c>game_title_not_said</c>. A search followed by the fetch of one of its results never waits. An address
+/// literal (an IP) carries no words: a page in the person's own network (loopback, private, link-local) goes, but one
+/// at any other IP waits unless the person wrote it or a result gave it (auditoría de la App, 2026-10-23: a fetch of
+/// «http://203.0.113.9/?d=…» left the PC unasked). Owner's decision, 2026-10-25: only what is destructive or really
+/// dangerous asks, BAXY must not bother the person all the time; so searching or looking something up on the web never
+/// waits, whatever of the person's text or data it carries, a bare site («https://ejemplo.com», «ejemplo.com/») goes
+/// since it carries nothing of theirs, and a ping sends no page. Which calls go out is the catalog's typed fact (al
+/// máximo 5.1: the network effect, with the call's exact arguments), and the address is the call's <c>url</c>. A
+/// heartbeat holds every such call already (NativeTurnLoop.BeatProposes).
 /// </summary>
 internal sealed class NetworkEgress
 {
@@ -56,10 +57,8 @@ internal sealed class NetworkEgress
             return null;
         }
 
-        string? url = Text(arguments["url"]);
-        string? address = url ?? Text(arguments["host"]);
-        return address is not null && HostOf(address) is { Length: > 0 } host
-            && !Grounded(host, carriesPage: url is not null)
+        return Text(arguments["url"]) is { } url && UriOf(url) is { } address && Carries(address)
+            && Normalized(address.Host) is { Length: > 0 } host && !Grounded(host)
                 ? "host_not_from_session"
                 : null;
     }
@@ -160,11 +159,11 @@ internal sealed class NetworkEgress
         }
     }
 
-    private bool Grounded(string host, bool carriesPage)
+    private bool Grounded(string host)
     {
         if (IPAddress.TryParse(host.Trim('[', ']'), out IPAddress? ip))
         {
-            return !carriesPage || InPersonsNetwork(ip) || _hosts.Contains(host) || _hosts.Contains(ip.ToString());
+            return InPersonsNetwork(ip) || _hosts.Contains(host) || _hosts.Contains(ip.ToString());
         }
 
         if (_hosts.Any(seen => host == seen || host.EndsWith("." + seen, StringComparison.Ordinal)
@@ -219,13 +218,21 @@ internal sealed class NetworkEgress
         return words.Length > 0 && words.All(_words.Contains);
     }
 
-    private static string HostOf(string address)
+    private static string HostOf(string address) => UriOf(address) is { } uri ? Normalized(uri.Host) : string.Empty;
+
+    private static Uri? UriOf(string address)
     {
         string given = address.Trim();
-        return Uri.TryCreate(given, UriKind.Absolute, out Uri? uri) && uri.Host.Length > 0 ? Normalized(uri.Host)
-            : Uri.TryCreate("http://" + given, UriKind.Absolute, out uri) ? Normalized(uri.Host)
-            : string.Empty;
+        return Uri.TryCreate(given, UriKind.Absolute, out Uri? uri) && uri.Host.Length > 0 ? uri
+            : Uri.TryCreate("http://" + given, UriKind.Absolute, out uri) ? uri
+            : null;
     }
+
+    // What an address takes to its host besides the host itself: a path past «/», a query, a fragment or a name before
+    // «@». A bare site («https://ejemplo.com», «ejemplo.com/») carries nothing.
+    private static bool Carries(Uri address) =>
+        address.AbsolutePath is not ("/" or "") || address.Query.Length > 0 || address.Fragment.Length > 0
+        || address.UserInfo.Length > 0;
 
     private static string Normalized(string host)
     {

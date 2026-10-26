@@ -6,8 +6,8 @@ namespace Baxy.App.Tests;
 
 /// <summary>
 /// What a call of the person's turn may send out of the PC without their «sí» (src/Baxy.App/NetworkEgress.cs): what
-/// they said, what the session's results gave and what memory read goes; a host nobody gave, or a game they did not
-/// name, waits.
+/// they said, what the session's results gave and what memory read goes; an address that carries something to a host
+/// nobody gave, or a game they did not name, waits.
 /// </summary>
 [TestFixture]
 public sealed class NetworkEgressTests
@@ -58,12 +58,34 @@ public sealed class NetworkEgressTests
 
         Assert.That(egress.Holds("browser.navigate",
             new JsonObject { ["url"] = "https://www.youtube.com/results?search_query=lofi" }), Is.Null);
-        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://lofi.exfil.example/" }),
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://lofi.exfil.example/mix?u=7" }),
             Is.EqualTo("host_not_from_session"));
-        Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "exfil.example" }),
-            Is.EqualTo("host_not_from_session"));
-        // An address literal carries no words.
-        Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "1.1.1.1" }), Is.Null);
+    }
+
+    // Owner's decision, 2026-10-25: a host nobody gave asks only when its address carries something; a bare site carries
+    // nothing of the person's, and a ping sends no page.
+    [Test]
+    public void ABareSiteNobodyGaveGoesAndOneThatCarriesSomethingWaits()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("abre una página cualquiera");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://ejemplo.com" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "ejemplo.com/" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://203.0.113.90/" }), Is.Null);
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "exfil.example" }), Is.Null);
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "203.0.113.9" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://ejemplo.com/nunoa" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "ejemplo.com/?d=nunoa" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://ejemplo.com/#nunoa" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://nunoa@ejemplo.com/" }),
+                Is.EqualTo("host_not_from_session"));
+        });
     }
 
     // Auditoría de la App (2026-10-23): an IP carries no words, so a page at any IP went out unasked, query and all.
@@ -82,8 +104,6 @@ public sealed class NetworkEgressTests
             Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://192.168.1.1/estado" }), Is.Null);
             Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://127.0.0.2/" }), Is.Null);
             Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://[::1]/" }), Is.Null);
-            // A ping sends no page.
-            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "203.0.113.9" }), Is.Null);
         });
 
         egress.Heard("abre http://203.0.113.9/estado");
@@ -94,7 +114,7 @@ public sealed class NetworkEgressTests
         {
             Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://203.0.113.9/estado" }), Is.Null);
             Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://198.51.100.4/informe" }), Is.Null);
-            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://203.0.113.90/" }),
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "http://203.0.113.90/estado" }),
                 Is.EqualTo("host_not_from_session"));
         });
     }
@@ -116,7 +136,7 @@ public sealed class NetworkEgressTests
         egress.Heard("abre rfc-editor.org");
         Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://rfc-editor.org/" }), Is.Null);
         // One part said is not the name.
-        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://rfc-exfil.example/" }),
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://rfc-exfil.example/rfc2324" }),
             Is.EqualTo("host_not_from_session"));
     }
 
