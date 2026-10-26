@@ -84,6 +84,15 @@ public static class ProductCatalog
             "app.restart.window.close.process.exit.app.open.v1",
             "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo.",
             effects: [WindowInput()]),
+        // f6 estado (2026-10-25): lo que la vista ya muestra de BAXY (Ajustes › Modelo y el medidor del rail; Ajustes ›
+        // Privacidad, «Salidas a internet de esta sesión») se pregunta también por voz. Lo lee la App de lo suyo
+        // (OwnReadings): nada sale del PC ni se mide de nuevo.
+        Descriptor(
+            "assistant.status",
+            Schema([String("scope", values: ["internet", "model"])], ["scope"]),
+            OperationRisks.ReadOnly,
+            "assistant.status.app.view.readings.v1",
+            "Lee lo que la vista muestra de BAXY: la memoria de vídeo y la RAM de su modelo, o las salidas a internet de esta sesión con su destino y hora."),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(

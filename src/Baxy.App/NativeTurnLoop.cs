@@ -106,6 +106,10 @@ internal sealed class NativeTurnLoop
 
         /// <summary>Where each of the person's known folders is, by its label (SaidFolders; tests point it elsewhere).</summary>
         internal Func<string, string?>? PersonFolder { get; init; }
+
+        /// <summary>assistant.status by its scope: what the App holds of BAXY itself (OwnReadings), read here and never
+        /// sent to the engine, which holds none of it.</summary>
+        internal Func<string, CancellationToken, Task<OperationOutcome>>? OwnReading { get; init; }
     }
 
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
@@ -655,9 +659,44 @@ internal sealed class NativeTurnLoop
                 .ToJsonString(SaidFolders.AsWritten));
         }
 
+        if (operation == OwnReadings.Operation && _host.OwnReading is { } ownReading)
+        {
+            return await ReadOwnAsync(ownReading, prepared, descriptor, arguments, started, cancellationToken);
+        }
+
         return await SendAsync(core, prepared, arguments, confirmationToken: null, answered: false, started,
                 cancellationToken, said)
             ;
+    }
+
+    // f6 estado: BAXY's own readings (assistant.status, a read with no effect) are the App's: checked against the
+    // catalog's schema as the kernel checks every call, read, and told by the kernel's own receipt.
+    private async Task<string> ReadOwnAsync(
+        Func<string, CancellationToken, Task<OperationOutcome>> read,
+        PreparedOperation prepared,
+        ProductOperationDescriptor descriptor,
+        JsonObject arguments,
+        long started,
+        CancellationToken cancellationToken)
+    {
+        Release(prepared);
+        OperationOutcome outcome = OperationArgumentValidator.IsValid(prepared.Arguments, descriptor.ArgumentsSchema)
+            ? await read((string?)arguments["scope"] ?? string.Empty, cancellationToken)
+            : OperationOutcome.InvalidArguments(ProductCatalog.CreateDefinition(descriptor.Name), prepared.Arguments);
+        bool completed = outcome.Succeeded && outcome.Verified;
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse,
+            prepared.InvocationId,
+            prepared.MissionId,
+            prepared.InvocationId,
+            completed ? OperationStatuses.Completed : OperationStatuses.Failed,
+            OperationVisibleFacts.FromOutcome(descriptor.Name, outcome),
+            completed,
+            false,
+            outcome.Result,
+            completed ? null : outcome.ErrorCode);
+        _turnPlace.Ran(descriptor.Name, arguments, response.Status);
+        return Record(descriptor.Name, arguments, started, response.Message, response);
     }
 
     // Al máximo 5.1: what the call does besides its risk is the catalog's typed fact (OperationEffects), read with the

@@ -134,6 +134,7 @@ internal static class Program
             new ApplicationWindowStatusHandler(installedApplicationProvider),
             appOpenHandler,
             new AppRestartHandler(windowControlProvider, appOpenHandler.ExecuteAsync),
+            new AssistantStatusHandler(),
             new GameStoreHandler("game.store.page", "game", "title", appOpenHandler.ExecuteAsync),
             new PasteIntoNewDocumentHandler(
                 new ExternalCapabilityHandler("clipboard.paste", externalCapabilityProvider), appOpenHandler.ExecuteAsync,
