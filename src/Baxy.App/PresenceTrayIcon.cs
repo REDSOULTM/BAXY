@@ -145,7 +145,17 @@ internal sealed class PresenceTrayIcon : IDisposable
             if (eventCode is 0x0205 or 0x007B)
             {
                 _ = NativeMethods.GetCursorPos(out Point point);
-                ShowMenu(point.X, point.Y);
+                try
+                {
+                    ShowMenu(point.X, point.Y);
+                }
+                catch (Exception exception) when (exception is ObjectDisposedException or InvalidOperationException)
+                {
+                    // Arreglos de uso real (2026-10-26): an exception out of this window procedure ended the whole
+                    // App; a menu that could not open is recorded, and BAXY goes on.
+                    UnhandledFailures.Record("tray", exception);
+                }
+
                 return nint.Zero;
             }
         }

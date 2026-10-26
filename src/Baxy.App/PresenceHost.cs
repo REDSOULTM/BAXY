@@ -10,6 +10,7 @@ internal sealed class PresenceHost : IDisposable
     private Heartbeat? _heartbeat;
     private ProposalToast? _toast;
     private Presentation.TrayMenu? _menu;
+    private bool _menuOpening;
     private MainWindow? _window;
     private MainWindowViewModel? _viewModel;
     private bool _exitRequested;
@@ -100,7 +101,28 @@ internal sealed class PresenceHost : IDisposable
     }
 
     // BAXY's own tray menu (design v4) at the pointer, with what BAXY is doing now; one open at a time.
+    // Arreglos de uso real (2026-10-26, the App ended with ObjectDisposedException in Window.Show): a right click sends the
+    // icon both WM_RBUTTONUP and WM_CONTEXTMENU, and Show dispatches the messages sent meanwhile; the second request
+    // closed the menu still being shown, whose window then no longer existed. One arriving while a menu opens is ignored.
     private void ShowMenu(int x, int y)
+    {
+        if (_menuOpening)
+        {
+            return;
+        }
+
+        _menuOpening = true;
+        try
+        {
+            OpenMenu(x, y);
+        }
+        finally
+        {
+            _menuOpening = false;
+        }
+    }
+
+    private void OpenMenu(int x, int y)
     {
         MainWindowViewModel? viewModel = _viewModel;
         _menu?.Close();
