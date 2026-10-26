@@ -113,7 +113,7 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
 
     private static bool PendingShutdown(int error) => error is 1115 or 1190;
 
-    private static bool EnableShutdownPrivilege()
+    internal static bool EnableShutdownPrivilege()
     {
         if (!OpenProcessToken(GetCurrentProcess(), TokenAdjustPrivileges | TokenQuery, out nint token))
             return false;
@@ -134,7 +134,10 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    // Arreglos de uso real (2026-10-26, a shutdown refused in 31 ms): TOKEN_PRIVILEGES packs its LUID at offset
+    // 4. With the long's own alignment it went to offset 8, Windows read a LUID no token holds, answered
+    // ERROR_NOT_ALL_ASSIGNED, and no shutdown or restart was ever asked of Windows.
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     private struct TokenPrivileges
     {
         public uint PrivilegeCount;

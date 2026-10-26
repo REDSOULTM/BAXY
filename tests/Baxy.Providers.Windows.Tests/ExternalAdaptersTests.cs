@@ -42,6 +42,14 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    [Test]
+    public void TheShutdownPrivilegeIsEnabledOnThisProcessToken()
+    {
+        // Arreglos de uso real (2026-10-26): the privilege's LUID was laid out where Windows does not read it, so enabling
+        // it always failed and every shutdown was refused before Windows was asked. Enabling it shuts nothing down.
+        Assert.That(WindowsPowerTransitionPlatform.EnableShutdownPrivilege(), Is.True);
+    }
+
     [TestCase("lock", "win32_lockworkstation_acceptance")]
     [TestCase("restart", "win32_initiatesystemshutdownex_restart_acceptance")]
     [TestCase("shutdown", "win32_initiatesystemshutdownex_shutdown_acceptance")]
