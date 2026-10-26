@@ -210,19 +210,97 @@ public sealed class SaidFoldersTests
             .And.Contain("to look there, call file_find with folder \"home\" and subdirectory \"banco-local\""));
     }
 
-    // Holdout v6 V6E042: told only that file_find «looks there», the model wrote the same filesystem_search again; the
-    // look is said as a call, with the name the search looked for.
-    [Test]
-    public void ASearchOfTheWorkingFolderIsRefusedWithTheCallThatLooksForItInTheFolderNamed()
+    // Práctica V5E040: «busca la factura en Documentos\Contabilidad» was a filesystem_search, which looks only in BAXY's
+    // working folder, and BAXY said it found nothing. A search of the working folder in a turn that names a folder of
+    // the person's runs as file_find in that folder (and the folder inside it said), and its note says so.
+    [TestCase(@"busca la factura en Documentos\Contabilidad", "factura",
+        "{\"query\":\"factura\",\"folder\":\"documents\",\"subdirectory\":\"Contabilidad\"}", "Documents/Contabilidad")]
+    [TestCase("busca el contrato en mis descargas", "contrato",
+        "{\"query\":\"contrato\",\"folder\":\"downloads\"}", "Downloads")]
+    [TestCase("busca en cajones dónde está el file llaves.txt, que no me acuerdo en cuál lo dejé", "llaves.txt",
+        "{\"query\":\"llaves.txt\",\"folder\":\"home\",\"subdirectory\":\"cajones\"}", "cajones")]
+    public void ASearchOfTheWorkingFolderRunsAsFileFindInTheFolderNamed(
+        string words, string query, string arguments, string folder)
     {
+        Directory.CreateDirectory(Path.Combine(_home, "Documents", "Contabilidad"));
         Directory.CreateDirectory(Path.Combine(_home, "cajones", "azul"));
-        SaidFolders said = Heard("busca en cajones dónde está el file llaves.txt, que no me acuerdo en cuál lo dejé");
+        SaidFolders said = Heard(words);
 
-        string next = (string?)said.Rule("filesystem.search", Descriptor("filesystem.search"),
-            new JsonObject { ["query"] = "llaves.txt" })?.Refusal?["next"] ?? string.Empty;
+        SaidFolders.Ruling? ruling = said.Rule("filesystem.search", Descriptor("filesystem.search"),
+            new JsonObject { ["query"] = query });
 
-        Assert.That(next, Does.Contain(
-            "to look there, call file_find with query \"llaves.txt\" and folder \"home\" and subdirectory \"cajones\""));
+        Assert.Multiple(() =>
+        {
+            Assert.That(ruling?.Refusal, Is.Null);
+            Assert.That(ruling?.Operation, Is.EqualTo("file.find"));
+            Assert.That(ruling?.Arguments.ToJsonString(), Is.EqualTo(arguments));
+            Assert.That(ruling?.Note, Does.Contain("this search looked in " + Path.Combine([_home, .. folder.Split('/')])
+                + " with file_find"));
+            Assert.That(ruling?.Note, Does.Contain("instead of BAXY's own working folder"));
+        });
+    }
+
+    // In the turn loop: the call that goes to the engine is file.find in the folder named, and its step says it.
+    [Test]
+    public async Task TheTurnLoopSendsTheSearchAsFileFindInTheFolderNamed()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "Documents", "Contabilidad"));
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = "filesystem.search",
+                    ["arguments"] = new JsonObject { ["query"] = "factura" },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "Listo.",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var core = new CoreProcessClient();
+        const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+        typeof(CoreProcessClient).GetField("_ready", Private)!.SetValue(core, true);
+        typeof(CoreProcessClient).GetField("_process", Private)!.SetValue(core, Process.GetCurrentProcess());
+        var steps = new List<NativeTurnStep>();
+        var registry = new RetryableOperationRegistry();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            StepCompleted = steps.Add,
+            PersonFolder = Known,
+        });
+
+        await loop.RunAsync(@"busca la factura en Documentos\Contabilidad", Stopwatch.GetTimestamp(),
+            CancellationToken.None);
+
+        Assert.That(steps.Select(static step => (step.Operation, step.Arguments.ToJsonString())), Is.EqualTo(new[]
+        {
+            ("file.find", "{\"query\":\"factura\",\"folder\":\"documents\",\"subdirectory\":\"Contabilidad\"}"),
+        }));
+    }
+
+    // Without a folder of the person's named, or with BAXY's working folder named, the search runs as it was written.
+    [TestCase("busca la factura")]
+    [TestCase("busca la factura en tu carpeta de trabajo")]
+    public void ASearchWithoutAFolderOfThePersonsNamedRunsAsWritten(string words)
+    {
+        SaidFolders said = Heard(words);
+
+        Assert.That(said.Rule("filesystem.search", Descriptor("filesystem.search"),
+            new JsonObject { ["query"] = "factura" }), Is.Null);
     }
 
     // Holdout v6 V6E042 (cien s0 and s2): the refused search written again ran in the working folder, its note said only
@@ -241,6 +319,7 @@ public sealed class SaidFoldersTests
         Assert.Multiple(() =>
         {
             Assert.That(again?.Refusal, Is.Null);
+            Assert.That(again?.Operation, Is.Null);
             Assert.That(again?.Note, Does.Contain("it did not look at or change anything in that folder; to look there, "
                 + "call file_find with query \"llaves.txt\" and folder \"home\" and subdirectory \"cajones\""));
         });
