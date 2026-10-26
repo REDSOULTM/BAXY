@@ -531,7 +531,7 @@ export default function App() {
             </div>
             {/* final 4, accesibilidad: the notices, the internet banner and a failure are drawn for a moment and were
                 never read by a screen reader; this region, always there, says them (politely, never over the voice) */}
-            <div className="sr-only" role="status" aria-live="polite">{liveText(banner, shownNotice, state === 'error' ? errorText : null)}</div>
+            <div className="sr-only" role="status" aria-live="polite">{liveText(banner, shownNotice, state === 'error' ? label : null)}</div>
             <div className="bx-cbot">
               {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>Salió a internet</b><span>· {banner}</span></div>
                 : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
