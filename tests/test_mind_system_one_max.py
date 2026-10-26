@@ -200,7 +200,6 @@ NETWORK = [WEB_SEARCH, WEATHER, SHELL, FILE_FIND]
      "weather.current"),
     ("web_search", "weather_current", {"location": "Santiago"}, "forecast this week please",
      None),  # an optional value nobody said is never sent out of the PC
-    ("web_search", "shell_command_run", {"command": "weather"}, "forecast please", None),  # not a read
     ("file_find", "weather_current", {}, "forecast please", None)])  # the model's call stayed in the PC
 def test_a_correction_to_a_read_with_the_effects_of_the_chosen_call_runs(tmp_path, monkeypatch, doubted, choice,
                                                                           filled, text, operation) -> None:
@@ -231,3 +230,27 @@ def test_a_number_said_in_words_founds_a_correction(tmp_path, monkeypatch, words
     # the correction was unfounded and Qwen's app volume for «video» ran and failed in both seeds.
     mind, _ = _corrects(tmp_path, monkeypatch, [AUDIO_APP, AUDIO], "audio_app_volume_set", "audio_volume", {"level": 70})
     assert mind.decide(1, words)["operation"] == operation
+
+
+# ---- 4. Layer 2 lets a look run where the decision model's action would land ----------------------------------------
+LOOK = {"name": "input.visible.controls", "description": "Look at a window's controls", "risk": "read_only",
+        "effects": ["window_input"], "argumentsSchema": {"type": "object", "properties": {}, "required": [],
+                                                          "additionalProperties": False}}
+KEY = {"name": "input.key.press", "description": "Press a key", "risk": "low_reversible", "effects": ["window_input"],
+       "argumentsSchema": {"type": "object", "properties": {"key": {"type": "string", "enum": ["escape"]}},
+                           "required": ["key"], "additionalProperties": False}}
+
+
+@pytest.mark.parametrize("doubted, choice, operation", [
+    # Holdout v6 V6E024 (final5): «hit the C button» on the calculator; Qwen looked first (0.42), Laya read a key press
+    # (0.90) it does not fill, and BAXY asked «¿Quieres que presione la tecla C?». Holdout v5 V5E023 («agrega al final» in
+    # the Notepad open): the same hold before typing in 10 runs, every one a question and no step.
+    ("input_visible_controls", "input_key_press", "input.visible.controls"),
+    ("web_search", "shell_command_run", "web.search"),  # the search sends out of the PC as the command would
+    ("input_visible_controls", "web_search", None),  # the look stays in the PC; the search would not
+    ("file_find", "responder_con_palabras", None)])  # a read with no effect still asks
+def test_layer_2_lets_a_read_run_where_the_choice_would_land(tmp_path, monkeypatch, doubted, choice, operation) -> None:
+    mind, fills = _corrects(tmp_path, monkeypatch, [LOOK, KEY, *NETWORK], doubted, choice, {"key": "escape"})
+    result = mind.decide(1, "on the calculator, hit the C button to clear what's on the display")
+    assert result["operation"] == operation
+    assert fills == []  # nothing with an effect of the catalog is put in the model's mouth

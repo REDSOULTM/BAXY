@@ -2215,8 +2215,9 @@ class Mind:
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
-        runs. Asking is never held: it already puts the person in the loop; confirming only when it approves under
-        CONFIRM_FLOOR, whatever System One's own thresholds."""
+        runs, and so does a read where that tool would act (its effects). Asking is never held: it already puts the
+        person in the loop; confirming only when it approves under CONFIRM_FLOOR, whatever System One's own
+        thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
             return None
         doubt = read_doubt(reply)
@@ -2252,10 +2253,18 @@ class Mind:
         if corrected is not None:
             self._judged["corrected"] = True
             return corrected
-        if self.risk.get(call["wire"]) == "low_reversible":
+        theirs = set(self.effects.get(judged["choice"]) or [])
+        if self.risk.get(call["wire"]) == "low_reversible" or (
+                self.risk.get(call["wire"]) == "read_only" and self.risk.get(judged["choice"]) != "read_only"
+                and theirs and theirs <= set(self.effects.get(call["wire"]) or [])):
             # Al máximo, System One 2: nor does layer 2 turn a low_reversible call into a question; it only corrects it.
             # On the same 26 runs it asked instead of 11, all right without System One (P112 ×4, P124 ×6, P113 ×1);
             # its corrections of them were 6 useful (P257) against 2 harmful.
+            # final6 (holdout v6 V6E024, v5 V5E023): nor a read that lands where the decision model's choice would act
+            # (the choice acts, and its effects are the read's): the look before that action, never wrong as a first
+            # step; another read chosen instead is another reading of the request and still asks. On 1,620
+            # stored e2e runs layer 2 held such a look 13 times, each before an action the person had asked for
+            # («hit the C button», «agrega al final del texto»), and each turn ended in a question with no step.
             return None
         other =OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
