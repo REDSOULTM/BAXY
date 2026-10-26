@@ -19,6 +19,7 @@ import importlib.util
 import json
 import os
 import queue
+import re
 import sys
 import tempfile
 import threading
@@ -78,6 +79,18 @@ HOTWORDS_PATHS = 4      # beam width when the names are hotwords
 # 3.41 % (spellings: «wifi» → «Wi-Fi»), names not installed 62 → 49 of 100, no name inserted, no empty result, decode
 # p50 220 → 195 ms. 1.5 keeps almost all of the gain and costs less to the names not installed than 2 or 3.
 HOTWORDS_SCORE = 1.5
+
+
+# «Baxy» heard as a word of the request (real use, 2026-10-26): when the wake answered late the person called again, and
+# «Baxi.», «Paksi.» or «Maxi, …» reached the mind as what they asked — the same greeting again, a site named Paksi
+# opened, the person called Maxi. The call is how the request is addressed, never part of it: the words at its start
+# that sound like it go, and a request that was only the call is not told.
+CALL_WORDS = re.compile(r"^(?:[\W_]*[bpvm]a(?:x|ks|cs|k|c)s?[iíy]\b)+[\W_]*", re.IGNORECASE)
+
+
+def without_call(text: str) -> str:
+    """The request without the call at its start (CALL_WORDS)."""
+    return CALL_WORDS.sub("", text).strip()
 
 
 def hotwords_score() -> float:
@@ -595,6 +608,7 @@ class Voice:
         self._event("transcribing")
 
         def then(text: str) -> None:
+            text = without_call(text)
             if text:
                 self._write({"type": "voice.transcript", "text": text})
             if not wake:
