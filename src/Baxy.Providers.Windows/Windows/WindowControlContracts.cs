@@ -233,4 +233,8 @@ public interface IWindowControlProvider
     ValueTask<WindowCloseResult> CloseAsync(
         string windowId,
         CancellationToken cancellationToken);
+
+    // v3 r6 lectores: whether the issued window holds no document of the person (closing it loses nothing), read
+    // without consuming the id. Fail-closed: a provider that cannot tell says it may hold one.
+    bool HoldsNoDocument(string windowId) => false;
 }

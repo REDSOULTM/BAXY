@@ -169,7 +169,8 @@ public sealed class RiskPolicyWorldActsTests
             "Enviar búsqueda", "Submit search", "En\u200Bviar mensaje", "Desinstalar (Supr)", "Choche, Llamada de voz en curso",
             "Ajustes de voz y video", "Abrir Discord", "Steam", "Tienda", "Deshabilitar todos", "Disable all",
             "Desactivar todo", "Deshabilitado", "Habilitar todos", "Quitar silencio", "Clear filters",
-            "Limpiar búsqueda", "Descartar notificación", "Clear search history", "Vaciar papelera", "Descartar cambios",
+            "Limpiar búsqueda", "Descartar notificación", "Quitar búsqueda del historial", "Remove search from history",
+            "Remove selection from library", "Clear search history", "Vaciar papelera", "Descartar cambios",
         ];
         string[] differ =
         [
@@ -189,10 +190,12 @@ public sealed class RiskPolicyWorldActsTests
             Assert.That(RiskPolicy.LabelAsks("Desactivar todo"), Is.True);
             Assert.That(RiskPolicy.LabelAsks("Deshabilitado"), Is.False);
             Assert.That(RiskPolicy.LabelAsks("Habilitar todos"), Is.False);
-            // Decisión del dueño 2026-10-25: over a harmless object the verb does not ask; over a history it still
-            // does.
+            // Decisión del dueño 2026-10-25: over a harmless object that ends the label the verb does not ask; with
+            // anything after it (what it is taken from) it still does.
             Assert.That(RiskPolicy.LabelAsks("Quitar silencio"), Is.False);
             Assert.That(RiskPolicy.LabelAsks("Clear filters"), Is.False);
+            Assert.That(RiskPolicy.LabelAsks("Quitar búsqueda del historial"), Is.True);
+            Assert.That(RiskPolicy.LabelAsks("Remove selection from library"), Is.True);
             Assert.That(RiskPolicy.LabelAsks("Clear search history"), Is.True);
         });
     }

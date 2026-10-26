@@ -68,13 +68,15 @@ public sealed class OperationRegistryTests
         });
     }
 
-    // D3: what reaches another person keeps asking; playing, navigating, clicking, copying, capturing, typing, radios
-    // and settings do not. Installing asks since the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo
-    // Normal BAXY confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct». Decisión del
-    // dueño 2026-10-25 («solo se debe pedir confirmación a cosas que son destructivas… que Baxy no te moleste todo el
-    // tiempo… sino para cosas que realmente son peligrosas»): the test message to the owner's own channel, an event in
-    // their own calendar, their own game library and a graceful close go directly; they all asked before.
-    [TestCase("message.send.test", PolicyDecision.Allow)]
+    // D3: what reaches another person keeps asking; playing, navigating, clicking,
+    // copying, capturing, typing, radios and settings do not. Installing asks since
+    // the owner's decision 8 (2026-10-10, PROMPT_ESTABILIZACION: «en modo Normal BAXY
+    // confirma ... instalar o desinstalar»), which replaced D3's «installing goes direct». Decisión del dueño 2026-10-25
+    // («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son peligrosas»): an event in the owner's
+    // own calendar goes directly; the test message (a saved destination, a real email by mail), the game library
+    // (installing adds to the account, cancelling uninstalls what was downloaded) and closing what may hold work still
+    // ask.
+    [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
     [TestCase("email.send", PolicyDecision.RequireConfirmation)]
     // Uso real 2026-10-21: message.send asks in normal mode and in Bypass (MessageSendAsksEvenInBypass).
     [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
@@ -90,18 +92,18 @@ public sealed class OperationRegistryTests
     [TestCase("bluetooth.device.pair", PolicyDecision.Allow)]
     [TestCase("system.settings.set", PolicyDecision.Allow)]
     [TestCase("memory.enable", PolicyDecision.Allow)]
-    [TestCase("game.install.named", PolicyDecision.Allow)]
+    [TestCase("game.install.named", PolicyDecision.RequireConfirmation)]
     [TestCase("package.install", PolicyDecision.RequireConfirmation)]
     [TestCase("game.uninstall.named", PolicyDecision.RequireConfirmation)]
     [TestCase("game.launch", PolicyDecision.Allow)]
-    [TestCase("game.install.cancel", PolicyDecision.Allow)]
-    [TestCase("game.install.cancel.active", PolicyDecision.Allow)]
+    [TestCase("game.install.cancel", PolicyDecision.RequireConfirmation)]
+    [TestCase("game.install.cancel.active", PolicyDecision.RequireConfirmation)]
     [TestCase("memory.forget", PolicyDecision.RequireConfirmation)]
     [TestCase("system.process.terminate.named", PolicyDecision.RequireConfirmation)]
     [TestCase("system.recyclebin.empty", PolicyDecision.RequireConfirmation)]
-    [TestCase("window.close.all", PolicyDecision.Allow)]
-    [TestCase("app.close", PolicyDecision.Allow)]
-    [TestCase("app.restart", PolicyDecision.Allow)]
+    [TestCase("window.close.all", PolicyDecision.RequireConfirmation)]
+    [TestCase("app.close", PolicyDecision.RequireConfirmation)]
+    [TestCase("app.restart", PolicyDecision.RequireConfirmation)]
     [TestCase("system.power", PolicyDecision.Allow)]
     [TestCase("input.scroll", PolicyDecision.Allow)]
     public void Normal_mode_asks_only_for_the_destructive_or_what_reaches_another_person(
@@ -239,13 +241,14 @@ public sealed class OperationRegistryTests
     [TestCase("Delete (Supr)", true)]
     [TestCase("Eli\u200Bminar", true)]
     // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
-    // peligrosas»): quitar, remove, limpiar, clear, vaciar, empty or descartar over a harmless object (the mute, a
-    // filter, a search, a format, a notification, a selection) destroys nothing; they all asked before. Clearing a
-    // history, emptying the bin and discarding changes still ask.
+    // peligrosas»): quitar, remove, limpiar, clear, vaciar, empty or descartar whose harmless object (the mute, a filter,
+    // a search, a format, a notification, a selection) ends the label destroys nothing; they all asked before. Anything
+    // after the object may name what it is taken from, so it asks, as clearing a history, emptying the bin and
+    // discarding changes do.
     [TestCase("Quitar silencio", false)]
+    [TestCase("Quitar filtro", false)]
     [TestCase("Remove filter", false)]
     [TestCase("Clear filters", false)]
-    [TestCase("Quitar los filtros de la tabla", false)]
     [TestCase("Limpiar búsqueda", false)]
     [TestCase("Clear search", false)]
     [TestCase("Quitar formato", false)]
@@ -256,6 +259,10 @@ public sealed class OperationRegistryTests
     [TestCase("Vaciar selección", false)]
     [TestCase("Clear selection", false)]
     [TestCase("Unmute", false)]
+    [TestCase("Quitar búsqueda del historial", true)]
+    [TestCase("Remove search from history", true)]
+    [TestCase("Remove selection from library", true)]
+    [TestCase("Quitar los filtros de la tabla", true)]
     [TestCase("Clear search history", true)]
     [TestCase("Limpiar historial de búsqueda", true)]
     [TestCase("Clear history", true)]
@@ -393,8 +400,8 @@ public sealed class OperationRegistryTests
     }
 
     // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
-    // peligrosas»): Ctrl+W closes a tab or a window gracefully, as app.close does, and goes directly (it asked before,
-    // auditoría final 2, fila 9); the application's own «No guardar» is what asks. No shortcut asks.
+    // peligrosas»): Ctrl+W closes a tab or a window gracefully and goes directly (it asked before, auditoría final 2,
+    // fila 9); the application's own «No guardar» is what asks. No shortcut asks.
     [TestCase("""{"key":"ctrl_w"}""", PolicyDecision.Allow)]
     [TestCase("""{"key":"ctrl_w","window":4660}""", PolicyDecision.Allow)]
     [TestCase("""{"key":"ctrl_t"}""", PolicyDecision.Allow)]

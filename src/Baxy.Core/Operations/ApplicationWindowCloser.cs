@@ -86,8 +86,11 @@ internal static class ApplicationWindowCloser
             : new(null, closedWindows, processes, titles, closedWindows > 0, hidden, frames.Length);
     }
 
-    /// <summary>Read only: the application's windows, or why there is none to close.</summary>
-    private static async ValueTask<ApplicationWindows> ResolveAsync(
+    /// <summary>
+    /// Read only: the application's windows, or why there is none to close. Al máximo, flujos: app.close reads it before
+    /// asking the person (IInvocationPreflight), and closing reads it again.
+    /// </summary>
+    internal static async ValueTask<ApplicationWindows> ResolveAsync(
         IWindowControlProvider windows,
         string appId,
         CancellationToken cancellationToken)

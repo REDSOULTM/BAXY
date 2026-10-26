@@ -11,13 +11,11 @@ namespace Baxy.Kernel.Policy;
 /// navegar, copiar, capturar, pulsar, escribir, radios y ajustes van directos en
 /// modo normal; lo que llega a otra persona (mensajes y correo) y lo que destruye
 /// o pierde trabajo (work_loss) sigue preguntando, e instalar también (decisión 8
-/// del dueño, 2026-10-10). Decisión del dueño 2026-10-25: «solo se debe pedir
-/// confirmación a cosas que son destructivas… como muy máximo… que Baxy no te moleste
-/// todo el tiempo… sino para cosas que realmente son peligrosas»: cerrar con gracia
-/// (app.close, app.restart, window.close.all, Ctrl+W: el «No guardar» de la propia
-/// aplicación ya pregunta), crear un evento en su calendario, el mensaje de prueba a
-/// su propio canal, y la biblioteca de juegos propia (instalar, cancelar una descarga)
-/// van directos.
+/// del dueño, 2026-10-10). Decisión del dueño 2026-10-25 («que Baxy no te moleste
+/// todo el tiempo… sino para cosas que realmente son peligrosas»): crear un evento
+/// en su propio calendario y Ctrl+W (cierra con gracia; el «No guardar» de la
+/// aplicación ya pregunta) van directos. Las etiquetas de riesgo del catálogo no
+/// cambian: los sellos históricos las citan.
 ///
 /// Motor de computer use (CONTRATO_VISTA_ACCION.md §2.1, D15): un paso del bucle
 /// lleva el riesgo de su primitiva evaluado con los argumentos exactos delante.
@@ -38,28 +36,17 @@ namespace Baxy.Kernel.Policy;
 /// </summary>
 public static partial class RiskPolicy
 {
-    // External communication that reaches another person: the only external operations that keep asking in normal mode.
-    // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
-    // peligrosas»): an event in the owner's own calendar (calendar.event.create) and the test message, whose
-    // destination is always forced to the owner's own test channel (message.send.test), reach nobody else and go
-    // directly.
+    // External communication that reaches another person or sends the owner's content outside the machine: the only
+    // external operations that keep asking in normal mode. The test message goes to a saved destination name (a real
+    // email by mail). Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que
+    // realmente son peligrosas»): an event in the owner's own calendar (calendar.event.create) reaches nobody else and
+    // goes directly.
     private static readonly HashSet<string> ExternalRequiringConfirmation = new(StringComparer.Ordinal)
     {
         "message.send",
+        "message.send.test",
         "email.latest.reply",
         "email.send",
-    };
-
-    // Decisión del dueño 2026-10-25: operations that go directly in normal mode although their catalog risk asks. The
-    // catalog keeps labelling them (historical seals cite the labels, and a heartbeat still only proposes them):
-    // apagar / cerrar sesión (identity), and the owner's own game library, which is undone by installing or downloading
-    // again (game.install.named installs a game the account owns; package.install keeps asking).
-    private static readonly HashSet<string> UnaskedDespiteTheirRisk = new(StringComparer.Ordinal)
-    {
-        "game.install.cancel",
-        "game.install.cancel.active",
-        "game.install.named",
-        "system.power",
     };
 
     // landingRead: the handler's preflight read where this exact invocation lands and lowered its risk; only the
@@ -84,7 +71,9 @@ public static partial class RiskPolicy
             return PolicyDecision.Allow;
         }
 
-        if (operation is not null && UnaskedDespiteTheirRisk.Contains(operation))
+        // Identity: apagar / cerrar sesión van directos. The catalog still
+        // labels system.power as work_loss so historical seals do not move.
+        if (string.Equals(operation, "system.power", StringComparison.Ordinal))
         {
             return PolicyDecision.Allow;
         }
@@ -181,15 +170,18 @@ public static partial class RiskPolicy
     };
 
     // ipconfig's switches that change the network instead of reading it (they ask): releasing or renewing the address,
-    // flushing or registering DNS, setting a class id. Windows takes them with «/» or «-».
+    // flushing or registering DNS, setting a class id. Windows takes them with «/» or «-», and the console joins quoted
+    // pieces into one argument («"/release"», «/re"new"»), so an argument is read without its quotes and the switch
+    // may stand anywhere in it (fail-closed: an adapter whose name holds one asks too).
+    private static readonly string[] IpconfigChangingSwitches = ["release", "renew", "flushdns", "registerdns", "setclassid"];
+
     private static bool IpconfigChanges(string[] words) =>
         string.Equals(words[0], "ipconfig", StringComparison.OrdinalIgnoreCase)
-        && words.Skip(1).Any(word => word.TrimStart('/', '-').ToLowerInvariant() is { } option
-            && (option.StartsWith("release", StringComparison.Ordinal)
-                || option.StartsWith("renew", StringComparison.Ordinal)
-                || option.StartsWith("flushdns", StringComparison.Ordinal)
-                || option.StartsWith("registerdns", StringComparison.Ordinal)
-                || option.StartsWith("setclassid", StringComparison.Ordinal)));
+        && words.Skip(1).Any(word =>
+        {
+            string bare = new(word.Where(character => character is not ('"' or '\'' or '‘' or '’' or '“' or '”')).ToArray());
+            return IpconfigChangingSwitches.Any(change => bare.Contains(change, StringComparison.OrdinalIgnoreCase));
+        });
 
     /// <summary>
     /// Whether this exact invocation of a computer-use primitive leaves the
@@ -460,21 +452,21 @@ public static partial class RiskPolicy
         RegexOptions.CultureInvariant)]
     private static partial Regex IrreversibleAct();
 
-    // A destructive verb anywhere in a short label: not saving, discarding, closing without saving, moving to the bin,
-    // removing, emptying, clearing, deleting, uninstalling («No guardar», «Don't save», «Descartar cambios», «Mover a
-    // la papelera», «Vaciar papelera de reciclaje», «Empty Recycle Bin», «Quitar de la biblioteca», «Remove», «Limpiar
-    // historial», «Clear all»). Only verb forms count: «Eliminados», «Deleted items» or «Papelera de reciclaje» name a
-    // place, not an act. Incidente del 2026-10-15 (msconfig, «Deshabilitar todos»): turning off everything a list holds
-    // at once («Deshabilitar todos», «Desactivar todo», «Disable all») asks too. Auditoría del núcleo 2026-10-23:
-    // ending a program without letting it save («Finalizar tarea», «End task», «Forzar cierre», «Force quit») loses
-    // what it held, as system.process.terminate.named (work_loss) does. Decisión del dueño 2026-10-25 («que Baxy no te
-    // moleste todo el tiempo… sino para cosas que realmente son peligrosas»): quitar, remove, limpiar, clear, vaciar,
-    // empty, descartar or discard whose object is harmless and comes back at once (the mute, a filter, a search, a
-    // format, a notification, a selection: «Quitar silencio», «Clear filters», «Limpiar búsqueda», «Descartar
-    // notificación») destroy nothing and do not ask; the object ends the label or a preposition follows it, so «Clear
-    // search history» still asks, as «Vaciar papelera», «Clear history» and «Descartar cambios» do.
+    // A destructive verb anywhere in a short label: not saving, discarding, closing without saving, moving to the
+    // bin, removing, emptying, clearing, deleting, uninstalling («No guardar», «Don't save», «Descartar cambios»,
+    // «Mover a la papelera», «Vaciar papelera de reciclaje», «Empty Recycle Bin», «Quitar de la biblioteca»,
+    // «Remove», «Limpiar historial», «Clear all»). Only verb forms count: «Eliminados», «Deleted items» or
+    // «Papelera de reciclaje» name a place, not an act. Incidente del 2026-10-15 (msconfig, «Deshabilitar todos»): turning
+    // off everything a list holds at once («Deshabilitar todos», «Desactivar todo», «Disable all») asks too. Auditoría del
+    // núcleo 2026-10-23: ending a program without letting it save («Finalizar tarea», «End task», «Forzar cierre», «Force
+    // quit») loses what it held, as system.process.terminate.named (work_loss) does. Decisión del dueño 2026-10-25 («que
+    // Baxy no te moleste todo el tiempo… sino para cosas que realmente son peligrosas»): quitar, remove, limpiar, clear,
+    // vaciar, empty, descartar or discard whose harmless object ends the label (the mute, a filter, a search, a format,
+    // a notification, a selection: «Quitar silencio», «Clear filters», «Limpiar búsqueda», «Descartar notificación»)
+    // destroy nothing and do not ask. Anything after the object may name what it is taken from, so «Quitar búsqueda del
+    // historial», «Remove selection from library» and «Clear search history» ask, as «Vaciar papelera» does.
     [GeneratedRegex(
-        @"\b(?:finalizar\s+(?:la\s+)?tarea|finaliza\s+(?:la\s+)?tarea|end\s+task|forzar\s+(?:el\s+)?cierre|fuerza\s+(?:el\s+)?cierre|force\s+(?:quit|close)|deshabilitar\s+tod[oa]s?|deshabilita\s+tod[oa]s?|desactivar\s+tod[oa]s?|desactiva\s+tod[oa]s?|disable\s+all|turn\s+off\s+all|no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|(?:quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|descartar|descarta|discard)\b(?!(?:\s+(?:el|la|los|las|tu|su|sus|tus|the|all|todo|todos|todas|this|these|esta|este|estas|estos))*\s+(?:silencio|mute|filtros?|filters?|busqueda|search|formato|format|notificacion(?:es)?|notifications?|seleccion|selection)(?:\s*$|\s+(?:de|del|en|a|al|from|in|on|of|for|para)\b))|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
+        @"\b(?:finalizar\s+(?:la\s+)?tarea|finaliza\s+(?:la\s+)?tarea|end\s+task|forzar\s+(?:el\s+)?cierre|fuerza\s+(?:el\s+)?cierre|force\s+(?:quit|close)|deshabilitar\s+tod[oa]s?|deshabilita\s+tod[oa]s?|desactivar\s+tod[oa]s?|desactiva\s+tod[oa]s?|disable\s+all|turn\s+off\s+all|no\s+guardar|no\s+guardes|don'?t\s+save|do\s+not\s+save|cerrar\s+sin\s+guardar|close\s+without\s+saving|mover\s+a\s+(?:la\s+)?papelera|move\s+to\s+(?:the\s+)?(?:trash|bin|recycle\s+bin)|(?:quitar|quita|remove|vaciar|vacia|empty|limpiar|limpia|clear|descartar|descarta|discard)\b(?!(?:\s+(?:el|la|los|las|tu|su|sus|tus|the|all|todo|todos|todas|this|these|esta|este|estas|estos))*\s+(?:silencio|mute|filtros?|filters?|busqueda|search|formato|format|notificacion(?:es)?|notifications?|seleccion|selection)\s*$)|eliminar|elimina|delete|borrar|borra|desinstalar|desinstala|uninstall)\b",
         RegexOptions.CultureInvariant)]
     private static partial Regex DestructiveVerb();
 }

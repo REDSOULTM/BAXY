@@ -84,10 +84,8 @@ public sealed class MissionEngineTests
         };
 
         OperationResponse conflict = await engine.ExecuteAsync(conflicting, CancellationToken.None);
-        // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
-        // peligrosas»): a start that may have acted, of a reversible note, is retried without asking.
-        OperationResponse recovered = await engine.ExecuteAsync(
-            original with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        // Auditoría del núcleo 2026-10-23: the original's start may have acted; its retry asks first.
+        (_, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, original);
 
         Assert.Multiple(() =>
         {
@@ -345,14 +343,24 @@ public sealed class MissionEngineTests
             Assert.That(completed, Is.Null);
         });
 
-        // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
-        // peligrosas»): the handler threw after it may have acted, but a reversible note that asks nothing with these
-        // arguments is retried on the same identity without asking (auditoría del núcleo 2026-10-23 had it ask).
-        OperationResponse recovered = await engine.ExecuteAsync(
+        // Auditoría del núcleo 2026-10-23: the handler threw after it may have acted, so the retry is not run again
+        // unasked (it used to be, on the same identity): it asks with reconciliationRequired and runs on the yes.
+        OperationResponse asked = await engine.ExecuteAsync(
             request with { RequestId = Guid.NewGuid().ToString("D") },
+            CancellationToken.None);
+        int executedBeforeTheYes = handler.ExecutionCount;
+        OperationResponse recovered = await engine.ExecuteAsync(
+            request with
+            {
+                RequestId = Guid.NewGuid().ToString("D"),
+                ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString(),
+            },
             CancellationToken.None);
         Assert.Multiple(() =>
         {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(asked.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
+            Assert.That(executedBeforeTheYes, Is.EqualTo(1));
             Assert.That(recovered.Status, Is.EqualTo(OperationStatuses.Completed));
             Assert.That(recovered.Verified, Is.True);
             Assert.That(recovered.Replayed, Is.False);
@@ -414,14 +422,15 @@ public sealed class MissionEngineTests
     }
 
     // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
-    // peligrosas»): a retry of an invocation that started and did not end runs without asking when it only reads or
-    // changes something reversibly and asks nothing with these arguments (it asked before); one whose arguments ask (a
-    // click on «Enviar») still asks with reconciliationRequired, as an irreversible one does.
+    // peligrosas»): a retry of an invocation that started and did not end runs without asking only when it reads and
+    // asks nothing with these arguments; a reversible one (its text may be typed twice, its amount added twice), one
+    // whose arguments ask (a click on «Enviar») and an irreversible one ask with reconciliationRequired.
     [TestCase(OperationRisk.ReadOnly, "note.list", "{}", false)]
-    [TestCase(OperationRisk.Reversible, "note.create", "{\"title\":\"Compras\",\"content\":\"pan\"}", false)]
+    [TestCase(OperationRisk.Reversible, "note.create", "{\"title\":\"Compras\",\"content\":\"pan\"}", true)]
+    [TestCase(OperationRisk.Reversible, "input.text.type", "{\"text\":\"hola\"}", true)]
     [TestCase(OperationRisk.Reversible, "input.visible.click", "{\"label\":\"Enviar\"}", true)]
     [TestCase(OperationRisk.Irreversible, "note.delete", "{}", true)]
-    public async Task AnUncertainStartAsksAgainOnlyWhenItsRiskOrArgumentsDo(
+    public async Task AnUncertainStartRunsAgainUnaskedOnlyWhenItReads(
         OperationRisk risk, string operation, string arguments, bool asks)
     {
         var handler = new CountingHandler(risk, operation);
@@ -437,7 +446,9 @@ public sealed class MissionEngineTests
             Assert.That(retried.ErrorCode, asks ? Is.EqualTo("confirmation_required") : Is.Null);
             Assert.That(handler.ExecutionCount, Is.EqualTo(asks ? 0 : 1));
             if (asks)
+            {
                 Assert.That(retried.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
+            }
         });
     }
 
