@@ -67,3 +67,15 @@ def test_one_detector_is_built_and_the_copies_share_its_sessions_with_their_own_
     assert all(d.at is made[0].at for d in wake._copies)  # what reset() does not make again is shared
     wake._copies[1].samples += 1
     assert wake._copies[2].samples == int(0.64 * RATE)  # each copy's state is its own
+
+
+def test_the_detector_hears_a_soft_call_raised_and_a_loud_one_as_it_is() -> None:
+    from baxy_mind import voice as _voice
+    soft = np.full(_voice.BLOCK, 0.05, np.float32)
+    peak = 0.0
+    for _ in range(50):  # seconds of a soft room: the gain reaches its cap
+        peak, raised = _voice.wake_gain(peak, soft)
+    assert np.allclose(raised, soft * _voice.WAKE_GAIN_CAP)
+    loud = np.full(_voice.BLOCK, 0.9, np.float32)
+    peak, raised = _voice.wake_gain(peak, loud)
+    assert np.array_equal(raised, loud * (_voice.WAKE_TARGET / 0.9)) and np.abs(raised).max() <= _voice.WAKE_TARGET + 1e-6

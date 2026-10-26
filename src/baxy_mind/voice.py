@@ -72,6 +72,20 @@ KEEP_S = 30.0
 STALL_S = 3.0
 PARTIAL_S = 0.8         # while a request is heard, what was said so far is decoded again this often (live captions)
 WAKE_COPIES = 4         # staggered copies (StaggeredWake): 0.28 s p50 after the word, 0.46 s at most (1 copy: 1.18, 1.36)
+# The detector heard the microphone as it came, while Ultra hears it with probar_ultra's gain: in a room, a few metres
+# from the notebook, «Baxi» peaked at 0.07 (real use, 2026-10-26) against ~0.96 in the owner's recordings the detector
+# was trained on, and it never reached 0.1. What it hears is raised the same way (WAKE_TARGET over the peak of the last
+# ~3 s, WAKE_PEAK_DECAY per block), up to WAKE_GAIN_CAP: on 80 of the owner's «Baxi» at a twentieth of their level,
+# 60 → 77 heard; a cap of 8 heard the same and fired more on the recorded false fires of loud speech.
+WAKE_TARGET = 0.45
+WAKE_PEAK_DECAY = 0.97
+WAKE_GAIN_CAP = 4.0
+
+
+def wake_gain(peak: float, block: np.ndarray) -> tuple[float, np.ndarray]:
+    """The recent peak with ``block`` heard, and ``block`` raised for the detector (WAKE_TARGET), never clipped."""
+    peak = max(peak * WAKE_PEAK_DECAY, float(np.max(np.abs(block))) if len(block) else 0.0)
+    return peak, block * min(WAKE_GAIN_CAP, WAKE_TARGET / max(peak, 1e-6))
 NAMES_WAIT_S = 30.0     # the recognizer waits this long for catalog.configure's names (they come before voice.start)
 HOTWORDS_PATHS = 4      # beam width when the names are hotwords
 # Score per token of the names (scripts/voice/medir_hotwords.py, 1366 synthetic utterances, 2026-10-23): installed names
@@ -233,6 +247,7 @@ class Voice:
         self._stream: Any = None
         self._blocks: queue.Queue[np.ndarray] = queue.Queue()
         self._heard = 0                 # moved on by every reset and stop
+        self._wake_peak = WAKE_TARGET   # the recent peak the detector's gain follows (wake_gain)
         self._reset()
         self._on_spoken = on_spoken
         self.speech = Speech(self._speaking, self._sounding, self._lip)
@@ -475,7 +490,8 @@ class Voice:
             self._audio, self._speech, self._first = self._audio[cut:], self._speech[cut:], self._first + cut
         if self._mode == "wake":
             # The detector keeps hearing during the request too, as in probar_baxy.py.
-            detections = self._detector.accept(block)
+            self._wake_peak, raised = wake_gain(self._wake_peak, block)
+            detections = self._detector.accept(raised)
             if self._start is None and detections:
                 self._start = detections[0].time_s
                 self._partial = ""  # a new request's live caption is told even when it repeats the last one
