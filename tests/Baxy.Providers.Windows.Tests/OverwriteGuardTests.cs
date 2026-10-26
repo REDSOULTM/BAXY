@@ -63,8 +63,8 @@ public sealed class OverwriteGuardTests
                     + "would replace all of it with the text, which keeps none of its lines. To add the text as a new "
                     + "line at its end and keep what it has: file_write {\"relativePath\":\"Liga de Futbolito/jugadores.txt\","
                     + "\"folder\":\"documents\",\"text\":\"Matías, arquero\",\"append\":true}. To replace all it has only if "
-                    + "the person asked for that: the same call with expectedSha256 (currentSha256); in normal mode it "
-                    + "asks the person's yes first"));
+                    + "the person asked for that: the same call with expectedSha256 (currentSha256); in normal mode that "
+                    + "call waits for the person's yes, so do not ask them yourself"));
                 Assert.That(replaced.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
                 Assert.That(afterReplace, Is.EqualTo(Players));
                 Assert.That(place.Bin.Recycled, Is.Empty);
@@ -131,7 +131,8 @@ public sealed class OverwriteGuardTests
                 + "with the text, which keeps none of its lines. To add the text as a new line at its end and keep what "
                 + "it has: file_write {\"relativePath\":\"Liga de Futbolito/jugadores.txt\",\"folder\":\"documents\","
                 + "\"text\":\"Matías, arquero\",\"append\":true}. To replace all it has only if the person asked for "
-                + "that: the same call again; in normal mode it asks the person's yes first"));
+                + "that: the same call again; in normal mode that call waits for the person's yes, so do not ask them "
+                + "yourself"));
             Assert.That(asked.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
             Assert.That(beforeTheYes, Is.EqualTo(Players));
             Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed));

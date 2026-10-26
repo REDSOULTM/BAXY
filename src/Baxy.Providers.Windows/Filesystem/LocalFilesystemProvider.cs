@@ -877,7 +877,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     }
 
     // The receipt's sentence: what the file has, that this call replaces all of it, the call that appends (a file that
-    // is text), and how a replacement the person asked for goes on.
+    // is text), and how a replacement the person asked for goes on. Holdout v6 V6E048 (final5 and integ, 2 of 2:
+    // «sobrescribe repertorio.txt … con la palabra pendiente»): read «it asks the person's yes first», the model asked
+    // in words with ask_user and no «sí» was bound to the call; it is told that the call itself waits for the yes.
     private static string LossNext(string name, long size, LossTold told)
     {
         TextLoss loss = told.Loss;
@@ -898,7 +900,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         }
         next.Append(" To replace all it has only if the person asked for that: ")
             .Append(told.Again ? "the same call again" : "the same call with expectedSha256 (currentSha256)")
-            .Append("; in normal mode it asks the person's yes first");
+            .Append("; in normal mode that call waits for the person's yes, so do not ask them yourself");
         return next.ToString();
     }
 
