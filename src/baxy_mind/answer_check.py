@@ -1052,7 +1052,8 @@ def _not_read_names(answer: str, folded: str, raw_folded: str, statements: list[
 # window), and an operation of the catalog does that act on it. Kept narrow: a false finding costs a regeneration.
 _DENIAL = re.compile(
     r"\bno (?:(?:lo|la|los|las|le|les|te|me) )?(?:puedo|podria|soy capaz de|logro|me es posible|es posible|"
-    r"tengo (?:como|forma de|manera de|la capacidad de|capacidad de|permiso para|permisos para))\b"
+    r"tengo (?:como|forma de|manera de|la capacidad de|capacidad de|permiso para|permisos para|"
+    r"herramientas? para|(?:una|ninguna) herramienta para))\b"
     r"|\bno (?:(?:lo|la|los|las) )?se (?:puede|pueden|permite)\b"
     r"|\bno tengo acceso\b"
     r"|\bi (?:can[’']?t|cannot|can not|am not able to|am unable to)\b|\bi[’']m (?:not able to|unable to)\b"
