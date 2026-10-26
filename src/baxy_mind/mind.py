@@ -351,24 +351,16 @@ def _deduplicated(observation: str, outcome: str) -> str:
     return json.dumps(shown, ensure_ascii=False, separators=(",", ":"))
 
 
-# Aids of the mind that are off unless BAXY_AYUDAS names them (ablaciones de nb-w11-final, 2026-10-25: the decision bench
-# of the holdout v6 measures each one apart). «all» does not turn them on; «all,<id>» is every aid and that one too.
-DEFAULT_OFF_AIDS = frozenset({
-    # input_text_type's replacing argument and its sentence (práctica V5E061): with it off the tool reads as in cien.
-    "text_replacing",
-})
-
-
 def _aid_on(aid: str) -> bool:
     """Whether a model aid (goal «ayudas al modelo», 2026-10-19) is on: BAXY_AYUDAS as the core reads it
-    (src/Baxy.Providers.Windows/Infrastructure/ModelAids.cs). Unset, empty or «all», every aid but DEFAULT_OFF_AIDS;
-    «none» or «0», none, and the mind reads as it did before them; otherwise the comma-separated ids that are on, and with
-    «all» among them every aid but DEFAULT_OFF_AIDS too. The core has none of DEFAULT_OFF_AIDS: they are the mind's."""
+    (src/Baxy.Providers.Windows/Infrastructure/ModelAids.cs). Unset, empty or «all», every aid; «none» or «0», none, and
+    the mind reads as it did before them; otherwise the comma-separated ids that are on."""
     setting = os.environ.get("BAXY_AYUDAS", "").strip().lower()
+    if setting in {"", "all"}:
+        return True
     if setting in {"none", "0"}:
         return False
-    named = {part.strip() for part in setting.split(",")} if setting else {"all"}
-    return aid in named or ("all" in named and aid not in DEFAULT_OFF_AIDS)
+    return aid in {part.strip() for part in setting.split(",")}
 
 
 # Aid «person_folder_sentence» (lever 8): one sentence of fact at the end of a tool's description
@@ -411,15 +403,7 @@ DESCRIPTION_AIDS = {
                                        "Steam and Epic without opening anything."),),
     "game.installed.named": (("game_epic_look", " It is also the look for a game the person wants to play that is not "
                                                 "in game_launch's list of installed games (Steam's only)."),),
-    # «text_replacing» (práctica V5E061, «cámbialo, era el miércoles, no el martes»: the new text went in at the caret,
-    # «martesreunión con Pedro el miércoles», and replace is refused for a document): the argument that changes one part
-    # of the text already written (ARGUMENT_AIDS), and this sentence.
-    "input.text.type": (("text_replacing", " To change one part of a text already written, pass replacing = that "
-                                           "part and text = what goes in its place."),),
 }
-# Arguments of a tool the model sees only with their aid on (by the catalog's own schema, dropped otherwise), so the
-# tool reads as before with the aid off.
-ARGUMENT_AIDS = {"input.text.type": {"replacing": "text_replacing"}}
 
 def _fold(name: str) -> str:
     text = unicodedata.normalize("NFKD", name).casefold()
@@ -1239,9 +1223,6 @@ class Mind:
                 constants_of[name] = constants
             schema["type"] = "object"
             schema.setdefault("properties", {})
-            for argument, aid in ARGUMENT_AIDS.get(name, {}).items():
-                if not _aid_on(aid):
-                    schema["properties"].pop(argument, None)
             # What one argument means, where the model fills it (a folder named by the person went missing from the
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():

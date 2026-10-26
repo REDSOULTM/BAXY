@@ -287,34 +287,21 @@ TEXT_TYPE = {"capabilities": [{"name": "input.text.type", "description": "Type a
                                      "window": {"type": ["integer", "null"]}}, "required": ["text"]}}]}
 
 
-@pytest.mark.parametrize("setting,on", [(None, False), ("all", False), ("text_replacing", True),
-                                        ("all,text_replacing", True), ("none", False), ("named_folder_theirs", False)])
-def test_input_text_type_shows_replacing_only_with_its_aid(tmp_path: Path, monkeypatch, setting: str | None,
-                                                           on: bool) -> None:
+@pytest.mark.parametrize("setting", [None, "all", "none"])
+def test_input_text_type_shows_replacing_with_or_without_aids(tmp_path: Path, monkeypatch, setting: str | None) -> None:
     # Práctica V5E061 («cámbialo, era el miércoles, no el martes»: the new text went in at the caret, after the old one):
-    # the argument that changes one part of the text, and the sentence that says it, reach the model only with the aid;
-    # without it the tool reads as before, argument and all. Ablación c: the aid is off unless named.
-    monkeypatch.setenv("BAXY_AYUDAS", "none")
-    before, _ = _mind(tmp_path / "before", [])
-    before.configure(TEXT_TYPE)
+    # the argument that changes one part of the text, and the sentence that says it, reach the model always (decision
+    # bench v6-abierto ×3, 2026-10-25: 614.67 without them, 616.00 with them).
     if setting is None:
         monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     else:
         monkeypatch.setenv("BAXY_AYUDAS", setting)
     mind, _ = _mind(tmp_path, [])
     mind.configure(TEXT_TYPE)
-    plain = next(t for t in before.tools if t["function"]["name"] == "input_text_type")["function"]
     tool = next(t for t in mind.tools if t["function"]["name"] == "input_text_type")["function"]
-    assert "replacing" not in plain["parameters"]["properties"] and "replacing" not in plain["description"]
-    assert ("replacing" in tool["parameters"]["properties"]) is on
-    assert (tool["description"] != plain["description"]) is on
-    if on:
-        assert tool["description"].startswith(plain["description"]) and "replacing" in tool["description"]
-        assert "exactly once" in tool["parameters"]["properties"]["replacing"]["description"]
-        traced = [r for r in _trace(mind) if r["stage"] == "configure.aid"][0]["aids"]
-        assert set(traced["text_replacing"]) == {"input.text.type"}
-    else:
-        assert tool == plain
+    assert tool["description"].endswith(" To change one part of a text already written, pass replacing = that part and "
+                                        "text = what goes in its place.")
+    assert "exactly once" in tool["parameters"]["properties"]["replacing"]["description"]
 
 
 TYPED = json.dumps({"status": "completed", "verification": "readback", "observed": {
@@ -507,22 +494,3 @@ def test_the_same_window_read_with_a_new_handle_each_time_is_the_same_result(tmp
             {"windowId": f"win_{handle}", "title": "Sin título - Paint", "state": "maximized"}], "count": 1}}))
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert "window_resolve ya se llamó 3 veces en este turno" in last
-
-
-@pytest.mark.parametrize("setting,default_on,default_off", [
-    (None, True, False), ("", True, False), ("all", True, False), ("ALL", True, False), ("none", False, False),
-    ("0", False, False), ("check_found", False, False),
-    ("all,text_replacing", True, True),
-    ("text_replacing", False, True),
-    ("check_found, text_replacing", False, True)])
-def test_an_aid_off_by_default_is_on_only_when_named(monkeypatch, setting: str | None, default_on: bool,
-                                                     default_off: bool) -> None:
-    # Ablaciones de nb-w11-final: DEFAULT_OFF_AIDS stay off with the aids by default and with «all»; named, they are on.
-    from baxy_mind import mind as mind_module
-    if setting is None:
-        monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    else:
-        monkeypatch.setenv("BAXY_AYUDAS", setting)
-    assert "text_replacing" in mind_module.DEFAULT_OFF_AIDS
-    assert mind_module._aid_on("person_folder_sentence") is default_on
-    assert mind_module._aid_on("text_replacing") is default_off
