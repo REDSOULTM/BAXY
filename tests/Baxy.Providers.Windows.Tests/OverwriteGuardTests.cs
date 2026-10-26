@@ -5,6 +5,7 @@ using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
+using Baxy.Providers.Windows.External;
 using Baxy.Providers.Windows.Filesystem;
 using Baxy.Providers.Windows.Infrastructure;
 using NUnit.Framework;
@@ -173,6 +174,60 @@ public sealed class OverwriteGuardTests
             Assert.That(asked.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
             Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed), confirmed.ErrorCode);
             Assert.That(place.Text(), Is.EqualTo("pendiente"));
+        });
+    }
+
+    // V6E048 by file.edit: oldText was the whole file with «\n» and the file has «\r\n». Found now, an edit that would
+    // leave the file with «pendiente» alone is file.write's loss (the same measure): it asks the person first, bound to
+    // the call, and runs on the yes. An edit of one line goes straight. With BAXY_AYUDAS=none nothing asks, as before.
+    [TestCase("all")]
+    [TestCase("none")]
+    public async Task AnEditThatLosesTheTextAsksFirstAndAnEditOfALineGoesStraight(string aids)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        bool guarded = aids == "all";
+        using var place = new Place();
+        const string Repertoire = "Aleluya de Cohen\r\nGracias a la vida\r\nCanción de cuna\r\n";
+        place.Seed(Repertoire);
+        var adapter = new WindowsKnownFileAdapter(
+            new Dictionary<string, string[]> { ["documents"] = [place.Documents] }, place.Bin);
+        using var provider = new WindowsExternalCapabilityProvider([adapter]);
+        IOperationHandler edit = ExternalCapabilityHandlers.Create(provider)
+            .Single(handler => handler.Definition.Name == "file.edit");
+        await using FileInvocationJournal journal = await place.Journal();
+        using var engine = new MissionEngine(new OperationRegistry([edit]), journal);
+        OperationRequest everything = Request(
+            """{"fileName":"jugadores.txt","folder":"documents","subdirectory":"Liga de Futbolito","oldText":"Aleluya de Cohen\nGracias a la vida\nCanción de cuna","newText":"pendiente"}""",
+            "file.edit");
+
+        OperationResponse asked = await engine.ExecuteAsync(everything, CancellationToken.None);
+        string beforeTheYes = place.Text();
+        OperationResponse confirmed = guarded
+            ? await engine.ExecuteAsync(
+                everything with
+                {
+                    RequestId = Guid.NewGuid().ToString("D"),
+                    ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString(),
+                },
+                CancellationToken.None)
+            : asked;
+        string afterTheYes = place.Text();
+        place.Seed(Repertoire);
+        OperationResponse line = await engine.ExecuteAsync(
+            Request(
+                """{"fileName":"jugadores.txt","folder":"documents","oldText":"Gracias a la vida","newText":"Gracias a la vida (bis)"}""",
+                "file.edit"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.ErrorCode, Is.EqualTo(guarded ? ConfirmationChallengeContract.RequiredErrorCode : null));
+            Assert.That(beforeTheYes, Is.EqualTo(guarded ? Repertoire : "pendiente\r\n"));
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed), confirmed.ErrorCode);
+            Assert.That(afterTheYes, Is.EqualTo("pendiente\r\n"));
+            Assert.That(place.Bin.Recycled.Select(File.ReadAllText), Does.Contain(Repertoire));
+            Assert.That(line.Status, Is.EqualTo(OperationStatuses.Completed), line.ErrorCode);
+            Assert.That(place.Text(), Is.EqualTo("Aleluya de Cohen\r\nGracias a la vida (bis)\r\nCanción de cuna\r\n"));
         });
     }
 
@@ -355,6 +410,8 @@ public sealed class OverwriteGuardTests
         internal KnownFileToolsTests.FolderRecycleBin Bin { get; }
 
         internal LocalFilesystemProvider Provider { get; }
+
+        internal string Documents => System.IO.Path.Combine(_root, "documents");
 
         internal string Full() => System.IO.Path.Combine(_root, "documents", "Liga de Futbolito", "jugadores.txt");
 
