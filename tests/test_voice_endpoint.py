@@ -20,6 +20,7 @@ def _heard(mode: str, *pieces: tuple[float, float]) -> Voice:
     listening._audio = numpy.concatenate([numpy.full(int(s * RATE), level, numpy.float32) for s, level in pieces])
     listening._speech = numpy.ones(len(listening._audio), bool)
     listening._total = len(listening._audio)
+    listening._early_at = listening._early_text = None
     return listening
 
 

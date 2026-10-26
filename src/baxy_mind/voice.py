@@ -23,6 +23,7 @@ import re
 import sys
 import tempfile
 import threading
+import unicodedata
 from pathlib import Path
 from typing import Any, Callable
 
@@ -41,6 +42,19 @@ VOICE_RMS = 0.012       # voice threshold of TranscripcionBaxy/probar_ultra.py
 SPEECH_P = 0.5          # Silero's own speech threshold (0.3 and 0.7 closed the same requests within 0.1 s)
 VAD_STEP = 512          # Silero's window at 16 kHz (32 ms); sherpa-onnx gives it the 64 samples before as context
 END_SILENCE_S = 0.9     # silence that closes the request
+# How long the silence waits once the early transcript (palanca 2, EARLY: decoded 0.2 s into it) says how the words end
+# (real use, 2026-10-26: «se demora en mandar el mensaje», and slow speakers must not be cut): a sentence that ended
+# closes after END_FAST_S, one left hanging waits END_SLOW_S, anything else END_SILENCE_S. LiveKit's turn detector waits
+# 0.3 s when the turn is complete and up to 2.5-3 s when not; AssemblyAI 0.4 s and 1.28 s; Pipecat Smart Turn 3 s; Amazon
+# (Maas et al. 2018) reads the last words («a transcript ending in a preposition means more is coming»). Ultra writes a
+# period after any fragment, so «ended» takes two words or more and a last word that does not leave it hanging.
+END_FAST_S = 0.4
+END_SLOW_S = 2.0
+HANGING_WORDS = frozenset(
+    "el la los las un una unos unas lo al del a de en con por para sin sobre entre hasta desde hacia segun y e o u ni "
+    "pero sino que porque si cuando como aunque donde mientras mi mis tu tus su sus nuestro me te se le les eh em mm "
+    "este esto bueno pues tipo the an to of and but or so because um uh like my your".split())
+HANGING_ENDS = frozenset({"o sea", "a ver", "voy a", "hay que", "es que", "i mean", "quiero que", "puedes"})
 WORD_TAIL_S = 0.4       # voice in the first 0.4 s after the trigger is the end of «Baxy», not the request
 # The same where the room is loud by itself (Voice._noisy): loudness no longer trims Silero's hold of the word, which
 # reached 0.5 s past the trigger at 10 dB and 0.7 s at 5 dB (0.2 s in a quiet room; 50 «Baxi» + request, OneCore).
@@ -105,6 +119,21 @@ CALL_WORDS = re.compile(r"^(?:[\W_]*[bpvm]a(?:x|ks|cs|k|c)s?[iíy]\b)+[\W_]*", r
 def without_call(text: str) -> str:
     """The request without the call at its start (CALL_WORDS)."""
     return CALL_WORDS.sub("", text).strip()
+
+
+def end_silence(early: str | None) -> float:
+    """The silence that closes the request after these early words (END_FAST_S, END_SLOW_S, END_SILENCE_S)."""
+    text = (early or "").strip()
+    folded = "".join(c for c in unicodedata.normalize("NFKD", text.casefold()) if not unicodedata.combining(c))
+    words = re.findall(r"[^\W\d_]+", folded)
+    if not words:
+        return END_SILENCE_S
+    if (text.endswith((",", "…", ":", "...")) or words[-1] in HANGING_WORDS or words[-1] in HANGING_ENDS
+            or " ".join(words[-2:]) in HANGING_ENDS):
+        return END_SLOW_S
+    if text.endswith(("?", "!")) or (text.endswith(".") and len(words) >= 2):
+        return END_FAST_S
+    return END_SILENCE_S
 
 
 def hotwords_score() -> float:
@@ -575,8 +604,9 @@ class Voice:
         end = self._voice_end(start)
         if end is None:
             return now - start >= (NO_COMMAND_S if self._mode == "wake" else DIRECT_WAIT_S)
+        wait = end_silence(self._early_text) if self._early_text is not None and self._early_at == end else END_SILENCE_S
         # 1e-6: in direct mode 2.4 - 1.5 is 0.8999…, and 48 of 120 requests waited one block (100 ms) more
-        return now - end >= END_SILENCE_S - 1e-6
+        return now - end >= wait - 1e-6
 
     def _early(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
         """Palanca 2 (early.py): ``early_s`` into the silence that may end the request, what was said is decoded with
@@ -604,6 +634,7 @@ class Voice:
                 self._partial = text
                 self._write({"type": "voice.event", "event": "partial", "mode": self._mode, "text": text})
             if text and self._on_early is not None and self._early_seq == seq and self._early_at == end:
+                self._early_text = text
                 self._on_early(seq, text)
 
         return self._segment(begin, now), start - begin if wake else None, then
@@ -614,17 +645,22 @@ class Voice:
         if getattr(self, "_early_at", None) is not None and self._on_early is not None:
             self._on_early(self._early_seq, None)
         self._early_at = None
+        self._early_text: str | None = None  # the early transcript of the voice up to _early_at, once decoded
 
     def _finish(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]]:
+        # No voice after the early transcript: it was decoded from the same words with less silence after them, so it is
+        # the request's transcript and nothing is decoded again (Deepgram Flux's EagerEndOfTurn without TurnResumed).
+        early = self._early_text if self._early_at is not None and self._early_at == self._voice_end(start) else None
         self._start = None
         self._early_at = None  # the request's own transcript says whether the early one stands (early.py)
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
-        stop = self._total / RATE if len(self._request_voice(start)) * BLOCK / RATE >= MIN_VOICE_S else begin
+        voiced_enough = len(self._request_voice(start)) * BLOCK / RATE >= MIN_VOICE_S
+        stop = self._total / RATE if voiced_enough and early is None else begin
         self._event("transcribing")
 
         def then(text: str) -> None:
-            text = without_call(text)
+            text = without_call(early if early is not None and voiced_enough else text)
             if text:
                 self._write({"type": "voice.transcript", "text": text})
             if not wake:

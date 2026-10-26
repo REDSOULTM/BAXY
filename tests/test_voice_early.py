@@ -113,9 +113,9 @@ def test_the_words_are_told_early_and_the_request_still_ends_with_its_own_transc
     _feed(listening, "v" * 10 + "." * 10)
     _until(lambda: _transcripts(written) == ["abre Steam"])
     assert told == [(1, "abre Steam")]
-    # The early decoding heard the voice and 0.2 s of silence; the request's own, the whole 0.9 s, as before.
-    # The early decoding took the place of the live caption due a block later (see the switch off): as many decodings.
-    assert recognizer.decoded == [1.2, 1.9]
+    # The early decoding heard the voice and 0.2 s of silence; no voice came after it, so it is the request's transcript
+    # and nothing is decoded again (it took the place of the live caption due a block later, see the switch off).
+    assert recognizer.decoded == [1.2]
     assert [m["text"] for m in written if m.get("event") == "partial"] == ["abre Steam"]  # the early one, as caption
 
 
@@ -124,7 +124,7 @@ def test_going_on_after_it_takes_it_back_and_a_new_one_is_told(monkeypatch: pyte
     _feed(listening, "v" * 5 + "..." + "v" * 3 + "." * 10)
     _until(lambda: len(_transcripts(written)) == 1)
     assert told == [(1, "abre Steam"), (1, None), (2, "abre Steam")]
-    assert recognizer.decoded == [0.7, 1.3, 2.0]
+    assert recognizer.decoded == [0.7, 1.3]  # the second early transcript is the request's
 
 
 def test_a_stop_takes_it_back(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -157,3 +157,12 @@ def test_the_wake_word_is_told_once(monkeypatch: pytest.MonkeyPatch) -> None:
     _feed(listening, "." * 3)
     _until(lambda: any(m.get("event") == "wake_detected" for m in written))
     assert woke == [True]
+
+
+@pytest.mark.parametrize(("early", "wait"), [
+    ("Abre Steam.", voice.END_FAST_S), ("¿Qué hora es?", voice.END_FAST_S), ("Pon música de", voice.END_SLOW_S),
+    ("Busca recetas y", voice.END_SLOW_S), ("Quiero que,", voice.END_SLOW_S), ("Abre el bloc de notas, eh.", voice.END_SLOW_S),
+    ("Necesito saber según.", voice.END_SLOW_S), ("Spotify.", voice.END_SILENCE_S), ("abre Steam", voice.END_SILENCE_S),
+    ("", voice.END_SILENCE_S), (None, voice.END_SILENCE_S)])
+def test_the_silence_that_ends_it_follows_how_the_early_words_end(early, wait) -> None:
+    assert voice.end_silence(early) == wait
