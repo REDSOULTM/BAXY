@@ -289,3 +289,18 @@ test('un error de voz es un estado de la interfaz: nada en el subtítulo de BAXY
   const shown = await h.page.locator('body').innerText();
   expect(shown).not.toMatch(/te entendí|lo repites/i);
 });
+
+test('ningún aviso ni etiqueta fija de la vista habla como BAXY en primera persona', async () => {
+  const firstPerson = /\b(me pongo|me activo|no pude|te oí|estaba ocupado|pregunto|escucho|necesito|te aviso)\b/i;
+  h = await openView({ items: [card('c1')] });
+  const p = h.page;
+  await expect(p.locator('.bx-card .tag')).not.toHaveText(firstPerson);
+  h.reply('/power', () => ({ status: 409, body: { ok: false, error: 'turn_in_progress' } }));
+  await p.locator('button', { hasText: 'Activo' }).first().click();
+  await expect(p.locator('.bx-notice')).toBeVisible();
+  await expect(p.locator('.bx-notice')).not.toHaveText(firstPerson);
+  await expect(p.locator('.bx-notice')).toHaveCount(0);
+  h.emit({ type: 'voice', available: true, mode: 'wake', speaking: false, last_error: 'voice_dropped_busy' });
+  await expect(p.locator('.bx-notice')).toContainText('ocupad');
+  await expect(p.locator('.bx-notice')).not.toHaveText(firstPerson);
+});

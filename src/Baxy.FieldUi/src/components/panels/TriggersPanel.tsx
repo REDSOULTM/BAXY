@@ -30,7 +30,7 @@ export function TriggersPanel({ onClose }: { onClose: () => void }) {
           <div key={i} className={'bx-trig' + (t.state && t.state !== 'Ready' ? ' off' : '')}>
             <div className="b">
               <span className="w">{(t.kind === 'alarm' ? 'Alarma' : 'Recordatorio') + (t.next_local ? ' · ' + t.next_local : '')}</span>
-              <span className="d">{t.title ?? (t.kind === 'alarm' ? 'Suena en este PC' : 'Te aviso en este PC')}</span>
+              <span className="d">{t.title ?? (t.kind === 'alarm' ? 'Suena en este PC' : 'Aviso en este PC')}</span>
             </div>
             {ask === i ? <ConfirmRow label="¿Cancelar?" yes="Sí, cancelar" onYes={() => void cancel(t)} onNo={() => setAsk(null)} />
               : t.next_local ? <button className="bx-lnk" onClick={() => setAsk(i)}>Cancelar</button> : null}

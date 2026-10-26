@@ -227,7 +227,7 @@ export default function App() {
     return () => window.clearTimeout(id);
   }, [s.voiceDroppedAt, finish]);
   const dropped = s.voiceDroppedAt !== null && done.voiceDropped !== s.voiceDroppedAt
-    ? { b: 'Voz', t: 'te oí, pero estaba ocupado · repítelo cuando termine' } : null;
+    ? { b: 'Voz', t: 'pedido de voz no tomado: BAXY seguía ocupado · repítelo cuando termine' } : null;
   const shownNotice = notice ?? dropped;
 
   // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
@@ -342,7 +342,7 @@ export default function App() {
     if (!r) { setNotice({ b: 'Confirmación', t: 'no se pudo cambiar' }); return; }
     const now = r.confirmationPolicy === 'bypass';
     setBypassState(now);
-    setNotice(now ? { b: 'Bypass', t: 'sin frenos hasta que lo apagues' } : { b: 'Normal', t: 'pregunto antes de lo arriesgado' });
+    setNotice(now ? { b: 'Bypass', t: 'sin frenos hasta que lo apagues' } : { b: 'Normal', t: 'BAXY pregunta antes de lo arriesgado' });
   }, [edit]);
   const setA11y = useCallback(async (next: A11y) => {
     setA11yState(next);
@@ -358,7 +358,7 @@ export default function App() {
   const micApplied = useRef(false);
   const mindUp = !!s.boot?.model;
   const setMic = useCallback(async (m: MicMode) => {
-    const said = { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY» · en pruebas', ptt: 'mantén el botón o espacio para hablar · en pruebas' }[m];
+    const said = { off: 'micrófono apagado · solo texto', always: 'siempre activo · di «BAXY» · en pruebas', ptt: 'mantén el botón o espacio para hablar · en pruebas' }[m];
     // while BAXY starts or rests the host takes no voice command: the choice is kept and applied when it can be
     // (once built, below; on waking, togglePower), instead of being refused and lost
     if (!s.agent.built || !mindUp || !powered) {
@@ -397,9 +397,9 @@ export default function App() {
   }, []);
   const togglePower = useCallback(async () => {
     // resting first stops the ear, which waits for the voice to finish loading after a start: say so at once
-    setNotice({ b: 'BAXY', t: powered ? 'me pongo en reposo…' : 'me activo…' });
+    setNotice({ b: 'BAXY', t: powered ? 'poniendo a BAXY en reposo…' : 'activando a BAXY…' });
     const r = await send<{ ok?: boolean; on?: boolean }>('POST', '/power', { on: !powered });
-    if (!r || r.on === powered) { setNotice({ b: 'BAXY', t: powered ? 'no pude ponerme en reposo' : 'no pude activarme' }); return; }
+    if (!r || r.on === powered) { setNotice({ b: 'BAXY', t: powered ? 'no se pudo poner en reposo' : 'no se pudo activar' }); return; }
     setNotice(null);
   }, [powered]);
   // back from rest, by this button, the tray's «Activar» or a text written to BAXY at rest, the microphone mode the
