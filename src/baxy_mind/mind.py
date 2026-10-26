@@ -570,10 +570,21 @@ ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
 SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder exactamente lo mismo que tu respuesta "
                    "anterior. No la repitas: responde a lo que dice ahora la persona, con otras palabras.]")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
+FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
+                                                          "set; it was not made"})
+FLIP_REFUSED = "no se ejecutó: deshacía lo que otra llamada de este turno ya había hecho"
 LOOK_CLICK_REFUSED = f"no se ejecutó: la misma mirada y el mismo clic ya iban {LOOK_CLICK_PAIRS} veces"
 # What the model reads at the end of the last result of a turn that takes no more calls.
 NO_MORE_CALLS = ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo con lo que muestran los "
                  "resultados.]")
+
+
+def _flips(before: Any, now: Any) -> bool:
+    """Whether ``now`` is ``before`` with only yes/no values turned the other way (the same keys, the rest equal)."""
+    if not isinstance(before, dict) or not isinstance(now, dict) or before.keys() != now.keys():
+        return False
+    turned = [k for k in now if isinstance(now[k], bool) and isinstance(before[k], bool) and now[k] != before[k]]
+    return bool(turned) and all(now[k] == before[k] for k in now if k not in turned)
 
 
 def _call_key(arguments: Any) -> str:
@@ -2599,6 +2610,23 @@ class Mind:
                     missed += 1
             if missed >= LOOK_CLICK_PAIRS:
                 return "look_click_closed", LOOK_CLICK_NOT_RUN, LOOK_CLICK_REFUSED
+        # Uso real 2026-10-26: «qué es la inteligencia artificial» read the same Wikipedia page 14 times, only its
+        # maximumCharacters going up by 1000, 43 s for one sentence (same_call_closes never saw the same arguments): a
+        # page already read LOOK_CLICK_PAIRS times in the turn is not read again, whatever the size asked.
+        if call["wire"] == "web_fetch" and _aid_on("same_call_closes"):
+            url = str(call["arguments"].get("url") or "").strip().rstrip("/")
+            read = sum(r.get("tool") == "web_fetch"
+                       and str((r.get("arguments") or {}).get("url") or "").strip().rstrip("/") == url
+                       for r in turn.get("receipts") or [])
+            if url and read >= LOOK_CLICK_PAIRS:
+                return "same_call_closed", SAME_CALL_NOT_RUN, SAME_CALL_REFUSED
+        # Uso real 2026-10-26: «baja el volumen a 30» unmuted the PC, then muted it, then unmuted it… seven times, the
+        # person having asked for neither: a call that only turns back a yes/no an earlier call of the same operation
+        # set in this turn (it would undo what the turn did) is not made.
+        if _aid_on("same_call_closes") and any(
+                r.get("tool") == call["wire"] and r.get("completed") and not r.get("read")
+                and _flips(r.get("arguments") or {}, call["arguments"]) for r in turn.get("receipts") or []):
+            return "flip_closed", FLIP_NOT_RUN, FLIP_REFUSED
         return None
 
     def _close_repeat(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
