@@ -60,11 +60,11 @@ public sealed class OverwriteGuardTests
                 Assert.That(facts.GetProperty("linesKept").GetInt32(), Is.Zero);
                 Assert.That(facts.GetProperty("next").GetString(), Is.EqualTo(
                     "nothing was written: jugadores.txt is already there with 3 lines (48 characters), and this call "
-                    + "would replace all of it with the text, which keeps none of its lines. To add the text as a new "
-                    + "line at its end and keep what it has: file_write {\"relativePath\":\"Liga de Futbolito/jugadores.txt\","
-                    + "\"folder\":\"documents\",\"text\":\"Matías, arquero\",\"append\":true}. To replace all it has only if "
-                    + "the person asked for that: the same call with expectedSha256 (currentSha256); in normal mode that "
-                    + "call waits for the person's yes, so do not ask them yourself"));
+                    + "would replace all of it with the text, which keeps none of its lines. If the person asked to add "
+                    + "the text: file_write {\"relativePath\":\"Liga de Futbolito/jugadores.txt\",\"folder\":\"documents\","
+                    + "\"text\":\"Matías, arquero\",\"append\":true}, a new line at its end that keeps what it has. If the "
+                    + "person asked to replace all it has: the same call with expectedSha256 (currentSha256). Their words "
+                    + "pick the call, so ask them nothing: in normal mode BAXY itself asks their yes before a replacement"));
                 Assert.That(replaced.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
                 Assert.That(afterReplace, Is.EqualTo(Players));
                 Assert.That(place.Bin.Recycled, Is.Empty);
@@ -128,11 +128,11 @@ public sealed class OverwriteGuardTests
             Assert.That(facts.GetProperty("lines").GetInt32(), Is.EqualTo(3));
             Assert.That(facts.GetProperty("next").GetString(), Is.EqualTo(
                 "nothing was written: jugadores.txt has 3 lines (48 characters), and this call would replace all of it "
-                + "with the text, which keeps none of its lines. To add the text as a new line at its end and keep what "
-                + "it has: file_write {\"relativePath\":\"Liga de Futbolito/jugadores.txt\",\"folder\":\"documents\","
-                + "\"text\":\"Matías, arquero\",\"append\":true}. To replace all it has only if the person asked for "
-                + "that: the same call again; in normal mode that call waits for the person's yes, so do not ask them "
-                + "yourself"));
+                + "with the text, which keeps none of its lines. If the person asked to add the text: file_write "
+                + "{\"relativePath\":\"Liga de Futbolito/jugadores.txt\",\"folder\":\"documents\",\"text\":\"Matías, "
+                + "arquero\",\"append\":true}, a new line at its end that keeps what it has. If the person asked to "
+                + "replace all it has: the same call again. Their words pick the call, so ask them nothing: in normal "
+                + "mode BAXY itself asks their yes before a replacement"));
             Assert.That(asked.ErrorCode, Is.EqualTo(ConfirmationChallengeContract.RequiredErrorCode));
             Assert.That(beforeTheYes, Is.EqualTo(Players));
             Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed));
