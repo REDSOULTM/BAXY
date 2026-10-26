@@ -63,12 +63,12 @@ FADE_S = 0.015      # no click at a sentence's trimmed edges
 SILENCE_DB = -40.0
 LEAD_S, TAIL_S_KEPT = 0.03, 0.10
 GAP_S, GAP_QUESTION_S = 0.35, 0.45
-# BAXY_RENEW_TTS_CLAUSE=1 (off by default: the owner judges it by ear): the first take may end at the first clause
-# (clause_cut), so the voice starts on it while the model still writes the sentence; 80 of 82 replies were one
-# sentence, and the first sound waited for the whole reply (H7 on the notebook, 2026-10-24: −0.46 s in 35 of 82 replies
-# simulated on real turns). The trimmed edges already leave 0.13 s of near silence at the joint (TAIL_S_KEPT + LEAD_S):
-# GAP_CLAUSE_S makes it 0.23 s, under half of the pause between sentences (0.48 s), a comma's and not a full stop's.
-# At least CLAUSE_MIN_CHARS (about 10 syllables, 1.5 s of voice: the rest of the sentence is synthesized while it
+# The first take may end at the first clause (clause_cut), so the voice starts on it while the model still writes the
+# sentence; 80 of 82 replies were one sentence, and the first sound waited for the whole reply (H7 on the notebook,
+# 2026-10-24: −0.46 s in 35 of 82 replies simulated on real turns; spoken A/B, 2026-10-25: the first answer 378 ms
+# sooner on average, sooner in 7 of 10 orders; behind a switch until then, now the behaviour). The trimmed edges
+# already leave 0.13 s of near silence at the joint (TAIL_S_KEPT + LEAD_S): GAP_CLAUSE_S makes it 0.23 s, under half
+# of the pause between sentences (0.48 s), a comma's and not a full stop's. At least CLAUSE_MIN_CHARS (about 10 syllables, 1.5 s of voice: the rest of the sentence is synthesized while it
 # sounds, and _speed no longer slows it as a short phrase) and CLAUSE_MIN_WORDS on each side (three words or fewer are
 # Supertonic's weak spot, issue #30).
 GAP_CLAUSE_S = 0.10
@@ -91,12 +91,8 @@ def _speed(text: str) -> float:
     return 0.94 if syllables <= 8 else 1.0 if syllables <= 20 else 1.06
 
 
-def _clause_on() -> bool:
-    return os.environ.get("BAXY_RENEW_TTS_CLAUSE", "").strip() == "1"
-
-
 def clause_cut(sentence: str) -> int | None:
-    """Where a first take that ends at a clause ends (BAXY_RENEW_TTS_CLAUSE): just after the first «,» «;» or «:»
+    """Where a first take that ends at a clause ends: just after the first «,» «;» or «:»
     followed by a space that closes CLAUSE_MIN_CHARS characters and CLAUSE_MIN_WORDS words, outside quotes and
     brackets and not after a number («1,5» has no space; «1, 2, 3» and «uno, dos o tres» are lists); a dash is
     already «, » in what is said (spoken). None when what
@@ -123,11 +119,11 @@ def clause_cut(sentence: str) -> int | None:
 
 
 def _gap(take: str) -> float:
-    """The pause after a take: a question's is a little longer, a clause's (BAXY_RENEW_TTS_CLAUSE) shorter."""
+    """The pause after a take: a question's is a little longer, a clause's shorter."""
     end = take.rstrip()[-1:]
     if end == "?":
         return GAP_QUESTION_S
-    return GAP_CLAUSE_S if end in ",;:" and _clause_on() else GAP_S
+    return GAP_CLAUSE_S if end in ",;:" else GAP_S
 
 
 def _trim(audio: np.ndarray, rate: int) -> np.ndarray:
@@ -268,10 +264,10 @@ class Speech:
 
     def foresee(self, text: str | None, done: bool) -> bool:
         """An answer as the model writes it (al máximo 9.4): once its first sentence is closed (or the answer is done),
-        its first take (that sentence, or with BAXY_RENEW_TTS_CLAUSE its first clause once that one is closed) is
-        synthesized now, the same take _sentences would make, and kept; nothing sounds until the App
-        publishes the answer and asks for it (speak). None: the model went on to call a tool, and what was foreseen is
-        dropped. True once there is nothing more to look at."""
+        its first take (that sentence, or its first clause once that one is closed) is synthesized now, the same take
+        _sentences would make, and kept; nothing sounds until the App publishes the answer and asks for it (speak).
+        None: the model went on to call a tool, and what was foreseen is dropped. True once there is nothing more to
+        look at."""
         if text is None:
             with self._posting:
                 for _generation, future in self._foreseen.values():
@@ -290,9 +286,9 @@ class Speech:
         if not units:
             return done
         if not done and len(pieces) < 2:
-            # the first sentence is not closed yet; with BAXY_RENEW_TTS_CLAUSE its first clause may be, and it is the
-            # take the whole sentence will start with
-            cut = clause_cut(units[0]) if _clause_on() else None
+            # the first sentence is not closed yet; its first clause may be, and it is the take the whole sentence will
+            # start with
+            cut = clause_cut(units[0])
             if cut is None:
                 return False
             first = units[0][:cut]
@@ -502,14 +498,14 @@ class Speech:
         whole reply, so a reply of three or four sentences waited for all of them: its first take 3 059 ms against
         1 686 ms with only the next sentence (p50 of 8 such replies, voice D, 6 steps, PC CPU, 2026-10-23); the
         sentences after the second are takes of their own, with BAXY's pause, as in any other reply.
-        BAXY_RENEW_TTS_JOIN_ALL=1 joins the whole reply again. With BAXY_RENEW_TTS_CLAUSE=1 any other first sentence
-        is two takes when it has a clause to end at (clause_cut): that clause, and the rest of the sentence after
-        GAP_CLAUSE_S; the words and their marks are the same, only the space at the cut is the pause."""
+        BAXY_RENEW_TTS_JOIN_ALL=1 joins the whole reply again. Any other first sentence is two takes when it has a
+        clause to end at (clause_cut): that clause, and the rest of the sentence after GAP_CLAUSE_S; the words and
+        their marks are the same, only the space at the cut is the pause."""
         if len(sentences) > 1 and len(sentences[0].split()) <= 3:
             if os.environ.get("BAXY_RENEW_TTS_JOIN_ALL", "").strip() == "1":
                 return [spoken(text)]
             return [f"{sentences[0]} {sentences[1]}", *sentences[2:]]
-        if sentences and _clause_on():
+        if sentences:
             cut = clause_cut(sentences[0])
             if cut is not None:
                 return [sentences[0][:cut], sentences[0][cut:].lstrip(), *sentences[1:]]
