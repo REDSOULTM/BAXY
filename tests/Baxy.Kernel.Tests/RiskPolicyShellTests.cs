@@ -36,6 +36,8 @@ public sealed class RiskPolicyShellTests
     // asked before.
     [TestCase("ipconfig")]
     [TestCase("ipconfig /all")]
+    [TestCase("ipconfig \"/all\"")]
+    [TestCase("ipconfig /displaydns | findstr example")]
     [TestCase("netstat -an")]
     [TestCase("nslookup example.com")]
     [TestCase("getmac /v")]
@@ -77,12 +79,19 @@ public sealed class RiskPolicyShellTests
     [TestCase(".\\script.ps1")]
     [TestCase("findstr ERROR server.log > errores.txt")]
     [TestCase("findstr ERROR server.log | Out-File errores.txt")]
-    // ipconfig's switches that change the network instead of reading it.
+    // ipconfig's switches that change the network instead of reading it, however they are quoted or written.
     [TestCase("ipconfig /release")]
     [TestCase("ipconfig /renew Wi-Fi")]
     [TestCase("IPCONFIG -flushdns")]
     [TestCase("ipconfig /registerdns")]
     [TestCase("ipconfig /setclassid Ethernet x")]
+    [TestCase("ipconfig \"/release\"")]
+    [TestCase("ipconfig '/renew'")]
+    [TestCase("ipconfig /re\"new\"")]
+    [TestCase("ipconfig \" /flushdns\"")]
+    [TestCase("ipconfig /all /release6")]
+    [TestCase("ipconfig /RegisterDNS")]
+    [TestCase("ipconfig \u201C/release\u201D")]
     public void Anything_else_asks_with_the_exact_command(string command) =>
         Assert.That(Run(command), Is.EqualTo(PolicyDecision.RequireConfirmation));
 

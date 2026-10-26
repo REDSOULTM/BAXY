@@ -29,14 +29,13 @@ public sealed class Goal05TerminalStateTests
         CompletedInvocation? beforeRetry = await journal.FindCompletedAsync(
             request.InvocationId,
             CancellationToken.None);
-        // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
-        // peligrosas»): its effect may have happened (effectMayHaveOccurred), but the invocation is reversible and asks
-        // nothing with these arguments, so the same invocation is retried without asking (it asked before).
-        OperationResponse recovered = await engine.ExecuteAsync(
-            request with { RequestId = Guid.NewGuid().ToString("D") }, CancellationToken.None);
+        // Auditoría del núcleo 2026-10-23: its effect may have happened (effectMayHaveOccurred), so the same invocation
+        // is retried only on the person's yes to reconcile it.
+        (OperationResponse asked, OperationResponse recovered) = await UncertainStart.RetryAsync(engine, request);
 
         Assert.Multiple(() =>
         {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
             Assert.That(pending.Status, Is.EqualTo(OperationStatuses.Pending));
             Assert.That(pending.Verified, Is.False);
             Assert.That(pending.InvocationId, Is.EqualTo(request.InvocationId));
@@ -97,13 +96,13 @@ public sealed class Goal05TerminalStateTests
     {
         var handler = new ScriptedHandler(OperationOutcome.Success());
         handler.DefinitionOverride = new OperationDefinition(
-            "message.send",
+            "message.send.test",
             OperationRisk.External,
             "Send a message.");
         using var journal = new InMemoryInvocationJournal();
         using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
         OperationRequest original = Request(
-            "message.send",
+            "message.send.test",
             "{\"destination\":\"equipo\"}");
         OperationResponse challenge = await engine.ExecuteAsync(original, CancellationToken.None);
         string token = challenge.Result!.Value.GetProperty("token").GetString()!;

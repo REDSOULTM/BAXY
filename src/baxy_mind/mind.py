@@ -887,14 +887,12 @@ DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # Al máximo, System One 3: also the risks the kernel always confirms in normal mode (RiskPolicy.Evaluate: work_loss and
 # installation and recoverable_delete are Irreversible there), because its confirmation names the exact action and
 # replaces the vague question (P215 «desinstala el Worms»: Laya read game_uninstall_named at 0.91 and BAXY asked what to
-# do). Not external_communication: normal mode confirms only three of its operations. Not the operations normal mode
-# runs unasked whatever their risk (RiskPolicy.UnaskedDespiteTheirRisk: system.power and, by the owner's decision of
-# 2026-10-25, the own game library: installing a game, cancelling its downloads), and none of them in Bypass, which
-# runs them unasked too (only message.send asks there, and it has an effect of the catalog); a mode that cannot be read
-# counts as Bypass. With _founded and the effects rule, as for the rest.
+# do). Not external_communication: normal mode confirms only four of its operations. Not system.power, which normal mode
+# runs unasked, and none of them in Bypass, which runs them unasked too (only message.send asks there, and it has an
+# effect of the catalog); a mode that cannot be read counts as Bypass. With _founded and the effects rule, as for the rest.
 CONFIRMED_RISKS = ("work_loss", "installation", "recoverable_delete")
 CORRECTABLE_RISKS = ("read_only", "low_reversible", *CONFIRMED_RISKS)
-UNCONFIRMED_OPERATIONS = ("game.install.cancel", "game.install.cancel.active", "game.install.named", "system.power")
+UNCONFIRMED_OPERATIONS = ("system.power",)
 
 
 def _bypass() -> bool:

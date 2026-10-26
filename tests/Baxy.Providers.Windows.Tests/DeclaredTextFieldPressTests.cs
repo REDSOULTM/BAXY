@@ -40,6 +40,8 @@ public sealed class DeclaredTextFieldPressTests
     // What is declared a text field and is not (a file list, a button), lies outside the window, or cannot be read;
     // and Enter on a messaging client's composer or a console's line, which sends or runs what they hold.
     [TestCase("""{"key":"delete","target":"text_field"}""", """{"ok":true,"kind":"List","editable":false,"text":false,"inside":true}""", KeyWindowKind.Ordinary)]
+    [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true}""", KeyWindowKind.Ordinary)]
+    [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"CheckBox","editable":false,"text":false,"inside":true,"name":" "}""", KeyWindowKind.Ordinary)]
     [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true,"name":"Enviar"}""", KeyWindowKind.Ordinary)]
     [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true,"name":"Eliminar"}""", KeyWindowKind.Ordinary)]
     [TestCase("""{"key":"space","target":"text_field"}""", """{"ok":true,"kind":"CheckBox","editable":false,"text":false,"inside":false,"name":"Recordarme"}""", KeyWindowKind.Ordinary)]
@@ -65,10 +67,10 @@ public sealed class DeclaredTextFieldPressTests
 
     // Decisión del dueño 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son
     // peligrosas»): space on a focus read inside the window that is no text field (a check box, a switch, a button)
-    // toggles or presses it, and asks only when its read name would make a click on it ask; before, it always asked.
+    // toggles or presses it, and with a name read asks only when that name would make a click on it ask; before, it
+    // always asked. One with no name read still asks (above).
     [TestCase("""{"ok":true,"kind":"CheckBox","editable":false,"text":false,"inside":true,"name":"Recordarme"}""")]
     [TestCase("""{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true,"name":"Activar Wi-Fi"}""")]
-    [TestCase("""{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true}""")]
     [TestCase("""{"ok":true,"kind":"Button","editable":false,"text":false,"inside":true,"name":"Quitar silencio"}""")]
     public async Task SpaceOnAControlWhoseNameAsksNothingGoesWithoutAsking(string focus)
     {

@@ -176,7 +176,7 @@ public sealed class AppOpenHandlerTests
         var provider = new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe");
         var handler = new AppOpenHandler(
             provider,
-            new LaunchProvenance(static _ => null),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RefusedPlace(),
             windowIdFor: static window => window == 777 ? "w-777" : null,
             frontOf: static _ => new OpenedWindowFront(true, "steam"));
@@ -207,7 +207,7 @@ public sealed class AppOpenHandlerTests
         using IDisposable setting = ModelAids.Use(aids);
         var handler = new AppOpenHandler(
             new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe"),
-            new LaunchProvenance(static _ => null),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new HandedPlace(),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"));
 
@@ -244,7 +244,7 @@ public sealed class AppOpenHandlerTests
         using IDisposable setting = ModelAids.Use(aids);
         var handler = new AppOpenHandler(
             new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe"),
-            new LaunchProvenance(static _ => null),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new DrawnPlace(changed),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"));
 
@@ -612,7 +612,7 @@ public sealed class AppOpenHandlerTests
         var handler = new AppOpenHandler(
             new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", running,
                 startedNow ? OpeningStarted.UtcTicks : 638900000000000000),
-            new LaunchProvenance(static _ => null),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RecordedPlace(opened),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
             settle: (_, _, _) => { waited++; return ValueTask.FromResult(999L); },
@@ -639,7 +639,7 @@ public sealed class AppOpenHandlerTests
         var settled = new TaskCompletionSource<long>(TaskCreationOptions.RunContinuationsAsynchronously);
         var handler = new AppOpenHandler(
             new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe", false, OpeningStarted.UtcTicks),
-            new LaunchProvenance(static _ => null),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
             new RecordedPlace(opened),
             frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
             settle: (_, _, _) => new ValueTask<long>(settled.Task),
@@ -670,7 +670,7 @@ public sealed class AppOpenHandlerTests
 
     private static AppOpenHandler SteamHandler(List<string> opened, IGameTitles titles) => new(
         new VerifiedOpening(@"C:\Program Files (x86)\Steam\steam.exe"),
-        new LaunchProvenance(static _ => null),
+        new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
         new RecordedPlace(opened),
         frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
         games: titles);
@@ -946,7 +946,7 @@ public sealed class AppOpenHandlerTests
 
     private static AppOpenHandler Handler(IApplicationOpenProvider provider, Func<long, OpenedWindowFront>? frontOf = null) => new(
         provider,
-        new LaunchProvenance(static _ => null),
+        new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
         frontOf: frontOf ?? (static _ => new OpenedWindowFront(true, "Notepad")));
 
     private static OperationInvocation Invocation(string arguments)

@@ -29,15 +29,9 @@ public static class ProductCatalog
                     String("windowId", maximumLength: 36, nonWhitespace: true),
                 ],
                 []),
-            // Decisión del dueño 2026-10-25 («solo se debe pedir confirmación a cosas que son destructivas… que Baxy no
-            // te moleste todo el tiempo»): it closes gracefully and never forces, and an application's own «¿Guardar?»
-            // stops it (its «No guardar» asks by itself), so it is low reversible. Its window command reaches a window
-            // of the person (window_input): a heartbeat only proposes it and «corrige» never puts it in the model's
-            // mouth.
-            OperationRisks.LowReversible,
+            OperationRisks.WorkLoss,
             "app.close.identity.window.absence.v1",
-            "Solicita el cierre de una ventana resuelta (windowId) o de todas las ventanas de una aplicación por su nombre (appId) y verifica su ausencia sin forzar la terminacion del proceso; si una ventana responde con un diálogo propio (guardar) se detiene y lo dice; el windowId caduca a los 5 minutos.",
-            effects: [WindowInput()]),
+            "Solicita el cierre de una ventana resuelta (windowId) o de todas las ventanas de una aplicación por su nombre (appId) y verifica su ausencia sin forzar la terminacion del proceso; si una ventana responde con un diálogo propio (guardar) se detiene y lo dice; el windowId caduca a los 5 minutos."),
         Descriptor(
             "app.installed",
             Schema([String("name", maximumUtf8Bytes: 256, nonWhitespace: true)], ["name"]),
@@ -78,12 +72,9 @@ public static class ProductCatalog
         Descriptor(
             "app.restart",
             Schema([String("appId", maximumUtf8Bytes: 512, nonWhitespace: true)], ["appId"]),
-            // Low reversible and window_input as app.close (decisión del dueño 2026-10-25): it closes gracefully, never
-            // forces.
-            OperationRisks.LowReversible,
+            OperationRisks.WorkLoss,
             "app.restart.window.close.process.exit.app.open.v1",
-            "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo.",
-            effects: [WindowInput()]),
+            "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo."),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(
@@ -1982,12 +1973,9 @@ public static class ProductCatalog
         Descriptor(
             "window.close.all",
             EmptySchema(),
-            // Low reversible and window_input as app.close (decisión del dueño 2026-10-25): it closes gracefully, never
-            // forces.
-            OperationRisks.LowReversible,
+            OperationRisks.WorkLoss,
             "window.close.all.desktop.postread.v1",
-            "Pide el cierre de todas las ventanas visibles de este escritorio salvo las de BAXY (las de otro escritorio virtual no se tocan y se cuentan), verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso.",
-            effects: [WindowInput()]),
+            "Pide el cierre de todas las ventanas visibles de este escritorio salvo las de BAXY (las de otro escritorio virtual no se tocan y se cuentan), verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso."),
         Descriptor(
             "window.focus",
             WindowIdSchema(),
