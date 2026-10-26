@@ -57,6 +57,8 @@ def _denials(answer: str, receipts: list | None = None, tries: list | None = Non
     ("No puedo contar los archivos de esa carpeta.", "filesystem_explorer_count"),
     ("I can't delete folders inside BAXY-bench, only files.", "filesystem_known_trash_named"),
     ("I don't have access to your files.", "file_find"),
+    # Uso real 2026-10-26: «no tengo herramientas para…» with file_write in the catalog.
+    ("No tengo herramientas para escribir archivos por ti.", "file_write"),
 ])
 def test_a_denied_act_that_a_tool_of_the_catalog_does_is_flagged_with_that_tool(answer: str, tool: str) -> None:
     found = _denials(answer)

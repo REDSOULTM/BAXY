@@ -9,6 +9,7 @@ applications and games), not from code that decides for it.
 from __future__ import annotations
 
 import datetime as _dt
+import difflib
 import hashlib
 import json
 import os
@@ -553,6 +554,20 @@ SAME_CALL_NOT_RUN = json.dumps({"status": "not_run", "reason": "this same call, 
 LOOK_CLICK_NOT_RUN = json.dumps({"status": "not_run",
                                  "reason": f"this click, after the same look that saw the same, was already made "
                                            f"{LOOK_CLICK_PAIRS} times in this turn; it was not made again"})
+# Aid «ask_once» (uso real 2026-10-26): the person's answer to ask_user is that call's result, and the model asked the
+# same question again at each answer («¿en todo el sistema o en un programa?» six times, «¿qué quieres que recuerde de
+# ti?» three): one question per thing (identity: «una pregunta corta, no un interrogatorio»). A question alike to one
+# already asked in the turn (ASKED_ALIKE of its letters, folded) is not asked: the model answers in words.
+ASKED_ALIKE = 0.9
+ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
+                                  "reason": "this question was already asked in this turn and the person's answer is "
+                                            "above; it was not asked again: do with that answer what a tool can do, "
+                                            "or say in one sentence that you don't do it"})
+# Aid «say_once» (uso real 2026-10-26): the same words came back turn after turn (the same greeting three times, the
+# same «¿te refieres a algo más?» to whatever followed). An answer of a turn with no call that is BAXY's last answer
+# again, letter for letter, is written once more with this note, words only.
+SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder exactamente lo mismo que tu respuesta "
+                   "anterior. No la repitas: responde a lo que dice ahora la persona, con otras palabras.]")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 LOOK_CLICK_REFUSED = f"no se ejecutó: la misma mirada y el mismo clic ya iban {LOOK_CLICK_PAIRS} veces"
 # What the model reads at the end of the last result of a turn that takes no more calls.
@@ -2117,6 +2132,9 @@ class Mind:
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
             return self._next(request_id, stage, turn, final=True)
+        if (content and not turn.get("beat") and not turn.get("receipts") and not turn.get("said_again")
+                and _aid_on("say_once") and self._said_last(conv, content)):
+            return self._say_otherwise(request_id, stage, turn, content, reply, started)
         if content and not turn.get("beat") and _aid_on("answer_check"):
             checked = self._check_answer(request_id, stage, turn, content, reply, started)
             if checked is not None:
@@ -2132,6 +2150,39 @@ class Mind:
                 except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
                     pass
         return self._result(request_id, turn, None, reply, stage, started, content)
+
+    @staticmethod
+    def _said_last(conv: list[dict[str, Any]], content: str) -> bool:
+        """Whether these words are BAXY's last words in the conversation again, letter for letter (folded)."""
+        last = next((str(m.get("content") or "") for m in reversed(conv)
+                     if m.get("role") == "assistant" and str(m.get("content") or "").strip()), "")
+        return bool(last) and re.findall(r"[^\W_]+", _fold(last)) == re.findall(r"[^\W_]+", _fold(content))
+
+    def _say_otherwise(self, request_id: Any, stage: str, turn: dict[str, Any], content: str, reply: dict | None,
+                       started: float) -> dict[str, Any]:
+        """Aid «say_once» (SAID_AGAIN_NOTE): an answer of a turn with no call that is BAXY's last answer again is asked
+        once more, words only; the second one is spoken, whatever it says."""
+        turn["said_again"] = True
+        self._log("turn.repeat", started, None, content=None if turn.get("private") else content)
+        if self.foresee is not None:
+            try:
+                self.foresee(None, True)  # the first sentence the voice synthesized ahead is not the one spoken
+            except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
+                pass
+        conv = turn["conv"]
+        note = {"role": "user", "content": SAID_AGAIN_NOTE}
+        conv.append(note)
+        try:
+            result = self._next(request_id, stage, turn, final=True)
+        finally:
+            for index in range(len(conv) - 1, -1, -1):
+                if conv[index] is note:
+                    del conv[index]
+                    break
+        if result.get("kind") == "conversation" and not result.get("reply"):
+            conv.append({"role": "assistant", "content": content})
+            result["reply"] = content
+        return result
 
     def _check_answer(self, request_id: Any, stage: str, turn: dict[str, Any], content: str, reply: dict | None,
                       started: float) -> dict[str, Any] | None:
@@ -2448,6 +2499,18 @@ class Mind:
             question = " ".join(str(call["arguments"].get("question") or "").split())
             later = [c["id"] for c in turn.get("queue") or []]
             turn["queue"], turn["awaiting"] = [], None
+            folded = " ".join(re.findall(r"[^\W_]+", _fold(question)))
+            if folded and _aid_on("ask_once") and any(
+                    difflib.SequenceMatcher(None, folded, asked).ratio() >= ASKED_ALIKE
+                    for asked in turn.get("questions", [])):
+                for call_id in [call["id"], *later]:
+                    turn["conv"].append({"role": "tool", "tool_call_id": call_id,
+                                         "content": ASKED_AGAIN_NOT_RUN if call_id == call["id"] else NOT_RUN})
+                self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                          kind="ask_repeat_closed", operation=None, arguments=None, content=None)
+                return self._next(request_id, stage, turn, final=True)
+            if folded:
+                turn.setdefault("questions", []).append(folded)
             if question:
                 turn["asked"], turn["after_asked"] = call["id"], later
                 result.update(kind="clarify", question=question)

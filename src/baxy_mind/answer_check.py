@@ -47,6 +47,9 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   (DENIED_OPS). Not when the sentence gives a limit of its own (a confirmation, a protected window, something not
   installed or not found, a place outside the person's folders, a program) or a condition («si…»), nor when an earlier
   call of that act did not complete (it may be what the answer tells), except one the core refused for its arguments.
+- ``output``: «salió «Hola mundo»», «imprimió «3»» (an output quoted after a verb that tells one) in a turn with calls
+  while no result of the turn shows that text (uso real 2026-10-26: a console command sent without reading its output
+  and window looks that failed, then «el programa se ejecutó y salió «Hola mundo»»).
 
 What never counts as a claim: a sentence or the part of one that is a question, a clause with «no / nunca / sin /
 tampoco» before the verb («no pude abrirlo», «no lo cerré»), a conditional «si…», quoted text, or a promise («voy a
@@ -484,6 +487,9 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
 
     # «No puedo borrar carpetas de X» with no call in the turn while a tool of the catalog does it (aid check_denial).
     findings.extend(f for f in _denials(answer, folded, statements, receipts, catalog, tries) if f not in findings)
+
+    # «Salió «Hola mundo»» while no result of the turn shows that text.
+    findings.extend(f for f in _outputs(answer, raw_folded, statements, receipts) if f not in findings)
 
     # «Ya estaba».
     changed = [r for r in receipts if r.get("completed") and _parsed(r).get("verification") == "readback"]
@@ -1046,7 +1052,8 @@ def _not_read_names(answer: str, folded: str, raw_folded: str, statements: list[
 # window), and an operation of the catalog does that act on it. Kept narrow: a false finding costs a regeneration.
 _DENIAL = re.compile(
     r"\bno (?:(?:lo|la|los|las|le|les|te|me) )?(?:puedo|podria|soy capaz de|logro|me es posible|es posible|"
-    r"tengo (?:como|forma de|manera de|la capacidad de|capacidad de|permiso para|permisos para))\b"
+    r"tengo (?:como|forma de|manera de|la capacidad de|capacidad de|permiso para|permisos para|"
+    r"herramientas? para|(?:una|ninguna) herramienta para))\b"
     r"|\bno (?:(?:lo|la|los|las) )?se (?:puede|pueden|permite)\b"
     r"|\bno tengo acceso\b"
     r"|\bi (?:can[’']?t|cannot|can not|am not able to|am unable to)\b|\bi[’']m (?:not able to|unable to)\b"
@@ -1125,6 +1132,33 @@ _IF_AFTER = re.compile(r"\b(?:si|if|sin|unless|without|mientras no)\b")
 def _first_sentence(description: str) -> str:
     sentence = re.split(r"(?<=[.!?])\s+(?=[A-Z¿«])", description.strip(), maxsplit=1)[0]
     return sentence if len(sentence) <= 400 else sentence[:400].rsplit(" ", 1)[0] + "…"
+
+
+# ---- an output told ---------------------------------------------------------------------------------------------------
+# A verb that tells an output, and the text quoted right after it in its clause (read on the answer with its quotes).
+_OUTPUT = re.compile(r"\b(?:salio|salieron|imprimio|mostro|devolvio|arrojo|dio como resultado|printed|returned|output)\b"
+                     r"[^«\"“.;!?\n]{0,25}[«\"“]([^»\"”\n]+)[»\"”]")
+
+
+def _outputs(answer: str, raw_folded: str, statements: list[tuple[int, int]], receipts: list[Receipt]) -> list[dict]:
+    """Rule ``output``: a quoted output that no result of the turn shows (not their arguments: what was written or sent
+    is not what came out)."""
+    if not receipts:
+        return []
+    shown = " ".join(_fold("\n".join(
+        "\n".join(str(v) for _, v in _walk(facts) if isinstance(v, str)) if (facts := _parsed(r))
+        else str(r.get("observation") or "") for r in receipts)).split())
+    findings: list[dict] = []
+    for start, end in statements:
+        for hit in _OUTPUT.finditer(raw_folded, start, end):
+            quoted = " ".join(hit.group(1).split()).strip(" .,;:!¡")
+            if len(quoted) < 2 or quoted in shown or _negated(raw_folded, start, hit.start(), answer):
+                continue
+            findings.append({"rule": "output", "said": _quote(answer, _clause_start(raw_folded, start, hit.start()), end),
+                             "fact": f"ningún resultado de este turno muestra «{answer[hit.start(1):hit.end(1)].strip()}»; "
+                                     f"en este turno: {'; '.join(_told(r) for r in receipts[-3:])}"})
+            break
+    return findings
 
 
 def _denials(answer: str, folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
