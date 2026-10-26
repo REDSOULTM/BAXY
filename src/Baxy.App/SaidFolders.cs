@@ -79,6 +79,8 @@ internal sealed class SaidFolders
     private string _before = string.Empty;
     // The folders this turn's calls made in the person's folders (Ran).
     private readonly List<string> _made = [];
+    // The folders the previous request's calls made, places of it as the folders its words named.
+    private readonly List<string> _madeBefore = [];
 
     /// <param name="known">Where each known folder is, by its label (tests point them at a temporary folder).</param>
     internal SaidFolders(Func<string, string?>? known = null) => _known = known ?? PersonFolders.Path;
@@ -101,6 +103,8 @@ internal sealed class SaidFolders
         _before = _words;
         _words = words ?? string.Empty;
         _told.Clear();
+        _madeBefore.Clear();
+        _madeBefore.AddRange(_made);
         _made.Clear();
     }
 
@@ -275,8 +279,11 @@ internal sealed class SaidFolders
         // Holdout v8 (falsedades #16): «haz una carpeta cumple_benja en BAXY-bench, adentro un archivo lista.txt»; the
         // write left out the folder just made and was offered BAXY-bench/lista.txt, beside it. A folder this turn made
         // inside a folder named is a place of it. Of those and the folders named, the ones that hold the file or folder
-        // the call names are its place; of a write that names what none holds, the only folder made.
-        Place[] made = [.. _made.Where(folder => places.Any(place => !Same(folder, place.Path) && Within(folder, place.Path)))
+        // the call names are its place; of a write that names what none holds, the only folder made. Final7 e2e: «hazme
+        // una carpeta viajes en BAXY-bench», then «y adentro deja itinerario.txt»; the folder the previous request made
+        // was gone and BAXY-bench/itinerario.txt was offered. A request ruled by the previous one's folders keeps the
+        // folders it made.
+        Place[] made = [.. (earlier ? _madeBefore.Concat(_made) : _made).Where(folder => places.Any(place => !Same(folder, place.Path) && Within(folder, place.Path)))
             .Distinct(StringComparer.OrdinalIgnoreCase).Select(folder => new Place(folder, Path.GetFileName(folder)))];
         Place[] holding = reach.Leaf is null ? []
             : [.. places.Concat(made).Where(place => Holds(place.Path, reach.Leaf))];
@@ -324,7 +331,8 @@ internal sealed class SaidFolders
         {
             // Of two folders of that name, the one that holds the file is said by its path and what it holds.
             string which = targets.Count == 1 && made.Contains(targets[0])
-                    ? $"{targets[0].Path}, the folder this turn made in {(places.Count == 1 ? "it" : "one of them")},"
+                    ? $"{targets[0].Path}, the folder {(_made.Contains(targets[0].Path) ? "this turn" : "that request")} made "
+                        + $"in {(places.Count == 1 ? "it" : "one of them")},"
                 : places.Count == 1 ? "that folder"
                 : targets.Count == 1 ? targets[0].Path + Holding(targets[0], reach.Leaf) : "one of them";
             next = $"nothing ran: {who} {named} and this call would act in {where}, outside it. If "

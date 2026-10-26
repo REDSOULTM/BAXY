@@ -2,6 +2,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.App;
@@ -25,7 +26,12 @@ namespace Baxy.App;
 /// which asks the person's «sí» first on that first call. Aid «overwrite_guard».</item>
 /// <item>Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): a calculator.expression.evaluate of a bare number,
 /// when their words name one operation on what it shows, goes as that operator and the number (continuing from the
-/// number shown). Words of several operations change nothing. Aid «calculator_next».</item>
+/// number shown). Words of several operations change nothing. Final7 e2e («a la calcu súmale 17 a lo que tiene»: «17+17»,
+/// the Calculator cleared what it showed): the number said, that operator and the number again goes the same way. Aid
+/// «calculator_next».</item>
+/// <item>Final7 e2e («copia X a Y»: the move ran without copy and the file left where it was): a call of an operation that
+/// takes copy (the catalog's moves), without it, when their words say to copy and nothing of moving, goes with copy,
+/// which keeps the file where it was. Aid «overwrite_guard».</item>
 /// </list>
 /// The verbs are data (Assets/said-verbs.v1.json, embedded); the words are read as SaidFolders reads them (Spoken), and the
 /// result of the call says what it did instead of what was written.
@@ -40,7 +46,11 @@ internal sealed class SaidVerbs
 
     private static readonly Regex BareNumber = new(@"^\d+(?:[.,]\d+)?$", RegexOptions.CultureInvariant);
 
-    private static readonly Lazy<(string[] Append, string[] KeepWhole, string[] Overwrite,
+    // A number, an operator and the same number (final7 e2e «a la calcu súmale 17 a lo que tiene»: «17+17»).
+    private static readonly Regex Echo = new(@"^(?<number>\d+(?:[.,]\d+)?)\s*(?<sign>[-+*/])\s*\k<number>$",
+        RegexOptions.CultureInvariant);
+
+    private static readonly Lazy<(string[] Append, string[] KeepWhole, string[] Overwrite, string[] Copy, string[] Move,
         (string Operator, string[] Words)[] Operators)> Verbs =
         new(() =>
         {
@@ -51,7 +61,8 @@ internal sealed class SaidVerbs
             static string[] Words(JsonNode? node) =>
                 [.. (node as JsonArray ?? throw new InvalidDataException("A list of said verbs is missing."))
                     .Select(word => SaidFolders.Spoken((string)word!))];
-            return (Words(data["append"]), Words(data["keepWhole"]), Words(data["overwrite"]),
+            return (Words(data["append"]), Words(data["keepWhole"]), Words(data["overwrite"]), Words(data["copy"]),
+                Words(data["move"]),
                 [.. (data["operators"] as JsonObject ?? throw new InvalidDataException("The said operators are missing."))
                     .Select(entry => (entry.Key, Words(entry.Value)))]);
         });
@@ -86,7 +97,7 @@ internal sealed class SaidVerbs
             "file.write" => Append(arguments, () => fileThere(operation, arguments)) ?? Replace(arguments, fileThere),
             "file.edit" => Overwrite(arguments, fileThere),
             "calculator.expression.evaluate" => Operate(arguments),
-            _ => null,
+            _ => Copy(operation, arguments),
         };
     }
 
@@ -103,6 +114,20 @@ internal sealed class SaidVerbs
         string name = Path.GetFileName(file);
         return (appended, $"the person said to add to {name}: this call appended the text as a new line at its end and "
             + $"kept all {name} had, instead of replacing it, as it was written");
+    }
+
+    private (JsonObject, string)? Copy(string operation, JsonObject arguments)
+    {
+        if (!ModelAids.On(ModelAids.OverwriteGuard)
+            || (arguments["copy"] is JsonValue copy && copy.TryGetValue(out bool on) && on)
+            || !ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) || descriptor is null
+            || !descriptor.ArgumentsSchema.Properties.Any(static property => property.Name == "copy")
+            || !Says(Verbs.Value.Copy) || Says(Verbs.Value.Move))
+            return null;
+        var copied = (JsonObject)arguments.DeepClone();
+        copied["copy"] = true;
+        return (copied, "the person said to copy: this call copied the file with copy true and kept it where it was, "
+            + "instead of moving it, as it was written");
     }
 
     private (JsonObject, string)? Overwrite(JsonObject arguments, Func<string, JsonObject, string?> fileThere)
@@ -165,16 +190,20 @@ internal sealed class SaidVerbs
 
     private (JsonObject, string)? Operate(JsonObject arguments)
     {
-        if (!ModelAids.On(ModelAids.CalculatorNext) || Text(arguments["expression"]) is not { } number
-            || !BareNumber.IsMatch(number))
+        if (!ModelAids.On(ModelAids.CalculatorNext) || Text(arguments["expression"]) is not { } written)
             return null;
         string[] said = [.. Verbs.Value.Operators.Where(entry => Says(entry.Words)).Select(entry => entry.Operator)];
         if (said is not [string sign])
             return null;
+        Match echo = Echo.Match(written);
+        string number = echo.Success ? echo.Groups["number"].Value : written;
+        if (echo.Success ? echo.Groups["sign"].Value != sign || !Says([SaidFolders.Spoken(number)])
+                : !BareNumber.IsMatch(written))
+            return null;
         var operated = (JsonObject)arguments.DeepClone();
         operated["expression"] = sign + number;
         return (operated, $"the person said to operate on what the Calculator showed: this call pressed {sign}{number}, "
-            + $"from the number it showed, instead of {number} alone, as it was written");
+            + $"from the number it showed, instead of {(echo.Success ? written : number + " alone")}, as it was written");
     }
 
     private bool Says(string[] words) => words.Any(word => _spoken.Contains(word, StringComparison.Ordinal));

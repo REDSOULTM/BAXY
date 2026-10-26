@@ -590,6 +590,39 @@ public sealed class SaidFoldersTests
         });
     }
 
+    // Final7 e2e: «hazme una carpeta viajes en BAXY-bench», then «y adentro deja itinerario.txt»; the turn that names no
+    // folder was ruled by BAXY-bench, but the folder the previous request made was no place any more and the refusal
+    // offered BAXY-bench/itinerario.txt, beside it. The folders a request made stay places of the next one that is ruled
+    // by its folders, and go with them after a heartbeat.
+    [Test]
+    public void AFolderThePreviousRequestMadeIsThePlaceOfTheWriteOfTheNextOne()
+    {
+        string bench = Path.Combine(_home, "taller-bench");
+        string trips = Path.Combine(bench, "viajes");
+        Directory.CreateDirectory(bench);
+        var make = new JsonObject { ["relativePath"] = "taller-bench/viajes", ["folder"] = "home" };
+        var write = new JsonObject { ["relativePath"] = "itinerario.txt", ["text"] = "vuelo a las 9", ["folder"] = "home" };
+        SaidFolders said = Heard("hazme una carpeta viajes en taller-bench");
+        Directory.CreateDirectory(trips);
+        said.Ran("filesystem.create.directory", make, "completed");
+        said.Heard("y adentro deja itinerario.txt que diga vuelo a las 9");
+        string next = (string?)said.Rule("file.write", Descriptor("file.write"), write)?.Refusal?["next"] ?? string.Empty;
+
+        SaidFolders cleared = Heard("hazme una carpeta viajes en taller-bench");
+        cleared.Ran("filesystem.create.directory", make, "completed");
+        cleared.Clear();
+        cleared.Heard("y adentro deja itinerario.txt que diga vuelo a las 9");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.StartWith("nothing ran: the person's previous request named «taller-bench»"));
+            Assert.That(next, Does.Contain($"If {trips}, the folder that request made in it, is the place of this call, "
+                + "call file_write again with relativePath \"taller-bench/viajes/itinerario.txt\""));
+            Assert.That(next, Does.Not.Contain("\"taller-bench/itinerario.txt\""));
+            Assert.That(cleared.Rule("file.write", Descriptor("file.write"), write), Is.Null);
+        });
+    }
+
     // Holdout v5 V5E034/V5E044: a count in a folder of theirs was refused with no call that could reach it.
     [Test]
     public void ACountLeavingOutTheFolderNamedIsRoutedIntoItsSubdirectory()

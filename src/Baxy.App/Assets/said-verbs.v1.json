@@ -1,6 +1,6 @@
 {
   "schema": "baxy.said-verbs.v1",
-  "note": "The person's verbs that pick what a call does when the model wrote it otherwise (SaidVerbs). Each entry is compared as folded words (lower case, no accents, single spaces: SaidFolders.Spoken). append: a file.write without append over a file of theirs that is there goes as an append when the turn says one of these and none of keepWhole. overwrite: a file.edit of a file of theirs that is there goes as the file.write of its newText over all of it, under the file's hash (the person's yes first), and a file.write without hash nor append over such a file goes under its hash, when the turn says one of these (not «reemplaza X por Y», an edit). operators: a calculator.expression.evaluate of a bare number goes as that operator and the number when the turn says words of exactly one of them.",
+  "note": "The person's verbs that pick what a call does when the model wrote it otherwise (SaidVerbs). Each entry is compared as folded words (lower case, no accents, single spaces: SaidFolders.Spoken). append: a file.write without append over a file of theirs that is there goes as an append when the turn says one of these and none of keepWhole. overwrite: a file.edit of a file of theirs that is there goes as the file.write of its newText over all of it, under the file's hash (the person's yes first), and a file.write without hash nor append over such a file goes under its hash, when the turn says one of these (not «reemplaza X por Y», an edit). operators: a calculator.expression.evaluate of a bare number, or of the number said, that operator and the number again, goes as that operator and the number when the turn says words of exactly one of them. copy: a call of an operation that takes copy, without copy, goes with copy when the turn says one of these and none of move.",
   "append": [
     "agrega", "agregale", "agregalo", "agregala", "agregar", "agregarle", "agregue", "agreguele", "agregues", "agregame",
     "anade", "anadele", "anadelo", "anadela", "anadir", "anadirle", "anada", "anadale",
@@ -14,6 +14,13 @@
   ],
   "overwrite": [
     "sobrescribe", "sobreescribe", "sobrescribir", "sobreescribir", "sobrescribelo", "sobreescribelo", "overwrite"
+  ],
+  "copy": [
+    "copia", "copiame", "copialo", "copiala", "copiar", "copiarlo", "haz una copia", "hazme una copia",
+    "duplica", "duplicalo", "duplicala", "duplicar", "copy", "make a copy", "duplicate"
+  ],
+  "move": [
+    "mueve", "muevelo", "muevela", "mover", "moverlo", "muevas", "traslada", "trasladalo", "move"
   ],
   "operators": {
     "+": ["sumale", "sumalo", "suma", "sumar", "sumarle", "agregale", "anadele", "mas", "add", "plus"],

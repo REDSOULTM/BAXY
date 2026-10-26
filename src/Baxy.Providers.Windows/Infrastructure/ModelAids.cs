@@ -122,7 +122,8 @@ public static class ModelAids
     /// the file has and the exact file_write call that appends. Empty files and edits that keep
     /// most of the text go straight. V6E048: a file.edit that would leave its file with as little (TextLoss, the same
     /// measure) asks the person first in normal mode (WindowsKnownFileAdapter's preflight). And a file.write without append
-    /// over a file of the person's, when their words say to add to it, goes as an append (Baxy.App.SaidVerbs).
+    /// over a file of the person's, when their words say to add to it, goes as an append, and a move that can copy, when
+    /// they say to copy, goes as a copy (Baxy.App.SaidVerbs).
     /// </summary>
     public const string OverwriteGuard = "overwrite_guard";
 

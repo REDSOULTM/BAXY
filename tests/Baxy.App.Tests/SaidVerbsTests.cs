@@ -163,15 +163,70 @@ public sealed class SaidVerbsTests
         });
     }
 
+    // Final7 e2e («a la calcu súmale 17 a lo que tiene»): the model wrote «17+17» and the Calculator cleared what it
+    // showed. The number said, the one operator said and that number again goes as the operator and the number.
+    [TestCase("a la calcu súmale 17 a lo que tiene", "17+17", "+17")]
+    [TestCase("a la calcu súmale 17 a lo que tiene", "17 + 17", "+17")]
+    [TestCase("réstale 2,5 a lo que muestra", "2,5-2,5", "-2,5")]
+    public void TheNumberSaidEchoedAroundTheOperatorGoesAsTheOperationTheyNamed(string words, string written,
+        string expression)
+    {
+        (JsonObject Arguments, string Note)? ruled = Rule(words, "calculator.expression.evaluate",
+            new JsonObject { ["expression"] = written });
+
+        Assert.That(ruled, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)ruled!.Value.Arguments["expression"], Is.EqualTo(expression));
+            Assert.That(ruled.Value.Note, Does.Contain($"this call pressed {expression}, from the number it showed, "
+                + $"instead of {written}, as it was written"));
+        });
+    }
+
     // Several operations named, none, an expression that is no bare number, or no words: it runs as written.
     [TestCase("súmale 53 y luego réstale 3", "53")]
     [TestCase("pon 53 en la calculadora", "53")]
     [TestCase("a lo que tiene la calculadora súmale 53", "47+53")]
     [TestCase("a lo que tiene la calculadora súmale 53", "-53")]
+    [TestCase("a la calcu súmale 17 a lo que tiene", "17-17")]
+    [TestCase("a la calcu súmale 17 a lo que tiene", "17+18")]
+    [TestCase("a la calcu súmale 17 a lo que tiene", "53+53")]
+    [TestCase("súmale 17 y luego réstale 3", "17+17")]
+    [TestCase("", "17+17")]
     [TestCase("", "53")]
     public void OtherwiseTheExpressionRunsAsItIs(string words, string expression) =>
         Assert.That(Rule(words, "calculator.expression.evaluate", new JsonObject { ["expression"] = expression }),
             Is.Null);
+
+    // Final7 e2e («copia X a Y»): the move ran without copy and the file left where it was. A call of an operation that
+    // takes copy, without it, when the person said to copy, goes with copy, and its result says so.
+    [TestCase("copia jugadores.txt de Liga de Futbolito a Respaldo")]
+    [TestCase("cópiame jugadores.txt en la carpeta Respaldo")]
+    [TestCase("haz una copia de jugadores.txt en Respaldo")]
+    [TestCase("duplica jugadores.txt en Respaldo")]
+    [TestCase("copy jugadores.txt to Respaldo")]
+    public void AMoveTheyAskedAsACopyCopies(string words)
+    {
+        (JsonObject Arguments, string Note)? ruled = Rule(words, "filesystem.sandbox.move.named", Move(copy: null));
+
+        Assert.That(ruled, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(ruled!.Value.Arguments["copy"]?.GetValue<bool>(), Is.True);
+            Assert.That((string?)ruled.Value.Arguments["destinationRelativePath"], Is.EqualTo("Respaldo/jugadores.txt"));
+            Assert.That(ruled.Value.Note, Does.Contain("copied the file with copy true and kept it where it was, "
+                + "instead of moving it"));
+        });
+    }
+
+    // Words of moving (a copy that is moved), a copy already, an operation that takes no copy, or no words: as written.
+    [TestCase("mueve jugadores.txt a Respaldo", "filesystem.sandbox.move.named", null)]
+    [TestCase("mueve la copia de jugadores.txt a Respaldo", "filesystem.sandbox.move.named", null)]
+    [TestCase("copia jugadores.txt a Respaldo", "filesystem.sandbox.move.named", true)]
+    [TestCase("copia jugadores.txt a Respaldo", "filesystem.move", null)]
+    [TestCase("", "filesystem.sandbox.move.named", null)]
+    public void OtherwiseTheMoveRunsAsItIs(string words, string operation, bool? copy) =>
+        Assert.That(Rule(words, operation, Move(copy)), Is.Null);
 
     [Test]
     public void WithTheAidsOffNothingChanges()
@@ -185,6 +240,7 @@ public sealed class SaidVerbsTests
                 Assert.That(Rule("agrégale a jugadores.txt la línea Matías, arquero", Write("Matías, arquero")), Is.Null);
                 Assert.That(Rule("súmale 53", "calculator.expression.evaluate", new JsonObject { ["expression"] = "53" }),
                     Is.Null);
+                Assert.That(Rule("copia jugadores.txt a Respaldo", "filesystem.sandbox.move.named", Move(null)), Is.Null);
             });
         }
         finally
@@ -210,6 +266,15 @@ public sealed class SaidVerbsTests
             Assert.That(verbs.Rule("calculator.expression.evaluate", call, (_, _) => null), Is.Null);
         });
     }
+
+    private static JsonObject Move(bool? copy) => new()
+    {
+        ["sourceFileName"] = "jugadores.txt",
+        ["destinationRelativePath"] = "Respaldo/jugadores.txt",
+        ["folder"] = "documents",
+        ["subdirectory"] = "Liga de Futbolito",
+        ["copy"] = copy,
+    };
 
     private static JsonObject Write(string text) => new()
     {
