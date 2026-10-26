@@ -1,9 +1,7 @@
-"""Goal h-web (2026-10-25): what the model reads of a web.fetch page with BAXY_WEB_FOCUS=1 (src/baxy_mind/web_focus.py).
+"""Goal h-web (2026-10-25): what the model reads of a web.fetch page (src/baxy_mind/web_focus.py).
 Pages written for the test, shaped as the provider gives them (one block per line); no network."""
 
 import json
-
-import pytest
 
 from baxy_mind import web_focus
 
@@ -31,24 +29,12 @@ def _receipt(text: str, offset: int = 0, total: int | None = None, has_more: boo
                       ensure_ascii=False)
 
 
-@pytest.fixture
-def focus_on(monkeypatch):
-    monkeypatch.setenv("BAXY_WEB_FOCUS", "1")
-
-
-def test_off_by_default_the_page_and_the_call_are_as_today(monkeypatch):
-    monkeypatch.delenv("BAXY_WEB_FOCUS", raising=False)
-    receipt = _receipt(HISTORY)
-    assert web_focus.focus(receipt, ["en qué año se inauguró el Metro de Santiago"], {"url": "x"}) == receipt
-    assert web_focus.widen({"url": "x"}) == {"url": "x"}
-
-
-def test_the_call_reads_a_wider_part_unless_the_model_asked_a_size(focus_on):
+def test_the_call_reads_a_wider_part_unless_the_model_asked_a_size():
     assert web_focus.widen({"url": "x"}) == {"url": "x", "maximumCharacters": web_focus.WINDOW}
     assert web_focus.widen({"url": "x", "maximumCharacters": 3000}) == {"url": "x", "maximumCharacters": 3000}
 
 
-def test_the_paragraph_that_answers_is_shown_with_the_lead_under_the_cap(focus_on):
+def test_the_paragraph_that_answers_is_shown_with_the_lead_under_the_cap():
     receipt = _receipt(HISTORY)
     shown = json.loads(web_focus.focus(receipt, ["busca en internet en qué año se inauguró el Metro de Santiago"],
                                        {"url": "https://example.org/historia"}))
@@ -69,7 +55,7 @@ def test_the_paragraph_that_answers_is_shown_with_the_lead_under_the_cap(focus_o
     assert f"offset {len(HISTORY)}" in text
 
 
-def test_the_turns_search_query_counts_too(focus_on):
+def test_the_turns_search_query_counts_too():
     lines = [f"Párrafo {i}: {FILLER}" for i in range(30)]
     lines[20] = "El Volga es el río más largo de Europa, con unos 3690 km de longitud desde su fuente."
     receipt = _receipt("\n".join(lines))
@@ -77,7 +63,7 @@ def test_the_turns_search_query_counts_too(focus_on):
     assert "El Volga es el río más largo de Europa" in shown["observed"]["text"]
 
 
-def test_a_page_within_the_cap_an_asked_size_or_an_error_comes_as_it_came(focus_on):
+def test_a_page_within_the_cap_an_asked_size_or_an_error_comes_as_it_came():
     short = _receipt("Texto corto de la página.", has_more=False)
     assert web_focus.focus(short, ["metro"], {"url": "x"}) == short
     long = _receipt(HISTORY)
@@ -87,17 +73,43 @@ def test_a_page_within_the_cap_an_asked_size_or_an_error_comes_as_it_came(focus_
     assert web_focus.focus("no es json", ["metro"], {"url": "x"}) == "no es json"
 
 
-def test_nothing_related_shows_the_start_of_the_text(focus_on):
+def test_nothing_related_shows_the_start_of_the_text():
     receipt = _receipt(HISTORY)
     text = json.loads(web_focus.focus(receipt, ["zzzz qqqq"], {"url": "x"}))["observed"]["text"]
     assert text.startswith("Nuestra Historia\nIr al contenido")
     assert len(text.split("\n[recortado:")[0]) <= web_focus.CAP
 
 
-def test_a_later_part_has_no_lead_and_says_where_it_goes_on(focus_on):
+def test_a_later_part_has_no_lead_and_says_where_it_goes_on():
     receipt = _receipt(HISTORY, offset=8000)
     page = json.loads(web_focus.focus(receipt, ["se inauguró"], {"url": "x", "offset": 8000}))["observed"]
     assert page["text"].startswith("…\n")  # no lead: the part starts with what was left out
     assert "El 15 de septiembre se inauguró oficialmente" in page["text"]
     assert "caracteres 8001–" in page["text"]
     assert f"offset {8000 + len(HISTORY)}" in page["text"]
+
+
+def test_in_the_mind_the_call_reads_wider_the_model_reads_the_focus_and_the_answer_check_the_whole_page(
+        tmp_path, monkeypatch):
+    from baxy_mind import mind as mind_module
+    from test_mind_final import _call, _mind, _say
+
+    checked: list[list[dict]] = []
+    real_check = mind_module.check_answer
+
+    def check(content, text, receipts, *rest, **named):
+        checked.append(receipts)
+        return real_check(content, text, receipts, *rest, **named)
+
+    monkeypatch.setattr(mind_module, "check_answer", check)
+    url = "https://example.org/historia"
+    mind, server = _mind(tmp_path, [_call("web_fetch", {"url": url}), _say("Se inauguró en 1975.")])
+    mind.wire_to_op = {"web_fetch": "web.fetch"}
+    fetch = mind.decide(1, "en qué año se inauguró el Metro de Santiago")
+    assert fetch["arguments"] == {"url": url, "maximumCharacters": web_focus.WINDOW}
+    receipt = _receipt(HISTORY)
+    mind.continue_turn(2, receipt)
+    tool = [m.get("content") for m in server.bodies[-1]["messages"] if m.get("role") == "tool"][-1]
+    assert "El 15 de septiembre se inauguró oficialmente" in tool and "[recortado:" in tool
+    assert "Ver Galería" not in tool
+    assert checked and checked[-1][-1]["observation"] == receipt

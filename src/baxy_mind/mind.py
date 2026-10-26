@@ -1842,8 +1842,8 @@ class Mind:
         done = turn.setdefault("done", [])
         calling = str(turn.get("calling", "?"))
         received = observation
-        if calling == "web.fetch" and web_focus.on():
-            # Goal h-web (BAXY_WEB_FOCUS=1): the model reads the lead and the paragraphs nearest to what was asked; the
+        if calling == "web.fetch":
+            # Goal h-web: the model reads the lead and the paragraphs nearest to what was asked; the
             # answer check keeps the page as it came (received).
             observation = web_focus.focus(observation, self._web_queries(turn), json.loads(
                 turn.get("calling_args") or "{}"))
@@ -2458,7 +2458,7 @@ class Mind:
             turn["calling_args"] = json.dumps(call["arguments"], sort_keys=True, ensure_ascii=False)
             arguments = self._expand({**call["arguments"], **self.constants.get(name, {})})
             if name == "web.fetch":
-                arguments = web_focus.widen(arguments)  # goal h-web: BAXY_WEB_FOCUS=1 reads a wider part
+                arguments = web_focus.widen(arguments)  # goal h-web: it reads a wider part
             result.update(kind="action", operation=name, arguments=arguments)
         elif content:
             result.update(reply=content)

@@ -1,6 +1,6 @@
-"""The first clause as the first take (src/baxy_mind/voice_output.py, BAXY_RENEW_TTS_CLAUSE; H7 on the notebook): 80 of
-82 replies were one sentence, so the first sound waited for the whole reply. Behind its switch, off by default: it
-changes the prosody (a pause at the clause), never the words, and the owner judges it by ear."""
+"""The first clause as the first take (src/baxy_mind/voice_output.py; H7 on the notebook): 80 of 82 replies were one
+sentence, so the first sound waited for the whole reply. It changes the prosody (a pause at the clause), never the
+words; the spoken A/B (2026-10-25: the first answer 378 ms sooner on average, 7 of 10 orders) made it the behaviour."""
 import time
 from pathlib import Path
 
@@ -68,13 +68,11 @@ def _takes(text: str) -> list[str]:
 
 
 @pytest.mark.parametrize("reply", REPLIES)
-def test_the_takes_say_the_model_s_words_and_marks_in_order(monkeypatch: pytest.MonkeyPatch, reply: str) -> None:
-    monkeypatch.setenv("BAXY_RENEW_TTS_CLAUSE", "1")
+def test_the_takes_say_the_model_s_words_and_marks_in_order(reply: str) -> None:
     assert " ".join(_takes(reply)) == spoken(reply)
 
 
-def test_with_the_switch_the_first_clause_is_its_own_take(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("BAXY_RENEW_TTS_CLAUSE", "1")
+def test_the_first_clause_is_its_own_take() -> None:
     assert _takes(REPLIES[0]) == ["Abrí el informe de ventas del mes,", "y lo dejé en el escritorio."]
     assert _takes(REPLIES[1]) == ["Tienes uno coma cinco gigas libres en el disco C,",
                                   "y el resto está ocupado por juegos.", "¿Quieres que lo revise?"]
@@ -86,23 +84,14 @@ def test_with_the_switch_the_first_clause_is_its_own_take(monkeypatch: pytest.Mo
     assert _takes(REPLIES[4]) == Speech._units(REPLIES[4])  # «Listo,» is too short a clause
 
 
-@pytest.mark.parametrize("value", [None, "", "0"])
-def test_without_the_switch_the_takes_and_pauses_are_today_s(monkeypatch: pytest.MonkeyPatch, value: str | None) -> None:
-    if value is None:
-        monkeypatch.delenv("BAXY_RENEW_TTS_CLAUSE", raising=False)
-    else:
-        monkeypatch.setenv("BAXY_RENEW_TTS_CLAUSE", value)
-    for reply in REPLIES:
+def test_a_sentence_without_a_clause_to_end_at_is_one_take() -> None:
+    for reply in (REPLIES[4], "Abrí el informe de ventas del mes, como pediste.", "Hola, ¿qué tal?"):
         units = Speech._units(reply)
-        today = [f"{units[0]} {units[1]}", *units[2:]] if len(units) > 1 and len(units[0].split()) <= 3 else units
-        assert _takes(reply) == today
-    assert voice_output._gap("Abrí el informe de ventas del mes,") == GAP_S
-    assert voice_output._gap("¿Quieres que lo revise?") == GAP_QUESTION_S
-    assert voice_output._gap("y lo dejé en el escritorio.") == GAP_S
+        joined = [f"{units[0]} {units[1]}", *units[2:]] if len(units) > 1 and len(units[0].split()) <= 3 else units
+        assert _takes(reply) == joined
 
 
-def test_a_clause_pauses_less_than_a_sentence(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("BAXY_RENEW_TTS_CLAUSE", "1")
+def test_a_clause_pauses_less_than_a_sentence() -> None:
     assert voice_output._gap("Abrí el informe de ventas del mes,") == GAP_CLAUSE_S < GAP_S
     assert voice_output._gap("Encontré tres archivos con ese nombre:") == GAP_CLAUSE_S
     assert voice_output._gap("y lo dejé en el escritorio.") == GAP_S
@@ -134,7 +123,6 @@ def _until(condition) -> None:
 
 def test_a_closed_first_clause_is_foreseen_before_its_sentence_ends_and_sounds_with_its_answer(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("BAXY_RENEW_TTS_CLAUSE", "1")
     synthesized: list[str] = []
     played: list[str] = []
     speech = _voice(tmp_path, monkeypatch, synthesized, played)
@@ -149,12 +137,13 @@ def test_a_closed_first_clause_is_foreseen_before_its_sentence_ends_and_sounds_w
     assert synthesized == played  # the clause was not synthesized again
 
 
-def test_without_the_switch_the_stream_waits_for_the_sentence(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("BAXY_RENEW_TTS_CLAUSE", raising=False)
+def test_without_a_clause_to_end_at_the_stream_waits_for_the_sentence(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    whole = "Listo, Spotify está abierto y sonando en tu PC."
     synthesized: list[str] = []
     played: list[str] = []
     speech = _voice(tmp_path, monkeypatch, synthesized, played)
-    assert not speech.foresee("Abrí el informe de ventas del mes, y lo dejé en", False)
-    assert speech.foresee(REPLIES[0], True)
+    assert not speech.foresee(whole[:-4], False)
+    assert speech.foresee(whole, True)
     _until(lambda: synthesized)
-    assert synthesized == [REPLIES[0]]
+    assert synthesized == [spoken(whole)]

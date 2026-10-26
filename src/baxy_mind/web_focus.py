@@ -1,22 +1,23 @@
-"""Goal h-web (2026-10-25): what the 4B model reads of a web page, behind BAXY_WEB_FOCUS=1 (unset: the page as today).
+"""Goal h-web (2026-10-25): what the 4B model reads of a web page.
 
 Measured in the e2e traces (renew_v1/runs c3-*-e2e and ho6-*-e2e-e2e, 47 runs): web.fetch results were 30 % of every
 result's characters (208 pages of ~4,500 characters, all completed), and the model paged a long page 8 to 14 times
 looking for one line (V6E008/V6E014 «el río más largo de Europa»: 4-10 pages of a Wikipedia list, 14 context_shrunk;
 V5E008 «en qué año se inauguró el Metro de Santiago»: 14 pages, 2 context_shrunk; E022 RFC 2324: 5 pages each run).
 
-With the switch on, a web.fetch the model wrote without a size reads a wider part of the page (WINDOW characters), and
+A web.fetch the model wrote without a size reads a wider part of the page (WINDOW characters), and
 the model is shown, of that part, the lead and the paragraphs that share the most words with what the person asked
 (and the web.search queries of the turn), in the page's order, up to CAP characters, with a note of how much was left
 out and the call that reads it whole. A web.fetch that names maximumCharacters is the model asking for the text as it
 is: it is shown whole. Every other field of the result (title, requestedUrl, finalUrl, offsets, error, verification)
-stays as the App gave it."""
+stays as the App gave it, and the answer check reads the page as it came (mind.py). Measured on web searches: the
+same answers (4 of 4 against 3 of 3) and the first answer at 5.5 s against 11.7-15.2 s; behind BAXY_WEB_FOCUS until
+then."""
 
 from __future__ import annotations
 
 import json
 import math
-import os
 import re
 import unicodedata
 from typing import Any
@@ -42,13 +43,9 @@ _BOILER = {"ir al contenido", "saltar al contenido", "ver galeria", "editar", "[
            "share", "accept", "read more"}
 
 
-def on() -> bool:
-    return os.environ.get("BAXY_WEB_FOCUS", "").strip() == "1"
-
-
 def widen(arguments: dict[str, Any]) -> dict[str, Any]:
     """The arguments sent to the App: a web.fetch without a size reads WINDOW characters."""
-    if on() and "maximumCharacters" not in arguments:
+    if "maximumCharacters" not in arguments:
         return {**arguments, "maximumCharacters": WINDOW}
     return arguments
 
@@ -139,8 +136,8 @@ def select(text: str, queries: list[str], cap: int = CAP, lead: bool = True) -> 
 
 def focus(observation: str, queries: list[str], arguments: dict[str, Any]) -> str:
     """A web.fetch result as the model reads it (see the module). Not a completed page with text, or the model asked a
-    size (maximumCharacters), or the switch is off: the result as it came."""
-    if not on() or "maximumCharacters" in arguments:
+    size (maximumCharacters): the result as it came."""
+    if "maximumCharacters" in arguments:
         return observation
     try:
         result = json.loads(observation)

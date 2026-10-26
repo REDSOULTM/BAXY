@@ -3,8 +3,8 @@ using System.Text.RegularExpressions;
 namespace Baxy.Providers.Windows.External;
 
 // web.fetch: a page's title and its readable text, without what a reader skips (the head, scripts, styles, menus,
-// headers, footers, side panels and buttons), with how many characters of text those skipped sections held. Nothing of
-// the page is chosen or left out by what it says. A form keeps its text (ronda final 10: a WebForms page holds its
+// headers, footers, side panels and buttons, and what PageMain leaves out by the page's markup), with how many
+// characters of text those skipped sections held. Nothing of the page is chosen or left out by what it says. A form keeps its text (ronda final 10: a WebForms page holds its
 // whole body in one).
 internal static class PageText
 {
@@ -30,23 +30,16 @@ internal static class PageText
         "nav", "header", "footer", "aside", "button", "select",
     };
 
-    // The page's title, its whole readable text, one block per line (web.fetch hands it out in pages), and the
-    // characters of text in the menus, headers, footers, side panels and buttons it skipped.
-    internal static (string Title, string Text, int SkippedCharacters) Prose(string html) =>
-        Prose(html, MainOnly());
-
-    // Goal h-web (2026-10-25): BAXY_WEB_FOCUS=1 also leaves out what the page marks as boilerplate by its class or id
-    // (cookie banners, breadcrumbs, share bars, edit links, reference marks, navigation boxes) and, when the page names
-    // its main content (main, article or role=main) with text enough, reads only that. Unset: the page as before.
-    internal static bool MainOnly() =>
-        Environment.GetEnvironmentVariable("BAXY_WEB_FOCUS") is { } focus && focus.Trim() == "1";
-
-    internal static (string Title, string Text, int SkippedCharacters) Prose(string html, bool mainOnly)
+    // The page's title, its readable text, one block per line (web.fetch hands it out in pages), and the characters of
+    // text in the menus, headers, footers, side panels, buttons and boilerplate it skipped. Goal h-web (2026-10-25):
+    // what the page marks as boilerplate by its class or id (cookie banners, breadcrumbs, share bars, edit links,
+    // reference marks, navigation boxes) is left out and, when the page names its main content (main, article or
+    // role=main) with text enough, only that is read (PageMain). Measured on web searches: the same answers (4 of 4
+    // against 3 of 3) and the first answer at 5.5 s against 11.7-15.2 s; behind BAXY_WEB_FOCUS until then.
+    internal static (string Title, string Text, int SkippedCharacters) Prose(string html)
     {
         Match title = Title.Match(html);
-        int boilerplate = 0;
-        if (mainOnly)
-            html = PageMain.Content(html, static part => Text(part).Length, out boilerplate);
+        html = PageMain.Content(html, static part => Text(part).Length, out int boilerplate);
         int skipped = 0;
         string kept = Unread.Replace(html, match =>
         {
