@@ -125,7 +125,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     LastTurnFailure = failure;
                     ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, ShellTraceStages.TurnError,
                         failure);
-                    SayTurnFailure(failure);
                 },
                 // The notice is said aloud and nothing else: no line of the chat, the conversation log or the
                 // interface, so it never reads as the turn's answer.
@@ -735,7 +734,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             LastTurnFailure = "turn_failed";
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.TurnError,
                 $"{exception.GetType().Name}.{exception.TargetSite?.Name ?? "unknown"}".ToLowerInvariant());
-            SayTurnFailure("turn_failed");
         }
         finally
         {
@@ -1684,22 +1682,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         if (_mindClient is { IsVoiceAvailable: true } mind)
             _ = mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None);
-    }
-
-    /// <summary>Final 4, accesibilidad: a turn of the person's that ended without an answer says so aloud, with its cause
-    /// (<see cref="TurnFailureSpeech"/>); before, only the view showed it. Not for a heartbeat nobody asked for, and not
-    /// when the owner silenced BAXY's voice.</summary>
-    private void SayTurnFailure(string failure)
-    {
-        if (_beatActive || Settings.VoiceMuted || TurnFailureSpeech.LineOf(failure) is not { } line)
-        {
-            return;
-        }
-
-        if (_mindClient is { IsVoiceAvailable: true } mind)
-        {
-            _ = mind.VoiceSpeakAsync(line, TimeSpan.FromSeconds(5), CancellationToken.None);
-        }
     }
 
     private async Task SpeakNoticeAsync(MindSidecarClient mind, string notice)
