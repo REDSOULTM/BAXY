@@ -36,7 +36,7 @@ const MODS: [Exclude<PanelId, 'settings'>, string, ReactNode][] = [
   ['sessions', 'Sesiones', <><rect x="2.5" y="3" width="11" height="10" rx="1"></rect><path d="M2.5 6h11M5 8.6h6M5 10.6h4"></path></>],
   ['memory', 'Memoria', <><path d="M8 2.5L13.5 5.5L8 8.5L2.5 5.5Z"></path><path d="M2.5 8.3L8 11.3L13.5 8.3"></path><path d="M2.5 11L8 14L13.5 11"></path></>],
   ['triggers', 'Triggers', <><circle cx="8" cy="8.5" r="5"></circle><path d="M8 5.8V8.5L9.8 10M6.5 2h3"></path></>],
-  ['catalog', 'Qué puedo hacer', <><rect x="2.5" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="2.5" y="9" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="9" width="4.5" height="4.5" rx=".8"></rect></>],
+  ['catalog', 'Capacidades', <><rect x="2.5" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="2.5" y="9" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="9" width="4.5" height="4.5" rx=".8"></rect></>],
   ['proposals', 'Propuestas', <><path d="M4 11V7a4 4 0 0 1 8 0v4l1.2 1.5H2.8Z"></path><path d="M6.6 14h2.8"></path></>],
 ];
 

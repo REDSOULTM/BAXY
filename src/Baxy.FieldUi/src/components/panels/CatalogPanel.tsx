@@ -3,7 +3,7 @@ import { Panel } from '../Panel';
 import { Icon } from '../Icon';
 import { getJson } from '../../api';
 
-/* «Qué puedo hacer» (design panels4.jsx BxCatalog): the catalog's real operations, grouped by theme, the ones the
+/* «Capacidades de BAXY» (design panels4.jsx BxCatalog, «Qué puedo hacer»): the catalog's real operations, grouped by theme, the ones the
    kernel always confirms in normal mode marked with «!» (GET /catalog, from ProductCatalog and RiskPolicy). */
 
 interface CatalogItem { name: string; title: string; confirm: 'always' | 'sometimes' | 'never' }
@@ -15,7 +15,7 @@ export function CatalogPanel({ onClose }: { onClose: () => void }) {
   useEffect(() => { void getJson<Catalog>('/catalog').then(setCat); }, []);
   const needle = q.trim().toLowerCase();
   return (
-    <Panel title="Qué puedo hacer" onClose={onClose} width={560}>
+    <Panel title="Capacidades de BAXY" onClose={onClose} width={560}>
       <div className="session-search">
         <Icon name="search" size={13} />
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar una acción" aria-label="Buscar una acción" />
