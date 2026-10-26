@@ -160,7 +160,7 @@ def test_the_wake_word_is_told_once(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.mark.parametrize(("early", "wait"), [
-    ("Abre Steam.", voice.END_FAST_S), ("¿Qué hora es?", voice.END_FAST_S), ("Pon música de", voice.END_SLOW_S),
+    ("Abre Steam.", voice.END_SILENCE_S), ("¿Qué hora es?", voice.END_SILENCE_S), ("Pon música de", voice.END_SLOW_S),
     ("Busca recetas y", voice.END_SLOW_S), ("Quiero que,", voice.END_SLOW_S), ("Abre el bloc de notas, eh.", voice.END_SLOW_S),
     ("Necesito saber según.", voice.END_SLOW_S), ("Spotify.", voice.END_SILENCE_S), ("abre Steam", voice.END_SILENCE_S),
     ("", voice.END_SILENCE_S), (None, voice.END_SILENCE_S)])

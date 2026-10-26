@@ -42,13 +42,13 @@ VOICE_RMS = 0.012       # voice threshold of TranscripcionBaxy/probar_ultra.py
 SPEECH_P = 0.5          # Silero's own speech threshold (0.3 and 0.7 closed the same requests within 0.1 s)
 VAD_STEP = 512          # Silero's window at 16 kHz (32 ms); sherpa-onnx gives it the 64 samples before as context
 END_SILENCE_S = 0.9     # silence that closes the request
-# How long the silence waits once the early transcript (palanca 2, EARLY: decoded 0.2 s into it) says how the words end
-# (real use, 2026-10-26: «se demora en mandar el mensaje», and slow speakers must not be cut): a sentence that ended
-# closes after END_FAST_S, one left hanging waits END_SLOW_S, anything else END_SILENCE_S. LiveKit's turn detector waits
-# 0.3 s when the turn is complete and up to 2.5-3 s when not; AssemblyAI 0.4 s and 1.28 s; Pipecat Smart Turn 3 s; Amazon
-# (Maas et al. 2018) reads the last words («a transcript ending in a preposition means more is coming»). Ultra writes a
-# period after any fragment, so «ended» takes two words or more and a last word that does not leave it hanging.
-END_FAST_S = 0.4
+# A request whose early transcript (palanca 2, decoded 0.2 s into the silence) is left hanging (a preposition, article,
+# conjunction, filler or comma at its end) waits END_SLOW_S instead of END_SILENCE_S, so a slow speaker is not cut
+# (real use, 2026-10-26). LiveKit's turn detector waits up to 2.5-3 s when the turn is not complete, Pipecat Smart Turn
+# 3 s; Amazon (Maas et al. 2018) reads the last words («a transcript ending in a preposition means more is coming»).
+# A shorter wait when the words look ended (0.4-0.75 s, as LiveKit's 0.3 s) was measured and left out: Ultra writes a
+# period after any fragment, and on 57 synthetic requests with a 0.7 s pause inside, 35-47 % were cut there against
+# ~10 % at 0.9 s, for 0.1-0.3 s less wait.
 END_SLOW_S = 2.0
 HANGING_WORDS = frozenset(
     "el la los las un una unos unas lo al del a de en con por para sin sobre entre hasta desde hacia segun y e o u ni "
@@ -122,7 +122,7 @@ def without_call(text: str) -> str:
 
 
 def end_silence(early: str | None) -> float:
-    """The silence that closes the request after these early words (END_FAST_S, END_SLOW_S, END_SILENCE_S)."""
+    """The silence that closes the request after these early words: END_SLOW_S when they are left hanging."""
     text = (early or "").strip()
     folded = "".join(c for c in unicodedata.normalize("NFKD", text.casefold()) if not unicodedata.combining(c))
     words = re.findall(r"[^\W\d_]+", folded)
@@ -131,8 +131,6 @@ def end_silence(early: str | None) -> float:
     if (text.endswith((",", "…", ":", "...")) or words[-1] in HANGING_WORDS or words[-1] in HANGING_ENDS
             or " ".join(words[-2:]) in HANGING_ENDS):
         return END_SLOW_S
-    if text.endswith(("?", "!")) or (text.endswith(".") and len(words) >= 2):
-        return END_FAST_S
     return END_SILENCE_S
 
 
