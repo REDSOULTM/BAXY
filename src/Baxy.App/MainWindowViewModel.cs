@@ -158,6 +158,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     ConfirmationResolved?.Invoke(outcome);
                 },
                 Refuse = Settings.Refusal,
+                OwnReading = (scope, cancellationToken) => OwnReader is { } read
+                    ? read(scope, cancellationToken)
+                    : Task.FromResult(Baxy.Kernel.Operations.OperationOutcome.Failure(OwnReadings.Unavailable)),
                 MemoryChanged = () => MemoryChanged?.Invoke(),
                 ForgotEverything = () =>
                 {
@@ -169,6 +172,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>What the owner chose in the view's Settings and Proposals panels.</summary>
     internal FieldSettings Settings { get; } = FieldSettings.CreateDefault();
+
+    /// <summary>assistant.status by its scope, read from what the view is shown (FieldProductChannel sets it).</summary>
+    internal Func<string, CancellationToken, Task<Baxy.Kernel.Operations.OperationOutcome>>? OwnReader { get; set; }
 
     /// <summary>A call is about to run (the view's chip in progress).</summary>
     internal event Action<string, string, System.Text.Json.Nodes.JsonObject>? StepStarted;

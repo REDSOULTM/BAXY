@@ -20,6 +20,7 @@
     "app.installed": { "t": "Ver si una app está instalada", "g": "apps", "f": "apps" },
     "app.open": { "t": "Abrir app", "g": "apps", "f": "apps" },
     "app.restart": { "t": "Reiniciar app", "g": "apps", "f": "apps" },
+    "assistant.status": { "t": "Ver lo que usa BAXY", "g": "system", "f": "ventanas" },
     "audio.app.volume.adjust": { "t": "Subir o bajar el volumen de una app", "g": "audio", "f": "musica" },
     "audio.app.volume.set": { "t": "Fijar el volumen de una app", "g": "audio", "f": "musica" },
     "audio.microphone.mute": { "t": "Silenciar el micrófono", "g": "audio", "f": "musica" },

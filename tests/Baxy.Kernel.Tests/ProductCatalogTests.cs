@@ -145,10 +145,18 @@ public sealed class ProductCatalogTests
         "message.send",
     ];
 
+    // f6 estado (2026-10-25): lo que BAXY usa del PC (la memoria de vídeo y la RAM de su modelo) y lo que salió a
+    // internet en la sesión se veían en la vista y no se podían preguntar por voz.
+    internal static readonly string[] F6EstadoAdditions =
+    [
+        "assistant.status",
+    ];
+
     // Every operation of the catalog is offered to the model as a tool.
     // BAXY Renew uso real: + 1, message.send. BAXY Renew cu (C04 variante, C05): + 2, game.store.page y game.store.search;
     // (C14) + 1, client.microphone.set; (C18) + 1, clipboard.paste.into; (C10, C11, notebook) + 1, office.format.apply.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1;
+    // f6 estado: + 1, assistant.status.
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1;
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
@@ -319,6 +327,25 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // f6 estado: BAXY's own readings are a read with no effect (no «sí» in any mode), told which one by its scope.
+    [Test]
+    public void AssistantStatusIsAReadOfTheModelOrTheSessionsInternetExits()
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("assistant.status");
+        OperationArgumentsSchema schema = descriptor.ArgumentsSchema;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
+            Assert.That(descriptor.EffectKinds, Is.Empty);
+            Assert.That(descriptor.RequiresObservedEffect, Is.False);
+            Assert.That(schema.Properties.Single().Name, Is.EqualTo("scope"));
+            Assert.That(schema.Properties.Single().AllowedValues, Is.EqualTo(new[] { "internet", "model" }));
+            Assert.That(schema.Required, Is.EqualTo(new[] { "scope" }));
+            Assert.That(ProductCatalog.ToPolicyRisk(descriptor.Risk), Is.EqualTo(OperationRisk.ReadOnly));
+        });
+    }
+
     // P5.3 counter-case: past twelve values the list is left to the tool's own schema; the nearest still goes back.
     [TestCase("Page Down", "page_down")]
     [TestCase("ctrl+c", "ctrl_c")]
@@ -479,7 +506,7 @@ public sealed class ProductCatalogTests
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
                     .And.SupersetOf(RenewAgentAdditions).And.SupersetOf(RenewRealesAdditions)
-                    .And.SupersetOf(UsoRealAdditions));
+                    .And.SupersetOf(UsoRealAdditions).And.SupersetOf(F6EstadoAdditions));
             Assert.That(descriptors.Select(static descriptor => descriptor.Name),
                 Has.None.AnyOf(RenewRetired));
             Assert.That(

@@ -74,7 +74,19 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
         // A mind that starts again gets back the conversation this view shows (2026-10-22, review of the App).
         _viewModel.KeptConversation = () => _sessions.Load(_sessionId)?.Mind;
+        // f6 estado: BAXY's own readings by voice are the ones this channel serves the view.
+        _viewModel.OwnReader = ReadOwnAsync;
     }
+
+    // assistant.status: GET /metrics' model reading (the same sampler), or this session's internet log, which the view
+    // builds from the same transcript (store.ts, netOf).
+    private async Task<Baxy.Kernel.Operations.OperationOutcome> ReadOwnAsync(string scope, CancellationToken cancellationToken) =>
+        scope switch
+        {
+            "model" => OwnReadings.Model(await _telemetry.SampleAsync(cancellationToken).ConfigureAwait(true)),
+            "internet" => OwnReadings.Internet(_transcript.Items),
+            _ => Baxy.Kernel.Operations.OperationOutcome.Failure(OwnReadings.UnknownScope),
+        };
 
     internal async Task<FieldHttpResponse> HandleHttpAsync(string method, string path, string? body)
     {
