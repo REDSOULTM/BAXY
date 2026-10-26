@@ -2216,14 +2216,21 @@ class Mind:
         private = bool(turn.get("private"))
         shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
         if turn.get("checked"):
-            # The second answer: spoken as it is, never asked again (no loop); the trace says whether it still
-            # contradicts.
-            self._log("turn.check", started, None, round=2, findings=shown, kept=bool(findings))
+            # The second answer: the trace says whether it still contradicts. Uso real 2026-10-26: it still said
+            # «Spotify se cerró» against the results, and was spoken. Still contradicted, the model is told the facts
+            # once more (round 3); that answer is spoken as it is, never asked again (no loop). Cutting the sentence the
+            # check quotes was left out: the quote is not always the false one («Busqué su ventana.» of «Busqué su
+            # ventana. Listo, cerré Paint.»), and what was left would have been the falsehood.
+            third = bool(turn.get("checked_again"))
+            self._log("turn.check", started, None, round=3 if third else 2, findings=shown, kept=bool(findings))
+            if not findings or third:
+                return None
+            turn["checked_again"] = True
+        elif not findings:
             return None
-        if not findings:
-            return None
-        turn["checked"] = True
-        self._log("turn.check", started, None, round=1, findings=shown, content=None if private else content)
+        else:
+            turn["checked"] = True
+            self._log("turn.check", started, None, round=1, findings=shown, content=None if private else content)
         if self.foresee is not None:
             try:
                 self.foresee(None, True)  # the first sentence the voice synthesized ahead is not the one spoken
@@ -2578,6 +2585,20 @@ class Mind:
                 and (turn.get("look_clicks") or {}).get(json.dumps([*turn["look"], arguments], ensure_ascii=False),
                                                        0) >= LOOK_CLICK_PAIRS):
             return "look_click_closed", LOOK_CLICK_NOT_RUN, LOOK_CLICK_REFUSED
+        # Uso real 2026-10-26: the same click on Spotify («Reproducir», the same index) failed five times in a row
+        # (protected_window), a look between each that never saw quite the same, for a minute and a half: a click that
+        # did not complete LOOK_CLICK_PAIRS times with these arguments since the last call that changed something is
+        # not made again, whatever the looks saw (after «Archivo» opened its menu, «Guardar como» runs again).
+        if call["wire"] == "input_visible_click" and _aid_on("look_click_cap"):
+            missed = 0
+            for receipt in turn.get("receipts") or []:
+                if receipt.get("completed") and not receipt.get("read"):
+                    missed = 0
+                elif (receipt.get("tool") == call["wire"] and not receipt.get("completed")
+                      and _call_key(receipt.get("arguments") or {}) == arguments):
+                    missed += 1
+            if missed >= LOOK_CLICK_PAIRS:
+                return "look_click_closed", LOOK_CLICK_NOT_RUN, LOOK_CLICK_REFUSED
         return None
 
     def _close_repeat(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
