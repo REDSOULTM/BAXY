@@ -213,3 +213,30 @@ def test_an_earlier_try_the_owner_switched_off_holds_the_denial(tmp_path: Path, 
     mind.continue_turn(2, json.dumps({"status": "rejected", "error": "screen_disabled_by_owner"}))
     result = mind.decide(3, "¿por qué no?")
     assert result["reply"] == "No puedo leer el texto del bloc de notas." and len(server.bodies) == 3
+
+
+# Identidad (00_IDENTIDAD.md, aclaración 2026-10-10): an application is covered by a generic mechanism and data of its
+# own, never by code that names it. What names a window or the text it shows (generic words and the applications whose
+# window holds a text) is data the rule reads (window_words.v1.json), not words of its code.
+_WINDOW_WORDS = json.loads((Path(__file__).resolve().parents[1] / "src" / "baxy_mind" / "data" / "window_words.v1.json")
+                           .read_bytes())
+
+
+def test_the_code_of_the_check_names_no_application_of_the_data() -> None:
+    import io
+    import tokenize
+
+    import baxy_mind.answer_check as module
+
+    applications = [a.casefold() for a in _WINDOW_WORDS["applications"]]
+    assert applications
+    source = Path(module.__file__).read_bytes().decode("utf-8")
+    code = " ".join(t.string.casefold() for t in tokenize.generate_tokens(io.StringIO(source).readline)
+                    if t.type not in (tokenize.COMMENT, tokenize.NL, tokenize.NEWLINE))
+    assert [a for a in applications if a in code] == []
+
+
+@pytest.mark.parametrize("word", [*_WINDOW_WORDS["generic"], *_WINDOW_WORDS["applications"]])
+def test_each_word_of_the_data_names_a_window_whose_text_a_look_reads(word: str) -> None:
+    found = _denials(f"No puedo leer el texto de {word}.")
+    assert len(found) == 1 and "input_visible_controls" in found[0]["fact"] and "note_read" not in found[0]["fact"]

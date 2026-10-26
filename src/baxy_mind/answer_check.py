@@ -59,6 +59,7 @@ import json
 import math
 import re
 import unicodedata
+import pathlib
 from typing import Any, Iterable
 
 # How a completed call ended, in mind._outcome's words (mind.COMPLETED_OUTCOMES): passed in by the mind, so this module
@@ -1066,14 +1067,23 @@ _DENIED_ACTS = {
 _DENIED_ACT = re.compile(r"(?:\s+(?:directamente|realmente|tampoco|aun|todavia|en|a|al|el|the|to|into))*\s*(?:"
                          + "|".join(f"(?P<{act}>(?:{verbs})(?:lo|la|los|las|le|les|te|me)?)"
                                     for act, verbs in _DENIED_ACTS.items()) + r")\b")
-# The objects, by what reaches them: the text of a window (Notepad, the screen), a file or a folder, a note. «bloc de
-# notas» is a window, not a note.
+# The objects, by what reaches them: the text of a window, a file or a folder, a note. What names a window is data
+# (window_words.v1.json: generic words and the applications whose window shows a text), never an application named in
+# code (00_IDENTIDAD.md, aclaración 2026-10-10); an application whose name says «notas» is a window, not a note: a window
+# found in the clause drops the note (_denials).
+def _window_words() -> re.Pattern[str]:
+    data = json.loads((pathlib.Path(__file__).with_name("data") / "window_words.v1.json").read_bytes())
+    words = sorted({_fold(w).strip() for w in (*data["generic"], *data["applications"]) if w.strip()}, key=len,
+                   reverse=True)
+    return re.compile(r"\b(?:" + "|".join(re.escape(w) for w in words) + r")\b")
+
+
 _DENIED_OBJECTS = {
-    "window": re.compile(r"\b(?:bloc de notas|notepad|ventanas?|pantalla|window|screen)\b"),
+    "window": _window_words(),
     "file": re.compile(r"\b(?:archivos?|ficheros?|carpetas?|subcarpetas?|directorios?|documentos?|files?|folders?|"
                        r"director(?:y|ies)|escritorio|descargas|desktop|downloads)\b"
                        r"|[\w-]+\.(?:txt|md|docx?|xlsx?|pptx?|pdf|csv|json|png|jpe?g|zip|log)\b"),
-    "note": re.compile(r"\b(?<!bloc de )(?:notas?|notes?)\b"),
+    "note": re.compile(r"\b(?:notas?|notes?)\b"),
 }
 # Which operations of the catalog do an act on an object: the first ones the catalog has are named, in this order.
 DENIED_OPS: dict[tuple[str, str], tuple[str, ...]] = {
