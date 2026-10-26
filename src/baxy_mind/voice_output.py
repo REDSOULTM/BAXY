@@ -394,13 +394,15 @@ class Speech:
                 sys.stderr.write(f"baxy_mind_renew_speech: {error!r}\n")
                 sys.stderr.flush()
 
-    def _say_notice(self, notice: _Notice) -> None:
+    def _say_notice(self, notice: _Notice, answer: Future | None = None) -> None:
+        """Said unless an answer was given or began to sound since it was asked; answer: the first take of the answer
+        it is said in front of (_await_first), whose readiness ends the notice's tail."""
         with self._posting:
             due = (not notice.said and notice.generation == self._generation and notice.answers == self._answers
                    and notice.sounded == self._sounded)
             notice.said = True
         if due:
-            self._play(iter([notice.audio]), notice.generation, notice.queued, True)
+            self._play(iter([notice.audio]), notice.generation, notice.queued, True, answer)
 
     def _await_first(self, sentences: Iterator[np.ndarray], generation: int) -> None:
         """While an answer's first sentence is synthesized, a notice asked meanwhile sounds (from its own audio)."""
@@ -408,7 +410,7 @@ class Speech:
         while first is not None and not first.done() and generation == self._generation:
             notice = self._early
             if notice is not None and not notice.said:
-                self._say_notice(notice)
+                self._say_notice(notice, first)
             else:
                 wait([first], timeout=0.02)
 
@@ -539,7 +541,9 @@ class Speech:
         gap = np.zeros(int(self.rate * _gap(text)), dtype=np.float32)
         return np.concatenate([audio, gap])
 
-    def _play(self, sentences: Iterator[np.ndarray], generation: int, queued: float, notice: bool = False) -> None:
+    def _play(self, sentences: Iterator[np.ndarray], generation: int, queued: float, notice: bool = False,
+              answer: Future | None = None) -> None:
+        """answer: the first take of the answer this notice is said in front of (_await_first), when there is one."""
         stream = self._open_stream()
         audio = next(sentences, None)  # none when it was cancelled before its first sentence was synthesized
         if audio is None or generation != self._generation:
@@ -575,8 +579,15 @@ class Speech:
                 time.sleep(stream.latency)  # the blocks written are still in the device buffer
                 self._stream_until = time.monotonic() + HOLD_S
             ends = time.monotonic() + TAIL_S
-            while time.monotonic() < ends and generation == self._generation and self._queue.empty():
-                time.sleep(0.05)
+            # nb-f4-velocidad (2026-10-25): a notice said while its answer's first take was synthesized held that
+            # answer for the whole tail, since the answer is no longer in the queue: in 117 of 522 e2e turns the answer
+            # sounded right as the notice's tail ended, up to 0.64 s after its take was ready. Once the take is ready
+            # the tail ends after BAXY's own pause between sentences (GAP_S, the device's latency counted in it), so
+            # the notice and the answer are heard as two sentences of one reply.
+            pause = time.monotonic() + max(0.0, GAP_S - stream.latency)
+            while (time.monotonic() < ends and generation == self._generation and self._queue.empty()
+                   and not (answer is not None and answer.done() and time.monotonic() >= pause)):
+                time.sleep(0.05 if answer is None else 0.01)
         finally:
             self._answer_sounding = False
             self.speaking = False
