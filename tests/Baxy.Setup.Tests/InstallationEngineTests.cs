@@ -859,6 +859,149 @@ public sealed class InstallationEngineTests
         }
     }
 
+    [Test]
+    public void UpdateAcceptsAnInstalledVersionBuiltWithAnOlderFieldUiContract()
+    {
+        // A 1.0.9 installed before the contract carried FieldUi/bg and FieldUi/clips, with its own asset hashes, is
+        // verified against what it attested at install time, not against the contract of the Setup that updates it.
+        using TemporaryDirectory temporary = new();
+        InstallationEngine engine = new(temporary.InstallationRoot);
+        _ = Install(engine, TestProductPackageFactory.Create("1.0.9", "a"));
+        RewriteAsOlderContract(temporary.InstallationRoot, "1.0.9");
+
+        InstallationResult updated = Install(engine, TestProductPackageFactory.Create("1.1.0", "b"));
+        InstallationResult rolledBack = engine.Rollback();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(updated.Disposition, Is.EqualTo(InstallationDisposition.Updated));
+            Assert.That(updated.PreviousVersion, Is.EqualTo("1.0.9"));
+            Assert.That(rolledBack.Version, Is.EqualTo("1.0.9"));
+            Assert.That(engine.GetCurrentVersion(), Is.EqualTo("1.0.9"));
+        });
+        AssertTransactionClean(temporary.InstallationRoot);
+    }
+
+    [Test]
+    public void OlderContractVersionStillFailsClosedOnTamperedOrExtraFiles()
+    {
+        using TemporaryDirectory temporary = new();
+        InstallationEngine engine = new(temporary.InstallationRoot);
+        _ = Install(engine, TestProductPackageFactory.Create("1.0.9", "a"));
+        RewriteAsOlderContract(temporary.InstallationRoot, "1.0.9");
+        string version = Path.Combine(temporary.InstallationRoot, "versions", "1.0.9");
+        string extra = Path.Combine(version, "FieldUi", "clips");
+        Directory.CreateDirectory(extra);
+
+        Assert.That(() => engine.GetCurrentVersion(), Throws.TypeOf<InstallationSafetyException>());
+
+        Directory.Delete(extra);
+        File.AppendAllText(Path.Combine(version, "FieldUi", "index.html"), "tampered");
+
+        Assert.That(() => engine.GetCurrentVersion(), Throws.TypeOf<InstallationSafetyException>().Or.TypeOf<ProductPackageException>());
+    }
+
+    // Rewrites an installed version as a build whose contract had no FieldUi/bg nor FieldUi/clips and other asset
+    // names, with its own build-manifest.json, SHA256SUMS, attestation and current pointer, as that build wrote them.
+    private static void RewriteAsOlderContract(string root, string version)
+    {
+        string versionRoot = Path.Combine(root, "versions", version);
+        Directory.Delete(Path.Combine(versionRoot, "FieldUi", "bg"), recursive: true);
+        Directory.Delete(Path.Combine(versionRoot, "FieldUi", "clips"), recursive: true);
+        string asset = Directory.EnumerateFiles(Path.Combine(versionRoot, "FieldUi", "assets"), "index-*.js").Single();
+        File.Move(asset, Path.Combine(versionRoot, "FieldUi", "assets", "index-OlderBld.js"));
+
+        string manifestPath = Path.Combine(versionRoot, "build-manifest.json");
+        BuildManifest old = JsonSerializer.Deserialize(
+            File.ReadAllBytes(manifestPath),
+            SetupJsonContext.Default.BuildManifest)!;
+        BuildFileRecord[] records = old.Files
+            .Select(static record => record.Path)
+            .Select(path => path.StartsWith("FieldUi/assets/index-", StringComparison.Ordinal) && path.EndsWith(".js", StringComparison.Ordinal)
+                ? "FieldUi/assets/index-OlderBld.js"
+                : path)
+            .Where(path => File.Exists(Path.Combine(versionRoot, path.Replace('/', Path.DirectorySeparatorChar))))
+            .Order(StringComparer.Ordinal)
+            .Select(path =>
+            {
+                byte[] bytes = File.ReadAllBytes(Path.Combine(versionRoot, path.Replace('/', Path.DirectorySeparatorChar)));
+                return new BuildFileRecord { Path = path, Bytes = bytes.Length, Sha256 = Sha256(bytes) };
+            })
+            .ToArray();
+        Assert.That(records, Has.Length.LessThan(old.Files.Length));
+        BuildManifest manifest = new()
+        {
+            Schema = old.Schema,
+            Product = old.Product,
+            Version = old.Version,
+            DataSchema = old.DataSchema,
+            Configuration = old.Configuration,
+            Runtime = old.Runtime,
+            TargetFramework = old.TargetFramework,
+            Authenticity = old.Authenticity,
+            Source = old.Source,
+            Toolchain = old.Toolchain,
+            Deployment = old.Deployment,
+            FileCount = records.Length,
+            TotalBytes = records.Sum(static record => record.Bytes),
+            Files = records,
+        };
+        byte[] manifestBytes = JsonSerializer.SerializeToUtf8Bytes(manifest, SetupJsonContext.Default.BuildManifest);
+        File.WriteAllBytes(manifestPath, manifestBytes);
+
+        Dictionary<string, byte[]> zip = records.ToDictionary(
+            static record => record.Path,
+            record => File.ReadAllBytes(Path.Combine(versionRoot, record.Path.Replace('/', Path.DirectorySeparatorChar))),
+            StringComparer.Ordinal);
+        zip["build-manifest.json"] = manifestBytes;
+        System.Text.StringBuilder sums = new();
+        foreach (string path in zip.Keys.Order(StringComparer.Ordinal))
+        {
+            _ = sums.Append(Sha256(zip[path])).Append("  ").Append(path).Append('\n');
+        }
+
+        byte[] sumsBytes = System.Text.Encoding.UTF8.GetBytes(sums.ToString());
+        File.WriteAllBytes(Path.Combine(versionRoot, "SHA256SUMS"), sumsBytes);
+        zip["SHA256SUMS"] = sumsBytes;
+        System.Text.StringBuilder content = new();
+        foreach (string path in zip.Keys.Order(StringComparer.Ordinal))
+        {
+            _ = content.Append(path).Append('\0').Append(zip[path].Length).Append('\0').Append(Sha256(zip[path])).Append('\n');
+        }
+
+        string contentId = Sha256(System.Text.Encoding.UTF8.GetBytes(content.ToString()));
+        string manifestSha256 = Sha256(manifestBytes);
+        string attestationPath = Path.Combine(versionRoot, ".baxy-version.json");
+        InstalledVersionAttestation attestation = JsonSerializer.Deserialize(
+            File.ReadAllBytes(attestationPath),
+            SetupJsonContext.Default.InstalledVersionAttestation)!;
+        File.WriteAllBytes(attestationPath, [.. JsonSerializer.SerializeToUtf8Bytes(
+            new InstalledVersionAttestation
+            {
+                Version = attestation.Version,
+                DataSchema = attestation.DataSchema,
+                PackageSha256 = attestation.PackageSha256,
+                ManifestSha256 = manifestSha256,
+                ContentId = contentId,
+            },
+            SetupJsonContext.Default.InstalledVersionAttestation), (byte)'\n']);
+        string currentPath = Path.Combine(root, "current");
+        InstallationPointer current = ReadPointer(currentPath);
+        File.WriteAllBytes(currentPath, [.. JsonSerializer.SerializeToUtf8Bytes(
+            new InstallationPointer
+            {
+                Version = current.Version,
+                DataSchema = current.DataSchema,
+                PackageSha256 = current.PackageSha256,
+                ManifestSha256 = manifestSha256,
+                ContentId = contentId,
+            },
+            SetupJsonContext.Default.InstallationPointer), (byte)'\n']);
+    }
+
+    private static string Sha256(byte[] bytes) =>
+        Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes)).ToLowerInvariant();
+
     private static InstallationResult Install(InstallationEngine engine, byte[] package)
     {
         using MemoryStream stream = TestProductPackageFactory.Open(package);

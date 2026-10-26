@@ -56,10 +56,10 @@ public sealed class ProductPackageVerifier
 
             byte[] manifestBytes = metadata["build-manifest.json"];
             byte[] checksumBytes = metadata["SHA256SUMS"];
-            BuildManifest manifest = ValidateManifest(manifestBytes);
+            BuildManifest manifest = ValidateManifest(manifestBytes, requireThisContract: true);
             AssertPackageTimestamp(verifiedEntries, manifest.Source.SourceDateEpoch);
             ValidateManifestAgainstEntries(manifest, verifiedEntries);
-            ValidateChecksums(checksumBytes, verifiedEntries);
+            ValidateChecksums(checksumBytes, verifiedEntries, PackageContract.ChecksumPaths);
 
             string packageSha256 = DigestWholeStream(packageStream);
             string manifestSha256 = verifiedEntries.Single(
@@ -173,23 +173,46 @@ public sealed class ProductPackageVerifier
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Verifier instances are injectable installation services.")]
     internal VerifiedInstalledVersion VerifyInstalledVersion(string versionRoot)
     {
-        SafeFileTree tree = PathSafety.InspectTree(versionRoot, PackageContract.MaximumVersionTreeEntries);
-        if (!tree.Directories.SequenceEqual(PackageContract.DirectoryPaths, StringComparer.Ordinal))
+        // An installed version is held to the layout its own build manifest names, which its attestation binds by
+        // hash, and not to the contract of this Setup: an older build had other Field UI files (another set of asset
+        // hashes, no FieldUi/bg nor FieldUi/clips) and must still verify, roll back and be updated from.
+        SafeFileTree tree = PathSafety.InspectTree(versionRoot, PackageContract.MaximumInstalledVersionTreeEntries);
+        if (!tree.Files.Contains("build-manifest.json", StringComparer.Ordinal))
+        {
+            throw new InstallationSafetyException("An installed version has no build manifest.");
+        }
+
+        string manifestPath = PathSafety.GetStrictDescendantPath(versionRoot, "build-manifest.json");
+        if (new FileInfo(manifestPath).Length > PackageContract.MaximumManifestBytes)
+        {
+            throw new InstallationSafetyException("Installed metadata exceeds its reviewed limit: build-manifest.json");
+        }
+
+        PathSafety.AssertRegularFile(manifestPath);
+        byte[] layoutManifestBytes = File.ReadAllBytes(manifestPath);
+        BuildManifest layoutManifest = ValidateManifest(layoutManifestBytes, requireThisContract: false);
+        string[] payloadPaths = [.. layoutManifest.Files.Select(static record => record.Path)];
+        string[] checksumPaths = [.. payloadPaths.Append("build-manifest.json").Order(StringComparer.Ordinal)];
+        string[] zipPaths = [.. checksumPaths.Append("SHA256SUMS").Order(StringComparer.Ordinal)];
+        string[] expectedDirectories = [.. zipPaths
+            .SelectMany(static path => AncestorDirectories(path))
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)];
+        if (!tree.Directories.SequenceEqual(expectedDirectories, StringComparer.Ordinal))
         {
             throw new InstallationSafetyException("An installed version has an unexpected directory set.");
         }
 
-        string[] expectedFiles = [.. PackageContract.ZipPaths, ".baxy-version.json"];
-        Array.Sort(expectedFiles, StringComparer.Ordinal);
+        string[] expectedFiles = [.. zipPaths.Append(".baxy-version.json").Order(StringComparer.Ordinal)];
         if (!tree.Files.SequenceEqual(expectedFiles, StringComparer.Ordinal))
         {
             throw new InstallationSafetyException("An installed version contains missing or unexpected files.");
         }
 
-        List<VerifiedEntry> entries = new(PackageContract.ZipPaths.Length);
+        List<VerifiedEntry> entries = new(zipPaths.Length);
         Dictionary<string, byte[]> metadata = new(StringComparer.Ordinal);
         long installedBytes = 0;
-        foreach (string relativePath in PackageContract.ZipPaths)
+        foreach (string relativePath in zipPaths)
         {
             string path = PathSafety.GetStrictDescendantPath(versionRoot, relativePath);
             FileInfo info = new(path);
@@ -220,9 +243,14 @@ public sealed class ProductPackageVerifier
             }
         }
 
-        BuildManifest manifest = ValidateManifest(metadata["build-manifest.json"]);
+        if (!metadata["build-manifest.json"].AsSpan().SequenceEqual(layoutManifestBytes))
+        {
+            throw new InstallationSafetyException("The installed build manifest changed while it was verified.");
+        }
+
+        BuildManifest manifest = ValidateManifest(metadata["build-manifest.json"], requireThisContract: false);
         ValidateManifestAgainstEntries(manifest, entries);
-        ValidateChecksums(metadata["SHA256SUMS"], entries);
+        ValidateChecksums(metadata["SHA256SUMS"], entries, checksumPaths);
         string contentId = ComputeContentId(entries);
         string manifestSha256 = entries.Single(static entry => entry.Path == "build-manifest.json").Sha256;
 
@@ -261,7 +289,7 @@ public sealed class ProductPackageVerifier
         }
     }
 
-    private static BuildManifest ValidateManifest(byte[] bytes)
+    private static BuildManifest ValidateManifest(byte[] bytes, bool requireThisContract)
     {
         AssertUtf8WithoutBom(bytes, "build-manifest.json");
         using JsonDocument document = JsonDocument.Parse(bytes, new JsonDocumentOptions
@@ -284,7 +312,9 @@ public sealed class ProductPackageVerifier
             ["app", "native_libraries", "core", "symbols", "mind"], "build manifest deployment");
 
         JsonElement filesElement = document.RootElement.GetProperty("files");
-        if (filesElement.ValueKind != JsonValueKind.Array || filesElement.GetArrayLength() != PackageContract.PayloadPaths.Length)
+        if (filesElement.ValueKind != JsonValueKind.Array || (requireThisContract
+                ? filesElement.GetArrayLength() != PackageContract.PayloadPaths.Length
+                : filesElement.GetArrayLength() is 0 or > PackageContract.MaximumInstalledPayloadFiles))
         {
             throw new ProductPackageException("The build manifest file array has an unexpected shape.");
         }
@@ -300,7 +330,7 @@ public sealed class ProductPackageVerifier
             throw new ProductPackageException("The build manifest JSON is null.");
         }
 
-        ValidateManifestValues(manifest);
+        ValidateManifestValues(manifest, requireThisContract);
         byte[] canonical = JsonSerializer.SerializeToUtf8Bytes(manifest, SetupJsonContext.Default.BuildManifest);
         if (!bytes.AsSpan().SequenceEqual(canonical))
         {
@@ -310,7 +340,7 @@ public sealed class ProductPackageVerifier
         return manifest;
     }
 
-    private static void ValidateManifestValues(BuildManifest manifest)
+    private static void ValidateManifestValues(BuildManifest manifest, bool requireThisContract)
     {
         if (manifest.Source is null || manifest.Toolchain is null || manifest.Deployment is null || manifest.Files is null ||
             manifest.Files.Any(static record => record is null))
@@ -356,11 +386,24 @@ public sealed class ProductPackageVerifier
             throw new ProductPackageException("The build manifest deployment contract is invalid.");
         }
 
-        if (manifest.FileCount != PackageContract.PayloadPaths.Length ||
-            manifest.Files.Length != PackageContract.PayloadPaths.Length)
+        if (requireThisContract &&
+            (manifest.FileCount != PackageContract.PayloadPaths.Length ||
+             manifest.Files.Length != PackageContract.PayloadPaths.Length))
         {
             throw new ProductPackageException(
                 $"The build manifest must contain exactly {PackageContract.PayloadPaths.Length} payload records.");
+        }
+
+        // An installed version's own manifest names its payload: bounded, and never one of the version's metadata files.
+        if (!requireThisContract &&
+            (manifest.FileCount != manifest.Files.Length ||
+             manifest.Files.Length is 0 or > PackageContract.MaximumInstalledPayloadFiles ||
+             manifest.Files.Any(static record =>
+                 string.Equals(record.Path, "build-manifest.json", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(record.Path, "SHA256SUMS", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(record.Path, ".baxy-version.json", StringComparison.OrdinalIgnoreCase))))
+        {
+            throw new ProductPackageException("An installed build manifest names an invalid payload set.");
         }
 
         long totalBytes = 0;
@@ -376,7 +419,8 @@ public sealed class ProductPackageVerifier
             PathSafety.ValidateRelativePath(record.Path);
             if (!windowsPaths.Add(record.Path) ||
                 (previousPath is not null && StringComparer.Ordinal.Compare(previousPath, record.Path) >= 0) ||
-                !string.Equals(record.Path, PackageContract.PayloadPaths[index], StringComparison.Ordinal) ||
+                (requireThisContract &&
+                 !string.Equals(record.Path, PackageContract.PayloadPaths[index], StringComparison.Ordinal)) ||
                 record.Bytes < 0 || record.Bytes > PackageContract.MaximumPayloadFileBytes ||
                 !IsLowerHex(record.Sha256, 64))
             {
@@ -406,12 +450,12 @@ public sealed class ProductPackageVerifier
         }
     }
 
-    private static void ValidateChecksums(byte[] checksumBytes, IReadOnlyList<VerifiedEntry> entries)
+    private static void ValidateChecksums(byte[] checksumBytes, IReadOnlyList<VerifiedEntry> entries, IReadOnlyList<string> checksumPaths)
     {
         AssertUtf8WithoutBom(checksumBytes, "SHA256SUMS");
         Dictionary<string, VerifiedEntry> entriesByPath = entries.ToDictionary(static entry => entry.Path, StringComparer.Ordinal);
         StringBuilder canonical = new();
-        foreach (string path in PackageContract.ChecksumPaths)
+        foreach (string path in checksumPaths)
         {
             VerifiedEntry entry = entriesByPath[path];
             _ = canonical.Append(entry.Sha256).Append("  ").Append(path).Append('\n');
@@ -702,6 +746,14 @@ public sealed class ProductPackageVerifier
         if (index != expected.Length)
         {
             throw new ProductPackageException($"The {context} property set is incomplete.");
+        }
+    }
+
+    private static IEnumerable<string> AncestorDirectories(string path)
+    {
+        for (int separator = path.LastIndexOf('/'); separator > 0; separator = path.LastIndexOf('/', separator - 1))
+        {
+            yield return path[..separator];
         }
     }
 

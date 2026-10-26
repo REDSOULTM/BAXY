@@ -105,6 +105,12 @@ internal static class PackageContract
 
     internal static int MaximumStagingTreeEntries => MaximumVersionTreeEntries + 2;
 
+    // A version already installed answers to its own build manifest, not to this contract: an older or newer build
+    // ships other Field UI files. These bounds only cap that manifest and the walk of its tree.
+    internal const int MaximumInstalledPayloadFiles = 4096;
+
+    internal const int MaximumInstalledVersionTreeEntries = 2 * MaximumInstalledPayloadFiles;
+
     private static IEnumerable<string> AncestorDirectories(string path)
     {
         for (int separator = path.LastIndexOf('/'); separator > 0; separator = path.LastIndexOf('/', separator - 1))
