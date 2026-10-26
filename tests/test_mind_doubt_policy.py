@@ -208,7 +208,7 @@ def test_layer_0_asks_once_per_misunderstanding(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
     mind, _ = _mind(tmp_path, [_call("system_power", {"action": "shutdown"}, 0.3), _say("¿Qué cierro?"),
                                _call("system_power", {"action": "shutdown"}, 0.3),
-                               _call("system_power", {"action": "shutdown"}, 0.3), _say("¿Qué cierro?")])
+                               _call("system_power", {"action": "shutdown"}, 0.3), _say("¿Qué apago?")])
     assert mind.decide(1, "ciérralo")["operation"] is None
     assert mind.decide(2, "el PC")["operation"] == "system.power"  # its answer: layer 0 does not ask again
     mind.continue_turn(3, json.dumps({"status": "cancelled"}))
@@ -240,7 +240,7 @@ def test_layer2_asks_once_per_misunderstanding(tmp_path, monkeypatch) -> None:
     # answer while the decision model still read it otherwise, with no limit. It may still correct; it no longer asks.
     mind, _, one = _layer2(tmp_path, monkeypatch, "app_close",
                            [_rival_call(0.5), _say("¿Cierro la ventana o apago el PC?"), _rival_call(0.5),
-                            _rival_call(0.5), _say("¿Cierro la ventana o apago el PC?")])
+                            _rival_call(0.5), _say("¿La ventana o el PC?")])
     assert mind.decide(1, "ciérralo")["operation"] is None
     assert mind.decide(2, "el PC")["operation"] == "system.power"  # its answer: not asked again
     assert len(one.asked) == 2  # the decision model still read the answer

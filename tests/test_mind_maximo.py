@@ -32,7 +32,7 @@ def test_a_cut_history_keeps_room_so_the_next_turns_do_not_move_its_start(tmp_pa
     from baxy_mind import mind as mind_module
     from baxy_mind.mind import TRIM_TO, TURN_ROOM_TOKENS
     from test_mind_final import _mind, _say
-    mind, server = _mind(tmp_path, [_say("Vale.") for _ in range(20)])
+    mind, server = _mind(tmp_path, [_say(f"Vale {n}.") for n in range(20)])  # never the last answer again (say_once)
     counted: list[str] = []
     server.tokenize = lambda text: counted.append(text) or [0] * (len(text) // 4)
     room = 1500  # tokens; a turn here is ~160

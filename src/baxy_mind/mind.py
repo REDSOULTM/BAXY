@@ -563,6 +563,11 @@ ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
                                   "reason": "this question was already asked in this turn and the person's answer is "
                                             "above; it was not asked again: do with that answer what a tool can do, "
                                             "or say in one sentence that you don't do it"})
+# Aid «say_once» (uso real 2026-10-26): the same words came back turn after turn (the same greeting three times, the
+# same «¿te refieres a algo más?» to whatever followed). An answer of a turn with no call that is BAXY's last answer
+# again, letter for letter, is written once more with this note, words only.
+SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder exactamente lo mismo que tu respuesta "
+                   "anterior. No la repitas: responde a lo que dice ahora la persona, con otras palabras.]")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 LOOK_CLICK_REFUSED = f"no se ejecutó: la misma mirada y el mismo clic ya iban {LOOK_CLICK_PAIRS} veces"
 # What the model reads at the end of the last result of a turn that takes no more calls.
@@ -2127,6 +2132,9 @@ class Mind:
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
             return self._next(request_id, stage, turn, final=True)
+        if (content and not turn.get("beat") and not turn.get("receipts") and not turn.get("said_again")
+                and _aid_on("say_once") and self._said_last(conv, content)):
+            return self._say_otherwise(request_id, stage, turn, content, reply, started)
         if content and not turn.get("beat") and _aid_on("answer_check"):
             checked = self._check_answer(request_id, stage, turn, content, reply, started)
             if checked is not None:
@@ -2142,6 +2150,39 @@ class Mind:
                 except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
                     pass
         return self._result(request_id, turn, None, reply, stage, started, content)
+
+    @staticmethod
+    def _said_last(conv: list[dict[str, Any]], content: str) -> bool:
+        """Whether these words are BAXY's last words in the conversation again, letter for letter (folded)."""
+        last = next((str(m.get("content") or "") for m in reversed(conv)
+                     if m.get("role") == "assistant" and str(m.get("content") or "").strip()), "")
+        return bool(last) and re.findall(r"[^\W_]+", _fold(last)) == re.findall(r"[^\W_]+", _fold(content))
+
+    def _say_otherwise(self, request_id: Any, stage: str, turn: dict[str, Any], content: str, reply: dict | None,
+                       started: float) -> dict[str, Any]:
+        """Aid «say_once» (SAID_AGAIN_NOTE): an answer of a turn with no call that is BAXY's last answer again is asked
+        once more, words only; the second one is spoken, whatever it says."""
+        turn["said_again"] = True
+        self._log("turn.repeat", started, None, content=None if turn.get("private") else content)
+        if self.foresee is not None:
+            try:
+                self.foresee(None, True)  # the first sentence the voice synthesized ahead is not the one spoken
+            except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
+                pass
+        conv = turn["conv"]
+        note = {"role": "user", "content": SAID_AGAIN_NOTE}
+        conv.append(note)
+        try:
+            result = self._next(request_id, stage, turn, final=True)
+        finally:
+            for index in range(len(conv) - 1, -1, -1):
+                if conv[index] is note:
+                    del conv[index]
+                    break
+        if result.get("kind") == "conversation" and not result.get("reply"):
+            conv.append({"role": "assistant", "content": content})
+            result["reply"] = content
+        return result
 
     def _check_answer(self, request_id: Any, stage: str, turn: dict[str, Any], content: str, reply: dict | None,
                       started: float) -> dict[str, Any] | None:

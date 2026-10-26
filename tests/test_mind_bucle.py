@@ -6,7 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.mind import ASKED_AGAIN_NOT_RUN, LOOK_CLICK_NOT_RUN, NO_MORE_CALLS, NOT_RUN, SAME_CALL_NOT_RUN
+from baxy_mind.mind import (ASKED_AGAIN_NOT_RUN, LOOK_CLICK_NOT_RUN, NO_MORE_CALLS, NOT_RUN, SAID_AGAIN_NOTE,
+                            SAME_CALL_NOT_RUN)
 
 from test_mind_final import _call, _mind, _say
 
@@ -182,3 +183,37 @@ def test_without_the_aid_the_same_question_is_asked_again(tmp_path: Path, monkey
     mind, _ = _mind(tmp_path, [ask, ask])
     mind.decide(1, "abre eso")
     assert mind.decide(2, "el otro")["kind"] == "clarify"
+
+
+def test_the_last_answer_again_in_a_turn_with_no_call_is_written_once_more(tmp_path: Path, monkeypatch) -> None:
+    # Aid «say_once» (uso real 2026-10-26): the same words turn after turn. The second time they are written again with
+    # the note, words only; the second answer is spoken whatever it says, and the note does not stay.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_say("Hola, ¿qué hacemos?"), _say("Hola, ¿Qué hacemos?"),
+                                    _say("Aquí sigo, dime.")])
+    assert mind.decide(1, "hola")["reply"] == "Hola, ¿qué hacemos?"
+    step = mind.decide(2, "oye")
+    assert step["kind"] == "conversation" and step["reply"] == "Aquí sigo, dime."
+    last = server.bodies[-1]
+    assert last["tool_choice"] == "none" and last["messages"][-1]["content"] == SAID_AGAIN_NOTE
+    assert SAID_AGAIN_NOTE not in [m.get("content") for m in mind.conversation]
+    assert mind.conversation[-1] == {"role": "assistant", "content": "Aquí sigo, dime."}
+    assert len([r for r in _trace(mind) if r["stage"] == "turn.repeat"]) == 1
+
+
+def test_an_answer_after_a_call_or_another_answer_is_not_written_again(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_say("Son las 10."), _call("system_status", {}), _say("Son las 10."),
+                                    _say("Hola.")])
+    mind.decide(1, "¿qué hora es?")
+    mind.decide(2, "¿y ahora?")
+    assert mind.continue_turn(3, json.dumps({"status": "completed"}))["reply"] == "Son las 10."
+    assert mind.decide(4, "hola")["reply"] == "Hola."
+    assert len(server.bodies) == 4
+
+
+def test_without_the_aid_the_same_answer_is_said_again(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    mind, server = _mind(tmp_path, [_say("Hola."), _say("Hola.")])
+    mind.decide(1, "hola")
+    assert mind.decide(2, "hola")["reply"] == "Hola." and len(server.bodies) == 2
