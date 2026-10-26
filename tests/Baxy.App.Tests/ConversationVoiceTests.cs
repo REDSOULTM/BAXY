@@ -158,7 +158,7 @@ public sealed class ConversationVoiceTests
     }
 
     // The mind calls the operation once and then answers in words.
-    private static JsonObject Calling(string operation, JsonObject arguments) => new()
+    internal static JsonObject Calling(string operation, JsonObject arguments) => new()
     {
         ["reply"] = new JsonObject
         {
@@ -179,7 +179,7 @@ public sealed class ConversationVoiceTests
     };
 
     // What the model read back from the call (the turn.continue that followed it).
-    private static JsonObject Observation(FakeMind fake) =>
+    internal static JsonObject Observation(FakeMind fake) =>
         (JsonObject)JsonNode.Parse((string)fake.Requests("turn.continue")[0]["observation"]!)!;
 
     private static JsonObject Run(MainWindowViewModel viewModel, string operation, JsonObject arguments) =>

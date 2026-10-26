@@ -78,6 +78,8 @@ internal static class ProductConductorHost
         }
 
         await using var viewModel = new MainWindowViewModel();
+        await using var telemetry = new FieldTelemetrySampler(() => viewModel.MindProcessId);
+        await using FieldProductChannel view = Mount(viewModel, telemetry, lifetime.Token);
         long turnStartedMs = 0;
         // Renew al máximo: the voice says which utterance is the notice (VoiceSounded); the order of the notice's
         // acceptance and the voice's start did not (ConductorUtterances).
@@ -202,8 +204,10 @@ internal static class ProductConductorHost
 
                 if ((string?)turn["session"] == "new")
                 {
-                    bool started = await viewModel.StartNewUiSessionAsync(lifetime.Token).ConfigureAwait(true);
-                    Emit(new JsonObject { ["type"] = "command.done", ["session"] = "new", ["ok"] = started });
+                    // As the view's «+» starts one: the conversation that was is kept in the profile.
+                    FieldHttpResponse started = await view.HandleHttpAsync("POST", "/sessions/new", null)
+                        .ConfigureAwait(true);
+                    Emit(new JsonObject { ["type"] = "command.done", ["session"] = "new", ["ok"] = started.Status == 200 });
                     continue;
                 }
 
@@ -269,6 +273,20 @@ internal static class ProductConductorHost
         {
             capture?.Dispose();
         }
+    }
+
+    /// <summary>
+    /// The product as the window mounts it, with no view to show what it publishes: the view's channel serves BAXY's own
+    /// readings (assistant.status: the model's from <paramref name="telemetry"/>, the internet exits from this session's
+    /// steps) and the conversations asked by voice (conversation.*, kept in the profile's sessions).
+    /// </summary>
+    internal static FieldProductChannel Mount(MainWindowViewModel viewModel, FieldTelemetrySampler telemetry,
+        CancellationToken lifetime) => new(viewModel, new Unseen(), telemetry, lifetime);
+
+    // No view: what the channel publishes for it is seen by none (the benches read the conductor's own events).
+    private sealed class Unseen : IFieldEventSink
+    {
+        public bool Publish(JsonObject eventData) => true;
     }
 
     private static async IAsyncEnumerable<JsonObject> ReadTurnsAsync(
