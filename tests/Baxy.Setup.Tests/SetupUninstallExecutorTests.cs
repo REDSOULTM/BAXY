@@ -254,12 +254,15 @@ public sealed class SetupUninstallExecutorTests
         SetupUninstallExecutor.MoveInstallationRoot(tree.InstallationRoot, tombstone);
         int cleanups = 0;
         bool purged = false;
+        bool shortcutTouched = false;
 
         Assert.That(
             () => SetupUninstallExecutor.FinishMovedUninstall(
                 tree.InstallationRoot,
                 tombstone,
-                removeIntegration: static () => throw new InstallationSafetyException("registry"),
+                removeRegistry: static () => throw new InstallationSafetyException("registry"),
+                restoreRegistry: static () => { },
+                removeShortcut: () => shortcutTouched = true,
                 purgeData: () => purged = true,
                 launchCleanup: (_, _) => ++cleanups > 0 ? 1u : 0u),
             Throws.TypeOf<InstallationSafetyException>().With.Message.EqualTo("registry"));
@@ -269,9 +272,43 @@ public sealed class SetupUninstallExecutorTests
                 File.ReadAllText(Path.Combine(tree.InstallationRoot, "installed.txt")),
                 Is.EqualTo("installed"));
             Assert.That(Directory.Exists(tombstone), Is.False);
+            Assert.That(shortcutTouched, Is.False);
             Assert.That(cleanups, Is.Zero);
             Assert.That(purged, Is.False);
         });
+    }
+
+    [Test]
+    public void FailedShortcutRemovalReturnsTheInstallationAndItsRegistryKey()
+    {
+        using TemporaryTree tree = new();
+        Directory.CreateDirectory(tree.InstallationRoot);
+        File.WriteAllText(Path.Combine(tree.InstallationRoot, "installed.txt"), "installed");
+        string tombstone = SetupUninstallExecutor.BuildTombstonePath(tree.InstallationRoot, Guid.NewGuid());
+        SetupUninstallExecutor.MoveInstallationRoot(tree.InstallationRoot, tombstone);
+        List<string> steps = [];
+
+        Assert.That(
+            () => SetupUninstallExecutor.FinishMovedUninstall(
+                tree.InstallationRoot,
+                tombstone,
+                removeRegistry: () => steps.Add("registry removed"),
+                restoreRegistry: () => steps.Add(
+                    File.Exists(Path.Combine(tree.InstallationRoot, "installed.txt"))
+                        ? "registry restored over the returned installation"
+                        : "registry restored without the installation"),
+                removeShortcut: static () => throw new InstallationSafetyException("shortcut"),
+                purgeData: () => steps.Add("purged"),
+                launchCleanup: (_, _) =>
+                {
+                    steps.Add("cleanup");
+                    return 1;
+                }),
+            Throws.TypeOf<InstallationSafetyException>().With.Message.EqualTo("shortcut"));
+        Assert.That(
+            steps,
+            Is.EqualTo(new[] { "registry removed", "registry restored over the returned installation" }));
+        Assert.That(Directory.Exists(tombstone), Is.False);
     }
 
     [Test]
@@ -287,7 +324,9 @@ public sealed class SetupUninstallExecutorTests
             () => SetupUninstallExecutor.FinishMovedUninstall(
                 tree.InstallationRoot,
                 tombstone,
-                removeIntegration: static () => { },
+                removeRegistry: static () => { },
+                restoreRegistry: static () => { },
+                removeShortcut: static () => { },
                 purgeData: static () => throw new IOException("locked data"),
                 launchCleanup: SetupUninstallExecutor.LaunchTombstoneCleanup),
             Throws.TypeOf<IOException>());
