@@ -158,3 +158,12 @@ def test_a_request_with_no_voice_after_the_call_is_not_transcribed() -> None:
     spoken._start, spoken._early_at = 0.0, None
     spoken._event = lambda name: None
     assert len(spoken._finish(0.0)[0]) == len(spoken._audio)
+
+
+@pytest.mark.parametrize(("heard", "asked"), [
+    ("Baxi.", ""), ("Paksi.", ""), ("Baxy, Baxi", ""), ("Baxi, abre la calculadora.", "abre la calculadora."),
+    ("Maxi, prepárate para mañana.", "prepárate para mañana."), ("¿Baxi? sube el volumen", "sube el volumen"),
+    ("abre el taxi de la app", "abre el taxi de la app"), ("Pásame la sal", "Pásame la sal"),
+    ("Hola, ¿qué hora es?", "Hola, ¿qué hora es?")])
+def test_the_call_is_never_part_of_the_request(heard: str, asked: str) -> None:
+    assert voice.without_call(heard) == asked
