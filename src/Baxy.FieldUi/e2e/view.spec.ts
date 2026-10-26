@@ -319,7 +319,11 @@ test('el catálogo no habla como BAXY («Qué puedo hacer») y su nombre cabe en
       .flatMap((b) => [...b.querySelectorAll<HTMLElement>('span')].filter((s) => s.scrollWidth > s.clientWidth + 1 || s.getBoundingClientRect().right > b.getBoundingClientRect().right + 1).map((s) => s.innerText)));
     expect(over, `${w}×${ht}`).toEqual([]);
   }
-  await p.setViewportSize({ width: 1400, height: 860 });
-  await rail.click();
-  await expect(p.locator('.panel-title')).toHaveText('Capacidades de BAXY');
+});
+
+test('el panel del catálogo se titula «Capacidades de BAXY»', async () => {
+  h = await openView();
+  h.reply('/catalog', () => ({ body: { total: 1, groups: [{ name: 'Apps', items: [{ name: 'app.open', title: 'Abrir una app', confirm: 'never' }] }] } }));
+  await h.page.getByRole('button', { name: /Capacidades/ }).click();
+  await expect(h.page.locator('.panel-title')).toHaveText('Capacidades de BAXY');
 });
