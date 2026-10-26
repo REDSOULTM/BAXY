@@ -5,7 +5,9 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Baxy.Contracts;
+using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
+using Baxy.Security.Windows;
 
 namespace Baxy.App;
 
@@ -76,6 +78,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.KeptConversation = () => _sessions.Load(_sessionId)?.Mind;
         // f6 estado: BAXY's own readings by voice are the ones this channel serves the view.
         _viewModel.OwnReader = ReadOwnAsync;
+        _viewModel.Conversation = RunConversation;
+        _viewModel.TurnReleased += OnTurnReleased;
     }
 
     // assistant.status: GET /metrics' model reading (the same sampler), or this session's internet log, which the view
@@ -525,6 +529,220 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         return new JsonObject { ["sessions"] = list };
     }
 
+    // ---- conversations asked by voice ------------------------------------------------------------------------------
+    // pc-f6-sesiones (APLAZADOS f4-accesibilidad, 2026-10-25): what SessionsPanel and the chat's «+» do, asked by voice
+    // (conversation.*, which NativeTurnLoop runs here after the catalog's schema and the kernel's policy). The turn that
+    // asks belongs to the conversation on screen: its answer is kept there, and the conversation asked for opens once
+    // that turn has let go (TurnReleased), with the same steps as the panel's. Its result says so (afterThisAnswer).
+
+    private const int ConversationsListed = 20;
+    // The conversation to open once the turn lets go: a kept one's id, or empty for a new one.
+    private string? _openAfterTurn;
+
+    private string? RunConversation(string operation, JsonObject arguments) => operation switch
+    {
+        "conversation.list" => ListConversations(),
+        "conversation.new" => OpenAfterTurn(string.Empty, null),
+        "conversation.open" => OpenConversation((string?)arguments["conversation"] ?? string.Empty),
+        "conversation.rename" => RenameConversation((string?)arguments["conversation"],
+            ((string?)arguments["title"] ?? string.Empty).Trim()),
+        _ => null,
+    };
+
+    private string ListConversations()
+    {
+        List<(string Id, string Title, DateTimeOffset Updated)> all = AllConversations();
+        return Ran(OperationVisibleFacts.VerificationOutputOnly, new JsonObject
+        {
+            ["conversations"] = new JsonArray([.. all.Take(ConversationsListed).Select(Listed)]),
+            ["totalCount"] = all.Count,
+        });
+    }
+
+    private string OpenConversation(string selector)
+    {
+        if (FindConversation(selector) is not { } found)
+        {
+            return NotFound(selector);
+        }
+
+        if (found.Id == _sessionId)
+        {
+            _openAfterTurn = null;
+            return Ran(OperationVisibleFacts.VerificationUnchanged, new JsonObject
+            {
+                ["conversation"] = Listed(found),
+                ["alreadyOpen"] = true,
+            });
+        }
+
+        return OpenAfterTurn(found.Id, found);
+    }
+
+    // The result of an opening that waits for the turn: what opens, and that this turn's answer stays where it is.
+    private string OpenAfterTurn(string id, (string Id, string Title, DateTimeOffset Updated)? kept)
+    {
+        _openAfterTurn = id;
+        return Ran(OperationVisibleFacts.VerificationNone, new JsonObject
+        {
+            ["opens"] = kept is { } conversation ? Listed(conversation) : "new_conversation",
+            ["afterThisAnswer"] = true,
+            ["thisAnswerStaysIn"] = SessionTitle,
+        });
+    }
+
+    private string RenameConversation(string? selector, string title)
+    {
+        (string Id, string Title, DateTimeOffset Updated)? found = selector is null
+            ? (_sessionId, SessionTitle, DateTimeOffset.UtcNow)
+            : FindConversation(selector);
+        if (found is not { } conversation)
+        {
+            return NotFound(selector ?? string.Empty);
+        }
+
+        string renamed;
+        if (conversation.Id == _sessionId)
+        {
+            _sessionLabel = title;
+            Publish(SessionEvent());
+            renamed = SessionTitle;
+        }
+        else if (_sessions.Rename(conversation.Id, title) && _sessions.Load(conversation.Id)?.Label is { } label)
+        {
+            renamed = label;
+            Publish(SurfacesEvent());
+        }
+        else
+        {
+            return Failed("conversation_not_renamed", null);
+        }
+
+        return Ran(renamed == title ? OperationVisibleFacts.VerificationReadback : OperationVisibleFacts.VerificationNone,
+            new JsonObject
+            {
+                ["conversation"] = Listed((conversation.Id, renamed, conversation.Updated)),
+                ["previousTitle"] = conversation.Title,
+            });
+    }
+
+    // The one on screen first, then the kept ones from the newest, as the panel lists them.
+    private List<(string Id, string Title, DateTimeOffset Updated)> AllConversations() =>
+    [
+        (_sessionId, SessionTitle, DateTimeOffset.UtcNow),
+        .. _sessions.List().Where(s => s.Id != _sessionId)
+            .Select(static s => (s.Id, s.Label.Length > 0 ? s.Label : "Conversación", s.Updated)),
+    ];
+
+    // By its id, else by its whole title, else by a part of it, without case or accents; null when none or several.
+    private (string Id, string Title, DateTimeOffset Updated)? FindConversation(string selector)
+    {
+        List<(string Id, string Title, DateTimeOffset Updated)> all = AllConversations();
+        selector = selector.Trim();
+        string folded = NetworkEgress.Folded(selector);
+        List<(string Id, string Title, DateTimeOffset Updated)> found = [.. all.Where(c => c.Id == selector)];
+        if (found.Count == 0)
+        {
+            found = [.. all.Where(c => NetworkEgress.Folded(c.Title) == folded)];
+        }
+
+        if (found.Count == 0)
+        {
+            found = [.. TitledWith(all, folded)];
+        }
+
+        return found.Count == 1 ? found[0] : null;
+    }
+
+    private static IEnumerable<(string Id, string Title, DateTimeOffset Updated)> TitledWith(
+        IEnumerable<(string Id, string Title, DateTimeOffset Updated)> all, string folded) =>
+        all.Where(c => folded.Length > 0 && NetworkEgress.Folded(c.Title).Contains(folded, StringComparison.Ordinal));
+
+    // None answers to it, or several do (each one listed, to tell which).
+    private string NotFound(string selector)
+    {
+        JsonNode[] several = [.. TitledWith(AllConversations(), NetworkEgress.Folded(selector.Trim()))
+            .Take(ConversationsListed).Select(Listed)];
+        return several.Length > 1
+            ? Failed("conversation_ambiguous", new JsonObject { ["matches"] = new JsonArray(several) })
+            : Failed("conversation_not_found", null);
+    }
+
+    private JsonObject Listed((string Id, string Title, DateTimeOffset Updated) conversation) => new()
+    {
+        ["id"] = conversation.Id,
+        ["title"] = conversation.Title,
+        ["when"] = conversation.Id == _sessionId ? "ahora" : Said(conversation.Updated),
+        ["current"] = conversation.Id == _sessionId,
+    };
+
+    // When a kept conversation was last used, as the person would say it: «hoy 10:30», «ayer 21:05» or its date.
+    private static string Said(DateTimeOffset utc)
+    {
+        DateTime local = utc.ToLocalTime().DateTime;
+        string clock = local.ToString("HH:mm", CultureInfo.InvariantCulture);
+        return (DateTime.Today - local.Date).Days switch
+        {
+            0 => "hoy " + clock,
+            1 => "ayer " + clock,
+            _ => local.ToString("yyyy-MM-dd ", CultureInfo.InvariantCulture) + clock,
+        };
+    }
+
+    private static string Ran(string verification, JsonObject facts)
+    {
+        var result = new JsonObject
+        {
+            ["status"] = OperationStatuses.Completed,
+            [OperationVisibleFacts.VerificationKey] = verification,
+        };
+        return With(result, facts);
+    }
+
+    private static string Failed(string error, JsonObject? facts) =>
+        With(new JsonObject { ["status"] = OperationStatuses.Failed, ["error"] = error }, facts);
+
+    private static string With(JsonObject result, JsonObject? facts)
+    {
+        foreach ((string key, JsonNode? value) in facts ?? [])
+        {
+            result[key] = value?.DeepClone();
+        }
+
+        return result.ToJsonString(SaidFolders.AsWritten);
+    }
+
+    // The turn that asked has let go: the conversation it asked for opens now, as the panel opens it. One the turn could
+    // not take yet (a heartbeat took it first) waits for the next release.
+    private async void OnTurnReleased()
+    {
+        if (_openAfterTurn is not { } id || _disposed)
+        {
+            return;
+        }
+
+        _openAfterTurn = null;
+        try
+        {
+            FieldHttpResponse opened = id.Length == 0
+                ? await NewSessionAsync(silence: false).ConfigureAwait(true)
+                : await LoadSessionAsync(id).ConfigureAwait(true);
+            if (opened.Status == 409 && opened.Body.Contains("turn_in_progress", StringComparison.Ordinal))
+            {
+                _openAfterTurn ??= id;
+            }
+
+            ShellTraceSink.Record(ShellTraceScopes.Bridge, ShellTraceSink.TurnId,
+                opened.Status == 200 ? "conversation.opened" : "conversation.not_opened", "");
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException or JsonException
+            or UnauthorizedAccessException or OperationCanceledException or ProtectedPayloadException)
+        {
+            ShellTraceSink.Record(ShellTraceScopes.Bridge, ShellTraceSink.TurnId, "conversation.not_opened",
+                exception.GetType().Name.ToLowerInvariant());
+        }
+    }
+
     // Keeps the current conversation (what the view showed and the mind's own) when it holds anything.
     private async Task SaveCurrentAsync(CancellationToken? cancellationToken = null)
     {
@@ -553,7 +771,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         Publish(SurfacesEvent());
     }
 
-    private async Task<FieldHttpResponse> NewSessionAsync()
+    private async Task<FieldHttpResponse> NewSessionAsync(bool silence = true)
     {
         if (_viewModel.IsBusy)
         {
@@ -561,7 +779,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         await SaveCurrentAsync().ConfigureAwait(true);
-        if (!await _viewModel.StartNewUiSessionAsync(_lifetimeCancellation).ConfigureAwait(true))
+        if (!await _viewModel.StartNewUiSessionAsync(_lifetimeCancellation, silence).ConfigureAwait(true))
         {
             return Error(_viewModel.IsBusy ? "turn_in_progress" : "session_not_started", 409);
         }
@@ -1165,6 +1383,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.VoiceLip -= OnVoiceLip;
         _viewModel.VoiceWake -= OnVoiceWake;
         _viewModel.KeptConversation = null;
+        _viewModel.Conversation = null;
+        _viewModel.TurnReleased -= OnTurnReleased;
         try
         {
             // The conversation as it stands is kept when BAXY closes. FT/proveedores goal (review of the App): the window

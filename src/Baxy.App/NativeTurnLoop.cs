@@ -110,6 +110,10 @@ internal sealed class NativeTurnLoop
         /// <summary>assistant.status by its scope: what the App holds of BAXY itself (OwnReadings), read here and never
         /// sent to the engine, which holds none of it.</summary>
         internal Func<string, CancellationToken, Task<OperationOutcome>>? OwnReading { get; init; }
+
+        /// <summary>Runs a conversation.* call on the App's own conversations (FieldProductChannel) and returns its
+        /// result as the model reads it; null when no view keeps conversations.</summary>
+        internal Func<string, JsonObject, string?>? Conversation { get; init; }
     }
 
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
@@ -543,6 +547,12 @@ internal sealed class NativeTurnLoop
         // Anything else the person asked for replaces a confirmation still waiting: it is dropped, never run later (a
         // heartbeat never starts with one waiting, RunBeatAsync).
         DropPending();
+        if (IsConversation(operation))
+        {
+            string ran = RunConversation(operation, arguments);
+            return Record(operation, arguments, started, ran, sent: StatusOf(ran) == OperationStatuses.Completed);
+        }
+
         CoreProcessClient? core = _host.Core();
         if (core is not { IsReady: true })
         {
@@ -710,6 +720,47 @@ internal sealed class NativeTurnLoop
             completed ? null : outcome.ErrorCode);
         _turnPlace.Ran(descriptor.Name, arguments, response.Status);
         return Record(descriptor.Name, arguments, started, response.Message, response);
+    }
+
+    /// <summary>A call on BAXY's own conversations (conversation.*): the App runs it, and only in a person's turn.</summary>
+    internal static bool IsConversation(string operation) =>
+        operation.StartsWith("conversation.", StringComparison.Ordinal);
+
+    // pc-f6-sesiones (APLAZADOS f4-accesibilidad, 2026-10-25): the conversations are the App's, not the engine's, so a
+    // conversation.* call runs here, through the same gates an engine call has: the catalog's schema and the kernel's
+    // policy (Normal, the stricter mode: what it allows Bypass allows too). Only the person asks for one: a heartbeat
+    // never moves them to another conversation unasked.
+    private string RunConversation(string operation, JsonObject arguments)
+    {
+        if (!ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) || descriptor is null)
+        {
+            return Observation("rejected", "unknown_operation");
+        }
+
+        using System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString());
+        IReadOnlyList<ArgumentProblem> problems =
+            OperationArgumentValidator.Problems(given.RootElement, descriptor.ArgumentsSchema);
+        if (problems.Count > 0)
+        {
+            return Observation("failed", "invalid_arguments", WithArguments(new JsonObject
+            {
+                ["argumentProblems"] = OperationVisibleFacts.ArgumentProblemsJson(problems),
+            }, "argumentsGiven", operation, arguments));
+        }
+
+        if (Baxy.Kernel.Policy.RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk),
+                Baxy.Kernel.Policy.ConfirmationMode.Normal, operation, given.RootElement)
+            != Baxy.Kernel.Policy.PolicyDecision.Allow)
+        {
+            return Observation("rejected", "confirmation_unsupported");
+        }
+
+        if (_beat)
+        {
+            return Observation("rejected", "person_turn_only");
+        }
+
+        return _host.Conversation?.Invoke(operation, arguments) ?? Observation("failed", "conversations_unavailable");
     }
 
     // Al máximo 5.1: what the call does besides its risk is the catalog's typed fact (OperationEffects), read with the

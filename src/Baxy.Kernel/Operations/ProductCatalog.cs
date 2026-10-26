@@ -409,6 +409,38 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "clipboard.write.text.sequence.postread.v1",
             "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura."),
+        // pc-f6-sesiones (APLAZADOS f4-accesibilidad, 2026-10-25): las conversaciones con BAXY, que sólo se manejaban en
+        // la vista (SessionsPanel, el «+» del chat). Las ejecuta la App, dueña de las sesiones (FieldProductChannel), no
+        // el motor; abrir una o empezar otra ocurre al terminar la respuesta del turno, que es de la conversación actual.
+        Descriptor(
+            "conversation.list",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "conversation.list.app.sessions.v1",
+            "Lista las conversaciones con BAXY, la actual y las guardadas de la más reciente a la más antigua, con su id, título y cuándo."),
+        Descriptor(
+            "conversation.new",
+            EmptySchema(),
+            OperationRisks.LowReversible,
+            "conversation.new.app.afterturn.v1",
+            "Empieza una conversación nueva con BAXY al terminar esta respuesta; la actual queda guardada."),
+        Descriptor(
+            "conversation.open",
+            Schema([String("conversation", maximumUtf8Bytes: 256, nonWhitespace: true)], ["conversation"]),
+            OperationRisks.LowReversible,
+            "conversation.open.app.afterturn.v1",
+            "Vuelve a una conversación guardada, por su id o su título de conversation_list, al terminar esta respuesta."),
+        Descriptor(
+            "conversation.rename",
+            Schema(
+                [
+                    String("conversation", maximumUtf8Bytes: 256, nonWhitespace: true),
+                    String("title", maximumLength: 80, nonWhitespace: true),
+                ],
+                ["title"]),
+            OperationRisks.LowReversible,
+            "conversation.rename.app.readback.v1",
+            "Cambia el título de la conversación actual, o de otra dada por su id o su título."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0459 «cambiá el fondo de
         // pantalla a azul», D11): un color liso o una imagen de una carpeta conocida
         // como fondo de escritorio, verificado por la postlectura del sistema; el

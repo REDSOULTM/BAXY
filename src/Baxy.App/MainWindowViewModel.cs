@@ -170,6 +170,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     ClearConversationLog();
                     EverythingForgotten?.Invoke();
                 },
+                Conversation = (operation, arguments) => Conversation?.Invoke(operation, arguments),
             });
     }
 
@@ -632,6 +633,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// a mind that starts is given back.</summary>
     internal Func<System.Text.Json.Nodes.JsonArray?>? KeptConversation { get; set; }
 
+    /// <summary>Runs a conversation.* call of the person's turn on the conversations the view's channel keeps
+    /// (NativeTurnLoop.Host.Conversation): its result as the model reads it.</summary>
+    internal Func<string, System.Text.Json.Nodes.JsonObject, string?>? Conversation { get; set; }
+
+    /// <summary>A person's turn ended and let the turn go: what waited for it (a conversation to open) can run now.</summary>
+    internal event Action? TurnReleased;
+
     /// <summary>What the heartbeat last saw the person doing (libre, jugando, llamada, viendo, ausente…).</summary>
     internal string OwnerActivity { get; private set; } = string.Empty;
 
@@ -735,6 +743,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             IsBusy = false;
+            if (entered)
+            {
+                TurnReleased?.Invoke();
+            }
         }
     }
 
@@ -798,7 +810,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         : "BAXY disponible";
 
     /// <summary>A new conversation: the transcript, the model's session and anything pending start over.</summary>
-    internal async Task<bool> StartNewUiSessionAsync(CancellationToken cancellationToken)
+    /// <param name="silence">Whether BAXY's voice stops too: a new conversation asked by voice (conversation.new)
+    /// starts while BAXY still says that it did.</param>
+    internal async Task<bool> StartNewUiSessionAsync(CancellationToken cancellationToken, bool silence = true)
     {
         // Ronda final 33 (regla 3): not while a heartbeat holds the turn either (its line would land in the new session).
         // 2026-10-22, review of the App: it holds the turn itself while the mind starts over, and it waits for the mind:
@@ -818,7 +832,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             _loop.Reset();
             Messages.Clear();
-            SilenceVoice();
+            if (silence)
+            {
+                SilenceVoice();
+            }
             OnPropertyChanged(nameof(HasPendingConfirmation));
             StatusDescription = IdleStatus();
             return true;
