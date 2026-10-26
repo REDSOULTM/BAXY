@@ -123,7 +123,7 @@ def _refusing_past(server, limit: int) -> None:
 
 def test_the_last_answer_of_a_turn_of_paged_reads_always_comes(tmp_path: Path) -> None:
     pages = [_call("file_read", {"fileName": "server.log", "folder": "home", "offset": 4000 * n}) for n in range(15)]
-    mind, server = _mind(tmp_path, [*pages, _say("I read only part of the file; in that part I saw no errors.")])
+    mind, server = _mind(tmp_path, [*pages, _say("Leí sólo una parte del archivo; en esa parte no vi errores.")])
     _refusing_past(server, LIMIT)
     assert mind.decide(1, "check server.log and tell me if there were any errors anywhere in the file")["kind"] == "action"
     for step in range(14):

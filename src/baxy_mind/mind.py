@@ -850,17 +850,7 @@ CHECK_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía 
 CHECK_FACT = "Dice «{said}», pero {fact}."
 CHECK_FACTS = 3
 # The rules of the check that are aids of their own (BAXY_AYUDAS), beside «answer_check» itself.
-CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read", "denial": "check_denial",
-                   "language": "check_language"}
-# Aid «check_language» (2026-10-25): an answer clearly in Spanish to this turn's words clearly in English (answer_check
-# rule «language»; cien: 14 of 68 English requests of the e2e runs answered in Spanish). The model is told only that
-# fact and writes its answer again, once, words only; the second answer is final. Never on Spanglish, a short request or
-# one that asks for Spanish or a translation. Offline on the 2,250 replies of the c3-*-e2e, ho6-*-e2e-e2e and
-# ho7-*-s1-e2e runs (176 of them to the 30 requests it reads as English, all English by hand): 45 flagged, all Spanish
-# answers by hand (V5E046 18, V6E049 7, V6E068 6, V6E038 3, V6E073 3, V6E039 2, V7E055 4, V7E046 2); 3 Spanish ones of
-# two words left as they are (scripts/renew/ayudas/idioma_auditoria.py). Precision 45/45: on by default.
-LANGUAGE_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo. La persona escribió en "
-                 "inglés y tu respuesta está en español. Escribe de nuevo tu respuesta a la persona.]")
+CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read", "denial": "check_denial"}
 # Aid «check_denial» (2026-10-25): an answer of a turn with no call that says BAXY cannot do what a tool of the catalog
 # does (answer_check rule «denial»: V5E046 «No puedo eliminar carpetas de BAXY-bench», E027, V5E040, V6E015). The model
 # is told which tool does it and what its description says, and answers again once; its tools stay, so it may do what
@@ -2165,12 +2155,8 @@ class Mind:
             except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
                 pass
         denied = any(f["rule"] == "denial" for f in findings)
-        # Aid «check_language»: the language alone has its own note; beside other facts it is one more, never cut.
-        facts = [f for f in findings if f["rule"] != "language"][:CHECK_FACTS]
-        facts += [f for f in findings if f["rule"] == "language"]
-        note = {"role": "user", "content": LANGUAGE_NOTE if all(f["rule"] == "language" for f in facts) else (
-            DENIAL_NOTE if denied else CHECK_NOTE).format(facts=" ".join(
-                CHECK_FACT.format(said=f["said"], fact=f["fact"]) for f in facts))}
+        note = {"role": "user", "content": (DENIAL_NOTE if denied else CHECK_NOTE).format(facts=" ".join(
+            CHECK_FACT.format(said=f["said"], fact=f["fact"]) for f in findings[:CHECK_FACTS]))}
         conv = turn["conv"]
         conv.append(note)
         try:

@@ -42,7 +42,7 @@ def _corrects(tmp_path, monkeypatch, capabilities, doubted, choice, filled):
     monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))  # no confirmation-mode file: the kernel's normal mode
     reply = _call(doubted, {}, 0.5)
     reply["choices"][0]["logprobs"]["content"][5]["top_logprobs"].append({"token": "x", "logprob": math.log(0.4)})
-    mind, server = _mind(tmp_path, [reply, _say("What exactly do you want?")])
+    mind, server = _mind(tmp_path, [reply, _say("¿Qué quieres exactamente?")])
     server.complete_name = lambda prompt, written: "_y"
     fills: list[str] = []
 
