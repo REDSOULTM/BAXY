@@ -92,7 +92,7 @@ export function SettingsPanel({ onClose, theme, onTheme, bypass, onBypass, mic, 
             <Row label="Nivel de confirmación" hint="Lo mismo que el interruptor del panel: Normal o Bypass">
               <Seg value={bypass ? 'never' : 'risk'} onChange={(v) => onBypass(v === 'never')} options={[['risk', 'Lo arriesgado'], ['never', 'Nada']]} />
             </Row>
-            <div className="st-tip">Con <b className="bone">lo arriesgado</b>, BAXY pregunta antes de: borrar o perder trabajo sin guardar, enviar un mensaje o un correo, crear un evento en tu calendario, instalar, y un comando o un clic que cambia algo que no se puede deshacer. Con <b className="bone">nada</b> (bypass), lo hace sin preguntar y la conversación lo dice. La tarjeta aparece en la conversación, nunca encima de tu ventana, y espera tu respuesta {spoken(confirmSeconds)}; si no contestas, no se hace nada.</div>
+            <div className="st-tip">Con <b className="bone">lo arriesgado</b>, BAXY pregunta sólo antes de lo destructivo o peligroso: borrar o vaciar la papelera, perder lo que no guardaste, enviar o publicar algo, entrar a una llamada, instalar o desinstalar programas, comprar o pagar, forzar el cierre de un programa y un comando que cambia algo. Con <b className="bone">nada</b> (bypass), lo hace sin preguntar y la conversación lo dice. La tarjeta aparece en la conversación, nunca encima de tu ventana, y espera tu respuesta {spoken(confirmSeconds)}; si no contestas, no se hace nada.</div>
           </>) : null}
           {tab === 'voz' ? (<>
             <Row label="Palabra de activación" ro hint={voice?.wake?.downloaded === false ? 'El modelo de activación no está en disco' : 'En pruebas · próximamente disponible'}><span className="bxs-fixed">BAXY</span></Row>
