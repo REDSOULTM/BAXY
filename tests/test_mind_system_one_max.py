@@ -98,17 +98,12 @@ def test_an_invented_window_id_still_asks_beside_an_enum_code(tmp_path, monkeypa
 
 # ---- 2. Layer 0 does not hold what is reversible ----------------------------------------------------------------
 @pytest.mark.parametrize("risk, operation", [("low_reversible", "app.open"),  # its error is undone; the kernel verifies
-                                             ("read_only", None), ("privacy_sensitive", None),
-                                             # holdout v6 V6E052: the kernel confirms it, naming the exact action
-                                             # (ablación e: only with BAXY_S1_PASS_CONFIRMED=1)
-                                             ("work_loss", "app.open"),
+                                             ("read_only", None), ("work_loss", None), ("privacy_sensitive", None),
                                              ("", None)])  # a catalog without the risk holds as before
 def test_layer_0_holds_an_unsure_call_unless_it_is_low_reversible(tmp_path, monkeypatch, risk, operation) -> None:
     # 26 runs of decision2 with System One (2026-10-22): layer 0 held low_reversible calls 23 times, 22 of them right
     # without System One (P040 ×7, P085 ×15) and none useful.
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
-    monkeypatch.setenv("BAXY_S1_PASS_CONFIRMED", "1")
-    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))  # no confirmation-mode file: the kernel's normal mode
     mind, _ = _mind(tmp_path, [_call("app_open", {"appId": "Discord"}, 0.3), _say("¿Qué abro?")])
     mind.risk = {"app_open": risk}
     assert mind.decide(1, "abre discord")["operation"] == operation

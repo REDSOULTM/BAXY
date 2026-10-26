@@ -74,36 +74,6 @@ def test_a_sure_action_or_layer_0_off_runs_as_before(tmp_path, monkeypatch, thre
     assert result["kind"] == "action" and result["operation"] == "app.open"
 
 
-# Holdout v6 V6E052 («bórrame plan_b.txt de la carpeta BAXY-bench», s0): held at 0.35, the model asked «¿Quieres que
-# borre plan_b.txt…?» in words and nothing waited for the answer. A call the kernel confirms whatever its arguments (a
-# risk of CONFIRMED_RISKS in normal mode) is not held by layer 0: its confirmation names the exact action. In Bypass, or
-# for system.power (normal mode runs it unasked), layer 0 holds it as before. Ablación e: only with
-# BAXY_S1_PASS_CONFIRMED=1; by default layer 0 holds it as in cien (V6D131 of the decision bench).
-@pytest.mark.parametrize("passing,mode,wire,risk,held", [
-    ("1", None, "filesystem_known_trash_named", "recoverable_delete", False),
-    ("1", "bypass", "filesystem_known_trash_named", "recoverable_delete", True),
-    ("1", None, "system_power", "work_loss", True),
-    (None, None, "filesystem_known_trash_named", "recoverable_delete", True),
-    (None, None, "app_close", "work_loss", True),
-])
-def test_layer_0_leaves_to_the_kernel_a_call_it_confirms(tmp_path, monkeypatch, passing, mode, wire, risk,
-                                                         held) -> None:
-    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
-    if passing:
-        monkeypatch.setenv("BAXY_S1_PASS_CONFIRMED", passing)
-    else:
-        monkeypatch.delenv("BAXY_S1_PASS_CONFIRMED", raising=False)
-    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))
-    if mode:
-        (tmp_path / "confirmation-mode").write_text(mode, encoding="utf-8")
-    mind, _ = _mind(tmp_path, [_call(wire, {"fileName": "plan_b.txt"}, 0.3), _say("¿Quieres que borre plan_b.txt?")])
-    mind.wire_to_op["filesystem_known_trash_named"] = "filesystem.known.trash.named"
-    mind.risk = {wire: risk}
-    result = mind.decide(1, "bórrame plan_b.txt de la carpeta BAXY-bench")
-    assert (result["kind"] == "conversation") is held
-    assert (result["operation"] is None) is held
-
-
 class FakeSystemOne:
     ready = True
 
