@@ -1,4 +1,3 @@
-using Baxy.Providers.Windows.Applications;
 using Baxy.Providers.Windows.Audio;
 using Baxy.Providers.Windows.Infrastructure;
 using NUnit.Framework;

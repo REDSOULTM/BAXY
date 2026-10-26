@@ -1,5 +1,4 @@
 using System.Reflection;
-using Baxy.App;
 
 namespace Baxy.App.Tests;
 

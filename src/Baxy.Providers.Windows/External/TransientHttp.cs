@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Net;
-using System.Net.Http;
 
 namespace Baxy.Providers.Windows.External;
 

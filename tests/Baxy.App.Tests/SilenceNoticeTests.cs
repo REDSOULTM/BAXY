@@ -1,4 +1,3 @@
-using Baxy.App;
 using NUnit.Framework;
 
 namespace Baxy.App.Tests;

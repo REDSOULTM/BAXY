@@ -1392,7 +1392,7 @@ internal sealed class WindowsVisibleControlAdapter
         CancellationToken cancellationToken)
     {
         if (operation == "input.visible.controls")
-            return await ListAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            return await ListAsync(arguments, cancellationToken).ConfigureAwait(false);
 
         ExternalCapabilityReceipt receipt;
         _pressedUnchanged = null;
@@ -2129,7 +2129,6 @@ internal sealed class WindowsVisibleControlAdapter
     // ---------------------------------------------------------------- view
 
     private async ValueTask<ExternalCapabilityReceipt> ListAsync(
-        string operation,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {

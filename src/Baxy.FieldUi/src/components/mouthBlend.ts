@@ -74,7 +74,7 @@ function fillHoles(m: Uint8Array): Uint8Array {
   return o;
 }
 /** the lit mouth (LEDs, teeth, tongue and what they enclose), grown by `grow` px for its glow */
-export function mouthMask(rgba: Uint8ClampedArray, grow: number): Uint8Array {
+function mouthMask(rgba: Uint8ClampedArray, grow: number): Uint8Array {
   const m = new Uint8Array(N);
   for (let i = 0; i < N; i++) {
     const r = rgba[i * 4], g = rgba[i * 4 + 1], b = rgba[i * 4 + 2];

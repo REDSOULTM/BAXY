@@ -19,7 +19,6 @@ cases = {c["id"]: c for c in json.load(open(casos, encoding="utf-8"))}
 
 NEW_WINDOW = r"window\+|explorer\+"
 SANDBOX = r"sandbox changed|known\+"
-BROWSERS = r"^FG (opera|chrome|msedge|brave|firefox|opera_gx)\b"
 # op -> (oracle index, regex): 0 = world change, 1 = foreground, 2 = audio. An op not listed is judged by its receipt.
 # Measured in the first pass (nb-reales-e2e-845): Steam stays in front for the whole bench and the YouTube tabs outlive
 # their case in the person's (protected) Opera, so the foreground and the titles cannot judge browser, streaming or

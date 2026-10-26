@@ -80,10 +80,13 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
                 : "win32_initiatesystemshutdownex_shutdown_acceptance");
         }
 
-        string? message = DialogMessage(reboot);
+        // Renew al máximo (B-SYS-7): Windows shows lpMessage in its restart/shutdown notice. BAXY put a fixed «BAXY
+        // confirmó el reinicio solicitado…» there: a visible fixed reply, and in Normal mode nobody had confirmed. Both
+        // calls take NULL (InitiateSystemShutdownEx: «can be NULL if no message is required»), and Windows shows its own
+        // notice.
         if (InitiateSystemShutdownEx(
                 null,
-                message,
+                message: null,
                 timeout: TransitionDelaySeconds,
                 forceAppsClosed: false,
                 rebootAfterShutdown: reboot,
@@ -98,7 +101,7 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
         uint flags = ShutdownGraceOverride | (reboot ? ShutdownRestart : ShutdownPowerOff);
         uint error = InitiateShutdown(
             null,
-            message,
+            message: null,
             TransitionDelaySeconds,
             flags,
             ShutdownReasonMajorApplication | ShutdownReasonPlanned);
@@ -107,11 +110,6 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
                 : "win32_initiateshutdown_shutdown_acceptance",
             AlreadyPending: error != 0 && (PendingShutdown(firstError) || PendingShutdown(unchecked((int)error))));
     }
-
-    // Renew al máximo (B-SYS-7): Windows shows lpMessage in its restart/shutdown notice. BAXY put a fixed «BAXY confirmó
-    // el reinicio solicitado…» there: a visible fixed reply, and in Normal mode nobody had confirmed. Both calls take NULL
-    // (InitiateSystemShutdownEx: «can be NULL if no message is required»), and Windows shows its own notice.
-    internal static string? DialogMessage(bool reboot) => null;
 
     private static bool PendingShutdown(int error) => error is 1115 or 1190;
 

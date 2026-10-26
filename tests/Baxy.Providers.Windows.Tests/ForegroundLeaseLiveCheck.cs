@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 

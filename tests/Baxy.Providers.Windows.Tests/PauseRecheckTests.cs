@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Baxy.Contracts;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 

@@ -275,7 +275,7 @@ public sealed class InstallationEngine
         WriteJournal(transaction);
         SwapCurrent(previous, hasCurrent: true, injectFaults: true);
         transaction = AdvanceJournal(transaction, PointerSwitchedPhase, previous);
-        transaction = AdvanceJournal(transaction, CompletePhase, previous);
+        _ = AdvanceJournal(transaction, CompletePhase, previous);
         Checkpoint(SetupFaultPoint.OperationCompleted);
         DeleteJournal();
         return new InstallationResult(

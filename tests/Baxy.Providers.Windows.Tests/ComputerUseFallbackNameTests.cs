@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;

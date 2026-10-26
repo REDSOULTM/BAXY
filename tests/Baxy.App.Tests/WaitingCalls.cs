@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Nodes;
-using Baxy.App;
 using Baxy.Kernel.Operations;
 
 namespace Baxy.App.Tests;

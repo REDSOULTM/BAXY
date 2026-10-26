@@ -38,7 +38,7 @@ const PAL_L: Record<string, { f: string; l: string; p: string }> = {
 type RGB = [number, number, number];
 const hex = (c: string): RGB => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16)) as RGB;
 const rgba = (c: RGB, a: number) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
-export const FACE_MAXPX = 4.5e6; /* canvas buffer cap: keeps 4K/8K smooth */
+const FACE_MAXPX = 4.5e6; /* canvas buffer cap: keeps 4K/8K smooth */
 const RATE: Record<string, number> = { error: 0.3, standby: 0, idle: 0.8, listening: 3.5, thinking: 6, speaking: 4, confirm: 0.8 };
 
 interface Particle { x: number; y: number; vx: number; vy: number; tx: number; ty: number; big: boolean }

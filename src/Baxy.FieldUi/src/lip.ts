@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
    from the wall-clock time `t0` its first sample sounds, and `stop` when the voice is cut. The avatar reads this
    timeline every frame with the same clock; nothing here goes through React. */
 
-export interface Take { t0: number; step: number; env: number[]; voicedEnd: number }
+interface Take { t0: number; step: number; env: number[]; voicedEnd: number }
 
 const VOICED = 0.12;      // a level above this is voice; below it, a pause
 const BRIDGE_MS = 450;    // a pause shorter than this keeps the mouth in «speaking» (between words and sentences)

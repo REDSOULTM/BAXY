@@ -19,17 +19,10 @@ Cada activo indica tipo, obligatoriedad, variable de entorno explícita, lista
 ordenada de candidatos, archivos requeridos y reparación. Los literales ligados
 a una unidad o convención histórica viven allí y no en consumidores.
 
-Los tres consumidores del descriptor son:
-
-- `scripts/asset_resolver.ps1`, usado por bootstrap, registro, instaladores y
-  build;
-- `src/baxy_mind/assets.py`, usado por voz, STT y wake sin alterar su
-  degradación;
-- `src/Baxy.App/AssetManifestDiscovery.cs`, usado por el host para diagnóstico.
-
-El consumidor .NET no activa directamente un candidato. La activación requiere
-además `mind-runtime-v1.json`, cuyas rutas y hashes valida
-`MindRuntimeDiscovery` de forma fail-closed.
+Su único consumidor es `scripts/asset_resolver.ps1`, usado por bootstrap, la
+instalación del modelo wake, el registro y el build. El host no lee el
+descriptor: la activación requiere `mind-runtime-v1.json`, cuyas rutas y hashes
+valida `MindRuntimeDiscovery` de forma fail-closed.
 
 ## Override local fuera de Git
 

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Reflection;
-using Baxy.App;
 using NUnit.Framework;
 
 namespace Baxy.App.Tests;

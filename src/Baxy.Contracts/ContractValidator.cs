@@ -441,19 +441,17 @@ public static class ContractValidator
             }
         }
 
-        JsonElement type = default;
         JsonElement properties = default;
         JsonElement required = default;
-        JsonElement additional = default;
         if (topLevelNames.Count != 4
-            || !schema.TryGetProperty("type", out type)
+            || !schema.TryGetProperty("type", out JsonElement type)
             || type.ValueKind != JsonValueKind.String
             || !string.Equals(type.GetString(), "object", StringComparison.Ordinal)
             || !schema.TryGetProperty("properties", out properties)
             || properties.ValueKind != JsonValueKind.Object
             || !schema.TryGetProperty("required", out required)
             || required.ValueKind != JsonValueKind.Array
-            || !schema.TryGetProperty("additionalProperties", out additional)
+            || !schema.TryGetProperty("additionalProperties", out JsonElement additional)
             || additional.ValueKind is not (JsonValueKind.True or JsonValueKind.False)
             || additional.GetBoolean())
         {

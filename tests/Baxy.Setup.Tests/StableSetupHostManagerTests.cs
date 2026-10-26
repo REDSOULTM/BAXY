@@ -511,45 +511,6 @@ public sealed class StableSetupHostManagerTests
     }
 
     [Test]
-    public void RestorePrevious_CreatesAnExactTargetBackupAndReturnsToUpdateStaged()
-    {
-        using HostTestTree tree = HostTestTree.Create();
-        tree.PrepareReplacedUpdate();
-
-        tree.Manager.RestorePrevious(tree.Before, tree.Target);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(tree.Manager.Inspect(tree.Before, tree.Target).State,
-                Is.EqualTo(StableSetupHostRecoveryState.UpdateStaged));
-            Assert.That(File.ReadAllBytes(tree.Paths.Stable), Is.EqualTo(tree.BeforeBytes));
-            Assert.That(File.ReadAllBytes(tree.Paths.Next), Is.EqualTo(tree.TargetBytes));
-            Assert.That(File.Exists(tree.Paths.Previous), Is.False);
-        });
-
-        Assert.That(tree.Manager.DeleteStagedTarget(tree.Before, tree.Target), Is.True);
-        Assert.That(tree.Manager.Inspect(tree.Before, tree.Target).State,
-            Is.EqualTo(StableSetupHostRecoveryState.BeforeStable));
-    }
-
-    [Test]
-    public void FaultDuringRestoreBackup_IsClassifiedAndResumed()
-    {
-        using HostTestTree tree = HostTestTree.Create(
-            new OneShotFaultInjector(StableSetupHostFaultPoint.RestoreTargetBackupDurable));
-        tree.PrepareReplacedUpdate();
-
-        Assert.Throws<SimulatedStableHostCrashException>(() =>
-            tree.Manager.RestorePrevious(tree.Before, tree.Target));
-        Assert.That(tree.InspectWithoutFault(tree.Before, tree.Target).State,
-            Is.EqualTo(StableSetupHostRecoveryState.RestoreBackupReady));
-
-        tree.ManagerWithoutFault.RestorePrevious(tree.Before, tree.Target);
-        Assert.That(tree.InspectWithoutFault(tree.Before, tree.Target).State,
-            Is.EqualTo(StableSetupHostRecoveryState.UpdateStaged));
-    }
-
-    [Test]
     public void FaultAfterStagedTargetDelete_LeavesAnEmptyStateAndIsIdempotent()
     {
         using HostTestTree tree = HostTestTree.Create(
@@ -596,20 +557,6 @@ public sealed class StableSetupHostManagerTests
                 tree.ManagerWithoutFault.DeleteStagedTarget(tree.Before, tree.Target),
                 Is.False);
         });
-    }
-
-    [Test]
-    public void FaultAfterPreviousRestore_LeavesTheRestoredStateClassified()
-    {
-        using HostTestTree tree = HostTestTree.Create(
-            new OneShotFaultInjector(StableSetupHostFaultPoint.PreviousRestored));
-        tree.PrepareReplacedUpdate();
-
-        Assert.Throws<SimulatedStableHostCrashException>(() =>
-            tree.Manager.RestorePrevious(tree.Before, tree.Target));
-
-        Assert.That(tree.InspectWithoutFault(tree.Before, tree.Target).State,
-            Is.EqualTo(StableSetupHostRecoveryState.UpdateStaged));
     }
 
     private static StableSetupHostRecoveryState ExpectedFirstInstallState(

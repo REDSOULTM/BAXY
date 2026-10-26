@@ -9,24 +9,6 @@ internal static partial class VisibleControlSurface
     // ~600 ms in all a caret (it blinks about every 530 ms).
     internal static readonly TimeSpan[] AnimationProbes = [TimeSpan.FromMilliseconds(150), TimeSpan.FromMilliseconds(450)];
 
-    /// <summary>
-    /// Auditoría final (regla 3): whether the window in front changes by itself (a video, a caret, a spinner): a later
-    /// capture that differs from <paramref name="first"/>, or that could not be taken. On such a window an image that
-    /// differs after a press is no proof of it.
-    /// </summary>
-    internal static async ValueTask<bool> ForegroundAnimatesAsync(CapturedWindow first, CancellationToken cancellationToken)
-    {
-        foreach (TimeSpan wait in AnimationProbes)
-        {
-            await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
-            CapturedWindow? again = await CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
-            if (again is not { } next || next.Hwnd != first.Hwnd
-                || !string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
-                return true;
-        }
-        return false;
-    }
-
     // PLAN_GENERAL A3/A4 (uso real 2026-10-21, e2e del notebook: Epic's store plays a video and a carousel; every click
     // there was refused as «surface changed» or read as «unread», since the whole window never holds still): the window is
     // read in cells, and what moves by itself is told apart from what a press changed.
@@ -1494,7 +1476,7 @@ internal static partial class VisibleControlSurface
         cancellationToken.ThrowIfCancellationRequested();
         // An application that was running already is the window the opening verified while it is still on screen;
         // only one launched now is followed through the processes it starts (its main window replaces a splash).
-        nint target = 0;
+        nint target;
         if (!opened.Launched && opened.Window != 0 && IsAlive(opened.Window)
             && HasUsableSurface(opened.Window) && !IsShellSurface(opened.Window))
         {

@@ -19,7 +19,7 @@ const COMET: Record<SkyState, { rate: number; cols: string[] }> = {
   thinking: { rate: 1.8, cols: ['#7B95D9', '#5B7FDB', '#C8D6F5'] },
   speaking: { rate: 1, cols: ['#E8C98E', '#C9A66B', '#F8EED2'] },
 };
-export const COSMOS_MAXPX = 4e6;
+const COSMOS_MAXPX = 4e6;
 const STAR_COLS = ['#D8DCE6', '#7B95D9', '#E55366'];
 const STAR_COLS_L = ['#7A849A', '#3A5BB8', '#C2334A'];
 

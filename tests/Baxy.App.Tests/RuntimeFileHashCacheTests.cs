@@ -1,6 +1,5 @@
 using System.IO;
 using System.Text.Json.Nodes;
-using Baxy.App;
 using NUnit.Framework;
 
 namespace Baxy.App.Tests;

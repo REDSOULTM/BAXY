@@ -11,7 +11,6 @@ import sys
 from pathlib import Path
 
 BANKS = Path(r"F:\BAXYeval\renew_v1\runs")
-WIRE = {"ask_user": "ask"}
 
 
 def auroc(scores, labels):
