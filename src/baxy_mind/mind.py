@@ -890,20 +890,10 @@ CONFIRM_FLOOR = 0.95
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
                     "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
                     "qué quiere exactamente.]")
-# Prueba en vivo (Paint cerrado, then «¿ya lo cerraste?»): layer 0 held app_close again with the same arguments, and the
-# model, told to ask, asked «¿Quieres que lo cierre o que lo abra?». With BAXY_S1_DOUBT_DONE=1, a held call that repeats
-# one of the session that completed (same tool and arguments, and it did not only look) is told with how that one ended;
-# what the model says with it is its own. It does not start as DOUBT_NOTE (the trace tells them apart), but the person's
-# next words answer it as they answer DOUBT_NOTE (DOUBT_DONE): it asks whether to repeat a call asked for again.
-DOUBT_DONE_NOTE = ("[Nota interna, no la escribió la persona: ibas a usar {call} sin estar seguro de qué quiere, y en esta "
-                   "conversación ya se llamó {call} con los mismos argumentos: {outcome}. No la hagas de nuevo todavía: "
-                   "contesta a la persona según lo que ya pasó, y si te pidió hacerlo otra vez, pregúntale en una frase "
-                   "corta si lo repites.]")
 # Al máximo 4.2 (SAGE-Agent): one question per misunderstanding. The person's words right after a doubt question (both
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
 DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
-DOUBT_DONE = DOUBT_DONE_NOTE[:DOUBT_DONE_NOTE.index("{call}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
@@ -1501,10 +1491,7 @@ class Mind:
                 raise
         self._close_open_calls()
         self._clean_closed()
-        # Revisión de nb-w11-mente: DOUBT_DONE_NOTE too, which asks whether to repeat a call asked for again; its answer
-        # was held again by the same note at every unsure «sí».
-        answering = any(str(m.get("content") or "").startswith((DOUBT_ASKED, DOUBT_DONE))
-                        for m in self.conversation[-2:])
+        answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
         clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
         self.conversation.append(clock)
         request = {"role": "user", "content": text}
@@ -2128,9 +2115,8 @@ class Mind:
             doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             if doubted.startswith("memory."):
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
-            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
-                      kind="doubt_done" if note.startswith(DOUBT_DONE) else "doubt_ask", operation=doubted,
-                      arguments=None, content=None)
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
+                      operation=doubted, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=True)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
@@ -2269,7 +2255,7 @@ class Mind:
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
         model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
-        low_reversible (with BAXY_S1_DOUBT_DONE=1, a call that repeats a completed one says how that one ended). Layer 2
+        low_reversible. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
@@ -2301,9 +2287,7 @@ class Mind:
                 and self.risk.get(call["wire"]) != "low_reversible" \
                 and not (os.environ.get("BAXY_S1_PASS_CONFIRMED", "").strip() == "1"
                          and self._kernel_confirms(call["wire"])):
-            done = self._done_before(call) if os.environ.get("BAXY_S1_DOUBT_DONE", "").strip() == "1" else None
-            return (DOUBT_DONE_NOTE.format(call=call["wire"], outcome=done) if done
-                    else DOUBT_NOTE.format(call=call["wire"]))
+            return DOUBT_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
         if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
@@ -2350,21 +2334,6 @@ class Mind:
                     if isinstance(question, str) and question.strip():
                         said.append({"role": "assistant", "content": question})
         return said
-
-    def _done_before(self, call: dict[str, Any]) -> str | None:
-        """How the newest earlier call of the session with this call's tool and arguments ended (its outcome among the
-        session's calls, _ran), when it completed and did more than look (DOUBT_DONE_NOTE); None otherwise. A look
-        (OUTPUT_READ) is not told: what it saw may have changed since, and looking again is what was asked."""
-        key = _call_key(call["arguments"])
-        ids = {made.get("id") for message in self.conversation for made in message.get("tool_calls") or []
-               if made.get("id") and made.get("function", {}).get("name") == call["wire"]
-               and _call_key(made["function"].get("arguments") or "{}") == key}
-        for entry, call_id in zip(reversed(self._ran), reversed(self._ran_ids)):
-            if call_id in ids:
-                outcome = entry.partition(" → ")[2]
-                done = outcome.startswith(COMPLETED_OUTCOMES) and not outcome.startswith(OUTPUT_READ)
-                return outcome if done else None
-        return None
 
     def _kernel_confirms(self, wire: str) -> bool:
         """Whether the kernel asks the person before this tool runs, whatever its arguments: a risk it always confirms in
