@@ -51,7 +51,8 @@ const FAILURE: Record<string, string> = {
   core_disconnected: 'El motor local se desconectó',
   retry_without_close: 'El motor local no arrancó',
   turn_failed: 'El turno no pudo terminar',
-  voice_error: 'No te entendí bien. ¿Lo repites?',
+  // a state of the interface, never words of BAXY's (zero fixed visible replies)
+  voice_error: 'No se entendió el audio',
 };
 
 // the frame's ring per state (design app.jsx SET).
@@ -66,7 +67,7 @@ const RING: Record<string, string[]> = {
 
 const LABEL: Record<BaxyState, string> = {
   booting: 'Arrancando', standby: 'En reposo', idle: 'En espera', listening: 'Escuchando', thinking: 'Pensando',
-  speaking: 'Hablando', confirm: 'Esperando tu ok', error: 'No te entendí',
+  speaking: 'Hablando', confirm: 'Esperando tu ok', error: 'No se entendió el audio',
 };
 
 export default function App() {
@@ -205,7 +206,6 @@ export default function App() {
         : host === 'idle' && pendingCard ? 'confirm'
           : host;
   const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
-  const errorText = voiceError ?? (s.agent.failure ? FAILURE[s.agent.failure] ?? 'Algo falló' : 'Algo falló');
   const label = state === 'error' ? (voiceError ? LABEL.error : FAILURE[s.agent.failure ?? ''] ?? 'Algo falló') : LABEL[state];
 
   // how long the model took this time, kept as this view's note for the next start (never a promise)
@@ -228,7 +228,7 @@ export default function App() {
     return () => window.clearTimeout(id);
   }, [s.voiceDroppedAt, finish]);
   const dropped = s.voiceDroppedAt !== null && done.voiceDropped !== s.voiceDroppedAt
-    ? { b: 'Voz', t: 'te oí, pero estaba ocupado · repítelo cuando termine' } : null;
+    ? { b: 'Voz', t: 'pedido de voz no tomado: BAXY seguía ocupado · repítelo cuando termine' } : null;
   const shownNotice = notice ?? dropped;
 
   // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
@@ -346,7 +346,7 @@ export default function App() {
     if (!r) { setNotice({ b: 'Confirmación', t: 'no se pudo cambiar' }); return; }
     const now = r.confirmationPolicy === 'bypass';
     setBypassState(now);
-    setNotice(now ? { b: 'Bypass', t: 'sin frenos hasta que lo apagues' } : { b: 'Normal', t: 'pregunto antes de lo arriesgado' });
+    setNotice(now ? { b: 'Bypass', t: 'sin frenos hasta que lo apagues' } : { b: 'Normal', t: 'BAXY pregunta antes de lo arriesgado' });
   }, [edit]);
   const setA11y = useCallback(async (next: A11y) => {
     setA11yState(next);
@@ -362,7 +362,7 @@ export default function App() {
   const micApplied = useRef(false);
   const mindUp = !!s.boot?.model;
   const setMic = useCallback(async (m: MicMode) => {
-    const said = { off: 'micrófono apagado · solo texto', always: 'escucho siempre · di «BAXY» · en pruebas', ptt: 'mantén el botón o espacio para hablar · en pruebas' }[m];
+    const said = { off: 'micrófono apagado · solo texto', always: 'siempre activo · di «BAXY» · en pruebas', ptt: 'mantén el botón o espacio para hablar · en pruebas' }[m];
     // while BAXY starts or rests the host takes no voice command: the choice is kept and applied when it can be
     // (once built, below; on waking, togglePower), instead of being refused and lost
     if (!s.agent.built || !mindUp || !powered) {
@@ -401,9 +401,9 @@ export default function App() {
   }, []);
   const togglePower = useCallback(async () => {
     // resting first stops the ear, which waits for the voice to finish loading after a start: say so at once
-    setNotice({ b: 'BAXY', t: powered ? 'me pongo en reposo…' : 'me activo…' });
+    setNotice({ b: 'BAXY', t: powered ? 'poniendo a BAXY en reposo…' : 'activando a BAXY…' });
     const r = await send<{ ok?: boolean; on?: boolean }>('POST', '/power', { on: !powered });
-    if (!r || r.on === powered) { setNotice({ b: 'BAXY', t: powered ? 'no pude ponerme en reposo' : 'no pude activarme' }); return; }
+    if (!r || r.on === powered) { setNotice({ b: 'BAXY', t: powered ? 'no se pudo poner en reposo' : 'no se pudo activar' }); return; }
     setNotice(null);
   }, [powered]);
   // back from rest, by this button, the tray's «Activar» or a text written to BAXY at rest, the microphone mode the
@@ -536,7 +536,7 @@ export default function App() {
               {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>Salió a internet</b><span>· {banner}</span></div>
                 : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
               {booting && s.boot ? <Boot boot={s.boot} />
-                : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} error={errorText} />}
+                : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} />}
               <VoiceInput mic={shownMic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
                 onSubmit={submit} state={state} canSend={canSend} />
             </div>

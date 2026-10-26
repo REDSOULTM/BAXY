@@ -75,7 +75,7 @@ export function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; o
   return (
     <div className={'bx-card k-' + c.kind + ' s-' + status}>
       <div className="hd">
-        <span className="tag">{c.kind === 'proposal' ? 'Propuesta' : 'Necesito tu ok'}</span>
+        <span className="tag">{c.kind === 'proposal' ? 'Propuesta' : 'Confirmación'}</span>
         {c.risk ? <span className="risk">{c.risk}</span> : null}
         {c.effectStarted ? <span className="risk">un intento anterior pudo haber corrido</span> : null}
         {c.context ? <span className="ctx">{c.context}</span> : null}
