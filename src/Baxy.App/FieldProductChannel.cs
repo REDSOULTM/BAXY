@@ -360,6 +360,15 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             _triggerCount = null; // read again when the view asks
         }
+
+        // The chat changed one of BAXY's own settings in the profile's file (baxy.settings.set): the App reads it again,
+        // and a voice switched off stops speaking now, as the view's switch does (PutGeneral).
+        if (step.Operation == "baxy.settings.set" && step.Sent)
+        {
+            _viewModel.Settings.Reload();
+            if (_viewModel.Settings.VoiceMuted)
+                _viewModel.SilenceVoice();
+        }
     }
 
     private void OnConfirmationAsked(NativeTurnConfirmation asked, string? beatActivity)

@@ -148,7 +148,34 @@ public sealed class ProductCatalogTests
     // Every operation of the catalog is offered to the model as a tool.
     // BAXY Renew uso real: + 1, message.send. BAXY Renew cu (C04 variante, C05): + 2, game.store.page y game.store.search;
     // (C14) + 1, client.microphone.set; (C18) + 1, clipboard.paste.into; (C10, C11, notebook) + 1, office.format.apply.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1;
+    // pc-f6-ajustes: + 1, baxy.settings.set.
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1;
+
+    // pc-f6-ajustes (f4-accesibilidad): BAXY's own settings by voice, one setting and its value; reversible, so it never
+    // asks, and it reaches neither a window nor the network. The proposals take a span (or on to end the silence); the
+    // switches take on or off, which the handler checks (the schema has one enum for both).
+    [TestCase("""{"setting":"voice","value":"off"}""", true)]
+    [TestCase("""{"setting":"proposals","value":"tomorrow"}""", true)]
+    [TestCase("""{"setting":"proposals","value":"on"}""", true)]
+    [TestCase("""{"setting":"web_search","value":"on"}""", true)]
+    [TestCase("""{"setting":"no_interrupt_games","value":"off"}""", true)]
+    [TestCase("""{"setting":"voice"}""", false)]
+    [TestCase("""{"setting":"voice","value":true}""", false)]
+    [TestCase("""{"setting":"proposals","value":"2h"}""", false)]
+    [TestCase("""{"setting":"weather","value":"off"}""", false)]
+    [TestCase("""{"setting":"do_not_disturb","value":"on"}""", false)]
+    public void BaxysOwnSettingsAreOneReversibleSettingAndItsValue(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("baxy.settings.set");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.LowReversible));
+            Assert.That(descriptor.Effects, Is.Empty);
+            Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+        });
+    }
 
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]

@@ -1,33 +1,47 @@
 using System.IO;
-using System.Text.Json;
 using System.Text.Json.Nodes;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
 /// <summary>
 /// What the owner chose in the view's Settings and Proposals panels (design v4), in one file of the profile
-/// (<c>&lt;datos&gt;/field-settings.v1.json</c>). Each switch changes what BAXY does, never how the model decides:
+/// (<c>&lt;datos&gt;/field-settings.v1.json</c>, <see cref="FieldSettingsStore"/>; the chat's <c>baxy.settings.set</c>
+/// writes it too, <see cref="Reload"/>). Each switch changes what BAXY does, never how the model decides:
 /// the privacy switches refuse a call before it runs (<see cref="NativeTurnLoop"/>), the voice ones change what the
 /// App asks the mind, and the proposal ones change when the heartbeat looks and whether its words are spoken.
 /// </summary>
 internal sealed class FieldSettings
 {
-    internal const string FileName = "field-settings.v1.json";
-
     // Operations that read what is on the screen (a capture, the text or controls of a window): «Mirar la pantalla».
     private static readonly HashSet<string> ScreenOperations = new(StringComparer.Ordinal)
     {
         "capture.screenshot", "capture.active.window", "vision.describe", "ocr.read", "input.visible.controls",
     };
 
-    private readonly string _path;
+    private readonly string _dataRoot;
     private readonly object _gate = new();
     private JsonObject _values;
 
     internal FieldSettings(string dataRoot)
     {
-        _path = Path.Combine(dataRoot, FileName);
-        _values = Read(_path);
+        _dataRoot = dataRoot;
+        _values = FieldSettingsStore.TryRead(dataRoot, out JsonObject values) ? values : new JsonObject();
+    }
+
+    /// <summary>
+    /// Reads the file again: baxy.settings.set wrote it from the engine. A file that cannot be read now keeps what was
+    /// read before.
+    /// </summary>
+    internal void Reload()
+    {
+        lock (_gate)
+        {
+            if (FieldSettingsStore.TryRead(_dataRoot, out JsonObject values))
+            {
+                _values = values;
+            }
+        }
     }
 
     internal static FieldSettings CreateDefault() => new(MemoryOperationProtector.ResolveDataRoot());
@@ -67,10 +81,7 @@ internal sealed class FieldSettings
         {
             lock (_gate)
             {
-                return _values["quietUntil"] is JsonValue value && value.TryGetValue(out long ms)
-                    && DateTimeOffset.FromUnixTimeMilliseconds(ms) > DateTimeOffset.UtcNow
-                        ? DateTimeOffset.FromUnixTimeMilliseconds(ms)
-                        : null;
+                return FieldSettingsStore.QuietUntil(_values, DateTimeOffset.UtcNow);
             }
         }
     }
@@ -111,6 +122,7 @@ internal sealed class FieldSettings
     {
         lock (_gate)
         {
+            Reload();
             foreach (string key in (string[])["autostart", "closeToTray", "voiceMuted", "wakeSound", "waitNotice", "web", "weather", "screen"])
             {
                 if (body[key] is JsonValue value && value.TryGetValue(out bool on))
@@ -128,6 +140,7 @@ internal sealed class FieldSettings
     {
         lock (_gate)
         {
+            Reload();
             if (body["ctx"] is JsonObject ctx)
             {
                 foreach ((string name, string key) in (ReadOnlySpan<(string, string)>)[("game", "ctx.game"), ("call", "ctx.call"), ("video", "ctx.video")])
@@ -142,13 +155,7 @@ internal sealed class FieldSettings
             if (body.ContainsKey("quiet"))
             {
                 string? span = body["quiet"] is JsonValue q && q.TryGetValue(out string? text) ? text : null;
-                DateTimeOffset? until = span switch
-                {
-                    "30m" => now.AddMinutes(30),
-                    "1h" => now.AddHours(1),
-                    "tomorrow" => new DateTimeOffset(now.LocalDateTime.Date.AddDays(1).AddHours(8), TimeZoneInfo.Local.GetUtcOffset(now.LocalDateTime.Date.AddDays(1).AddHours(8))),
-                    _ => null,
-                };
+                DateTimeOffset? until = FieldSettingsStore.QuietUntil(span, now);
                 _values["quiet"] = until is null ? null : span;
                 _values["quietUntil"] = until?.ToUnixTimeMilliseconds();
             }
@@ -198,26 +205,11 @@ internal sealed class FieldSettings
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
-            string temporary = _path + ".tmp";
-            File.WriteAllText(temporary, _values.ToJsonString());
-            File.Move(temporary, _path, overwrite: true);
+            FieldSettingsStore.Write(_dataRoot, _values);
         }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException)
         {
             // The choice holds for this run; the file is written again with the next one.
-        }
-    }
-
-    private static JsonObject Read(string path)
-    {
-        try
-        {
-            return File.Exists(path) && JsonNode.Parse(File.ReadAllText(path)) is JsonObject values ? values : new JsonObject();
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
-        {
-            return new JsonObject();
         }
     }
 }
