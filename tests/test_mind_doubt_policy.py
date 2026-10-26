@@ -235,6 +235,19 @@ def test_the_answer_to_a_doubt_question_goes_to_layer_2(tmp_path, monkeypatch) -
     assert "app_close" in server.bodies[-1]["messages"][-1]["content"]
 
 
+def test_layer2_asks_once_per_misunderstanding(tmp_path, monkeypatch) -> None:
+    # Menos preguntas (2026-10-25): the answer to layer 2's own question went to layer 2 again, which asked again at each
+    # answer while the decision model still read it otherwise, with no limit. It may still correct; it no longer asks.
+    mind, _, one = _layer2(tmp_path, monkeypatch, "app_close",
+                           [_rival_call(0.5), _say("¿Cierro la ventana o apago el PC?"), _rival_call(0.5),
+                            _rival_call(0.5), _say("¿Cierro la ventana o apago el PC?")])
+    assert mind.decide(1, "ciérralo")["operation"] is None
+    assert mind.decide(2, "el PC")["operation"] == "system.power"  # its answer: not asked again
+    assert len(one.asked) == 2  # the decision model still read the answer
+    mind.continue_turn(3, json.dumps({"status": "cancelled"}))
+    assert mind.decide(4, "ciérralo otra vez")["operation"] is None  # a new request is asked about as before
+
+
 @pytest.mark.parametrize("approve,p_name,held", [(True, 0.78, True), (True, 0.999, False), (False, 0.78, False)])
 def test_a_yes_the_model_is_not_sure_of_is_held_and_asked(tmp_path, monkeypatch, approve, p_name, held) -> None:
     # Confirmaciones 2026-10-23: «sí pero el otro» approved a pending trash at 0.77-0.79; plain yeses were ≥ 0.998.
@@ -258,3 +271,21 @@ def test_the_confirm_floor_can_be_turned_off(tmp_path, monkeypatch) -> None:
     mind, _ = _mind(tmp_path, [_call("confirm_pending", {"approve": True}, 0.5)])
     result = mind.decide(1, "sí", {"operation": "app.close", "arguments": {"appId": "Paint"}})
     assert result["operation"] == "confirmation.answer"
+
+
+@pytest.mark.parametrize("words, held", [
+    *((yes, False) for yes in ("Sí po.", "dale", "Ya.", "ok", "Hágale", "de una", "Obvio", "sí, hazlo", "ya po",
+                               "Okey, dale", "claro que sí", "hágale pues", "sí, por favor", "go ahead")),
+    *((other, True) for other in ("mmm", "no sé", "espera", "ya, espera", "sí pero el otro", "sí no", "ok no",
+                                  "Zí"))])
+def test_words_that_are_only_a_yes_are_not_held_by_the_confirm_floor(tmp_path, monkeypatch, words, held) -> None:
+    # Menos preguntas (dueño, 2026-10-25): a held «sí» costs the model's question and the kernel's again (the App drops the
+    # call that question left behind). A plain yes approves even if the model was unsure of it; anything else is held.
+    monkeypatch.delenv("BAXY_S1_DOUBT", raising=False)
+    monkeypatch.delenv("BAXY_CONFIRM_FLOOR", raising=False)
+    reply = _call("confirm_pending", {"approve": True}, 0.78)
+    reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", 1.0)
+    mind, _ = _mind(tmp_path, [reply, _say("¿Qué quieres que haga con notas.txt?")])
+    pending = {"operation": "filesystem.known.trash.named", "arguments": {"fileName": "notas.txt"}}
+    result = mind.decide(1, words, pending)
+    assert result["operation"] == (None if held else "confirmation.answer")

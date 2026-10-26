@@ -867,6 +867,19 @@ DENIAL_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía
 # one; under this floor an approve:true is held and the model asks, so nothing runs on it. «sí no» confirmed at 0.99:
 # no confidence tells it apart (a limit, said so in the report). BAXY_CONFIRM_FLOOR sets it; 0 turns it off.
 CONFIRM_FLOOR = 0.95
+# Menos preguntas (decisión del dueño 2026-10-25: BAXY pide el sí sólo para lo peligroso, sin preguntas innecesarias): a
+# held «sí» costs two more questions, the model's own and the kernel's again (the App drops the call its question left
+# behind). Words that are only a yes are one, whatever the model's confidence: the floor holds an approve:true only when
+# the person said something besides a yes («sí pero el otro», «sí no», «ya, espera»). The words are read folded (lower
+# case, no accents), whole, a yes first and then yeses or the softeners that may follow one («sí po», «hágale pues»).
+PLAIN_YES = ("si", "sip", "ya", "dale", "ok", "okay", "okey", "oki", "vale", "va", "venga", "claro", "claro que si",
+             "obvio", "obviamente", "hagale", "hagalo", "hazlo", "hacelo", "dele", "de una", "por supuesto", "adelante",
+             "bueno", "listo", "perfecto", "correcto", "exacto", "afirmativo", "de acuerdo", "andale", "orale", "sale",
+             "simon", "yes", "yep", "yeah", "sure", "go ahead", "do it", "of course")
+YES_SOFTENERS = ("po", "pues", "porfa", "por favor", "please")
+_YES, _SOFT = ("(?:" + "|".join(r"\s+".join(map(re.escape, p.split())) for p in phrases) + ")"
+                for phrases in (PLAIN_YES, YES_SOFTENERS))
+_PLAIN_YES = re.compile(rf"\W*{_YES}(?:\W+(?:{_YES}|{_SOFT}))*\W*")
 # Layer 2 (system_one.py): the model doubted and the decision model read the request otherwise.
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
                     "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
@@ -875,6 +888,9 @@ DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
 DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
+# Menos preguntas (2026-10-25): layer 2 asks once too. The answer to its own question went to layer 2 again, which asked
+# again at each answer while the decision model read it otherwise, with no limit; that answer may still be corrected.
+DOUBT_OTHER_ASKED = DOUBT_OTHER_NOTE[DOUBT_OTHER_NOTE.index("{call}") + len("{call}"):DOUBT_OTHER_NOTE.index("{other}")]
 # Layer 2 «corrige» (BAXY_S1_CORRECT=1): when the decision model chose another tool and it is one of these risks, the
 # model fills that tool's arguments (LlmServer.fill_call) instead of asking. Simulated on the 156 held-out real requests
 # (2026-10-22): right 140 → 148, wrong actions run 10 → 3; forced arguments where Qwen had chosen otherwise 14/15. Any
@@ -1470,7 +1486,8 @@ class Mind:
                 turn.update(asked=asked, after_asked=after, text=said, **was)
                 raise
         self._close_open_calls()
-        answering = any(str(m.get("content") or "").startswith(DOUBT_ASKED) for m in self.conversation[-2:])
+        doubts = [note for note in (str(m.get("content") or "") for m in self.conversation[-2:])
+                  if note.startswith(DOUBT_ASKED)]
         clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
         self.conversation.append(clock)
         request = {"role": "user", "content": text}
@@ -1487,7 +1504,8 @@ class Mind:
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
-                          "pending": self._waits(pending), "ended": self._ended(pending), "answering": answering,
+                          "pending": self._waits(pending), "ended": self._ended(pending), "answering": bool(doubts),
+                          "answering_other": any(DOUBT_OTHER_ASKED in note for note in doubts),
                           "confirming": self._confirming(pending), "pending_op": self._pending_op(pending)}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
@@ -2215,8 +2233,9 @@ class Mind:
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
-        runs. Asking is never held: it already puts the person in the loop; confirming only when it approves under
-        CONFIRM_FLOOR, whatever System One's own thresholds."""
+        runs; the answer to layer 2's own question is never turned into another one. Asking is never held: it already
+        puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
+        only a yes (PLAIN_YES), whatever System One's own thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
             return None
         doubt = read_doubt(reply)
@@ -2230,7 +2249,7 @@ class Mind:
             floor = CONFIRM_FLOOR if os.environ.get("BAXY_CONFIRM_FLOOR") is None else _threshold("BAXY_CONFIRM_FLOOR")
             return (DOUBT_NOTE.format(call=call["wire"])
                     if turn.get("pending") and call["arguments"].get("approve") is True
-                    and doubt["confidence"] < floor else None)
+                    and doubt["confidence"] < floor and not _PLAIN_YES.fullmatch(_fold(turn["text"])) else None)
         # Al máximo, System One 2: layer 0 never holds a low_reversible call; its error is undone and the kernel verifies
         # it. On 26 runs of decision2 with System One (2026-10-22) it held 23, 22 of them right without System One (P040
         # ×7, P085 ×15) and none useful; read_only it holds still (24 useful against 5 harmful), and anything riskier.
@@ -2257,7 +2276,9 @@ class Mind:
             # On the same 26 runs it asked instead of 11, all right without System One (P112 ×4, P124 ×6, P113 ×1);
             # its corrections of them were 6 useful (P257) against 2 harmful.
             return None
-        other =OPTION_TEXT.get(judged["choice"], judged["choice"])
+        if turn.get("answering_other"):
+            return None  # the person already answered layer 2's question about this request
+        other = OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
 
     def _said(self) -> list[dict[str, str]]:
