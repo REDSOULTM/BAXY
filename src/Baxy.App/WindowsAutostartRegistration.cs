@@ -91,6 +91,27 @@ internal sealed class WindowsAutostartRegistration
     internal void EnsureRegistered(IReadOnlyList<string> arguments)
     {
         ArgumentNullException.ThrowIfNull(arguments);
+        try
+        {
+            RegisterOrClean(arguments);
+            LastFailure = null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or InvalidOperationException or System.Security.SecurityException)
+        {
+            // A Run key a policy blocks must not stop the start: OnStartup would fail, the dispatcher would take the
+            // failure as handled and BAXY would hold the single instance with no window. It starts without autostart.
+            LastFailure = exception.GetType().Name;
+            Trace.TraceWarning("BAXY autostart not registered: " + LastFailure);
+        }
+    }
+
+    /// <summary>Why the last <see cref="EnsureRegistered"/> could not read or write the Run key (the exception's type,
+    /// say a policy that blocks it); null when it could.</summary>
+    internal string? LastFailure { get; private set; }
+
+    private void RegisterOrClean(IReadOnlyList<string> arguments)
+    {
         string executable = _executablePath();
         if (!MayRegister(executable, arguments))
         {

@@ -11,6 +11,7 @@ namespace Baxy.App;
 internal static partial class SensitiveText
 {
     private const int MaximumTokenLength = 256;
+    private const int MinimumEncodedSecretLength = 30;
 
     /// <summary>What the transcript shows in place of a message that carries a secret.</summary>
     internal const string Hidden = "••••••";
@@ -31,7 +32,8 @@ internal static partial class SensitiveText
                      [' ', '\t', '\r', '\n', '"', '\'', '(', ')', '[', ']', '<', '>', ',', ';', ':'],
                      StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            if (LooksLikeCredentialToken(token.TrimEnd('.', '!', '?')))
+            string candidate = token.TrimEnd('.', '!', '?');
+            if (LooksLikeCredentialToken(candidate) || LooksLikeEncodedSecret(candidate))
             {
                 return true;
             }
@@ -81,6 +83,64 @@ internal static partial class SensitiveText
             && token.Length - firstSeparator - 1 >= 16
             && token[..firstSeparator].All(static character => char.IsAsciiLetter(character));
         return hasLetter && hasDigit && (credentialPrefix || token.Length >= 32);
+    }
+
+    // A base64-shaped secret (a cloud provider's secret access key: 40 characters with / and +, or a padded value
+    // with =) is not caught by the token rule above, which takes only letters, digits and - _ . . Conservative: the
+    // token carries / or + or trailing = padding, nothing but base64 characters (no dot, so no URL or file name),
+    // upper case, lower case and digits, and its letters and digits switch kind as often as random text does (a path
+    // or an identifier made of words switches only at its word boundaries). «NAME=value» is judged by its value.
+    private static bool LooksLikeEncodedSecret(string token)
+    {
+        int assignment = token.IndexOf('=');
+        if (assignment > 0 && token.AsSpan(assignment).TrimStart('=').Length > 0)
+        {
+            return LooksLikeEncodedSecret(token[(assignment + 1)..].TrimStart('='));
+        }
+
+        string body = token.TrimEnd('=');
+        if (token.Length - body.Length > 2
+            || body.Length is < MinimumEncodedSecretLength or > MaximumTokenLength
+            || (body.IndexOfAny(['/', '+']) < 0 && body.Length == token.Length))
+        {
+            return false;
+        }
+
+        int upper = 0;
+        int lower = 0;
+        int digits = 0;
+        int pairs = 0;
+        int switches = 0;
+        int previous = 0;
+        foreach (char character in body)
+        {
+            int kind = character switch
+            {
+                >= 'a' and <= 'z' => 1,
+                >= 'A' and <= 'Z' => 2,
+                >= '0' and <= '9' => 3,
+                '/' or '+' or '-' or '_' => 0,
+                _ => -1,
+            };
+            if (kind < 0)
+            {
+                return false;
+            }
+
+            upper += kind == 2 ? 1 : 0;
+            lower += kind == 1 ? 1 : 0;
+            digits += kind == 3 ? 1 : 0;
+            if (kind != 0 && previous != 0)
+            {
+                pairs++;
+                switches += kind != previous ? 1 : 0;
+            }
+
+            previous = kind;
+        }
+
+        // Random base64 switches kind about 6 times in 10; words switch about 2 in 10.
+        return upper >= 2 && lower >= 2 && digits >= 2 && pairs > 0 && switches * 10 >= pairs * 4;
     }
 
     [GeneratedRegex(

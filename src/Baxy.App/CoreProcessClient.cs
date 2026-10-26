@@ -15,6 +15,7 @@ internal sealed class CoreProcessClient : IAsyncDisposable
     internal const int MaximumProtocolLineLength = 1_048_576;
     private const int MaximumDiagnosticLineLength = 2048;
     private const int MaximumDiagnostics = 64;
+    private static readonly TimeSpan PumpReapTimeout = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan DefaultResponseReconciliationTimeout =
         TimeSpan.FromSeconds(70);
     private static readonly OperationDescriptor[] RequiredInteractiveOperations =
@@ -506,8 +507,17 @@ internal sealed class CoreProcessClient : IAsyncDisposable
         finally
         {
             _pumpCancellation?.Cancel();
-            await ObservePumpAsync(_stdoutPump).ConfigureAwait(false);
-            await ObservePumpAsync(_stderrPump).ConfigureAwait(false);
+            // A program the core launched may inherit the pipes' write ends, so a reader may never see their end: each
+            // gets a bounded wait, its stream closed, one more wait, and then the stop goes on without it.
+            bool[] reaped = await Task.WhenAll(
+                ReapPumpAsync(_stdoutPump, () => CloseQuietly(process, standardError: false), PumpReapTimeout),
+                ReapPumpAsync(_stderrPump, () => CloseQuietly(process, standardError: true), PumpReapTimeout))
+                .ConfigureAwait(false);
+            if (!reaped.All(static done => done))
+            {
+                _diagnostics.Enqueue("core_reader_abandoned");
+            }
+
             var closed = new IOException("El motor local se cerró.");
             _helloCompletion?.TrySetException(closed);
             FailPending(closed);
@@ -730,24 +740,20 @@ internal sealed class CoreProcessClient : IAsyncDisposable
         }
     }
 
-    private static async Task ObservePumpAsync(Task? pump)
-    {
-        if (pump is null)
-        {
-            return;
-        }
+    // Observes a pump within a bound (LocalJsonlSidecarProcess.ReapPumpWithinAsync); a pump failure is observed and
+    // never prevents closing the Job Object and the child process. False when the reader was left behind.
+    internal static Task<bool> ReapPumpAsync(Task? pump, Action close, TimeSpan timeout) =>
+        pump is null ? Task.FromResult(true) : LocalJsonlSidecarProcess.ReapPumpWithinAsync(pump, close, timeout);
 
+    private static void CloseQuietly(Process? process, bool standardError)
+    {
         try
         {
-            await pump.ConfigureAwait(false);
+            (standardError ? process?.StandardError : process?.StandardOutput)?.Close();
         }
-        catch (OperationCanceledException)
+        catch (Exception exception) when (
+            exception is InvalidOperationException or IOException or ObjectDisposedException)
         {
-            // Cancellation is expected during shutdown.
-        }
-        catch (Exception)
-        {
-            // A pump failure must never prevent closing the Job Object and child process.
         }
     }
 

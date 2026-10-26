@@ -74,12 +74,6 @@ internal static class MissionInputContract
         out MissionInputRejectionReason rejection)
     {
         text = string.Empty;
-        if (input?.Text is { Length: > MaximumCharacters })
-        {
-            rejection = MissionInputRejectionReason.TooLarge;
-            return false;
-        }
-
         if (input is null || string.IsNullOrWhiteSpace(input.Text))
         {
             rejection = MissionInputRejectionReason.Empty;
