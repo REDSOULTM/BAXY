@@ -1131,11 +1131,30 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         refused = string.Concat(expression
             .Where(character => !char.IsWhiteSpace(character) && !CalculatorCharacters.Contains(character))
             .Distinct());
-        string keys = string.Concat(expression.Where(character => !char.IsWhiteSpace(character))).Replace(',', '.');
+        string keys = CalculatorPressed(expression);
         int operators = keys.Count(character => "+-*/^".Contains(character));
         // A space is dropped between the parts, never inside a number («1 2+3» is not 12+3).
         return refused.Length == 0 && operators is >= 1 and <= 8 && !NumberSplit.IsMatch(expression)
             && CalculatorExpression.IsMatch(keys) ? keys : null;
+    }
+
+    // An expression as the keypad would press it: spaces dropped, a decimal comma as the «.».
+    private static string CalculatorPressed(string expression) =>
+        string.Concat(expression.Where(character => !char.IsWhiteSpace(character))).Replace(',', '.');
+
+    private static readonly Regex CalculatorNumber = new(@"^\d{1,12}(?:\.\d{1,6})?$", RegexOptions.CultureInvariant);
+
+    // Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53», the Calculator showing 47): «53» was refused with only
+    // what is accepted, and in 7 of 7 runs that wrote it the model asked the person what number the Calculator showed.
+    // One number alone (as pressed, never one split by a space) says so, that nothing was pressed, and that the same
+    // number with an operator before it continues from the display as it is: a fact and an option, not an order.
+    private static string? LoneNumberNext(string expression)
+    {
+        string number = CalculatorPressed(expression);
+        return !NumberSplit.IsMatch(expression) && CalculatorNumber.IsMatch(number)
+            ? $"{number} alone has no operator: it computes nothing, and nothing was pressed; +{number} continues from "
+                + "the number the display shows now, without reading it first"
+            : null;
     }
 
     private async ValueTask<ExternalCapabilityReceipt> CalculatorEvaluateAsync(
@@ -1155,6 +1174,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     writer.WriteString("refused", refused);
                 }
                 writer.WriteString("accepted", CalculatorAccepted);
+                if (LoneNumberNext(expression) is { } next)
+                {
+                    writer.WriteString("next", next);
+                }
                 writer.WriteEndObject();
             });
             return new ExternalCapabilityReceipt(operation, false, false, observed, "calculator_expression_invalid");
