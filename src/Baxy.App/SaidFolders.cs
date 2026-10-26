@@ -77,6 +77,8 @@ internal sealed class SaidFolders
     private string _words = string.Empty;
     // The words of the person's previous request (none after a heartbeat or a new session).
     private string _before = string.Empty;
+    // The folders this turn's calls made in the person's folders (Ran).
+    private readonly List<string> _made = [];
 
     /// <param name="known">Where each known folder is, by its label (tests point them at a temporary folder).</param>
     internal SaidFolders(Func<string, string?>? known = null) => _known = known ?? PersonFolders.Path;
@@ -99,6 +101,7 @@ internal sealed class SaidFolders
         _before = _words;
         _words = words ?? string.Empty;
         _told.Clear();
+        _made.Clear();
     }
 
     /// <summary>
@@ -107,6 +110,16 @@ internal sealed class SaidFolders
     /// </summary>
     internal void Answered(string words) =>
         _words = _words.Length == 0 ? words ?? string.Empty : _words + "\n" + words;
+
+    /// <summary>A call ran with <paramref name="arguments"/> as sent and ended with <paramref name="status"/>: a folder
+    /// it made in the person's folders is one this turn made (Rule).</summary>
+    internal void Ran(string operation, JsonObject arguments, string? status)
+    {
+        if (operation == "filesystem.create.directory" && status == OperationStatuses.Completed
+            && ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) && descriptor is not null
+            && ReachOf(operation, descriptor, arguments) is { Sandbox: false, Items: [string folder] })
+            _made.Add(folder);
+    }
 
     /// <summary>A heartbeat or a new session: no words of the person's hold.</summary>
     internal void Clear() => Heard(string.Empty);
@@ -253,10 +266,17 @@ internal sealed class SaidFolders
             return null;
         string named = Said(places);
         string where = reach.Sandbox ? "BAXY's own working folder" : string.Join(", ", reach.Items);
-        // Of several folders named, the ones that hold the file or folder the call names are its place.
-        Place[] holding = reach.Leaf is null ? [.. places]
-            : [.. places.Where(place => Holds(place.Path, reach.Leaf))];
-        IReadOnlyList<Place> targets = holding.Length == 1 ? holding : places;
+        // Holdout v8 (falsedades #16): «haz una carpeta cumple_benja en BAXY-bench, adentro un archivo lista.txt»; the
+        // write left out the folder just made and was offered BAXY-bench/lista.txt, beside it. A folder this turn made
+        // inside a folder named is a place of it. Of those and the folders named, the ones that hold the file or folder
+        // the call names are its place; of a write that names what none holds, the only folder made.
+        Place[] made = [.. _made.Where(folder => places.Any(place => !Same(folder, place.Path) && Within(folder, place.Path)))
+            .Distinct(StringComparer.OrdinalIgnoreCase).Select(folder => new Place(folder, Path.GetFileName(folder)))];
+        Place[] holding = reach.Leaf is null ? []
+            : [.. places.Concat(made).Where(place => Holds(place.Path, reach.Leaf))];
+        IReadOnlyList<Place> targets = holding.Length == 1 ? holding
+            : holding.Length == 0 && made.Length == 1 && reach.Leaf is not null && descriptor.Risk != OperationRisks.ReadOnly
+                ? made : places;
         // The look there is said as a call, with what the call looked for (holdout v6 V6E042: told only that file_find
         // «looks there», the model wrote the same filesystem_search again).
         string? look = reach.Sandbox && descriptor.Risk == OperationRisks.ReadOnly
@@ -297,12 +317,15 @@ internal sealed class SaidFolders
         if (options.Any(option => option.Arguments is not null))
         {
             // Of two folders of that name, the one that holds the file is said by its path and what it holds.
-            string which = places.Count == 1 ? "that folder"
+            string which = targets.Count == 1 && made.Contains(targets[0])
+                    ? $"{targets[0].Path}, the folder this turn made in {(places.Count == 1 ? "it" : "one of them")},"
+                : places.Count == 1 ? "that folder"
                 : targets.Count == 1 ? targets[0].Path + Holding(targets[0], reach.Leaf) : "one of them";
             next = $"nothing ran: {who} {named} and this call would act in {where}, outside it. If "
                 + $"{which} is the place of this call, call {wire} again with "
                 + string.Join(", or ", options.Where(option => option.Arguments is not null).Select(option =>
-                    Changes(arguments, option.Arguments!, whole: true) + (targets.Count == 1 ? string.Empty
+                    Changes(arguments, option.Arguments!, whole: true) + (targets.Count == 1
+                        ? Reached(operation, descriptor, option.Arguments!, option.Place)
                         : $" for {option.Place.Path}{Holding(option.Place, reach.Leaf)}")))
                 + "; " + again;
         }
@@ -460,22 +483,10 @@ internal sealed class SaidFolders
     {
         IReadOnlyList<OperationArgumentProperty> properties = descriptor.ArgumentsSchema.Properties;
         bool Takes(string name) => properties.Any(property => property.Name == name);
-        if (properties.FirstOrDefault(static property => property.Name == "folder") is not { } folderArgument)
+        if (Holder(descriptor, place) is not (string label, string relative))
             return null;
-        (string Label, string Root)? holder = null;
-        foreach (string label in folderArgument.AllowedValues)
-        {
-            if (label is not ("all_known" or "projects") && Root(label) is { } root && Within(place.Path, root)
-                && (holder is null || root.Length > holder.Value.Root.Length))
-                holder = (label, root);
-        }
-
-        if (holder is not { } best)
-            return null;
-        string relative = Same(place.Path, best.Root) ? string.Empty
-            : Path.GetRelativePath(best.Root, place.Path).Replace('\\', '/');
         var routed = (JsonObject)arguments.DeepClone();
-        routed["folder"] = best.Label;
+        routed["folder"] = label;
         if (Takes("subdirectory"))
         {
             if (relative.Length == 0)
@@ -500,6 +511,38 @@ internal sealed class SaidFolders
 
         return relative.Length == 0 && key is null ? routed : null;
     }
+
+    // The deepest known folder of the call's folder argument that holds the place, and the place's path inside it (empty
+    // for that folder itself); null when the call has no folder argument or none of its folders holds the place.
+    private (string Label, string Relative)? Holder(ProductOperationDescriptor descriptor, Place place)
+    {
+        if (descriptor.ArgumentsSchema.Properties.FirstOrDefault(static property => property.Name == "folder") is not { } folder)
+            return null;
+        (string Label, string Root)? holder = null;
+        foreach (string label in folder.AllowedValues)
+        {
+            if (label is not ("all_known" or "projects") && Root(label) is { } root && Within(place.Path, root)
+                && (holder is null || root.Length > holder.Value.Root.Length))
+                holder = (label, root);
+        }
+
+        return holder is not { } best ? null
+            : (best.Label, Same(place.Path, best.Root) ? string.Empty
+                : Path.GetRelativePath(best.Root, place.Path).Replace('\\', '/'));
+    }
+
+    // Revisión de los bucles de said_folder (93 repeated refusals in 64 turns of the saved runs): told the call that names
+    // the folder, the model wrote it and then left the folder out of its next call (44 of them; final5 V6E048: file_edit
+    // fixed, file_read in it, then file_edit and file_write without it, three refusals, ~20 s); and told relativePath
+    // "BAXY-bench/facturas2025" and folder "home", it wrote relativePath "facturas2025" (27; V6E064, V8E067). The call is
+    // said with where it acts, and the folder with how every call of the turn in it names it.
+    private string Reached(string operation, ProductOperationDescriptor descriptor, JsonObject routed, Place place) =>
+        (ReachOf(operation, descriptor, routed) is { Sandbox: false, Items.Count: > 0 } reach
+            ? $" (it acts in {string.Join(", ", reach.Items)})" : string.Empty)
+        + (Holder(descriptor, place) is not (string label, string relative) ? string.Empty
+            : relative.Length == 0 ? $"; any other call of this turn in that folder says it the same way, folder \"{label}\""
+            : $"; any other call of this turn in that folder says it the same way: folder \"{label}\" with \"{relative}\" "
+                + "as subdirectory, or at the start of relativePath or name");
 
     // What a path the call gave names inside the folder: a full path's last part; a relative one without a known
     // folder's name it begins with, nor the folder's own last parts it repeats («proyecto/notas.txt» in proyecto).
