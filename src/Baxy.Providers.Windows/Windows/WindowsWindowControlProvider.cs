@@ -33,6 +33,10 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     public WindowsWindowControlProvider(WindowsInstalledApplicationOpenProvider applications)
         : this(new Win32WindowControlPlatform(), applications, LaunchProvenance.Shared)
     {
+        // PC-F8 cierre: a window closes without the yes for showing no changes only when the person's input into it
+        // was watched since it was created; the watch (passive) and the tab strip's reader start with the Core.
+        LaunchProvenance.Shared.PrepareLaunch();
+        WindowsInstalledApplicationPlatform.PrewarmTabStripWorker();
     }
 
     internal WindowsWindowControlProvider(IWindowControlPlatform platform)
@@ -1406,7 +1410,11 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     // reading that fails or cannot tell keeps the yes (fail-closed).
     private bool ShowsNoChanges(WindowIdentity identity)
     {
-        if (External.VisibleControlSurface.RunsWhatIsTyped(identity.ProcessName))
+        // Acotado: nothing of the person's or BAXY's was written into it since it was created; a browser (where private
+        // mode cannot be told), a private window by its title, and a window showing several tabs or documents keep
+        // the yes, and so does one whose tabs cannot be read.
+        if (External.VisibleControlSurface.RunsWhatIsTyped(identity.ProcessName)
+            || !_provenance.UnwrittenSince(identity.Handle, identity.ProcessCreationTimeUtcTicks))
         {
             return false;
         }
@@ -1416,8 +1424,11 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             string? title = _platform.Observe(identity).Title;
             return !string.IsNullOrWhiteSpace(title)
                 && !MarksUnsavedChanges(title)
+                && !MarksPrivateWindow(title)
                 && !_platform.ShowsConsole(identity)
-                && _platform.OwnedDialogs(identity).Count == 0;
+                && !_platform.IsWebBrowser(identity)
+                && _platform.OwnedDialogs(identity).Count == 0
+                && _platform.TabCount(identity) is 0 or 1;
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException
             or ArgumentException or UnauthorizedAccessException)
@@ -1429,6 +1440,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     // The marks applications put in a title while it has unsaved changes: an asterisk (Notepad, Paint and most
     // editors, before or after the name), a dot (●) or the words themselves.
     private static readonly string[] UnsavedWords = ["sin guardar", "no guardado", "unsaved", "modified", "modificado"];
+
+    // The words a private or incognito window shows in its title.
+    private static readonly string[] PrivateWords = ["incognito", "incógnito", "inprivate", "private", "privad"];
+
+    internal static bool MarksPrivateWindow(string title) =>
+        PrivateWords.Any(word => title.Contains(word, StringComparison.OrdinalIgnoreCase));
 
     internal static bool MarksUnsavedChanges(string title) =>
         title.Contains('*', StringComparison.Ordinal)
@@ -1660,6 +1677,12 @@ internal interface IWindowControlPlatform
     // PC-F8 cierre: whether the window is a console or a terminal (its window class); a platform that cannot tell
     // says it is one (fail-closed).
     bool ShowsConsole(WindowIdentity identity) => true;
+    // PC-F8 cierre (acotado): whether the window's executable is a web browser Windows knows; a platform that cannot
+    // tell says it is one.
+    bool IsWebBrowser(WindowIdentity identity) => true;
+    // PC-F8 cierre (acotado): how many tabs (or documents) the window's tab strip shows, 0 with none; null when it
+    // cannot be read.
+    int? TabCount(WindowIdentity identity) => null;
     // BAXY Renew cu (C13 en el PC): a window in full screen covers its whole monitor (taskbar included) with no title bar.
     bool FullScreen(WindowIdentity identity) => false;
     // BAXY Renew cu (C13 en el PC): one key posted to the window itself (never the real keyboard): Esc or F11.
@@ -1993,6 +2016,18 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         _ = Observe(identity);
         string className = ReadClassName(identity.Handle);
         return className.Length == 0 || ConsoleWindowClasses.Contains(className);
+    }
+
+    public bool IsWebBrowser(WindowIdentity identity) =>
+        identity.ExecutablePath is not { Length: > 0 } executable
+        || External.UserBrowserIdentityResolver.IsRegisteredBrowser(executable) != false;
+
+    private static readonly TimeSpan TabCountBudget = TimeSpan.FromSeconds(3);
+
+    public int? TabCount(WindowIdentity identity)
+    {
+        _ = Observe(identity);
+        return WindowsInstalledApplicationPlatform.CountTabs(identity.Handle, TabCountBudget);
     }
 
     public IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity)

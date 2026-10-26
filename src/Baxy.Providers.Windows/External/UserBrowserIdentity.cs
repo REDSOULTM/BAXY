@@ -72,6 +72,42 @@ internal static class UserBrowserIdentityResolver
         return null;
     }
 
+    /// <summary>
+    /// PC-F8 cierre (acotado): whether an executable is a web browser Windows knows: one registered as a browser
+    /// (Clients\StartMenuInternet, machine and user) or the one a web link opens with. Null when the registry cannot be
+    /// read.
+    /// </summary>
+    internal static bool? IsRegisteredBrowser(string executable)
+    {
+        try
+        {
+            foreach (RegistryKey hive in new[] { Registry.LocalMachine, Registry.CurrentUser })
+            {
+                foreach (string clients in new[] { @"SOFTWARE\Clients\StartMenuInternet", @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet" })
+                {
+                    using RegistryKey? browsers = hive.OpenSubKey(clients);
+                    foreach (string name in browsers?.GetSubKeyNames() ?? [])
+                    {
+                        using RegistryKey? command = browsers!.OpenSubKey(name + @"\shell\open\command");
+                        if (SameExecutable(CommandExecutable(command?.GetValue(null) as string), executable))
+                            return true;
+                    }
+                }
+            }
+
+            return SameExecutable(ResolveFromRegistry()?.Executable, executable);
+        }
+        catch (Exception exception) when (exception is System.Security.SecurityException
+            or UnauthorizedAccessException or IOException or ArgumentException or NotSupportedException)
+        {
+            return null;
+        }
+    }
+
+    private static bool SameExecutable(string? registered, string executable) =>
+        registered is not null && string.Equals(
+            Path.GetFullPath(registered), Path.GetFullPath(executable), StringComparison.OrdinalIgnoreCase);
+
     internal static UserBrowserIdentity? Resolve(string? progId, string? openCommand)
     {
         if (string.IsNullOrWhiteSpace(progId))
