@@ -235,3 +235,38 @@ def test_a_click_that_failed_twice_with_only_looks_between_is_not_made_a_third_t
         step = mind.continue_turn(2 + index, result)
     assert step["kind"] == "conversation" and step["reply"] == "No pude pulsar Reproducir."
     assert [r["kind"] for r in _trace(mind) if r.get("kind") == "look_click_closed"] == ["look_click_closed"]
+
+
+def test_a_page_read_twice_is_not_read_a_third_time_whatever_the_size(tmp_path: Path, monkeypatch) -> None:
+    # Uso real 2026-10-26: the same page read 14 times, only maximumCharacters going up.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    page = "https://es.wikipedia.org/wiki/Ciencia"
+    calls = [_call("web_fetch", {"url": page, "maximumCharacters": size}) for size in (500, 1000, 2000)]
+    mind, _ = _mind(tmp_path, [*calls, _say("La ciencia es el conocimiento ordenado.")])
+    read = json.dumps({"status": "completed", "observed": {"text": "La ciencia es..."}})
+    mind.decide(1, "qué es la ciencia")
+    step = mind.continue_turn(2, read)
+    assert step["kind"] == "action" and step["arguments"]["maximumCharacters"] == 1000
+    step = mind.continue_turn(3, read)
+    assert step["kind"] == "conversation" and step["reply"] == "La ciencia es el conocimiento ordenado."
+    assert [r["kind"] for r in _trace(mind) if r.get("kind") == "same_call_closed"] == ["same_call_closed"]
+
+
+def test_a_call_that_turns_back_what_the_turn_set_is_not_made(tmp_path: Path, monkeypatch) -> None:
+    # Uso real 2026-10-26: unmute, mute, unmute… seven times for «baja el volumen a 30».
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("audio_mute", {"state": False}), _call("audio_mute", {"state": True}),
+                               _say("Quité el silencio.")])
+    done = json.dumps({"status": "completed", "observed": {"muted": False}})
+    mind.decide(1, "quita el silencio")
+    step = mind.continue_turn(2, done)
+    assert step["kind"] == "conversation" and step["reply"] == "Quité el silencio."
+    assert [r["kind"] for r in _trace(mind) if r.get("kind") == "flip_closed"] == ["flip_closed"]
+
+
+def test_the_same_operation_with_other_values_still_runs(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("app_open", {"appId": "Calculadora"}), _call("app_open", {"appId": "Paint"})])
+    mind.decide(1, "abre la calculadora y paint")
+    step = mind.continue_turn(2, json.dumps({"status": "completed"}))
+    assert step["kind"] == "action" and step["arguments"]["appId"] == "Paint"
