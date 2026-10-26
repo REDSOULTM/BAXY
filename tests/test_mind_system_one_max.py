@@ -109,6 +109,23 @@ def test_layer_0_holds_an_unsure_call_unless_it_is_low_reversible(tmp_path, monk
     assert mind.decide(1, "abre discord")["operation"] == operation
 
 
+@pytest.mark.parametrize("risk, mode, operation", [
+    ("recoverable_delete", None, "file.trash"),  # V9E037: the kernel asks the «sí» itself, naming the exact action
+    ("recoverable_delete", "bypass", None),  # Bypass runs it unasked: layer 0 still holds it
+    ("work_loss", None, None),  # V6D131: closing with unsaved work is still held
+    ("installation", None, None)])
+def test_layer_0_leaves_an_unsure_recoverable_delete_to_the_kernels_confirmation(tmp_path, monkeypatch, risk, mode,
+                                                                                    operation) -> None:
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))
+    if mode:
+        (tmp_path / "confirmation-mode").write_text(mode, encoding="utf-8")
+    mind, _ = _mind(tmp_path, [_call("file_trash", {"fileName": "notas.txt"}, 0.3), _say("¿Qué archivo?")])
+    mind.wire_to_op["file_trash"] = "file.trash"
+    mind.risk = {"file_trash": risk}
+    assert mind.decide(1, "manda notas.txt a la papelera")["operation"] == operation
+
+
 @pytest.mark.parametrize("doubted, choice, filled, operation", [
     ("app_open", "responder_con_palabras", {}, "app.open"),  # P124: Laya said «answer in words»; the call runs
     ("app_open", "file_find", {"folder": "music"}, "app.open"),  # it cannot be corrected (not founded): it runs

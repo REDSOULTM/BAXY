@@ -2233,7 +2233,7 @@ class Mind:
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
         model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
-        low_reversible. Layer 2
+        low_reversible, or recoverable_delete and the kernel confirms it. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
@@ -2257,8 +2257,12 @@ class Mind:
         # Al máximo, System One 2: layer 0 never holds a low_reversible call; its error is undone and the kernel verifies
         # it. On 26 runs of decision2 with System One (2026-10-22) it held 23, 22 of them right without System One (P040
         # ×7, P085 ×15) and none useful; read_only it holds still (24 useful against 5 harmful), and anything riskier.
+        # Nor a recoverable_delete the kernel confirms (V9E037): its «sí» names the exact action, and holding it asked in
+        # words first and then the kernel asked again. work_loss it still holds (V6D131), and Bypass runs it unasked.
+        risk = self.risk.get(call["wire"])
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
-                and self.risk.get(call["wire"]) != "low_reversible":
+                and risk != "low_reversible" \
+                and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
             return DOUBT_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
