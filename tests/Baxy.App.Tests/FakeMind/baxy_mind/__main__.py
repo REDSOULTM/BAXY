@@ -4,8 +4,8 @@ As the real mind (src/baxy_mind/__main__.py), the reader answers voice.speak, vo
 voice.release as they arrive and every other request waits its turn on one loop. What it does is read from script.json
 in its folder at each request: "hold" {type: file} waits until that file exists, "delay" {type: seconds}, "fail" [type]
 answers an error, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
-reply. Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process writes
-its pid under pids/.
+reply; "delay" {"hello": seconds} holds the hello at start. Every request's type is appended to seen.log and the request
+itself to requests.jsonl, and each process writes its pid under pids/.
 """
 
 import json
@@ -93,6 +93,7 @@ def answer(message: dict) -> None:
 def main() -> None:
     os.makedirs(os.path.join(HERE, "pids"), exist_ok=True)
     open(os.path.join(HERE, "pids", str(os.getpid())), "w", encoding="utf-8").close()
+    time.sleep(float(script().get("delay", {}).get("hello", 0)))
     write({"type": "hello", "protocol": "baxy.mind.v1", "models": {"llm": "fake"}, "requests": REQUESTS})
     pending: queue.Queue = queue.Queue()
 

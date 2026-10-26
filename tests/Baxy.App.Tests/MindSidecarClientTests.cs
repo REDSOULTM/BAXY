@@ -1,3 +1,5 @@
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
 using NUnit.Framework;
@@ -102,6 +104,53 @@ public sealed class MindSidecarClientTests
                 ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "hola",
             })?.Text, Is.EqualTo("hola"));
         });
+    }
+
+    [Test]
+    public async Task AStartAbandonedBeforeTheHelloLeavesNoUnobservedFailure()
+    {
+        // Arreglos de uso real (2026-10-26): a core start that failed gave up on the mind still loading; the hello the
+        // pump faulted afterwards was seen by nobody and reached TaskScheduler.UnobservedTaskException on every retry.
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject { ["delay"] = new JsonObject { ["hello"] = 30 } });
+        var unobserved = new List<Exception>();
+        void Record(object? sender, UnobservedTaskExceptionEventArgs eventArgs)
+        {
+            lock (unobserved)
+            {
+                unobserved.AddRange(eventArgs.Exception.InnerExceptions.Where(static inner => inner is IOException));
+            }
+        }
+
+        TaskScheduler.UnobservedTaskException += Record;
+        try
+        {
+            await AbandonStartAsync();
+            for (int pass = 0; pass < 3; pass++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+
+            Assert.That(unobserved, Is.Empty);
+        }
+        finally
+        {
+            TaskScheduler.UnobservedTaskException -= Record;
+        }
+    }
+
+    // Its own frame, so nothing of the abandoned start stays reachable from the test's.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static async Task AbandonStartAsync()
+    {
+        var mind = new MindSidecarClient();
+        using var abandon = new CancellationTokenSource(TimeSpan.FromMilliseconds(500));
+        Assert.That(
+            async () => await mind.TryStartAsync(Task.FromResult(FakeMind.EmptyCatalog), TimeSpan.FromSeconds(60),
+                abandon.Token),
+            Throws.InstanceOf<OperationCanceledException>());
+        await mind.DisposeAsync();
     }
 
     // A request that is still waiting when its caller gives up is a false, not an exception.

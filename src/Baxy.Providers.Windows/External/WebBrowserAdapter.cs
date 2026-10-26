@@ -746,6 +746,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // /search. DuckDuckGo's terms and policy say nothing about automated queries, but the service throttles them.
     private const string GeneralSearchEndpoint = "https://lite.duckduckgo.com/lite/";
     private const string GeneralSearchAuthority = "duckduckgo_lite_https";
+    // Arreglos de uso real (2026-10-26): after a burst of searches the lite endpoint answered pages without results in
+    // a quarter of a second, a throttle and no timeout. The request now reads as a browser's and, when the page is no
+    // results page or the endpoint does not answer, the html endpoint is asked once after a short wait.
+    private const string GeneralSearchFallbackEndpoint = "https://html.duckduckgo.com/html/";
+    private const string GeneralSearchFallbackAuthority = "duckduckgo_html_https";
+    private const string GeneralSearchUserAgent =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
+    private static readonly TimeSpan GeneralSearchRetryDelay = TimeSpan.FromSeconds(1.5);
     private const string NewsSearchAuthority = "google_news_rss_search";
     private const string SearchUnavailable = "web_search_unavailable";
     private const string SearchNoResults = "web_search_no_results";
@@ -790,7 +798,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 string sent = near is null ? query : query + " " + near;
                 return source switch
                 {
-                    "web" => await WebAsync(operation, sent, limit, cancellationToken).ConfigureAwait(false),
+                    "web" => await WebAsync(operation, sent, language, limit, cancellationToken).ConfigureAwait(false),
                     "news" => await NewsAsync(operation, sent, language, limit, cancellationToken).ConfigureAwait(false),
                     _ => await EncyclopediaAsync(operation, sent, language, limit, cancellationToken)
                         .ConfigureAwait(false),
@@ -855,27 +863,26 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private async Task<ExternalCapabilityReceipt> WebAsync(
         string operation,
         string query,
+        string language,
         int limit,
         CancellationToken cancellationToken)
     {
-        (List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage) reading;
-        try
+        string authority = GeneralSearchAuthority;
+        var reading = await ReadGeneralSearchAsync(
+            GeneralSearchEndpoint, ParseDuckDuckGoLitePage, query, language, cancellationToken).ConfigureAwait(false);
+        if (reading is not { IsResultsPage: true })
         {
-            reading = await ReadGeneralSearchAsync(query, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(GeneralSearchRetryDelay, cancellationToken).ConfigureAwait(false);
+            authority = GeneralSearchFallbackAuthority;
+            reading = await ReadGeneralSearchAsync(
+                    GeneralSearchFallbackEndpoint, ParseDuckDuckGoHtmlPage, query, language, cancellationToken)
+                .ConfigureAwait(false);
         }
-        catch (HttpRequestException)
-        {
+        // A block, a captcha, an error page or no answer: nothing was searched, and the reply must not pretend the web
+        // had no answer.
+        if (reading is not { IsResultsPage: true } read)
             return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
-        }
-        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
-        }
-        // A block, a captcha or an error page: nothing was searched, and the reply must not pretend the web had no
-        // answer.
-        if (reading.Results.Count == 0 && !reading.IsResultsPage)
-            return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
-        return SearchReceipt(operation, "web", query, GeneralSearchAuthority, reading.Results.Take(limit).ToList(),
+        return SearchReceipt(operation, "web", query, authority, read.Results.Take(limit).ToList(),
             static (writer, result) =>
             {
                 writer.WriteString("title", result.Title);
@@ -1024,8 +1031,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     // The one receipt shape of web.search: the source asked, the query (as sent to a text source: web, news,
     // encyclopedia), what a typed source was sent instead («sent»: currency, sports, places), the results as the source
-    // gave them and their count, and «authority», the source that answered (duckduckgo_lite_https,
-    // google_news_rss_search, wikipedia_es_api, wikipedia_en_api, frankfurter_reference_rates, espn_public_schedule,
+    // gave them and their count, and «authority», the source that answered (duckduckgo_lite_https or
+    // duckduckgo_html_https, google_news_rss_search, wikipedia_es_api, wikipedia_en_api, frankfurter_reference_rates, espn_public_schedule,
     // openstreetmap_nominatim). No result is web_search_no_results: the source answered with nothing.
     private static ExternalCapabilityReceipt SearchReceipt<T>(
         string operation,
@@ -1116,26 +1123,47 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
-    // The lite endpoint answers only a form post (a GET returns its search form with no results). Each result is kept
-    // as the engine gave it when it is structurally one: an http or https address that is not the engine's own, a
-    // title and bounded lengths.
-    private async Task<(List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage)>
-        ReadGeneralSearchAsync(string query, CancellationToken cancellationToken)
+    // Both endpoints answer a form post (a GET of the lite one returns its search form with no results). Each result is
+    // kept as the engine gave it when it is structurally one: an http or https address that is not the engine's own, a
+    // title and bounded lengths. Null when the endpoint did not answer.
+    private async Task<(List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage)?>
+        ReadGeneralSearchAsync(
+            string endpoint,
+            Func<string, IEnumerable<(string Title, string Url, string Snippet)>> parse,
+            string query,
+            string language,
+            CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, GeneralSearchEndpoint)
+        using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
             Content = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("q", query),
             }),
         };
-        using HttpResponseMessage response = await _http
-            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-            .ConfigureAwait(false);
-        string page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
-            .ConfigureAwait(false);
+        request.Headers.TryAddWithoutValidation("User-Agent", GeneralSearchUserAgent);
+        request.Headers.TryAddWithoutValidation("Accept-Language", language == "en" ? "en-US,en;q=0.9" : "es-ES,es;q=0.9");
+        string page;
+        bool answered;
+        try
+        {
+            using HttpResponseMessage response = await _http
+                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                .ConfigureAwait(false);
+            answered = response.IsSuccessStatusCode;
+            page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
         var results = new List<(string Title, string Url, string Snippet)>();
-        foreach ((string title, string url, string snippet) in ParseDuckDuckGoLitePage(page))
+        foreach ((string title, string url, string snippet) in parse(page))
         {
             if (Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
                 && parsed.Scheme is "http" or "https"
@@ -1146,7 +1174,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 results.Add((title, parsed.AbsoluteUri, snippet));
             }
         }
-        return (results, IsDuckDuckGoResultsPage(response, page));
+        return (results, answered && IsDuckDuckGoResultsPage(page));
     }
 
     internal static async Task<string> ReadBoundedTextAsync(
@@ -1228,12 +1256,52 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
-    // The lite endpoint marks its results table in the page itself; a block or an
-    // error page carries neither that mark nor a single result link.
-    private static bool IsDuckDuckGoResultsPage(HttpResponseMessage response, string page) =>
-        response.IsSuccessStatusCode
-        && (page.Contains("Web results are present", StringComparison.Ordinal)
-            || DuckDuckGoResultLink.IsMatch(page));
+    private static readonly Regex DuckDuckGoHtmlResultLink = new(
+        "<a\\b(?=[^>]*class=[\"']result__a[\"'])[^>]*href=[\"']([^\"']+)[\"'][^>]*>(.*?)</a>",
+        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    private static readonly Regex DuckDuckGoHtmlResultSnippet = new(
+        "<(a|div)\\b[^>]*class=[\"']result__snippet[\"'][^>]*>(.*?)</\\1>",
+        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    // The html endpoint lists each result as an anchor of class «result__a» whose href is the engine's redirect
+    // (//duckduckgo.com/l/?uddg=<the target, escaped>&…), followed by its «result__snippet»; the target is taken from
+    // the redirect as written, and a result without a snippet keeps an empty one.
+    internal static IEnumerable<(string Title, string Url, string Snippet)> ParseDuckDuckGoHtmlPage(string page)
+    {
+        MatchCollection links = DuckDuckGoHtmlResultLink.Matches(page);
+        for (int index = 0; index < links.Count; index++)
+        {
+            int blockStart = links[index].Index + links[index].Length;
+            int blockEnd = index + 1 < links.Count ? links[index + 1].Index : page.Length;
+            Match snippet = DuckDuckGoHtmlResultSnippet.Match(page, blockStart, blockEnd - blockStart);
+            string href = System.Net.WebUtility.HtmlDecode(links[index].Groups[1].Value);
+            int target = href.IndexOf("uddg=", StringComparison.Ordinal);
+            if (target >= 0)
+            {
+                int end = href.IndexOf('&', target);
+                href = Uri.UnescapeDataString(end < 0 ? href[(target + 5)..] : href[(target + 5)..end]);
+            }
+            else if (href.StartsWith("//", StringComparison.Ordinal))
+            {
+                href = "https:" + href;
+            }
+            yield return (
+                HtmlText(links[index].Groups[2].Value),
+                href,
+                snippet.Success ? HtmlText(snippet.Groups[2].Value) : string.Empty);
+        }
+    }
+
+    // Each endpoint marks a page of results in the page itself (the lite one its results table, the html one its
+    // «no-results» notice when there are none); a block or an error page carries neither that mark nor a result link.
+    private static bool IsDuckDuckGoResultsPage(string page) =>
+        page.Contains("Web results are present", StringComparison.Ordinal)
+        || page.Contains("class=\"no-results\"", StringComparison.Ordinal)
+        || DuckDuckGoResultLink.IsMatch(page)
+        || DuckDuckGoHtmlResultLink.IsMatch(page);
 
     private static JsonElement NavigationResult(CdpNavigationResult value, string authority) =>
         ExternalJson.Create(writer =>

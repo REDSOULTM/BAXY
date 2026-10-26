@@ -42,6 +42,14 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    [Test]
+    public void TheShutdownPrivilegeIsEnabledOnThisProcessToken()
+    {
+        // Arreglos de uso real (2026-10-26): the privilege's LUID was laid out where Windows does not read it, so enabling
+        // it always failed and every shutdown was refused before Windows was asked. Enabling it shuts nothing down.
+        Assert.That(WindowsPowerTransitionPlatform.EnableShutdownPrivilege(), Is.True);
+    }
+
     [TestCase("lock", "win32_lockworkstation_acceptance")]
     [TestCase("restart", "win32_initiatesystemshutdownex_restart_acceptance")]
     [TestCase("shutdown", "win32_initiatesystemshutdownex_shutdown_acceptance")]
@@ -3854,6 +3862,56 @@ public sealed class ExternalAdaptersTests
             Assert.That(down.ErrorCode, Is.EqualTo("web_search_unavailable"));
             Assert.That(new[] { block, none, down }, Has.All.Matches<ExternalCapabilityReceipt>(
                 receipt => !receipt.EffectObserved && !receipt.EffectMayHaveOccurred));
+        });
+    }
+
+    // Arreglos de uso real (2026-10-26): after a burst the lite endpoint answered a page with no results in a quarter of
+    // a second (a throttle), and every search said it could not look it up. The request reads as a browser's, and a
+    // page that is no results page is asked once more of the html endpoint, whose redirect links carry the target.
+    [Test]
+    public async Task AThrottledLiteSearchIsAskedOnceOfTheHtmlEndpoint()
+    {
+        const string htmlPage = """
+            <html><body><div class="results">
+            <div class="result results_links result--ad"><a rel="nofollow" class="result__a"
+              href="https://duckduckgo.com/y.js?ad_domain=shop.example&amp;u3=x">Sponsored</a></div>
+            <div class="result results_links"><h2 class="result__title"><a rel="nofollow" class="result__a"
+              href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fguide%3Fa%3D1%26b%3D2&amp;rut=abc">An <b>example</b> guide</a></h2>
+              <a class="result__snippet" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fguide">How to <b>use</b> it</a></div>
+            <div class="result results_links"><h2 class="result__title"><a rel="nofollow" class="result__a"
+              href="https://example.org/plain">Plain</a></h2></div>
+            </div></body></html>
+            """;
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, "<html><body><form>anomaly</form></body></html>", "text/html"),
+            ["html.duckduckgo.com"] = new(HttpStatusCode.OK, htmlPage, "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"example guide"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            JsonElement result = receipt.Result!.Value;
+            Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_html_https"));
+            Assert.That(result.GetProperty("answeredBy").GetString(), Is.EqualTo("DuckDuckGo"));
+            JsonElement results = result.GetProperty("results");
+            Assert.That(results.GetArrayLength(), Is.EqualTo(2));
+            Assert.That(results[0].GetProperty("title").GetString(), Is.EqualTo("An example guide"));
+            Assert.That(results[0].GetProperty("url").GetString(), Is.EqualTo("https://example.com/guide?a=1&b=2"));
+            Assert.That(results[0].GetProperty("snippet").GetString(), Is.EqualTo("How to use it"));
+            Assert.That(results[1].GetProperty("url").GetString(), Is.EqualTo("https://example.org/plain"));
+            Assert.That(results[1].GetProperty("snippet").GetString(), Is.Empty);
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+                Is.EqualTo(new[] { "lite.duckduckgo.com", "html.duckduckgo.com" }));
+            Assert.That(handler.Asked, Has.All.Matches<AskedRequest>(asked =>
+                asked.UserAgent.StartsWith("Mozilla/5.0", StringComparison.Ordinal)
+                && asked.Headers.Contains("Accept-Language")));
         });
     }
 
