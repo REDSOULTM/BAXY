@@ -383,11 +383,20 @@ def test_a_contradicted_answer_is_written_again_once_with_the_fact(tmp_path: Pat
     assert checks[0]["findings"][0]["rule"] == "not_completed" and checks[1]["kept"] is False
 
 
-def test_a_second_answer_that_still_contradicts_is_spoken_and_traced(tmp_path: Path, monkeypatch) -> None:
+def test_a_second_answer_that_still_contradicts_is_told_the_facts_once_more(tmp_path: Path, monkeypatch) -> None:
+    # Uso real 2026-10-26: the second answer still said what the results denied, and was spoken.
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    mind, server, result = _closing(tmp_path, "Cerré Paint.", "Listo, cerré Paint.")
-    assert result["reply"] == "Listo, cerré Paint." and len(server.bodies) == 3  # decide, first, second: no loop
-    assert [c["kept"] for c in _trace(mind) if c["stage"] == "turn.check" and c["round"] == 2] == [True]
+    mind, server, result = _closing(tmp_path, "Cerré Paint.", "Listo, cerré Paint.", "No pude cerrar Paint.")
+    assert result["reply"] == "No pude cerrar Paint." and len(server.bodies) == 4
+    assert server.bodies[-1]["messages"][-1]["content"].startswith(CHECK_NOTE[:40])
+    assert [c["round"] for c in _trace(mind) if c["stage"] == "turn.check"] == [1, 2, 3]
+
+
+def test_a_third_answer_is_spoken_whatever_it_says(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server, result = _closing(tmp_path, "Cerré Paint.", "Listo, cerré Paint.", "Ya cerré Paint.")
+    assert result["reply"] == "Ya cerré Paint." and len(server.bodies) == 4  # no loop
+    assert [c["kept"] for c in _trace(mind) if c["stage"] == "turn.check" and c["round"] == 3] == [True]
 
 
 def test_an_empty_second_answer_leaves_the_first(tmp_path: Path, monkeypatch) -> None:

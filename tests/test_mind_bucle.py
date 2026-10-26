@@ -219,3 +219,19 @@ def test_without_the_aid_the_same_answer_is_said_again(tmp_path: Path, monkeypat
     mind, server = _mind(tmp_path, [_say("Hola."), _say("Hola.")])
     mind.decide(1, "hola")
     assert mind.decide(2, "hola")["reply"] == "Hola." and len(server.bodies) == 2
+
+
+def test_a_click_that_failed_twice_with_only_looks_between_is_not_made_a_third_time(tmp_path: Path, monkeypatch) -> None:
+    # Uso real 2026-10-26: the same «Reproducir» refused five times (protected_window), each look seeing a bit else.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    look, play = (_call("input_visible_controls", {"application": "Música"}),
+                  _call("input_visible_click", {"label": "Reproducir", "index": 48}))
+    refused = json.dumps({"status": "failed", "error": "protected_window"})
+    views = [json.dumps({"status": "completed", "view": f"Música\n[48] Button «Reproducir» {n}"}) for n in range(3)]
+    mind, server = _mind(tmp_path, [look, play, look, play, look, play, _say("No pude pulsar Reproducir.")])
+    mind.risk = {"input_visible_controls": "read_only"}  # as the catalog sends it: a look changes nothing
+    mind.decide(1, "dale play")
+    for index, result in enumerate([views[0], refused, views[1], refused, views[2]]):
+        step = mind.continue_turn(2 + index, result)
+    assert step["kind"] == "conversation" and step["reply"] == "No pude pulsar Reproducir."
+    assert [r["kind"] for r in _trace(mind) if r.get("kind") == "look_click_closed"] == ["look_click_closed"]
