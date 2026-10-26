@@ -14,7 +14,7 @@ internal static class ViewModelHarness
 
     internal static async Task<MainWindowViewModel> WithMindAsync()
     {
-        var viewModel = new MainWindowViewModel();
+        var viewModel = new MainWindowViewModel { FailedTurnSound = static () => { } }; // a failed turn sounds nothing here
         await StartMindAsync(viewModel);
         if (!viewModel.IsMindReady)
         {

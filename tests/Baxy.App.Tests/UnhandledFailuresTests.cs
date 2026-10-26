@@ -18,7 +18,7 @@ public sealed class UnhandledFailuresTests
     public async Task ATurnThatThrowsAnyExceptionEndsAsAFailedTurnAndIsRecorded()
     {
         using var fake = new FakeMind();
-        var viewModel = new MainWindowViewModel();
+        var viewModel = new MainWindowViewModel { FailedTurnSound = static () => { } };
         await using (viewModel)
         {
             MethodInfo run = typeof(MainWindowViewModel).GetMethod("RunTurnAsync",
