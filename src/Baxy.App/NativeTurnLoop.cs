@@ -583,6 +583,18 @@ internal sealed class NativeTurnLoop
                 return Record(operation, arguments, started, leftOut.ToJsonString(SaidFolders.AsWritten));
             }
 
+            // Práctica V5E040: a search of the working folder runs as file.find in the folder named.
+            if (ruling.Operation is { } instead && ProductCatalog.TryGet(instead, out ProductOperationDescriptor? other)
+                && other is not null)
+            {
+                operation = instead;
+                descriptor = other;
+                if (_host.Refuse?.Invoke(operation, ruling.Arguments) is { } off)
+                {
+                    return Record(operation, ruling.Arguments, started, Observation("rejected", off));
+                }
+            }
+
             arguments = ruling.Arguments;
             said = ruling.Note is { } note ? ("saidFolder", note) : null;
         }

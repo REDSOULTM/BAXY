@@ -93,9 +93,10 @@ internal sealed class SaidFolders
 
     /// <summary>
     /// What happens to a call: it runs with <paramref name="Arguments"/> (its own, or routed into the folder named) and
-    /// <paramref name="Note"/> goes with its result; or nothing runs and <paramref name="Refusal"/> is its whole result.
+    /// <paramref name="Note"/> goes with its result, as <paramref name="Operation"/> when that is another one (a search of
+    /// the working folder runs as file.find there); or nothing runs and <paramref name="Refusal"/> is its whole result.
     /// </summary>
-    internal sealed record Ruling(JsonObject Arguments, string? Note, JsonObject? Refusal);
+    internal sealed record Ruling(JsonObject Arguments, string? Note, JsonObject? Refusal, string? Operation = null);
 
     /// <summary>The person's words open a turn: the folders they name are this turn's.</summary>
     internal void Heard(string words)
@@ -292,10 +293,10 @@ internal sealed class SaidFolders
                 ? made : places;
         // The look there is said as a call, with what the call looked for (holdout v6 V6E042: told only that file_find
         // «looks there», the model wrote the same filesystem_search again).
-        string? look = reach.Sandbox && descriptor.Risk == OperationRisks.ReadOnly
+        JsonObject? found = reach.Sandbox && descriptor.Risk == OperationRisks.ReadOnly
             && ProductCatalog.TryGet("file.find", out ProductOperationDescriptor? find) && find is not null
-            && targets.Count == 1 && Express(find, Shared(arguments, find), targets[0]) is { } found
-                ? $"to look there, call file_find with {Changes(new JsonObject(), found)}" : null;
+            && targets.Count == 1 ? Express(find, Shared(arguments, find), targets[0]) : null;
+        string? look = found is null ? null : $"to look there, call file_find with {Changes(new JsonObject(), found)}";
         // Holdout v6 V6E034 (final_v5 s0): told only that filesystem_copy «cannot name a folder of theirs», the model
         // answered that the file was in the person's folder and not in its working folder, and copied nothing. The
         // operation that does the same act there is said as a call (aid «said_folder_counterpart»).
@@ -313,6 +314,15 @@ internal sealed class SaidFolders
             return new(arguments, $"{who} {named}; this call acted in {where}, outside it, as it was written: "
                 + $"it did not look at or change anything in {(places.Count == 1 ? "that folder" : "those folders")}"
                 + (after is null ? string.Empty : "; " + after), null);
+        }
+
+        // Práctica V5E040: «busca la factura en Documentos\Contabilidad» ran as a filesystem_search of the working folder,
+        // refused and written again, and BAXY said it found nothing. The search runs as file_find in the folder named.
+        if (operation == "filesystem.search" && found is not null)
+        {
+            return new(found, $"the person named {named}: this search looked in {targets[0].Path} with file_find "
+                + $"({Changes(new JsonObject(), found)}) instead of BAXY's own working folder, as it was written; to look "
+                + "at the working folder itself, call it again exactly as before", null, "file.find");
         }
 
         string wire = operation.Replace('.', '_');
