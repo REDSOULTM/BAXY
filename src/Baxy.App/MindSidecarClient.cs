@@ -226,6 +226,14 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             _pumpCancellation = new CancellationTokenSource();
             var helloCompletion = new TaskCompletionSource<JsonObject>(
                 TaskCreationOptions.RunContinuationsAsynchronously);
+            // Arreglos de uso real (2026-10-26): a start abandoned before the hello (the core's start failed and the
+            // retry gave up on this mind) stopped waiting, and the pump's end faulted the hello with nobody left to see
+            // it: one unobserved IOException per retry, «site unknown», no stack. The fault is observed here.
+            _ = helloCompletion.Task.ContinueWith(
+                static abandoned => _ = abandoned.Exception,
+                CancellationToken.None,
+                TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default);
             _pump = PumpAsync(sidecar.Process, helloCompletion, _pumpCancellation.Token);
             _ = _pump.ContinueWith(static (_, state) => ((MindSidecarClient)state!).ReadyLost?.Invoke(true), this,
                 CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
