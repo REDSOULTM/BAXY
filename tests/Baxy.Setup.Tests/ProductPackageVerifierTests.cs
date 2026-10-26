@@ -273,16 +273,17 @@ public sealed class ProductPackageVerifierTests
 
     private static string FindRepositoryFieldUiDist()
     {
-        for (DirectoryInfo? directory = new(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
+        // Injected by Baxy.Setup.Tests.csproj, so it is the checkout's real dist wherever the tests are built.
+        string? dist = typeof(ProductPackageVerifierTests).Assembly
+            .GetCustomAttributes(typeof(System.Reflection.AssemblyMetadataAttribute), inherit: false)
+            .Cast<System.Reflection.AssemblyMetadataAttribute>()
+            .SingleOrDefault(static attribute => attribute.Key == "BaxyRepositoryFieldUiDist")?.Value;
+        if (dist is null || !Directory.Exists(dist))
         {
-            string candidate = Path.Combine(directory.FullName, "src", "Baxy.FieldUi", "dist");
-            if (Directory.Exists(candidate))
-            {
-                return candidate;
-            }
+            throw new AssertionException($"The checkout's src/Baxy.FieldUi/dist is missing: {dist}");
         }
 
-        throw new AssertionException("src/Baxy.FieldUi/dist was not found above the test output.");
+        return dist;
     }
 
     private static byte[] ReplaceSourceWithNull(byte[] bytes)
