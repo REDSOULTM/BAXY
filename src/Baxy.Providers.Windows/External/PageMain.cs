@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
-// Goal h-web (2026-10-25, BAXY_WEB_FOCUS=1): the part of a page that is its content. web.fetch receipts were 30 % of
+// Goal h-web (2026-10-25): the part of a page that is its content. web.fetch receipts were 30 % of
 // every receipt's characters in the e2e traces (c3-*, ho6-*), and the 4B model paged through 8-14 pages of 4,000
 // characters of a list until the context overflowed (V6E008/V6E014, V5E008). Two rules, by the page's own markup only,
 // never by what its text says:

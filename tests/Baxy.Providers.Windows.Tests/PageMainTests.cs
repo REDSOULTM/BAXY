@@ -3,8 +3,8 @@ using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
 
-// Goal h-web (2026-10-25): web.fetch with BAXY_WEB_FOCUS=1 reads a page's main content without what the page marks as
-// boilerplate; unset, the page is read as before. Pages written for the test (Fixtures/Web), no network.
+// Goal h-web (2026-10-25): web.fetch reads a page's main content without what the page marks as boilerplate. Pages
+// written for the test (Fixtures/Web), no network.
 [TestFixture]
 public sealed class PageMainTests
 {
@@ -14,7 +14,7 @@ public sealed class PageMainTests
     [Test]
     public void FocusReadsTheMainContentWithoutBannersMenusOrShareBars()
     {
-        (string title, string text, int skipped) = PageText.Prose(Fixture("historia_metro.html"), mainOnly: true);
+        (string title, string text, int skipped) = PageText.Prose(Fixture("historia_metro.html"));
 
         Assert.That(title, Is.EqualTo("Nuestra historia | Metro de prueba"));
         Assert.That(text, Does.StartWith("Nuestra Historia"));
@@ -30,20 +30,9 @@ public sealed class PageMainTests
     }
 
     [Test]
-    public void FocusOffReadsThePageAsBefore()
-    {
-        string html = Fixture("historia_metro.html");
-        (string title, string text, int skipped) = PageText.Prose(html, mainOnly: false);
-
-        Assert.That((title, text, skipped), Is.EqualTo(PageText.Prose(html)));
-        Assert.That(text, Does.Contain("Usamos cookies"));
-        Assert.That(text, Does.Contain("Compartir en redes"));
-    }
-
-    [Test]
     public void FocusDropsEditLinksReferenceMarksNavboxesAndKeepsNestedContent()
     {
-        (_, string text, _) = PageText.Prose(Fixture("rios_wiki.html"), mainOnly: true);
+        (_, string text, _) = PageText.Prose(Fixture("rios_wiki.html"));
 
         Assert.That(text, Does.Contain("El Volga es el río más largo de Europa, con unos 3690 km"));
         Assert.That(text, Does.Contain("sus caudales medios"));
@@ -65,7 +54,7 @@ public sealed class PageMainTests
             + "porque el sitio marcó como principal sólo su encabezado; la regla exige trescientos caracteres de texto "
             + "en el elemento principal antes de leerlo solo, y aquí no los hay.</p></div></body></html>";
 
-        (_, string text, _) = PageText.Prose(html, mainOnly: true);
+        (_, string text, _) = PageText.Prose(html);
 
         Assert.That(text, Does.Contain("Hola"));
         Assert.That(text, Does.Contain("Un párrafo largo fuera del elemento principal"));
@@ -78,7 +67,7 @@ public sealed class PageMainTests
             + "<table data-mw='{\"parts\":[{\"wt\":\"<span>creado</span>\"}]}'><tr><td>Sede</td></tr></table>"
             + "</body></html>";
 
-        (_, string text, _) = PageText.Prose(html, mainOnly: true);
+        (_, string text, _) = PageText.Prose(html);
 
         Assert.That(text, Is.EqualTo("Fundada en 1945.\nSede"));
     }
@@ -89,7 +78,7 @@ public sealed class PageMainTests
         const string html = "<html><body><div class=\"menu\"><p>Texto de la página que sigue sin cerrar el menú.</p>"
             + "</body></html>";
 
-        (_, string text, _) = PageText.Prose(html, mainOnly: true);
+        (_, string text, _) = PageText.Prose(html);
 
         Assert.That(text, Does.Contain("Texto de la página"));
     }
