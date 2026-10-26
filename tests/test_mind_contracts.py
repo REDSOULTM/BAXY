@@ -60,15 +60,42 @@ def test_with_both_layers_an_unsure_action_asks_without_consulting_the_decision_
     assert one.asked == []
 
 
-# c) Layer 2 off without BAXY_S1_VETO (mutation: a default threshold for the veto).
-def test_layer_2_is_off_without_its_threshold_even_with_the_decision_model_up(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.delenv("BAXY_S1_DOUBT", raising=False)
-    monkeypatch.delenv("BAXY_S1_VETO", raising=False)
+# c) Layer 2 off with the owner's switch, or with an empty BAXY_S1_VETO (mutation: the switch not read, or an empty value
+# taken for the default). Entrega 1.1.0: with neither, the defaults are on (test_system_one_is_on_without_variables).
+@pytest.mark.parametrize("off", ["switch", "empty"])
+def test_layer_2_is_off_with_the_switch_or_an_empty_threshold_even_with_the_decision_model_up(
+        tmp_path: Path, monkeypatch, off: str) -> None:
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "local"))
+    if off == "switch":
+        (tmp_path / "local" / "BAXY" / "renew").mkdir(parents=True)
+        (tmp_path / "local" / "BAXY" / "renew" / "system_one.off").touch()
+    else:
+        monkeypatch.setenv("BAXY_S1_DOUBT", "")
+        monkeypatch.setenv("BAXY_S1_VETO", "")
     mind, _ = _doubt_mind(tmp_path, [_sure("system_power", {}, 0.3)])
     one = FakeSystemOne("app_close")
     mind.system_one = one  # type: ignore[assignment]
     assert mind.decide(1, "apaga el pc")["operation"] == "system.power"
     assert one.asked == []
+
+
+# Entrega 1.1.0: BAXY installed starts with no launcher; with no variable and no switch, System One is the one the benches
+# ran (mutation: a default lost, or changed).
+def test_system_one_is_on_without_variables(tmp_path: Path, monkeypatch) -> None:
+    from baxy_mind import mind as mind_module
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "local"))
+    (tmp_path / "uno").mkdir()
+    (tmp_path / "dos").mkdir()
+    held, _ = _doubt_mind(tmp_path / "uno", [_sure("app_open", {"appId": "Paint"}, 0.39), _say("¿Qué abro?")])
+    assert held.decide(1, "abre eso")["operation"] is None
+    mind, _, one = _layer2(tmp_path / "dos", monkeypatch, "system_power", [_sure("system_power", {}, 0.5)])
+    monkeypatch.delenv("BAXY_S1_DOUBT")
+    monkeypatch.delenv("BAXY_S1_VETO")
+    assert mind.decide(1, "apaga el pc")["operation"] == "system.power"
+    assert one.asked
+    assert {name: mind_module._system_one(name) for name in mind_module.SYSTEM_ONE} == {
+        "BAXY_S1_DOUBT": "0.4", "BAXY_S1_VETO": "0.6", "BAXY_S1_CORRECT": "1"}
 
 
 # d) «corrige» only to a harmless tool or one the kernel confirms (mutation: CORRECTABLE_RISKS widened, or an unknown risk

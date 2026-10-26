@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 
 namespace Baxy.App;
@@ -10,7 +11,22 @@ internal sealed record MindRuntimeConfiguration(
     string PythonPath,
     string Gguf,
     string LlamaServer,
-    int GpuLayers);
+    int GpuLayers,
+    MindRuntimePieces Pieces);
+
+/// <summary>
+/// The pieces beside the model that a registration names on this machine (entrega 1.1.0): BAXY's voice (Supertonic),
+/// the ear (the k4 wake word and Parakeet Ultra), System One's decision model and its CPU threads, and the model's vision
+/// projector. Each is null when it is not registered or is not what was registered: that piece stays off, and the mind
+/// says so (its voice's state; no decision model; no projector on its server).
+/// </summary>
+internal sealed record MindRuntimePieces(
+    string? Voice,
+    string? Wake,
+    string? Stt,
+    string? SystemOneGguf,
+    int? SystemOneThreads,
+    string? VisionProjector);
 
 internal sealed record MindRuntimeEnvironmentSnapshot(
     string? Disabled,
@@ -27,13 +43,13 @@ internal sealed record MindRuntimeDiscoveryResult(
     bool Disabled);
 
 /// <summary>
-/// Loads a deliberately registered local mind runtime. The registration is
-/// fail-closed, and an explicit environment configuration always wins. Only what
-/// the App publishes (interpreter, mind path, model, server, GPU layers) is
-/// required and verified. The voice entries (stt, wake, tts) and the adapters
-/// that a registration may still carry are allowed and not read: the mind's voice
-/// comes from the BAXY_RENEW_* variables its launcher sets (scripts/run_renew.cmd),
-/// not from this file. Any other property refuses the registration.
+/// Loads a deliberately registered local mind runtime (scripts/register_mind_runtime.ps1). The registration is
+/// fail-closed, and an explicit environment configuration always wins. The interpreter, mind path, model, server and
+/// GPU layers are required and verified. Entrega 1.1.0: BAXY installed and opened from the Start menu has no launcher,
+/// and scripts/run_renew.cmd was the only way its voice, ear, System One and vision reached the mind; the registration
+/// now names them (<see cref="MindRuntimePieces"/>), each verified by its SHA-256 and applied only where no variable
+/// was given, so a bench still sets its own. The old voice entries and the adapters an older registration may carry
+/// are allowed and not read. Any other property refuses the registration.
 /// </summary>
 internal static class MindRuntimeDiscovery
 {
@@ -52,6 +68,16 @@ internal static class MindRuntimeDiscovery
         "llama_server_sha256",
         "ngl",
     ];
+
+    // The pieces (MindRuntimePieces), each optional: a path and its SHA-256 (of a folder, DirectorySha256).
+    private static readonly string[] PieceProperties =
+    [
+        "renew_tts_dir", "renew_tts_sha256", "renew_wake_dir", "renew_wake_sha256", "renew_stt_dir", "renew_stt_sha256",
+        "s1_gguf", "s1_gguf_sha256", "s1_threads", "mmproj", "mmproj_sha256",
+    ];
+
+    // The click's vision asks the mind's own llama-server (PLAN_GENERAL A5) on this port unless one is given.
+    private const string VisionPort = "8077";
 
     private static readonly object ApplyLock = new();
 
@@ -95,7 +121,10 @@ internal static class MindRuntimeDiscovery
             Disabled: false);
     }
 
-    internal static bool ApplyVerified(MindRuntimeDiscoveryResult discovery)
+    internal static bool ApplyVerified(MindRuntimeDiscoveryResult discovery) =>
+        ApplyVerified(discovery, Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+
+    internal static bool ApplyVerified(MindRuntimeDiscoveryResult discovery, string localData)
     {
         ArgumentNullException.ThrowIfNull(discovery);
         lock (ApplyLock)
@@ -115,6 +144,7 @@ internal static class MindRuntimeDiscovery
             MindRuntimeConfiguration? runtime = discovery.Runtime;
             if (runtime is null)
             {
+                ApplyVision(localData);
                 return true;
             }
 
@@ -127,6 +157,8 @@ internal static class MindRuntimeDiscovery
             SetIfMissing(
                 "BAXY_MIND_NGL",
                 runtime.GpuLayers.ToString(CultureInfo.InvariantCulture));
+            ApplyPieces(runtime.Pieces, localData);
+            ApplyVision(localData);
             if (string.IsNullOrWhiteSpace(discovery.Environment.Python))
             {
                 SetIfMissing(MindSidecarClient.PythonEnvironmentVariable, runtime.Python);
@@ -134,6 +166,57 @@ internal static class MindRuntimeDiscovery
             return true;
         }
     }
+
+    /// <summary>
+    /// The registered pieces, each where no variable names one. System One's decision model and its threads not while
+    /// the owner's switch is off (scripts/system_one.cmd off; the mind reads it too, for its thresholds), and the
+    /// projector not with BAXY_VISION_OFF, as scripts/run_renew.cmd starts a bench.
+    /// </summary>
+    private static void ApplyPieces(MindRuntimePieces pieces, string localData)
+    {
+        SetIfMissing("BAXY_RENEW_TTS_DIR", pieces.Voice);
+        SetIfMissing("BAXY_RENEW_WAKE_DIR", pieces.Wake);
+        SetIfMissing("BAXY_RENEW_STT_DIR", pieces.Stt);
+        if (!SystemOneSwitchedOff(localData))
+        {
+            SetIfMissing("BAXY_S1_GGUF", pieces.SystemOneGguf);
+            SetIfMissing("BAXY_S1_THREADS", pieces.SystemOneThreads?.ToString(CultureInfo.InvariantCulture));
+        }
+
+        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BAXY_VISION_OFF")))
+        {
+            SetIfMissing("BAXY_MIND_MMPROJ", pieces.VisionProjector);
+        }
+    }
+
+    /// <summary>
+    /// With a projector on the mind's server (registered, or given by a bench), the click's vision is pointed at it
+    /// before the core starts, which reads these variables (LocalVisionEndpoint): a pinned port (8077 unless one is
+    /// given), its chat endpoint, the server's one slot, and the folder where that slot's state is set aside meanwhile,
+    /// the server's own --slot-save-path (llm_server._slot_dir). A port or folder already given is kept.
+    /// </summary>
+    private static void ApplyVision(string localData)
+    {
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BAXY_VISION_OFF"))
+            || string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("BAXY_MIND_MMPROJ")))
+        {
+            return;
+        }
+
+        SetIfMissing("BAXY_MIND_LLAMA_PORT", VisionPort);
+        string port = Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_PORT")!.Trim();
+        SetIfMissing("BAXY_VISION_ENDPOINT", $"http://127.0.0.1:{port}/v1/chat/completions");
+        SetIfMissing("BAXY_VISION_MODEL", "baxy");
+        SetIfMissing("BAXY_VISION_SLOT", "0");
+        if (!string.IsNullOrWhiteSpace(localData))
+        {
+            SetIfMissing("BAXY_VISION_SLOT_DIR", Path.Combine(localData, "BAXY", "renew", "slots"));
+        }
+    }
+
+    private static bool SystemOneSwitchedOff(string localData) =>
+        !string.IsNullOrWhiteSpace(localData)
+        && File.Exists(Path.Combine(localData, "BAXY", "renew", "system_one.off"));
 
     internal static string DefaultRegistrationPath()
     {
@@ -195,10 +278,7 @@ internal static class MindRuntimeDiscovery
                 });
             JsonElement root = document.RootElement;
             if (root.ValueKind != JsonValueKind.Object
-                || !HasExactProperties(root, [
-                    .. RegistrationProperties,
-                    .. UnreadProperties.Where(name => root.TryGetProperty(name, out _)),
-                ])
+                || !HasKnownProperties(root)
                 || !string.Equals(
                     RequiredString(root, "schema"),
                     RegistrationSchema,
@@ -246,7 +326,17 @@ internal static class MindRuntimeDiscovery
                 pythonPath,
                 gguf,
                 server,
-                ngl);
+                ngl,
+                new MindRuntimePieces(
+                    RegisteredDirectory(hashes, root, "renew_tts_dir", "renew_tts_sha256"),
+                    RegisteredDirectory(hashes, root, "renew_wake_dir", "renew_wake_sha256"),
+                    RegisteredDirectory(hashes, root, "renew_stt_dir", "renew_stt_sha256"),
+                    RegisteredModel(hashes, root, "s1_gguf", "s1_gguf_sha256"),
+                    root.TryGetProperty("s1_threads", out JsonElement threads)
+                        && threads.ValueKind == JsonValueKind.Number
+                        && threads.TryGetInt32(out int count)
+                        && count is >= 1 and <= 64 ? count : null,
+                    RegisteredModel(hashes, root, "mmproj", "mmproj_sha256")));
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -258,8 +348,70 @@ internal static class MindRuntimeDiscovery
         }
     }
 
+    /// <summary>A registered GGUF beside the model (System One's, the projector) that is what was registered.</summary>
+    private static string? RegisteredModel(RuntimeFileHashCache hashes, JsonElement root, string path, string sha256)
+    {
+        try
+        {
+            string? file = ExistingFile(hashes, OptionalString(root, path), expectedName: null, OptionalString(root, sha256));
+            return file is not null && file.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase) ? file : null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return null; // only this piece stays off
+        }
+    }
+
+    /// <summary>A registered folder (the voice, the wake word, the recognizer) whose files are what was registered.</summary>
+    private static string? RegisteredDirectory(RuntimeFileHashCache hashes, JsonElement root, string path, string sha256)
+    {
+        try
+        {
+            string? directory = ExistingDirectory(OptionalString(root, path));
+            string? expected = OptionalString(root, sha256);
+            return directory is not null
+                && IsSha256(expected)
+                && string.Equals(DirectorySha256(hashes, directory), expected, StringComparison.Ordinal)
+                ? directory
+                : null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// A folder's SHA-256 as scripts/mind_runtime_manifest.ps1 writes it (Get-BaxyDirectorySha256): of the UTF-8 lines
+    /// «name:sha256», one per file directly in it by ordinal name, each ending in a line feed; null for a folder with
+    /// no file. Subfolders are not part of it (the wake word's __pycache__, written when the mind imports its runtime).
+    /// </summary>
+    internal static string? DirectorySha256(RuntimeFileHashCache hashes, string directory)
+    {
+        string[] names = [.. Directory.GetFiles(directory).Select(static file => Path.GetFileName(file))
+            .Order(StringComparer.Ordinal)];
+        if (names.Length == 0)
+        {
+            return null;
+        }
+
+        var lines = new StringBuilder();
+        foreach (string name in names)
+        {
+            lines.Append(name).Append(':').Append(hashes.Sha256(Path.Combine(directory, name))).Append('\n');
+        }
+
+        return Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(lines.ToString())));
+    }
+
+    private static string? OptionalString(JsonElement root, string propertyName) =>
+        root.TryGetProperty(propertyName, out JsonElement element) && element.ValueKind == JsonValueKind.String
+            ? element.GetString()
+            : null;
+
     // Allowed in a registration and never read here (audit 2026-10-15, App H23: they were required although nothing
-    // in the App reads them, so a registration without voice was refused).
+    // in the App reads them, so a registration without voice was refused). The voice entries are those of a
+    // registration written before entrega 1.1.0 (Definitivo's voice): it still starts the mind, with no piece.
     private static readonly string[] UnreadProperties =
     [
         "stt_dir", "stt_sha256", "wake_manifest", "wake_manifest_sha256", "tts_model", "tts_sha256", "wake_on_start",
@@ -381,18 +533,22 @@ internal static class MindRuntimeDiscovery
         return element.ValueKind == JsonValueKind.String ? element.GetString() : null;
     }
 
-    private static bool HasExactProperties(JsonElement root, IReadOnlyCollection<string> expected)
+    /// <summary>Every required property once, and no other but the pieces' and the unread ones.</summary>
+    private static bool HasKnownProperties(JsonElement root)
     {
         var actual = new HashSet<string>(StringComparer.Ordinal);
         foreach (JsonProperty property in root.EnumerateObject())
         {
-            if (!actual.Add(property.Name))
+            if (!actual.Add(property.Name)
+                || !(RegistrationProperties.Contains(property.Name, StringComparer.Ordinal)
+                    || PieceProperties.Contains(property.Name, StringComparer.Ordinal)
+                    || UnreadProperties.Contains(property.Name, StringComparer.Ordinal)))
             {
                 return false;
             }
         }
 
-        return actual.SetEquals(expected);
+        return RegistrationProperties.All(actual.Contains);
     }
 
     private static MindRuntimeEnvironmentSnapshot CaptureEnvironment() =>
@@ -433,9 +589,9 @@ internal static class MindRuntimeDiscovery
     private static bool IsDisabled(string? value) =>
         string.Equals(value, "1", StringComparison.Ordinal);
 
-    private static void SetIfMissing(string name, string value)
+    private static void SetIfMissing(string name, string? value)
     {
-        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(name)))
+        if (value is not null && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(name)))
         {
             Environment.SetEnvironmentVariable(name, value);
         }

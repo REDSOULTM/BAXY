@@ -429,6 +429,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 _retryableOperations = new RetryableOperationRegistry();
             }
 
+            // Entrega 1.1.0: the registered runtime completes the environment before the core starts, which only
+            // inherits it: the click's vision (BAXY_VISION_*) is pointed at the projector the registration names.
+            // The files' hashes are kept between starts (RuntimeFileHashCache); the mind's start verifies it again.
+            await Task.Run(
+                static () => MindRuntimeDiscovery.ApplyVerified(MindRuntimeDiscovery.DiscoverVerified()),
+                cancellationToken);
             if (_mindClient is not { IsReady: true })
             {
                 // The mind's process and model start beside the core's hello; only its catalog waits for the core.

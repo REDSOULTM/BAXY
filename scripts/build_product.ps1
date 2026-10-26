@@ -6,7 +6,7 @@ param(
     [string]$VulkanLoaderPath,
     [string]$YtDlpPath,
     [ValidatePattern('^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*))*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?\z')]
-    [string]$Version = '1.0.8',
+    [string]$Version = '1.1.0',
     [switch]$AllowDirtyDevelopmentBuild
 )
 

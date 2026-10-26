@@ -32,22 +32,18 @@ rem restaura despues, unos 2 s; el archivo se borra al restaurarlo. Se apaga def
 if defined BAXY_VISION_OFF goto run
 if not exist "%VISION_MMPROJ%" goto run
 set "BAXY_MIND_MMPROJ=%VISION_MMPROJ%"
-rem Calidad PC 2026-10-25: la voz y el puerto que pone un banco se respetan, como las demas rutas; la vision sigue al puerto.
-if not defined BAXY_MIND_LLAMA_PORT set "BAXY_MIND_LLAMA_PORT=8077"
-set "BAXY_VISION_ENDPOINT=http://127.0.0.1:%BAXY_MIND_LLAMA_PORT%/v1/chat/completions"
-set "BAXY_VISION_MODEL=baxy"
-set "BAXY_VISION_SLOT=0"
-rem Un banco guarda el slot en otro disco definiendo antes la variable (el C: del PC se lleno el 2026-10-22).
-if not defined BAXY_VISION_SLOT_DIR set "BAXY_VISION_SLOT_DIR=%LOCALAPPDATA%\BAXY\renew\slots"
+rem Entrega 1.1.0: con el proyector, el resto lo pone la App (src\Baxy.App\MindRuntimeDiscovery.cs), igual que en el BAXY
+rem instalado, que toma el proyector del registro del runtime: el puerto 8077, el endpoint de la vision en ese puerto, el
+rem modelo baxy, el slot 0 y su carpeta %LOCALAPPDATA%\BAXY\renew\slots. El puerto y la carpeta que defina antes un
+rem banco se respetan (el C: del PC se lleno el 2026-10-22).
 :run
 rem System One (rama pc-system-one): la duda de Qwen (capa 0) y Laya como freno o corrector (capa 2). Encendido si no
-rem existe el interruptor %LOCALAPPDATA%\BAXY\renew\system_one.off (scripts\system_one.cmd on ^| off ^| estado). Umbrales medidos en
-rem la fase 0: preguntar bajo 0,4 de confianza; consultar a Laya bajo 0,6; si Laya elige otra operacion inofensiva,
-rem Qwen la rellena y se ejecuta (BAXY_S1_CORRECT); si es riesgosa, BAXY pregunta.
+rem existe el interruptor %LOCALAPPDATA%\BAXY\renew\system_one.off (scripts\system_one.cmd on ^| off ^| estado). Los
+rem umbrales de la fase 0 (preguntar bajo 0,4 de confianza; consultar a Laya bajo 0,6; si Laya elige otra operacion
+rem inofensiva, Qwen la rellena y se ejecuta) son desde la entrega 1.1.0 los de la mente (SYSTEM_ONE en
+rem src\baxy_mind\mind.py), que tambien lee el interruptor; un banco los cambia definiendo antes BAXY_S1_DOUBT,
+rem BAXY_S1_VETO o BAXY_S1_CORRECT. Aqui queda el GGUF de Laya de cada maquina.
 if not exist "%LOCALAPPDATA%\BAXY\renew\system_one.off" (
-  if not defined BAXY_S1_DOUBT set "BAXY_S1_DOUBT=0.4"
-  if not defined BAXY_S1_VETO set "BAXY_S1_VETO=0.6"
-  if not defined BAXY_S1_CORRECT set "BAXY_S1_CORRECT=1"
   if /I "%COMPUTERNAME%"=="REDNOTE" (
     if not defined BAXY_S1_GGUF set "BAXY_S1_GGUF=D:\BAXYeval\s1\tuned\layam-long-s1-Q8_0.gguf"
     rem Palanca 6, medida en el notebook el 2026-10-23 con medir_laya_cpu.py: con 6 hilos Laya elige igual, 48 de 48 y

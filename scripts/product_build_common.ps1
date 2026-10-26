@@ -850,8 +850,9 @@ function New-BaxyBuildManifest {
             native_libraries = 'adjacent_no_self_extraction'
             core = 'native_aot_self_contained'
             symbols = 'excluded_from_user_payload'
-            # Renew's mind (src/baxy_mind and its Python runtime), the GGUF model, llama-server and the voice are not in
-            # the package: Renew runs with scripts/run_renew.cmd where they are registered (a measured limit).
+            # Renew's mind (src/baxy_mind and its Python runtime), the GGUF model, llama-server, the voice, the ear,
+            # System One and the vision projector are not in the package (a measured limit): the App starts them from
+            # the machine's registration, scripts/register_mind_runtime.ps1.
             mind = 'not_included'
         }
         file_count = [int]$sortedFiles.Count

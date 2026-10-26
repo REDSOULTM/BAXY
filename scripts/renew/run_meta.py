@@ -130,15 +130,16 @@ def machine() -> str:
     return os.environ.get("COMPUTERNAME") or socket.gethostname()
 
 
+# The mind's own (SYSTEM_ONE in src/baxy_mind/mind.py since entrega 1.1.0; scripts/run_renew.cmd set them before).
 S1_DEFAULTS = {"BAXY_S1_DOUBT": "0.4", "BAXY_S1_VETO": "0.6", "BAXY_S1_CORRECT": "1"}
 
 
 def system_one_setting(environ: dict[str, str] | None = None) -> dict[str, Any]:
-    """System One as scripts/run_renew.cmd starts the product for a bench: with the switch file
-    %LOCALAPPDATA%\\BAXY\\renew\\system_one.off (scripts\\system_one.cmd off, the owner's) the launcher sets nothing and
-    only what the bench's own environment carries counts; without it, every BAXY_S1_* not given takes the launcher's
-    default (its GGUF is per machine: «default of run_renew.cmd»). The owner's switch decided whether an e2e arm ran
-    with System One."""
+    """System One as the product starts for a bench: with the switch file %LOCALAPPDATA%\\BAXY\\renew\\system_one.off
+    (scripts\\system_one.cmd off, the owner's) neither the mind's defaults nor the launcher's GGUF apply, and only what
+    the bench's own environment carries counts; without it, every BAXY_S1_* not given takes the mind's default (the
+    GGUF is per machine: «default of run_renew.cmd»). The owner's switch decided whether an e2e arm ran with System
+    One."""
     source = os.environ if environ is None else environ
     off_file = (Path(source.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "system_one.off").exists()
     given = {key: source[key] for key in (*S1_DEFAULTS, "BAXY_S1_GGUF", "BAXY_S1_THREADS") if source.get(key)}

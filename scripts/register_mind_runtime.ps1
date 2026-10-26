@@ -1,15 +1,25 @@
+# Registers the mind runtime BAXY installed starts with (%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json; the App
+# verifies every hash, src\Baxy.App\MindRuntimeDiscovery.cs). Entrega 1.1.0: besides the model, the pieces of this
+# machine that scripts\run_renew.cmd gave the benches (each optional; one not given stays off): BAXY's voice
+# (-VoiceDirectory, Supertonic), the ear (-WakeDirectory k4, -SttDirectory Parakeet Ultra), System One's decision model
+# (-SystemOneGguf, -SystemOneThreads) and the vision projector (-VisionProjector).
 [CmdletBinding()]
 param(
     [string]$Python,
     [string]$PythonPath,
     [string]$Gguf,
     [string]$LlamaServer,
-    [string]$SttDirectory,
     [string]$CpuProseAdapter,
     [string]$DeciderAdapter,
     [ValidateRange(0, 999)]
     [int]$GpuLayers = 99,
-    [switch]$NoWake
+    [string]$VoiceDirectory,
+    [string]$WakeDirectory,
+    [string]$SttDirectory,
+    [string]$SystemOneGguf,
+    [ValidateRange(1, 64)]
+    [int]$SystemOneThreads = 4,
+    [string]$VisionProjector
 )
 
 $ErrorActionPreference = 'Stop'
@@ -44,15 +54,6 @@ if ([string]::IsNullOrWhiteSpace($LlamaServer)) {
     }
     $LlamaServer = $resolution.Path
 }
-if ([string]::IsNullOrWhiteSpace($SttDirectory)) {
-    $resolution = Resolve-BaxyAsset -Name 'stt_parakeet' -RepositoryRoot $repo
-    if (-not $resolution.Found) {
-        throw ("Parakeet STT ausente. Rutas comprobadas:`n- " +
-            ($resolution.Candidates -join "`n- ") + "`n" + $resolution.Repair)
-    }
-    $SttDirectory = $resolution.Path
-}
-
 function Resolve-RequiredFile {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
@@ -88,8 +89,34 @@ $pythonFull = Resolve-BaxyRuntimePython `
 $pythonPathFull = Resolve-RequiredDirectory -Path $PythonPath -Description 'baxy_mind source root'
 $ggufFull = Resolve-RequiredFile -Path $Gguf -Description 'GGUF conversacional'
 $serverFull = Resolve-RequiredFile -Path $LlamaServer -Description 'llama-server'
-$sttFull = Resolve-RequiredDirectory -Path $SttDirectory -Description 'Parakeet STT bundle'
-foreach ($candidate in @($pythonFull, $ggufFull, $serverFull, $sttFull)) {
+# The pieces: property, given path, kind, the file the mind looks for in a folder (or the extension of a file), label.
+$pieces = @(
+    @('renew_tts', $VoiceDirectory, 'Container', 'baxy-voice.json', 'Voz de BAXY (Supertonic)'),
+    @('renew_wake', $WakeDirectory, 'Container', 'config.json', 'Palabra de activacion (k4)'),
+    @('renew_stt', $SttDirectory, 'Container', 'tokens.txt', 'Reconocedor (Parakeet Ultra)'),
+    @('s1_gguf', $SystemOneGguf, 'Leaf', '.gguf', 'Modelo de decision de System One'),
+    @('mmproj', $VisionProjector, 'Leaf', '.gguf', 'Proyector de vision')
+)
+$pieceFull = @{}
+foreach ($piece in $pieces) {
+    if ([string]::IsNullOrWhiteSpace($piece[1])) {
+        $pieceFull[$piece[0]] = $null
+        continue
+    }
+    if ($piece[2] -ceq 'Leaf') {
+        $full = Resolve-RequiredFile -Path $piece[1] -Description $piece[4]
+        if ([IO.Path]::GetExtension($full) -ine $piece[3]) {
+            throw "$($piece[4]) must be a GGUF file: $full"
+        }
+    } else {
+        $full = Resolve-RequiredDirectory -Path $piece[1] -Description $piece[4]
+        if (-not (Test-Path -LiteralPath (Join-Path $full $piece[3]) -PathType Leaf)) {
+            throw "$($piece[4]) has no $($piece[3]): $full"
+        }
+    }
+    $pieceFull[$piece[0]] = $full
+}
+foreach ($candidate in @($pythonFull, $ggufFull, $serverFull) + @($pieceFull.Values | Where-Object { $null -ne $_ })) {
     if (Test-BaxyForeignWorktreePath -Path $candidate) {
         throw ("mind_runtime_registration_failed: foreign_baxy_worktree: " +
             $candidate)
@@ -114,57 +141,11 @@ if (-not [string]::Equals(
         [StringComparison]::OrdinalIgnoreCase)) {
     throw 'The llama.cpp runtime must point to llama-server.exe.'
 }
-foreach ($name in @('encoder.int8.onnx', 'decoder.int8.onnx', 'joiner.int8.onnx', 'tokens.txt')) {
-    if (-not (Test-Path -LiteralPath (Join-Path $sttFull $name) -PathType Leaf)) {
-        throw "The Parakeet STT bundle is incomplete; missing $name."
-    }
-}
 $null = Assert-BaxyRuntimeLock `
     -Python $pythonFull `
     -Repository $repo `
     -Profile Runtime `
     -FailurePrefix 'mind_runtime_registration_failed'
-
-$wakeResolution = Resolve-BaxyAsset -Name 'wake_cascade_manifest' -RepositoryRoot $repo
-$wakeCandidates = @($wakeResolution.Candidates)
-if (-not $wakeResolution.Found) {
-    $wakeResolution = Resolve-BaxyAsset -Name 'wake_manifest' -RepositoryRoot $repo
-    $wakeCandidates += @($wakeResolution.Candidates)
-}
-$installedWake = Join-Path $registrationRoot 'assets\wake\baxy-wakeword-v1.json'
-if (-not $wakeResolution.Found -and (Test-Path -LiteralPath $installedWake -PathType Leaf)) {
-    $wakeResolution = [pscustomobject]@{ Found = $true; Path = $installedWake }
-    $wakeCandidates += $installedWake
-}
-$wakeDeclared = $wakeResolution.Found
-$wakeOnStart = -not $NoWake.IsPresent -and $wakeDeclared
-if (-not $NoWake.IsPresent -and -not $wakeDeclared) {
-    Write-Warning ("No hay un modelo wake acústico; BAXY se registra " +
-        "con micrófono directo. Rutas comprobadas: " +
-        ($wakeCandidates -join '; '))
-}
-
-$ttsModel = $null
-$ttsSha = $null
-$ttsResolution = Resolve-BaxyAsset -Name 'neural_tts_voice' -RepositoryRoot $repo
-foreach ($candidate in @($ttsResolution.Path) + @($ttsResolution.Candidates)) {
-    if ([string]::IsNullOrWhiteSpace($candidate)) { continue }
-    $onnx = $candidate
-    if (Test-Path -LiteralPath $candidate -PathType Container) {
-        $named = Join-Path $candidate 'es_MX-claude-high.onnx'
-        if (Test-Path -LiteralPath $named -PathType Leaf) {
-            $onnx = $named
-        } else {
-            $found = @(Get-ChildItem -LiteralPath $candidate -Filter '*.onnx' -ErrorAction SilentlyContinue)
-            if ($found.Count -eq 1) { $onnx = $found[0].FullName } else { continue }
-        }
-    }
-    if (Test-Path -LiteralPath $onnx -PathType Leaf) {
-        $ttsModel = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $onnx).Path)
-        $ttsSha = Get-BaxySha256 -Path $ttsModel
-        break
-    }
-}
 
 $manifest = [ordered]@{
     schema = 'baxy-mind-runtime-v1'
@@ -175,19 +156,21 @@ $manifest = [ordered]@{
     gguf_sha256 = Get-BaxySha256 -Path $ggufFull
     llama_server = $serverFull
     llama_server_sha256 = Get-BaxySha256 -Path $serverFull
-    stt_dir = $sttFull
-    stt_sha256 = Get-BaxySttSha256 -Directory $sttFull
-    wake_manifest = if ($wakeDeclared) { $wakeResolution.Path } else { $null }
-    wake_manifest_sha256 = if ($wakeDeclared) {
-        Get-BaxySha256 -Path $wakeResolution.Path
-    } else {
-        $null
-    }
-    tts_model = $ttsModel
-    tts_sha256 = $ttsSha
     ngl = $GpuLayers
-    wake_on_start = $wakeOnStart
 }
+foreach ($piece in $pieces) {
+    $full = $pieceFull[$piece[0]]
+    $path = if ($piece[2] -ceq 'Leaf') { $piece[0] } else { "$($piece[0])_dir" }
+    $manifest[$path] = $full
+    $manifest["$($piece[0])_sha256"] = if ($null -eq $full) {
+        $null
+    } elseif ($piece[2] -ceq 'Leaf') {
+        Get-BaxySha256 -Path $full
+    } else {
+        Get-BaxyDirectorySha256 -Directory $full
+    }
+}
+$manifest['s1_threads'] = if ($null -eq $pieceFull['s1_gguf']) { $null } else { $SystemOneThreads }
 # LoRAs bound by hash to the registered GGUF (the mind turns each on only for its own role).
 foreach ($bound in @(
         @('cpu_prose_adapter', 'baxy-cpu-prose-adapter-v1', 'Adaptador CPU', $CpuProseAdapter),
@@ -225,6 +208,6 @@ if (-not $status.Valid) {
 [pscustomobject]@{
     registered = $true
     manifest = $manifestPath
-    wake_on_start = $wakeOnStart
     gpu_layers = $GpuLayers
+    pieces = @($pieces | Where-Object { $null -ne $pieceFull[$_[0]] } | ForEach-Object { $_[0] }) -join ', '
 }

@@ -146,12 +146,10 @@ $registrationArguments = @{
     PythonPath = (Join-Path $repo 'src')
     Gguf = $resolutions['conversation_model'].Path
     LlamaServer = $resolutions['llama_server'].Path
-    SttDirectory = $resolutions['stt_parakeet'].Path
     GpuLayers = if ($Cpu) { 0 } else { 99 }
 }
-if (-not $resolutions['wake_manifest'].Found) {
-    $registrationArguments.NoWake = $true
-}
+# The voice, the ear, System One and the vision of this machine are registered with their own parameters
+# (scripts\register_mind_runtime.ps1 -VoiceDirectory ... -VisionProjector); without them those pieces stay off.
 & (Join-Path $PSScriptRoot 'register_mind_runtime.ps1') @registrationArguments
 if ($LASTEXITCODE -ne 0) {
     throw 'bootstrap_failed: no se pudo registrar el runtime local.'

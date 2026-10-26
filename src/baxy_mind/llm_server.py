@@ -451,7 +451,7 @@ def _vision_args() -> list[str]:
 
 def _slot_dir() -> Path:
     """The server's --slot-save-path: BAXY_VISION_SLOT_DIR, where the App's vision sets the slot's state aside, or the
-    same folder run_renew.cmd gives it when the vision is off."""
+    same folder the App gives it (MindRuntimeDiscovery) when the vision is off."""
     held = os.environ.get("BAXY_VISION_SLOT_DIR", "").strip()
     return Path(held) if held else Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / "slots"
 

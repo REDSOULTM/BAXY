@@ -79,9 +79,17 @@ dependencias Python fijadas; los modelos nunca se descargan implícitamente.
 
 `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` contiene rutas absolutas porque
 es un registro por equipo, no un archivo portable ni versionado. Declara
-SHA-256 para Python, GGUF, `llama-server`, bundle STT y wake cuando está activo.
-Un campo ausente, una ruta inexistente o un hash distinto invalida todo el
-registro.
+SHA-256 para Python, GGUF y `llama-server`; un campo ausente, una ruta
+inexistente o un hash distinto en ellos invalida todo el registro. Desde la
+entrega 1.1.0 declara también, opcionales, las piezas que antes sólo ponía
+`scripts\run_renew.cmd`: la voz (`renew_tts_dir`, Supertonic), el oído
+(`renew_wake_dir` k4, `renew_stt_dir` Parakeet Ultra), System One (`s1_gguf`,
+`s1_threads`) y el proyector de visión (`mmproj`), cada una con su SHA-256 (de
+una carpeta: el de las líneas `nombre:sha256` de sus ficheros, por nombre
+ordinal). La App las pasa a la mente donde no hay variable; una pieza ausente o
+distinta de la registrada queda apagada y la mente lo dice, sin invalidar el
+resto. Se registran con `scripts\register_mind_runtime.ps1 -VoiceDirectory
+-WakeDirectory -SttDirectory -SystemOneGguf -SystemOneThreads -VisionProjector`.
 
 `Baxy.App` valida ese archivo y todos sus SHA-256 antes de configurar o iniciar
 la mente. `scripts/run_baxy.ps1` no repite esa lectura completa de los modelos:
