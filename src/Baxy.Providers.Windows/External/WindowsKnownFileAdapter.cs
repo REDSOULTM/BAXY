@@ -53,15 +53,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         var effectBoundary = new ExternalEffectBoundary();
         try
         {
-            string folder = ExternalJson.RequiredString(arguments, "folder");
-            (string Label, string Root)[] roots = Roots(folder);
-            bool inSubdirectory = arguments.TryGetProperty("subdirectory", out JsonElement subdirectoryElement);
-            if (inSubdirectory)
-            {
-                string subdirectory = subdirectoryElement.GetString()?.Trim()
-                    ?? throw new InvalidDataException("known_subdirectory_invalid");
-                roots = SubdirectoryRoots(roots, subdirectory, _privateRoots);
-            }
+            (string Label, string Root)[] roots = ArgumentRoots(arguments, out bool inSubdirectory);
             return ValueTask.FromResult(operation switch
             {
                 "file.edit" => Edit(operation, roots, arguments, effectBoundary),
@@ -93,6 +85,17 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             return ValueTask.FromResult(effectBoundary.Failure(
                 operation, inUse ? "file_in_use" : "known_folder_filesystem_unavailable"));
         }
+    }
+
+    // The folders a call names: its folder, or the subdirectory it names under it.
+    private (string Label, string Root)[] ArgumentRoots(JsonElement arguments, out bool inSubdirectory)
+    {
+        (string Label, string Root)[] roots = Roots(ExternalJson.RequiredString(arguments, "folder"));
+        inSubdirectory = arguments.TryGetProperty("subdirectory", out JsonElement subdirectory);
+        return inSubdirectory
+            ? SubdirectoryRoots(roots, subdirectory.GetString()?.Trim()
+                ?? throw new InvalidDataException("known_subdirectory_invalid"), _privateRoots)
+            : roots;
     }
 
     private ExternalCapabilityReceipt Duplicates(
@@ -513,21 +516,26 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             : null;
 
     // Al máximo, flujos: the name looked up before the person is asked; a name that names no one target fails here.
+    // Holdout v6 V6E048 (aid overwrite_guard): an edit that would leave its file with little of its text (TextLoss, the
+    // measure of file.write's replacement) needs the person's yes, bound to the call; an edit of a part goes unasked,
+    // and one its file refuses is refused when it runs.
     public ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (operation != "filesystem.known.trash.named")
+        if (operation != "filesystem.known.trash.named" && !PreflightMayRaise(operation, arguments))
             return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
         try
         {
-            (string Label, string Root)[] roots = Roots(ExternalJson.RequiredString(arguments, "folder"));
-            if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectory))
-                roots = SubdirectoryRoots(roots, subdirectory.GetString()?.Trim()
-                    ?? throw new InvalidDataException("known_subdirectory_invalid"), _privateRoots);
-            return ValueTask.FromResult(TrashTarget(operation, roots, arguments, out _));
+            (string Label, string Root)[] roots = ArgumentRoots(arguments, out _);
+            if (operation == "filesystem.known.trash.named")
+                return ValueTask.FromResult(TrashTarget(operation, roots, arguments, out _));
+            return ValueTask.FromResult(PlanEdit(operation, roots, arguments, out EditPlan? plan) is null
+                && TextLoss.Of(plan!.Text, plan.Replaced.Edited!) is not null
+                    ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
+                    : null);
         }
         catch (Exception exception) when (exception is InvalidDataException or IOException
             or UnauthorizedAccessException or System.Security.SecurityException)
@@ -535,6 +543,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
         }
     }
+
+    public bool PreflightMayRaise(string operation, JsonElement arguments) =>
+        operation == "file.edit" && ModelAids.On(ModelAids.OverwriteGuard);
 
     private ExternalCapabilityReceipt Trash(
         string operation,
@@ -877,59 +888,18 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // file.edit (BAXY Renew agent tools, 2026-10-15): an exact replacement in a text file of a known folder. The text
     // to replace must appear exactly once unless every occurrence is asked; otherwise nothing changes and the count is
     // said. The file keeps its encoding and BOM; its previous version goes to the Recycle Bin before the edited one
-    // takes its place (recoverable, so no confirmation), and the result is read back.
+    // takes its place (recoverable, so no confirmation), and the result is read back. Holdout v6 V6E048: the text is
+    // found whatever its line breaks, and the new one is written with the file's (TextReplacement).
     private ExternalCapabilityReceipt Edit(
         string operation,
         IReadOnlyList<(string Label, string Root)> roots,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary)
     {
-        string oldText = arguments.TryGetProperty("oldText", out JsonElement oldElement)
-            ? oldElement.GetString() ?? "" : "";
-        string newText = arguments.TryGetProperty("newText", out JsonElement newElement)
-            ? newElement.GetString() ?? "" : "";
-        bool replaceAll = arguments.TryGetProperty("replaceAll", out JsonElement all)
-            && all.ValueKind == JsonValueKind.True;
-        if (oldText.Length == 0) return ExternalJson.Failure(operation, "known_edit_old_text_empty");
-        if (string.Equals(oldText, newText, StringComparison.Ordinal))
-            return ExternalJson.Failure(operation, "known_edit_text_unchanged");
-        if (Locate(operation, roots, ExternalJson.RequiredString(arguments, "fileName"), out KnownEntry file,
-                out bool walkStopped)
-            is { } refused)
+        if (PlanEdit(operation, roots, arguments, out EditPlan? plan) is { } refused)
             return refused;
-        // Renew al máximo (velocidad): one file of that name seen before the walk's time limit is read as the one seen,
-        // but never written: a copy deeper in what was not walked may be the one the person meant. Nothing is changed;
-        // the one seen is named, so the next call can name it by its path.
-        if (walkStopped)
-            return SearchIncompleteRefusal(operation, file);
-        // Revisión de fase 3: a file Windows runs at sign-in is read like any other, never edited.
-        if (AutostartArea.Holds(_autostartRoots, file.Path))
-            return ExternalJson.Failure(operation, "path_autostart");
-        if (new FileInfo(file.Path).Length > MaximumTextBytes)
-            return ExternalJson.Failure(operation, "known_text_too_large");
-        byte[] before = File.ReadAllBytes(file.Path);
-        if (TextFileEncoding.LooksBinary(before)) return ExternalJson.Failure(operation, "known_file_not_text");
-        string? text = TextFileEncoding.DecodeExactly(before);
-        if (text is null) return ExternalJson.Failure(operation, "known_text_encoding_unsupported");
-        int occurrences = Occurrences(text, oldText);
-        if (occurrences == 0 || (occurrences > 1 && !replaceAll))
-        {
-            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject(); writer.WriteNumber("version", 1);
-                writer.WriteString("reviewLabel", Path.GetFileName(file.Path));
-                writer.WriteString("folder", file.Label);
-                writer.WriteNumber("occurrences", occurrences);
-                writer.WriteBoolean("changed", false);
-                writer.WriteString("next", EditRefusalNext(occurrences, oldText, file.Path));
-                writer.WriteEndObject();
-            }), occurrences == 0 ? "known_edit_text_not_found" : "known_edit_text_not_unique");
-        }
-        int index = text.IndexOf(oldText, StringComparison.Ordinal);
-        string edited = replaceAll
-            ? text.Replace(oldText, newText, StringComparison.Ordinal)
-            : string.Concat(text.AsSpan(0, index), newText, text.AsSpan(index + oldText.Length));
-        byte[] after = TextFileEncoding.EncodeLike(before, edited);
+        (KnownEntry file, byte[] before, _, string oldText, string newText, TextReplacement.Replaced replaced) = plan!;
+        byte[] after = TextFileEncoding.EncodeLike(before, replaced.Edited!);
         string previousSha256 = Convert.ToHexStringLower(SHA256.HashData(before));
         string expectedSha256 = Convert.ToHexStringLower(SHA256.HashData(after));
         string temporary = Path.Combine(
@@ -975,9 +945,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("reviewLabel", Path.GetFileName(file.Path));
             writer.WriteString("folder", file.Label);
-            writer.WriteNumber("replacements", replaceAll ? occurrences : 1);
-            writer.WriteNumber("oldTextOccurrencesNow", Occurrences(observedText, oldText));
-            writer.WriteNumber("newTextOccurrences", newText.Length == 0 ? 0 : Occurrences(observedText, newText));
+            writer.WriteNumber("replacements", replaced.Replacements);
+            writer.WriteNumber("oldTextOccurrencesNow", TextReplacement.Occurrences(observedText, oldText));
+            writer.WriteNumber("newTextOccurrences",
+                newText.Length == 0 ? 0 : TextReplacement.Occurrences(observedText, newText));
             writer.WriteNumber("characters", observedText.Length);
             writer.WriteString("previousSha256", previousSha256);
             writer.WriteString("sha256", observedSha256);
@@ -985,6 +956,66 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteString("authority", "windows_known_text_edit_recycle_postread");
             writer.WriteEndObject();
         }), effectObserved: true);
+    }
+
+    // What file.edit would do: its file, the file's bytes and text, and the replacement in it; or the refusal that
+    // changes nothing.
+    private sealed record EditPlan(
+        KnownEntry File, byte[] Before, string Text, string OldText, string NewText, TextReplacement.Replaced Replaced);
+
+    private ExternalCapabilityReceipt? PlanEdit(
+        string operation,
+        IReadOnlyList<(string Label, string Root)> roots,
+        JsonElement arguments,
+        out EditPlan? plan)
+    {
+        plan = null;
+        string oldText = arguments.TryGetProperty("oldText", out JsonElement oldElement)
+            ? oldElement.GetString() ?? "" : "";
+        string newText = arguments.TryGetProperty("newText", out JsonElement newElement)
+            ? newElement.GetString() ?? "" : "";
+        bool replaceAll = arguments.TryGetProperty("replaceAll", out JsonElement all)
+            && all.ValueKind == JsonValueKind.True;
+        if (oldText.Length == 0) return ExternalJson.Failure(operation, "known_edit_old_text_empty");
+        if (string.Equals(oldText, newText, StringComparison.Ordinal))
+            return ExternalJson.Failure(operation, "known_edit_text_unchanged");
+        if (Locate(operation, roots, ExternalJson.RequiredString(arguments, "fileName"), out KnownEntry file,
+                out bool walkStopped)
+            is { } refused)
+            return refused;
+        // Renew al máximo (velocidad): one file of that name seen before the walk's time limit is read as the one seen,
+        // but never written: a copy deeper in what was not walked may be the one the person meant. Nothing is changed;
+        // the one seen is named, so the next call can name it by its path.
+        if (walkStopped)
+            return SearchIncompleteRefusal(operation, file);
+        // Revisión de fase 3: a file Windows runs at sign-in is read like any other, never edited.
+        if (AutostartArea.Holds(_autostartRoots, file.Path))
+            return ExternalJson.Failure(operation, "path_autostart");
+        if (new FileInfo(file.Path).Length > MaximumTextBytes)
+            return ExternalJson.Failure(operation, "known_text_too_large");
+        byte[] before = File.ReadAllBytes(file.Path);
+        if (TextFileEncoding.LooksBinary(before)) return ExternalJson.Failure(operation, "known_file_not_text");
+        string? text = TextFileEncoding.DecodeExactly(before);
+        if (text is null) return ExternalJson.Failure(operation, "known_text_encoding_unsupported");
+        TextReplacement.Replaced replaced = TextReplacement.Replace(text, oldText, newText, replaceAll);
+        if (replaced.Edited is null)
+        {
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteString("reviewLabel", Path.GetFileName(file.Path));
+                writer.WriteString("folder", file.Label);
+                writer.WriteNumber("occurrences", replaced.Occurrences);
+                writer.WriteBoolean("changed", false);
+                writer.WriteString("next", EditRefusalNext(replaced.Occurrences, oldText, file.Path));
+                writer.WriteEndObject();
+            }), replaced.Occurrences == 0 ? "known_edit_text_not_found" : "known_edit_text_not_unique");
+        }
+        // newText told apart from what it replaces only by line breaks (written as the file's): nothing would change.
+        if (string.Equals(replaced.Edited, text, StringComparison.Ordinal))
+            return ExternalJson.Failure(operation, "known_edit_text_unchanged");
+        plan = new EditPlan(file, before, text, oldText, newText, replaced);
+        return null;
     }
 
     // The previous version went to the Recycle Bin and the edited text could not take its place: both are kept and named.
@@ -1060,14 +1091,6 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         }), "known_file_search_incomplete");
     }
 
-    private static int Occurrences(string text, string value)
-    {
-        int count = 0;
-        for (int index = text.IndexOf(value, StringComparison.Ordinal); index >= 0;
-             index = text.IndexOf(value, index + value.Length, StringComparison.Ordinal))
-            count++;
-        return count;
-    }
 
     // file.read and file.edit name one file: by its name, found once anywhere under the folder, by its path
     // relative to the known folder (as file.find gives it, without a subdirectory), or by its full path inside the

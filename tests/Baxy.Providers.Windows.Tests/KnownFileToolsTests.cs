@@ -932,6 +932,40 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Holdout v6 V6E048: the model wrote oldText with «\n» and the Windows file has «\r\n», and the edit said
+    // known_edit_text_not_found. A line break is found as any line break, and spaces that end a line do not count;
+    // newText's line breaks are written as the file's (never mixed), in a file with «\n» as in one with «\r\n».
+    [TestCase("\r\n")]
+    [TestCase("\n")]
+    public async Task AnEditFindsTheTextWhateverItsLineBreaksAndWritesTheFilesOwn(string lineBreak)
+    {
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, FolderRecycleBin bin) = Folders(temporary);
+        string path = Path.Combine(desktop, "repertorio.txt");
+        string original = string.Join(lineBreak, "Aleluya de Cohen  ", "Gracias a la vida", "Canción de cuna", "");
+        await File.WriteAllTextAsync(path, original, new UTF8Encoding(false));
+        string other = lineBreak == "\n" ? "\r\n" : "\n";
+
+        ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(JsonSerializer.Serialize(new
+        {
+            folder = "desktop",
+            fileName = "repertorio.txt",
+            oldText = "Aleluya de Cohen" + other + "Gracias a la vida" + other,
+            newText = "Aleluya de Cohen" + other + "Te recuerdo Amanda" + other + "Gracias a la vida" + other,
+        })), CancellationToken.None);
+
+        Assert.That(edited.Verified, Is.True, edited.ErrorCode);
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.ReadAllText(path), Is.EqualTo(string.Join(lineBreak,
+                "Aleluya de Cohen", "Te recuerdo Amanda", "Gracias a la vida", "Canción de cuna", "")));
+            Assert.That(edited.Result?.GetProperty("replacements").GetInt32(), Is.EqualTo(1));
+            Assert.That(edited.Result?.GetProperty("oldTextOccurrencesNow").GetInt32(), Is.Zero);
+            Assert.That(edited.Result?.GetProperty("newTextOccurrences").GetInt32(), Is.EqualTo(1));
+            Assert.That(bin.Recycled.Select(File.ReadAllText), Is.EqualTo(new[] { original }));
+        });
+    }
+
     // Renew al máximo (w8): a log its program holds open for writing is read (and searched by content), not refused as
     // file_in_use or skipped as unreadable.
     [Test]

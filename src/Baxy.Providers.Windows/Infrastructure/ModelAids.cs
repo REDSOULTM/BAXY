@@ -116,7 +116,8 @@ public static class ModelAids
     /// refused once before any effect, saying how many lines and characters it has and the exact file_write call that
     /// appends; the same replacement again goes on, and in normal mode the kernel asks the person first
     /// (FilesystemHandler's preflight, LocalFilesystemProvider.ReplacementAsksFirst). Empty files and edits that keep
-    /// most of the text go straight.
+    /// most of the text go straight. V6E048: a file.edit that would leave its file with as little (TextLoss, the same
+    /// measure) asks the person first in normal mode (WindowsKnownFileAdapter's preflight).
     /// </summary>
     public const string OverwriteGuard = "overwrite_guard";
 

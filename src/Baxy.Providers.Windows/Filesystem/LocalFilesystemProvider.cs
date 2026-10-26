@@ -800,80 +800,15 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private static string ReplacementKey(string path, string current, string desired) =>
         Path.GetFullPath(path).ToUpperInvariant() + "\n" + current + "\n" + desired;
 
-    // What a file has that a replacement by text would lose: null when nothing is lost (an empty file or only blanks,
-    // a text that holds all of it) or when the text keeps more than half of its words (an edit: a line corrected, one of
-    // three taken out); otherwise its lines, characters and the lines the text keeps, or no lines for a file that is no
-    // text (bytes that are no text in a known encoding, or past the size an append reads).
+    // What a file has that a replacement by text would lose (TextLoss), or no lines for a file that is no text (bytes
+    // that are no text in a known encoding, or past the size an append reads).
     private static TextLoss? LossOf(string path, string text)
     {
         long size = new FileInfo(path).Length;
         if (size == 0) return null;
         if (size > MaximumAppendTargetBytes) return new TextLoss(null, 0, 0);
         string? before = TextFileEncoding.DecodeExactly(File.ReadAllBytes(path));
-        if (before is null || before.Contains('\0')) return new TextLoss(null, 0, 0);
-        string had = Unified(before).Trim();
-        if (had.Length == 0 || Unified(text).Contains(had, StringComparison.Ordinal)) return null;
-        var words = new Dictionary<string, int>(StringComparer.Ordinal);
-        foreach (string word in Words(text)) words[word] = words.GetValueOrDefault(word) + 1;
-        int total = 0, kept = 0;
-        foreach (string word in Words(before))
-        {
-            total++;
-            if (words.GetValueOrDefault(word) > 0)
-            {
-                words[word]--;
-                kept++;
-            }
-        }
-        if (total > 0 && kept * 2 > total) return null;
-        string[] lines = LinesOf(before);
-        var newLines = new Dictionary<string, int>(StringComparer.Ordinal);
-        foreach (string line in LinesOf(text))
-        {
-            string trimmed = line.Trim();
-            newLines[trimmed] = newLines.GetValueOrDefault(trimmed) + 1;
-        }
-        int linesKept = 0;
-        foreach (string line in lines)
-        {
-            string trimmed = line.Trim();
-            if (trimmed.Length > 0 && newLines.GetValueOrDefault(trimmed) > 0)
-            {
-                newLines[trimmed]--;
-                linesKept++;
-            }
-        }
-        return new TextLoss(lines.Length, before.Length, linesKept);
-    }
-
-    private static string Unified(string text) =>
-        text.Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
-
-    // A text's lines as a reader counts them: a last line break ends the last line, it starts none.
-    private static string[] LinesOf(string text)
-    {
-        string unified = Unified(text);
-        if (unified.EndsWith('\n')) unified = unified[..^1];
-        return unified.Length == 0 ? [] : unified.Split('\n');
-    }
-
-    // Its words: runs of letters and digits, in lower case.
-    private static IEnumerable<string> Words(string text)
-    {
-        int start = -1;
-        for (int index = 0; index <= text.Length; index++)
-        {
-            bool inWord = index < text.Length && char.IsLetterOrDigit(text[index]);
-            if (inWord && start < 0)
-            {
-                start = index;
-            }
-            else if (!inWord && start >= 0)
-            {
-                yield return text[start..index].ToLowerInvariant();
-                start = -1;
-            }
-        }
+        return before is null || before.Contains(' ') ? new TextLoss(null, 0, 0) : TextLoss.Of(before, text);
     }
 
     // The receipt's sentence: what the file has, that this call replaces all of it, the call that appends (a file that
@@ -929,9 +864,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         }
         return "file_write " + Encoding.UTF8.GetString(buffer.ToArray());
     }
-
-    // Lines null: a file that is no text.
-    private sealed record TextLoss(int? Lines, int Characters, int LinesKept);
 
     // A loss as a refusal tells it: the call's own path, folder and text, and whether this is the replacement's own
     // refusal (Again: the same call again goes on) or a version_conflict's (the call still needs the hash).
