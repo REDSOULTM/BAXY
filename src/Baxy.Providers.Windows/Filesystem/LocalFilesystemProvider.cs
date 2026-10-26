@@ -877,7 +877,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     }
 
     // The receipt's sentence: what the file has, that this call replaces all of it, the call that appends (a file that
-    // is text), and how a replacement the person asked for goes on.
+    // is text), how a replacement the person asked for goes on, and that the person's words pick the way: the yes to a
+    // replacement is BAXY's to ask (holdout v6 V6E041/V6E048, practice E030: after «in normal mode it asks the person's
+    // yes first» the model asked «¿reemplazo o agrego?» itself in 7 of 7 runs, «agrégale la línea» and «sobrescribe»
+    // alike, and never made either call).
     private static string LossNext(string name, long size, LossTold told)
     {
         TextLoss loss = told.Loss;
@@ -892,13 +895,14 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             $"nothing was written: {has}{what}, and this call would replace all of it with the text{keeps}.");
         if (loss.Lines is not null)
         {
-            next.Append(" To add the text as a new line at its end and keep what it has: ")
+            next.Append(" If the person asked to add the text: ")
                 .Append(AppendCall(told))
-                .Append('.');
+                .Append(", a new line at its end that keeps what it has.");
         }
-        next.Append(" To replace all it has only if the person asked for that: ")
+        next.Append(" If the person asked to replace all it has: ")
             .Append(told.Again ? "the same call again" : "the same call with expectedSha256 (currentSha256)")
-            .Append("; in normal mode it asks the person's yes first");
+            .Append(". Their words pick the call, so ask them nothing: in normal mode BAXY itself asks their yes "
+                + "before a replacement");
         return next.ToString();
     }
 
