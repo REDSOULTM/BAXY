@@ -2273,7 +2273,7 @@ class Mind:
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
-        runs, and so does a look toward that tool's act (_looks_toward). Asking is never held: it already puts the person in the loop; confirming only when it approves under
+        runs. Asking is never held: it already puts the person in the loop; confirming only when it approves under
         CONFIRM_FLOOR, whatever System One's own thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
             return None
@@ -2324,22 +2324,8 @@ class Mind:
             # On the same 26 runs it asked instead of 11, all right without System One (P112 ×4, P124 ×6, P113 ×1);
             # its corrections of them were 6 useful (P257) against 2 harmful.
             return None
-        if self._looks_toward(call["wire"], judged["choice"]):
-            self._judged["looks_toward"] = True
-            return None
-        other = OPTION_TEXT.get(judged["choice"], judged["choice"])
+        other =OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
-
-    def _looks_toward(self, wire: str, choice: str) -> bool:
-        """BAXY_S1_LOOK_TOWARD=1 (off by default): whether the model's call only reads and the decision model's tool,
-        which «corrige» did not fill, acts on nothing the look does not touch too (its effects of the catalog, none
-        missing, among the look's own): the look is a step toward that act, which the model then makes itself after
-        reading what it saw, and layer 2 does not turn it into a question. Holdout v5 V5E023 («en el Notepad que tengo
-        abierto, agrega al final…»): input_visible_controls (read_only, window_input) against input_text_type at 0.905
-        (privacy_sensitive, not correctable, window_input); BAXY asked instead of looking at the window."""
-        effects = set(self.effects.get(choice) or [])
-        return os.environ.get("BAXY_S1_LOOK_TOWARD", "").strip() == "1" and self.risk.get(wire) == "read_only" \
-            and bool(effects) and effects <= set(self.effects.get(wire) or [])
 
     def _said(self) -> list[dict[str, str]]:
         """What the person and BAXY said before the words being decided, for the decision model: their messages and
