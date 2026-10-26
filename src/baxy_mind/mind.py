@@ -9,6 +9,7 @@ applications and games), not from code that decides for it.
 from __future__ import annotations
 
 import datetime as _dt
+import difflib
 import hashlib
 import json
 import os
@@ -553,6 +554,15 @@ SAME_CALL_NOT_RUN = json.dumps({"status": "not_run", "reason": "this same call, 
 LOOK_CLICK_NOT_RUN = json.dumps({"status": "not_run",
                                  "reason": f"this click, after the same look that saw the same, was already made "
                                            f"{LOOK_CLICK_PAIRS} times in this turn; it was not made again"})
+# Aid «ask_once» (uso real 2026-10-26): the person's answer to ask_user is that call's result, and the model asked the
+# same question again at each answer («¿en todo el sistema o en un programa?» six times, «¿qué quieres que recuerde de
+# ti?» three): one question per thing (identity: «una pregunta corta, no un interrogatorio»). A question alike to one
+# already asked in the turn (ASKED_ALIKE of its letters, folded) is not asked: the model answers in words.
+ASKED_ALIKE = 0.9
+ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
+                                  "reason": "this question was already asked in this turn and the person's answer is "
+                                            "above; it was not asked again: do with that answer what a tool can do, "
+                                            "or say in one sentence that you don't do it"})
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 LOOK_CLICK_REFUSED = f"no se ejecutó: la misma mirada y el mismo clic ya iban {LOOK_CLICK_PAIRS} veces"
 # What the model reads at the end of the last result of a turn that takes no more calls.
@@ -2448,6 +2458,18 @@ class Mind:
             question = " ".join(str(call["arguments"].get("question") or "").split())
             later = [c["id"] for c in turn.get("queue") or []]
             turn["queue"], turn["awaiting"] = [], None
+            folded = " ".join(re.findall(r"[^\W_]+", _fold(question)))
+            if folded and _aid_on("ask_once") and any(
+                    difflib.SequenceMatcher(None, folded, asked).ratio() >= ASKED_ALIKE
+                    for asked in turn.get("questions", [])):
+                for call_id in [call["id"], *later]:
+                    turn["conv"].append({"role": "tool", "tool_call_id": call_id,
+                                         "content": ASKED_AGAIN_NOT_RUN if call_id == call["id"] else NOT_RUN})
+                self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                          kind="ask_repeat_closed", operation=None, arguments=None, content=None)
+                return self._next(request_id, stage, turn, final=True)
+            if folded:
+                turn.setdefault("questions", []).append(folded)
             if question:
                 turn["asked"], turn["after_asked"] = call["id"], later
                 result.update(kind="clarify", question=question)

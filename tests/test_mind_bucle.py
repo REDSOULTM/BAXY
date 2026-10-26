@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.mind import LOOK_CLICK_NOT_RUN, NO_MORE_CALLS, NOT_RUN, SAME_CALL_NOT_RUN
+from baxy_mind.mind import ASKED_AGAIN_NOT_RUN, LOOK_CLICK_NOT_RUN, NO_MORE_CALLS, NOT_RUN, SAME_CALL_NOT_RUN
 
 from test_mind_final import _call, _mind, _say
 
@@ -149,3 +149,36 @@ def test_the_call_told_as_repeated_runs_again_after_another_call(tmp_path: Path,
     assert mind.continue_turn(3, missing)["operation"] == "app_open"
     step = mind.continue_turn(4, OPENED)
     assert step["kind"] == "action" and step["operation"] == "calculator_expression_evaluate"
+
+
+def test_a_question_alike_to_one_already_answered_in_the_turn_is_not_asked_again(tmp_path: Path, monkeypatch) -> None:
+    # Aid «ask_once» (uso real 2026-10-26): the same clarifying question came back at each answer. The second one alike
+    # (another article, the same letters at 0.9) is not asked; the model answers in words, with no tools.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Lo cambio en la pantalla o en una ventana?"}),
+                                    _call("ask_user", {"question": "¿Lo cambio en toda la pantalla o en una ventana?"}),
+                                    _say("Eso no lo hago.")])
+    assert mind.decide(1, "cambia el tono")["kind"] == "clarify"
+    step = mind.decide(2, "en toda la pantalla")
+    assert step["kind"] == "conversation" and step["reply"] == "Eso no lo hago."
+    last = server.bodies[-1]
+    assert last["tool_choice"] == "none"
+    assert [m for m in last["messages"] if m["role"] == "tool"][-1]["content"] == ASKED_AGAIN_NOT_RUN
+    assert [r["kind"] for r in _trace(mind) if r.get("kind") == "ask_repeat_closed"] == ["ask_repeat_closed"]
+
+
+def test_another_question_in_the_turn_is_asked(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("ask_user", {"question": "¿A qué hora?"}),
+                               _call("ask_user", {"question": "¿Qué día?"})])
+    mind.decide(1, "pon una alarma")
+    step = mind.decide(2, "a las siete")
+    assert step["kind"] == "clarify" and step["question"] == "¿Qué día?"
+
+
+def test_without_the_aid_the_same_question_is_asked_again(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    ask = _call("ask_user", {"question": "¿Cuál?"})
+    mind, _ = _mind(tmp_path, [ask, ask])
+    mind.decide(1, "abre eso")
+    assert mind.decide(2, "el otro")["kind"] == "clarify"
