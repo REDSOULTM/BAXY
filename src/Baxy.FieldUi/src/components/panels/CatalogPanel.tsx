@@ -20,7 +20,7 @@ export function CatalogPanel({ onClose }: { onClose: () => void }) {
         <Icon name="search" size={13} />
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar una acción" aria-label="Buscar una acción" />
       </div>
-      {cat === null ? <div className="bx-mem-empty">No se pudo leer el catálogo.</div> : null}
+      {cat === null ? <div className="bx-mem-empty" role="status">No se pudo leer el catálogo.</div> : null}
       <div className="bx-cat">
         {cat?.groups.map((g) => {
           const f = g.items.filter((x) => !needle || x.title.toLowerCase().includes(needle));

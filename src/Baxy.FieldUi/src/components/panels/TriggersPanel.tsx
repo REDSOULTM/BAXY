@@ -23,8 +23,8 @@ export function TriggersPanel({ onClose }: { onClose: () => void }) {
   };
   return (
     <Panel title="Triggers · solo los que tú creaste" onClose={onClose} width={460}>
-      {data === null ? <div className="bx-mem-empty">No se pudieron leer las alarmas y recordatorios.</div> : null}
-      {note ? <div className="bx-mem-empty">{note}</div> : null}
+      {data === null ? <div className="bx-mem-empty" role="status">No se pudieron leer las alarmas y recordatorios.</div> : null}
+      {note ? <div className="bx-mem-empty" role="status">{note}</div> : null}
       <div className="bx-mem">
         {data?.items.map((t, i) => (
           <div key={i} className={'bx-trig' + (t.state && t.state !== 'Ready' ? ' off' : '')}>
@@ -33,7 +33,7 @@ export function TriggersPanel({ onClose }: { onClose: () => void }) {
               <span className="d">{t.title ?? (t.kind === 'alarm' ? 'Suena en este PC' : 'Te aviso en este PC')}</span>
             </div>
             {ask === i ? <ConfirmRow label="¿Cancelar?" yes="Sí, cancelar" onYes={() => void cancel(t)} onNo={() => setAsk(null)} />
-              : t.next_local ? <button className="bx-lnk" onClick={() => setAsk(i)}>Cancelar</button> : null}
+              : t.next_local ? <button className="bx-lnk" aria-label={'Cancelar ' + (t.kind === 'alarm' ? 'la alarma' : 'el recordatorio') + ' de ' + t.next_local} onClick={() => setAsk(i)}>Cancelar</button> : null}
           </div>
         ))}
         {data && !data.items.length ? <div className="bx-mem-empty">No has creado alarmas ni recordatorios. Pídeselos a BAXY.</div> : null}
