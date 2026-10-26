@@ -182,7 +182,7 @@ public sealed class OwnReadingsTests
             Interlocked.Increment(ref measured);
             return Task.FromResult(new FieldMetricSnapshot(10, 20, 50, 1.25, 0.5));
         });
-        await using var viewModel = new MainWindowViewModel { FailedTurnSound = static () => { } };
+        await using var viewModel = new MainWindowViewModel { Sound = static _ => { } };
         var sink = new ChannelHarness.RecordingSink();
         await using var channel = new FieldProductChannel(viewModel, sink, telemetry, CancellationToken.None);
 
