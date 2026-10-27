@@ -65,4 +65,4 @@ como límite; estado del PC claro; informe corto con cifras y vuelta atrás.
 
 ## Herramientas
 Scratchpad de esta sesión: `cdp.py`, `probar_texto.py`, `probar2.py` (con reconexión), `ver.py`, `lanzar_debug.ps1`;
-Python con `websocket`: `C:\Users\usuario\AppData\Local\Programs\Python\Python312\python.exe`.
+Python con `websocket`: el Python 3.12 del usuario (no el 3.10 ni el del runtime).

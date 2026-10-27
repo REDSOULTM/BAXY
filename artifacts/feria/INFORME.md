@@ -38,8 +38,8 @@ Equipo de la feria: **el notebook**. BAXY instalada 1.1.1, mente desplegada desd
 - «¿Quién te creó?»: dice que no lo sabe, porque la memoria de este perfil no lo tiene. Si quieres que lo diga,
   díselo una vez («recuerda que te creó …») antes de la feria.
 - «¿Qué modelo usas?» a veces devuelve la pregunta (V11D237, por la regla de persona de anoche).
-- Spotify: si alguien toca el teclado o el ratón mientras BAXY busca la canción, se corta y BAXY dice que no pudo
-  comprobarlo aunque suene.
+- Spotify: si alguien toca el teclado o el ratón mientras BAXY busca la canción, la búsqueda se corta y BAXY cuenta
+  la reproducción como sin verificar aunque la música suene.
 - Una pregunta con año y otro número («el récord de 100 m en 2009») no activa la ayuda.
 - Falsedades en el PC: VOID (había un Chrome tuyo con un documento abierto y no se cerró).
 - ruff no ejecutado (no está instalado en el runtime).
