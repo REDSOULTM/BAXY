@@ -19,20 +19,24 @@ public sealed class SilenceNoticeTests
     public void NoContext() => SynchronizationContext.SetSynchronizationContext(null);
 
     [Test]
-    public void AnAnswerPublishedButNotYetHeardStillGetsTheNotice()
+    public void AnAnswerPublishedButNotYetHeardGetsNoNoticeNow()
     {
+        // Al máximo 9.2b said one here; feria 2026-10-27: no call runs once the line is published, and the turn is
+        // about to be heard.
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
         notice.Open(Ask, clock.GetTimestamp(), said.Add);
         notice.Running(true); // a call of the turn runs in the App
+        clock.Advance(TimeSpan.FromSeconds(1));
+        notice.Running(false);
 
-        clock.Advance(TimeSpan.FromSeconds(2.4));
+        clock.Advance(TimeSpan.FromSeconds(1.4));
         notice.Publish(static () => { });
         notice.Close(); // the turn ended with its line on screen; the voice still synthesizes it
         clock.Advance(TimeSpan.FromSeconds(0.1));
 
-        Assert.That(said, Is.EqualTo(new[] { Phrase }));
+        Assert.That(said, Is.Empty);
     }
 
     [Test]

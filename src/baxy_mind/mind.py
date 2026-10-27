@@ -39,7 +39,7 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 # fixed here broke invariant 5, cero respuestas visibles fijas). Feria 2026-10-27: written once at warm-up, it was the
 # same phrase in every turn («Estoy procesando tu solicitud.»), which the owner heard as fixed; now the model writes it
 # for the call the App is running, from the turn's own conversation, while the GPU waits for that call (Mind.notice_of;
-# the App asks only then): never one already said in the turn, none once it answered. What is
+# the App asks only then): never one it already wrote in the turn, none once it answered. What is
 # asked is an instruction, not a phrase; a phrase it does not write usably (empty, more than NOTICE_MAX_CHARS or
 # NOTICE_MAX_WORDS, more than one line, markup) is not said. Fase 3 (H7): a 1,81 s notice held the reply that came
 # behind it; it is said only while a call runs now, before the next decision even starts.

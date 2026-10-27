@@ -222,11 +222,10 @@ internal sealed class NativeTurnLoop
 
     // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the model's
     // notice when nothing it published is heard SilenceNotice.After after they arrived (the turn may have waited for a
-    // heartbeat to end before it started). A call this turn raised that waits for the person's Sí or No no longer holds
-    // it back: until its question is heard BAXY is still writing or saying it, as with any line (al máximo 9.2b), and
-    // that silence passed 3 s (primera voz, e2e c3-final5-dv6: a «¿Mando … a la papelera?» heard at 4.65 s and a
-    // «Should I close Notepad without saving?» at 3.25 s, with no notice before them). A heartbeat says none: nobody
-    // asked and nobody waits for it.
+    // heartbeat to end before it started), while a call of the turn runs (SilenceNotice.Running). A call this turn
+    // raised that waits for the person's Sí or No no longer holds it back while it runs (primera voz, e2e
+    // c3-final5-dv6: a question heard at 4.65 s with no notice before it). A heartbeat says none: nobody asked and
+    // nobody waits for it.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
         long arrivedAt,

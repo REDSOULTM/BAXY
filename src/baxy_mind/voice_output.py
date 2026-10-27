@@ -20,9 +20,8 @@ for every turn). It is synthesized as soon as the voice has it, and the mind ans
 needs (owner, 2026-10-20: an answer waited 3.6 s behind a notice synthesized like any sentence). It is dropped if an
 answer was given after it and before it began to sound: said then, it came right before the answer and held it back
 (owner, 2026-10-20: the notice cut in on what BAXY was about to say; answers waited up to 4.8 s behind it). An answer
-given before it that is still being synthesized does not drop it: the App asks for the notice until the answer is heard
-(al máximo 9.2b; an answer published at 2.4 s that sounded at 3.9 s left more than 3 s without a signal), so the notice
-sounds from its audio while that synthesis runs, and never once an answer has begun to sound. The first sound of each
+given before it that is still being synthesized does not drop it: the notice sounds from its audio while that synthesis
+runs (al máximo 9.2b), and never once an answer has begun to sound. The first sound of each
 utterance is told (on_spoken), and whether it was the notice, so the App knows when the answer is heard. Opening the output takes 0.38 s on the PC (its USB interface, under MME, DirectSound and WASAPI alike), so it
 opens when a turn starts, while the model thinks (prepare), and closes after HOLD_S without sound, so the voice still
 follows the default output.
