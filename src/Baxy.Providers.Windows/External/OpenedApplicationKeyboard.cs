@@ -17,7 +17,8 @@ internal interface IOpenedApplicationKeyboard
     ValueTask<OpenedKeyboardWindow?> WindowAsync(CancellationToken cancellationToken);
 }
 
-/// <summary>The opened application's window a keyboard act was sent to, and its title for the receipt.</summary>
+/// <summary>The window a keyboard act with no window was sent to (the opened application's, or a text's to the person's
+/// below BAXY's own), and its title for the receipt.</summary>
 internal readonly record struct OpenedKeyboardWindow(nint Window, string Title);
 
 internal sealed class OpenedApplicationKeyboard : IOpenedApplicationKeyboard

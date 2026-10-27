@@ -291,6 +291,143 @@ public sealed class DesktopInteractionOpenedApplicationTests
         });
     }
 
+    // Feria (writing with no window): BAXY's own window, where the request was just written, was in front; the text was
+    // judged there and refused, while a look and a click land on the person's window below it. The text now goes there
+    // too, through the lease, and the receipt says where it went and why.
+    [Test]
+    public async Task ATextWithNoWindowGoesToThePersonsWindowBelowBaxy()
+    {
+        var focus = new Opening { Fresh = false };
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(focus, Steam), () => new OpenedKeyboardWindow((nint)Steam, "Steam"));
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(lease.Taken, Is.EqualTo(new nint[] { (nint)Steam }));
+            Assert.That(adapter.Window, Is.EqualTo(Steam));
+            Assert.That(receipt.Result?.GetProperty("windowFrom").GetString(), Is.EqualTo("persons_surface"));
+            Assert.That(receipt.Result?.GetProperty("surfaceWindow").GetInt64(), Is.EqualTo(Steam));
+            Assert.That(receipt.Result?.GetProperty("surfaceWindowTitle").GetString(), Is.EqualTo("Steam"));
+        });
+    }
+
+    // A fresh opening still wins over the window below BAXY, and a window named wins over both.
+    [TestCase("""{"text":"hola"}""", Opened)]
+    [TestCase("""{"text":"hola","window":-4}""", -4L)]
+    public async Task TheOpenedOrTheNamedWindowWinsOverTheOneBelowBaxy(string arguments, long expected)
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening(), Steam),
+            () => throw new AssertionException("the window below BAXY is not read"));
+
+        _ = await provider.InvokeAsync("input.text.type", Json(arguments), CancellationToken.None);
+
+        Assert.That(adapter.Window, Is.EqualTo(expected));
+    }
+
+    // A key keeps the front: whether its Enter needs the person's yes is read before, on the window in front.
+    [Test]
+    public async Task AKeyWithNoWindowIsNotSentBelowBaxy()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.key.press", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening { Fresh = false }, Steam),
+            () => throw new AssertionException("the window below BAXY is not read for a key"));
+
+        _ = await provider.InvokeAsync("input.key.press", Json("""{"key":"enter"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(adapter.Window, Is.Null);
+            Assert.That(lease.Taken, Is.Empty);
+        });
+    }
+
+    // A protected window below BAXY's own is refused as any other, and the refusal names the front apart from it.
+    [Test]
+    public async Task AProtectedWindowBelowBaxyIsRefusedNamingTheFrontApart()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease,
+            (_, arguments) => WindowsExternalCapabilityProvider.MissionWindow(arguments) == (nint)Steam,
+            Keyboard(new Opening { Fresh = false }, Steam), () => new OpenedKeyboardWindow((nint)Steam, "terminal"))
+        {
+            RefusedProcessOf = (_, _) => "WindowsTerminal",
+            FrontProcessOf = () => "Baxy",
+        };
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
+            Assert.That(receipt.Result?.GetProperty("refusedProcess").GetString(), Is.EqualTo("WindowsTerminal"));
+            Assert.That(receipt.Result?.GetProperty("frontProcess").GetString(), Is.EqualTo("Baxy"));
+            Assert.That(receipt.Result?.GetProperty("windowFrom").GetString(), Is.EqualTo("persons_surface"));
+            Assert.That(adapter.Calls, Is.Zero);
+            Assert.That(lease.Taken, Is.Empty);
+        });
+    }
+
+    // With no window of the person's below BAXY's own, the text goes to the front, as before (and is refused there).
+    [Test]
+    public async Task WithNoWindowBelowBaxyTheTextGoesToTheFront()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("input.text.type", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening { Fresh = false }, Steam), () => null);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(adapter.Window, Is.Null);
+            Assert.That(lease.Taken, Is.Empty);
+            Assert.That(receipt.Result?.TryGetProperty("windowFrom", out _), Is.False);
+        });
+    }
+
+    // The product's rule: only with BAXY's own window in front, the person's surface below it (PersonsSurface), never
+    // the desktop's.
+    [Test]
+    public void ThePersonsWindowBelowIsTakenOnlyWithBaxyInFront()
+    {
+        nint chat = 11, below = 22, desktop = 33;
+        var processes = new Dictionary<nint, uint> { [0] = 0, [chat] = 4242, [below] = 5151, [desktop] = 6161 };
+        var images = new Dictionary<int, string>
+        {
+            [4242] = @"C:\Program Files\BAXY\Baxy.exe",
+            [5151] = @"C:\Apps\editor.exe",
+            [6161] = @"C:\Windows\explorer.exe",
+        };
+        nint Below(nint front, IEnumerable<nint> topDown) => VisibleControlSurface.SurfaceBelowProduct(
+            front, window => processes[window], _ => true, window => window == desktop, () => topDown,
+            process => images.GetValueOrDefault(process));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Below(chat, [chat, below, desktop]), Is.EqualTo(below));
+            Assert.That(Below(below, [below, chat]), Is.EqualTo(nint.Zero), "another window in front");
+            Assert.That(Below(chat, [chat]), Is.EqualTo(nint.Zero), "nothing below");
+            Assert.That(Below(chat, [chat, desktop]), Is.EqualTo(nint.Zero), "only the desktop below");
+            Assert.That(Below(0, [below]), Is.EqualTo(nint.Zero), "nobody's front");
+        });
+    }
+
     private static WindowsDesktopInteractionAdapter Adapter(FakeDesktopKeyboard keyboard) => new(
         new NoRunner(),
         "KnownFolderOpen.ps1",
