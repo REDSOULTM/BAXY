@@ -492,9 +492,11 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     findings.extend(f for f in _outputs(answer, raw_folded, statements, receipts) if f not in findings)
 
     # «Ya estaba». Feria 2026-10-27: a call repeated after it changed something comes back «unchanged» because of that
-    # first call; only an operation's first call in the turn tells what was so before it.
+    # first call; only the first call of an operation with its arguments that ran in the turn tells what was so before.
     changed = [r for r in receipts if r.get("completed") and _parsed(r).get("verification") == "readback"]
-    firsts = {r.get("op"): r for r in reversed(receipts)}.values()
+    firsts = {(r.get("op"), json.dumps({k: v for k, v in (r.get("arguments") or {}).items() if v is not None},
+                                       sort_keys=True, ensure_ascii=False)): r
+              for r in reversed(receipts) if _parsed(r).get("status") != "not_run"}.values()
     if changed and not any(_ALREADY_SEEN.search(r.get("observation") or "") or "ya estaba" in (r.get("outcome") or "")
                            for r in firsts):
         for start, end in statements:

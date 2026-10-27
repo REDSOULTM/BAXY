@@ -318,3 +318,14 @@ def test_a_call_that_came_back_unchanged_runs_again_after_another_call_changed_s
     assert mind.continue_turn(2, gone)["operation"] == "app_open"
     step = mind.continue_turn(3, OPENED)
     assert step["kind"] == "action" and step["operation"] == "app_close"
+
+
+def test_a_set_that_came_back_unchanged_runs_again_after_any_call_that_acted(tmp_path: Path, monkeypatch) -> None:
+    # Review of the branch: a key or a command that may have changed the same state ends without a read-back (sent
+    # without looking, or only its output); after it the set acts again, never told from the result before it.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [SET_100, _call("input_key_press", {"key": "volume_down"}), SET_100])
+    mind.decide(1, "deja el volumen en 100")
+    assert mind.continue_turn(2, SET_SAME)["operation"] == "input_key_press"
+    step = mind.continue_turn(3, json.dumps({"status": "completed", "verification": "delivered_only"}))
+    assert step["kind"] == "action" and step["operation"] == "audio_volume"

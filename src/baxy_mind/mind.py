@@ -2689,21 +2689,18 @@ class Mind:
                 and _CLOSES.match(_fold(str(call["arguments"].get("label") or "")))
                 and not _CLOSE_SAID.search(_fold(str(turn.get("text") or "")))):
             return "close_unsaid", CLOSE_NOT_RUN, CLOSE_REFUSED
-        # Since the last call that changed something: a window already gone, an app opened, the same close runs again.
-        unchanged = False
+        # Since the last other call that acted, whatever it said (a window already gone, an app opened: the same close
+        # runs again); its first result since then is the earlier one.
+        unchanged, first = False, None
         for receipt in turn.get("receipts") or []:
-            if not receipt.get("read") and str(receipt.get("outcome") or "").startswith(VERIFICATION["readback"]):
+            if _same_ended(receipt, call["wire"], call["arguments"], VERIFICATION["unchanged"], SET_BY_SAME):
+                unchanged, first = True, first or receipt
+            elif not receipt.get("read"):
                 unchanged = False
-            elif _same_ended(receipt, call["wire"], call["arguments"], VERIFICATION["unchanged"], SET_BY_SAME):
-                unchanged = True
-        if unchanged and _aid_on("same_call_closes"):
-            first = _same_done(turn, call["wire"], call["arguments"], *COMPLETED_OUTCOMES) or {}
-            try:
-                earlier = json.loads(first.get("observation") or "")
-            except json.JSONDecodeError:
-                earlier = first.get("observation")
-            return ("unchanged_closed", json.dumps({**UNCHANGED_NOT_RUN, "earlier": earlier}, ensure_ascii=False),
-                    UNCHANGED_REFUSED)
+                first = receipt if _same_ended(receipt, call["wire"], call["arguments"], *COMPLETED_OUTCOMES) else None
+        if unchanged and first and _aid_on("same_call_closes"):
+            return ("unchanged_closed", json.dumps({**UNCHANGED_NOT_RUN, "earlier": json.loads(first["observation"])},
+                                                   ensure_ascii=False), UNCHANGED_REFUSED)
         if turn.get("same_told_call") == [name, arguments] and _aid_on("same_call_closes"):
             return "same_call_closed", SAME_CALL_NOT_RUN, SAME_CALL_REFUSED
         if (call["wire"] == "input_visible_click" and turn.get("look") and _aid_on("look_click_cap")

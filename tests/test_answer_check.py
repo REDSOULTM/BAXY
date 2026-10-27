@@ -368,6 +368,13 @@ def test_already_so_is_the_first_call_of_its_operation() -> None:
     # Another operation's first call that came back so still tells it (the volume set, the sound already on).
     unmuted = _r("audio.mute", {"status": "completed", "verification": "unchanged", "observed": {"muted": False}})
     assert _rules("Lo puse en 100; el sonido ya estaba activado.", [changed, again, unmuted]) == []
+    # Review of the branch: the same operation on another thing is that call's first time; a call that never ran
+    # (queued behind a failure) is no call of the turn.
+    other = _r("audio.volume", {"status": "completed", "verification": "unchanged", "observed": {"final": 40}},
+               {"level": 40, "device": "auriculares"})
+    assert _rules("Los auriculares ya estaban en 40.", [changed, other]) == []
+    queued = _r("audio.mute", {"status": "not_run", "reason": "the call before it in this turn did not complete"})
+    assert _rules("Lo puse en 100; el sonido ya estaba activado.", [queued, changed, unmuted]) == []
 
 
 # ---- the mind: one more answer, never a loop ------------------------------------------------------------------------
