@@ -491,10 +491,12 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     # «Salió «Hola mundo»» while no result of the turn shows that text.
     findings.extend(f for f in _outputs(answer, raw_folded, statements, receipts) if f not in findings)
 
-    # «Ya estaba».
+    # «Ya estaba». Feria 2026-10-27: a call repeated after it changed something comes back «unchanged» because of that
+    # first call; only an operation's first call in the turn tells what was so before it.
     changed = [r for r in receipts if r.get("completed") and _parsed(r).get("verification") == "readback"]
+    firsts = {r.get("op"): r for r in reversed(receipts)}.values()
     if changed and not any(_ALREADY_SEEN.search(r.get("observation") or "") or "ya estaba" in (r.get("outcome") or "")
-                           for r in receipts):
+                           for r in firsts):
         for start, end in statements:
             hit = _ALREADY.search(folded, start, end)
             if hit and not re.search(r"\bno\b", folded[_clause_start(folded, start, hit.start()):hit.start()]):
