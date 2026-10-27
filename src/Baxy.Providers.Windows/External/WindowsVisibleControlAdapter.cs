@@ -984,6 +984,7 @@ internal sealed class WindowsVisibleControlAdapter
                     return null;
                 _lastView = new LastView(window, controls)
                 {
+                    Bounds = WindowBounds(window),
                     Cut = afterCut,
                     TreeTitle = title,
                     Limit = before.Limit,
@@ -2648,6 +2649,7 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 _lastView = new LastView(hwnd, controls)
                 {
+                    Bounds = WindowBounds(hwnd),
                     Cut = counted > controls.Count,
                     TreeTitle = treeTitle,
                     Limit = limit,
@@ -4175,9 +4177,11 @@ internal sealed class WindowsVisibleControlAdapter
         return chosen is not null;
     }
 
-    /// <summary>The body (the canvas) the last view handed out at this index, that view's window and the body's
-    /// rectangle: what input.pointer.drag's «index» names. False when that index is no body of the last view.</summary>
-    internal bool TryViewedBody(int index, out nint window, out Rect? rect)
+    /// <summary>The body (the canvas) the last view handed out at this index, that view's window, the body's rectangle
+    /// and where the window was when looked at: what input.pointer.drag's «index» names. False when that index is no
+    /// body of the last view.</summary>
+    internal bool TryViewedBody(
+        int index, out nint window, out Rect? rect, out (int Left, int Top, int Right, int Bottom)? looked)
     {
         LastView? view;
         lock (_viewLock)
@@ -4188,8 +4192,15 @@ internal sealed class WindowsVisibleControlAdapter
         ViewControl? chosen = view?.Controls.FirstOrDefault(control => control.Index == index && control.Body);
         window = chosen is null ? 0 : view!.Hwnd;
         rect = chosen?.RectValue;
+        looked = chosen is null ? null : view!.Bounds;
         return chosen is not null;
     }
+
+    /// <summary>A window's bounds from the compositor, or null when they cannot be read.</summary>
+    internal static (int Left, int Top, int Right, int Bottom)? WindowBounds(nint window) =>
+        VisibleControlSurface.TryBounds(window, out int left, out int top, out int right, out int bottom)
+            ? (left, top, right, bottom)
+            : null;
 
     /// <summary>The field the last view handed out at this index, and that view's window: what input.text.type's
     /// «index» names. False when no view handed it out or it carries no identity.</summary>
@@ -4360,6 +4371,9 @@ internal sealed class WindowsVisibleControlAdapter
 
         // Renew al máximo (w8): the window had more controls than this view listed (its cap).
         internal bool Cut { get; init; }
+
+        // Feria 2026-10-27: where the window was when looked at (its rectangles hold only while it stays there).
+        internal (int Left, int Top, int Right, int Bottom)? Bounds { get; init; }
 
         internal int Limit { get; init; } = 60;
 

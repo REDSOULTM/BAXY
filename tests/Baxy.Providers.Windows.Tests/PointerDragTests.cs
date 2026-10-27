@@ -49,11 +49,8 @@ public sealed class PointerDragTests
                 Assert.That(receipt.Result!.Value.GetProperty("authority").GetString(),
                     Is.EqualTo("win32_pointer_drag_body_surface_postread"));
                 Assert.That(drag.Buttons, Is.EqualTo(new[] { true, false }), "down once, up once");
-                Assert.That(drag.Moves[0], Is.EqualTo((132, 112)), "the first point is the body's top left");
-                Assert.That(drag.Moves, Does.Contain((291, 207)), "through its bottom right");
-                Assert.That(drag.Moves[^1], Is.EqualTo((132, 207)), "and ends on its bottom left");
-                Assert.That(drag.Moves.All(point => point.X >= 132 && point.X <= 291 && point.Y >= 112 && point.Y <= 207),
-                    Is.True, "never outside the body");
+                Assert.That(drag.Moves, Is.EqualTo(new[] { (132, 112), (291, 207), (132, 207) }),
+                    "the body's top left, through its bottom right, to its bottom left");
                 Assert.That(drag.Lease.Burst!.Restores, Is.GreaterThanOrEqualTo(1));
             });
         });
@@ -65,15 +62,59 @@ public sealed class PointerDragTests
     {
         WithWindow(window =>
         {
-            using var drag = new Drag(window, after: Painted(inside: true)) { PersonActsAfterMoves = 3 };
+            using var drag = new Drag(window, after: Painted(inside: true)) { PersonActsAfterMoves = 2 };
 
-            ExternalCapabilityReceipt receipt = drag.Run("""{"index":1,"points":[0,0,1,1]}""");
+            ExternalCapabilityReceipt receipt = drag.Run("""{"index":1,"points":[0,0,0.5,0.5,1,1]}""");
 
             Assert.Multiple(() =>
             {
                 Assert.That(receipt.ErrorCode, Is.EqualTo("input_user_interrupted"));
                 Assert.That(receipt.EffectMayHaveOccurred, Is.True);
                 Assert.That(drag.Buttons, Is.EqualTo(new[] { true, false }));
+            });
+        });
+    }
+
+    // Privacy review: a window kept on top that comes over the path stops it there (the button let go), and a window
+    // moved or resized since the look holds no rectangle of its body: nothing is pressed.
+    [Test]
+    public void ACoveredPathStopsAndAWindowMovedSinceTheLookIsNotPressed()
+    {
+        WithWindow(window =>
+        {
+            using var covered = new Drag(window, after: Painted(inside: true)) { CoveredAfterMoves = 2 };
+            using var moved = new Drag(window, after: Painted(inside: true)) { MovedTo = (0, 0, 640, 480) };
+
+            ExternalCapabilityReceipt stopped = covered.Run("""{"index":1,"points":[0,0,0.5,0.5,1,1]}""");
+            ExternalCapabilityReceipt refused = moved.Run("""{"index":1,"points":[0,0,1,1]}""");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(stopped.ErrorCode, Is.EqualTo("input_window_not_in_front"));
+                Assert.That(stopped.EffectMayHaveOccurred, Is.True);
+                Assert.That(covered.Buttons, Is.EqualTo(new[] { true, false }));
+                Assert.That(refused.ErrorCode, Is.EqualTo("pointer_drag_window_moved"));
+                Assert.That(refused.EffectMayHaveOccurred, Is.False);
+                Assert.That(moved.Buttons, Is.Empty);
+            });
+        });
+    }
+
+    // Review of the drag: a body that goes on changing by itself after the drag (a caret, a video) proves nothing of it.
+    [Test]
+    public void ABodyThatGoesOnChangingByItselfIsNotTakenForTheDrawing()
+    {
+        WithWindow(window =>
+        {
+            using var drag = new Drag(window, after: Painted(inside: true)) { Flickers = true };
+
+            ExternalCapabilityReceipt receipt = drag.Run("""{"index":1,"points":[0,0,1,1]}""");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("pointer_drag_surface_unsettled"));
+                Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+                Assert.That(receipt.EffectObserved, Is.False);
             });
         });
     }
@@ -94,6 +135,7 @@ public sealed class PointerDragTests
             {
                 Assert.That(unread.ErrorCode, Is.EqualTo("pointer_drag_postread_unread"));
                 Assert.That(unread.EffectMayHaveOccurred, Is.True);
+                Assert.That(unread.EffectObserved, Is.False, "an image not read observed nothing");
                 Assert.That(outside.ErrorCode, Is.EqualTo("pointer_drag_surface_unchanged"));
                 Assert.That(outside.EffectMayHaveOccurred, Is.True);
             });
@@ -126,10 +168,10 @@ public sealed class PointerDragTests
     }
 
     // The capture after the drag: a dark cell inside the body, or in the window's bottom strip outside it.
-    private static byte[] Painted(bool inside)
+    private static byte[] Painted(bool inside, int shift = 0)
     {
         byte[] bmp = Bitmap();
-        (int x, int y) = inside ? (Canvas.X - Left + 40, Canvas.Y - Top + 40) : (8, Height - 8);
+        (int x, int y) = inside ? (Canvas.X - Left + 40 + (shift * 32), Canvas.Y - Top + 40) : (8, Height - 8);
         Paint(bmp, x, y);
         return bmp;
     }
@@ -188,6 +230,15 @@ public sealed class PointerDragTests
 
         internal int? PersonActsAfterMoves { get; init; }
 
+        // From this many moves on, a window kept on top covers the path.
+        internal int? CoveredAfterMoves { get; init; }
+
+        // The body goes on changing by itself after the drag (a caret, a video): each capture differs.
+        internal bool Flickers { get; init; }
+
+        // Where the window is now, when the test moved it since the look.
+        internal (int Left, int Top, int Right, int Bottom)? MovedTo { get; init; }
+
         internal ExternalCapabilityReceipt Run(string arguments)
         {
             using JsonDocument parsed = JsonDocument.Parse(arguments);
@@ -199,10 +250,10 @@ public sealed class PointerDragTests
                 _controls,
                 Lease,
                 capture: (_, _) => ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
-                    _captures++ == 0 ? Capture(_window, Bitmap(), "before")
+                    Buttons.Count == 0 ? Capture(_window, Bitmap(), "before")
                     : _after is null ? null
-                    : Capture(_window, _after, "after")),
-                shows: (_, _, _) => true,
+                    : Capture(_window, Flickers ? Painted(inside: true, shift: _captures++) : _after, "after")),
+                shows: (_, _, _) => Moves.Count < CoveredAfterMoves.GetValueOrDefault(int.MaxValue),
                 inFront: _ => true,
                 pointAt: (burst, x, y) =>
                 {
@@ -213,7 +264,8 @@ public sealed class PointerDragTests
                         fake.UserActed = true;
                     return true;
                 },
-                button: Buttons.Add);
+                button: Buttons.Add,
+                bounds: MovedTo is { } moved ? _ => moved : null);
             return adapter.InvokeAsync("input.pointer.drag", call, CancellationToken.None).AsTask().GetAwaiter().GetResult();
         }
     }
@@ -246,6 +298,8 @@ public sealed class PointerDragTests
         object view = Activator.CreateInstance(
             field.FieldType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
             [window, controls], null)!;
+        field.FieldType.GetProperty("Bounds", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(view, WindowsVisibleControlAdapter.WindowBounds(window));
         field.SetValue(adapter, view);
     }
 

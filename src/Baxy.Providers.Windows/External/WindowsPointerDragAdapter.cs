@@ -17,10 +17,8 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
     private const uint MouseEventLeftDown = 0x0002;
     private const uint MouseEventLeftUp = 0x0004;
 
-    // A move is sent at most this many physical pixels after the one before, so a drawing application sees a stroke
-    // and not a jump; the pause between moves lets it take each one.
-    private const int StepPixels = 6;
-    private const int StepPauseMs = 4;
+    // The pause on each point of the path (about one frame), so the window takes every point and not only the last.
+    private const int PointPauseMs = 16;
 
     private readonly WindowsVisibleControlAdapter? _controls;
     private readonly IForegroundLease? _lease;
@@ -29,6 +27,7 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
     private readonly Func<nint, bool> _inFront;
     private readonly Func<IInputBurst, int, int, bool> _pointAt;
     private readonly Action<bool> _button;
+    private readonly Func<nint, (int Left, int Top, int Right, int Bottom)?> _bounds;
 
     internal WindowsPointerDragAdapter(
         WindowsVisibleControlAdapter? controls = null,
@@ -37,7 +36,8 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
         Func<nint, int, int, bool>? shows = null,
         Func<nint, bool>? inFront = null,
         Func<IInputBurst, int, int, bool>? pointAt = null,
-        Action<bool>? button = null)
+        Action<bool>? button = null,
+        Func<nint, (int Left, int Top, int Right, int Bottom)?>? bounds = null)
     {
         _controls = controls;
         _lease = lease;
@@ -46,6 +46,7 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
         _inFront = inFront ?? VisibleControlSurface.ForegroundIs;
         _pointAt = pointAt ?? VisibleControlSurface.PointAt;
         _button = button ?? (down => mouse_event(down ? MouseEventLeftDown : MouseEventLeftUp, 0, 0, 0, BaxyInputMark.Value));
+        _bounds = bounds ?? WindowsVisibleControlAdapter.WindowBounds;
     }
 
     public bool CanHandle(string operation) => operation is "input.pointer.drag";
@@ -82,7 +83,9 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
             || window != named
             || !VisibleControlSurface.IsAlive(window))
             return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
-        if (!_controls.TryViewedBody(index, out _, out WindowsVisibleControlAdapter.Rect? rect))
+        if (!_controls.TryViewedBody(index, out nint bodyWindow, out WindowsVisibleControlAdapter.Rect? rect,
+                out (int Left, int Top, int Right, int Bottom)? looked)
+            || bodyWindow != window)
             return ExternalJson.FailureBeforeEffect(operation, "pointer_drag_index_not_body");
         if (rect is not { } body || body.W <= 1 || body.H <= 1)
             return ExternalJson.FailureBeforeEffect(operation, "pointer_drag_control_unreachable");
@@ -95,10 +98,11 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
         {
             if (burst.Refusal is string refusal)
                 return ExternalJson.FailureBeforeEffect(operation, refusal);
-            VisibleControlSurface.CapturedWindow? before = await ReadAsync(window, cancellationToken).ConfigureAwait(false);
-            if (before is not { } captured || captured.Hwnd != window)
-                return ExternalJson.FailureBeforeEffect(operation, "active_window_not_found");
-            return await DragAsync(operation, index, body, path, captured, burst, cancellationToken).ConfigureAwait(false);
+            // The body's rectangle is the look's: a window moved or resized since (the person's pause and the lease's
+            // wait come between) would put the path on its toolbar or a list. Nothing is pressed.
+            if (looked is null || _bounds(window) != looked)
+                return ExternalJson.FailureBeforeEffect(operation, "pointer_drag_window_moved");
+            return await DragAsync(operation, index, body, path, window, burst, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -134,12 +138,11 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
         int index,
         WindowsVisibleControlAdapter.Rect body,
         (int X, int Y)[] path,
-        VisibleControlSurface.CapturedWindow captured,
+        nint window,
         IInputBurst burst,
         CancellationToken cancellationToken)
     {
         var effectBoundary = new ExternalEffectBoundary();
-        nint window = captured.Hwnd;
         // The person's input since the pause ends the burst first: nothing is pressed.
         if (!burst.MayAct)
             return ExternalJson.FailureBeforeEffect(operation, "input_user_interrupted");
@@ -150,77 +153,126 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
         if (!_inFront(window))
             return ExternalJson.FailureBeforeEffect(operation, "input_window_changed");
         if (!_pointAt(burst, path[0].X, path[0].Y))
-            return ExternalJson.FailureBeforeEffect(operation, "input_user_interrupted");
+            return ExternalJson.FailureBeforeEffect(operation, Unplaced(burst));
+        // The image the drag is judged against is taken with the cursor already on the first point: what the window
+        // redraws for a pointer resting there (a hover, a brush outline) is not the drag's.
+        await Task.Delay(PointPauseMs, cancellationToken).ConfigureAwait(false);
+        if (await ReadAsync(window, cancellationToken).ConfigureAwait(false) is not { } before || before.Hwnd != window)
+            return ExternalJson.FailureBeforeEffect(operation, "active_window_not_found");
 
+        string? stopped;
         try
         {
-            return await PressAlongAsync(operation, index, body, path, captured, burst, effectBoundary, cancellationToken)
-                .ConfigureAwait(false);
+            stopped = await PressAlongAsync(path, window, burst, effectBoundary, cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             return effectBoundary.Failure(operation, "pointer_drag_cancelled");
         }
+
+        if (stopped is not null)
+            return effectBoundary.Failure(operation, stopped, effectObserved: true);
+        try
+        {
+            return await PostreadAsync(operation, index, body, path.Length, before, burst, effectBoundary, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The whole path was sent: only its image was not looked at.
+            return effectBoundary.Failure(operation, "pointer_drag_postread_unread");
+        }
     }
 
-    private async ValueTask<ExternalCapabilityReceipt> PressAlongAsync(
-        string operation,
-        int index,
-        WindowsVisibleControlAdapter.Rect body,
+    // A cursor not placed: the person's input took the burst, or Windows did not move it (a locked or secure desktop).
+    private static string Unplaced(IInputBurst burst) =>
+        burst.UserActed ? "input_user_interrupted" : "pointer_drag_cursor_unplaced";
+
+    /// <summary>
+    /// The button down on the first point, through the others, and up: why the path stopped partway (a window that came
+    /// over it or took the front, the person's input, a cursor not placed), or null when it was sent whole.
+    /// </summary>
+    private async ValueTask<string?> PressAlongAsync(
         (int X, int Y)[] path,
-        VisibleControlSurface.CapturedWindow captured,
+        nint window,
         IInputBurst burst,
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        nint window = captured.Hwnd;
-        bool whole = true;
+        bool covered = false;
+        bool placed = true;
+        long ownSeen = burst.OwnInputsSeen;
         effectBoundary.Cross(cancellationToken);
         _button(true);
         try
         {
-            (int X, int Y) from = path[0];
+            // The press is processed by Windows later than the cursor moves (review of fable/cu-v3-rafaga): it is let
+            // land on the first point before the cursor leaves it.
+            await burst.SettleOwnInputAsync(ownSeen, 1, cancellationToken).ConfigureAwait(false);
             foreach ((int X, int Y) to in path.Skip(1))
             {
-                int steps = Math.Max(1, (int)Math.Ceiling(Math.Max(Math.Abs(to.X - from.X), Math.Abs(to.Y - from.Y))
-                    / (double)StepPixels));
-                for (int step = 1; step <= steps && whole; step++)
-                {
-                    whole = _pointAt(burst,
-                        from.X + (int)Math.Round((to.X - from.X) * step / (double)steps),
-                        from.Y + (int)Math.Round((to.Y - from.Y) * step / (double)steps));
-                    await Task.Delay(StepPauseMs, cancellationToken).ConfigureAwait(false);
-                }
-
-                if (!whole)
+                // Safety review r10a, checked at every point as the wheel does at every notch: a window kept on top
+                // that came over the path, or one that took the front, stops it there.
+                covered = !_shows(window, to.X, to.Y) || !_inFront(window);
+                placed = !covered && _pointAt(burst, to.X, to.Y);
+                if (!placed)
                     break;
-                from = to;
+                // A drawing application joins the points it is given; the pause lets it take each one.
+                await Task.Delay(PointPauseMs, cancellationToken).ConfigureAwait(false);
             }
         }
         finally
         {
-            // Let go whatever stopped the path: a button left down would keep drawing under the person's hand.
+            // Let go whatever stopped the path: a button left down would keep drawing under the person's hand. The
+            // release lands before the burst gives the cursor back (else it would land where the cursor went back to).
             _button(false);
+            await burst.SettleOwnInputAsync(ownSeen, 2, CancellationToken.None).ConfigureAwait(false);
         }
 
-        // The person's input stopped the path partway: what was drawn is not the path asked for.
-        if (!whole || burst.UserActed)
-            return effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true);
+        return covered ? "input_window_not_in_front"
+            : burst.UserActed ? "input_user_interrupted"
+            : placed ? null
+            : Unplaced(burst);
+    }
+
+    /// <summary>
+    /// The body's image after the drag, against the one before it. Regla 3: an image not read (or not comparable: the
+    /// window moved or was resized) is said unread, never unchanged; an unchanged body is said so; and, as the wheel's
+    /// post-read does, a body that goes on changing by itself afterwards (a caret, a video) proves nothing of the drag.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> PostreadAsync(
+        string operation,
+        int index,
+        WindowsVisibleControlAdapter.Rect body,
+        int points,
+        VisibleControlSurface.CapturedWindow before,
+        IInputBurst burst,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
         // The window redraws after the last move, not during it.
         await Task.Delay(350, cancellationToken).ConfigureAwait(false);
-        VisibleControlSurface.CapturedWindow? after = await ReadAsync(window, cancellationToken).ConfigureAwait(false);
+        VisibleControlSurface.CapturedWindow? after = await ReadAsync(before.Hwnd, cancellationToken).ConfigureAwait(false);
         // An image changed after the person acted proves nothing of the drag.
         if (burst.UserActed)
             return effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true);
-        bool? changed = after is { } read
-            ? VisibleControlSurface.ChangedWithin(captured, read, body.X, body.Y, body.W, body.H)
-            : null;
-        // Regla 3: an image not read (or not comparable: the window moved or was resized) is said unread, never
-        // unchanged; an unchanged body is said so, and the drag is never told as drawn.
+        bool? changed = after is { } drawn ? ChangedInBody(before, drawn, body) : null;
         if (changed is null)
-            return effectBoundary.Failure(operation, "pointer_drag_postread_unread", effectObserved: true);
+            return effectBoundary.Failure(operation, "pointer_drag_postread_unread");
         if (changed == false)
             return effectBoundary.Failure(operation, "pointer_drag_surface_unchanged", effectObserved: true);
+        // Two looks, ~300 ms and ~600 ms after, so a caret's blink (about every 530 ms) falls inside.
+        for (int look = 0; look < 2; look++)
+        {
+            await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+            VisibleControlSurface.CapturedWindow? later = await ReadAsync(before.Hwnd, cancellationToken).ConfigureAwait(false);
+            bool? moving = later is { } again ? ChangedInBody(after!.Value, again, body) : null;
+            if (moving is null)
+                return effectBoundary.Failure(operation, "pointer_drag_postread_unread");
+            if (moving == true)
+                return effectBoundary.Failure(operation, "pointer_drag_surface_unsettled");
+        }
+
         bool restored = burst.Restore();
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
@@ -228,7 +280,7 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
             writer.WriteNumber("version", 1);
             writer.WriteBoolean("ok", true);
             writer.WriteNumber("index", index);
-            writer.WriteNumber("points", path.Length);
+            writer.WriteNumber("points", points);
             writer.WriteBoolean("surfaceChanged", true);
             writer.WriteNumber("waitedMs", burst.WaitedMs);
             writer.WriteBoolean("restored", restored);
@@ -236,6 +288,10 @@ internal sealed partial class WindowsPointerDragAdapter : IExternalOperationAdap
             writer.WriteEndObject();
         }));
     }
+
+    private static bool? ChangedInBody(
+        VisibleControlSurface.CapturedWindow first, VisibleControlSurface.CapturedWindow second, WindowsVisibleControlAdapter.Rect body) =>
+        VisibleControlSurface.ChangedWithin(first, second, body.X, body.Y, body.W, body.H);
 
     private async ValueTask<VisibleControlSurface.CapturedWindow?> ReadAsync(nint window, CancellationToken cancellationToken)
     {
