@@ -37,6 +37,19 @@ como límite; estado del PC claro; informe corto con cifras y vuelta atrás.
     lo estable igual de rápido (3-7 s); fechadas 14-19 s.
   - E 1dec600b2 (DESPLEGADO 01:20 en la entrega): D + la misma ayuda para «dato curioso/curiosidad».
     Pruebas: `tests/test_mind_fechado.py` (5) y mente 410 pass.
+  - F 3e320d49a: + ayuda «close_unsaid» (un input_visible_click cuya etiqueta empieza por cerrar/close/salir/exit/quit
+    no se pasa a la App si las palabras del turno no dicen cerrar/salir). G 54a4f702b: «curiosidad» sólo al pedir una.
+    H 19b6b441b (DESPLEGADO 01:36): + minimizar. I 5c71624e7: la ayuda fechada pide al modelo el web_search con
+    `fill_call` (como «corrige» de System One); la nota queda de respaldo.
+  - En vivo con F/H: Bloc de notas cerrado solo 0/3 (antes 3/4); «abre la calculadora» sólo abre 3/3; cierres pedidos
+    6/6. Batería E de 59 pedidos: 0 sin respuesta, 0 errores, mediana 8,2 s, p90 20 s.
+  - PC con G=H (decisión v11 x2): 198,0 frente a B 198,5 (Δ −0,5, IC95 [−2,5, +1,0]); equivocadas 30,0 → 29,5;
+    sondas con año 11/12 (B 2,5); curiosidades 6/8 (B 0/8; fallan 2 en inglés, tras la nota vuelve a responder
+    de palabra → I). close_unsaid no toca ningún caso de v11/v6 (no hay clics de cerrar en los bancos).
+  - Resistencia H (01:36-): 70 turnos a mitad, 0 sin respuesta, 0 errores, mediana 6,6 s, RAM estable; tras la nota
+    3/8 fechadas preguntaron «¿Quieres que busque…?» → I.
+- Suite Python completa con H: 955 pass, 1 skip, 2 xfail (preexistentes). ruff: no ejecutado (no está instalado en
+  el runtime; la regla es no instalar sin el dueño). .NET sin tocar.
 - Arranque: lo tecleado antes de que la mente esté lista (≈30-40 s) se queda en la caja (`data-ready=false`), no se
   pierde; el aviso dice «Escribe o di» en vez de «Cargando». Límite menor, sin arreglo.
 - Clics no pedidos tras cumplir (base, 1 de 2 pasadas): «Abre la calculadora» pulsó «Es igual a» y «Borrar» ×3;
