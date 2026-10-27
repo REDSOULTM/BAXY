@@ -69,7 +69,9 @@ SYSTEM = (
     "5. Charla, traducciones y lo que sabes con certeza respóndelo tú; las cuentas, con calculate. Lo que cambia con "
     "el tiempo o no sabes, búscalo con web_search. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
     "con memory_recall.\n"
-    "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («sincuenta» es 50).\n"
+    "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («sincuenta» es 50). "
+    "Si ni así se entiende qué dice (sílabas sueltas, palabras sin sentido), no adivines ni digas que no puedes: "
+    "pídele en una frase corta que lo repita.\n"
     "7. Si la persona te pide que pares, te calles o esperes, no hagas nada más: responde con una palabra.\n"
     "8. Si una herramienta responde status needs_confirmation, pregunta en una frase si lo haces, nombrando "
     "exactamente qué. Cuando la persona conteste, llama a confirm_pending con su respuesta.\n"
@@ -569,12 +571,16 @@ LOOK_CLICK_NOT_RUN = json.dumps({"status": "not_run",
 # Aid «ask_once» (uso real 2026-10-26): the person's answer to ask_user is that call's result, and the model asked the
 # same question again at each answer («¿en todo el sistema o en un programa?» six times, «¿qué quieres que recuerde de
 # ti?» three): one question per thing (identity: «una pregunta corta, no un interrogatorio»). A question alike to one
-# already asked in the turn (ASKED_ALIKE of its letters, folded) is not asked: the model answers in words.
+# already asked in the turn (ASKED_ALIKE of its letters, folded) is not asked: the model decides again, without asking.
 ASKED_ALIKE = 0.9
 ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
                                   "reason": "this question was already asked in this turn and the person's answer is "
                                             "above; it was not asked again: do with that answer what a tool can do, "
                                             "or say in one sentence that you don't do it"})
+# The question the model asked in the decision after that one: no other question is asked in this turn.
+ASKED_CLOSED_NOT_RUN = json.dumps({"status": "not_run",
+                                   "reason": "no other question is asked in this turn; it was not asked: answer the "
+                                             "person in words with what is above"})
 # Aid «say_once» (uso real 2026-10-26): the same words came back turn after turn (the same greeting three times, the
 # same «¿te refieres a algo más?» to whatever followed; after searches that all failed, the answer of the turn before
 # as if they had found it). An answer that is BAXY's last answer again, letter for letter, in a turn where no call
@@ -2714,20 +2720,26 @@ class Mind:
                 stage: str, started: float, content: str) -> dict[str, Any]:
         result: dict[str, Any] = {"type": "turn.result", "id": request_id, "kind": "conversation", "operation": None,
                                   "arguments": None, "question": "", "reply": ""}
+        closed = turn.pop("ask_closed", False)  # this decision follows a question not asked again (aid «ask_once»)
         if call is not None and call["wire"] == "ask_user":
             question = " ".join(str(call["arguments"].get("question") or "").split())
             later = [c["id"] for c in turn.get("queue") or []]
             turn["queue"], turn["awaiting"] = [], None
             folded = " ".join(re.findall(r"[^\W_]+", _fold(question)))
-            if folded and _aid_on("ask_once") and any(
+            if folded and _aid_on("ask_once") and (closed or any(
                     difflib.SequenceMatcher(None, folded, asked).ratio() >= ASKED_ALIKE
-                    for asked in turn.get("questions", [])):
+                    for asked in turn.get("questions", []))):
+                not_run = ASKED_CLOSED_NOT_RUN if closed else ASKED_AGAIN_NOT_RUN
                 for call_id in [call["id"], *later]:
                     turn["conv"].append({"role": "tool", "tool_call_id": call_id,
-                                         "content": ASKED_AGAIN_NOT_RUN if call_id == call["id"] else NOT_RUN})
+                                         "content": not_run if call_id == call["id"] else NOT_RUN})
                 self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
                           kind="ask_repeat_closed", operation=None, arguments=None, content=None)
-                return self._next(request_id, stage, turn, final=True)
+                # Feria 2026-10-27: the decision after it had no tools, though the answer to the question asked for one
+                # (the topic of a presentation to make: it said it could not make it without one). It keeps them; only
+                # asking is closed in it, and asking there again ends the turn in words.
+                turn["ask_closed"] = not closed
+                return self._next(request_id, stage, turn, final=closed)
             if folded:
                 turn.setdefault("questions", []).append(folded)
             if question:
