@@ -749,6 +749,29 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Feria (caso 15): a game not on this PC left the same title_not_resolved as a title no game bears, and nothing
+    // said the title was looked up only among this PC's manifests: the answer was that Steam has no such game. The
+    // receipt says where the title was looked up, so an unresolved title is neither «it does not exist» nor «not owned».
+    [Test]
+    public async Task AnUnresolvedTitleSaysItWasLookedUpOnlyAmongThisPcsGames()
+    {
+        var adapter = new SteamLocalAdapter(
+            () => Catalog,
+            () => new HashSet<string>(["620"], StringComparer.Ordinal),
+            new FakeSteamAutomation(onDispatch: null),
+            (_, _) => ValueTask.CompletedTask);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.entitlement.named", Json("""{"title":"A Game Not On This PC"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result?.GetProperty("state").GetString(), Is.EqualTo("title_not_resolved"));
+            Assert.That(receipt.Result?.GetProperty("titleLookedUpAmong").GetString(),
+                Is.EqualTo("games_installed_or_downloading_on_this_pc"));
+        });
+    }
+
     // Renew al máximo (B-APP-5): a store search that got no answer (offline, a timeout, an error status, a body not
     // read) is said as such before any effect, never as a title no game bears.
     [TestCase(0)]

@@ -255,6 +255,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             if (appId is not null && (installed || !librariesUnread)) writer.WriteBoolean("installed", installed);
             if (librariesUnread) writer.WriteBoolean("librariesUnread", true);
             if (appId is null) WriteClosest(writer, ClosestTitles(title, catalog.Select(static game => game.Name)));
+            // Feria (caso 15): an unresolved title was read as a game Steam does not have. It was looked up only among
+            // this PC's manifests, so it says neither that the game does not exist nor that it is not owned.
+            writer.WriteString("titleLookedUpAmong", "games_installed_or_downloading_on_this_pc");
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
                 : librariesUnread ? "install_not_read"
