@@ -41,3 +41,14 @@ def test_the_raw_pointer_tool_tells_the_model_it_neither_drags_nor_draws(tmp_pat
     assert "It cannot drag or draw" in tool["description"]
     # Only dragging with the mouse is the limit: a whole window still moves with its own tools.
     assert "no tool drags or draws with the mouse (moving a whole window is window_move" in tool["description"]
+
+
+def test_the_document_tool_says_how_much_text_fits_in_one_decision(tmp_path: Path) -> None:
+    # Review R6: a decision now holds 1536 tokens (19ff61b68), about 900 Spanish words in one call; the description says
+    # a conservative 800, not the 250 that fitted in 512 tokens, so the model does not shorten a text that fits.
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": "office.document.create", "description": "Create.", "argumentsSchema": {
+        "type": "object", "properties": {"title": {"type": "string"}}, "required": ["title"]}}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "office_document_create")["function"]
+    assert "about 800 words of text at most" in tool["description"]
+    assert "250 words" not in tool["description"]
