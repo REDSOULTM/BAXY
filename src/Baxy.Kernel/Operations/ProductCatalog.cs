@@ -1189,7 +1189,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ExternalCommunication,
             "media.play.youtube.cdp.video.postread.v1",
-            "Busca en YouTube, reproduce el primer vídeo que lista y verifica la reproducción: en el navegador de la persona (el predeterminado, o el indicado en browser si Windows lo tiene registrado; si no, no abre nada), que la sesión multimedia del sistema de ese navegador dice que reproduce; sólo sin browser y si el predeterminado no se puede abrir, en el navegador propio del producto, el elemento multimedia y que avanza; el recibo dice en qué navegador suena (browser).",
+            "Busca en YouTube, reproduce el primer vídeo que lista y verifica la reproducción: en el navegador de la persona (el predeterminado, o el indicado en browser si Windows lo tiene registrado; si no, no abre nada), que la sesión multimedia del sistema dice que reproduce (con browser, sólo una sesión de ese navegador); sólo sin browser y si el predeterminado no se puede abrir, en el navegador propio del producto, el elemento multimedia y que avanza; el recibo dice en qué navegador suena (browser).",
             // Auditoría del núcleo 2026-10-23: lo que se busca sale a YouTube.
             effects: [Network()]),
         Descriptor(
