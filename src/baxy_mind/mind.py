@@ -2775,14 +2775,19 @@ class Mind:
         opened, focused or resolved any of them, or acted naming one; empty, it runs. A name that is in a text typed in
         this turn is what is written, not where."""
         arguments = call["arguments"]
-        if (call["wire"] not in WRITES_TO_FRONT or turn.get("beat") or turn.get("unopened_told")
-                or not _aid_on("unopened_app") or any(arguments.get(key) not in (None, "") for key in TARGET_ARGUMENTS)):
-            return []
         receipts = turn.get("receipts") or []
+
+        def targeted(given: dict[str, Any]) -> bool:
+            return any(given.get(key) not in (None, "") for key in TARGET_ARGUMENTS)
+
+        # Not when the turn already acts on a window it looked at (a typing with window, then its Enter).
+        if (call["wire"] not in WRITES_TO_FRONT or turn.get("beat") or turn.get("unopened_told")
+                or not _aid_on("unopened_app") or targeted(arguments)
+                or any(r.get("completed") and targeted(r.get("arguments") or {}) for r in receipts)):
+            return []
         said = _words(str(turn.get("said") or turn.get("text") or ""))
-        typed = _words(" ".join(str(written.get(key) or "") for written in
-                                [arguments, *(r.get("arguments") or {} for r in receipts if r.get("tool") in WRITES_TO_FRONT)]
-                                for key in ("text", "replacing")))
+        written = [arguments, *(r.get("arguments") or {} for r in receipts if r.get("tool") in WRITES_TO_FRONT)]
+        typed = _words(" ".join(str(given.get(key) or "") for given in written for key in ("text", "replacing")))
         named = [name for name in dict.fromkeys(self.names)
                  if _words(name).strip() and _words(name) in said and _words(name) not in typed]
         if not named:

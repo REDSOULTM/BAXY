@@ -98,6 +98,16 @@ def test_a_call_that_only_read_about_the_application_does_not_count(tmp_path: Pa
     assert mind.continue_turn(2, DONE)["operation"] == "app_open"
 
 
+def test_a_key_after_a_typing_into_a_given_window_is_pressed(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola", "window": 2623998}),
+                               _call("input_key_press", {"key": "enter"})])
+    mind.names = list(APPS)
+    assert mind.decide(1, "escribe hola en el bloc de notas y pulsa enter")["operation"] == "input_text_type"
+    assert mind.continue_turn(2, DONE)["operation"] == "input_key_press"
+    assert _not_run(mind) == []
+
+
 def test_a_field_of_the_last_look_is_left_as_it_is(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola", "index": 4})])
