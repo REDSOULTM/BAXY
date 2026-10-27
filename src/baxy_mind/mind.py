@@ -2235,24 +2235,39 @@ class Mind:
         return ((bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(folded))))
                 or bool(_CURIOUS.search(folded)))
 
+    @classmethod
+    def _names_said(cls, text: str, content: str) -> bool:
+        """Whether the words, in a sentence that is not a question (a question tells no fact), say a word of the person's
+        that either of them wrote as a name: with a capital past the start of a sentence (aid «named_fact»). PC-L review
+        2026-10-27: the voice may come in lowercase, and the model still writes a name with its capital."""
+        told = " ".join(sentence for sentence in _TOLD.findall(content) if not sentence.rstrip().endswith("?"))
+        said, said_names = cls._words_and_names(text)
+        words, names = cls._words_and_names(told)
+        return not (said_names | names).isdisjoint(said & words)
+
     @staticmethod
-    def _names_said(text: str, content: str) -> bool:
-        """Whether the words repeat, in a sentence that is not a question (a question tells no fact), a name the person
-        wrote with a capital past the start of a sentence (aid «named_fact»)."""
-        names = {_fold(word) for sentence in _SENTENCES.split(text) for word in _WORDS.findall(sentence)[1:]
-                 if word[0].isupper()}
-        told = (sentence for sentence in _TOLD.findall(content) if not sentence.rstrip().endswith("?"))
-        return bool(names) and not names.isdisjoint(_fold(w) for sentence in told for w in _WORDS.findall(sentence))
+    def _words_and_names(text: str) -> tuple[set[str], set[str]]:
+        """The words of a text, folded, and those written as a name: with a capital past the start of a sentence."""
+        words: set[str] = set()
+        names: set[str] = set()
+        for sentence in _SENTENCES.split(text):
+            found = _WORDS.findall(sentence)
+            words.update(_fold(word) for word in found)
+            names.update(_fold(word) for word in found[1:] if word[0].isupper())
+        return words, names
 
     def _named_fact(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
                     reply: dict | None, started: float) -> dict[str, Any] | None:
         """Aid «named_fact»: System One judges between the words and web_search; its web_search is looked up as a
         dated question is, and None leaves the words as they are."""
         turn["named"] = True
-        search = next((t for t in self.tools if t["function"]["name"] == "web_search"), None)
-        if search is None:
+        if not any(t["function"]["name"] == "web_search" for t in self.tools):
             return None
-        options = {"web_search": short(search["function"]["description"]), ANSWER: OPTION_TEXT[ANSWER]}
+        # PC-L review 2026-10-27 (privacy): who or what the person keeps in memory (a contact) is an option of its own,
+        # never looked up on the web.
+        options = {t["function"]["name"]: short(t["function"]["description"]) for t in self.tools
+                   if t["function"]["name"] in ("web_search", "memory_recall")}
+        options[ANSWER] = OPTION_TEXT[ANSWER]
         judged = self.system_one.choose(turn["text"], self._said(), options)  # type: ignore[union-attr]
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
         self._log("turn.named", started, None)

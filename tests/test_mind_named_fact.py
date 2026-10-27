@@ -58,3 +58,20 @@ def test_without_the_aid_the_words_are_not_judged(tmp_path, monkeypatch) -> None
     mind, server, one, fills = _named(tmp_path, monkeypatch, "web_search", [_say("Zorvik es una banda.")])
     monkeypatch.setenv("BAXY_AYUDAS", "none")
     assert mind.decide(1, "¿Conoces a Zorvik?")["reply"] == "Zorvik es una banda." and one.asked == []
+
+
+def test_a_name_the_recognizer_wrote_in_lowercase_counts_when_the_answer_writes_it_as_a_name(tmp_path,
+                                                                                             monkeypatch) -> None:
+    # PC-L review 2026-10-27: the voice may come in lowercase; the model writes a name with its capital
+    mind, server, one, fills = _named(tmp_path, monkeypatch, "web_search", [_say("El jugo Zorvik es energético.")])
+    assert mind.decide(1, "qué es el jugo zorvik")["kind"] == "action" and fills == ["web_search"]
+
+
+def test_what_memory_holds_is_an_option_and_never_goes_to_the_web(tmp_path, monkeypatch) -> None:
+    # PC-L review 2026-10-27 (privacy): a person of the contacts or of memory is not looked up on the web
+    mind, server, one, fills = _named(tmp_path, monkeypatch, "memory_recall", [_say("Lena es tu hermana.")])
+    mind.tools = [SEARCH, {"type": "function", "function": {"name": "memory_recall",
+                                                            "description": "Recall what you keep. More.",
+                                                            "parameters": {}}}]
+    assert mind.decide(1, "¿Quién es Lena en mis contactos?")["reply"] == "Lena es tu hermana." and not fills
+    assert set(one.asked[0]["options"]) == {"web_search", "memory_recall", "responder_con_palabras"}
