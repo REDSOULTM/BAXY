@@ -86,21 +86,3 @@ def test_the_model_writes_the_search_itself_when_it_can(tmp_path: Path, monkeypa
     step = mind.decide(1, "¿Quién ganó el premio Nobel de Física 2023?")
     assert step["kind"] == "action" and step["operation"] == "web_search" and fills == ["web_search"]
     assert len(server.bodies) == 1 and DATED_NOTE not in [m.get("content") for m in mind.conversation]
-
-
-def test_what_something_with_a_name_of_its_own_is_looked_up(tmp_path: Path, monkeypatch) -> None:
-    # feria 2026-10-27: what a local brand is, answered from memory as another kind of product
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    for asked in ("¿Qué es la marca Zorvik?", "Oye, ¿quién es Lena Marhoff?", "what is Quellstrom?"):
-        mind, server = _mind(tmp_path, [_say("Es una bebida energética."), _call("web_search", {"query": "x"})])
-        assert mind.decide(1, asked)["kind"] == "action", asked
-
-
-def test_definitions_of_common_things_of_baxy_or_of_the_person_are_not_held(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    asked = ("Hola, ¿qué tal?", "¿Quién eres?", "¿Qué es BAXY?", "¿Qué es la fotosíntesis?", "What is your name?",
-             "¿Qué es lo que tengo abierto en Chrome?", "¿Quién es tu creador?", "What is it I asked?")
-    mind, server = _mind(tmp_path, [_say(f"Vale {n}.") for n in range(len(asked))])
-    for n, text in enumerate(asked):
-        assert mind.decide(n, text)["reply"] == f"Vale {n}.", text
-    assert len(server.bodies) == len(asked)

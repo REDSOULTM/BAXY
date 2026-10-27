@@ -576,21 +576,20 @@ SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder 
 # a sentence in rule 5 alone did not hold past a few answers from memory in a row. The question with one number, a year,
 # or a curiosity asked for, answered in words with nothing looked at, is decided once more with this note; the model still
 # chooses.
-DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto (de un año, una curiosidad o qué es algo "
-              "con nombre propio), y esos datos de memoria se confunden. Búscalo con web_search y responde con lo que "
+DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto (de un año, una curiosidad o algo con "
+              "nombre propio), y esos datos de memoria se confunden. Búscalo con web_search y responde con lo que "
               "encuentres.]")
 _YEAR_ALONE = re.compile(r"^\D*(?<!\d)(?:1[5-9]|20)\d\d(?!\d)\D*$")
 # A curiosity asked for (feria 2026-10-27, «cuéntame un dato curioso…» from memory: «el estribo, en el pie»).
 _CURIOUS = re.compile(r"\b(?:datos? curios[oa]s?|curiosidad(?:es)? (?:de|del|sobre|acerca)|algo curioso|fun facts?)\b")
-# What something with a name of its own is (feria 2026-10-27: a local brand of juices told from memory as an energy
-# drink): «qué es / quién es» up to the end of the sentence, naming something the recognizer wrote with a capital, not
-# BAXY itself, and not a clause of the person's own («lo que tengo…»).
-_DEFINES = re.compile(r"\b(?:que|quien|quienes) (?:es|son|era|fue)\s+([^?!.]+)"
-                      r"|\b(?:what|who)(?:'s| is| are| was)\s+([^?!.]+)", re.IGNORECASE)
-_NAMED = re.compile(r"\b[A-Z][\w'&-]+")
-_RELATIVE = re.compile(r"\b(?:que|quien|i|you|your|my|tu|mi)\b", re.IGNORECASE)
-_SELF = re.compile(r"^bax(?:y|i|ie)$", re.IGNORECASE)
 _ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|donde|como|who|what|which|when|how|where)\b")
+# Aid «named_fact» (feria 2026-10-27): what a local brand is, answered in words from memory as another kind of
+# product, with no doubt to read (p_call 0.05). Words that repeat a name the person wrote with a capital, past the start
+# of a sentence, say something of a thing with a name of its own: a form, not what was asked. System One judges then,
+# between those words and web_search, what the person asked for; only its web_search is looked up (_look_up_first).
+_SENTENCES = re.compile(r"[.!?¿¡:;\n]+")
+_WORDS = re.compile(r"[^\W\d_][\w'&-]*")
+_TOLD = re.compile(r"[^.!?]+[.!?]*")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
                                                           "set; it was not made"})
@@ -2178,7 +2177,15 @@ class Mind:
         if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
                 and not turn.get("dated") and not turn.get("receipts") and _aid_on("dated_search")
                 and self._dated(turn["text"])):
+            turn["dated"] = True
+            self._log("turn.dated", started, None)
             return self._look_up_first(request_id, stage, turn, body, reply, started)
+        if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
+                and not turn.get("named") and not turn.get("receipts") and _aid_on("named_fact")
+                and self.system_one is not None and self.system_one.ready and self._names_said(turn["text"], content)):
+            looked = self._named_fact(request_id, stage, turn, body, reply, started)
+            if looked is not None:
+                return looked
         if (content and not turn.get("beat") and not turn.get("said_again")
                 and not any(r.get("completed") for r in turn.get("receipts") or [])
                 and _aid_on("say_once") and self._said_last(conv, content)):
@@ -2199,23 +2206,38 @@ class Mind:
                     pass
         return self._result(request_id, turn, None, reply, stage, started, content)
 
-    @classmethod
-    def _dated(cls, text: str) -> bool:
+    @staticmethod
+    def _dated(text: str) -> bool:
         """Whether the person asks for a fact memory confuses: about something of a given year (a question whose only
-        number is a year), a curiosity, or what something with a name of its own is."""
+        number is a year), or a curiosity."""
         folded = _fold(text)
         return ((bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(folded))))
-                or bool(_CURIOUS.search(folded)) or cls._defines_named(text))
+                or bool(_CURIOUS.search(folded)))
 
     @staticmethod
-    def _defines_named(text: str) -> bool:
-        """Whether the person asks what or who something with a name of its own is (_DEFINES), other than BAXY."""
-        plain = "".join(ch for ch in unicodedata.normalize("NFKD", text) if not unicodedata.combining(ch))
-        for asked in _DEFINES.finditer(plain):
-            named = asked.group(1) or asked.group(2)
-            if not _RELATIVE.search(named) and any(not _SELF.match(n) for n in _NAMED.findall(named)):
-                return True
-        return False
+    def _names_said(text: str, content: str) -> bool:
+        """Whether the words repeat, in a sentence that is not a question (a question tells no fact), a name the person
+        wrote with a capital past the start of a sentence (aid «named_fact»)."""
+        names = {_fold(word) for sentence in _SENTENCES.split(text) for word in _WORDS.findall(sentence)[1:]
+                 if word[0].isupper()}
+        told = (sentence for sentence in _TOLD.findall(content) if not sentence.rstrip().endswith("?"))
+        return bool(names) and not names.isdisjoint(_fold(w) for sentence in told for w in _WORDS.findall(sentence))
+
+    def _named_fact(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
+                    reply: dict | None, started: float) -> dict[str, Any] | None:
+        """Aid «named_fact»: System One judges between the words and web_search; its web_search is looked up as a
+        dated question is, and None leaves the words as they are."""
+        turn["named"] = True
+        search = next((t for t in self.tools if t["function"]["name"] == "web_search"), None)
+        if search is None:
+            return None
+        options = {"web_search": short(search["function"]["description"]), ANSWER: OPTION_TEXT[ANSWER]}
+        judged = self.system_one.choose(turn["text"], self._said(), options)  # type: ignore[union-attr]
+        self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
+        self._log("turn.named", started, None)
+        if not judged or judged["choice"] != "web_search":
+            return None
+        return self._look_up_first(request_id, stage, turn, body, reply, started)
 
     def _look_up_first(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
                        reply: dict | None, started: float) -> dict[str, Any]:
@@ -2223,8 +2245,6 @@ class Mind:
         web_search itself (LlmServer.fill_call, as System One's «corrige»); a fill that fails or writes no query decides
         once more with the note, which does not stay in the conversation (the soak of 2026-10-27: after the note alone
         «¿Quieres que busque…?» 3 of 8)."""
-        turn["dated"] = True
-        self._log("turn.dated", started, None)
         conv = turn["conv"]
         try:
             filled = self.server.fill_call(body, "web_search")
