@@ -25,6 +25,11 @@ internal static class SteamAppInfo
     private const uint Version40 = 0x07564428;
     private const uint Version41 = 0x07564429;
 
+    // The last file read (its path, size and time written) and its games: a file of several MB is read again only when
+    // Steam rewrote it.
+    private static (string Path, long Length, DateTime Written, IReadOnlyList<SteamStoreTitle> Games)? _last;
+    private static readonly Lock LastLock = new();
+
     /// <summary>The games in the cache at <paramref name="path"/>; null when it is not there or cannot be read.</summary>
     internal static IReadOnlyList<SteamStoreTitle>? ReadGames(string path)
     {
@@ -32,9 +37,21 @@ internal static class SteamAppInfo
         {
             // Steam keeps the file open and rewrites it while it runs: read it without denying it that.
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            byte[] bytes = new byte[stream.Length];
+            long length = stream.Length;
+            DateTime written = File.GetLastWriteTimeUtc(path);
+            lock (LastLock)
+            {
+                if (_last is { } last && last.Path == path && last.Length == length && last.Written == written)
+                    return last.Games;
+            }
+            if (length > Array.MaxLength)
+                throw new InvalidDataException("appinfo.vdf larger than an array");
+            byte[] bytes = new byte[length];
             stream.ReadExactly(bytes);
-            return Games(bytes);
+            IReadOnlyList<SteamStoreTitle> games = Games(bytes);
+            lock (LastLock)
+                _last = (path, length, written, games);
+            return games;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException)
         {

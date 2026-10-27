@@ -40,6 +40,33 @@ public sealed class SteamAppInfoTests
         Assert.That(SteamAppInfo.ReadGames(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"), "appinfo.vdf")),
             Is.Null);
 
+    // Revisión: the file is read again only when Steam rewrote it (another size or time written).
+    [Test]
+    public void TheSameFileIsReadOnceUntilItIsRewritten()
+    {
+        string folder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        string path = Path.Combine(folder, "appinfo.vdf");
+        try
+        {
+            File.WriteAllBytes(path, AppInfo(0x07564429u, [(10, "game", "First Game")]));
+            IReadOnlyList<SteamStoreTitle>? first = SteamAppInfo.ReadGames(path);
+            IReadOnlyList<SteamStoreTitle>? again = SteamAppInfo.ReadGames(path);
+            File.WriteAllBytes(path, AppInfo(0x07564429u, [(10, "game", "First Game"), (11, "game", "Second Game")]));
+            IReadOnlyList<SteamStoreTitle>? rewritten = SteamAppInfo.ReadGames(path);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(again, Is.SameAs(first));
+                Assert.That(rewritten, Has.Count.EqualTo(2));
+            });
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
     // appid, size, info state, last updated, PICS token, SHA-1, change number, binary SHA-1, then the binary KeyValues
     // «appinfo» { appid (int32), common { name, type }, extended { } }.
     private static byte[] AppInfo(uint magic, (uint AppId, string Type, string Name)[] apps)

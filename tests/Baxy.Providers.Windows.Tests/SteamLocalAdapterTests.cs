@@ -809,6 +809,41 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Revisión: two known games bearing one title resolve to the one in the library cache; a known game near the title
+    // is offered only when the cache has it; a cache of known games that could not be read is said.
+    [Test]
+    public async Task KnownGamesSharingATitleResolveByTheLibraryCacheAndOnlyOwnedOnesAreOffered()
+    {
+        static SteamLocalAdapter Adapter(Func<IReadOnlyList<SteamStoreTitle>?> knownGames) => new(
+            () => Catalog,
+            () => new HashSet<string>(["700"], StringComparer.Ordinal),
+            new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam")),
+            (_, _) => ValueTask.CompletedTask,
+            knownGames: knownGames);
+        IReadOnlyList<SteamStoreTitle> known =
+            [new("700", "Shared Name"), new("701", "Shared Name"), new("702", "Store Only Game")];
+
+        ExternalCapabilityReceipt shared = await Adapter(() => known).InvokeAsync(
+            "game.entitlement.named", Json("""{"title":"Shared Name"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt near = await Adapter(() => known).InvokeAsync(
+            "game.entitlement.named", Json("""{"title":"Store Only Gam"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt unread = await Adapter(() => null).InvokeAsync(
+            "game.entitlement.named", Json("""{"title":"Shared Name"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shared.Result?.GetProperty("appId").GetString(), Is.EqualTo("700"));
+            Assert.That(shared.Result?.GetProperty("state").GetString(), Is.EqualTo("owned_not_installed"));
+            Assert.That(shared.Result?.GetProperty("steamKnownGamesWithThatName").GetInt32(), Is.EqualTo(2));
+            Assert.That(near.Result?.GetProperty("state").GetString(), Is.EqualTo("title_not_resolved"));
+            Assert.That(near.Result?.ToString(), Does.Not.Contain("Store Only Game"));
+            Assert.That(unread.Result?.GetProperty("state").GetString(), Is.EqualTo("title_not_resolved"));
+            Assert.That(unread.Result?.GetProperty("knownGamesUnread").GetBoolean(), Is.True);
+            Assert.That(unread.Result?.GetProperty("titleLookedUpAmong").GetString(),
+                Is.EqualTo("games_installed_or_downloading_on_this_pc"));
+        });
+    }
+
     // Renew al máximo (B-APP-5): a store search that got no answer (offline, a timeout, an error status, a body not
     // read) is said as such before any effect, never as a title no game bears.
     [TestCase(0)]

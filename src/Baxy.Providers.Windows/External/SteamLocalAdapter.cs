@@ -238,12 +238,18 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         IReadOnlyList<SteamStoreTitle>? known = bearing.Length == 0 ? _knownGames() : null;
         SteamStoreTitle[] knownBearing = known is null ? []
             : [.. known.Where(game => FoldTitle(game.Name) == folded).DistinctBy(static game => game.AppId)];
-        string? appId = bearing.Length == 1 ? bearing[0] : knownBearing.Length == 1 ? knownBearing[0].AppId : null;
+        IReadOnlySet<string>? cache = _owned();
+        // Two known games bear the same title (a re-release under the same name): the one in the library cache, when only
+        // one of them is.
+        SteamStoreTitle[] knownOwned = cache is null ? []
+            : [.. knownBearing.Where(candidate => cache.Contains(candidate.AppId))];
+        SteamStoreTitle? knownGame = knownBearing.Length == 1 ? knownBearing[0]
+            : knownOwned.Length == 1 ? knownOwned[0] : null;
+        string? appId = bearing.Length == 1 ? bearing[0] : knownGame?.AppId;
         bool librariesUnread = UnreadLibraries(catalog) > 0;
         SteamLocalGame? game = appId is null
             ? null
             : catalog.SingleOrDefault(candidate => candidate.AppId == appId);
-        IReadOnlySet<string>? cache = _owned();
         bool owned = appId is not null && cache is not null && cache.Contains(appId);
         bool installed = game is { Installed: true };
         JsonElement result = ExternalJson.Create(writer =>
@@ -252,10 +258,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteString("query", title);
             writer.WriteBoolean("resolved", appId is not null);
             if (appId is null) writer.WriteNull("appId"); else writer.WriteString("appId", appId);
-            writer.WriteString("title", game?.Name ?? (knownBearing.Length == 1 ? knownBearing[0].Name : title));
+            writer.WriteString("title", game?.Name ?? knownGame?.Name ?? title);
             // How many manifests bear the title (none, or two that leave it ambiguous); with a library unread, only some.
             if (bearing.Length > 0 || !librariesUnread) writer.WriteNumber("steamManifestsWithThatName", bearing.Length);
             if (known is not null) writer.WriteNumber("steamKnownGamesWithThatName", knownBearing.Length);
+            // The games this Steam knows were to be looked up and their cache could not be read: only this PC's were.
+            else if (bearing.Length == 0) writer.WriteBoolean("knownGamesUnread", true);
             // Ronda final: the local library cache is incomplete (see InstallNamedAsync), so a game absent from it is
             // absent from the cache, never «not owned».
             // An installed manifest is not the account's ownership (a shared or free game): only the cache says owned.
@@ -266,10 +274,14 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // Ronda final 8: with a library unread, a game not found installed may be installed there.
             if (appId is not null && (installed || !librariesUnread)) writer.WriteBoolean("installed", installed);
             if (librariesUnread) writer.WriteBoolean("librariesUnread", true);
+            // A known game close to the title is offered only when the library cache has it: one merely seen in the store
+            // is not the person's.
             if (appId is null)
             {
-                WriteClosest(writer, ClosestTitles(title, catalog.Select(static game => game.Name)
-                    .Concat(known?.Select(static game => game.Name) ?? [])));
+                IEnumerable<string> knownOwnedNames = known?
+                    .Where(candidate => cache?.Contains(candidate.AppId) == true)
+                    .Select(static candidate => candidate.Name) ?? [];
+                WriteClosest(writer, ClosestTitles(title, catalog.Select(static game => game.Name).Concat(knownOwnedNames)));
             }
             // Feria (caso 15): an unresolved title was read as a game Steam does not have. Where it was looked up is
             // said: an unresolved one says neither that the game does not exist nor that it is not owned.
@@ -1311,7 +1323,8 @@ internal sealed record SteamDispatchResult(
 
 internal sealed record SteamProcessObservation(int ProcessId, string? ExecutablePath);
 
-/// <summary>A game of the store's title search: its catalog number and its name.</summary>
+/// <summary>A game of the store's title search, or of the ones this Steam client knows (<see cref="SteamAppInfo"/>): its
+/// catalog number and its name.</summary>
 internal sealed record SteamStoreTitle(string AppId, string Name);
 
 internal interface ISteamClientAutomation
