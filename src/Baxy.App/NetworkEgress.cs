@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Baxy.Contracts;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.App;
@@ -41,9 +42,9 @@ internal sealed class NetworkEgress
     private readonly List<string> _resultHosts = [];
     private readonly HashSet<string> _queriesRefused = new(StringComparer.Ordinal);
 
-    // A message refused for its channel, by the turn it was refused in (_turns counts the person's turns), and the last
-    // turn that ended with the model's question to the person.
-    private readonly Dictionary<string, int> _messagesRefused = new(StringComparer.Ordinal);
+    // A channel a message was refused by, with the last turn it was refused in (_turns counts the person's turns) and
+    // whether that call asked the person's «sí» before it went, and the last turn that ended with the model's question.
+    private readonly Dictionary<string, (int Turn, bool Confirmed)> _channelsRefused = new(StringComparer.Ordinal);
     private int _turns;
     private int _asked = -1;
 
@@ -93,9 +94,11 @@ internal sealed class NetworkEgress
     /// <list type="bullet">
     /// <item>A greeting asked for someone in the room opened a messaging client with a draft: a message.draft or
     /// message.send by a channel their words now or just before did not name (the answer to the model's question keeps
-    /// what it asked), <c>channel_not_said</c>, for the rest of that turn; when that turn ended with the model's question,
-    /// in the turn right after it the message to that recipient by that channel goes (their «sí» to «¿le escribo por
-    /// …?», a channel the ear wrote otherwise), and that channel counts as said from then on. Aid «said_channel».</item>
+    /// what it asked), <c>channel_not_said</c>; a message.send by that channel again in that turn goes, as written, for a
+    /// channel they named in other words (one the ear wrote otherwise), since the person is asked before it goes, while a
+    /// draft by it waits the rest of the turn. When that turn ended with the model's question, in the turn right after it
+    /// a message by that channel goes (their «sí» to «¿le escribo por …?»), and that channel counts as said in that turn
+    /// and the next. Aid «said_channel».</item>
     /// <item>A creator's name searched as another one that sounds alike, a question's subject searched as another word: a
     /// call that goes out with a query (web.search only by the sources that search its text) whose words share none of
     /// theirs in this session nor of what its results and memory gave, <c>query_not_said</c>, once for those words; the
@@ -108,17 +111,36 @@ internal sealed class NetworkEgress
             && Text(arguments["channel"]) is { } channel
             && !Joined(_previous + " " + _latest).Contains(Joined(channel), StringComparison.Ordinal))
         {
-            string message = Folded(channel + "\n" + Text(arguments["recipient"]));
-            if (_messagesRefused.TryGetValue(message, out int refusedIn) && refusedIn == _turns - 1 && _asked == refusedIn)
+            // A message that reaches a person (the catalog's external_communication: message.send, which RiskPolicy asks
+            // about even in Bypass) waits for their «sí» before it goes; a draft is written in their client unasked.
+            bool confirmed = ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
+                && descriptor?.Risk == OperationRisks.ExternalCommunication;
+
+            // By the channel alone: the model may word the recipient otherwise when it calls again.
+            string refused = Joined(channel);
+            if (_channelsRefused.TryGetValue(refused, out (int Turn, bool Confirmed) last))
             {
-                // Their answer to the model's question: the channel counts as said from now on.
-                _latest += " " + Folded(channel);
-                return null;
+                int refusedIn = last.Turn;
+                if (refusedIn == _turns && confirmed && last.Confirmed)
+                {
+                    // Called again in the turn it was refused in, for a channel the person named in other words (one
+                    // the ear wrote otherwise): their «sí» to the message is the check.
+                    return null;
+                }
+
+                if (refusedIn == _turns - 1 && _asked == refusedIn)
+                {
+                    // Their answer to the model's question: the channel counts as said in this turn and the next.
+                    _latest += " " + Folded(channel);
+                    return null;
+                }
             }
 
-            _messagesRefused[message] = _turns;
+            _channelsRefused[refused] = (_turns, confirmed);
             return ("channel_not_said", $"nothing ran: the person did not name {channel} now nor just before; if they "
-                + "spoke to someone there, answer them in words; if they want a message sent, ask them by which channel");
+                + "spoke to someone there, answer them in words; if they want a message sent, ask them by which channel"
+                + (confirmed ? "; if they named this channel in other words, call it again exactly as before: they are "
+                    + "asked before it goes" : string.Empty));
         }
 
         // web.search's currency, sports and places sources search their typed fields, not the query's text.
@@ -208,7 +230,7 @@ internal sealed class NetworkEgress
         _words.Clear();
         _resultHosts.Clear();
         _queriesRefused.Clear();
-        _messagesRefused.Clear();
+        _channelsRefused.Clear();
         _given.Clear();
         _latest = _previous = string.Empty;
     }

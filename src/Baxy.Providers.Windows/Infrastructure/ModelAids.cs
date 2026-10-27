@@ -158,8 +158,9 @@ public static class ModelAids
 
     /// <summary>
     /// Feria 2026-10-27 (a greeting asked for someone in the room opened a messaging client with a draft): a
-    /// message.draft or message.send by a channel the person's words now or just before did not name is refused; after the
-    /// model's question, the same message goes in the next turn (Baxy.App.NetworkEgress).
+    /// message.draft or message.send by a channel the person's words now or just before did not name is refused; a
+    /// message.send by that channel again in that turn goes as written, since the person is asked before it goes; after the
+    /// model's question, a message by that channel goes in the next turn (Baxy.App.NetworkEgress).
     /// </summary>
     public const string SaidChannel = "said_channel";
 

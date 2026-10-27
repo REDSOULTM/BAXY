@@ -83,10 +83,10 @@ public sealed class NetworkEgressTests
         });
     }
 
-    // Feria 2026-10-27: a greeting asked for someone in the room opened a messaging client with a draft. A message goes
-    // only by a channel the person named now or just before (the answer to the model's question keeps what it asked),
-    // or, when the turn that refused it ended with the model's question, in the turn right after it (their «sí» to «¿le
-    // escribo por …?»), and that channel counts as said from then on.
+    // Feria 2026-10-27: a greeting asked for someone in the room opened a messaging client with a draft. A draft goes
+    // only by a channel the person named now or just before (the answer to the model's question keeps what it asked);
+    // when the turn that refused a message ended with the model's question, a draft or a send by that channel goes in the
+    // turn right after it (their «sí» to «¿le escribo por …?»), and that channel counts as said in that turn and the next.
     [Test]
     public void AMessageGoesOnlyByAChannelThePersonNamed()
     {
@@ -112,12 +112,79 @@ public sealed class NetworkEgressTests
         {
             Assert.That(greeted?.Code, Is.EqualTo("channel_not_said"));
             Assert.That(greeted?.Next, Does.Contain("answer them in words"));
+            Assert.That(greeted?.Next, Does.Not.Contain("call it again"));
             Assert.That(again?.Code, Is.EqualTo("channel_not_said"));
             Assert.That(unasked?.Code, Is.EqualTo("channel_not_said"));
             Assert.That(yes, Is.Null);
             Assert.That(clarified, Is.Null);
             Assert.That(egress.Unsaid("message.send", draft), Is.Null);
             Assert.That(egress.Unsaid("message.send.test", draft), Is.Null);
+        });
+    }
+
+    // Revisión de privacidad 2026-10-27: a message asked for clearly, its channel written otherwise by the ear, came back
+    // for the whole turn and ended in a question. The first message.send by a channel not said goes back with what to do
+    // next; by that channel again in that turn it goes, to that recipient or another wording of it, since the person is
+    // asked before it goes; in the next turn the channel is weighed again.
+    [TestCase("mándale a Ana por guasap que ya salí", "whatsapp")]
+    [TestCase("escríbele a Ana por wasap que llego tarde", "whatsapp")]
+    public void AMessageByAChannelSaidInOtherWordsGoesWhenCalledAgain(string words, string channel)
+    {
+        var egress = new NetworkEgress();
+        egress.Heard(words);
+        (string Code, string Next)? first = egress.Unsaid("message.send", new JsonObject
+        {
+            ["channel"] = channel, ["recipient"] = "Ana", ["text"] = "Llego tarde",
+        });
+        (string Code, string Next)? second = egress.Unsaid("message.send", new JsonObject
+        {
+            ["channel"] = channel, ["recipient"] = "Ana", ["text"] = "Llego tarde",
+        });
+        (string Code, string Next)? reworded = egress.Unsaid("message.send", new JsonObject
+        {
+            ["channel"] = channel, ["recipient"] = "Ana María", ["text"] = "Llego tarde",
+        });
+        egress.Heard("saluda a Nadia");
+        var greeting = new JsonObject { ["channel"] = channel, ["recipient"] = "Nadia", ["text"] = "Hola" };
+        (string Code, string Next)? greeted = egress.Unsaid("message.send", greeting);
+        egress.Heard("Nadia, pasa");
+        (string Code, string Next)? drafted = egress.Unsaid("message.draft", greeting);
+        (string Code, string Next)? sentAfterDraft = egress.Unsaid("message.send", greeting);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(first?.Next, Does.Contain("ask them by which channel"));
+            Assert.That(first?.Next, Does.Contain("call it again exactly as before"));
+            Assert.That(second, Is.Null);
+            Assert.That(reworded, Is.Null);
+            Assert.That(greeted?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(drafted?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(sentAfterDraft?.Code, Is.EqualTo("channel_not_said"));
+        });
+    }
+
+    // Revisión de privacidad 2026-10-27: the answer to the model's question releases the message even when the model
+    // words the recipient otherwise when it calls again.
+    [Test]
+    public void TheAnswerReleasesTheMessageWhateverTheRecipientsWording()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("escríbele a Nadia que llego a las ocho");
+        (string Code, string Next)? refused = egress.Unsaid("message.send", new JsonObject
+        {
+            ["channel"] = "whatsapp", ["recipient"] = "Nadia", ["text"] = "Llego a las ocho",
+        });
+        egress.Asked();
+        egress.Heard("sí");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(refused?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(egress.Unsaid("message.send", new JsonObject
+            {
+                ["channel"] = "whatsapp", ["recipient"] = "Nadia Temuco", ["text"] = "Llego a las ocho",
+            }), Is.Null);
         });
     }
 
