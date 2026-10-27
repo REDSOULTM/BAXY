@@ -243,7 +243,7 @@ def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending):
+        def decide(self, request_id, text, pending, unsure=None):
             return {"type": "turn.result", "id": request_id}
 
         def continue_turn(self, request_id, observation, final, beat):
@@ -278,6 +278,9 @@ def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a
     class FakeVoice:
         def __init__(self, *args, **kwargs) -> None:
             self.speech = FakeSpeech()
+
+        def unsure(self, text: str) -> list:
+            return []
 
         def stop(self) -> None:
             pass

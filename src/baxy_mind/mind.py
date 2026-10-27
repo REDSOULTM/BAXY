@@ -1025,6 +1025,12 @@ DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
 DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
+# Uso en la feria (2026-10-27): in the noise a short greeting came out in another language or as a word nobody said, and
+# the model answered it as said. How sure the ear was of each word (voice.Heard, Parakeet's per-token probabilities)
+# reaches the model beside the clock as a fact, as the pending «sí» does: the model decides, in its own words, whether to
+# ask the person to say it again.
+UNSURE_NOTE = ("[Nota interna, no la escribió la persona: habló por voz y el oído no está seguro de haber oído bien "
+               "estas palabras: {words}.]")
 # Menos preguntas (2026-10-25): layer 2 asks once too. The answer to its own question went to layer 2 again, which asked
 # again at each answer while the decision model read it otherwise, with no limit; that answer may still be corrected.
 DOUBT_OTHER_ASKED = DOUBT_OTHER_NOTE[DOUBT_OTHER_NOTE.index("{call}") + len("{call}"):DOUBT_OTHER_NOTE.index("{other}")]
@@ -1535,6 +1541,14 @@ class Mind:
         return (f"\n[Espera el sí de la persona: {wire}{shown}. Si sus palabras contestan a tu pregunta, llama a "
                 f"confirm_pending con approve true o false.]")
 
+    @staticmethod
+    def _unsure_note(unsure: list[tuple[str, float]]) -> str:
+        """The words of a spoken request the ear was not sure of (voice.Heard), told as a fact the model weighs."""
+        if not unsure:
+            return ""
+        words = ", ".join(f"«{word}» ({round(p * 100)} %)" for word, p in unsure)
+        return "\n" + UNSURE_NOTE.format(words=words)
+
     def _clock(self) -> str:
         # The time is a message of its own just before the person's words (the end of the prompt, the only part that is
         # new anyway). Appended to their words it was copied into arguments: a clipboard text and a web query carried
@@ -1643,7 +1657,9 @@ class Mind:
                 missing.append({"role": "tool", "tool_call_id": call.get("id"), "content": content})
         return closed, unanswered
 
-    def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None) -> dict[str, Any]:
+    def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None,
+               unsure: list[tuple[str, float]] | None = None) -> dict[str, Any]:
+        """``unsure``: the words of a spoken request the ear was not sure of (voice.Voice.unsure)."""
         # Review 2026-10-22: a decision that fails (the model server down, an error) takes back what it added, so the
         # next turn never reads an old request without its answer as one still to do.
         turn = self._turn
@@ -1659,7 +1675,8 @@ class Mind:
             was = {"pending": turn.get("pending"), "ended": turn.get("ended"), "said": turn.get("said", said)}
             # Aid «unopened_app»: the words of the whole turn, the request with the answers to its questions.
             turn["said"] = was["said"] + "\n" + text
-            answer = {"role": "tool", "tool_call_id": asked, "content": text + self._pending_note(pending)}
+            answer = {"role": "tool", "tool_call_id": asked,
+                      "content": text + self._pending_note(pending) + self._unsure_note(unsure or [])}
             turn["conv"].append(answer)
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
@@ -1675,14 +1692,15 @@ class Mind:
         self._close_open_calls()
         doubts = [note for note in (str(m.get("content") or "") for m in self.conversation[-2:])
                   if note.startswith(DOUBT_ASKED)]
-        clock = {"role": "user", "content": self._clock() + self._pending_note(pending)}
+        notes = self._pending_note(pending) + self._unsure_note(unsure or [])
+        clock = {"role": "user", "content": self._clock() + notes}
         self.conversation.append(clock)
         request = {"role": "user", "content": text}
         self.conversation.append(request)
         try:
             self._trim()
             if _aid_on("clock_omitted"):
-                clock["content"] = self._clock() + self._pending_note(pending)  # the bodies as the trim left them
+                clock["content"] = self._clock() + notes  # the bodies as the trim left them
             # Review 2026-10-22: a text that alone does not fit beside the prefix (a pasted log) failed the turn whole
             # and wordless, as only earlier turns can be trimmed: it keeps its start, halved until it fits, and the cut
             # is said where the model reads it.

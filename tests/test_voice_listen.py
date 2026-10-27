@@ -39,7 +39,7 @@ class _Recognizer:
     def decode_stream(self, stream: _Stream) -> None:
         self.decoding.set()
         time.sleep(1.0)
-        stream.result = SimpleNamespace(text=" abre Steam", tokens=[], timestamps=[])
+        stream.result = SimpleNamespace(text=" abre Steam", tokens=[], timestamps=[], ys_log_probs=[])
         self.decoded.set()
 
 
@@ -107,7 +107,8 @@ class _InstantRecognizer:
         return _Stream()
 
     def decode_stream(self, stream: _Stream) -> None:
-        stream.result = SimpleNamespace(text=" abre Steam", tokens=[" abre", " Steam"], timestamps=[9.0, 9.3])
+        stream.result = SimpleNamespace(text=" abre Steam", tokens=[" abre", " Steam"], timestamps=[9.0, 9.3],
+                                        ys_log_probs=[0.0, 0.0])
 
 
 class _Wake:

@@ -33,7 +33,7 @@ def test_the_output_opens_for_every_answer_of_a_person_s_turn(
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending):
+        def decide(self, request_id, text, pending, unsure=None):
             turn.append(f"decide:{request_id}")
             return {"type": "turn.result", "id": request_id}
 
@@ -61,6 +61,9 @@ def test_the_output_opens_for_every_answer_of_a_person_s_turn(
     class FakeVoice:
         def __init__(self, *args, **kwargs) -> None:
             self.speech = FakeSpeech()
+
+        def unsure(self, text: str) -> list:
+            return []
 
         def stop(self) -> None:
             pass

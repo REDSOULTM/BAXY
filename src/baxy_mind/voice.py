@@ -17,6 +17,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import math
 import os
 import queue
 import re
@@ -25,7 +26,7 @@ import tempfile
 import threading
 import unicodedata
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, NamedTuple
 
 from . import stt_hotwords, voice_feed
 from .voice_output import Speech, default_follower
@@ -72,6 +73,16 @@ SPEAKER_DB = 10.0
 SPEAKER_FLOOR = 0.004   # under this nothing is voice, however soft the speaker
 CALL_BACK_S = 1.0       # in wake mode the speaker's level is looked for from this long before the trigger: «Baxy»
 MIN_VOICE_S = 0.1       # no block of voice after the call: noise or a false wake, nothing is transcribed
+# A word whose least sure token is under this probability is told to the mind as unsure (Heard.unsure). Measured on the
+# notebook (2026-10-27; beam with the hotwords, as here): 113 human recordings, 540 synthetic requests and 480 short
+# replies (one to three words) in four OneCore voices, clean, pink noise at 10 and 5 dB and babble at 5 dB. Some word
+# under 0.5 in 5 % of the human transcripts heard right against 25 % of those heard wrong (10 % and 44-46 % on the
+# synthetic ones; 0.3 marks 2-7 % against 12-18 %); greedy, without hotwords, alike (5 % against 26 %). Hotword tokens
+# score over 1 and count as sure. A wrong word heard sure stays unmarked: a greeting heard as another word in pink noise
+# scored 0.62-0.78.
+# Not used to drop a transcript: a one-syllable piece cut from a phrase is as sure as a short reply (under 0.3, 11 % of
+# 476 pieces against 3 % of 226 replies heard right), so dropping by it loses replies without stopping the pieces.
+UNSURE_P = 0.5
 # Ultra decodes on the thread that hears the blocks (0.4 s for 4 s of audio, 1.4-1.6 s for 14 s on the notebook,
 # 2026-10-26), and a live caption decoded the whole request again every PARTIAL_S: the thread fell behind the microphone,
 # so the end of the request and the next «Baxy» were heard seconds late. A caption waits while more than this many
@@ -125,6 +136,39 @@ CALL_WORDS = re.compile(r"^(?:[\W_]*[bpvm]a(?:x|ks|cs|k|c)s?[iíy]\b)+[\W_]*", r
 def without_call(text: str) -> str:
     """The request without the call at its start (CALL_WORDS)."""
     return CALL_WORDS.sub("", text).strip()
+
+
+class Heard(NamedTuple):
+    """A transcript and how sure Parakeet was of each of its words: per word of ``text`` (split on spaces), the
+    probability of its least sure token with a letter or digit (ys_log_probs; 1.0 for bare punctuation). No words when
+    the recognizer gave no probabilities or they do not match the words of ``text``: nothing is said of it then."""
+    text: str
+    words: tuple[tuple[str, float], ...] = ()
+
+    @classmethod
+    def of(cls, text: str, tokens: list[str], log_probs: list[float]) -> Heard:
+        """``text`` as Parakeet wrote it from ``tokens`` (each word begins with a space), sure as ``log_probs`` say."""
+        words: list[list[Any]] = []
+        for token, log_p in zip(tokens, log_probs):
+            p = math.exp(log_p) if re.search(r"[^\W_]", token) else 1.0
+            if token.startswith(" ") or not words:
+                words.append([token, p])
+            else:
+                words[-1][0] += token
+                words[-1][1] = min(words[-1][1], p)
+        words = [[word.strip(), p] for word, p in words if word.strip()]
+        aligned = len(log_probs) == len(tokens) and [word for word, _ in words] == text.split()
+        return cls(text, tuple((word, p) for word, p in words) if aligned else ())
+
+    def unsure(self) -> list[tuple[str, float]]:
+        """The words the ear is not sure of (UNSURE_P), as the mind is told them."""
+        return [(word, p) for word, p in self.words if p < UNSURE_P]
+
+    def without_call(self) -> Heard:
+        """The request without the call at its start (CALL_WORDS), its words with it."""
+        text = without_call(self.text)
+        words = self.words[len(self.words) - len(text.split()):] if text else ()
+        return Heard(text, words if [word for word, _ in words] == text.split() else ())
 
 
 def end_silence(early: str | None) -> float:
@@ -281,6 +325,7 @@ class Voice:
         self._blocks: queue.Queue[np.ndarray] = queue.Queue()
         self._heard = 0                 # moved on by every reset and stop
         self._wake_peak = WAKE_TARGET   # the recent peak the detector's gain follows (wake_gain)
+        self._told = Heard("")          # the last transcript told to the App, until the mind takes it (unsure)
         self._reset()
         self._on_spoken = on_spoken
         self.speech = Speech(self._speaking, self._sounding, self._lip)
@@ -295,6 +340,13 @@ class Voice:
         return {"available": stt and self._input, "input": self._input, "stt": stt,
                 "wake": self._detector is not None, "tts": self.speech.ready,
                 "pending": not self._loaded.is_set()}
+
+    def unsure(self, text: str) -> list[tuple[str, float]]:
+        """The words the ear was not sure of when ``text`` is the transcript it told last (taken once): the App's
+        turn.decide carries only the words, typed or heard."""
+        with self._lock:
+            told, self._told = self._told, Heard("")
+        return told.unsure() if told.text and told.text == text.strip() else []
 
     def start(self, mode: str) -> bool:
         self._loaded.wait(60)
@@ -506,16 +558,16 @@ class Voice:
                     job = self._feed(block) if self._mode != "off" and not self.speech.speaking else None
                 if job is not None:
                     audio, wake_at, then = job
-                    text = self._transcribe(audio, wake_at)
+                    transcript = self._transcribe(audio, wake_at)
                     with self._lock:
                         if heard == self._heard:
-                            then(text)
+                            then(transcript)
             except Exception as error:  # noqa: BLE001 - one bad block never ends the voice
                 sys.stderr.write(f"baxy_mind_renew_voice: {error!r}\n")
                 sys.stderr.flush()
                 self._event("error")
 
-    def _feed(self, block: np.ndarray) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
+    def _feed(self, block: np.ndarray) -> tuple[np.ndarray, float | None, Callable[[Heard], None]] | None:
         self._audio = np.concatenate([self._audio, block])
         self._speech = np.concatenate([self._speech, self._vad.marks(block)])
         self._total += len(block)
@@ -544,7 +596,7 @@ class Voice:
             return self._early(start) or self._live(start)
         return None
 
-    def _live(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
+    def _live(self, start: float) -> tuple[np.ndarray, float | None, Callable[[Heard], None]] | None:
         """Live captions: the request heard so far, decoded again every PARTIAL_S with the same recognizer and the same
         cut of the call as the final transcript; only a changed text is sent, and it starts nothing."""
         now = self._total / RATE
@@ -556,7 +608,8 @@ class Voice:
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
 
-        def then(text: str) -> None:
+        def then(transcript: Heard) -> None:
+            text = transcript.text
             if text and text != self._partial:
                 self._partial = text
                 self._write({"type": "voice.event", "event": "partial", "mode": self._mode, "text": text})
@@ -614,11 +667,12 @@ class Voice:
         end = self._voice_end(start)
         if end is None:
             return now - start >= (NO_COMMAND_S if self._mode == "wake" else DIRECT_WAIT_S)
-        wait = end_silence(self._early_text) if self._early_text is not None and self._early_at == end else END_SILENCE_S
+        early = self._early_heard if self._early_at == end else None
+        wait = end_silence(early.text) if early is not None else END_SILENCE_S
         # 1e-6: in direct mode 2.4 - 1.5 is 0.8999…, and 48 of 120 requests waited one block (100 ms) more
         return now - end >= wait - 1e-6
 
-    def _early(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]] | None:
+    def _early(self, start: float) -> tuple[np.ndarray, float | None, Callable[[Heard], None]] | None:
         """Palanca 2 (early.py): ``early_s`` into the silence that may end the request, what was said is decoded with
         the same recognizer and cut as the final transcript, and told to the mind (and as the caption). If the person
         goes on, it is taken back; the request ends as always, with a transcript of its own."""
@@ -639,12 +693,13 @@ class Voice:
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
 
-        def then(text: str) -> None:
+        def then(transcript: Heard) -> None:
+            text = transcript.text
             if text and text != self._partial:
                 self._partial = text
                 self._write({"type": "voice.event", "event": "partial", "mode": self._mode, "text": text})
             if text and self._on_early is not None and self._early_seq == seq and self._early_at == end:
-                self._early_text = text
+                self._early_heard = transcript
                 self._on_early(seq, text)
 
         return self._segment(begin, now), start - begin if wake else None, then
@@ -655,12 +710,12 @@ class Voice:
         if getattr(self, "_early_at", None) is not None and self._on_early is not None:
             self._on_early(self._early_seq, None)
         self._early_at = None
-        self._early_text: str | None = None  # the early transcript of the voice up to _early_at, once decoded
+        self._early_heard: Heard | None = None  # the early transcript of the voice up to _early_at, once decoded
 
-    def _finish(self, start: float) -> tuple[np.ndarray, float | None, Callable[[str], None]]:
+    def _finish(self, start: float) -> tuple[np.ndarray, float | None, Callable[[Heard], None]]:
         # No voice after the early transcript: it was decoded from the same words with less silence after them, so it is
         # the request's transcript and nothing is decoded again (Deepgram Flux's EagerEndOfTurn without TurnResumed).
-        early = self._early_text if self._early_at is not None and self._early_at == self._voice_end(start) else None
+        early = self._early_heard if self._early_at is not None and self._early_at == self._voice_end(start) else None
         self._start = None
         self._early_at = None  # the request's own transcript says whether the early one stands (early.py)
         wake = self._mode == "wake"
@@ -669,10 +724,11 @@ class Voice:
         stop = self._total / RATE if voiced_enough and early is None else begin
         self._event("transcribing")
 
-        def then(text: str) -> None:
-            text = without_call(early if early is not None and voiced_enough else text)
-            if text:
-                self._write({"type": "voice.transcript", "text": text})
+        def then(transcript: Heard) -> None:
+            heard = (early if early is not None and voiced_enough else transcript).without_call()
+            if heard.text:
+                self._told = heard
+                self._write({"type": "voice.transcript", "text": heard.text})
             if not wake:
                 # A direct request is one utterance; the voice goes back to what it was doing before.
                 self._mode = self._resume
@@ -684,29 +740,30 @@ class Voice:
 
         return self._segment(begin, stop), start - begin if wake else None, then
 
-    def _transcribe(self, audio: np.ndarray, wake_at: float | None) -> str:
+    def _transcribe(self, audio: np.ndarray, wake_at: float | None) -> Heard:
         peak = float(np.max(np.abs(audio))) if len(audio) else 0.0
         if peak < 0.008:
-            return ""
+            return Heard("")
         audio = audio * min(8.0, 0.45 / peak)  # the gain of probar_ultra.preparar
         stream = self._recognizer.create_stream(self._hotwords) if self._hotwords else self._recognizer.create_stream()
         stream.accept_waveform(RATE, np.ascontiguousarray(audio, dtype=np.float32))
         self._recognizer.decode_stream(stream)
         result = stream.result
         if wake_at is None:
-            return result.text.strip()
+            return Heard.of(result.text.strip(), result.tokens, result.ys_log_probs)
         # The call is cut by time, whatever Ultra wrote for it: the words that began more than CALL_LEAD_S before the
         # trigger are «Baxy» and what was said before it. Measured on the owner's recordings (TranscripcionBaxy/corpus/
         # grabaciones): «Baxy» begins 0.5-0.75 s before the trigger and the request after it, so «Baxi, abre Steam.»
         # gives «abre Steam.», «Hola. Maxi. Abre Spotify» gives «Abre Spotify», and a bare «Baxi» gives nothing.
+        tokens, log_probs = list(result.tokens), list(result.ys_log_probs)
         words: list[list[Any]] = []
-        for token, at in zip(result.tokens, result.timestamps):
+        for index, (token, at) in enumerate(zip(tokens, result.timestamps)):
             if token.startswith(" ") or not words:
-                words.append([at, token])
-            else:
-                words[-1][1] += token
-        words = [word for word in words if word[0] >= wake_at - CALL_LEAD_S]
-        return "".join(word for _, word in words).strip()
+                words.append([at, []])
+            words[-1][1].append(index)
+        kept = [index for at, indices in words if at >= wake_at - CALL_LEAD_S for index in indices]
+        return Heard.of("".join(tokens[i] for i in kept).strip(), [tokens[i] for i in kept],
+                        [log_probs[i] for i in kept] if len(log_probs) == len(tokens) else [])
 
     # --- events ---------------------------------------------------------------------------------------------------
 

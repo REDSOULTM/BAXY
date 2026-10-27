@@ -12,7 +12,7 @@ import pytest
 
 from baxy_mind import early
 from baxy_mind.early import SHARED, Anticipation, set_aside
-from baxy_mind.mind import CLOCK_MARK, Mind
+from baxy_mind.mind import CLOCK_MARK, UNSURE_NOTE, Mind
 from test_mind_prefill import TOOLS, SlotServer, _call, _say
 
 MINUTE = "jueves 22/10/2026 18:30 hora local, UTC-03:00"
@@ -293,10 +293,12 @@ def test_shared_attributes_are_the_ones_a_decision_never_writes() -> None:
     assert SHARED >= {"server", "system_one", "foresee", "_turned", "_holding"}
 
 
-def test_the_sidecar_answers_the_app_with_the_decision_made_early(tmp_path: Path,
-                                                                 monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.parametrize("unsure", [[], [("hola", 0.3)]])
+def test_the_sidecar_answers_the_app_with_the_decision_made_early_unless_the_ear_was_unsure(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, unsure: list) -> None:
     from baxy_mind import __main__ as sidecar
-    server = Server([_say("Hola, ¿qué necesitas?")])
+    server = Server([_say("Hola, ¿qué necesitas?"), _say("¿Me lo repites?")])
+    asked: list[str] = []
     written: list[dict] = []
     voice: dict = {}
 
@@ -320,6 +322,10 @@ def test_the_sidecar_answers_the_app_with_the_decision_made_early(tmp_path: Path
         def __init__(self, write, spoken, on_early=None, early_s=0.0, on_wake=None) -> None:
             voice.update(on_early=on_early, early_s=early_s, on_wake=on_wake)
             self.speech = FakeSpeech()
+
+        def unsure(self, text: str) -> list:
+            asked.append(text)
+            return unsure
 
         def stop(self) -> None:
             pass
@@ -350,8 +356,19 @@ def test_the_sidecar_answers_the_app_with_the_decision_made_early(tmp_path: Path
     assert sidecar.main() == 0
     assert voice["early_s"] == early.EARLY_SILENCE_S and voice["on_wake"] is not None
     replies = [m for m in written if m.get("type") == "turn.result"]
-    assert replies == [{"type": "turn.result", "id": "r1", "kind": "conversation", "operation": None,
-                        "arguments": None, "question": "", "reply": "Hola, ¿qué necesitas?"}]
-    assert len(server.bodies) == 1  # decided once, early
+    assert asked == ["hola"]
     rows = _rows(tmp_path / "BAXY" / "renew")
-    assert [r["stage"] for r in rows] == ["turn.decide", "warm.history"] and rows[0]["early"]["hit"] is True
+    if not unsure:
+        assert replies == [{"type": "turn.result", "id": "r1", "kind": "conversation", "operation": None,
+                            "arguments": None, "question": "", "reply": "Hola, ¿qué necesitas?"}]
+        assert len(server.bodies) == 1  # decided once, early
+        assert [r["stage"] for r in rows] == ["turn.decide", "warm.history"] and rows[0]["early"]["hit"] is True
+        return
+    # The early decision did not read the note: it is put back, and the request decides with it.
+    assert [m["reply"] for m in replies] == ["¿Me lo repites?"] and replies[0]["id"] == "r1"
+    messages = server.bodies[1]["messages"]
+    assert messages[-1] == {"role": "user", "content": "hola"}
+    assert messages[-2]["content"].endswith(UNSURE_NOTE.format(words="«hola» (30 %)"))
+    assert messages.count({"role": "user", "content": "hola"}) == 1  # the early one was put back
+    assert rows[0]["stage"] == "turn.decide" and rows[0]["early"]["hit"] is False
+    assert rows[0]["early"]["reason"] == "unsure"
