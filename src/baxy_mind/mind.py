@@ -2169,7 +2169,7 @@ class Mind:
         if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
                 and not turn.get("dated") and not turn.get("receipts") and _aid_on("dated_search")
                 and self._dated(turn["text"])):
-            return self._look_up_first(request_id, stage, turn, started)
+            return self._look_up_first(request_id, stage, turn, body, reply, started)
         if (content and not turn.get("beat") and not turn.get("said_again")
                 and not any(r.get("completed") for r in turn.get("receipts") or [])
                 and _aid_on("say_once") and self._said_last(conv, content)):
@@ -2198,12 +2198,27 @@ class Mind:
         return ((bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(folded))))
                 or bool(_CURIOUS.search(folded)))
 
-    def _look_up_first(self, request_id: Any, stage: str, turn: dict[str, Any], started: float) -> dict[str, Any]:
-        """Aid «dated_search» (DATED_NOTE): the words answered from memory are not said; the model decides once more
-        with the note, which does not stay in the conversation."""
+    def _look_up_first(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
+                       reply: dict | None, started: float) -> dict[str, Any]:
+        """Aid «dated_search» (DATED_NOTE): the words answered from memory are not said. The model writes the
+        web_search itself (LlmServer.fill_call, as System One's «corrige»); a fill that fails or writes no query decides
+        once more with the note, which does not stay in the conversation (the soak of 2026-10-27: after the note alone
+        «¿Quieres que busque…?» 3 of 8)."""
         turn["dated"] = True
         self._log("turn.dated", started, None)
         conv = turn["conv"]
+        try:
+            filled = self.server.fill_call(body, "web_search")
+        except Exception:  # noqa: BLE001 - a fill that failed falls back to the note
+            filled = None
+        if (filled and filled.get("name") == "web_search" and isinstance(filled.get("arguments"), dict)
+                and str(filled["arguments"].get("query") or "").strip()):
+            call = {"id": self._new_id("call"), "wire": "web_search", "arguments": filled["arguments"]}
+            conv.append({"role": "assistant", "content": "", "tool_calls": [
+                {"id": call["id"], "type": "function",
+                 "function": {"name": "web_search", "arguments": json.dumps(call["arguments"], ensure_ascii=False)}}]})
+            turn["queue"] = []
+            return self._result(request_id, turn, call, reply, stage, started, "")
         note = {"role": "user", "content": DATED_NOTE}
         conv.append(note)
         try:

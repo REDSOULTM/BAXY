@@ -70,3 +70,19 @@ def test_curiosity_named_without_asking_for_one_is_not_held(tmp_path: Path, monk
     assert mind.decide(2, "Tengo curiosidad: ¿cómo estás hoy?")["reply"] == "Bien."
     mind, server = _mind(tmp_path, [_say("Tienen tres corazones."), _call("web_search", {"query": "pulpos"})])
     assert mind.decide(3, "Cuéntame una curiosidad sobre los pulpos.")["kind"] == "action"
+
+
+def test_the_model_writes_the_search_itself_when_it_can(tmp_path: Path, monkeypatch) -> None:
+    # soak 2026-10-27: after the note alone, «¿Quieres que busque en internet…?» 3 of 8; the model fills web_search
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_say("¿Quieres que busque quién ganó el Nobel de Física 2023?")])
+    fills: list[str] = []
+
+    def fill_call(body, wire):
+        fills.append(wire)
+        return {"name": "web_search", "arguments": {"query": "Nobel de Física 2023"}, "timings": {}}
+
+    server.fill_call = fill_call
+    step = mind.decide(1, "¿Quién ganó el premio Nobel de Física 2023?")
+    assert step["kind"] == "action" and step["operation"] == "web_search" and fills == ["web_search"]
+    assert len(server.bodies) == 1 and DATED_NOTE not in [m.get("content") for m in mind.conversation]
