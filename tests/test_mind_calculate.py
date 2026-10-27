@@ -82,3 +82,13 @@ def test_a_calculation_after_memory_keeps_its_expression_out_of_the_trace(tmp_pa
     mind.continue_turn(2, json.dumps({"status": "completed", "items": [{"text": "saldo 4823.5"}]}))
     rows = [json.loads(line) for line in mind.trace.read_text(encoding="utf-8").splitlines()]
     assert [r for r in rows if r.get("kind") == "calculated"][0]["arguments"] is None
+
+
+def test_calculations_have_a_bound_and_then_the_answer_is_in_words(tmp_path: Path, monkeypatch) -> None:
+    # code review 2026-10-27: each calculation decides again (_next) without the App's step budget; a model that keeps
+    # writing new expressions must still end the turn
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    calls = [_call("calculate", {"expression": f"2*{n}"}) for n in range(1, 5)]
+    mind, server = _mind(tmp_path, [*calls, _say("Son dieciséis.")])
+    assert mind.decide(1, "¿Cuánto es dos por ocho?")["kind"] == "conversation"
+    assert len(server.bodies) == len(calls) + 1 and server.bodies[-1].get("tool_choice") == "none"

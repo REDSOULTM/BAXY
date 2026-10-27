@@ -87,3 +87,15 @@ def test_a_name_memory_gave_in_an_earlier_turn_is_not_judged(tmp_path, monkeypat
     mind.decide(1, "¿Qué sabes de Lena?")
     mind.continue_turn(2, json.dumps({"status": "completed", "items": [{"text": "Lena es mi hermana"}]}))
     assert mind.decide(3, "Cuéntame de Lena.")["reply"] == "Lena vive en Valdivia." and one.asked == []
+
+
+def test_a_fact_about_a_named_thing_that_is_not_asked_what_it_is_is_not_judged(tmp_path, monkeypatch) -> None:
+    # PC-L, decision v11 2026-10-27: a capital, the letters of an acronym or what was opened, said with a name, went to
+    # the web; the fair's miss was asking what a named thing is
+    mind, server, one, fills = _named(tmp_path, monkeypatch, "web_search",
+                                      [_say("La capital de Zorvia es Velmar."), _say("No, no abrí Descargas."),
+                                       _say("ZRV stands for Zero Return Value.")])
+    assert mind.decide(1, "¿Cuál es la capital de Zorvia? Siempre se me olvida")["kind"] == "conversation"
+    assert mind.decide(2, "¿Ya me abriste lo de Descargas?")["kind"] == "conversation"
+    assert mind.decide(3, "My nephew asked me what the letters ZRV mean")["kind"] == "conversation"
+    assert one.asked == [] and not fills

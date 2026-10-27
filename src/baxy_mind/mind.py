@@ -594,6 +594,11 @@ _ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|do
 # product, with no doubt to read (p_call 0.05). Words that repeat a name the person wrote with a capital, past the start
 # of a sentence, say something of a thing with a name of its own: a form, not what was asked. System One judges then,
 # between those words and web_search, what the person asked for; only its web_search is looked up (_look_up_first).
+# PC-L, decision v11 2026-10-27: a capital, the letters of an acronym or what was opened, said with a name, went to the
+# web as well; only a question about what or who the named thing is, or asking to be told of it, is judged.
+_ABOUT = re.compile(r"(?:^|[,;:])\W*(?:(?:que|quien(?:es)?) (?:es|son|era|eran|fue|fueron)|(?:hablame|cuentame) "
+                    r"(?:de|del|sobre|acerca)|que sabes (?:de|del|sobre)|conoces|(?:what|who)(?:'s| is| are| was)"
+                    r"|tell me about|do you know)\b")
 _SENTENCES = re.compile(r"[.!?¿¡:;\n]+")
 _WORDS = re.compile(r"[^\W\d_][\w'&-]*")
 _TOLD = re.compile(r"[^.!?]+[.!?]*")
@@ -1095,6 +1100,7 @@ CALCULATE = {
                        "required": ["expression"]},
     },
 }
+CALCULATIONS = 4  # a turn's calculations; the next decision after the last is in words
 CALCULATED_FIRST = json.dumps({"status": "not_run", "reason": "written before the calculation's value; call it again "
                                                               "with that value if it is still needed"})
 
@@ -2212,7 +2218,8 @@ class Mind:
             self._log("turn.dated", started, None)
             return self._look_up_first(request_id, stage, turn, body, reply, started)
         if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
-                and not turn.get("named") and not turn.get("receipts") and _aid_on("named_fact")
+                and not turn.get("named") and not turn.get("receipts") and not turn.get("private")
+                and _aid_on("named_fact") and _ABOUT.search(_fold(turn["text"]))
                 and self.system_one is not None and self.system_one.ready
                 and self._unkept(self._names_said(turn["text"], content))):
             looked = self._named_fact(request_id, stage, turn, body, reply, started)
@@ -2476,8 +2483,9 @@ class Mind:
             return None
         # Aid «dated_search» (soak of the fair, 2026-10-27): the web_search the model chose for a dated question or a
         # curiosity asked for, under the threshold, became «¿Quieres que busque…?» 6 times: it is the call that aid asks
-        # for, so its doubt does not hold it.
-        if call["wire"] == "web_search" and _aid_on("dated_search") and self._dated(turn["text"]):
+        # for, so its doubt does not hold it; the same for the one «named_fact» asks for (code review 2026-10-27).
+        if call["wire"] == "web_search" and ((_aid_on("dated_search") and self._dated(turn["text"]))
+                                             or turn.get("named")):
             return None
         doubt = read_doubt(reply)
         if doubt is None:
@@ -2747,7 +2755,9 @@ class Mind:
             turn["queue"], turn["awaiting"] = [], None
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind=kind,
                       operation=None, arguments=None if turn.get("private") else call["arguments"], content=None)
-            return self._next(request_id, "turn.continue", turn)
+            # Code review 2026-10-27: new expressions each time never reach the App's budget either; past
+            # CALCULATIONS the answer is in words.
+            return self._next(request_id, "turn.continue", turn, final=len(computed) >= CALCULATIONS)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))
