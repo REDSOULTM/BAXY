@@ -423,6 +423,20 @@ def _fold(name: str) -> str:
     return " ".join("".join(ch for ch in text if not unicodedata.combining(ch)).split())
 
 
+def _words(text: str) -> str:
+    """The folded words of a text, one space apart and one at each end, to find a name among them as whole words."""
+    return " " + " ".join(re.findall(r"[^\W_]+", _fold(text))) + " "
+
+
+def _as_read(observation: Any) -> str:
+    """A result as its words read, JSON's escapes undone (the App's JSON writes «ó» as \\u00f3)."""
+    text = str(observation or "")
+    try:
+        return json.dumps(json.loads(text), ensure_ascii=False)
+    except json.JSONDecodeError:
+        return text
+
+
 def _app_places() -> dict[str, dict[str, str]]:
     """The places of each application with an address of its own (app_places.v1.json, the kernel's data), by folded
     name: place → the placeValue it takes, empty for none."""
@@ -630,6 +644,30 @@ CLOSE_REFUSED = "no se ejecutó: la persona no pidió cerrar nada"
 # Minimizing too: after «ahora escribe debajo la fecha de hoy» a click on the window's «Minimizar» (1 of 3 runs).
 _CLOSES = re.compile(r"^\W*(?:cerrar|close|salir|exit|quit|minimizar|minimize)\b")
 _CLOSE_SAID = re.compile(r"\b(?:cierr\w*|cerr\w*|clos\w*|sal|salir|sali\w*|quit\w*|exit\w*|minimi\w*)\b")
+# Aid «unopened_app» (feria 2026-10-27, case 13, «escribe en el bloc de notas hola quién eres» with Notepad not open; a
+# live test the same day): the model typed with no window and the text went to whatever window was in front, BAXY's at
+# the fair, a window of the person's own in the live test (its receipt said sentTo that window, completed). A typing or a
+# key with no window and no field, in a turn whose words name an installed application (catalog.configure's, self.names)
+# that no completed call of the turn opened, focused, resolved or acted on, is not handed to the App: its result says so,
+# as data, and the model decides again with its tools. Once per turn: a name of the catalog may be a plain word of what
+# was said («el cursor», «un correo»), so the model's next typing or key runs as it is.
+WRITES_TO_FRONT = frozenset({"input_text_type", "input_key_press"})
+OPENS_WINDOW = frozenset({"app_open", "window_focus", "window_resolve"})  # and any completed call that is not a read
+TARGET_ARGUMENTS = ("window", "windowId", "index")  # a window, or the field of the last look: not the window in front
+UNOPENED_REFUSED = "no se ejecutó: la ventana de la aplicación nombrada no se había abierto ni enfocado en este turno"
+
+
+def unopened_not_run(applications: list[str]) -> str:
+    """The result of a typing or a key held by «unopened_app»: why, and the applications the person's words name."""
+    return json.dumps({"status": "not_run", "reason": "the person's words name this application, and no call of this "
+                                                      "turn opened or focused its window: with no window this call goes "
+                                                      "to whatever window is in front, so it was not made. If the text "
+                                                      "is for that application, open it first with app_open (or bring "
+                                                      "it to the front with window_focus) and write there; if it is not "
+                                                      "where the text goes, make the call again",
+                       "application": applications}, ensure_ascii=False)
+
+
 # What the model reads at the end of the last result of a turn that takes no more calls.
 NO_MORE_CALLS = ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo con lo que muestran los "
                  "resultados.]")
@@ -1598,7 +1636,9 @@ class Mind:
             # was approved with the answer to the question (the old file, after «sí pero el otro» → «¿cuál?» → «el
             # informe»), and one asked since then got nothing_pending.
             asked, after, said = turn.pop("asked"), turn.pop("after_asked", []), turn["text"]
-            was = {"pending": turn.get("pending"), "ended": turn.get("ended")}
+            was = {"pending": turn.get("pending"), "ended": turn.get("ended"), "said": turn.get("said", said)}
+            # Aid «unopened_app»: the words of the whole turn, the request with the answers to its questions.
+            turn["said"] = was["said"] + "\n" + text
             answer = {"role": "tool", "tool_call_id": asked, "content": text + self._pending_note(pending)}
             turn["conv"].append(answer)
             for later in after:
@@ -1630,7 +1670,7 @@ class Mind:
             while keep > CUT_TEXT_FLOOR and not self._fits(self._turn_sizes()):
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
-            self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text,
+            self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text, "said": text,
                           "pending": self._waits(pending), "ended": self._ended(pending), "answering": bool(doubts),
                           "answering_other": any(DOUBT_OTHER_ASKED in note for note in doubts),
                           "confirming": self._confirming(pending), "pending_op": self._pending_op(pending)}
@@ -2802,6 +2842,9 @@ class Mind:
             refused = self._repeat_refused(turn, name, call)
             if refused:
                 return self._close_repeat(request_id, turn, call, reply, stage, started, *refused)
+            unopened = self._unopened(turn, call)
+            if unopened:
+                return self._unopened_back(request_id, turn, call, reply, stage, started, unopened)
             turn["awaiting"] = call["id"]
             turn["calling"] = name
             turn["calling_args"] = json.dumps(call["arguments"], sort_keys=True, ensure_ascii=False)
@@ -2904,6 +2947,58 @@ class Mind:
                   operation=self.wire_to_op.get(call["wire"], call["wire"]),
                   arguments=None if private else call["arguments"], content=None)
         return self._next(request_id, stage, turn, final=True)
+
+    def _unopened(self, turn: dict[str, Any], call: dict[str, Any]) -> list[str]:
+        """Aid «unopened_app»: the installed applications the person's words in this turn name, when this call types or
+        presses a key with no window and no field, the turn has not told it yet, and no completed call of the turn
+        opened, focused or resolved any of them, or acted naming one; empty, it runs. A name that is in a text typed in
+        this turn is what is written, not where."""
+        arguments = call["arguments"]
+        receipts = turn.get("receipts") or []
+
+        def targeted(given: dict[str, Any]) -> bool:
+            return any(given.get(key) not in (None, "") for key in TARGET_ARGUMENTS)
+
+        # Not when the turn already acts on a window it looked at (a typing with window, then its Enter).
+        if (call["wire"] not in WRITES_TO_FRONT or turn.get("beat") or turn.get("unopened_told")
+                or not _aid_on("unopened_app") or targeted(arguments)
+                or any(r.get("completed") and targeted(r.get("arguments") or {}) for r in receipts)):
+            return []
+        said = _words(str(turn.get("said") or turn.get("text") or ""))
+        written = [arguments, *(r.get("arguments") or {} for r in receipts if r.get("tool") in WRITES_TO_FRONT)]
+        typed = _words(" ".join(str(given.get(key) or "") for given in written for key in ("text", "replacing")))
+        named = [name for name in dict.fromkeys(self.names)
+                 if _words(name).strip() and _words(name) in said and _words(name) not in typed]
+        if not named:
+            return []
+        reached = "".join(_words(json.dumps(r.get("arguments"), ensure_ascii=False) + " " + _as_read(r.get("observation")))
+                          for r in receipts if r.get("completed") and r.get("tool") not in WRITES_TO_FRONT
+                          and (r.get("tool") in OPENS_WINDOW or not r.get("read")))
+        return [] if any(_words(name) in reached for name in named) else named
+
+    def _unopened_back(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
+                       stage: str, started: float, applications: list[str]) -> dict[str, Any]:
+        """A typing or a key held by «unopened_app» goes back to the model with why, and the calls queued behind it
+        (chosen on the same reading) do not run: the model decides again, with its tools."""
+        turn["unopened_told"] = True
+        done = turn.setdefault("done", [])
+        done.append(f"{call['wire']} → {UNOPENED_REFUSED}")
+        line = _said_once(done) if _aid_on("facts_once") else done
+        result = unopened_not_run(applications)
+        for later in [call, *(turn.get("queue") or [])]:
+            told = result + TURN_FACTS + "; ".join(line) + "]" if later is call else NOT_RUN_AFTER
+            turn["conv"].append({"role": "tool", "tool_call_id": later["id"], "content": told})
+            turn.setdefault("receipts", []).append({
+                "op": self.wire_to_op.get(later["wire"], later["wire"]), "tool": later["wire"],
+                "arguments": later["arguments"], "observation": result if later is call else NOT_RUN_AFTER,
+                "outcome": GIST_NOT_RUN, "completed": False,
+                "read": self.risk.get(later["wire"]) == "read_only"})
+        turn["queue"], turn["awaiting"] = [], None
+        private = bool(turn.get("private"))
+        self._log(stage, started, reply, text=None if private else turn["text"], kind="unopened_app",
+                  operation=self.wire_to_op.get(call["wire"], call["wire"]),
+                  arguments=None if private else call["arguments"], content=None)
+        return self._next(request_id, "turn.continue", turn)
 
     # ---- trace ---------------------------------------------------------------------------------------------
     def forget_trace(self) -> bool:
