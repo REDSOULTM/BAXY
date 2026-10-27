@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from .answer_check import check as check_answer
+from .arithmetic import evaluate
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
 from .protocol import whole_code_points
@@ -65,8 +66,8 @@ SYSTEM = (
     "valores.\n"
     "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra herramienta "
     "ni lo conviertas en una pregunta.\n"
-    "5. Charla, cuentas, traducciones y lo que sabes con certeza respóndelo tú. Lo que cambia con el tiempo o no sabes, "
-    "búscalo con web_search. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
+    "5. Charla, traducciones y lo que sabes con certeza respóndelo tú; las cuentas, con calculate. Lo que cambia con "
+    "el tiempo o no sabes, búscalo con web_search. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
     "con memory_recall.\n"
     "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («sincuenta» es 50).\n"
     "7. Si la persona te pide que pares, te calles o esperes, no hagas nada más: responde con una palabra.\n"
@@ -1070,6 +1071,26 @@ ASK_USER = {
     },
 }
 
+# Feria 2026-10-27: sums done from memory went wrong (12 for two plus two, a digit misheard) and an 18-digit square root
+# went to the Calculator, which takes none. The model writes the expression it understood; the mind computes it
+# (arithmetic.evaluate, no App call) and its value, or why there is none, is the call's result.
+CALCULATE = {
+    "type": "function",
+    "function": {
+        "name": "calculate",
+        "description": (
+            "Compute arithmetic exactly, to answer the person yourself: a sum, a product, a division, a percentage, a "
+            "power or a root. Write the expression you understood with digits and symbols only: + - * / ^ ( ), % for "
+            "percent, sqrt() and cbrt(). Do not use when: they ask to do it in the Calculator app "
+            "(calculator_expression_evaluate)."
+        ),
+        "parameters": {"type": "object", "properties": {"expression": {"type": "string"}},
+                       "required": ["expression"]},
+    },
+}
+CALCULATED_FIRST = json.dumps({"status": "not_run", "reason": "written before the calculation's value; call it again "
+                                                              "with that value if it is still needed"})
+
 
 # What the model sees of an argument schema: meaning only. Validation-only keywords stay with the kernel, which
 # validates the exact schema anyway; contract constants (a const or a one-value enum) are not the model's to write and
@@ -1277,7 +1298,7 @@ class Mind:
         # The same names, for the ear's hotwords (voice.hear_names): what the model is shown is what it may hear.
         self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                                     if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
+        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}
         # Auditoría de la mente (w8): the constants of this catalog only; one a tool had in an earlier catalog was still
         # added to its calls.
         constants_of: dict[str, dict[str, Any]] = {}
@@ -2415,7 +2436,8 @@ class Mind:
         runs; the answer to layer 2's own question is never turned into another one. Asking is never held: it already
         puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
         only a yes (PLAIN_YES), whatever System One's own thresholds."""
-        if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
+        if not self._doubted(stage, turn, final) or call["wire"] in (ASK_USER["function"]["name"],
+                                                                     CALCULATE["function"]["name"]):
             return None
         # Aid «dated_search» (soak of the fair, 2026-10-27): the web_search the model chose for a dated question or a
         # curiosity asked for, under the threshold, became «¿Quieres que busque…?» 6 times: it is the call that aid asks
@@ -2668,6 +2690,20 @@ class Mind:
                       kind="confirmation_ended" if ended else "nothing_pending",
                       operation=ended["operation"] if ended else None, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=not ended)
+        elif call is not None and call["wire"] == CALCULATE["function"]["name"]:
+            # Computed here, never handed to the App; what the model wrote beside it waits for the value.
+            try:
+                told = json.dumps({"status": "completed", "value": evaluate(str(call["arguments"].get("expression")))},
+                                  ensure_ascii=False)
+            except ValueError as error:
+                told = json.dumps({"status": "failed", "error": str(error)})
+            for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
+                turn["conv"].append({"role": "tool", "tool_call_id": call_id,
+                                     "content": told if call_id == call["id"] else CALCULATED_FIRST})
+            turn["queue"], turn["awaiting"] = [], None
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="calculated",
+                      operation=None, arguments=call["arguments"], content=None)
+            return self._next(request_id, "turn.continue", turn)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))
