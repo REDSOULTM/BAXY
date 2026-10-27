@@ -1255,16 +1255,22 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     private static IReadOnlyList<SteamStoreTitle>? ReadKnownGames() =>
         SteamAppInfo.ReadGames(Path.Combine(SteamRoots().Root, "appcache", "appinfo.vdf"));
 
+    private static IReadOnlySet<string>? ReadOwnedAppIds() =>
+        ReadOwnedAppIds(Path.Combine(SteamRoots().Root, "userdata"), SignedInAccount());
+
     // Auditoría final (regla 3): ownership is the account's library cache alone (an installed manifest may be a shared
-    // or free game), and no cache read at all is null, never an empty library.
-    private static IReadOnlySet<string>? ReadOwnedAppIds()
+    // or free game), and no cache read at all is null, never an empty library. Feria (NB-W5): a PC where two accounts
+    // signed in keeps a cache for each, so only the signed-in account's counts; every cache only when there is none.
+    internal static IReadOnlySet<string>? ReadOwnedAppIds(string userdata, string? account)
     {
-        (string root, _) = SteamRoots();
         var result = new HashSet<string>(StringComparer.Ordinal);
         bool cacheRead = false;
-        string userdata = Path.Combine(root, "userdata");
         if (!Directory.Exists(userdata)) return null;
-        foreach (string user in Directory.EnumerateDirectories(userdata))
+        string? signedIn = account is null ? null : Path.Combine(userdata, account);
+        IEnumerable<string> users = signedIn is not null && Directory.Exists(Path.Combine(signedIn, "config", "librarycache"))
+            ? [signedIn]
+            : Directory.EnumerateDirectories(userdata);
+        foreach (string user in users)
         {
             string cache = Path.Combine(user, "config", "librarycache");
             if (!Directory.Exists(cache)) continue;
@@ -1296,6 +1302,16 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             }
         }
         return (root, libraries.ToArray());
+    }
+
+    // The account Steam signs in with (its userdata folder's name), which Steam keeps once it has quit; null when it
+    // names none.
+    private static string? SignedInAccount()
+    {
+        using RegistryKey? process = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam\ActiveProcess");
+        return process?.GetValue("ActiveUser") is int account and not 0
+            ? unchecked((uint)account).ToString(System.Globalization.CultureInfo.InvariantCulture)
+            : null;
     }
 
     [GeneratedRegex("\\\"path\\\"\\s+\\\"([^\\\"]+)\\\"", RegexOptions.IgnoreCase)]

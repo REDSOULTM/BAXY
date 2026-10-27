@@ -4,7 +4,7 @@ namespace Baxy.Providers.Windows.External;
 
 /// <summary>
 /// The browser the person uses: the one Windows opens a web link with
-/// (HKCU UrlAssociations\https\UserChoice), not one BAXY picks. Owner 2026-10-02:
+/// (HKCU UrlAssociations\https, <see cref="UserBrowserIdentityResolver.ChosenProgId"/>), not one BAXY picks. Owner 2026-10-02:
 /// «cuando le pido una canción de YouTube la abre en Edge, que no es mi navegador
 /// predeterminado; tengo Disney y HBO iniciados en Opera».
 /// </summary>
@@ -71,9 +71,8 @@ internal static class UserBrowserIdentityResolver
         {
             try
             {
-                using RegistryKey? choice = Registry.CurrentUser.OpenSubKey(
-                    UrlAssociations + scheme + @"\UserChoice");
-                string? progId = choice?.GetValue("ProgId") as string;
+                using RegistryKey? association = Registry.CurrentUser.OpenSubKey(UrlAssociations + scheme);
+                string? progId = association is null ? null : ChosenProgId(association);
                 if (string.IsNullOrWhiteSpace(progId))
                     continue;
                 using RegistryKey? command = Registry.ClassesRoot.OpenSubKey(
@@ -89,6 +88,20 @@ internal static class UserBrowserIdentityResolver
             }
         }
         return null;
+    }
+
+    /// <summary>
+    /// Feria (NB-W5): the ProgId a scheme's association names. Windows 11 from 25H2 writes the person's choice to
+    /// UserChoiceLatest\ProgId and no longer updates the legacy UserChoice, which keeps the browser chosen before; the
+    /// legacy key counts only where the newer one is absent.
+    /// </summary>
+    internal static string? ChosenProgId(RegistryKey association)
+    {
+        using RegistryKey? latest = association.OpenSubKey(@"UserChoiceLatest\ProgId");
+        using RegistryKey? legacy = association.OpenSubKey("UserChoice");
+        return new[] { latest?.GetValue("ProgId"), legacy?.GetValue("ProgId") }
+            .OfType<string>()
+            .FirstOrDefault(static progId => !string.IsNullOrWhiteSpace(progId));
     }
 
     /// <summary>
