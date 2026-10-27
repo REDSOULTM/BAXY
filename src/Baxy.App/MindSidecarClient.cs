@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -45,6 +46,21 @@ internal sealed record MindStartupFailure(string Cause, long? ExitCode)
             : null;
         return new MindStartupFailure(cause, exitCode);
     }
+}
+
+/// <summary>
+/// Feria 2026-10-27: why the mind stopped being ready, or started anew. <see cref="Cause"/>: <see cref="ProcessEnded"/>
+/// (its output ended; <see cref="ExitCode"/> once its process exited), a failed request's name
+/// (<see cref="MindSidecarClient.ClassifyRequestFailure"/>) with its <see cref="Request"/> type, <c>startup.</c> and the
+/// label of a start that failed (<see cref="MindStartupFailure.TraceLabel"/>), or the App's own start
+/// (<see cref="AppStart"/>) and exit (<see cref="AppExit"/>, who asked for it, and the App's exit code). Never a request's
+/// arguments.
+/// </summary>
+internal sealed record MindLoss(string Cause, string? Request = null, int? ExitCode = null)
+{
+    internal const string ProcessEnded = "process_ended";
+    internal const string AppStart = "app_start";
+    internal const string AppExit = "app_exit";
 }
 
 /// <summary>
@@ -158,10 +174,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
     public event Action<string>? TranscriptReceived;
 
-    // Ronda final 18-19 (regla 3): the mind stopped being ready, so whoever shows it ready (or listening) is told:
-    // true when its process ended (its output pump returned, and its voice with it), false when a failed request
-    // invalidated it with the process still alive.
-    public event Action<bool>? ReadyLost;
+    // Ronda final 18-19 (regla 3): the mind stopped being ready, so whoever shows it ready (or listening) is told why:
+    // its process ended (its output pump returned, and its voice with it), or a failed request invalidated it with the
+    // process still alive.
+    public event Action<MindLoss>? ReadyLost;
 
     /// <summary>Estado no sensible de la tubería de voz (hilo del pump).</summary>
     public event Action<JsonObject>? VoiceEventReceived;
@@ -235,8 +251,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
                 TaskScheduler.Default);
             _pump = PumpAsync(sidecar.Process, helloCompletion, _pumpCancellation.Token);
-            _ = _pump.ContinueWith(static (_, state) => ((MindSidecarClient)state!).ReadyLost?.Invoke(true), this,
-                CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            _ = ReportEndAsync(_pump, sidecar.Process, _pumpCancellation.Token);
 
             JsonObject hello = await helloCompletion.Task
                 .WaitAsync(startupCancellation.Token)
@@ -722,7 +737,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             if (InvalidatesMind(failure, requestType) && _ready)
             {
                 _ready = false;
-                ReadyLost?.Invoke(false);
+                ReadyLost?.Invoke(new MindLoss(failure, requestType));
             }
 
             ShellTraceSink.Record(ShellTraceScopes.Turn, traceId,
@@ -857,6 +872,32 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                     completion.TrySetCanceled(CancellationToken.None);
                 }
             }
+        }
+    }
+
+    // Feria 2026-10-27: the output can end a moment before the process does; its exit code is waited for that moment,
+    // never when this side ended it (its shutdown releases the process meanwhile). Whoever shows the mind is told either way.
+    private async Task ReportEndAsync(Task pump, Process process, CancellationToken shutdown)
+    {
+        await pump.ConfigureAwait(false);
+        int? exitCode = null;
+        try
+        {
+            if (!shutdown.IsCancellationRequested)
+            {
+                using var exited = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                await process.WaitForExitAsync(exited.Token).ConfigureAwait(false);
+                exitCode = process.ExitCode;
+            }
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or InvalidOperationException
+            or Win32Exception or NotSupportedException)
+        {
+            // Still running (its reader failed), or already released: no exit code to tell.
+        }
+        finally
+        {
+            ReadyLost?.Invoke(new MindLoss(MindLoss.ProcessEnded, ExitCode: exitCode));
         }
     }
 

@@ -1154,11 +1154,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     // Ronda final 18-19 (regla 3): a mind no longer ready is no longer shown ready (IsMindReady reads it), and one whose
     // process ended is no longer shown listening or speaking either: its voice ended with it and sends nothing more.
-    private void OnMindReadyLost(bool processEnded) => _uiContext.Post(
+    private void OnMindReadyLost(MindLoss loss) => _uiContext.Post(
         _ =>
         {
             if (_isDisposed)
                 return;
+            bool processEnded = loss.Cause == MindLoss.ProcessEnded;
             if (processEnded)
             {
                 IsListening = false;
@@ -1176,6 +1177,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 _mindStartupFailureCount++;
                 _mindStartupState = MindStartupState.Failed;
                 _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
+                MindRestarts.Record(loss, DateTimeOffset.UtcNow - _mindStartedAt);
             }
             OnPropertyChanged(nameof(IsMindReady));
         },
@@ -1506,9 +1508,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         _mindStartupFailureCount++;
         _mindStartupState = MindStartupState.Failed;
-        ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed,
-            failure?.TraceLabel ?? "desconocida");
+        string cause = failure?.TraceLabel ?? "desconocida";
+        ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed, cause);
         _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
+        MindRestarts.Record(new MindLoss("startup." + cause), DateTimeOffset.UtcNow - _mindStartedAt);
     }
 
     internal static TimeSpan MindRetryDelay(int failures) =>

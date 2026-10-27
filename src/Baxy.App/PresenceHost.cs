@@ -13,7 +13,7 @@ internal sealed class PresenceHost : IDisposable
     private bool _menuOpening;
     private MainWindow? _window;
     private MainWindowViewModel? _viewModel;
-    private bool _exitRequested;
+    private string? _exitVia;
     private bool _disposed;
 
     private PresenceHost(WindowsAutostartRegistration autostart)
@@ -25,7 +25,10 @@ internal sealed class PresenceHost : IDisposable
 
     internal bool StartHidden { get; private set; }
 
-    internal bool IsExitRequested => _exitRequested;
+    internal bool IsExitRequested => _exitVia is not null;
+
+    /// <summary>Who asked BAXY to exit (<see cref="RequestExit"/>), or null: its exit line names it (<see cref="MindRestarts"/>).</summary>
+    internal string? ExitVia => _exitVia;
 
     internal void Start(IReadOnlyList<string> arguments)
     {
@@ -133,7 +136,7 @@ internal sealed class PresenceHost : IDisposable
             viewModel is { IsReady: true, IsMindReady: true },
             // A start that failed (the engine's own failure, or the mind that did not start) is not «Arrancando».
             viewModel is { IsMindReady: false, MindFailed: true } || viewModel is { IsReady: false, Failure: not null });
-        _menu = new Presentation.TrayMenu(state, ShowMainWindow, ToggleListen, TogglePower, RequestExit);
+        _menu = new Presentation.TrayMenu(state, ShowMainWindow, ToggleListen, TogglePower, () => RequestExit("tray"));
         _menu.Closed += (_, _) => _menu = null;
         _menu.ShowAt(x, y);
     }
@@ -164,9 +167,9 @@ internal sealed class PresenceHost : IDisposable
         _ = viewModel.ToggleWakeVoiceAsync(CancellationToken.None);
     }
 
-    internal void RequestExit()
+    internal void RequestExit(string via)
     {
-        _exitRequested = true;
+        _exitVia ??= via;
         MainWindow? window = _window;
         if (window is null)
         {
