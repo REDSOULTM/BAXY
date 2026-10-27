@@ -65,42 +65,30 @@ def test_an_unsure_action_does_not_run_and_the_model_asks_in_its_own_words(tmp_p
     assert rows[0]["doubt"]["confidence"] < 0.4
 
 
-# Held-out (written by an agent that did not see the change): small talk with typos, and short requests for the PC.
-SMALL_TALK = ("grasias por too, erí muy simpático", "que entretenido estai, me abriste el día",
-              "chao chao, nos vemo despué", "quien te iso a ti oye", "escribí re bonito tú, te felisito")
-REQUESTS = ("apaga el bluetooth", "minimiza todas las ventanas", "toma una captura y guárdala")
-
-
-def _unsure(p_call: float, p_name: float) -> dict:
-    reply = _call("input_text_type", {"text": "gracias"}, p_name)
+def _call_at(p_call: float, p_name: float) -> dict:
+    reply = _call("app_open", {"appId": "notas"}, p_name)
     reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", p_call)
     return reply
 
 
-@pytest.mark.parametrize("text", SMALL_TALK)
-def test_an_unsure_action_the_model_more_likely_answered_in_words_is_answered_in_words(tmp_path, monkeypatch,
-                                                                                        text) -> None:
-    # Feria 2026-10-27: a greeting with a typo, p(call) 0.30, sampled the typing tool; the note naming it made the model
-    # ask what to type. Under WORDS_P_CALL the model decides again in words, and no note names any tool.
+def test_a_sure_call_under_even_odds_runs(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
-    mind, server = _mind(tmp_path, [_unsure(0.3, 0.9), _say("¡De nada!")])
-    result = mind.decide(1, text)
-    assert result["kind"] == "conversation" and result["operation"] is None and result["reply"] == "¡De nada!"
-    second = server.bodies[1]
-    assert second["tool_choice"] == "none"
-    assert second["messages"][-1] == {"role": "user", "content": text}  # no note after the person's words
-    # the rules (the system message) name tools of their own
-    assert not any("input_text_type" in str(m.get("content")) for m in second["messages"][1:])
+    mind, _ = _mind(tmp_path, [_call_at(0.45, 1.0)])
+    result = mind.decide(1, "abre las notas")
+    assert result["kind"] == "action" and result["operation"] == "app.open"
+
+
+@pytest.mark.parametrize("p_call", [0.3, 0.45])
+def test_an_unsure_call_under_even_odds_is_held_with_the_note_that_names_it(tmp_path, monkeypatch, p_call) -> None:
+    # Banco v11 (2026-10-27): deciding again in words, told nothing, whenever p(call) < 0.5 turned right actions (a
+    # named network, a «quítalo» after an app) into questions that echoed them. p(call) alone does not turn a call into
+    # words: an unsure one is held with the note that names it, as for any other p(call).
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_call_at(p_call, 0.6), _say("¿Abro las notas?")])
+    assert mind.decide(1, "abre las notas")["operation"] is None
+    assert "app_open" in server.bodies[1]["messages"][-1]["content"]
     rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
-    assert rows[0]["kind"] == "doubt_words" and rows[0]["doubt"]["p_call"] == 0.3
-
-
-@pytest.mark.parametrize("text", REQUESTS)
-def test_an_unsure_action_the_model_more_likely_called_is_asked_about_as_before(tmp_path, monkeypatch, text) -> None:
-    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
-    mind, server = _mind(tmp_path, [_unsure(0.95, 0.3), _say("¿Qué quieres que haga?")])
-    assert mind.decide(1, text)["operation"] is None
-    assert "input_text_type" in server.bodies[1]["messages"][-1]["content"]
+    assert rows[0]["kind"] == "doubt_ask" and rows[0]["operation"] == "app.open" and rows[0]["doubt"]["p_call"] == p_call
 
 
 def test_the_rules_say_what_to_do_with_words_that_make_no_sense(tmp_path) -> None:

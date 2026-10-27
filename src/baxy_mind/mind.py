@@ -880,10 +880,6 @@ CUT_TEXT_FLOOR = 500
 # of 1,530 right ones (phase 0, 2026-10-21).
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
               "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
-# Feria 2026-10-27: a greeting with a typo sampled the typing tool at p(call) 0.30, and the note naming it made the model
-# ask what to type. Under this p(call) a call was not the model's likelier decision: it decides again in words, with no
-# note (an empty one), so no tool is named.
-WORDS_P_CALL = 0.5
 # Aid «answer_check» (al máximo, lever 3; answer_check.py): what the model reads when its final answer contradicts the
 # turn's results, before it is spoken. Only the facts and what to do with them, never words to say (invariant 5): the
 # model writes its answer again, once, with no tools. Offline on the stored practice transcripts it flagged the 11 clear
@@ -2148,18 +2144,16 @@ class Mind:
             # it carries (doubt_of) beside the operation that runs.
             turn["doubt_of"] = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             calls, note, content = [note], None, ""
-        if note is not None:
+        if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads and asks the person, in its own words, what
-            # they want (the call it nearly made never enters the conversation). An empty note (WORDS_P_CALL): it
-            # answers in words, told nothing.
-            if note:
-                conv.append({"role": "user", "content": note})
+            # they want (the call it nearly made never enters the conversation).
+            conv.append({"role": "user", "content": note})
             doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             if doubted.startswith("memory."):
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
-            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
-                      kind="doubt_ask" if note else "doubt_words", operation=doubted, arguments=None, content=None)
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
+                      operation=doubted, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=True)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
@@ -2380,8 +2374,8 @@ class Mind:
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
-        model's confidence is under the threshold (an empty note under WORDS_P_CALL), unless these words answer a
-        question (DOUBT_ASKED) or the call is low_reversible, or recoverable_delete and the kernel confirms it. Layer 2
+        model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
+        low_reversible, or recoverable_delete and the kernel confirms it. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
@@ -2416,7 +2410,7 @@ class Mind:
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
                 and risk != "low_reversible" \
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
-            return "" if doubt["p_call"] < WORDS_P_CALL else DOUBT_NOTE.format(call=call["wire"])
+            return DOUBT_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
         if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
