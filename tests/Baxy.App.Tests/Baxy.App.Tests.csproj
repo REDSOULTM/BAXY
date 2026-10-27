@@ -17,5 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FakeMind\baxy_mind\*.py" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Sentences written by an agent that never saw the check they test (NetworkEgressTests). -->
+    <None Include="Data\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

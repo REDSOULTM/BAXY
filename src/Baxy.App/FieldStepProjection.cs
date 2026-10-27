@@ -87,6 +87,8 @@ internal static class FieldStepProjection
         ["outbox_unavailable"] = "No se ejecutó: BAXY no estaba listo",
         ["memory_protection_unavailable"] = "No se ejecutó: la memoria privada no estaba lista",
         ["memory_value_needs_sensitive_channel"] = "No se guardó: parece un dato secreto",
+        ["query_not_said"] = "No se ejecutó: la búsqueda no llevaba tus palabras",
+        ["channel_not_said"] = "No se ejecutó: no nombraste ese canal",
     };
 
     internal static string Title(string operation) =>

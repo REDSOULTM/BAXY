@@ -198,7 +198,7 @@ internal sealed class NativeTurnLoop
         // of the turn that asked it, as a press on Sí or No does: the folders it named. A spoken «sí» replaced them, so
         // the calls after the approved one were ruled by «sí» alone while the button's were ruled by the turn that asked.
         bool answering = WaitingPrepared() is not null && ConfirmationAsk.Answers(_askedAt, arrivedAt);
-        _egress.Heard(text);
+        _egress.Heard(text, answering);
         if (answering)
         {
             _said.Answered(text);
@@ -437,6 +437,11 @@ internal sealed class NativeTurnLoop
                     Publish(step.Text, PublicResponseRoute.Conversation);
                     return;
                 case { Kind: "question" }:
+                    if (!_beat)
+                    {
+                        _egress.Asked();
+                    }
+
                     Publish(step.Text, PublicResponseRoute.Clarification);
                     return;
             }
@@ -571,6 +576,14 @@ internal sealed class NativeTurnLoop
         if (_host.Refuse?.Invoke(operation, arguments) is { } refusal)
         {
             return Record(operation, arguments, started, Observation("rejected", refusal));
+        }
+
+        // Feria 2026-10-27: a search with none of the person's words, or a message by a channel they did not name, goes
+        // back to the model before it runs, with what to do next (NetworkEgress). A heartbeat's call has no words to weigh.
+        if (!_beat && _egress.Unsaid(operation, arguments) is { } unsaid)
+        {
+            return Record(operation, arguments, started, Observation("rejected", unsaid.Code,
+                new JsonObject { ["next"] = unsaid.Next }));
         }
 
         // Renew al máximo (w6, rutas): a file call that leaves out the folder the person named in this turn is routed

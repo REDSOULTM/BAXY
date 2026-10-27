@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json.Nodes;
 using Baxy.App;
 using NUnit.Framework;
@@ -31,6 +32,162 @@ public sealed class NetworkEgressTests
             Assert.That(egress.Holds("game.launch", new JsonObject { ["appId"] = "252950", ["title"] = "Rocket League" }),
                 Is.EqualTo("game_title_not_said"));
         });
+    }
+
+    // Feria 2026-10-27: a creator's name the person said was searched as another one that sounds alike, and the video of
+    // someone else played. A search with none of their words goes back to the model once; the same call again goes.
+    [Test]
+    public void ASearchWithNoneOfThePersonsWordsGoesBackOnce()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("ponme un video en el navegador");
+        egress.Heard("uno de zentrovox");
+        var renamed = new JsonObject { ["query"] = "Centro Box" };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Unsaid("media.play.youtube", renamed)?.Code, Is.EqualTo("query_not_said"));
+            Assert.That(egress.Unsaid("media.play.youtube", renamed), Is.Null);
+            Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = "Centro Box", ["source"] = "news" })
+                ?.Code, Is.EqualTo("query_not_said"));
+        });
+    }
+
+    // Their words with other endings, run together or spelled otherwise by the ear, a source that searches
+    // its typed fields and not the query, and a call that sends nothing out are not refused.
+    [TestCase("zentrovox", "videos de zentrovox")]
+    [TestCase("zentro vox", "zentrovox")]
+    [TestCase("busca la receta del pan amasado", "recetas pan amasado")]
+    [TestCase("¿la comuna tiene alcaldeza?", "alcaldesa comuna")]
+    public void ASearchThatSharesTheirWordsGoes(string words, string query)
+    {
+        var egress = new NetworkEgress();
+        egress.Heard(words);
+
+        Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = query }), Is.Null);
+    }
+
+    [Test]
+    public void OnlyTheTextASearchSendsIsWeighed()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("¿cuántos pesos son cien dólares?");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Unsaid("web.search", new JsonObject
+            {
+                ["query"] = "exchange rate", ["source"] = "currency", ["from"] = "USD", ["to"] = "CLP", ["amount"] = 100,
+            }), Is.Null);
+            Assert.That(egress.Unsaid("note.search", new JsonObject { ["query"] = "presupuesto mensual" }), Is.Null);
+        });
+    }
+
+    // Feria 2026-10-27: a greeting asked for someone in the room opened a messaging client with a draft. A message goes
+    // only by a channel the person named now or just before (the answer to the model's question keeps what it asked),
+    // or, when the turn that refused it ended with the model's question, in the turn right after it (their «sí» to «¿le
+    // escribo por …?»), and that channel counts as said from then on.
+    [Test]
+    public void AMessageGoesOnlyByAChannelThePersonNamed()
+    {
+        var egress = new NetworkEgress();
+        var draft = new JsonObject { ["channel"] = "whatsapp", ["recipient"] = "Nadia", ["text"] = "Hola" };
+        egress.Heard("saluda a Nadia");
+        (string Code, string Next)? greeted = egress.Unsaid("message.draft", draft);
+        (string Code, string Next)? again = egress.Unsaid("message.draft", draft);
+        egress.Heard("Nadia, ¿cómo estás?");
+        (string Code, string Next)? unasked = egress.Unsaid("message.draft", draft);
+        egress.Asked();
+        egress.Heard("sí");
+        (string Code, string Next)? yes = egress.Unsaid("message.send", draft);
+        egress.Heard("la que vive en Temuco");
+        (string Code, string Next)? clarified = egress.Unsaid("message.send", new JsonObject
+        {
+            ["channel"] = "whatsapp", ["recipient"] = "Nadia Temuco", ["text"] = "Hola",
+        });
+        egress.Heard("escríbele a Nadia por Whats App");
+        egress.Heard("que paso a buscarla");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(greeted?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(greeted?.Next, Does.Contain("answer them in words"));
+            Assert.That(again?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(unasked?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(yes, Is.Null);
+            Assert.That(clarified, Is.Null);
+            Assert.That(egress.Unsaid("message.send", draft), Is.Null);
+            Assert.That(egress.Unsaid("message.send.test", draft), Is.Null);
+        });
+    }
+
+    // A search may take its words from what a result or memory gave in a short text («pon un video de él» after a result
+    // named him), never from a page's text nor from BAXY's own fields; the person's «sí» to a waiting call keeps the words
+    // they said before it.
+    [Test]
+    public void WhatResultsGaveAndTheWordsBeforeAnAnswerStillCount()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("¿quién ganó el torneo de ajedrez de este año?");
+        egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":[" +
+            "{\"title\":\"Gana Ilvaro Kastañeda\",\"url\":\"https://ajedrez.example/a\"}]}}");
+        egress.Heard("ponme un video de él");
+        egress.Observed("memory.recall", "{\"status\":\"completed\",\"observed\":{\"records\":[" +
+            "{\"label\":\"cancion favorita\",\"value\":\"Brisa de Tolhuaca\"}]}}");
+        egress.Observed("web.fetch", "{\"status\":\"rejected\",\"next\":\"call it again exactly\",\"observed\":{\"text\":\""
+            + new string('x', 120) + " Pehuenquelo\"}}");
+        egress.Heard("mándale por whatsapp a Nadia que llego a las ocho");
+        egress.Heard("y que lleve pan");
+        egress.Heard("sí", answering: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Unsaid("media.play.youtube", new JsonObject { ["query"] = "Ilvaro Kastañeda" }), Is.Null);
+            Assert.That(egress.Unsaid("media.play.youtube", new JsonObject { ["query"] = "Brisa de Tolhuaca" }), Is.Null);
+            Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = "Pehuenquelo" })?.Code,
+                Is.EqualTo("query_not_said"));
+            Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = "exactamente" })?.Code,
+                Is.EqualTo("query_not_said"));
+            Assert.That(egress.Unsaid("message.send", new JsonObject
+            {
+                ["channel"] = "whatsapp", ["recipient"] = "Nadia", ["text"] = "Llego a las ocho",
+            }), Is.Null);
+        });
+    }
+
+    // Sentences an agent wrote without seeing the check (Data/said-arguments.heldout.v1.json): what goes back and what goes.
+    [TestCaseSource(nameof(HeldOut))]
+    public void HeldOutSentences(string check, string[] said, string argument, bool back)
+    {
+        var egress = new NetworkEgress();
+        foreach (string words in said)
+        {
+            egress.Heard(words);
+        }
+
+        (string Code, string Next)? unsaid = check == "A"
+            ? egress.Unsaid("web.search", new JsonObject { ["query"] = argument })
+            : egress.Unsaid("message.send", new JsonObject { ["channel"] = argument, ["recipient"] = "x", ["text"] = "y" });
+        Assert.That(unsaid?.Code, back ? Is.EqualTo(check == "A" ? "query_not_said" : "channel_not_said") : Is.Null);
+    }
+
+    private static IEnumerable<TestCaseData> HeldOut()
+    {
+        string path = Path.Combine(TestContext.CurrentContext.TestDirectory, "Data", "said-arguments.heldout.v1.json");
+        JsonNode data = JsonNode.Parse(File.ReadAllText(path))!;
+        foreach ((string check, string field) in new[] { ("A", "consulta"), ("B", "canal") })
+        {
+            foreach ((string kind, bool back) in new[] { ("positivas", true), ("negativas", false) })
+            {
+                JsonArray items = data[check]![kind]!.AsArray();
+                for (int index = 0; index < items.Count; index++)
+                {
+                    string[] said = [.. items[index]!["dicho"]!.AsArray().Select(static words => (string)words!)];
+                    yield return new TestCaseData(check, said, (string)items[index]![field]!, back)
+                        .SetName($"HeldOut {check} {kind} {index + 1}");
+                }
+            }
+        }
     }
 
     [Test]
