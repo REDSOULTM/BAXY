@@ -73,6 +73,13 @@ como límite; estado del PC claro; informe corto con cifras y vuelta atrás.
 - «¿Quién es el presidente de Chile?»: doubt_ask (p_call 0,49) → pregunta-eco. Sin arreglo.
 - La alarma de las 05:30 del perfil es una tarea programada de Windows: sobrevive a los reinicios de BAXY.
 
+## Limpieza para la feria (06:00)
+- Por pedido del dueño, sin restos de pruebas: 174 tareas programadas BAXY-* (alarmas y recordatorios, ninguna con
+  próxima ejecución; la de las 05:30 ya había sonado), 21 notas de prueba, avisos, capturas, 50 sesiones y el historial
+  de conversación se movieron (no se borraron) a `D:\BAXYeval\entregaespaldo-limpieza-feria` (tareas exportadas
+  en XML). Cerradas Configuración y Spotify. BAXY arranca con «Conversación nueva · Sin pedidos aún» y responde.
+  No tocados: las 2 memorias del perfil, Steam y WhatsApp.
+
 ## Vuelta atrás
 - Mente: `git -C D:\BAXYeval\entrega\BAXY-1.1.1-arr-9537b5f8b checkout --detach 5017917f9` y reiniciar BAXY.
   Sólo Wikipedia: `checkout --detach 6203d774f`. Sólo la ayuda nueva, sin tocar código: variable `BAXY_AYUDAS` con la lista de ayudas sin `dated_search`.
