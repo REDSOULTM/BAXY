@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
@@ -24,6 +23,7 @@ public partial class App : Application
     private EventWaitHandle? _exitRequest;
     private RegisteredWaitHandle? _exitWait;
     private string? _sessionEnding;
+    private DateTimeOffset _startedAt;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -97,6 +97,7 @@ public partial class App : Application
 
         _presence = PresenceHost.CreateDefault();
         _presence.Start(e.Args);
+        _startedAt = DateTimeOffset.UtcNow;
         MindRestarts.Record(new MindLoss(MindLoss.AppStart), TimeSpan.Zero);
         PresenceHost presence = _presence;
         _showRequest = new EventWaitHandle(false, EventResetMode.AutoReset, ShowRequestName);
@@ -136,9 +137,8 @@ public partial class App : Application
         {
             // Feria 2026-10-27: who closed it, so that a mind started anew by the App opened again reads as such.
             string via = _presence.ExitVia ?? _sessionEnding ?? "unrequested";
-            using Process current = Process.GetCurrentProcess();
             MindRestarts.Record(new MindLoss(MindLoss.AppExit + "." + via, ExitCode: e.ApplicationExitCode),
-                DateTime.Now - current.StartTime);
+                DateTimeOffset.UtcNow - _startedAt);
         }
 
         _exitWait?.Unregister(null);
