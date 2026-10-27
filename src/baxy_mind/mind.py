@@ -616,10 +616,11 @@ _ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|do
 # of a sentence, say something of a thing with a name of its own: a form, not what was asked. System One judges then,
 # between those words and web_search, what the person asked for; only its web_search is looked up (_look_up_first).
 # PC-L, decision v11 2026-10-27: a capital, the letters of an acronym or what was opened, said with a name, went to the
-# web as well; only a question about what or who the named thing is, or asking to be told of it, is judged.
-_ABOUT = re.compile(r"(?:^|[,;:])\W*(?:(?:que|quien(?:es)?) (?:es|son|era|eran|fue|fueron)|(?:hablame|cuentame) "
-                    r"(?:de|del|sobre|acerca)|que sabes (?:de|del|sobre)|conoces|(?:what|who)(?:'s| is| are| was)"
-                    r"|tell me about|do you know)\b")
+# web as well; only a question about what or who the named thing is, or asking to be told of it, is judged: at the
+# start, after a sentence or a comma, or after one word (by voice there is seldom a comma: «oye qué es…»).
+_ABOUT = re.compile(r"(?:^|[,;:.!?])\W*(?:[^\W\d_]+ )?(?:(?:que|quien(?:es)?) (?:es|son|era|eran|fue|fueron)"
+                    r"|(?:hablame|cuentame) (?:de|del|sobre|acerca)|que sabes (?:de|del|sobre)|conoces"
+                    r"|(?:what|who)(?:'s| is| are| was)|tell me about|do you know)\b")
 _SENTENCES = re.compile(r"[.!?¿¡:;\n]+")
 
 _WORDS = re.compile(r"[^\W\d_][\w'&-]*")
@@ -634,7 +635,7 @@ def _asked_about(text: str) -> str:
     about = _ABOUT.search(folded)
     if about is None:
         return ""
-    clause = _WORDS.findall(re.split(r"[,.;:!?¿¡]", folded[about.end():], maxsplit=1)[0])
+    clause = _WORDS.findall(re.split(r"[,.;:!?¿¡]| (?:y|e|o|and|or) ", folded[about.end():], maxsplit=1)[0])
     return clause[-1] if 0 < len(clause) <= 4 else ""
 
 
@@ -667,9 +668,9 @@ _CLOSE_SAID = re.compile(r"\b(?:cierr\w*|cerr\w*|clos\w*|sal|salir|sali\w*|quit\
 # as data, and the model decides again with its tools. Once per turn: a name of the catalog may be a plain word of what
 # was said («el cursor», «un correo»), so the model's next typing or key runs as it is.
 # PC-L, decision v6 2026-10-27: «escribe … donde tengo el cursor» was held for an app named Cursor and the model opened
-# it. A name is where the text goes only said as a place: after «en», «in», «on», «into» or «a(l)», maybe with an
-# article (the name's own words are marked \0 in the folded words before this is searched).
-_PLACE = re.compile(r" (?:en|in|on|into|al|a)(?: (?:el|la|los|las|un|una|mi|the|my))? \0 ")
+# it. A name is where the text goes only said as a place: after «en», «in», «on», «into», «a(l)», «del» or «dentro» and up
+# to three words («en un documento de …»); the name's own words are marked \0 in the folded words before the search.
+_PLACE = re.compile(r" (?:en|in|on|into|al|a|del|dentro)(?: [^ \0]+){0,3} \0 ")
 WRITES_TO_FRONT = frozenset({"input_text_type", "input_key_press"})
 OPENS_WINDOW = frozenset({"app_open", "window_focus", "window_resolve"})  # and any completed call that is not a read
 TARGET_ARGUMENTS = ("window", "windowId", "index")  # a window, or the field of the last look: not the window in front

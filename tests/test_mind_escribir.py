@@ -175,3 +175,13 @@ def test_without_the_aid_the_typing_is_made(tmp_path: Path, monkeypatch) -> None
     mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola"})])
     mind.names = list(APPS)
     assert mind.decide(1, "escribe hola en el bloc de notas")["operation"] == "input_text_type"
+
+
+def test_the_application_said_as_the_place_after_a_few_words_counts(tmp_path: Path, monkeypatch) -> None:
+    # code review 2026-10-27: «en un documento de Word», «dentro del bloc de notas» are where the text goes
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    for said in ("escribe en un documento de Microsoft Word hola", "escribe hola dentro del bloc de notas"):
+        mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola"}),
+                                   _call("app_open", {"appId": "Bloc de notas", "foreground": True})])
+        mind.names = list(APPS)
+        assert mind.decide(1, said)["operation"] == "app_open", said

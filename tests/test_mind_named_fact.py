@@ -110,3 +110,13 @@ def test_a_question_about_something_else_of_a_named_thing_is_not_judged(tmp_path
     assert mind.decide(1, "Estoy leyendo Zorvik Grande, ¿quién es el autor?")["kind"] == "conversation"
     assert mind.decide(2, "I'm visiting Zorvia soon, what's the Zorvian word for thanks?")["kind"] == "conversation"
     assert one.asked == [] and not fills
+
+
+def test_the_question_counts_after_a_word_or_a_sentence_before_it(tmp_path, monkeypatch) -> None:
+    # code review 2026-10-27: by voice there is seldom a comma; «oye qué es…», «Hola. ¿Qué es…?» and «… y para qué
+    # sirve» are the same question
+    for said in ("oye qué es el jugo Zorvik", "Hola. ¿Qué es el jugo Zorvik?", "dime qué es Zorvik",
+                 "¿Qué es Zorvik y para qué sirve?"):
+        mind, server, one, fills = _named(tmp_path, monkeypatch, "web_search",
+                                          [_say("Zorvik es una bebida energética.")])
+        assert mind.decide(1, said)["operation"] == "web_search" and fills == ["web_search"], said
