@@ -51,7 +51,7 @@ NOTICE_RUNNING = json.dumps({"status": "running"})
 NOTICE_MAX_CHARS = 60
 NOTICE_MAX_WORDS = 6
 # The notice's own budget: the result of the call it speaks of may come meanwhile, and its next decision waits for it.
-NOTICE_SECONDS = 3.0
+NOTICE_SECONDS = 1.5
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "

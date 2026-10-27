@@ -297,3 +297,91 @@ def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a
     assert [e for e in events if e != "hello"] == [
         "turn.result:1", "prefill", "session.ready:2", "turn.result:3", "prefill", "session.ready:4", "prefill",
         "turn.beat.ended:5", "prefill", "turn.result:6"]
+
+
+@pytest.mark.parametrize("ready", [True, False])
+def test_the_sidecar_answers_a_turn_s_notice_once_its_audio_is_kept_and_none_without_a_voice(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ready: bool) -> None:
+    # Feria 2026-10-27: the notice is the model's phrase for the call the App runs (turn.notice); the voice.speak that
+    # follows finds its audio, and with no voice loaded the model is not asked.
+    import threading
+    from concurrent.futures import Future
+    from baxy_mind import __main__ as sidecar
+    replies: list[dict] = []
+    asked: list[str] = []
+    incoming = [{"type": "turn.notice", "id": 1}, None]
+
+    class FakeServer:
+        REQUEST_SECONDS = 24.0
+        name = "model.gguf"
+        deadline = None
+
+        def __init__(self, *args, **kwargs) -> None:
+            pass
+
+        def start(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class FakeMind:
+        foresee = None
+
+        def __init__(self, *args) -> None:
+            pass
+
+        def notice_of(self) -> str:
+            asked.append("notice")
+            return "Busco vuelos a Lima."
+
+    class FakeSpeech:
+        def __init__(self) -> None:
+            self.ready = ready
+            self.kept = ""
+
+        def set_notice(self, text: str) -> Future:
+            self.kept = text
+            done: Future = Future()
+            done.set_result(None)
+            return done
+
+        def foresee(self, text, done):
+            return True
+
+        def close(self) -> None:
+            pass
+
+    class FakeVoice:
+        def __init__(self, *args, **kwargs) -> None:
+            self.speech = FakeSpeech()
+
+        def stop(self) -> None:
+            pass
+
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "model.gguf")
+    monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", "llama-server.exe")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    monkeypatch.setattr(sidecar, "declared_build", lambda path: "b11609")
+    monkeypatch.setattr(sidecar, "LlmServer", FakeServer)
+    monkeypatch.setattr(sidecar, "Mind", FakeMind)
+    monkeypatch.setattr(sidecar, "Voice", FakeVoice)
+    answered = threading.Event()
+
+    def read() -> dict | None:
+        if not incoming[0]:
+            answered.wait(5)  # stdin closes only after the notice was answered: nothing else waits behind it
+        return incoming.pop(0)
+
+    def write(message: dict) -> None:
+        replies.append(message)
+        if message.get("type") == "turn.notice.result":
+            answered.set()
+
+    monkeypatch.setattr(sidecar.protocol, "read_message", read)
+    monkeypatch.setattr(sidecar.protocol, "write_message", write)
+    assert sidecar.main() == 0
+    notice = [r for r in replies if r.get("type") == "turn.notice.result"]
+    assert notice == [{"type": "turn.notice.result", "id": 1, "notice": "Busco vuelos a Lima." if ready else ""}]
+    assert asked == (["notice"] if ready else [])
