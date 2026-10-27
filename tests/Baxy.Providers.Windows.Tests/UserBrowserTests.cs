@@ -563,7 +563,7 @@ public sealed class UserBrowserTests
             Assert.That(platform.Opened, Is.EqualTo(new[] { "https://youtube.com/" }));
             Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("Opera GX"));
             Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://www.youtube.com/"));
-            Assert.That(context.UserBrowserHoldsThePage, Is.True);
+            Assert.That(context.UserBrowserHoldingThePage?.DisplayName, Is.EqualTo("Opera GX"));
             Assert.That(Directory.Exists(root), Is.False, "no private profile was created");
         });
     }
@@ -697,6 +697,107 @@ public sealed class UserBrowserTests
         });
     }
 
+    // Feria 2026-10-27 (caso 19): a video asked for in a named browser opens with that browser's registered executable,
+    // not with the default one, and only that browser's media session verifies it: the default browser showing the
+    // same title proves nothing.
+    [Test]
+    public async Task AYouTubeVideoInANamedBrowserOpensThereAndOnlyItsOwnSessionVerifiesIt()
+    {
+        var platform = new FakePlatform(OperaGx) { Registered = { ["chrome"] = Chrome } };
+        var inTheDefault = new UserMediaSession("Opera GXStable", "Never Gonna Give You Up", "Rick Astley", "playing");
+        platform.SessionsAfterOpen =
+        [
+            [inTheDefault],
+            [inTheDefault, new("Chrome", "Never Gonna Give You Up", "Rick Astley", "playing")],
+        ];
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up","browser":"chrome"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(platform.Opened, Is.Empty, "the default browser is not the one named");
+            Assert.That(platform.OpenedWith.Select(static opened => opened.Executable),
+                Is.EqualTo(new[] { Chrome.Executable }));
+            Assert.That(new Uri(platform.OpenedWith[0].Address).Query, Is.EqualTo("?v=dQw4w9WgXcQ"));
+            Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("Google Chrome"));
+            Assert.That(receipt.Result?.GetProperty("sourceAppUserModelId").GetString(), Is.EqualTo("Chrome"));
+            Assert.That(harness.Edge.YouTubeCalls, Is.Zero);
+        });
+    }
+
+    // E016 again: after a video played in a named browser (Chrome while the default is Opera GX), a tab step acts on
+    // Chrome, where the page is, not on the person's default browser.
+    [Test]
+    public async Task ATabStepAfterAVideoInANamedBrowserActsOnThatBrowser()
+    {
+        var platform = new FakePlatform(OperaGx) { Registered = { ["chrome"] = Chrome } };
+        platform.OtherWindows["chrome"] = [new(21, "YouTube - Google Chrome")];
+        platform.SessionsAfterOpen = [[new("Chrome", "Never Gonna Give You Up", "Rick Astley", "playing")]];
+        platform.Frames.AddRange([Frame("doc-1"), Frame("doc-1"), Frame("doc-9")]);
+        var context = new CdpBrowserSessionContext();
+        using Harness harness = new(
+            platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"), context: context);
+
+        ExternalCapabilityReceipt played = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up","browser":"chrome"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt reloaded = await Control(harness, "reload");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(played.Verified, Is.True);
+            Assert.That(reloaded.Verified, Is.True);
+            Assert.That(platform.MessageWindows, Is.EqualTo(new[] { 21 }), "the default browser's window is not touched");
+        });
+    }
+
+    // A browser named that Windows has not registered is not replaced by another one: nothing opens.
+    [Test]
+    public async Task AYouTubeVideoInANamedBrowserWindowsDoesNotKnowOpensNothing()
+    {
+        var platform = new FakePlatform(OperaGx);
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up","browser":"brave"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(WebBrowserAdapter.NamedBrowserNotRegistered));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.Opened, Is.Empty);
+            Assert.That(platform.OpenedWith, Is.Empty);
+            Assert.That(harness.Edge.YouTubeCalls, Is.Zero);
+        });
+    }
+
+    // A named browser that could not be launched is not replaced by the product's own browser either.
+    [Test]
+    public async Task AYouTubeVideoInANamedBrowserThatDoesNotStartFallsToNoOtherBrowser()
+    {
+        var platform = new FakePlatform(OperaGx) { OpenFails = true, Registered = { ["chrome"] = Chrome } };
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up","browser":"chrome"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(WebBrowserAdapter.NamedBrowserNotLaunched));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.Opened, Is.Empty);
+            Assert.That(harness.Edge.YouTubeCalls, Is.Zero);
+        });
+    }
+
     [Test]
     public async Task AutoplayHeldBackIsPressedOnceThroughTheSessionsOwnPlayControl()
     {
@@ -734,6 +835,10 @@ public sealed class UserBrowserTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.PlaybackUnconfirmed));
+            // Caso 19: the page was opened; the failure says in which browser.
+            Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("Opera GX"));
+            Assert.That(receipt.Result?.GetProperty("openedUrl").GetString(),
+                Does.EndWith("/watch?v=dQw4w9WgXcQ"));
             Assert.That(platform.Played, Is.Empty);
             Assert.That(harness.Edge.YouTubeCalls, Is.Zero, "the video is not started a second time elsewhere");
         });
@@ -2219,11 +2324,25 @@ public sealed class UserBrowserTests
 
         public UserBrowserIdentity? ResolveDefault() => identity;
 
+        /// <summary>The browsers Windows has registered, by family.</summary>
+        internal Dictionary<string, UserBrowserIdentity> Registered { get; } = [];
+        internal List<(string Executable, string Address)> OpenedWith { get; } = [];
+
+        public UserBrowserIdentity? ResolveRegistered(string family) => Registered.GetValueOrDefault(family);
+
         public void Open(Uri address)
         {
             if (OpenFails)
                 throw new System.ComponentModel.Win32Exception(1155, "No application is associated.");
             Opened.Add(address.AbsoluteUri);
+            _opened = true;
+        }
+
+        public void OpenWith(UserBrowserIdentity browser, Uri address)
+        {
+            if (OpenFails)
+                throw new System.ComponentModel.Win32Exception(2, "The system cannot find the file specified.");
+            OpenedWith.Add((browser.Executable, address.AbsoluteUri));
             _opened = true;
         }
 
@@ -2235,10 +2354,13 @@ public sealed class UserBrowserTests
             return ValueTask.FromResult(true);
         }
 
+        /// <summary>The windows of a browser other than the default one, by process name.</summary>
+        internal Dictionary<string, IReadOnlyList<UserBrowserWindow>> OtherWindows { get; } = [];
+
         public IReadOnlyList<UserBrowserWindow> ListWindows(string processName)
         {
             if (processName != identity?.ProcessName)
-                return [];
+                return OtherWindows.GetValueOrDefault(processName) ?? [];
             if (!_opened)
                 return WindowsBeforeOpen;
             if (WindowSteps.Count == 0)

@@ -81,19 +81,9 @@ internal static class UserBrowserIdentityResolver
     {
         try
         {
-            foreach (RegistryKey hive in new[] { Registry.LocalMachine, Registry.CurrentUser })
-            {
-                foreach (string clients in new[] { @"SOFTWARE\Clients\StartMenuInternet", @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet" })
-                {
-                    using RegistryKey? browsers = hive.OpenSubKey(clients);
-                    foreach (string name in browsers?.GetSubKeyNames() ?? [])
-                    {
-                        using RegistryKey? command = browsers!.OpenSubKey(name + @"\shell\open\command");
-                        if (SameExecutable(CommandExecutable(command?.GetValue(null) as string), executable))
-                            return true;
-                    }
-                }
-            }
+            if (RegisteredBrowsers(Registry.LocalMachine, Registry.CurrentUser)
+                .Any(registered => SameExecutable(CommandExecutable(registered.OpenCommand), executable)))
+                return true;
 
             return SameExecutable(ResolveFromRegistry()?.Executable, executable);
         }
@@ -101,6 +91,34 @@ internal static class UserBrowserIdentityResolver
             or UnauthorizedAccessException or IOException or ArgumentException or NotSupportedException)
         {
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Feria 2026-10-27 (caso 19): the installed browser of a family (as <see cref="Classify"/> names it) that Windows
+    /// has registered (Clients\StartMenuInternet, the user's first), whatever the default one is. Null when none of
+    /// that family is registered with an executable that exists; throws when the registry cannot be read.
+    /// </summary>
+    internal static UserBrowserIdentity? ResolveRegistered(string family) =>
+        RegisteredBrowsers(Registry.CurrentUser, Registry.LocalMachine)
+            .Select(static registered => Resolve(registered.Name, registered.OpenCommand))
+            .FirstOrDefault(identity => identity is not null
+                && string.Equals(identity.Family, family, StringComparison.Ordinal)
+                && File.Exists(identity.Executable));
+
+    private static IEnumerable<(string Name, string? OpenCommand)> RegisteredBrowsers(params RegistryKey[] hives)
+    {
+        foreach (RegistryKey hive in hives)
+        {
+            foreach (string clients in new[] { @"SOFTWARE\Clients\StartMenuInternet", @"SOFTWARE\WOW6432Node\Clients\StartMenuInternet" })
+            {
+                using RegistryKey? browsers = hive.OpenSubKey(clients);
+                foreach (string name in browsers?.GetSubKeyNames() ?? [])
+                {
+                    using RegistryKey? command = browsers!.OpenSubKey(name + @"\shell\open\command");
+                    yield return (name, command?.GetValue(null) as string);
+                }
+            }
         }
     }
 

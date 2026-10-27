@@ -101,6 +101,79 @@ public sealed class InstalledApplicationWindowEnumerationTests
         }
     }
 
+    // Feria (caso 16): an application installed from a web browser is a shortcut to the browser's launcher, which hands
+    // the page to the browser's own process; its window, of another program, was never the application's and the
+    // opening waited out its 30 s. The window that carries the shortcut's application id as its own is the
+    // application's, whatever process draws it; that process's other windows, and a window declaring another id, are not.
+    [Test]
+    public void AWindowThatDeclaresTheShortcutsApplicationIdIsTheApplicationsWhateverItsProcess()
+    {
+        const string ApplicationId = "Baxy.Fixture.WebApplication";
+        var owned = new List<nint>();
+        try
+        {
+            nint declared = Create(ApplicationId);
+            _ = Create(null);
+            _ = Create("Baxy.Fixture.OtherApplication");
+            // The shortcut runs a launcher that is not the test process's image.
+            var entry = new InstalledApplicationEntry(
+                "Web application fixture", ApplicationId, @"C:\Fixture Browser\launcher.exe", "--app-id=fixture");
+            var platform = new WindowsInstalledApplicationPlatform();
+
+            IReadOnlyList<InstalledApplicationObservation> opened = platform.Inventory(entry);
+            IReadOnlyList<InstalledApplicationObservation> resolved =
+                platform.InventoryForWindowResolution(entry, CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(opened.Select(static item => item.WindowHandle), Is.EqualTo(new[] { declared.ToInt64() }));
+                Assert.That(resolved.Select(static item => item.WindowHandle), Is.EqualTo(new[] { declared.ToInt64() }));
+                Assert.That(opened.Concat(resolved).All(static item => item.DeclaredByWindow), Is.True);
+            });
+        }
+        finally
+        {
+            foreach (nint handle in owned)
+            {
+                Declare(handle, null);
+                _ = DestroyWindow(handle);
+            }
+        }
+
+        nint Create(string? applicationId)
+        {
+            nint handle = CreateWindowEx(0x08000000, "STATIC", "Web application fixture", 0x90000000u,
+                -31000, -31000, 120, 80, 0, 0, 0, 0);
+            Assert.That(handle, Is.Not.EqualTo(nint.Zero), $"CreateWindowEx failed: {Marshal.GetLastPInvokeError()}");
+            owned.Add(handle);
+            Declare(handle, applicationId);
+            return handle;
+        }
+    }
+
+    // A window's own AppUserModelID, as a browser gives each application window it shows; null removes it.
+    private static void Declare(nint window, string? applicationId)
+    {
+        Guid store = typeof(IPropertyStore).GUID;
+        Marshal.ThrowExceptionForHR(SHGetPropertyStoreForWindow(window, ref store, out IPropertyStore properties));
+        var key = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5);
+        var value = new PropVariant
+        {
+            Type = (ushort)(applicationId is null ? 0 : 31), // VT_EMPTY or VT_LPWSTR
+            Value = applicationId is null ? 0 : Marshal.StringToCoTaskMemUni(applicationId),
+        };
+        try
+        {
+            properties.SetValue(ref key, ref value);
+            properties.Commit();
+        }
+        finally
+        {
+            Marshal.FreeCoTaskMem(value.Value);
+            _ = Marshal.ReleaseComObject(properties);
+        }
+    }
+
     // Renew al máximo (rendimiento): one poll of a packaged application looks at every process's main window (each one
     // an EnumWindows of its own through MainWindowHandle, about 300 a poll); the main windows are now read in one pass.
     [Test]
@@ -281,4 +354,31 @@ public sealed class InstalledApplicationWindowEnumerationTests
 
     [DllImport("user32.dll", ExactSpelling = true)]
     private static extern nint GetForegroundWindow();
+
+    [DllImport("shell32.dll", ExactSpelling = true)]
+    private static extern int SHGetPropertyStoreForWindow(nint window, ref Guid interfaceId, out IPropertyStore store);
+
+    [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface IPropertyStore
+    {
+        void GetCount(out uint count);
+        void GetAt(uint index, out PropertyKey key);
+        void GetValue(ref PropertyKey key, out PropVariant value);
+        void SetValue(ref PropertyKey key, ref PropVariant value);
+        void Commit();
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    private readonly record struct PropertyKey(Guid FormatId, uint PropertyId);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PropVariant
+    {
+        public ushort Type;
+        private readonly ushort _reserved1;
+        private readonly ushort _reserved2;
+        private readonly ushort _reserved3;
+        public nint Value;
+        private readonly nint _value2;
+    }
 }

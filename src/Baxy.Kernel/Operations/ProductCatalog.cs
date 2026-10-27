@@ -17,6 +17,9 @@ public static class ProductCatalog
     // The session media.control's YouTube tab publishes (WindowsExternalCapabilityProvider.YouTubeTabMediaSource).
     private const string YouTubeTabMediaSource = "BAXY YouTube (Edge)";
 
+    // The browsers a call may name: where a page opens (browser.navigate.named) and where a YouTube video plays.
+    private static readonly string[] NamedBrowsers = ["brave", "chrome", "edge", "opera", "opera_gx"];
+
     private static readonly ProductOperationDescriptor[] Catalog =
     [
         Descriptor(
@@ -273,7 +276,7 @@ public static class ProductCatalog
             "browser.navigate.named",
             Schema(
                 [
-                    String("browser", values: ["brave", "chrome", "edge", "opera", "opera_gx"]),
+                    String("browser", values: NamedBrowsers),
                     String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
                 ],
                 ["browser", "url"]),
@@ -1178,10 +1181,15 @@ public static class ProductCatalog
             budget: TimeSpan.FromSeconds(85)),
         Descriptor(
             "media.play.youtube",
-            Schema([String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["query"]),
+            Schema(
+                [
+                    String("browser", values: NamedBrowsers),
+                    String("query", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                ],
+                ["query"]),
             OperationRisks.ExternalCommunication,
             "media.play.youtube.cdp.video.postread.v1",
-            "Busca en YouTube, reproduce un resultado de video y verifica la reproducción: en el navegador propio del producto, el elemento multimedia y que avanza; en el de la persona, que la sesión multimedia del sistema dice que reproduce; con el reproductor propio instalado, sólo el sonido (audioOnly) en una ventana «BAXY YouTube»; en el navegador reproduce el primer vídeo que lista YouTube.",
+            "Busca en YouTube, reproduce el primer vídeo que lista y verifica la reproducción: en el navegador de la persona (el predeterminado, o el indicado en browser si Windows lo tiene registrado; si no, no abre nada), que la sesión multimedia del sistema dice que reproduce (con browser, sólo una sesión de ese navegador); sólo sin browser y si el predeterminado no se puede abrir, en el navegador propio del producto, el elemento multimedia y que avanza; el recibo dice en qué navegador suena (browser).",
             // Auditoría del núcleo 2026-10-23: lo que se busca sale a YouTube.
             effects: [Network()]),
         Descriptor(
@@ -1473,12 +1481,20 @@ public static class ProductCatalog
             Schema(
                 [
                     String("format", values: ["docx", "xlsx"]),
+                    // Feria 2026-10-27: a Word text had no tool and was typed key by key into what Word had in front.
+                    new OperationArgumentProperty(
+                        "paragraphs",
+                        OperationJsonType.Array,
+                        itemTypes: OperationJsonType.String,
+                        maximumItems: 100,
+                        itemMaximumUtf8Bytes: 8_192,
+                        itemNonWhitespace: true),
                     String("title", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["format", "title"]),
             OperationRisks.LowReversible,
             "office.document.create.adapter.postread.v1",
-            "Escribe en este PC un documento de Office mínimo (.docx o .xlsx) con ese título en Documentos\\BAXY, verifica el paquete releído y devuelve su identidad; no usa Office ni ninguna cuenta."),
+            "Escribe en este PC un documento de Office mínimo (.docx o .xlsx) con ese título y, en Word, los párrafos dados en Documentos\\BAXY, verifica el paquete releído (título y párrafos) y devuelve su identidad, su nombre de fichero y, con párrafos, cuántos párrafos y palabras tiene bajo el título; no usa Office ni ninguna cuenta."),
         Descriptor(
             "office.document.read",
             Schema([String("documentId", maximumLength: 128, nonWhitespace: true)], ["documentId"]),

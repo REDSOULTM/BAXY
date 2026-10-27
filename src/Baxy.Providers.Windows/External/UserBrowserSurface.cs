@@ -86,6 +86,12 @@ internal sealed partial class UserBrowserSurface
         return _platform.ResolveDefault();
     }
 
+    /// <summary>
+    /// Feria 2026-10-27 (caso 19): the person's install of the browser a call named, whatever the default one is; null
+    /// when Windows has none of that family registered. Throws when the registry cannot be read.
+    /// </summary>
+    internal UserBrowserIdentity? ResolveNamed(string family) => _platform.ResolveRegistered(family);
+
     /// <summary>A navigation in the person's browser; null when the browser could not be launched at all.</summary>
     internal async ValueTask<ExternalCapabilityReceipt?> NavigateAsync(
         string operation,
@@ -162,7 +168,8 @@ internal sealed partial class UserBrowserSurface
         string query,
         YouTubeSearchResult video,
         ExternalEffectBoundary effectBoundary,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool named = false)
     {
         IReadOnlyList<UserMediaSession>? read = await _platform.ReadMediaSessionsAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -173,16 +180,26 @@ internal sealed partial class UserBrowserSurface
         if (read is null)
             return ExternalJson.FailureBeforeEffect(operation, MediaSessionsNotRead);
         IReadOnlyList<UserMediaSession> before = read;
-        if (!TryOpen(video.WatchUri, effectBoundary, cancellationToken))
+        if (!TryOpen(video.WatchUri, effectBoundary, cancellationToken, named ? browser : null))
             return null;
         // Ronda 19 (t1-c01 «ponme algo de los prisioneros», Opera closed): a browser this request launched has no
         // session of its own before the page, so whatever session it shows now is the page's, whatever its title.
         UserMediaSession? playing = await AwaitPlaybackAsync(
             browser, video.Title, before, browserRunning ? PlaybackPolls : SlowStartPlaybackPolls, cancellationToken,
             silentPollsLimit: browserRunning ? SilentPlaybackPolls : null,
-            coldLaunch: !browserRunning).ConfigureAwait(false);
+            coldLaunch: !browserRunning, ownSessionsOnly: named).ConfigureAwait(false);
+        // Caso 19: the page was opened, so the failure says where, as a success does.
         if (playing is null)
-            return ExternalJson.FailureAfterEffect(operation, PlaybackUnconfirmed);
+            return ExternalJson.FailureAfterEffect(operation, PlaybackUnconfirmed) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("openedUrl", video.WatchUri.AbsoluteUri);
+                    writer.WriteString("browser", browser.DisplayName);
+                    writer.WriteEndObject();
+                }),
+            };
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -313,17 +330,22 @@ internal sealed partial class UserBrowserSurface
         _ => new(new Uri("https://www.disneyplus.com/browse/search"), true, "disney_authentication_required"),
     };
 
-    private bool TryOpen(Uri target, ExternalEffectBoundary effectBoundary, CancellationToken cancellationToken)
+    private bool TryOpen(
+        Uri target, ExternalEffectBoundary effectBoundary, CancellationToken cancellationToken,
+        UserBrowserIdentity? named = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
         try
         {
-            _platform.Open(target);
+            if (named is null)
+                _platform.Open(target);
+            else
+                _platform.OpenWith(named, target);
         }
         catch (Exception exception) when (exception is System.ComponentModel.Win32Exception
             or InvalidOperationException or FileNotFoundException or ArgumentException)
         {
-            // Nothing was launched: the caller keeps the product browser as fallback.
+            // Nothing was launched: the caller keeps the product browser as fallback, never for a browser a call named.
             return false;
         }
         // The link is out: from here the effect may have happened whatever the token says.
@@ -715,7 +737,8 @@ internal sealed partial class UserBrowserSurface
         CancellationToken cancellationToken,
         bool anyNewBrowserSession = false,
         int? silentPollsLimit = null,
-        bool coldLaunch = false)
+        bool coldLaunch = false,
+        bool ownSessionsOnly = false)
     {
         int notPlaying = 0;
         bool nudged = false;
@@ -727,7 +750,7 @@ internal sealed partial class UserBrowserSurface
                 .ConfigureAwait(false) ?? [];
             traced |= !BrowserSessionsUnchanged(browser, before, sessions);
             UserMediaSession? candidate = PlaybackCandidate(
-                browser, expectedTitle, before, sessions, anyNewBrowserSession, coldLaunch);
+                browser, expectedTitle, before, sessions, anyNewBrowserSession, coldLaunch, ownSessionsOnly);
             if (candidate is null)
             {
                 if (!traced && attempt + 1 >= silentPollsLimit)
@@ -755,7 +778,8 @@ internal sealed partial class UserBrowserSurface
     /// The session the opened page started: one whose title is the expected
     /// one (the browser's own sessions first), or —for a service whose session
     /// title is not the title asked for— a session of the person's browser that
-    /// had no session with that title before the page was opened.
+    /// had no session with that title before the page was opened. A browser the call named is verified by its own
+    /// sessions only (<paramref name="ownSessionsOnly"/>): the same title in another browser proves nothing.
     /// </summary>
     internal static UserMediaSession? PlaybackCandidate(
         UserBrowserIdentity browser,
@@ -763,7 +787,8 @@ internal sealed partial class UserBrowserSurface
         IReadOnlyList<UserMediaSession> before,
         IReadOnlyList<UserMediaSession> sessions,
         bool anyNewBrowserSession,
-        bool coldLaunch = false)
+        bool coldLaunch = false,
+        bool ownSessionsOnly = false)
     {
         // A browser this request launched had no page of the person's playing: any session of it that was not there
         // before is the page's, as for a service whose session title is not the title asked for.
@@ -771,7 +796,8 @@ internal sealed partial class UserBrowserSurface
         if (expectedTitle.Length > 0)
         {
             UserMediaSession? titled = sessions
-                .Where(session => TitlesMatch(session.Title, expectedTitle) && !AlreadyThere(session, before))
+                .Where(session => TitlesMatch(session.Title, expectedTitle) && !AlreadyThere(session, before)
+                    && (!ownSessionsOnly || browser.OwnsMediaSession(session.SourceAppUserModelId)))
                 .OrderByDescending(session => browser.OwnsMediaSession(session.SourceAppUserModelId))
                 .ThenByDescending(session => session.PlaybackStatus == "playing")
                 .FirstOrDefault();

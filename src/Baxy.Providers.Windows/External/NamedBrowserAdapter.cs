@@ -83,7 +83,7 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
             }
             if (opened is not null)
             {
-                _sessionContext?.UseUserBrowser();
+                _sessionContext?.UseUserBrowser(userBrowser);
                 return opened;
             }
         }

@@ -1165,6 +1165,33 @@ public sealed class ExternalAdaptersTests
                 Is.EqualTo("https://www.youtube.com/watch?v=verified"));
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("youtube_cdp_video_postread"));
+            // Feria 2026-10-27 (caso 19): the receipt says where it plays, here the product's own browser.
+            Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("product"));
+        });
+    }
+
+    // Caso 19: a playback in the product's browser that was not verified still says where the page was opened.
+    [Test]
+    public async Task AnUnverifiedYouTubePlaybackSaysWhereItsPageWasOpened()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserPlaybackSession(
+            temporary.Path,
+            new(false, true, "gatos", string.Empty, string.Empty, "page-9", "youtube_playback_not_verified_video_missing"));
+        using var http = new HttpClient(new StubHttpHandler(
+            "{\"videoRenderer\":{\"videoId\":\"abcdefghijk\"}}"));
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_playback_not_verified_video_missing"));
+            Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("product"));
+            Assert.That(receipt.Result?.GetProperty("openedUrl").GetString(), Does.EndWith("/watch?v=abcdefghijk"));
         });
     }
 
@@ -4840,6 +4867,76 @@ public sealed class ExternalAdaptersTests
             if (answer.Location is not null) response.Headers.Location = new Uri(answer.Location, UriKind.RelativeOrAbsolute);
             return Task.FromResult(response);
         }
+    }
+
+    // Feria 2026-10-27: a Word document with a text in it had no tool (only its title was written), so a long text was
+    // typed key by key into whatever field Word had in front. The body goes in as paragraphs (an entry's line breaks
+    // make paragraphs of their own), the reread package must hold title and paragraphs as asked, and the receipt counts
+    // them and names the file.
+    [Test]
+    public async Task AWordDocumentIsWrittenWithItsParagraphsAndTheRereadCountsThem()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create",
+            Json("""{"format":"docx","title":"Cuento","paragraphs":["Había una vez un faro \"azul\" y un barco.","Llegó la noche.\r\n\n  Y amaneció 🌙.  \rFin."]}"""),
+            CancellationToken.None);
+
+        string path = Directory.GetFiles(temporary.Path, "*.docx").Single();
+        string text = (await adapter.InvokeAsync(
+            "office.document.read",
+            Json($$"""{"documentId":"{{receipt.Result?.GetProperty("documentId").GetString()}}"}"""),
+            CancellationToken.None)).Result?.GetProperty("text").GetString() ?? string.Empty;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("paragraphCount").GetInt32(), Is.EqualTo(4));
+            Assert.That(receipt.Result?.GetProperty("wordCount").GetInt32(), Is.EqualTo(16));
+            Assert.That(receipt.Result?.GetProperty("name").GetString(), Is.EqualTo(Path.GetFileName(path)));
+            Assert.That(text, Is.EqualTo("Cuento\nHabía una vez un faro \"azul\" y un barco.\nLlegó la noche.\nY amaneció 🌙.\nFin."));
+        });
+    }
+
+    // A control character XML cannot hold would leave a file Word cannot open: refused before anything is written.
+    [Test]
+    public async Task AParagraphXmlCannotHoldIsRefusedBeforeAnythingIsWritten()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create",
+            Json("""{"format":"docx","title":"Cuento","paragraphs":["uno\u0001dos"]}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("office_text_invalid_character"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
+        });
+    }
+
+    // A spreadsheet has no paragraphs: asked for one with them, nothing is written and the refusal names it.
+    [Test]
+    public async Task ParagraphsForASpreadsheetAreRefusedBeforeAnythingIsWritten()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create",
+            Json("""{"format":"xlsx","title":"Gastos","paragraphs":["Luz"]}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("office_paragraphs_docx_only"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
+        });
     }
 
     [Test]

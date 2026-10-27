@@ -659,6 +659,7 @@ public sealed class ProductCatalogTests
     [TestCase("media.play.query", "{\"provider\":\"spotify\",\"query\":\"x\"}")]
     [TestCase("media.play.exact", "{\"provider\":\"spotify\",\"title\":\"x\"}")]
     [TestCase("media.play.youtube", "{\"query\":\"x\"}")]
+    [TestCase("media.play.youtube", "{\"query\":\"x\",\"browser\":\"opera_gx\"}")]
     [TestCase("streaming.play.named", "{\"service\":\"netflix\",\"title\":\"x\"}")]
     [TestCase("streaming.navigate", "{\"service\":\"netflix\",\"resourceUri\":\"https://www.netflix.com/title/1\"}")]
     [TestCase("game.store.search", "{\"query\":\"x\"}")]
@@ -673,6 +674,24 @@ public sealed class ProductCatalogTests
             Assert.That(descriptor.Has(OperationEffects.Network, given.RootElement), Is.True);
             Assert.That(RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal,
                 operation, given.RootElement), Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
+    // Feria 2026-10-27 (caso 19): a YouTube video could not be asked for in a named browser; it may name the browsers
+    // a named navigation does, those and no other, and naming none stays valid.
+    [Test]
+    public void YouTubeNamesTheBrowsersANamedNavigationNames()
+    {
+        static IReadOnlyList<string> Browsers(string operation) => ProductCatalog.GetRequired(operation).ArgumentsSchema
+            .Properties.Single(static property => property.Name == "browser").AllowedValues;
+        OperationArgumentsSchema youtube = ProductCatalog.GetRequired("media.play.youtube").ArgumentsSchema;
+        using JsonDocument unknown = JsonDocument.Parse("""{"query":"x","browser":"firefox"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Browsers("media.play.youtube"), Is.EqualTo(Browsers("browser.navigate.named")));
+            Assert.That(youtube.Required, Is.EqualTo(new[] { "query" }));
+            Assert.That(OperationArgumentValidator.IsValid(unknown.RootElement, youtube), Is.False);
         });
     }
 
