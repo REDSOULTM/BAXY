@@ -58,14 +58,25 @@ def test_a_key_with_no_window_into_a_named_app_nobody_opened_is_not_pressed(tmp_
 
 
 def test_it_is_told_once_and_the_models_next_typing_runs(tmp_path: Path, monkeypatch) -> None:
-    # A name of the catalog may be a plain word of what was said («el cursor»): told once, the model decides.
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     key = _call("input_key_press", {"key": "ctrl_end"})
     mind, _ = _mind(tmp_path, [key, key])
     mind.names = [*APPS, "Cursor"]
-    step = mind.decide(1, "pon el cursor al final")
+    step = mind.decide(1, "pulsa control fin en Cursor")
     assert step["kind"] == "action" and step["operation"] == "input_key_press"
     assert [body["application"] for body in _not_run(mind)] == [["Cursor"]]
+
+
+def test_a_name_of_the_catalog_said_but_not_as_where_to_write_is_not_held(tmp_path: Path, monkeypatch) -> None:
+    # PC-L, decision v6 2026-10-27: «escribe … donde tengo el cursor» was held for the app named Cursor and the model
+    # opened it; only a name said as the place («en …», «in …») is where the text goes
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "nos vemos el lunes"}),
+                               _call("input_key_press", {"key": "ctrl_end"})])
+    mind.names = [*APPS, "Cursor"]
+    assert mind.decide(1, "escribe «nos vemos el lunes» donde tengo el cursor")["operation"] == "input_text_type"
+    assert mind.decide(2, "pon el cursor al final")["operation"] == "input_key_press"
+    assert _not_run(mind) == []
 
 
 def test_a_key_after_typing_a_name_of_the_catalog_is_pressed(tmp_path: Path, monkeypatch) -> None:

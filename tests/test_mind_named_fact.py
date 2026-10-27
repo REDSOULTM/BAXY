@@ -74,7 +74,7 @@ def test_what_memory_holds_is_an_option_and_never_goes_to_the_web(tmp_path, monk
     mind.tools = [SEARCH, {"type": "function", "function": {"name": "memory_recall",
                                                             "description": "Recall what you keep. More.",
                                                             "parameters": {}}}]
-    assert mind.decide(1, "¿Quién es Lena en mis contactos?")["reply"] == "Lena es tu hermana." and not fills
+    assert mind.decide(1, "¿Quién es Lena?")["reply"] == "Lena es tu hermana." and not fills
     assert set(one.asked[0]["options"]) == {"web_search", "memory_recall", "responder_con_palabras"}
 
 
@@ -98,4 +98,15 @@ def test_a_fact_about_a_named_thing_that_is_not_asked_what_it_is_is_not_judged(t
     assert mind.decide(1, "¿Cuál es la capital de Zorvia? Siempre se me olvida")["kind"] == "conversation"
     assert mind.decide(2, "¿Ya me abriste lo de Descargas?")["kind"] == "conversation"
     assert mind.decide(3, "My nephew asked me what the letters ZRV mean")["kind"] == "conversation"
+    assert one.asked == [] and not fills
+
+
+def test_a_question_about_something_else_of_a_named_thing_is_not_judged(tmp_path, monkeypatch) -> None:
+    # PC-L, decision v6 2026-10-27: the author of a book named before, or a word in a language, went to the web; the
+    # named thing has to close the question about what or who it is
+    mind, server, one, fills = _named(tmp_path, monkeypatch, "web_search",
+                                      [_say("El autor de Zorvik Grande es Ana Velmar."),
+                                       _say("The Zorvian word for thanks is velma.")])
+    assert mind.decide(1, "Estoy leyendo Zorvik Grande, ¿quién es el autor?")["kind"] == "conversation"
+    assert mind.decide(2, "I'm visiting Zorvia soon, what's the Zorvian word for thanks?")["kind"] == "conversation"
     assert one.asked == [] and not fills

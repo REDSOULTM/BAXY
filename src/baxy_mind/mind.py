@@ -621,8 +621,23 @@ _ABOUT = re.compile(r"(?:^|[,;:])\W*(?:(?:que|quien(?:es)?) (?:es|son|era|eran|f
                     r"(?:de|del|sobre|acerca)|que sabes (?:de|del|sobre)|conoces|(?:what|who)(?:'s| is| are| was)"
                     r"|tell me about|do you know)\b")
 _SENTENCES = re.compile(r"[.!?¿¡:;\n]+")
+
 _WORDS = re.compile(r"[^\W\d_][\w'&-]*")
 _TOLD = re.compile(r"[^.!?]+[.!?]*")
+
+
+def _asked_about(text: str) -> str:
+    """The folded word that closes a question about what or who something is (_ABOUT), when it is a few words long;
+    empty otherwise. PC-L, decision v6 2026-10-27: the author of a book named before, or a word in a language, went to
+    the web: the named thing has to be what is asked about («qué es el jugo X», not «quién es el autor» of X)."""
+    folded = _fold(text)
+    about = _ABOUT.search(folded)
+    if about is None:
+        return ""
+    clause = _WORDS.findall(re.split(r"[,.;:!?¿¡]", folded[about.end():], maxsplit=1)[0])
+    return clause[-1] if 0 < len(clause) <= 4 else ""
+
+
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
                                                           "set; it was not made"})
@@ -651,6 +666,10 @@ _CLOSE_SAID = re.compile(r"\b(?:cierr\w*|cerr\w*|clos\w*|sal|salir|sali\w*|quit\
 # that no completed call of the turn opened, focused, resolved or acted on, is not handed to the App: its result says so,
 # as data, and the model decides again with its tools. Once per turn: a name of the catalog may be a plain word of what
 # was said («el cursor», «un correo»), so the model's next typing or key runs as it is.
+# PC-L, decision v6 2026-10-27: «escribe … donde tengo el cursor» was held for an app named Cursor and the model opened
+# it. A name is where the text goes only said as a place: after «en», «in», «on», «into» or «a(l)», maybe with an
+# article (the name's own words are marked \0 in the folded words before this is searched).
+_PLACE = re.compile(r" (?:en|in|on|into|al|a)(?: (?:el|la|los|las|un|una|mi|the|my))? \0 ")
 WRITES_TO_FRONT = frozenset({"input_text_type", "input_key_press"})
 OPENS_WINDOW = frozenset({"app_open", "window_focus", "window_resolve"})  # and any completed call that is not a read
 TARGET_ARGUMENTS = ("window", "windowId", "index")  # a window, or the field of the last look: not the window in front
@@ -2291,9 +2310,8 @@ class Mind:
             return self._look_up_first(request_id, stage, turn, body, reply, started)
         if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
                 and not turn.get("named") and not turn.get("receipts") and not turn.get("private")
-                and _aid_on("named_fact") and _ABOUT.search(_fold(turn["text"]))
-                and self.system_one is not None and self.system_one.ready
-                and self._unkept(self._names_said(turn["text"], content))):
+                and _aid_on("named_fact") and self.system_one is not None and self.system_one.ready
+                and self._unkept(self._names_said(turn["text"], content) & {_asked_about(turn["text"])})):
             looked = self._named_fact(request_id, stage, turn, body, reply, started)
             if looked is not None:
                 return looked
@@ -2968,7 +2986,8 @@ class Mind:
         written = [arguments, *(r.get("arguments") or {} for r in receipts if r.get("tool") in WRITES_TO_FRONT)]
         typed = _words(" ".join(str(given.get(key) or "") for given in written for key in ("text", "replacing")))
         named = [name for name in dict.fromkeys(self.names)
-                 if _words(name).strip() and _words(name) in said and _words(name) not in typed]
+                 if _words(name).strip() and _PLACE.search(said.replace(_words(name), " \0 "))
+                 and _words(name) not in typed]
         if not named:
             return []
         reached = "".join(_words(json.dumps(r.get("arguments"), ensure_ascii=False) + " " + _as_read(r.get("observation")))
