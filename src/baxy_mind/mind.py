@@ -574,10 +574,13 @@ SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder 
 # Aid «dated_search» (feria 2026-10-27): after «conversación nueva» the model answered every question about something of
 # a given year from memory (mundial 2022 «Francia», Copa América 2021 «Chile», Balón de Oro 2023 «Mbappé»: 3 of 5 wrong);
 # a sentence in rule 5 alone did not hold past a few answers from memory in a row. The question with one number, a year,
-# answered in words with nothing looked at, is decided once more with this note; the model still chooses.
-DATED_NOTE = ("[Nota interna, no la escribió la persona: pregunta por algo de un año concreto, y esos datos de memoria "
-              "se confunden. Búscalo con web_search y responde con lo que encuentres.]")
+# or a curiosity asked for, answered in words with nothing looked at, is decided once more with this note; the model still
+# chooses.
+DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto (de un año, o una curiosidad), y esos "
+              "datos de memoria se confunden. Búscalo con web_search y responde con lo que encuentres.]")
 _YEAR_ALONE = re.compile(r"^\D*(?<!\d)(?:1[5-9]|20)\d\d(?!\d)\D*$")
+# A curiosity asked for (feria 2026-10-27, «cuéntame un dato curioso…» from memory: «el estribo, en el pie»).
+_CURIOUS = re.compile(r"\b(?:datos? curios[oa]s?|curiosidad(?:es)?|fun facts?)\b")
 _ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|donde|como|who|what|which|when|how|where)\b")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
@@ -2180,8 +2183,11 @@ class Mind:
 
     @staticmethod
     def _dated(text: str) -> bool:
-        """Whether the person asks about something of a given year: a question whose only number is a year."""
-        return bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(_fold(text))))
+        """Whether the person asks for a fact memory confuses: about something of a given year (a question whose only
+        number is a year), or a curiosity."""
+        folded = _fold(text)
+        return ((bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(folded))))
+                or bool(_CURIOUS.search(folded)))
 
     def _look_up_first(self, request_id: Any, stage: str, turn: dict[str, Any], started: float) -> dict[str, Any]:
         """Aid «dated_search» (DATED_NOTE): the words answered from memory are not said; the model decides once more

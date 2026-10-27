@@ -50,3 +50,13 @@ def test_without_the_aid_a_dated_question_is_answered_as_written(tmp_path: Path,
     monkeypatch.setenv("BAXY_AYUDAS", "none")
     mind, server = _mind(tmp_path, [_say("Lo ganó Francia.")])
     assert mind.decide(1, "¿Quién ganó el mundial 2022?")["reply"] == "Lo ganó Francia." and len(server.bodies) == 1
+
+
+def test_a_curiosity_asked_for_is_looked_up_too(tmp_path: Path, monkeypatch) -> None:
+    # feria 2026-10-27: «Dime un dato curioso del cuerpo humano» → «el estribo, en el pie», from memory
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_say("El estribo está en el pie."), _call("web_search", {"query": "dato curioso"}),
+                                    _say("Un chiste."), _say("Hola.")])
+    assert mind.decide(1, "Dime un dato curioso del cuerpo humano.")["kind"] == "action"
+    assert mind.decide(2, "Cuéntame un chiste corto.")["reply"] == "Un chiste."
+    assert mind.decide(3, "Curiosamente, hola.")["reply"] == "Hola." and len(server.bodies) == 4
