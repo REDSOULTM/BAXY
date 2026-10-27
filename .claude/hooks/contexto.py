@@ -37,12 +37,15 @@ def git(project: Path, *args: str) -> str:
 def orientation(project: Path) -> str:
     now = datetime.datetime.now()
     host = os.environ.get("COMPUTERNAME") or socket.gethostname()
+    where = (f"Ahora: {DAYS[now.weekday()]} {now:%Y-%m-%d %H:%M} (hora local). "
+             f"Máquina: {MACHINES.get(host.upper(), host)}. ")
+    if git(project, "rev-parse", "--is-inside-work-tree") != "true":
+        return where + (f"Carpeta: {project}, que no es un repositorio git: antes de tocar código, entra en el "
+                        "worktree del goal y comprueba su rama.")
     branch = git(project, "branch", "--show-current") or "(sin rama: HEAD suelto)"
     head = git(project, "log", "-1", "--format=%h %s")
     dirty = len([line for line in git(project, "status", "--porcelain").splitlines() if line.strip()])
-    return (f"Ahora: {DAYS[now.weekday()]} {now:%Y-%m-%d %H:%M} (hora local). "
-            f"Máquina: {MACHINES.get(host.upper(), host)}. Worktree: {project}. "
-            f"Rama: {branch}; HEAD {head or '?'}; {dirty} fichero(s) sin confirmar.")
+    return where + f"Worktree: {project}. Rama: {branch}; HEAD {head or '?'}; {dirty} fichero(s) sin confirmar."
 
 
 def texts(content):
