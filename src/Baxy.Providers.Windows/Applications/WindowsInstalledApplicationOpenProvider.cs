@@ -345,7 +345,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     .ConfigureAwait(false);
                 if (!takeFront && handBackTo != 0)
                 {
-                    _ = GuardFrontAsync(handBackTo, focused.ProcessId, _platform.FrontGuardStamp());
+                    _ = GuardFrontAsync(handBackTo, focused, _platform.FrontGuardStamp());
                 }
                 return Success(request, entry, focused, running, activated, restored, shownWithoutFocus: shown);
             }
@@ -871,7 +871,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // is theirs to keep; r4a M2: typing in their own window is not, and does not end it): only a front the
     // application took by itself is handed back. r4a M4 (w1): each look reads and hands back under the front's gate,
     // which the foreground lease holds while it brings a window up, so the guard never undoes a burst's front.
-    private async Task GuardFrontAsync(long previousFront, int processId, ForegroundHandBack.GuardStamp stamp)
+    private async Task GuardFrontAsync(
+        long previousFront, InstalledApplicationObservation opened, ForegroundHandBack.GuardStamp stamp)
     {
         try
         {
@@ -887,7 +888,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                     long front = _platform.ForegroundWindow();
                     if (front == 0 || front == previousFront)
                         continue;
-                    if (_platform.SameApplication(processId, _platform.WindowProcessId(front)))
+                    if (IsOpened(opened, front))
                     {
                         bool restored = await ReturnForegroundWithinBudgetAsync(previousFront, front, CancellationToken.None)
                             .ConfigureAwait(false);
@@ -1489,8 +1490,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     }
 
     // Whether «window» is the opened application's: its window, or a window of its process or of the same program.
+    // Review R6: an application told by the id its window declares runs in another program (a browser), whose other
+    // windows are the person's, so only that window is the application's.
     private bool IsOpened(InstalledApplicationObservation opened, long window) =>
-        window == opened.WindowHandle || _platform.SameApplication(opened.ProcessId, _platform.WindowProcessId(window));
+        window == opened.WindowHandle
+        || (!opened.DeclaredByWindow
+            && _platform.SameApplication(opened.ProcessId, _platform.WindowProcessId(window)));
 
     private async ValueTask<InstalledApplicationObservation?> TryFocusAsync(
         InstalledApplicationEntry entry,

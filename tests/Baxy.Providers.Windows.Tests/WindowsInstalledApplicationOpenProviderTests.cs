@@ -970,6 +970,49 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         Assert.That(platform.HandedBack, Has.Count.EqualTo(handedBack));
     }
 
+    // Review R6: an application known by the id its window declares runs in another program (a browser); the person
+    // typing in an ordinary window of that browser (74, process 5151) is working elsewhere, so the opening is shown
+    // without taking their keyboard.
+    [Test]
+    public async Task AWindowDeclaredApplicationLeavesThePersonInAnotherWindowOfItsProgramTheirKeyboard()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Launched() with { ProcessId = 5151, Foreground = true, DeclaredByWindow = true },
+            PersonFront = 74,
+            WorkingFront = 74,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.ShownWithoutFocus, Is.True);
+            Assert.That(platform.FocusCalls, Is.Zero);
+        });
+    }
+
+    // Review R6: the guard hands back only the declaring window's front, not one another window of the same program
+    // (an ordinary window of the browser) took.
+    [Test]
+    public async Task TheGuardOfAWindowDeclaredApplicationLeavesTheProgramsOtherWindows()
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            ObservationAfterActivation = Launched() with { ProcessId = 5151, DeclaredByWindow = true },
+            PersonFront = 0x500,
+            FrontAfterOpening = 74,
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        _ = await provider.OpenAsync(Request("Steam"), CancellationToken.None);
+        await GuardOver();
+
+        Assert.That(platform.HandedBack, Is.Empty);
+    }
+
     // v3 point 0 review: the guard hands back only a front the application took by itself. When BAXY's next act took
     // it on purpose (its first click or key, inside the guard's 3 s) or the person clicked the new window,
     // the front stays where it went; otherwise it goes back to the person's window.
