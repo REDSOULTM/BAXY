@@ -2378,6 +2378,11 @@ class Mind:
         only a yes (PLAIN_YES), whatever System One's own thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
             return None
+        # Aid «dated_search» (soak of the fair, 2026-10-27): the web_search the model chose for a dated question or a
+        # curiosity asked for, under the threshold, became «¿Quieres que busque…?» 6 times: it is the call that aid asks
+        # for, so its doubt does not hold it.
+        if call["wire"] == "web_search" and _aid_on("dated_search") and self._dated(turn["text"]):
+            return None
         doubt = read_doubt(reply)
         if doubt is None:
             return None

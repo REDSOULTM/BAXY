@@ -289,3 +289,17 @@ def test_words_that_are_only_a_yes_are_not_held_by_the_confirm_floor(tmp_path, m
     pending = {"operation": "filesystem.known.trash.named", "arguments": {"fileName": "notas.txt"}}
     result = mind.decide(1, words, pending)
     assert result["operation"] == (None if held else "confirmation.answer")
+
+
+def test_an_unsure_search_for_a_dated_question_or_a_curiosity_is_not_held(tmp_path, monkeypatch) -> None:
+    # Aid «dated_search», soak of the fair (2026-10-27): web_search chosen for «¿Quién ganó el premio Nobel de Física
+    # 2023?» or «Cuéntame un dato curioso de los océanos» under the threshold became «¿Quieres que busque…?» 6 times.
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("web_search", {"query": "Nobel de Física 2023"}, 0.3),
+                               _call("web_search", {"query": "dato curioso océanos"}, 0.3),
+                               _call("web_search", {"query": "clima"}, 0.3), _say("¿Qué quieres buscar?")])
+    mind.wire_to_op["web_search"] = "web.search"
+    assert mind.decide(1, "¿Quién ganó el premio Nobel de Física 2023?")["operation"] == "web.search"
+    assert mind.decide(2, "Cuéntame un dato curioso de los océanos.")["operation"] == "web.search"
+    assert mind.decide(3, "busca algo")["operation"] is None  # any other unsure search is held as before
