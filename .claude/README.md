@@ -33,12 +33,28 @@ Los tres plugins no traen hooks ni servidores MCP; están activados en `settings
 | skill `lanzar-baxy` | «Lanza BAXY» con `scripts\run_renew.cmd` y comprobando que arrancó. |
 | agente `revisor-privacidad`, comando `/limpiar-muerto` | Lo que el toolkit oficial no mira: que no salga nada de la persona; ley 5. |
 
+## context-mode: aprobado por el dueño, lo instala él
+
+`mksglu/context-mode` saca las salidas largas del contexto y guarda la sesión en SQLite local para restaurarla
+tras compactar. El dueño lo aprobó el 2026-10-26 sabiendo lo que hace: cada arranque añade un hook de
+reparación al `~/.claude/settings.json` global, guarda mensajes y salidas en claro bajo
+`~/.claude/context-mode/` (7 días), consulta npm cada hora y reescribe algunos comandos (`curl`, `fetch` en
+línea, `gradle`) y los prompts de los subagentes. Sólo envía eventos fuera si existe
+`%APPDATA%\context-mode\platform.json`: ese fichero no debe crearse. La instalación por Claude Code la bloquea
+el clasificador de permisos, así que se hace a mano desde la raíz del worktree:
+
+```bash
+claude plugin marketplace add mksglu/context-mode
+claude plugin install context-mode@context-mode --scope project
+```
+
+Convive con el hook `contexto.py`: context-mode recupera lo relevante por búsqueda; `contexto.py` garantiza
+los mensajes del dueño literales. Quitarlo: `claude plugin uninstall context-mode@context-mode --scope project`
+y borrar `~/.claude/context-mode/`, `~/.claude/hooks/context-mode-cache-heal.mjs` y su entrada en
+`~/.claude/settings.json`.
+
 ## Revisado y descartado
 
-- **context-mode** (`mksglu/context-mode`): reduce el contexto y guarda la sesión, pero cada arranque escribe un
-  hook en el `~/.claude/settings.json` global, guarda en claro todos los mensajes y salidas, puede enviar eventos a
-  su servidor si existe su fichero de plataforma, consulta npm cada hora y reescribe algunos comandos y los
-  prompts de los subagentes. Choca con la privacidad y con «nada a nivel de usuario sin el sí del dueño».
 - **claude-mem**: memoria alojada en su nube por defecto. **Continuous-Claude v3**: PostgreSQL y sin cambios
   desde enero. **claude-context** (Zilliz): por defecto manda el código a Zilliz y OpenAI.
 - **everything-claude-code**: 28 hooks en Node que registran todo y escriben a nivel de usuario; reglas que
