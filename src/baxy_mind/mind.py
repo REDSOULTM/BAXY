@@ -66,8 +66,7 @@ SYSTEM = (
     "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra herramienta "
     "ni lo conviertas en una pregunta.\n"
     "5. Charla, cuentas, traducciones y lo que sabes con certeza respóndelo tú. Lo que cambia con el tiempo o no sabes, "
-    "búscalo con web_search, y también quién ganó algo, récords, cifras o fechas de un suceso y una curiosidad que te "
-    "pidan: de memoria se confunden, así que «¿quién ganó el mundial 2022?» se busca aunque creas saberlo. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
+    "búscalo con web_search. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
     "con memory_recall.\n"
     "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («sincuenta» es 50).\n"
     "7. Si la persona te pide que pares, te calles o esperes, no hagas nada más: responde con una palabra.\n"
@@ -572,6 +571,14 @@ ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
 # completed, is written once more with this note, words only.
 SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder exactamente lo mismo que tu respuesta "
                    "anterior. No la repitas: responde a lo que dice ahora la persona, con otras palabras.]")
+# Aid «dated_search» (feria 2026-10-27): after «conversación nueva» the model answered every question about something of
+# a given year from memory (mundial 2022 «Francia», Copa América 2021 «Chile», Balón de Oro 2023 «Mbappé»: 3 of 5 wrong);
+# a sentence in rule 5 alone did not hold past a few answers from memory in a row. The question with one number, a year,
+# answered in words with nothing looked at, is decided once more with this note; the model still chooses.
+DATED_NOTE = ("[Nota interna, no la escribió la persona: pregunta por algo de un año concreto, y esos datos de memoria "
+              "se confunden. Búscalo con web_search y responde con lo que encuentres.]")
+_YEAR_ALONE = re.compile(r"^\D*(?<!\d)(?:1[5-9]|20)\d\d(?!\d)\D*$")
+_ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|donde|como|who|what|which|when|how|where)\b")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
                                                           "set; it was not made"})
@@ -2147,6 +2154,10 @@ class Mind:
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
             return self._next(request_id, stage, turn, final=True)
+        if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
+                and not turn.get("dated") and not turn.get("receipts") and _aid_on("dated_search")
+                and self._dated(turn["text"])):
+            return self._look_up_first(request_id, stage, turn, started)
         if (content and not turn.get("beat") and not turn.get("said_again")
                 and not any(r.get("completed") for r in turn.get("receipts") or [])
                 and _aid_on("say_once") and self._said_last(conv, content)):
@@ -2166,6 +2177,27 @@ class Mind:
                 except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
                     pass
         return self._result(request_id, turn, None, reply, stage, started, content)
+
+    @staticmethod
+    def _dated(text: str) -> bool:
+        """Whether the person asks about something of a given year: a question whose only number is a year."""
+        return bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(_fold(text))))
+
+    def _look_up_first(self, request_id: Any, stage: str, turn: dict[str, Any], started: float) -> dict[str, Any]:
+        """Aid «dated_search» (DATED_NOTE): the words answered from memory are not said; the model decides once more
+        with the note, which does not stay in the conversation."""
+        turn["dated"] = True
+        self._log("turn.dated", started, None)
+        conv = turn["conv"]
+        note = {"role": "user", "content": DATED_NOTE}
+        conv.append(note)
+        try:
+            return self._next(request_id, stage, turn)
+        finally:
+            for index in range(len(conv) - 1, -1, -1):
+                if conv[index] is note:
+                    del conv[index]
+                    break
 
     @staticmethod
     def _said_last(conv: list[dict[str, Any]], content: str) -> bool:
