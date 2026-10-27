@@ -33,25 +33,23 @@ Los tres plugins no traen hooks ni servidores MCP; están activados en `settings
 | skill `lanzar-baxy` | «Lanza BAXY» con `scripts\run_renew.cmd` y comprobando que arrancó. |
 | agente `revisor-privacidad`, comando `/limpiar-muerto` | Lo que el toolkit oficial no mira: que no salga nada de la persona; ley 5. |
 
-## context-mode: aprobado por el dueño, lo instala él
+## Instalado con el sí del dueño (2026-10-26)
 
-`mksglu/context-mode` saca las salidas largas del contexto y guarda la sesión en SQLite local para restaurarla
-tras compactar. El dueño lo aprobó el 2026-10-26 sabiendo lo que hace: cada arranque añade un hook de
-reparación al `~/.claude/settings.json` global, guarda mensajes y salidas en claro bajo
-`~/.claude/context-mode/` (7 días), consulta npm cada hora y reescribe algunos comandos (`curl`, `fetch` en
-línea, `gradle`) y los prompts de los subagentes. Sólo envía eventos fuera si existe
-`%APPDATA%\context-mode\platform.json`: ese fichero no debe crearse. La instalación por Claude Code la bloquea
-el clasificador de permisos, así que se hace a mano desde la raíz del worktree:
+**context-mode** (`mksglu/context-mode`, ELv2): saca las salidas largas del contexto y guarda la sesión en SQLite
+local para restaurarla tras compactar. El dueño lo aprobó sabiendo lo que hace: añade un hook de reparación al
+`~/.claude/settings.json` global, guarda mensajes y salidas en claro bajo `~/.claude/context-mode/` (7 días),
+consulta npm cada hora y reescribe algunos comandos (`curl`, `fetch` en línea, `gradle`) y los prompts de los
+subagentes. Sólo enviaría eventos fuera si existiera `%APPDATA%\context-mode\platform.json`: no debe crearse.
+Convive con `contexto.py`: context-mode recupera lo relevante por búsqueda; `contexto.py` garantiza los mensajes
+del dueño literales. Diagnóstico: `/context-mode:ctx-doctor`.
 
-```bash
-claude plugin marketplace add mksglu/context-mode
-claude plugin install context-mode@context-mode --scope project
-```
+**LSP oficiales** `csharp-lsp`, `pyright-lsp`, `typescript-lsp`: Claude navega el código por símbolos
+(definiciones, referencias, diagnósticos) en vez de leer ficheros enteros. Necesitan en cada máquina
+`dotnet tool install --global csharp-ls --add-source https://api.nuget.org/v3/index.json` y
+`npm install -g pyright typescript-language-server typescript`.
 
-Convive con el hook `contexto.py`: context-mode recupera lo relevante por búsqueda; `contexto.py` garantiza
-los mensajes del dueño literales. Quitarlo: `claude plugin uninstall context-mode@context-mode --scope project`
-y borrar `~/.claude/context-mode/`, `~/.claude/hooks/context-mode-cache-heal.mjs` y su entrada en
-`~/.claude/settings.json`.
+Quitar cualquiera: `claude plugin uninstall <plugin> --scope project`; context-mode deja además
+`~/.claude/context-mode/`, `~/.claude/hooks/context-mode-cache-heal.mjs` y su entrada en `~/.claude/settings.json`.
 
 ## Revisado y descartado
 
@@ -62,11 +60,8 @@ y borrar `~/.claude/context-mode/`, `~/.claude/hooks/context-mode-cache-heal.mjs
 - **security-guidance** (oficial): revisión con LLM en cada parada; lenta y cara. **hookify**: reglas locales
   sin versionar.
 
-## Pendiente de decisión (instala programas en la máquina)
+## Para consultar a demanda
 
-- **Serena** (`oraios/serena`, en el directorio oficial) o los plugins LSP oficiales `csharp-lsp`, `pyright-lsp`,
-  `typescript-lsp`: navegar el código por símbolos en vez de leer ficheros enteros. Piden instalar `uv`/Serena o
-  `csharp-ls`, `pyright` y `typescript-language-server`.
 - **ccusage**: informe local del consumo de cuota leyendo los transcripts (`npx ccusage@latest`).
 
 ## Cómo probarlo
