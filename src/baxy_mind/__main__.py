@@ -229,9 +229,11 @@ def main() -> int:
                     # The App's turn has been silent SilenceNotice.After while its call runs: the model writes the
                     # notice for that call, and it is answered once the voice holds its audio, so the voice.speak
                     # that follows never waits for a synthesis an answer may need (Speech.set_notice).
-                    phrase = mind.notice_of()
+                    # With no voice loaded nothing would be said: the model is not asked.
+                    phrase = mind.notice_of() if voice.speech.ready else ""
                     audio = voice.speech.set_notice(phrase) if phrase else None
-                    if audio is None or futures.wait([audio], NOTICE_VOICE_S).not_done or audio.exception():
+                    if (audio is None or futures.wait([audio], NOTICE_VOICE_S).not_done or audio.cancelled()
+                            or audio.exception()):
                         phrase = ""
                     protocol.write_message({"type": "turn.notice.result", "id": request_id, "notice": phrase})
                 elif kind == "session.new":

@@ -50,6 +50,8 @@ NOTICE_SAID = " Ya dijiste {said}: di otra cosa."
 NOTICE_RUNNING = json.dumps({"status": "running"})
 NOTICE_MAX_CHARS = 60
 NOTICE_MAX_WORDS = 6
+# The notice's own budget: the result of the call it speaks of may come meanwhile, and its next decision waits for it.
+NOTICE_SECONDS = 3.0
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
@@ -1470,7 +1472,7 @@ class Mind:
                 "chat_template_kwargs": {"enable_thinking": False}}
         started = time.perf_counter()
         try:
-            reply = self.server.chat(body)
+            reply = self.server.chat(body, timeout=NOTICE_SECONDS)
             written = str(reply["choices"][0]["message"].get("content") or "")
         except Exception:  # noqa: BLE001 - a notice that could not be written is not said; the turn goes on as it was
             self._log("turn.notice", started, None, operation=turn.get("calling"), content=None, written="")
