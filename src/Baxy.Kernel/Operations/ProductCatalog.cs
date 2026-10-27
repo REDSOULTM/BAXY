@@ -807,7 +807,7 @@ public static class ProductCatalog
                 ["title"]),
             OperationRisks.ReadOnly,
             "game.entitlement.named.steam.librarycache.manifest.postread.v1",
-            "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos; con Steam sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes); con Epic toma la primera entrada con ese título."),
+            "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos; con Steam busca el título entre los juegos instalados o en descarga en este PC y, si no está, entre los que conoce este Steam (su caché local, no toda la tienda), y sólo lo resuelve si es idéntico a un único juego (sin contar mayúsculas ni tildes), así que uno no resuelto no dice que no exista ni que no se tenga; con Epic toma la primera entrada con ese título."),
             // Whether a game is owned is read on the PC alone (Renew al máximo, B-APP-6): no network effect.
         Descriptor(
             "game.install.cancel",

@@ -263,6 +263,29 @@ internal static partial class VisibleControlSurface
         return candidate != 0 ? candidate : front;
     }
 
+    /// <summary>
+    /// Feria (writing with no window): the window a text with no window of its own goes to when BAXY's own is in
+    /// front (the request was just written there): the person's surface below it, where a look and a click land
+    /// (<see cref="PersonsSurface"/>); 0 when another window is in front (the act goes to it, as before) or none is below
+    /// but the shell's (the desktop, where keys select icons).
+    /// </summary>
+    internal static nint SurfaceBelowProduct(nint front) =>
+        SurfaceBelowProduct(front, ProcessOf, HasUsableSurface, IsShellSurface, TopDownRootWindows);
+
+    internal static nint SurfaceBelowProduct(
+        nint front,
+        Func<nint, uint> processOf,
+        Func<nint, bool> usable,
+        Func<nint, bool> shell,
+        Func<IEnumerable<nint>> topDown,
+        Func<int, string?>? imageOf = null)
+    {
+        if (front == 0 || !ProductProcesses(imageOf)(processOf(front)))
+            return 0;
+        nint surface = PersonsSurface(front, processOf, usable, shell, topDown, imageOf);
+        return surface == front || shell(surface) ? 0 : surface;
+    }
+
     // The first window, top of the Z order first, of a process that is not the product's with a usable surface; 0 when none.
     internal static nint FirstForeignWindow(
         IEnumerable<nint> topDown,

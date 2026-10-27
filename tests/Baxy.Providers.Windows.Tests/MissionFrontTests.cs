@@ -69,6 +69,7 @@ public sealed class MissionFrontTests
         using var provider = new WindowsExternalCapabilityProvider([adapter], lease, (_, _) => true)
         {
             RefusedProcessOf = (_, _) => "WindowsTerminal",
+            FrontProcessOf = () => "Baxy",
         };
 
         ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
@@ -78,6 +79,9 @@ public sealed class MissionFrontTests
         {
             Assert.That(receipt.ErrorCode, Is.EqualTo("protected_window"));
             Assert.That(receipt.Result?.GetProperty("refusedProcess").GetString(), Is.EqualTo("WindowsTerminal"));
+            // Feria (writing with no window): the window in front is named apart from the refused one, so a reply does
+            // not tell one as the other.
+            Assert.That(receipt.Result?.GetProperty("frontProcess").GetString(), Is.EqualTo("Baxy"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(adapter.Calls, Is.Zero);
         });

@@ -1109,40 +1109,84 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // Holdout v5 V5E021/V5E029: numbers joined by + - * / ^, each inside any parentheses opened before it and closed
     // after it (balancing groups: every «(» closed by the end); an operator first continues from the number shown.
     // Whether the keypad has ^ and the parentheses is the script's to read (only the Scientific one has them).
+    // Feria (caso 14): the shape is read with numbers of any length; a number longer than the limit is a reason of its own.
     private static readonly Regex CalculatorExpression = new(
-        @"^[-+*/^]?(?<open>\()*\d{1,12}(?:\.\d{1,6})?(?<-open>\))*(?:[-+*/^](?<open>\()*\d{1,12}(?:\.\d{1,6})?(?<-open>\))*)*(?(open)(?!))$",
+        @"^[-+*/^]?(?<open>\()*\d+(?:\.\d+)?(?<-open>\))*(?:[-+*/^](?<open>\()*\d+(?:\.\d+)?(?<-open>\))*)*(?(open)(?!))$",
         RegexOptions.CultureInvariant);
+
+    private static readonly Regex CalculatorNumberPart = new(@"(?<whole>\d+)(?:\.(?<fraction>\d+))?", RegexOptions.CultureInvariant);
+
+    private const int CalculatorMaxDigits = 12;
+
+    private const int CalculatorMaxDecimals = 6;
+
+    private const int CalculatorMaxOperators = 8;
 
     private const string CalculatorCharacters = "0123456789+-*/^().,";
 
     private static readonly Regex NumberSplit = new(@"[\d.,]\s+[\d.,]", RegexOptions.CultureInvariant);
 
-    // What calculator_expression_invalid tells the model it accepts: a fact, nothing pressed.
+    // What calculator_expression_invalid tells the model it accepts: a fact, nothing pressed. Feria (caso 14): it said
+    // ^ and ( ) worked only in Scientific mode, and the model took a root to work there too. No mode takes anything
+    // else, and whether this keypad has ^ and ( ) is the script's to read (calculator_needs_scientific_mode).
     private const string CalculatorAccepted = "numbers with a decimal point or comma, joined by + - * / ^, with ( ) around "
-        + "parts; ^ and ( ) only in Scientific mode; an operator first continues from the number shown";
+        + "parts; nothing else (no function, letter or other sign) in any mode; an operator first continues from the "
+        + "number shown";
 
     /// <summary>
-    /// The keys an expression presses (a decimal comma is the «.» the keypad presses, spaces dropped), or null when it
-    /// is not one: <paramref name="refused"/> then holds the characters that are not accepted (none when only its shape
-    /// is wrong).
+    /// The keys an expression presses (a decimal comma is the «.» the keypad presses, spaces dropped) and every reason
+    /// it is not one (none when it is): characters not accepted (<c>Refused</c>), no operator, more operators than the
+    /// limit, numbers longer than the limit (<c>LongNumbers</c>, as written), or a shape that is not numbers joined by
+    /// operators.
     /// </summary>
-    internal static string? CalculatorKeys(string expression, out string refused)
+    internal static CalculatorVerdict CalculatorCheck(string expression)
     {
-        refused = string.Concat(expression
+        string refused = string.Concat(expression
             .Where(character => !char.IsWhiteSpace(character) && !CalculatorCharacters.Contains(character))
             .Distinct());
         string keys = CalculatorPressed(expression);
         int operators = keys.Count(character => "+-*/^".Contains(character));
-        // A space is dropped between the parts, never inside a number («1 2+3» is not 12+3).
-        return refused.Length == 0 && operators is >= 1 and <= 8 && !NumberSplit.IsMatch(expression)
-            && CalculatorExpression.IsMatch(keys) ? keys : null;
+        // Read as written (a space inside a number keeps it two), never as pressed.
+        List<string> longNumbers = [.. CalculatorNumberPart.Matches(expression.Replace(',', '.'))
+            .Where(number => number.Groups["whole"].Length > CalculatorMaxDigits
+                || number.Groups["fraction"].Length > CalculatorMaxDecimals)
+            .Select(number => number.Value)];
+        List<string> reasons = [];
+        if (refused.Length > 0)
+        {
+            reasons.Add("characters_not_accepted");
+        }
+        if (operators == 0)
+        {
+            reasons.Add("no_operator");
+        }
+        if (operators > CalculatorMaxOperators)
+        {
+            reasons.Add("too_many_operators");
+        }
+        if (longNumbers.Count > 0)
+        {
+            reasons.Add("number_too_long");
+        }
+        // A space is dropped between the parts, never inside a number («1 2+3» is not 12+3). Among characters not
+        // accepted the shape is not judged: what they stand for is not known.
+        if (refused.Length == 0 && (NumberSplit.IsMatch(expression) || !CalculatorExpression.IsMatch(keys)))
+        {
+            reasons.Add("shape_not_accepted");
+        }
+        return new CalculatorVerdict(keys, refused, reasons, longNumbers, operators);
     }
+
+    /// <summary>What <see cref="CalculatorCheck"/> read of an expression: accepted when it gives no reason.</summary>
+    internal sealed record CalculatorVerdict(
+        string Keys, string Refused, IReadOnlyList<string> Reasons, IReadOnlyList<string> LongNumbers, int Operators);
 
     // An expression as the keypad would press it: spaces dropped, a decimal comma as the «.».
     private static string CalculatorPressed(string expression) =>
         string.Concat(expression.Where(character => !char.IsWhiteSpace(character))).Replace(',', '.');
 
-    private static readonly Regex CalculatorNumber = new(@"^\d{1,12}(?:\.\d{1,6})?$", RegexOptions.CultureInvariant);
+    private static readonly Regex CalculatorNumber = new(
+        $@"^\d{{1,{CalculatorMaxDigits}}}(?:\.\d{{1,{CalculatorMaxDecimals}}})?$", RegexOptions.CultureInvariant);
 
     // Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53», the Calculator showing 47): «53» was refused with only
     // what is accepted, and in 7 of 7 runs that wrote it the model asked the person what number the Calculator showed.
@@ -1164,14 +1208,37 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         CancellationToken token)
     {
         string expression = ExternalJson.RequiredString(arguments, "expression");
-        if (CalculatorKeys(expression, out string refused) is not { } normalized)
+        CalculatorVerdict verdict = CalculatorCheck(expression);
+        string normalized = verdict.Keys;
+        if (verdict.Reasons.Count > 0)
         {
             JsonElement observed = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
-                if (refused.Length > 0)
+                if (verdict.Refused.Length > 0)
                 {
-                    writer.WriteString("refused", refused);
+                    writer.WriteString("refused", verdict.Refused);
+                }
+                writer.WriteStartArray("reasons");
+                foreach (string reason in verdict.Reasons)
+                {
+                    writer.WriteStringValue(reason);
+                }
+                writer.WriteEndArray();
+                if (verdict.LongNumbers.Count > 0)
+                {
+                    writer.WriteStartArray("longNumbers");
+                    foreach (string number in verdict.LongNumbers)
+                    {
+                        writer.WriteStringValue(number);
+                    }
+                    writer.WriteEndArray();
+                    writer.WriteNumber("maxDigits", CalculatorMaxDigits);
+                    writer.WriteNumber("maxDecimals", CalculatorMaxDecimals);
+                }
+                if (verdict.Operators > CalculatorMaxOperators)
+                {
+                    writer.WriteNumber("maxOperators", CalculatorMaxOperators);
                 }
                 writer.WriteString("accepted", CalculatorAccepted);
                 if (LoneNumberNext(expression) is { } next)

@@ -21,6 +21,10 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     // Holdout v6 V6E016: the desktop's windows an act may reach, as a refusal lists them. Null in the test seams.
     private Func<IReadOnlyList<OpenWindow>>? _openWindows;
     private readonly IOpenedApplicationKeyboard? _openedKeyboard;
+    private readonly Func<OpenedKeyboardWindow?>? _surfaceBelowProduct;
+    // Feria (writing with no window): the program of the window in front, named apart from the refused one. Null in the
+    // test seams.
+    private Func<string?>? _frontProcess;
     private int _disposed;
 
     /// <summary>
@@ -40,9 +44,10 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
 
     public WindowsExternalCapabilityProvider(string dataRoot)
         : this(CreateDefaultAdapters(dataRoot), ForegroundLease.Shared, ActOnProtectedWindow,
-            OpenedApplicationKeyboard.Product)
+            OpenedApplicationKeyboard.Product, SurfaceBelowProduct)
     {
         _refusedProcess = RefusedProcess;
+        _frontProcess = static () => ProgramOf(VisibleControlSurface.FrontWindow());
         _openWindows = OpenWindows;
         _elevatedAct = static (operation, arguments) => ElevatedActCode(operation, ActTarget(operation, arguments),
             static window => unchecked((int)VisibleControlSurface.ProcessOf(window)), VisibleControlSurface.RunsAboveUs,
@@ -135,16 +140,20 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// null (the test seams, whose adapters reach no window) refuses nothing.</param>
     /// <param name="openedKeyboard">The window of the application app.open just opened that a keyboard act with no
     /// window goes to (<see cref="OpenedApplicationKeyboard"/>); null (the test seams) sends it to the front, as before.</param>
+    /// <param name="surfaceBelowProduct">The person's window a text with no window goes to when BAXY's own is in
+    /// front (<see cref="SurfaceBelowProduct"/>); null (the test seams) sends it to the front, as before.</param>
     internal WindowsExternalCapabilityProvider(
         IExternalOperationAdapter[] adapters,
         IForegroundLease? missionFront = null,
         Func<string, JsonElement, bool>? actRefused = null,
-        IOpenedApplicationKeyboard? openedKeyboard = null)
+        IOpenedApplicationKeyboard? openedKeyboard = null,
+        Func<OpenedKeyboardWindow?>? surfaceBelowProduct = null)
     {
         _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
         _missionFront = missionFront;
         _actRefused = actRefused;
         _openedKeyboard = openedKeyboard;
+        _surfaceBelowProduct = surfaceBelowProduct;
     }
 
     /// <summary>
@@ -218,6 +227,28 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         };
 
     /// <summary>
+    /// Feria (writing with no window): the receipt of a text sent to the person's window below BAXY's own says
+    /// so: the window it was sent to (<c>surfaceWindow</c>, its title) and why (<c>windowFrom</c>: <c>persons_surface</c>),
+    /// whatever came of it (a refusal before any key included).
+    /// </summary>
+    private static ExternalCapabilityReceipt FromSurface(ExternalCapabilityReceipt receipt, OpenedKeyboardWindow surface) =>
+        receipt with
+        {
+            Result = ExternalJson.Extended(receipt.Result, writer =>
+            {
+                writer.WriteString("windowFrom", "persons_surface");
+                writer.WriteNumber("surfaceWindow", (long)surface.Window);
+                writer.WriteString("surfaceWindowTitle", surface.Title);
+            }),
+        };
+
+    // The product's window below BAXY's own (VisibleControlSurface.SurfaceBelowProduct), with its title.
+    private static OpenedKeyboardWindow? SurfaceBelowProduct() =>
+        VisibleControlSurface.SurfaceBelowProduct(VisibleControlSurface.FrontWindow()) is var window and not 0
+            ? new OpenedKeyboardWindow(window, VisibleControlSurface.WindowTitle(window))
+            : null;
+
+    /// <summary>
     /// The mission's window an act names (its «window» argument: the catalog gives it only to the acts of a computer-use
     /// mission, the hwnd of the view the act was decided on), or 0.
     /// </summary>
@@ -233,10 +264,13 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// CU4 (auditoría final 2): a click, a key, a text, a wheel turn or a clipboard keystroke would reach a developer's
     /// or BAXY's own window that no look named (<see cref="VisibleControlSurface.ActRefused"/>).
     /// </summary>
-    private static string? RefusedProcess(string operation, JsonElement arguments)
+    private static string? RefusedProcess(string operation, JsonElement arguments) =>
+        ProgramOf(ActTarget(operation, arguments));
+
+    // The program (process name) of a window; null when it is none or its process is gone.
+    private static string? ProgramOf(nint window)
     {
-        nint target = ActTarget(operation, arguments);
-        uint processId = target == 0 ? 0 : VisibleControlSurface.ProcessOf(target);
+        uint processId = window == 0 ? 0 : VisibleControlSurface.ProcessOf(window);
         if (processId == 0)
             return null;
         try
@@ -254,6 +288,12 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     internal Func<string, JsonElement, string?>? RefusedProcessOf
     {
         set => _refusedProcess = value;
+    }
+
+    // A test seam's way to name the program in front (the product's reads the front window's process).
+    internal Func<string?>? FrontProcessOf
+    {
+        set => _frontProcess = value;
     }
 
     // A test seam's way to list the desktop's windows an act may reach (the product's reads them, OpenWindows).
@@ -495,6 +535,19 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 opened);
         }
 
+        // Feria (writing with no window): with BAXY's own window in front (the request was just written there) a text went
+        // there and was refused, while a look and a click land on the person's window below it. It goes to that window as
+        // if it named it, by the same lease and refusal as the opened application's. A key keeps the front: whether its
+        // Enter or space needs the person's yes (a declared text field, a dialog's answer) is read before, on the front.
+        if (_surfaceBelowProduct is not null && operation == "input.text.type" && NamesNoWindow(arguments)
+            && _surfaceBelowProduct() is { } surface)
+        {
+            return FromSurface(
+                await InvokeBoundAsync(operation, WithWindow(arguments, surface.Window), cancellationToken)
+                    .ConfigureAwait(false),
+                surface);
+        }
+
         return await InvokeBoundAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
     }
 
@@ -535,6 +588,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                     writer.WriteStartObject();
                     writer.WriteNumber("version", 1);
                     writer.WriteString("refusedProcess", program);
+                    if (_frontProcess?.Invoke() is { } front)
+                        writer.WriteString("frontProcess", front);
                     // BAXY Renew cu (C18): a paste with no app opened went to the window in front (a developer's) and
                     // the reply blamed the app it meant; the fact of where it went, and how another window is reached.
                     if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.ProtectedFrontNext))
