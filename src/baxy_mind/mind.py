@@ -2607,9 +2607,11 @@ class Mind:
             return None
         # Aid «dated_search» (soak of the fair, 2026-10-27): the web_search the model chose for a dated question or a
         # curiosity asked for, under the threshold, became «¿Quieres que busque…?» 6 times: it is the call that aid asks
-        # for, so its doubt does not hold it; the same for the one «named_fact» asks for (code review 2026-10-27).
+        # for, so its doubt does not hold it; the same for the one «named_fact» asks for (code review 2026-10-27), also
+        # when the model chose it itself for what or who a named thing is (live on the notebook after the deploy).
         if call["wire"] == "web_search" and ((_aid_on("dated_search") and self._dated(turn["text"]))
-                                             or turn.get("named")):
+                                             or (_aid_on("named_fact") and (turn.get("named")
+                                                                            or _asked_about(turn["text"])))):
             return None
         doubt = read_doubt(reply)
         if doubt is None:

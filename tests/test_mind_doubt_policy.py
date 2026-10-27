@@ -329,3 +329,13 @@ def test_an_unsure_search_for_a_dated_question_or_a_curiosity_is_not_held(tmp_pa
     assert mind.decide(1, "¿Quién ganó el premio Nobel de Física 2023?")["operation"] == "web.search"
     assert mind.decide(2, "Cuéntame un dato curioso de los océanos.")["operation"] == "web.search"
     assert mind.decide(3, "busca algo")["operation"] is None  # any other unsure search is held as before
+
+
+def test_an_unsure_search_for_what_or_who_a_named_thing_is_is_not_held(tmp_path, monkeypatch) -> None:
+    # Live on the notebook after the deploy (2026-10-27): web_search chosen for what a local brand is, under the
+    # threshold, became «¿Quieres que busque…?»: it is the call aid «named_fact» asks for, so its doubt does not hold it
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("web_search", {"query": "Zorvik"}, 0.3), _say("¿Quieres que busque Zorvik?")])
+    mind.wire_to_op["web_search"] = "web.search"
+    assert mind.decide(1, "¿Qué es Zorvik?")["operation"] == "web.search"  # held, it would be the question
