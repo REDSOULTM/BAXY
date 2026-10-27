@@ -78,7 +78,8 @@ como límite; estado del PC claro; informe corto con cifras y vuelta atrás.
   próxima ejecución; la de las 05:30 ya había sonado), 21 notas de prueba, avisos, capturas, 50 sesiones y el historial
   de conversación se movieron (no se borraron) a `D:\BAXYeval\entregaespaldo-limpieza-feria` (tareas exportadas
   en XML). Cerradas Configuración y Spotify. BAXY arranca con «Conversación nueva · Sin pedidos aún» y responde.
-  No tocados: las 2 memorias del perfil, Steam y WhatsApp.
+  Memorias del perfil borradas con memory.forget a pedido del dueño («olvida todo» no es válido: hay que nombrar el
+  dato). No tocados: Steam y WhatsApp. Pedidos de demostración: `artifacts/feria/DEMOS.md`.
 
 ## Vuelta atrás
 - Mente: `git -C D:\BAXYeval\entrega\BAXY-1.1.1-arr-9537b5f8b checkout --detach 5017917f9` y reiniciar BAXY.
