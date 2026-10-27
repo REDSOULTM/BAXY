@@ -14,11 +14,10 @@ Equipo de la feria: **el notebook**. BAXY instalada 1.1.1, mente desplegada desd
 | «Abre la calculadora» pulsando cosas | 1 de 2 | 0 de 3 |
 | Decisión v11 del PC (240, x2) | 198,5 | 198,5 (Δ 0,0, ningún caso distinto) |
 | Acciones equivocadas v11 / v6 | 30 / 77 | 29 / 74 |
-| v6 abierto (720, una semilla) | 625 | 624 (Δ −1, ruido ±4) |
+| v6 abierto (720, 3 semillas) | 621,7 | 620,3 (Δ −1,3, IC95 [−6,0, +3,3], p 0,75; final8: 616,3) |
 | Batería de la feria y del público (59 pedidos) | — | 0 sin respuesta, 0 errores, mediana 8 s, p90 20 s |
 | Resistencia H (20 min, 118 turnos) | — | 0 sin respuesta, 0 errores, sin fuga de RAM |
 | Resistencia J (40 min, 230 turnos) | — | 0 sin respuesta, 0 errores, 38/38 fechadas y curiosidades buscadas, 0 clics no pedidos, sin fuga de RAM (mente 1.412 → 685 MB, VRAM máx. 4.000 MiB) |
-| v6 abierto (720, 2 semillas) | 621,0 | 620,5 (final8: 615,0) |
 | Arranque normal (BAXY.vbs, como al iniciar Windows), 7 pedidos tecleados | — | 7 de 7 bien; mente lista en ≈20 s |
 | Voz sin altavoces (frases grabadas por el detector + Parakeet desplegados) | — | despierta 2/2; «Quien ganó el Mundial de Fútbol 2014.» y «Cuéntame un dato curioso…» activan la ayuda |
 | Suite Python completa | — | 957 pass, 1 skip, 2 xfail (preexistentes) |
