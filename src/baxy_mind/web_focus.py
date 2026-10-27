@@ -45,20 +45,20 @@ _BOILER = {"ir al contenido", "saltar al contenido", "ver galeria", "editar", "[
 
 def widen(arguments: dict[str, Any]) -> dict[str, Any]:
     """The arguments sent to the App: a web.fetch without a size reads WINDOW characters, and an article of Wikipedia
-    is read as its classic page."""
+    is read as the article alone, without the skin."""
     url = arguments.get("url")
-    if isinstance(url, str) and _PARSOID_READ.match(url.strip()) and "useparsoid=" not in url:
-        # Feria 2026-10-27: Wikipedia serves its articles as Parsoid HTML, whose data-mw attributes hold «<» and «>»
-        # inside their quotes; the App's page text ends each tag at the first «>» and the article's opening came as
-        # wikitext (3 of 3 articles «no pude leer el texto de Wikipedia»). useparsoid=0 serves the classic HTML.
+    if isinstance(url, str) and _WIKI_ARTICLE.match(url.strip()) and "action=" not in url:
+        # Feria 2026-10-27: the class of Wikipedia's <html> names «main-menu», so the App's page text (PageMain, rule 1)
+        # left the whole page out as a menu: the text came empty (3 of 3 «no pude leer el texto de Wikipedia»; the
+        # App's extractor run on the page: 0 characters). action=render serves the article without the skin (31 275).
         url = url.strip()
-        arguments = {**arguments, "url": url + ("&" if "?" in url else "?") + "useparsoid=0"}
+        arguments = {**arguments, "url": url + ("&" if "?" in url else "?") + "action=render"}
     if "maximumCharacters" not in arguments:
         return {**arguments, "maximumCharacters": WINDOW}
     return arguments
 
 
-_PARSOID_READ = re.compile(r"^(?:https?://)?[a-z-]+(?:\.m)?\.wikipedia\.org/wiki/[^#]+$", re.I)
+_WIKI_ARTICLE = re.compile(r"^(?:https?://)?[a-z-]+(?:\.m)?\.wikipedia\.org/wiki/[^#]+$", re.I)
 
 
 def _fold(text: str) -> str:
