@@ -101,7 +101,7 @@ def test_a_notice_with_no_answer_yet_is_said_and_the_answer_follows(
 def test_the_notice_is_the_mind_s_phrase_synthesized_when_it_is_given(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Al máximo 9.2a: the notice was «Un momento.», fixed in the code and synthesized at load; it is now the phrase
-    the model wrote (catalog.ready), synthesized as soon as the voice has it, and nothing else is taken as the notice."""
+    the model wrote (turn.notice), synthesized as soon as the voice has it, and nothing else is taken as the notice."""
     played: list[str] = []
     speech = _loaded_voice(tmp_path, monkeypatch, played)
     assert not speech.speak("Un momento.", notice=True)  # no phrase from the mind: no notice
@@ -113,6 +113,19 @@ def test_the_notice_is_the_mind_s_phrase_synthesized_when_it_is_given(
     assert speech.speak("Sigo en ello.", notice=True)
     _wait_for(played, 1)
     assert played == ["audio:Sigo en ello."]
+
+
+def test_a_turn_s_notice_is_answered_once_its_audio_is_kept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Feria 2026-10-27: the notice is the model's phrase for the turn's call (turn.notice); the mind answers the App
+    when set_notice's synthesis is done, so the voice.speak that follows finds its audio."""
+    played: list[str] = []
+    speech = _loaded_voice(tmp_path, monkeypatch, played)
+    synthesis = speech.set_notice("Busco vuelos a Lima.")
+    assert synthesis is not None
+    synthesis.result(5)
+    assert speech._notice_audio == "audio:Busco vuelos a Lima."
+    assert speech.speak("Busco vuelos a Lima.", notice=True)
+    assert speech.set_notice("") is None
 
 
 def test_a_notice_given_while_the_voice_loads_is_synthesized_once_it_has(

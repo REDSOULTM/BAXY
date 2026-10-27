@@ -13,10 +13,10 @@ An answer is even seen as the model writes it (foresee, al máximo 9.4), or as s
 decision whose doubt is read, al máximo V2): its first sentence is synthesized then and kept, and the answer given later
 uses that take; a call written after it drops the take; nothing sounds before the App
 publishes the answer.
-The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote at warm-up, which the mind
-gives the voice with its catalog.ready (set_notice; al máximo 9.2a: it was «Un momento.», fixed in the code). It is
-synthesized as soon as the voice has it (given before the voice loaded, it is the load's warm-up take, so it is ready
-with the voice) and said from that audio only: a notice never takes the one synthesis an answer
+The turn's notice (said when a turn has been silent for 2.5 s) is the phrase the model wrote for the call the turn runs
+(turn.notice; al máximo 9.2a: it was «Un momento.», fixed in the code; feria 2026-10-27: one phrase written at warm-up
+for every turn). It is synthesized as soon as the voice has it, and the mind answers the App once its audio is kept
+(set_notice), so it is said from that audio only: a notice never takes the one synthesis an answer
 needs (owner, 2026-10-20: an answer waited 3.6 s behind a notice synthesized like any sentence). It is dropped if an
 answer was given after it and before it began to sound: said then, it came right before the answer and held it back
 (owner, 2026-10-20: the notice cut in on what BAXY was about to say; answers waited up to 4.8 s behind it). An answer
@@ -191,8 +191,8 @@ class Speech:
         # started), or None to end the speech thread (close)
         self._queue: queue.Queue[tuple[int, str | None, float, _Notice | None, Iterator[np.ndarray] | None] | None] = \
             queue.Queue(maxsize=16)
-        # speak() (the reader) and prepare() (the request loop) share the queue; reentrant, since a notice whose
-        # synthesis is already done keeps its audio from inside set_notice (add_done_callback runs it at once)
+        # speak() (the reader) and prepare() (the request loop) share the queue; a notice's synthesis keeps its audio
+        # under it too
         self._posting = threading.RLock()
         self._generation = 0                 # cancel() moves it on; older utterances are dropped
         self._answers = 0                    # answers given so far: a notice with an answer after it is not said
@@ -202,7 +202,7 @@ class Speech:
         # Al máximo 9.4: first sentences synthesized while the model still wrote their answer (foresee), by the text
         # synthesized, with the generation they were asked in; an answer whose first sentence is one of them uses it.
         self._foreseen: dict[str, tuple[int, Future]] = {}
-        self._notice_text = ""               # the mind's notice phrase (set_notice), said only as a notice
+        self._notice_text = ""               # the turn's notice phrase (set_notice), said only as a notice
         self._notice_audio: np.ndarray | None = None  # its audio, synthesized once, with no pause after it
         self._loaded = False                 # Supertonic is loaded: a notice given from now on is synthesized at once
         self._ready = threading.Event()
@@ -311,27 +311,32 @@ class Speech:
                     self._foreseen.pop(next(iter(self._foreseen)))
         return True
 
-    def set_notice(self, text: str) -> None:
-        """The mind's notice phrase (its catalog.ready): synthesized now, or as soon as the voice has loaded; empty, no
-        notice is said."""
+    def set_notice(self, text: str) -> Future | None:
+        """The turn's notice phrase (turn.notice): synthesized now, or as soon as the voice has loaded; empty, no
+        notice is said. The synthesis, done once its audio is kept; None when it is not synthesized now."""
         text = " ".join(str(text or "").split())[:MAX_CHARS]
         with self._posting:
             self._notice_text, self._notice_audio = text, None
             if text and self._loaded and not self.failure:
-                self._synthesize_notice(text)
+                return self._synthesize_notice(text)
+        return None
 
-    def _synthesize_notice(self, text: str) -> None:
-        """Called under _posting. Kept only while it is still the mind's phrase."""
-        def keep(done) -> None:
-            if done.exception() is None:
-                with self._posting:
-                    if self._notice_text == text:
-                        self._notice_audio = done.result()
-            else:
+    def _synthesize_notice(self, text: str) -> Future:
+        """Called under _posting. Kept only while it is still the mind's phrase, before the synthesis is done."""
+        def keep() -> None:
+            audio = self._synthesize(text, False)
+            with self._posting:
+                if self._notice_text == text:
+                    self._notice_audio = audio
+
+        def failed(done) -> None:
+            if done.exception() is not None:
                 sys.stderr.write(f"baxy_mind_renew_speech: notice: {done.exception()!r}\n")
                 sys.stderr.flush()
 
-        self._synthesis.submit(self._synthesize, text, False).add_done_callback(keep)
+        synthesis = self._synthesis.submit(keep)
+        synthesis.add_done_callback(failed)
+        return synthesis
 
     def prepare(self) -> None:
         """A turn started: open the output now, so its answer does not wait for the device."""

@@ -12,6 +12,9 @@ public sealed class SilenceNoticeTests
 {
     private const string Phrase = "Dame un segundo.";
 
+    // The mind answers each question at once with the phrase.
+    private static readonly Func<CancellationToken, Task<string?>> Ask = _ => Task.FromResult<string?>(Phrase);
+
     [SetUp]
     public void NoContext() => SynchronizationContext.SetSynchronizationContext(null);
 
@@ -21,7 +24,7 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
 
         clock.Advance(TimeSpan.FromSeconds(2.4));
         notice.Publish(static () => { });
@@ -37,7 +40,7 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
 
         clock.Advance(TimeSpan.FromSeconds(1.5));
         notice.Publish(static () => { });
@@ -56,7 +59,7 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
 
         clock.Advance(TimeSpan.FromSeconds(1));
         notice.Sounded();
@@ -71,7 +74,7 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
 
         clock.Advance(TimeSpan.FromSeconds(1));
         notice.Close();
@@ -86,12 +89,12 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
         clock.Advance(TimeSpan.FromSeconds(2));
         notice.Publish(static () => { });
         notice.Close();
 
-        notice.Open(null, clock.GetTimestamp(), said.Add); // the next turn, with no phrase
+        notice.Open(null, clock.GetTimestamp(), said.Add); // the next turn, with no notice to hear
         clock.Advance(TimeSpan.FromSeconds(5));
 
         Assert.That(said, Is.Empty);

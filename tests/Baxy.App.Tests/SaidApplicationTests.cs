@@ -113,6 +113,7 @@ public sealed class SaidApplicationTests
             Publish = static (_, _) => { },
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
             StepCompleted = steps.Add,
         });
 

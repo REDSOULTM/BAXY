@@ -150,7 +150,6 @@ class _FakeLlama:
         import http.server
         import threading
         import urllib.parse
-        from baxy_mind.mind import NOTICE_ASK
         folder.mkdir(parents=True, exist_ok=True)
         self.folder, self.calls, self.slot, self.build, self.fail_restore = folder, [], "", "b11609-test", False
         fake = self
@@ -183,8 +182,7 @@ class _FakeLlama:
                     if said == "hola":
                         return self._answer(200, {"choices": [{"message": {"content": "H"}}],
                                                   "usage": {"prompt_tokens": 37000}})
-                    return self._answer(200, {"choices": [{"message": {
-                        "content": "Dame un segundo." if said == NOTICE_ASK else "Listo."}}]})
+                    return self._answer(200, {"choices": [{"message": {"content": "Listo."}}]})
                 state = fake.folder / body["filename"]
                 if query == "action=save":
                     state.write_text(fake.slot, encoding="utf-8")
@@ -229,7 +227,7 @@ def _rows(tmp_path: Path, stage: str) -> list[dict]:
     return [row for row in rows if row["stage"] == stage]
 
 
-WARM = ["/tokenize", "/props", "/v1/chat/completions", "/v1/chat/completions", "/slots/0?action=save"]
+WARM = ["/tokenize", "/props", "/v1/chat/completions", "/slots/0?action=save"]
 
 
 def test_a_start_restores_the_prefix_the_last_one_kept_instead_of_reading_it_again(tmp_path: Path) -> None:
@@ -237,13 +235,13 @@ def test_a_start_restores_the_prefix_the_last_one_kept_instead_of_reading_it_aga
     fake = _FakeLlama(tmp_path / "slots")
     first = _warmed(tmp_path, fake)
     assert fake.calls == WARM
-    assert first.notice == "Dame un segundo." and first.prefix_tokens == 37000
+    assert first.prefix_tokens == 37000
     kept = fake.files()
     assert len(kept) == 2 and {Path(name).suffix for name in kept} == {".json", ".slot"}
     fake.calls.clear()
     again = _warmed(tmp_path, fake)  # the next start: a new server process and a new mind
-    assert fake.calls == ["/tokenize", "/props", "/slots/0?action=restore"]  # nothing read again, no notice asked
-    assert again.notice == "Dame un segundo." and again.prefix_tokens == 37000  # the notice the model wrote then
+    assert fake.calls == ["/tokenize", "/props", "/slots/0?action=restore"]  # nothing read again
+    assert again.prefix_tokens == 37000
     assert fake.files() == kept
     assert [row.get("restored") for row in _rows(tmp_path, "warm.prefix")] == [False, True]
 
@@ -264,9 +262,8 @@ def test_a_prefix_made_of_anything_else_is_read_again_and_replaces_the_one_kept(
         context = 49152
     else:
         fake.build = "b11700-test"
-    mind = _warmed(tmp_path, fake, tools, gguf, context)
+    _warmed(tmp_path, fake, tools, gguf, context)
     assert fake.calls == WARM  # its key has no state: no restore asked, the warm-up as always, then kept
-    assert mind.notice == "Dame un segundo."
     assert len(fake.files()) == 2 and not set(fake.files()) & set(old)  # the other key's state is removed
 
 
@@ -278,14 +275,13 @@ def test_a_prefix_the_server_cannot_restore_is_read_again_and_kept_anew(tmp_path
     fake.fail_restore = True
     mind = _warmed(tmp_path, fake)
     assert fake.calls == ["/tokenize", "/props", "/slots/0?action=restore", *WARM[2:]]
-    assert mind.notice == "Dame un segundo." and mind.prefix_tokens == 37000 and fake.files() == kept
+    assert mind.prefix_tokens == 37000 and fake.files() == kept
 
 
 def test_the_prefix_is_kept_only_before_any_turn_so_no_conversation_reaches_the_disk(tmp_path: Path) -> None:
-    from baxy_mind.mind import NOTICE_ASK
     fake = _FakeLlama(tmp_path / "slots")
     mind = _warmed(tmp_path, fake)
-    assert json.loads(next(fake.folder.glob("*.slot")).read_text(encoding="utf-8"))[-1]["content"] == NOTICE_ASK
+    assert json.loads(next(fake.folder.glob("*.slot")).read_text(encoding="utf-8"))[-1]["content"] == "hola"
     for kept in fake.folder.iterdir():
         kept.unlink()
     mind.decide(1, "mi clave del banco es 4321")

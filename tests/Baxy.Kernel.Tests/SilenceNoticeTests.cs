@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using Baxy.App;
 using NUnit.Framework;
 
@@ -12,23 +11,13 @@ namespace Baxy.Kernel.Tests;
 public sealed class SilenceNoticeTests
 {
     [Test]
-    public void ThePhraseIsTheMindsTrimmedAndAbsentWhenItSentNone()
-    {
-        Assert.That(SilenceNotice.PhraseOf(Ready(" Dame un momento. ")), Is.EqualTo("Dame un momento."));
-        Assert.That(SilenceNotice.PhraseOf(Ready(null)), Is.Null);
-        Assert.That(SilenceNotice.PhraseOf(Ready("   ")), Is.Null);
-        Assert.That(SilenceNotice.PhraseOf(new JsonObject { ["type"] = "catalog.ready", ["notice"] = 3 }), Is.Null);
-        Assert.That(SilenceNotice.PhraseOf(null), Is.Null);
-    }
-
-    [Test]
     public void ASilentTurnSaysTheNoticeAtItsDelayAndAgainWhileItStaysSilent()
     {
         var time = new ManualTime();
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", time.GetTimestamp(), said.Add);
+        notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
 
         Assert.That(time.Timers, Has.Count.EqualTo(1));
         Assert.That(time.Timers[0].DueTime, Is.EqualTo(SilenceNotice.After));
@@ -53,7 +42,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", time.GetTimestamp(), said.Add);
+        notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
         time.Timers[0].Fire();
         notice.Publish(() => said.Add("answer"));
         notice.Close();
@@ -74,7 +63,7 @@ public sealed class SilenceNoticeTests
         // The person's words waited 1.5 s for a heartbeat to end before their turn started.
         time.Advance(TimeSpan.FromSeconds(1.5));
 
-        notice.Open("Dame un momento.", arrived, said.Add);
+        notice.Open(Says("Dame un momento."), arrived, said.Add);
 
         Assert.That(time.Timers, Has.Count.EqualTo(1));
         Assert.That(time.Timers[0].DueTime, Is.EqualTo(SilenceNotice.After - TimeSpan.FromSeconds(1.5)));
@@ -96,7 +85,7 @@ public sealed class SilenceNoticeTests
         SynchronizationContext.SetSynchronizationContext(turnContext);
         try
         {
-            notice.Open("Dame un momento.", arrived, said.Add);
+            notice.Open(Says("Dame un momento."), arrived, said.Add);
         }
         finally
         {
@@ -123,7 +112,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", time.GetTimestamp(), said.Add);
+        notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
         notice.Publish(() => said.Add("answer"));
         notice.Sounded();
         time.Timers[0].Fire();
@@ -139,7 +128,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", time.GetTimestamp(), said.Add);
+        notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
         notice.Close();
         time.Timers[0].Fire();
         // A heartbeat opens no notice: its own line is only published.
@@ -155,9 +144,9 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
         var said = new List<string>();
 
-        notice.Open("Dame un momento.", time.GetTimestamp(), said.Add);
+        notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
         notice.Close();
-        notice.Open("Dame un momento.", time.GetTimestamp(), said.Add);
+        notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
         time.Timers[0].Fire();
         Assert.That(said, Is.Empty);
 
@@ -166,12 +155,12 @@ public sealed class SilenceNoticeTests
     }
 
     [Test]
-    public void WithoutAPhraseFromTheMindThereIsNoNotice()
+    public void WhenNobodyWouldHearItThereIsNoNotice()
     {
         var time = new ManualTime();
         var notice = new SilenceNotice(time);
 
-        notice.Open(null, time.GetTimestamp(), _ => Assert.Fail("no phrase, no notice"));
+        notice.Open(null, time.GetTimestamp(), _ => Assert.Fail("nobody asks, no notice"));
 
         Assert.That(time.Timers, Is.Empty);
     }
@@ -187,7 +176,7 @@ public sealed class SilenceNoticeTests
         SynchronizationContext.SetSynchronizationContext(turnContext);
         try
         {
-            notice.Open("Dame un momento.", time.GetTimestamp(), said.Add);
+            notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
         }
         finally
         {
@@ -205,16 +194,129 @@ public sealed class SilenceNoticeTests
         Assert.That(said, Is.EqualTo(new[] { "answer" }));
     }
 
-    private static JsonObject Ready(string? phrase)
+    [Test]
+    public void AQuestionTheMindAnswersWithoutAPhraseSaysNothingAndTheNextExpiryAsksAgain()
     {
-        var reply = new JsonObject { ["type"] = "catalog.ready", ["count"] = 1 };
-        if (phrase is not null)
-        {
-            reply["notice"] = phrase;
-        }
+        // The mind writes a phrase only while the turn waits for a call the App runs that had no notice yet.
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+        var phrases = new Queue<string?>([null, "  Busco el archivo en Documentos.  "]);
+        int asked = 0;
 
-        return reply;
+        notice.Open(
+            _ =>
+            {
+                asked++;
+                return Task.FromResult(phrases.Dequeue());
+            },
+            time.GetTimestamp(),
+            said.Add);
+        time.Timers[0].Fire();
+        Assert.That(said, Is.Empty);
+        time.Timers[0].Fire();
+
+        Assert.That(asked, Is.EqualTo(2));
+        Assert.That(said, Is.EqualTo(new[] { "Busco el archivo en Documentos." }));
     }
+
+    [Test]
+    public void APhraseThatArrivesOnceTheTurnClosedOrAnotherOpenedIsNotSaid()
+    {
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+        var first = new TaskCompletionSource<string?>();
+        var second = new TaskCompletionSource<string?>();
+        CancellationToken firstToken = default;
+
+        notice.Open(
+            token =>
+            {
+                firstToken = token;
+                return first.Task;
+            },
+            time.GetTimestamp(),
+            said.Add);
+        time.Timers[0].Fire();
+        notice.Close();
+        Assert.That(firstToken.IsCancellationRequested, Is.True);
+        first.SetResult("Abro el Bloc de notas.");
+
+        notice.Open(_ => second.Task, time.GetTimestamp(), said.Add);
+        time.Timers[1].Fire();
+        notice.Open(Says("Otro turno."), time.GetTimestamp(), said.Add);
+        second.SetResult("Busco en la web.");
+
+        Assert.That(said, Is.Empty);
+    }
+
+    [Test]
+    public void AnExpiryWhileTheQuestionHasNotAnsweredAsksNoOther()
+    {
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+        var answer = new TaskCompletionSource<string?>();
+        int asked = 0;
+
+        notice.Open(
+            _ =>
+            {
+                asked++;
+                return answer.Task;
+            },
+            time.GetTimestamp(),
+            said.Add);
+        time.Timers[0].Fire();
+        time.Timers[0].Fire();
+        Assert.That(asked, Is.EqualTo(1));
+        answer.SetResult("Estoy descargando el instalador.");
+
+        Assert.That(said, Is.EqualTo(new[] { "Estoy descargando el instalador." }));
+    }
+
+    [Test]
+    public void EachExpiryOfALongTurnSaysThePhraseTheMindWroteForIt()
+    {
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+        var phrases = new Queue<string?>(["Busco el archivo.", "Sigo buscando en el disco D."]);
+
+        notice.Open(_ => Task.FromResult(phrases.Dequeue()), time.GetTimestamp(), said.Add);
+        time.Timers[0].Fire();
+        time.Timers[0].Fire();
+
+        Assert.That(said, Is.EqualTo(new[] { "Busco el archivo.", "Sigo buscando en el disco D." }));
+    }
+
+    [Test]
+    public void AQuestionThatFailsSaysNothingAndNeverReachesTheTurn()
+    {
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+        int asked = 0;
+
+        notice.Open(
+            _ =>
+            {
+                asked++;
+                return asked == 1
+                    ? Task.FromException<string?>(new IOException("the mind's pipe broke"))
+                    : Task.FromResult<string?>("Sigo con la descarga.");
+            },
+            time.GetTimestamp(),
+            said.Add);
+        Assert.DoesNotThrow(() => time.Timers[0].Fire());
+        time.Timers[0].Fire();
+
+        Assert.That(said, Is.EqualTo(new[] { "Sigo con la descarga." }));
+    }
+
+    // The mind answers each question at once with this phrase.
+    private static Func<CancellationToken, Task<string?>> Says(string? phrase) => _ => Task.FromResult(phrase);
 
     private sealed class ManualTime : TimeProvider
     {

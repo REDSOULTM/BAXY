@@ -58,8 +58,8 @@ internal sealed record NativeTurnConfirmation(
 /// </para>
 /// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
-/// arrived says the mind's notice, again while it stays silent (<see cref="SilenceNotice"/>); the model's decisions are
-/// untouched by it.
+/// arrived says the notice the model writes for the call it waits for, again while it stays silent
+/// (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
 /// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
@@ -84,6 +84,9 @@ internal sealed class NativeTurnLoop
 
         /// <summary>Says the mind's notice aloud (<see cref="SilenceNotice"/>): a line that is not the turn's answer.</summary>
         internal required Action<string> Notice { get; init; }
+
+        /// <summary>Whether a notice would be heard (the owner's switch, BAXY's voice): otherwise none is asked for.</summary>
+        internal required Func<bool> NoticeHeard { get; init; }
 
         internal Action<NativeTurnStep>? StepCompleted { get; init; }
 
@@ -217,7 +220,7 @@ internal sealed class NativeTurnLoop
             () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken), cancellationToken);
     }
 
-    // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
+    // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the model's
     // notice when nothing it published is heard SilenceNotice.After after they arrived (the turn may have waited for a
     // heartbeat to end before it started). A call this turn raised that waits for the person's Sí or No no longer holds
     // it back: until its question is heard BAXY is still writing or saying it, as with any line (al máximo 9.2b), and
@@ -233,7 +236,7 @@ internal sealed class NativeTurnLoop
         _personAt = arrivedAt;
         long turn = ++_personTurns;
         _turnStarted = Stopwatch.GetTimestamp();
-        _notice.Open(mind.Notice, arrivedAt, _host.Notice);
+        _notice.Open(_host.NoticeHeard() ? mind.NoticeAsync : null, arrivedAt, _host.Notice);
         try
         {
             await DriveAsync(mind, await decide(), cancellationToken);

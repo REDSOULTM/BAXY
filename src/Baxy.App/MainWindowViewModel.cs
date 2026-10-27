@@ -133,12 +133,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 // interface, so it never reads as the turn's answer.
                 Notice = notice =>
                 {
-                    // Not said when the owner switched it off or silenced BAXY's voice (it was said even then).
-                    if (Settings.WaitNotice && !Settings.VoiceMuted && _mindClient is { IsVoiceAvailable: true } mind)
+                    // Not said when the owner switched it off or silenced BAXY's voice (it was said even then); checked
+                    // again here because either may change while the mind writes the phrase.
+                    if (NoticeWouldBeHeard() && _mindClient is { } mind)
                     {
                         _ = SpeakNoticeAsync(mind, notice);
                     }
                 },
+                // Nobody would hear it: the mind is not asked to write a notice.
+                NoticeHeard = NoticeWouldBeHeard,
                 StepCompleted = step =>
                 {
                     _personActed |= step.Sent && !_beatActive;
@@ -1749,10 +1752,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _ = mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None);
     }
 
+    private bool NoticeWouldBeHeard() =>
+        Settings.WaitNotice && !Settings.VoiceMuted && _mindClient is { IsVoiceAvailable: true };
+
     private async Task SpeakNoticeAsync(MindSidecarClient mind, string notice)
     {
         _noticeAsked = notice; // set before asking: it may sound before the acceptance arrives
-        if (await mind.VoiceSpeakAsync(notice, TimeSpan.FromSeconds(5), CancellationToken.None))
+        if (await mind.VoiceSpeakAsync(notice, TimeSpan.FromSeconds(5), CancellationToken.None, notice: true))
         {
             ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "notice.queued");
             NoticeQueued?.Invoke(notice);
