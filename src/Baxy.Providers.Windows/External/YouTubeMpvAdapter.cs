@@ -71,8 +71,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         (await MediaSessionCalls.ReadAsync(cancellationToken).ConfigureAwait(false))
             .Any(static session => session.PlaybackStatus == "playing");
 
+    // Feria 2026-10-27 (owner): the player plays audio only, so a video asked for showed as a black window; YouTube
+    // now plays in the person's browser (WebBrowserAdapter), and this one answers only for a player still open.
     public bool CanHandle(string operation) =>
-        operation is "media.play.youtube" or "media.status" or "media.control";
+        operation is "media.status" or "media.control";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
