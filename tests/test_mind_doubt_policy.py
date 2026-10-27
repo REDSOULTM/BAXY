@@ -68,7 +68,7 @@ def test_an_unsure_action_does_not_run_and_the_model_asks_in_its_own_words(tmp_p
 # Held-out (written by an agent that did not see the change): small talk with typos, and short requests for the PC.
 SMALL_TALK = ("grasias por too, erí muy simpático", "que entretenido estai, me abriste el día",
               "chao chao, nos vemo despué", "quien te iso a ti oye", "escribí re bonito tú, te felisito")
-REQUESTS = ("abre la calculadora", "sube el volumen", "busca el clima de Santiago en internet")
+REQUESTS = ("apaga el bluetooth", "minimiza todas las ventanas", "toma una captura y guárdala")
 
 
 def _unsure(p_call: float, p_name: float) -> dict:
@@ -91,7 +91,7 @@ def test_an_unsure_action_the_model_more_likely_answered_in_words_is_answered_in
     assert second["messages"][-1] == {"role": "user", "content": text}  # no note after the person's words
     # the rules (the system message) name tools of their own
     assert not any("input_text_type" in str(m.get("content")) for m in second["messages"][1:])
-    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
     assert rows[0]["kind"] == "doubt_words" and rows[0]["doubt"]["p_call"] == 0.3
 
 

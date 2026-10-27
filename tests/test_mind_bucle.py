@@ -201,7 +201,7 @@ def test_a_question_after_the_repeated_one_ends_the_turn_in_words(tmp_path: Path
     step = mind.decide(2, "en toda la pantalla")
     assert step["kind"] == "conversation" and step["reply"] == "Eso no lo hago."
     assert server.bodies[-1]["tool_choice"] == "none"
-    assert [m for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]["content"] == ASKED_CLOSED_NOT_RUN
+    assert server.bodies[-1]["messages"][-1]["content"] == ASKED_CLOSED_NOT_RUN
     assert [r["kind"] for r in _trace(mind) if r.get("kind") == "ask_repeat_closed"] == ["ask_repeat_closed"] * 2
 
 
