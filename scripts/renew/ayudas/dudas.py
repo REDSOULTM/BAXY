@@ -33,7 +33,7 @@ def decide(mind, case: dict, seed: int) -> dict:
     rows = [json.loads(line) for line in mind.trace.read_text(encoding="utf-8").splitlines()[before:]]
     first = next((r for r in rows if r.get("stage") == "turn.decide"), {})
     mind._close_open_calls()
-    return {"first": first.get("operation") or first.get("kind"), "held": first.get("kind") == "doubt_ask",
+    return {"first": first.get("operation") or first.get("kind"), "held": first.get("kind") in ("doubt_ask", "doubt_words"),
             "confidence": (first.get("doubt") or {}).get("confidence"),
             "rivals": (first.get("doubt") or {}).get("rivals"), "kind": result.get("kind"),
             "operation": result.get("operation"), "reply": result.get("reply") or result.get("question")}

@@ -65,6 +65,44 @@ def test_an_unsure_action_does_not_run_and_the_model_asks_in_its_own_words(tmp_p
     assert rows[0]["doubt"]["confidence"] < 0.4
 
 
+# Held-out (written by an agent that did not see the change): small talk with typos, and short requests for the PC.
+SMALL_TALK = ("grasias por too, erí muy simpático", "que entretenido estai, me abriste el día",
+              "chao chao, nos vemo despué", "quien te iso a ti oye", "escribí re bonito tú, te felisito")
+REQUESTS = ("abre la calculadora", "sube el volumen", "busca el clima de Santiago en internet")
+
+
+def _unsure(p_call: float, p_name: float) -> dict:
+    reply = _call("input_text_type", {"text": "gracias"}, p_name)
+    reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", p_call)
+    return reply
+
+
+@pytest.mark.parametrize("text", SMALL_TALK)
+def test_an_unsure_action_the_model_more_likely_answered_in_words_is_answered_in_words(tmp_path, monkeypatch,
+                                                                                        text) -> None:
+    # Feria 2026-10-27: a greeting with a typo, p(call) 0.30, sampled the typing tool; the note naming it made the model
+    # ask what to type. Under WORDS_P_CALL the model decides again in words, and no note names any tool.
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_unsure(0.3, 0.9), _say("¡De nada!")])
+    result = mind.decide(1, text)
+    assert result["kind"] == "conversation" and result["operation"] is None and result["reply"] == "¡De nada!"
+    second = server.bodies[1]
+    assert second["tool_choice"] == "none"
+    assert second["messages"][-1] == {"role": "user", "content": text}  # no note after the person's words
+    # the rules (the system message) name tools of their own
+    assert not any("input_text_type" in str(m.get("content")) for m in second["messages"][1:])
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert rows[0]["kind"] == "doubt_words" and rows[0]["doubt"]["p_call"] == 0.3
+
+
+@pytest.mark.parametrize("text", REQUESTS)
+def test_an_unsure_action_the_model_more_likely_called_is_asked_about_as_before(tmp_path, monkeypatch, text) -> None:
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_unsure(0.95, 0.3), _say("¿Qué quieres que haga?")])
+    assert mind.decide(1, text)["operation"] is None
+    assert "input_text_type" in server.bodies[1]["messages"][-1]["content"]
+
+
 @pytest.mark.parametrize("threshold", ["", "0.4"])
 def test_a_sure_action_or_layer_0_off_runs_as_before(tmp_path, monkeypatch, threshold) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", threshold)

@@ -559,12 +559,16 @@ LOOK_CLICK_NOT_RUN = json.dumps({"status": "not_run",
 # Aid «ask_once» (uso real 2026-10-26): the person's answer to ask_user is that call's result, and the model asked the
 # same question again at each answer («¿en todo el sistema o en un programa?» six times, «¿qué quieres que recuerde de
 # ti?» three): one question per thing (identity: «una pregunta corta, no un interrogatorio»). A question alike to one
-# already asked in the turn (ASKED_ALIKE of its letters, folded) is not asked: the model answers in words.
+# already asked in the turn (ASKED_ALIKE of its letters, folded) is not asked: the model decides again, without asking.
 ASKED_ALIKE = 0.9
 ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
                                   "reason": "this question was already asked in this turn and the person's answer is "
                                             "above; it was not asked again: do with that answer what a tool can do, "
                                             "or say in one sentence that you don't do it"})
+# The question the model asked in the decision after that one: no other question is asked in this turn.
+ASKED_CLOSED_NOT_RUN = json.dumps({"status": "not_run",
+                                   "reason": "no other question is asked in this turn; it was not asked: answer the "
+                                             "person in words with what is above"})
 # Aid «say_once» (uso real 2026-10-26): the same words came back turn after turn (the same greeting three times, the
 # same «¿te refieres a algo más?» to whatever followed; after searches that all failed, the answer of the turn before
 # as if they had found it). An answer that is BAXY's last answer again, letter for letter, in a turn where no call
@@ -874,6 +878,10 @@ CUT_TEXT_FLOOR = 500
 # of 1,530 right ones (phase 0, 2026-10-21).
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
               "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
+# Feria 2026-10-27: a greeting with a typo sampled the typing tool at p(call) 0.30, and the note naming it made the model
+# ask what to type. Under this p(call) a call was not the model's likelier decision: it decides again in words, with no
+# note (an empty one), so no tool is named.
+WORDS_P_CALL = 0.5
 # Aid «answer_check» (al máximo, lever 3; answer_check.py): what the model reads when its final answer contradicts the
 # turn's results, before it is spoken. Only the facts and what to do with them, never words to say (invariant 5): the
 # model writes its answer again, once, with no tools. Offline on the stored practice transcripts it flagged the 11 clear
@@ -2138,16 +2146,18 @@ class Mind:
             # it carries (doubt_of) beside the operation that runs.
             turn["doubt_of"] = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             calls, note, content = [note], None, ""
-        if note:
+        if note is not None:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads and asks the person, in its own words, what
-            # they want (the call it nearly made never enters the conversation).
-            conv.append({"role": "user", "content": note})
+            # they want (the call it nearly made never enters the conversation). An empty note (WORDS_P_CALL): it
+            # answers in words, told nothing.
+            if note:
+                conv.append({"role": "user", "content": note})
             doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             if doubted.startswith("memory."):
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
-            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
-                      operation=doubted, arguments=None, content=None)
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                      kind="doubt_ask" if note else "doubt_words", operation=doubted, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=True)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
@@ -2368,8 +2378,8 @@ class Mind:
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any]) -> str | dict[str, Any] | None:
         """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
-        model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
-        low_reversible, or recoverable_delete and the kernel confirms it. Layer 2
+        model's confidence is under the threshold (an empty note under WORDS_P_CALL), unless these words answer a
+        question (DOUBT_ASKED) or the call is low_reversible, or recoverable_delete and the kernel confirms it. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
@@ -2404,7 +2414,7 @@ class Mind:
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
                 and risk != "low_reversible" \
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
-            return DOUBT_NOTE.format(call=call["wire"])
+            return "" if doubt["p_call"] < WORDS_P_CALL else DOUBT_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
         if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
@@ -2585,20 +2595,26 @@ class Mind:
                 stage: str, started: float, content: str) -> dict[str, Any]:
         result: dict[str, Any] = {"type": "turn.result", "id": request_id, "kind": "conversation", "operation": None,
                                   "arguments": None, "question": "", "reply": ""}
+        closed = turn.pop("ask_closed", False)  # this decision follows a question not asked again (aid «ask_once»)
         if call is not None and call["wire"] == "ask_user":
             question = " ".join(str(call["arguments"].get("question") or "").split())
             later = [c["id"] for c in turn.get("queue") or []]
             turn["queue"], turn["awaiting"] = [], None
             folded = " ".join(re.findall(r"[^\W_]+", _fold(question)))
-            if folded and _aid_on("ask_once") and any(
+            if folded and _aid_on("ask_once") and (closed or any(
                     difflib.SequenceMatcher(None, folded, asked).ratio() >= ASKED_ALIKE
-                    for asked in turn.get("questions", [])):
+                    for asked in turn.get("questions", []))):
+                not_run = ASKED_CLOSED_NOT_RUN if closed else ASKED_AGAIN_NOT_RUN
                 for call_id in [call["id"], *later]:
                     turn["conv"].append({"role": "tool", "tool_call_id": call_id,
-                                         "content": ASKED_AGAIN_NOT_RUN if call_id == call["id"] else NOT_RUN})
+                                         "content": not_run if call_id == call["id"] else NOT_RUN})
                 self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
                           kind="ask_repeat_closed", operation=None, arguments=None, content=None)
-                return self._next(request_id, stage, turn, final=True)
+                # Feria 2026-10-27: the decision after it had no tools, though the answer to the question asked for one
+                # (the topic of a presentation to make: it said it could not make it without one). It keeps them; only
+                # asking is closed in it, and asking there again ends the turn in words.
+                turn["ask_closed"] = not closed
+                return self._next(request_id, stage, turn, final=closed)
             if folded:
                 turn.setdefault("questions", []).append(folded)
             if question:

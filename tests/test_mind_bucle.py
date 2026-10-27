@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.mind import (ASKED_AGAIN_NOT_RUN, LOOK_CLICK_NOT_RUN, NO_MORE_CALLS, NOT_RUN, SAID_AGAIN_NOTE,
-                            SAME_CALL_NOT_RUN)
+from baxy_mind.mind import (ASKED_AGAIN_NOT_RUN, ASKED_CLOSED_NOT_RUN, LOOK_CLICK_NOT_RUN, NO_MORE_CALLS, NOT_RUN,
+                            SAID_AGAIN_NOTE, SAME_CALL_NOT_RUN)
 
 from test_mind_final import _call, _mind, _say
 
@@ -154,18 +154,67 @@ def test_the_call_told_as_repeated_runs_again_after_another_call(tmp_path: Path,
 
 def test_a_question_alike_to_one_already_answered_in_the_turn_is_not_asked_again(tmp_path: Path, monkeypatch) -> None:
     # Aid «ask_once» (uso real 2026-10-26): the same clarifying question came back at each answer. The second one alike
-    # (another article, the same letters at 0.9) is not asked; the model answers in words, with no tools.
+    # (another article, the same letters at 0.9) is not asked; the model decides again with its tools (feria 2026-10-27:
+    # with none, it could not do what the answer asked for), and does it.
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Lo cambio en la pantalla o en una ventana?"}),
                                     _call("ask_user", {"question": "¿Lo cambio en toda la pantalla o en una ventana?"}),
-                                    _say("Eso no lo hago.")])
+                                    _call("app_open", {"appId": "Configuración"})])
     assert mind.decide(1, "cambia el tono")["kind"] == "clarify"
     step = mind.decide(2, "en toda la pantalla")
-    assert step["kind"] == "conversation" and step["reply"] == "Eso no lo hago."
+    assert step["kind"] == "action" and step["operation"] == "app_open"
     last = server.bodies[-1]
-    assert last["tool_choice"] == "none"
+    assert "tool_choice" not in last
     assert [m for m in last["messages"] if m["role"] == "tool"][-1]["content"] == ASKED_AGAIN_NOT_RUN
     assert [r["kind"] for r in _trace(mind) if r.get("kind") == "ask_repeat_closed"] == ["ask_repeat_closed"]
+
+
+# Held-out (written by an agent that did not see the change): a request missing a datum, its question and the answer.
+CLARIFIED = [("crea un documento para el informe", "¿Qué nombre le pongo al documento?", "Informe final"),
+             ("mándale un correo a mi profe", "¿Qué asunto le pongo al correo?", "Feria"),
+             ("ponme una alarma para mañana", "¿A qué hora pongo la alarma?", "Seis"),
+             ("dibújame un círculo", "¿De qué color quieres el círculo?", "Azul"),
+             ("búscame la página de la universidad", "¿Qué universidad quieres que busque?", "La USACH")]
+
+
+@pytest.mark.parametrize("request_, question, answer", CLARIFIED)
+def test_the_answer_to_a_question_asked_again_is_acted_on(tmp_path: Path, monkeypatch, request_: str, question: str,
+                                                          answer: str) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    act = _call("app_open", {"appId": "Word"})
+    mind, _ = _mind(tmp_path, [_call("ask_user", {"question": question}), _call("ask_user", {"question": question}),
+                               act])
+    assert mind.decide(1, request_)["kind"] == "clarify"
+    step = mind.decide(2, answer)
+    assert step["kind"] == "action" and step["operation"] == "app_open"
+
+
+@pytest.mark.parametrize("again", ["¿Lo cambio en toda la pantalla o en una ventana?", "¿Qué color?"])
+def test_a_question_after_the_repeated_one_ends_the_turn_in_words(tmp_path: Path, monkeypatch, again: str) -> None:
+    # Only asking is closed in that decision: any question there, alike or not, is not asked and the model answers in
+    # words, with no tools.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Lo cambio en la pantalla o en una ventana?"}),
+                                    _call("ask_user", {"question": "¿Lo cambio en toda la pantalla o en una ventana?"}),
+                                    _call("ask_user", {"question": again}), _say("Eso no lo hago.")])
+    mind.decide(1, "cambia el tono")
+    step = mind.decide(2, "en toda la pantalla")
+    assert step["kind"] == "conversation" and step["reply"] == "Eso no lo hago."
+    assert server.bodies[-1]["tool_choice"] == "none"
+    assert [m for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]["content"] == ASKED_CLOSED_NOT_RUN
+    assert [r["kind"] for r in _trace(mind) if r.get("kind") == "ask_repeat_closed"] == ["ask_repeat_closed"] * 2
+
+
+def test_a_question_after_a_tool_that_ran_is_asked(tmp_path: Path, monkeypatch) -> None:
+    # The closing lasts that one decision: after a tool ran, a new question of the turn is asked.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("ask_user", {"question": "¿Qué colores?"}),
+                               _call("ask_user", {"question": "¿Y qué colores?"}),
+                               _call("app_open", {"appId": "Paint"}), _call("ask_user", {"question": "¿De qué tamaño?"})])
+    mind.decide(1, "haz un dibujo")
+    assert mind.decide(2, "azul y rojo")["operation"] == "app_open"
+    step = mind.continue_turn(3, OPENED)
+    assert step["kind"] == "clarify" and step["question"] == "¿De qué tamaño?"
 
 
 def test_another_question_in_the_turn_is_asked(tmp_path: Path, monkeypatch) -> None:
