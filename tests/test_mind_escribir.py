@@ -1,0 +1,120 @@
+"""Aid «unopened_app» (feria 2026-10-27, case 13; live test 2026-10-27): «escribe en <app> <texto>» with that application
+not open. The model typed with no window and the text went to whatever window was in front (BAXY's at the fair; in the
+live test a window of the person's own, its receipt «sentTo» that window). A typing or a key with no window, in a turn
+whose words name an installed application that no call of the turn opened, focused or resolved, is not handed to the
+App: its result says so as data and the model decides again."""
+import json
+from pathlib import Path
+
+from test_mind_final import _call, _mind, _say
+
+DONE = json.dumps({"status": "completed", "verification": "readback"})
+OPENED = json.dumps({"status": "completed", "verification": "window_appeared", "foreground": True})
+APPS = ["Bloc de notas", "Calculadora", "Microsoft Word", "Spotify"]
+
+
+def _trace(mind) -> list[dict]:
+    return [json.loads(line) for line in mind.trace.read_text(encoding="utf-8").splitlines()]
+
+
+def _not_run(mind) -> list[dict]:
+    told = []
+    for message in mind.conversation:
+        if message["role"] == "tool" and str(message.get("content")).startswith("{"):
+            body = json.loads(str(message["content"]).split("\n", 1)[0])
+            if body.get("status") == "not_run":
+                told.append(body)
+    return told
+
+
+def test_typing_into_a_named_app_nobody_opened_goes_back_to_the_model_and_after_app_open_it_types(
+        tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("input_text_type", {"text": "hola quién eres"}),
+                                    _call("app_open", {"appId": "Bloc de notas", "foreground": True}),
+                                    _call("input_text_type", {"text": "hola quién eres"}),
+                                    _say("Abrí el Bloc de notas y escribí «hola quién eres».")])
+    mind.names = list(APPS)
+    step = mind.decide(1, "Escribe en el bloc de notas hola quién eres")
+    # The typing did not reach the App: the model decided again, with its tools, and opened the application.
+    assert step["kind"] == "action" and step["operation"] == "app_open"
+    told = _not_run(mind)
+    assert len(told) == 1 and told[0]["application"] == ["Bloc de notas"] and "app_open" in told[0]["reason"]
+    assert "tool_choice" not in server.bodies[1]  # not the last answer: the model may still call
+    step = mind.continue_turn(2, OPENED)
+    assert step["kind"] == "action" and step["operation"] == "input_text_type"
+    assert step["arguments"]["text"] == "hola quién eres"
+    assert mind.continue_turn(3, DONE)["reply"].startswith("Abrí el Bloc de notas")
+    assert [r["kind"] for r in _trace(mind) if r.get("kind") == "unopened_app"] == ["unopened_app"]
+
+
+def test_a_key_with_no_window_into_a_named_app_nobody_opened_is_not_pressed(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("input_key_press", {"key": "ctrl_s"}),
+                               _call("window_resolve", {"application": "Microsoft Word"})])
+    mind.names = list(APPS)
+    assert mind.decide(1, "dale ctrl s en microsoft word")["operation"] == "window_resolve"
+    assert _not_run(mind)[0]["application"] == ["Microsoft Word"]
+
+
+def test_the_same_call_refused_again_ends_the_turn_in_words(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    typing = _call("input_text_type", {"text": "hola"})
+    mind, server = _mind(tmp_path, [typing, typing, _say("No escribí nada: el Bloc de notas no estaba abierto.")])
+    mind.names = list(APPS)
+    step = mind.decide(1, "escribe hola en el bloc de notas")
+    assert step["kind"] == "conversation" and step["reply"].startswith("No escribí")
+    assert server.bodies[-1]["tool_choice"] == "none"
+    assert [r["kind"] for r in _trace(mind) if r.get("kind", "").startswith("unopened_app")] == [
+        "unopened_app", "unopened_app_closed"]
+
+
+def test_typing_with_no_application_named_is_made_as_before(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola"})])
+    mind.names = list(APPS)
+    step = mind.decide(1, "escribe hola")
+    assert step["kind"] == "action" and step["operation"] == "input_text_type"
+
+
+def test_an_application_named_only_in_the_text_to_type_is_not_where_it_goes(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "mañana instalo Spotify"})])
+    mind.names = list(APPS)
+    assert mind.decide(1, "escribe mañana instalo Spotify")["operation"] == "input_text_type"
+
+
+def test_an_application_named_in_an_earlier_turn_does_not_count(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("app_open", {"appId": "Bloc de notas", "foreground": True}),
+                               _say("Abrí el Bloc de notas."), _call("input_text_type", {"text": "hola"})])
+    mind.names = list(APPS)
+    assert mind.decide(1, "abre el bloc de notas")["operation"] == "app_open"
+    assert mind.continue_turn(2, OPENED)["kind"] == "conversation"
+    assert mind.decide(3, "ahora escribe hola")["operation"] == "input_text_type"
+
+
+def test_an_application_named_in_the_answer_to_a_question_counts(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("ask_user", {"question": "¿Dónde lo escribo?"}),
+                               _call("input_text_type", {"text": "hola"}),
+                               _call("app_open", {"appId": "Bloc de notas", "foreground": True})])
+    mind.names = list(APPS)
+    assert mind.decide(1, "escribe hola")["kind"] == "clarify"
+    assert mind.decide(2, "en el bloc de notas")["operation"] == "app_open"
+    assert _not_run(mind)[0]["application"] == ["Bloc de notas"]
+
+
+def test_a_window_given_is_left_as_it_is(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola", "window": 2623998})])
+    mind.names = list(APPS)
+    step = mind.decide(1, "escribe hola en el bloc de notas")
+    assert step["kind"] == "action" and step["arguments"]["window"] == 2623998
+
+
+def test_without_the_aid_the_typing_is_made(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola"})])
+    mind.names = list(APPS)
+    assert mind.decide(1, "escribe hola en el bloc de notas")["operation"] == "input_text_type"
