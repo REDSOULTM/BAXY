@@ -1149,4 +1149,39 @@ public sealed class SteamLocalAdapterTests
             Directory.Delete(library, recursive: true);
         }
     }
+
+    // Feria (NB-W5): a PC where two accounts signed in to Steam keeps a library cache for each; a game only the other
+    // account holds was told owned. Ownership is the signed-in account's cache alone, and every cache only when Steam
+    // names no account or that account has none.
+    [Test]
+    public void OwnershipIsTheSignedInAccountsLibraryCacheAlone()
+    {
+        string userdata = Path.Combine(Path.GetTempPath(), "baxy-steam-" + Guid.NewGuid().ToString("N"));
+        void Cache(string account, params string[] appIds)
+        {
+            string cache = Path.Combine(userdata, account, "config", "librarycache");
+            Directory.CreateDirectory(cache);
+            foreach (string appId in appIds)
+                File.WriteAllText(Path.Combine(cache, appId + ".json"), "{}");
+        }
+        try
+        {
+            Cache("111", "10", "20");
+            Cache("222", "30");
+            Directory.CreateDirectory(Path.Combine(userdata, "333"));
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(SteamLocalAdapter.ReadOwnedAppIds(userdata, "111"), Is.EquivalentTo(new[] { "10", "20" }));
+                Assert.That(SteamLocalAdapter.ReadOwnedAppIds(userdata, "222"), Is.EquivalentTo(new[] { "30" }));
+                Assert.That(SteamLocalAdapter.ReadOwnedAppIds(userdata, null), Is.EquivalentTo(new[] { "10", "20", "30" }));
+                Assert.That(SteamLocalAdapter.ReadOwnedAppIds(userdata, "333"), Is.EquivalentTo(new[] { "10", "20", "30" }));
+                Assert.That(SteamLocalAdapter.ReadOwnedAppIds(Path.Combine(userdata, "absent"), "111"), Is.Null);
+            });
+        }
+        finally
+        {
+            Directory.Delete(userdata, recursive: true);
+        }
+    }
 }
