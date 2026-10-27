@@ -587,6 +587,14 @@ FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn 
                                                           "set; it was not made"})
 FLIP_REFUSED = "no se ejecutó: deshacía lo que otra llamada de este turno ya había hecho"
 LOOK_CLICK_REFUSED = f"no se ejecutó: la misma mirada y el mismo clic ya iban {LOOK_CLICK_PAIRS} veces"
+# Aid «close_unsaid» (feria 2026-10-27, «abre el bloc de notas y escribe …», 3 of 4 runs, the base too): after typing
+# and a look, a click on «Cerrar» and on the «Sí» of what it asked, and the Notepad the person was shown closed. A click
+# whose label closes or quits, in a turn whose words say nothing of closing, is not handed to the App.
+CLOSE_NOT_RUN = json.dumps({"status": "not_run", "reason": "the person did not ask to close anything; this click on "
+                                                           "what closes was not made"})
+CLOSE_REFUSED = "no se ejecutó: la persona no pidió cerrar nada"
+_CLOSES = re.compile(r"^\W*(?:cerrar|close|salir|exit|quit)\b")
+_CLOSE_SAID = re.compile(r"\b(?:cierr\w*|cerr\w*|clos\w*|sal|salir|sali\w*|quit\w*|exit\w*)\b")
 # What the model reads at the end of the last result of a turn that takes no more calls.
 NO_MORE_CALLS = ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo con lo que muestran los "
                  "resultados.]")
@@ -2631,6 +2639,10 @@ class Mind:
         """Aids «same_call_closes» and «look_click_cap» (LOOK_CLICK_PAIRS): whether this call of the model is one the
         mind does not hand to the App, as (the trace's kind, its result, its facts); None: it runs."""
         arguments = _call_key(call["arguments"])
+        if (call["wire"] == "input_visible_click" and _aid_on("close_unsaid")
+                and _CLOSES.match(_fold(str(call["arguments"].get("label") or "")))
+                and not _CLOSE_SAID.search(_fold(str(turn.get("text") or "")))):
+            return "close_unsaid", CLOSE_NOT_RUN, CLOSE_REFUSED
         if turn.get("same_told_call") == [name, arguments] and _aid_on("same_call_closes"):
             return "same_call_closed", SAME_CALL_NOT_RUN, SAME_CALL_REFUSED
         if (call["wire"] == "input_visible_click" and turn.get("look") and _aid_on("look_click_cap")
