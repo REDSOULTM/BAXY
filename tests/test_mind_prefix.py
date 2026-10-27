@@ -39,4 +39,5 @@ def test_the_raw_pointer_tool_tells_the_model_it_neither_drags_nor_draws(tmp_pat
         "type": "object", "properties": {"action": {"type": "string"}}, "required": ["action"]}}]})
     tool = next(t for t in mind.tools if t["function"]["name"] == "input_pointer_control")["function"]
     assert "It cannot drag or draw" in tool["description"]
-    assert "no tool drags or draws" in tool["description"]
+    # Only dragging with the mouse is the limit: a whole window still moves with its own tools.
+    assert "no tool drags or draws with the mouse (moving a whole window is window_move" in tool["description"]
