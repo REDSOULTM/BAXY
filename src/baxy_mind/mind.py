@@ -593,8 +593,9 @@ LOOK_CLICK_REFUSED = f"no se ejecutó: la misma mirada y el mismo clic ya iban {
 CLOSE_NOT_RUN = json.dumps({"status": "not_run", "reason": "the person did not ask to close anything; this click on "
                                                            "what closes was not made"})
 CLOSE_REFUSED = "no se ejecutó: la persona no pidió cerrar nada"
-_CLOSES = re.compile(r"^\W*(?:cerrar|close|salir|exit|quit)\b")
-_CLOSE_SAID = re.compile(r"\b(?:cierr\w*|cerr\w*|clos\w*|sal|salir|sali\w*|quit\w*|exit\w*)\b")
+# Minimizing too: after «ahora escribe debajo la fecha de hoy» a click on the window's «Minimizar» (1 of 3 runs).
+_CLOSES = re.compile(r"^\W*(?:cerrar|close|salir|exit|quit|minimizar|minimize)\b")
+_CLOSE_SAID = re.compile(r"\b(?:cierr\w*|cerr\w*|clos\w*|sal|salir|sali\w*|quit\w*|exit\w*|minimi\w*)\b")
 # What the model reads at the end of the last result of a turn that takes no more calls.
 NO_MORE_CALLS = ("\n[Este turno no admite más herramientas: responde ahora a la persona sólo con lo que muestran los "
                  "resultados.]")

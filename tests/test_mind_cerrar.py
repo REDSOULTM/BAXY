@@ -46,3 +46,14 @@ def test_without_the_aid_the_close_is_made(tmp_path: Path, monkeypatch) -> None:
     mind, _ = _mind(tmp_path, [_call("input_visible_controls", {"application": "Bloc de notas"}), CLOSE])
     mind.decide(1, "escribe hola en el bloc de notas")
     assert mind.continue_turn(2, VIEW)["operation"] == "input_visible_click"
+
+
+def test_a_minimize_nobody_asked_for_is_not_made_and_one_asked_for_is(tmp_path: Path, monkeypatch) -> None:
+    # feria 2026-10-27: after «Ahora escribe debajo la fecha de hoy», a click on the window's «Minimizar»
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    minimize = _call("input_visible_click", {"label": "Minimizar", "index": 19, "window": 2623998})
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "27/10/2026"}), minimize, _say("Escribí la fecha.")])
+    mind.decide(1, "Ahora escribe debajo la fecha de hoy.")
+    assert mind.continue_turn(2, DONE)["reply"] == "Escribí la fecha."
+    mind, _ = _mind(tmp_path, [minimize])
+    assert mind.decide(1, "minimiza el bloc de notas")["operation"] == "input_visible_click"
