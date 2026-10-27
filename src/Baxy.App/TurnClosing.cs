@@ -17,9 +17,11 @@ namespace Baxy.App;
 /// <item>A call that came back the same three times in the turn, in a row or not: the same operation with the same
 /// arguments and the same result, its content (e2e E022: the same page fetched eight times, until the results overflowed
 /// the context and the turn ended with no answer; feria 2026-10-27: a navigation and a new tab alternated 16 times in
-/// 55 s, each breaking the other's run, until the move cap). Not twice: after two identical failures the model still
-/// changes course (e2e E011, base 0be0f9de9, all three seeds: two calculator_window_not_found, then app.open and the
-/// sum); the branch that closed the turn at the second one lost that case.</item>
+/// 55 s, each breaking the other's run, until the move cap), unless a call not made before in the turn (another operation
+/// or other arguments) came since its last time: a form filled field by field, the same key between each typing, goes on.
+/// Not twice: after two identical failures the model still changes course (e2e E011, base 0be0f9de9, all three seeds: two
+/// calculator_window_not_found, then app.open and the sum); the branch that closed the turn at the second one lost that
+/// case.</item>
 /// </list>
 /// </summary>
 internal sealed class TurnClosing
@@ -30,10 +32,14 @@ internal sealed class TurnClosing
     /// <summary>The turn's time: longer than any turn of the practice e2e that passes (57 s at most, lote 3).</summary>
     internal static readonly TimeSpan Budget = TimeSpan.FromSeconds(90);
 
-    /// <summary>The same call with the same result this many times in the turn, in a row or not, closes it.</summary>
+    /// <summary>
+    /// The same call with the same result this many times in the turn, with no new call since its last time, closes it.
+    /// </summary>
     internal const int RepeatsThatClose = 3;
 
-    private readonly Dictionary<string, int> _appearances = new(StringComparer.Ordinal);
+    // Each call with its result: how many times it came, and how many new calls the turn had made at its last time.
+    private readonly Dictionary<string, (int Times, int NewCalls)> _appearances = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _made = new(StringComparer.Ordinal);
 
     /// <summary>
     /// The call number <paramref name="calls"/> of the turn came back, <paramref name="elapsed"/> after the turn started,
@@ -41,10 +47,13 @@ internal sealed class TurnClosing
     /// </summary>
     internal bool AfterCall(int calls, TimeSpan elapsed, string operation, string arguments, string observation)
     {
-        string call = string.Join('\n', operation, arguments, ResultHash(observation));
-        int appearances = _appearances.GetValueOrDefault(call) + 1;
-        _appearances[call] = appearances;
-        return calls >= MaximumModelCalls || elapsed >= Budget || appearances >= RepeatsThatClose;
+        string made = string.Join('\n', operation, arguments);
+        _made.Add(made);
+        string call = string.Join('\n', made, ResultHash(observation));
+        (int times, int newCallsBefore) = _appearances.GetValueOrDefault(call);
+        bool stuck = times + 1 >= RepeatsThatClose && newCallsBefore == _made.Count;
+        _appearances[call] = (times + 1, _made.Count);
+        return calls >= MaximumModelCalls || elapsed >= Budget || stuck;
     }
 
     // Al máximo 7.7: the same result is the same content, status and error with it (three looks at a window still

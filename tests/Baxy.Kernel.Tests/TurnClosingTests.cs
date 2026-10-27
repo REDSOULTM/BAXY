@@ -87,6 +87,25 @@ public sealed class TurnClosingTests
         });
     }
 
+    // Review of the branch: a form filled field by field, the same key between each typing, is work going on: each
+    // typing was a call not made before, so the key's third time is no loop.
+    [Test]
+    public void TheSameKeyBetweenNewCallsKeepsTheTurnOpen()
+    {
+        var closing = new TurnClosing();
+        const string tab = "{\"key\":\"tab\"}";
+        Assert.Multiple(() =>
+        {
+            for (int field = 0; field < 4; field++)
+            {
+                Assert.That(closing.AfterCall(2 * field + 1, Soon, "input.text.type", $"{{\"text\":\"campo {field}\"}}",
+                    Result("completed")), Is.False, $"typing {field}");
+                Assert.That(closing.AfterCall(2 * field + 2, Soon, "input.key.press", tab, Result("completed")),
+                    Is.False, $"key {field}");
+            }
+        });
+    }
+
     // E011 (base 0be0f9de9): two calculator_window_not_found, then app.open and the sum. Counting over the whole turn
     // keeps it: the failure appeared twice, and the sum that completes is another result.
     [Test]
