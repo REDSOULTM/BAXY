@@ -6292,8 +6292,12 @@ public sealed class ExternalAdaptersTests
 
     // M86: the cold client restored paused on the result's first track; the
     // script proved playback by the paused-to-playing change after its press.
+    // Uso real 2026-10-26 («Pon una canción de Queen»): that same observation is
+    // what a press that only resumed the loaded track shows. A now-playing line
+    // unchanged by the press and holding no word of the search is not confirmed:
+    // effect observed, what plays carried, never a success.
     [Test]
-    public async Task SpotifyQueryPlaybackSeenAfterThePressIsVerified()
+    public async Task SpotifyQueryPlaybackOfTheLineShownBeforeThePressIsNotConfirmed()
     {
         var runner = new StubProcessRunner(
             "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Conep - After (feat. Young Miko)\",\"selectedControl\":\"Reproducir Reggaetón Mix\",\"beforeNowPlaying\":\"after feat young miko de conep young miko\",\"observedNowPlaying\":\"after feat young miko de conep young miko\",\"processId\":42}");
@@ -6306,14 +6310,15 @@ public sealed class ExternalAdaptersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_query_result_not_confirmed"));
             Assert.That(receipt.Result?.GetProperty("title").GetString(),
                 Is.EqualTo("Conep - After (feat. Young Miko)"));
-            Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("reggaetón"));
-            Assert.That(receipt.Result?.GetProperty("playbackStatus").GetString(), Is.EqualTo("playing"));
-            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
-                Is.EqualTo("spotify_windows_uia_postread"));
+            Assert.That(receipt.Result?.GetProperty("observedNowPlaying").GetString(),
+                Is.EqualTo("after feat young miko de conep young miko"));
+            Assert.That(receipt.Result?.TryGetProperty("playbackStatus", out _), Is.False);
             Assert.That(runner.LastArguments[^1], Is.EqualTo("query"));
         });
     }

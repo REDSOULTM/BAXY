@@ -216,6 +216,16 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
                 {
                     return WithDiagnostic(effectBoundary.Failure(operation, ResponseUnreadable, effect), response.RootElement);
                 }
+                // Uso real 2026-10-26 («Pon una canción de Queen»): the script told a search played while the
+                // now-playing line still showed the track loaded before the press (La Chica de Humo), and that was
+                // told as the search's result. A search's playback is verified only when what plays is another than
+                // what showed before the press or holds a word of the search; otherwise it may be the loaded track
+                // resumed: unconfirmed, with what plays carried for the model to tell.
+                if (!exactSelection && !QueryPlaybackShown(title, response.RootElement))
+                {
+                    return WithDiagnostic(
+                        effectBoundary.Failure(operation, QueryResultNotConfirmed, effect), response.RootElement);
+                }
                 JsonElement result = ExternalJson.Create(writer =>
                 {
                     writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -321,6 +331,20 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter, IDispos
 
     // The script's playbackEvidence when what plays is another than what showed before the press.
     private const string NowPlayingChanged = "now_playing_changed";
+
+    // The script's own code for a search whose press only resumed what the client had loaded (ronda 19).
+    private const string QueryResultNotConfirmed = "spotify_query_result_not_confirmed";
+
+    /// <summary>
+    /// Whether a search's verified response shows the search playing: the now-playing line after the press is another
+    /// than the one before it (both folded by the script), or what plays holds a word of the search (<see cref="QueryHeard"/>).
+    /// </summary>
+    internal static bool QueryPlaybackShown(string query, JsonElement response)
+    {
+        string observed = StringField(response, "observedNowPlaying").Trim();
+        return !string.Equals(observed, StringField(response, "beforeNowPlaying").Trim(), StringComparison.Ordinal)
+            || QueryHeard(query, observed, StringField(response, "title"));
+    }
 
     private static string StringField(JsonElement response, string name) =>
         response.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String
