@@ -51,6 +51,25 @@ public sealed class MindSidecarClientTests
     }
 
     [Test]
+    public void TheCatalogTheMindReadsCarriesEachToolsGroupOfWhatItCanDo()
+    {
+        // Feria 2026-10-27: asked what it can do, the model named things no tool does; it reads the groups of the panel
+        // «Qué puedo hacer» (operation-labels.v1.json), the same words the person sees there.
+        JsonObject request = MindSidecarClient.CreateCatalogConfigureRequest(
+            [.. ProductCatalog.ToolDescriptors.Select(static descriptor =>
+                ProductCatalog.CreateToolDescriptor(new OperationDefinition(descriptor)))],
+            applicationCatalog: null);
+        JsonObject Tool(string name) => request["capabilities"]!.AsArray().OfType<JsonObject>()
+            .Single(tool => (string?)tool["name"] == name);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)Tool("web.search")["group"], Is.EqualTo("Web y navegador"));
+            Assert.That((string?)Tool("backup.create")["group"], Is.EqualTo("Copias de seguridad"));
+        });
+    }
+
+    [Test]
     public async Task AFieldOfAnotherTypeFromTheMindEndsNeitherItsReaderNorTheRequest()
     {
         // Revisión de calidad (2026-10-25): a line whose type, text or id was not a string ended the reader with the mind

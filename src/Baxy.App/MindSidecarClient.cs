@@ -317,6 +317,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 ["argumentsSchema"] = JsonNode.Parse(
                     capability.ArgumentsSchema.GetRawText()),
                 ["risk"] = capability.Risk,
+                // Feria 2026-10-27: what the model may say it can do (mind.py, AREAS), as the panel «Qué puedo hacer».
+                ["group"] = FieldStepProjection.Group(capability.Name),
             };
             if (capability.Effects is { } effects)
             {

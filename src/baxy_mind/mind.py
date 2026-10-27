@@ -77,7 +77,8 @@ SYSTEM = (
     "input_visible_controls, actúa con input_visible_click (por la etiqueta que viste), input_text_type o "
     "input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo.\n"
     "10. Los identificadores (windowId, ids de notas, tareas o redes) salen del resultado de la herramienta que los "
-    "lista; nunca los inventes ni uses un número de otro campo."
+    "lista; nunca los inventes ni uses un número de otro campo.\n"
+    "11. Si te preguntan qué sabes o puedes hacer, nombra sólo lo que hacen tus herramientas, nada que ellas no hagan."
 )
 
 # The heartbeat reads the same rules without the answer to «¿ya lo hiciste?», which only a person asks: with it, the
@@ -88,7 +89,12 @@ _ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo o cómo está algo del PC
                   "conversación: sin una herramienta que lo hiciera, no lo hiciste, y sin una que lo mirara, no lo "
                   "sabes: míralo con su herramienta antes de responder.")
 assert _ASKED_IF_DONE in SYSTEM
-BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "")
+# Feria 2026-10-27: asked what it can do, it answered five ways and named things no tool does (editing photos). Only a
+# person asks that, so the heartbeat reads none of it; the person's text names the catalog's groups (CAN_DO_AREAS).
+_CAN_DO = SYSTEM[SYSTEM.index("\n11. "):]
+BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "").replace(_CAN_DO, "")
+# The groups of the App's panel «Qué puedo hacer» (operation-labels.v1.json), each tool's «group» in catalog.configure.
+CAN_DO_AREAS = " Por áreas: {areas}."
 
 # The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
 # reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
@@ -1194,6 +1200,7 @@ class Mind:
         self._judged: dict[str, Any] | None = None
         self._unread: list[dict[str, str]] = []  # the last decision's rivals whose names could not be read (P4)
         self.tools: list[dict[str, Any]] = []
+        self.system = SYSTEM  # the person's system text: with the last catalog's groups (CAN_DO_AREAS)
         self.names: list[str] = []  # the installed applications and games of the last catalog.configure
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
@@ -1336,6 +1343,8 @@ class Mind:
             risk[wire] = str(cap.get("risk") or "")
             effects[wire] = [str(e) for e in cap.get("effects") or []]
         self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
+        areas = list(dict.fromkeys(str(cap["group"]) for cap in capabilities if cap.get("group")))
+        self.system = SYSTEM + CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else SYSTEM
         self.constants = constants_of
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
@@ -1391,7 +1400,7 @@ class Mind:
 
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
-        return BEAT_SYSTEM if beat else SYSTEM
+        return BEAT_SYSTEM if beat else self.system
 
     @staticmethod
     def _history(conv: list[dict[str, Any]]) -> list[dict[str, Any]]:
