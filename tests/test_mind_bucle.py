@@ -270,3 +270,51 @@ def test_the_same_operation_with_other_values_still_runs(tmp_path: Path, monkeyp
     mind.decide(1, "abre la calculadora y paint")
     step = mind.continue_turn(2, json.dumps({"status": "completed"}))
     assert step["kind"] == "action" and step["arguments"]["appId"] == "Paint"
+
+
+SET_100 = _call("audio_volume", {"level": 100})
+SET_DONE = json.dumps({"status": "completed", "verification": "readback", "observed": {"before": 30, "final": 100}})
+SET_SAME = json.dumps({"status": "completed", "verification": "unchanged", "observed": {"final": 100}})
+
+
+def test_a_set_repeated_after_it_changed_says_the_turn_set_it_and_is_not_made_a_third_time(tmp_path: Path,
+                                                                                          monkeypatch) -> None:
+    # Feria 2026-10-27: the volume set at the first call, the same set three times more, each «unchanged», and the
+    # answer said it already was so. The repeat that came back unchanged says the turn's own call left it so; the same
+    # call again after it is not made, and its result is the first one's.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [SET_100, SET_100, SET_100, _say("Listo, en 100."), _say("Listo, en 100.")])
+    mind.decide(1, "sube el volumen")
+    assert mind.continue_turn(2, SET_DONE)["operation"] == "audio_volume"
+    step = mind.continue_turn(3, SET_SAME)
+    assert step["kind"] == "conversation" and step["reply"] == "Listo, en 100."
+    tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert "ya estaba así antes de esta llamada" not in tools[1]
+    assert "audio_volume → ya había quedado así por la misma llamada hecha antes en este turno" in tools[1]
+    refused = json.loads(tools[2].split("\n")[0])
+    assert refused["status"] == "not_run" and refused["earlier"] == json.loads(SET_DONE)
+    assert [r["kind"] for r in _trace(mind) if r.get("kind", "").endswith("_closed")] == ["unchanged_closed"]
+
+
+def test_a_call_that_changed_something_each_time_still_runs_again(tmp_path: Path, monkeypatch) -> None:
+    # A key or a click that does something each time it is made (a digit typed twice) is never taken as done.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    key = _call("input_key_press", {"key": "down"})
+    mind, _ = _mind(tmp_path, [key, key, key])
+    pressed = json.dumps({"status": "completed", "verification": "readback"})
+    mind.decide(1, "baja tres líneas")
+    assert mind.continue_turn(2, pressed)["operation"] == "input_key_press"
+    assert mind.continue_turn(3, pressed)["operation"] == "input_key_press"
+
+
+def test_a_call_that_came_back_unchanged_runs_again_after_another_call_changed_something(tmp_path: Path,
+                                                                                         monkeypatch) -> None:
+    # A close of a window already gone, then the app opened: the same close again acts on what the turn changed.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    close = _call("app_close", {"appId": "Paint"})
+    mind, _ = _mind(tmp_path, [close, _call("app_open", {"appId": "Paint"}), close])
+    gone = json.dumps({"status": "completed", "verification": "unchanged", "observed": {"alreadyGone": True}})
+    mind.decide(1, "cierra paint, ábrelo y ciérralo")
+    assert mind.continue_turn(2, gone)["operation"] == "app_open"
+    step = mind.continue_turn(3, OPENED)
+    assert step["kind"] == "action" and step["operation"] == "app_close"

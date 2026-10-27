@@ -147,8 +147,11 @@ READ_RISKS = ("read_only", "privacy_sensitive")
 # model took a web_search's snippets as the answer and opened the page 4 of 24 times (1975 after reading it: 2); without
 # it, 12 of 24 (7); 8 of 8 before 8.2 put it there. No extra fetch on searches whose snippet already answers (0 of 12).
 OUTPUT_READ = "lectura: sólo miró, sin abrir, cerrar ni cambiar nada"
+# Feria 2026-10-27: the volume set at the first call and the same set made again, «unchanged» by that first call, told
+# as already so before the turn. An unchanged call after the same call of the turn changed it says what left it so.
+SET_BY_SAME = "ya había quedado así por la misma llamada hecha antes en este turno: no hizo falta cambiar nada"
 # Every outcome of a completed call (the App runs the queued calls after one of these).
-COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ)
+COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ, SET_BY_SAME)
 # What the facts line adds of a result's own fields (_outcome), and what _deduplicated leaves out of it for that.
 ALREADY_OPEN = "; ya estaba abierta antes de esta llamada"
 SAME_WINDOW = "; la ventana no cambió"
@@ -586,6 +589,13 @@ SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
                                                           "set; it was not made"})
 FLIP_REFUSED = "no se ejecutó: deshacía lo que otra llamada de este turno ya había hecho"
+# Feria 2026-10-27 (the same volume set four times in a row, the last three «unchanged»): a call that acted and came back
+# unchanged in this turn showed that making it again changes nothing; the same call again is not made, and its result
+# is the first one's. One that changed something each time (a key, a digit) runs again.
+UNCHANGED_NOT_RUN = {"status": "not_run", "reason": "this same call, with the same arguments, already came back "
+                                                    "unchanged in this turn; it was not made again: its first result "
+                                                    "is in «earlier»"}
+UNCHANGED_REFUSED = "no se ejecutó: la misma llamada ya había vuelto sin cambios en este turno"
 LOOK_CLICK_REFUSED = f"no se ejecutó: la misma mirada y el mismo clic ya iban {LOOK_CLICK_PAIRS} veces"
 # Aid «close_unsaid» (feria 2026-10-27, «abre el bloc de notas y escribe …», 3 of 4 runs, the base too): after typing
 # and a look, a click on «Cerrar» and on the «Sí» of what it asked, and the Notepad the person was shown closed. A click
@@ -620,6 +630,18 @@ def _call_key(arguments: Any) -> str:
     if isinstance(arguments, dict):
         arguments = {k: v for k, v in arguments.items() if v is not None}
     return json.dumps(arguments, sort_keys=True, ensure_ascii=False)
+
+
+def _same_ended(receipt: dict[str, Any], wire: str, arguments: Any, *outcomes: str) -> bool:
+    """Whether ``receipt`` is a call of ``wire`` with these arguments that acted and ended in one of ``outcomes``."""
+    return (receipt.get("tool") == wire and not receipt.get("read")
+            and str(receipt.get("outcome") or "").startswith(outcomes)
+            and _call_key(receipt.get("arguments") or {}) == _call_key(arguments))
+
+
+def _same_done(turn: dict[str, Any], wire: str, arguments: Any, *outcomes: str) -> dict[str, Any] | None:
+    """The turn's first call of ``wire`` with these arguments that acted and ended in one of ``outcomes``, or None."""
+    return next((r for r in turn.get("receipts") or [] if _same_ended(r, wire, arguments, *outcomes)), None)
 
 
 def same_call_places(application: str | None) -> str:
@@ -1920,6 +1942,9 @@ class Mind:
                 turn.get("calling_args") or "{}"))
         calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
         outcome = _outcome(observation, read=self.risk.get(calling) in READ_RISKS)
+        if outcome.startswith(VERIFICATION["unchanged"]) and _aid_on("same_call_closes") and _same_done(
+                turn, calling, turn.get("calling_args"), VERIFICATION["readback"]):
+            outcome = SET_BY_SAME + outcome[len(VERIFICATION["unchanged"]):]
         # Aid «confirm_names_call» (auditoría de la mente, w8, P5): an answer to a confirmation says which call it
         # answered («confirm_pending (filesystem_known_trash_named) → …»), here and in the clock; once its turn is cut,
         # «confirm_pending → completado y verificado» no longer said what was done. Only when the App said which call
@@ -2664,6 +2689,21 @@ class Mind:
                 and _CLOSES.match(_fold(str(call["arguments"].get("label") or "")))
                 and not _CLOSE_SAID.search(_fold(str(turn.get("text") or "")))):
             return "close_unsaid", CLOSE_NOT_RUN, CLOSE_REFUSED
+        # Since the last call that changed something: a window already gone, an app opened, the same close runs again.
+        unchanged = False
+        for receipt in turn.get("receipts") or []:
+            if not receipt.get("read") and str(receipt.get("outcome") or "").startswith(VERIFICATION["readback"]):
+                unchanged = False
+            elif _same_ended(receipt, call["wire"], call["arguments"], VERIFICATION["unchanged"], SET_BY_SAME):
+                unchanged = True
+        if unchanged and _aid_on("same_call_closes"):
+            first = _same_done(turn, call["wire"], call["arguments"], *COMPLETED_OUTCOMES) or {}
+            try:
+                earlier = json.loads(first.get("observation") or "")
+            except json.JSONDecodeError:
+                earlier = first.get("observation")
+            return ("unchanged_closed", json.dumps({**UNCHANGED_NOT_RUN, "earlier": earlier}, ensure_ascii=False),
+                    UNCHANGED_REFUSED)
         if turn.get("same_told_call") == [name, arguments] and _aid_on("same_call_closes"):
             return "same_call_closed", SAME_CALL_NOT_RUN, SAME_CALL_REFUSED
         if (call["wire"] == "input_visible_click" and turn.get("look") and _aid_on("look_click_cap")
