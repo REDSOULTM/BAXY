@@ -64,7 +64,7 @@ Cada límite se comprobó en vivo: BAXY responde corto, con la causa, y no actú
 
 | Límite | Por qué | Qué dice BAXY (en vivo) | Comprobado en vivo |
 |---|---|---|---|
-| Arrastrar y soltar (archivos, diapositivas, notas, dibujar con el ratón) | El modelo no ve coordenadas fiables para un arrastre | «Eso no lo hago: arrastrar un archivo a una carpeta.» · «Eso no lo hago: dibujar una línea recta en Paint.» | t-drag-1…4 (limites2, 12-10) |
+| Arrastrar y soltar (archivos, diapositivas, notas) | El modelo no ve coordenadas fiables para un arrastre. Desde la feria 2026-10-27 sí dibuja: `input.pointer.drag` arrastra sólo sobre el cuerpo (el lienzo) de una ventana mirada, con puntos relativos a él, tras el sí de la persona y verificado por la imagen del lienzo | «Eso no lo hago: arrastrar un archivo a una carpeta.» | t-drag-1…4 (limites2, 12-10); el dibujo, pendiente de la prueba en vivo de NB-L |
 | Scroll largo en listas virtualizadas | Lo que no está en pantalla no está en la vista | «No pude hacerlo en «Configuración»: la lista es demasiado larga y lo que queda fuera de la pantalla no lo veo.» | t-scroll-1, t-scroll-2 (limites2, 12-10) |
 | Clic derecho sobre un elemento | Los menús contextuales no entran en la vista | «No pude hacerlo en «Explorador de archivos»: los menús del clic derecho no entran en lo que veo.» | t-menu-1, t-menu-2 (limites2, 12-10) |
 | Controles fuera de la vista del modelo (cinta de Office: negrita, tablas…) | La cinta no entra en lo que ve el modelo | «No pude hacerlo en «Word»: los botones de formato de la cinta (negrita, tablas y similares) no entran en lo que veo; antes de parar escribí «Informe semanal».» | t-long-2 (limites2); t4-c13 en fin1–fin4 |
