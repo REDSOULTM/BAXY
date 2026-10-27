@@ -14,16 +14,22 @@ internal sealed record UserBrowserIdentity(
     string DisplayName,
     string Executable)
 {
-    internal string ProcessName => Path.GetFileNameWithoutExtension(Executable);
+    /// <summary>
+    /// The process that draws the browser's windows. Opera may register its launcher.exe, which hands the page to
+    /// opera.exe and owns no window, so a listing by the launcher's name would take a running Opera for a closed one.
+    /// </summary>
+    internal string ProcessName => Family is "opera" or "opera_gx"
+        ? "opera"
+        : Path.GetFileNameWithoutExtension(Executable);
 
     /// <summary>
     /// Fragments of the SMTC SourceAppUserModelId a Chromium or Firefox build
     /// publishes for its media sessions. Firefox registers a hashed AUMID
     /// (308046B0AF4A39CB for the release channel), hence the second token.
+    /// Opera's two editions are told apart in <see cref="OwnsMediaSession"/>.
     /// </summary>
-    internal IReadOnlyList<string> MediaSessionTokens => Family switch
+    private IReadOnlyList<string> MediaSessionTokens => Family switch
     {
-        "opera" or "opera_gx" => ["opera"],
         "chrome" => ["chrome"],
         "edge" => ["msedge", "microsoftedge"],
         "brave" => ["brave"],
@@ -32,9 +38,22 @@ internal sealed record UserBrowserIdentity(
         _ => [ProcessName],
     };
 
-    internal bool OwnsMediaSession(string sourceAppUserModelId) =>
-        MediaSessionTokens.Any(token => sourceAppUserModelId.Contains(
+    /// <summary>
+    /// Whether the media session is this browser's. Opera and Opera GX are separate browsers: Opera GX publishes
+    /// «OperaSoftware.OperaGXWebBrowser.…» (measured), or «Opera GXStable» by its ProgId, so a session of one never
+    /// verifies a page opened in the other.
+    /// </summary>
+    internal bool OwnsMediaSession(string sourceAppUserModelId)
+    {
+        if (Family is "opera" or "opera_gx")
+        {
+            string folded = string.Concat(sourceAppUserModelId.Where(char.IsLetterOrDigit)).ToLowerInvariant();
+            bool gx = folded.Contains("operagx", StringComparison.Ordinal);
+            return Family == "opera_gx" ? gx : !gx && folded.Contains("opera", StringComparison.Ordinal);
+        }
+        return MediaSessionTokens.Any(token => sourceAppUserModelId.Contains(
             token, StringComparison.OrdinalIgnoreCase));
+    }
 }
 
 internal static class UserBrowserIdentityResolver
