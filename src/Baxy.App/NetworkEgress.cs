@@ -33,17 +33,23 @@ internal sealed class NetworkEgress
     /// <summary>The most result hosts a held call's result lists (<see cref="ResultHosts"/>).</summary>
     internal const int MaximumResultHosts = 8;
 
+    // A result's text longer than this (a snippet, a page) gives no words to a search: a title, a name or a value does.
+    private const int MaximumGivenLength = 120;
+
     private readonly HashSet<string> _hosts = new(StringComparer.Ordinal);
     private readonly HashSet<string> _words = new(StringComparer.Ordinal);
     private readonly List<string> _resultHosts = [];
     private readonly HashSet<string> _queriesRefused = new(StringComparer.Ordinal);
 
-    // A message refused for its channel, by the turn it was refused in (_turns counts the person's turns).
+    // A message refused for its channel, by the turn it was refused in (_turns counts the person's turns), and the last
+    // turn that ended with the model's question to the person.
     private readonly Dictionary<string, int> _messagesRefused = new(StringComparer.Ordinal);
     private int _turns;
+    private int _asked = -1;
 
-    // The words this session's results and memory reads gave: a search may take its words from them («pon un video de
-    // él» after a result named him), never a host.
+    // The words this session's results and memory reads gave in their short texts (a title, a name, a value; never a
+    // page's text nor BAXY's own fields beside «observed»): a search may take its words from them («pon un video de él»
+    // after a result named him).
     private readonly HashSet<string> _given = new(StringComparer.Ordinal);
 
     // The person's words now and just before, folded: what a message's channel is weighed against.
@@ -87,22 +93,29 @@ internal sealed class NetworkEgress
     /// <list type="bullet">
     /// <item>A greeting asked for someone in the room opened a messaging client with a draft: a message.draft or
     /// message.send by a channel their words now or just before did not name (the answer to the model's question keeps
-    /// what it asked), <c>channel_not_said</c>, for the rest of that turn; in the turn right after it, the message to
-    /// that recipient by that channel goes (their «sí» to «¿le escribo por …?», a channel the ear wrote otherwise). Aid
-    /// «said_channel».</item>
+    /// what it asked), <c>channel_not_said</c>, for the rest of that turn; when that turn ended with the model's question,
+    /// in the turn right after it the message to that recipient by that channel goes (their «sí» to «¿le escribo por
+    /// …?», a channel the ear wrote otherwise), and that channel counts as said from then on. Aid «said_channel».</item>
     /// <item>A creator's name searched as another one that sounds alike, a question's subject searched as another word: a
-    /// search whose text shares none of their words in this session, <c>query_not_said</c>, once for that very call; the
-    /// same call again goes, as written, for a search they asked in other words. Aid «said_query».</item>
+    /// call that goes out with a query (web.search only by the sources that search its text) whose words share none of
+    /// theirs in this session nor of what its results and memory gave, <c>query_not_said</c>, once for those words; the
+    /// same words again go, as written, for a search they asked in other words. Aid «said_query».</item>
     /// </list>
     /// </summary>
     internal (string Code, string Next)? Unsaid(string operation, JsonObject arguments)
     {
         if (operation is "message.draft" or "message.send" && ModelAids.On(ModelAids.SaidChannel)
             && Text(arguments["channel"]) is { } channel
-            && !Joined(_previous + " " + _latest).Contains(Joined(channel), StringComparison.Ordinal)
-            && Folded(channel + "\n" + Text(arguments["recipient"])) is var message
-            && !(_messagesRefused.TryGetValue(message, out int refusedIn) && refusedIn == _turns - 1))
+            && !Joined(_previous + " " + _latest).Contains(Joined(channel), StringComparison.Ordinal))
         {
+            string message = Folded(channel + "\n" + Text(arguments["recipient"]));
+            if (_messagesRefused.TryGetValue(message, out int refusedIn) && refusedIn == _turns - 1 && _asked == refusedIn)
+            {
+                // Their answer to the model's question: the channel counts as said from now on.
+                _latest += " " + Folded(channel);
+                return null;
+            }
+
             _messagesRefused[message] = _turns;
             return ("channel_not_said", $"nothing ran: the person did not name {channel} now nor just before; if they "
                 + "spoke to someone there, answer them in words; if they want a message sent, ask them by which channel");
@@ -168,7 +181,10 @@ internal sealed class NetworkEgress
         }
     }
 
-    /// <summary>A call's result as the model reads it: its addresses, and its words a search may take.</summary>
+    /// <summary>The model asked the person something, and the turn ends waiting for their answer.</summary>
+    internal void Asked() => _asked = _turns;
+
+    /// <summary>A call's result as the model reads it: its addresses, and the words a search may take.</summary>
     internal void Observed(string operation, string observation)
     {
         JsonNode? facts;
@@ -182,6 +198,7 @@ internal sealed class NetworkEgress
         }
 
         Walk(facts, operation is "memory.recall" or "memory.list");
+        Gather(facts?["observed"]);
     }
 
     /// <summary>A new session: nothing seen or heard in the last one counts.</summary>
@@ -219,10 +236,6 @@ internal sealed class NetworkEgress
                                 }
                             }
                         }
-                        else
-                        {
-                            Collect(field, _given);
-                        }
                     }
                     else
                     {
@@ -238,8 +251,29 @@ internal sealed class NetworkEgress
                 }
 
                 break;
-            case JsonValue value when value.TryGetValue(out string? listed):
-                Collect(listed, _given);
+        }
+    }
+
+    private void Gather(JsonNode? node)
+    {
+        switch (node)
+        {
+            case JsonObject facts:
+                foreach ((_, JsonNode? value) in facts)
+                {
+                    Gather(value);
+                }
+
+                break;
+            case JsonArray items:
+                foreach (JsonNode? item in items)
+                {
+                    Gather(item);
+                }
+
+                break;
+            case JsonValue value when value.TryGetValue(out string? text) && text.Length <= MaximumGivenLength:
+                Collect(text, _given);
                 break;
         }
     }

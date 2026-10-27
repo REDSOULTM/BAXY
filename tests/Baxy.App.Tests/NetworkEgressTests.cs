@@ -85,7 +85,8 @@ public sealed class NetworkEgressTests
 
     // Feria 2026-10-27: a greeting asked for someone in the room opened a messaging client with a draft. A message goes
     // only by a channel the person named now or just before (the answer to the model's question keeps what it asked),
-    // or in the turn right after the one that refused it (their «sí» to «¿le escribo por …?»).
+    // or, when the turn that refused it ended with the model's question, in the turn right after it (their «sí» to «¿le
+    // escribo por …?»), and that channel counts as said from then on.
     [Test]
     public void AMessageGoesOnlyByAChannelThePersonNamed()
     {
@@ -94,27 +95,35 @@ public sealed class NetworkEgressTests
         egress.Heard("saluda a Nadia");
         (string Code, string Next)? greeted = egress.Unsaid("message.draft", draft);
         (string Code, string Next)? again = egress.Unsaid("message.draft", draft);
+        egress.Heard("Nadia, ¿cómo estás?");
+        (string Code, string Next)? unasked = egress.Unsaid("message.draft", draft);
+        egress.Asked();
+        egress.Heard("sí");
+        (string Code, string Next)? yes = egress.Unsaid("message.send", draft);
+        egress.Heard("la que vive en Temuco");
+        (string Code, string Next)? clarified = egress.Unsaid("message.send", new JsonObject
+        {
+            ["channel"] = "whatsapp", ["recipient"] = "Nadia Temuco", ["text"] = "Hola",
+        });
         egress.Heard("escríbele a Nadia por Whats App");
         egress.Heard("que paso a buscarla");
-        (string Code, string Next)? answered = egress.Unsaid("message.send", draft);
-        egress.Heard("gracias");
-        (string Code, string Next)? later = egress.Unsaid("message.send", draft);
-        egress.Heard("sí");
 
         Assert.Multiple(() =>
         {
             Assert.That(greeted?.Code, Is.EqualTo("channel_not_said"));
             Assert.That(greeted?.Next, Does.Contain("answer them in words"));
             Assert.That(again?.Code, Is.EqualTo("channel_not_said"));
-            Assert.That(answered, Is.Null);
-            Assert.That(later?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(unasked?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(yes, Is.Null);
+            Assert.That(clarified, Is.Null);
             Assert.That(egress.Unsaid("message.send", draft), Is.Null);
             Assert.That(egress.Unsaid("message.send.test", draft), Is.Null);
         });
     }
 
-    // A search may take its words from what a result or memory gave («pon un video de él» after a result named him), and
-    // the person's «sí» to a waiting call keeps the words they said before it.
+    // A search may take its words from what a result or memory gave in a short text («pon un video de él» after a result
+    // named him), never from a page's text nor from BAXY's own fields; the person's «sí» to a waiting call keeps the words
+    // they said before it.
     [Test]
     public void WhatResultsGaveAndTheWordsBeforeAnAnswerStillCount()
     {
@@ -125,13 +134,20 @@ public sealed class NetworkEgressTests
         egress.Heard("ponme un video de él");
         egress.Observed("memory.recall", "{\"status\":\"completed\",\"observed\":{\"records\":[" +
             "{\"label\":\"cancion favorita\",\"value\":\"Brisa de Tolhuaca\"}]}}");
+        egress.Observed("web.fetch", "{\"status\":\"rejected\",\"next\":\"call it again exactly\",\"observed\":{\"text\":\""
+            + new string('x', 120) + " Pehuenquelo\"}}");
         egress.Heard("mándale por whatsapp a Nadia que llego a las ocho");
+        egress.Heard("y que lleve pan");
         egress.Heard("sí", answering: true);
 
         Assert.Multiple(() =>
         {
             Assert.That(egress.Unsaid("media.play.youtube", new JsonObject { ["query"] = "Ilvaro Kastañeda" }), Is.Null);
             Assert.That(egress.Unsaid("media.play.youtube", new JsonObject { ["query"] = "Brisa de Tolhuaca" }), Is.Null);
+            Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = "Pehuenquelo" })?.Code,
+                Is.EqualTo("query_not_said"));
+            Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = "exactamente" })?.Code,
+                Is.EqualTo("query_not_said"));
             Assert.That(egress.Unsaid("message.send", new JsonObject
             {
                 ["channel"] = "whatsapp", ["recipient"] = "Nadia", ["text"] = "Llego a las ocho",

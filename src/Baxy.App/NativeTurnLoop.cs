@@ -437,6 +437,11 @@ internal sealed class NativeTurnLoop
                     Publish(step.Text, PublicResponseRoute.Conversation);
                     return;
                 case { Kind: "question" }:
+                    if (!_beat)
+                    {
+                        _egress.Asked();
+                    }
+
                     Publish(step.Text, PublicResponseRoute.Clarification);
                     return;
             }

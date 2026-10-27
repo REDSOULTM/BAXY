@@ -151,15 +151,15 @@ public static class ModelAids
 
     /// <summary>
     /// Feria 2026-10-27 (a creator's name searched as another one that sounds alike, and someone else's video played): a
-    /// search whose text shares none of the person's words in this session is refused once, and the same call again
-    /// goes as written (Baxy.App.NetworkEgress).
+    /// call that goes out with a query whose words share none of the person's in this session nor of what its results and
+    /// memory gave is refused once, and the same words again go as written (Baxy.App.NetworkEgress).
     /// </summary>
     public const string SaidQuery = "said_query";
 
     /// <summary>
     /// Feria 2026-10-27 (a greeting asked for someone in the room opened a messaging client with a draft): a
-    /// message.draft or message.send by a channel the person's words now or just before did not name is refused
-    /// (Baxy.App.NetworkEgress).
+    /// message.draft or message.send by a channel the person's words now or just before did not name is refused; after the
+    /// model's question, the same message goes in the next turn (Baxy.App.NetworkEgress).
     /// </summary>
     public const string SaidChannel = "said_channel";
 
