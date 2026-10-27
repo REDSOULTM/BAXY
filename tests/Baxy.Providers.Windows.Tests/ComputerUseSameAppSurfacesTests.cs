@@ -157,7 +157,8 @@ public sealed class ComputerUseSameAppSurfacesTests
         {
             Assert.That(pointer.Clicks, Is.EqualTo(1), "the point was pressed");
             Assert.That(receipt.Verified, Is.False);
-            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_postread_unchanged"));
+            // Feria 2026-10-27: the pointer here reads no image of the window, so the press is unread, not unchanged.
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_postread_unread"));
         });
     }
 

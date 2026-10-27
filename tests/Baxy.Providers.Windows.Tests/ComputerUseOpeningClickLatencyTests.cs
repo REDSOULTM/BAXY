@@ -120,6 +120,41 @@ public sealed class ComputerUseOpeningClickLatencyTests
         });
     }
 
+    // Feria 2026-10-27: a calculator's clicks were said «unchanged» when its window's image was never read. Its button
+    // stays enabled and unselected after Invoke, so the control's own «unchanged» is no read of the window: with no image
+    // before the click, or none read after it, the click is said unread, its effect uncertain.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task AClickWhoseWindowWasNeverReadIsNotSaidUnchanged(bool imageBefore)
+    {
+        bool clicked = false;
+        var worker = new RoutedWorker(request =>
+        {
+            clicked |= (string?)request["cmd"] == "click";
+            return (string?)request["cmd"] switch
+            {
+                "click" => PendingClick,
+                "postread" => UnchangedControl,
+                _ => null,
+            };
+        });
+        ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint window, bool? selfDrawn, CancellationToken token) =>
+            ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(imageBefore && !clicked
+                ? new VisibleControlSurface.CapturedWindow(window, [], 0, 0, 10, 10, "same")
+                : null);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: Capture);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Aceptar","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_postread_unread"));
+            Assert.That(receipt.EffectObserved, Is.True, "it pressed");
+            Assert.That(worker.Commands.Count(command => (string?)command["cmd"] == "click"), Is.EqualTo(1));
+        });
+    }
+
     // The tree found the control, pressed it by its pattern and saw nothing change. Review of the branch (finding 4):
     // the OCR stage still looks for the label (since 956a89ace it rescued a hidden duplicate the tree chose, or an
     // Invoke the application ignored), but its point on that same control is refused by the worker before any effect,
@@ -136,7 +171,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
             _ => null,
         });
         var ocr = new PointLocator("ocr");
-        var adapter = new WindowsVisibleControlAdapter(worker, ocr, null, capture: NoCapture);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, null, capture: StillImage);
         var clock = Stopwatch.StartNew();
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -204,7 +239,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
             _ => null,
         });
         var ocr = new PointLocator("ocr");
-        var adapter = new WindowsVisibleControlAdapter(worker, ocr, null, capture: NoCapture);
+        var adapter = new WindowsVisibleControlAdapter(worker, ocr, null, capture: StillImage);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Aceptar","window":4660}"""), CancellationToken.None);
@@ -228,7 +263,7 @@ public sealed class ComputerUseOpeningClickLatencyTests
             "at" => PendingAt,
             _ => null,
         });
-        var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: NoCapture);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: StillImage);
         _ = await adapter.InvokeAsync(
             "input.visible.click", Json("""{"label":"Aceptar","window":4660}"""), CancellationToken.None);
 
@@ -432,6 +467,12 @@ public sealed class ComputerUseOpeningClickLatencyTests
     private static ValueTask<VisibleControlSurface.CapturedWindow?> NoCapture(
         nint window, bool? selfDrawn, CancellationToken cancellationToken) =>
         ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(null);
+
+    // Feria 2026-10-27: a press is seen unchanged only on an image of its window read after it.
+    private static ValueTask<VisibleControlSurface.CapturedWindow?> StillImage(
+        nint window, bool? selfDrawn, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
+            new VisibleControlSurface.CapturedWindow(window, [], 0, 0, 10, 10, "same"));
 
     // One opening, the same one peeked by a look and taken by the click; its window never shows (a launcher still
     // opening), so a click that waits for it waits the whole LaunchSurface.
