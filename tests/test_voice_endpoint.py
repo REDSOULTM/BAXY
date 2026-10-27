@@ -20,7 +20,7 @@ def _heard(mode: str, *pieces: tuple[float, float]) -> Voice:
     listening._audio = numpy.concatenate([numpy.full(int(s * RATE), level, numpy.float32) for s, level in pieces])
     listening._speech = numpy.ones(len(listening._audio), bool)
     listening._total = len(listening._audio)
-    listening._early_at = listening._early_text = None
+    listening._early_at = listening._early_heard = None
     return listening
 
 
@@ -92,7 +92,8 @@ def test_a_request_that_never_goes_quiet_ends_at_its_cap_and_a_release_ends_it_a
 
 class _Recognizer:
     def __init__(self, tokens: list[str], timestamps: list[float]) -> None:
-        self.result = SimpleNamespace(text="".join(tokens), tokens=tokens, timestamps=timestamps)
+        self.result = SimpleNamespace(text="".join(tokens), tokens=tokens, timestamps=timestamps,
+                                      ys_log_probs=[0.0] * len(tokens))
 
     def create_stream(self) -> SimpleNamespace:
         return SimpleNamespace(accept_waveform=lambda rate, audio: None, result=self.result)
@@ -107,16 +108,16 @@ def test_the_call_and_what_came_before_it_are_cut_by_time() -> None:
     # «Hola. Baxi, abre Steam.» with the trigger at 2.0 s: «Baxi» began 0.6 s before it
     listening._recognizer = _Recognizer([" Hola", ".", " Ba", "xi", ",", " abre", " Ste", "am", "."],
                                         [0.3, 0.6, 1.4, 1.6, 1.8, 2.1, 2.4, 2.5, 2.7])
-    assert listening._transcribe(numpy.full(BLOCK * 30, 0.1, numpy.float32), 2.0) == "abre Steam."
+    assert listening._transcribe(numpy.full(BLOCK * 30, 0.1, numpy.float32), 2.0).text == "abre Steam."
     # a word that began within CALL_LEAD_S of the trigger is the request's
     listening._recognizer = _Recognizer([" Ba", "xi", " abre"], [1.2, 1.4, 2.0 - voice.CALL_LEAD_S])
-    assert listening._transcribe(numpy.full(BLOCK * 30, 0.1, numpy.float32), 2.0) == "abre"
+    assert listening._transcribe(numpy.full(BLOCK * 30, 0.1, numpy.float32), 2.0).text == "abre"
 
 
 def test_near_silence_is_never_transcribed() -> None:
     listening = object.__new__(Voice)
     listening._hotwords, listening._recognizer = "", None  # it would fail if it were asked
-    assert listening._transcribe(numpy.full(RATE, 0.005, numpy.float32), None) == ""
+    assert listening._transcribe(numpy.full(RATE, 0.005, numpy.float32), None).text == ""
 
 
 @pytest.mark.parametrize("voiced_blocks", range(1, 61))

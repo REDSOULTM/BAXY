@@ -186,7 +186,9 @@ def main() -> int:
                                else time.monotonic() + LlmServer.REQUEST_SECONDS)
             # Al máximo, palanca 2: a decision made early is this request's reply when it is the one it would make;
             # any other request (a voice request aside) finds the mind as it was before it.
-            held = anticipation.settle(kind, message, arrived) if kind not in ("voice.start", "voice.stop") else None
+            unsure = voice.unsure(str(message.get("text") or "")) if kind == "turn.decide" else []
+            held = (anticipation.settle(kind, message, arrived, unsure) if kind not in ("voice.start", "voice.stop")
+                    else None)
             try:
                 if kind == "catalog.configure":
                     count = mind.configure(message)
@@ -208,7 +210,7 @@ def main() -> int:
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
                     protocol.write_message(held or anticipation.decide(request_id, str(message.get("text") or ""),
-                                                                       message.get("pendingConfirmation")))
+                                                                       message.get("pendingConfirmation"), unsure))
                 elif kind == "turn.continue":
                     # After a tool the answer may come long after the output closed (HOLD_S 20 s; file.find 11-14 s,
                     # web.fetch up to 160 s): it opens again (0.38 s on the PC) while the model writes it.

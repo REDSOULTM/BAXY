@@ -96,7 +96,7 @@ class _Recognizer:
         return SimpleNamespace(accept_waveform=lambda *_: None, result=None)
 
     def decode_stream(self, stream) -> None:
-        stream.result = SimpleNamespace(text=" Abre Steam.", tokens=[], timestamps=[])
+        stream.result = SimpleNamespace(text=" Abre Steam.", tokens=[], timestamps=[], ys_log_probs=[])
 
 
 def _stt(tmp_path: Path) -> Path:
@@ -119,7 +119,7 @@ def test_the_recognizer_is_built_with_the_names_as_hotwords(monkeypatch: pytest.
     assert recognizer.options["decoding_method"] == "modified_beam_search"
     assert recognizer.options["modeling_unit"] == "bpe" and "▁Ste\t" in recognizer.vocab
     assert not Path(recognizer.options["bpe_vocab"]).exists()  # a temporary file, gone once sherpa read it
-    assert listening._transcribe(np.full(16000, 0.1, np.float32), None) == "Abre Steam."
+    assert listening._transcribe(np.full(16000, 0.1, np.float32), None).text == "Abre Steam."
     assert recognizer.hotwords == [f"Steam :{voice.HOTWORDS_SCORE:g}/Spotify :{voice.HOTWORDS_SCORE:g}"]
 
 

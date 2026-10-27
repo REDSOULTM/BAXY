@@ -40,7 +40,7 @@ class _Recognizer:
         return _Stream(self.decoded)
 
     def decode_stream(self, stream: _Stream) -> None:
-        stream.result = SimpleNamespace(text=" abre Steam", tokens=[], timestamps=[])
+        stream.result = SimpleNamespace(text=" abre Steam", tokens=[], timestamps=[], ys_log_probs=[])
 
 
 class _Vad:

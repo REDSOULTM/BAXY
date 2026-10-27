@@ -43,7 +43,7 @@ class _Recognizer:
 
     def decode_stream(self, stream: _Stream) -> None:
         word = " dos" if (stream.audio < 0).any() else " uno"
-        stream.result = SimpleNamespace(text=word, tokens=[word], timestamps=[99.0])  # after any call
+        stream.result = SimpleNamespace(text=word, tokens=[word], timestamps=[99.0], ys_log_probs=[0.0])  # after any call
 
 
 class _Vad:
