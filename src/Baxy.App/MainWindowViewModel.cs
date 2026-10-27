@@ -1174,10 +1174,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed,
                     processEnded ? "mente_salio" : "mente_sin_respuesta");
-                MindRelaunches.Record(loss, DateTimeOffset.UtcNow - _mindStartedAt);
                 _mindStartupFailureCount++;
                 _mindStartupState = MindStartupState.Failed;
                 _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
+                MindRestarts.Record(loss, DateTimeOffset.UtcNow - _mindStartedAt);
             }
             OnPropertyChanged(nameof(IsMindReady));
         },
@@ -1510,8 +1510,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindStartupState = MindStartupState.Failed;
         string cause = failure?.TraceLabel ?? "desconocida";
         ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed, cause);
-        MindRelaunches.Record(new MindLoss("startup." + cause), DateTimeOffset.UtcNow - _mindStartedAt);
         _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
+        MindRestarts.Record(new MindLoss("startup." + cause), DateTimeOffset.UtcNow - _mindStartedAt);
     }
 
     internal static TimeSpan MindRetryDelay(int failures) =>

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -48,14 +49,18 @@ internal sealed record MindStartupFailure(string Cause, long? ExitCode)
 }
 
 /// <summary>
-/// Feria 2026-10-27: why the mind stopped being ready. <see cref="Cause"/>: <see cref="ProcessEnded"/> (its output
-/// ended; <see cref="ExitCode"/> once its process exited), a failed request's name
-/// (<see cref="MindSidecarClient.ClassifyRequestFailure"/>) with its <see cref="Request"/> type, or <c>startup.</c> and
-/// the label of a start that failed (<see cref="MindStartupFailure.TraceLabel"/>). Never a request's arguments.
+/// Feria 2026-10-27: why the mind stopped being ready, or started anew. <see cref="Cause"/>: <see cref="ProcessEnded"/>
+/// (its output ended; <see cref="ExitCode"/> once its process exited), a failed request's name
+/// (<see cref="MindSidecarClient.ClassifyRequestFailure"/>) with its <see cref="Request"/> type, <c>startup.</c> and the
+/// label of a start that failed (<see cref="MindStartupFailure.TraceLabel"/>), or the App's own start
+/// (<see cref="AppStart"/>) and exit (<see cref="AppExit"/>, who asked for it, and the App's exit code). Never a request's
+/// arguments.
 /// </summary>
 internal sealed record MindLoss(string Cause, string? Request = null, int? ExitCode = null)
 {
     internal const string ProcessEnded = "process_ended";
+    internal const string AppStart = "app_start";
+    internal const string AppExit = "app_exit";
 }
 
 /// <summary>
@@ -246,7 +251,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
                 TaskScheduler.Default);
             _pump = PumpAsync(sidecar.Process, helloCompletion, _pumpCancellation.Token);
-            _ = ReportEndAsync(_pump, sidecar.Process);
+            _ = ReportEndAsync(_pump, sidecar.Process, _pumpCancellation.Token);
 
             JsonObject hello = await helloCompletion.Task
                 .WaitAsync(startupCancellation.Token)
@@ -870,23 +875,30 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
     }
 
-    // Feria 2026-10-27: the output can end a moment before the process does; its exit code is waited for that moment.
-    private async Task ReportEndAsync(Task pump, Process process)
+    // Feria 2026-10-27: the output can end a moment before the process does; its exit code is waited for that moment,
+    // never when this side ended it (its shutdown releases the process meanwhile). Whoever shows the mind is told either way.
+    private async Task ReportEndAsync(Task pump, Process process, CancellationToken shutdown)
     {
         await pump.ConfigureAwait(false);
         int? exitCode = null;
         try
         {
-            using var exited = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-            await process.WaitForExitAsync(exited.Token).ConfigureAwait(false);
-            exitCode = process.ExitCode;
+            if (!shutdown.IsCancellationRequested)
+            {
+                using var exited = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                await process.WaitForExitAsync(exited.Token).ConfigureAwait(false);
+                exitCode = process.ExitCode;
+            }
         }
-        catch (Exception exception) when (exception is OperationCanceledException or InvalidOperationException)
+        catch (Exception exception) when (exception is OperationCanceledException or InvalidOperationException
+            or Win32Exception or NotSupportedException)
         {
-            // Still running (its reader failed), or already released by a shutdown: no exit code to tell.
+            // Still running (its reader failed), or already released: no exit code to tell.
         }
-
-        ReadyLost?.Invoke(new MindLoss(MindLoss.ProcessEnded, ExitCode: exitCode));
+        finally
+        {
+            ReadyLost?.Invoke(new MindLoss(MindLoss.ProcessEnded, ExitCode: exitCode));
+        }
     }
 
     private async Task ShutdownQuietlyAsync()

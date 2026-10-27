@@ -201,7 +201,7 @@ public partial class MainWindow : Window
                 // (núcleo y mente parados por su canal) no llegaba a correr.
                 if (_presence is not null)
                 {
-                    _presence.RequestExit();
+                    _presence.RequestExit("probe");
                 }
                 else
                 {
@@ -517,7 +517,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                _ = Dispatcher.BeginInvoke(presence.RequestExit);
+                _ = Dispatcher.BeginInvoke(() => presence.RequestExit("window"));
             }
 
             return;
