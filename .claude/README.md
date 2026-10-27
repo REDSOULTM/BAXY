@@ -1,57 +1,65 @@
 # Configuración de Claude Code para BAXY
 
-Ayudas de Claude Code hechas para BAXY y sólo para BAXY: cada pieza sale de `AGENTS.md`,
-`documentacion/00_IDENTIDAD.md` o de un fallo real de este proyecto. Nada de esto toca el producto; sólo
-cambia cómo trabaja Claude Code en este repositorio. `AGENTS.md` sigue mandando.
+Ley 1 aplicada al propio entorno de trabajo: primero lo que ya existe (oficial de Anthropic o público y
+mantenido), y sólo se construye lo que nada cubre. Todo sale de dos fuentes: los mensajes del dueño en las
+sesiones del PC y del notebook (septiembre y octubre de 2026: lo que más se repitió, corrigió o se perdió
+tras compactar) y una búsqueda en GitHub y la documentación oficial. `AGENTS.md` y
+`documentacion/00_IDENTIDAD.md` siguen mandando. Nada de esto toca el producto.
 
-## Qué hay
+## Heredado
 
-| Tipo | Nombre | Para qué |
+| Pieza | De dónde | Para qué en BAXY |
 |---|---|---|
-| skill | `verificar` | la escalera de validación con los comandos reales de esta máquina |
-| skill | `arreglar-fallo` | prueba que falla → arreglo mínimo en la pieza dueña → verificar |
-| skill | `arreglar-build` | build verde sin callar avisos ni relajar reglas |
-| skill | `traspaso` | dejar o retomar el handoff con `docs/AI_HANDOFF_TEMPLATE.md` |
-| comando | `/revisar-cambio` | los agentes revisores en paralelo, sólo si el dueño lo pide |
-| comando | `/limpiar-muerto` | ley 5, sin descargar herramientas |
-| agente | `revisor-codigo` | los invariantes y las leyes sobre un diff de Python, C# o FieldUi |
-| agente | `revisor-privacidad` | que no salga nada de la persona, efectos sin autorizar, rutas, procesos |
-| agente | `cazador-fallos-silenciosos` | errores que acaban en un «Listo» falso |
-| agente | `analizador-pruebas` | ¿hay una prueba que fallaría sin el cambio? |
-| agente | `explorador` | la exploración de sólo lectura que `AGENTS.md` permite delegar |
-| regla | `rules/python.md`, `csharp.md`, `fieldui.md` | se cargan sólo al tocar esos ficheros |
-| hook | `hooks/baxy_guard.py` + `settings.json` | ver «La guarda» |
+| plugin `pr-review-toolkit` (`/pr-review-toolkit:review-pr` y 6 agentes: code-reviewer, silent-failure-hunter, pr-test-analyzer, type-design-analyzer, comment-analyzer, code-simplifier) | `anthropics/claude-plugins-official` | revisión de cambios; los agentes leen `CLAUDE.md` → `AGENTS.md` |
+| plugin `claude-md-management` (`/revise-claude-md`, `claude-md-improver`) | ídem | que lo aprendido en cada sesión quede escrito |
+| plugin `project-artifact` | ídem | la página de progreso que se actualiza (el «¿cómo vas?» de cada día) |
+| skill `verification-before-completion` | `obra/superpowers` (MIT, `skills/LICENSE-superpowers.txt`) | nunca «listo» sin evidencia fresca |
+| skill `systematic-debugging` | ídem | causa raíz antes de arreglar; nada de parches |
 
-Los agentes leen y no editan, corren en `sonnet` y por defecto no se usan: `AGENTS.md` dice que no se
-delega salvo exploración acotada, así que entran cuando el dueño lo pide o con `/revisar-cambio`.
+Los tres plugins no traen hooks ni servidores MCP; están activados en `settings.json` con alcance de proyecto.
 
-## La guarda
+## Construido (porque nada público lo cubría)
 
-Un solo script en Python con librería estándar (sirve el Python del sistema; `py` no hace falta):
+| Pieza | Por qué |
+|---|---|
+| hook `hooks/contexto.py` (SessionStart) | Al arrancar: fecha con día, máquina, worktree, rama y commit (hubo errores de fecha y de rama). Tras compactar o retomar: **todos** los mensajes del dueño de la sesión, leídos del transcript, los recientes en contexto (tope de 10.000 caracteres del hook) y la lista entera en `.claude/sesiones/<sesión>.md`, local y fuera de git. Es el patrón que la guía oficial de hooks recomienda (`SessionStart` con `compact`); no había script público que lo hiciera en local. |
+| hook `hooks/baxy_guard.py` (PreToolUse/PostToolUse) | Deniega lo que ya rompió algo: `--no-verify`, `git stash`, `reset --hard`, `clean -f`, push forzado o a GitHub, descartar el árbol, servicios o arranque de Windows (msconfig), matar procesos por nombre (cerró VS Code), reiniciar o apagar. Avisa si `AGENTS.md` pasa de 10.000 caracteres o si se toca configuración de calidad. |
+| regla `rules/trabajo.md` (siempre cargada, sobrevive a la compactación) | La forma de trabajar que el dueño más repitió: autonomía, confirmar sólo lo peligroso, no esperar, evidencia, soluciones generales, ramas, procesos por PID, informes en español con cifras. |
+| reglas `rules/python.md`, `csharp.md`, `fieldui.md` | Lo de cada lenguaje en BAXY (stdout es el protocolo de la mente, warnings como errores, accesibilidad). |
+| skills `verificar`, `arreglar-fallo`, `arreglar-build` | La escalera de validación con los comandos reales de esta máquina; se apoyan en las dos de superpowers. |
+| skill `traspaso` | Handoff en el repo y el prompt o `/goal` para la sesión siguiente o la otra máquina (pedido más de ocho veces; límite de 4.000 caracteres de `/goal`). |
+| skill `prueba-en-vivo` | Seguridad de las pruebas de escritorio (incidentes: msconfig, juegos abiertos, llama-server huérfanos). |
+| skill `coordinar-pc-nb` | Buzón, reparto, hub y el chequeo de privacidad antes de un push. |
+| skill `lanzar-baxy` | «Lanza BAXY» con `scripts\run_renew.cmd` y comprobando que arrancó. |
+| agente `revisor-privacidad`, comando `/limpiar-muerto` | Lo que el toolkit oficial no mira: que no salga nada de la persona; ley 5. |
 
-- **Antes de un comando** (`Bash|PowerShell`) deniega `--no-verify`/`--no-gpg-sign`, `git stash` (salvo
-  `list`/`show`), `git reset --hard`, `git clean -f`, `git push --force`, `git checkout .`/`git restore .`
-  —en esta máquina varias sesiones comparten worktree— y msconfig, `bcdedit`, `sc config|delete|stop`,
-  `Set-Service`, `Stop-Service`, `reg add|delete|import HKLM` (incidente msconfig: 256 servicios).
-- **Después de editar** avisa a Claude, sin bloquear, si `AGENTS.md` pasa de 10.000 caracteres o si se
-  toca configuración de calidad (`ruff.toml`, `pytest.ini`, `Directory.*.props`, `global.json`,
-  `eslint.config.js`, `tsconfig*.json`…).
+## Revisado y descartado
 
-Límites: es una red, no una frontera. Busca texto en el comando, así que hay falsos positivos (un
-`--no-verify` dentro de un mensaje) y no ve lo que haga un script por dentro. No usa red, no escribe
-ficheros, no lee prompts. Si Python no está en el `PATH`, Claude Code sigue sin ella. Si deniega algo que
-de verdad hace falta, el dueño lo ejecuta él (prefijo `!`) o lanza Claude Code con `BAXY_GUARD=off`.
+- **context-mode** (`mksglu/context-mode`): reduce el contexto y guarda la sesión, pero cada arranque escribe un
+  hook en el `~/.claude/settings.json` global, guarda en claro todos los mensajes y salidas, puede enviar eventos a
+  su servidor si existe su fichero de plataforma, consulta npm cada hora y reescribe algunos comandos y los
+  prompts de los subagentes. Choca con la privacidad y con «nada a nivel de usuario sin el sí del dueño».
+- **claude-mem**: memoria alojada en su nube por defecto. **Continuous-Claude v3**: PostgreSQL y sin cambios
+  desde enero. **claude-context** (Zilliz): por defecto manda el código a Zilliz y OpenAI.
+- **everything-claude-code**: 28 hooks en Node que registran todo y escriben a nivel de usuario; reglas que
+  chocan con `AGENTS.md`. **superpowers** entero: TDD obligatorio y subagentes por defecto.
+- **security-guidance** (oficial): revisión con LLM en cada parada; lenta y cara. **hookify**: reglas locales
+  sin versionar.
+
+## Pendiente de decisión (instala programas en la máquina)
+
+- **Serena** (`oraios/serena`, en el directorio oficial) o los plugins LSP oficiales `csharp-lsp`, `pyright-lsp`,
+  `typescript-lsp`: navegar el código por símbolos en vez de leer ficheros enteros. Piden instalar `uv`/Serena o
+  `csharp-ls`, `pyright` y `typescript-language-server`.
+- **ccusage**: informe local del consumo de cuota leyendo los transcripts (`npx ccusage@latest`).
 
 ## Cómo probarlo
 
 ```powershell
-# Debe imprimir un JSON con "deny"
-'{"tool_input":{"command":"git stash"}}' | python .claude\hooks\baxy_guard.py pre-shell
+'{"tool_input":{"command":"git stash"}}' | python .claude\hooks\baxy_guard.py pre-shell   # JSON con "deny"
+'{"source":"startup"}' | python .claude\hooks\contexto.py                                  # fecha, máquina, rama
 ```
 
-En una sesión: `/agents` lista los cinco agentes; `/revisar-cambio HEAD~1..HEAD` lanza la revisión.
-
-## Cómo quitarlo
-
-Todo vive en `.claude/`, en las líneas de `.gitignore` y en la sección de `CLAUDE.md`: revertir sus
-commits lo quita entero. Nada se instala a nivel usuario (`~/.claude`).
+`BAXY_GUARD=off` o `BAXY_CONTEXTO=off` al lanzar Claude Code apagan cada hook. Para quitarlo todo, se
+revierten los commits de esta configuración y se desinstalan los tres plugins (`claude plugin uninstall
+<plugin>@claude-plugins-official --scope project`).

@@ -33,6 +33,13 @@ DENIED_COMMANDS = [
     (r"\bmsconfig\b|\bbcdedit\b|\bsc(\.exe)?\s+(config|delete|stop)\b|"
      r"\bset-service\b|\bstop-service\b|\breg(\.exe)?\s+(add|delete|import)\s+hklm",
      "configuración de servicios o del arranque de Windows (incidente msconfig: 256 servicios)"),
+    (r"\bstop-process\b[^;&|]*\s-(name|processname)\b|\bget-process\b[^;&|]*\|\s*stop-process\b|"
+     r"\btaskkill\b[^;&|]*/im\b|\b(pkill|killall)\b",
+     "matar por nombre ya cerró VS Code y la propia sesión; cierra por PID (Stop-Process -Id, taskkill /PID)"),
+    (r"\b(shutdown(\.exe)?\s+[/-][rsp]|restart-computer|stop-computer)\b",
+     "no se reinicia ni se apaga ninguna máquina"),
+    (r"\bgit\s+push\s+(\S+\s+)*origin\b",
+     "push sólo a hub; a GitHub (origin) únicamente si el dueño lo pide"),
 ]
 
 QUALITY_CONFIGS = {

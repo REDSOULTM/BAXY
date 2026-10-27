@@ -9,15 +9,18 @@ preguntando, y las tools se llaman `Grep`, `Read`, `Edit` y `Bash`.
 
 ## Lo que Claude Code tiene además en `.claude/`
 
-Ayudas hechas para BAXY; inventario y cómo quitarlas en
-[`.claude/README.md`](.claude/README.md). `AGENTS.md` sigue mandando.
+Inventario, origen de cada pieza y cómo quitarla en [`.claude/README.md`](.claude/README.md).
+`AGENTS.md` sigue mandando.
 
-- Skills: `verificar` (la escalera con los comandos de esta máquina; `py` está roto, se
-  usa el Python del runtime), `arreglar-fallo`, `arreglar-build`, `traspaso`.
-- Agentes `revisor-codigo`, `revisor-privacidad`, `cazador-fallos-silenciosos`,
-  `analizador-pruebas` y `explorador`, en `sonnet` y de sólo lectura. Por defecto no se
-  delega: se usan cuando el dueño lo pide o con `/revisar-cambio`.
-- Una guarda (`.claude/hooks/baxy_guard.py`) deniega `--no-verify`, `git stash`,
-  `reset --hard`, `clean -f`, `push --force` y tocar servicios o arranque de Windows, y
-  avisa si `AGENTS.md` pasa de 10.000 caracteres. Si deniega algo que de verdad hace
-  falta, no lo esquives: díselo al dueño.
+- `.claude/rules/trabajo.md` se carga siempre: es la forma de trabajar que el dueño fija.
+- Al arrancar, un hook dice fecha, máquina, worktree y rama; tras compactar o retomar,
+  reinyecta los mensajes del dueño de la sesión y deja la lista entera en
+  `.claude/sesiones/` (local, privada).
+- Skills: `verificar`, `arreglar-fallo`, `arreglar-build`, `traspaso`, `prueba-en-vivo`,
+  `coordinar-pc-nb`, `lanzar-baxy`, `verification-before-completion`,
+  `systematic-debugging`. Plugins oficiales: `pr-review-toolkit`, `claude-md-management`,
+  `project-artifact`.
+- Una guarda (`.claude/hooks/baxy_guard.py`) deniega lo que ya rompió algo (saltarse
+  hooks, `git stash`, `reset --hard`, push a GitHub, matar procesos por nombre, tocar
+  servicios de Windows, reiniciar). Si deniega algo que de verdad hace falta, no lo
+  esquives: díselo al dueño.
