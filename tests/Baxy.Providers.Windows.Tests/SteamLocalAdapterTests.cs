@@ -772,6 +772,43 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Feria (caso 15): a game not on this PC resolves by the games this Steam client knows (its local app cache), and
+    // the library cache then says whether it is the person's; a title this Steam does not know stays unresolved, said as
+    // looked up among those games, which are not the whole store. Nothing goes to the store.
+    [TestCase("Owned Elsewhere", true, "owned_not_installed")]
+    [TestCase("Known Not Owned", true, "not_in_local_library_cache")]
+    [TestCase("Unknown Here", false, "title_not_resolved")]
+    public async Task ATitleNotOnThisPcResolvesByTheGamesThisSteamKnows(string title, bool resolved, string state)
+    {
+        bool asked = false;
+        var adapter = new SteamLocalAdapter(
+            () => Catalog,
+            () => new HashSet<string>(["620", "700"], StringComparer.Ordinal),
+            new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam")),
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) =>
+            {
+                asked = true;
+                return ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>([]);
+            },
+            knownGames: () => [new("700", "Owned Elsewhere"), new("701", "Known Not Owned"), new("620", "Portal 2")]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.entitlement.named", Json($$"""{"title":"{{title}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked, Is.False);
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("resolved").GetBoolean(), Is.EqualTo(resolved));
+            Assert.That(receipt.Result?.GetProperty("state").GetString(), Is.EqualTo(state));
+            Assert.That(receipt.Result?.GetProperty("titleLookedUpAmong").GetString(),
+                Is.EqualTo("games_on_this_pc_and_games_this_steam_client_knows"));
+            Assert.That(receipt.Result?.GetProperty("steamKnownGamesWithThatName").GetInt32(), Is.EqualTo(resolved ? 1 : 0));
+            if (resolved) Assert.That(receipt.Result?.GetProperty("installed").GetBoolean(), Is.False);
+        });
+    }
+
     // Renew al máximo (B-APP-5): a store search that got no answer (offline, a timeout, an error status, a body not
     // read) is said as such before any effect, never as a title no game bears.
     [TestCase(0)]
