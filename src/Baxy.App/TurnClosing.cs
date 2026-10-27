@@ -1,8 +1,11 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Baxy.Contracts;
+using Baxy.Kernel.Operations;
 
 namespace Baxy.App;
 
@@ -18,7 +21,9 @@ namespace Baxy.App;
 /// arguments and the same result, its content (e2e E022: the same page fetched eight times, until the results overflowed
 /// the context and the turn ended with no answer; feria 2026-10-27: a navigation and a new tab alternated 16 times in
 /// 55 s, each breaking the other's run, until the move cap), unless a call not made before in the turn (another operation
-/// or other arguments) came since its last time: a form filled field by field, the same key between each typing, goes on.
+/// or other arguments), or a read that saw a word no read saw before in it, came since its last time: a form
+/// filled field by field, the same key between each typing, goes on, and so does a long page read by scrolling and
+/// looking in turn.
 /// Not twice: after two identical failures the model still changes course (e2e E011, base 0be0f9de9, all three seeds: two
 /// calculator_window_not_found, then app.open and the sum); the branch that closed the turn at the second one lost that
 /// case.</item>
@@ -39,7 +44,9 @@ internal sealed class TurnClosing
 
     // Each call with its result: how many times it came, and how many new calls the turn had made at its last time.
     private readonly Dictionary<string, (int Times, int NewCalls)> _appearances = new(StringComparer.Ordinal);
+    // The calls made in the turn (operation and arguments), and the words its reads saw: either growing is a new call.
     private readonly HashSet<string> _made = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _seen = new(StringComparer.Ordinal);
 
     /// <summary>
     /// The call number <paramref name="calls"/> of the turn came back, <paramref name="elapsed"/> after the turn started,
@@ -49,18 +56,33 @@ internal sealed class TurnClosing
     {
         string made = string.Join('\n', operation, arguments);
         _made.Add(made);
-        string call = string.Join('\n', made, ResultHash(observation));
+        string content = Content(observation);
+        string call = string.Join('\n', made, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content))));
+        if (Reads(operation))
+        {
+            // A read that saw a word no read of the turn saw before is new too (a look after each scroll of a long page);
+            // other numbers or the same words in another order (a clock, a load, a list sorted by it) are not.
+            _seen.UnionWith(Word.Matches(content).Select(static word => word.Value));
+        }
+
+        int news = _made.Count + _seen.Count;
         (int times, int newCallsBefore) = _appearances.GetValueOrDefault(call);
-        bool stuck = times + 1 >= RepeatsThatClose && newCallsBefore == _made.Count;
-        _appearances[call] = (times + 1, _made.Count);
+        bool stuck = times + 1 >= RepeatsThatClose && newCallsBefore == news;
+        _appearances[call] = (times + 1, news);
         return calls >= MaximumModelCalls || elapsed >= Budget || stuck;
     }
+
+    // Only a read's result is progress, by the catalog's risk: an effect's result may change at each repeat with nothing
+    // gained (a new tab's tabCount in the feria loop).
+    private static bool Reads(string operation) =>
+        ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
+        && descriptor.Risk == OperationRisks.ReadOnly;
 
     // Al máximo 7.7: the same result is the same content, status and error with it (three looks at a window still
     // loading, each with another view, are three results, not a repeat). How long the call took («…Ms»: durationMs,
     // elapsedMs, burstMs) is not part of it: the same console output each time in its own time is a repeat. The mind's
     // «same call» aid compares the same way (mind.py, _result_key).
-    private static string ResultHash(string observation)
+    private static string Content(string observation)
     {
         string content = observation;
         try
@@ -68,15 +90,20 @@ internal sealed class TurnClosing
             if (JsonNode.Parse(observation) is { } facts)
             {
                 WithoutTimes(facts);
-                content = facts.ToJsonString();
+                content = facts.ToJsonString(Unescaped);
             }
         }
         catch (JsonException)
         {
         }
 
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content)));
+        return content;
     }
+
+    // Letters as they are, not \u escapes, so that a read's words are whole (only compared, never shown).
+    private static readonly JsonSerializerOptions Unescaped = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
+    private static readonly Regex Word = new(@"\p{L}+", RegexOptions.CultureInvariant);
 
     // Holdout v4 (the Steam library, «Biblioteca» 7 times): nor is a click's own count of its repeats
     // (unchangedInARow, WindowsVisibleControlAdapter) and the «next» that count brings, which differ on each repeat of

@@ -87,6 +87,90 @@ public sealed class TurnClosingTests
         });
     }
 
+    // Review of R1: «read me the whole page» scrolls and looks in turn. A scroll that moved says nothing of what it
+    // brought (WindowsScrollAdapter: the same result each time) and each look has the same arguments, but each look sees
+    // more of the page: a read that sees something not seen before in the turn is work going on, up to the move cap.
+    [Test]
+    public void ScrollingAndLookingAtNewContentKeepsTheTurnOpenUntilTheMoveCap()
+    {
+        var closing = new TurnClosing();
+        const string scroll = "{\"direction\":\"down\",\"amount\":5}";
+        const string look = "{\"includeText\":true}";
+        string[] parts = ["Inicio", "Historia", "Geografía", "Economía", "Cultura", "Deporte", "Véase también"];
+        Assert.Multiple(() =>
+        {
+            for (int call = 1; call < TurnClosing.MaximumModelCalls; call++)
+            {
+                Assert.That(call % 2 == 1
+                    ? closing.AfterCall(call, Soon, "input.scroll", scroll, Result("completed"))
+                    : closing.AfterCall(call, Soon, "input.visible.controls", look, View(parts[call / 2 - 1])),
+                    Is.False, $"call {call}");
+            }
+
+            Assert.That(closing.AfterCall(TurnClosing.MaximumModelCalls, Soon, "input.scroll", scroll,
+                Result("completed")), Is.True);
+        });
+    }
+
+    // A look that sees what it saw before is no progress: scrolling a page that no longer moves still closes the turn.
+    [Test]
+    public void ScrollingAndLookingAtTheSameContentClosesTheTurn()
+    {
+        var closing = new TurnClosing();
+        const string scroll = "{\"direction\":\"down\",\"amount\":5}";
+        const string look = "{\"includeText\":true}";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "input.scroll", scroll, Result("completed")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "input.visible.controls", look, View("final")), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "input.scroll", scroll, Result("completed")), Is.False);
+            Assert.That(closing.AfterCall(4, Soon, "input.visible.controls", look, View("final")), Is.False);
+            Assert.That(closing.AfterCall(5, Soon, "input.scroll", scroll, Result("completed")), Is.True);
+        });
+    }
+
+    // Feria 2026-10-27 again: a new tab's result carries the browser's count of tabs, another each time; only what a
+    // read sees is progress, so the effects that alternate still close the turn.
+    [Test]
+    public void AnEffectWithAnotherResultEachTimeIsNoProgress()
+    {
+        var closing = new TurnClosing();
+        const string page = "{\"url\":\"https://a.example/\"}";
+        const string tab = "{\"action\":\"new_tab\"}";
+        string Tabs(int count) => $"{{\"status\":\"completed\",\"observed\":{{\"tabCount\":{count}}}}}";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "browser.navigate", page, Result("completed")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "browser.control", tab, Tabs(2)), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "browser.navigate", page, Result("completed")), Is.False);
+            Assert.That(closing.AfterCall(4, Soon, "browser.control", tab, Tabs(3)), Is.False);
+            Assert.That(closing.AfterCall(5, Soon, "browser.navigate", page, Result("completed")), Is.True);
+        });
+    }
+
+    // Review of the fix: a read that sees the same words again, with other numbers or in another order (a list sorted by
+    // load), sees nothing new, so the same failed call between two such reads still closes the turn at its third time.
+    [Test]
+    public void AReadWithTheSameWordsInAnotherOrderIsNoProgress()
+    {
+        var closing = new TurnClosing();
+        const string open = "{\"appId\":\"cmd\"}";
+        const string byLoad = "{\"sort\":\"cpu\"}";
+        string Processes(string first, int load, string second) =>
+            "{\"status\":\"completed\",\"observed\":{\"processes\":["
+            + $"{{\"name\":\"{first}\",\"cpuPercent\":{load}.5}},{{\"name\":\"{second}\",\"cpuPercent\":1.25}}]}}}}";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "app.open", open, Result("failed", "verification_failed")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "system.process.list", byLoad, Processes("cmd", 3, "explorer")),
+                Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "app.open", open, Result("failed", "verification_failed")), Is.False);
+            Assert.That(closing.AfterCall(4, Soon, "system.process.list", byLoad, Processes("explorer", 7, "cmd")),
+                Is.False);
+            Assert.That(closing.AfterCall(5, Soon, "app.open", open, Result("failed", "verification_failed")), Is.True);
+        });
+    }
+
     // Review of the branch: a form filled field by field, the same key between each typing, is work going on: each
     // typing was a call not made before, so the key's third time is no loop.
     [Test]
