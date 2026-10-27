@@ -9,11 +9,18 @@ nothing hangs. A failure is a ValueError whose short reason the model reads.
 from __future__ import annotations
 
 import re
-from decimal import Context, Decimal, Inexact, InvalidOperation, Overflow, getcontext, localcontext
+from typing import Callable
+from decimal import (Context, Decimal, DivisionByZero, Inexact, InvalidOperation, Overflow, Underflow, getcontext,
+                     localcontext)
 
 _TOKEN = re.compile(r"\d+(?:[.,]\d+)*|\*\*|[^\W\d_]+|\S")
 _ALIASES = {"×": "*", "÷": "/", "**": "^", "√": "sqrt", "∛": "cbrt"}
 _MAX_EXPONENT = 10000
+# Silent-failure review 2026-10-27: 300 nested parentheses, or a thousand «-», ran past Python's recursion limit and
+# failed the whole turn; each level takes about seven frames, the mind's turn already holds some.
+_MAX_DEPTH = 64
+# «1.500» is how a Spanish transcript writes fifteen hundred, and it read silently as 1.5.
+_GROUPED = re.compile(r"\d+[.,]\d{3}")
 
 
 def _not_arithmetic(part: str) -> ValueError:
@@ -29,6 +36,7 @@ class _Parser:
         self.expression = expression
         self.tokens = [_ALIASES.get(token, token.lower()) for token in _TOKEN.findall(expression)]
         self.pos = 0
+        self.depth = 0
 
     def _take(self, *options: str) -> str | None:
         token = self.tokens[self.pos] if self.pos < len(self.tokens) else None
@@ -40,7 +48,18 @@ class _Parser:
     def _unexpected(self) -> ValueError:
         return _not_arithmetic(self.tokens[self.pos] if self.pos < len(self.tokens) else self.expression.strip())
 
+    def _nested(self, parse: Callable[[], Decimal]) -> Decimal:
+        self.depth += 1
+        if self.depth > _MAX_DEPTH:
+            raise ValueError("expression nested too deep")
+        try:
+            return parse()
+        finally:
+            self.depth -= 1
+
     def parse(self) -> Decimal:
+        if not self.tokens:
+            raise ValueError("no expression")
         value = self._expression()
         if self.pos < len(self.tokens):
             raise self._unexpected()
@@ -64,7 +83,7 @@ class _Parser:
 
     def _unary(self) -> Decimal:
         if op := self._take("-", "+"):
-            value = self._unary()
+            value = self._nested(self._unary)
             return value.copy_negate() if op == "-" else value
         return self._power()
 
@@ -72,9 +91,9 @@ class _Parser:
         base = self._postfix()
         if not self._take("^"):
             return base
-        exponent = self._unary()
+        exponent = self._nested(self._unary)
         if abs(exponent) > _MAX_EXPONENT:
-            raise ValueError("number too large")
+            raise ValueError("exponent too large")
         if base == 0 and exponent < 0:
             raise ValueError("division by zero")
         return base ** exponent
@@ -87,12 +106,12 @@ class _Parser:
 
     def _primary(self) -> Decimal:
         if self._take("("):
-            value = self._expression()
+            value = self._nested(self._expression)
             if not self._take(")"):
                 raise self._unexpected()
             return value
         if function := self._take("sqrt", "cbrt"):
-            argument = self._primary()
+            argument = self._nested(self._primary)
             if function == "sqrt":
                 if argument < 0:
                     raise ValueError("square root of a negative number")
@@ -103,6 +122,8 @@ class _Parser:
             raise self._unexpected()
         if token.count(".") + token.count(",") > 1:  # no thousands separators: «1,000.5» is ambiguous
             raise _not_arithmetic(token)
+        if _GROUPED.fullmatch(token):
+            raise ValueError(f"ambiguous separator in {token}: write a thousand as 1000 and a decimal as 1.5")
         self.pos += 1
         return Decimal(token.replace(",", "."))
 
@@ -127,11 +148,15 @@ def _plain(value: Decimal) -> str:
 
 def evaluate(expression: str) -> str:
     """The value of an arithmetic expression written with digits and symbols: «≈ » marks a rounded result."""
-    with localcontext(Context(prec=50, Emax=10 ** 6, Emin=-10 ** 6)) as context:
+    # Underflow trapped too (silent-failure review): a result past Emin read as an exact «0».
+    traps = [InvalidOperation, DivisionByZero, Overflow, Underflow]
+    with localcontext(Context(prec=50, Emax=10 ** 6, Emin=-10 ** 6, traps=traps)) as context:
         try:
             value = _Parser(expression).parse()
         except Overflow:
             raise ValueError("number too large") from None
+        except Underflow:
+            raise ValueError("number too small") from None
         except InvalidOperation:
             raise ValueError("undefined result") from None  # 0 ^ 0, a negative number to a fractional power
         if value == 0:

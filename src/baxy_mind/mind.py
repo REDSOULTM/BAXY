@@ -1086,8 +1086,9 @@ CALCULATE = {
         "name": "calculate",
         "description": (
             "Compute arithmetic exactly, to answer the person yourself: a sum, a product, a division, a percentage, a "
-            "power or a root. Write the expression you understood with digits and symbols only: + - * / ^ ( ), % for "
-            "percent, sqrt() and cbrt(). Do not use when: they ask to do it in the Calculator app "
+            "power or a root. Write the expression you understood with digits and symbols only: + - * / ^ ( ), "
+            "sqrt() and cbrt(), % as a hundredth (15% of 200 is 15% * 200), decimals with a point and no thousands "
+            "separators. Do not use when: they ask to do it in the Calculator app "
             "(calculator_expression_evaluate)."
         ),
         "parameters": {"type": "object", "properties": {"expression": {"type": "string"}},
@@ -2725,17 +2726,26 @@ class Mind:
                       operation=ended["operation"] if ended else None, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=not ended)
         elif call is not None and call["wire"] == CALCULATE["function"]["name"]:
-            # Computed here, never handed to the App; what the model wrote beside it waits for the value.
+            # Computed here, never handed to the App; what the model wrote beside it waits for the value. Code review
+            # 2026-10-27: the App's step budget never sees these calls, so the same expression again closes the turn's
+            # calls, as a repeat the App runs does (same_call_closes).
+            computed = turn.setdefault("calculated", [])
+            if _call_key(call["arguments"]) in computed and _aid_on("same_call_closes"):
+                return self._close_repeat(request_id, turn, call, reply, stage, started, "same_call_closed",
+                                          SAME_CALL_NOT_RUN, SAME_CALL_REFUSED)
+            computed.append(_call_key(call["arguments"]))
+            kind = "calculated"
             try:
-                told = json.dumps({"status": "completed", "value": evaluate(str(call["arguments"].get("expression")))},
+                told = json.dumps({"status": "completed",
+                                   "value": evaluate(str(call["arguments"].get("expression") or ""))},
                                   ensure_ascii=False)
             except ValueError as error:
-                told = json.dumps({"status": "failed", "error": str(error)})
+                told, kind = json.dumps({"status": "failed", "error": str(error)}), "calculation_failed"
             for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
                 turn["conv"].append({"role": "tool", "tool_call_id": call_id,
                                      "content": told if call_id == call["id"] else CALCULATED_FIRST})
             turn["queue"], turn["awaiting"] = [], None
-            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="calculated",
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind=kind,
                       operation=None, arguments=None if turn.get("private") else call["arguments"], content=None)
             return self._next(request_id, "turn.continue", turn)
         elif call is not None:

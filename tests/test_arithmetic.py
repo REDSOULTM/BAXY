@@ -85,10 +85,19 @@ def test_very_large_and_very_small_results_are_scientific() -> None:
     ("(2 + 3", "not an arithmetic expression: (2 + 3"),
     ("2 3", "not an arithmetic expression: 3"),
     ("1,000.5", "not an arithmetic expression: 1,000.5"),
-    ("2 ^ 100000", "number too large"),
-    ("10 ^ 10 ^ 10", "number too large"),
+    ("2 ^ 100000", "exponent too large"),
+    ("10 ^ 10 ^ 10", "exponent too large"),
     ("(10 ^ 9000) ^ 9000", "number too large"),
-])
+    # silent-failure review 2026-10-27: none of these may end the turn, read as 0 or read a thousand as a decimal
+    ("(10 ^ -10000) ^ 101", "number too small"),
+    ("(" * 300 + "1" + ")" * 300, "expression nested too deep"),
+    ("-" * 1000 + "1", "expression nested too deep"),
+    ("sqrt " * 1000 + "4", "expression nested too deep"),
+    ("2 ^ " * 1000 + "1", "expression nested too deep"),
+    ("1.000", "ambiguous separator in 1.000: write a thousand as 1000 and a decimal as 1.5"),
+    ("2,500 * 3", "ambiguous separator in 2,500: write a thousand as 1000 and a decimal as 1.5"),
+    ("", "no expression"),
+], ids=lambda text: text[:24])
 def test_what_is_no_sum_raises_a_reason(expression: str, reason: str) -> None:
     with pytest.raises(ValueError) as raised:
         evaluate(expression)

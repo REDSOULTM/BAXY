@@ -5,7 +5,7 @@ import json
 import math
 from pathlib import Path
 
-from baxy_mind.mind import CALCULATE, SYSTEM
+from baxy_mind.mind import CALCULATE, SAME_CALL_NOT_RUN, SYSTEM
 
 from test_mind_final import _call, _mind, _say
 
@@ -31,6 +31,17 @@ def test_an_expression_that_cannot_be_computed_says_why(tmp_path: Path) -> None:
     mind, server = _mind(tmp_path, [_call("calculate", {"expression": "1/0"}), _say("No se puede dividir por cero.")])
     assert mind.decide(1, "¿Cuánto es uno entre cero?")["reply"] == "No se puede dividir por cero."
     assert json.loads(server.bodies[1]["messages"][-1]["content"]) == {"status": "failed", "error": "division by zero"}
+    rows = [json.loads(line) for line in mind.trace.read_text(encoding="utf-8").splitlines()]
+    assert rows[0]["kind"] == "calculation_failed"
+
+
+def test_the_same_expression_again_closes_the_turns_calls(tmp_path: Path, monkeypatch) -> None:
+    # code review 2026-10-27: a calculation the model repeats never reaches the App's step budget
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    same = _call("calculate", {"expression": "2x3"})
+    mind, server = _mind(tmp_path, [same, same, _say("No pude calcularlo.")])
+    assert mind.decide(1, "¿Cuánto es dos por tres?")["reply"] == "No pude calcularlo." and len(server.bodies) == 3
+    assert server.bodies[2]["messages"][-1]["content"].startswith(SAME_CALL_NOT_RUN)
 
 
 def test_calls_written_beside_it_wait_for_its_value(tmp_path: Path) -> None:
