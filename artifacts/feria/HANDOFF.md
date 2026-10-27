@@ -30,7 +30,13 @@ como límite; estado del PC claro; informe corto con cifras y vuelta atrás.
     y pregunta, 2/2. Causa: la palabra «datos» de la frase.
   - C3 9e14c2d1d (sin «datos»): 6/6 sucesos bien; datos curiosos de memoria falsos 2/3; al final vuelve a contestar de
     memoria un suceso con un detalle falso.
-  - C4 1f47d6121 (+ «una curiosidad que te pidan»): en medida.
+  - C4 1f47d6121 (+ «una curiosidad que te pidan»): igual; curiosidades de memoria falsas, y tras unas respuestas de
+    memoria seguidas «mundial 2014: Brasil». Conclusión: el prompt solo no aguanta con el 4B.
+  - D ced466b6d: regla 5 = la de B + ayuda «dated_search» en mind.py (pregunta con un solo número que es un año,
+    respondida de palabra sin mirar nada → decide otra vez con DATED_NOTE). En vivo 8/8 fechadas buscadas y bien,
+    lo estable igual de rápido (3-7 s); fechadas 14-19 s.
+  - E 1dec600b2 (DESPLEGADO 01:20 en la entrega): D + la misma ayuda para «dato curioso/curiosidad».
+    Pruebas: `tests/test_mind_fechado.py` (5) y mente 410 pass.
 - Arranque: lo tecleado antes de que la mente esté lista (≈30-40 s) se queda en la caja (`data-ready=false`), no se
   pierde; el aviso dice «Escribe o di» en vez de «Cargando». Límite menor, sin arreglo.
 - Clics no pedidos tras cumplir (base, 1 de 2 pasadas): «Abre la calculadora» pulsó «Es igual a» y «Borrar» ×3;
@@ -40,6 +46,7 @@ como límite; estado del PC claro; informe corto con cifras y vuelta atrás.
 
 ## Vuelta atrás
 - Mente: `git -C D:\BAXYeval\entrega\BAXY-1.1.1-arr-9537b5f8b checkout --detach 5017917f9` y reiniciar BAXY.
+  Sólo la ayuda nueva, sin tocar código: variable `BAXY_AYUDAS` con la lista de ayudas sin `dated_search`.
 - Más atrás: `python_path` del registro `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` a
   `...BAXY-1.1.1-final7-4530e077c\src` (copia en `entrega\respaldo-registro\`).
 
