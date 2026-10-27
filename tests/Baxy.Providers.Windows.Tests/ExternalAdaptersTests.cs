@@ -4842,6 +4842,75 @@ public sealed class ExternalAdaptersTests
         }
     }
 
+    // Feria 2026-10-27: a Word document with a text in it had no tool (only its title was written), so a long text was
+    // typed key by key into whatever field Word had in front. The body goes in as paragraphs (an entry's line breaks
+    // make paragraphs of their own), the reread package must hold title and paragraphs as asked, and the receipt counts
+    // them and names the file.
+    [Test]
+    public async Task AWordDocumentIsWrittenWithItsParagraphsAndTheRereadCountsThem()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create",
+            Json("""{"format":"docx","title":"Cuento","paragraphs":["Había una vez un faro \"azul\" y un barco.","Llegó la noche.\n\n  Y amaneció.  "]}"""),
+            CancellationToken.None);
+
+        string path = Directory.GetFiles(temporary.Path, "*.docx").Single();
+        string text = (await adapter.InvokeAsync(
+            "office.document.read",
+            Json($$"""{"documentId":"{{receipt.Result?.GetProperty("documentId").GetString()}}"}"""),
+            CancellationToken.None)).Result?.GetProperty("text").GetString() ?? string.Empty;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("paragraphCount").GetInt32(), Is.EqualTo(3));
+            Assert.That(receipt.Result?.GetProperty("wordCount").GetInt32(), Is.EqualTo(14));
+            Assert.That(receipt.Result?.GetProperty("name").GetString(), Is.EqualTo(Path.GetFileName(path)));
+            Assert.That(text, Is.EqualTo("Cuento\nHabía una vez un faro \"azul\" y un barco.\nLlegó la noche.\nY amaneció."));
+        });
+    }
+
+    // A control character XML cannot hold leaves a file Word cannot open: written, but not verified.
+    [Test]
+    public async Task AParagraphXmlCannotHoldEndsNotVerified()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create",
+            Json("""{"format":"docx","title":"Cuento","paragraphs":["uno\u0001dos"]}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("office_document_create_not_verified"));
+            Assert.That(receipt.EffectObserved, Is.True);
+        });
+    }
+
+    // A spreadsheet has no paragraphs: asked for one with them, nothing is written and the refusal names it.
+    [Test]
+    public async Task ParagraphsForASpreadsheetAreRefusedBeforeAnythingIsWritten()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create",
+            Json("""{"format":"xlsx","title":"Gastos","paragraphs":["Luz"]}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("office_paragraphs_docx_only"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
+        });
+    }
+
     [Test]
     public async Task OutlookCalendarListProjectsOpaqueEventIdentities()
     {

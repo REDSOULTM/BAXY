@@ -1473,12 +1473,20 @@ public static class ProductCatalog
             Schema(
                 [
                     String("format", values: ["docx", "xlsx"]),
+                    // Feria 2026-10-27: a Word text had no tool and was typed key by key into what Word had in front.
+                    new OperationArgumentProperty(
+                        "paragraphs",
+                        OperationJsonType.Array,
+                        itemTypes: OperationJsonType.String,
+                        maximumItems: 100,
+                        itemMaximumUtf8Bytes: 8_192,
+                        itemNonWhitespace: true),
                     String("title", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["format", "title"]),
             OperationRisks.LowReversible,
             "office.document.create.adapter.postread.v1",
-            "Escribe en este PC un documento de Office mínimo (.docx o .xlsx) con ese título en Documentos\\BAXY, verifica el paquete releído y devuelve su identidad; no usa Office ni ninguna cuenta."),
+            "Escribe en este PC un documento de Office mínimo (.docx o .xlsx) con ese título y, en Word, los párrafos dados en Documentos\\BAXY, verifica el paquete releído (título y párrafos) y devuelve su identidad, su nombre de fichero y, con párrafos, cuántos párrafos y palabras tiene; no usa Office ni ninguna cuenta."),
         Descriptor(
             "office.document.read",
             Schema([String("documentId", maximumLength: 128, nonWhitespace: true)], ["documentId"]),

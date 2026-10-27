@@ -599,6 +599,17 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             return ExternalJson.Failure(operation, "office_format_invalid");
         }
         string title = ExternalJson.RequiredString(arguments, "title");
+        // Feria 2026-10-27: the body, one paragraph per line of each entry (blank lines left out); only Word has them.
+        string[] paragraphs = arguments.TryGetProperty("paragraphs", out JsonElement paragraphsElement)
+            && paragraphsElement.ValueKind == JsonValueKind.Array
+            ? paragraphsElement.EnumerateArray()
+                .SelectMany(item => (item.GetString() ?? string.Empty).Replace("\r\n", "\n").Split('\n'))
+                .Select(line => line.Trim()).Where(line => line.Length > 0).ToArray()
+            : [];
+        if (paragraphs.Length > 0 && format != "docx")
+        {
+            return ExternalJson.Failure(operation, "office_paragraphs_docx_only");
+        }
         effectBoundary.Cross(cancellationToken);
         Directory.CreateDirectory(_documentsRoot);
         if (new DirectoryInfo(_documentsRoot).LinkTarget is not null)
@@ -609,10 +620,10 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             Path.GetInvalidFileNameChars().Contains(character) ? '_' : character)).Trim();
         safeName = safeName.Length == 0 ? "Documento" : safeName[..Math.Min(safeName.Length, 80)];
         string path = Path.Combine(_documentsRoot, safeName + "-" + Guid.NewGuid().ToString("N") + "." + format);
-        byte[] package = CreateOfficePackage(format, title);
+        byte[] package = CreateOfficePackage(format, title, paragraphs);
         await File.WriteAllBytesAsync(path, package, cancellationToken).ConfigureAwait(false);
         if (!File.Exists(path) || new FileInfo(path).Length <= 0
-            || !VerifyOfficePackage(path, format, title))
+            || !VerifyOfficePackage(path, format, string.Join('\n', [title, .. paragraphs])))
         {
             return ExternalJson.Failure(operation, "office_document_create_not_verified", true);
         }
@@ -621,7 +632,14 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("documentId", documentId); writer.WriteString("format", format);
-            writer.WriteString("title", title); writer.WriteNumber("length", new FileInfo(path).Length);
+            writer.WriteString("title", title); writer.WriteString("name", Path.GetFileName(path));
+            if (paragraphs.Length > 0)
+            {
+                writer.WriteNumber("paragraphCount", paragraphs.Length);
+                writer.WriteNumber("wordCount", paragraphs.Sum(paragraph =>
+                    paragraph.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length));
+            }
+            writer.WriteNumber("length", new FileInfo(path).Length);
             writer.WriteString("authority", "iso29500_ooxml_postread"); writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
@@ -802,7 +820,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
     private static string Opaque(string prefix, string value) => prefix + "_"
         + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(value)))[..24];
 
-    private static byte[] CreateOfficePackage(string format, string title)
+    private static byte[] CreateOfficePackage(string format, string title, string[] paragraphs)
     {
         using var output = new MemoryStream();
         using (var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true))
@@ -819,8 +837,10 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
                     """);
                 WriteEntry(archive, "word/document.xml",
                     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                    + "<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body><w:p><w:r><w:t>"
-                    + EscapeXml(title) + "</w:t></w:r></w:p><w:sectPr/></w:body></w:document>");
+                    + "<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>"
+                    + string.Concat(((string[])[title, .. paragraphs]).Select(paragraph =>
+                        "<w:p><w:r><w:t>" + EscapeXml(paragraph) + "</w:t></w:r></w:p>"))
+                    + "<w:sectPr/></w:body></w:document>");
             }
             else
             {
@@ -849,13 +869,14 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         return output.ToArray();
     }
 
-    private static bool VerifyOfficePackage(string path, string format, string expectedTitle)
+    private static bool VerifyOfficePackage(string path, string format, string expectedText)
     {
         try
         {
-            return string.Equals(ReadOfficeText(path, format), expectedTitle, StringComparison.Ordinal);
+            return string.Equals(ReadOfficeText(path, format), expectedText, StringComparison.Ordinal);
         }
-        catch (InvalidDataException)
+        // A character XML cannot hold (a control character in the text) leaves a part Word cannot open either.
+        catch (Exception exception) when (exception is InvalidDataException or XmlException)
         {
             return false;
         }
