@@ -57,6 +57,13 @@ como límite; estado del PC claro; informe corto con cifras y vuelta atrás.
 - PC decisión v11 x3: A final8 194,33 → B nb-arr-junto 197,67 (Δ +3,33, IC95 [−0,33, +7,67]); equivocadas 32,3 → 30,0.
   v6 abierto s0 B = 625 (ref. final8 616,6). Baja V11D237 («qué modelo usas» → pregunta-eco por la regla de persona).
 
+## Estado final (03:15)
+- Desplegado J 6203d774f (entrega en detached); `nb-arr-junto` = `nb-arr-feria` en hub. BAXY instalada en marcha con
+  el arranque normal (BAXY.vbs), PID 27436; certificada 7/7 por teclado. Informe: `artifacts/feria/INFORME.md`.
+- Voz: el oído desplegado despierta y transcribe bien (offline). Prueba por altavoces no válida: la salida
+  predeterminada son unos auriculares HyperX y los altavoces Realtek tienen volumen bajo (no se tocó el audio).
+- Siguiente: si el dueño cambia el audio de la feria, repetir `voz_sala2.py` (ALTAVOZ=índice) con BAXY abierta.
+
 ## Vuelta atrás
 - Mente: `git -C D:\BAXYeval\entrega\BAXY-1.1.1-arr-9537b5f8b checkout --detach 5017917f9` y reiniciar BAXY.
   Sólo la ayuda nueva, sin tocar código: variable `BAXY_AYUDAS` con la lista de ayudas sin `dated_search`.

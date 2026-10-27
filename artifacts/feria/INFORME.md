@@ -17,7 +17,10 @@ Equipo de la feria: **el notebook**. BAXY instalada 1.1.1, mente desplegada desd
 | v6 abierto (720, una semilla) | 625 | 624 (Δ −1, ruido ±4) |
 | Batería de la feria y del público (59 pedidos) | — | 0 sin respuesta, 0 errores, mediana 8 s, p90 20 s |
 | Resistencia H (20 min, 118 turnos) | — | 0 sin respuesta, 0 errores, sin fuga de RAM |
-| Resistencia J (40 min) | — | ver abajo |
+| Resistencia J (40 min, 230 turnos) | — | 0 sin respuesta, 0 errores, 38/38 fechadas y curiosidades buscadas, 0 clics no pedidos, sin fuga de RAM (mente 1.412 → 685 MB, VRAM máx. 4.000 MiB) |
+| v6 abierto (720, 2 semillas) | 621,0 | 620,5 (final8: 615,0) |
+| Arranque normal (BAXY.vbs, como al iniciar Windows), 7 pedidos tecleados | — | 7 de 7 bien; mente lista en ≈20 s |
+| Voz sin altavoces (frases grabadas por el detector + Parakeet desplegados) | — | despierta 2/2; «Quien ganó el Mundial de Fútbol 2014.» y «Cuéntame un dato curioso…» activan la ayuda |
 | Suite Python completa | — | 957 pass, 1 skip, 2 xfail (preexistentes) |
 
 ## Qué se arregló (commits en `nb-arr-feria`)
@@ -30,6 +33,14 @@ Equipo de la feria: **el notebook**. BAXY instalada 1.1.1, mente desplegada desd
   no dijo nada de cerrar, salir o minimizar. Los cierres pedidos («cierra el bloc de notas») funcionan igual (6 de 6).
 - Tres intentos sólo con frases en el prompt (a489c28e1, 9f7587350, 9e14c2d1d, 1f47d6121) se midieron y se
   descartaron: no aguantaban o empeoraban; la regla 5 quedó como la de anoche.
+
+## Antes de la feria, mira esto (audio)
+
+- La **salida predeterminada** de Windows en el notebook son unos **auriculares HyperX** (USB): BAXY habla por ellos
+  y «sube/baja el volumen» cambia el de ellos. El **micrófono predeterminado** es el del portátil (Realtek). Si en la
+  feria quieres que BAXY suene por los altavoces o te oiga por el micro del HyperX, cámbialo en Sonido de Windows; no
+  lo toqué. Con los altavoces del portátil a su volumen actual (bajo), una voz por los altavoces casi no llega al micro.
+- Volumen dejado en 15.
 
 ## Límites que quedan (declarados, sin arreglo esta noche)
 
