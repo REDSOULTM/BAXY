@@ -369,6 +369,6 @@ def test_the_sidecar_answers_the_app_with_the_decision_made_early_unless_the_ear
     messages = server.bodies[1]["messages"]
     assert messages[-1] == {"role": "user", "content": "hola"}
     assert messages[-2]["content"].endswith(UNSURE_NOTE.format(words="«hola» (30 %)"))
-    assert [m["content"] for m in messages if m["role"] == "user"].count("hola") == 1
+    assert messages.count({"role": "user", "content": "hola"}) == 1  # the early one was put back
     assert rows[0]["stage"] == "turn.decide" and rows[0]["early"]["hit"] is False
     assert rows[0]["early"]["reason"] == "unsure"
