@@ -47,7 +47,8 @@ Se hereda la apertura de los BAXY anteriores (el enlace va al navegador de la
 persona, como un clic) y se le pone la verificación que les faltaba, sin
 tomar el navegador.
 
-1. **Detección.** `UserChoice` de `https` (y de `http` si falta) → `ProgId` →
+1. **Detección.** `UserChoiceLatest\ProgId` de `https` (Windows 11 desde 25H2 escribe ahí la elección y deja
+   `UserChoice` con la anterior, que sólo cuenta si la nueva falta), y de `http` si falta → `ProgId` →
    comando `shell\open\command` → ejecutable absoluto. Familia por `ProgId` o
    ejecutable: Opera GX, Opera, Chrome, Edge, Brave, Vivaldi, Firefox; otro
    cualquiera vale con su nombre de proceso.

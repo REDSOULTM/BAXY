@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using Baxy.Providers.Windows.External;
+using Microsoft.Win32;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -51,6 +52,38 @@ public sealed class UserBrowserTests
             Assert.That(UserBrowserIdentityResolver.Resolve("OperaStable", "opera.exe %1"), Is.Null,
                 "a relative executable is no browser identity");
         });
+    }
+
+    // Feria (NB-W5): Windows 11 from 25H2 writes the default browser to UserChoiceLatest\ProgId and leaves the legacy
+    // UserChoice on the one chosen before; reading the legacy key opened links in the old browser.
+    [Test]
+    public void TheDefaultBrowserIsTheNewerChoiceWhenWindowsKeepsBoth()
+    {
+        string root = @"Software\BAXY-tests-" + Guid.NewGuid().ToString("N");
+        try
+        {
+            using RegistryKey both = Registry.CurrentUser.CreateSubKey(root + @"\both");
+            using (RegistryKey legacy = both.CreateSubKey("UserChoice")) legacy.SetValue("ProgId", "ChromeHTML");
+            using (RegistryKey latest = both.CreateSubKey(@"UserChoiceLatest\ProgId")) latest.SetValue("ProgId", "Opera GXStable");
+            using RegistryKey legacyOnly = Registry.CurrentUser.CreateSubKey(root + @"\legacy");
+            using (RegistryKey legacy = legacyOnly.CreateSubKey("UserChoice")) legacy.SetValue("ProgId", "MSEdgeHTM");
+            using RegistryKey emptyLatest = Registry.CurrentUser.CreateSubKey(root + @"\empty-latest");
+            using (RegistryKey legacy = emptyLatest.CreateSubKey("UserChoice")) legacy.SetValue("ProgId", "ChromeHTML");
+            emptyLatest.CreateSubKey(@"UserChoiceLatest\ProgId").Dispose();
+            using RegistryKey none = Registry.CurrentUser.CreateSubKey(root + @"\none");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(UserBrowserIdentityResolver.ChosenProgId(both), Is.EqualTo("Opera GXStable"));
+                Assert.That(UserBrowserIdentityResolver.ChosenProgId(legacyOnly), Is.EqualTo("MSEdgeHTM"));
+                Assert.That(UserBrowserIdentityResolver.ChosenProgId(emptyLatest), Is.EqualTo("ChromeHTML"));
+                Assert.That(UserBrowserIdentityResolver.ChosenProgId(none), Is.Null);
+            });
+        }
+        finally
+        {
+            Registry.CurrentUser.DeleteSubKeyTree(root, throwOnMissingSubKey: false);
+        }
     }
 
     [Test]
