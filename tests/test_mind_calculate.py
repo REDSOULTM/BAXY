@@ -60,3 +60,14 @@ def test_it_is_offered_beside_the_catalog_and_rule_5_sends_sums_to_it(tmp_path: 
     mind, _ = _mind(tmp_path, [])
     mind.configure({"capabilities": [{"name": "app.open", "description": "Open an app.", "risk": "low_reversible"}]})
     assert CALCULATE in mind.tools and "calculate" in SYSTEM.split("\n5. ")[1].split("\n")[0]
+
+
+def test_a_calculation_after_memory_keeps_its_expression_out_of_the_trace(tmp_path: Path) -> None:
+    # privacy review 2026-10-27: figures of what the person keeps stay out of the trace, as every row after memory
+    mind, server = _mind(tmp_path, [_call("memory_recall", {"query": "saldo"}),
+                                    _call("calculate", {"expression": "0.15*4823.5"}), _say("Unos 723.")])
+    mind.wire_to_op = {"memory_recall": "memory.recall"}
+    mind.decide(1, "¿Cuánto es el 15 % de mi saldo?")
+    mind.continue_turn(2, json.dumps({"status": "completed", "items": [{"text": "saldo 4823.5"}]}))
+    rows = [json.loads(line) for line in mind.trace.read_text(encoding="utf-8").splitlines()]
+    assert [r for r in rows if r.get("kind") == "calculated"][0]["arguments"] is None

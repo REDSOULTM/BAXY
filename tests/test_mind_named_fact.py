@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from test_mind_doubt_policy import FakeSystemOne, _mind, _say
+from test_mind_final import _call
 
 SEARCH = {"type": "function", "function": {"name": "web_search", "description": "Look something up on the web. More.",
                                            "parameters": {}}}
@@ -75,3 +76,14 @@ def test_what_memory_holds_is_an_option_and_never_goes_to_the_web(tmp_path, monk
                                                             "parameters": {}}}]
     assert mind.decide(1, "¿Quién es Lena en mis contactos?")["reply"] == "Lena es tu hermana." and not fills
     assert set(one.asked[0]["options"]) == {"web_search", "memory_recall", "responder_con_palabras"}
+
+
+def test_a_name_memory_gave_in_an_earlier_turn_is_not_judged(tmp_path, monkeypatch) -> None:
+    # privacy review 2026-10-27: what memory_recall returned stays in the conversation; that name is the person's
+    mind, server, one, fills = _named(tmp_path, monkeypatch, "web_search",
+                                      [_call("memory_recall", {"query": "Lena"}), _say("Lena es tu hermana."),
+                                       _say("Lena vive en Valdivia.")])
+    mind.wire_to_op = {"memory_recall": "memory.recall"}
+    mind.decide(1, "¿Qué sabes de Lena?")
+    mind.continue_turn(2, json.dumps({"status": "completed", "items": [{"text": "Lena es mi hermana"}]}))
+    assert mind.decide(3, "Cuéntame de Lena.")["reply"] == "Lena vive en Valdivia." and one.asked == []

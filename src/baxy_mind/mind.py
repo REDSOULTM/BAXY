@@ -2212,7 +2212,8 @@ class Mind:
             return self._look_up_first(request_id, stage, turn, body, reply, started)
         if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
                 and not turn.get("named") and not turn.get("receipts") and _aid_on("named_fact")
-                and self.system_one is not None and self.system_one.ready and self._names_said(turn["text"], content)):
+                and self.system_one is not None and self.system_one.ready
+                and self._unkept(self._names_said(turn["text"], content))):
             looked = self._named_fact(request_id, stage, turn, body, reply, started)
             if looked is not None:
                 return looked
@@ -2245,14 +2246,23 @@ class Mind:
                 or bool(_CURIOUS.search(folded)))
 
     @classmethod
-    def _names_said(cls, text: str, content: str) -> bool:
-        """Whether the words, in a sentence that is not a question (a question tells no fact), say a word of the person's
-        that either of them wrote as a name: with a capital past the start of a sentence (aid «named_fact»). PC-L review
-        2026-10-27: the voice may come in lowercase, and the model still writes a name with its capital."""
+    def _names_said(cls, text: str, content: str) -> set[str]:
+        """The person's words, folded, that the answer says in a sentence that is not a question (a question tells no
+        fact) and either of them wrote as a name: with a capital past the start of a sentence (aid «named_fact»). PC-L
+        review 2026-10-27: the voice may come in lowercase, and the model still writes a name with its capital."""
         told = " ".join(sentence for sentence in _TOLD.findall(content) if not sentence.rstrip().endswith("?"))
         said, said_names = cls._words_and_names(text)
         words, names = cls._words_and_names(told)
-        return not (said_names | names).isdisjoint(said & words)
+        return (said_names | names) & said & words
+
+    def _unkept(self, names: set[str]) -> bool:
+        """Whether there are names and none is in what a memory call returned in this conversation (privacy review
+        2026-10-27: a contact recalled in an earlier turn is the person's, never a web query)."""
+        kept = {c["id"] for m in self.conversation for c in m.get("tool_calls") or []
+                if self.wire_to_op.get(c["function"]["name"], "").startswith("memory.")}
+        return bool(names) and not any(
+            names & self._words_and_names(str(m.get("content") or ""))[0]
+            for m in self.conversation if m.get("role") == "tool" and m.get("tool_call_id") in kept)
 
     @staticmethod
     def _words_and_names(text: str) -> tuple[set[str], set[str]]:
@@ -2726,7 +2736,7 @@ class Mind:
                                      "content": told if call_id == call["id"] else CALCULATED_FIRST})
             turn["queue"], turn["awaiting"] = [], None
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="calculated",
-                      operation=None, arguments=call["arguments"], content=None)
+                      operation=None, arguments=None if turn.get("private") else call["arguments"], content=None)
             return self._next(request_id, "turn.continue", turn)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
