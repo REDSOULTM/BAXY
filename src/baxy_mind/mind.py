@@ -1191,9 +1191,10 @@ CALCULATE = {
     },
 }
 CALCULATIONS = 4  # a turn's calculations; the next decision after the last is in words
-# Feria 2026-10-27: office_document_create takes the whole body in one call; at 512 tokens a story of ~500 words was
-# cut mid-call. A cap, not a length: a short answer still ends at its own end.
-DECISION_TOKENS = 1536
+# Feria 2026-10-27: office_document_create takes the whole body in one call; at 512 tokens a story was cut mid-call. A
+# cap, not a length: a short answer still ends at its own end. Measured on the notebook (NB-L): ~36 tokens/s, ~2 tokens
+# a word; 768 is ~21 s, inside the App's 30 s for a decision (TurnRequestTimeout) with room for the prefix.
+DECISION_TOKENS = 768
 CALCULATED_FIRST = json.dumps({"status": "not_run", "reason": "written before the calculation's value; call it again "
                                                               "with that value if it is still needed"})
 

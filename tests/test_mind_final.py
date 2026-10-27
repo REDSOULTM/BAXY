@@ -151,8 +151,10 @@ def test_the_last_answer_comes_even_when_its_newest_result_alone_does_not_fit(tm
     assert told.startswith(COMPACTED) and "de 9000" in told and NO_MORE_CALLS.strip() in told
 
 
-def test_a_decision_has_room_for_a_document_of_some_five_hundred_words(tmp_path: Path) -> None:
-    # Feria 2026-10-27 (W6): office_document_create takes the body; at 512 tokens a story of ~500 words was cut mid-call
+def test_a_decision_has_room_for_a_document_and_stays_inside_the_apps_budget(tmp_path: Path) -> None:
+    # Feria 2026-10-27 (W6): office_document_create takes the body; at 512 tokens a story was cut mid-call. Measured on
+    # the notebook (NB-L): ~36 tokens/s and ~2 tokens a word; the App gives a decision 30 s (TurnRequestTimeout), so the
+    # cap leaves room for the prefix: about 350 words, never a decision the App gives up on
     mind, server = _mind(tmp_path, [_say("Listo.")])
     mind.decide(1, "Escribe un cuento largo en un documento.")
-    assert server.bodies[0]["max_tokens"] >= 1024
+    assert 640 <= server.bodies[0]["max_tokens"] <= 900
