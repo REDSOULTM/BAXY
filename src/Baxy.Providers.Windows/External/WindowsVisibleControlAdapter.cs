@@ -3693,7 +3693,6 @@ internal sealed class WindowsVisibleControlAdapter
         UiaFrontReport? front = UiaFrontReport.Read(clicked);
         TimeSpan budget = before is null ? _timing.ControlPostread : _timing.SurfacePostread;
         bool surfaceRead = false;
-        bool controlSaidUnchanged = false;
         bool controlWasSelected = false;
         bool arrivedUncaused = false;
         while (true)
@@ -3717,8 +3716,6 @@ internal sealed class WindowsVisibleControlAdapter
                 if (root.TryGetProperty("error", out JsonElement doubt) && doubt.ValueKind == JsonValueKind.String
                     && doubt.GetString() is ToggleUncorroborated or ChoiceUncorroborated)
                     return ReceiptFromWorker(operation, root, effectBoundary);
-                controlSaidUnchanged |= root.TryGetProperty("error", out JsonElement said)
-                    && said.ValueKind == JsonValueKind.String && said.GetString() == "visible_button_postread_unchanged";
                 controlWasSelected |= root.TryGetProperty("alreadySelected", out JsonElement chosen)
                     && chosen.ValueKind == JsonValueKind.True;
                 // Anything but «not yet» ends the questions to the control; the surface may still answer.
@@ -3786,7 +3783,10 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         // Ronda final 18 (regla 3): «unchanged» only from a read-back that was read; none read is said as such.
-        if (!surfaceRead && !controlSaidUnchanged)
+        // Feria 2026-10-27: a calculator's clicks were said «unchanged» with no image of its window read. A control that
+        // stays enabled and unselected after Invoke says «unchanged» whatever the click did, so only the window's image,
+        // read after the click, can say it, or the control itself read as already chosen before the click (C02).
+        if (!surfaceRead && !controlWasSelected)
             return effectBoundary.Failure(operation, "visible_click_postread_unread", effectObserved: true);
         // Ronda final 20 (regla 3): another process's window came meanwhile with nothing showing the click caused it:
         // the click's effect is uncertain, never «unchanged» (the model would press again: a second browser tab).

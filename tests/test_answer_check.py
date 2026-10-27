@@ -357,6 +357,26 @@ def test_already_so_needs_a_result_that_says_it() -> None:
     assert _rules("Abrí el Bloc de notas; ya estaba abierto, así que lo traje al frente.", [running]) == []
 
 
+# Feria 2026-10-27: a volume set changed it at the first call and its repeats in the turn came back «unchanged»; the
+# answer said it already was so. Only the first call of an operation in the turn tells what was so before the turn.
+def test_already_so_is_the_first_call_of_its_operation() -> None:
+    level = {"level": 100}
+    changed = _r("audio.volume", {**DONE, "observed": {"before": 30, "final": 100}}, level)
+    again = _r("audio.volume", {"status": "completed", "verification": "unchanged", "observed": {"final": 100}}, level)
+    assert _rules("El volumen ya estaba en 100.", [changed, again, again]) == ["already"]
+    assert _rules("El volumen ya estaba en 100.", [again, changed]) == []
+    # Another operation's first call that came back so still tells it (the volume set, the sound already on).
+    unmuted = _r("audio.mute", {"status": "completed", "verification": "unchanged", "observed": {"muted": False}})
+    assert _rules("Lo puse en 100; el sonido ya estaba activado.", [changed, again, unmuted]) == []
+    # Review of the branch: the same operation on another thing is that call's first time; a call that never ran
+    # (queued behind a failure) is no call of the turn.
+    other = _r("audio.volume", {"status": "completed", "verification": "unchanged", "observed": {"final": 40}},
+               {"level": 40, "device": "auriculares"})
+    assert _rules("Los auriculares ya estaban en 40.", [changed, other]) == []
+    queued = _r("audio.mute", {"status": "not_run", "reason": "the call before it in this turn did not complete"})
+    assert _rules("Lo puse en 100; el sonido ya estaba activado.", [queued, changed, unmuted]) == []
+
+
 # ---- the mind: one more answer, never a loop ------------------------------------------------------------------------
 def _closing(tmp_path: Path, *answers: str) -> tuple[Mind, object, dict]:
     mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Paint"}), *(_say(a) for a in answers)])
