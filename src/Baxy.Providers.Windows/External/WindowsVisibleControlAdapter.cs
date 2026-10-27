@@ -3785,8 +3785,8 @@ internal sealed class WindowsVisibleControlAdapter
         // Ronda final 18 (regla 3): «unchanged» only from a read-back that was read; none read is said as such.
         // Feria 2026-10-27: a calculator's clicks were said «unchanged» with no image of its window read. A control that
         // stays enabled and unselected after Invoke says «unchanged» whatever the click did, so only the window's image,
-        // read after the click, can say it.
-        if (!surfaceRead)
+        // read after the click, can say it, or the control itself read as already chosen before the click (C02).
+        if (!surfaceRead && !controlWasSelected)
             return effectBoundary.Failure(operation, "visible_click_postread_unread", effectObserved: true);
         // Ronda final 20 (regla 3): another process's window came meanwhile with nothing showing the click caused it:
         // the click's effect is uncertain, never «unchanged» (the model would press again: a second browser tab).

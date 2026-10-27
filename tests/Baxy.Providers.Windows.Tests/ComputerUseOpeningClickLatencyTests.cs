@@ -155,6 +155,30 @@ public sealed class ComputerUseOpeningClickLatencyTests
         });
     }
 
+    // C02 (BAXY Renew cu): a control the worker read as already chosen before the click is its own proof that the click
+    // changed nothing, with no image of the window: still said unchanged, with what is already shown.
+    [Test]
+    public async Task AControlAlreadyChosenBeforeTheClickIsUnchangedWithNoImageRead()
+    {
+        var worker = new RoutedWorker(request => (string?)request["cmd"] switch
+        {
+            "click" => PendingClick,
+            "postread" => UnchangedControl.Replace("\"selected\":false}", "\"selected\":true,\"alreadySelected\":true}",
+                StringComparison.Ordinal),
+            _ => null,
+        });
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: NoCapture);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Aceptar","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_button_postread_unchanged"));
+            Assert.That(receipt.Result?.GetProperty("alreadySelected").GetBoolean(), Is.True);
+        });
+    }
+
     // The tree found the control, pressed it by its pattern and saw nothing change. Review of the branch (finding 4):
     // the OCR stage still looks for the label (since 956a89ace it rescued a hidden duplicate the tree chose, or an
     // Invoke the application ignored), but its point on that same control is refused by the worker before any effect,
