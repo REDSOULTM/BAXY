@@ -1486,7 +1486,7 @@ public static class ProductCatalog
                 ["format", "title"]),
             OperationRisks.LowReversible,
             "office.document.create.adapter.postread.v1",
-            "Escribe en este PC un documento de Office mínimo (.docx o .xlsx) con ese título y, en Word, los párrafos dados en Documentos\\BAXY, verifica el paquete releído (título y párrafos) y devuelve su identidad, su nombre de fichero y, con párrafos, cuántos párrafos y palabras tiene; no usa Office ni ninguna cuenta."),
+            "Escribe en este PC un documento de Office mínimo (.docx o .xlsx) con ese título y, en Word, los párrafos dados en Documentos\\BAXY, verifica el paquete releído (título y párrafos) y devuelve su identidad, su nombre de fichero y, con párrafos, cuántos párrafos y palabras tiene bajo el título; no usa Office ni ninguna cuenta."),
         Descriptor(
             "office.document.read",
             Schema([String("documentId", maximumLength: 128, nonWhitespace: true)], ["documentId"]),

@@ -4854,7 +4854,7 @@ public sealed class ExternalAdaptersTests
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "office.document.create",
-            Json("""{"format":"docx","title":"Cuento","paragraphs":["Había una vez un faro \"azul\" y un barco.","Llegó la noche.\n\n  Y amaneció.  "]}"""),
+            Json("""{"format":"docx","title":"Cuento","paragraphs":["Había una vez un faro \"azul\" y un barco.","Llegó la noche.\r\n\n  Y amaneció 🌙.  \rFin."]}"""),
             CancellationToken.None);
 
         string path = Directory.GetFiles(temporary.Path, "*.docx").Single();
@@ -4865,16 +4865,16 @@ public sealed class ExternalAdaptersTests
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(receipt.Result?.GetProperty("paragraphCount").GetInt32(), Is.EqualTo(3));
-            Assert.That(receipt.Result?.GetProperty("wordCount").GetInt32(), Is.EqualTo(14));
+            Assert.That(receipt.Result?.GetProperty("paragraphCount").GetInt32(), Is.EqualTo(4));
+            Assert.That(receipt.Result?.GetProperty("wordCount").GetInt32(), Is.EqualTo(16));
             Assert.That(receipt.Result?.GetProperty("name").GetString(), Is.EqualTo(Path.GetFileName(path)));
-            Assert.That(text, Is.EqualTo("Cuento\nHabía una vez un faro \"azul\" y un barco.\nLlegó la noche.\nY amaneció."));
+            Assert.That(text, Is.EqualTo("Cuento\nHabía una vez un faro \"azul\" y un barco.\nLlegó la noche.\nY amaneció 🌙.\nFin."));
         });
     }
 
-    // A control character XML cannot hold leaves a file Word cannot open: written, but not verified.
+    // A control character XML cannot hold would leave a file Word cannot open: refused before anything is written.
     [Test]
-    public async Task AParagraphXmlCannotHoldEndsNotVerified()
+    public async Task AParagraphXmlCannotHoldIsRefusedBeforeAnythingIsWritten()
     {
         using TemporaryDirectory temporary = new();
         var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
@@ -4886,8 +4886,9 @@ public sealed class ExternalAdaptersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.ErrorCode, Is.EqualTo("office_document_create_not_verified"));
-            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("office_text_invalid_character"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
         });
     }
 

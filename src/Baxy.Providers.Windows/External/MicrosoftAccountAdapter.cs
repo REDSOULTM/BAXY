@@ -603,12 +603,17 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         string[] paragraphs = arguments.TryGetProperty("paragraphs", out JsonElement paragraphsElement)
             && paragraphsElement.ValueKind == JsonValueKind.Array
             ? paragraphsElement.EnumerateArray()
-                .SelectMany(item => (item.GetString() ?? string.Empty).Replace("\r\n", "\n").Split('\n'))
+                .SelectMany(item => (item.GetString() ?? string.Empty).ReplaceLineEndings("\n").Split('\n'))
                 .Select(line => line.Trim()).Where(line => line.Length > 0).ToArray()
             : [];
         if (paragraphs.Length > 0 && format != "docx")
         {
             return ExternalJson.Failure(operation, "office_paragraphs_docx_only");
+        }
+        // A character XML cannot hold (a control character) would leave a file Office cannot open.
+        if (!((string[])[title, .. paragraphs]).All(XmlCanHold))
+        {
+            return ExternalJson.Failure(operation, "office_text_invalid_character");
         }
         effectBoundary.Cross(cancellationToken);
         Directory.CreateDirectory(_documentsRoot);
@@ -875,11 +880,29 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         {
             return string.Equals(ReadOfficeText(path, format), expectedText, StringComparison.Ordinal);
         }
-        // A character XML cannot hold (a control character in the text) leaves a part Word cannot open either.
-        catch (Exception exception) when (exception is InvalidDataException or XmlException)
+        catch (InvalidDataException)
         {
             return false;
         }
+    }
+
+    // Every character is one XML holds (a surrogate pair counts as one).
+    private static bool XmlCanHold(string text)
+    {
+        for (int index = 0; index < text.Length; index++)
+        {
+            if (XmlConvert.IsXmlChar(text[index]))
+            {
+                continue;
+            }
+            if (index + 1 < text.Length && XmlConvert.IsXmlSurrogatePair(text[index + 1], text[index]))
+            {
+                index++;
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 
     private static string ReadOfficeText(string path, string format)
