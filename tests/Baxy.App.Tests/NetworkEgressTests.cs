@@ -84,9 +84,9 @@ public sealed class NetworkEgressTests
     }
 
     // Feria 2026-10-27: a greeting asked for someone in the room opened a messaging client with a draft. A draft goes
-    // only by a channel the person named now or just before (the answer to the model's question keeps what it asked),
-    // or, when the turn that refused it ended with the model's question, in the turn right after it (their «sí» to «¿le
-    // escribo por …?»), and that channel counts as said in that turn and the next.
+    // only by a channel the person named now or just before (the answer to the model's question keeps what it asked);
+    // when the turn that refused a message ended with the model's question, a draft or a send by that channel goes in the
+    // turn right after it (their «sí» to «¿le escribo por …?»), and that channel counts as said in that turn and the next.
     [Test]
     public void AMessageGoesOnlyByAChannelThePersonNamed()
     {
@@ -145,10 +145,11 @@ public sealed class NetworkEgressTests
             ["channel"] = channel, ["recipient"] = "Ana María", ["text"] = "Llego tarde",
         });
         egress.Heard("saluda a Nadia");
-        (string Code, string Next)? greeted = egress.Unsaid("message.draft", new JsonObject
-        {
-            ["channel"] = channel, ["recipient"] = "Nadia", ["text"] = "Hola",
-        });
+        var greeting = new JsonObject { ["channel"] = channel, ["recipient"] = "Nadia", ["text"] = "Hola" };
+        (string Code, string Next)? greeted = egress.Unsaid("message.send", greeting);
+        egress.Heard("Nadia, pasa");
+        (string Code, string Next)? drafted = egress.Unsaid("message.draft", greeting);
+        (string Code, string Next)? sentAfterDraft = egress.Unsaid("message.send", greeting);
 
         Assert.Multiple(() =>
         {
@@ -158,6 +159,8 @@ public sealed class NetworkEgressTests
             Assert.That(second, Is.Null);
             Assert.That(reworded, Is.Null);
             Assert.That(greeted?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(drafted?.Code, Is.EqualTo("channel_not_said"));
+            Assert.That(sentAfterDraft?.Code, Is.EqualTo("channel_not_said"));
         });
     }
 

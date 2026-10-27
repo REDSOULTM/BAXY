@@ -42,9 +42,9 @@ internal sealed class NetworkEgress
     private readonly List<string> _resultHosts = [];
     private readonly HashSet<string> _queriesRefused = new(StringComparer.Ordinal);
 
-    // A channel a message was refused by, with the last turn it was refused in (_turns counts the person's turns), and the
-    // last turn that ended with the model's question to the person.
-    private readonly Dictionary<string, int> _channelsRefused = new(StringComparer.Ordinal);
+    // A channel a message was refused by, with the last turn it was refused in (_turns counts the person's turns) and
+    // whether that call asked the person's «sí» before it went, and the last turn that ended with the model's question.
+    private readonly Dictionary<string, (int Turn, bool Confirmed)> _channelsRefused = new(StringComparer.Ordinal);
     private int _turns;
     private int _asked = -1;
 
@@ -111,16 +111,17 @@ internal sealed class NetworkEgress
             && Text(arguments["channel"]) is { } channel
             && !Joined(_previous + " " + _latest).Contains(Joined(channel), StringComparison.Ordinal))
         {
-            // A message that reaches a person (the catalog's external_communication) asks their «sí» before it goes, even
-            // in Bypass (RiskPolicy); a draft is written in their client unasked.
+            // A message that reaches a person (the catalog's external_communication: message.send, which RiskPolicy asks
+            // about even in Bypass) waits for their «sí» before it goes; a draft is written in their client unasked.
             bool confirmed = ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
                 && descriptor?.Risk == OperationRisks.ExternalCommunication;
 
             // By the channel alone: the model may word the recipient otherwise when it calls again.
             string refused = Joined(channel);
-            if (_channelsRefused.TryGetValue(refused, out int refusedIn))
+            if (_channelsRefused.TryGetValue(refused, out (int Turn, bool Confirmed) last))
             {
-                if (refusedIn == _turns && confirmed)
+                int refusedIn = last.Turn;
+                if (refusedIn == _turns && confirmed && last.Confirmed)
                 {
                     // Called again in the turn it was refused in, for a channel the person named in other words (one
                     // the ear wrote otherwise): their «sí» to the message is the check.
@@ -135,7 +136,7 @@ internal sealed class NetworkEgress
                 }
             }
 
-            _channelsRefused[refused] = _turns;
+            _channelsRefused[refused] = (_turns, confirmed);
             return ("channel_not_said", $"nothing ran: the person did not name {channel} now nor just before; if they "
                 + "spoke to someone there, answer them in words; if they want a message sent, ask them by which channel"
                 + (confirmed ? "; if they named this channel in other words, call it again exactly as before: they are "
