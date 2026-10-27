@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from .answer_check import check as check_answer
+from .arithmetic import evaluate
 from .doubt import read as read_doubt
 from .llm_server import LlmServer
 from .protocol import whole_code_points
@@ -65,8 +66,8 @@ SYSTEM = (
     "valores.\n"
     "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra herramienta "
     "ni lo conviertas en una pregunta.\n"
-    "5. Charla, cuentas, traducciones y lo que sabes con certeza respóndelo tú. Lo que cambia con el tiempo o no sabes, "
-    "búscalo con web_search. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
+    "5. Charla, traducciones y lo que sabes con certeza respóndelo tú; las cuentas, con calculate. Lo que cambia con "
+    "el tiempo o no sabes, búscalo con web_search. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
     "con memory_recall.\n"
     "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («sincuenta» es 50).\n"
     "7. Si la persona te pide que pares, te calles o esperes, no hagas nada más: responde con una palabra.\n"
@@ -76,7 +77,8 @@ SYSTEM = (
     "input_visible_controls, actúa con input_visible_click (por la etiqueta que viste), input_text_type o "
     "input_key_press, y vuelve a mirarla para comprobar el cambio antes de seguir o de contarlo.\n"
     "10. Los identificadores (windowId, ids de notas, tareas o redes) salen del resultado de la herramienta que los "
-    "lista; nunca los inventes ni uses un número de otro campo."
+    "lista; nunca los inventes ni uses un número de otro campo.\n"
+    "11. Si te preguntan qué sabes o puedes hacer, nombra sólo lo que hacen tus herramientas, nada que ellas no hagan."
 )
 
 # The heartbeat reads the same rules without the answer to «¿ya lo hiciste?», which only a person asks: with it, the
@@ -87,7 +89,12 @@ _ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo o cómo está algo del PC
                   "conversación: sin una herramienta que lo hiciera, no lo hiciste, y sin una que lo mirara, no lo "
                   "sabes: míralo con su herramienta antes de responder.")
 assert _ASKED_IF_DONE in SYSTEM
-BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "")
+# Feria 2026-10-27: asked what it can do, it answered five ways and named things no tool does (editing photos). Only a
+# person asks that, so the heartbeat reads none of it; the person's text names the catalog's groups (CAN_DO_AREAS).
+_CAN_DO = SYSTEM[SYSTEM.index("\n11. "):]
+BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "").replace(_CAN_DO, "")
+# The groups of the App's panel «Qué puedo hacer» (operation-labels.v1.json), each tool's «group» in catalog.configure.
+CAN_DO_AREAS = " Por áreas: {areas}."
 
 # The heartbeat decides in two moves, both the model's: first it says in JSON what is happening and whether one of the
 # reasons applies (grammar-constrained; measured on the open scenes 2026-10-15: a silence token was chosen in 40 of 40
@@ -576,12 +583,20 @@ SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder 
 # a sentence in rule 5 alone did not hold past a few answers from memory in a row. The question with one number, a year,
 # or a curiosity asked for, answered in words with nothing looked at, is decided once more with this note; the model still
 # chooses.
-DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto (de un año, o una curiosidad), y esos "
-              "datos de memoria se confunden. Búscalo con web_search y responde con lo que encuentres.]")
+DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto (de un año, una curiosidad o algo con "
+              "nombre propio), y esos datos de memoria se confunden. Búscalo con web_search y responde con lo que "
+              "encuentres.]")
 _YEAR_ALONE = re.compile(r"^\D*(?<!\d)(?:1[5-9]|20)\d\d(?!\d)\D*$")
 # A curiosity asked for (feria 2026-10-27, «cuéntame un dato curioso…» from memory: «el estribo, en el pie»).
 _CURIOUS = re.compile(r"\b(?:datos? curios[oa]s?|curiosidad(?:es)? (?:de|del|sobre|acerca)|algo curioso|fun facts?)\b")
 _ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|donde|como|who|what|which|when|how|where)\b")
+# Aid «named_fact» (feria 2026-10-27): what a local brand is, answered in words from memory as another kind of
+# product, with no doubt to read (p_call 0.05). Words that repeat a name the person wrote with a capital, past the start
+# of a sentence, say something of a thing with a name of its own: a form, not what was asked. System One judges then,
+# between those words and web_search, what the person asked for; only its web_search is looked up (_look_up_first).
+_SENTENCES = re.compile(r"[.!?¿¡:;\n]+")
+_WORDS = re.compile(r"[^\W\d_][\w'&-]*")
+_TOLD = re.compile(r"[^.!?]+[.!?]*")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
                                                           "set; it was not made"})
@@ -1062,6 +1077,27 @@ ASK_USER = {
     },
 }
 
+# Feria 2026-10-27: sums done from memory went wrong (12 for two plus two, a digit misheard) and an 18-digit square root
+# went to the Calculator, which takes none. The model writes the expression it understood; the mind computes it
+# (arithmetic.evaluate, no App call) and its value, or why there is none, is the call's result.
+CALCULATE = {
+    "type": "function",
+    "function": {
+        "name": "calculate",
+        "description": (
+            "Compute arithmetic exactly, to answer the person yourself: a sum, a product, a division, a percentage, a "
+            "power or a root. Write the expression you understood with digits and symbols only: + - * / ^ ( ), "
+            "sqrt() and cbrt(), % as a hundredth (15% of 200 is 15% * 200), decimals with a point and no thousands "
+            "separators. Do not use when: they ask to do it in the Calculator app "
+            "(calculator_expression_evaluate)."
+        ),
+        "parameters": {"type": "object", "properties": {"expression": {"type": "string"}},
+                       "required": ["expression"]},
+    },
+}
+CALCULATED_FIRST = json.dumps({"status": "not_run", "reason": "written before the calculation's value; call it again "
+                                                              "with that value if it is still needed"})
+
 
 # What the model sees of an argument schema: meaning only. Validation-only keywords stay with the kernel, which
 # validates the exact schema anyway; contract constants (a const or a one-value enum) are not the model's to write and
@@ -1165,6 +1201,7 @@ class Mind:
         self._judged: dict[str, Any] | None = None
         self._unread: list[dict[str, str]] = []  # the last decision's rivals whose names could not be read (P4)
         self.tools: list[dict[str, Any]] = []
+        self.system = SYSTEM  # the person's system text: with the last catalog's groups (CAN_DO_AREAS)
         self.names: list[str] = []  # the installed applications and games of the last catalog.configure
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
@@ -1269,7 +1306,7 @@ class Mind:
         # The same names, for the ear's hotwords (voice.hear_names): what the model is shown is what it may hear.
         self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                                     if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM], {}, {}, {}
+        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}
         # Auditoría de la mente (w8): the constants of this catalog only; one a tool had in an earlier catalog was still
         # added to its calls.
         constants_of: dict[str, dict[str, Any]] = {}
@@ -1307,6 +1344,8 @@ class Mind:
             risk[wire] = str(cap.get("risk") or "")
             effects[wire] = [str(e) for e in cap.get("effects") or []]
         self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
+        areas = list(dict.fromkeys(str(cap["group"]) for cap in capabilities if cap.get("group")))
+        self.system = SYSTEM + CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else SYSTEM
         self.constants = constants_of
         if aids:
             # A session's aid in the tools themselves, once: its own trace row, as the aids of a turn.
@@ -1362,7 +1401,7 @@ class Mind:
 
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
-        return BEAT_SYSTEM if beat else SYSTEM
+        return BEAT_SYSTEM if beat else self.system
 
     @staticmethod
     def _history(conv: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -2169,7 +2208,16 @@ class Mind:
         if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
                 and not turn.get("dated") and not turn.get("receipts") and _aid_on("dated_search")
                 and self._dated(turn["text"])):
+            turn["dated"] = True
+            self._log("turn.dated", started, None)
             return self._look_up_first(request_id, stage, turn, body, reply, started)
+        if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
+                and not turn.get("named") and not turn.get("receipts") and _aid_on("named_fact")
+                and self.system_one is not None and self.system_one.ready
+                and self._unkept(self._names_said(turn["text"], content))):
+            looked = self._named_fact(request_id, stage, turn, body, reply, started)
+            if looked is not None:
+                return looked
         if (content and not turn.get("beat") and not turn.get("said_again")
                 and not any(r.get("completed") for r in turn.get("receipts") or [])
                 and _aid_on("say_once") and self._said_last(conv, content)):
@@ -2198,14 +2246,61 @@ class Mind:
         return ((bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(folded))))
                 or bool(_CURIOUS.search(folded)))
 
+    @classmethod
+    def _names_said(cls, text: str, content: str) -> set[str]:
+        """The person's words, folded, that the answer says in a sentence that is not a question (a question tells no
+        fact) and either of them wrote as a name: with a capital past the start of a sentence (aid «named_fact»). PC-L
+        review 2026-10-27: the voice may come in lowercase, and the model still writes a name with its capital."""
+        told = " ".join(sentence for sentence in _TOLD.findall(content) if not sentence.rstrip().endswith("?"))
+        said, said_names = cls._words_and_names(text)
+        words, names = cls._words_and_names(told)
+        return (said_names | names) & said & words
+
+    def _unkept(self, names: set[str]) -> bool:
+        """Whether there are names and none is in what a memory call returned in this conversation (privacy review
+        2026-10-27: a contact recalled in an earlier turn is the person's, never a web query)."""
+        kept = {c["id"] for m in self.conversation for c in m.get("tool_calls") or []
+                if self.wire_to_op.get(c["function"]["name"], "").startswith("memory.")}
+        return bool(names) and not any(
+            names & self._words_and_names(str(m.get("content") or ""))[0]
+            for m in self.conversation if m.get("role") == "tool" and m.get("tool_call_id") in kept)
+
+    @staticmethod
+    def _words_and_names(text: str) -> tuple[set[str], set[str]]:
+        """The words of a text, folded, and those written as a name: with a capital past the start of a sentence."""
+        words: set[str] = set()
+        names: set[str] = set()
+        for sentence in _SENTENCES.split(text):
+            found = _WORDS.findall(sentence)
+            words.update(_fold(word) for word in found)
+            names.update(_fold(word) for word in found[1:] if word[0].isupper())
+        return words, names
+
+    def _named_fact(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
+                    reply: dict | None, started: float) -> dict[str, Any] | None:
+        """Aid «named_fact»: System One judges between the words and web_search; its web_search is looked up as a
+        dated question is, and None leaves the words as they are."""
+        turn["named"] = True
+        if not any(t["function"]["name"] == "web_search" for t in self.tools):
+            return None
+        # PC-L review 2026-10-27 (privacy): who or what the person keeps in memory (a contact) is an option of its own,
+        # never looked up on the web.
+        options = {t["function"]["name"]: short(t["function"]["description"]) for t in self.tools
+                   if t["function"]["name"] in ("web_search", "memory_recall")}
+        options[ANSWER] = OPTION_TEXT[ANSWER]
+        judged = self.system_one.choose(turn["text"], self._said(), options)  # type: ignore[union-attr]
+        self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
+        self._log("turn.named", started, None)
+        if not judged or judged["choice"] != "web_search":
+            return None
+        return self._look_up_first(request_id, stage, turn, body, reply, started)
+
     def _look_up_first(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
                        reply: dict | None, started: float) -> dict[str, Any]:
         """Aid «dated_search» (DATED_NOTE): the words answered from memory are not said. The model writes the
         web_search itself (LlmServer.fill_call, as System One's «corrige»); a fill that fails or writes no query decides
         once more with the note, which does not stay in the conversation (the soak of 2026-10-27: after the note alone
         «¿Quieres que busque…?» 3 of 8)."""
-        turn["dated"] = True
-        self._log("turn.dated", started, None)
         conv = turn["conv"]
         try:
             filled = self.server.fill_call(body, "web_search")
@@ -2376,7 +2471,8 @@ class Mind:
         runs; the answer to layer 2's own question is never turned into another one. Asking is never held: it already
         puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
         only a yes (PLAIN_YES), whatever System One's own thresholds."""
-        if not self._doubted(stage, turn, final) or call["wire"] == ASK_USER["function"]["name"]:
+        if not self._doubted(stage, turn, final) or call["wire"] in (ASK_USER["function"]["name"],
+                                                                     CALCULATE["function"]["name"]):
             return None
         # Aid «dated_search» (soak of the fair, 2026-10-27): the web_search the model chose for a dated question or a
         # curiosity asked for, under the threshold, became «¿Quieres que busque…?» 6 times: it is the call that aid asks
@@ -2629,6 +2725,29 @@ class Mind:
                       kind="confirmation_ended" if ended else "nothing_pending",
                       operation=ended["operation"] if ended else None, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=not ended)
+        elif call is not None and call["wire"] == CALCULATE["function"]["name"]:
+            # Computed here, never handed to the App; what the model wrote beside it waits for the value. Code review
+            # 2026-10-27: the App's step budget never sees these calls, so the same expression again closes the turn's
+            # calls, as a repeat the App runs does (same_call_closes).
+            computed = turn.setdefault("calculated", [])
+            if _call_key(call["arguments"]) in computed and _aid_on("same_call_closes"):
+                return self._close_repeat(request_id, turn, call, reply, stage, started, "same_call_closed",
+                                          SAME_CALL_NOT_RUN, SAME_CALL_REFUSED)
+            computed.append(_call_key(call["arguments"]))
+            kind = "calculated"
+            try:
+                told = json.dumps({"status": "completed",
+                                   "value": evaluate(str(call["arguments"].get("expression") or ""))},
+                                  ensure_ascii=False)
+            except ValueError as error:
+                told, kind = json.dumps({"status": "failed", "error": str(error)}), "calculation_failed"
+            for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
+                turn["conv"].append({"role": "tool", "tool_call_id": call_id,
+                                     "content": told if call_id == call["id"] else CALCULATED_FIRST})
+            turn["queue"], turn["awaiting"] = [], None
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind=kind,
+                      operation=None, arguments=None if turn.get("private") else call["arguments"], content=None)
+            return self._next(request_id, "turn.continue", turn)
         elif call is not None:
             name = (CONFIRM_OPERATION if call["wire"] == CONFIRM["function"]["name"]
                     else self.wire_to_op.get(call["wire"], call["wire"]))
