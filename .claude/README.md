@@ -51,6 +51,22 @@ del dueño literales. Diagnóstico: `/context-mode:ctx-doctor`.
 Quitar cualquiera: `claude plugin uninstall <plugin> --scope project`; context-mode deja además
 `~/.claude/context-mode/`, `~/.claude/hooks/context-mode-cache-heal.mjs` y su entrada en `~/.claude/settings.json`.
 
+## Dónde está instalado (2026-10-26)
+
+| Máquina | Sitio | Cómo |
+|---|---|---|
+| notebook | `D:\BAXYeval\wt\BAXY-Renew-arr-junto` (rama `nb-arr-junto`) | fusión de `nb-ecc`, versionado |
+| notebook | `D:\BAXYeval\wt\BAXY-Renew-ecc` (rama `nb-ecc`, también en `hub`) | origen de la configuración |
+| notebook | `D:\Perfil\Escritorio\ETC\Programacion\Baxy Renew\.claude` (carpeta de arranque de las sesiones, sin git) | copia de `.claude/` |
+| PC | `C:\Users\usuario\Desktop\ETC\Programacion\BAXY-Renew\.claude` (rama `baxy-renew` del dueño) | copia de `.claude/`; git la ignora, el checkout no cambia |
+
+En cada máquina: `csharp-ls` 0.28.0 (`dotnet tool`), `pyright`, `typescript-language-server` y `typescript`
+(`npm -g`), y los plugins con alcance de proyecto. context-mode además quedó activado a nivel de usuario.
+Una copia sin git se actualiza a mano, copiando `.claude/` desde `nb-ecc` (o desde `hub`).
+
+Lección: con dos hooks `SessionStart` que devuelven `hookSpecificOutput.additionalContext` (el de context-mode y
+el nuestro), sólo uno llegaba al modelo; `contexto.py` escribe texto plano y así llegan los dos.
+
 ## Revisado y descartado
 
 - **claude-mem**: memoria alojada en su nube por defecto. **Continuous-Claude v3**: PostgreSQL y sin cambios
