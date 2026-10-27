@@ -34,6 +34,20 @@ def test_the_call_reads_a_wider_part_unless_the_model_asked_a_size():
     assert web_focus.widen({"url": "x", "maximumCharacters": 3000}) == {"url": "x", "maximumCharacters": 3000}
 
 
+def test_a_wikipedia_article_is_read_as_its_classic_page():
+    # feria 2026-10-27: the Parsoid page's opening came as wikitext; useparsoid=0 serves the classic HTML
+    def url(address: str) -> str:
+        return web_focus.widen({"url": address, "maximumCharacters": 3000})["url"]
+    assert url("https://es.wikipedia.org/wiki/Copa_Libertadores_2023") == (
+        "https://es.wikipedia.org/wiki/Copa_Libertadores_2023?useparsoid=0")
+    assert url("https://en.m.wikipedia.org/wiki/100_metres?oldid=1") == (
+        "https://en.m.wikipedia.org/wiki/100_metres?oldid=1&useparsoid=0")
+    for same in ("https://es.wikipedia.org/wiki/X?useparsoid=1", "https://es.wikipedia.org/wiki/X#Final",
+                 "https://es.wikipedia.org/w/index.php?search=x", "https://www.bbc.com/mundo/deportes-57793379",
+                 "https://notwikipedia.org/wiki/X"):
+        assert url(same) == same
+
+
 def test_the_paragraph_that_answers_is_shown_with_the_lead_under_the_cap():
     receipt = _receipt(HISTORY)
     shown = json.loads(web_focus.focus(receipt, ["busca en internet en qué año se inauguró el Metro de Santiago"],

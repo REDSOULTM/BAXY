@@ -44,10 +44,21 @@ _BOILER = {"ir al contenido", "saltar al contenido", "ver galeria", "editar", "[
 
 
 def widen(arguments: dict[str, Any]) -> dict[str, Any]:
-    """The arguments sent to the App: a web.fetch without a size reads WINDOW characters."""
+    """The arguments sent to the App: a web.fetch without a size reads WINDOW characters, and an article of Wikipedia
+    is read as its classic page."""
+    url = arguments.get("url")
+    if isinstance(url, str) and _PARSOID_READ.match(url.strip()) and "useparsoid=" not in url:
+        # Feria 2026-10-27: Wikipedia serves its articles as Parsoid HTML, whose data-mw attributes hold «<» and «>»
+        # inside their quotes; the App's page text ends each tag at the first «>» and the article's opening came as
+        # wikitext (3 of 3 articles «no pude leer el texto de Wikipedia»). useparsoid=0 serves the classic HTML.
+        url = url.strip()
+        arguments = {**arguments, "url": url + ("&" if "?" in url else "?") + "useparsoid=0"}
     if "maximumCharacters" not in arguments:
         return {**arguments, "maximumCharacters": WINDOW}
     return arguments
+
+
+_PARSOID_READ = re.compile(r"^(?:https?://)?[a-z-]+(?:\.m)?\.wikipedia\.org/wiki/[^#]+$", re.I)
 
 
 def _fold(text: str) -> str:
