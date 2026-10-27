@@ -9,8 +9,8 @@ namespace Baxy.App;
 /// shell's trace exists only there); it took the Windows event log to learn the App itself had been opened again. Each
 /// mind that ends or starts anew leaves one line in the profile (<c>&lt;datos&gt;/diagnostics/mind_restarts.v1.jsonl</c>,
 /// 256 KB and one archive): when, the classified cause (<see cref="MindLoss.Cause"/>, the App's start or exit included),
-/// the type of the request that failed, the mind's exit code and how long the mind (or the App) had run. Never what the
-/// person said nor a request's arguments. An App that ended without its exit line ended without exiting.
+/// the type of the request that failed, the exit code (the mind's; the App's on its exit line) and how long the mind (or
+/// the App) had run. Never what the person said nor a request's arguments. An App that ended without its exit line ended without exiting.
 /// </summary>
 internal static class MindRestarts
 {
