@@ -228,6 +228,64 @@ public sealed class R24FaithfulPlaybackTests
         });
     }
 
+    // Uso real 2026-10-26 («Pon una canción de Queen»): the script told the search played (the pressed control read as
+    // pause) while the now-playing line still showed the track loaded before the press, and BAXY told «Reproduje La
+    // Chica de Humo de Emmanuel, que salió en la búsqueda de Queen». Neither changed nor of the search: not confirmed,
+    // effect observed, and what plays travels with the failure.
+    [TestCase("pressed_control_reads_pause")]
+    [TestCase("resumed_track_shares_word_prefix_with_pressed_result")]
+    public async Task ASearchThatLeftTheLoadedTrackPlayingIsNotConfirmed(string evidence)
+    {
+        var adapter = new SpotifyDesktopAdapter(new Runner(
+            "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Emmanuel - La Chica de Humo\","
+            + "\"selectedControl\":\"Reproducir\",\"beforeNowPlaying\":\"la chica de humo de emmanuel\","
+            + "\"observedNowPlaying\":\"la chica de humo de emmanuel\",\"playbackEvidence\":\"" + evidence + "\","
+            + "\"processId\":42}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query", Json("""{"provider":"spotify","query":"Queen"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_query_result_not_confirmed"));
+            Assert.That(receipt.EffectObserved, Is.True);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("observedNowPlaying").GetString(),
+                Is.EqualTo("la chica de humo de emmanuel"));
+            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("Emmanuel - La Chica de Humo"));
+        });
+    }
+
+    // The same unchanged line is still the search playing when it holds a word of it, accents and case aside (heldout
+    // t17: a client restored paused on the very track the chosen result starts with); a changed line is verified as
+    // before, with queryMatched:false when it holds none.
+    [TestCase("bohemian rhapsody de queen", "bohemian rhapsody de queen", "QUEEN", true, false)]
+    [TestCase("cancion del mariachi de los lobos", "cancion del mariachi de los lobos", "Canción del Mariachi", true, false)]
+    [TestCase("la chica de humo de emmanuel", "la chica de humo de emmanuel", "Queen", false, false)]
+    [TestCase("la chica de humo de emmanuel", "around the world de red hot chili peppers", "Queen", true, true)]
+    [TestCase("", "la chica de humo de emmanuel", "Queen", true, true)]
+    public async Task ASearchIsVerifiedOnlyWhenWhatPlaysChangedOrHoldsAWordOfIt(
+        string before, string observed, string query, bool verified, bool unmatched)
+    {
+        var adapter = new SpotifyDesktopAdapter(new Runner(
+            "{\"ok\":true,\"effectObserved\":true,\"error\":null,\"title\":\"Spotify Premium\","
+            + "\"selectedControl\":\"Reproducir\",\"beforeNowPlaying\":\"" + before + "\","
+            + "\"observedNowPlaying\":\"" + observed + "\",\"playbackEvidence\":\"pressed_control_reads_pause\","
+            + "\"processId\":42}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.query", Json("{\"provider\":\"spotify\",\"query\":\"" + query + "\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.EqualTo(verified));
+            Assert.That(receipt.ErrorCode, Is.EqualTo(verified ? null : "spotify_query_result_not_confirmed"));
+            if (verified)
+                Assert.That(receipt.Result!.Value.TryGetProperty("queryMatched", out _), Is.EqualTo(unmatched));
+        });
+    }
+
     private sealed class Runner(string output) : IExternalProcessRunner
     {
         public List<IReadOnlyList<string>> Calls { get; } = [];
