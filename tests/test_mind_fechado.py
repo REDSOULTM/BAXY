@@ -60,3 +60,13 @@ def test_a_curiosity_asked_for_is_looked_up_too(tmp_path: Path, monkeypatch) -> 
     assert mind.decide(1, "Dime un dato curioso del cuerpo humano.")["kind"] == "action"
     assert mind.decide(2, "Cuéntame un chiste corto.")["reply"] == "Un chiste."
     assert mind.decide(3, "Curiosamente, hola.")["reply"] == "Hola." and len(server.bodies) == 4
+
+
+def test_curiosity_named_without_asking_for_one_is_not_held(tmp_path: Path, monkeypatch) -> None:
+    # PC review 2026-10-27: «Por curiosidad, ¿qué hora es?» names curiosity and asks for no curious fact
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_say("Son las 10."), _say("Bien."), _call("web_search", {"query": "pulpos"})])
+    assert mind.decide(1, "Por curiosidad, ¿qué hora es?")["reply"] == "Son las 10."
+    assert mind.decide(2, "Tengo curiosidad: ¿cómo estás hoy?")["reply"] == "Bien."
+    mind, server = _mind(tmp_path, [_say("Tienen tres corazones."), _call("web_search", {"query": "pulpos"})])
+    assert mind.decide(3, "Cuéntame una curiosidad sobre los pulpos.")["kind"] == "action"

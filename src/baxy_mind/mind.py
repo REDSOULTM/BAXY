@@ -580,7 +580,7 @@ DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto 
               "datos de memoria se confunden. Búscalo con web_search y responde con lo que encuentres.]")
 _YEAR_ALONE = re.compile(r"^\D*(?<!\d)(?:1[5-9]|20)\d\d(?!\d)\D*$")
 # A curiosity asked for (feria 2026-10-27, «cuéntame un dato curioso…» from memory: «el estribo, en el pie»).
-_CURIOUS = re.compile(r"\b(?:datos? curios[oa]s?|curiosidad(?:es)?|fun facts?)\b")
+_CURIOUS = re.compile(r"\b(?:datos? curios[oa]s?|curiosidad(?:es)? (?:de|del|sobre|acerca)|algo curioso|fun facts?)\b")
 _ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|donde|como|who|what|which|when|how|where)\b")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
