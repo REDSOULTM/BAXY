@@ -1004,7 +1004,7 @@ public static class ProductCatalog
                 ["index", "points", "window"]),
             OperationRisks.LowReversible,
             "input.pointer.drag.win32.body.surface.postread.v1",
-            "Arrastra con el botón izquierdo pulsado por los puntos dados, relativos (0 a 1) al cuerpo de la última mirada de la ventana nombrada, con la ventana al frente en una ráfaga tras la pausa de la persona; suelta siempre el botón y verifica que la imagen dentro del cuerpo cambió.",
+            "Arrastra con el botón izquierdo pulsado por los puntos dados, relativos (0 a 1) al cuerpo de la última mirada de la ventana nombrada, que trae delante en una ráfaga tras la pausa de la persona; suelta siempre el botón y verifica que la imagen dentro del cuerpo cambió.",
             effects: [WindowInput()]),
         // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): desplaza la ventana
         // en primer plano por pasos de rueda y sólo cuenta el desplazamiento si la
