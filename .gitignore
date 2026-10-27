@@ -35,8 +35,16 @@ artifacts/_trazas_locales/
 # Comprimido de una carpeta que ya está en el árbol
 documentacion/documentacion.rar
 
-# Estado local del harness
-.claude/
+# Estado local del harness. La configuración compartida de Claude Code (agentes, skills,
+# comandos, reglas, hooks y settings.json) sí se versiona; ver .claude/README.md.
+.claude/*
+!.claude/README.md
+!.claude/settings.json
+!.claude/agents/
+!.claude/commands/
+!.claude/hooks/
+!.claude/rules/
+!.claude/skills/
 
 # Encoder experimental 9-tools (reproducible: scripts/train_encoder_9tools.py, determinista)
 data/router_encoder_ft9/
