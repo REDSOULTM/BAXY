@@ -21,8 +21,8 @@ public sealed class SilenceNoticeTests
     [Test]
     public void AnAnswerPublishedButNotYetHeardGetsNoNoticeNow()
     {
-        // Al máximo 9.2b said one here; feria 2026-10-27: no call runs once the line is published, and the turn is
-        // about to be heard.
+        // Al máximo 9.2b said one here; feria 2026-10-27: no call runs once the line is published, and its line is
+        // heard next.
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();

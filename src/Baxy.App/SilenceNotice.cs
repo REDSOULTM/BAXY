@@ -8,7 +8,7 @@ namespace Baxy.App;
 /// is doing: it is asked only while a call of the turn runs in the App (<see cref="Running"/>) and said only if it still
 /// runs, the mind never writes the same phrase twice in a turn, and with no phrase nothing is said and the next expiry
 /// asks again. So a turn whose line is published and not yet heard (al máximo 9.2b, below) or whose question for the
-/// person's yes is on its way gets no notice now: no call runs then, and the owner wants none when the turn is about to
+/// person's yes is on its way gets no notice now: no call runs then, and the owner wants none right before the turn can
 /// be heard (2026-10-27: «no siempre»).
 /// Until 2026-10-27 it was one phrase the mind wrote when it warmed up (the <c>notice</c> of its <c>catalog.ready</c>),
 /// and the owner heard the same «Estoy procesando…» in every turn. The notice is not the turn's answer: it is only said
