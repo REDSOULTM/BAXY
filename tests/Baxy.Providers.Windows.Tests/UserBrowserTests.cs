@@ -777,6 +777,78 @@ public sealed class UserBrowserTests
         });
     }
 
+    // Opera and Opera GX are two browsers: a session of one is never the other's.
+    [Test]
+    public void OperaAndOperaGxOwnOnlyTheirOwnMediaSessions()
+    {
+        var opera = new UserBrowserIdentity(
+            "OperaStable", "opera", "Opera", @"C:\Users\owner\AppData\Local\Programs\Opera\launcher.exe");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperaGx.OwnsMediaSession("OperaSoftware.OperaGXWebBrowser.1732473326"), Is.True);
+            Assert.That(OperaGx.OwnsMediaSession("Opera GXStable"), Is.True);
+            Assert.That(OperaGx.OwnsMediaSession("OperaSoftware.OperaWebBrowser.1732473326"), Is.False);
+            Assert.That(opera.OwnsMediaSession("OperaSoftware.OperaWebBrowser.1732473326"), Is.True);
+            Assert.That(opera.OwnsMediaSession("OperaSoftware.OperaGXWebBrowser.1732473326"), Is.False);
+            Assert.That(opera.ProcessName, Is.EqualTo("opera"), "the launcher draws no window");
+        });
+    }
+
+    // Review R6: a video asked for in Opera GX is not verified by the plain Opera's new session of the same title.
+    [Test]
+    public async Task AYouTubeVideoInNamedOperaGxIsNotVerifiedByThePlainOperasSession()
+    {
+        var platform = new FakePlatform(Chrome) { Registered = { ["opera_gx"] = OperaGxLauncher } };
+        platform.SessionsAfterOpen =
+        [
+            [],
+            [new("OperaSoftware.OperaWebBrowser.1735227809", "Never Gonna Give You Up", "Rick Astley", "playing")],
+        ];
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up","browser":"opera_gx"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.PlaybackUnconfirmed));
+            Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("Opera GX"));
+            Assert.That(platform.OpenedWith.Select(static opened => opened.Executable),
+                Is.EqualTo(new[] { OperaGxLauncher.Executable }));
+        });
+    }
+
+    // Review R6: Opera registered by its launcher.exe and already running is not taken for a browser this request
+    // launched, so a new session of it with another title (another tab) does not verify the video asked for.
+    [Test]
+    public async Task AYouTubeVideoInARunningOperaRegisteredByItsLauncherNeedsItsTitle()
+    {
+        var platform = new FakePlatform(Chrome) { Registered = { ["opera_gx"] = OperaGxLauncher } };
+        platform.OtherWindows["opera"] = [new(31, "Inicio - Opera GX")];
+        platform.SessionsAfterOpen =
+        [
+            [],
+            [new("OperaSoftware.OperaGXWebBrowser.1735227809", "Lo-fi para estudiar", string.Empty, "playing")],
+        ];
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up","browser":"opera_gx"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.PlaybackUnconfirmed));
+        });
+    }
+
+    private static readonly UserBrowserIdentity OperaGxLauncher = new(
+        "Opera GXStable", "opera_gx", "Opera GX", @"C:\Users\owner\AppData\Local\Programs\Opera GX\launcher.exe");
+
     // A named browser that could not be launched is not replaced by the product's own browser either.
     [Test]
     public async Task AYouTubeVideoInANamedBrowserThatDoesNotStartFallsToNoOtherBrowser()
