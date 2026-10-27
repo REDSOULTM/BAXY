@@ -563,7 +563,7 @@ public sealed class UserBrowserTests
             Assert.That(platform.Opened, Is.EqualTo(new[] { "https://youtube.com/" }));
             Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("Opera GX"));
             Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://www.youtube.com/"));
-            Assert.That(context.UserBrowserHoldsThePage, Is.True);
+            Assert.That(context.UserBrowserHoldingThePage?.DisplayName, Is.EqualTo("Opera GX"));
             Assert.That(Directory.Exists(root), Is.False, "no private profile was created");
         });
     }

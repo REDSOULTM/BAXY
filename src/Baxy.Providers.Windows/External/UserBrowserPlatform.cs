@@ -171,9 +171,13 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         AllowForeground(browser);
         // Feria 2026-10-27 (caso 19): the address as the only argument of the browser's own executable, as its
         // registered open command passes a link: the person's profile, a new tab in the window of it already running.
-        var start = new ProcessStartInfo(browser.Executable) { UseShellExecute = false };
-        start.ArgumentList.Add(address.AbsoluteUri);
-        using Process? launched = Process.Start(start);
+        // Started outside BAXY's job and inheriting none of the core's handles (its stdio pipes), as the files and the
+        // CDP browser are (InvokerLaunch, review of M5): a browser started here lives for hours.
+        if (Applications.InvokerLaunch.StartOutsideBaxy(new Applications.InvokerLaunch.LaunchPlan(
+                browser.Executable,
+                "\"" + address.AbsoluteUri + "\"",
+                Path.GetDirectoryName(browser.Executable) ?? Environment.SystemDirectory)) <= 0)
+            throw new InvalidOperationException("The named browser could not be started.");
     }
 
     private static void RequireWebAddress(Uri address)

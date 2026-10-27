@@ -1511,11 +1511,9 @@ internal sealed class CdpBrowserSessionContext
     /// <summary>
     /// The last page went to the person's own browser (M122): no CDP session is
     /// the active one, and the tab steps that need CDP say so instead of acting
-    /// on a product browser the person is not looking at.
+    /// on a product browser the person is not looking at. Caso 19: which of the person's browsers holds that page (a
+    /// named one, not always the default).
     /// </summary>
-    internal bool UserBrowserHoldsThePage => UserBrowserHoldingThePage is not null;
-
-    /// <summary>Caso 19: which of the person's browsers holds that page (a named one, not always the default).</summary>
     internal UserBrowserIdentity? UserBrowserHoldingThePage =>
         Active is null ? Volatile.Read(ref _userBrowser) : null;
 
