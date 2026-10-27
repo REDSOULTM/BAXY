@@ -613,22 +613,24 @@ _CLOSE_SAID = re.compile(r"\b(?:cierr\w*|cerr\w*|clos\w*|sal|salir|sali\w*|quit\
 # Aid «unopened_app» (feria 2026-10-27, case 13, «escribe en el bloc de notas hola quién eres» with Notepad not open; a
 # live test the same day): the model typed with no window and the text went to whatever window was in front, BAXY's at
 # the fair, a window of the person's own in the live test (its receipt said sentTo that window, completed). A typing or a
-# key with no window, in a turn whose words name an installed application (catalog.configure's, self.names) and where no
-# call opened, focused or resolved one of them, is not handed to the App: its result says so, as data, and the model
-# decides again with its tools; the same again in that turn ends its calls, as _close_repeat does.
+# key with no window and no field, in a turn whose words name an installed application (catalog.configure's, self.names)
+# that no completed call of the turn opened, focused, resolved or acted on, is not handed to the App: its result says so,
+# as data, and the model decides again with its tools. Once per turn: a name of the catalog may be a plain word of what
+# was said («el cursor», «un correo»), so the model's next typing or key runs as it is.
 WRITES_TO_FRONT = frozenset({"input_text_type", "input_key_press"})
-OPENS_WINDOW = frozenset({"app_open", "window_focus", "window_resolve"})
-WINDOW_ARGUMENTS = ("window", "windowId")
+OPENS_WINDOW = frozenset({"app_open", "window_focus", "window_resolve"})  # and any completed call that is not a read
+TARGET_ARGUMENTS = ("window", "windowId", "index")  # a window, or the field of the last look: not the window in front
 UNOPENED_REFUSED = "no se ejecutó: la ventana de la aplicación nombrada no se había abierto ni enfocado en este turno"
 
 
 def unopened_not_run(applications: list[str]) -> str:
-    """The result of a typing or a key refused by «unopened_app»: why, and the applications the person named."""
-    return json.dumps({"status": "not_run", "reason": "the person named an application, and no call of this turn opened "
-                                                      "or focused its window: with no window this call would go to "
-                                                      "whatever window is in front, so it was not made. Open it first "
-                                                      "with app_open (or bring it to the front with window_focus), then "
-                                                      "write there",
+    """The result of a typing or a key held by «unopened_app»: why, and the applications the person's words name."""
+    return json.dumps({"status": "not_run", "reason": "the person's words name this application, and no call of this "
+                                                      "turn opened or focused its window: with no window this call goes "
+                                                      "to whatever window is in front, so it was not made. If the text "
+                                                      "is for that application, open it first with app_open (or bring "
+                                                      "it to the front with window_focus) and write there; if it is not "
+                                                      "where the text goes, make the call again",
                        "application": applications}, ensure_ascii=False)
 
 
@@ -2674,9 +2676,6 @@ class Mind:
             if refused:
                 return self._close_repeat(request_id, turn, call, reply, stage, started, *refused)
             unopened = self._unopened(turn, call)
-            if unopened and turn.get("unopened_told"):
-                return self._close_repeat(request_id, turn, call, reply, stage, started, "unopened_app_closed",
-                                          unopened_not_run(unopened), UNOPENED_REFUSED)
             if unopened:
                 return self._unopened_back(request_id, turn, call, reply, stage, started, unopened)
             turn["awaiting"] = call["id"]
@@ -2772,26 +2771,31 @@ class Mind:
 
     def _unopened(self, turn: dict[str, Any], call: dict[str, Any]) -> list[str]:
         """Aid «unopened_app»: the installed applications the person's words in this turn name, when this call types or
-        presses a key with no window and no call of the turn opened, focused or resolved any of them; empty, it runs. A
-        name that is also in the text to type is what is written, not where."""
+        presses a key with no window and no field, the turn has not told it yet, and no completed call of the turn
+        opened, focused or resolved any of them, or acted naming one; empty, it runs. A name that is in a text typed in
+        this turn is what is written, not where."""
         arguments = call["arguments"]
-        if (call["wire"] not in WRITES_TO_FRONT or turn.get("beat") or not _aid_on("unopened_app")
-                or any(arguments.get(key) not in (None, "") for key in WINDOW_ARGUMENTS)):
+        if (call["wire"] not in WRITES_TO_FRONT or turn.get("beat") or turn.get("unopened_told")
+                or not _aid_on("unopened_app") or any(arguments.get(key) not in (None, "") for key in TARGET_ARGUMENTS)):
             return []
+        receipts = turn.get("receipts") or []
         said = _words(str(turn.get("said") or turn.get("text") or ""))
-        typed = _words(" ".join(str(arguments.get(key) or "") for key in ("text", "replacing")))
+        typed = _words(" ".join(str(written.get(key) or "") for written in
+                                [arguments, *(r.get("arguments") or {} for r in receipts if r.get("tool") in WRITES_TO_FRONT)]
+                                for key in ("text", "replacing")))
         named = [name for name in dict.fromkeys(self.names)
                  if _words(name).strip() and _words(name) in said and _words(name) not in typed]
         if not named:
             return []
         reached = "".join(_words(json.dumps(r.get("arguments"), ensure_ascii=False) + " " + _as_read(r.get("observation")))
-                          for r in turn.get("receipts") or [] if r.get("tool") in OPENS_WINDOW and r.get("completed"))
+                          for r in receipts if r.get("completed") and r.get("tool") not in WRITES_TO_FRONT
+                          and (r.get("tool") in OPENS_WINDOW or not r.get("read")))
         return [] if any(_words(name) in reached for name in named) else named
 
     def _unopened_back(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
                        stage: str, started: float, applications: list[str]) -> dict[str, Any]:
-        """A typing or a key refused by «unopened_app» goes back to the model with why, and the calls queued behind it
-        (chosen on the same reading) do not run: the model decides again, with its tools, once per turn."""
+        """A typing or a key held by «unopened_app» goes back to the model with why, and the calls queued behind it
+        (chosen on the same reading) do not run: the model decides again, with its tools."""
         turn["unopened_told"] = True
         done = turn.setdefault("done", [])
         done.append(f"{call['wire']} → {UNOPENED_REFUSED}")

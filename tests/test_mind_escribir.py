@@ -57,16 +57,52 @@ def test_a_key_with_no_window_into_a_named_app_nobody_opened_is_not_pressed(tmp_
     assert _not_run(mind)[0]["application"] == ["Microsoft Word"]
 
 
-def test_the_same_call_refused_again_ends_the_turn_in_words(tmp_path: Path, monkeypatch) -> None:
+def test_it_is_told_once_and_the_models_next_typing_runs(tmp_path: Path, monkeypatch) -> None:
+    # A name of the catalog may be a plain word of what was said («el cursor»): told once, the model decides.
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    typing = _call("input_text_type", {"text": "hola"})
-    mind, server = _mind(tmp_path, [typing, typing, _say("No escribí nada: el Bloc de notas no estaba abierto.")])
+    key = _call("input_key_press", {"key": "ctrl_end"})
+    mind, _ = _mind(tmp_path, [key, key])
+    mind.names = [*APPS, "Cursor"]
+    step = mind.decide(1, "pon el cursor al final")
+    assert step["kind"] == "action" and step["operation"] == "input_key_press"
+    assert [body["application"] for body in _not_run(mind)] == [["Cursor"]]
+
+
+def test_a_key_after_typing_a_name_of_the_catalog_is_pressed(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "nos vemos en Spotify"}),
+                               _call("input_key_press", {"key": "enter"})])
     mind.names = list(APPS)
-    step = mind.decide(1, "escribe hola en el bloc de notas")
-    assert step["kind"] == "conversation" and step["reply"].startswith("No escribí")
-    assert server.bodies[-1]["tool_choice"] == "none"
-    assert [r["kind"] for r in _trace(mind) if r.get("kind", "").startswith("unopened_app")] == [
-        "unopened_app", "unopened_app_closed"]
+    assert mind.decide(1, "escribe nos vemos en Spotify y pulsa enter")["operation"] == "input_text_type"
+    assert mind.continue_turn(2, DONE)["operation"] == "input_key_press"
+    assert _not_run(mind) == []
+
+
+def test_a_completed_call_that_acted_naming_the_application_counts(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("file_open", {"name": "informe.docx", "application": "Microsoft Word"}),
+                               _call("input_text_type", {"text": "gracias"})])
+    mind.names = list(APPS)
+    assert mind.decide(1, "abre informe.docx con microsoft word y escribe gracias")["operation"] == "file_open"
+    assert mind.continue_turn(2, DONE)["operation"] == "input_text_type"
+
+
+def test_a_call_that_only_read_about_the_application_does_not_count(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("app_installed", {"appId": "Bloc de notas"}),
+                               _call("input_text_type", {"text": "hola"}),
+                               _call("app_open", {"appId": "Bloc de notas", "foreground": True})])
+    mind.names = list(APPS)
+    mind.risk = {"app_installed": "read_only"}
+    assert mind.decide(1, "escribe hola en el bloc de notas")["operation"] == "app_installed"
+    assert mind.continue_turn(2, DONE)["operation"] == "app_open"
+
+
+def test_a_field_of_the_last_look_is_left_as_it_is(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola", "index": 4})])
+    mind.names = list(APPS)
+    assert mind.decide(1, "escribe hola en el bloc de notas")["arguments"]["index"] == 4
 
 
 def test_typing_with_no_application_named_is_made_as_before(tmp_path: Path, monkeypatch) -> None:
