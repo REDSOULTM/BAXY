@@ -63,9 +63,47 @@ public sealed class TurnClosingTests
                 Result("failed", "verification_failed")), Is.False);
             Assert.That(closing.AfterCall(3, Soon, "app.open", "{\"appId\":\"terminal\"}",
                 Result("failed", "launch_failed")), Is.False);
-            // A call between two equal ones breaks the run: only consecutive repeats count.
+            // The first call again: its second appearance in the turn, not yet the third.
             Assert.That(closing.AfterCall(4, Soon, "app.open", "{\"appId\":\"cmd\"}",
                 Result("failed", "verification_failed")), Is.False);
+        });
+    }
+
+    // Feria 2026-10-27: a navigation and a new tab alternated 16 times in 55 s with no answer, up to the move cap; each
+    // call broke the other's run. The same call with the same result a third time in the turn closes it, in a row or not.
+    [Test]
+    public void TwoCallsThatAlternateCloseTheTurnAtTheThirdAppearance()
+    {
+        var closing = new TurnClosing();
+        const string page = "{\"url\":\"https://a.example/\"}";
+        const string tab = "{\"action\":\"new_tab\"}";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "browser.navigate", page, Result("completed")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "browser.control", tab, Result("completed")), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "browser.navigate", page, Result("completed")), Is.False);
+            Assert.That(closing.AfterCall(4, Soon, "browser.control", tab, Result("completed")), Is.False);
+            Assert.That(closing.AfterCall(5, Soon, "browser.navigate", page, Result("completed")), Is.True);
+        });
+    }
+
+    // E011 (base 0be0f9de9): two calculator_window_not_found, then app.open and the sum. Counting over the whole turn
+    // keeps it: the failure appeared twice, and the sum that completes is another result.
+    [Test]
+    public void TwoEqualFailuresThenAnotherCallAndTheSameCallCompletingKeepTheTurnOpen()
+    {
+        var closing = new TurnClosing();
+        const string sum = "{\"expression\":\"2+2\"}";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "calculator.expression.evaluate", sum,
+                Result("failed", "calculator_window_not_found")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "calculator.expression.evaluate", sum,
+                Result("failed", "calculator_window_not_found")), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "app.open", "{\"appId\":\"calculator\"}", Result("completed")),
+                Is.False);
+            Assert.That(closing.AfterCall(4, Soon, "calculator.expression.evaluate", sum, Result("completed")),
+                Is.False);
         });
     }
 
