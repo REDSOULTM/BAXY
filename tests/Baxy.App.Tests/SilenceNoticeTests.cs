@@ -12,23 +12,31 @@ public sealed class SilenceNoticeTests
 {
     private const string Phrase = "Dame un segundo.";
 
+    // The mind answers each question at once with the phrase.
+    private static readonly Func<CancellationToken, Task<string?>> Ask = _ => Task.FromResult<string?>(Phrase);
+
     [SetUp]
     public void NoContext() => SynchronizationContext.SetSynchronizationContext(null);
 
     [Test]
-    public void AnAnswerPublishedButNotYetHeardStillGetsTheNotice()
+    public void AnAnswerPublishedButNotYetHeardGetsNoNoticeNow()
     {
+        // Al máximo 9.2b said one here; feria 2026-10-27: no call runs once the line is published, and its line is
+        // heard next.
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
+        clock.Advance(TimeSpan.FromSeconds(1));
+        notice.Running(false);
 
-        clock.Advance(TimeSpan.FromSeconds(2.4));
+        clock.Advance(TimeSpan.FromSeconds(1.4));
         notice.Publish(static () => { });
         notice.Close(); // the turn ended with its line on screen; the voice still synthesizes it
         clock.Advance(TimeSpan.FromSeconds(0.1));
 
-        Assert.That(said, Is.EqualTo(new[] { Phrase }));
+        Assert.That(said, Is.Empty);
     }
 
     [Test]
@@ -37,7 +45,8 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         clock.Advance(TimeSpan.FromSeconds(1.5));
         notice.Publish(static () => { });
@@ -56,7 +65,8 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         clock.Advance(TimeSpan.FromSeconds(1));
         notice.Sounded();
@@ -71,7 +81,8 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         clock.Advance(TimeSpan.FromSeconds(1));
         notice.Close();
@@ -86,13 +97,15 @@ public sealed class SilenceNoticeTests
         var clock = new ManualClock();
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
-        notice.Open(Phrase, clock.GetTimestamp(), said.Add);
+        notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         clock.Advance(TimeSpan.FromSeconds(2));
         notice.Publish(static () => { });
         notice.Close();
 
-        notice.Open(null, clock.GetTimestamp(), said.Add); // the next turn, with no phrase
+        notice.Open(null, clock.GetTimestamp(), said.Add); // the next turn, with no notice to hear
         clock.Advance(TimeSpan.FromSeconds(5));
+        notice.Running(true); // a call of the turn runs in the App
 
         Assert.That(said, Is.Empty);
     }

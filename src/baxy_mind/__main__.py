@@ -7,6 +7,7 @@ import queue
 import sys
 import threading
 import time
+from concurrent import futures
 from pathlib import Path
 
 from . import protocol
@@ -26,6 +27,10 @@ TRACE_LIMIT_BYTES = 50 * 1024 * 1024
 # Al máximo W5: the requests after which the conversation may be read ahead for the next one (Mind.prefill decides
 # whether a turn is left open): a turn's last answer, a heartbeat's end and a kept session's load.
 PREFILLED_AFTER = ("turn.decide", "turn.continue", "turn.beat.end", "session.load")
+
+# Feria 2026-10-27: how long a turn's notice waits for its audio before it is answered; past it the notice is not said
+# (the call may be over by then).
+NOTICE_VOICE_S = 1.5
 
 
 def trace_dir(environ: dict[str, str] | None = None) -> Path:
@@ -108,7 +113,7 @@ def main() -> int:
         "type": "hello", "protocol": protocol.PROTOCOL,
         "models": {"llm": server.name, "server": build},
         "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
-                     "session.new", "session.export", "session.load", "trace.forget",
+                     "turn.notice", "session.new", "session.export", "session.load", "trace.forget",
                      "voice.start", "voice.stop", "voice.release", "voice.status", "voice.speak", "voice.cancel"],
     })
     def read() -> None:
@@ -130,10 +135,8 @@ def main() -> int:
                     # FT/proveedores goal (review of E001's fix): an answer asked while the voice loads waits and
                     # sounds once it is loaded, but the turn's notice says the turn is under way: heard after the
                     # answer is on screen it would say something false, so it is only taken with its audio ready
-                    # (Speech.speak). The notice is the model's phrase sent with catalog.ready (al máximo 9.2a).
-                    text = str(message.get("text") or "")
-                    notice = mind.notice
-                    accepted = voice.speech.speak(text, notice=bool(notice) and text == notice)
+                    # (Speech.speak). The App marks it: the phrase the model wrote for the turn (turn.notice).
+                    accepted = voice.speech.speak(str(message.get("text") or ""), notice=bool(message.get("notice")))
                     protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
                                             "accepted": accepted})
                 elif kind == "voice.cancel":
@@ -203,10 +206,7 @@ def main() -> int:
                         reply["startup"] = server.startup_failure()
                         protocol.write_message(reply)
                         continue
-                    # The notice the model wrote at warm-up (empty: none is said); the voice synthesizes it now.
-                    voice.speech.set_notice(mind.notice)
-                    protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count,
-                                            "notice": mind.notice})
+                    protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
                     protocol.write_message(held or anticipation.decide(request_id, str(message.get("text") or ""),
@@ -227,6 +227,21 @@ def main() -> int:
                     voice.speech.prepare()  # the person's «sí» or «no» is answered aloud too
                     protocol.write_message(mind.confirm(request_id, bool(message.get("approve")),
                                                         str(message.get("label") or "")))
+                elif kind == "turn.notice":
+                    # The App's turn has been silent SilenceNotice.After while its call runs: the model writes the
+                    # notice for that call, and it is answered once the voice holds its audio, so the voice.speak
+                    # that follows never waits for a synthesis an answer may need (Speech.set_notice). With no voice
+                    # loaded nothing would be said: the model is not asked. It gives way to any request already
+                    # waiting (NB-L 2026-10-27: the call's result must never wait behind its notice), before it is
+                    # written and while its audio is made.
+                    phrase = mind.notice_of() if voice.speech.ready and pending.empty() else ""
+                    audio = voice.speech.set_notice(phrase) if phrase else None
+                    until = time.monotonic() + NOTICE_VOICE_S
+                    while audio is not None and not audio.done() and pending.empty() and time.monotonic() < until:
+                        futures.wait([audio], 0.02)
+                    if audio is None or not audio.done() or audio.cancelled() or audio.exception():
+                        phrase = ""
+                    protocol.write_message({"type": "turn.notice.result", "id": request_id, "notice": phrase})
                 elif kind == "session.new":
                     mind.new_session()
                     protocol.write_message({"type": "session.ready", "id": request_id})

@@ -168,9 +168,6 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>Whether the mind speaks (its hello offers voice.speak): no speech request is sent otherwise.</summary>
     public bool IsVoiceAvailable => IsReady && _voiceAvailable;
 
-    /// <summary>The mind's notice phrase from its <c>catalog.ready</c> (<see cref="SilenceNotice"/>), or null.</summary>
-    internal string? Notice { get; private set; }
-
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
     public event Action<string>? TranscriptReceived;
 
@@ -312,7 +309,6 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         bool ready = reply is not null
             && Str(reply["type"]) == "catalog.ready"
             && Number(reply["count"]) == capabilities.Count;
-        Notice = ready ? SilenceNotice.PhraseOf(reply) : null;
         return ready;
     }
 
@@ -438,6 +434,27 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
         return reply is not null && Str(reply["type"]) == "turn.beat.ended";
+    }
+
+    /// <summary>
+    /// The person's turn has been silent long enough for a notice (<see cref="SilenceNotice"/>): the phrase the model
+    /// writes for the call the App is running, trimmed, or null when the mind has none now.
+    /// </summary>
+    internal async Task<string?> NoticeAsync(CancellationToken cancellationToken)
+    {
+        if (!IsTurnAvailable)
+        {
+            return null;
+        }
+
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "turn.notice" },
+            TurnRequestTimeout,
+            cancellationToken).ConfigureAwait(false);
+        return reply is not null && Str(reply["type"]) == "turn.notice.result"
+            && Str(reply["notice"]) is { } notice && !string.IsNullOrWhiteSpace(notice)
+                ? notice.Trim()
+                : null;
     }
 
     /// <summary>The person pressed Sí or No: their answer enters the conversation as the confirmation call.</summary>
@@ -614,15 +631,23 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     public async Task<bool> VoiceSpeakAsync(
         string text,
         TimeSpan timeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool notice = false)
     {
         if (string.IsNullOrWhiteSpace(text) || text.Length > 8_192)
         {
             return false;
         }
 
+        var request = new JsonObject { ["type"] = "voice.speak", ["text"] = text };
+        if (notice)
+        {
+            // The voice tells the silence notice (SilenceNotice) by this mark, not by its words.
+            request["notice"] = true;
+        }
+
         JsonObject? reply = await RequestAsync(
-            new JsonObject { ["type"] = "voice.speak", ["text"] = text },
+            request,
             timeout,
             cancellationToken).ConfigureAwait(false);
         return reply is not null
@@ -767,13 +792,15 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// trusted. A late voice reply (status, speech, start, stop, cancel) is
     /// not a dead mind: the late reply is discarded and the next turn goes
     /// through (2026-10-08, v2-s02: a slow voice.status relaunched the mind
-    /// three times). A closed mind was already marked by its reader.
+    /// three times). A closed mind was already marked by its reader. Nor is a late turn.notice: it waits behind the
+    /// turn's own decision, which may write a long document (feria 2026-10-27).
     /// </summary>
     internal static bool InvalidatesMind(string failure, string requestType) =>
         failure switch
         {
             "request_io" => true,
-            "request_timeout" => !requestType.StartsWith("voice.", StringComparison.Ordinal),
+            "request_timeout" => !requestType.StartsWith("voice.", StringComparison.Ordinal)
+                && requestType != "turn.notice",
             _ => false,
         };
 

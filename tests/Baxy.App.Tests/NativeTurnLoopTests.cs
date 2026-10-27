@@ -144,6 +144,7 @@ public sealed class NativeTurnLoopTests
             Publish = static (_, _) => { },
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
             StepCompleted = steps.Add,
         });
 
@@ -195,6 +196,7 @@ public sealed class NativeTurnLoopTests
             Publish = static (_, _) => { },
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
         });
 
         await loop.RunAsync("abre un juego", Stopwatch.GetTimestamp(), CancellationToken.None);
@@ -248,6 +250,7 @@ public sealed class NativeTurnLoopTests
             Publish = static (_, _) => { },
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
         });
 
         await loop.RunAsync(words, Stopwatch.GetTimestamp(), CancellationToken.None);
@@ -284,6 +287,7 @@ public sealed class NativeTurnLoopTests
             Publish = static (_, _) => { },
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
             StepCompleted = steps.Add,
             ConfirmationResolved = outcomes.Add,
             Refuse = (operation, _) => operation == "web.fetch" ? switchedOff : null,
@@ -418,6 +422,7 @@ public sealed class NativeTurnLoopTests
             Publish = static (_, _) => { },
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
             StepCompleted = steps.Add,
         }, clock);
     }
@@ -455,6 +460,7 @@ public sealed class NativeTurnLoopTests
             Publish = static (_, _) => { },
             Fail = failures.Add,
             Notice = static _ => { },
+            NoticeHeard = static () => false,
             StepCompleted = steps.Add,
         });
 
@@ -593,6 +599,7 @@ public sealed class NativeTurnLoopTests
             Publish = (text, route) => published.Add((text, route)),
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
             ConfirmationResolved = outcomes.Add,
         }, clock);
     }
@@ -669,6 +676,7 @@ public sealed class NativeTurnLoopTests
             Publish = static (_, _) => { },
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
             StepCompleted = steps.Add,
             ConfirmationAsked = asked.Add,
         });
@@ -702,6 +710,7 @@ public sealed class NativeTurnLoopTests
         Publish = static (_, _) => { },
         Fail = static _ => { },
         Notice = static _ => { },
+        NoticeHeard = static () => false,
         ConfirmationResolved = outcomes.Add,
     }, clock);
 

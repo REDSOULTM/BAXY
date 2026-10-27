@@ -15,7 +15,7 @@ class FakeServer:
         self.replies = replies
         self.bodies: list[dict] = []
 
-    def chat(self, body: dict) -> dict:
+    def chat(self, body: dict, timeout: float = 120.0) -> dict:
         self.bodies.append(json.loads(json.dumps(body)))
         reply = self.replies.pop(0)
         if isinstance(reply, Exception):

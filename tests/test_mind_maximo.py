@@ -193,58 +193,77 @@ def test_a_turn_past_the_context_makes_room_in_its_history_before_it_ends(tmp_pa
 
 
 # --- 9.2a: the notice is the model's words, not the code's (invariant 5: cero respuestas visibles fijas) ---------------
+# Feria 2026-10-27: written once at warm-up it was the same phrase in every turn; the model writes it for the turn's call.
 
-def _warm_mind(tmp_path: Path, notice_reply):
-    from test_mind_final import FakeServer, _say
-    from baxy_mind.mind import Mind
-
-    class Server(FakeServer):
-        def chat(self, body: dict, timeout: float = 120.0) -> dict:
-            return super().chat(body)
-
-        def tokenize(self, text: str) -> list[int]:
-            return [248058] if text == "<tool_call>" else super().tokenize(text)
-
-        def prefix_key(self, warm) -> str:
-            return "key"
-
-        def restore_prefix(self, key: str) -> None:
-            return None  # no prefix kept: the warm-up runs (al máximo V1, test_maximo_velocidad)
-
-        def save_prefix(self, key: str, facts: dict) -> bool:
-            return True
-
-    replies = [{"choices": [{"message": {"content": "H"}}], "usage": {"prompt_tokens": 37000}},
-               notice_reply if isinstance(notice_reply, Exception) else _say(notice_reply)]
-    server = Server(replies)
-    mind = Mind(server, tmp_path / "turns.jsonl")  # type: ignore[arg-type]
-    mind.tools = [{"type": "function", "function": {"name": "app_open", "parameters": {}}}]
-    mind.warm()
+def _calling(tmp_path: Path, *notices):
+    from test_mind_final import _call, _mind, _say
+    replies = [_call("web_search", {"query": "vuelos a Lima"}), *[n if isinstance(n, Exception) else _say(n)
+                                                                    for n in notices]]
+    mind, server = _mind(tmp_path, replies)
+    assert mind.decide(1, "busca vuelos a Lima")["kind"] == "action"
     return mind, server
 
 
-def test_the_notice_is_written_by_the_model_once_at_warm_up(tmp_path: Path) -> None:
+def test_the_notice_is_written_by_the_model_for_the_call_the_app_runs(tmp_path: Path) -> None:
     from baxy_mind import mind as mind_module
-    mind, server = _warm_mind(tmp_path, "«Dame un segundo.»")
+    mind, server = _calling(tmp_path, "«Busco vuelos a Lima.»")
+    decision = server.bodies[0]["messages"]
     assert not hasattr(mind_module, "NOTICE")  # no phrase of BAXY's is fixed in the code
-    assert mind.notice == "Dame un segundo."
-    assert mind.prefix_tokens == 37000
-    warm, notice = server.bodies
-    # The same cached prefix (system prompt and tools) and words only: the token that opens a call cannot be sampled.
-    assert notice["messages"][0] == warm["messages"][0] and notice["tools"] == warm["tools"]
-    assert notice["tool_choice"] == "none" and notice["logit_bias"] == [[248058, False]]
-    assert notice["temperature"] == 0.0 and notice["max_tokens"] <= 32
+    assert mind.notice_of() == "Busco vuelos a Lima."
+    asked = server.bodies[1]
+    # The turn as the model wrote it, the call still running, and words only: the token that opens a call cannot be
+    # sampled; the conversation the turn goes on with is not changed.
+    assert asked["messages"][:len(decision)] == decision
+    assert asked["messages"][-2] == {"role": "tool", "tool_call_id": "c1", "content": mind_module.NOTICE_RUNNING}
+    assert asked["tool_choice"] == "none" and asked["logit_bias"] == [[248058, False]]
+    assert asked["temperature"] == 0.0 and asked["tools"] == server.bodies[0]["tools"]
+    assert not any(m.get("content") == mind_module.NOTICE_RUNNING for m in mind.conversation)
 
 
-# «Estoy procesando tu solicitud.» (holdout v5, the phrase Qwen wrote at 2-5 words): 1,81 s of audio that the reply waits
-# behind (fase 3, H7: the e2e p50 of 4,32 s was 2,5 s + that notice), so a notice is three words at most.
+def test_a_long_call_gets_another_notice_and_none_once_the_turn_answered(tmp_path: Path) -> None:
+    # Al máximo, flujos: a call of 30 to 160 s said one notice and then nothing; each one now is other words.
+    from test_mind_final import _say
+    mind, server = _calling(tmp_path, "Busco vuelos a Lima.", "Sigo comparando horarios.")
+    assert mind.notice_of() == "Busco vuelos a Lima."
+    assert mind.notice_of() == "Sigo comparando horarios."
+    server.replies.append(_say("Hay vuelos desde 200 dólares."))
+    mind.continue_turn(2, json.dumps({"status": "completed", "results": []}))
+    assert mind.notice_of() == ""
+    assert len(server.bodies) == 4
+
+
+def test_a_notice_already_said_in_the_turn_is_not_said_again(tmp_path: Path) -> None:
+    from test_mind_final import _call, _say
+    mind, server = _calling(tmp_path, "Busco vuelos a Lima.")
+    assert mind.notice_of() == "Busco vuelos a Lima."
+    server.replies += [_call("web_fetch", {"url": "https://example.org"}), _say("busco vuelos a lima")]
+    assert mind.continue_turn(2, json.dumps({"status": "completed", "results": []}))["kind"] == "action"
+    assert mind.notice_of() == ""
+    assert "«Busco vuelos a Lima.»" in server.bodies[-1]["messages"][-1]["content"]  # told what it already said
+
+
+# «Estoy procesando tu solicitud.» (holdout v5) was 1,81 s of audio the reply waited behind (fase 3, H7): a notice is a
+# few words, one line, no markup.
 @pytest.mark.parametrize("written", ["", "   ", "Ya abrí la aplicación que me pediste y todo quedó funcionando perfecto.",
-                                     "Un momento.\nYa está.", "<tool_call>", "Estoy procesando tu solicitud."])
-def test_a_notice_the_model_did_not_write_usably_goes_empty(tmp_path: Path, written: str) -> None:
-    mind, _ = _warm_mind(tmp_path, written)
-    assert mind.notice == ""
+                                     "Un momento.\nYa está.", "<tool_call>"])
+def test_a_notice_the_model_did_not_write_usably_is_not_said(tmp_path: Path, written: str) -> None:
+    mind, _ = _calling(tmp_path, written)
+    assert mind.notice_of() == ""
 
 
-def test_a_failed_notice_call_leaves_the_notice_empty_and_the_warm_up_done(tmp_path: Path) -> None:
-    mind, _ = _warm_mind(tmp_path, TimeoutError("slow"))
-    assert mind.notice == "" and mind.prefix_tokens == 37000
+def test_a_failed_notice_call_says_none_and_the_turn_goes_on(tmp_path: Path) -> None:
+    from test_mind_final import _say
+    mind, server = _calling(tmp_path, TimeoutError("slow"))
+    assert mind.notice_of() == ""
+    server.replies.append(_say("No encontré vuelos."))
+    assert mind.continue_turn(2, json.dumps({"status": "completed", "results": []}))["reply"] == "No encontré vuelos."
+
+
+def test_no_notice_is_written_with_no_turn_or_in_a_turn_kept_out_of_the_trace(tmp_path: Path) -> None:
+    from test_mind_final import _call, _mind
+    mind, server = _mind(tmp_path, [_call("memory_save", {"key": "clave", "value": "4321"})])
+    mind.wire_to_op = {"memory_save": "memory.save"}
+    assert mind.notice_of() == ""
+    mind.decide(1, "guarda mi clave")
+    assert mind.notice_of() == ""
+    assert len(server.bodies) == 1

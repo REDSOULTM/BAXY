@@ -58,8 +58,8 @@ internal sealed record NativeTurnConfirmation(
 /// </para>
 /// <para>
 /// A turn the person opened that has published nothing <see cref="SilenceNotice.After"/> after their words or press
-/// arrived says the mind's notice, again while it stays silent (<see cref="SilenceNotice"/>); the model's decisions are
-/// untouched by it.
+/// arrived says the notice the model writes for the call it waits for, again while it stays silent
+/// (<see cref="SilenceNotice"/>); the model's decisions are untouched by it.
 /// </para>
 /// </summary>
 internal sealed class NativeTurnLoop
@@ -84,6 +84,9 @@ internal sealed class NativeTurnLoop
 
         /// <summary>Says the mind's notice aloud (<see cref="SilenceNotice"/>): a line that is not the turn's answer.</summary>
         internal required Action<string> Notice { get; init; }
+
+        /// <summary>Whether a notice would be heard (the owner's switch, BAXY's voice): otherwise none is asked for.</summary>
+        internal required Func<bool> NoticeHeard { get; init; }
 
         internal Action<NativeTurnStep>? StepCompleted { get; init; }
 
@@ -217,13 +220,12 @@ internal sealed class NativeTurnLoop
             () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken), cancellationToken);
     }
 
-    // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the mind's
+    // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the model's
     // notice when nothing it published is heard SilenceNotice.After after they arrived (the turn may have waited for a
-    // heartbeat to end before it started). A call this turn raised that waits for the person's Sí or No no longer holds
-    // it back: until its question is heard BAXY is still writing or saying it, as with any line (al máximo 9.2b), and
-    // that silence passed 3 s (primera voz, e2e c3-final5-dv6: a «¿Mando … a la papelera?» heard at 4.65 s and a
-    // «Should I close Notepad without saving?» at 3.25 s, with no notice before them). A heartbeat says none: nobody
-    // asked and nobody waits for it.
+    // heartbeat to end before it started), while a call of the turn runs (SilenceNotice.Running). A call this turn
+    // raised that waits for the person's Sí or No no longer holds it back while it runs (primera voz, e2e
+    // c3-final5-dv6: a question heard at 4.65 s with no notice before it). A heartbeat says none: nobody asked and
+    // nobody waits for it.
     private async Task PersonTurnAsync(
         MindSidecarClient mind,
         long arrivedAt,
@@ -233,7 +235,7 @@ internal sealed class NativeTurnLoop
         _personAt = arrivedAt;
         long turn = ++_personTurns;
         _turnStarted = Stopwatch.GetTimestamp();
-        _notice.Open(mind.Notice, arrivedAt, _host.Notice);
+        _notice.Open(_host.NoticeHeard() ? mind.NoticeAsync : null, arrivedAt, _host.Notice);
         try
         {
             await DriveAsync(mind, await decide(), cancellationToken);
@@ -464,7 +466,17 @@ internal sealed class NativeTurnLoop
                 return;
             }
 
-            string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
+            string observation;
+            _notice.Running(true);
+            try
+            {
+                observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
+            }
+            finally
+            {
+                _notice.Running(false);
+            }
+
             _egress.Observed(step.Operation!, observation);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
             // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same

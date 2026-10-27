@@ -1,9 +1,7 @@
 """BAXY's spoken voice while it loads (src/baxy_mind/voice_output.py; FT/proveedores goal, E001): an answer given
 before Supertonic has loaded waits and sounds once it has, and a voice with no model files refuses at once."""
-import sys
 import threading
 import time
-import types
 from pathlib import Path
 
 import pytest
@@ -101,7 +99,7 @@ def test_a_notice_with_no_answer_yet_is_said_and_the_answer_follows(
 def test_the_notice_is_the_mind_s_phrase_synthesized_when_it_is_given(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Al máximo 9.2a: the notice was «Un momento.», fixed in the code and synthesized at load; it is now the phrase
-    the model wrote (catalog.ready), synthesized as soon as the voice has it, and nothing else is taken as the notice."""
+    the model wrote (turn.notice), synthesized as soon as the voice has it, and nothing else is taken as the notice."""
     played: list[str] = []
     speech = _loaded_voice(tmp_path, monkeypatch, played)
     assert not speech.speak("Un momento.", notice=True)  # no phrase from the mind: no notice
@@ -115,90 +113,29 @@ def test_the_notice_is_the_mind_s_phrase_synthesized_when_it_is_given(
     assert played == ["audio:Sigo en ello."]
 
 
-def test_a_notice_given_while_the_voice_loads_is_synthesized_once_it_has(
-        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_a_turn_s_notice_is_answered_once_its_audio_is_kept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Feria 2026-10-27: the notice is the model's phrase for the turn's call (turn.notice); the mind answers the App
+    when set_notice's synthesis is done, so the voice.speak that follows finds its audio."""
+    played: list[str] = []
+    speech = _loaded_voice(tmp_path, monkeypatch, played)
+    synthesis = speech.set_notice("Busco vuelos a Lima.")
+    assert synthesis is not None
+    synthesis.result(5)
+    assert speech._notice_audio == "audio:Busco vuelos a Lima."
+    assert speech.speak("Busco vuelos a Lima.", notice=True)
+    assert speech.set_notice("") is None
+
+
+def test_a_notice_given_before_the_voice_loaded_is_not_said(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Feria 2026-10-27: the notice is written for a turn's call; one the voice cannot say now is not kept for later."""
     monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
     loaded = threading.Event()
     monkeypatch.setattr(Speech, "_start", lambda self: loaded.wait(5))
     monkeypatch.setattr(Speech, "_synthesize", lambda self, text, pause=True: f"audio:{text}")
     speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
-    speech.set_notice("Sigo en ello.")
-    assert not speech.speak("Sigo en ello.", notice=True)  # a notice is never synthesized when it is asked
+    assert speech.set_notice("Sigo en ello.") is None
+    assert not speech.speak("Sigo en ello.", notice=True)
     loaded.set()
-    deadline = time.monotonic() + 5
-    while speech._notice_audio is None and time.monotonic() < deadline:
-        time.sleep(0.01)
-    assert speech._notice_audio == "audio:Sigo en ello."
-
-
-def _fake_sherpa(monkeypatch: pytest.MonkeyPatch, loading: threading.Event) -> None:
-    """sherpa_onnx as _start uses it, whose model takes until ``loading`` is set to load."""
-    class Tts:
-        sample_rate = 44100
-
-        def __init__(self, *_: object) -> None:
-            loading.wait(5)
-
-    monkeypatch.setitem(sys.modules, "sherpa_onnx", types.SimpleNamespace(
-        OfflineTts=Tts, OfflineTtsConfig=dict, OfflineTtsModelConfig=dict, OfflineTtsSupertonicModelConfig=dict))
-
-
-@pytest.mark.parametrize("phrase", ["Sigo en ello.", ""])
-def test_the_notice_given_while_the_voice_loads_is_its_warm_up_take(
-        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, phrase: str) -> None:
-    """primera voz (e2e c3-final5-dv6): the first turn's notice was refused 7.3 s after catalog.ready, the voice still
-    without its audio. The phrase given while the model loads is the load's one warm-up take, kept as the notice's audio:
-    the notice is ready with the voice and nothing more is synthesized; with no phrase the warm-up is a word."""
-    folder = _model_dir(tmp_path)
-    (folder / "baxy-voice.json").write_bytes(b"{}")
-    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(folder))
-    loading = threading.Event()
-    _fake_sherpa(monkeypatch, loading)
-    synthesized: list[str] = []
-    monkeypatch.setattr(Speech, "_synthesize",
-                        lambda self, text, pause=True: synthesized.append(text) or f"audio:{text}")
-    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
-    speech.set_notice(phrase)
-    loading.set()
-    deadline = time.monotonic() + 5
-    while not speech.ready and time.monotonic() < deadline:
-        time.sleep(0.01)
-    assert speech.ready and not speech.failure
-    time.sleep(0.1)  # nothing else is synthesized
-    assert synthesized == [phrase or "Hola."]
-    assert speech._notice_audio == (f"audio:{phrase}" if phrase else None)
-    if phrase:
-        assert speech.speak(phrase, notice=True)
-
-
-def test_a_notice_changed_during_the_warm_up_is_synthesized_once_the_voice_loaded(
-        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    folder = _model_dir(tmp_path)
-    (folder / "baxy-voice.json").write_bytes(b"{}")
-    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(folder))
-    loading, warming = threading.Event(), threading.Event()
-    _fake_sherpa(monkeypatch, loading)
-    synthesized: list[str] = []
-
-    def synthesize(self: Speech, text: str, pause: bool = True) -> str:
-        synthesized.append(text)
-        if len(synthesized) == 1:
-            warming.wait(5)
-        return f"audio:{text}"
-
-    monkeypatch.setattr(Speech, "_synthesize", synthesize)
-    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
-    speech.set_notice("Sigo en ello.")
-    loading.set()
-    deadline = time.monotonic() + 5
-    while not synthesized and time.monotonic() < deadline:
-        time.sleep(0.01)
-    speech.set_notice("Dame un segundo.")  # the mind's phrase changed while the old one was the warm-up
-    warming.set()
-    while speech._notice_audio is None and time.monotonic() < deadline:
-        time.sleep(0.01)
-    assert synthesized == ["Sigo en ello.", "Dame un segundo."]
-    assert speech._notice_audio == "audio:Dame un segundo."
 
 
 def test_an_empty_notice_from_the_mind_is_never_said(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

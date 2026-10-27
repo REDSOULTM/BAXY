@@ -35,18 +35,23 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 
 # What BAXY says when a turn of the person's has said nothing for 2.5 s (SilenceNotice.After) and is still working,
 # and again every 10 s while it stays silent (goal identity: a notice that claims no result when the turn will go past
-# 3 s in silence). The App times it; the
-# words are the model's, written once at warm-up (Mind.warm): al máximo 9.2a (2026-10-22), a phrase fixed here broke
-# invariant 5 (cero respuestas visibles fijas). What is asked is an instruction, not a phrase; a phrase it does not
-# write usably (empty, more than NOTICE_MAX_CHARS or NOTICE_MAX_WORDS, more than one line, markup) leaves the notice
-# empty, and with no phrase the App says none (SilenceNotice.PhraseOf). Fase 3 (H7): at «dos a cinco palabras» it wrote
-# «Estoy procesando tu solicitud.», 1,81 s of audio the reply waits behind once it has started (the e2e p50 of 4,32 s
-# was 2,5 s plus that notice); at most three words.
-NOTICE_ASK = ("[Esto no lo dice la persona. Cuando algo que te pidan tarde unos segundos, dirás en voz alta una frase muy "
-              "breve para que sepa que sigues en ello. Escribe sólo esa frase, de una a tres palabras, sin decir que "
-              "hiciste algo ni ningún resultado.]")
-NOTICE_MAX_CHARS = 40
-NOTICE_MAX_WORDS = 3
+# 3 s in silence). The App times it and asks for it (turn.notice); the words are the model's (al máximo 9.2a: a phrase
+# fixed here broke invariant 5, cero respuestas visibles fijas). Feria 2026-10-27: written once at warm-up, it was the
+# same phrase in every turn («Estoy procesando tu solicitud.»), which the owner heard as fixed; now the model writes it
+# for the call the App is running, from the turn's own conversation, while the GPU waits for that call (Mind.notice_of;
+# the App asks only then): never one it already wrote in the turn, none once it answered. What is
+# asked is an instruction, not a phrase; a phrase it does not write usably (empty, more than NOTICE_MAX_CHARS or
+# NOTICE_MAX_WORDS, more than one line, markup) is not said. Fase 3 (H7): a 1,81 s notice held the reply that came
+# behind it; it is said only while a call runs now, before the next decision even starts.
+NOTICE_ASK = ("[Esto no lo dice la persona. Lo que acabas de pedir a la herramienta sigue en curso y tarda unos segundos. "
+              "Escribe sólo una frase muy breve que dirás en voz alta para que la persona sepa qué estás haciendo ahora, "
+              "sin decir que ya lo hiciste ni ningún resultado.{said}]")
+NOTICE_SAID = " Ya dijiste {said}: di otra cosa."
+NOTICE_RUNNING = json.dumps({"status": "running"})
+NOTICE_MAX_CHARS = 60
+NOTICE_MAX_WORDS = 6
+# The notice's own budget: the result of the call it speaks of may come meanwhile, and its next decision waits for it.
+NOTICE_SECONDS = 1.5
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
@@ -1286,7 +1291,6 @@ def _env_float(name: str, default: float) -> float:
 
 
 class Mind:
-    notice = ""  # the model's notice phrase, written at warm-up (NOTICE_ASK); empty before it or when unusable
     # Al máximo 9.4: the voice's look-ahead (Speech.foresee), given the last answer's text as it is written; None: the
     # last answer is not streamed.
     foresee: Any = None
@@ -1454,49 +1458,59 @@ class Mind:
 
     def warm(self) -> None:
         """Process the tools and the system prompt once, so every turn starts from a cached prefix. Al máximo V1
-        (2026-10-22): that state is kept on disk (LlmServer.save_prefix) with the notice and the prefix's tokens, and a
-        start whose tools, system prompt, model and server are the same restores it instead (18.3 s → under 1 s)."""
+        (2026-10-22): that state is kept on disk (LlmServer.save_prefix) with the prefix's tokens, and a start whose
+        tools, system prompt, model and server are the same restores it instead (18.3 s → under 1 s)."""
         started = time.perf_counter()
         self.call_tokens = self.server.tokenize("<tool_call>")
         if len(self.call_tokens) != 1:
             raise RuntimeError(f"<tool_call> is not one token of this model: {self.call_tokens}")
         warm = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": "hola"}],
                 "tools": self.tools, "max_tokens": 1, "chat_template_kwargs": {"enable_thinking": False}}
-        notice = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": NOTICE_ASK}],
-                  "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
-                  "logit_bias": [[token, False] for token in self.call_tokens],
-                  "chat_template_kwargs": {"enable_thinking": False}}
-        key = self.server.prefix_key([warm, notice])
+        key = self.server.prefix_key([warm])
         held = self.server.restore_prefix(key)
-        if held is not None and isinstance(held.get("prefix_tokens"), int) and isinstance(held.get("notice"), str):
-            self.prefix_tokens, self.notice = held["prefix_tokens"], held["notice"]
-            self._log("warm.prefix", started, None, restored=True, content=self.notice or None)
+        if held is not None and isinstance(held.get("prefix_tokens"), int):
+            self.prefix_tokens = held["prefix_tokens"]
+            self._log("warm.prefix", started, None, restored=True)
             return
         reply = self.server.chat(warm, timeout=600)
         self.prefix_tokens = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
-        phrase = self._write_notice(notice)
-        self.notice = phrase or ""
-        # The file holds the slot: only the prefix (the tools, the system prompt, the notice's request and words) may be
-        # in it, never a person's conversation, so it is saved only before any turn of this process reached the model.
-        saved = phrase is not None and not self._turned and self.server.save_prefix(
-            key, {"prefix_tokens": self.prefix_tokens, "notice": self.notice})
+        # The file holds the slot: only the prefix (the tools and the system prompt) may be in it, never a person's
+        # conversation, so it is saved only before any turn of this process reached the model.
+        saved = not self._turned and self.server.save_prefix(key, {"prefix_tokens": self.prefix_tokens})
         self._log("warm.prefix", started, None, restored=False, saved=saved)
 
-    def _write_notice(self, body: dict[str, Any]) -> str | None:
-        """The notice in the model's own words (NOTICE_ASK), once, on the cached prefix: words only, as the last answer
-        of a turn, and greedy. Empty when it gave nothing usable: then BAXY says no notice; None when the call failed
-        (nor is the warm-up kept on disk then)."""
+    def notice_of(self) -> str:
+        """The notice of the person's turn while the App runs its call (NOTICE_ASK): the model's words for that call,
+        written from the turn's conversation with the call still running, words only and greedy, on the GPU the call
+        leaves idle. Empty, and nothing asked of the model, when no call of a person's turn is running or in a turn kept
+        out of the trace (its words would be said aloud); empty too when it wrote nothing usable or one of the turn's
+        earlier notices (a form compare), or the call failed."""
+        turn = self._turn
+        if not turn or not turn.get("awaiting") or turn.get("private"):
+            return ""
+        said = turn.setdefault("notices", [])
+        ask = NOTICE_ASK.format(said=NOTICE_SAID.format(said=", ".join(f"«{s}»" for s in said)) if said else "")
+        notice = {"messages": [{"role": "system", "content": self._system()}, *self._history(turn["conv"]),
+                               {"role": "tool", "tool_call_id": turn["awaiting"], "content": NOTICE_RUNNING},
+                               {"role": "user", "content": ask}],
+                  "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
+                  "logit_bias": [[token, False] for token in self.call_tokens],
+                  "chat_template_kwargs": {"enable_thinking": False}}
         started = time.perf_counter()
         try:
-            reply = self.server.chat(body, timeout=600)
+            reply = self.server.chat(notice, timeout=NOTICE_SECONDS)
             written = str(reply["choices"][0]["message"].get("content") or "")
-        except Exception:  # noqa: BLE001 - without its words BAXY says no notice; the warm-up itself is done
-            self._log("warm.notice", started, None, content=None, written="")
-            return None
-        phrase = written.strip().strip("«»\"'“”").strip()
-        usable = bool(phrase) and "\n" not in phrase and "<" not in phrase and len(phrase) <= NOTICE_MAX_CHARS \
-            and len(phrase.split()) <= NOTICE_MAX_WORDS
-        self._log("warm.notice", started, reply, content=phrase if usable else None, written=written)
+        except Exception:  # noqa: BLE001 - a notice that could not be written is not said; the turn goes on as it was
+            self._log("turn.notice", started, None, operation=turn.get("calling"), content=None, written="")
+            return ""
+        phrase = " ".join(written.strip().strip("«»\"'“”").split())
+        usable = (bool(phrase) and "\n" not in written.strip() and "<" not in phrase
+                  and len(phrase) <= NOTICE_MAX_CHARS and len(phrase.split()) <= NOTICE_MAX_WORDS
+                  and _words(phrase) not in {_words(s) for s in said})
+        if usable:
+            said.append(phrase)
+        self._log("turn.notice", started, reply, operation=turn.get("calling"), content=phrase if usable else None,
+                  written=written)
         return phrase if usable else ""
 
     def _system(self, beat: bool = False) -> str:

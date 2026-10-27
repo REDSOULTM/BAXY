@@ -238,6 +238,7 @@ public sealed class OwnReadingsTests
             Publish = static (_, _) => { },
             Fail = static _ => { },
             Notice = static _ => { },
+            NoticeHeard = static () => false,
             StepCompleted = steps.Add,
             OwnReading = (scope, _) =>
             {

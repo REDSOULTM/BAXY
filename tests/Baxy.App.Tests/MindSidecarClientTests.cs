@@ -32,6 +32,18 @@ public sealed class MindSidecarClientTests
     }
 
     [Test]
+    public void ALateNoticeIsNotADeadMind()
+    {
+        // Feria 2026-10-27: the turn's notice waits behind its own decision, which may write a long document.
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.InvalidatesMind("request_timeout", "turn.notice"), Is.False);
+            Assert.That(MindSidecarClient.InvalidatesMind("request_timeout", "turn.continue"), Is.True);
+            Assert.That(MindSidecarClient.InvalidatesMind("request_io", "turn.notice"), Is.True);
+        });
+    }
+
+    [Test]
     public void TheCatalogTheMindReadsCarriesEachToolsEffects()
     {
         // Al máximo 5.1: «corrige» reads them; a tool without one carries no field, as the saved catalogs.
