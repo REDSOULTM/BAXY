@@ -281,7 +281,7 @@ def test_a_prefix_the_server_cannot_restore_is_read_again_and_kept_anew(tmp_path
 def test_the_prefix_is_kept_only_before_any_turn_so_no_conversation_reaches_the_disk(tmp_path: Path) -> None:
     fake = _FakeLlama(tmp_path / "slots")
     mind = _warmed(tmp_path, fake)
-    assert json.loads(next(fake.folder.glob("*.slot")).read_text(encoding="utf-8"))[-1]["content"] == "hola"
+    assert json.loads(next(fake.folder.glob("*.slot")).read_bytes())[-1]["content"] == "hola"
     for kept in fake.folder.iterdir():
         kept.unlink()
     mind.decide(1, "mi clave del banco es 4321")

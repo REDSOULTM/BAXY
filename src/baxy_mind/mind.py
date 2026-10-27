@@ -1464,15 +1464,15 @@ class Mind:
         turn["noticed"] = turn["awaiting"]
         said = turn.setdefault("notices", [])
         ask = NOTICE_ASK.format(said=NOTICE_SAID.format(said=", ".join(f"«{s}»" for s in said)) if said else "")
-        body = {"messages": [{"role": "system", "content": self._system()}, *self._history(turn["conv"]),
-                             {"role": "tool", "tool_call_id": turn["awaiting"], "content": NOTICE_RUNNING},
-                             {"role": "user", "content": ask}],
-                "tools": self.tools, "max_tokens": 32, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
-                "logit_bias": [[token, False] for token in self.call_tokens],
-                "chat_template_kwargs": {"enable_thinking": False}}
+        notice = {"messages": [{"role": "system", "content": self._system()}, *self._history(turn["conv"]),
+                               {"role": "tool", "tool_call_id": turn["awaiting"], "content": NOTICE_RUNNING},
+                               {"role": "user", "content": ask}],
+                  "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
+                  "logit_bias": [[token, False] for token in self.call_tokens],
+                  "chat_template_kwargs": {"enable_thinking": False}}
         started = time.perf_counter()
         try:
-            reply = self.server.chat(body, timeout=NOTICE_SECONDS)
+            reply = self.server.chat(notice, timeout=NOTICE_SECONDS)
             written = str(reply["choices"][0]["message"].get("content") or "")
         except Exception:  # noqa: BLE001 - a notice that could not be written is not said; the turn goes on as it was
             self._log("turn.notice", started, None, operation=turn.get("calling"), content=None, written="")
