@@ -1,7 +1,7 @@
 # Informe de la noche de la feria — 2026-10-27 (00:00 a 04:30)
 
 Equipo de la feria: **el notebook**. BAXY instalada 1.1.1, mente desplegada desde la rama `nb-arr-feria`
-(commit 6203d774f, en hub) en `D:\BAXYeval\entrega\BAXY-1.1.1-arr-9537b5f8b`. Sin cambios en .NET ni en la interfaz.
+(commit f6383c258, en hub; hasta las 04:30 era 6203d774f) en `D:\BAXYeval\entrega\BAXY-1.1.1-arr-9537b5f8b`. Sin cambios en .NET ni en la interfaz.
 
 ## Qué se probó
 
@@ -20,7 +20,9 @@ Equipo de la feria: **el notebook**. BAXY instalada 1.1.1, mente desplegada desd
 | Resistencia J (40 min, 230 turnos) | — | 0 sin respuesta, 0 errores, 38/38 fechadas y curiosidades buscadas, 0 clics no pedidos, sin fuga de RAM (mente 1.412 → 685 MB, VRAM máx. 4.000 MiB) |
 | Arranque normal (BAXY.vbs, como al iniciar Windows), 7 pedidos tecleados | — | 7 de 7 bien; mente lista en ≈20 s |
 | Voz sin altavoces (frases grabadas por el detector + Parakeet desplegados) | — | despierta 2/2; «Quien ganó el Mundial de Fútbol 2014.» y «Cuéntame un dato curioso…» activan la ayuda |
-| Suite Python completa | — | 957 pass, 1 skip, 2 xfail (preexistentes) |
+| Suite Python completa | — | 958 pass, 1 skip, 2 xfail (preexistentes) |
+| Hora extra (04:35-05:20): batería nueva de 28 pedidos | — | 22 bien; fallos: Wikipedia sin texto 3, visión sin respuesta 1, presidente de Chile pregunta-eco 1, población «no encontré» 1 |
+| Wikipedia leída tras el arreglo (en vivo) | 0 de 4 | 5 de 5 bien (16-38 s) |
 
 ## Qué se arregló (commits en `nb-arr-feria`)
 
@@ -32,6 +34,12 @@ Equipo de la feria: **el notebook**. BAXY instalada 1.1.1, mente desplegada desd
   no dijo nada de cerrar, salir o minimizar. Los cierres pedidos («cierra el bloc de notas») funcionan igual (6 de 6).
 - Tres intentos sólo con frases en el prompt (a489c28e1, 9f7587350, 9e14c2d1d, 1f47d6121) se midieron y se
   descartaron: no aguantaban o empeoraban; la regla 5 quedó como la de anoche.
+
+- f6383c258 (05:10) — Wikipedia: desde esta madrugada el extractor de páginas de la App devolvía el texto vacío para
+  cualquier artículo (la clase del `<html>` de Wikipedia nombra «main-menu» y la regla de menús dejaba fuera la página
+  entera; medido con el extractor real: 0 caracteres). La mente pide el artículo sin la piel (`action=render`): 31 275
+  caracteres y en vivo 5 de 5 bien. El arreglo de fondo es de .NET (que la regla de menús no se aplique a `<html>` ni
+  a `<body>`): queda para después de la feria. (f8fdd97b3, `useparsoid=0`, no lo arreglaba y quedó reemplazado.)
 
 ## Antes de la feria, mira esto (audio)
 
@@ -50,6 +58,9 @@ Equipo de la feria: **el notebook**. BAXY instalada 1.1.1, mente desplegada desd
 - «¿Qué modelo usas?» a veces devuelve la pregunta (V11D237, por la regla de persona de anoche).
 - Spotify: si alguien toca el teclado o el ratón mientras BAXY busca la canción, la búsqueda se corta y BAXY cuenta
   la reproducción como sin verificar aunque la música suene.
+- Preguntarle qué se ve en la pantalla: captura bien pero la descripción no respondió en 150 s (1 de 1 a las 04:36). Visto
+  al final de la noche, sin tiempo para la causa: no lo muestres en la feria sin probarlo antes.
+- «¿Quién es el presidente de Chile?»: responde con otra pregunta («¿Quieres que te diga…?») en vez de buscar.
 - Una pregunta con año y otro número («el récord de 100 m en 2009») no activa la ayuda.
 - Falsedades en el PC: VOID (había un Chrome tuyo con un documento abierto y no se cerró).
 - ruff no ejecutado (no está instalado en el runtime).

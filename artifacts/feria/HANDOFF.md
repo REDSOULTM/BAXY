@@ -64,9 +64,18 @@ como límite; estado del PC claro; informe corto con cifras y vuelta atrás.
   predeterminada son unos auriculares HyperX y los altavoces Realtek tienen volumen bajo (no se tocó el audio).
 - Siguiente: si el dueño cambia el audio de la feria, repetir `voz_sala2.py` (ALTAVOZ=índice) con BAXY abierta.
 
+## Hora extra (04:33-05:20)
+- Batería nueva de 28 pedidos (scratchpad `casos_k.txt`): Wikipedia sin texto 3/3 → causa medida con el extractor
+  real (PageText/PageMain compilados aparte): la clase del `<html>` contiene «main-menu» y `PageMain.Marked` quita la
+  página entera. Mente f6383c258: `web_focus.widen` añade `action=render` a `*.wikipedia.org/wiki/…`; en vivo 5/5.
+  Pendiente .NET: que `Marked` no se aplique a html/body; y `PageMain.Code` usa `</\s*>` (no cierra por nombre).
+- Visión (pregunta por lo que se ve en la pantalla): capture.screenshot bien, vision.describe sin respuesta en 150 s. Sin causa.
+- «¿Quién es el presidente de Chile?»: doubt_ask (p_call 0,49) → pregunta-eco. Sin arreglo.
+- La alarma de las 05:30 del perfil es una tarea programada de Windows: sobrevive a los reinicios de BAXY.
+
 ## Vuelta atrás
 - Mente: `git -C D:\BAXYeval\entrega\BAXY-1.1.1-arr-9537b5f8b checkout --detach 5017917f9` y reiniciar BAXY.
-  Sólo la ayuda nueva, sin tocar código: variable `BAXY_AYUDAS` con la lista de ayudas sin `dated_search`.
+  Sólo Wikipedia: `checkout --detach 6203d774f`. Sólo la ayuda nueva, sin tocar código: variable `BAXY_AYUDAS` con la lista de ayudas sin `dated_search`.
 - Más atrás: `python_path` del registro `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` a
   `...BAXY-1.1.1-final7-4530e077c\src` (copia en `entrega\respaldo-registro\`).
 
