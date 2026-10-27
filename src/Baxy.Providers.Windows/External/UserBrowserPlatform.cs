@@ -63,8 +63,17 @@ internal interface IUserBrowserPlatform
 {
     UserBrowserIdentity? ResolveDefault();
 
+    /// <summary>
+    /// The installed browser of that family Windows has registered, or null when none is. Throws when the registry cannot
+    /// be read.
+    /// </summary>
+    UserBrowserIdentity? ResolveRegistered(string family);
+
     /// <summary>Opens the address with the person's default browser. Throws when nothing was launched.</summary>
     void Open(Uri address);
+
+    /// <summary>Opens the address with that browser's own executable, not the default one. Throws when nothing was launched.</summary>
+    void OpenWith(UserBrowserIdentity browser, Uri address);
 
     IReadOnlyList<UserBrowserWindow> ListWindows(string processName);
 
@@ -139,23 +148,13 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
 
     public UserBrowserIdentity? ResolveDefault() => UserBrowserIdentityResolver.ResolveFromRegistry();
 
+    public UserBrowserIdentity? ResolveRegistered(string family) => UserBrowserIdentityResolver.ResolveRegistered(family);
+
     public void Open(Uri address)
     {
-        ArgumentNullException.ThrowIfNull(address);
-        if (address.Scheme is not ("http" or "https"))
-            throw new ArgumentException("Only web addresses are opened.", nameof(address));
-        // PLAN_GENERAL B3: the right to take the front is handed to the browser already running, by its exact process
-        // (Raymond Chen, «Sure, you can steal the foreground…» 2009-02-20; Chromium does the same for its running copy),
-        // so the browser may raise the page it opens itself. Refused when this process holds no right to give: the
-        // bringing up after the navigation (BringToFrontAsync) still does it then.
+        RequireWebAddress(address);
         if (ResolveDefault() is { } browser)
-        {
-            foreach (Process running in Process.GetProcessesByName(browser.ProcessName))
-            {
-                using (running)
-                    _ = AllowSetForegroundWindow(unchecked((uint)running.Id));
-            }
-        }
+            AllowForeground(browser);
 
         // The shell resolves the link exactly as a click would: the person's
         // browser, their profile and session, a new tab in the window they use.
@@ -163,6 +162,38 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         {
             UseShellExecute = true,
         });
+    }
+
+    public void OpenWith(UserBrowserIdentity browser, Uri address)
+    {
+        ArgumentNullException.ThrowIfNull(browser);
+        RequireWebAddress(address);
+        AllowForeground(browser);
+        // Feria 2026-10-27 (caso 19): the address as the only argument of the browser's own executable, as its
+        // registered open command passes a link: the person's profile, a new tab in the window of it already running.
+        var start = new ProcessStartInfo(browser.Executable) { UseShellExecute = false };
+        start.ArgumentList.Add(address.AbsoluteUri);
+        using Process? launched = Process.Start(start);
+    }
+
+    private static void RequireWebAddress(Uri address)
+    {
+        ArgumentNullException.ThrowIfNull(address);
+        if (address.Scheme is not ("http" or "https"))
+            throw new ArgumentException("Only web addresses are opened.", nameof(address));
+    }
+
+    // PLAN_GENERAL B3: the right to take the front is handed to the browser already running, by its exact process
+    // (Raymond Chen, «Sure, you can steal the foreground…» 2009-02-20; Chromium does the same for its running copy),
+    // so the browser may raise the page it opens itself. Refused when this process holds no right to give: the
+    // bringing up after the navigation (BringToFrontAsync) still does it then.
+    private static void AllowForeground(UserBrowserIdentity browser)
+    {
+        foreach (Process running in Process.GetProcessesByName(browser.ProcessName))
+        {
+            using (running)
+                _ = AllowSetForegroundWindow(unchecked((uint)running.Id));
+        }
     }
 
     // Under the gate of the opening guards, and said before it happens, as a lease takes the front (ForegroundLease).

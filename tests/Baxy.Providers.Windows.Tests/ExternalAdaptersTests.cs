@@ -1165,6 +1165,33 @@ public sealed class ExternalAdaptersTests
                 Is.EqualTo("https://www.youtube.com/watch?v=verified"));
             Assert.That(receipt.Result?.GetProperty("authority").GetString(),
                 Is.EqualTo("youtube_cdp_video_postread"));
+            // Feria 2026-10-27 (caso 19): the receipt says where it plays, here the product's own browser.
+            Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("product"));
+        });
+    }
+
+    // Caso 19: a playback in the product's browser that was not verified still says where the page was opened.
+    [Test]
+    public async Task AnUnverifiedYouTubePlaybackSaysWhereItsPageWasOpened()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserPlaybackSession(
+            temporary.Path,
+            new(false, true, "gatos", string.Empty, string.Empty, "page-9", "youtube_playback_not_verified_video_missing"));
+        using var http = new HttpClient(new StubHttpHandler(
+            "{\"videoRenderer\":{\"videoId\":\"abcdefghijk\"}}"));
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"gatos"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("youtube_playback_not_verified_video_missing"));
+            Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("product"));
+            Assert.That(receipt.Result?.GetProperty("openedUrl").GetString(), Does.EndWith("/watch?v=abcdefghijk"));
         });
     }
 

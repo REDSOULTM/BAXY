@@ -18,7 +18,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // browser (their default, their sessions). The product's CDP browser stays
     // as the fallback when no default browser resolves or it cannot launch.
     private readonly UserBrowserSurface? _userBrowser;
-    private bool _userBrowserInUse;
+    private UserBrowserIdentity? _userBrowserInUse;
     private readonly HttpClient _http;
     private readonly PublicPlaceLocator _locator;
     private readonly WikipediaSearchSource _wikipedia;
@@ -171,8 +171,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         // answer to «cierra la pestaña» or «vuelve atrás». FT/proveedores goal (review of receipts): but the last page
         // BAXY opened in a named browser (Chrome when Opera is the default) is acted on there, as its page read is
         // (E016); before, «léela» read Chrome and «ciérrala» closed the person's Opera tab.
-        if (_sessionContext?.Active is null && _userBrowser?.Resolve() is { } userBrowser)
-            return await _userBrowser.ControlAsync(operation, userBrowser, action, effectBoundary, cancellationToken)
+        if (_sessionContext?.Active is null && PersonsBrowser() is { } userBrowser)
+            return await _userBrowser!.ControlAsync(operation, userBrowser, action, effectBoundary, cancellationToken)
                 .ConfigureAwait(false);
         if (UserBrowserHoldsThePage)
             return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
@@ -225,7 +225,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 operation, userBrowser, target, effectBoundary, cancellationToken).ConfigureAwait(false)
                 is { } opened)
         {
-            UseUserBrowser();
+            UseUserBrowser(userBrowser);
             return opened;
         }
         UseProductBrowser();
@@ -251,8 +251,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         // not the person's default) is read there, not in the person's browser in front of it (2026-10-15 E016: Chrome
         // showed example.com and the read returned the person's Opera tab).
         CdpBrowserSession? active = _sessionContext?.Active;
-        if (active is null && _userBrowser?.Resolve() is { } userBrowser)
-            return await _userBrowser.ReadPageAsync(operation, userBrowser, maximumCharacters, cancellationToken)
+        if (active is null && PersonsBrowser() is { } userBrowser)
+            return await _userBrowser!.ReadPageAsync(operation, userBrowser, maximumCharacters, cancellationToken)
                 .ConfigureAwait(false);
         CdpBrowserSession browser = active ?? _browser;
         int launches = browser.Launches;
@@ -375,8 +375,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
-        if (_sessionContext?.Active is null && _userBrowser?.Resolve() is { } userBrowser)
-            return await _userBrowser.ListTabsAsync(operation, userBrowser, limit, cancellationToken)
+        if (_sessionContext?.Active is null && PersonsBrowser() is { } userBrowser)
+            return await _userBrowser!.ListTabsAsync(operation, userBrowser, limit, cancellationToken)
                 .ConfigureAwait(false);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         int launches = browser.Launches;
@@ -434,7 +434,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 operation, userBrowser, service, target, effectBoundary, cancellationToken)
                 .ConfigureAwait(false) is { } opened)
         {
-            UseUserBrowser();
+            UseUserBrowser(userBrowser);
             return opened;
         }
         UseProductBrowser();
@@ -487,7 +487,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 operation, userBrowser, service, title, effectBoundary, cancellationToken)
                 .ConfigureAwait(false) is { } started)
         {
-            UseUserBrowser();
+            UseUserBrowser(userBrowser);
             return started;
         }
         // HBO Max only plays where the person is signed in: the product's own browser has no session of theirs and no
@@ -557,6 +557,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
     }
 
+    // What a receipt names as the browser when the product's own one is used.
+    private const string ProductBrowser = "product";
+    internal const string NamedBrowserNotRegistered = "named_browser_not_registered";
+    internal const string NamedBrowserRegistryUnreadable = "named_browser_registry_unreadable";
+    internal const string NamedBrowserNotLaunched = "named_browser_not_launched";
+
     private async ValueTask<ExternalCapabilityReceipt> PlayYouTubeAsync(
         string operation,
         JsonElement arguments,
@@ -564,16 +570,46 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string query = ExternalJson.RequiredString(arguments, "query");
+        // Feria 2026-10-27 (caso 19): a browser the call named is where the video plays, the person's install of it, or
+        // nothing opens: neither the default browser nor the product's takes its place. It is looked for before the
+        // search, so nothing leaves the PC for a browser that is not there.
+        UserBrowserIdentity? namedBrowser = null;
+        if (arguments.TryGetProperty("browser", out JsonElement named))
+        {
+            if (named.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(named.GetString()))
+                throw new InvalidDataException("The browser argument is not a browser name.");
+            try
+            {
+                namedBrowser = _userBrowser?.ResolveNamed(named.GetString()!);
+            }
+            catch (Exception exception) when (exception is System.Security.SecurityException
+                or UnauthorizedAccessException or IOException)
+            {
+                return effectBoundary.Failure(operation, NamedBrowserRegistryUnreadable);
+            }
+            if (namedBrowser is null)
+                return effectBoundary.Failure(operation, NamedBrowserNotRegistered);
+        }
         YouTubeSearchResult video = await YouTubeSearch.FirstVideoAsync(_http, query, cancellationToken)
             .ConfigureAwait(false);
         if (!video.Found)
             return effectBoundary.Failure(operation, video.ErrorCode);
+        if (namedBrowser is not null)
+        {
+            ExternalCapabilityReceipt? played = await _userBrowser!.PlayYouTubeAsync(
+                    operation, namedBrowser, query, video, effectBoundary, cancellationToken, named: true)
+                .ConfigureAwait(false);
+            if (played is null)
+                return effectBoundary.Failure(operation, NamedBrowserNotLaunched);
+            UseUserBrowser(namedBrowser);
+            return played;
+        }
         if (_userBrowser?.Resolve() is { } userBrowser
             && await _userBrowser.PlayYouTubeAsync(
                 operation, userBrowser, query, video, effectBoundary, cancellationToken)
                 .ConfigureAwait(false) is { } started)
         {
-            UseUserBrowser();
+            UseUserBrowser(userBrowser);
             return started;
         }
         Uri watchUri = video.WatchUri;
@@ -582,9 +618,18 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CdpMediaPlaybackResult playback = await _browser.PlayYouTubeAsync(
             query, watchUri, cancellationToken)
             .ConfigureAwait(false);
+        // Caso 19: the page was sent to the product's browser, so a failure says where, as a success does.
         if (!playback.Verified)
-            return effectBoundary.Failure(
-                operation, playback.ErrorCode, playback.EffectObserved);
+            return effectBoundary.Failure(operation, playback.ErrorCode, playback.EffectObserved) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("openedUrl", watchUri.AbsoluteUri);
+                    writer.WriteString("browser", ProductBrowser);
+                    writer.WriteEndObject();
+                }),
+            };
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -596,6 +641,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("title", playback.Title);
             writer.WriteString("finalUrl", playback.FinalUrl);
             writer.WriteString("targetId", playback.TargetId);
+            // Caso 19: the receipt says where it plays; the person's browser is named by its display name.
+            writer.WriteString("browser", ProductBrowser);
             writer.WriteString("playbackStatus", "playing");
             writer.WriteString("authority", "youtube_cdp_video_postread");
             writer.WriteEndObject();
@@ -1335,18 +1382,25 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // over since: its tabs are not BAXY's to read or drive (no debug port on the
     // person's profile), and acting on the product browser instead would act on
     // a page the person is not looking at.
-    private bool UserBrowserHoldsThePage =>
-        _sessionContext?.UserBrowserHoldsThePage ?? _userBrowserInUse;
+    private bool UserBrowserHoldsThePage => UserBrowserHoldingThePage is not null;
 
-    private void UseUserBrowser()
+    private UserBrowserIdentity? UserBrowserHoldingThePage =>
+        _sessionContext is { } context ? context.UserBrowserHoldingThePage : _userBrowserInUse;
+
+    // Caso 19: the person's browser the last page went to (a named one a video played in, not the default one), else
+    // their default browser.
+    private UserBrowserIdentity? PersonsBrowser() =>
+        _userBrowser is null ? null : UserBrowserHoldingThePage ?? _userBrowser.Resolve();
+
+    private void UseUserBrowser(UserBrowserIdentity browser)
     {
-        _userBrowserInUse = true;
-        _sessionContext?.UseUserBrowser();
+        _userBrowserInUse = browser;
+        _sessionContext?.UseUserBrowser(browser);
     }
 
     private void UseProductBrowser()
     {
-        _userBrowserInUse = false;
+        _userBrowserInUse = null;
         _sessionContext?.Activate(_browser);
     }
 
@@ -1452,26 +1506,31 @@ internal sealed class CdpBrowserSessionContext
 
     internal CdpBrowserSession? Active => Volatile.Read(ref _active);
 
-    private volatile bool _userBrowserHoldsThePage;
+    private UserBrowserIdentity? _userBrowser;
 
     /// <summary>
     /// The last page went to the person's own browser (M122): no CDP session is
     /// the active one, and the tab steps that need CDP say so instead of acting
     /// on a product browser the person is not looking at.
     /// </summary>
-    internal bool UserBrowserHoldsThePage => _userBrowserHoldsThePage && Active is null;
+    internal bool UserBrowserHoldsThePage => UserBrowserHoldingThePage is not null;
+
+    /// <summary>Caso 19: which of the person's browsers holds that page (a named one, not always the default).</summary>
+    internal UserBrowserIdentity? UserBrowserHoldingThePage =>
+        Active is null ? Volatile.Read(ref _userBrowser) : null;
 
     internal void Activate(CdpBrowserSession session)
     {
         ArgumentNullException.ThrowIfNull(session);
-        _userBrowserHoldsThePage = false;
+        Volatile.Write(ref _userBrowser, null);
         Volatile.Write(ref _active, session);
     }
 
-    internal void UseUserBrowser()
+    internal void UseUserBrowser(UserBrowserIdentity browser)
     {
+        ArgumentNullException.ThrowIfNull(browser);
         Volatile.Write(ref _active, null);
-        _userBrowserHoldsThePage = true;
+        Volatile.Write(ref _userBrowser, browser);
     }
 
     internal void Deactivate(CdpBrowserSession session)
