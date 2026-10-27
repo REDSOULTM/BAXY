@@ -1564,8 +1564,12 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         External.VisibleControlSurface.NoteOpened(observation.ProcessId, launched: !reused, observation.WindowHandle);
         // PLAN_GENERAL B1: the executable this verified opening found is the application's, by both names it was asked
         // by, so a later look by name finds its window whatever its title says (a localized «Iniciador de Epic Games»).
-        External.VisibleControlSurface.NoteApplicationExecutable(entry.Name, observation.ExecutablePath);
-        External.VisibleControlSurface.NoteApplicationExecutable(request.ApplicationId, observation.ExecutablePath);
+        // A window told by the id it declares runs in another program, whose other windows are not the application.
+        if (!observation.DeclaredByWindow)
+        {
+            External.VisibleControlSurface.NoteApplicationExecutable(entry.Name, observation.ExecutablePath);
+            External.VisibleControlSurface.NoteApplicationExecutable(request.ApplicationId, observation.ExecutablePath);
+        }
         var receipt = new ApplicationLaunchReceipt(
             request.InvocationId,
             request.ApplicationId,
@@ -1640,7 +1644,9 @@ internal sealed record InstalledApplicationObservation(
     bool Visible,
     bool Foreground,
     string? ProcessName = null,
-    bool HostedByTerminal = false);
+    bool HostedByTerminal = false,
+    // The window declares the application's id as its own and its process runs another program (a browser's).
+    bool DeclaredByWindow = false);
 
 // Renew al máximo (rendimiento): one text field of a window (an Edit or RichEdit child), whether it is shown, and
 // whether it holds no text (asked only of a shown field; a hidden one is never said empty).
@@ -2241,6 +2247,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 StringComparison.OrdinalIgnoreCase))
             .Select(static process => unchecked((uint)process.Id))];
         Dictionary<uint, uint> parents = launchers.Count > 0 ? External.VisibleControlSurface.ParentByProcess() : [];
+        // The windows that declare the application's id as their own, by the process that draws them (DeclaresApplication).
+        Dictionary<uint, HashSet<nint>> declaring = packaged ? [] : WindowsDeclaring(entry);
         try
         {
             foreach (Process process in processes)
@@ -2249,7 +2257,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 try
                 {
                     process.Refresh();
-                    if (!packaged && !launchers.Contains(unchecked((uint)process.Id))
+                    declaring.TryGetValue(unchecked((uint)process.Id), out HashSet<nint>? declared);
+                    if (!packaged && declared is null && !launchers.Contains(unchecked((uint)process.Id))
                         && !HasAncestorAmong(unchecked((uint)process.Id), launchers, parents))
                     {
                         // A process of another executable cannot be this
@@ -2315,21 +2324,26 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                             throw new ApplicationInventoryException("A visible executable could not be verified.");
                         continue;
                     }
+                    bool launchedImage = packaged
+                        || ExecutableIsLaunchedImage(Path.GetFullPath(executablePath), expectedExecutable!)
+                        || DescendsFromLaunchedImage(process, expectedExecutable!, parents);
+                    if (!launchedImage && declared is null)
+                        continue;
                     if (strongIdentityOnly)
                     {
-                        // The candidate's own window set must be complete and stable.
-                        ownedWindows = VisibleTopLevelWindows(process.Id, requireComplete: true, windowClass);
+                        // The candidate's own window set must be complete and stable; another program's other windows
+                        // (a browser's, one being torn down) are not the application's.
+                        ownedWindows = VisibleTopLevelWindows(process.Id, requireComplete: launchedImage, windowClass);
                         if (ownedWindows.Length == 0)
                             continue;
                     }
-                    if (!packaged
-                        && !ExecutableIsLaunchedImage(Path.GetFullPath(executablePath), expectedExecutable!)
-                        && !DescendsFromLaunchedImage(process, expectedExecutable!, parents))
-                        continue;
 
                     long creationTime = process.StartTime.ToUniversalTime().Ticks;
                     foreach (nint operated in ownedWindows ?? (frame != 0 ? [frame] : VisibleTopLevelWindows(process.Id)))
                     {
+                        // Another program's process: only its windows that declare the application are the application.
+                        if (!launchedImage && !declared!.Contains(operated))
+                            continue;
                         observations.Add(new InstalledApplicationObservation(
                             process.Id,
                             creationTime,
@@ -2338,7 +2352,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                             Visible: true,
                             Foreground: GetForegroundWindow() == operated,
                             ProcessName: strongIdentityOnly ? process.ProcessName : null,
-                            HostedByTerminal: hostedByTerminal));
+                            HostedByTerminal: hostedByTerminal,
+                            DeclaredByWindow: !launchedImage));
                     }
                     if (strongIdentityOnly && packaged
                         && !string.Equals(entry.AppUserModelId,
@@ -2613,6 +2628,39 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             return true;
         return string.Equals(Path.GetDirectoryName(versioned), launcherFolder, StringComparison.OrdinalIgnoreCase)
             && VersionedFolder.IsMatch(Path.GetFileName(versioned));
+    }
+
+    /// <summary>
+    /// Feria (caso 16: an application installed from a web browser waited out its 30 s with its window on screen): such
+    /// an application is a shortcut to the browser's launcher, which hands the page to the browser's own process, so its
+    /// window belongs to another program. That window carries the application's id as its own (its property store's
+    /// AppUserModelID, what the taskbar groups it by), the id the catalog lists the shortcut by (read 2026-10-27 on this
+    /// PC: every one of 587 classic entries' System.AppUserModel.ID is its id). A window declaring a classic entry's id
+    /// is that application's, whatever process draws it; a packaged application's frame declares its id even empty
+    /// (VisibleControlSurface.ShowsEmptyFrame), so a package keeps its process identity.
+    /// </summary>
+    internal static bool DeclaresApplication(InstalledApplicationEntry entry, string? windowApplicationId) =>
+        !entry.AppUserModelId.Contains('!')
+        && string.Equals(windowApplicationId, entry.AppUserModelId, StringComparison.Ordinal);
+
+    private static Dictionary<uint, HashSet<nint>> WindowsDeclaring(InstalledApplicationEntry entry)
+    {
+        var found = new Dictionary<uint, HashSet<nint>>();
+        EnumWindowsProc callback = (window, _) =>
+        {
+            if (IsWindowVisible(window)
+                && DeclaresApplication(entry, External.VisibleControlSurface.WindowApplicationId(window)))
+            {
+                GetWindowThreadProcessId(window, out uint process);
+                if (!found.TryGetValue(process, out HashSet<nint>? windows))
+                    found[process] = windows = [];
+                windows.Add(window);
+            }
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return found;
     }
 
     // The executable a classic application's windows run: File Explorer's own image for the shell's catalog entry (its

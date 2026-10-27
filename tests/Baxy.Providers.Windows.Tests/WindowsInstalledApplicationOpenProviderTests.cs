@@ -43,6 +43,52 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Feria (caso 16): a window of another program that declares a classic entry's id as its own is that application's
+    // (an application installed from a web browser); another id or none is not, and a package keeps its process identity.
+    [Test]
+    public void AWindowDeclaringAClassicEntrysIdIsThatApplications()
+    {
+        var web = new InstalledApplicationEntry("Web fixture", "Browser._app_fixture", @"C:\Browser\launcher.exe");
+        var packaged = new InstalledApplicationEntry("Paint", "Microsoft.Paint_8wekyb3d8bbwe!App");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsInstalledApplicationPlatform.DeclaresApplication(web, "Browser._app_fixture"), Is.True);
+            Assert.That(WindowsInstalledApplicationPlatform.DeclaresApplication(web, "Browser"), Is.False);
+            Assert.That(WindowsInstalledApplicationPlatform.DeclaresApplication(web, "Browser._app_other"), Is.False);
+            Assert.That(WindowsInstalledApplicationPlatform.DeclaresApplication(web, null), Is.False);
+            Assert.That(WindowsInstalledApplicationPlatform.DeclaresApplication(packaged, packaged.AppUserModelId),
+                Is.False);
+        });
+    }
+
+    // Feria (caso 16): an opening verified on a window that declares the application runs in another program (the
+    // browser); that program is never learned as the application's, or a later look by its name would take any window of
+    // the browser.
+    [Test]
+    public async Task AnOpeningVerifiedByTheWindowsDeclaredIdLearnsNoExecutable()
+    {
+        const string Name = "Aplicación web de prueba C16";
+        var platform = new FakePlatform([new(Name, "Browser._app_fixture_c16", @"C:\Browser\launcher.exe")])
+        {
+            ObservationAfterActivation = Launched() with
+            {
+                ExecutablePath = @"C:\Browser\browser.exe",
+                DeclaredByWindow = true,
+            },
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request(Name), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.WindowHandle, Is.EqualTo(78));
+            Assert.That(Baxy.Providers.Windows.External.VisibleControlSurface.HasLearnedExecutable(Name), Is.False);
+        });
+    }
+
     [Test]
     public async Task AnApplicationWithoutAWindowIdentityIsNeitherLaunchedNorCounted()
     {
