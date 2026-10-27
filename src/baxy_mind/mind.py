@@ -576,11 +576,20 @@ SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder 
 # a sentence in rule 5 alone did not hold past a few answers from memory in a row. The question with one number, a year,
 # or a curiosity asked for, answered in words with nothing looked at, is decided once more with this note; the model still
 # chooses.
-DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto (de un año, o una curiosidad), y esos "
-              "datos de memoria se confunden. Búscalo con web_search y responde con lo que encuentres.]")
+DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto (de un año, una curiosidad o qué es algo "
+              "con nombre propio), y esos datos de memoria se confunden. Búscalo con web_search y responde con lo que "
+              "encuentres.]")
 _YEAR_ALONE = re.compile(r"^\D*(?<!\d)(?:1[5-9]|20)\d\d(?!\d)\D*$")
 # A curiosity asked for (feria 2026-10-27, «cuéntame un dato curioso…» from memory: «el estribo, en el pie»).
 _CURIOUS = re.compile(r"\b(?:datos? curios[oa]s?|curiosidad(?:es)? (?:de|del|sobre|acerca)|algo curioso|fun facts?)\b")
+# What something with a name of its own is (feria 2026-10-27: a local brand of juices told from memory as an energy
+# drink): «qué es / quién es» up to the end of the sentence, naming something the recognizer wrote with a capital, not
+# BAXY itself, and not a clause of the person's own («lo que tengo…»).
+_DEFINES = re.compile(r"\b(?:que|quien|quienes) (?:es|son|era|fue)\s+([^?!.]+)"
+                      r"|\b(?:what|who)(?:'s| is| are| was)\s+([^?!.]+)", re.IGNORECASE)
+_NAMED = re.compile(r"\b[A-Z][\w'&-]+")
+_RELATIVE = re.compile(r"\b(?:que|quien|i|you|your|my|tu|mi)\b", re.IGNORECASE)
+_SELF = re.compile(r"^bax(?:y|i|ie)$", re.IGNORECASE)
 _ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|donde|como|who|what|which|when|how|where)\b")
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
 FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
@@ -2190,13 +2199,23 @@ class Mind:
                     pass
         return self._result(request_id, turn, None, reply, stage, started, content)
 
-    @staticmethod
-    def _dated(text: str) -> bool:
+    @classmethod
+    def _dated(cls, text: str) -> bool:
         """Whether the person asks for a fact memory confuses: about something of a given year (a question whose only
-        number is a year), or a curiosity."""
+        number is a year), a curiosity, or what something with a name of its own is."""
         folded = _fold(text)
         return ((bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(folded))))
-                or bool(_CURIOUS.search(folded)))
+                or bool(_CURIOUS.search(folded)) or cls._defines_named(text))
+
+    @staticmethod
+    def _defines_named(text: str) -> bool:
+        """Whether the person asks what or who something with a name of its own is (_DEFINES), other than BAXY."""
+        plain = "".join(ch for ch in unicodedata.normalize("NFKD", text) if not unicodedata.combining(ch))
+        for asked in _DEFINES.finditer(plain):
+            named = asked.group(1) or asked.group(2)
+            if not _RELATIVE.search(named) and any(not _SELF.match(n) for n in _NAMED.findall(named)):
+                return True
+        return False
 
     def _look_up_first(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
                        reply: dict | None, started: float) -> dict[str, Any]:
