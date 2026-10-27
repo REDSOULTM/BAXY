@@ -208,6 +208,59 @@ public sealed class NativeTurnLoopTests
         });
     }
 
+    // Feria 2026-10-27: a search with none of the person's words, or a message they did not ask for, reaches the model as
+    // a refusal with what to do next, and nothing is sent to the engine.
+    [TestCase("uno de zentrovox", "media.play.youtube", "query_not_said")]
+    [TestCase("saluda a Daniel", "message.draft", "channel_not_said")]
+    public async Task ACallThePersonDidNotAskForGoesBackToTheModel(string words, string operation, string code)
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = operation,
+                    ["arguments"] = operation == "message.draft"
+                        ? new JsonObject { ["channel"] = "whatsapp", ["recipient"] = "Daniel", ["text"] = "Hola" }
+                        : new JsonObject { ["query"] = "Centro Box" },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "clarify",
+                    ["question"] = "¿Cuál?",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+        });
+
+        await loop.RunAsync(words, Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        JsonNode? observed = JsonNode.Parse((string)fake.Requests("turn.continue").Single()["observation"]!);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)observed?["status"], Is.EqualTo("rejected"));
+            Assert.That((string?)observed?["error"], Is.EqualTo(code));
+            Assert.That((string?)observed?["next"], Does.StartWith("nothing ran"));
+        });
+    }
+
     // Auditoría de la App (2026-10-23): the owner's switches are read again when the call is approved; one switched off
     // while it waited does not run it, by the button as by voice.
     [TestCase(true)]

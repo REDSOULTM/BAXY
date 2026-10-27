@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Baxy.Contracts;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.App;
 
@@ -23,7 +24,9 @@ namespace Baxy.App;
 /// waits, whatever of the person's text or data it carries, a bare site by its name («https://ejemplo.com»,
 /// «ejemplo.com/») goes since it carries nothing past its host, and a ping sends no page. Which calls go out is the
 /// catalog's typed fact (al máximo 5.1: the network effect, with the call's exact arguments), and the address is the
-/// call's <c>url</c>. A heartbeat holds every such call already (NativeTurnLoop.BeatProposes).
+/// call's <c>url</c>. A heartbeat holds every such call already (NativeTurnLoop.BeatProposes). Before any of that, a
+/// search or a message with an argument that is the person's to say and that they did not goes back to the model
+/// (<see cref="Unsaid"/>).
 /// </summary>
 internal sealed class NetworkEgress
 {
@@ -33,6 +36,19 @@ internal sealed class NetworkEgress
     private readonly HashSet<string> _hosts = new(StringComparer.Ordinal);
     private readonly HashSet<string> _words = new(StringComparer.Ordinal);
     private readonly List<string> _resultHosts = [];
+    private readonly HashSet<string> _queriesRefused = new(StringComparer.Ordinal);
+
+    // A message refused for its channel, by the turn it was refused in (_turns counts the person's turns).
+    private readonly Dictionary<string, int> _messagesRefused = new(StringComparer.Ordinal);
+    private int _turns;
+
+    // The words this session's results and memory reads gave: a search may take its words from them («pon un video de
+    // él» after a result named him), never a host.
+    private readonly HashSet<string> _given = new(StringComparer.Ordinal);
+
+    // The person's words now and just before, folded: what a message's channel is weighed against.
+    private string _latest = string.Empty;
+    private string _previous = string.Empty;
 
     /// <summary>
     /// The hosts of the addresses this session's results gave (a search result, a page fetched or read, a tab), in the
@@ -65,16 +81,72 @@ internal sealed class NetworkEgress
                 : null;
     }
 
-    /// <summary>The person's words in this session, and the addresses they wrote or dictated in them.</summary>
-    internal void Heard(string words)
+    /// <summary>
+    /// Why a call goes back to the model before it runs, and what it does next; null: it goes. Feria 2026-10-27, an
+    /// argument that is the person's to say and that they did not (a form compared, never what they meant):
+    /// <list type="bullet">
+    /// <item>A greeting asked for someone in the room opened a messaging client with a draft: a message.draft or
+    /// message.send by a channel their words now or just before did not name (the answer to the model's question keeps
+    /// what it asked), <c>channel_not_said</c>, for the rest of that turn; in the turn right after it, the message to
+    /// that recipient by that channel goes (their «sí» to «¿le escribo por …?», a channel the ear wrote otherwise). Aid
+    /// «said_channel».</item>
+    /// <item>A creator's name searched as another one that sounds alike, a question's subject searched as another word: a
+    /// search whose text shares none of their words in this session, <c>query_not_said</c>, once for that very call; the
+    /// same call again goes, as written, for a search they asked in other words. Aid «said_query».</item>
+    /// </list>
+    /// </summary>
+    internal (string Code, string Next)? Unsaid(string operation, JsonObject arguments)
     {
-        foreach (string word in Regex.Split(Folded(words), @"[^\p{L}\p{Nd}]+"))
+        if (operation is "message.draft" or "message.send" && ModelAids.On(ModelAids.SaidChannel)
+            && Text(arguments["channel"]) is { } channel
+            && !Joined(_previous + " " + _latest).Contains(Joined(channel), StringComparison.Ordinal)
+            && Folded(channel + "\n" + Text(arguments["recipient"])) is var message
+            && !(_messagesRefused.TryGetValue(message, out int refusedIn) && refusedIn == _turns - 1))
         {
-            if (word.Length > 0)
-            {
-                _words.Add(word);
-            }
+            _messagesRefused[message] = _turns;
+            return ("channel_not_said", $"nothing ran: the person did not name {channel} now nor just before; if they "
+                + "spoke to someone there, answer them in words; if they want a message sent, ask them by which channel");
         }
+
+        // web.search's currency, sports and places sources search their typed fields, not the query's text.
+        if (!ModelAids.On(ModelAids.SaidQuery) || !NativeTurnLoop.Has(operation, arguments, OperationEffects.Network)
+            || Text(arguments["query"]) is not { } query
+            || Text(arguments["source"]) is not (null or "web" or "news" or "encyclopedia"))
+        {
+            return null;
+        }
+
+        string[] words = [.. Regex.Split(Folded(query), @"[^\p{L}\p{Nd}]+").Where(static word => word.Length >= 4)];
+        if (words.Length == 0 || words.Any(word => _words.Concat(_given).Any(said => SameWord(
+                SaidFolders.Sounded(word).Trim(), SaidFolders.Sounded(said).Trim())))
+            || !_queriesRefused.Add(operation + "\n" + string.Join(' ', words)))
+        {
+            return null;
+        }
+
+        return ("query_not_said", "nothing ran: this search has none of the person's words nor of what this session's "
+            + "results and memory gave; call it again with their words, names exactly as they said them, even ones you do "
+            + "not know; if they asked it in these words, call it again exactly as before");
+    }
+
+    /// <summary>
+    /// The person's words in this session, and the addresses they wrote or dictated in them. <paramref name="answering"/>:
+    /// they answer the call that waits for their «sí», and the words they said before it are still the ones just before.
+    /// </summary>
+    internal void Heard(string words, bool answering = false)
+    {
+        if (answering)
+        {
+            _latest += " " + Folded(words);
+        }
+        else
+        {
+            _previous = _latest;
+            _latest = Folded(words);
+            _turns++;
+        }
+
+        Collect(words, _words);
 
         // «https://www.rfc-editor.org/rfc/rfc2324» or «rfc-editor.org» is the person's own host, as a result's address
         // is (e2e E022, 2026-10-22: its name split at the hyphen never matched their words).
@@ -96,7 +168,7 @@ internal sealed class NetworkEgress
         }
     }
 
-    /// <summary>A call's result as the model reads it: its addresses.</summary>
+    /// <summary>A call's result as the model reads it: its addresses, and its words a search may take.</summary>
     internal void Observed(string operation, string observation)
     {
         JsonNode? facts;
@@ -118,6 +190,10 @@ internal sealed class NetworkEgress
         _hosts.Clear();
         _words.Clear();
         _resultHosts.Clear();
+        _queriesRefused.Clear();
+        _messagesRefused.Clear();
+        _given.Clear();
+        _latest = _previous = string.Empty;
     }
 
     private void Walk(JsonNode? node, bool memoryRead)
@@ -143,6 +219,10 @@ internal sealed class NetworkEgress
                                 }
                             }
                         }
+                        else
+                        {
+                            Collect(field, _given);
+                        }
                     }
                     else
                     {
@@ -158,6 +238,20 @@ internal sealed class NetworkEgress
                 }
 
                 break;
+            case JsonValue value when value.TryGetValue(out string? listed):
+                Collect(listed, _given);
+                break;
+        }
+    }
+
+    private static void Collect(string text, HashSet<string> words)
+    {
+        foreach (string word in Regex.Split(Folded(text), @"[^\p{L}\p{Nd}]+"))
+        {
+            if (word.Length > 0)
+            {
+                words.Add(word);
+            }
         }
     }
 
@@ -212,6 +306,24 @@ internal sealed class NetworkEgress
             || (bytes[0] == 192 && bytes[1] == 168)
             || (bytes[0] == 169 && bytes[1] == 254);
     }
+
+    // One word with another ending, run together with the next or spelled otherwise by the ear (as they sound,
+    // SaidFolders.Sounded: «vianca» is «bianca»): «recetas» for «receta», «zentrovox» for «zentro vox», «alcaldesa» for
+    // «alcaldeza» (a start of 5 letters in common, or a word of 4 or more that starts the other), never two that only
+    // start alike («aurora» and «auronplay»).
+    private static bool SameWord(string word, string said)
+    {
+        int common = 0;
+        while (common < word.Length && common < said.Length && word[common] == said[common])
+        {
+            common++;
+        }
+
+        return common >= 5 || (common >= 4 && common == Math.Min(word.Length, said.Length));
+    }
+
+    // Letters and digits alone: «Whats App» is «whatsapp».
+    private static string Joined(string text) => Regex.Replace(Folded(text), @"[^\p{L}\p{Nd}]+", string.Empty);
 
     // Every word of the name is one the person said in this session («doom eternal» in «pon Doom Eternal»).
     private bool Said(string name)

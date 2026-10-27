@@ -150,6 +150,20 @@ public static class ModelAids
     public const string SaidName = "said_name";
 
     /// <summary>
+    /// Feria 2026-10-27 (a creator's name searched as another one that sounds alike, and someone else's video played): a
+    /// search whose text shares none of the person's words in this session is refused once, and the same call again
+    /// goes as written (Baxy.App.NetworkEgress).
+    /// </summary>
+    public const string SaidQuery = "said_query";
+
+    /// <summary>
+    /// Feria 2026-10-27 (a greeting asked for someone in the room opened a messaging client with a draft): a
+    /// message.draft or message.send by a channel the person's words now or just before did not name is refused
+    /// (Baxy.App.NetworkEgress).
+    /// </summary>
+    public const string SaidChannel = "said_channel";
+
+    /// <summary>
     /// Holdout v4 (en vivo: «Biblioteca» pressed 7 times in Steam, each visible_button_postread_unchanged, 50 s): the
     /// same click seen unchanged a second time in a row says so, and the places its application opens straight at.
     /// </summary>

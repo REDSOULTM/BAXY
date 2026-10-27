@@ -1,0 +1,203 @@
+{
+ "schema": "baxy.said-arguments-heldout.v1",
+ "note": "Written 2026-10-27 by an agent that never saw NetworkEgress.Unsaid, from a description of the two checks only. A: a search (dicho: the person's sentences of the session; consulta: what the model searched); positivas go back to the model, negativas go. B: a message (dicho: the person's sentences, the last one now; canal: the call's channel); positivas go back, negativas go. Names are made up.",
+ "A": {
+  "positivas": [
+   {
+    "dicho": [
+     "pon en youtube a la chef Morquilda haciendo empanadas"
+    ],
+    "consulta": "Murkelda recetas de pino"
+   },
+   {
+    "dicho": [
+     "quiero ver el último video de Tobías Grenfal",
+     "el que habla de bicicletas de montaña"
+    ],
+    "consulta": "Tomás Greenfield ciclismo de ruta"
+   },
+   {
+    "dicho": [
+     "busca cómo se juega al palitroque mapuche"
+    ],
+    "consulta": "reglas del hockey sobre césped"
+   },
+   {
+    "dicho": [
+     "ponme la banda Los Grillos de Quilmahue en youtube"
+    ],
+    "consulta": "Los Brillos de Kilmawe"
+   },
+   {
+    "dicho": [
+     "busca el trámite para renovar el carnet en la municipalidad de Peñaflorida"
+    ],
+    "consulta": "requisitos licencia de conducir Piedraflor"
+   },
+   {
+    "dicho": [
+     "quiero saber de la batalla de Ranquelmo"
+    ],
+    "consulta": "combate de Rangelmar 1820"
+   },
+   {
+    "dicho": [
+     "busca trucos para Castillo de Brumavela",
+     "el juego de las torres"
+    ],
+    "consulta": "Bruneval fortaleza estrategia"
+   },
+   {
+    "dicho": [
+     "ponme el video del profe Ismael Cardoner sobre los volcanes"
+    ],
+    "consulta": "Israel Gardoner sismos"
+   }
+  ],
+  "negativas": [
+   {
+    "dicho": [
+     "busca recetas de sopaipilla pasada"
+    ],
+    "consulta": "receta sopaipillas pasadas"
+   },
+   {
+    "dicho": [
+     "quiero aprender a entrenar para una maratón"
+    ],
+    "consulta": "entrenamiento maratones principiantes"
+   },
+   {
+    "dicho": [
+     "pon en youtube al canal Rocamarina"
+    ],
+    "consulta": "Roca Marina últimos videos"
+   },
+   {
+    "dicho": [
+     "pon música del grupo Las Pata Quietas"
+    ],
+    "consulta": "Las Pataquietas en vivo"
+   },
+   {
+    "dicho": [
+     "busca la historia del fuerte de Zarandel"
+    ],
+    "consulta": "Sarandel colonial"
+   },
+   {
+    "dicho": [
+     "pon el canal de viajes de la Vianca Ortúzar"
+    ],
+    "consulta": "Bianca mochileando"
+   },
+   {
+    "dicho": [
+     "busca horarios del tren a Valdeluna"
+    ],
+    "consulta": "horarios tren Valdeluna pasajes precio fin de semana"
+   },
+   {
+    "dicho": [
+     "me interesa la astronomía de los pueblos andinos",
+     "ya, búscalo en youtube"
+    ],
+    "consulta": "astronomía andina documental"
+   }
+  ]
+ },
+ "B": {
+  "positivas": [
+   {
+    "dicho": [
+     "Cata, ven a almorzar",
+     "dile hola a la Cata de mi parte"
+    ],
+    "canal": "whatsapp"
+   },
+   {
+    "dicho": [
+     "saluda a los chiquillos que vinieron",
+     "diles que bienvenidos a la casa"
+    ],
+    "canal": "discord"
+   },
+   {
+    "dicho": [
+     "mándale un mensaje a Renata Quilodrán",
+     "que llego tarde a la junta"
+    ],
+    "canal": "whatsapp"
+   },
+   {
+    "dicho": [
+     "escríbele al Pancho Vilugrón",
+     "dile que el partido es el sábado"
+    ],
+    "canal": "discord"
+   },
+   {
+    "dicho": [
+     "abre whatsapp",
+     "busca el clima de mañana",
+     "pon música tranquila",
+     "mándale a la Coni Treumún que llego a las ocho"
+    ],
+    "canal": "whatsapp"
+   },
+   {
+    "dicho": [
+     "abre discord",
+     "qué hora es",
+     "sube el volumen",
+     "avísale al grupo de la liga que hoy no juego"
+    ],
+    "canal": "discord"
+   }
+  ],
+  "negativas": [
+   {
+    "dicho": [
+     "qué tiempo hace",
+     "mándale por WhatsApp a la Fernanda Rojas que ya salí"
+    ],
+    "canal": "whatsapp"
+   },
+   {
+    "dicho": [
+     "escríbele a la Maite Zúñelo por discord",
+     "que la partida empieza a las nueve"
+    ],
+    "canal": "discord"
+   },
+   {
+    "dicho": [
+     "pon algo de cumbia",
+     "mandale por whatsapp al Nico Barrazul que traiga el carbon"
+    ],
+    "canal": "whatsapp"
+   },
+   {
+    "dicho": [
+     "escríbele por whats app a mi tía Rosalba Quintrel",
+     "dile que feliz cumpleaños"
+    ],
+    "canal": "whatsapp"
+   },
+   {
+    "dicho": [
+     "abre el chat del curso",
+     "manda por Dis Cord que la tarea es para el lunes"
+    ],
+    "canal": "discord"
+   },
+   {
+    "dicho": [
+     "avísale a Tomasina Reyque",
+     "por WHATSAPP, que la reunión se cambió al jueves"
+    ],
+    "canal": "whatsapp"
+   }
+  ]
+ }
+}

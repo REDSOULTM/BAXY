@@ -161,6 +161,7 @@ public sealed class FieldStepProjectionTests
 
     [TestCase("cancelled", "declined_by_person", "skip", "No se ejecutó: dijiste que no")]
     [TestCase(OperationStatuses.Rejected, "unknown_operation", "skip", "No se ejecutó: esa acción no existe")]
+    [TestCase(OperationStatuses.Rejected, "channel_not_said", "skip", "No se ejecutó: no nombraste ese canal")]
     [TestCase(OperationStatuses.Failed, "provider_failed", "fail", "Falló · provider_failed")]
     public void ACallThatDidNotCompleteSaysHowItEnded(string status, string error, string shown, string reason)
     {

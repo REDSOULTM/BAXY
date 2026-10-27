@@ -836,7 +836,7 @@ internal sealed class SaidFolders
     // The person's words and a folder's name as they sound: a dictated name comes spelled by its sounds (holdout v6
     // V6E044: «baxi bench» for BAXY-bench), so the letters Spanish writes for one sound are one: b and v, s and z, i and
     // a y not before a vowel.
-    private static string Sounded(string text)
+    internal static string Sounded(string text)
     {
         char[] letters = Spoken(text).ToCharArray();
         for (int index = 0; index < letters.Length; index++)
