@@ -1136,17 +1136,18 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     /// <summary>
     /// The keys an expression presses (a decimal comma is the «.» the keypad presses, spaces dropped) and every reason
     /// it is not one (none when it is): characters not accepted (<c>Refused</c>), no operator, more operators than the
-    /// limit, numbers longer than the limit (<c>LongNumbers</c>, as pressed), or a shape that is not numbers joined by
+    /// limit, numbers longer than the limit (<c>LongNumbers</c>, as written), or a shape that is not numbers joined by
     /// operators.
     /// </summary>
-    internal static (string Keys, string Refused, List<string> Reasons, List<string> LongNumbers) CalculatorCheck(string expression)
+    internal static CalculatorVerdict CalculatorCheck(string expression)
     {
         string refused = string.Concat(expression
             .Where(character => !char.IsWhiteSpace(character) && !CalculatorCharacters.Contains(character))
             .Distinct());
         string keys = CalculatorPressed(expression);
         int operators = keys.Count(character => "+-*/^".Contains(character));
-        List<string> longNumbers = [.. CalculatorNumberPart.Matches(keys)
+        // Read as written (a space inside a number keeps it two), never as pressed.
+        List<string> longNumbers = [.. CalculatorNumberPart.Matches(expression.Replace(',', '.'))
             .Where(number => number.Groups["whole"].Length > CalculatorMaxDigits
                 || number.Groups["fraction"].Length > CalculatorMaxDecimals)
             .Select(number => number.Value)];
@@ -1173,14 +1174,19 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         {
             reasons.Add("shape_not_accepted");
         }
-        return (keys, refused, reasons, longNumbers);
+        return new CalculatorVerdict(keys, refused, reasons, longNumbers, operators);
     }
+
+    /// <summary>What <see cref="CalculatorCheck"/> read of an expression: accepted when it gives no reason.</summary>
+    internal sealed record CalculatorVerdict(
+        string Keys, string Refused, IReadOnlyList<string> Reasons, IReadOnlyList<string> LongNumbers, int Operators);
 
     // An expression as the keypad would press it: spaces dropped, a decimal comma as the «.».
     private static string CalculatorPressed(string expression) =>
         string.Concat(expression.Where(character => !char.IsWhiteSpace(character))).Replace(',', '.');
 
-    private static readonly Regex CalculatorNumber = new(@"^\d{1,12}(?:\.\d{1,6})?$", RegexOptions.CultureInvariant);
+    private static readonly Regex CalculatorNumber = new(
+        $@"^\d{{1,{CalculatorMaxDigits}}}(?:\.\d{{1,{CalculatorMaxDecimals}}})?$", RegexOptions.CultureInvariant);
 
     // Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53», the Calculator showing 47): «53» was refused with only
     // what is accepted, and in 7 of 7 runs that wrote it the model asked the person what number the Calculator showed.
@@ -1202,26 +1208,27 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         CancellationToken token)
     {
         string expression = ExternalJson.RequiredString(arguments, "expression");
-        (string normalized, string refused, List<string> reasons, List<string> longNumbers) = CalculatorCheck(expression);
-        if (reasons.Count > 0)
+        CalculatorVerdict verdict = CalculatorCheck(expression);
+        string normalized = verdict.Keys;
+        if (verdict.Reasons.Count > 0)
         {
             JsonElement observed = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
-                if (refused.Length > 0)
+                if (verdict.Refused.Length > 0)
                 {
-                    writer.WriteString("refused", refused);
+                    writer.WriteString("refused", verdict.Refused);
                 }
                 writer.WriteStartArray("reasons");
-                foreach (string reason in reasons)
+                foreach (string reason in verdict.Reasons)
                 {
                     writer.WriteStringValue(reason);
                 }
                 writer.WriteEndArray();
-                if (longNumbers.Count > 0)
+                if (verdict.LongNumbers.Count > 0)
                 {
                     writer.WriteStartArray("longNumbers");
-                    foreach (string number in longNumbers)
+                    foreach (string number in verdict.LongNumbers)
                     {
                         writer.WriteStringValue(number);
                     }
@@ -1229,7 +1236,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     writer.WriteNumber("maxDigits", CalculatorMaxDigits);
                     writer.WriteNumber("maxDecimals", CalculatorMaxDecimals);
                 }
-                if (reasons.Contains("too_many_operators"))
+                if (verdict.Operators > CalculatorMaxOperators)
                 {
                     writer.WriteNumber("maxOperators", CalculatorMaxOperators);
                 }

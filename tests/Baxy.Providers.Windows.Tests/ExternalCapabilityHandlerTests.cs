@@ -228,6 +228,7 @@ public sealed class ExternalCapabilityHandlerTests
     [TestCase("1+2+3+4+5+6+7+8+9+10", null, "too_many_operators", null)]
     [TestCase("2++3", null, "shape_not_accepted", null)]
     [TestCase("5 3+1", null, "shape_not_accepted", null)]
+    [TestCase("123456 7890123+1", null, "shape_not_accepted", null)]
     public async Task AnInvalidExpressionListsEveryReasonAndNamesNoMode(
         string expression, string? refused, string reasons, string? longNumbers)
     {
@@ -246,6 +247,8 @@ public sealed class ExternalCapabilityHandlerTests
                 ? string.Join(",", numbers.EnumerateArray().Select(number => number.GetString())) : null, Is.EqualTo(longNumbers));
             Assert.That(observed.TryGetProperty("maxDigits", out JsonElement digits) ? digits.GetInt32() : (int?)null,
                 Is.EqualTo(longNumbers is null ? null : 12));
+            Assert.That(observed.TryGetProperty("maxDecimals", out JsonElement decimals) ? decimals.GetInt32() : (int?)null,
+                Is.EqualTo(longNumbers is null ? null : 6));
             Assert.That(observed.TryGetProperty("maxOperators", out JsonElement operators) ? operators.GetInt32() : (int?)null,
                 Is.EqualTo(reasons == "too_many_operators" ? 8 : null));
             Assert.That(observed.GetRawText(), Does.Not.Contain("Scientific").IgnoreCase);
