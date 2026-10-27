@@ -217,6 +217,41 @@ public sealed class ExternalCapabilityHandlerTests
         });
     }
 
+    // Feria (caso 14): a root of a number longer than the limit was refused with only its first reason and an «accepted»
+    // that said ^ and ( ) worked in Scientific mode, and the model took a root to work there too. The refusal lists every
+    // reason that applies, with the numbers over the limit and the limit itself, and never names a mode: no mode takes a
+    // function, and whether the keypad has ^ and ( ) is the script's to read.
+    [TestCase("√314159265358979323", "√", "characters_not_accepted,no_operator,number_too_long", "314159265358979323")]
+    [TestCase("sqrt(314159265358979323)", "sqrt", "characters_not_accepted,no_operator,number_too_long", "314159265358979323")]
+    [TestCase("1234567890123+1.1234567", null, "number_too_long", "1234567890123,1.1234567")]
+    [TestCase("53", null, "no_operator", null)]
+    [TestCase("1+2+3+4+5+6+7+8+9+10", null, "too_many_operators", null)]
+    [TestCase("2++3", null, "shape_not_accepted", null)]
+    [TestCase("5 3+1", null, "shape_not_accepted", null)]
+    public async Task AnInvalidExpressionListsEveryReasonAndNamesNoMode(
+        string expression, string? refused, string reasons, string? longNumbers)
+    {
+        string message = OperationVisibleFacts.FromOutcome(
+            "calculator.expression.evaluate", await Calculator("""{"ok":true}""", expression));
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement observed = facts.RootElement.GetProperty("observed");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("calculator_expression_invalid"));
+            Assert.That(observed.TryGetProperty("refused", out JsonElement shown) ? shown.GetString() : null, Is.EqualTo(refused));
+            Assert.That(observed.GetProperty("reasons").EnumerateArray().Select(reason => reason.GetString()),
+                Is.EqualTo(reasons.Split(',')));
+            Assert.That(observed.TryGetProperty("longNumbers", out JsonElement numbers)
+                ? string.Join(",", numbers.EnumerateArray().Select(number => number.GetString())) : null, Is.EqualTo(longNumbers));
+            Assert.That(observed.TryGetProperty("maxDigits", out JsonElement digits) ? digits.GetInt32() : (int?)null,
+                Is.EqualTo(longNumbers is null ? null : 12));
+            Assert.That(observed.TryGetProperty("maxOperators", out JsonElement operators) ? operators.GetInt32() : (int?)null,
+                Is.EqualTo(reasons == "too_many_operators" ? 8 : null));
+            Assert.That(observed.GetRawText(), Does.Not.Contain("Scientific").IgnoreCase);
+        });
+    }
+
     // Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53», Calculator showing 47): in 7 of 7 runs that wrote
     // «53» it was refused with only what is accepted, and the model asked the person «¿qué número está en la
     // calculadora?». One number alone says it computes nothing, that nothing was pressed, and the same number with an
