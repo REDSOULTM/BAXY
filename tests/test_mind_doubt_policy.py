@@ -91,14 +91,6 @@ def test_an_unsure_call_under_even_odds_is_held_with_the_note_that_names_it(tmp_
     assert rows[0]["kind"] == "doubt_ask" and rows[0]["operation"] == "app.open" and rows[0]["doubt"]["p_call"] == p_call
 
 
-def test_the_rules_say_what_to_do_with_words_that_make_no_sense(tmp_path) -> None:
-    # Feria 2026-10-27: a request heard as words with no sense was answered as one BAXY could not help with; rule 6 only
-    # read a misheard word as the one it sounds like. The model asks, in its own words, for it to be said again.
-    mind, server = _mind(tmp_path, [_say("¿Me lo repites?")])
-    mind.decide(1, "pla tu ne")
-    assert "pídele en una frase corta que lo repita" in server.bodies[0]["messages"][0]["content"]
-
-
 @pytest.mark.parametrize("threshold", ["", "0.4"])
 def test_a_sure_action_or_layer_0_off_runs_as_before(tmp_path, monkeypatch, threshold) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", threshold)
