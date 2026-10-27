@@ -94,6 +94,12 @@ WAKE_COPIES = 4         # staggered copies (StaggeredWake): 0.28 s p50 after the
 WAKE_TARGET = 0.45
 WAKE_PEAK_DECAY = 0.97
 WAKE_GAIN_CAP = 4.0
+# The detector's feature extractor keeps every frame since its last reset (9.6 MB of the mind's memory per minute of
+# audio, four copies; real use, 2026-10-26: +120 MB in 15 min without a request), and it was reset only when a request
+# opened or BAXY spoke. With no request open, after WAKE_RESET_S of it and WAKE_QUIET_S without speech, it starts
+# afresh, as it does when BAXY speaks: no word is cut.
+WAKE_RESET_S = 60.0
+WAKE_QUIET_S = 1.5
 
 
 def wake_gain(peak: float, block: np.ndarray) -> tuple[float, np.ndarray]:
@@ -477,6 +483,7 @@ class Voice:
         self._released = False          # push-to-talk let go (direct mode)
         self._partial_at = 0.0          # when what was said so far was last decoded
         self._partial = ""
+        self._wake_at = 0.0             # when the detector was last reset (its times count from there)
         if self._detector is not None:
             self._detector.reset()
         if self._vad is not None:
@@ -517,10 +524,15 @@ class Voice:
             self._audio, self._speech, self._first = self._audio[cut:], self._speech[cut:], self._first + cut
         if self._mode == "wake":
             # The detector keeps hearing during the request too, as in probar_baxy.py.
+            now = self._total / RATE
+            if (self._start is None and now - self._wake_at >= WAKE_RESET_S
+                    and not self._speech[-int(WAKE_QUIET_S * RATE):].any()):
+                self._detector.reset()
+                self._wake_at = (self._total - len(block)) / RATE  # it hears from this block on
             self._wake_peak, raised = wake_gain(self._wake_peak, block)
             detections = self._detector.accept(raised)
             if self._start is None and detections:
-                self._start = detections[0].time_s
+                self._start = self._wake_at + detections[0].time_s
                 self._partial = ""  # a new request's live caption is told even when it repeats the last one
                 self._event("wake_detected")
                 if self._on_wake is not None:
