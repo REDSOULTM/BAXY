@@ -132,8 +132,9 @@ def main() -> int:
                 parts.append(digest(messages, path, BUDGET - len(parts[0])))
         except OSError:
             pass
-    print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart",
-                                             "additionalContext": "\n\n".join(parts)}}))
+    # Texto plano y no hookSpecificOutput: con otro hook SessionStart que también devuelve JSON (context-mode),
+    # el additionalContext de éste no llegaba al modelo (comprobado el 2026-10-26).
+    print("[Contexto BAXY]\n" + "\n\n".join(parts))
     return 0
 
 
