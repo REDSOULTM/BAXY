@@ -1,8 +1,7 @@
 """Guarda de Claude Code para BAXY: lee el evento del hook por stdin y decide.
 
-Adaptado de los hooks de everything-claude-code (block-no-verify, config-protection) y del
-incidente de msconfig. Sólo librería estándar; si este script falla, Claude Code sigue (falla
-abierto). Modos:
+Nace del incidente de msconfig y de los worktrees compartidos entre sesiones. Sólo librería estándar;
+si este script falla, Claude Code sigue (falla abierto). Modos:
   pre-shell  PreToolUse de Bash/PowerShell: deniega lo que no se hace aquí nunca.
   post-edit  PostToolUse de Edit/Write: avisa a Claude, sin bloquear, de lo que debe revisar.
 BAXY_GUARD=off al lanzar Claude Code la apaga entera.

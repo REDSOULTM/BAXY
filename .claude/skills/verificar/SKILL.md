@@ -1,8 +1,6 @@
 ---
 name: verificar
 description: Verifica un cambio de BAXY subiendo la escalera de validación de AGENTS.md sólo hasta el peldaño que el cambio justifica, y devuelve un informe con comandos y resultados exactos. Úsala antes de dar una tarea por terminada o de hacer commit.
-metadata:
-  origin: verification-loop de everything-claude-code (MIT) 25278e7d7, reescrita para BAXY
 ---
 
 # Verificar un cambio de BAXY

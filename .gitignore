@@ -39,7 +39,6 @@ documentacion/documentacion.rar
 # comandos, reglas, hooks y settings.json) sí se versiona; ver .claude/README.md.
 .claude/*
 !.claude/README.md
-!.claude/LICENSE-ECC.txt
 !.claude/settings.json
 !.claude/agents/
 !.claude/commands/

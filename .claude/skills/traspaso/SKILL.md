@@ -1,13 +1,11 @@
 ---
 name: traspaso
 description: Deja o retoma el handoff de una sesión larga de BAXY con la plantilla docs/AI_HANDOFF_TEMPLATE.md (una página, rutas y comandos con resultado exacto). Úsala al cerrar una sesión larga, antes de agotar el contexto, o para continuar la de otra sesión.
-metadata:
-  origin: save-session y resume-session de everything-claude-code (MIT) 25278e7d7, reescrita para BAXY
 ---
 
 # Traspaso entre sesiones
 
-ECC guarda las sesiones en `~/.claude/session-data`; en BAXY el estado se deja **en el repositorio**,
+El estado se deja **en el repositorio**, no en `~/.claude`,
 porque `AGENTS.md` lo exige y porque otra máquina (el PC o el notebook) tiene que poder leerlo.
 
 ## Dejarlo

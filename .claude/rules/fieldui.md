@@ -7,9 +7,8 @@ paths:
 
 # FieldUi (React + TS) en BAXY
 
-<!-- Adaptado de rules/react y rules/typescript de everything-claude-code (MIT) 25278e7d7; sin Next.js ni servidor. -->
-
-- Vite + React 19 + TS dentro de WebView2. No hay Next.js, RSC, rutas ni servidor.
+- Vite + React 19 + TS dentro del shell de escritorio (WebView2). BAXY no es una aplicación web: la vista
+  se verifica ejecutando el producto y con `scripts/test_field_ui.ps1`, nunca con una BAXY de otra sesión.
 - Componentes de función; hooks sólo en el nivel superior, con dependencias completas
   (`eslint-plugin-react-hooks` ya está configurado). No dupliques estado que se puede derivar.
 - Accesibilidad central: HTML semántico, teclado y foco gestionados, nada alcanzable sólo con el ratón. El

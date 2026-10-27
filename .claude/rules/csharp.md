@@ -9,8 +9,6 @@ paths:
 
 # C# en BAXY
 
-<!-- Adaptado de rules/csharp/*.md de everything-claude-code (MIT) 25278e7d7; lo que choca con AGENTS.md se quitó. -->
-
 - .NET 10, `Nullable` y `TreatWarningsAsErrors` activos, analizadores `latest-recommended` con estilo en el
   build (`Directory.Build.props`). Un aviso se arregla; no se calla con `#pragma`, `NoWarn` ni `!`.
 - `record` para modelos de valor inmutables, `sealed` para clases que no se heredan, modificadores de acceso

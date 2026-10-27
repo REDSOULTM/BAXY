@@ -3,8 +3,6 @@ description: Busca y borra código muerto en BAXY de uno en uno, con la prueba d
 argument-hint: "[ruta o pieza]"
 ---
 
-<!-- Adaptado de commands/refactor-clean.md de everything-claude-code (MIT) 25278e7d7. -->
-
 Ámbito: `$ARGUMENTS` (por defecto, pregunta qué pieza; no barras el repositorio entero de golpe).
 
 1. **Detecta** sin descargar herramientas (nada de `npx knip`, `depcheck`, `ts-prune` ni `vulture`):

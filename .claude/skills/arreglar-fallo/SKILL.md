@@ -1,8 +1,6 @@
 ---
 name: arreglar-fallo
 description: Arregla un fallo de BAXY demostrándolo primero con una prueba que falla, luego el cambio mínimo hasta verde, revisión del diff y verificación. Úsala cuando algo existente está roto (salida mala, excepción, regresión), no para conducta nueva.
-metadata:
-  origin: orch-fix-defect de everything-claude-code (MIT) 25278e7d7, reescrita para BAXY
 ---
 
 # Arreglar un fallo

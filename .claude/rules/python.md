@@ -8,8 +8,6 @@ paths:
 
 # Python en BAXY
 
-<!-- Adaptado de rules/python/*.md de everything-claude-code (MIT) 25278e7d7; lo que choca con AGENTS.md se quitó. -->
-
 - Python 3.12 (`ruff.toml`: `target-version = "py312"`, lint sólo `F`). No se añaden black, isort, mypy ni
   bandit: no son parte del repo.
 - Anotaciones de tipo en las firmas públicas; `dataclass(frozen=True)` o `NamedTuple` para datos que no

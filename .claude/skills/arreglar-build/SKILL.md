@@ -1,8 +1,6 @@
 ---
 name: arreglar-build
 description: Deja verde un build roto de BAXY (.NET Release con warnings como errores, ruff F, tsc o eslint de FieldUi) error a error con el diff mínimo, sin callar avisos ni relajar reglas. Úsala cuando falle la compilación o la estática.
-metadata:
-  origin: build-fix y build-error-resolver de everything-claude-code (MIT) 25278e7d7, reescrita para BAXY
 ---
 
 # Arreglar el build
