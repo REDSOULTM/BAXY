@@ -29,3 +29,14 @@ def test_the_installed_applications_leave_out_uninstallers_help_manuals_and_web_
             "Foo en la Web", "wxWidgets on the Web", "Configuration tutorial (online)"]
     listed = _installed(tmp_path, kept + left)
     assert listed == "; ".join(kept) + "."
+
+
+def test_the_raw_pointer_tool_tells_the_model_it_neither_drags_nor_draws(tmp_path: Path) -> None:
+    # Feria, caso 18: asked to draw lines on a drawing canvas, the model said it could draw and sent clicks on one point;
+    # no tool holds a button down while moving (dragging was retired from the catalog as a declared limit).
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": "input.pointer.control", "description": "Click.", "argumentsSchema": {
+        "type": "object", "properties": {"action": {"type": "string"}}, "required": ["action"]}}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "input_pointer_control")["function"]
+    assert "It cannot drag or draw" in tool["description"]
+    assert "no tool drags or draws" in tool["description"]
