@@ -25,6 +25,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
         notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         clock.Advance(TimeSpan.FromSeconds(2.4));
         notice.Publish(static () => { });
@@ -41,6 +42,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
         notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         clock.Advance(TimeSpan.FromSeconds(1.5));
         notice.Publish(static () => { });
@@ -60,6 +62,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
         notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         clock.Advance(TimeSpan.FromSeconds(1));
         notice.Sounded();
@@ -75,6 +78,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
         notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         clock.Advance(TimeSpan.FromSeconds(1));
         notice.Close();
@@ -90,12 +94,14 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(clock);
         var said = new List<string>();
         notice.Open(Ask, clock.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         clock.Advance(TimeSpan.FromSeconds(2));
         notice.Publish(static () => { });
         notice.Close();
 
         notice.Open(null, clock.GetTimestamp(), said.Add); // the next turn, with no notice to hear
         clock.Advance(TimeSpan.FromSeconds(5));
+        notice.Running(true); // a call of the turn runs in the App
 
         Assert.That(said, Is.Empty);
     }

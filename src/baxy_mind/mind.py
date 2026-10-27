@@ -38,8 +38,8 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 # 3 s in silence). The App times it and asks for it (turn.notice); the words are the model's (al máximo 9.2a: a phrase
 # fixed here broke invariant 5, cero respuestas visibles fijas). Feria 2026-10-27: written once at warm-up, it was the
 # same phrase in every turn («Estoy procesando tu solicitud.»), which the owner heard as fixed; now the model writes it
-# for the call the App is running, from the turn's own conversation, while the GPU waits for that call (Mind.notice_of):
-# one per call at most, never one already said in the turn, none while the model decides or once it answered. What is
+# for the call the App is running, from the turn's own conversation, while the GPU waits for that call (Mind.notice_of;
+# the App asks only then): never one already said in the turn, none once it answered. What is
 # asked is an instruction, not a phrase; a phrase it does not write usably (empty, more than NOTICE_MAX_CHARS or
 # NOTICE_MAX_WORDS, more than one line, markup) is not said. Fase 3 (H7): a 1,81 s notice held the reply that came
 # behind it; it is said only while a call runs now, before the next decision even starts.
@@ -1455,13 +1455,12 @@ class Mind:
     def notice_of(self) -> str:
         """The notice of the person's turn while the App runs its call (NOTICE_ASK): the model's words for that call,
         written from the turn's conversation with the call still running, words only and greedy, on the GPU the call
-        leaves idle. Empty, and nothing asked of the model, when no call of a person's turn is running, when this call
-        already had its notice, or in a turn kept out of the trace (its words would be said aloud); empty too when it
-        wrote nothing usable or one of the turn's earlier notices (a form compare), or the call failed."""
+        leaves idle. Empty, and nothing asked of the model, when no call of a person's turn is running or in a turn kept
+        out of the trace (its words would be said aloud); empty too when it wrote nothing usable or one of the turn's
+        earlier notices (a form compare), or the call failed."""
         turn = self._turn
-        if not turn or not turn.get("awaiting") or turn.get("noticed") == turn["awaiting"] or turn.get("private"):
+        if not turn or not turn.get("awaiting") or turn.get("private"):
             return ""
-        turn["noticed"] = turn["awaiting"]
         said = turn.setdefault("notices", [])
         ask = NOTICE_ASK.format(said=NOTICE_SAID.format(said=", ".join(f"«{s}»" for s in said)) if said else "")
         notice = {"messages": [{"role": "system", "content": self._system()}, *self._history(turn["conv"]),

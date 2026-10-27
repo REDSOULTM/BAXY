@@ -204,7 +204,6 @@ class Speech:
         self._foreseen: dict[str, tuple[int, Future]] = {}
         self._notice_text = ""               # the turn's notice phrase (set_notice), said only as a notice
         self._notice_audio: np.ndarray | None = None  # its audio, synthesized once, with no pause after it
-        self._loaded = False                 # Supertonic is loaded: a notice given from now on is synthesized at once
         self._ready = threading.Event()
         self.failure = ""
         self.speaking = False
@@ -312,12 +311,12 @@ class Speech:
         return True
 
     def set_notice(self, text: str) -> Future | None:
-        """The turn's notice phrase (turn.notice): synthesized now, or as soon as the voice has loaded; empty, no
-        notice is said. The synthesis, done once its audio is kept; None when it is not synthesized now."""
+        """The turn's notice phrase (turn.notice), synthesized now: the synthesis, done once its audio is kept. Empty,
+        or with the voice not loaded, no notice is said (None)."""
         text = " ".join(str(text or "").split())[:MAX_CHARS]
         with self._posting:
             self._notice_text, self._notice_audio = text, None
-            if text and self._loaded and not self.failure:
+            if text and self.ready:
                 return self._synthesize_notice(text)
         return None
 
@@ -365,10 +364,6 @@ class Speech:
     def _run(self) -> None:
         try:
             self._start()
-            with self._posting:
-                self._loaded = True
-                if self._notice_text and self._notice_audio is None:
-                    self._synthesize_notice(self._notice_text)
         except Exception as error:  # noqa: BLE001 - without a voice BAXY still answers on screen
             self.failure = repr(error)
             sys.stderr.write(f"baxy_mind_renew_speech: {self.failure}\n")
@@ -457,17 +452,8 @@ class Speech:
             num_threads=THREADS, provider="cpu")))
         self.rate = int(self._tts.sample_rate)
         self._shift = Fraction(2 ** (float(self._voice.get("shift", 0)) / 12)).limit_denominator(100)
-        # Loads the voice now, so the first answer does not wait for it. The mind's notice phrase, when it came while the
-        # model loaded (catalog.ready; on the notebook, e2e c3-final5-dv6, the first turn's notice was refused 7.3 s
-        # after it, with no audio yet, and the next one came 10 s later), is that first take and its audio is kept: the
-        # notice is ready with the voice, and a throwaway «Hola.» followed by the notice's own synthesis no longer
-        # stands before the first answer or notice.
-        with self._posting:
-            warm = self._notice_text
-        audio = self._synthesize(warm or "Hola.", pause=False)
-        with self._posting:
-            if warm and self._notice_text == warm:
-                self._notice_audio = audio
+        # Loads the voice now, so the first answer does not wait for it.
+        self._synthesize("Hola.", pause=False)
 
     def _sentences(self, text: str) -> _Sentences:
         """Each sentence's audio in order: the first is already being synthesized (while the output opens), and each

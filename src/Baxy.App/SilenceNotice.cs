@@ -5,8 +5,9 @@ namespace Baxy.App;
 /// silencio»): a turn the person opened that has published nothing <see cref="After"/> after the person's words (or
 /// press) arrived, and is still working, asks the mind for its notice (<c>turn.notice</c>) and says the phrase it gets,
 /// and asks again every <see cref="Again"/> while it stays silent. The words are the model's, written for what the turn
-/// is doing: the mind writes one only while the turn waits for a call the App runs that had no notice yet, never the same
-/// phrase twice in a turn, and answers none otherwise; with no phrase nothing is said and the next expiry asks again.
+/// is doing: it is asked only while a call of the turn runs in the App (<see cref="Running"/>) and said only if it still
+/// runs, the mind never writes the same phrase twice in a turn, and with no phrase nothing is said and the next expiry
+/// asks again.
 /// Until 2026-10-27 it was one phrase the mind wrote when it warmed up (the <c>notice</c> of its <c>catalog.ready</c>),
 /// and the owner heard the same «Estoy procesando…» in every turn. The notice is not the turn's answer: it is only said
 /// aloud, never a line of the conversation. The first sound of the turn's own line closes it under one gate, so the
@@ -44,6 +45,10 @@ internal sealed class SilenceNotice
     private bool _asking;
     // Cancels that question when the notice closes (the question owns and disposes its source).
     private Action? _stopAsking;
+    // A call of the turn runs in the App now (Running): the notice speaks of it, so it is asked and said only then.
+    private bool _running;
+    // The notice came due while no call ran (the model decided, or the answer was on its way): asked when one starts.
+    private Action? _waiting;
 
     internal SilenceNotice(TimeProvider time)
     {
@@ -74,7 +79,7 @@ internal sealed class SilenceNotice
 
             _open = true;
             SynchronizationContext? context = SynchronizationContext.Current;
-            Action notice = () => _ = AskAsync(turn, ask, say, context);
+            Action notice = () => Due(() => _ = AskAsync(turn, ask, say, context));
             TimeSpan due = After - _time.GetElapsedTime(arrivedAt);
             _timer = _time.CreateTimer(
                 _ =>
@@ -128,6 +133,27 @@ internal sealed class SilenceNotice
         }
     }
 
+    /// <summary>
+    /// A call of the turn starts (<paramref name="running"/>) or ends running in the App. Feria 2026-10-27: a notice
+    /// asked while the model decided waited behind that decision in the mind and spoke of a call that had already ended,
+    /// or of one that was only asking the person's yes; it is asked while a call runs and said only if it still runs.
+    /// </summary>
+    internal void Running(bool running)
+    {
+        Action? waiting;
+        lock (_gate)
+        {
+            _running = running;
+            waiting = running ? _waiting : null;
+            if (running)
+            {
+                _waiting = null;
+            }
+        }
+
+        waiting?.Invoke();
+    }
+
     /// <summary>The turn ended: a turn that published nothing says no notice; one whose line is not heard yet still may.</summary>
     internal void Close()
     {
@@ -140,7 +166,22 @@ internal sealed class SilenceNotice
         }
     }
 
-    // The notice is due: the mind is asked for a phrase unless this turn's question has not answered yet.
+    // The notice is due: asked now while a call runs, else when the next one starts.
+    private void Due(Action ask)
+    {
+        lock (_gate)
+        {
+            if (!_running)
+            {
+                _waiting = _open ? ask : null;
+                return;
+            }
+        }
+
+        ask();
+    }
+
+    // The mind is asked for a phrase unless this turn's question has not answered yet.
     private async Task AskAsync(
         long turn,
         Func<CancellationToken, Task<string?>> ask,
@@ -205,7 +246,7 @@ internal sealed class SilenceNotice
             }
 
             _asking = false;
-            if (!_open || phrase is null)
+            if (!_open || !_running || phrase is null)
             {
                 return;
             }
@@ -224,6 +265,7 @@ internal sealed class SilenceNotice
         _open = false;
         _published = false;
         _asking = false;
+        _waiting = null;
         _timer?.Dispose();
         _timer = null;
         Action? stop = _stopAsking;

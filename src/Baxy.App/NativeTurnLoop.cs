@@ -467,7 +467,17 @@ internal sealed class NativeTurnLoop
                 return;
             }
 
-            string observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
+            string observation;
+            _notice.Running(true);
+            try
+            {
+                observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
+            }
+            finally
+            {
+                _notice.Running(false);
+            }
+
             _egress.Observed(step.Operation!, observation);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
             // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same

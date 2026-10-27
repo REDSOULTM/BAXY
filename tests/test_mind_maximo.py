@@ -220,24 +220,23 @@ def test_the_notice_is_written_by_the_model_for_the_call_the_app_runs(tmp_path: 
     assert not any(m.get("content") == mind_module.NOTICE_RUNNING for m in mind.conversation)
 
 
-def test_one_notice_per_call_and_none_once_the_turn_answered(tmp_path: Path) -> None:
+def test_a_long_call_gets_another_notice_and_none_once_the_turn_answered(tmp_path: Path) -> None:
+    # Al máximo, flujos: a call of 30 to 160 s said one notice and then nothing; each one now is other words.
     from test_mind_final import _say
-    mind, server = _calling(tmp_path, "Busco vuelos a Lima.")
+    mind, server = _calling(tmp_path, "Busco vuelos a Lima.", "Sigo comparando horarios.")
     assert mind.notice_of() == "Busco vuelos a Lima."
-    assert mind.notice_of() == ""  # the same call: nothing asked of the model
+    assert mind.notice_of() == "Sigo comparando horarios."
     server.replies.append(_say("Hay vuelos desde 200 dólares."))
     mind.continue_turn(2, json.dumps({"status": "completed", "results": []}))
     assert mind.notice_of() == ""
-    assert len(server.bodies) == 3
+    assert len(server.bodies) == 4
 
 
 def test_a_notice_already_said_in_the_turn_is_not_said_again(tmp_path: Path) -> None:
     from test_mind_final import _call, _say
     mind, server = _calling(tmp_path, "Busco vuelos a Lima.")
     assert mind.notice_of() == "Busco vuelos a Lima."
-    fetch = _call("web_fetch", {"url": "https://example.org"})
-    fetch["choices"][0]["message"]["tool_calls"][0]["id"] = "c2"
-    server.replies += [fetch, _say("busco vuelos a lima")]
+    server.replies += [_call("web_fetch", {"url": "https://example.org"}), _say("busco vuelos a lima")]
     assert mind.continue_turn(2, json.dumps({"status": "completed", "results": []}))["kind"] == "action"
     assert mind.notice_of() == ""
     assert "«Busco vuelos a Lima.»" in server.bodies[-1]["messages"][-1]["content"]  # told what it already said

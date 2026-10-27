@@ -18,6 +18,7 @@ public sealed class SilenceNoticeTests
         var said = new List<string>();
 
         notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         Assert.That(time.Timers, Has.Count.EqualTo(1));
         Assert.That(time.Timers[0].DueTime, Is.EqualTo(SilenceNotice.After));
@@ -43,6 +44,7 @@ public sealed class SilenceNoticeTests
         var said = new List<string>();
 
         notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         time.Timers[0].Fire();
         notice.Publish(() => said.Add("answer"));
         notice.Close();
@@ -64,6 +66,7 @@ public sealed class SilenceNoticeTests
         time.Advance(TimeSpan.FromSeconds(1.5));
 
         notice.Open(Says("Dame un momento."), arrived, said.Add);
+        notice.Running(true); // a call of the turn runs in the App
 
         Assert.That(time.Timers, Has.Count.EqualTo(1));
         Assert.That(time.Timers[0].DueTime, Is.EqualTo(SilenceNotice.After - TimeSpan.FromSeconds(1.5)));
@@ -86,6 +89,7 @@ public sealed class SilenceNoticeTests
         try
         {
             notice.Open(Says("Dame un momento."), arrived, said.Add);
+            notice.Running(true); // a call of the turn runs in the App
         }
         finally
         {
@@ -113,6 +117,7 @@ public sealed class SilenceNoticeTests
         var said = new List<string>();
 
         notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         notice.Publish(() => said.Add("answer"));
         notice.Sounded();
         time.Timers[0].Fire();
@@ -129,6 +134,7 @@ public sealed class SilenceNoticeTests
         var said = new List<string>();
 
         notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         notice.Close();
         time.Timers[0].Fire();
         // A heartbeat opens no notice: its own line is only published.
@@ -145,8 +151,10 @@ public sealed class SilenceNoticeTests
         var said = new List<string>();
 
         notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         notice.Close();
         notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         time.Timers[0].Fire();
         Assert.That(said, Is.Empty);
 
@@ -161,6 +169,7 @@ public sealed class SilenceNoticeTests
         var notice = new SilenceNotice(time);
 
         notice.Open(null, time.GetTimestamp(), _ => Assert.Fail("nobody asks, no notice"));
+        notice.Running(true); // a call of the turn runs in the App
 
         Assert.That(time.Timers, Is.Empty);
     }
@@ -177,6 +186,7 @@ public sealed class SilenceNoticeTests
         try
         {
             notice.Open(Says("Dame un momento."), time.GetTimestamp(), said.Add);
+            notice.Running(true); // a call of the turn runs in the App
         }
         finally
         {
@@ -212,6 +222,7 @@ public sealed class SilenceNoticeTests
             },
             time.GetTimestamp(),
             said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         time.Timers[0].Fire();
         Assert.That(said, Is.Empty);
         time.Timers[0].Fire();
@@ -238,14 +249,17 @@ public sealed class SilenceNoticeTests
             },
             time.GetTimestamp(),
             said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         time.Timers[0].Fire();
         notice.Close();
         Assert.That(firstToken.IsCancellationRequested, Is.True);
         first.SetResult("Abro el Bloc de notas.");
 
         notice.Open(_ => second.Task, time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         time.Timers[1].Fire();
         notice.Open(Says("Otro turno."), time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         second.SetResult("Busco en la web.");
 
         Assert.That(said, Is.Empty);
@@ -268,12 +282,35 @@ public sealed class SilenceNoticeTests
             },
             time.GetTimestamp(),
             said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         time.Timers[0].Fire();
         time.Timers[0].Fire();
         Assert.That(asked, Is.EqualTo(1));
         answer.SetResult("Estoy descargando el instalador.");
 
         Assert.That(said, Is.EqualTo(new[] { "Estoy descargando el instalador." }));
+    }
+
+    [Test]
+    public void ANoticeDueWhileTheModelDecidesIsAskedWhenACallStartsAndSaidOnlyWhileItRuns()
+    {
+        // Feria 2026-10-27: asked while the model decided, the question waited behind that decision in the mind and
+        // spoke of a call that had already ended, or of one only asking the person's yes.
+        var time = new ManualTime();
+        var notice = new SilenceNotice(time);
+        var said = new List<string>();
+        var pending = new TaskCompletionSource<string?>();
+        int asked = 0;
+
+        notice.Open(_ => { asked++; return pending.Task; }, time.GetTimestamp(), said.Add);
+        time.Timers[0].Fire();
+        Assert.That(asked, Is.Zero);
+        notice.Running(true);
+        Assert.That(asked, Is.EqualTo(1));
+        notice.Running(false); // the call came back (its question for the person's yes) before the phrase
+        pending.SetResult("Muevo el informe a la papelera.");
+
+        Assert.That(said, Is.Empty);
     }
 
     [Test]
@@ -285,6 +322,7 @@ public sealed class SilenceNoticeTests
         var phrases = new Queue<string?>(["Busco el archivo.", "Sigo buscando en el disco D."]);
 
         notice.Open(_ => Task.FromResult(phrases.Dequeue()), time.GetTimestamp(), said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         time.Timers[0].Fire();
         time.Timers[0].Fire();
 
@@ -309,6 +347,7 @@ public sealed class SilenceNoticeTests
             },
             time.GetTimestamp(),
             said.Add);
+        notice.Running(true); // a call of the turn runs in the App
         Assert.DoesNotThrow(() => time.Timers[0].Fire());
         time.Timers[0].Fire();
 
