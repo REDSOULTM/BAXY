@@ -2773,6 +2773,9 @@ internal sealed class WindowsVisibleControlAdapter
                     // Renew al máximo (7.3): where in the window it lies (two «Buscar», «the first result»).
                     if (ControlZone(control.RectValue, windowBox) is { Length: > 0 } zone)
                         writer.WriteString("zone", zone);
+                    // Feria 2026-10-27: the window's body (its canvas), the only control input.pointer.drag drags on.
+                    if (control.Body)
+                        writer.WriteBoolean("body", true);
                     writer.WriteEndObject();
                 }
 
@@ -2944,6 +2947,7 @@ internal sealed class WindowsVisibleControlAdapter
                 ItemType = ReadString(item, "itemType"),
                 RectValue = rect,
                 Repeated = ReadInt(item, "repeated"),
+                Body = item.TryGetProperty("body", out JsonElement body) && body.ValueKind == JsonValueKind.True,
             });
         }
 
@@ -4171,6 +4175,22 @@ internal sealed class WindowsVisibleControlAdapter
         return chosen is not null;
     }
 
+    /// <summary>The body (the canvas) the last view handed out at this index, that view's window and the body's
+    /// rectangle: what input.pointer.drag's «index» names. False when that index is no body of the last view.</summary>
+    internal bool TryViewedBody(int index, out nint window, out Rect? rect)
+    {
+        LastView? view;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        ViewControl? chosen = view?.Controls.FirstOrDefault(control => control.Index == index && control.Body);
+        window = chosen is null ? 0 : view!.Hwnd;
+        rect = chosen?.RectValue;
+        return chosen is not null;
+    }
+
     /// <summary>The field the last view handed out at this index, and that view's window: what input.text.type's
     /// «index» names. False when no view handed it out or it carries no identity.</summary>
     public bool TryViewedField(int index, out nint window, out string controlId)
@@ -4328,6 +4348,8 @@ internal sealed class WindowsVisibleControlAdapter
         internal string ItemType { get; set; } = string.Empty;
         internal Rect? RectValue { get; set; }
         internal int Repeated { get; set; }
+
+        internal bool Body { get; set; }
     }
 
     private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls)
