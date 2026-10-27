@@ -1129,6 +1129,9 @@ CALCULATE = {
     },
 }
 CALCULATIONS = 4  # a turn's calculations; the next decision after the last is in words
+# Feria 2026-10-27: office_document_create takes the whole body in one call; at 512 tokens a story of ~500 words was
+# cut mid-call. A cap, not a length: a short answer still ends at its own end.
+DECISION_TOKENS = 1536
 CALCULATED_FIRST = json.dumps({"status": "not_run", "reason": "written before the calculation's value; call it again "
                                                               "with that value if it is still needed"})
 
@@ -2156,7 +2159,7 @@ class Mind:
         self._turned = True
         conv = turn["conv"]
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *self._history(conv)]
-        body = {"messages": messages, "tools": self.tools, "max_tokens": 512, "parallel_tool_calls": True,
+        body = {"messages": messages, "tools": self.tools, "max_tokens": DECISION_TOKENS, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
                 "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
                 # A fixed seed: the same conversation gets the same decision, so two runs of a bench differ by the
