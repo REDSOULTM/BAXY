@@ -100,7 +100,13 @@ assert _ASKED_IF_DONE in SYSTEM
 # Feria 2026-10-27: asked what it can do, it answered five ways and named things no tool does (editing photos). Only a
 # person asks that, so the heartbeat reads none of it; the person's text names the catalog's groups (CAN_DO_AREAS).
 _CAN_DO = SYSTEM[SYSTEM.index("\n11. "):]
-BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "").replace(_CAN_DO, "")
+# P1.4 (noche 2026-10-27): what to do with words that sound like nothing, or with the ear's doubts, is for words someone
+# said; in the heartbeat nobody spoke.
+_REPEAT = (" Si no suena a nada que se entienda (sílabas sueltas, palabras que juntas no dicen nada) o una nota dice que "
+           "el oído no está seguro de la palabra de la que depende qué hacer, no lo adivines: pídele en una frase que lo "
+           "repita.")
+assert _REPEAT in SYSTEM
+BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "").replace(_CAN_DO, "").replace(_REPEAT, "")
 # The groups of the App's panel «Qué puedo hacer» (operation-labels.v1.json), each tool's «group» in catalog.configure.
 CAN_DO_AREAS = " Por áreas: {areas}."
 

@@ -11,7 +11,7 @@ import numpy
 
 from baxy_mind import voice
 from baxy_mind.early import Anticipation
-from baxy_mind.mind import SYSTEM, UNSURE_NOTE
+from baxy_mind.mind import BEAT_SYSTEM, SYSTEM, UNSURE_NOTE
 from baxy_mind.voice import BLOCK, Heard, Voice
 from test_mind_final import _call, _mind, _say
 
@@ -121,6 +121,7 @@ def test_the_rules_say_what_the_ears_doubts_and_words_that_make_no_sense_ask_for
     assert "«sincuenta» es 50" in rule
     assert "el oído no está seguro" in UNSURE_NOTE and "el oído no está seguro" in rule
     assert "repita" in rule
+    assert "«sincuenta» es 50" in BEAT_SYSTEM and "repita" not in BEAT_SYSTEM  # in the heartbeat nobody spoke
 
 def test_an_answer_to_the_models_question_carries_its_unsure_words(tmp_path: Path) -> None:
     mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿A qué nivel?"}), _say("Listo.")])
