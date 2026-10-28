@@ -755,7 +755,7 @@ public sealed class NativeTurnLoopTests
 
     // e01442da5 (wire.py): message.send is message_send_set to the model (message_send ⊂ message_send_test). The call
     // held for the person and the result of one that waits for the person's yes named message_send, a name the model is
-    // not shown; they name the call as the model sees it.
+    // not shown; they name the call by the name shown to the model.
     [Test]
     public void ACallHeldForThePersonIsNamedAsTheModelSeesIt()
     {

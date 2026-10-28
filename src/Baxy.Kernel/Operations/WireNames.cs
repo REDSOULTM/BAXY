@@ -59,7 +59,7 @@ public sealed class WireNames
         _names = names;
     }
 
-    /// <summary>The wire name of an operation of the product catalog, as the model sees it.</summary>
+    /// <summary>The wire name of an operation of the product catalog, the one shown to the model.</summary>
     public static string Of(string operation) => Product.Name(operation);
 
     /// <summary>The wire name of an operation; one this catalog does not have keeps its plain name.</summary>
