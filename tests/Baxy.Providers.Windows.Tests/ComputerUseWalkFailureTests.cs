@@ -148,6 +148,10 @@ public sealed class ComputerUseWalkFailureTests
             Assert.That(unfinished.RootElement.GetProperty("uiaFailed").GetString(),
                 Is.EqualTo(WindowsVisibleControlAdapter.UnfinishedWalkReason));
             Assert.That(WindowsVisibleControlAdapter.UnfinishedWalk(7, _ => false), Is.Null);
+            // Only a walk that spent the worker's budget did not end; a worker missing or broken answers nothing at once.
+            Assert.That(WindowsVisibleControlAdapter.PastWalkBudget(Stopwatch.GetTimestamp()), Is.False);
+            Assert.That(WindowsVisibleControlAdapter.PastWalkBudget(
+                Stopwatch.GetTimestamp() - (long)(20 * Stopwatch.Frequency)), Is.True);
             Assert.That(gone.Verified, Is.False);
             Assert.That(gone.ErrorCode, Is.EqualTo("visible_controls_unavailable"));
         });

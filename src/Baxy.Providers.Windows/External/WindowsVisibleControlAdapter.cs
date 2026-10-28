@@ -2192,7 +2192,8 @@ internal sealed class WindowsVisibleControlAdapter
                 .ConfigureAwait(false);
             if (view.Receipt.ErrorCode is not null)
                 return view.Receipt;
-            if (waitForLabel is null || view.Names.Any(name => SameLabel(waitForLabel, name))
+            // A walk that did not end is not waited on again: each look may take the worker's budget once more.
+            if (waitForLabel is null || view.Unfinished || view.Names.Any(name => SameLabel(waitForLabel, name))
                 || DateTime.UtcNow >= deadline)
             {
                 NoteOpenedLooked(view.Receipt, view.Names);
@@ -2291,6 +2292,12 @@ internal sealed class WindowsVisibleControlAdapter
 
     /// <summary>The reason a look whose walk did not end gives the model («uiaFailed»).</summary>
     internal const string UnfinishedWalkReason = "la lectura del árbol accesible no terminó en su plazo";
+
+    /// <summary>Whether a worker that answered nothing (<paramref name="asked"/> the timestamp the walk was asked at) spent
+    /// <see cref="WorkerViewBudget"/> on it: a slow walk, not a worker missing or broken (those answer nothing at once).
+    /// The budget's timer is allowed a second of slack.</summary>
+    internal static bool PastWalkBudget(long asked) =>
+        Stopwatch.GetElapsedTime(asked) >= WorkerViewBudget - TimeSpan.FromSeconds(1);
 
     /// <summary>P2.17: the answer a look goes on with when the worker did not answer its walk within
     /// <see cref="WorkerViewBudget"/> (a slow tree; the worker was ended) on a window that is still there
@@ -2502,9 +2509,11 @@ internal sealed class WindowsVisibleControlAdapter
         Task<VisibleControlSurface.CapturedWindow?> captureTask =
             Task.Run(() => CaptureQuietlyAsync(firstLooked, covered, cancellationToken), CancellationToken.None);
         Task<WrittenText>? textTask = includeText ? ReadTextAsync(captureTask, lines ? PlacedLinesRead : limit, cancellationToken, placed: lines) : null;
+        long asked = Stopwatch.GetTimestamp();
         JsonDocument? answer = await _worker.SendAsync(command, WorkerViewBudget, cancellationToken).ConfigureAwait(false);
-        bool unfinished = answer is null;
-        answer ??= UnfinishedWalk(hwnd, VisibleControlSurface.IsAlive);
+        bool unfinished = answer is null && PastWalkBudget(asked);
+        if (unfinished)
+            answer = UnfinishedWalk(hwnd, VisibleControlSurface.IsAlive);
         if (answer is null)
         {
             return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
@@ -2535,12 +2544,14 @@ internal sealed class WindowsVisibleControlAdapter
                     captureTask = Task.Run(
                         () => CaptureQuietlyAsync(content, contentCovered, cancellationToken), CancellationToken.None);
                     textTask = includeText ? ReadTextAsync(captureTask, lines ? PlacedLinesRead : limit, cancellationToken, placed: lines) : null;
+                    asked = Stopwatch.GetTimestamp();
                     answer = await _worker.SendAsync(
                             ViewCommand(content, limit, wanted, tail),
                             WorkerViewBudget, cancellationToken)
                         .ConfigureAwait(false);
-                    unfinished = answer is null;
-                    answer ??= UnfinishedWalk(content, VisibleControlSurface.IsAlive);
+                    unfinished = answer is null && PastWalkBudget(asked);
+                    if (unfinished)
+                        answer = UnfinishedWalk(content, VisibleControlSurface.IsAlive);
                     if (answer is null)
                         return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
                 }
@@ -2872,7 +2883,7 @@ internal sealed class WindowsVisibleControlAdapter
                     : "windows_uia_snapshot_ocr_zones");
                 writer.WriteEndObject();
             });
-            return new ViewResult(ExternalJson.Success(operation, result, false), names);
+            return new ViewResult(ExternalJson.Success(operation, result, false), names, unfinished);
         }
     }
 
@@ -4370,5 +4381,7 @@ internal sealed class WindowsVisibleControlAdapter
         internal string? Application { get; init; }
     }
 
-    private readonly record struct ViewResult(ExternalCapabilityReceipt Receipt, IReadOnlyList<string> Names);
+    // Unfinished: the worker's walk did not end within its budget (P2.17), so the look is not taken again.
+    private readonly record struct ViewResult(
+        ExternalCapabilityReceipt Receipt, IReadOnlyList<string> Names, bool Unfinished = false);
 }
