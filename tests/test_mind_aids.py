@@ -550,6 +550,8 @@ def test_a_relative_volume_change_says_its_amount_when_no_number_was_said(tmp_pa
     # a 0,57 en la primera decisión según el prompt); amount es obligatorio y su descripción sólo hablaba de un número dicho.
     mind, _ = _mind(tmp_path, [])
     schema = {"type": "object", "properties": {"amount": {"type": "integer"}, "direction": {"type": "string"}}}
-    mind.configure({"capabilities": [{"name": "audio.volume.adjust", "description": "Volume.", "argumentsSchema": schema}]})
-    tool = next(t for t in mind.tools if t["function"]["name"] == "audio_volume_adjust")["function"]
-    assert tool["parameters"]["properties"]["amount"]["description"].endswith("or 10 when they said no number.")
+    mind.configure({"capabilities": [{"name": name, "description": "Volume.", "argumentsSchema": schema}
+                                     for name in ("audio.volume.adjust", "audio.app.volume.adjust")]})
+    for wire in ("audio_volume_adjust", "audio_app_volume_adjust"):
+        tool = next(t for t in mind.tools if t["function"]["name"] == wire)["function"]
+        assert tool["parameters"]["properties"]["amount"]["description"].endswith("or 10 when they said no number.")
