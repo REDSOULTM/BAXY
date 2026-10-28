@@ -60,7 +60,7 @@ public sealed class ComputerUseWalkFailureTests
               [string](Test-Broken $cutTail),
               [string]$cutHead.EndsWith('Chat silenciado'),
               [string]$cutHead.StartsWith($prefix),
-              [string]((Format-Name $plain) -ceq (('A'*60)+' ... '+('B'*16))),
+              [string](((Format-Name $plain) -ceq $plain) -and ((Format-Name (('A'*100)+' '+('B'*100))) -ceq (('A'*100)+' '+[char]0x2026))),
               [string]$first.controls.Count,
               [string]$after.controls.Count,
               [string]$after.reserved,
@@ -72,7 +72,7 @@ public sealed class ComputerUseWalkFailureTests
             "False",  // the start kept is whole
             "False",  // the end kept is whole
             "True", "True",
-            "True",   // contracase: a name without pairs is cut exactly as before
+            "True",   // contracase: a name without pairs arrives whole up to 160, past it is cut at a word (R6-NB-5)
             "63",     // the look before the click: its 60 and, since no row was in them, the rows (C11, reserved room)
             "61", "1", "Abuela 23:18", // the look after it: the contact named by the goal's words, past the cap
         }));
