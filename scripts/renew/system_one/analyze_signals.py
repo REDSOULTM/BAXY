@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from wire_names import wire  # noqa: E402  (scripts/renew/wire_names.py)
+from wire_names import current, wire  # noqa: E402  (scripts/renew/wire_names.py)
 
 BANKS = Path(r"F:\BAXYeval\renew_v1\runs")
 
@@ -77,7 +77,7 @@ def main():
         if chosen in wants:
             args_only += 1  # the right operation with a wrong argument: no rival fixes it
             continue
-        names = {x["wire"] for x in r["rivals"]} - {chosen}
+        names = {current(x["wire"]) for x in r["rivals"]} - {chosen}
         alts = {t for t, _ in r["signals"].get("first_alts") or []}
         if wants & names or (e["kind"] == "text" and r["kind"] != "conversation" and any(not a.startswith("<") for a in alts)):
             reach += 1

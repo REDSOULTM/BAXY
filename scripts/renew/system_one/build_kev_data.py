@@ -21,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 import bench_decision as bench  # noqa: E402
-from wire_names import wire  # noqa: E402
+from wire_names import current, wire  # noqa: E402
 from kev_adjudicate import ANSWER, KINDS, OPTION_TEXT, qwen_choice, short, state_text  # noqa: E402
 
 CANT = {"sint_no_lo_hago", "sint_modo_no_disponible", "massive_cannot", "agente_no_lo_hago"}
@@ -48,7 +48,7 @@ def confusion_map(rows):
         gold = wire(bench.current(expect["op"])[0] or "")
         if not gold:
             continue
-        for name in [qwen_choice(row)] + [r["wire"] for r in row["rivals"] if r.get("known")]:
+        for name in [qwen_choice(row)] + [current(r["wire"]) for r in row["rivals"] if r.get("known")]:
             if name not in (gold, "ask_user", ANSWER):
                 pairs[gold][name] += 1
     return {gold: [name for name, _ in counter.most_common()] for gold, counter in pairs.items()}
@@ -105,7 +105,7 @@ def main():
             if expect["kind"] in ("call", "call_any") and not any(g in described for g in gold):
                 stats["gold_not_in_catalog"] += 1
                 continue
-            options = [qwen_choice(row)] + [r["wire"] for r in row["rivals"] if r.get("known")]
+            options = [qwen_choice(row)] + [current(r["wire"]) for r in row["rivals"] if r.get("known")]
             if expect["kind"] in ("call", "call_any") and not any(g in options for g in gold):
                 options.append(next(g for g in gold if g in described))
                 stats["gold_added"] += 1

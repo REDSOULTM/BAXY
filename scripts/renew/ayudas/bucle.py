@@ -22,9 +22,6 @@ import tempfile
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from wire_names import wire  # noqa: E402  (scripts/renew/wire_names.py)
-
 
 def recorded(run: Path) -> tuple[list[dict], list[dict]]:
     """The model's decisions in the order the mind traced them, and each turn's person's words and steps."""
@@ -42,7 +39,7 @@ def recorded(run: Path) -> tuple[list[dict], list[dict]]:
     return decisions, turns
 
 
-def forced_reply(decision: dict, n: int) -> dict:
+def forced_reply(decision: dict, n: int, wire) -> dict:
     message = {"role": "assistant", "content": decision.get("content") or ""}
     if decision["kind"] == "action":
         message["tool_calls"] = [{"id": f"call_r{n}", "type": "function", "function": {
@@ -100,7 +97,10 @@ def main() -> None:
 
     def chat(body, timeout=120.0, on_text=None):
         if body.get("max_tokens") == 512 and forced:  # a decision, not the warm-up
-            return forced_reply(forced.pop(0), len(forced))
+            # The name the configured mind shows for it (an older --src, with no wire.py, shows the plain one).
+            wires = getattr(mind, "wires", None)
+            return forced_reply(forced.pop(0), len(forced),
+                                wires.name if wires is not None else (lambda op: op.replace(".", "_")))
         return plain(body, timeout=max(timeout, 10800.0))
 
     server.chat = chat

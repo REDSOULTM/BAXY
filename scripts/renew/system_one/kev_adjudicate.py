@@ -23,7 +23,7 @@ import psutil
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 import bench_decision as bench  # noqa: E402
-from wire_names import wire  # noqa: E402
+from wire_names import current, wire  # noqa: E402
 
 # The question as the product writes it (src/baxy_mind/system_one.py): training and serving read the same words.
 sys.path.insert(0, str(bench.ROOT / "src"))
@@ -95,7 +95,7 @@ def main():
             if row["excluded"] or not row["signals"]:
                 continue
             chosen = qwen_choice(row)
-            options = [chosen] + [r["wire"] for r in row["rivals"] if r["known"]] + ["ask_user", ANSWER]
+            options = [chosen] + [current(r["wire"]) for r in row["rivals"] if r["known"]] + ["ask_user", ANSWER]
             options = list(dict.fromkeys(o for o in options if o in described))
             body = {"state": state_text(row["text"], row["history"]), "questions": {
                 "operacion": {"type": "choice", "instructions": "¿Qué debe hacer el asistente con este pedido?",

@@ -70,7 +70,8 @@ public sealed class WireNamesTests
     }
 
     // Each text the App and the providers give the model names a call by WireNames: none builds a name by hand, and none
-    // writes the old name of a renamed operation in a string.
+    // writes the old name of a renamed operation in a string. It reads line by line: a name on a continuation line of a
+    // raw """ literal, or one built another way than Replace, is not seen here.
     [Test]
     public void NoSourceTextNamesACallByAWireNameTheModelIsNotShown()
     {

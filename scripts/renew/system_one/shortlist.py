@@ -24,7 +24,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 import bench_decision as bench  # noqa: E402
-from wire_names import wire  # noqa: E402
+from wire_names import current, wire  # noqa: E402
 
 KS = (4, 8, 12, 16, 20)
 ASK, ANSWER = "ask_user", "responder_con_palabras"
@@ -115,12 +115,12 @@ def main():
     from baxy_mind.system_one import short  # noqa: E402
 
     catalog = json.loads(Path(args.tools).read_text(encoding="utf-8"))
-    tools = {t["wire"]: short(t["description"]) for t in catalog if t["wire"] not in (ASK, "confirm_pending")}
+    tools = {current(t["wire"]): short(t["description"]) for t in catalog if t["wire"] not in (ASK, "confirm_pending")}
     data = Path(args.train)
     examples = []
     for rec, case in zip((json.loads(l) for l in open(data / "train.jsonl", encoding="utf-8")),
                          (json.loads(l) for l in open(data / "train.ids.jsonl", encoding="utf-8"))):
-        label = rec["questions"]["operacion"]["label"]
+        label = current(rec["questions"]["operacion"]["label"])
         if label in tools:
             examples.append((case["text"][:300], label))
     model = SentenceTransformer(args.model, device="cpu")
@@ -139,7 +139,7 @@ def main():
             t0 = time.monotonic()
             ranked = sl.rank(r["text"])
             times.append(time.monotonic() - t0)
-            qwen = [x["wire"] for x in r.get("rivals") or []] + ([wire(str(r["operation"]))] if r.get("operation") else [])
+            qwen = [current(x["wire"]) for x in r.get("rivals") or []] + ([wire(str(r["operation"]))] if r.get("operation") else [])
             for k in KS:
                 hits[k] += bool(gold & set(ranked[:k]))
                 union[k] += bool(gold & (set(ranked[:k]) | set(qwen)))

@@ -28,6 +28,17 @@ def wire(operation: str) -> str:
     return _names().get(operation) or operation.replace(".", "_")
 
 
+@cache
+def _renamed() -> dict[str, str]:
+    return {op.replace(".", "_"): name for op, name in _names().items() if name != op.replace(".", "_")}
+
+
+def current(name: str) -> str:
+    """A wire name read from a file (a run's rivals, a catalog, a label written before a tool was renamed) as the model
+    is shown it now: the plain name of a renamed operation (audio_volume) is its new one (audio_volume_set)."""
+    return _renamed().get(name, name)
+
+
 def _write() -> None:
     sys.path.insert(0, str(ROOT / "src"))
     from baxy_mind.mind import ASK_USER, CALCULATE, CONFIRM  # noqa: PLC0415
