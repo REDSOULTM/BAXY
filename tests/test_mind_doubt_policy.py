@@ -457,3 +457,59 @@ def test_in_normal_mode_an_unsure_call_the_kernel_confirms_or_that_goes_direct_i
     mind.risk = {"email_send": risk}
     assert mind.decide(1, "mándaselo a ana")["operation"] == "email.send"
     assert all("tool_choice" not in body for body in server.bodies)  # held, it read again with its tools
+
+
+# Held-out of C16, written by a subagent that never saw the change. The mind reads no words: whatever is said, an unsure
+# power call asks (here at either layer), and a sure one, or an unsure call the kernel confirms or that goes direct, runs.
+HELD_OUT_UNSURE = ["apágalo no más", "cierra todo y chao", "ya me voy déjalo durmiendo", "reinicia esa cuestión que se pegó",
+                   "a pagar todo", "corta la sesión po", "mata todo que me tengo que ir",
+                   "salte de ahí y deja la cuestión lista pa mañana"]
+
+
+@pytest.mark.parametrize("words", HELD_OUT_UNSURE)
+@pytest.mark.parametrize("p_power", [0.3, 0.5])
+def test_held_out_unsure_power_requests_are_asked(tmp_path, monkeypatch, words, p_power) -> None:
+    _unasked(tmp_path, monkeypatch, "")
+    mind, server, _ = _layer2(tmp_path, monkeypatch, "app_close", [_rival_call(p_power), _say("¿Qué quieres que haga?")])
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind.risk = {"system_power": "work_loss", "app_close": "work_loss"}
+    assert mind.decide(1, words)["operation"] is None
+    assert server.bodies[1].get("tool_choice") == "none"
+
+
+@pytest.mark.parametrize("words, reply, operation", [
+    ("reinicia el computador por favor", _call("system_power", {"action": "restart"}, 0.9), "system.power"),
+    ("suspende el notebook ahora", _call("system_power", {"action": "sleep"}, 0.9), "system.power"),
+    ("abre la calculadora", _call("app_open", {"appId": "calculadora"}, 0.3), "app.open"),
+    ("busca en internet el clima de mañana en curicó", _call("web_search", {"query": "clima"}, 0.3), "web.search")])
+def test_held_out_clear_requests_run(tmp_path, monkeypatch, words, reply, operation) -> None:
+    _unasked(tmp_path, monkeypatch, "")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [reply, json.loads(json.dumps(reply))])
+    mind.wire_to_op["web_search"] = "web.search"
+    mind.risk = {"system_power": "work_loss", "app_open": "read_only", "web_search": "read_only"}
+    assert mind.decide(1, words)["operation"] == operation
+    assert all("tool_choice" not in body for body in server.bodies)
+
+
+def test_an_unreadable_confirmation_mode_asks_about_an_unsure_external_call(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))
+    (tmp_path / "confirmation-mode").mkdir()  # unreadable: it counts as Bypass (_bypass)
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_call("email_send", {"to": "ana"}, 0.3), _say("¿A quién se lo mando?")])
+    mind.wire_to_op["email_send"] = "email.send"
+    mind.risk = {"email_send": "external_communication"}
+    assert mind.decide(1, "mándaselo")["operation"] is None
+    assert server.bodies[1].get("tool_choice") == "none"
+
+
+@pytest.mark.parametrize("risk", ["recoverable_delete", "installation"])
+def test_in_bypass_layer2_asks_about_an_unsure_call_normal_mode_would_confirm(tmp_path, monkeypatch, risk) -> None:
+    _unasked(tmp_path, monkeypatch, "bypass")
+    monkeypatch.setenv("BAXY_S1_CORRECT", "1")
+    mind, server, _ = _layer2(tmp_path, monkeypatch, "app_close", [_rival_call(0.5), _say("¿Cuál de las dos?")])
+    mind.risk = {"system_power": risk, "app_close": risk}
+    server.fill_call = lambda body, wire: {"name": wire, "arguments": {}, "timings": {}}
+    assert mind.decide(1, "ahora ciérralo")["operation"] is None
+    assert server.bodies[1].get("tool_choice") == "none"
+    assert ", pero también podría ser " in server.bodies[1]["messages"][-1]["content"]

@@ -1045,7 +1045,8 @@ DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de ha
 # the request back («¿Quieres que busque…?», «¿Quieres conectarte a la red…?», «¿Quieres cerrar…?»), and a clear request
 # became a question (v11, the fair's battery). Layer 0 lets it read the request again with its tools: it does what was
 # asked, or asks only what is missing (identity: «una pregunta corta y concreta que desambigua»). System One does not
-# hold that reading again (layers 0 and 2); the kernel's confirmations still apply. A «sí» under CONFIRM_FLOOR only asks.
+# hold that reading again (layers 0 and 2), save a call the kernel would run unasked (Mind._unasked, which only asks); the
+# kernel's confirmations still apply. A «sí» under CONFIRM_FLOOR only asks.
 REREAD_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
                "{call}. Nada se hizo todavía. Vuelve a leer lo que dijo: si pide eso y no cabe otra lectura, hazlo; si "
                "cabe otra lectura o falta un dato, pregúntale en una frase corta sólo lo que falta.]")
@@ -2468,8 +2469,9 @@ class Mind:
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads (the call it nearly made never enters the
-            # conversation). After layer 0 or 2 it decides again with its tools, once (REREAD_NOTE, DOUBT_OTHER_NOTE); an
-            # unsure «sí» (DOUBT_NOTE) only asks the person, in its own words, what they want.
+            # conversation). After layer 0 or 2 it decides again with its tools, once (REREAD_NOTE, DOUBT_OTHER_NOTE); a
+            # note that ends in ASK_ONLY (an unsure «sí», a call the kernel would run unasked) only asks the person, in
+            # its own words, what they want.
             conv.append({"role": "user", "content": note})
             reread = not note.endswith(ASK_ONLY)
             doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
@@ -2759,7 +2761,8 @@ class Mind:
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
         runs; the answer to layer 2's own question is never turned into another one, nor is the model's reading again
-        after either layer (turn["reread"]). Asking is never held: it already puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
+        after either layer (turn["reread"]), save a call the kernel would run unasked (_unasked): that one, at either
+        layer, only asks. Asking is never held: it already puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
         only a yes (PLAIN_YES), whatever System One's own thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] in (ASK_USER["function"]["name"],
                                                                      CALCULATE["function"]["name"]):
