@@ -19,7 +19,9 @@ internal sealed class WindowsMicrophoneAdapter : IExternalOperationAdapter
         _openDefaultInput = openDefaultInput
             ?? throw new ArgumentNullException(nameof(openDefaultInput));
 
-    public bool CanHandle(string operation) => operation == "audio.microphone.mute";
+    internal const string StatusOperation = "audio.microphone.status";
+
+    public bool CanHandle(string operation) => operation is "audio.microphone.mute" or StatusOperation;
 
     public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -27,6 +29,11 @@ internal sealed class WindowsMicrophoneAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        if (operation == StatusOperation)
+        {
+            return ValueTask.FromResult(ReadStatus(operation));
+        }
+
         if (!arguments.TryGetProperty("state", out JsonElement stateValue)
             || stateValue.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
         {
@@ -90,6 +97,37 @@ internal sealed class WindowsMicrophoneAdapter : IExternalOperationAdapter
         {
             return ValueTask.FromResult(effectBoundary.Failure(
                 operation, "microphone_endpoint_unavailable"));
+        }
+    }
+
+    // noche P1.1 (d): the state, read with no boundary crossed (the mute call found it out only by trying to change it).
+    private ExternalCapabilityReceipt ReadStatus(string operation)
+    {
+        try
+        {
+            using IWindowsAudioEndpoint endpoint = _openDefaultInput();
+            bool muted = endpoint.ReadMuted();
+            JsonElement result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("muted", muted);
+                writer.WriteString("endpointIdHash", AudioEndpointIdentity.Hash(endpoint.EndpointId));
+                writer.WriteString("authority", "windows_core_audio_capture_endpoint_read");
+                if (ModelAids.On(ModelAids.MicrophoneScope)) writer.WriteString("next", ScopeNext);
+                writer.WriteEndObject();
+            });
+            return ExternalJson.Success(operation, result, effectObserved: false);
+        }
+        catch (AudioPlatformException exception)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, exception.ErrorCode);
+        }
+        catch (Exception exception) when (exception is COMException
+            or InvalidComObjectException or UnauthorizedAccessException
+            or SecurityException or ObjectDisposedException)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "microphone_endpoint_unavailable");
         }
     }
 

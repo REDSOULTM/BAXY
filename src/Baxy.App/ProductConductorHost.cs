@@ -277,8 +277,8 @@ internal static class ProductConductorHost
 
     /// <summary>
     /// The product as the window mounts it, with no view to show what it publishes: the view's channel serves BAXY's own
-    /// readings (assistant.status: the model's from <paramref name="telemetry"/>, the internet exits from this session's
-    /// steps) and the conversations asked by voice (conversation.*, kept in the profile's sessions).
+    /// readings (assistant.status: the confirmation mode from the profile, the model's from <paramref name="telemetry"/>,
+    /// the internet exits from this session's steps) and the conversations asked by voice (conversation.*, kept in the profile's sessions).
     /// </summary>
     internal static FieldProductChannel Mount(MainWindowViewModel viewModel, FieldTelemetrySampler telemetry,
         CancellationToken lifetime) => new(viewModel, new Unseen(), telemetry, lifetime);

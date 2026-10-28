@@ -156,7 +156,8 @@ public sealed class ProductCatalogTests
     // BAXY Renew uso real: + 1, message.send. BAXY Renew cu (C04 variante, C05): + 2, game.store.page y game.store.search;
     // (C14) + 1, client.microphone.set; (C18) + 1, clipboard.paste.into; (C10, C11, notebook) + 1, office.format.apply.
     // pc-f6-ajustes: + 1, baxy.settings.set; f6 estado: + 1, assistant.status; pc-f6-sesiones: + 4, las conversaciones por voz (ConversationAdditions).
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 4;
+    // noche P1.1: + 1, audio.microphone.status (NocheReadAdditions).
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 4 + 1;
 
     // pc-f6-ajustes (f4-accesibilidad): BAXY's own settings by voice, one setting and its value; reversible, so it never
     // asks, and it reaches neither a window nor the network. The proposals take a span (or on to end the silence); the
@@ -183,6 +184,12 @@ public sealed class ProductCatalogTests
             Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
         });
     }
+
+    // noche P1.1 (d): si el micrófono está silenciado sólo se sabía llamando a la operación que lo cambia.
+    internal static readonly string[] NocheReadAdditions =
+    [
+        "audio.microphone.status",
+    ];
 
     // pc-f6-sesiones (APLAZADOS f4-accesibilidad, 2026-10-25): empezar, listar, abrir y renombrar una conversación
     // estaba sólo en la vista; la App las ejecuta con sus propias sesiones (FieldProductChannel) y ninguna pide el sí.
@@ -365,7 +372,7 @@ public sealed class ProductCatalogTests
 
     // f6 estado: BAXY's own readings are a read with no effect (no «sí» in any mode), told which one by its scope.
     [Test]
-    public void AssistantStatusIsAReadOfTheModelOrTheSessionsInternetExits()
+    public void AssistantStatusIsAReadOfTheConfirmationModeTheModelOrTheSessionsInternetExits()
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("assistant.status");
         OperationArgumentsSchema schema = descriptor.ArgumentsSchema;
@@ -376,7 +383,7 @@ public sealed class ProductCatalogTests
             Assert.That(descriptor.EffectKinds, Is.Empty);
             Assert.That(descriptor.RequiresObservedEffect, Is.False);
             Assert.That(schema.Properties.Single().Name, Is.EqualTo("scope"));
-            Assert.That(schema.Properties.Single().AllowedValues, Is.EqualTo(new[] { "internet", "model" }));
+            Assert.That(schema.Properties.Single().AllowedValues, Is.EqualTo(new[] { "confirmation", "internet", "model" }));
             Assert.That(schema.Required, Is.EqualTo(new[] { "scope" }));
             Assert.That(ProductCatalog.ToPolicyRisk(descriptor.Risk), Is.EqualTo(OperationRisk.ReadOnly));
         });
@@ -543,7 +550,7 @@ public sealed class ProductCatalogTests
                 Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
                     .And.SupersetOf(RenewAgentAdditions).And.SupersetOf(RenewRealesAdditions)
                     .And.SupersetOf(UsoRealAdditions).And.SupersetOf(F6EstadoAdditions)
-                    .And.SupersetOf(ConversationAdditions));
+                    .And.SupersetOf(ConversationAdditions).And.SupersetOf(NocheReadAdditions));
             Assert.That(descriptors.Select(static descriptor => descriptor.Name),
                 Has.None.AnyOf(RenewRetired));
             Assert.That(
@@ -776,6 +783,22 @@ public sealed class ProductCatalogTests
                 Assert.That(RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), mode, name,
                     accepted.RootElement), Is.EqualTo(PolicyDecision.Allow), $"{name} {mode}");
             }
+        });
+    }
+
+    [Test]
+    public void MicrophoneStatusIsAReadOnlyCallWithNoArguments()
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("audio.microphone.status");
+        using JsonDocument extra = JsonDocument.Parse("{\"state\":true}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
+            Assert.That(descriptor.EffectKinds, Is.Empty);
+            Assert.That(descriptor.RequiresObservedEffect, Is.False);
+            Assert.That(descriptor.ArgumentsSchema.Properties, Is.Empty);
+            Assert.That(OperationArgumentValidator.IsValid(extra.RootElement, descriptor.ArgumentsSchema), Is.False);
         });
     }
 

@@ -1,12 +1,13 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
 /// <summary>
 /// assistant.status (f6 estado, 2026-10-25): what BAXY's view already shows of BAXY itself, read for the person who asks
-/// by voice. Scope model: the video memory and RAM its model takes, the same reading as Ajustes › Modelo and the rail's
+/// by voice. Scope confirmation: the mode its bypass switch shows. Scope model: the video memory and RAM its model takes, the same reading as Ajustes › Modelo and the rail's
 /// meter (FieldTelemetrySampler, nothing measured anew). Scope internet: the session's «Salidas a internet» (Ajustes ›
 /// Privacidad), the steps of this session's conversation that reached the internet, each with what went out and when;
 /// they are the person's own (the addresses visited), so they are read from this session only and go nowhere but to
@@ -20,6 +21,8 @@ internal static class OwnReadings
     internal const int ExitsShown = 20;
 
     internal const string ModelUnreadable = "model_resources_unreadable";
+
+    internal const string ConfirmationUnreadable = "confirmation_mode_unreadable";
 
     /// <summary>Nothing in the App holds the view's readings (no view channel).</summary>
     internal const string Unavailable = "own_readings_unavailable";
@@ -52,6 +55,18 @@ internal static class OwnReadings
 
         return Success(receipt);
     }
+
+    /// <summary>The confirmation mode the engine rereads at each call (ConfirmationModeStore), the one BAXY's own bypass
+    /// switch shows: normal asks the person's yes before a risky call, bypass runs it without asking. A file that could not
+    /// be read (null) is a failure, never «normal».</summary>
+    internal static OperationOutcome Confirmation(ConfirmationMode? mode) =>
+        mode is null ? OperationOutcome.Failure(ConfirmationUnreadable) : Success(new JsonObject
+        {
+            ["version"] = 1,
+            ["scope"] = "confirmation",
+            ["mode"] = mode == ConfirmationMode.Bypass ? "bypass" : "normal",
+            ["asksBeforeRiskyCalls"] = mode != ConfirmationMode.Bypass,
+        });
 
     /// <summary>This session's internet exits as the view's log lists them (store.ts, netOf): every step of BAXY's
     /// replies that went out, with what went out and the reply's time; the latest <see cref="ExitsShown"/>, oldest

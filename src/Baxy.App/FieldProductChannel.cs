@@ -82,11 +82,14 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.TurnReleased += OnTurnReleased;
     }
 
-    // assistant.status: GET /metrics' model reading (the same sampler), or this session's internet log, which the view
-    // builds from the same transcript (store.ts, netOf).
+    // assistant.status: the confirmation mode the engine rereads (null when its file could not be read), GET /metrics'
+    // model reading (the same sampler), or this session's internet log, which the view builds from the same transcript
+    // (store.ts, netOf).
     private async Task<Baxy.Kernel.Operations.OperationOutcome> ReadOwnAsync(string scope, CancellationToken cancellationToken) =>
         scope switch
         {
+            "confirmation" => OwnReadings.Confirmation(
+                ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(), out ConfirmationMode mode) ? mode : null),
             "model" => OwnReadings.Model(await _telemetry.SampleAsync(cancellationToken).ConfigureAwait(true)),
             "internet" => OwnReadings.Internet(_transcript.Items),
             _ => Baxy.Kernel.Operations.OperationOutcome.Failure(OwnReadings.UnknownScope),

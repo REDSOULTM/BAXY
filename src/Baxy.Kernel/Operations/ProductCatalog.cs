@@ -79,14 +79,14 @@ public static class ProductCatalog
             "app.restart.window.close.process.exit.app.open.v1",
             "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo."),
         // f6 estado (2026-10-25): lo que la vista ya muestra de BAXY (Ajustes › Modelo y el medidor del rail; Ajustes ›
-        // Privacidad, «Salidas a internet de esta sesión») se pregunta también por voz. Lo lee la App de lo suyo
+        // Privacidad, «Salidas a internet de esta sesión»; el interruptor de bypass) se pregunta también por voz. Lo lee la App de lo suyo
         // (OwnReadings): nada sale del PC ni se mide de nuevo.
         Descriptor(
             "assistant.status",
-            Schema([String("scope", values: ["internet", "model"])], ["scope"]),
+            Schema([String("scope", values: ["confirmation", "internet", "model"])], ["scope"]),
             OperationRisks.ReadOnly,
             "assistant.status.app.view.readings.v1",
-            "Lee lo que la vista muestra de BAXY: la memoria de vídeo y la RAM de su modelo, o las salidas a internet de esta sesión con su destino y hora."),
+            "Lee lo que la vista muestra de BAXY: su modo de confirmación (normal o bypass), la memoria de vídeo y la RAM de su modelo, o las salidas a internet de esta sesión con su destino y hora."),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(
@@ -116,6 +116,13 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "audio.microphone.mute.capture.endpoint.postread.v1",
             "Silencia o reactiva el micrófono predeterminado de Windows y corrobora la postlectura del endpoint de captura."),
+        // noche P1.1 (d): si está silenciado se leía con la operación que lo cambia.
+        Descriptor(
+            "audio.microphone.status",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "audio.microphone.status.capture.endpoint.read.v1",
+            "Lee si el micrófono predeterminado de Windows está silenciado, sin modificarlo."),
         Descriptor(
             "audio.mute",
             Schema([Boolean("state")], ["state"]),
