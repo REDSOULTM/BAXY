@@ -40,6 +40,36 @@ internal sealed partial class UserBrowserSurface
         writer.WriteBoolean("effectReadBack", false);
     }
 
+    // Noche r7 (pre-web-comprobar): what an unconfirmed navigation's address field showed after the link (addressSeen),
+    // so the result says what was checked and why it was not enough, never the address itself.
+    internal const string AddressNotRead = "not_read";
+    internal const string NoAddress = "no_address";
+    internal const string PageFromBefore = "page_from_before";
+    internal const string OtherPage = "other_page";
+    internal const string SameSiteNotKnownNew = "same_site_not_known_new";
+
+    /// <summary>
+    /// Decisión del dueño (noche, pre-web-comprobar): an unconfirmed navigation says what was checked: the link was
+    /// handed to the browser, whether a window of it changed after that, and what its address field showed
+    /// (<see cref="PageObservation.Seen"/>). No address read from a tab is written: it may be another page of the person's.
+    /// </summary>
+    private static ExternalCapabilityReceipt Unconfirmed(
+        string operation, UserBrowserIdentity browser, Uri target, PageObservation seen) =>
+        ExternalJson.FailureAfterEffect(operation, NavigationUnconfirmed) with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("requestedUrl", target.AbsoluteUri);
+                writer.WriteString("browser", browser.DisplayName);
+                writer.WriteBoolean("linkSent", true);
+                writer.WriteBoolean("windowChanged", seen.Changed);
+                writer.WriteString("addressSeen", seen.Seen);
+                writer.WriteEndObject();
+            }),
+        };
+
     private static readonly TimeSpan Poll = TimeSpan.FromMilliseconds(250);
     private const int NavigationPolls = 40;
     // Ronda 23: with the browser already running and no window of it changing title in this long (six seconds), the
@@ -59,6 +89,11 @@ internal sealed partial class UserBrowserSurface
     private const int AddressReads = 3;
     // After a redirect of the same site, how long the destination itself may still arrive (about a second).
     private const int RedirectSettlePolls = 4;
+    // Noche r7 (R7-NB-5): when the address field of a window whose title moved on still shows the page from before the
+    // link, how long before it is read again although the title does not move (about a second).
+    private const int StaleRereadPolls = 4;
+    // A baseline read that failed this fast (not one that ran out its time) is tried once more.
+    private static readonly TimeSpan BaselineRetryWithin = TimeSpan.FromSeconds(3);
     // When the front window already showed the destination, how long before its address is read again (two seconds).
     private const int SamePagePolls = 8;
     private const int PausedPollsBeforePlay = 8;
@@ -106,7 +141,7 @@ internal sealed partial class UserBrowserSurface
         PageObservation seen = await ObserveNavigationAsync(
             browser, target, address => SameSite(target, address), before, cancellationToken).ConfigureAwait(false);
         if (seen.Address is null)
-            return ExternalJson.FailureAfterEffect(operation, NavigationUnconfirmed);
+            return Unconfirmed(operation, browser, target, seen);
         // Uso real (Opera GX behind Spotify): the shell opened the tab, but this background process had no right to hand
         // the front over, so the page stayed behind and the text typed next went to the window in front. The page the
         // person asked to see is put in front, as a click on a link does.
@@ -534,7 +569,16 @@ internal sealed partial class UserBrowserSurface
         return shared;
     }
 
-    private readonly record struct PageObservation(Uri? Address, nint Window, string Authority = AddressAuthority);
+    /// <summary>
+    /// Where a navigation arrived, or with no <paramref name="Address"/> what was checked: whether a window of the browser
+    /// changed after the link (<paramref name="Changed"/>) and what the last address read showed (<paramref name="Seen"/>).
+    /// </summary>
+    private readonly record struct PageObservation(
+        Uri? Address,
+        nint Window,
+        string Authority = AddressAuthority,
+        string Seen = AddressNotRead,
+        bool Changed = false);
 
     /// <summary>
     /// The address a window title names: the browser titles its window «&lt;tab title&gt; - &lt;browser&gt;», and a tab
@@ -570,8 +614,12 @@ internal sealed partial class UserBrowserSurface
                 return true;
             if (window != Front || FrontAddress is null)
                 return false;
-            return !(TryAddress(FrontAddress, out Uri? earlier) && SameAddress(earlier, observed));
+            return !ShowedBefore(window, observed);
         }
+
+        /// <summary>The front window's address field read before the link showed this very address.</summary>
+        internal bool ShowedBefore(nint window, Uri observed) =>
+            window == Front && TryAddress(FrontAddress, out Uri? earlier) && SameAddress(earlier, observed);
     }
 
     private async ValueTask<NavigationBaseline> BaselineAsync(
@@ -584,7 +632,12 @@ internal sealed partial class UserBrowserSurface
         if (windows.Count == 0)
             return new(titles, nint.Zero, null);
         nint front = windows[0].Handle;
+        long started = System.Diagnostics.Stopwatch.GetTimestamp();
         string? address = await _platform.ReadAddressAsync(front, cancellationToken).ConfigureAwait(false);
+        // Noche r7 (R7-NB-5): one failed read left the page before the link unknown, and a redirect of the site could
+        // not be told from a page the person had; a read that failed fast is tried once more.
+        if (address is null && System.Diagnostics.Stopwatch.GetElapsedTime(started) < BaselineRetryWithin)
+            address = await _platform.ReadAddressAsync(front, cancellationToken).ConfigureAwait(false);
         return new(titles, front, address?.Trim());
     }
 
@@ -621,21 +674,37 @@ internal sealed partial class UserBrowserSurface
         int attempt = 0;
         bool clue = false;
         string? browserSegment = BrowserTitleSegment(before.Titles.Values);
+        string seenLast = AddressNotRead;
+        // Noche r7 (R7-NB-5): a window whose address field still showed the page from before the link is read again
+        // from this poll on, although its title does not move.
+        var rereadAt = new Dictionary<nint, int>();
 
         // The address read of a window: the arrival when it is the destination; a fresh address of the same site
-        // is kept as a redirect.
+        // is kept as a redirect. Anything else is noted by kind (seenLast), never by address.
         PageObservation? Arrived(string? text, nint window)
         {
             if (!TryAddress(text, out Uri? observed))
+            {
+                seenLast = NoAddress;
                 return null;
+            }
             if (ReachedTarget(target, observed))
                 return new(observed, window);
-            if (ofSite(observed) && !ContradictsTarget(target, observed) && before.Fresh(window, observed))
+            if (before.ShowedBefore(window, observed))
+            {
+                seenLast = PageFromBefore;
+                rereadAt[window] = attempt + StaleRereadPolls;
+            }
+            else if (!ofSite(observed) || ContradictsTarget(target, observed))
+                seenLast = OtherPage;
+            else if (before.Fresh(window, observed))
             {
                 if (redirect.Address is null)
                     redirectUntil = attempt + RedirectSettlePolls;
                 redirect = new(observed, window);
             }
+            else
+                seenLast = SameSiteNotKnownNew;
             return null;
         }
 
@@ -676,10 +745,13 @@ internal sealed partial class UserBrowserSurface
                 if (pending is not null || reads >= AddressReads)
                     break;
                 // A window is read again only once its title moved on: an address
-                // field read while the new tab was still being built says nothing.
+                // field read while the new tab was still being built says nothing. Noche r7: or once a field that
+                // still showed the page from before the link has had a moment to catch up.
                 if (readTitles.TryGetValue(window.Handle, out string? read)
-                    && string.Equals(read, window.Title, StringComparison.Ordinal))
+                    && string.Equals(read, window.Title, StringComparison.Ordinal)
+                    && !(rereadAt.TryGetValue(window.Handle, out int due) && attempt >= due))
                     continue;
+                rereadAt.Remove(window.Handle);
                 readTitles[window.Handle] = window.Title;
                 reads++;
                 Task<string?> started = _platform.ReadAddressAsync(window.Handle, cancellationToken).AsTask();
@@ -702,7 +774,7 @@ internal sealed partial class UserBrowserSurface
         if (alreadyShown && redirect.Address is null
             && await FrontShowsAsync(browser, target, cancellationToken).ConfigureAwait(false) is { } last)
             return last;
-        return redirect;
+        return redirect.Address is null ? new(null, nint.Zero, Seen: seenLast, Changed: clue) : redirect;
     }
 
     /// <summary>

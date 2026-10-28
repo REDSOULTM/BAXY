@@ -178,7 +178,7 @@ public sealed class UserBrowserTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
-            Assert.That(receipt.Result, Is.Null);
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("finalUrl").And.Not.Contain("mail.example.org"));
             Assert.That(harness.Edge.NavigateCalls, Is.Zero, "an opened link is never repeated elsewhere");
             Assert.That(platform.Fronted, Is.Empty, "another site's window is never put in front");
         });
@@ -208,7 +208,8 @@ public sealed class UserBrowserTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
-            Assert.That(receipt.Result, Is.Null, "the old search is never reported as the arrival");
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("finalUrl").And.Not.Contain("Aleph"),
+                "the old search is never reported as the arrival");
             Assert.That(platform.BaselineReads, Is.EqualTo(1), "only the front window is read before the link opens");
             Assert.That(harness.Edge.NavigateCalls, Is.Zero);
         });
@@ -313,7 +314,7 @@ public sealed class UserBrowserTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
-            Assert.That(receipt.Result, Is.Null);
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("finalUrl"));
         });
     }
 
@@ -580,7 +581,7 @@ public sealed class UserBrowserTests
 
     [TestCase("page_from_before", true)]
     [TestCase("not_read", false)]
-    [TestCase("unreadable", true)]
+    [TestCase("no_address", true)]
     [TestCase("other_page", true)]
     [TestCase("same_site_not_known_new", true)]
     public async Task AnUnconfirmedNavigationSaysWhatWasCheckedAndNoAddressItRead(string seen, bool windowChanged)
@@ -600,7 +601,7 @@ public sealed class UserBrowserTests
                 AddressBeforeOpen = _ => "www.example.org/private",
                 AddressOf = _ => "www.example.org/private",
             },
-            "unreadable" => new FakePlatform(OperaGx)
+            "no_address" => new FakePlatform(OperaGx)
             {
                 AddressBeforeOpen = EmptyAddressField,
                 AddressOf = _ => null,
