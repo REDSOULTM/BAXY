@@ -1440,7 +1440,7 @@ internal sealed class WindowsVisibleControlAdapter
             // lost focus is the click's effect elsewhere, never «unchanged» (the model would press again).
             receipt = FocusOnly(receipt, after) is { } unchanged && !AnotherWindowCame(_clickRoots)
                 ? unchanged
-                : WithAfter(receipt, after);
+                : WithAfter(receipt, ListedSameWhenSurfaceChanged(receipt.Result, after));
         }
 
         if (receipt.Verified
@@ -1453,6 +1453,21 @@ internal sealed class WindowsVisibleControlAdapter
 
         return RepeatedUnchanged(receipt, arguments);
     }
+
+    // C67 (R8-NB-5): a click proved by the window's image (surfaceChanged) on a browser whose tree lists only an old
+    // document came back with after «same», read as «the window did not change», and the model pressed it again. The tree
+    // did not see what the image did: its view says only that the listed controls are the same («sameListed»).
+    private static JsonElement ListedSameWhenSurfaceChanged(JsonElement? result, JsonElement after) =>
+        result is { ValueKind: JsonValueKind.Object } facts
+        && facts.TryGetProperty("surfaceChanged", out JsonElement changed) && changed.ValueKind == JsonValueKind.True
+        && after.TryGetProperty("same", out JsonElement same) && same.ValueKind == JsonValueKind.True
+            ? ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("sameListed", true);
+                writer.WriteEndObject();
+            })
+            : after;
 
     // Holdout v5 V5E029 (s1): «Modo de calculadora Estándar», a Text and not a button, was clicked; the window's image
     // changed only because the display lost the focus ring, and the click came back completed (surfaceChanged), so the
