@@ -235,6 +235,34 @@ def test_the_decision_model_has_no_answer_off_its_options_or_when_one_order_fail
     assert laya.choose("ciérralo", [], OPTIONS) is None
 
 
+def test_the_decision_model_answers_within_the_requests_budget(monkeypatch) -> None:
+    # P1.13: a doubted decide asked it for 2 s per order past the request's 24 s, and the App got decision_unavailable.
+    import time
+    laya, _ = _laya(monkeypatch, [])
+    given: list[float] = []
+    laya._ask = lambda text, history, options, timeout: given.append(timeout) or {"probabilities": {"app_close": 1.0}}
+    laya.until = lambda: time.monotonic() + 0.5
+    assert laya.choose("ciérralo", [], OPTIONS)["choice"] == "app_close"
+    assert len(given) == 2 and all(0 < seconds <= 0.5 for seconds in given)
+    laya.until = lambda: time.monotonic() - 0.1
+    laya._ask = lambda *args: pytest.fail("asked with the request's budget spent")
+    told: list = []
+    laya.on_event = lambda stage, **fields: told.append((stage, fields))
+    assert laya.choose("ciérralo", [], OPTIONS) is None
+    assert told == [("system_one.over_budget", {"answered_orders": 0})]  # the trace tells it from a failed answer
+
+
+def test_the_mind_gives_the_decision_model_its_requests_budget(tmp_path) -> None:
+    from baxy_mind.mind import Mind
+    from baxy_mind.system_one import SystemOne
+    laya = SystemOne("laya.gguf", "llama-server.exe")
+    server = type("Server", (), {"deadline": None})()
+    Mind(server, tmp_path / "turns.jsonl", laya)
+    assert laya.until() is None
+    server.deadline = 123.0
+    assert laya.until() == 123.0
+
+
 def test_the_decision_model_has_no_answer_before_it_is_up() -> None:
     from baxy_mind.system_one import SystemOne
     laya = SystemOne("laya.gguf", "llama-server.exe")

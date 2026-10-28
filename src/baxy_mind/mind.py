@@ -1360,6 +1360,7 @@ class Mind:
         if system_one is not None:
             # Its server exiting and starting again is said in this trace (system_one.exited, system_one.restarted).
             system_one.on_event = lambda stage, **fields: self._log(stage, time.perf_counter(), None, **fields)
+            system_one.until = lambda: self.server.deadline  # it answers within the request's budget, as every call
         self._judged: dict[str, Any] | None = None
         self._unread: list[dict[str, str]] = []  # the last decision's rivals whose names could not be read (P4)
         self.tools: list[dict[str, Any]] = []
