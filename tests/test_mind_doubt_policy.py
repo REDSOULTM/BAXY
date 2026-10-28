@@ -386,3 +386,74 @@ def test_an_unsure_search_for_what_or_who_a_named_thing_is_is_not_held(tmp_path,
     mind, _ = _mind(tmp_path, [_call("web_search", {"query": "Zorvik"}, 0.3), _say("¿Quieres que busque Zorvik?")])
     mind.wire_to_op["web_search"] = "web.search"
     assert mind.decide(1, "¿Qué es Zorvik?")["operation"] == "web.search"  # held, it would be the question
+
+
+# C16 (auditoría de la noche): after pregunta-eco a doubt reads again with the tools, and nothing held what that reading
+# chose. A call the kernel would run unasked though normal mode counts its risk as one to confirm (system.power; in
+# Bypass every one of them, and what goes out of the PC) is asked about as before the night, whichever layer doubted it
+# and also when the reading after another doubt chose it.
+def _unasked(tmp_path, monkeypatch, mode: str) -> None:
+    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))
+    if mode:
+        (tmp_path / "confirmation-mode").write_text(mode, encoding="utf-8")
+
+
+def test_layer2_asks_about_an_unsure_power_call_with_no_tools(tmp_path, monkeypatch) -> None:
+    _unasked(tmp_path, monkeypatch, "")
+    mind, server, _ = _layer2(tmp_path, monkeypatch, "app_close",
+                              [_rival_call(0.5), _say("¿Cierro la ventana o apago el PC?")])
+    mind.risk = {"system_power": "work_loss", "app_close": "work_loss"}
+    result = mind.decide(1, "ahora ciérralo")
+    assert result["operation"] is None and result["reply"] == "¿Cierro la ventana o apago el PC?"
+    assert server.bodies[1].get("tool_choice") == "none"
+    assert "app_close" in server.bodies[1]["messages"][-1]["content"]
+    rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
+    assert rows[0]["kind"] == "doubt_ask"
+
+
+def test_the_answer_to_layer2_power_question_is_not_asked_again(tmp_path, monkeypatch) -> None:
+    _unasked(tmp_path, monkeypatch, "")
+    mind, _, one = _layer2(tmp_path, monkeypatch, "app_close",
+                           [_rival_call(0.5), _say("¿Cierro la ventana o apago el PC?"), _rival_call(0.5)])
+    mind.risk = {"system_power": "work_loss", "app_close": "work_loss"}
+    assert mind.decide(1, "ciérralo")["operation"] is None
+    assert mind.decide(2, "el PC")["operation"] == "system.power"  # the person answered its question
+    assert len(one.asked) == 2
+
+
+@pytest.mark.parametrize("p_power", [0.3, 0.5])
+def test_power_chosen_unsure_on_reading_again_after_another_doubt_is_asked(tmp_path, monkeypatch, p_power) -> None:
+    _unasked(tmp_path, monkeypatch, "")
+    mind, server, _ = _layer2(tmp_path, monkeypatch, "app_close",
+                              [_call("app_open", {"appId": "notas"}, 0.3), _rival_call(p_power), _say("¿Apago el PC?")])
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind.risk = {"system_power": "work_loss", "app_open": "read_only", "app_close": "work_loss"}
+    result = mind.decide(1, "ahora ciérralo")
+    assert result["operation"] is None and result["reply"] == "¿Apago el PC?"
+    assert server.bodies[2].get("tool_choice") == "none"
+
+
+@pytest.mark.parametrize("risk", ["recoverable_delete", "installation", "external_communication", "work_loss"])
+def test_in_bypass_an_unsure_call_normal_mode_would_confirm_is_asked(tmp_path, monkeypatch, risk) -> None:
+    _unasked(tmp_path, monkeypatch, "bypass")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_call("email_send", {"to": "ana"}, 0.3), _say("¿A quién se lo mando?")])
+    mind.wire_to_op["email_send"] = "email.send"
+    mind.risk = {"email_send": risk}
+    result = mind.decide(1, "mándaselo")
+    assert result["operation"] is None and server.bodies[1].get("tool_choice") == "none"
+
+
+@pytest.mark.parametrize("risk", ["recoverable_delete", "installation", "external_communication", "read_only"])
+def test_in_normal_mode_an_unsure_call_the_kernel_confirms_or_that_goes_direct_is_read_again(tmp_path, monkeypatch,
+                                                                                               risk) -> None:
+    # Normal mode: the kernel asks the person for what it confirms (and for the external calls that reach a person); the
+    # rest of external_communication (a page, a song, an event in their own calendar) goes direct by the owner's
+    # decision, and its doubt reads again, as pregunta-eco measured.
+    _unasked(tmp_path, monkeypatch, "")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_call("email_send", {"to": "ana"}, 0.3), _call("email_send", {"to": "ana"}, 0.3)])
+    mind.wire_to_op["email_send"] = "email.send"
+    mind.risk = {"email_send": risk}
+    assert mind.decide(1, "mándaselo a ana")["operation"] == "email.send"
+    assert all("tool_choice" not in body for body in server.bodies)  # held, it read again with its tools

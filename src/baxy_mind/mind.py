@@ -1037,8 +1037,10 @@ CUT_RESULT = "\n[Resultado recortado para que quepa el turno: {n} de sus {total}
 # System One, layer 0 (doubt.py): what the model reads when it was not sure of the action it chose. Under BAXY_S1_DOUBT
 # (0.4, SYSTEM_ONE); on the 1,839 labelled real requests, below 0.4 held 95 of 210 wrong actions and asked instead of 10
 # of 1,530 right ones (phase 0, 2026-10-21).
+# How every note that only asks ends (DOUBT_NOTE, DOUBT_OTHER_ASK_NOTE): after it the model writes words only.
+ASK_ONLY = "No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]"
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
-              "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
+              "{call}. " + ASK_ONLY)
 # Pregunta-eco (noche 2026-10-27): told to ask with no tools, a model unsure of nothing but its own call could only ask
 # the request back («¿Quieres que busque…?», «¿Quieres conectarte a la red…?», «¿Quieres cerrar…?»), and a clear request
 # became a question (v11, the fair's battery). Layer 0 lets it read the request again with its tools: it does what was
@@ -1093,6 +1095,10 @@ DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro
                     "usar {call}, pero también podría ser {other}. Nada se hizo todavía. Vuelve a leer lo que dijo: si "
                     "pide una de las dos y no cabe otra lectura, hazla; si caben las dos, pregúntale en una frase corta "
                     "cuál quiere.]")
+# C16 (auditoría de la noche): layer 2's question as before pregunta-eco, for a call the kernel would run unasked
+# (Mind._unasked): read again, the same call would run, and nobody asked.
+DOUBT_OTHER_ASK_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas "
+                        "a usar {call}, pero también podría ser {other}. " + ASK_ONLY)
 # Al máximo 4.2 (SAGE-Agent): one question per misunderstanding. The person's words right after a doubt question (the
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
@@ -2465,7 +2471,7 @@ class Mind:
             # conversation). After layer 0 or 2 it decides again with its tools, once (REREAD_NOTE, DOUBT_OTHER_NOTE); an
             # unsure «sí» (DOUBT_NOTE) only asks the person, in its own words, what they want.
             conv.append({"role": "user", "content": note})
-            reread = note != DOUBT_NOTE.format(call=calls[0]["wire"])
+            reread = not note.endswith(ASK_ONLY)
             doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             if doubted.startswith("memory."):
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
@@ -2783,20 +2789,21 @@ class Mind:
         # ×7, P085 ×15) and none useful; read_only it holds still (24 useful against 5 harmful), and anything riskier.
         # Nor a recoverable_delete the kernel confirms (V9E037): its «sí» names the exact action, and holding it asked in
         # words first and then the kernel asked again. work_loss it still holds (V6D131), and Bypass runs it unasked.
+        # P2.34, C16: read again with its tools it could make the same call, and the kernel would run it unasked
+        # (_unasked): its doubt asks the person, with no tools, at either layer, also in the reading after another doubt.
         risk = self.risk.get(call["wire"])
+        unasked = self._unasked(call["wire"])
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
-                and not turn.get("reread") and risk != "low_reversible" \
+                and (unasked or not turn.get("reread")) and risk != "low_reversible" \
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
-            if risk == "work_loss" and not self._kernel_confirms(call["wire"]):
-                # P2.34: read again with its tools it could make the same call, and the kernel would run it unasked
-                # (system.power; any in Bypass): its doubt asks the person, with no tools.
+            if unasked:
                 return DOUBT_NOTE.format(call=call["wire"])
             turn["reread"] = True
             return REREAD_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
         if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO") \
-                or turn.get("reread"):
+                or (turn.get("reread") and not unasked):
             return None  # nor the model's reading again after a doubt (REREAD_NOTE, DOUBT_OTHER_NOTE): it decided
         options = self._candidates(call["wire"], doubt, body)
         judged = self.system_one.choose(turn["text"], self._said(), options)
@@ -2816,8 +2823,10 @@ class Mind:
             return None
         if turn.get("answering_other"):
             return None  # the person already answered layer 2's question about this request
-        turn["reread"] = True
         other = OPTION_TEXT.get(judged["choice"], judged["choice"])
+        if unasked:
+            return DOUBT_OTHER_ASK_NOTE.format(call=call["wire"], other=other)
+        turn["reread"] = True
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
 
     def _said(self) -> list[dict[str, str]]:
@@ -2849,6 +2858,14 @@ class Mind:
         normal mode (CONFIRMED_RISKS), not one of UNCONFIRMED_OPERATIONS, and the mode is not Bypass."""
         return self.risk.get(wire) in CONFIRMED_RISKS and self.wire_to_op.get(wire) not in UNCONFIRMED_OPERATIONS \
             and not _bypass()
+
+    def _unasked(self, wire: str) -> bool:
+        """Whether the kernel would run this tool without the person's «sí» though normal mode counts its risk as one to
+        confirm: one of CONFIRMED_RISKS it does not confirm now (system.power; any in Bypass), or, in Bypass, one that
+        goes out of the PC (external_communication: normal mode asks for those that reach a person)."""
+        risk = self.risk.get(wire)
+        return (risk in CONFIRMED_RISKS and not self._kernel_confirms(wire)) \
+            or (risk == "external_communication" and _bypass())
 
     def _corrected(self, wire: str, body: dict[str, Any], chosen: str = "") -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
