@@ -345,7 +345,8 @@ internal sealed class SaidFolders
                         + $"in {(places.Count == 1 ? "it" : "one of them")},"
                 : places.Count == 1 ? "that folder"
                 : targets.Count == 1 ? targets[0].Path + Holding(targets[0], reach.Leaf) : "one of them";
-            next = $"nothing ran: {who} {named} and this call would act in {where}, outside it. If "
+            next = $"nothing ran, and no limit of BAXY's stopped it: {who} {named} and this call would act in {where}, "
+                + "not there. If "
                 + $"{which} is the place of this call, call {wire} again with "
                 + string.Join(", or ", options.Where(option => option.Arguments is not null).Select(option =>
                     Changes(arguments, option.Arguments!, whole: true) + (targets.Count == 1
@@ -367,11 +368,13 @@ internal sealed class SaidFolders
                 + $"act there (it would act in {where}); {again}";
         }
 
+        // noche P1.1 (c): whether a call can act in the folder named, typed, so «nothing ran» is not told as BAXY's limit.
         var refusal = new JsonObject
         {
             ["status"] = "rejected",
             ["error"] = LeftOut,
             ["saidFolders"] = new JsonArray([.. places.Select(place => JsonValue.Create(place.Path))]),
+            ["reachable"] = options.Any(option => option.Arguments is not null),
             ["next"] = next,
         };
         return new(arguments, null, refusal);

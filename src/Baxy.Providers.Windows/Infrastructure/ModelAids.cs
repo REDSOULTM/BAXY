@@ -18,7 +18,8 @@ public static class ModelAids
     /// <summary>Accessible mode: system.settings.set says what the mode changes and which modes do not exist yet.</summary>
     public const string AccessibleScope = "accessible_scope";
 
-    /// <summary>BAXY Renew cu (C14): audio.microphone.mute says it is Windows' switch, not an application's own mute.</summary>
+    /// <summary>BAXY Renew cu (C14): audio.microphone.mute and audio.microphone.status say they are Windows' switch, not an
+    /// application's own mute.</summary>
     public const string MicrophoneScope = "microphone_scope";
 
     /// <summary>BAXY Renew cu (C02): a click that changed nothing on a control already chosen says it was already so.</summary>

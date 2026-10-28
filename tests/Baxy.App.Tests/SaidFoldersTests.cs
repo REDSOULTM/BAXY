@@ -60,7 +60,10 @@ public sealed class SaidFoldersTests
         {
             Assert.That(first?.Refusal, Is.Not.Null);
             string next = (string?)first!.Refusal!["next"] ?? string.Empty;
-            Assert.That(next, Does.StartWith("nothing ran: the person named "));
+            // noche P1.1 (c): a folder a call can reach is not said as BAXY's limit («outside it» was told so).
+            Assert.That(next, Does.StartWith("nothing ran, and no limit of BAXY's stopped it: the person named "));
+            Assert.That(next, Does.Not.Contain("outside"));
+            Assert.That((bool?)first.Refusal["reachable"], Is.True);
             Assert.That(next, Does.Contain("call file_write again with relativePath \"banco-local/recados.txt\""));
             Assert.That(next, Does.Contain(Path.Combine(_home, "recados.txt")));
             Assert.That(first.Refusal["saidFolders"]!.AsArray().Select(static node => (string?)node),
@@ -440,10 +443,11 @@ public sealed class SaidFoldersTests
     {
         SaidFolders said = Heard("haz una presentación sobre el agua en banco-local");
 
-        string next = (string?)said.Rule("document.presentation.create", Descriptor("document.presentation.create"),
-            new JsonObject { ["folder"] = "documents", ["title"] = "El agua" })?.Refusal?["next"] ?? string.Empty;
+        JsonObject? refusal = said.Rule("document.presentation.create", Descriptor("document.presentation.create"),
+            new JsonObject { ["folder"] = "documents", ["title"] = "El agua" })?.Refusal;
 
-        Assert.That(next, Does.Contain("document_presentation_create reaches only the folders"));
+        Assert.That((string?)refusal?["next"], Does.Contain("document_presentation_create reaches only the folders"));
+        Assert.That((bool?)refusal?["reachable"], Is.False);
     }
 
     [Test]
@@ -697,7 +701,7 @@ public sealed class SaidFoldersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(next, Does.StartWith("nothing ran: the person's previous request named «taller-bench»"));
+            Assert.That(next, Does.StartWith("nothing ran, and no limit of BAXY's stopped it: the person's previous request named «taller-bench»"));
             Assert.That(next, Does.Contain($"If {trips}, the folder that request made in it, is the place of this call, "
                 + "call file_write again with relativePath \"taller-bench/viajes/itinerario.txt\""));
             Assert.That(next, Does.Not.Contain("\"taller-bench/itinerario.txt\""));
@@ -1181,7 +1185,7 @@ public sealed class SaidFoldersTests
         Assert.Multiple(() =>
         {
             string next = (string?)first?.Refusal?["next"] ?? string.Empty;
-            Assert.That(next, Does.StartWith("nothing ran: the person's previous request named «taller-bench»"));
+            Assert.That(next, Does.StartWith("nothing ran, and no limit of BAXY's stopped it: the person's previous request named «taller-bench»"));
             Assert.That(next, Does.Contain(
                 "call filesystem_create_directory again with relativePath \"taller-bench/fotos_2026\""));
             Assert.That(again?.Refusal, Is.Null);
