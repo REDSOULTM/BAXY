@@ -1390,6 +1390,9 @@ class Mind:
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
         self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
+        # P2.41: the modes in which the kernel asks the person before each tool runs, whatever its arguments («normal»,
+        # «bypass»: RiskPolicy.Evaluate, as the App sent them), by wire name (_unasked).
+        self.confirms: dict[str, list[str]] = {}
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -1493,7 +1496,7 @@ class Mind:
         # The same names, for the ear's hotwords (voice.hear_names): what the model is shown is what it may hear.
         self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                                     if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}
+        tools, wire_to_op, risk, effects, confirms = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}, {}
         # Auditoría de la mente (w8): the constants of this catalog only; one a tool had in an earlier catalog was still
         # added to its calls.
         constants_of: dict[str, dict[str, Any]] = {}
@@ -1530,7 +1533,8 @@ class Mind:
             wire_to_op[wire] = name
             risk[wire] = str(cap.get("risk") or "")
             effects[wire] = [str(e) for e in cap.get("effects") or []]
-        self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
+            confirms[wire] = [str(mode) for mode in cap.get("confirms") or []]
+        self.tools, self.wire_to_op, self.risk, self.effects, self.confirms = tools, wire_to_op, risk, effects, confirms
         areas = list(dict.fromkeys(str(cap["group"]) for cap in capabilities if cap.get("group")))
         self.system = SYSTEM + CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else SYSTEM
         self.constants = constants_of
@@ -2862,11 +2866,12 @@ class Mind:
 
     def _unasked(self, wire: str) -> bool:
         """Whether the kernel would run this tool without the person's «sí» though normal mode counts its risk as one to
-        confirm: one of CONFIRMED_RISKS it does not confirm now (system.power; any in Bypass), or, in Bypass, one that
-        goes out of the PC (external_communication: normal mode asks for those that reach a person)."""
-        risk = self.risk.get(wire)
+        confirm: one of CONFIRMED_RISKS it does not confirm now (system.power; any in Bypass), or, in Bypass, one the
+        kernel confirms in normal mode and not in Bypass, by the modes it sent (self.confirms; P2.41: of
+        external_communication, normal mode asks only for those that reach a person, and Bypass still for message.send)."""
+        risk, confirms = self.risk.get(wire), self.confirms.get(wire) or []
         return (risk in CONFIRMED_RISKS and not self._kernel_confirms(wire)) \
-            or (risk == "external_communication" and _bypass())
+            or (_bypass() and "normal" in confirms and "bypass" not in confirms)
 
     def _corrected(self, wire: str, body: dict[str, Any], chosen: str = "") -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting

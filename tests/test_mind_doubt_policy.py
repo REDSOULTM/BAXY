@@ -395,8 +395,8 @@ def test_an_unsure_search_for_what_or_who_a_named_thing_is_is_not_held(tmp_path,
 
 # C16 (auditoría de la noche): after pregunta-eco a doubt reads again with the tools, and nothing held what that reading
 # chose. A call the kernel would run unasked though normal mode counts its risk as one to confirm (system.power; in
-# Bypass every one of them, and what goes out of the PC) is asked about as before the night, whichever layer doubted it
-# and also when the reading after another doubt chose it.
+# Bypass every one of them, and what the kernel confirms only in normal mode) is asked about as before the night,
+# whichever layer doubted it and also when the reading after another doubt chose it.
 def _unasked(tmp_path, monkeypatch, mode: str) -> None:
     monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))
     if mode:
@@ -445,6 +445,7 @@ def test_in_bypass_an_unsure_call_normal_mode_would_confirm_is_asked(tmp_path, m
     mind, server = _mind(tmp_path, [_call("email_send", {"to": "ana"}, 0.3), _say("¿A quién se lo mando?")])
     mind.wire_to_op["email_send"] = "email.send"
     mind.risk = {"email_send": risk}
+    mind.confirms = {"email_send": ["normal"]}  # what the kernel sends for email.send (RiskPolicy.Evaluate)
     result = mind.decide(1, "mándaselo")
     assert result["operation"] is None and server.bodies[1].get("tool_choice") == "none"
 
@@ -504,6 +505,7 @@ def test_an_unreadable_confirmation_mode_asks_about_an_unsure_external_call(tmp_
     mind, server = _mind(tmp_path, [_call("email_send", {"to": "ana"}, 0.3), _say("¿A quién se lo mando?")])
     mind.wire_to_op["email_send"] = "email.send"
     mind.risk = {"email_send": "external_communication"}
+    mind.confirms = {"email_send": ["normal"]}
     assert mind.decide(1, "mándaselo")["operation"] is None
     assert server.bodies[1].get("tool_choice") == "none"
 
@@ -518,3 +520,34 @@ def test_in_bypass_layer2_asks_about_an_unsure_call_normal_mode_would_confirm(tm
     assert mind.decide(1, "ahora ciérralo")["operation"] is None
     assert server.bodies[1].get("tool_choice") == "none"
     assert ", pero también podría ser " in server.bodies[1]["messages"][-1]["content"]
+
+
+# P2.41 (blind review of cand3f): in Bypass, a doubt asks in words only about a call the kernel would run unasked though
+# it confirms it in normal mode, by the modes the kernel itself sends (the catalog's «confirms», RiskPolicy.Evaluate),
+# not by the risk label: a song, a page or an event in the person's own calendar go direct in normal mode too, and
+# message.send the kernel confirms in Bypass as well, so its doubt reads again with the tools instead of asking twice.
+@pytest.mark.parametrize("operation, confirms", [("media.play.query", []), ("browser.navigate", []),
+                                                ("message.send", ["normal", "bypass"])])
+def test_in_bypass_an_unsure_external_call_the_kernel_does_not_run_unasked_is_read_again(tmp_path, monkeypatch,
+                                                                                         operation, confirms) -> None:
+    _unasked(tmp_path, monkeypatch, "bypass")
+    wire = operation.replace(".", "_")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    empty = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
+    mind, server = _mind(tmp_path, [_call(wire, {}, 0.3), _call(wire, {}, 0.3)])
+    mind.configure({"capabilities": [{"name": operation, "description": "Do it", "argumentsSchema": empty,
+                                      "risk": "external_communication", "confirms": confirms}]})
+    assert mind.decide(1, "hazlo")["operation"] == operation
+    assert all("tool_choice" not in body for body in server.bodies)  # held, it read again with its tools
+
+
+def test_in_bypass_an_unsure_external_call_the_kernel_confirms_only_in_normal_mode_is_asked(tmp_path,
+                                                                                         monkeypatch) -> None:
+    _unasked(tmp_path, monkeypatch, "bypass")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    empty = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
+    mind, server = _mind(tmp_path, [_call("email_send", {}, 0.3), _say("¿A quién se lo mando?")])
+    mind.configure({"capabilities": [{"name": "email.send", "description": "Send an email", "argumentsSchema": empty,
+                                      "risk": "external_communication", "confirms": ["normal"]}]})
+    assert mind.decide(1, "mándaselo")["operation"] is None
+    assert server.bodies[1].get("tool_choice") == "none"

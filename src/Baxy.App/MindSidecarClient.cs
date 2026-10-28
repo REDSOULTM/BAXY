@@ -6,6 +6,8 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
+using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
@@ -337,6 +339,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 ["risk"] = capability.Risk,
                 // Feria 2026-10-27: what the model may say it can do (mind.py, AREAS), as the panel «Qué puedo hacer».
                 ["group"] = FieldStepProjection.Group(capability.Name),
+                // P2.41: the modes in which the kernel asks the person before it runs, whatever its arguments; the mind's
+                // doubt asks in words only about a call the kernel would run unasked (mind.py, _unasked).
+                ["confirms"] = new JsonArray([.. Enum.GetValues<ConfirmationMode>()
+                    .Where(mode => RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(capability.Risk), mode, capability.Name)
+                        == PolicyDecision.RequireConfirmation)
+                    .Select(static mode => (JsonNode?)mode.ToString().ToLowerInvariant())]),
             };
             if (capability.Effects is { } effects)
             {
