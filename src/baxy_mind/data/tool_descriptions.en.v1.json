@@ -266,6 +266,12 @@
   "audio.volume.adjust": {
    "amount": "How much to change it from where it is now: only when the person gave no level to end at («sube 10», «baja 5»)."
   },
+  "audio.app.volume.set": {
+   "app": "The application the person named, whose own volume changes (spotify, discord, chrome). The PC, the computer or the volume in general is not an application: that is audio_volume."
+  },
+  "audio.app.volume.adjust": {
+   "app": "The application the person named, whose own volume changes (spotify, discord, chrome). The PC, the computer or the volume in general is not an application: that is audio_volume_adjust."
+  },
   "app.open": {
    "place": "A section to open directly, only for an app that declares it: {app_places}."
   },
