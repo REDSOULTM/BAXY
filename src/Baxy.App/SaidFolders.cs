@@ -295,13 +295,13 @@ internal sealed class SaidFolders
         // «looks there», the model wrote the same filesystem_search again). Of several folders of the name said, the look
         // at each (banco v6 V6D278, 0 of 106: a BAXY-bench in the home folder and on the Desktop, and the note said only
         // that filesystem_list cannot name one).
-        JsonObject?[] finds = reach.Sandbox && descriptor.Risk == OperationRisks.ReadOnly
+        JsonObject[] finds = reach.Sandbox && descriptor.Risk == OperationRisks.ReadOnly
             && ProductCatalog.TryGet("file.find", out ProductOperationDescriptor? find) && find is not null
-            ? [.. targets.Select(place => Express(find, Shared(arguments, find), place))] : [];
-        JsonObject? found = finds.Length == 1 ? finds[0] : null;
-        string? look = finds.Length == 0 || finds.Contains(null) ? null
+            ? [.. targets.Select(place => Express(find, Shared(arguments, find), place)).OfType<JsonObject>()] : [];
+        JsonObject? found = targets.Count == 1 ? finds.FirstOrDefault() : null;
+        string? look = finds.Length == 0 || finds.Length < targets.Count ? null
             : "to look there, call file_find with " + (found is not null ? Changes(new JsonObject(), found)
-                : string.Join(", or ", targets.Select((place, index) => $"{Changes(new JsonObject(), finds[index]!)} for {place.Path}")));
+                : string.Join(", or ", targets.Zip(finds, static (place, call) => $"{Changes(new JsonObject(), call)} for {place.Path}")));
         // Holdout v6 V6E034 (final_v5 s0): told only that filesystem_copy «cannot name a folder of theirs», the model
         // answered that the file was in the person's folder and not in its working folder, and copied nothing. The
         // operation that does the same act there is said as a call (aid «said_folder_counterpart»).
