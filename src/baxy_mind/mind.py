@@ -2932,6 +2932,14 @@ class Mind:
             return None
         if turn.get("answering_other"):
             return None  # the person already answered layer 2's question about this request
+        if self.risk.get(call["wire"]) == "read_only" and not self.effects.get(call["wire"]) \
+                and self._unfounded(judged["choice"], body):
+            # P2.44 causa 4 (V11D202, V11D086): the model read the window in front, the decision model chose window_snap,
+            # which needs the windowId only that read gives. Not two readings: one, in two steps; «¿cuál de las dos?»
+            # had the model ask which window or which side. The read runs, and the model decides with its result; a
+            # read with an effect of the catalog (what it sends out of the PC) still asks.
+            self._judged["reads_first"] = True
+            return None
         other = OPTION_TEXT.get(judged["choice"], judged["choice"])
         if unasked:
             return DOUBT_OTHER_ASK_NOTE.format(call=call["wire"], other=other)
@@ -3012,6 +3020,20 @@ class Mind:
             why["fill"] = "unfounded"
             return None
         return {"id": self._new_id("s1"), "wire": wire, "arguments": filled["arguments"]}
+
+    def _unfounded(self, wire: str, body: dict[str, Any]) -> bool:
+        """Whether the decision model's tool cannot be called from what the conversation showed: as the model fills it,
+        a required argument holds a value no word of the person nor any result showed (_founded). The fill «corrige»
+        already made is read, not made again; one that failed, wrote nothing or another tool tells nothing."""
+        fill = self._judged.get("fill") if self._judged is not None else None
+        if fill is not None:
+            return fill == "unfounded"
+        try:
+            filled = self.server.fill_call(body, wire)
+        except Exception:  # noqa: BLE001 - a fill that failed tells nothing: layer 2 asks, as before
+            return False
+        return bool(filled) and filled.get("name") == wire \
+            and not self._founded(wire, filled.get("arguments") or {}, body["messages"])
 
     def _founded(self, wire: str, arguments: dict[str, Any], messages: list[dict[str, Any]],
                  every: bool = False) -> bool:

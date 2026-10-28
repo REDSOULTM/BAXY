@@ -272,6 +272,31 @@ def test_layer2_never_corrects_to_a_tool_with_an_effect_of_the_catalog(tmp_path,
     assert fills == ([] if operation is None else ["app_close"])
 
 
+@pytest.mark.parametrize("effects, appId, text, sends, operation", [
+    (["window_input"], "1", "ahora ciérralo", False, "system.power"),  # never corrected: filled only to see if it could
+    (None, "1", "ahora ciérralo", False, "system.power"),  # corrected and unfounded: that fill is read, not made again
+    (["window_input"], "Spotify", "ciérrame el Spotify", False, None),  # it could be called: both fit, and it asks
+    (["window_input"], "1", "ahora ciérralo", True, None)])  # a read that sends out of the PC still asks
+def test_layer2_lets_a_read_run_when_the_decision_models_tool_lacks_an_argument_nobody_showed(
+        tmp_path, monkeypatch, effects, appId, text, sends, operation) -> None:
+    # P2.44 causa 4 (V11D202, V11D086): the model chose window_active and the decision model window_snap, which needs
+    # the windowId only that read gives; asked «¿cuál de las dos?», the model asked which window or which side.
+    mind, _, fills = _correcting(tmp_path, monkeypatch, "low_reversible",
+                                 {"name": "app_close", "arguments": {"appId": appId}, "timings": {}})
+    empty = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
+    close = {"name": "app.close", "description": "Close an application", "risk": "low_reversible",
+             "argumentsSchema": {"type": "object", "properties": {"appId": {"type": "string"}},
+                                 "required": ["appId"], "additionalProperties": False}}
+    if effects is not None:
+        close["effects"] = effects
+    power = {"name": "system.power", "description": "Shut down the PC", "argumentsSchema": empty, "risk": "read_only"}
+    if sends:
+        power["effects"] = ["network"]
+    mind.configure({"capabilities": [power, close]})
+    assert mind.decide(1, text)["operation"] == operation
+    assert fills == ([] if sends and effects else ["app_close"])
+
+
 def test_layer2_does_not_correct_when_correcting_is_off(tmp_path, monkeypatch) -> None:
     mind, _, fills = _correcting(tmp_path, monkeypatch, "low_reversible",
                                  {"name": "app_close", "arguments": {}, "timings": {}})
