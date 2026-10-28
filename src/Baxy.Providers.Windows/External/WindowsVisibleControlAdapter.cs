@@ -776,8 +776,9 @@ internal sealed class WindowsVisibleControlAdapter
         if (state is "On" or "Off")
             writer.WriteString("switch", state == "On" ? "on" : "off");
         writer.WriteString("next", "nothing was pressed: a switch of Windows' Settings changes the machine, so a click "
-            + "never flips it; its state is the one shown (on or off). wifi_radio_set and bluetooth_radio_set change "
-            + "those radios when the person asks it");
+            + "never flips it; its state is the one shown (on or off). When the person asks it, wifi_radio_set and "
+            + "bluetooth_radio_set change those radios, and system_settings_set the settings airplane_mode, "
+            + "do_not_disturb or brightness; a switch none of them covers is the person's to flip");
         writer.WriteEndObject();
     });
 

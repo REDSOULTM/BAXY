@@ -50,4 +50,21 @@ public sealed class VisibleClickAlreadySelectedTests
                 script, @"\$switchRefused=Get-SettingsSwitchRefusal \$button \$toggleBefore").Count, Is.EqualTo(2));
         });
     }
+
+    // P2.15 (resultados honestos): the refusal holds for every switch of Settings, so its way out names every tool that
+    // changes one of them; naming only the radios sent «modo avión» or «no molestar» to wifi_radio_set.
+    [Test]
+    public void ASettingsSwitchRefusalNamesEveryToolThatChangesASetting()
+    {
+        using JsonDocument worker = JsonDocument.Parse(
+            """{"ok":false,"error":"visible_settings_switch_refused","name":"Modo avión","switchState":"Off"}""");
+        string next = WindowsVisibleControlAdapter.SettingsSwitchFacts(worker.RootElement).GetProperty("next").GetString()!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.Contain("wifi_radio_set"));
+            Assert.That(next, Does.Contain("bluetooth_radio_set"));
+            Assert.That(next, Does.Contain("system_settings_set"));
+        });
+    }
 }
