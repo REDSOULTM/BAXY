@@ -31,7 +31,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_e2e import (BANKS, ROOT, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
-                       run_ps, run_setup, run_turn, say_profile, session_locked, wait_silence)
+                       refuse_a_used_run, run_ps, run_setup, run_turn, say_profile, session_locked, wait_silence)
 import juez_claude  # noqa: E402
 import limpieza  # noqa: E402
 import run_meta  # noqa: E402
@@ -67,6 +67,7 @@ class BenchVoid(Exception):
 
 
 def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
+    refuse_a_used_run(run_dir)  # before its transcripts.json goes
     # transcripts.json is written at the end: one left by an earlier run would be judged (--judge-only) as this run's.
     (run_dir / "transcripts.json").unlink(missing_ok=True)
     isolation = Isolation(run_dir)

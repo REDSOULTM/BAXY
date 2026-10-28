@@ -305,8 +305,19 @@ class Events:
         return None
 
 
+def refuse_a_used_run(run_dir: Path) -> None:
+    """A folder an earlier conductor wrote in is not reused (R8-NB-2, 2026-10-28): its events.jsonl was read as this
+    run's, so the earlier «conductor_not_ready» came back at once, before the new App emptied the file; and the new App
+    would replay its commands/ from 00001 on. A VOID run started no conductor, so its folder runs again."""
+    used = [p.name for p in (run_dir / "events.jsonl", run_dir / "commands") if p.is_file() or any(p.glob("*.json"))]
+    if used:
+        raise SystemExit(f"{run_dir} already holds a run ({', '.join(used)}): give this run a new label, or move that "
+                         "folder away first")
+
+
 class Conductor:
     def __init__(self, run_dir: Path, profile: Path) -> None:
+        refuse_a_used_run(run_dir)
         self.tabs_backup, self.bench_tabs = run_dir / "notepad-tabstate-owner", run_dir / "notepad-tabstate-bench"
         if set_aside_notepad_tabs(self.tabs_backup):
             print(f"Notepad tabs set aside in {self.tabs_backup} (put back when the bench closes)", flush=True)
@@ -599,6 +610,7 @@ def main() -> None:
         cases = [c for c in cases if c["id"] in wanted]
     run_dir = BANKS / "runs" / f"{args.label}-e2e"
     run_dir.mkdir(parents=True, exist_ok=True)
+    refuse_a_used_run(run_dir)  # before the isolation check writes in it
     # A profile of its own, empty at the start of the run (notes, memory and todo list are disposable); on C: because
     # the private store needs NTFS permissions.
     profile = Path(os.environ["LOCALAPPDATA"]) / "BAXY" / f"bench-{args.label}-{int(time.time())}"
