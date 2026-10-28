@@ -174,8 +174,9 @@ internal sealed class WindowActionHandler(string operation, WindowControlAction 
         // same next as window_move, window_resize and window_snap (WindowControlResultJson.Unchanged), which a focus, a
         // maximize, a minimize or a restore already as asked lacked: the C13 reading of a bare changed:false as «no pude».
         return result.Succeeded && result.Verified && result.Window is not null
-            ? OperationOutcome.Success(WindowControlResultJson.Unchanged(
-                WindowControlResultJson.Serialize(result.Window), result.AlreadyReached))
+            ? OperationOutcome.Success(WindowControlResultJson.Unchanged(WindowControlResultJson.UnsavedNotRead(
+                WindowControlResultJson.Serialize(result.Window), action == WindowControlAction.Minimize),
+                result.AlreadyReached))
             : WindowControlResultJson.Failure(
                 result.ErrorCode ?? "window_action_failed", result.EffectMayHaveOccurred, result.StateAfter);
     }
@@ -320,6 +321,10 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             {
                 writer.WriteBoolean("closePrompted", true);
             }
+            else if (closing.ErrorCode is null && closing.ClosedWindows > 0)
+            {
+                WindowControlResultJson.WriteClosedWithoutPrompt(writer);
+            }
 
             writer.WriteEndObject();
         }
@@ -357,6 +362,10 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             if (closePrompted)
             {
                 writer.WriteBoolean("closePrompted", true);
+            }
+            else if (windowClosed)
+            {
+                WindowControlResultJson.WriteClosedWithoutPrompt(writer);
             }
 
             writer.WriteEndObject();
@@ -600,6 +609,32 @@ internal static class WindowControlResultJson
             writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
+    }
+
+    // P1.1(b) F024 (falsedades v11, base y candidato): «¿había algo sin guardar?» after a close or a minimize got «no, no
+    // había nada sin guardar» with no read. Windows tells whether the application answered the polite close with a
+    // dialog of its own (closePrompted); whether a window held unsaved changes is not readable (an application may keep
+    // them for its next start or drop them without asking), and the receipt says so instead of leaving it unsaid.
+    internal const string UnsavedChangesNotReadable = "not_readable";
+
+    public static void WriteClosedWithoutPrompt(Utf8JsonWriter writer)
+    {
+        if (!Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.UnsavedNotRead))
+            return;
+        writer.WriteBoolean("closePrompted", false);
+        writer.WriteString("unsavedChanges", UnsavedChangesNotReadable);
+    }
+
+    // The same for a minimized window: it is still open as it was, and whether it holds unsaved changes is not read.
+    public static JsonElement UnsavedNotRead(JsonElement result, bool minimized)
+    {
+        if (!minimized
+            || !Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.UnsavedNotRead))
+            return result;
+        var receipt = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(result.GetRawText())!;
+        receipt["unsavedChanges"] = UnsavedChangesNotReadable;
+        using JsonDocument document = JsonDocument.Parse(receipt.ToJsonString());
         return document.RootElement.Clone();
     }
 

@@ -85,6 +85,13 @@ public static class ModelAids
     /// <summary>Renew al máximo (w5, F004): a text typed with no window named says, as a sentence, the one window it went into.</summary>
     public const string TypedTargetNext = "typed_target_next";
 
+    /// <summary>
+    /// P1.1(b) F024 (falsedades v11): an app.close that closed a window with no dialog of its own (by appId: with no
+    /// error and at least one window closed) says closePrompted false, and it and a minimized window say unsavedChanges
+    /// not_readable: whether a window held unsaved changes is not something BAXY reads.
+    /// </summary>
+    public const string UnsavedNotRead = "unsaved_not_read";
+
 
     /// <summary>Holdout v6 V6E024: control or shift pressed alone says it writes nothing and how a window's button is pressed.</summary>
     public const string LoneModifierNext = "lone_modifier_next";
