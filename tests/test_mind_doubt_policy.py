@@ -663,15 +663,36 @@ def test_a_sure_reading_again_of_another_invocation_runs(tmp_path, monkeypatch) 
     assert result["arguments"] == {"label": "Siguiente"} and "unsure" not in result
 
 
-def test_the_weighing_of_a_doubt_is_bounded(tmp_path, monkeypatch) -> None:
+def test_the_weighing_of_a_doubt_is_bounded_and_past_it_the_doubt_asks(tmp_path, monkeypatch) -> None:
     mind, server = _click_mind(tmp_path, monkeypatch, "bypass",
-                               [_call("input_visible_click", {"label": label}, 0.3)
-                                for label in ("Ver detalles", "Vaciar papelera")])
+                               [*(_call("input_visible_click", {"label": label}, 0.3)
+                                  for label in ("Ver detalles", "Vaciar papelera")), _say("¿Qué botón aprieto?")])
     mind.decide(1, "dale")
     assert _weighed_again(mind)["unsure"] is True  # the reading's other invocation, weighed
     last = _weighed_again(mind)
-    assert last["kind"] == "action" and "unsure" not in last  # no third weighing: the doubt does not loop
-    assert len(server.bodies) == 3
+    assert last["kind"] == "conversation" and last["reply"] == "¿Qué botón aprieto?"  # no third weighing, no run
+    assert server.bodies[-1].get("tool_choice") == "none" and len(server.bodies) == 4
+
+
+def test_the_persons_answer_after_a_weighed_doubt_is_not_weighed_again(tmp_path, monkeypatch) -> None:
+    # One question per misunderstanding (4.2): the reading asked with ask_user, and the call that answers it is the
+    # person's, as layer 0 never holds an answer.
+    mind, _ = _click_mind(tmp_path, monkeypatch, "bypass", [_call("ask_user", {"question": "¿Cuál?"}, 0.9),
+                                                            _call("input_visible_click", {"label": "Siguiente"}, 0.3)])
+    monkeypatch.setenv("BAXY_S1_VETO", "0.6")
+    mind.system_one = FakeSystemOne("app_close")  # type: ignore[assignment]
+    mind.decide(1, "dale")
+    assert _weighed_again(mind)["kind"] == "clarify"
+    result = mind.decide(2, "el de seguir")
+    assert result["arguments"] == {"label": "Siguiente"} and "unsure" not in result
+
+
+@pytest.mark.parametrize("held", [{"status": "held"}, {"status": "held", "outcome": "other"}])
+def test_a_held_answer_with_an_outcome_the_mind_does_not_know_asks(tmp_path, monkeypatch, held) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass", [_say("¿Lo envío?")])
+    mind.decide(1, "dale")
+    assert mind.continue_turn(2, json.dumps(held))["kind"] == "conversation"
+    assert server.bodies[1].get("tool_choice") == "none"
 
 
 def test_in_normal_mode_the_reading_again_is_not_weighed(tmp_path, monkeypatch) -> None:
@@ -732,8 +753,10 @@ def _absent_rows(tmp_path) -> list:
     return [r["operations"] for r in rows if r["stage"] == "configure.confirms_absent"]
 
 
-def test_a_catalog_without_confirms_keeps_the_prudent_doubt_and_says_so(tmp_path, monkeypatch) -> None:
-    mind, server = _email_mind(tmp_path, monkeypatch, [_say("¿A quién se lo mando?")])
+@pytest.mark.parametrize("confirms", [{}, {"confirms": None}, {"confirms": "normal"}, {"confirms": True},
+                                      {"confirms": [1]}])
+def test_a_catalog_without_confirms_keeps_the_prudent_doubt_and_says_so(tmp_path, monkeypatch, confirms) -> None:
+    mind, server = _email_mind(tmp_path, monkeypatch, [_say("¿A quién se lo mando?")], **confirms)
     result = mind.decide(1, "mándaselo")
     assert result["operation"] is None and "unsure" not in result
     assert server.bodies[1].get("tool_choice") == "none"
