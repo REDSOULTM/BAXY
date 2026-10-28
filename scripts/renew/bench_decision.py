@@ -270,7 +270,12 @@ def main():
             if system_one is not None:
                 system_one.case = None
             try:
-                mind.new_session(case.get("history") or [])
+                # A case may carry a session as the mind exports it (calls, results and the session's calls the clock
+                # tells), where plain history cannot say how an earlier call ended (P1.14, a question left unanswered).
+                if case.get("session"):
+                    mind.load_session(case["session"])
+                else:
+                    mind.new_session(case.get("history") or [])
                 result = decide(mind, case)
                 error = None
             except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
