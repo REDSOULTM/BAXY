@@ -1805,7 +1805,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     /// document window. An owned dialog with a title stays listed.
     /// </summary>
     internal static bool ListedForProcess(nint window, Func<nint, nint> ownerOf, Func<nint, string> titleOf) =>
-        true;
+        ownerOf(window) == 0 || !string.IsNullOrWhiteSpace(titleOf(window));
 
     /// <summary>
     /// Renew al máximo (w8): a window holds the front when it is the foreground window or owns it (its «Guardar como»,
