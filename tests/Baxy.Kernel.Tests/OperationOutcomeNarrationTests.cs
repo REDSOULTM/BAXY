@@ -68,7 +68,7 @@ public sealed class OperationOutcomeNarrationTests
     [Test]
     public void AWindowHandleNeverReachesTheModel()
     {
-        JsonElement opened = JsonSerializer.SerializeToElement(new { appId = "Bloc de notas", windowHandle = 777, windowId = "w-1" });
+        JsonElement opened = JsonSerializer.SerializeToElement(new { appId = "Bloc de notas", windowHandle = 777, windowId = "w-1", window = 777 });
         JsonElement captured = JsonSerializer.SerializeToElement(new { captureId = "c1", activeWindow = new { windowHandle = 777, isClipped = false } });
 
         using JsonDocument openedFacts = JsonDocument.Parse(
@@ -82,6 +82,8 @@ public sealed class OperationOutcomeNarrationTests
         {
             Assert.That(openedObserved.TryGetProperty("windowHandle", out _), Is.False);
             Assert.That(openedObserved.GetProperty("windowId").GetString(), Is.EqualTo("w-1"));
+            // NB-R1 P1.12: the number the input operations take as «window» reaches it under that name.
+            Assert.That(openedObserved.GetProperty("window").GetInt64(), Is.EqualTo(777));
             Assert.That(window.TryGetProperty("windowHandle", out _), Is.False);
             Assert.That(window.GetProperty("isClipped").GetBoolean(), Is.False);
         });

@@ -73,6 +73,10 @@ internal sealed record OpenApplicationResult(
     // WindowId: the id the window operations take for the window this opening verified (e2e p3 E007: the model passed
     // windowHandle as windowId and read the refusal as «it is no longer open»).
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? WindowId = null,
+    // Window (NB-R1 P1.12): the number the input operations take as «window» for the same window (input.text.type,
+    // input.key.press, input.scroll, input.visible.click), named as their argument; WindowHandle, the same number, stays
+    // with the receipt (OperationVisibleFacts). With only windowId the model typed into window 1 and 125, made up.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] long Window = 0,
     // ProcessName (BAXY Renew, notebook): the program a view names the window this opening verified by, as
     // ForegroundHeldBy and the keys' sentTo name a window (a packaged app's own: CalculatorApp, not its launcher calc).
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? ProcessName = null,
