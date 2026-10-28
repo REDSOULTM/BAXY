@@ -1263,10 +1263,14 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         + $"{WalkTimeLimit.TotalSeconds:0} s limit: {fileName} is not in the part walked, and the rest was not searched; "
         + "a subdirectory or the relativePath file_find gives looks only there";
 
+    // P2.44 causa 11: the folder only file.find takes (where a saved capture goes); a call by file name cannot name it.
+    private const string FindOnlyFolder = "pictures";
+
     // Only the folders walked are known not to hold it; a configured folder left out can be searched by its name.
     private string NotFoundScope(string fileName, string[] searched)
     {
-        string[] others = [.. _configuredRoots.Keys.Where(key => !searched.Contains(key, StringComparer.Ordinal))];
+        string[] others = [.. _configuredRoots.Keys.Where(key =>
+            key != FindOnlyFolder && !searched.Contains(key, StringComparer.Ordinal))];
         string where = searched.Length == 0 ? "no folder" : string.Join(", ", searched);
         return $"{fileName} is not in {where}, subfolders included; nothing else on the PC was searched"
             + (others.Length == 0 ? string.Empty
@@ -1574,9 +1578,9 @@ if __name__ == "__main__":
     private (string Label, string Root)[] Roots(string folder)
     {
         // «all_known» is the three known folders; the profile root (home) holds them and AppData, so it is only read
-        // when it is named, and so is pictures (P2.44 causa 11: where a saved capture goes).
+        // when it is named, and so is the folder only file.find takes.
         if (folder == "all_known")
-            return _configuredRoots.Where(pair => pair.Key is not ("home" or "pictures")).SelectMany(pair => pair.Value.Select(root =>
+            return _configuredRoots.Where(pair => pair.Key is not ("home" or FindOnlyFolder)).SelectMany(pair => pair.Value.Select(root =>
                 (pair.Key, Path.GetFullPath(root)))).ToArray();
         if (!_configuredRoots.TryGetValue(folder, out string[]? roots))
             throw new InvalidDataException("known_folder_invalid");

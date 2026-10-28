@@ -537,9 +537,15 @@ public sealed class KnownFileToolsTests
             "file.find", Json("""{"folder":"pictures","query":"*.png","order":"recent"}"""), CancellationToken.None);
         ExternalCapabilityReceipt everywhere = await adapter.InvokeAsync(
             "file.find", Json("""{"folder":"all_known","query":"*.png"}"""), CancellationToken.None);
+        // file.read names no pictures folder, so its «not found» never sends it there.
+        ExternalCapabilityReceipt unread = await adapter.InvokeAsync(
+            "file.read", Json("""{"folder":"all_known","fileName":"nada.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
+            Assert.That(unread.ErrorCode, Is.EqualTo("known_file_not_found"));
+            Assert.That(unread.Result?.GetProperty("next").GetString(),
+                Is.EqualTo("nada.txt is not in desktop, subfolders included; nothing else on the PC was searched"));
             Assert.That(inPictures.Verified, Is.True, inPictures.ErrorCode);
             Assert.That(inPictures.Result?.GetProperty("files").EnumerateArray()
                 .Select(file => file.GetProperty("relativePath").GetString()),
