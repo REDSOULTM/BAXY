@@ -667,3 +667,59 @@ def test_an_output_a_result_shows_is_not_flagged() -> None:
 def test_what_a_call_wrote_is_not_an_output_it_shows() -> None:
     receipts = [_r("file.write", DONE, {"text": "print('Hola mundo')"}), _r("shell.command.run", SENT)]
     assert "output" in _rules("Lo ejecuté y salió «Hola mundo».", receipts)
+
+
+# ---- a search engine named as the source that no result brings (R7-NB-3) ---------------------------------------------
+def _searched(answered_by: str, results: list[dict] | None = None, source: str = "web") -> dict:
+    return _r("web.search", {"status": "completed", "verification": "output_only", "observed": {
+        "version": 1, "source": source, "query": "mechanical keyboards",
+        "results": results or [{"title": "Mechanical Keyboards", "url": "https://mechanicalkeyboards.com/",
+                                "snippet": "The Ultimate Mechanical Keyboard Catalog."}],
+        "resultCount": 1, "answeredBy": answered_by}}, {"query": "mechanical keyboards"})
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("Google me dio mechanicalkeyboards.com, además de un artículo de PCMag.", True),
+    ("Google encontró mechanicalkeyboards.com con teclados mecánicos.", True),
+    ("Bing found mechanicalkeyboards.com.", True),
+    ("Busqué en Google y salió mechanicalkeyboards.com.", True),
+    ("DuckDuckGo me dio mechanicalkeyboards.com.", False),
+    ("Encontré mechanicalkeyboards.com, un catálogo de teclados.", False),
+    ("No busqué en Google: respondió DuckDuckGo, con mechanicalkeyboards.com.", False),
+    ("Pediste Google, pero me respondió DuckDuckGo: mechanicalkeyboards.com.", False),
+    ("¿Quieres que lo abra en Google?", False),
+])
+def test_an_engine_named_that_did_not_answer_is_flagged(answer: str, flagged: bool) -> None:
+    findings = [f for f in check(answer, "Search DuckDuckGo for mechanical keyboards", [_searched("DuckDuckGo")], [])
+                if f["rule"] == "answered_by"]
+    assert bool(findings) is flagged
+    if flagged:
+        assert "DuckDuckGo" in findings[0]["fact"]
+
+
+def test_an_engine_a_result_brings_is_not_flagged() -> None:
+    pixel = [{"title": "Google Pixel 10", "url": "https://store.google.com/pixel", "snippet": "El teléfono de Google."}]
+    assert "answered_by" not in _rules("Google vende el Pixel 10 en su tienda.", [_searched("DuckDuckGo", pixel)])
+    assert "answered_by" not in _rules("Según Google News, hubo tres noticias.", [_searched("Google News", source="news")])
+    opened = _r("browser.navigate", {"status": "completed", "verification": "readback",
+                                     "observed": {"url": "https://www.google.com/search?q=flash"}})
+    assert "answered_by" not in _rules("Abrí Google con flash y DuckDuckGo me dio mechanicalkeyboards.com.",
+                                       [opened, _searched("DuckDuckGo")])
+
+
+def test_an_engine_named_with_no_search_in_the_turn_is_not_read() -> None:
+    assert "answered_by" not in _rules("Google te lo dice en un segundo.", [])
+    assert "answered_by" not in _rules("Google es un buscador.", [_r("file.read", DONE)])
+
+
+def test_the_mind_asks_again_when_the_answer_credits_an_engine_that_did_not_answer(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    first, second = "Google me dio mechanicalkeyboards.com.", "DuckDuckGo me dio mechanicalkeyboards.com."
+    mind, server = _mind(tmp_path, [_call("web_search", {"query": "mechanical keyboards"}), _say(first), _say(second)])
+    mind.wire_to_op = {"web_search": "web.search"}
+    mind.risk = {**mind.risk, "web_search": "read_only"}
+    mind.decide(1, "Search DuckDuckGo for mechanical keyboards")
+    result = mind.continue_turn(2, _searched("DuckDuckGo")["observation"])
+    assert result["reply"] == second
+    note = server.bodies[-1]["messages"][-1]["content"]
+    assert "lo respondió DuckDuckGo (answeredBy)" in note and "«Google»" in note

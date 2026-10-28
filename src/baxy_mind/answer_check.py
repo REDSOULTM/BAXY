@@ -50,6 +50,9 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
 - ``output``: «salió «Hola mundo»», «imprimió «3»» (an output quoted after a verb that tells one) in a turn with calls
   while no result of the turn shows that text (uso real 2026-10-26: a console command sent without reading its output
   and window looks that failed, then «el programa se ejecutó y salió «Hola mundo»»).
+- ``answered_by``: a search engine of BAXY's table (search_addresses.v1.json: Google, Bing, DuckDuckGo…) named in a
+  statement of a turn with a completed web.search, while no result of the turn brings that name and the statement does
+  not name the source that answered («answeredBy») (R7-NB-3: «Google me dio…» when DuckDuckGo answered).
 
 What never counts as a claim: a sentence or the part of one that is a question, a clause with «no / nunca / sin /
 tampoco» before the verb («no pude abrirlo», «no lo cerré»), a conditional «si…», quoted text, or a promise («voy a
@@ -490,6 +493,9 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
 
     # «Salió «Hola mundo»» while no result of the turn shows that text.
     findings.extend(f for f in _outputs(answer, raw_folded, statements, receipts) if f not in findings)
+
+    # «Google me dio…» while the search that answered was another engine's (R7-NB-3).
+    findings.extend(f for f in _engines_unanswered(answer, folded, statements, receipts) if f not in findings)
 
     # «Ya estaba». Feria 2026-10-27: a call repeated after it changed something comes back «unchanged» because of that
     # first call; only the first call of an operation with its arguments that ran in the turn tells what was so before.
@@ -1163,6 +1169,39 @@ def _outputs(answer: str, raw_folded: str, statements: list[tuple[int, int]], re
                                      f"en este turno: {'; '.join(_told(r) for r in receipts[-3:])}"})
             break
     return findings
+
+
+# ---- a search engine named that did not answer ------------------------------------------------------------------------
+# The engines BAXY knows by their host (the table the Windows provider reads), each by the label before its domain:
+# google.com → google, search.brave.com → brave.
+_ENGINES = tuple(dict.fromkeys(engine["host"].split(".")[-2] for engine in json.loads(
+    (pathlib.Path(__file__).with_name("data") / "search_addresses.v1.json").read_bytes())["engines"]))
+
+
+def _engines_unanswered(answer: str, folded: str, statements: list[tuple[int, int]],
+                        receipts: list[Receipt]) -> list[dict]:
+    """Rule ``answered_by``: a statement that names an engine as a source in a turn whose completed web.search said
+    which source answered, while no result of the turn brings that engine's name (a page opened there, a result of
+    its own) and the statement names none of the sources that answered."""
+    answered = [(r, str(by)) for r in receipts if r.get("completed") and r.get("op") == "web.search"
+                for by in [(_parsed(r).get("observed") or {}).get("answeredBy")] if by]
+    if not answered:
+        return []
+    brought = _fold(" ".join(str(r.get("observation") or "") + json.dumps(r.get("arguments") or {}, ensure_ascii=False)
+                             for r in receipts))
+    sources = tuple(dict.fromkeys(_fold(by) for _, by in answered))
+    for start, end in statements:
+        sentence = folded[start:end]
+        if any(source in sentence for source in sources):
+            continue
+        for engine in _ENGINES:
+            hit = re.search(rf"\b{engine}\b", sentence)
+            if hit and not re.search(rf"\b{engine}\b", brought) and not _negated(folded, start, start + hit.start(), answer):
+                receipt, by = answered[-1]
+                return [{"rule": "answered_by", "said": _quote(answer, start, end),
+                         "fact": f"{_told(receipt)}: lo respondió {by} (answeredBy); ningún resultado de este turno "
+                                 f"viene de «{answer[start + hit.start():start + hit.end()]}»"}]
+    return []
 
 
 def _denials(answer: str, folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
