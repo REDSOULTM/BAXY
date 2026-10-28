@@ -28,15 +28,14 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private readonly string _backups;
     private readonly object _gate;
     private readonly Dictionary<string, Handle> _handles = new(StringComparer.Ordinal);
-    private readonly TimeProvider _time;
     private readonly IRecycleBin _recycleBin;
 
-    public LocalFilesystemProvider(string rootDirectory, TimeProvider? timeProvider = null)
-        : this(rootDirectory, WindowsRecycleBin.Instance, timeProvider)
+    public LocalFilesystemProvider(string rootDirectory)
+        : this(rootDirectory, WindowsRecycleBin.Instance)
     {
     }
 
-    internal LocalFilesystemProvider(string rootDirectory, IRecycleBin recycleBin, TimeProvider? timeProvider = null)
+    internal LocalFilesystemProvider(string rootDirectory, IRecycleBin recycleBin)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(rootDirectory);
         _recycleBin = recycleBin ?? throw new ArgumentNullException(nameof(recycleBin));
@@ -45,7 +44,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         Directory.CreateDirectory(_root);
         Directory.CreateDirectory(_backups);
         _gate = RootLocks.GetOrAdd(_root, static _ => new object());
-        _time = timeProvider ?? TimeProvider.System;
         EnsureSafePath(_root, allowMissingLeaf: false);
         EnsureSafePath(_backups, allowMissingLeaf: false);
     }
@@ -524,7 +522,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         string id = "fs_" + Guid.NewGuid().ToString("N");
         FileSystemInfo info = File.Exists(path) ? new FileInfo(path) : new DirectoryInfo(path);
         _handles[id] = new Handle(path, root, info.LastWriteTimeUtc, File.Exists(path) ? ((FileInfo)info).Length : 0,
-            _time.GetUtcNow());
+            DateTimeOffset.UtcNow);
         return id;
     }
 
@@ -609,7 +607,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
 
     private void Prune()
     {
-        DateTimeOffset now = _time.GetUtcNow();
+        DateTimeOffset now = DateTimeOffset.UtcNow;
         foreach (string key in _handles.Where(pair => now - pair.Value.IssuedAt > HandleLifetime)
             .Select(static pair => pair.Key).ToArray()) _handles.Remove(key);
     }
