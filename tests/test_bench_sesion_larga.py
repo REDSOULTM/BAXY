@@ -5,6 +5,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "renew"))
 
 import bench_sesion_larga as bench
@@ -100,7 +102,10 @@ def test_a_read_gets_a_long_body_and_an_effect_a_verified_result() -> None:
     assert done == {"status": "completed", "verification": "readback", "observed": {}}
 
 
-def test_each_turn_is_judged_on_its_decision_closed_with_its_results_and_measured_by_part(tmp_path: Path) -> None:
+def test_each_turn_is_judged_on_its_decision_closed_with_its_results_and_measured_by_part(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Turn 1's long search is two turns old at turn 3: the aid «old_bodies» (noche P0.2) would leave out its body.
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
     script = {"busca el tiempo": _call("web_search", {"query": "tiempo"}),
               "pon el volumen al 3": _call("audio_volume", {"level": 3}),
               "cuéntame algo": _say("Claro, algo.")}

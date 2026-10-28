@@ -53,6 +53,23 @@ def test_the_history_already_sent_is_rewritten_once_a_turn_and_only_when_a_turn_
     assert session.rewrites == [3, 4, 5]
 
 
+def test_the_system_and_the_catalog_reach_every_chat_of_a_long_session_unchanged(tmp_path) -> None:
+    # PC-R1-W12: the slot's cache (cache_prompt) is reused from the front, so whatever cuts or ages the history, nothing
+    # before it may change between chats; the clock, the only part that varies, is a message of the history.
+    session = Session(tmp_path)
+    session.mind.configure({"capabilities": [{"name": "app.open", "risk": "low_reversible", "argumentsSchema": {
+        "type": "object", "properties": {"appId": {"type": "string"}}}}]})
+    for turn in range(1, 21):
+        session.say(f"pedido {turn}", _body(OLD_BODY_CHARS * 3), reply=f"Hecho {turn}.")
+    bodies = session.server.bodies
+    assert session.mind.trimmed_turns and session.rewrites
+    system, tools = bodies[0]["messages"][0], bodies[0]["tools"]
+    assert system["role"] == "system" and tools
+    shown = json.dumps(tools, ensure_ascii=False)  # in order: the template renders the tools as they come
+    assert all(body["messages"][0] == system and json.dumps(body["tools"], ensure_ascii=False) == shown
+               for body in bodies)
+
+
 def test_a_short_reference_of_a_body_left_out_is_not_kept(tmp_path) -> None:
     session = Session(tmp_path)
     address = "https://example.com/" + "a" * 200
