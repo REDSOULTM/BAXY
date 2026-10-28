@@ -2221,6 +2221,11 @@ class Mind:
         the turn (steps spent, engine down, or a confirmation waiting), so the model answers now in text from what the
         results show. ``beat``: the heartbeat's turn."""
         turn = self._beat if beat else self._turn
+        if turn and not turn.get("awaiting") and turn["conv"] and turn["conv"][-1]["role"] == "tool":
+            # R7-NB-1 (CU C03): the result is already in the turn and no decision came after it (the request ran past its
+            # budget, and the turn ended with no words): the App asks for that decision again, and the model decides
+            # from the results it has, without reading the same result in twice.
+            return self._next(request_id, "turn.continue", turn, final=final)
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
         conv = turn["conv"]

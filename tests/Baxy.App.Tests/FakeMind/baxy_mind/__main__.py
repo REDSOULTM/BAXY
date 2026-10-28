@@ -3,7 +3,7 @@
 As the real mind (src/baxy_mind/__main__.py), the reader answers voice.speak, voice.cancel, voice.status and
 voice.release as they arrive and every other request waits its turn on one loop. What it does is read from script.json
 in its folder at each request: "hold" {type: file} waits until that file exists, "delay" {type: seconds}, "fail" [type]
-answers an error, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
+answers an error, "fail_first" {type: n} answers an error to the first n of that type, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
 reply, "stderr" {type: [line]} writes those lines to stderr before the reply; "delay" {"hello": seconds} holds the hello
 at start. Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process
 writes its pid under pids/.
@@ -46,6 +46,12 @@ def seen(message: dict) -> None:
             file.write(json.dumps(message, ensure_ascii=False) + "\n")
 
 
+def times_seen(kind: str) -> int:
+    with _write_lock:
+        with open(os.path.join(HERE, "seen.log"), encoding="utf-8") as file:
+            return sum(1 for line in file if line.strip() == kind)
+
+
 def answer(message: dict) -> None:
     kind, request_id, plan = str(message.get("type")), message.get("id"), script()
     hold = plan.get("hold", {}).get(kind)
@@ -57,7 +63,7 @@ def answer(message: dict) -> None:
     for line in plan.get("stderr", {}).get(kind, []):
         sys.stderr.write(line + "\n")
     sys.stderr.flush()
-    if kind in plan.get("fail", []):
+    if kind in plan.get("fail", []) or times_seen(kind) <= int(plan.get("fail_first", {}).get(kind, 0)):
         reply = {"type": "error", "code": "request_failed", "detail": kind}
     elif kind in plan.get("reply", {}):
         reply = dict(plan["reply"][kind])

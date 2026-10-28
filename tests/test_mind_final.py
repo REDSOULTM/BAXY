@@ -5,6 +5,8 @@ import json
 import urllib.error
 from pathlib import Path
 
+import pytest
+
 from baxy_mind.mind import COMPACTED, NO_MORE_CALLS, Mind
 
 
@@ -80,6 +82,29 @@ def test_nothing_written_after_a_call_is_answered_in_words(tmp_path: Path) -> No
     result = mind.continue_turn(2, json.dumps({"status": "completed", "verified": True}))
     assert result["reply"] == "Puse el volumen al 30."
     assert server.bodies[-1]["tool_choice"] == "none"
+
+
+def test_a_decision_that_did_not_come_after_a_result_is_asked_again_from_that_result(tmp_path: Path) -> None:
+    # R7-NB-1 (CU C03): the decision after app_open ran past the request's budget and the turn ended with no words; asked
+    # again, the model decides from the result already in the turn, which is not read in twice.
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Lanzador", "place": "library"}), TimeoutError("spent"),
+                                    _say("Pedí abrirlo en la biblioteca; no miré si se ve.")])
+    mind.decide(1, "abre el lanzador en la biblioteca")
+    observation = json.dumps({"status": "completed", "verification": "delivered_only"})
+    with pytest.raises(TimeoutError):
+        mind.continue_turn(2, observation)
+    result = mind.continue_turn(3, observation)
+    assert result["reply"] == "Pedí abrirlo en la biblioteca; no miré si se ve."
+    assert server.bodies[-1]["messages"] == server.bodies[-2]["messages"]
+    assert [m["role"] for m in server.bodies[-1]["messages"]].count("tool") == 1
+
+
+def test_a_continuation_with_no_result_to_decide_from_is_still_refused(tmp_path: Path) -> None:
+    mind, _ = _mind(tmp_path, [_call("audio_volume", {"level": 30}), _say("Puse el volumen al 30.")])
+    mind.decide(1, "pon el volumen al 30")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verified": True}))
+    with pytest.raises(RuntimeError):
+        mind.continue_turn(3, json.dumps({"status": "completed", "verified": True}))
 
 
 def test_the_turns_facts_say_where_a_file_was_made(tmp_path: Path) -> None:
