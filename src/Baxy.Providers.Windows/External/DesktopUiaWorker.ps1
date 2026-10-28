@@ -2541,13 +2541,17 @@ function Join-ViewControls($primary,$secondary,$menu,[int]$limit,[string[]]$want
   foreach($entry in $extra){ $entry.reserved=$true; [void]$controls.Add($entry) }
   return @{ controls=$controls; menuListed=$menuListed; reserved=$extra.Count }
 }
-# Ronda 21 (t-drag-4): el cuerpo de la ventana es su superficie de contenido: el Pane, Custom, Image o Document de mayor
-# area (al menos $script:BodyShare de la caja de la ventana) que no tiene dentro ningun accionable (el lienzo de un editor
-# de imagenes, no el panel que envuelve la cinta y el lienzo). Va siempre en la vista, fuera del tope, con su nombre o,
-# sin el, el de su tipo entre parentesis (como un campo sin nombre), y su rectangulo: un trazo se arrastra sobre el.
-$script:BodyKinds=@('Pane','Custom','Image','Document')
+# Ronda 21 (t-drag-4): el cuerpo de la ventana es su superficie de contenido: el elemento de mayor area (al menos
+# $script:BodyShare de la caja de la ventana) que no tiene dentro ningun accionable (el lienzo de un editor de imagenes,
+# no el panel que envuelve la cinta y el lienzo). Va siempre en la vista, fuera del tope, con su nombre o, sin el, el de
+# su tipo entre parentesis (como un campo sin nombre), y su rectangulo: un trazo se arrastra sobre el.
+# Noche 2026-10-27 (P1.6): lo decide su forma, no su tipo: un lienzo que se expone como Group (ningun Pane, Custom, Image
+# ni Document en su ventana) no era cuerpo y el arrastre rechazaba el indice que el modelo eligio. Solo queda fuera un
+# accionable, que se pulsa y no se dibuja (Document es campo y superficie a la vez: sigue pudiendo serlo).
 $script:BodyShare=0.15
+function Test-BodyKind([string]$kind){ return ($kind -eq 'Document' -or $Actionable -notcontains $kind) }
 function Get-BodySurface($item,[string]$kind,[string]$name,$rect,$box){
+  if(-not (Test-BodyKind $kind)){ return $null }
   if($null -eq $rect -or $null -eq $box -or [double]$box.w -le 0 -or [double]$box.h -le 0){ return $null }
   $area=[double]$rect.w*[double]$rect.h
   if($area -lt $script:BodyShare*[double]$box.w*[double]$box.h){ return $null }
@@ -2669,10 +2673,8 @@ function Do-View($request){
       if($item.Cached.IsOffscreen -and -not $keepOffscreen){ continue }
       $name=Get-ShownName $item
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
-      if($script:BodyKinds -contains $kind){
-        $surface=Get-BodySurface $item $kind $name (Get-Rect $item) $box
-        if($null -ne $surface){ [void]$surfaces.Add($surface) }
-      }
+      $surface=Get-BodySurface $item $kind $name (Get-Rect $item) $box
+      if($null -ne $surface){ [void]$surfaces.Add($surface) }
       # Uso real 2026-10-21 (e2e del notebook): la superficie de dibujo de Chromium sin accesibilidad (su clase de
       # render_surface_classes y el nombre fijo que Chromium le da, «Chrome Legacy Window») no es un control: es la
       # pagina entera. Listada como el control 0 de Steam, el modelo la pulso por la pagina de un juego.

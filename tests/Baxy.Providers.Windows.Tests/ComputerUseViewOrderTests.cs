@@ -194,6 +194,34 @@ public sealed class ComputerUseViewOrderTests
         Assert.That(answer.Split(','), Is.EqualTo(new[] { "9.2", "True" }));
     }
 
+    // Noche 2026-10-27 (P1.6): a drawing canvas exposed as a Group (no Pane, Custom, Image or Document in its window) was
+    // never the body, and the drag refused the index the model chose. Any kind can be the body by its shape (large,
+    // holding nothing that acts), except a kind that is itself pressed: a large button is pressed, not drawn on. A
+    // document is both a field and a surface, and stays a body.
+    [Test]
+    public void TheBodyIsChosenByShapeNotByControlType()
+    {
+        string answer = Run(["Get-BodySurface", "Test-BodyKind"], """
+            $script:BodyShare=0.15
+            $Actionable=@('Button','ListItem','Edit','Document')
+            function Get-Id($el){ return [string]$el }
+            $box=@{ x=0; y=0; w=1200; h=800 }
+            $rect=@{ x=100; y=200; w=900; h=500 }
+            $shown=@(foreach($kind in @('Group','Text','Pane','Document','Button','ListItem','Edit')){
+              $surface=Get-BodySurface $kind $kind '' $rect $box
+              $kind + ':' + [string]($null -ne $surface)
+            })
+            $small=Get-BodySurface 'g' 'Group' '' @{ x=0; y=0; w=100; h=100 } $box
+            $shown+=@('small:' + [string]($null -ne $small))
+            [Console]::Out.Write(($shown -join ','))
+            """);
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "Group:True", "Text:True", "Pane:True", "Document:True", "Button:False", "ListItem:False", "Edit:False",
+            "small:False",
+        }));
+    }
+
     // Revision 2: a window whose tree lists at most one control (CEF, a canvas: one host Pane or one Button) is read by
     // what is drawn: the adapter reads its text unasked, with the OCR lines' authority. The body is never added to such
     // a view (it would make two controls and take the window out of that regime); one already listed stays where it is.
