@@ -431,6 +431,54 @@ public sealed class NativeTurnLoopTests
         [.. ((Dictionary<string, PreparedOperation>)typeof(RetryableOperationRegistry)
             .GetField("_operations", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(registry)!).Values];
 
+    // P0.12 (noche 2026-10-27): the mind's error reply closes the person's turn as the failure it is (after a call, saying
+    // so), and a heartbeat's leaves nothing on their screen; a step of a kind the loop does not run never runs as a call.
+    [TestCase(false, "decision_unavailable")]
+    [TestCase(true, "decision_unavailable_after_call")]
+    public async Task AnErrorTheMindAnswersClosesTheTurnAsAFailure(bool afterCall, string failure)
+    {
+        using var fake = new FakeMind();
+        var call = new JsonObject
+        {
+            ["type"] = "turn.result",
+            ["kind"] = "action",
+            ["operation"] = "system.time",
+            ["arguments"] = new JsonObject(),
+        };
+        fake.Script(afterCall
+            ? new JsonObject { ["reply"] = new JsonObject { ["turn.decide"] = call }, ["fail"] = new JsonArray("turn.continue") }
+            : new JsonObject { ["fail"] = new JsonArray("turn.decide", "turn.beat") });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var steps = new List<NativeTurnStep>();
+        var failures = new List<string>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = static () => null,
+            Mind = () => mind,
+            Registry = static () => null,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = failures.Add,
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            StepCompleted = steps.Add,
+        });
+
+        await loop.RunAsync("¿qué hora es?", Stopwatch.GetTimestamp(), CancellationToken.None)
+            .WaitAsync(TimeSpan.FromSeconds(30));
+        if (!afterCall)
+        {
+            await loop.RunBeatAsync(new JsonObject(), CancellationToken.None).WaitAsync(TimeSpan.FromSeconds(30));
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(failures, Is.EqualTo(new[] { failure }));
+            Assert.That(steps.Select(static step => step.Operation),
+                Is.EqualTo(afterCall ? new[] { "system.time" } : Array.Empty<string>()));
+        });
+    }
+
     // Auditoría de la App (2026-10-23): told to answer in words (here, the engine is down), a mind that still calls does
     // not get that call run; before, each call ran, came back final again, and the turn never ended.
     [Test]
