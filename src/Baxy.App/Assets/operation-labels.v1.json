@@ -104,6 +104,7 @@
     "input.keyboard.open": { "t": "Abrir el teclado en pantalla", "g": "look", "f": "ventanas" },
     "input.keyboard.status": { "t": "Ver el idioma del teclado", "g": "look", "f": "ventanas" },
     "input.pointer.control": { "t": "Mover o pulsar el ratón", "g": "look", "f": "ventanas" },
+    "input.pointer.drag": { "t": "Arrastrar en la ventana", "g": "look", "f": "ventanas" },
     "input.scroll": { "t": "Desplazar", "g": "look", "f": "ventanas" },
     "input.select.all": { "t": "Seleccionar todo", "g": "look", "f": "ventanas" },
     "input.text.type": { "t": "Escribir texto", "g": "look", "f": "ventanas" },

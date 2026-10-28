@@ -16,7 +16,8 @@ public sealed class CatalogEffectTests
 {
     private static readonly HashSet<string> WindowInputAlways =
     [
-        "input.visible.click", "input.text.type", "input.key.press", "input.pointer.control", "input.select.all",
+        "input.visible.click", "input.text.type", "input.key.press", "input.pointer.control", "input.pointer.drag",
+        "input.select.all",
         "input.scroll", "input.keyboard.layout", "clipboard.copy", "clipboard.paste", "message.draft", "message.send",
         "client.channel.locate", "browser.control", "calculator.expression.evaluate", "game.launch", "window.focus",
         "window.maximize", "window.minimize.all", "window.move", "window.resize", "window.snap", "file.open",

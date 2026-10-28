@@ -55,9 +55,11 @@ public sealed class ProductCatalogTests
 
 
     // Motor de computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md): el desplazamiento verificado
-    // por superficie (el arrastre de v3 se retiró en la estabilización L; la misión general del shell, en BAXY Renew).
+    // por superficie (la misión general del shell se retiró en BAXY Renew) y, desde la feria 2026-10-27, el arrastre
+    // sobre el cuerpo de una mirada (el de v3 se había retirado en la estabilización L).
     internal static readonly string[] ComputerUseAdditions =
     [
+        "input.pointer.drag",
         "input.scroll",
     ];
 
@@ -157,7 +159,8 @@ public sealed class ProductCatalogTests
     // (C14) + 1, client.microphone.set; (C18) + 1, clipboard.paste.into; (C10, C11, notebook) + 1, office.format.apply.
     // pc-f6-ajustes: + 1, baxy.settings.set; f6 estado: + 1, assistant.status; pc-f6-sesiones: + 4, las conversaciones por voz (ConversationAdditions).
     // noche P1.1: + 1, audio.microphone.status (NocheReadAdditions).
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 4 + 1;
+    // Feria 2026-10-27: + 1, input.pointer.drag.
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 4 + 1 + 1;
 
     // pc-f6-ajustes (f4-accesibilidad): BAXY's own settings by voice, one setting and its value; reversible, so it never
     // asks, and it reaches neither a window nor the network. The proposals take a span (or on to end the silence); the

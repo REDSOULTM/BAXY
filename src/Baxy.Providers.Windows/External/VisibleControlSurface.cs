@@ -81,6 +81,35 @@ internal static partial class VisibleControlSurface
     }
 
     /// <summary>
+    /// Whether a cell lying whole inside a rectangle of the screen (physical pixels) differs between two captures of the
+    /// same window that did not move: what changed inside a canvas, never the window's status bar or caption beside it.
+    /// Null when they cannot be compared (another window, moved or resized, a capture not read as a bitmap, no whole
+    /// cell inside the rectangle).
+    /// </summary>
+    internal static bool? ChangedWithin(CapturedWindow first, CapturedWindow second, int left, int top, int width, int height)
+    {
+        if (first.Hwnd != second.Hwnd || first.Left != second.Left || first.Top != second.Top
+            || DifferingCells(first, second, out int columns, out int rows) is not { } differing)
+            return null;
+        int fromColumn = Math.Max(0, (left - first.Left + MotionCell - 1) / MotionCell);
+        int toColumn = Math.Min(columns, (left - first.Left + width) / MotionCell);
+        int fromRow = Math.Max(0, (top - first.Top + MotionCell - 1) / MotionCell);
+        int toRow = Math.Min(rows, (top - first.Top + height) / MotionCell);
+        if (fromColumn >= toColumn || fromRow >= toRow)
+            return null;
+        for (int row = fromRow; row < toRow; row++)
+        {
+            for (int column = fromColumn; column < toColumn; column++)
+            {
+                if (differing[(row * columns) + column])
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// The window's own motion: the cells that changed across the animation probes after <paramref name="first"/>, with
     /// no press; null when a probe could not be taken or compared (the whole window counts as moving then).
     /// </summary>

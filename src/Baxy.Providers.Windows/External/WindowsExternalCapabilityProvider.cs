@@ -112,6 +112,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             desktopInteraction,
             visibleControls,
             new WindowsScrollAdapter(visibleControls) { ActRefused = VisibleControlSurface.ActRefused },
+            new WindowsPointerDragAdapter(visibleControls),
             new WindowsKnownFileAdapter(),
             new WindowsSandboxNamedFileAdapter(root),
             new WindowsKnownBackupAdapter(root),
@@ -332,7 +333,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         string operation, nint target, Func<nint, int> processOf, Func<int, bool> runsAboveUs, Func<int, bool?> elevated)
     {
         if (target == 0 || operation is not ("input.key.press" or "input.text.type" or "input.scroll"
-            or "input.select.all" or "clipboard.copy" or "clipboard.paste" or "input.keyboard.layout"))
+            or "input.pointer.drag" or "input.select.all" or "clipboard.copy" or "clipboard.paste" or "input.keyboard.layout"))
             return null;
         int processId = processOf(target);
         if (processId <= 0 || !runsAboveUs(processId))
@@ -352,7 +353,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     private static nint ActTarget(string operation, JsonElement arguments) => operation switch
     {
         "input.visible.click" or "input.key.press" or "input.text.type" or "input.scroll" or "input.select.all"
-            or "clipboard.copy" or "clipboard.paste" or "input.keyboard.layout" =>
+            or "clipboard.copy" or "clipboard.paste" or "input.keyboard.layout" or "input.pointer.drag" =>
             MissionWindow(arguments) is var window and not 0 ? window : VisibleControlSurface.FrontWindow(),
         "input.pointer.control" when arguments.ValueKind == JsonValueKind.Object
             && arguments.TryGetProperty("action", out JsonElement action)

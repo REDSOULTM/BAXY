@@ -992,6 +992,27 @@ public static class ProductCatalog
             "input.pointer.control.win32.postread.v1",
             "Mueve el puntero al centro, hace clic en su posición actual o desplaza hacia abajo y verifica el recibo Win32.",
             effects: [WindowInput()]),
+        // Feria 2026-10-27 (arrastrar para dibujar): el botón izquierdo pulsado a lo largo de un trazo
+        // sobre el cuerpo (el lienzo) de la última mirada de la ventana nombrada; los puntos son
+        // fracciones de ese rectángulo, [x0, y0, x1, y1, …], nunca coordenadas de la pantalla.
+        Descriptor(
+            "input.pointer.drag",
+            Schema(
+                [
+                    Integer("index", 0, VisibleViewNumbering.HighestIndex),
+                    new OperationArgumentProperty(
+                        "points",
+                        OperationJsonType.Array,
+                        itemTypes: OperationJsonType.Number,
+                        minimumItems: 4,
+                        maximumItems: 64),
+                    Integer("window", 1, uint.MaxValue),
+                ],
+                ["index", "points", "window"]),
+            OperationRisks.LowReversible,
+            "input.pointer.drag.win32.body.surface.postread.v1",
+            "Arrastra con el botón izquierdo pulsado por los puntos dados, relativos (0 a 1) al cuerpo de la última mirada de la ventana nombrada, que trae delante en una ráfaga tras la pausa de la persona; suelta siempre el botón y verifica que la imagen dentro del cuerpo cambió.",
+            effects: [WindowInput()]),
         // Motor de computer use (CONTRATO_VISTA_ACCION.md §2): desplaza la ventana
         // en primer plano por pasos de rueda y sólo cuenta el desplazamiento si la
         // superficie cambió; un panel ya al fondo no cambia y se dice.
