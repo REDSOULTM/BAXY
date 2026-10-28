@@ -4,12 +4,15 @@ namespace Baxy.Kernel.Operations;
 /// The name the model sees for each operation (its wire name), by the mind's own rule (src/baxy_mind/wire.py, Wires):
 /// the operation's id with «.» → «_», except where that name would be a proper prefix of another name the model is shown
 /// (audio_volume ⊂ audio_volume_adjust), which gets «_set» (or «_2set», «_3set»… when that clashes by shape with
-/// another name). A text the App or a provider gives the model names a call by this name, the one the model sees
+/// another name; past «_9set» the catalog is an InvalidOperationException, never a loop). A text the App or a provider gives the model names a call by this name, the one the model sees
 /// (tests/fixtures/wire_names.v1.json, checked against the mind and against this class, keeps them the same).
 /// </summary>
 public sealed class WireNames
 {
     private const string Suffix = "set";
+
+    // The last suffix tried, _9set: past it the names of the catalog are an error, never a loop (wire.py: LAST).
+    private const int LastSuffix = 9;
 
     private readonly Dictionary<string, string> _names;
 
@@ -41,17 +44,7 @@ public sealed class WireNames
             List<string> taken = [.. fixedShown, .. order.Where(op => !shortSet.Contains(op)).Select(op => names[op])];
             foreach (string op in shorts)
             {
-                string named = names[op];
-                for (int k = 1; ; k++)
-                {
-                    string candidate = $"{named}_{(k > 1 ? k.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")}{Suffix}";
-                    if (!Clashes(candidate, taken))
-                    {
-                        names[op] = candidate;
-                        break;
-                    }
-                }
-
+                names[op] = Suffixed(op, order, names, taken);
                 taken.Add(names[op]);
             }
         }
@@ -67,6 +60,31 @@ public sealed class WireNames
     {
         ArgumentNullException.ThrowIfNull(operation);
         return _names.TryGetValue(operation, out string? name) ? name : Plain(operation);
+    }
+
+    // The first of _set, _2set... _9set that clashes with no name taken; when none can (every one still begins with a
+    // name shown, as calculate_x_set with calculate), an error that names the operations in the clash (wire.py: _suffixed).
+    private static string Suffixed(string op, List<string> order, Dictionary<string, string> names, List<string> taken)
+    {
+        string[] candidates = [.. Enumerable.Range(1, LastSuffix).Select(k =>
+            $"{names[op]}_{(k > 1 ? k.ToString(System.Globalization.CultureInfo.InvariantCulture) : "")}{Suffix}")];
+        foreach (string candidate in candidates)
+        {
+            if (!Clashes(candidate, taken))
+                return candidate;
+        }
+
+        var owners = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (string other in order)
+            owners[names[other]] = other;
+        string[] clash = [.. taken
+            .Where(name => candidates.Any(candidate => Clashes(candidate, [name])))
+            .Select(name => owners.TryGetValue(name, out string? owner) ? owner : name)
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal)];
+        throw new InvalidOperationException(
+            $"no wire name for {op}: {candidates[0]} to {candidates[^1]} all clash with the names of "
+            + string.Join(", ", clash));
     }
 
     private static string Plain(string operation) => operation.Replace('.', '_');

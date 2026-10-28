@@ -5,16 +5,17 @@ of another name the model is shown (audio_volume ⊂ audio_volume_adjust): choos
 the name where the other goes on writing, and the 4B tends to go on (PC-C72: a level to end at, asked with a lowering verb,
 came out as the adjusting tool in 0 of 4 seeds). The short one gets a suffix of its own (audio_volume_set), so the two
 names part on a token with content; a suffix that would clash by shape with another name (the same name, a prefix
-either way, the same letters but for «_», the same parts in another order) is _2set, _3set... Only the shape of the
+either way, the same letters but for «_», the same parts in another order) is _2set, _3set... up to _9set, past which
+the catalog is an error (ValueError, WireNames: InvalidOperationException), never a loop. Only the shape of the
 names decides this, never what an operation does.
 """
 from __future__ import annotations
 
-import itertools
 import re
 from collections.abc import Iterable
 
 SUFFIX = "_set"
+LAST = 9  # the last suffix tried, _9set: past it the names of the catalog are an error, never a loop
 
 
 def plain(operation: str) -> str:
@@ -44,6 +45,19 @@ def _shorts(names: dict[str, str], fixed: tuple[str, ...]) -> list[str]:
             if any(o != op and n.startswith(name) for o, n in names.items()) or any(f.startswith(name) for f in fixed)]
 
 
+def _suffixed(op: str, names: dict[str, str], taken: list[str]) -> str:
+    """The first of _set, _2set... _9set that clashes with no name taken; when none can (every one still begins with a
+    name shown, as calculate_x_set with calculate), a ValueError that names the operations in the clash."""
+    candidates = [f"{names[op]}_{k if k > 1 else ''}{SUFFIX[1:]}" for k in range(1, LAST + 1)]
+    for candidate in candidates:
+        if not _clashes(candidate, taken):
+            return candidate
+    owners = {name: o for o, name in names.items()}
+    clash = sorted({owners.get(name, name) for name in taken if any(_clashes(c, [name]) for c in candidates)})
+    raise ValueError(f"no wire name for {op}: {candidates[0]} to {candidates[-1]} all clash with the names of "
+                     + ", ".join(clash))
+
+
 class Wires:
     """The wire names of one catalog: ``name(op)`` the one the model sees, ``known(name)`` the way back, which also
     reads the plain name an older catalog gave it (receipts, kept sessions), and ``cite(text)`` a text of the catalog
@@ -60,8 +74,7 @@ class Wires:
                 break
             taken = [*fixed, *(n for o, n in names.items() if o not in shorts)]
             for op in shorts:
-                names[op] = next(c for k in itertools.count(1)
-                                 if not _clashes(c := f"{names[op]}_{k if k > 1 else ''}{SUFFIX[1:]}", taken))
+                names[op] = _suffixed(op, names, taken)
                 taken.append(names[op])
         self._names = names
         self._back = {name: op for op, name in names.items()}
