@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using Baxy.Kernel.Operations;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -383,7 +384,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         if (!TakesAWindow(operation))
             return refused + "; BAXY itself can open the application it meant (app_open) or bring its window to the front "
                 + "(window_focus) and then do this step again there";
-        string step = operation.Replace('.', '_');
+        string step = WireNames.Of(operation);
         return refused + (named ? "" : $"; {step} with no window named acts on the window in front")
             + (listed
                 ? $"; the windows open that BAXY may act in are in windows (top first), each with its number: to do this "

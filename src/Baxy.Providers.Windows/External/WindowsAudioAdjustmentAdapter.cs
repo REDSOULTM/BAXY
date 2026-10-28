@@ -3,6 +3,7 @@ using System.Security;
 using System.Text.Json;
 using Baxy.Providers.Windows.Audio;
 using Baxy.Providers.Windows.Infrastructure;
+using Baxy.Kernel.Operations;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -221,7 +222,7 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
                 cancellationToken);
             if (adjusted is null)
             {
-                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, "audio_volume_adjust",
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, WireNames.Of("audio.volume.adjust"),
                     $"amount {amount} and direction \"{direction}\""));
             }
             // FT/proveedores goal (review): an application already at the end it is moved towards, with no session
@@ -346,7 +347,7 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
                 cancellationToken);
             if (adjusted is null)
             {
-                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, "audio_volume",
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, WireNames.Of("audio.volume"),
                     $"level {level}"));
             }
             if (Math.Abs(adjusted.Level - level) > 2)

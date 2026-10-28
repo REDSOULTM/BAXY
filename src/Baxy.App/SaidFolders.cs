@@ -325,7 +325,7 @@ internal sealed class SaidFolders
                 + "at the working folder itself, call it again exactly as before", null, "file.find");
         }
 
-        string wire = operation.Replace('.', '_');
+        string wire = WireNames.Of(operation);
         if (descriptor.Risk == OperationRisks.ReadOnly && targets.Count == 1
             && Express(descriptor, arguments, targets[0]) is { } routed)
         {
@@ -402,7 +402,7 @@ internal sealed class SaidFolders
             ["status"] = "rejected",
             ["error"] = NameChanged,
             ["next"] = $"nothing ran: the person said the name «{theirs}» and this call writes «{leaf}»; call "
-                + $"{operation.Replace('.', '_')} again with {Changes(arguments, respelled)}, as they said it; if they asked "
+                + $"{WireNames.Of(operation)} again with {Changes(arguments, respelled)}, as they said it; if they asked "
                 + "for this spelling, call it again exactly as before",
         });
     }
@@ -630,8 +630,8 @@ internal sealed class SaidFolders
             return null;
         if (twin.Copy)
             routed["copy"] = true;
-        string wire = twin.Operation.Replace('.', '_');
-        return $"{operation.Replace('.', '_')} cannot name a folder of theirs, and {wire} does it there: call {wire} with "
+        string wire = WireNames.Of(twin.Operation);
+        return $"{WireNames.Of(operation)} cannot name a folder of theirs, and {wire} does it there: call {wire} with "
             + $"{Changes(new JsonObject(), routed)}, and {twin.Name} the file's own name";
     }
 

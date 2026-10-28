@@ -931,7 +931,7 @@ internal sealed class NativeTurnLoop
     // answer cannot tell what it would have done (e2e E021: «Python 3.11.2» after a console command that never ran).
     private static string Waiting(string observation, string operation)
     {
-        string note = $"{operation.Replace('.', '_')} waits for the person's yes and has not run";
+        string note = $"{WireNames.Of(operation)} waits for the person's yes and has not run";
         try
         {
             if (JsonNode.Parse(observation) is JsonObject facts)
@@ -966,7 +966,7 @@ internal sealed class NativeTurnLoop
     // in the next turn, where the same call runs (DropPending).
     private static string AskThePersonAbout(string operation) =>
         "nothing ran: ask the person whether to do it; their answer goes in confirm_pending (approve true or false); "
-        + $"calling {operation.Replace('.', '_')} again is not their answer: it is a new call";
+        + $"calling {WireNames.Of(operation)} again is not their answer: it is a new call";
 
     // Holdout v5 (H5): what a call held for a host no result gave reads besides, with the hosts the results did give.
     private const string ResultHostsNext =

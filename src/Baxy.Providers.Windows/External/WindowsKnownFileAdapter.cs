@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text;
 using Baxy.Providers.Windows.Filesystem;
 using Baxy.Providers.Windows.Infrastructure;
+using Baxy.Kernel.Operations;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -1086,7 +1087,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteString("next", $"nothing was changed: the search of {file.Label} found {relativePath} and "
                     + $"stopped at its {WalkTimeLimit.TotalSeconds:0} s limit before the rest of the folder, so another "
                     + $"file of that name may be there. If {relativePath} is the file the person means, call "
-                    + $"{operation.Replace('.', '_')} again with fileName \"{relativePath}\"");
+                    + $"{WireNames.Of(operation)} again with fileName \"{relativePath}\"");
             writer.WriteEndObject();
         }), "known_file_search_incomplete");
     }
