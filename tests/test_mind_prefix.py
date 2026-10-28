@@ -52,3 +52,21 @@ def test_the_document_tool_says_how_much_text_fits_in_one_decision(tmp_path: Pat
     tool = next(t for t in mind.tools if t["function"]["name"] == "office_document_create")["function"]
     assert "about 350 words of text at most" in tool["description"]
     assert "250 words" not in tool["description"]
+
+
+def test_the_document_tool_says_it_does_not_open_word_and_how_to_show_the_file(tmp_path: Path) -> None:
+    # Feria NB, humo f74f0d0eb: asked to open Word and write a long story there, the model opened Word, clicked its
+    # blank document and typed ~50 words in 55 s; nothing told it that office_document_create writes the file without
+    # opening Word, nor how to show it after (file_open finds it in Documents\BAXY), nor that the typing tool is not
+    # the way to compose a text for Word.
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": name, "description": "Do.", "argumentsSchema": {
+        "type": "object", "properties": {"title": {"type": "string"}}}}
+        for name in ("office.document.create", "input.text.type", "app.open")]})
+    tools = {t["function"]["name"]: t["function"]["description"] for t in mind.tools}
+    assert "written without opening Word" in tools["office_document_create"]
+    assert "file_open, folder documents and name «BAXY\» followed by the result's name" in tools[
+        "office_document_create"]
+    assert "a text to compose for Word (a story, a letter, an essay: use office_document_create" in tools[
+        "input_text_type"]
+    assert "opening Word to write a text you compose (use office_document_create" in tools["app_open"]
