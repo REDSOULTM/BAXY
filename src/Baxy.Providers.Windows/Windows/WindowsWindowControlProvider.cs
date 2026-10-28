@@ -1773,7 +1773,7 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
                 bool matches = allWindows || (title is not null
                     ? title.Length > 0 && InstalledApplicationResolver.Normalize(ReadWindowTitle(handle)) == title
                     : string.Equals(process.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
-                if (!matches)
+                if (!matches || !ListedForProcess(handle, static window => GetWindow(window, OwnerWindow), ReadWindowTitle))
                     return true;
                 var identity = new WindowIdentity(handle, process.Id,
                     process.StartTime.ToUniversalTime().Ticks, process.ProcessName, UtcNow);
@@ -1798,6 +1798,14 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             throw new Win32Exception(error);
         return new WindowEnumeration(result, observedCount, complete);
     }
+
+    /// <summary>
+    /// C37: an owned window without a title (an application's floating bar) is not one of its process's windows, as
+    /// the application-name path and the desktop inventory already hold; window.snap moved one in place of the
+    /// document window. An owned dialog with a title stays listed.
+    /// </summary>
+    internal static bool ListedForProcess(nint window, Func<nint, nint> ownerOf, Func<nint, string> titleOf) =>
+        true;
 
     /// <summary>
     /// Renew al máximo (w8): a window holds the front when it is the foreground window or owns it (its «Guardar como»,
