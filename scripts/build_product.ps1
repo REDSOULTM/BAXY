@@ -2,9 +2,6 @@ param(
     [ValidateSet('Debug', 'Release')]
     [string]$Configuration = 'Release',
     [string]$OutputRoot,
-    [string]$MpvPath,
-    [string]$VulkanLoaderPath,
-    [string]$YtDlpPath,
     [ValidatePattern('^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*))*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?\z')]
     [string]$Version = '1.1.0',
     [switch]$AllowDirtyDevelopmentBuild
@@ -39,7 +36,6 @@ if ($initialGit.dirty -and -not $AllowDirtyDevelopmentBuild) {
 
 . (Join-Path $PSScriptRoot 'path_safety.ps1')
 . (Join-Path $PSScriptRoot 'product_build_common.ps1')
-. (Join-Path $PSScriptRoot 'asset_resolver.ps1')
 
 function Assert-DetachedSnapshotUnchanged {
     param(
@@ -67,70 +63,6 @@ function Invoke-DotnetChecked {
     if ($LASTEXITCODE -ne 0) { throw "$FailureMessage (exit code $LASTEXITCODE)." }
 }
 
-function Resolve-BaxyRuntimeTool {
-    param(
-        [string]$ConfiguredPath,
-        [Parameter(Mandatory = $true)][string]$EnvironmentName,
-        [AllowEmptyString()][string]$DefaultPath,
-        [Parameter(Mandatory = $true)][string]$ExpectedFileName
-    )
-
-    $candidate = $ConfiguredPath
-    if ([string]::IsNullOrWhiteSpace($candidate)) {
-        $candidate = [Environment]::GetEnvironmentVariable($EnvironmentName, 'Process')
-    }
-    if ([string]::IsNullOrWhiteSpace($candidate)) { $candidate = $DefaultPath }
-    if ([string]::IsNullOrWhiteSpace($candidate)) {
-        throw "Required runtime tool is missing: $ExpectedFileName"
-    }
-    $full = [IO.Path]::GetFullPath($candidate)
-    if (-not [string]::Equals([IO.Path]::GetFileName($full), $ExpectedFileName, [StringComparison]::OrdinalIgnoreCase) -or
-        -not (Test-Path -LiteralPath $full -PathType Leaf)) {
-        throw "Required runtime tool is missing or has the wrong identity: $ExpectedFileName"
-    }
-    $null = Assert-ExistingPathChainHasNoReparsePoint -Path $full
-    $length = [int64](Get-Item -LiteralPath $full -Force).Length
-    if ($length -le 0 -or $length -gt 128MB) {
-        throw "Required runtime tool has an invalid size: $ExpectedFileName"
-    }
-    return $full
-}
-
-function Copy-BaxyRuntimeToolBytes {
-    param(
-        [Parameter(Mandatory = $true)][string]$Source,
-        [Parameter(Mandatory = $true)][string]$Destination
-    )
-
-    $input = New-Object IO.FileStream(
-        $Source, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
-    try {
-        $output = New-Object IO.FileStream(
-            $Destination, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
-        try { $input.CopyTo($output) } finally { $output.Dispose() }
-    } finally {
-        $input.Dispose()
-    }
-}
-
-$mpvResolution = Resolve-BaxyAsset -Name 'mpv' -RepositoryRoot $root
-$vulkanResolution = Resolve-BaxyAsset -Name 'mpv_vulkan' -RepositoryRoot $root
-$ytDlpResolution = Resolve-BaxyAsset -Name 'yt_dlp' -RepositoryRoot $root
-$MpvPath = Resolve-BaxyRuntimeTool `
-    -ConfiguredPath $MpvPath `
-    -EnvironmentName 'BAXY_MPV_PATH' `
-    -DefaultPath ([string]$mpvResolution.Path) `
-    -ExpectedFileName 'mpv.exe'
-$VulkanLoaderPath = Resolve-BaxyRuntimeTool `
-    -ConfiguredPath $VulkanLoaderPath `
-    -EnvironmentName 'BAXY_MPV_VULKAN_PATH' `
-    -DefaultPath ([string]$vulkanResolution.Path) `
-    -ExpectedFileName 'vulkan-1.dll'
-$YtDlpPath = Resolve-BaxyRuntimeTool `
-    -ConfiguredPath $YtDlpPath `
-    -EnvironmentName 'BAXY_YTDLP_PATH' `
-    -DefaultPath ([string]$ytDlpResolution.Path) `
-    -ExpectedFileName 'yt-dlp.exe'
 $allowedBuildRoot = [IO.Path]::GetFullPath((Join-Path $root 'artifacts\product\build'))
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
     $OutputRoot = Join-Path $allowedBuildRoot (
@@ -219,14 +151,6 @@ try {
     } finally {
         Pop-Location
     }
-
-    $mpvOutput = Join-Path $appOutput 'tools\mpv'
-    $ytDlpOutput = Join-Path $appOutput 'tools\yt-dlp'
-    New-Item -ItemType Directory -Path $mpvOutput -Force | Out-Null
-    New-Item -ItemType Directory -Path $ytDlpOutput -Force | Out-Null
-    Copy-BaxyRuntimeToolBytes -Source $MpvPath -Destination (Join-Path $mpvOutput 'mpv.exe')
-    Copy-BaxyRuntimeToolBytes -Source $VulkanLoaderPath -Destination (Join-Path $mpvOutput 'vulkan-1.dll')
-    Copy-BaxyRuntimeToolBytes -Source $YtDlpPath -Destination (Join-Path $ytDlpOutput 'yt-dlp.exe')
 
     $files = @(Get-BaxyPayloadFileRecords -PayloadRoot $appOutput)
     Assert-BaxyExactProductPayloadFileSet -Files $files

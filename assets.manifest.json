@@ -112,39 +112,6 @@
         "${USERPROFILE}\\.gemma4\\models\\vision\\baxy-vision.gguf"
       ],
       "repair": "Declara un modelo de visión local compatible; la captura y OCR deterministas permanecen disponibles sin él."
-    },
-    "mpv": {
-      "kind": "file",
-      "required": false,
-      "environment": "BAXY_MPV_PATH",
-      "candidates": [
-        "${BAXY_ASSETS_ROOT}\\tools\\mpv\\mpv.exe",
-        "D:\\BAXY\\tools\\mpv\\mpv.exe",
-        "${USERPROFILE}\\.gemma4\\tools\\mpv.exe"
-      ],
-      "repair": "Declara mpv.exe en el override local o mediante BAXY_MPV_PATH."
-    },
-    "mpv_vulkan": {
-      "kind": "file",
-      "required": false,
-      "environment": "BAXY_MPV_VULKAN_PATH",
-      "candidates": [
-        "${BAXY_ASSETS_ROOT}\\tools\\mpv\\vulkan-1.dll",
-        "D:\\BAXY\\tools\\mpv\\vulkan-1.dll",
-        "${USERPROFILE}\\.gemma4\\tools\\vulkan-1.dll"
-      ],
-      "repair": "Declara vulkan-1.dll en el override local o mediante BAXY_MPV_VULKAN_PATH."
-    },
-    "yt_dlp": {
-      "kind": "file",
-      "required": false,
-      "environment": "BAXY_YTDLP_PATH",
-      "candidates": [
-        "${BAXY_ASSETS_ROOT}\\tools\\yt-dlp\\yt-dlp.exe",
-        "D:\\BAXY\\tools\\yt-dlp\\yt-dlp.exe",
-        "${USERPROFILE}\\.gemma4\\tools\\yt-dlp.exe"
-      ],
-      "repair": "Declara yt-dlp.exe en el override local o mediante BAXY_YTDLP_PATH."
     }
   }
 }

@@ -82,10 +82,7 @@ $assetNames = @(
     'stt_nemotron_streaming',
     'wake_manifest',
     'neural_tts_voice',
-    'vision_model',
-    'mpv',
-    'mpv_vulkan',
-    'yt_dlp'
+    'vision_model'
 )
 $resolutions = @{}
 Write-Host "Inventario declarativo de activos: $AssetDescriptor"

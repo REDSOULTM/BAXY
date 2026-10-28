@@ -12,15 +12,14 @@ candidatas para activos externos. Declara:
 - modelo conversacional GGUF y `llama-server`;
 - Parakeet final y Nemotron Streaming opcional;
 - manifest wake calibrado;
-- voz neural y visión opcionales;
-- `mpv`, Vulkan y `yt-dlp`.
+- voz neural y visión opcionales.
 
 Cada activo indica tipo, obligatoriedad, variable de entorno explícita, lista
 ordenada de candidatos, archivos requeridos y reparación. Los literales ligados
 a una unidad o convención histórica viven allí y no en consumidores.
 
 Su único consumidor es `scripts/asset_resolver.ps1`, usado por bootstrap, la
-instalación del modelo wake, el registro y el build. El host no lee el
+instalación del modelo wake y el registro. El host no lee el
 descriptor: la activación requiere `mind-runtime-v1.json`, cuyas rutas y hashes
 valida `MindRuntimeDiscovery` de forma fail-closed.
 

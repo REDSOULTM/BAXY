@@ -445,7 +445,6 @@ Nombres principales:
 | Voz | `BAXY_VOICE_WAKE_ON_START` y variables detalladas en `src/baxy_mind/README.md` |
 | Browser/vision | `BAXY_CDP_ENDPOINT`, `BAXY_VISION_ENDPOINT`, `BAXY_VISION_MODEL`, `BAXY_VISION_API_KEY` |
 | Servicios | `BAXY_GRAPH_ACCESS_TOKEN`, `BAXY_SPOTIFY_ACCESS_TOKEN` |
-| Tools | `BAXY_MPV_PATH`, `BAXY_YTDLP_PATH`, `BAXY_NODE_PATH` |
 
 Documenta y registra solo nombres/estado redactado. Nunca imprimas tokens, API
 keys, contenido privado ni rutas que expongan datos innecesarios.

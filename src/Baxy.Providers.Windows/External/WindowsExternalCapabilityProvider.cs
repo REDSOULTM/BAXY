@@ -89,12 +89,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsAudioAdjustmentAdapter(),
             new WindowsAppVolumeAdapter(),
             new WindowsAppVolumeSetAdapter(),
-            // MUSIC1593: the local YouTube player answers media.status and
-            // media.control while it plays (SMTC never sees mpv); without an
-            // active player it stands aside and the SMTC adapter answers.
-            // Renew al máximo (B-APP-1): so it does, unnamed, when left paused
-            // while a system session plays.
-            new YouTubeMpvAdapter(),
             new WindowsMediaSessionAdapter(),
             // 2026-09-22 (owner's turn 148): the YouTube tab this session plays answers
             // media.control/media.status after SMTC, so «para la canción» stops what was
@@ -698,21 +692,6 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     {
         IReadOnlyList<(string Source, string Title, bool Playing)>? sessionsBefore = null;
         var paused = new List<PausedPlayback>();
-        if (IsPlayback(operation))
-        {
-            // Renew al máximo (auditoría de flujos): BAXY's own YouTube player is always BAXY's; playing, it is paused
-            // for any other playback as the sessions below are (its own next playback replaces it anyway), and played
-            // again by the same rule.
-            foreach (YouTubeMpvAdapter local in _adapters.OfType<YouTubeMpvAdapter>())
-            {
-                if (await local.PauseForAnotherPlaybackAsync(cancellationToken).ConfigureAwait(false) is { } own)
-                {
-                    paused.Add(new(() => local.ResumeAfterAnotherPlaybackAsync(CancellationToken.None), own.Source,
-                        own.Title));
-                }
-            }
-        }
-
         if (IsPlayback(operation)
             && _adapters.OfType<WindowsMediaSessionAdapter>().FirstOrDefault() is { } sessions)
         {
