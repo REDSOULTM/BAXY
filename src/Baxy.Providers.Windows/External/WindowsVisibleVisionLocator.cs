@@ -282,6 +282,13 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                 ? ExternalJson.FailureAfterEffect(operation, "visible_click_postread_invalid")
                 : ExternalJson.Failure(operation, "vision_provider_request_failed");
         }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // P2.17: the client's own time ran out on a question (the caller did not cancel); the finally above put the slot back.
+            return pressedOnce
+                ? ExternalJson.FailureAfterEffect(operation, "visible_click_postread_invalid")
+                : ExternalJson.Failure(operation, "vision_provider_timeout");
+        }
     }
 
     // Room around a word's box, in capture pixels: a point on the edge of a word is on it. Sideways, the room of a letter's

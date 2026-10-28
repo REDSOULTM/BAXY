@@ -130,11 +130,39 @@ public sealed class ComputerUseWalkFailureTests
         });
     }
 
+    // P2.17 (noche 27-10): a walk the worker did not answer within its budget (a slow tree; the worker is ended) lost the
+    // whole look («visible_controls_unavailable»). On a window that is still there the look goes on as one without a tree,
+    // read from what it draws, saying the walk did not end; a window that is gone fails as before.
+    [Test]
+    public void AWalkPastItsBudgetOnAWindowStillThereGoesOnWithoutTreeAndSaysSo()
+    {
+        using JsonDocument? unfinished = WindowsVisibleControlAdapter.UnfinishedWalk(7, _ => true);
+        ExternalCapabilityReceipt gone = Look(null, GoneWindow());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unfinished, Is.Not.Null);
+            Assert.That(unfinished!.RootElement.GetProperty("ok").GetBoolean(), Is.True);
+            Assert.That(unfinished.RootElement.GetProperty("controls").GetArrayLength(), Is.Zero);
+            Assert.That(unfinished.RootElement.GetProperty("partial").GetBoolean(), Is.True);
+            Assert.That(unfinished.RootElement.GetProperty("uiaFailed").GetString(),
+                Is.EqualTo(WindowsVisibleControlAdapter.UnfinishedWalkReason));
+            Assert.That(WindowsVisibleControlAdapter.UnfinishedWalk(7, _ => false), Is.Null);
+            // Only a walk that spent the worker's budget did not end; a worker missing or broken answers nothing at once.
+            Assert.That(WindowsVisibleControlAdapter.PastWalkBudget(Stopwatch.GetTimestamp()), Is.False);
+            Assert.That(WindowsVisibleControlAdapter.PastWalkBudget(
+                Stopwatch.GetTimestamp() - (long)(20 * Stopwatch.Frequency)), Is.True);
+            Assert.That(gone.Verified, Is.False);
+            Assert.That(gone.ErrorCode, Is.EqualTo("visible_controls_unavailable"));
+        });
+    }
+
     private static JsonElement Json(string value) => JsonDocument.Parse(value).RootElement.Clone();
 
-    private static ExternalCapabilityReceipt Look(string answer, nint window) =>
+    // A null answer: the worker answers nothing, as when its walk outlives WorkerViewBudget.
+    private static ExternalCapabilityReceipt Look(string? answer, nint window) =>
         new WindowsVisibleControlAdapter(
-                new ComputerUsePerceptionTests.ScriptedUiaWorker(answer), null, null, requestedWindow: (_, _) => ValueTask.FromResult(window), elevated: _ => false,
+                new ComputerUsePerceptionTests.ScriptedUiaWorker(answer is null ? [] : [answer]), null, null, requestedWindow: (_, _) => ValueTask.FromResult(window), elevated: _ => false,
                 capture: (_, _, _) => ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(null))
             .InvokeAsync("input.visible.controls", Json("""{"application":"el navegador"}"""), CancellationToken.None)
             .AsTask().GetAwaiter().GetResult();
