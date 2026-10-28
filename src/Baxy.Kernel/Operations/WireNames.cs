@@ -11,13 +11,13 @@ public sealed class WireNames
 {
     private const string Suffix = "set";
 
-    private static readonly Lazy<WireNames> ProductNames = new(static () => new WireNames(
-        ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name), MindTools));
-
     private readonly Dictionary<string, string> _names;
 
     /// <summary>The names the mind shows the model besides the catalog's (mind.py: ASK_USER, CONFIRM, CALCULATE).</summary>
     public static IReadOnlyList<string> MindTools { get; } = ["ask_user", "confirm_pending", "calculate"];
+
+    private static readonly Lazy<WireNames> ProductNames = new(static () => new WireNames(
+        ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name), MindTools));
 
     /// <summary>The wire names of the product catalog, which the App sends whole to the mind.</summary>
     public static WireNames Product => ProductNames.Value;
