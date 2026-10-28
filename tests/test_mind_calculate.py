@@ -73,6 +73,16 @@ def test_it_is_offered_beside_the_catalog_and_rule_5_sends_sums_to_it(tmp_path: 
     assert CALCULATE in mind.tools and "calculate" in SYSTEM.split("\n5. ")[1].split("\n")[0]
 
 
+def test_the_calculator_app_and_calculate_send_each_other_what_is_theirs(tmp_path: Path) -> None:
+    # noche 2026-10-27 (P1.5): the Calculator app's description, older than calculate, sent a plain arithmetic question
+    # to an answer «without tools» and took only an explicit ask; with the Calculator just opened, «haz una
+    # multiplicación» was answered by the mind (1/10). Each description names the other for what the other does.
+    mind, _ = _mind(tmp_path, [])
+    app = mind.english["calculator.expression.evaluate"]
+    assert "without tools" not in app and "(calculate)" in app
+    assert "the Calculator is open" in CALCULATE["function"]["description"]
+
+
 def test_a_calculation_after_memory_keeps_its_expression_out_of_the_trace(tmp_path: Path) -> None:
     # privacy review 2026-10-27: figures of what the person keeps stay out of the trace, as every row after memory
     mind, server = _mind(tmp_path, [_call("memory_recall", {"query": "saldo"}),
