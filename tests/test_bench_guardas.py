@@ -140,6 +140,16 @@ def test_a_doubted_call_is_held_before_the_guards_and_seen_as_it_was(oracle, mon
     assert bench_guardas.seen(Mind(), "c1", held, oracle, 3).shown == held
 
 
+def test_a_call_doubted_after_a_refusal_is_held_before_the_guards_too(oracle) -> None:
+    oracle.heard("saluda a Ana, que está aquí")
+    doubted = {**_draft("sms"), "unsure": True}
+    mind = Mind(doubted)
+    ran = []
+    after = bench_guardas.seen(mind, "c1", _draft(), oracle, 3, lambda *call: ran.append(call) or "{}")
+    assert after.refused == ["channel_not_said"] and after.went == [] and ran == []
+    assert after.shown == after.last == doubted and len(mind.given) == 1
+
+
 def test_the_minds_failure_after_a_refusal_ends_the_seen_decision_only(oracle) -> None:
     class Down(Mind):
         def continue_turn(self, request_id, observation: str, final: bool = False) -> dict:

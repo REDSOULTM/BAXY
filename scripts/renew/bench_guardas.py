@@ -139,13 +139,13 @@ def seen(mind: typing.Any, request_id: typing.Any, first: dict, guards: Guards, 
     or the model's words; a call still unruled when the calls are spent is none of them («unfinished»). With `observe`
     (op, arguments, index → the call's result) the turn goes on after a call goes, as the session bench closes it;
     without it, it stops there. The oracle's failures stop the run (GuardOracleError); the mind's end the turn."""
-    if first.get("unsure"):
-        # A call the mind doubted is held for the person before the App's guards (NativeTurnLoop: UnsureHeld): they see
-        # that call, asked.
-        return Seen(first, [], [], first)
     result, decision, went, refused, held, calls = first, None, [], [], [], 0
     try:
         while result.get("kind") == "action" and calls < limit:
+            if result.get("unsure"):
+                # A call the mind doubted, first or after a refusal, is held for the person before the App's guards
+                # (NativeTurnLoop.DriveAsync checks it at every step: UnsureHeld): they see that call, asked.
+                return Seen(decision or result, went, refused, result, None, held)
             calls += 1
             op = str(result.get("operation"))
             ruling = guards.call(op, result.get("arguments"))
