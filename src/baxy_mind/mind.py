@@ -193,9 +193,6 @@ REREAD = {True: "; releído después: quedó como se pidió", False: "; releído
 # campo de texto».
 OTHER_TEXT = "; el campo ya tenía otro texto: lo escrito quedó junto a ese texto"
 WINDOW_NOT_FOUND = "; la ventana pedida no existe: no se buscó ningún campo en ella"
-# Noche R6-NB-1 (sesión larga 7db8, T5): audio_app_volume_set failed with a next naming audio_volume, no call came after
-# it, and the answer was «lo puse al 15» with the volume where it was.
-NEXT_NOT_DONE = "; esta llamada no hizo nada de lo que dice su next: eso sería otra llamada"
 # What _read_in_part says after the part a read held, in full.
 PART_TAIL = "; lo demás no se leyó: un «no está» vale sólo para lo leído"
 # Aid «facts_once» (w7-breve, 2026-10-23): on the holdout v4 turn.continue wrote more after a tool (predicted p50 399 →
@@ -274,10 +271,7 @@ def _outcome(observation: str, read: bool = False) -> str:
         other = OTHER_TEXT if shown.get("otherTextInField") is True else ""
         return told + code + where + before + other + seen + _read_in_part(shown)
     gone = WINDOW_NOT_FOUND if shown.get("windowFound") is False else ""
-    # Aid «next_not_done» (noche R6-NB-1): a failure whose result says a next step was told as that step done.
-    proposed = shown.get("next") or facts.get("next")
-    undone = NEXT_NOT_DONE if isinstance(proposed, str) and proposed.strip() and _aid_on("next_not_done") else ""
-    return "falló" + code + reread + gone + _looked_elsewhere(shown) + undone
+    return "falló" + code + reread + gone + _looked_elsewhere(shown)
 
 
 # Renew al máximo (w8): file_open of a path that was not there looked only at that path (searchedElsewhere false), and the
@@ -594,6 +588,24 @@ def written_note(observation: str, receipts: list[dict[str, Any]]) -> str:
         if isinstance(sent, dict) and sent.get("title"):
             return WRITTEN_NOTE.format(path=observed["fullPath"], title=sent["title"], process=sent.get("process") or "?")
     return ""
+
+
+# Aid «next_not_done» (noche R6-NB-1, sesión larga 7db8, T5): audio_app_volume_set failed with a next naming
+# audio_volume, no call came after it, and the answer was «lo puse al 15» with the volume where it was.
+NEXT_NOT_DONE = "\n[Ayuda: esta llamada falló y lo que dice su next no lo hizo ella.]"
+
+
+def _has_next(observation: str) -> bool:
+    """Whether a result carries a next of its own (in observed or beside it), whatever it says."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return False
+    if not isinstance(facts, dict):
+        return False
+    observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
+    told = observed.get("next") or facts.get("next")
+    return isinstance(told, str) and bool(told.strip())
 
 
 # Measured history (PLAN_GENERAL C2, cf29f2510): told at the third, its risk «sondeos legítimos»: a look repeated at a
@@ -2335,6 +2347,9 @@ class Mind:
             if written:
                 note += written
                 aids["written_not_window"] = written.strip()
+        if outcome.startswith("falló") and _has_next(observation) and _aid_on("next_not_done"):
+            note += NEXT_NOT_DONE
+            aids["next_not_done"] = NEXT_NOT_DONE.strip()
         # Aid «same_call_next» (PLAN_GENERAL C2; uso real: the same click 5-7 times, a reload and a typing in turn): a
         # call made again in this turn with the same arguments and the same result (its content, _result_key),
         # whatever came between, is told as a fact with its options, once per turn (a loop of a look and a click repeats
