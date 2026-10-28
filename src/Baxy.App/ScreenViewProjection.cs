@@ -486,12 +486,6 @@ internal static class ScreenViewProjection
             line.Append(" [atajo ").Append(shortcut).Append(']');
         }
 
-        // Feria 2026-10-27: the window's body (its canvas), the only control input.pointer.drag drags on.
-        if ((bool?)control["body"] == true)
-        {
-            line.Append(" (cuerpo de la ventana)");
-        }
-
         return line.ToString();
     }
 }

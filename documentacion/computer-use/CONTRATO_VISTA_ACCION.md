@@ -764,13 +764,10 @@ cada uno, ≤30 pasos y 180 s en total), con su propia comprobación, historial 
 aplicación olvida el proceso adoptado. El resultado trae `subgoals[]`; el final narra cada parte o la primera que
 no se logró.
 
-**Límites (estabilización L, dueño 2026-10-10).** Arrastrar con el mouse (archivos, diapositivas, notas) es un límite
-declarado. Dibujar dejó de serlo en la feria 2026-10-27: `input.pointer.drag` mantiene el botón izquierdo pulsado por un
-trazo sobre el cuerpo de la última mirada de una ventana (el control que la vista marca `body`, «cuerpo de la
-ventana»), con puntos relativos 0–1 a su rectángulo; pide el sí como el clic del puntero, va en una ráfaga del
-arrendamiento, suelta siempre el botón y sólo se da por hecho si cambió la imagen dentro del cuerpo
-(`pointer_drag_postread_unread` si no se pudo mirar, `pointer_drag_surface_unchanged` si no cambió). Un índice que no
-es el cuerpo se rechaza antes de pulsar (`pointer_drag_index_not_body`). El clic derecho y el formato de la cinta se leen
+**Límites (estabilización L, dueño 2026-10-10).** Arrastrar o dibujar con el mouse es un límite declarado: no hay
+acto que lo haga (`input.pointer.drag` se retiró del catálogo); `semantic/drag.py:asks_to_drag` lee el acto (nunca el
+texto dictado, citado o buscado, ni una ventana movida a un lugar de la pantalla, ni el puntero) y el contrato de «sin
+operación» lo dice; ni el lector de misiones ni el motor lo intentan. El clic derecho y el formato de la cinta se leen
 sobre el ACTO de cada sub-objetivo (`semantic/limits.py:act_limit`, datos `computerUse.limits.kinds`) y lo marcan
 (`steps[].limit`): el bucle hace los anteriores y para al llegar sin mirar ni actuar (`computer_use_limit_<límite>`).
 Un lugar que necesita un dispositivo («ir a Wi-Fi») lleva `steps[].requires`: el bucle lo lee una vez con la operación

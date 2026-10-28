@@ -2541,17 +2541,13 @@ function Join-ViewControls($primary,$secondary,$menu,[int]$limit,[string[]]$want
   foreach($entry in $extra){ $entry.reserved=$true; [void]$controls.Add($entry) }
   return @{ controls=$controls; menuListed=$menuListed; reserved=$extra.Count }
 }
-# Ronda 21 (t-drag-4): el cuerpo de la ventana es su superficie de contenido: el elemento de mayor area (al menos
-# $script:BodyShare de la caja de la ventana) que no tiene dentro ningun accionable (el lienzo de un editor de imagenes,
-# no el panel que envuelve la cinta y el lienzo). Va siempre en la vista, fuera del tope, con su nombre o, sin el, el de
-# su tipo entre parentesis (como un campo sin nombre), y su rectangulo: un trazo se arrastra sobre el.
-# Noche 2026-10-27 (P1.6): lo decide su forma, no su tipo: un lienzo que se expone como Group (ningun Pane, Custom, Image
-# ni Document en su ventana) no era cuerpo y el arrastre rechazaba el indice que el modelo eligio. Solo queda fuera un
-# accionable, que se pulsa y no se dibuja (Document es campo y superficie a la vez: sigue pudiendo serlo).
+# Ronda 21 (t-drag-4): el cuerpo de la ventana es su superficie de contenido: el Pane, Custom, Image o Document de mayor
+# area (al menos $script:BodyShare de la caja de la ventana) que no tiene dentro ningun accionable (el lienzo de un editor
+# de imagenes, no el panel que envuelve la cinta y el lienzo). Va siempre en la vista, fuera del tope, con su nombre o,
+# sin el, el de su tipo entre parentesis (como un campo sin nombre), y su rectangulo: un trazo se arrastra sobre el.
+$script:BodyKinds=@('Pane','Custom','Image','Document')
 $script:BodyShare=0.15
-function Test-BodyKind([string]$kind){ return ($kind -eq 'Document' -or $Actionable -notcontains $kind) }
 function Get-BodySurface($item,[string]$kind,[string]$name,$rect,$box){
-  if(-not (Test-BodyKind $kind)){ return $null }
   if($null -eq $rect -or $null -eq $box -or [double]$box.w -le 0 -or [double]$box.h -le 0){ return $null }
   $area=[double]$rect.w*[double]$rect.h
   if($area -lt $script:BodyShare*[double]$box.w*[double]$box.h){ return $null }
@@ -2562,8 +2558,6 @@ function Get-BodySurface($item,[string]$kind,[string]$name,$rect,$box){
 # como mucho uno (CEF, un lienzo) se lee por lo dibujado: el adaptador lee su texto sin pedirlo, con autoridad de
 # lineas; un cuerpo anadido la sacaria de ese regimen. Ya listado, se queda donde esta; un cuerpo que solo entro por la
 # reserva sale de ella y va al final como siempre (la base no cambia).
-# Feria 2026-10-27 (arrastrar para dibujar): el cuerpo va marcado (body), listado o anadido: input.pointer.drag solo
-# arrastra sobre el.
 function Add-ViewBody($controls,$body,$elements){
   if($null -eq $body){ return }
   $listed=$null
@@ -2573,9 +2567,8 @@ function Add-ViewBody($controls,$body,$elements){
     if($null -eq $listed -and ([string]$entry.id).Length -gt 0 -and [string]$entry.id -eq [string]$body.id){ $listed=$entry }
   }
   if($null -ne $listed -and [bool]$listed.reserved){ [void]$controls.Remove($listed); $listed=$null }
-  if($null -ne $listed){ $listed.body=$true }
   if($null -ne $listed -or $shown -le 1){ return }
-  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0; body=$true })
+  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0 })
   if(([string]$body.id).Length -gt 0){ $elements[[string]$body.id]=$body.item }
 }
 function Select-BodySurface($surfaces,$primary){
@@ -2668,16 +2661,12 @@ function Do-View($request){
   # Ronda 21 (t-drag-4): las superficies de contenido grandes (lienzo, documento, panel) que pueden ser el cuerpo.
   $box=Get-WindowBox ([IntPtr][long]$target.hwnd)
   $surfaces=New-Object System.Collections.ArrayList
-  # Noche 2026-10-27 (P1.6): sin filtro de tipo, el area se mira antes en el cache: solo los grandes pagan Get-BodySurface.
-  $bodyMin=[double]::PositiveInfinity
-  if($null -ne $box){ $bodyMin=$script:BodyShare*[double]$box.w*[double]$box.h }
   foreach($item in $all){
     try {
       if($item.Cached.IsOffscreen -and -not $keepOffscreen){ continue }
       $name=Get-ShownName $item
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
-      $bounds=$item.Cached.BoundingRectangle
-      if($bounds.Width*$bounds.Height -ge $bodyMin){
+      if($script:BodyKinds -contains $kind){
         $surface=Get-BodySurface $item $kind $name (Get-Rect $item) $box
         if($null -ne $surface){ [void]$surfaces.Add($surface) }
       }
@@ -2753,7 +2742,7 @@ function Do-View($request){
   $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen }
   $ordered=@()
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType; body=[bool]$entry.body })
+    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType })
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
   # controles que pulsar, y su recorrido ni los trae.

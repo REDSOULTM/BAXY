@@ -78,13 +78,6 @@ public static partial class RiskPolicy
             return PolicyDecision.Allow;
         }
 
-        // Feria 2026-10-27: a drag presses along a path where no label can be judged (on a page's body it may move what
-        // lies there): it asks, as the pointer's click does (K-1, ClicksUnseen).
-        if (string.Equals(operation, "input.pointer.drag", StringComparison.Ordinal))
-        {
-            return PolicyDecision.RequireConfirmation;
-        }
-
         if (arguments is { } invocation
             && (ReachesAPerson(operation, invocation)
                 || (!landingRead && PressesUndeclared(operation, invocation))
