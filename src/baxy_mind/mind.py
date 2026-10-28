@@ -2010,7 +2010,8 @@ class Mind:
         self._ran_ids = [*self._ran_ids, call_id][-SESSION_CALLS:]
 
     def _ran_unanswered(self, ended: dict[str, Any] | None) -> None:
-        """The session's call whose question ended unanswered, as the App says it, no longer waits for a «sí» (8.1)."""
+        """The session's call whose question ended unanswered, as the App says it, no longer waits for a «sí» (8.1): not
+        in the clock's calls, nor in the facts lines of the turn that asked."""
         if ended is None:
             return
         wire = self.wires.name(str(ended["operation"]))
@@ -2023,13 +2024,13 @@ class Mind:
             self._ran = [told if index == last else entry for index, entry in enumerate(self._ran)]
             # Sesión larga sobre 8fa1e1430 (R7-NB-2): and so does the turn that asked, which the model reads beside the
             # clock: its facts line still said «espera el sí», and the same close of a new window tramos later was a
-            # question again (clarify 0.46 against app 0.41, confirm 0.11 as a rival). Its result on to its turn's end,
-            # once: the prefix is read again from there. The newest result with its id: the model's ids may repeat.
+            # question again (clarify 0.46 against app 0.41, confirm 0.11 as a rival). Retold from its result to the
+            # next clock, once: the prefix is read again from there. The newest result with its id that still says it
+            # waits: the model's ids may repeat.
             call_id = self._ran_ids[last]
-            at = next((i for i in range(len(self.conversation) - 1, -1, -1)
-                       if call_id is not None and self.conversation[i]["role"] == "tool"
-                       and self.conversation[i].get("tool_call_id") == call_id), None)
-            for message in self.conversation[at:] if at is not None else []:
+            results = [i for i, m in enumerate(self.conversation) if call_id and m["role"] == "tool"
+                       and m.get("tool_call_id") == call_id and waiting in str(m.get("content") or "")]
+            for message in self.conversation[results[-1]:] if results else []:
                 if message["role"] == "user" and str(message.get("content") or "").startswith(CLOCK_MARK):
                     break
                 if message["role"] == "tool":

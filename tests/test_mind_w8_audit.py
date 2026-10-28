@@ -500,6 +500,27 @@ def test_a_question_that_ended_unanswered_no_longer_waits_in_its_own_turn(tmp_pa
     mind.continue_turn(2, ASKS, final=True)
     mind.decide(3, "otra cosa", {"operation": "app.close", "ended": ended})
     mind.decide(4, "y otra más")
-    facts = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    sent = server.bodies[-1]["messages"]
+    facts = [m["content"] for m in sent if m["role"] == "tool"]
     assert len(facts) == 1 and f"app_close → {WAITS_FOR_YES}" not in facts[0]
     assert "[En este turno: app_close → no se ejecutó: " in facts[0]
+
+
+def test_a_question_that_ended_unanswered_is_retold_in_its_turn_when_a_later_call_repeats_its_id(tmp_path) -> None:
+    # The model's ids may repeat (here every call is «c1»): the turn that asked is the one retold, not a later one.
+    from baxy_mind.mind import WAITS_FOR_YES
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Calculadora"}), _say("¿Cierro?"),
+                                    _call("app_open", {"appId": "Paint"}), _say("Abierto."), _say("Vale."),
+                                    _say("Hecho.")])
+    mind.wire_to_op = {"app_close": "app.close", "app_open": "app.open"}
+    mind.decide(1, "ciérrala")
+    mind.continue_turn(2, ASKS, final=True)
+    mind.decide(3, "abre paint")
+    mind.continue_turn(4, TRASHED, final=True)
+    mind.decide(5, "otra cosa", {"operation": "app.close", "ended": "dropped"})
+    mind.decide(6, "y otra")
+    sent = server.bodies[-1]["messages"]
+    facts = [m["content"] for m in sent if m["role"] == "tool"]
+    assert len(facts) == 2 and not any(f"app_close → {WAITS_FOR_YES}" in told for told in facts)
+    assert "app_close → no se ejecutó: su pregunta quedó sin respuesta" in facts[0]
