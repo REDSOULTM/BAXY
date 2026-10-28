@@ -13,6 +13,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from wire_names import wire  # noqa: E402  (scripts/renew/wire_names.py)
+
 WIDE = re.compile(r"\bno (?:puedo|podria|tengo (?:acceso|permiso|la capacidad|forma|manera|como)|es posible|"
                   r"me es posible|soy capaz|se puede)|\bi (?:can.?t|cannot|don.?t have)|\bno hay (?:forma|manera)"
                   r"|fuera de mi alcance|\bno tengo (?:una )?herramienta")
@@ -80,7 +83,7 @@ def main() -> None:
             elif kind == "message" and event.get("speaker") == "baxy" and turn is not None:
                 turn["replies"].append(event.get("body") or "")
             elif kind == "turn.end" and turn is not None:
-                receipts = [{"op": s.get("operation"), "tool": str(s.get("operation")).replace(".", "_"),
+                receipts = [{"op": s.get("operation"), "tool": wire(str(s.get("operation"))),
                              "arguments": s.get("arguments") or {}, "observation": s.get("observation") or "",
                              "outcome": "", "completed": s.get("status") == "completed", "read": False}
                             for s in turn["steps"]]

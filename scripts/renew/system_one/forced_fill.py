@@ -61,7 +61,7 @@ def main():
         if not bodies:
             continue
         own_ok = bench.judge(case["expect"], result, result.get("arguments") if result.get("operation") else None)
-        wire = op.replace(".", "_")
+        wire = mind.wires.name(op)
         started = time.monotonic()
         try:
             filled = server.fill_call(bodies[0], wire)

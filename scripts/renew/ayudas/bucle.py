@@ -22,6 +22,9 @@ import tempfile
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from wire_names import wire  # noqa: E402  (scripts/renew/wire_names.py)
+
 
 def recorded(run: Path) -> tuple[list[dict], list[dict]]:
     """The model's decisions in the order the mind traced them, and each turn's person's words and steps."""
@@ -43,7 +46,7 @@ def forced_reply(decision: dict, n: int) -> dict:
     message = {"role": "assistant", "content": decision.get("content") or ""}
     if decision["kind"] == "action":
         message["tool_calls"] = [{"id": f"call_r{n}", "type": "function", "function": {
-            "name": decision["operation"].replace(".", "_"),
+            "name": wire(decision["operation"]),
             "arguments": json.dumps(decision.get("arguments") or {}, ensure_ascii=False)}}]
     return {"choices": [{"message": message}], "timings": {}, "usage": {}}
 

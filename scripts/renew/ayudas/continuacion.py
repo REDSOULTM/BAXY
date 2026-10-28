@@ -200,9 +200,9 @@ def steps_turn(mind, case: dict) -> dict:
         call_id = f"call_{index}"
         mind.conversation.append({"role": "assistant", "content": "", "tool_calls": [
             {"id": call_id, "type": "function",
-             "function": {"name": op.replace(".", "_"), "arguments": json.dumps(arguments, ensure_ascii=False)}}]})
+             "function": {"name": mind.wires.name(op), "arguments": json.dumps(arguments, ensure_ascii=False)}}]})
         if index < len(case["steps"]) - 1:
-            done.append(f"{op.replace('.', '_')} → {_outcome(observation)}")
+            done.append(f"{mind.wires.name(op)} → {_outcome(observation)}")
             mind.conversation.append({"role": "tool", "tool_call_id": call_id,
                                       "content": observation + "\n[En este turno: " + "; ".join(done) + "]"})
     last_op, last_args, last_obs = case["steps"][-1]
@@ -254,7 +254,7 @@ def main() -> None:
                 mind.new_session(case["history"])
                 mind.conversation.append({"role": "user", "content": mind._clock()})
                 mind.conversation.append({"role": "user", "content": case["text"]})
-                wire = case["op"].replace(".", "_")
+                wire = mind.wires.name(case["op"])
                 mind.conversation.append({"role": "assistant", "content": "", "tool_calls": [
                     {"id": "call_0", "type": "function",
                      "function": {"name": wire, "arguments": json.dumps(case["args"], ensure_ascii=False)}}]})

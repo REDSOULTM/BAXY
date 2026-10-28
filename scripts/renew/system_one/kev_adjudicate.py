@@ -23,6 +23,7 @@ import psutil
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 import bench_decision as bench  # noqa: E402
+from wire_names import wire  # noqa: E402
 
 # The question as the product writes it (src/baxy_mind/system_one.py): training and serving read the same words.
 sys.path.insert(0, str(bench.ROOT / "src"))
@@ -40,10 +41,10 @@ def wanted(expect):
     """The option names that meet the bank's expectation, and the expected kind."""
     if expect["kind"] == "call":
         op, _, _ = bench.current(expect["op"])
-        return ({op.replace(".", "_")} if op else set()), "actuar"
+        return ({wire(op)} if op else set()), "actuar"
     if expect["kind"] == "call_any":
         ops = {bench.current(o)[0] for o in expect["ops"]}
-        return {o.replace(".", "_") for o in ops if o}, "actuar"
+        return {wire(o) for o in ops if o}, "actuar"
     if expect["kind"] == "ask":
         return {"ask_user"}, "preguntar"
     return {ANSWER}, "responder"
@@ -53,7 +54,7 @@ def qwen_choice(row):
     if row["kind"] == "clarify":
         return "ask_user"
     if row["kind"] == "action":
-        return str(row["operation"]).replace(".", "_")
+        return wire(str(row["operation"]))
     return ANSWER
 
 

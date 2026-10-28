@@ -27,7 +27,8 @@ def main() -> int:
     parser.add_argument("--catalog", required=True)
     args = parser.parse_args()
     sys.path.insert(0, str(ROOT / "src"))
-    from baxy_mind.mind import SYSTEM, _as_written, _model_schema  # noqa: E402
+    from baxy_mind.mind import ASK_USER, CALCULATE, CONFIRM, SYSTEM, _as_written, _model_schema  # noqa: E402
+    from baxy_mind.wire import Wires  # noqa: E402
 
     def post(path: str, body: dict) -> dict:
         request = urllib.request.Request(args.url + path, data=json.dumps(body).encode("utf-8"),
@@ -36,8 +37,11 @@ def main() -> int:
             return json.loads(reply.read())
 
     catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
+    # The names the mind gives the whole catalog (a tool shown here is named as among all of them).
+    wires = Wires((str(cap.get("name") or "") for cap in catalog.get("capabilities") or []),
+                  fixed=[tool["function"]["name"] for tool in (ASK_USER, CONFIRM, CALCULATE)])
     tools = [{"type": "function", "function": {
-        "name": cap["name"].replace(".", "_"), "description": str(cap.get("description") or "")[:300],
+        "name": wires.name(cap["name"]), "description": str(cap.get("description") or "")[:300],
         "parameters": {**_model_schema(cap.get("argumentsSchema") or {}), "type": "object"}}}
         for cap in catalog.get("capabilities") or [] if cap.get("name") in TOOLS]
     for text in REQUESTS:

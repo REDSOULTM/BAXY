@@ -22,8 +22,10 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from baxy_mind.answer_check import check  # noqa: E402
 from baxy_mind.mind import COMPLETED_OUTCOMES, READ_RISKS, _outcome  # noqa: E402
+from wire_names import wire  # noqa: E402  (scripts/renew/wire_names.py)
 
 # The runs where the other scripts find them (BAXY_RENEW_BANKS); F: by default, as before.
 RUNS = Path(os.environ.get("BAXY_RENEW_BANKS", "F:/BAXYeval/renew_v1")) / "runs"
@@ -63,7 +65,7 @@ def _receipt(step: dict, risks: dict[str, str]) -> dict:
     observation = _normal(step)
     outcome = _outcome(observation, read=risks.get(op) in READ_RISKS)
     read = risks.get(op) == "read_only"  # as the mind tells the checker: only a read_only call never acted
-    return {"op": op, "tool": op.replace(".", "_"), "arguments": step.get("arguments") or {},
+    return {"op": op, "tool": wire(op), "arguments": step.get("arguments") or {},
             "observation": observation, "outcome": outcome, "completed": outcome.startswith(COMPLETED_OUTCOMES),
             "read": read}
 

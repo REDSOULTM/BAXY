@@ -24,6 +24,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 import bench_decision as bench  # noqa: E402
+from wire_names import wire  # noqa: E402
 
 KS = (4, 8, 12, 16, 20)
 ASK, ANSWER = "ask_user", "responder_con_palabras"
@@ -96,9 +97,9 @@ class Shortlist:
 def gold_of(expect):
     if expect["kind"] == "call":
         op = bench.current(expect["op"])[0]
-        return {op.replace(".", "_")} if op else set()
+        return {wire(op)} if op else set()
     if expect["kind"] == "call_any":
-        return {o.replace(".", "_") for o in (bench.current(x)[0] for x in expect["ops"]) if o}
+        return {wire(o) for o in (bench.current(x)[0] for x in expect["ops"]) if o}
     return set()
 
 
@@ -138,7 +139,7 @@ def main():
             t0 = time.monotonic()
             ranked = sl.rank(r["text"])
             times.append(time.monotonic() - t0)
-            qwen = [x["wire"] for x in r.get("rivals") or []] + ([str(r["operation"]).replace(".", "_")] if r.get("operation") else [])
+            qwen = [x["wire"] for x in r.get("rivals") or []] + ([wire(str(r["operation"]))] if r.get("operation") else [])
             for k in KS:
                 hits[k] += bool(gold & set(ranked[:k]))
                 union[k] += bool(gold & (set(ranked[:k]) | set(qwen)))

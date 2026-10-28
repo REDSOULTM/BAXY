@@ -8,11 +8,15 @@ usage: D:/BAXYft/venv/Scripts/python.exe -X utf8 recuperar_p9.py [--top 3] [--mi
 import argparse
 import json
 import os
+import sys
 import time
 from pathlib import Path
 
 import numpy as np
 import psutil
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from wire_names import wire  # noqa: E402  (scripts/renew/wire_names.py)
 
 OUT = Path(r"F:/BAXYeval/ayudas_v1/palanca9")
 POOL = [Path(rf"F:/BAXYeval/ft_v1/datos/G{i}.emb_limpio.jsonl") for i in range(1, 7)]
@@ -29,7 +33,7 @@ def queries() -> list[str]:
 def shown(example: dict) -> str | None:
     target = example.get("target") or {}
     if target.get("kind") == "call" and target.get("calls"):
-        calls = "; ".join(f'{c["op"].replace(".", "_")} {json.dumps(c.get("arguments") or {}, ensure_ascii=False)}'
+        calls = "; ".join(f'{wire(c["op"])} {json.dumps(c.get("arguments") or {}, ensure_ascii=False)}'
                           for c in target["calls"])
         return f'«{example["text"]}» → {calls}'
     if target.get("kind") == "ask":

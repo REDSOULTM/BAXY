@@ -94,7 +94,7 @@ class Replay:
                 call = f"call_{index}"
                 mind.conversation.append({"role": "assistant", "content": "", "tool_calls": [
                     {"id": call, "type": "function",
-                     "function": {"name": op.replace(".", "_"), "arguments": json.dumps(args, ensure_ascii=False)}}]})
+                     "function": {"name": mind.wires.name(op), "arguments": json.dumps(args, ensure_ascii=False)}}]})
                 mind._turn.update(awaiting=call, calling=op,
                                   calling_args=json.dumps(args, sort_keys=True, ensure_ascii=False))
                 last = index == len(turn["steps"]) - 1

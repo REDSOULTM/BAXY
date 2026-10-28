@@ -10,6 +10,9 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from wire_names import wire  # noqa: E402  (scripts/renew/wire_names.py)
+
 BANKS = Path(r"F:\BAXYeval\renew_v1\runs")
 
 
@@ -32,7 +35,7 @@ def confidence(row):
 
 
 def wire_of(op):
-    return (op or "").replace(".", "_")
+    return wire(op) if op else ""
 
 
 def main():

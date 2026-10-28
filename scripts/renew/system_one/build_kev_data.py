@@ -21,6 +21,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 import bench_decision as bench  # noqa: E402
+from wire_names import wire  # noqa: E402
 from kev_adjudicate import ANSWER, KINDS, OPTION_TEXT, qwen_choice, short, state_text  # noqa: E402
 
 CANT = {"sint_no_lo_hago", "sint_modo_no_disponible", "massive_cannot", "agente_no_lo_hago"}
@@ -44,7 +45,7 @@ def confusion_map(rows):
         expect = row["expect"]
         if expect["kind"] != "call":
             continue
-        gold = (bench.current(expect["op"])[0] or "").replace(".", "_")
+        gold = wire(bench.current(expect["op"])[0] or "")
         if not gold:
             continue
         for name in [qwen_choice(row)] + [r["wire"] for r in row["rivals"] if r.get("known")]:
@@ -87,7 +88,7 @@ def main():
             seen.add(row["id"])
             rows.append(row)
     confusers = confusion_map(rows) if args.confusers else {}
-    gold_tools = collections.Counter((bench.current(r["expect"]["op"])[0] or "").replace(".", "_") for r in rows
+    gold_tools = collections.Counter(mind.wires.name(bench.current(r["expect"]["op"])[0] or "") for r in rows
                                      if r["expect"]["kind"] == "call")
     common = [t for t, _ in gold_tools.most_common(60) if t in described]
     ids = {name: open(Path(args.outdir) / f"{name}.ids.jsonl", "w", encoding="utf-8", newline="\n")
@@ -100,7 +101,7 @@ def main():
                 gold = [bench.current(o)[0] for o in expect["ops"]]
             else:
                 gold = []
-            gold = [g.replace(".", "_") for g in gold if g]
+            gold = [mind.wires.name(g) for g in gold if g]
             if expect["kind"] in ("call", "call_any") and not any(g in described for g in gold):
                 stats["gold_not_in_catalog"] += 1
                 continue
