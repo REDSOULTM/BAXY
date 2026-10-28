@@ -203,7 +203,9 @@ public sealed class ComputerUseViewOrderTests
     {
         string answer = Run(["Get-BodySurface", "Test-BodyKind"], """
             $script:BodyShare=0.15
-            $Actionable=@('Button','ListItem','Edit','Document')
+            $actionables=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -eq '$Actionable' },$false))
+            if($actionables.Count -ne 1){ throw 'the worker names its actionable kinds once' }
+            . ([scriptblock]::Create($actionables[0].Extent.Text))
             function Get-Id($el){ return [string]$el }
             $box=@{ x=0; y=0; w=1200; h=800 }
             $rect=@{ x=100; y=200; w=900; h=500 }

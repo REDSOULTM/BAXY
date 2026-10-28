@@ -2668,13 +2668,19 @@ function Do-View($request){
   # Ronda 21 (t-drag-4): las superficies de contenido grandes (lienzo, documento, panel) que pueden ser el cuerpo.
   $box=Get-WindowBox ([IntPtr][long]$target.hwnd)
   $surfaces=New-Object System.Collections.ArrayList
+  # Noche 2026-10-27 (P1.6): sin filtro de tipo, el area se mira antes en el cache: solo los grandes pagan Get-BodySurface.
+  $bodyMin=[double]::PositiveInfinity
+  if($null -ne $box){ $bodyMin=$script:BodyShare*[double]$box.w*[double]$box.h }
   foreach($item in $all){
     try {
       if($item.Cached.IsOffscreen -and -not $keepOffscreen){ continue }
       $name=Get-ShownName $item
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
-      $surface=Get-BodySurface $item $kind $name (Get-Rect $item) $box
-      if($null -ne $surface){ [void]$surfaces.Add($surface) }
+      $bounds=$item.Cached.BoundingRectangle
+      if($bounds.Width*$bounds.Height -ge $bodyMin){
+        $surface=Get-BodySurface $item $kind $name (Get-Rect $item) $box
+        if($null -ne $surface){ [void]$surfaces.Add($surface) }
+      }
       # Uso real 2026-10-21 (e2e del notebook): la superficie de dibujo de Chromium sin accesibilidad (su clase de
       # render_surface_classes y el nombre fijo que Chromium le da, «Chrome Legacy Window») no es un control: es la
       # pagina entera. Listada como el control 0 de Steam, el modelo la pulso por la pagina de un juego.
