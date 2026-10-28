@@ -90,10 +90,10 @@ def _blocks(text: str) -> list[str]:
     return blocks
 
 
-def select(text: str, queries: list[str], cap: int = CAP, lead: bool = True) -> tuple[str, int]:
-    """The lead and the blocks most related to the queries, in the page's order, up to ``cap`` characters, «…» where
+def select(text: str, queries: list[str], lead: bool = True) -> tuple[str, int]:
+    """The lead and the blocks most related to the queries, in the page's order, up to CAP characters, «…» where
     text was left out; and how many characters of ``text`` are not shown. Text within the cap comes back as it is."""
-    if len(text) <= cap:
+    if len(text) <= CAP:
         return text, 0
     blocks = _blocks(text)
     wanted = set().union(*(_terms(q) for q in queries)) if queries else set()
@@ -115,13 +115,13 @@ def select(text: str, queries: list[str], cap: int = CAP, lead: bool = True) -> 
     for index in sorted(range(count), key=lambda i: (-scores[i], i)):
         if scores[index] <= 0:
             break
-        if index in chosen or used + len(blocks[index]) + 2 > cap:
+        if index in chosen or used + len(blocks[index]) + 2 > CAP:
             continue
         chosen.add(index)
         used += len(blocks[index]) + 2
     if len(chosen) <= (1 if lead else 0):
         # Nothing shares a word with the question: the start of the text, as it comes.
-        shown = text[:cap].rsplit("\n", 1)[0] if "\n" in text[:cap] else text[:cap]
+        shown = text[:CAP].rsplit("\n", 1)[0] if "\n" in text[:CAP] else text[:CAP]
         return shown, len(text) - len(shown)
     # The room left goes to what follows each chosen block (a heading's paragraph, a sentence's end), then to the
     # blocks nearest to them.
@@ -129,7 +129,7 @@ def select(text: str, queries: list[str], cap: int = CAP, lead: bool = True) -> 
     for distance in (1, -1, 2, -2):
         for index in best:
             near = index + distance
-            if 0 <= near < count and near not in chosen and used + len(blocks[near]) + 2 <= cap:
+            if 0 <= near < count and near not in chosen and used + len(blocks[near]) + 2 <= CAP:
                 chosen.add(near)
                 used += len(blocks[near]) + 2
     parts: list[str] = []
