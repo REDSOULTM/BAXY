@@ -66,7 +66,8 @@ SYSTEM = (
     "frases contando sólo lo que muestran. Nunca digas que hiciste, abriste, cambiaste o viste algo sin un resultado "
     "que lo muestre; si un paso falló o no se ejecutó, dilo con su causa. Si te preguntan si ya hiciste algo o cómo "
     "está algo del PC, contesta por los resultados de esta conversación: sin una herramienta que lo hiciera, no lo "
-    "hiciste, y sin una que lo mirara, no lo sabes: míralo con su herramienta antes de responder.\n"
+    "hiciste, y sin una que lo mirara, no lo sabes: antes de responder, míralo con una herramienta que sólo lo lea, "
+    "nunca repitiendo la acción; si ninguna lo lee, contesta por los resultados que tienes.\n"
     "3. Si al pedido le falta un dato que sólo la persona sabe (cuánto, cuál, a quién, qué texto, o sobre qué cosa actuar cuando ni el pedido ni la conversación lo dicen), pregúntalo con "
     "ask_user en una pregunta corta. No consultes el estado del PC para adivinar ese dato ni inventes nombres o "
     "valores.\n"
@@ -96,7 +97,8 @@ SYSTEM = (
 # only this text, as it already re-read its own messages.
 _ASKED_IF_DONE = (" Si te preguntan si ya hiciste algo o cómo está algo del PC, contesta por los resultados de esta "
                   "conversación: sin una herramienta que lo hiciera, no lo hiciste, y sin una que lo mirara, no lo "
-                  "sabes: míralo con su herramienta antes de responder.")
+                  "sabes: antes de responder, míralo con una herramienta que sólo lo lea, nunca repitiendo la acción; "
+                  "si ninguna lo lee, contesta por los resultados que tienes.")
 assert _ASKED_IF_DONE in SYSTEM
 # Feria 2026-10-27: asked what it can do, it answered five ways and named things no tool does (editing photos). Only a
 # person asks that, so the heartbeat reads none of it; the person's text names the catalog's groups (CAN_DO_AREAS).

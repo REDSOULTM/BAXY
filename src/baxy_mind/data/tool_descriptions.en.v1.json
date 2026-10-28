@@ -202,7 +202,8 @@
    "text": "At most 1 MiB (UTF-8); a longer text is refused (invalid arguments) and nothing is written."
   },
   "filesystem.create.directory": {
-   "relativePath": "The path inside folder (the known folder itself, Documents or Desktop, goes in folder), with every subfolder the person named: «Proyectos/notas.txt». The full path they said (C:\\Users\\ana\\Proyectos\\notas.txt) also works."
+   "relativePath": "The path inside folder (the known folder itself, Documents or Desktop, goes in folder), with every subfolder the person named: «Proyectos/2024». The full path they said (C:\\Users\\ana\\Proyectos\\2024) also works.",
+   "folder": "Which of the person's folders it goes in: desktop, documents or downloads when they name one, home for any other folder of theirs. Without folder the new folder goes in BAXY's private work folder."
   },
   "file.read": {
    "subdirectory": "The subfolder of folder the person named, with its parents: «Proyectos» or «Proyectos/2024»; or the full path they said. Leave it out only when they named no subfolder.",
