@@ -288,8 +288,10 @@ def main() -> int:
                            "turn.beat": "turn"}.get(kind, "request")
                 sys.stderr.write(f"baxy_mind_renew_failure:{kind}:{error!r}\n")
                 sys.stderr.flush()
-                protocol.write_message(protocol.error_reply(request_id, "request_failed",
-                                                            f"{surface}_runtime_failure"))
+                # R7-NB-1: a request past its budget (LlmServer.REQUEST_SECONDS) says so, as the only one the App asks
+                # for again; any other failure would fail the same way.
+                code = "request_timed_out" if isinstance(error, TimeoutError) else "request_failed"
+                protocol.write_message(protocol.error_reply(request_id, code, f"{surface}_runtime_failure"))
                 # P1.13: the App drops this stderr, and a decide past its budget left no row saying why.
                 mind._log("request.failed", arrived, None, kind=kind, failure=repr(error))
             if kind in PREFILLED_AFTER:

@@ -476,15 +476,16 @@ public sealed class NativeTurnLoopTests
             Assert.That(failures, Is.EqualTo(new[] { failure }));
             Assert.That(steps.Select(static step => step.Operation),
                 Is.EqualTo(afterCall ? new[] { "system.time" } : Array.Empty<string>()));
-            // R7-NB-1: the decision after the call is asked for once more, never in a loop.
-            Assert.That(fake.Requests("turn.continue"), Has.Count.EqualTo(afterCall ? 2 : 0));
+            // R7-NB-1: a failure that is not the request's budget is not asked for again.
+            Assert.That(fake.Requests("turn.continue"), Has.Count.EqualTo(afterCall ? 1 : 0));
         });
     }
 
     // R7-NB-1 (CU C03): the decision after app.open ran past the mind's budget and the turn ended with no words. Asked
-    // again, as the same decision (the same result and final), the model answers what it did.
-    [Test]
-    public async Task ADecisionThatDidNotComeAfterACallIsAskedForAgain()
+    // again, as the same decision (the same result and final), the model answers what it did; once, never in a loop.
+    [TestCase(1)]
+    [TestCase(2)]
+    public async Task ADecisionThatDidNotComeAfterACallIsAskedForAgain(int timedOut)
     {
         using var fake = new FakeMind();
         fake.Script(new JsonObject
@@ -505,7 +506,7 @@ public sealed class NativeTurnLoopTests
                     ["reply"] = "Lo pedí; no miré si se ve.",
                 },
             },
-            ["fail_first"] = new JsonObject { ["turn.continue"] = 1 },
+            ["time_out"] = new JsonObject { ["turn.continue"] = timedOut },
         });
         await using MindSidecarClient mind = await FakeMind.StartClientAsync();
         var published = new List<string>();
@@ -529,8 +530,8 @@ public sealed class NativeTurnLoopTests
         JsonObject[] continued = [.. fake.Requests("turn.continue")];
         Assert.Multiple(() =>
         {
-            Assert.That(failures, Is.Empty);
-            Assert.That(published, Is.EqualTo(new[] { "Lo pedí; no miré si se ve." }));
+            Assert.That(failures, Is.EqualTo(timedOut == 1 ? Array.Empty<string>() : new[] { "decision_unavailable_after_call" }));
+            Assert.That(published, Is.EqualTo(timedOut == 1 ? new[] { "Lo pedí; no miré si se ve." } : Array.Empty<string>()));
             Assert.That(continued, Has.Length.EqualTo(2));
             Assert.That(continued[1]["observation"]?.ToJsonString(), Is.EqualTo(continued[0]["observation"]?.ToJsonString()));
             Assert.That(continued[1]["final"]?.GetValue<bool>(), Is.EqualTo(continued[0]["final"]?.GetValue<bool>()));

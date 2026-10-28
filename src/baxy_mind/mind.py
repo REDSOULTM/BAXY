@@ -2224,8 +2224,10 @@ class Mind:
         if turn and not turn.get("awaiting") and turn["conv"] and turn["conv"][-1]["role"] == "tool":
             # R7-NB-1 (CU C03): the result is already in the turn and no decision came after it (the request ran past its
             # budget, and the turn ended with no words): the App asks for that decision again, and the model decides
-            # from the results it has, without reading the same result in twice.
-            return self._next(request_id, "turn.continue", turn, final=final)
+            # from the results it has, without reading the same result in twice; in words when the mind had closed the
+            # turn's calls itself (a refused repeat, the calculations' cap: _next's ``closed``).
+            self._log("turn.continue", time.perf_counter(), None, kind="asked_again", operation=turn.get("calling"))
+            return self._next(request_id, "turn.continue", turn, final=final or bool(turn.get("closed")))
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
         conv = turn["conv"]
@@ -2494,6 +2496,7 @@ class Mind:
             # which those rows no longer carry (−20 to −100 ms per call, expected).
             body.update(logprobs=True, top_logprobs=10)
         if final:
+            turn["closed"] = True  # R7-NB-1: a decision asked for again (continue_turn) keeps it
             # The last answer of an exhausted turn is words only. The tools stay, so the cached prefix (37k tokens)
             # is not evicted by a shorter prompt (llama.cpp PR #24176: a restore re-reads ~4k tokens; measured 2.3-3.6 s
             # on the next order). tool_choice none alone still let Qwen3.5 write a call as XML text that reached the

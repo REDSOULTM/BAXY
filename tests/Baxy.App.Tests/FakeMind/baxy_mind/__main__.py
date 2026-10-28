@@ -3,7 +3,7 @@
 As the real mind (src/baxy_mind/__main__.py), the reader answers voice.speak, voice.cancel, voice.status and
 voice.release as they arrive and every other request waits its turn on one loop. What it does is read from script.json
 in its folder at each request: "hold" {type: file} waits until that file exists, "delay" {type: seconds}, "fail" [type]
-answers an error, "fail_first" {type: n} answers an error to the first n of that type, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
+answers an error, "time_out" {type: n} answers the first n of that type as past their budget, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
 reply, "stderr" {type: [line]} writes those lines to stderr before the reply; "delay" {"hello": seconds} holds the hello
 at start. Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process
 writes its pid under pids/.
@@ -63,8 +63,10 @@ def answer(message: dict) -> None:
     for line in plan.get("stderr", {}).get(kind, []):
         sys.stderr.write(line + "\n")
     sys.stderr.flush()
-    if kind in plan.get("fail", []) or times_seen(kind) <= int(plan.get("fail_first", {}).get(kind, 0)):
+    if kind in plan.get("fail", []):
         reply = {"type": "error", "code": "request_failed", "detail": kind}
+    elif times_seen(kind) <= int(plan.get("time_out", {}).get(kind, 0)):
+        reply = {"type": "error", "code": "request_timed_out", "detail": kind}
     elif kind in plan.get("reply", {}):
         reply = dict(plan["reply"][kind])
     elif kind == "catalog.configure":

@@ -434,11 +434,12 @@ internal sealed class NativeTurnLoop
                         return;
                     }
 
-                    // R7-NB-1 (CU C03): the mind answered that the decision after a call that ran did not come (its request
-                    // ran past its budget), and the turn ended with no words about what the call did. It is asked for once
-                    // more, the same result and final: the mind decides from the result it already holds
-                    // (Mind.continue_turn). Not after no answer at all: a late decision may have taken that result.
-                    if (step is not null && calls > 1 && !askedAgain)
+                    // R7-NB-1 (CU C03): the mind answered that the decision after a call that ran did not come because its
+                    // request ran past its budget (request_timed_out), and the turn ended with no words about what the call
+                    // did. It is asked for once more, the same result and final: the mind decides from the result it
+                    // already holds (Mind.continue_turn). Not after another failure, which would fail the same way, nor
+                    // after no answer at all: a late decision may have taken that result.
+                    if (step is { Text: "request_timed_out" } && calls > 1 && !askedAgain)
                     {
                         askedAgain = true;
                         ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.decision_asked_again",

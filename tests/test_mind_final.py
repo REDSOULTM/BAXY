@@ -99,6 +99,19 @@ def test_a_decision_that_did_not_come_after_a_result_is_asked_again_from_that_re
     assert [m["role"] for m in server.bodies[-1]["messages"]].count("tool") == 1
 
 
+def test_a_decision_asked_again_keeps_the_turn_closed_in_words(tmp_path: Path) -> None:
+    # R7-NB-1, review: a decision in words only (here the App's final; the mind closes a turn's calls itself the same
+    # way, _next with final) ran past the budget; asked again with final false, the model still answers in words only.
+    mind, server = _mind(tmp_path, [_call("audio_volume", {"level": 30}), TimeoutError("spent"),
+                                    _say("Puse el volumen al 30.")])
+    mind.decide(1, "pon el volumen al 30")
+    observation = json.dumps({"status": "completed", "verified": True})
+    with pytest.raises(TimeoutError):
+        mind.continue_turn(2, observation, final=True)
+    assert mind.continue_turn(3, observation)["reply"] == "Puse el volumen al 30."
+    assert server.bodies[-2]["tool_choice"] == server.bodies[-1]["tool_choice"] == "none"
+
+
 def test_a_continuation_with_no_result_to_decide_from_is_still_refused(tmp_path: Path) -> None:
     mind, _ = _mind(tmp_path, [_call("audio_volume", {"level": 30}), _say("Puse el volumen al 30.")])
     mind.decide(1, "pon el volumen al 30")
