@@ -917,7 +917,8 @@ SESSION_STATE = "baxy.session"
 # The session's conversation keeps the last turns that fit both bounds; it is only ever cut at a turn's start (the
 # model is hybrid: its cache is reused from the front, so the middle of the prompt is edited only where a cut would
 # have moved its start anyway: the oldest results that lose their bodies, 1.1).
-HISTORY_TURNS = 8
+# P0.11 (noche 27-10): 10 turns, not 8 (see TRIM_TURNS_TO).
+HISTORY_TURNS = 10
 HISTORY_CHARS = 24000
 # Ronda final 44: the context also holds the tool prefix (about 42k of its 49,152 tokens with the descriptions of the
 # rondas finales, 37,999 at ff863b47f), so 24,000 characters of history (~7.9k tokens) no longer always fit beside it and
@@ -934,7 +935,10 @@ TRIM_TO = 0.6
 # the prefix (the slot's last checkpoint before the history). Estimated on the measured session's shapes (offline replay
 # with the model's chat template, not measured on the model): turn.decide re-reads −3 to −14 % against b84547ed5 on
 # that session, −21 % on random 30-turn sessions of its turns; 0.6 here, +1 % and −10 %.
-TRIM_TURNS_TO = 0.4
+# P0.11 (noche 27-10, offline replay of _trim on the notebook's 12,695 traced turns, not measured on the model): 60 % of
+# the cuts came from the count alone and TRIM_TO between 0.4 and 0.8 moved nothing; 10 turns cut to the same 3 (0.3)
+# instead of 8 to 3 cut 17 % less often and re-read 12 % less, the next cut seven turns later.
+TRIM_TURNS_TO = 0.3
 # Ronda final 45 (regla 3): what is cut is said where the model reads, or it took what is left for the whole session
 # («nunca me lo dijiste» about a turn no longer shown).
 TRIMMED = ("[Conversación recortada: los {n} turnos más antiguos de esta sesión ya no se muestran; lo que pasó en ellos "

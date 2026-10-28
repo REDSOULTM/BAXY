@@ -78,6 +78,17 @@ def test_cuts_are_rare_and_each_leaves_room_for_the_next_turns(tmp_path: Path) -
     assert len(session.rewrites) == len(set(session.rewrites))
 
 
+def test_a_long_session_is_cut_at_most_every_eighth_turn_and_keeps_three(tmp_path: Path) -> None:
+    # P0.11 (noche 27-10): 60 % of the cuts on the notebook's trace came from the count alone, each re-reading what was
+    # left (offline replay of _trim on 12,695 turns: TRIM_TO moved nothing; 10 turns cut to 3 instead of 8 to 3, −17 %
+    # cuts and −12 % re-read, the same three turns after each cut).
+    session = Session(tmp_path)
+    for turn in range(40):
+        session.say(f"pedido {turn}", _done())
+    gaps = [b - a for a, b in zip(session.rewrites, session.rewrites[1:])]
+    assert gaps and min(gaps) >= 8 and int(HISTORY_TURNS * TRIM_TURNS_TO) == 3
+
+
 def test_a_cut_leaves_out_the_bodies_of_every_closed_turn_it_keeps(tmp_path: Path) -> None:
     session = Session(tmp_path)
     for turn in range(HISTORY_TURNS + 1):
