@@ -227,7 +227,7 @@ def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lectura
             if guards is not None:
                 after = bench_guardas.seen(
                     mind, turn["id"], decision, guards, MAX_CALLS,
-                    lambda op, arguments, index: observation(op, arguments, mind.risk.get(op.replace(".", "_"), ""),
+                    lambda op, arguments, index: observation(op, arguments, mind.risk.get(mind.wires.name(op), ""),
                                                              lecturas, turn["n"] * MAX_CALLS + index))
                 calls, result, error = after.went, after.last, after.error
             while guards is None and result.get("kind") == "action" and len(calls) < MAX_CALLS:
