@@ -454,8 +454,20 @@ def test_a_question_with_a_name_answered_in_words_is_said_after_one_decision(tmp
         mind.tools = [{"function": {"name": "web_search", "description": "Look it up.", "parameters": {}},
                        "type": "function"}]
         mind.wire_to_op["web_search"] = "web.search"
+        one = FakeSystemOne("web_search")  # the judge the old aid asked, ready to send it to the web
+        mind.system_one = one  # type: ignore[assignment]
         assert mind.decide(1, said)["reply"] == answer, said
-        assert len(server.bodies) == 1, said
+        assert len(server.bodies) == 1 and one.asked == [], said
+
+
+def test_the_same_search_chosen_again_after_reading_again_runs(tmp_path, monkeypatch) -> None:
+    # P2.48: the doubt is no «sí»; read again, the model that chooses the same search again gets it run
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("web_search", {"query": "Zorvik"}, 0.3)] * 2)
+    mind.wire_to_op["web_search"] = "web.search"
+    assert mind.decide(1, "¿Qué es Zorvik?")["operation"] == "web.search"
+    assert len(server.bodies) == 2
 
 
 @pytest.mark.parametrize("wire, operation", [("memory_recall", "memory.recall"), ("file_find", "file.find"),
