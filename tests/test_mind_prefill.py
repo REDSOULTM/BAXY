@@ -351,6 +351,26 @@ def test_a_request_that_fails_leaves_its_reason_in_the_trace(tmp_path: Path, mon
                                         "failure": "TimeoutError(\"the request's time budget is spent\")"})]
 
 
+@pytest.mark.parametrize(("error", "code"), [(TimeoutError("timed out"), "request_timed_out"),
+                                             (RuntimeError("no open turn to continue"), "request_failed")])
+def test_a_request_past_its_budget_says_so_in_its_code(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+                                                         error: Exception, code: str) -> None:
+    # R7-NB-1 (CU C03): the App asks again for a decision whose request ran past its budget, never for one that failed
+    # otherwise (a context with no room left, a fault), which would fail the same way.
+    sidecar, fake_mind = _sidecar(tmp_path, monkeypatch, [{"type": "turn.continue", "id": 8, "observation": "{}"}, None],
+                                  [])
+    codes: list = []
+    monkeypatch.setattr(sidecar.protocol, "write_message", lambda message: codes.append(message.get("code")))
+
+    def continue_turn(self, request_id, observation, final=False, beat=False):
+        raise error
+
+    monkeypatch.setattr(fake_mind, "continue_turn", continue_turn, raising=False)
+    monkeypatch.setattr(fake_mind, "_log", lambda self, stage, started, reply, **fields: None, raising=False)
+    assert sidecar.main() == 0
+    assert code in codes
+
+
 @pytest.mark.parametrize("ready", [True, False])
 def test_the_sidecar_answers_a_turn_s_notice_once_its_audio_is_kept_and_none_without_a_voice(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ready: bool) -> None:

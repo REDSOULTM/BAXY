@@ -416,6 +416,8 @@ internal sealed class NativeTurnLoop
         // the budget, and a call after it ran, each one final again, with no end (engine down: engine_unavailable for
         // ever; a call waiting: dropped by the next).
         bool answerInWords = false;
+        bool askedAgain = false;
+        string observation = "";
         for (int calls = 1; ; calls++)
         {
             switch (step)
@@ -430,6 +432,21 @@ internal sealed class NativeTurnLoop
                         ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "beat.decision_unavailable",
                             step?.Text ?? "");
                         return;
+                    }
+
+                    // R7-NB-1 (CU C03): the mind answered that the decision after a call that ran did not come because its
+                    // request ran past its budget (request_timed_out), and the turn ended with no words about what the call
+                    // did. It is asked for once more, the same result and final: the mind decides from the result it
+                    // already holds (Mind.continue_turn). Not after another failure, which would fail the same way, nor
+                    // after no answer at all: a late decision may have taken that result.
+                    if (step is { Text: "request_timed_out" } && calls > 1 && !askedAgain)
+                    {
+                        askedAgain = true;
+                        ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.decision_asked_again",
+                            step.Text);
+                        step = await mind.ContinueAsync(observation, answerInWords, false, cancellationToken);
+                        calls--;
+                        continue;
                     }
 
                     // Ronda final 29 (regla 3): after a call was made in this turn the code says so (it may have had an
@@ -483,7 +500,6 @@ internal sealed class NativeTurnLoop
                 continue;
             }
 
-            string observation;
             _notice.Running(true);
             try
             {
