@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.mind import Mind, field_note
+from baxy_mind.mind import NEXT_NOT_DONE, Mind, field_note
 
 from test_mind_final import _call, _mind, _say
 
@@ -409,6 +409,36 @@ def test_a_failed_act_read_again_after_it_tells_whether_what_was_asked_holds() -
     assert _outcome(json.dumps(unsure)) == ("sin confirmar (verification_failed): pudo o no ocurrir; releído después: "
                                             "no quedó como se pidió")
     assert _outcome(json.dumps({"status": "failed", "error": "x", "observed": {}})) == "falló (x)"
+
+
+APP_VOLUME_FAILED = json.dumps({"status": "failed", "error": "app_audio_session_not_found_on_default_output",
+                                "observed": {"version": 1, "appsWithAudio": ["spotify"],
+                                             "next": "if the person meant the whole PC, call audio_volume with level 15"}})
+
+
+@pytest.mark.parametrize("setting,told", [("all", True), ("next_not_done", True), ("none", False)])
+def test_a_failed_result_with_a_next_says_this_call_did_none_of_it(
+        tmp_path: Path, monkeypatch, setting: str, told: bool) -> None:
+    # Noche R6-NB-1 (sesión larga 7db8, T5): audio_app_volume_set failed with a next naming audio_volume, no call came
+    # after it, and the answer told the next as done («lo puse al 15») with the volume where it was.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, server = _mind(tmp_path, [_call("audio_app_volume_set", {"app": "volumen", "level": 15}), _say("Listo.")])
+    mind.decide(1, "deja el volumen en 15")
+    mind.continue_turn(2, APP_VOLUME_FAILED)
+    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    line = "audio_app_volume_set → falló (app_audio_session_not_found_on_default_output)"
+    assert (line + NEXT_NOT_DONE + "]" in last) is told
+    assert (line + "]" in last) is not told
+
+
+@pytest.mark.parametrize("facts", [
+    {"status": "failed", "error": "x", "observed": {"next": ""}},
+    {"status": "failed", "error": "x", "effectUncertain": True, "observed": {"next": "look again"}},
+    {"status": "completed", "verification": "readback", "observed": {"next": "look again"}},
+])
+def test_only_a_plain_failure_with_a_next_says_it(facts: dict) -> None:
+    from baxy_mind.mind import _outcome
+    assert NEXT_NOT_DONE not in _outcome(json.dumps(facts))
 
 
 def test_a_retryable_call_that_did_nothing_is_never_told_as_maybe_done() -> None:

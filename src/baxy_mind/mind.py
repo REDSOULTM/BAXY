@@ -193,6 +193,9 @@ REREAD = {True: "; releído después: quedó como se pidió", False: "; releído
 # campo de texto».
 OTHER_TEXT = "; el campo ya tenía otro texto: lo escrito quedó junto a ese texto"
 WINDOW_NOT_FOUND = "; la ventana pedida no existe: no se buscó ningún campo en ella"
+# Noche R6-NB-1 (sesión larga 7db8, T5): audio_app_volume_set failed with a next naming audio_volume, no call came after
+# it, and the answer was «lo puse al 15» with the volume where it was.
+NEXT_NOT_DONE = "; esta llamada no hizo nada de lo que dice su next: eso sería otra llamada"
 # What _read_in_part says after the part a read held, in full.
 PART_TAIL = "; lo demás no se leyó: un «no está» vale sólo para lo leído"
 # Aid «facts_once» (w7-breve, 2026-10-23): on the holdout v4 turn.continue wrote more after a tool (predicted p50 399 →
@@ -271,7 +274,10 @@ def _outcome(observation: str, read: bool = False) -> str:
         other = OTHER_TEXT if shown.get("otherTextInField") is True else ""
         return told + code + where + before + other + seen + _read_in_part(shown)
     gone = WINDOW_NOT_FOUND if shown.get("windowFound") is False else ""
-    return "falló" + code + reread + gone + _looked_elsewhere(shown)
+    # Aid «next_not_done» (noche R6-NB-1): a failure whose result says a next step was told as that step done.
+    proposed = shown.get("next") or facts.get("next")
+    undone = NEXT_NOT_DONE if isinstance(proposed, str) and proposed.strip() and _aid_on("next_not_done") else ""
+    return "falló" + code + reread + gone + _looked_elsewhere(shown) + undone
 
 
 # Renew al máximo (w8): file_open of a path that was not there looked only at that path (searchedElsewhere false), and the
