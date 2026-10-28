@@ -5,6 +5,7 @@ import hashlib
 import http.client
 import json
 import os
+import select
 import socket
 import subprocess
 import threading
@@ -16,6 +17,10 @@ from typing import Any, Callable
 
 class _StreamBroken(Exception):
     """A streamed chat ended with an error after its first token, or its stream could not be read."""
+
+
+class Yielded(Exception):
+    """A read ahead (prefill) ended because a request was waiting (LlmServer.yields)."""
 
 
 def _tell(on_text: Callable[[str | None, bool], bool], text: str | None, done: bool) -> bool:
@@ -62,6 +67,8 @@ class LlmServer:
         # mind has used the slot since; None otherwise. A prefill of that same text is not sent again: with the slot
         # already holding all of it, a hybrid model must go back to a checkpoint to read its last token again.
         self.resident: str | None = None
+        # Whether a request waits for the mind (set by __main__): a read ahead gives way to it (prefill).
+        self.yields: Callable[[], bool] = lambda: False
 
     @property
     def name(self) -> str:
@@ -273,13 +280,34 @@ class LlmServer:
         token to predict, sampled and never decoded, so the slot then holds exactly the prompt's tokens (the warm-up's
         max_tokens 1 left n_tokens equal to its prompt's, llama-server.log). Tokenized as the chat's own prompt is
         (special tokens parsed, no BOS for this model). The text the slot already holds (``resident``) is not sent
-        again: its reply then has no timings and says ``resident``."""
+        again: its reply then has no timings and says ``resident``.
+
+        It gives way to any request that waits (``yields``; NB-R1, sesión larga en vivo 2026-10-27: one the server was
+        slow to read, with the CPU at 90 %, ran out its 24 s budget while the person's turn waited behind it): it is not
+        sent, or its connection closes as soon as one waits, so llama-server drops the task, and it raises Yielded."""
         self.wait_ready(self._within(timeout))
         if prompt == self.resident:
             return {"resident": True}
         self.resident = None
-        reply = self._post("/completion", {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True,
-                                           "id_slot": 0}, timeout)
+        if self.yields():
+            raise Yielded("a request waits")
+        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=self._within(timeout))
+        try:
+            connection.request("POST", "/completion", json.dumps(
+                {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True, "id_slot": 0}).encode(
+                "utf-8"), {"Content-Type": "application/json"})
+            until = time.monotonic() + self._within(timeout)
+            while not select.select([connection.sock], [], [], 0.05)[0]:
+                if self.yields():
+                    raise Yielded("a request waits")
+                if time.monotonic() > until:
+                    raise TimeoutError("the read ahead's time is spent")
+            response = connection.getresponse()
+            if response.status != 200:
+                raise http.client.HTTPException(f"/completion answered {response.status}")
+            reply = json.loads(response.read())
+        finally:
+            connection.close()
         self.resident = prompt
         return reply
 

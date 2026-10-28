@@ -218,17 +218,6 @@ def test_a_read_ahead_that_fails_leaves_the_conversation_as_it_was(tmp_path: Pat
     assert [r["failure"] for r in rows if r["stage"] == "warm.history"] == ["URLError"]
 
 
-def test_the_server_reads_the_text_into_its_one_slot_and_writes_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
-    from baxy_mind.llm_server import LlmServer
-    server = LlmServer("model.gguf", "llama-server.exe")
-    server._ready.set()
-    posted: list[tuple[str, dict]] = []
-    monkeypatch.setattr(server, "_post", lambda path, body, timeout: posted.append((path, body)) or {"timings": {}})
-    server.prefill("<|im_start|>system\nX<|im_end|>\n")
-    assert posted == [("/completion", {"prompt": "<|im_start|>system\nX<|im_end|>\n", "n_predict": 1,
-                                       "temperature": 0.0, "cache_prompt": True, "id_slot": 0})]
-
-
 def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a_load(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     from baxy_mind import __main__ as sidecar
@@ -405,3 +394,166 @@ def test_the_sidecar_answers_a_turn_s_notice_once_its_audio_is_kept_and_none_wit
     notice = [r for r in replies if r.get("type") == "turn.notice.result"]
     assert notice == [{"type": "turn.notice.result", "id": 1, "notice": "Busco vuelos a Lima." if ready else ""}]
     assert asked == (["notice"] if ready else [])
+
+
+def _slot_server(answer: bool):
+    """A local llama-server double for one POST: it answers at once, or, as one still reading a long prompt, answers
+    nothing and tells when the client closed its connection (it gives up after 5 s)."""
+    import http.server
+    import threading
+    closed = threading.Event()
+    posted: list[tuple[str, dict]] = []
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_POST(self) -> None:  # noqa: N802 - http.server's name
+            posted.append((self.path, json.loads(self.rfile.read(int(self.headers["Content-Length"])))))
+            if answer:
+                data = b'{"timings": {}}'
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+                return
+            self.connection.settimeout(5)
+            try:
+                if self.connection.recv(1) == b"":
+                    closed.set()
+            except OSError:
+                pass
+
+        def log_message(self, format: str, *args) -> None:  # noqa: A002 - http.server's signature
+            pass
+
+    httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    return httpd, closed, posted
+
+
+def test_a_read_ahead_gives_way_at_once_to_a_request_that_waits() -> None:
+    # NB-R1, sesión larga en vivo (2026-10-27): a read ahead the server was slow to read (CPU at 90 %) ran out its 24 s
+    # budget while the person's turn waited behind it. It ends as soon as a request waits, and its connection closes,
+    # so llama-server drops the task.
+    import threading
+    import time
+    from baxy_mind.llm_server import LlmServer, Yielded
+    httpd, closed, posted = _slot_server(answer=False)
+    try:
+        server = LlmServer("model.gguf", "llama-server.exe")
+        server.port = httpd.server_address[1]
+        server._ready.set()
+        waiting = threading.Event()
+        server.yields = waiting.is_set
+        threading.Timer(0.3, waiting.set).start()
+        started = time.monotonic()
+        with pytest.raises(Yielded):
+            server.prefill("<|im_start|>system\nX<|im_end|>\n")
+        assert time.monotonic() - started < 1.5
+        assert closed.wait(2) and server.resident is None
+        # With a request already waiting nothing is sent.
+        with pytest.raises(Yielded):
+            server.prefill("<|im_start|>system\nY<|im_end|>\n")
+        assert len(posted) == 1
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
+def test_the_server_reads_the_text_into_its_one_slot_and_writes_nothing() -> None:
+    # With nothing waiting the read ahead goes to its end, and the slot then holds its text.
+    from baxy_mind.llm_server import LlmServer
+    httpd, _, posted = _slot_server(answer=True)
+    try:
+        server = LlmServer("model.gguf", "llama-server.exe")
+        server.port = httpd.server_address[1]
+        server._ready.set()
+        assert server.prefill("<|im_start|>system\nX<|im_end|>\n") == {"timings": {}}
+        assert posted == [("/completion", {"prompt": "<|im_start|>system\nX<|im_end|>\n", "n_predict": 1,
+                                           "temperature": 0.0, "cache_prompt": True, "id_slot": 0})]
+        assert server.resident == "<|im_start|>system\nX<|im_end|>\n"
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
+
+def test_the_sidecar_s_read_ahead_gives_way_while_a_request_waits(tmp_path: Path,
+                                                                  monkeypatch: pytest.MonkeyPatch) -> None:
+    import threading
+    import time
+    from baxy_mind import __main__ as sidecar
+    servers: list = []
+    seen: list[bool] = []
+    asked = threading.Event()
+    incoming = [{"type": "turn.decide", "id": 1, "text": "hola"}, {"type": "turn.decide", "id": 2, "text": "y?"},
+                None]
+
+    class FakeServer:
+        REQUEST_SECONDS = 24.0
+        name = "model.gguf"
+        deadline = None
+
+        def __init__(self, *args, **kwargs) -> None:
+            servers.append(self)
+
+        def start(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class FakeMind:
+        foresee = None
+
+        def __init__(self, *args) -> None:
+            pass
+
+        def decide(self, request_id, text, pending, unsure=None):
+            return {"type": "turn.result", "id": request_id}
+
+        def prefill(self) -> bool:
+            if not seen:  # after the first turn: nothing waits, then the second turn comes
+                seen.append(servers[0].yields())
+                asked.set()
+                until = time.monotonic() + 2
+                while not servers[0].yields() and time.monotonic() < until:
+                    time.sleep(0.01)
+                seen.append(servers[0].yields())
+            return False
+
+    class FakeSpeech:
+        def foresee(self, text, done):
+            return True
+
+        def prepare(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class FakeVoice:
+        def __init__(self, *args, **kwargs) -> None:
+            self.speech = FakeSpeech()
+
+        def unsure(self, text: str) -> list:
+            return []
+
+        def stop(self) -> None:
+            pass
+
+    def read() -> dict | None:
+        if len(incoming) == 2:
+            asked.wait(5)
+        return incoming.pop(0)
+
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "model.gguf")
+    monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", "llama-server.exe")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    monkeypatch.setattr(sidecar, "declared_build", lambda path: "b11609")
+    monkeypatch.setattr(sidecar, "LlmServer", FakeServer)
+    monkeypatch.setattr(sidecar, "Mind", FakeMind)
+    monkeypatch.setattr(sidecar, "Voice", FakeVoice)
+    monkeypatch.setattr(sidecar.protocol, "read_message", read)
+    monkeypatch.setattr(sidecar.protocol, "write_message", lambda message: None)
+    assert sidecar.main() == 0
+    assert seen == [False, True]

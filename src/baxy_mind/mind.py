@@ -1861,6 +1861,7 @@ class Mind:
             return False
         started = time.perf_counter()
         self._age_bodies()  # as the next decision will show it, so it does not re-read from the older turn on
+        told = {"clock": True} if clock else {}  # the wake's row says so, whether it was read, failed or gave way
         after = [{"role": "user", "content": self._clock()}] if clock else []
         body = {"messages": [{"role": "system", "content": self._system()}, *self._history(self.conversation),
                              *after, {"role": "user", "content": PREFILL_MARK}],
@@ -1869,16 +1870,16 @@ class Mind:
             rendered = self.server.template(body)
             cut = rendered.rfind("<|im_start|>user\n" + PREFILL_MARK)
             if cut <= 0 or not rendered[:cut].endswith("<|im_end|>\n"):
-                self._log("warm.history", started, None, failure="unrendered")
+                self._log("warm.history", started, None, failure="unrendered", **told)
                 return False
             # Auditoría de la mente (w8): the slot now holds the person's conversation (a kept session's, loaded before
             # any turn), so the warm-up no longer keeps it on disk (Mind.warm), as after a turn.
             self._turned = True
             reply = self.server.prefill(rendered[:cut])
         except Exception as error:  # noqa: BLE001 - the next decision reads it itself, as it did before
-            self._log("warm.history", started, None, failure=type(error).__name__)
+            self._log("warm.history", started, None, failure=type(error).__name__, **told)
             return False
-        self._log("warm.history", started, reply, messages=len(self.conversation), **({"clock": True} if clock else {}))
+        self._log("warm.history", started, reply, messages=len(self.conversation), **told)
         return True
 
     def _ran_add(self, calling: Any, outcome: str, call_id: str | None = None) -> None:
