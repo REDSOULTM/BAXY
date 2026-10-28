@@ -119,3 +119,14 @@ def test_calculations_have_a_bound_and_then_the_answer_is_in_words(tmp_path: Pat
     mind, server = _mind(tmp_path, [*calls, _say("Son dieciséis.")])
     assert mind.decide(1, "¿Cuánto es dos por ocho?")["kind"] == "conversation"
     assert len(server.bodies) == len(calls) + 1 and server.bodies[-1].get("tool_choice") == "none"
+
+
+def test_its_examples_carry_no_number_to_copy_and_a_rate_it_was_not_given_goes_to_web_search() -> None:
+    # noche 2026-10-28 (P2.25): the example numbers were copied into the answer: rule 6's «sincuenta» es 50 read
+    # «beinticinco» and «zinco» as 50 and 52, and «15% of 200» turned the 17,5 % of 2.380 into 15 %. A conversion
+    # was multiplied by a rate the model made up, and a logarithm was answered from memory, wrong.
+    rule_6 = SYSTEM[SYSTEM.index("\n6. ") + 4:SYSTEM.index("\n7. ")]
+    description = CALCULATE["function"]["description"]
+    assert not any(character.isdecimal() for character in rule_6)
+    assert "15%" not in description and "log10()" in description and "ln()" in description
+    assert "(web_search)" in description

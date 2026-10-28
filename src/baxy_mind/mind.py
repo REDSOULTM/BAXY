@@ -77,7 +77,7 @@ SYSTEM = (
     "piden a la Calculadora. Lo que cambia con "
     "el tiempo o no sabes, búscalo con web_search. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
     "con memory_recall.\n"
-    "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («sincuenta» es 50). "
+    "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («yubia» es «lluvia»). "
     "Si no suena a nada que se entienda (sílabas sueltas, palabras que juntas no dicen nada) o una nota dice que el "
     "oído no está seguro de la palabra de la que depende qué hacer, no lo adivines: pídele en una frase que lo repita.\n"
     "7. Si la persona te pide que pares, te calles o esperes, no hagas nada más: responde con una palabra.\n"
@@ -1253,11 +1253,13 @@ CALCULATE = {
         "name": "calculate",
         "description": (
             "Compute arithmetic exactly, to answer the person yourself: a sum, a product, a division, a percentage, a "
-            "power or a root. Write the expression you understood with digits and symbols only: + - * / ^ ( ), "
-            "sqrt() and cbrt(), % as a hundredth (15% of 200 is 15% * 200), decimals with a point and no thousands "
-            "separators. Do not use when: they ask to do it in the Calculator app, or ask the open Calculator for an "
-            "operation (calculator_expression_evaluate). A question for the number («¿cuánto es…?») is yours even "
-            "with the Calculator open, and so is what it cannot type (a root, a percentage)."
+            "power, a root or a logarithm. Write the expression you understood with digits and symbols only: + - * / "
+            "^ ( ), sqrt(), cbrt(), log10() and ln(), % as a hundredth (p% of n is p% * n), decimals with a point (a "
+            "decimal comma becomes a point) and no thousands separators. Do not use when: they ask to do it in the "
+            "Calculator app, or ask the open Calculator for an operation (calculator_expression_evaluate); a "
+            "conversion or a price needs a rate you were not given, such as an exchange rate (web_search). A question "
+            "for the number («¿cuánto es…?») is yours even with the Calculator open, and so is what it cannot type (a "
+            "root, a percentage)."
         ),
         "parameters": {"type": "object", "properties": {"expression": {"type": "string"}},
                        "required": ["expression"]},

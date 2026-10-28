@@ -118,10 +118,10 @@ def test_the_rules_say_what_the_ears_doubts_and_words_that_make_no_sense_ask_for
     rule now says what the note is for and what to do when the words sound like nothing: ask, in its own words, to hear
     them again. Nothing decides for it."""
     rule = SYSTEM[SYSTEM.index("\n6. "):SYSTEM.index("\n7. ")]
-    assert "«sincuenta» es 50" in rule
+    assert "«yubia» es «lluvia»" in rule
     assert "el oído no está seguro" in UNSURE_NOTE and "el oído no está seguro" in rule
     assert "repita" in rule
-    assert "«sincuenta» es 50" in BEAT_SYSTEM and "repita" not in BEAT_SYSTEM  # in the heartbeat nobody spoke
+    assert "«yubia» es «lluvia»" in BEAT_SYSTEM and "repita" not in BEAT_SYSTEM  # in the heartbeat nobody spoke
 
 def test_an_answer_to_the_models_question_carries_its_unsure_words(tmp_path: Path) -> None:
     mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿A qué nivel?"}), _say("Listo.")])

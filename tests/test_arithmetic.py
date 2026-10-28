@@ -94,8 +94,8 @@ def test_very_large_and_very_small_results_are_scientific() -> None:
     ("-" * 1000 + "1", "expression nested too deep"),
     ("sqrt " * 1000 + "4", "expression nested too deep"),
     ("2 ^ " * 1000 + "1", "expression nested too deep"),
-    ("1.000", "ambiguous separator in 1.000: write a thousand as 1000 and a decimal as 1.5"),
-    ("2,500 * 3", "ambiguous separator in 2,500: write a thousand as 1000 and a decimal as 1.5"),
+    ("1.000", "ambiguous separator in 1.000: write a thousand as 1000 and a decimal as 1.5 or 2.3750"),
+    ("2,500 * 3", "ambiguous separator in 2,500: write a thousand as 1000 and a decimal as 1.5 or 2.3750"),
     ("", "no expression"),
 ], ids=lambda text: text[:24])
 def test_what_is_no_sum_raises_a_reason(expression: str, reason: str) -> None:
@@ -111,3 +111,24 @@ def test_huge_exponents_fail_quickly() -> None:
             evaluate(expression)
     assert evaluate("2 ^ 10000") == "≈ 1.995063e+3010"
     assert time.perf_counter() - started < 1
+
+
+def test_logarithms_in_base_ten_and_natural() -> None:
+    # noche 2026-10-28 (P2.25): log10(0.00042) answered from memory as -4.376; its value is -3.3768
+    assert evaluate("log10(0.00042)") == "≈ -3.376751"
+    assert evaluate("log10(1000)") == "3"
+    assert evaluate("ln(5)") == "≈ 1.609438"
+    assert evaluate("ln(1)") == "0"
+    with pytest.raises(ValueError, match="logarithm of a number that is not positive"):
+        evaluate("log10(0)")
+    with pytest.raises(ValueError, match="logarithm of a number that is not positive"):
+        evaluate("ln(-2)")
+
+
+def test_three_decimals_that_cannot_be_a_thousand_are_decimals() -> None:
+    # noche 2026-10-28 (P2.25 review): «0.125» and «log10(0.001)» read as an ambiguous thousands separator
+    assert evaluate("0.125 * 8") == "1"
+    assert evaluate("log10(0.001)") == "-3"
+    assert evaluate("1234.567 * 1000") == "1234567"
+    with pytest.raises(ValueError, match="2.3750"):
+        evaluate("2.375 * 2")
