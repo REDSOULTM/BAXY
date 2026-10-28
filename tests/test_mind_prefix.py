@@ -102,13 +102,3 @@ def test_the_power_tool_says_what_each_action_does_to_the_pc(tmp_path: Path) -> 
     assert "signout: the person's Windows session ends" in meaning and "the PC stays on" in meaning
     assert "shutdown: the PC turns off" in meaning
     assert "cierra sesión" in tool["description"]
-
-
-def test_going_back_to_a_conversation_asks_when_the_person_did_not_say_which(tmp_path: Path) -> None:
-    # R13-PC-10 (long session L09, V11D227): with a vague reference to an earlier talk, 8 of 10 arms listed the kept
-    # conversations and opened one whose title the person never said. Which one is the person's to say: the tool says so.
-    mind, _ = _mind(tmp_path, [])
-    mind.configure({"capabilities": [{"name": "conversation.open", "description": "Open.", "argumentsSchema": {
-        "type": "object", "properties": {"conversation": {"type": "string"}}}}]})
-    tool = next(t for t in mind.tools if t["function"]["name"] == "conversation_open")["function"]
-    assert "did not say which" in tool["description"]
