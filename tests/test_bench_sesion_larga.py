@@ -306,6 +306,7 @@ class FakeGuards:
 
     def ran(self, operation: str, arguments: dict | None, observation: str):
         self.log.append(("ran", operation))
+        return observation
 
 
 def test_with_the_apps_guards_a_turn_is_also_judged_on_what_the_person_sees(tmp_path: Path) -> None:

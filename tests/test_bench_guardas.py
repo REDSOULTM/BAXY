@@ -29,7 +29,10 @@ for line in sys.stdin:
     elif request.get("call") == "filesystem.list":
         answer = {"operation": "file.find", "arguments": {"folder": "home", "subdirectory": "x"}, "note": "routed"}
     elif "call" in request:
-        answer = {"operation": request["call"], "arguments": request["arguments"], "note": None}
+        answer = {"operation": request["call"], "arguments": request["arguments"], "note": None,
+                  "held": "host_not_from_session" if "url" in request["arguments"] else None}
+    elif "ran" in request:
+        answer = {"observation": request["observation"][:-1] + ', "said": "nota"}'}
     print(json.dumps(answer), flush=True)
 '''
 
@@ -63,7 +66,7 @@ def _draft(channel: str = "whatsapp") -> dict:
 def test_a_refused_call_goes_back_to_the_model_and_its_words_are_what_the_person_sees(oracle) -> None:
     oracle.heard("saluda a Ana, que está aquí")
     mind = Mind({"kind": "conversation", "reply": "¡Hola, Ana!"})
-    shown, went, refused, last, error = bench_guardas.seen(mind, "c1", _draft(), oracle, 3)
+    shown, went, refused, last, error, _ = bench_guardas.seen(mind, "c1", _draft(), oracle, 3)
     assert shown == last == {"kind": "conversation", "reply": "¡Hola, Ana!"} and error is None
     assert went == [] and refused == ["channel_not_said"]
     assert "channel_not_said" in mind.given[0][0] and mind.given[0][1] is False
@@ -75,7 +78,7 @@ def test_a_refused_call_goes_back_to_the_model_and_its_words_are_what_the_person
 def test_a_call_that_goes_is_seen_as_it_would_run_and_the_decision_bench_stops_there(oracle) -> None:
     oracle.heard("¿qué hay en mi carpeta x?")
     mind = Mind()
-    shown, went, refused, _, _ = bench_guardas.seen(
+    shown, went, refused, _, _, _ = bench_guardas.seen(
         mind, "c1", {"kind": "action", "operation": "filesystem.list", "arguments": {}}, oracle, 3)
     assert shown == {"kind": "action", "operation": "file.find", "arguments": {"folder": "home", "subdirectory": "x"}}
     assert went == ["file.find"] and refused == [] and mind.given == []
@@ -84,7 +87,7 @@ def test_a_call_that_goes_is_seen_as_it_would_run_and_the_decision_bench_stops_t
 def test_refused_every_time_the_last_continuation_closes_the_turn(oracle) -> None:
     oracle.heard("escríbele a Ana")
     mind = Mind(_draft(), _draft(), {"kind": "clarify", "question": "¿Por dónde?"})
-    shown, went, refused, _, _ = bench_guardas.seen(mind, "c1", _draft(), oracle, 3)
+    shown, went, refused, _, _, _ = bench_guardas.seen(mind, "c1", _draft(), oracle, 3)
     assert shown["kind"] == "clarify" and refused == ["channel_not_said"] * 3
     assert [final for _, final in mind.given] == [False, False, True]  # MAX_CALLS spent: the App closes the turn
 
@@ -92,10 +95,10 @@ def test_refused_every_time_the_last_continuation_closes_the_turn(oracle) -> Non
 def test_the_session_bench_gives_each_call_that_goes_its_result_and_tells_the_guards(oracle) -> None:
     oracle.heard("escríbele a Ana por whatsapp")
     mind = Mind({"kind": "conversation", "reply": "Listo."})
-    shown, went, _, last, _ = bench_guardas.seen(mind, "c1", _draft(), oracle, 3,
+    shown, went, _, last, _, _ = bench_guardas.seen(mind, "c1", _draft(), oracle, 3,
                                               lambda op, arguments, index: json.dumps({"status": "completed"}))
     assert shown["operation"] == "message.draft" and went == ["message.draft"] and last["reply"] == "Listo."
-    assert mind.given == [('{"status": "completed"}', False)]
+    assert mind.given == [('{"status": "completed", "said": "nota"}', False)]  # with the App's note, as it reads it
 
 
 def test_a_case_is_heard_with_its_earlier_words_and_an_answer_to_what_waits(oracle, monkeypatch) -> None:
@@ -249,3 +252,10 @@ def test_the_decision_bench_stops_when_the_oracle_dies_and_closes_the_server(tmp
     with pytest.raises(bench_guardas.GuardOracleError):
         _main(tmp_path, monkeypatch, launcher, [{"id": "D1", "text": "muere", "expect": {"kind": "text"}}])
     assert _Server.made[-1].closed and not (tmp_path / "runs" / "g.jsonl").exists()
+
+
+def test_a_call_the_app_holds_for_the_persons_yes_is_seen_and_its_cause_kept(oracle) -> None:
+    oracle.heard("abre la página")
+    call = {"kind": "action", "operation": "browser.navigate", "arguments": {"url": "https://ejemplo.org"}}
+    after = bench_guardas.seen(Mind(), "c1", call, oracle, 3)
+    assert after.shown["operation"] == "browser.navigate" and after.held == ["host_not_from_session"]

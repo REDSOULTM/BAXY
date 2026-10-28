@@ -319,7 +319,7 @@ def main():
                 rows[-1].update(ok_seen=after.error is None and bool(judge(case["expect"], shown, seen_arguments, enums)),
                                 refused=after.refused, seen_kind=shown.get("kind"), seen_operation=shown.get("operation"),
                                 seen_arguments=seen_arguments, seen_reply=shown.get("reply") or shown.get("question"),
-                                seen_error=after.error)
+                                seen_error=after.error, held=after.held)
             print(f"{case['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
                   flush=True)
         measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]

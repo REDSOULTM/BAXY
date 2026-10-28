@@ -910,7 +910,7 @@ internal sealed class NativeTurnLoop
 
     // Where the call acted, beside the folder the person named (SaidFolders) or the application of its place
     // (SaidApplication).
-    private static string WithSaid(string observation, string key, string said)
+    internal static string WithSaid(string observation, string key, string said)
     {
         try
         {

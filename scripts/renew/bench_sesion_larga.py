@@ -268,6 +268,7 @@ def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lectura
             seen_verdict = bench_decision.judge(turn["expect"], shown, seen_arguments, enums)
             rows[-1].update(ok_seen=shown.get("kind") != "error" and bool(seen_verdict),
                             refused=after.refused if decision.get("kind") != "error" else [],
+                            held=after.held if decision.get("kind") != "error" else [],
                             seen_kind=shown.get("kind"), seen_operation=shown.get("operation"),
                             seen_arguments=seen_arguments,
                             seen_reply=str(shown.get("reply") or shown.get("question") or "")[:REPLY_CHARS])

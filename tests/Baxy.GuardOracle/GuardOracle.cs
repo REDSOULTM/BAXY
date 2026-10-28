@@ -14,9 +14,11 @@ namespace Baxy.GuardOracle;
 /// <item><c>{"heard": words, "answering": false}</c>: the person's words open a turn (NativeTurnLoop.RunAsync).</item>
 /// <item><c>{"asked": true}</c>: the model ended the turn with a question (NativeTurnLoop.DriveAsync, «question»).</item>
 /// <item><c>{"call": op, "arguments": {…}}</c>: <c>{"refused": observation}</c>, the result the model reads, or
-/// <c>{"operation", "arguments", "note"}</c>, the call as it would run (NativeTurnLoop.ExecuteAsync).</item>
+/// <c>{"operation", "arguments", "note", "held"}</c>, the call as it would run (NativeTurnLoop.ExecuteAsync);
+/// <c>held</c>, NetworkEgress.Holds' cause when the App holds it for the person's «sí» (null: it runs).</item>
 /// <item><c>{"ran": op, "arguments": {…}, "observation": json}</c>: a call's result (SaidFolders.Ran,
-/// NetworkEgress.Observed).</item>
+/// NetworkEgress.Observed); <c>{"observation": json}</c>, that result with the said note of the call as the model reads
+/// it (NativeTurnLoop.WithSaid).</item>
 /// <item><c>{"reset": true}</c>: a new session (NativeTurnLoop.Reset).</item>
 /// </list>
 /// Not here: the owner's switches in Settings (Host.Refuse), the kernel's confirmation and argument checks, and
@@ -28,6 +30,8 @@ internal sealed class GuardOracle
     private readonly SaidFolders _said;
     private readonly SaidApplication _saidApp = new();
     private readonly SaidVerbs _saidVerbs = new();
+    // The said note of the last call that goes, by its key, for its result (ran).
+    private (string Key, string Note)? _told;
 
     /// <param name="known">The person's known folders by label (SaidFolders); null: this PC's own.</param>
     internal GuardOracle(Func<string, string?>? known = null) => _said = new SaidFolders(known);
@@ -60,9 +64,17 @@ internal sealed class GuardOracle
         }
         else if (request["ran"] is JsonValue ran)
         {
+            // NativeTurnLoop.SendAsync and DriveAsync: SaidFolders.Ran, the said note into the body, then Observed.
             string observation = (string?)request["observation"] ?? "{}";
             _said.Ran((string?)ran ?? string.Empty, Arguments(request), NativeTurnLoop.StatusOf(observation));
+            if (_told is { } fact)
+            {
+                observation = NativeTurnLoop.WithSaid(observation, fact.Key, fact.Note);
+            }
+
+            _told = null;
             _egress.Observed((string?)ran ?? string.Empty, observation);
+            return new JsonObject { ["observation"] = observation }.ToJsonString(SaidFolders.AsWritten);
         }
         else if (request["reset"] is not null)
         {
@@ -117,7 +129,8 @@ internal sealed class GuardOracle
             return Refused(NativeTurnLoop.Observation("rejected", unsaid.Code, new JsonObject { ["next"] = unsaid.Next }));
         }
 
-        string? note = null;
+        _told = null;
+        (string Key, string Note)? said = null;
         if (_said.Rule(operation, descriptor, arguments) is { } ruling)
         {
             if (ruling.Refusal is { } leftOut)
@@ -132,12 +145,12 @@ internal sealed class GuardOracle
             }
 
             arguments = ruling.Arguments;
-            note = ruling.Note;
+            said = ruling.Note is { } folder ? ("saidFolder", folder) : null;
         }
         else if (_saidApp.Rule(operation, arguments) is { } owner)
         {
             arguments = owner.Arguments;
-            note = owner.Note;
+            said = (SaidApplication.NoteKey, owner.Note);
         }
 
         if (_saidVerbs.Rule(operation, arguments, (named, given) =>
@@ -145,19 +158,21 @@ internal sealed class GuardOracle
                     ? _said.FileThere(named, called, given) : null) is { } verb)
         {
             arguments = verb.Arguments;
-            note = note is null ? verb.Note : note + "; " + verb.Note;
+            said = said is { } before ? (before.Key, before.Note + "; " + verb.Note) : (SaidVerbs.NoteKey, verb.Note);
         }
 
-        return Goes(operation, arguments, note);
+        _told = said;
+        return Goes(operation, arguments, said?.Note, _egress.Holds(operation, arguments));
     }
 
     private static JsonObject Refused(string observation) => new() { ["refused"] = observation };
 
-    private static JsonObject Goes(string operation, JsonObject arguments, string? note) => new()
+    private static JsonObject Goes(string operation, JsonObject arguments, string? note, string? held = null) => new()
     {
         ["operation"] = operation,
         ["arguments"] = arguments.DeepClone(),
         ["note"] = note,
+        ["held"] = held,
     };
 
     private static JsonObject Arguments(JsonObject request) =>

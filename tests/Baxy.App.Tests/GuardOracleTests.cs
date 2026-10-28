@@ -50,6 +50,38 @@ public sealed class GuardOracleTests
     }
 
     [Test]
+    public void AGameTheyDidNotNameGoesHeldForTheirYesWithItsCause()
+    {
+        var oracle = new GuardOracle.GuardOracle();
+
+        oracle.Answer("""{"heard": "pon algo para jugar"}""");
+        JsonNode answer = JsonNode.Parse(oracle.Answer("""{"call": "game.launch", "arguments": {"title": "Rocket League"}}"""))!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)answer["operation"], Is.EqualTo("game.launch"));
+            Assert.That((string?)answer["held"], Is.EqualTo("game_title_not_said"));
+        });
+    }
+
+    [Test]
+    public void AResultComesBackAsTheModelReadsItAndACallThatGoesUnheldSaysSo()
+    {
+        var oracle = new GuardOracle.GuardOracle();
+
+        oracle.Answer("""{"heard": "mándale a Pedro por whatsapp que ya voy"}""");
+        JsonNode answer = JsonNode.Parse(oracle.Answer(Draft))!;
+        JsonNode ran = JsonNode.Parse(oracle.Answer(
+            """{"ran": "message.draft", "arguments": {}, "observation": "{\"status\":\"completed\"}"}"""))!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(answer["held"], Is.Null);
+            Assert.That((string?)JsonNode.Parse((string)ran["observation"]!)!["status"], Is.EqualTo("completed"));
+        });
+    }
+
+    [Test]
     public void AnOperationNoCatalogHasIsRefusedAsUnknown()
     {
         JsonNode answer = JsonNode.Parse(new GuardOracle.GuardOracle().Answer("""{"call": "nada.inventado", "arguments": {}}"""))!;

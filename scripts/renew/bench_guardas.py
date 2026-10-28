@@ -9,8 +9,9 @@ never a copy of them here), a refused one back to the model with the App's refus
 or the model answers in words. The first decision stays the bench's number, as before; the one seen is the second.
 
 Oracle protocol, one JSON object per line each way: {"heard": words, "answering": bool} → {}; {"asked": true} → {};
-{"call": op, "arguments": {...}} → {"refused": observation} or {"operation": op, "arguments": {...}, "note": ...};
-{"ran": op, "arguments": {...}, "observation": text} → {}; {"reset": true} → {}. Any other answer stops the run
+{"call": op, "arguments": {...}} → {"refused": observation} or {"operation": op, "arguments": {...}, "note": ...,
+"held": NetworkEgress.Holds' cause or null}; {"ran": op, "arguments": {...}, "observation": text} → {"observation": the
+result as the model reads it, with the call's said note}; {"reset": true} → {}. Any other answer stops the run
 (GuardOracleError): a run that went on without its guards would report first decisions as the ones seen.
 """
 import subprocess
@@ -76,8 +77,12 @@ class Guards:
             raise GuardOracleError(f"the guard oracle answered {answer!r} to a call")
         return answer
 
-    def ran(self, operation: str, arguments: dict | None, observation: str) -> None:
-        self._state({"ran": operation, "arguments": arguments or {}, "observation": observation})
+    def ran(self, operation: str, arguments: dict | None, observation: str) -> str:
+        """The call's result as the model reads it in the App: with the said note of the call (NativeTurnLoop.WithSaid)."""
+        answer = self._ask({"ran": operation, "arguments": arguments or {}, "observation": observation})
+        if set(answer) != {"observation"} or not isinstance(answer["observation"], str):
+            raise GuardOracleError(f"the guard oracle answered {answer!r} to a result")
+        return answer["observation"]
 
     def close(self) -> None:
         if self._process.poll() is None and self._process.stdin:
@@ -117,12 +122,14 @@ def refusal_code(observation: str) -> str:
 
 class Seen(typing.NamedTuple):
     """A turn after the guards: the decision the person sees, the calls that went, the refusals' codes, the turn's last
-    result, and the mind's failure on the way (None)."""
+    result, the mind's failure on the way (None), and the causes the App held calls that went by for the person's «sí»
+    (NetworkEgress.Holds: the person sees the call, asked; the session bench still gives it a result)."""
     shown: dict
     went: list[str]
     refused: list[str]
     last: dict
     error: str | None = None
+    held: list[str] = []
 
 
 def seen(mind: typing.Any, request_id: typing.Any, first: dict, guards: Guards, limit: int,
@@ -136,7 +143,7 @@ def seen(mind: typing.Any, request_id: typing.Any, first: dict, guards: Guards, 
         # A call the mind doubted is held for the person before the App's guards (NativeTurnLoop: UnsureHeld): they see
         # that call, asked.
         return Seen(first, [], [], first)
-    result, decision, went, refused, calls = first, None, [], [], 0
+    result, decision, went, refused, held, calls = first, None, [], [], [], 0
     try:
         while result.get("kind") == "action" and calls < limit:
             calls += 1
@@ -149,19 +156,21 @@ def seen(mind: typing.Any, request_id: typing.Any, first: dict, guards: Guards, 
                 ran = {"kind": "action", "operation": ruling["operation"], "arguments": ruling["arguments"]}
                 decision = decision or ran
                 went.append(ran["operation"])
+                if ruling.get("held"):
+                    held.append(str(ruling["held"]))
                 if observe is None:
-                    return Seen(decision, went, refused, result)
-                observation = observe(ran["operation"], ran["arguments"], calls)
-                guards.ran(ran["operation"], ran["arguments"], observation)
+                    return Seen(decision, went, refused, result, None, held)
+                observation = guards.ran(ran["operation"], ran["arguments"],
+                                         observe(ran["operation"], ran["arguments"], calls))
             result = mind.continue_turn(request_id, observation, final=calls == limit)
     except GuardOracleError:
         raise
     except Exception as failure:  # noqa: BLE001 - the mind failed after the first decision: the turn ends there
-        return Seen(decision or {"kind": "error"}, went, refused, {"kind": "error"}, repr(failure)[:200])
+        return Seen(decision or {"kind": "error"}, went, refused, {"kind": "error"}, repr(failure)[:200], held)
     if result.get("kind") == "clarify":  # the App's «question» step (NetworkEgress.Asked)
         guards.asked()
     unfinished = {"kind": "unfinished"} if result.get("kind") == "action" else result
-    return Seen(decision or unfinished, went, refused, result)
+    return Seen(decision or unfinished, went, refused, result, None, held)
 
 
 def seen_summary(counted: list[dict], guards: Guards | None) -> dict:
