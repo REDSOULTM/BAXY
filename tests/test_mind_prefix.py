@@ -50,6 +50,8 @@ def test_the_rule_for_acting_inside_an_open_app_says_no_tool_draws() -> None:
     from baxy_mind.mind import SYSTEM
     rule_9 = SYSTEM.split("\n9. ")[1].split("\n")[0]
     assert "Ninguna herramienta dibuja, pinta ni arrastra con el ratón" in rule_9
+    # A whole window still moves with its own tools, as the raw pointer tool says.
+    assert "(mover una ventana entera es window_move o window_snap)" in rule_9
 
 
 def test_the_document_tool_says_how_much_text_fits_in_one_decision(tmp_path: Path) -> None:
