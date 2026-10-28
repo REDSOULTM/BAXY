@@ -214,14 +214,15 @@ def _outcome(observation: str, read: bool = False) -> str:
     reread = ""
     if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool):
         reread = REREAD[after["requestedStateReached"]]
-    # P2.15: the kernel says effectUncertain when the effect may have happened; a «pending» without it is a retryable
-    # call that did nothing. Either keeps its code, which tells what was or was not read.
+    # P2.15: the kernel says effectUncertain when the effect may have happened; a «pending» without it did not complete
+    # and is not told «pudo o no ocurrir» (nor «nothing happened»: a stale confirmation challenge comes as one too).
+    # Either keeps its code.
     error = facts.get("error") or facts.get("cause")
     code = f" ({error})" if isinstance(error, str) and error else ""
     if facts.get("effectUncertain"):
         return "sin confirmar" + code + ": pudo o no ocurrir" + reread
     if status == "pending":
-        return "no se completó" + code + ": no llegó a hacer nada; se puede intentar otra vez" + reread
+        return "no se completó" + code + reread
     if status == "completed":
         # Al máximo 8.2: how it was verified is the result's own typed fact (OperationVisibleFacts' table in the kernel,
         # and the App's for memory and for a result it could not read); one without it is not taken as verified.

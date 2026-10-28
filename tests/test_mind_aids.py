@@ -389,11 +389,10 @@ def test_a_retryable_call_that_did_nothing_is_never_told_as_maybe_done() -> None
     # may have happened. Without it, «pudo o no ocurrir» told a call that did nothing as maybe done, and one that stayed
     # unsure lost its code (the clicks read back unchanged or unread, a text not read back: all the same words).
     from baxy_mind.mind import _outcome
-    # The volume's retryable failure with no output device (AudioVolumeHandler.ProviderFailure).
-    nothing = json.dumps({"status": "pending", "error": "reconciliation_required", "cause": "endpoint_unavailable"})
+    # The volume's retryable failure to keep its state when nothing was applied (AudioVolumeHandler.ProviderFailure).
+    nothing = json.dumps({"status": "pending", "error": "audio_reconciliation_required", "cause": "state_unavailable"})
     unsure = json.dumps({"status": "failed", "error": "visible_click_postread_unread", "effectUncertain": True})
-    assert _outcome(nothing) == ("no se completó (reconciliation_required): no llegó a hacer nada; "
-                                 "se puede intentar otra vez")
+    assert _outcome(nothing) == "no se completó (audio_reconciliation_required)"
     assert _outcome(unsure) == "sin confirmar (visible_click_postread_unread): pudo o no ocurrir"
     assert _outcome(json.dumps({"status": "failed", "effectUncertain": True})) == "sin confirmar: pudo o no ocurrir"
 
