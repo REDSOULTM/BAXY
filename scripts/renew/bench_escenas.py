@@ -7,7 +7,7 @@ result; a call the App holds in a heartbeat for the person's «sí» is a propos
 clipboard written over, or an effect of the catalog with its arguments: a window, the network, a radio, airplane mode
 or the display, as NativeTurnLoop.BeatProposes reads them; held_by_app); any other
 effect is an action; words alone are a message; LATIDO_OK is silence. The channel (voice or a notification) is the
-App's (HeartbeatMoment.Speaks), not the model's, and is not judged (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first).
+App's (HeartbeatMoment.Speaks), not the model's, and is not judged (the labels' channel followed an older rule). Writes <banks>/runs/<label>-escenas.jsonl (summary first, with its «run»: what was measured, run_record).
 """
 import argparse
 import json
@@ -27,8 +27,9 @@ OBSERVING = {"ocr.read", "vision.describe", "browser.page.read", "browser.tabs.l
 INTRUSIVE = {"clipboard.paste", "message.draft", "calculator.expression.evaluate"}
 MAX_CALLS = 4
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from bench_decision import current  # noqa: E402
+from bench_decision import EQUIVALENCE_FILE, current  # noqa: E402
 import limpieza  # noqa: E402
+import run_meta  # noqa: E402
 
 
 def heartbeat_holds() -> dict[str, list[list[tuple[str, str, str | None]]]]:
@@ -103,6 +104,21 @@ def held_by_app(op: str, arguments, risk: str | None, holds) -> bool:
 
     return any(not conditions or any(meets(*condition) for condition in conditions)
                for conditions in holds.get(op, ()))
+
+
+def run_record(args, server, mind, environ=None) -> dict:
+    """What this run measured with (run_meta), as bench_decision's: this script is the judge of the scenes."""
+    cache = run_meta._cache_path()
+    src = Path(args.src)
+    return {"machine": run_meta.machine(), "src": str(src), "src_git": run_meta.git_state(src),
+            "mind_sha256": run_meta.tree_sha256(src / "baxy_mind"),
+            "judge_sha256": run_meta.sha256_file(Path(__file__)),
+            "equivalence_sha256": run_meta.sha256_file(EQUIVALENCE_FILE),
+            "catalog": run_meta.fingerprint(args.catalog, cache), "gguf": run_meta.fingerprint(args.gguf, cache),
+            "server": run_meta.fingerprint(args.server, cache),
+            "kv": list(getattr(server, "kv", []) or []), "ctx": int(args.ctx),
+            "seed": getattr(mind, "seed", None), "temp": getattr(mind, "decide_temperature", None),
+            "env": run_meta.baxy_env(environ)}
 
 
 def main() -> None:
@@ -216,7 +232,8 @@ def main() -> None:
                "by_kind": {k: [sum(r["ok"] for r in counted if r["expect"] == k),
                                sum(r["expect"] == k for r in counted)]
                            for k in ("silence", "act", "propose", "say")},
-               "p50_s": round(statistics.median(r["latency_s"] for r in rows), 3) if rows else None}
+               "p50_s": round(statistics.median(r["latency_s"] for r in rows), 3) if rows else None,
+               "run": run_record(args, server, mind)}
     with (runs / f"{args.label}-escenas.jsonl").open("w", encoding="utf-8") as out:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
         for row in rows:

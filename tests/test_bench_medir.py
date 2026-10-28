@@ -57,6 +57,13 @@ def test_every_baxy_switch_is_recorded_and_nothing_else() -> None:
     assert seen == {"BAXY_AYUDAS": "none", "BAXY_S1_VETO": "0.6", "baxy_renew_kv": "f16"}
 
 
+def test_a_secret_is_recorded_as_set_never_its_value() -> None:
+    seen = run_meta.baxy_env({"BAXY_VISION_API_KEY": "sk-123", "BAXY_X_TOKEN": "t", "BAXY_KEYPAD_KEYS": "1",
+                              "BAXY_KV": "q8_0"})
+    assert seen == {"BAXY_KEYPAD_KEYS": "1", "BAXY_KV": "q8_0", "BAXY_VISION_API_KEY": "<definida>",
+                    "BAXY_X_TOKEN": "<definida>"}
+
+
 def test_a_decision_run_says_what_it_measured(tmp_path, monkeypatch) -> None:
     import bench_decision
     catalog, gguf, server = tmp_path / "catalog.json", tmp_path / "qwen.gguf", tmp_path / "llama-server.exe"
