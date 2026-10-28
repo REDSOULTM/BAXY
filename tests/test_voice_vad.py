@@ -37,6 +37,8 @@ def _fake_sherpa(model: _Model) -> SimpleNamespace:
 
 
 def test_every_window_is_heard_once_with_its_context_and_marks_the_block_where_it_ends() -> None:
+    # The model is faked, but Vad still finds silero_vad.onnx where the package lives, as its siblings need it.
+    pytest.importorskip("silero_vad", reason="Vad finds silero_vad.onnx in the runtime's silero_vad package")
     model = _Model()
     vad = Vad(_fake_sherpa(model))
     audio = np.arange(5 * BLOCK, dtype=np.float32)
