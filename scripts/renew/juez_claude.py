@@ -5,8 +5,8 @@ apart, beside the runs, for whoever wants to uncover the letters (each verdict g
 every run are shuffled together and cut into tandas of a few lines (a conversation is never split); each tanda is one
 `claude -p` with no tools, the criterion of artifacts/renew/maximo/CRITERIO_FALSEDADES.md as its system prompt and a
 JSON schema for its verdicts, several at once, each stopped at five minutes. Every line is read VOTES times, each time
-shuffled anew among other conversations, and takes the majority. A line no reading returned a verdict for is a line not judged (unparsed, with its cause), never a
-true one.
+shuffled anew among other conversations, and takes the majority. A line no reading returned a verdict for, or one its
+votes tie on, is a line not judged (unparsed, with its cause), never a true one.
 Figures are comparable only with runs this same judge read: the runs judged before 2026-10-27 by the local 35B carry
 judge.gguf in their summary (judge.juez "claude" here) and are compared only among themselves, or judged again here.
 """
