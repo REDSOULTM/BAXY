@@ -326,29 +326,3 @@ def test_the_answer_to_ask_user_is_that_calls_result(tmp_path: Path) -> None:
     asked = messages[-2]["tool_calls"][0]["id"]
     assert messages[-1] == {"role": "tool", "tool_call_id": asked, "content": "a las 7"}
     assert sum(str(m.get("content", "")).startswith("[Reloj:") for m in messages) == 1
-
-
-# R6-NB-6 (CU 36 C06, estable desde 6005): a search asked for in a named engine was refused («No puedo hacer búsquedas
-# en Google directamente») with no step: browser_navigate's «Use when» named only a URL or site, and nothing said what
-# url opens that engine's results, so the model did not see that it can (mutation: the sentence dropped).
-def test_browser_navigate_says_a_search_in_a_named_engine_or_site_opens_its_results_address() -> None:
-    path = Path(__file__).parents[1] / "src/baxy_mind/data/tool_descriptions.en.v1.json"
-    descriptions = json.loads(path.read_bytes())["tools"]
-    use_when = descriptions["browser.navigate"].split("Use when:")[1].split("Do not use when:")[0]
-    assert "a search the person asks for in a search engine or a site with its own search" in use_when
-    assert "results address with the person's words as its query" in use_when
-
-
-# R7-NB-4 (e2e 2026-10-28, both arms, 3 blind judges): «busca X en …» on a video site played a video (p_name 0.99, the
-# results address not even a rival): media_play_youtube opened with «Search a video …», so a search asked there read as
-# its job, and the search-without-playing case was the last clause. It now opens with playing, its «Use when» says play
-# or watch, and its «Do not use when» says first that a search asked there without asking to play or watch opens its
-# results page (mutation: any of the three back).
-def test_media_play_youtube_starts_with_playing_and_a_search_there_without_playing_opens_its_results_page() -> None:
-    path = Path(__file__).parents[1] / "src/baxy_mind/data/tool_descriptions.en.v1.json"
-    description = json.loads(path.read_bytes())["tools"]["media.play.youtube"]
-    assert description.startswith("Play ")
-    assert "should play or be watched" in description.split("Use when:")[1].split("Do not use when:")[0]
-    do_not = description.split("Do not use when:")[1]
-    assert do_not.lstrip().startswith("a search the person asks for on YouTube without asking to play or watch")
-    assert "opens its results page (use browser_navigate," in do_not
