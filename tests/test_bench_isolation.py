@@ -158,7 +158,7 @@ def test_the_case_runs_list_the_tabs_before_the_setup_and_close_the_new_ones_aft
     calls = []
 
     def run_ps(path, env, timeout):
-        calls.append(path.read_text(encoding="utf-8-sig"))
+        calls.append(path.read_bytes().decode("utf-8-sig"))
         if len(calls) == 1:
             return 0, ("PROFILE-RESTORED\nBROWSER-WINDOW 10 whole\nBROWSER-TAB 10 42.1\nBROWSER-TAB 10 42.4\n"
                        "BROWSER-TAB 10 42.5\nBROWSER-TABS-READ\n")

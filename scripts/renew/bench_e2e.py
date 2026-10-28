@@ -90,7 +90,7 @@ def profile_report(out: str) -> dict:
 # R8-NB-1: the tabs a case's setup and turns opened in the person's browser stayed open (NB-R7: Opera GX from 47 to more
 # than 70 tabs, and a page one case left changed the next one's result). pestanas.ps1 lists them by UI Automation
 # runtime id before the setup and after the cleanup; the new ones are closed by that id, never by title or address.
-TABS = Path(__file__).resolve().parent / "pestanas.ps1"
+TABS = Path(__file__).resolve().with_name("pestanas.ps1")
 Tabs = dict[int, tuple[bool, set[str]]]  # window handle → (its strip read whole, the runtime ids of its tabs)
 # A list that fails never fails the case's setup: it is said, and without it no tab is closed.
 TABS_LIST = f"try {{ & '{TABS}' -List }} catch {{ \"BROWSER-TABS-FAILED $($_.Exception.Message)\" }}"
@@ -102,11 +102,11 @@ def browser_tabs(out: str) -> Tabs | None:
         return None
     tabs: Tabs = {}
     for line in out.splitlines():
-        parts = line.split()
-        if len(parts) == 3 and parts[0] == "BROWSER-WINDOW" and parts[1].isdigit():
-            tabs[int(parts[1])] = (parts[2] == "whole", set())
-        elif len(parts) == 3 and parts[0] == "BROWSER-TAB" and parts[1].isdigit() and int(parts[1]) in tabs:
-            tabs[int(parts[1])][1].add(parts[2])
+        fields = line.split()
+        if len(fields) == 3 and fields[0] == "BROWSER-WINDOW" and fields[1].isdigit():
+            tabs[int(fields[1])] = (fields[2] == "whole", set())
+        elif len(fields) == 3 and fields[0] == "BROWSER-TAB" and fields[1].isdigit() and int(fields[1]) in tabs:
+            tabs[int(fields[1])][1].add(fields[2])
     return tabs
 
 
