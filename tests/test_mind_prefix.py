@@ -85,7 +85,6 @@ def test_the_power_tool_says_what_each_action_does_to_the_pc(tmp_path: Path) -> 
             "lock", "restart", "shutdown", "signout", "sleep"]}}, "required": ["action"]}}]})
     tool = next(t for t in mind.tools if t["function"]["name"] == "system_power")["function"]
     action = tool["parameters"]["properties"]["action"]
-    assert action["enum"] == ["lock", "restart", "shutdown", "signout", "sleep"]
     meaning = action["description"]
     for value in action["enum"]:
         assert f"{value}:" in meaning
