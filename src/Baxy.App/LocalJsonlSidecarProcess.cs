@@ -126,6 +126,8 @@ internal sealed class BoundedStandardErrorLog : IDisposable
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
             or ArgumentException or NotSupportedException)
         {
+            // P2.35: without it the run keeps no stderr, so a failed turn's cause is lost; that is said, not kept quiet.
+            Trace.TraceWarning("mind_stderr_log_unavailable: {0}", exception.GetType().Name);
             return null;
         }
     }
@@ -137,6 +139,11 @@ internal sealed class BoundedStandardErrorLog : IDisposable
         {
             File.Delete(path);
             File.Delete(path + ".1");
+            return true;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            // P2.35: no folder, no log in it: nothing is kept.
             return true;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -166,6 +173,8 @@ internal sealed class BoundedStandardErrorLog : IDisposable
             }
             catch (Exception exception) when (exception is IOException or ObjectDisposedException)
             {
+                // P2.35: the rest of the run's stderr goes nowhere; said once, as the log ends here.
+                Trace.TraceWarning("mind_stderr_log_stopped: {0}", exception.GetType().Name);
                 _file.Dispose();
                 _file = null;
             }

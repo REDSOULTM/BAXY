@@ -278,6 +278,77 @@ public sealed class MindSidecarClientTests
         }
     }
 
+    [Test]
+    [NonParallelizable]
+    public void AStderrLogThatCannotOpenOrStopsWritingSaysSoOnce()
+    {
+        string folder = Path.Combine(Path.GetTempPath(), "baxy-app-tests", Guid.NewGuid().ToString("N"));
+        string path = Path.Combine(folder, "stderr.log");
+        var warnings = new WarningListener();
+        System.Diagnostics.Trace.Listeners.Add(warnings);
+        try
+        {
+            // A file where its folder should be: the log cannot open.
+            Directory.CreateDirectory(folder);
+            File.WriteAllText(Path.Combine(folder, "taken"), "");
+            Assert.That(BoundedStandardErrorLog.Open(Path.Combine(folder, "taken", "stderr.log")), Is.Null);
+            Assert.That(warnings.Lines, Has.Count.EqualTo(1).And.Some.StartsWith("mind_stderr_log_unavailable"));
+
+            // Another handle locks the file: the write fails and the log ends, said once however many writes follow.
+            warnings.Lines.Clear();
+            using (BoundedStandardErrorLog log = BoundedStandardErrorLog.Open(path)!)
+            using (var other = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete))
+            {
+                other.Lock(0, 1024);
+                log.Write("abc"u8);
+                log.Write("def"u8);
+                other.Unlock(0, 1024);
+            }
+
+            Assert.That(warnings.Lines, Has.Count.EqualTo(1).And.Some.StartsWith("mind_stderr_log_stopped"));
+            Assert.That(new FileInfo(path).Length, Is.Zero);
+
+            // Nothing on the disk to forget, not even its folder: none is kept.
+            Assert.That(BoundedStandardErrorLog.ForgetFiles(Path.Combine(folder, "missing", "stderr.log")), Is.True);
+        }
+        finally
+        {
+            System.Diagnostics.Trace.Listeners.Remove(warnings);
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    private sealed class WarningListener : System.Diagnostics.TraceListener
+    {
+        internal List<string> Lines { get; } = [];
+
+        public override void Write(string? message)
+        {
+        }
+
+        public override void WriteLine(string? message)
+        {
+        }
+
+        public override void TraceEvent(System.Diagnostics.TraceEventCache? eventCache, string source,
+            System.Diagnostics.TraceEventType eventType, int id, string? format, params object?[]? args)
+        {
+            if (eventType == System.Diagnostics.TraceEventType.Warning)
+            {
+                Lines.Add(args is null ? format ?? "" : string.Format(System.Globalization.CultureInfo.InvariantCulture, format ?? "", args));
+            }
+        }
+
+        public override void TraceEvent(System.Diagnostics.TraceEventCache? eventCache, string source,
+            System.Diagnostics.TraceEventType eventType, int id, string? message)
+        {
+            if (eventType == System.Diagnostics.TraceEventType.Warning)
+            {
+                Lines.Add(message ?? "");
+            }
+        }
+    }
+
     // The App holds the log open while the mind runs.
     private static string Shared(string path)
     {
