@@ -100,6 +100,54 @@ public sealed class ComputerUseAfterViewTests
         });
     }
 
+    // C67 held-out (written from the contract by a reviewer who did not see the change): «Kind|Name|State» controls,
+    // the same before and after unless the first is renamed.
+    [TestCase("true", "uia", "invoke", "Button|Aceptar|", null, 1, "{\"sameListed\":true}")]
+    [TestCase("true", "readback", "invoke", "Button|Guardar|;Edit|Nombre|;CheckBox|Recordar|", null, 3,
+        "{\"sameListed\":true}")]
+    [TestCase("true", "uia", "point", "Button|Buscar|;Edit|Consulta|", null, 2, "{\"sameListed\":true}")]
+    [TestCase("true", "uia", "invoke", "TabItem|Pestaña 2|focused;TabItem|Pestaña 1|", null, 2, "{\"sameListed\":true}")]
+    [TestCase("true", "readback", "point", "ListItem|Elemento 3|selected;List|Resultados|", null, 2,
+        "{\"sameListed\":true}")]
+    [TestCase("true", "uia", "invoke", "MenuItem|Configuración avanzada|;MenuItem|Ayuda|disabled", null, 2,
+        "{\"sameListed\":true}")]
+    [TestCase("false", "readback", "invoke", "Button|Guardar|;Edit|Nombre|;CheckBox|Recordar|", null, 3,
+        "{\"same\":true}")]
+    [TestCase(null, "uia", "invoke", "Button|Guardar|;Edit|Nombre|", null, 2, "{\"same\":true}")]
+    [TestCase("true", "uia", "invoke", "Button|Activar|", "Desactivar", 1, "{\"changed\":[\"[0] Button «Desactivar»\"]}")]
+    [TestCase("true", "uia", "invoke", "ListItem|Fila 1|;ListItem|Fila 2|", null, 80,
+        "{\"sameListed\":true,\"cut\":true}")]
+    public void HeldOutClicksWhoseTreeListsTheSame(
+        string? surfaceChanged, string stage, string method, string controls, string? renamed, int controlCount,
+        string expected)
+    {
+        WithWindow(window =>
+        {
+            string[][] rows = [.. controls.Split(';').Select(row => row.Split('|'))];
+            string pressed =
+                "{\"version\":2,\"ok\":true,\"effectObserved\":true,\"error\":\"\",\"name\":\"" + rows[0][1] + "\"," +
+                "\"kind\":\"" + rows[0][0] + "\",\"controlIdentity\":\"1.1\",\"absentOrDisabled\":false," +
+                "\"selected\":true,\"toggled\":false," +
+                (surfaceChanged is null ? string.Empty : "\"surfaceChanged\":" + surfaceChanged + ",") +
+                "\"cascadeStage\":\"" + stage + "\",\"method\":\"" + method + "\"}";
+            string viewAfter =
+                "{\"ok\":true,\"error\":\"\",\"window\":\"\",\"controls\":[" +
+                string.Join(',', rows.Select((row, i) =>
+                    "{\"kind\":\"" + row[0] + "\",\"name\":\"" + (i == 0 && renamed is not null ? renamed : row[1]) +
+                    "\",\"id\":\"1." + (i + 1) + "\",\"state\":\"" + row[2] + "\",\"value\":null}")) +
+                "],\"controlCount\":" + controlCount + ",\"partial\":false}";
+            WindowsVisibleControlAdapter adapter = Adapter(new OrderedWorker(pressed, viewAfter));
+            RememberView(adapter, window,
+                [.. rows.Select((row, i) => new ViewControlSpec(i, "1." + (i + 1), row[0], row[1], row[2]))]);
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, rows[0][1], "1.1");
+
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            JsonElement after = receipt.Result!.Value.GetProperty("after");
+            Assert.That(JsonElement.DeepEquals(after, Json(expected)), Is.True, after.GetRawText());
+        });
+    }
+
     [Test]
     public void AnIndexOfTheViewAfterIsPressedAndAnOldIndexThatIsGoneIsRefused()
     {
