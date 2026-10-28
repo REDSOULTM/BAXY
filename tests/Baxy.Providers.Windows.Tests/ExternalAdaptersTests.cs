@@ -4899,6 +4899,27 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // file.open shows the document by «BAXY\» and the receipt's name, and refuses a name with «..» in it: a title ending
+    // in an ellipsis («Había una vez...») must not leave one there.
+    [Test]
+    public async Task ADocumentNameKeepsNoDoubleDotFileOpenWouldRefuse()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create",
+            Json("""{"format":"docx","title":"Había una vez... el faro..","paragraphs":["Fin."]}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("name").GetString(), Does.StartWith("Había una vez. el faro.-"));
+            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo("Había una vez... el faro.."));
+        });
+    }
+
     // A control character XML cannot hold would leave a file Word cannot open: refused before anything is written.
     [Test]
     public async Task AParagraphXmlCannotHoldIsRefusedBeforeAnythingIsWritten()

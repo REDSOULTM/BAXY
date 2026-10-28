@@ -240,6 +240,8 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
     private const string LatestChanged = "email_latest_changed";
     private const string MessageIdRequired = "email_reply_message_id_required";
 
+    private static readonly System.Text.RegularExpressions.Regex DotRuns = new(
+        @"\.{2,}", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
     private static readonly System.Text.RegularExpressions.Regex MessageIdShape = new(
         "^email_[0-9a-f]{24}$", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
@@ -623,6 +625,8 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         }
         string safeName = string.Concat(title.Select(character =>
             Path.GetInvalidFileNameChars().Contains(character) ? '_' : character)).Trim();
+        // file.open shows it by this name and refuses one with «..» in it (a title ending in «...»).
+        safeName = DotRuns.Replace(safeName, ".");
         safeName = safeName.Length == 0 ? "Documento" : safeName[..Math.Min(safeName.Length, 80)];
         string path = Path.Combine(_documentsRoot, safeName + "-" + Guid.NewGuid().ToString("N") + "." + format);
         byte[] package = CreateOfficePackage(format, title, paragraphs);
