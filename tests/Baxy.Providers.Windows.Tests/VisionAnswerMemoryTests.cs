@@ -141,27 +141,70 @@ public sealed class VisionAnswerMemoryTests
         }
     }
 
+    [Test]
+    public async Task AQuestionPastItsTimeIsAnHonestTimeoutAndTheSlotGoesBack()
+    {
+        // P2.17 (noche 27-10): the shared server busy with the mind, the question outlasted the client's time; the timeout
+        // escaped as an exception (a bare provider failure) instead of saying what happened.
+        string slots = Path.Combine(Path.GetTempPath(), "baxy-vision-slots-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(slots);
+        string?[] saved = [.. Names.Select(Environment.GetEnvironmentVariable)];
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "http://127.0.0.1:8090/v1/chat/completions");
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", "vision-test");
+            Environment.SetEnvironmentVariable("BAXY_VISION_SLOT_DIR", slots);
+            var handler = new Recording { Stalls = true };
+            using var http = new HttpClient(handler) { Timeout = TimeSpan.FromMilliseconds(200) };
+            VisibleControlSurface.CapturedWindow shown = Frame("t");
+            var locator = new WindowsVisibleVisionLocator(
+                http,
+                _ => ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(shown),
+                (_, _) => ValueTask.FromResult<IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>?>([]));
+
+            ExternalCapabilityReceipt? receipt = await locator.TryClickAsync(
+                "input.visible.click", "Guardar como", null, CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt?.ErrorCode, Is.EqualTo("vision_provider_timeout"));
+                Assert.That(receipt?.EffectMayHaveOccurred, Is.False);
+                Assert.That(handler.Calls, Is.EqualTo(new[] { "save", "ask", "restore" }));
+            });
+        }
+        finally
+        {
+            for (int index = 0; index < Names.Length; index++)
+                Environment.SetEnvironmentVariable(Names[index], saved[index]);
+            Directory.Delete(slots, recursive: true);
+        }
+    }
+
     private static readonly string[] Names = ["BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL", "BAXY_VISION_SLOT_DIR"];
 
-    // The server: a slot saved and restored, and every question answered with a place on «Archivo».
+    // The server: a slot saved and restored, and every question answered with a place on «Archivo» (or, stalled, never).
     private sealed class Recording : HttpMessageHandler
     {
         internal List<string> Calls { get; } = [];
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        internal bool Stalls { get; init; }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             string query = request.RequestUri?.Query ?? "";
             string call = query.Contains("action=save", StringComparison.Ordinal) ? "save"
                 : query.Contains("action=restore", StringComparison.Ordinal) ? "restore"
                 : "ask";
             Calls.Add(call);
+            if (Stalls && call == "ask")
+                await Task.Delay(Timeout.Infinite, cancellationToken);
             string body = call == "ask"
                 ? """{"choices":[{"message":{"content":"{\"bbox_2d\": [100, 200, 300, 300]}"}}]}"""
                 : "{}";
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(body, Encoding.UTF8, "application/json"),
-            });
+            };
         }
     }
 }

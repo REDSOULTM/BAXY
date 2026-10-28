@@ -21,9 +21,11 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
     {
         _captureDirectory = Path.GetFullPath(captureDirectory);
         // Ronda final 19: the capture goes only to the loopback endpoint named, never on through a redirect or a proxy.
+        // P2.17: inside the catalog's 90 s budget, so a description the busy server never finished ends as
+        // vision_provider_timeout while the App still waits, not in its reconciliation (~150 s for a bare error).
         _http = http ?? new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false })
         {
-            Timeout = TimeSpan.FromSeconds(90),
+            Timeout = TimeSpan.FromSeconds(80),
         };
         _ownsHttp = http is null;
     }
@@ -56,6 +58,11 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
         {
             return effectBoundary.Failure(operation, "capture_vision_adapter_failed");
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // The client's own time ran out (the caller did not cancel): the server never answered.
+            return effectBoundary.Failure(operation, "vision_provider_timeout");
         }
         catch (InvalidDataException)
         {
@@ -427,6 +434,10 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         }
         byte[] image = await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
         string imageHash = Convert.ToHexStringLower(SHA256.HashData(image));
+        // P2.17: asked as the click's vision asks (WindowsVisibleVisionLocator): the projector reads a PNG at most 1280
+        // wide on the CPU, not the whole screen's bitmap, and the answer comes without thinking first.
+        byte[] png = await WindowsVisibleVisionLocator.ShrunkPngAsync(image, WindowsVisibleVisionLocator.ImageWidth)
+            .ConfigureAwait(false);
         string prompt = arguments.TryGetProperty("prompt", out JsonElement promptValue)
             && promptValue.ValueKind == JsonValueKind.String
             && !string.IsNullOrWhiteSpace(promptValue.GetString())
@@ -448,13 +459,16 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
             writer.WriteStartObject();
             writer.WriteString("type", "image_url");
             writer.WriteStartObject("image_url");
-            writer.WriteString("url", "data:image/bmp;base64," + Convert.ToBase64String(image));
+            writer.WriteString("url", "data:image/png;base64," + Convert.ToBase64String(png));
             writer.WriteEndObject();
             writer.WriteEndObject();
             writer.WriteEndArray();
             writer.WriteEndObject();
             writer.WriteEndArray();
             writer.WriteNumber("max_tokens", 800);
+            writer.WriteStartObject("chat_template_kwargs");
+            writer.WriteBoolean("enable_thinking", false);
+            writer.WriteEndObject();
             writer.WriteEndObject();
         }
         using var request = new HttpRequestMessage(HttpMethod.Post, uri)

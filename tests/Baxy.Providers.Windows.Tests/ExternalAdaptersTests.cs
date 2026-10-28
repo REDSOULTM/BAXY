@@ -744,7 +744,7 @@ public sealed class ExternalAdaptersTests
     {
         using var directory = new TemporaryDirectory();
         string captureId = "capture_" + new string('a', 32);
-        byte[] bytes = Enumerable.Range(0, 64).Select(value => (byte)value).ToArray();
+        byte[] bytes = WideCapture();
         await File.WriteAllBytesAsync(Path.Combine(directory.Path, captureId + ".bmp"), bytes);
         string? endpoint = Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT");
         string? model = Environment.GetEnvironmentVariable("BAXY_VISION_MODEL");
@@ -783,6 +783,69 @@ public sealed class ExternalAdaptersTests
             Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", endpoint);
             Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", model);
         }
+    }
+
+    [Test]
+    [NonParallelizable]
+    public async Task ADescriptionPastTheVisionServersTimeIsAnHonestTimeoutNotAnException()
+    {
+        // P2.17 (noche 27-10): the shared server busy with the mind, the description outlasted its client; the timeout
+        // escaped as an exception and the App waited the budget and its reconciliation (~150 s) for a bare provider error.
+        using var directory = new TemporaryDirectory();
+        string captureId = "capture_" + new string('b', 32);
+        await File.WriteAllBytesAsync(Path.Combine(directory.Path, captureId + ".bmp"), WideCapture());
+        string? endpoint = Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT");
+        string? model = Environment.GetEnvironmentVariable("BAXY_VISION_MODEL");
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "http://127.0.0.1:8090/v1/chat/completions");
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", "vision-test");
+            using var http = new HttpClient(new LambdaHttpHandler(async (_, token) =>
+            {
+                await Task.Delay(Timeout.Infinite, token);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }))
+            {
+                Timeout = TimeSpan.FromMilliseconds(200),
+            };
+            using var adapter = new CaptureVisionAdapter(directory.Path, http);
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "vision.describe",
+                Json($$"""{"captureId":"{{captureId}}"}"""),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.ErrorCode, Is.EqualTo("vision_provider_timeout"));
+                Assert.That(receipt.EffectObserved, Is.False);
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", endpoint);
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", model);
+        }
+    }
+
+    // A screen-wide capture (2000 px), a real 32-bit BMP the vision request can decode and shrink.
+    private static byte[] WideCapture()
+    {
+        const int width = 2000, height = 4;
+        byte[] bmp = new byte[54 + (width * height * 4)];
+        bmp[0] = (byte)'B';
+        bmp[1] = (byte)'M';
+        BitConverter.GetBytes(bmp.Length).CopyTo(bmp, 2);
+        BitConverter.GetBytes(54).CopyTo(bmp, 10);
+        BitConverter.GetBytes(40).CopyTo(bmp, 14);
+        BitConverter.GetBytes(width).CopyTo(bmp, 18);
+        BitConverter.GetBytes(height).CopyTo(bmp, 22);
+        BitConverter.GetBytes((short)1).CopyTo(bmp, 26);
+        BitConverter.GetBytes((short)32).CopyTo(bmp, 28);
+        BitConverter.GetBytes(width * height * 4).CopyTo(bmp, 34);
+        for (int index = 54; index < bmp.Length; index++)
+            bmp[index] = (byte)(index % 251);
+        return bmp;
     }
 
     [Test]
@@ -7381,8 +7444,17 @@ public sealed class ExternalAdaptersTests
             Assert.Multiple(() =>
             {
                 Assert.That(request.RequestUri?.IsLoopback, Is.True);
-                Assert.That(body, Does.Contain("data:image/bmp;base64,"));
                 Assert.That(body, Does.Contain("vision-test"));
+                // P2.17: the question goes as the click's does: a PNG at most 1280 wide (the projector reads it on the
+                // CPU) and no thinking before the answer.
+                Assert.That(body, Does.Contain("\"enable_thinking\":false"));
+                using JsonDocument sent = JsonDocument.Parse(body);
+                string url = sent.RootElement.GetProperty("messages")[0].GetProperty("content")[1]
+                    .GetProperty("image_url").GetProperty("url").GetString()!;
+                Assert.That(url, Does.StartWith("data:image/png;base64,"));
+                byte[] png = Convert.FromBase64String(url["data:image/png;base64,".Length..]);
+                Assert.That(System.Buffers.Binary.BinaryPrimitives.ReadInt32BigEndian(png.AsSpan(16, 4)),
+                    Is.LessThanOrEqualTo(1280));
             });
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
