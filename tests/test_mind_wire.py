@@ -167,3 +167,36 @@ def test_the_reference_of_wire_names_the_app_reads_is_what_the_mind_gives_over_t
     assert sorted(reference["names"]) == sorted(_OPERATIONS)
     wires = Wires(list(reference["names"]), fixed=fixed)
     assert reference["names"] == {op: wires.name(op) for op in reference["names"]}
+
+
+def _names_in_a_subprocess(operations: list[str], fixed: list[str]) -> tuple[int, str]:
+    """Wires over a catalog in a process of its own, with a time limit: a rule that loops is a failure, not a hang."""
+    import subprocess
+    import sys
+    code = ("import json, sys; sys.path.insert(0, sys.argv[1]); from baxy_mind.wire import Wires\n"
+            "w = Wires(json.loads(sys.argv[2]), fixed=json.loads(sys.argv[3]))\n"
+            "print(json.dumps({op: w.name(op) for op in json.loads(sys.argv[2])}))")
+    try:
+        done = subprocess.run([sys.executable, "-X", "utf8", "-c", code, str(Path(__file__).resolve().parents[1] / "src"),
+                               json.dumps(operations), json.dumps(fixed)], capture_output=True, text=True,
+                              encoding="utf-8", timeout=20)
+    except subprocess.TimeoutExpired:
+        raise AssertionError(f"Wires did not settle the names of {operations} within 20 s") from None
+    return done.returncode, done.stdout + done.stderr
+
+
+def test_a_short_name_no_suffix_can_part_from_another_name_is_a_clear_error_never_a_hang() -> None:
+    # calculate_x begins with the fixed calculate, so every calculate_x_<k>set does too.
+    code, said = _names_in_a_subprocess(["calculate.x", "calculate.x.y"], ["ask_user", "confirm_pending", "calculate"])
+    assert code != 0 and "ValueError: no wire name for calculate.x: calculate_x_set to calculate_x_9set all clash " \
+                          "with the names of calculate" in said
+
+
+def test_the_suffixes_go_up_to_9set_and_past_it_the_names_are_an_error() -> None:
+    taken = ["a.b", "a.b.c", "a.b.set", *(f"a.b.{k}set" for k in range(2, 9))]
+    code, said = _names_in_a_subprocess(taken, [])
+    assert code == 0 and json.loads(said)["a.b"] == "a_b_9set"
+    code, said = _names_in_a_subprocess([*taken, "a.b.9set"], [])
+    assert code != 0 and ("ValueError: no wire name for a.b: a_b_set to a_b_9set all clash with the names of "
+                          "a.b.2set, a.b.3set, a.b.4set, a.b.5set, a.b.6set, a.b.7set, a.b.8set, a.b.9set, "
+                          "a.b.set") in said

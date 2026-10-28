@@ -69,6 +69,45 @@ public sealed class WireNamesTests
         });
     }
 
+    // A short name whose every suffix still begins with another name shown (calculate_x with the mind's calculate) has
+    // no name to take: the rule says so by name, as wire.py does, and never loops.
+    [Test]
+    public void AShortNameNoSuffixCanPartFromAnotherNameIsAClearErrorNeverAHang()
+    {
+        InvalidOperationException error = Settle(["calculate.x", "calculate.x.y"], WireNames.MindTools)
+            ?? throw new AssertionException("the names settled where no suffix can part them");
+        Assert.That(error.Message, Is.EqualTo(
+            "no wire name for calculate.x: calculate_x_set to calculate_x_9set all clash with the names of calculate"));
+    }
+
+    [Test]
+    public void TheSuffixesGoUpTo9SetAndPastItTheNamesAreAnError()
+    {
+        string[] taken = ["a.b", "a.b.c", "a.b.set", .. Enumerable.Range(2, 7).Select(static k => $"a.b.{k}set")];
+        Assert.That(new WireNames(taken, []).Name("a.b"), Is.EqualTo("a_b_9set"));
+        InvalidOperationException error = Settle([.. taken, "a.b.9set"], [])
+            ?? throw new AssertionException("a tenth suffix was taken");
+        Assert.That(error.Message, Is.EqualTo("no wire name for a.b: a_b_set to a_b_9set all clash with the names of "
+            + "a.b.2set, a.b.3set, a.b.4set, a.b.5set, a.b.6set, a.b.7set, a.b.8set, a.b.9set, a.b.set"));
+    }
+
+    // The names of a catalog with a time limit: a rule that loops fails the test instead of hanging the suite.
+    private static InvalidOperationException? Settle(string[] operations, IReadOnlyList<string> fixedNames)
+    {
+        var settling = Task.Run(() => new WireNames(operations, fixedNames));
+        try
+        {
+            if (!settling.Wait(TimeSpan.FromSeconds(20)))
+                throw new AssertionException($"the names of {string.Join(", ", operations)} did not settle within 20 s");
+        }
+        catch (AggregateException wrapped) when (wrapped.InnerException is InvalidOperationException error)
+        {
+            return error;
+        }
+
+        return null;
+    }
+
     // Each text the App and the providers give the model names a call by WireNames: none builds a name by hand, and none
     // writes the old name of a renamed operation in a string. It reads line by line: a name on a continuation line of a
     // raw """ literal, or one built another way than Replace, is not seen here.
