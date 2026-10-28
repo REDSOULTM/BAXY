@@ -3085,7 +3085,7 @@ class Mind:
         # moves in steps of ~15.6 ms, and every ms was a multiple of it. The voice's times (voice.speak) too.
         row = {"t": _dt.datetime.now().isoformat(timespec="milliseconds"), "stage": stage,
                "ms": round((time.perf_counter() - started) * 1000),
-               "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
+               "cache_n": timings.get("cache_n"), "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
         doubt = read_doubt(reply)
         if doubt is not None:

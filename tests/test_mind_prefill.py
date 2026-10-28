@@ -88,7 +88,8 @@ class SlotServer:
         self.prefilled.append(prompt)
         before = len(self.read)
         self._read(prompt)
-        return {"timings": {"prompt_n": self.read[before], "prompt_ms": 1.0, "predicted_n": 1, "predicted_ms": 0.0}}
+        return {"timings": {"cache_n": len(prompt) - self.read[before], "prompt_n": self.read[before], "prompt_ms": 1.0,
+                            "predicted_n": 1, "predicted_ms": 0.0}}
 
     def tokenize(self, text: str) -> list[int]:
         return [0] * (len(text) // 4)
@@ -156,6 +157,8 @@ def test_the_next_decision_reads_only_its_own_words_and_gets_the_same_prompt(tmp
     row = [json.loads(line) for line in (tmp_path / "a" / "turns.jsonl").read_text(encoding="utf-8").splitlines()
            if '"warm.history"' in line][0]
     assert row["prompt_n"] == server.read[-2] and "text" not in row and "content" not in row
+    # P0.8: what the slot already held is traced too, so a broken prefix shows as a small cache_n beside a large prompt_n.
+    assert row["cache_n"] == len(read_ahead) - server.read[-2]
 
 
 def test_no_turn_changes_what_was_read_ahead_of_it(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
