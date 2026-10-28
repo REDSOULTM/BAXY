@@ -379,8 +379,8 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     of the session before and in this turn as (operation, completed, read), or None when the session is not known whole (a
     kept session, or one past the calls the mind keeps): then nothing is said of calls that may have been there.
     ``catalog`` (each operation and its description) and ``tries`` (the conversation's earlier calls as (operation,
-    status)) are for the rule ``denial``, which is not read without the catalog; ``wire_of`` names an operation as the
-    model sees it (wire.Wires.name).
+    status)) are for the rule ``denial``, which is not read without the catalog; ``wire_of`` gives an operation the tool name
+    shown to the model (wire.Wires.name).
     Each finding: {"rule", "said" (the model's words), "fact" (what contradicts them)}."""
     if not answer or not answer.strip():
         return []

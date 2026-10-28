@@ -2,7 +2,7 @@
 
 A wire name is the operation's id with «.» → «_» (app.open → app_open), except where that name would be a proper prefix
 of another name the model is shown (audio_volume ⊂ audio_volume_adjust): choosing the short one then means *closing*
-the name where the other goes on writing, and the 4B tends to go on (PC-C72: «baja el volumen a 20», a level to end at,
+the name where the other goes on writing, and the 4B tends to go on (PC-C72: a level to end at, asked with a lowering verb,
 came out as the adjusting tool in 0 of 4 seeds). The short one gets a suffix of its own (audio_volume_set), so the two
 names part on a token with content; a suffix that would clash by shape with another name (the same name, a prefix
 either way, the same letters but for «_», the same parts in another order) is _2set, _3set... Only the shape of the

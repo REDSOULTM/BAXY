@@ -106,7 +106,7 @@ def test_a_call_by_the_new_name_runs_its_operation_and_the_receipt_keeps_it(tmp_
     mind, server = _configured(tmp_path, _OPERATIONS)
     wire = mind.wires.name("audio.volume")
     server.replies.extend([_call(wire, {"level": 20}), _say("Listo.")])
-    step = mind.decide(1, "baja el volumen a 20")
+    step = mind.decide(1, "deja el sonido en veinte por ciento")
     assert step["kind"] == "action" and step["operation"] == "audio.volume"
     mind.continue_turn(2, json.dumps({"status": "completed", "observed": {"level": 20}}))
     receipt = mind._turn["receipts"][0]
