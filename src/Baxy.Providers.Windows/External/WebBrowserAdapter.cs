@@ -26,6 +26,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly FrankfurterRateSource _rates;
     private readonly EspnScheduleSource _sports;
     private readonly SearchPageReader _pages;
+    private readonly string? _homeRegion;
     // Private diagnostics of a playback that failed; null in tests.
     private readonly string? _capturesDirectory;
 
@@ -68,6 +69,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _rates = new FrankfurterRateSource(_http);
         _sports = new EspnScheduleSource(_http);
         _pages = new SearchPageReader();
+        _homeRegion = HomeRegion.Read();
     }
 
     internal WebBrowserAdapter(
@@ -75,7 +77,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         HttpClient http,
         CdpBrowserSessionContext? sessionContext = null,
         UserBrowserSurface? userBrowser = null,
-        EspnScheduleSource? sports = null)
+        EspnScheduleSource? sports = null,
+        string? homeRegion = null)
     {
         _browser = browser ?? throw new ArgumentNullException(nameof(browser));
         _http = http ?? throw new ArgumentNullException(nameof(http));
@@ -87,6 +90,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _rates = new FrankfurterRateSource(_http);
         _sports = sports ?? new EspnScheduleSource(_http);
         _pages = new SearchPageReader(_http);
+        _homeRegion = homeRegion;
     }
 
     public bool CanHandle(string operation) => operation is
@@ -798,6 +802,20 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // results page or the endpoint does not answer, the html endpoint is asked once after a short wait.
     private const string GeneralSearchFallbackEndpoint = "https://html.duckduckgo.com/html/";
     private const string GeneralSearchFallbackAuthority = "duckduckgo_html_https";
+    // Noche 2026-10-27 (P1.3): with no region the engine answers for the whole world, and a one-word local name came back
+    // as the English word it also is («Savory»: the adjective; asked in cl-es, the brand). A web search is asked in the
+    // Windows home region when the engine has that country in the search language: its region («kl») as its parameters
+    // page lists them (duckduckgo.com/duckduckgo-help-pages/settings/params, read 2026-10-27), keyed by ISO country and
+    // language; Britain is «uk» there and Spanish in the United States «ue». Any other pair asks the whole world, and
+    // the receipt says no region. Only the region leaves, a country the PC's address already places it in.
+    private static readonly Dictionary<string, string> GeneralSearchRegions = new(StringComparer.Ordinal)
+    {
+        ["AR-es"] = "ar-es", ["CL-es"] = "cl-es", ["CO-es"] = "co-es", ["ES-es"] = "es-es", ["MX-es"] = "mx-es",
+        ["PE-es"] = "pe-es", ["US-es"] = "ue-es", ["VE-es"] = "ve-es",
+        ["AU-en"] = "au-en", ["CA-en"] = "ca-en", ["GB-en"] = "uk-en", ["ID-en"] = "id-en", ["IE-en"] = "ie-en",
+        ["IN-en"] = "in-en", ["MY-en"] = "my-en", ["NZ-en"] = "nz-en", ["PH-en"] = "ph-en", ["SG-en"] = "sg-en",
+        ["US-en"] = "us-en", ["ZA-en"] = "za-en",
+    };
     private const string GeneralSearchUserAgent =
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
     private static readonly TimeSpan GeneralSearchRetryDelay = TimeSpan.FromSeconds(1.5);
@@ -915,14 +933,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string authority = GeneralSearchAuthority;
+        string? kl = _homeRegion is null ? null : GeneralSearchRegions.GetValueOrDefault(_homeRegion + "-" + language);
         var reading = await ReadGeneralSearchAsync(
-            GeneralSearchEndpoint, ParseDuckDuckGoLitePage, query, language, cancellationToken).ConfigureAwait(false);
+            GeneralSearchEndpoint, ParseDuckDuckGoLitePage, query, language, kl, cancellationToken).ConfigureAwait(false);
         if (reading is not { IsResultsPage: true })
         {
             await Task.Delay(GeneralSearchRetryDelay, cancellationToken).ConfigureAwait(false);
             authority = GeneralSearchFallbackAuthority;
             reading = await ReadGeneralSearchAsync(
-                    GeneralSearchFallbackEndpoint, ParseDuckDuckGoHtmlPage, query, language, cancellationToken)
+                    GeneralSearchFallbackEndpoint, ParseDuckDuckGoHtmlPage, query, language, kl, cancellationToken)
                 .ConfigureAwait(false);
         }
         // A block, a captcha, an error page or no answer: nothing was searched, and the reply must not pretend the web
@@ -935,7 +954,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteString("title", result.Title);
                 writer.WriteString("url", result.Url);
                 writer.WriteString("snippet", result.Snippet);
-            });
+            },
+            region: kl is null ? null : _homeRegion);
     }
 
     private async Task<ExternalCapabilityReceipt> NewsAsync(
@@ -1080,7 +1100,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // encyclopedia), what a typed source was sent instead («sent»: currency, sports, places), the results as the source
     // gave them and their count, and «authority», the source that answered (duckduckgo_lite_https or
     // duckduckgo_html_https, google_news_rss_search, wikipedia_es_api, wikipedia_en_api, frankfurter_reference_rates, espn_public_schedule,
-    // openstreetmap_nominatim). No result is web_search_no_results: the source answered with nothing.
+    // openstreetmap_nominatim), and «region», the home region a web search was asked in. No result is
+    // web_search_no_results: the source answered with nothing.
     private static ExternalCapabilityReceipt SearchReceipt<T>(
         string operation,
         string source,
@@ -1088,7 +1109,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         string authority,
         List<T> results,
         Action<Utf8JsonWriter, T> writeResult,
-        Action<Utf8JsonWriter>? sent = null)
+        Action<Utf8JsonWriter>? sent = null,
+        string? region = null)
     {
         if (results.Count == 0) return ExternalJson.FailureBeforeEffect(operation, SearchNoResults);
         JsonElement result = ExternalJson.Create(writer =>
@@ -1097,6 +1119,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteNumber("version", 1);
             writer.WriteString("source", source);
             writer.WriteString("query", query);
+            if (region is not null) writer.WriteString("region", region);
             if (sent is not null)
             {
                 writer.WriteStartObject("sent");
@@ -1173,20 +1196,19 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // Both endpoints answer a form post (a GET of the lite one returns its search form with no results). Each result is
     // kept as the engine gave it when it is structurally one: an http or https address that is not the engine's own, a
     // title and bounded lengths. Null when the endpoint did not answer.
+    // «kl», when not null, is the engine's region the search is asked in (GeneralSearchRegions).
     private async Task<(List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage)?>
         ReadGeneralSearchAsync(
             string endpoint,
             Func<string, IEnumerable<(string Title, string Url, string Snippet)>> parse,
             string query,
             string language,
+            string? kl,
             CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
-            Content = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("q", query),
-            }),
+            Content = new FormUrlEncodedContent(kl is null ? [new("q", query)] : [new("q", query), new("kl", kl)]),
         };
         request.Headers.TryAddWithoutValidation("User-Agent", GeneralSearchUserAgent);
         request.Headers.TryAddWithoutValidation("Accept-Language", language == "en" ? "en-US,en;q=0.9" : "es-ES,es;q=0.9");
