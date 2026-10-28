@@ -230,7 +230,7 @@ def test_an_applications_own_volume_says_what_its_app_is_and_where_the_whole_pc_
                                      for name in ("audio.app.volume.set", "audio.app.volume.adjust")]})
     for wire, whole in (("audio_app_volume_set", "audio_volume"), ("audio_app_volume_adjust", "audio_volume_adjust")):
         tool = next(t for t in mind.tools if t["function"]["name"] == wire)["function"]
-        assert whole in tool["parameters"]["properties"]["app"]["description"]
+        assert tool["parameters"]["properties"]["app"]["description"].endswith(f"that is {whole}.")
 
 
 SETTINGS_AND_TRASH = {"capabilities": [
