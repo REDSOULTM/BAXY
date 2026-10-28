@@ -58,7 +58,8 @@ tomar el navegador.
    se cierra ni se reinicia el navegador de la persona.**
 3. **Verificar sin secuestrar.**
    - **Navegación**: antes de abrir se anotan los títulos de las ventanas del
-     navegador y la dirección de la del frente (vacía en una pestaña nueva);
+     navegador y la dirección de la del frente (vacía en una pestaña nueva; si
+     esa lectura falla deprisa, se repite una vez);
      después, en la ventana cuyo título cambió, UI Automation lee el
      **campo de dirección** recorriendo sólo el marco del navegador (nunca
      entra en el `Document` de la página). Llega la dirección pedida (ruta y
@@ -66,10 +67,21 @@ tomar el navegador.
      `UserBrowserArrival.cs`). Otra dirección del mismo sitio (`www.` y
      subdominios incluidos) vale sólo como redirección: no es la misma ruta
      con otra consulta (uso real v3 t4, c10) y es nueva en esa ventana (ventana
-     nueva, o la del frente cuando antes mostraba otra cosa). Una dirección de
-     otro sitio no se reporta nunca. Sin lectura que valga, el resultado es
-     **incierto** (`user_browser_navigation_unconfirmed`, efecto posible): se
-     dice que se abrió y que la persona puede comprobarlo.
+     nueva, o la del frente cuando antes mostraba otra cosa). Si el campo de
+     la ventana cuyo título cambió sigue mostrando la página de antes (Opera GX
+     tarda en ponerlo al día), se lee una vez más a los dos segundos aunque el
+     título no se mueva; esa lectura no gasta ninguna de las tres que esperan
+     a un título nuevo (noche r7, R7-NB-5). Una
+     dirección de otro sitio no se reporta nunca. Sin lectura que valga, el
+     resultado es **incierto** (`user_browser_navigation_unconfirmed`, efecto
+     posible) y dice qué se comprobó: `linkSent` (el enlace se entregó al
+     navegador), `windowChanged` (alguna ventana suya cambió después) y
+     `addressSeen` (`not_read`, `unreadable`, `no_address`, `page_from_before`,
+     `other_page` o `same_site_not_known_new`), nunca la dirección leída de una
+     pestaña. `streaming.navigate` y `streaming.play.named` siguen devolviendo
+     su incierto sin esos datos. Se
+     dice que se abrió, que no se pudo comprobar y que la persona puede
+     comprobarlo: es honesto; dar por comprobada la página no lo es.
    - **YouTube**: la búsqueda HTTP de siempre da el id y el título del primer
      video; se abre `watch?v=`; la **sesión multimedia de Windows (SMTC)** con
      ese título en `Playing` es la verificación (`user_browser_smtc_postread`).
