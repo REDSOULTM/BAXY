@@ -519,6 +519,128 @@ public sealed class UserBrowserTests
         });
     }
 
+    private const string EarlierArticle = "es.wikipedia.org/wiki/Revoluci%C3%B3n_francesa";
+    private const string EarlierArticleTitle = "Revolución francesa - Wikipedia, la enciclopedia libre - Opera";
+    private const string SiteHome = "es.wikipedia.org/wiki/Wikipedia:Portada";
+
+    [Test]
+    public async Task AnAddressFieldStillShowingThePageFromBeforeIsReadAgainUntilTheRedirectShows()
+    {
+        // Noche r7 (R7-NB-5): the front tab showed a page of the site before the link; the window title moved on to the
+        // new tab, but the address field read right then still showed the page from before, and with no further title
+        // change nothing read it again: the redirect of the site the link landed on was never seen.
+        int reads = 0;
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, EarlierArticleTitle)],
+            AddressBeforeOpen = _ => EarlierArticle,
+            AddressOf = _ => ++reads == 1 ? EarlierArticle : SiteHome,
+        };
+        platform.WindowsAfterOpen = [new(11, "Wikipedia, la enciclopedia libre - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json("""{"url":"https://es.wikipedia.org/"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://" + SiteHome));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo(UserBrowserSurface.AddressAuthority));
+            Assert.That(platform.AddressReads, Is.EqualTo(2), "the field from before is read once more, not more");
+        });
+    }
+
+    [Test]
+    public async Task AFrontAddressThatCouldNotBeReadBeforeTheLinkIsReadOnceMore()
+    {
+        // Noche r7 (R7-NB-5): one failed read of the front tab before the link left its page unknown, so the redirect
+        // the link landed on could not be told from a page the person already had.
+        int before = 0;
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, EarlierArticleTitle)],
+            AddressBeforeOpen = _ => ++before == 1 ? null : EarlierArticle,
+            AddressOf = _ => SiteHome,
+        };
+        platform.WindowsAfterOpen = [new(11, "Wikipedia, la enciclopedia libre - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json("""{"url":"https://es.wikipedia.org/"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://" + SiteHome));
+            Assert.That(platform.BaselineReads, Is.EqualTo(2));
+        });
+    }
+
+    [TestCase("page_from_before", true)]
+    [TestCase("not_read", false)]
+    [TestCase("unreadable", true)]
+    [TestCase("other_page", true)]
+    [TestCase("same_site_not_known_new", true)]
+    public async Task AnUnconfirmedNavigationSaysWhatWasCheckedAndNoAddressItRead(string seen, bool windowChanged)
+    {
+        // Decisión del dueño (noche, pre-web-comprobar): «abrí, pero no pude comprobarlo» is honest; the result says what
+        // was checked (the link handed to the browser, whether a window of it changed, what its address field showed)
+        // and never an address read from a tab, which may be another page of the person's.
+        var platform = seen switch
+        {
+            "page_from_before" => new FakePlatform(OperaGx)
+            {
+                WindowsBeforeOpen = [new(11, EarlierArticleTitle)],
+                AddressOf = _ => EarlierArticle,
+            },
+            "not_read" => new FakePlatform(OperaGx)
+            {
+                AddressBeforeOpen = _ => "www.example.org/private",
+                AddressOf = _ => "www.example.org/private",
+            },
+            "unreadable" => new FakePlatform(OperaGx)
+            {
+                AddressBeforeOpen = EmptyAddressField,
+                AddressOf = _ => null,
+            },
+            "other_page" => new FakePlatform(OperaGx)
+            {
+                AddressBeforeOpen = EmptyAddressField,
+                AddressOf = _ => "mail.example.org/inbox?private=1",
+            },
+            _ => new FakePlatform(OperaGx)
+            {
+                AddressBeforeOpen = _ => null,
+                AddressOf = _ => SiteHome,
+            },
+        };
+        if (windowChanged)
+            platform.WindowsAfterOpen = [new(11, "Wikipedia, la enciclopedia libre - Opera")];
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json("""{"url":"https://es.wikipedia.org/"}"""), CancellationToken.None);
+
+        string raw = receipt.Result?.GetRawText() ?? string.Empty;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
+            Assert.That(receipt.Result?.GetProperty("requestedUrl").GetString(), Is.EqualTo("https://es.wikipedia.org/"));
+            Assert.That(receipt.Result?.GetProperty("browser").GetString(), Is.EqualTo("Opera GX"));
+            Assert.That(receipt.Result?.GetProperty("linkSent").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("windowChanged").GetBoolean(), Is.EqualTo(windowChanged));
+            Assert.That(receipt.Result?.GetProperty("addressSeen").GetString(), Is.EqualTo(seen));
+            Assert.That(raw, Does.Not.Contain("finalUrl"));
+            Assert.That(raw, Does.Not.Contain("Revoluci").And.Not.Contain("Portada").And.Not.Contain("example"),
+                "no address read from a tab is reported");
+            Assert.That(platform.Fronted, Is.Empty, "no window is put in front on an unconfirmed navigation");
+        });
+    }
+
     [TestCase("https://www.google.com/search?q=los+horarios", "google.com/search?q=los%20horarios", true)]
     [TestCase("http://example.org/page", "https://example.org/page/", true)]
     [TestCase("https://example.org/page#top", "https://www.example.org/page", true)]
