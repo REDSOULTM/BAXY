@@ -11,7 +11,7 @@ import numpy
 
 from baxy_mind import voice
 from baxy_mind.early import Anticipation
-from baxy_mind.mind import UNSURE_NOTE
+from baxy_mind.mind import SYSTEM, UNSURE_NOTE
 from baxy_mind.voice import BLOCK, Heard, Voice
 from test_mind_final import _call, _mind, _say
 
@@ -110,6 +110,17 @@ def test_the_model_reads_the_unsure_words_beside_the_clock_and_never_in_the_pers
     mind.decide(2, "Hola.")
     assert all(note not in str(m.get("content")) for m in server.bodies[1]["messages"][-2:])
 
+
+
+def test_the_rules_say_what_the_ears_doubts_and_words_that_make_no_sense_ask_for() -> None:
+    """P1.4 (noche 2026-10-27): with the note beside the clock the model still answered as said (0/10 in decision): rule
+    6 only told it to guess the word a transcript sounds like, and rule 4 to say it does not do what no tool does. The
+    rule now says what the note is for and what to do when the words sound like nothing: ask, in its own words, to hear
+    them again. Nothing decides for it."""
+    rule = SYSTEM[SYSTEM.index("\n6. "):SYSTEM.index("\n7. ")]
+    assert "«sincuenta» es 50" in rule
+    assert "el oído no está seguro" in UNSURE_NOTE and "el oído no está seguro" in rule
+    assert "repita" in rule
 
 def test_an_answer_to_the_models_question_carries_its_unsure_words(tmp_path: Path) -> None:
     mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿A qué nivel?"}), _say("Listo.")])

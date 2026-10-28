@@ -71,7 +71,7 @@ def test_a_case_with_a_pending_confirmation_reaches_the_mind_with_it() -> None:
     seen = {}
 
     class Mind:
-        def decide(self, request_id, text, pending=None):
+        def decide(self, request_id, text, pending=None, unsure=None):
             seen.update(id=request_id, text=text, pending=pending)
             return {"kind": "action"}
 
@@ -81,6 +81,23 @@ def test_a_case_with_a_pending_confirmation_reaches_the_mind_with_it() -> None:
     decide(Mind(), {"id": "X2", "text": "abre paint"})
     assert seen["pending"] is None
 
+
+
+def test_a_case_with_the_words_the_ear_was_unsure_of_reaches_the_mind_with_them() -> None:
+    """P1.4 (noche 2026-10-27): voice.Heard's doubts reach the model only beside a spoken request, so a case can carry
+    them (``unsure``: [word, p] pairs) and the bench measures the decision the model makes with that fact."""
+    from bench_decision import decide
+    seen = {}
+
+    class Mind:
+        def decide(self, request_id, text, pending=None, unsure=None):
+            seen.update(text=text, unsure=unsure)
+            return {"kind": "conversation"}
+
+    decide(Mind(), {"id": "X3", "text": "pon el volumen en treinta", "unsure": [["treinta", 0.2]]})
+    assert seen == {"text": "pon el volumen en treinta", "unsure": [["treinta", 0.2]]}
+    decide(Mind(), {"id": "X4", "text": "abre paint"})
+    assert seen["unsure"] is None
 
 # Audit w8-medir (2026-10-23): an argument of a code list is that code. As part of the text, «close» passed close_all,
 # «space» backspace and «escape» ctrl_shift_escape; free text (a name, a path) is still met by the text that holds it.

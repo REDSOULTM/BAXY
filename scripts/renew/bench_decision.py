@@ -135,8 +135,10 @@ def judge(expect, result, arguments, enums=None):
 def decide(mind, case):
     """The model's decision for a case, with the confirmation the case says is waiting for the person's «sí» (a case of
     the family confirmacion_pendiente carries `pending` {operation, arguments}, as the App sends it with the words;
-    holdout v5: without it confirm_pending read nothing_pending and those cases could never pass)."""
-    return mind.decide(case["id"], case["text"], pending=case.get("pending"))
+    holdout v5: without it confirm_pending read nothing_pending and those cases could never pass), and with the words
+    the ear was unsure of when the case says they were spoken so (`unsure` [[word, p], ...], as voice.Heard gives
+    them)."""
+    return mind.decide(case["id"], case["text"], pending=case.get("pending"), unsure=case.get("unsure"))
 
 
 class CountedSystemOne:
