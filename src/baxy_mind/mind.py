@@ -2180,7 +2180,10 @@ class Mind:
         if made:
             aids["short_refs"] = sorted(made) if turn.get("private") else made
         if _aid_on("result_cap"):
-            shown = self._fit_result(shown)
+            fitted = self._fit_result(shown)
+            if fitted != shown:
+                aids["result_cap"] = len(shown)  # the trace says which results the model read in part
+                shown = fitted
         line = _said_once(done) if _aid_on("facts_once") else done
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": shown + "\n[En este turno: " + "; ".join(line) + "]" + note})
@@ -2210,19 +2213,26 @@ class Mind:
     def _fit_result(self, shown: str) -> str:
         """Aid «result_cap» (P0.10): a result past RESULT_TOKENS keeps the start that fits and says how much is left out
         (CUT_RESULT), before it is sent rather than after a refusal (_make_room). Counted as the history counts, only
-        with the server's tokenizer (a token is at least a character, so a shorter text is never counted)."""
+        with the server's tokenizer (a token is at least a character, so a shorter text is never counted). The call has
+        already been counted as done when this runs, so a tokenizer that fails does not fail the turn: the result keeps
+        RESULT_TOKENS characters, which fit."""
         if not self.prefix_tokens or len(shown) <= RESULT_TOKENS:
             return shown
-        tokens = len(self.server.tokenize(shown))
-        if tokens <= RESULT_TOKENS:
-            return shown
-        keep = len(shown) * RESULT_TOKENS // tokens
-        while True:
-            cut = shown[:keep] + CUT_RESULT.format(n=len(shown) - keep, total=len(shown))
-            tokens = len(self.server.tokenize(cut))
-            if tokens <= RESULT_TOKENS or keep == 0:
-                return cut
-            keep = max(0, keep - (keep * (tokens - RESULT_TOKENS) // tokens) - 1)
+        try:
+            tokens = len(self.server.tokenize(shown))
+            if tokens <= RESULT_TOKENS:
+                return shown
+            keep = len(shown) * RESULT_TOKENS // tokens
+            while True:
+                cut = shown[:keep] + CUT_RESULT.format(n=len(shown) - keep, total=len(shown))
+                tokens = len(self.server.tokenize(cut))
+                if tokens <= RESULT_TOKENS or keep == 0:
+                    return cut
+                keep = max(0, keep - (keep * (tokens - RESULT_TOKENS) // tokens) - 1)
+        except (OSError, RuntimeError, ValueError, KeyError) as error:
+            self._log("turn.result_cap", time.perf_counter(), None, error=type(error).__name__)
+            keep = RESULT_TOKENS - len(CUT_RESULT) - 2 * len(str(len(shown)))
+            return shown[:keep] + CUT_RESULT.format(n=len(shown) - keep, total=len(shown))
 
     def confirm(self, request_id: Any, approve: bool, label: str) -> dict[str, Any]:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the

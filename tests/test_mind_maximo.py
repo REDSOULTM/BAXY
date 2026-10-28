@@ -224,6 +224,23 @@ def test_a_result_past_the_room_of_a_turn_reaches_the_model_cut_and_says_so(tmp_
     assert mind._turn["receipts"][-1]["observation"] == observation
 
 
+def test_a_result_whose_tokens_cannot_be_counted_is_cut_by_characters_and_the_turn_goes_on(tmp_path: Path) -> None:
+    # Review of P0.10: the call was already counted as done when the tokenizer failed, and the turn broke with the result
+    # outside the conversation (the next decision then read it as never answered).
+    from test_mind_final import _call, _mind, _say
+    from baxy_mind.mind import CUT_RESULT, RESULT_TOKENS, TURN_FACTS
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {"application": "Paint"}), _say("Listo.")])
+    mind.prefix_tokens = 40000
+    mind.decide(1, "mira Paint")
+    server.tokenize = lambda text: (_ for _ in ()).throw(TimeoutError("budget spent"))
+    assert mind.continue_turn(2, json.dumps({"status": "completed", "observed": {"text": "7" * 48000}}))["kind"]
+    body = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1].split(TURN_FACTS)[0]
+    assert CUT_RESULT.split("{")[0] in body and len(body) <= RESULT_TOKENS
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert any(row.get("stage") == "turn.result_cap" and row.get("error") == "TimeoutError" for row in rows)
+    assert any(row.get("stage") == "turn.aid" and row.get("aids", {}).get("result_cap") for row in rows)
+
+
 def test_a_result_within_the_room_of_a_turn_goes_whole(tmp_path: Path) -> None:
     from baxy_mind.mind import CUT_RESULT, RESULT_TOKENS
     _, _, _, text, content = _big_result(tmp_path, RESULT_TOKENS * 4 - 200)
