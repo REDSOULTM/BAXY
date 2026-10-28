@@ -14,6 +14,30 @@ sesión mandan sobre esto.
   o se da trabajo a la otra máquina. Si el dueño pide paralelismo, se usan subagentes sin pedir permiso;
   si no, vale el criterio de `AGENTS.md`.
 
+## Velocidad y jueces
+
+- Rondas cortas: ningún paso de medición pasa de 5 minutos. Un banco se parte en tandas pequeñas, se reporta por
+  tanda y se reparte entre máquinas. El 4B responde en segundos: lo que tarde más se parte o se paraleliza.
+- El juez es Claude: subagentes (Opus) que leen a ciegas con el criterio escrito, varios en paralelo. No se monta un
+  LLM juez local que ocupa gigas de VRAM: la GPU es para el modelo de BAXY. Base y candidato se juzgan con el mismo
+  juez del día; si se comparan con cifras del juez viejo, se dice.
+- Subagentes en paralelo para juzgar, revisar y probar siempre que el trabajo sea independiente; mensajes concisos.
+
+## Sin capa semántica: se ayuda al modelo
+
+- BAXY es un arnés para el modelo: el modelo entiende y decide. Nada de lectores, patrones, listas de palabras ni regex
+  de intención que decidan por él.
+- Se le ayuda con herramientas que funcionan y se verifican, descripciones claras, datos tipados y resultados
+  honestos. Lo determinista sólo compara forma (un argumento que no se dijo) y le devuelve el dato.
+- Cada arreglo se prueba con frases held-out que no nombra, escritas por un subagente que no vio el diff.
+
+## Trabajo en flota (plazos largos)
+
+- El PC y el notebook trabajan a la vez, en rondas: un líder por ronda, trabajadores en worktrees propios y
+  subagentes. El PC integra y mide; el notebook prueba en vivo y despliega en su BAXY instalada, con vuelta atrás.
+- Una ronda: medir en tandas, agrupar los fallos por causa, arreglar con prueba que falla primero, integrar con la
+  regla de corte (lo que baja una cifra sale), desplegar y escribir el estado. Al terminar, la siguiente.
+
 ## Verdad y calidad
 
 - Nunca «listo» sin evidencia fresca: el comando y su resultado, o la captura del estado real en la app.
