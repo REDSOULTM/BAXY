@@ -26,6 +26,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly FrankfurterRateSource _rates;
     private readonly EspnScheduleSource _sports;
     private readonly SearchPageReader _pages;
+    private readonly string? _homeRegion;
     // Private diagnostics of a playback that failed; null in tests.
     private readonly string? _capturesDirectory;
 
@@ -68,6 +69,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _rates = new FrankfurterRateSource(_http);
         _sports = new EspnScheduleSource(_http);
         _pages = new SearchPageReader();
+        _homeRegion = HomeRegion.Read();
     }
 
     internal WebBrowserAdapter(
@@ -75,7 +77,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         HttpClient http,
         CdpBrowserSessionContext? sessionContext = null,
         UserBrowserSurface? userBrowser = null,
-        EspnScheduleSource? sports = null)
+        EspnScheduleSource? sports = null,
+        string? homeRegion = null)
     {
         _browser = browser ?? throw new ArgumentNullException(nameof(browser));
         _http = http ?? throw new ArgumentNullException(nameof(http));
@@ -87,6 +90,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _rates = new FrankfurterRateSource(_http);
         _sports = sports ?? new EspnScheduleSource(_http);
         _pages = new SearchPageReader(_http);
+        _homeRegion = homeRegion;
     }
 
     public bool CanHandle(string operation) => operation is
@@ -935,7 +939,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteString("title", result.Title);
                 writer.WriteString("url", result.Url);
                 writer.WriteString("snippet", result.Snippet);
-            });
+            },
+            region: _homeRegion);
     }
 
     private async Task<ExternalCapabilityReceipt> NewsAsync(
@@ -1080,7 +1085,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // encyclopedia), what a typed source was sent instead («sent»: currency, sports, places), the results as the source
     // gave them and their count, and «authority», the source that answered (duckduckgo_lite_https or
     // duckduckgo_html_https, google_news_rss_search, wikipedia_es_api, wikipedia_en_api, frankfurter_reference_rates, espn_public_schedule,
-    // openstreetmap_nominatim). No result is web_search_no_results: the source answered with nothing.
+    // openstreetmap_nominatim), and «region», the home region a web search was asked in. No result is
+    // web_search_no_results: the source answered with nothing.
     private static ExternalCapabilityReceipt SearchReceipt<T>(
         string operation,
         string source,
@@ -1088,7 +1094,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         string authority,
         List<T> results,
         Action<Utf8JsonWriter, T> writeResult,
-        Action<Utf8JsonWriter>? sent = null)
+        Action<Utf8JsonWriter>? sent = null,
+        string? region = null)
     {
         if (results.Count == 0) return ExternalJson.FailureBeforeEffect(operation, SearchNoResults);
         JsonElement result = ExternalJson.Create(writer =>
@@ -1097,6 +1104,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteNumber("version", 1);
             writer.WriteString("source", source);
             writer.WriteString("query", query);
+            if (region is not null) writer.WriteString("region", region);
             if (sent is not null)
             {
                 writer.WriteStartObject("sent");
@@ -1173,6 +1181,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // Both endpoints answer a form post (a GET of the lite one returns its search form with no results). Each result is
     // kept as the engine gave it when it is structurally one: an http or https address that is not the engine's own, a
     // title and bounded lengths. Null when the endpoint did not answer.
+    // Noche 2026-10-27 (P1.3): with no region the engine answers for the whole world, and a one-word local name came back
+    // as the English word it also is («Savory»: the adjective; asked in cl-es, the brand). With the Windows home region
+    // set, «kl» asks the engine in that region and the search language; only the country code leaves, which the PC's
+    // address already tells the engine.
     private async Task<(List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage)?>
         ReadGeneralSearchAsync(
             string endpoint,
@@ -1183,10 +1195,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
-            Content = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("q", query),
-            }),
+            Content = new FormUrlEncodedContent(_homeRegion is null
+                ? [new("q", query)]
+                : [new("q", query), new("kl", _homeRegion.ToLowerInvariant() + "-" + language)]),
         };
         request.Headers.TryAddWithoutValidation("User-Agent", GeneralSearchUserAgent);
         request.Headers.TryAddWithoutValidation("Accept-Language", language == "en" ? "en-US,en;q=0.9" : "es-ES,es;q=0.9");

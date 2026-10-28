@@ -3860,6 +3860,32 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Noche 2026-10-27 (P1.3): a one-word local name searched with no region came back as the English word it also is.
+    // The engine is asked in the person's Windows home region and the search language, and the receipt says the region.
+    [Test]
+    public async Task AWebSearchAsksTheEngineInTheHomeRegionAndSaysIt()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
+                ("A result", "https://example.com/a", "")), "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = new(
+            new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused")), http, homeRegion: "CL");
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"Savory"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result!.Value.GetProperty("region").GetString(), Is.EqualTo("CL"));
+            Assert.That(handler.Asked.Single().Body, Is.EqualTo("q=Savory&kl=cl-es"));
+        });
+    }
+
     [Test]
     public async Task AWebSearchSaysABlockPageIsUnavailableAndAnEmptyResultsPageHasNoResults()
     {
@@ -4823,7 +4849,7 @@ public sealed class ExternalAdaptersTests
     private sealed record HttpAnswer(
         HttpStatusCode Status, string Body, string ContentType, byte[]? Raw = null, string? Location = null);
 
-    private sealed record AskedRequest(Uri Uri, string UserAgent, string[] Headers);
+    private sealed record AskedRequest(Uri Uri, string UserAgent, string[] Headers, string? Body);
 
     // Answers each host with its own reply; a host it does not know is unreachable.
     private sealed class SearchSourcesHttpHandler : HttpMessageHandler
@@ -4841,12 +4867,13 @@ public sealed class ExternalAdaptersTests
         // before the answer of the whole host.
         internal List<(string Contains, HttpAnswer Answer)> Routes { get; } = [];
 
-        protected override Task<HttpResponseMessage> SendAsync(
+        protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Uri uri = request.RequestUri!;
             Asked.Add(new AskedRequest(uri, request.Headers.UserAgent.ToString(),
-                request.Headers.Select(static header => header.Key).ToArray()));
+                request.Headers.Select(static header => header.Key).ToArray(),
+                request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken)));
             string address = Uri.UnescapeDataString(uri.AbsoluteUri);
             HttpAnswer? answer = Routes.FirstOrDefault(route => address.Contains(route.Contains, StringComparison.Ordinal)).Answer;
             if (answer is null && !_answers.TryGetValue(uri.Host, out answer))
@@ -4865,7 +4892,7 @@ public sealed class ExternalAdaptersTests
             }
             var response = new HttpResponseMessage(answer.Status) { Content = content };
             if (answer.Location is not null) response.Headers.Location = new Uri(answer.Location, UriKind.RelativeOrAbsolute);
-            return Task.FromResult(response);
+            return response;
         }
     }
 

@@ -1967,7 +1967,7 @@ public static class ProductCatalog
                 ["query"]),
             OperationRisks.ReadOnly,
             "web.search.provider.results.v1",
-            "Busca en la fuente pública que elige el modelo (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; con nearby, añade la ciudad y el país de este PC a la consulta; 5 resultados por defecto.",
+            "Busca en la fuente pública que elige el modelo (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; el buscador web se consulta en la región de casa de Windows; con nearby, añade la ciudad y el país de este PC a la consulta; 5 resultados por defecto.",
             effects: [Network()]),
         Descriptor(
             "wifi.connect",
