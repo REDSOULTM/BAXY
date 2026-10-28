@@ -14,7 +14,6 @@ Oracle protocol, one JSON object per line each way: {"heard": words, "answering"
 (GuardOracleError): a run that went on without its guards would report first decisions as the ones seen.
 """
 import subprocess
-import shutil
 import json
 import pathlib
 import typing
@@ -34,9 +33,10 @@ class Guards:
     """The oracle's process for one run: the executable `oracle`, closed by close()."""
 
     def __init__(self, oracle: str) -> None:
-        found = shutil.which(oracle)
-        if found is None:
+        # A full path, never a name looked up (Windows looks in the current folder first).
+        if not (pathlib.Path(oracle).is_absolute() and pathlib.Path(oracle).is_file()):
             raise GuardOracleError(f"no guard oracle at {oracle}")
+        found = str(pathlib.Path(oracle))
         # What judged, taken before it runs: the launcher and the assemblies beside it (a .NET apphost is only a launcher).
         self.identity = {"path": found, **{p.name: run_meta.sha256_file(p) for p in sorted(
             [pathlib.Path(found), *pathlib.Path(found).parent.glob("Baxy*.dll")])}}

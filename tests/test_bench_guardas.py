@@ -155,3 +155,8 @@ def test_the_persons_words_leave_out_baxys_notes_and_keep_their_answers() -> Non
                     {"role": "tool", "tool_call_id": "c9", "content": "{\"status\": \"completed\"}"},
                     {"role": "role-state", "refs": {}}]
     assert bench_guardas.person_words(conversation) == ["hola", "por whatsapp"]
+
+
+def test_the_oracle_is_given_by_its_full_path_never_by_a_name_looked_up() -> None:
+    with pytest.raises(bench_guardas.GuardOracleError, match="no guard oracle"):
+        bench_guardas.Guards("Baxy.GuardOracle.exe")
