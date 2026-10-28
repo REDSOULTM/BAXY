@@ -1518,7 +1518,8 @@ class Mind:
         tools, wire_to_op, risk, effects, confirms = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}, {}
         # PC-C72: no wire name is a proper prefix of another one (audio_volume ⊂ audio_volume_adjust made the 4B go on
         # writing the long one); the descriptions cite the names as they are shown.
-        wires = Wires(str(cap.get("name") or "") for cap in capabilities)
+        wires = Wires((str(cap.get("name") or "") for cap in capabilities),
+                      fixed=[tool["function"]["name"] for tool in tools])
         # Auditoría de la mente (w8): the constants of this catalog only; one a tool had in an earlier catalog was still
         # added to its calls.
         constants_of: dict[str, dict[str, Any]] = {}
@@ -1738,10 +1739,11 @@ class Mind:
             self._ref_count = max((int(ref[len(REF_PREFIX):]) for ref in self._refs
                                    if ref.startswith(REF_PREFIX) and ref[len(REF_PREFIX):].isdecimal()), default=0)
         self._ids = state["ids"] if isinstance(state.get("ids"), int) and state["ids"] > 0 else 0
-        self.conversation, unanswered = self._answered([m for m in conversation if isinstance(m, dict)
+        self.conversation, unanswered = self._answered([self._current_names(m) for m in conversation if isinstance(m, dict)
                                                         and m.get("role") in {"user", "assistant", "tool"}])
         if isinstance(state.get("ran_count"), int) and isinstance(state.get("ran"), list):
-            self._ran, self._ran_count = [str(entry) for entry in state["ran"]][-SESSION_CALLS:], state["ran_count"]
+            self._ran = [self._current_ran(str(entry)) for entry in state["ran"]][-SESSION_CALLS:]
+            self._ran_count = state["ran_count"]
             ids = state.get("ran_ids")
             self._ran_ids = ([i if isinstance(i, str) else None for i in ids][-SESSION_CALLS:]
                              if isinstance(ids, list) and len(ids) == len(state["ran"]) else [None] * len(self._ran))
@@ -1758,6 +1760,28 @@ class Mind:
             isinstance(c, list) and len(c) == 3 and isinstance(c[1], bool) and isinstance(c[2], bool) for c in calls)
             else None if any(m.get("tool_calls") for m in self.conversation) else [])
         self._trim()
+
+    def _current_names(self, message: dict[str, Any]) -> dict[str, Any]:
+        """A kept message whose calls name their tools as this catalog shows them: a session kept with an older catalog
+        says the plain name of a tool renamed since (wire.Wires), which is no tool the model is offered now."""
+        calls = message.get("tool_calls")
+        if not isinstance(calls, list) or not any(self._renamed(c) for c in calls):
+            return message
+        return {**message, "tool_calls": [
+            {**c, "function": {**c["function"], "name": self.wires.name(self.wires.known(c["function"]["name"]))}}
+            if self._renamed(c) else c for c in calls]}
+
+    def _renamed(self, call: Any) -> bool:
+        name = call.get("function", {}).get("name") if isinstance(call, dict) and isinstance(
+            call.get("function"), dict) else None
+        op = self.wires.known(name) if isinstance(name, str) else None
+        return op is not None and self.wires.name(op) != name
+
+    def _current_ran(self, entry: str) -> str:
+        """A kept line of the session's calls («wire → how it ended») with its tool as this catalog shows it."""
+        wire, arrow, rest = entry.partition(" → ")
+        op = self.wires.known(wire) if arrow else None
+        return f"{self.wires.name(op)}{arrow}{rest}" if op is not None else entry
 
     @staticmethod
     def _answered(conversation: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[str]]:
@@ -3147,6 +3171,8 @@ class Mind:
                 continue
             at = written.find("<function=")
             names.append(written[at + len("<function="):].split(">")[0].strip() if at >= 0 else "")
+        # A rival closed on the plain name of a renamed tool (audio_volume, an older catalog's) is that tool.
+        names = [self.wires.name(op) if (op := self.wires.known(n)) else n for n in names]
         options = {n: described[n] for n in dict.fromkeys(names) if n in described and n != ASK}
         return {**options, ASK: OPTION_TEXT[ASK], ANSWER: OPTION_TEXT[ANSWER]}
 

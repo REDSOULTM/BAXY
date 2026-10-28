@@ -223,7 +223,7 @@ def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lectura
                 op = str(result.get("operation"))
                 calls.append(op)
                 result = mind.continue_turn(turn["id"], observation(
-                    op, result.get("arguments"), mind.risk.get(op.replace(".", "_"), ""), lecturas,
+                    op, result.get("arguments"), mind.risk.get(mind.wires.name(op), ""), lecturas,
                     turn["n"] * MAX_CALLS + len(calls)), final=len(calls) == MAX_CALLS)
         except Exception as exc:
             # A decision that came is judged; a failure after it (a result's continuation) stays in «error».

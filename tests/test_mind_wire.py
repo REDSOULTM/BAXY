@@ -24,7 +24,7 @@ def _clashes(names: list[str]) -> list[tuple[str, str, str]]:
         for b in names[i + 1:]:
             if a == b:
                 found.append(("same name", a, b))
-            elif b.startswith(a + "_") or a.startswith(b + "_"):
+            elif b.startswith(a) or a.startswith(b):
                 found.append(("proper prefix", a, b))
             elif a.replace("_", "") == b.replace("_", ""):
                 found.append(("only «_»", a, b))
@@ -45,30 +45,45 @@ def test_every_operation_goes_to_its_wire_name_and_back(tmp_path: Path) -> None:
     seen = {t["function"]["name"] for t in mind.tools}
     for op in _OPERATIONS:
         wire = mind.wires.name(op)
-        assert wire in seen and mind.wire_to_op[wire] == op and mind.wires.operation(wire) == op
+        assert wire in seen and mind.wire_to_op[wire] == op and mind.wires.known(wire) == op
+        # Older receipts and kept sessions said the plain name: it still reads as its operation.
+        assert mind.wires.known(op.replace(".", "_")) == op
 
 
-def test_the_short_name_of_a_pair_gets_a_suffix_and_its_plain_name_still_reads_back(tmp_path: Path) -> None:
+def test_the_short_name_of_a_pair_gets_a_suffix_and_the_others_keep_theirs() -> None:
     from baxy_mind.wire import Wires
-    wires = Wires(["x.level", "x.level.adjust", "y.go", "y.go.named", "z.one"])
-    assert wires.name("x.level") == "x_level_set" and wires.name("x.level.adjust") == "x_level_adjust"
-    assert wires.name("y.go") == "y_go_set" and wires.name("z.one") == "z_one"
-    assert wires.renamed() == {"x.level": "x_level_set", "y.go": "y_go_set"}
-    # Older receipts and histories said the plain name: it still reads as its operation.
-    assert wires.operation("x_level") == "x.level" and wires.operation("x_level_set") == "x.level"
-    assert wires.operation("x.level") == "x.level" and wires.operation("q_r") == "q.r"
+    wires = Wires(["x.level", "x.level.adjust", "y.go", "y.go.named", "z.one", "w.find", "w.finds"])
+    assert [wires.name(op) for op in ["x.level", "x.level.adjust", "y.go", "y.go.named", "z.one", "w.find",
+                                      "w.finds"]] == [
+        "x_level_set", "x_level_adjust", "y_go_set", "y_go_named", "z_one", "w_find_set", "w_finds"]
+    assert wires.known("x_level") == "x.level" and wires.known("x_level_set") == "x.level"
+    assert wires.known("q_r") is None and wires.name("q.r") == "q_r"
 
 
-def test_a_suffix_that_would_clash_takes_the_next_free_one() -> None:
+def test_a_suffix_that_would_clash_by_shape_takes_the_next_free_one() -> None:
     from baxy_mind.wire import Wires
-    # The suffixed name is taken by another operation, or would be a prefix of one: the next suffix.
-    taken = Wires(["a.b", "a.b.set", "a.b.set.c"])
-    names = [taken.name(op) for op in ["a.b", "a.b.set", "a.b.set.c"]]
-    assert _clashes(names) == [] and [taken.operation(n) for n in names] == ["a.b", "a.b.set", "a.b.set.c"]
-    # A chain of prefixes: every short one gets its own name.
-    chain = Wires(["m", "m.n", "m.n.o"])
-    names = [chain.name(op) for op in ["m", "m.n", "m.n.o"]]
-    assert _clashes(names) == [] and names[2] == "m_n_o"
+    for operations, short, expected in [
+            (["a.b", "a.b.c", "a.b.set"], "a.b", "a_b_2set"),  # the suffixed name is another tool's
+            (["a.b", "a.b.c", "a.bset"], "a.b", "a_b_2set"),  # the same but for «_»
+            (["a.b", "a.b.c", "set.a.b"], "a.b", "a_b_2set"),  # the same parts in another order
+            (["a.b", "a.b.c", "a.b.set.d"], "a.b", "a_b_2set"),  # a prefix of another tool's
+            (["a.b", "a.b.c"], "a.b", "a_b_set")]:
+        wires = Wires(operations)
+        names = [wires.name(op) for op in operations]
+        assert wires.name(short) == expected and _clashes(names) == [], operations
+        assert [wires.known(n) for n in names] == operations
+    # A chain of prefixes: every short one gets its own name; one the same as a fixed tool's is renamed too.
+    chain = Wires(["m", "m.n", "m.n.o", "ask"], fixed=["ask_user"])
+    names = [chain.name(op) for op in ["m", "m.n", "m.n.o", "ask"]]
+    assert _clashes(names + ["ask_user"]) == [] and names[2] == "m_n_o"
+
+
+def test_a_cited_name_is_rewritten_only_whole() -> None:
+    from baxy_mind.wire import Wires
+    wires = Wires(["x.level", "x.level.adjust"])
+    assert wires.cite("(use x_level or x_level_adjust). That one is x_level.") ==         "(use x_level_set or x_level_adjust). That one is x_level_set."
+    assert wires.cite("x_levels, ax_level, x.level") == "x_levels, ax_level, x.level"
+    assert Wires(["z.one"]).cite("z_one") == "z_one"
 
 
 def test_the_descriptions_cite_the_names_the_model_sees(tmp_path: Path) -> None:
@@ -108,3 +123,32 @@ def test_the_notes_of_a_pending_or_ended_call_say_its_new_name(tmp_path: Path) -
     assert f"[Espera el sí de la persona: {wire} " in server.bodies[0]["messages"][-2]["content"]
     told = json.loads(ended_result({"operation": "audio.volume", "ended": "expired"}, mind.wires.name))
     assert f"call {wire} again" in told["next"]
+
+
+def test_a_session_kept_with_the_plain_names_reads_back_with_the_names_shown(tmp_path: Path) -> None:
+    mind, _ = _configured(tmp_path, _OPERATIONS)
+    old = "message_send"
+    new = mind.wires.name("message.send")
+    assert new != old
+    kept = [{"role": "user", "content": "manda el mensaje"},
+            {"role": "assistant", "content": "", "tool_calls": [
+                {"id": "c1", "type": "function", "function": {"name": old, "arguments": "{}"}}]},
+            {"role": "tool", "tool_call_id": "c1", "content": json.dumps({"status": "failed"})},
+            {"role": "baxy.session", "ran": [f"{old} → falló"], "ran_count": 1, "calls": []}]
+    mind.load_session(kept)
+    assert mind.conversation[1]["tool_calls"][0]["function"]["name"] == new
+    assert kept[1]["tool_calls"][0]["function"]["name"] == old  # the App's copy is not touched
+    assert mind._ran == [f"{new} → falló"]
+    assert mind._tries(mind.conversation) == [("message.send", "failed")]
+
+
+def test_every_tool_name_written_in_the_mind_is_one_the_catalog_shows() -> None:
+    # A literal wire name in the mind's code (web_search, app_open) is compared with what the model wrote: it must be
+    # the name shown, or the comparison stops matching without a word when a catalog renames it.
+    from baxy_mind.wire import Wires
+    wires = Wires(_OPERATIONS)
+    source = (Path(__file__).resolve().parents[1] / "src" / "baxy_mind" / "mind.py").read_text(encoding="utf-8")
+    written = set(re.findall(r"[\"']([a-z]+(?:_[a-z0-9]+)+)[\"']", source))
+    plain = {op.replace(".", "_"): op for op in _OPERATIONS}
+    stale = sorted(name for name in written & set(plain) if wires.name(plain[name]) != name)
+    assert stale == []
