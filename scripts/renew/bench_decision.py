@@ -146,10 +146,8 @@ def hear(guards, case) -> None:
     """The App's guards hear a case's words as the App would: the person's earlier words, then these (an answer to the
     confirmation waiting when the case has one)."""
     guards.reset()
-    before = [m for m in case.get("session") or case.get("history") or []
-              if isinstance(m, dict) and m.get("role") == "user"]
-    for message in before:
-        guards.heard(str(message.get("content") or ""))
+    for words in bench_guardas.person_words(case.get("session") or case.get("history") or []):
+        guards.heard(words)
     guards.heard(case["text"], answering=bool(case.get("pending")))
 
 
@@ -291,17 +289,17 @@ def main():
                     mind.load_session(case["session"])
                 else:
                     mind.new_session(case.get("history") or [])
-                if guards is not None:
-                    hear(guards, case)
-                result = shown = decide(mind, case)
-                refused = []
-                if guards is not None:
-                    shown, _, refused, _ = bench_guardas.seen(mind, case["id"], result, guards, 3)
+                result = decide(mind, case)
                 error = None
             except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
-                result = shown = {"kind": "error"}
-                refused, error = [], repr(exc)[:200]
+                result, error = {"kind": "error"}, repr(exc)[:200]
             latency = time.monotonic() - started
+            if guards is not None:
+                # After the first decision is measured and kept: the oracle's failure stops the run, the mind's after
+                # the first decision ends only the decision seen (seen_error), never «ok».
+                hear(guards, case)
+                after = (bench_guardas.seen(mind, case["id"], result, guards, 3) if error is None
+                         else bench_guardas.Seen({"kind": "error"}, [], [], {"kind": "error"}, error))
             arguments = result.get("arguments") if result.get("operation") else None
             verdict = judge(case["expect"], result, arguments, enums)
             excluded = verdict is None
@@ -316,10 +314,12 @@ def main():
                          "reply": result.get("reply") or result.get("question"), "error": error,
                          "system_one": system_one.case if system_one is not None else None})
             if guards is not None:
+                shown = after.shown
                 seen_arguments = shown.get("arguments") if shown.get("operation") else None
-                rows[-1].update(ok_seen=error is None and bool(judge(case["expect"], shown, seen_arguments, enums)),
-                                refused=refused, seen_kind=shown.get("kind"), seen_operation=shown.get("operation"),
-                                seen_arguments=seen_arguments, seen_reply=shown.get("reply") or shown.get("question"))
+                rows[-1].update(ok_seen=after.error is None and bool(judge(case["expect"], shown, seen_arguments, enums)),
+                                refused=after.refused, seen_kind=shown.get("kind"), seen_operation=shown.get("operation"),
+                                seen_arguments=seen_arguments, seen_reply=shown.get("reply") or shown.get("question"),
+                                seen_error=after.error)
             print(f"{case['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
                   flush=True)
         measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
@@ -334,7 +334,7 @@ def main():
         summary = {"label": args.label, "cases": str(args.cases), "temp": args.temp,
                    "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in counted),
                    "n": len(counted), "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
-                   **bench_guardas.seen_summary(counted, args.guardas),
+                   **bench_guardas.seen_summary(counted, guards),
                    "excluded_retired": [r["id"] for r in rows if r["excluded"]],
                    # A case the model server failed (HTTP error, timeout) counts as wrong; a run with any is not clean.
                    "errors": sum(1 for r in rows if r["error"]), "error_ids": [r["id"] for r in rows if r["error"]],

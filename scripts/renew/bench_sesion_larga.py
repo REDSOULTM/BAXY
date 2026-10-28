@@ -218,23 +218,26 @@ def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lectura
         open_ask = bool((getattr(mind, "_turn", None) or {}).get("asked"))
         if system_one is not None:
             system_one.case = None
-        calls, error, refused = [], None, []
-        decision = result = shown = {"kind": "error"}
+        calls, error = [], None
+        decision = result = {"kind": "error"}
+        if guards is not None:
+            guards.heard(turn["text"])  # the oracle's failure stops the run (GuardOracleError)
         try:
-            if guards is not None:
-                guards.heard(turn["text"])
             result = decision = mind.decide(turn["id"], turn["text"])
             if guards is not None:
-                shown, calls, refused, result = bench_guardas.seen(
+                after = bench_guardas.seen(
                     mind, turn["id"], decision, guards, MAX_CALLS,
                     lambda op, arguments, index: observation(op, arguments, mind.risk.get(op.replace(".", "_"), ""),
                                                              lecturas, turn["n"] * MAX_CALLS + index))
+                calls, result, error = after.went, after.last, after.error
             while guards is None and result.get("kind") == "action" and len(calls) < MAX_CALLS:
                 op = str(result.get("operation"))
                 calls.append(op)
                 result = mind.continue_turn(turn["id"], observation(
                     op, result.get("arguments"), mind.risk.get(mind.wires.name(op), ""), lecturas,
                     turn["n"] * MAX_CALLS + len(calls)), final=len(calls) == MAX_CALLS)
+        except bench_guardas.GuardOracleError:
+            raise
         except Exception as exc:
             # A decision that came is judged; a failure after it (a result's continuation) stays in «error».
             error = repr(exc)[:200]
@@ -260,9 +263,11 @@ def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lectura
                      "context_shrunk": sum(1 for r in traced if r.get("kind") == "context_shrunk"),
                      "system_one": system_one.case if system_one is not None else None})
         if guards is not None:
+            shown = after.shown if decision.get("kind") != "error" else decision
             seen_arguments = shown.get("arguments") if shown.get("operation") else None
             seen_verdict = bench_decision.judge(turn["expect"], shown, seen_arguments, enums)
-            rows[-1].update(ok_seen=shown.get("kind") != "error" and bool(seen_verdict), refused=refused,
+            rows[-1].update(ok_seen=shown.get("kind") != "error" and bool(seen_verdict),
+                            refused=after.refused if decision.get("kind") != "error" else [],
                             seen_kind=shown.get("kind"), seen_operation=shown.get("operation"),
                             seen_arguments=seen_arguments,
                             seen_reply=str(shown.get("reply") or shown.get("question") or "")[:REPLY_CHARS])
@@ -278,6 +283,14 @@ def kept_trim_count(conversation: list[dict], mark: str) -> int:
     first = str((conversation[:1] or [{}])[0].get("content") or "")
     told = re.match(r"\D*(\d+)", first) if first.startswith(mark) else None
     return int(told.group(1)) if told else 0
+
+
+def ended_asking(label: str, upto: int) -> bool:
+    """Whether the tanda that ended at turn `upto` ended with the model's question open (its summary's open_ask_at_end)."""
+    tandas = sorted((BANKS / "runs").glob(f"{label}-t[0-9][0-9]-{upto:02d}.jsonl"), key=lambda p: p.stat().st_mtime)
+    if not tandas:
+        return False
+    return bool(json.loads(tandas[-1].read_text(encoding="utf-8").splitlines()[0])["summary"].get("open_ask_at_end"))
 
 
 def snapshot_path(label: str, upto: int) -> Path:
@@ -337,9 +350,13 @@ def correr(args: argparse.Namespace) -> None:
             mind.new_session([])
         if args.guardas:
             guards = bench_guardas.Guards(args.guardas)
-            # The oracle starts empty: a later tanda's guards hear the turn before it, as the App's heard it.
-            if args.desde > 1:
-                guards.heard(next(t["text"] for t in session["turnos"] if t["n"] == args.desde - 1))
+            # The oracle starts empty: a later tanda's guards hear the session's turns before it, as the App heard them,
+            # and the model's question it ended with. The results the App gave them are not replayed (query_not_said
+            # also weighs their words: a search by a word only a result gave may be refused here and go in the App).
+            for earlier_turn in (t for t in session["turnos"] if t["n"] < args.desde):
+                guards.heard(earlier_turn["text"])
+            if ended_asking(args.label, args.desde - 1):
+                guards.asked()
         rows = correr_turnos(mind, server, turns, session.get("lecturas") or [], enums, trace, system_one, guards)
         snapshot_path(args.label, args.hasta).write_text(json.dumps(mind.export_session(), ensure_ascii=False),
                                                          encoding="utf-8")
@@ -362,7 +379,7 @@ def correr(args: argparse.Namespace) -> None:
                "from_snapshot": str(earlier) if args.desde > 1 else None, "open_ask_at_end": open_at_end,
                "ok": sum(r["ok"] for r in counted), "n": len(counted),
                "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
-               **bench_guardas.seen_summary(counted, args.guardas),
+               **bench_guardas.seen_summary(counted, guards),
                "errors": sum(1 for r in rows if r["error"]), "warm_s": round(warm_s, 1),
                "prefix_tokens": mind.prefix_tokens, "resources": measured, "system_one": s1,
                "run": bench_decision.run_record(args, inner, mind)}
