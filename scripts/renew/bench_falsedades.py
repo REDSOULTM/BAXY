@@ -31,7 +31,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from bench_e2e import (BANKS, ROOT, VOID_EXIT, Conductor, Isolation, profile_summary, ps_file,  # noqa: E402
-                       run_ps, run_setup, run_turn, say_profile, session_locked, wait_silence)
+                       refuse_a_used_run, run_ps, run_setup, run_turn, say_profile, session_locked, wait_silence)
 import juez_claude  # noqa: E402
 import limpieza  # noqa: E402
 import run_meta  # noqa: E402
@@ -470,6 +470,8 @@ def main() -> None:
     run_dirs = {label: BANKS / "runs" / f"{label}-falsedades" for label, _ in replicas}
     for run_dir in run_dirs.values():
         run_dir.mkdir(parents=True, exist_ok=True)
+        if not args.judge_only:
+            refuse_a_used_run(run_dir)  # every replica's, before one runs and before its transcripts.json goes
     if args.judge_only:
         conversations = {label: json.loads((run_dirs[label] / "transcripts.json").read_text(encoding="utf-8"))
                          for label, _ in replicas}

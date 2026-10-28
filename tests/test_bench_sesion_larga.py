@@ -279,3 +279,64 @@ def test_a_tanda_after_a_cut_keeps_the_count_of_the_turns_gone() -> None:
     assert bench.kept_trim_count([{"role": "user", "content": TRIMMED_GIST.format(n=12, k=1, lines="x")}], mark) == 12
     assert bench.kept_trim_count([{"role": "user", "content": "[Reloj: 3 de mayo]"}], mark) == 0
     assert bench.kept_trim_count([], mark) == 0
+
+
+class FakeGuards:
+    """The App's guard oracle (bench_guardas.Guards) as a test sets it: `refuse` op → its refusal's code, `route` op →
+    the operation it runs as; what each request was, in order."""
+
+    def __init__(self, refuse: dict | None = None, route: dict | None = None):
+        self.refuse, self.route, self.log = refuse or {}, route or {}, []
+
+    def reset(self):
+        self.log.append(("reset",))
+
+    def heard(self, words: str, answering=False):
+        self.log.append(("heard", words))
+
+    def asked(self):
+        self.log.append(("asked",))
+
+    def call(self, operation: str, arguments: dict | None) -> dict:
+        self.log.append(("call", operation))
+        if operation in self.refuse:
+            return {"refused": json.dumps({"status": "rejected", "error": self.refuse[operation],
+                                           "next": "answer them in words"})}
+        return {"operation": self.route.get(operation, operation), "arguments": arguments, "note": None}
+
+    def ran(self, operation: str, arguments: dict | None, observation: str):
+        self.log.append(("ran", operation))
+        return observation
+
+
+def test_with_the_apps_guards_a_turn_is_also_judged_on_what_the_person_sees(tmp_path: Path) -> None:
+    # C62: FER022's draft by a channel nobody named is refused by the App (channel_not_said) and the model then greets in
+    # words; V6D278's working-folder list is routed by the App into the folder named. The first decision stays the
+    # bench's number; the one seen after the guards is the second.
+    class Back(FakeServer):
+        def chat(self, body: dict, timeout: float = 120.0) -> dict:
+            last = body["messages"][-1]
+            if last["role"] == "tool" and "channel_not_said" in str(last.get("content")):
+                return {**_say("¡Hola!"), "usage": {"prompt_tokens": 1000}}
+            return super().chat(body, timeout)
+
+    server = bench.RecordingServer(Back({"saluda": _call("audio_volume", {"level": 1}),
+                                         "lee notas.txt": _call("web_search", {"query": "notas"})}))
+    mind = Mind(server, tmp_path / "turns.jsonl")
+    mind.configure(CATALOG)
+    mind.call_tokens = [248058]
+    mind.prefix_tokens = 1000
+    mind.new_session([])
+    guards = FakeGuards(refuse={"audio.volume": "channel_not_said"}, route={"web.search": "file.read"})
+    turns = [_turn(1, "saluda", {"kind": "text"}, "charla"),
+             _turn(2, "lee notas.txt", {"kind": "call", "op": "file.read"}, "lectura")]
+    rows = bench.correr_turnos(mind, server, turns, LECTURAS, {}, tmp_path / "turns.jsonl", guards=guards)
+    assert [row["ok"] for row in rows] == [False, False]  # the first decision, judged as before
+    assert [row["ok_seen"] for row in rows] == [True, True]  # what the App lets the person see
+    assert rows[0]["refused"] == ["channel_not_said"] and rows[0]["calls"] == [] and rows[0]["seen_kind"] == "conversation"
+    assert rows[1]["seen_operation"] == "file.read" and rows[1]["calls"] == ["file.read"] and rows[1]["refused"] == []
+    assert guards.log[:3] == [("heard", "saluda"), ("call", "audio.volume"), ("heard", "lee notas.txt")]
+    assert ("ran", "file.read") in guards.log
+    plain = bench.correr_turnos(*_mind(tmp_path, {"hola": _say("Hola.")}), [_turn(3, "hola", {"kind": "text"})],
+                                LECTURAS, {}, tmp_path / "turns.jsonl")
+    assert "ok_seen" not in plain[0]  # without the guards a row is as before
