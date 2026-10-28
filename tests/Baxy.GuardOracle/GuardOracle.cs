@@ -102,7 +102,7 @@ internal sealed class GuardOracle
     // observation it would record, what it rewrites is the call it would prepare. Keep the two in step.
     private JsonObject Call(string operation, JsonObject arguments)
     {
-        if (operation == MindSidecarClient.ConfirmationAnswer || NativeTurnLoop.IsConversation(operation))
+        if (operation == MindStep.ConfirmationAnswer || NativeTurnLoop.IsConversation(operation))
         {
             return Goes(operation, arguments, note: null);
         }
