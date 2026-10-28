@@ -295,6 +295,22 @@ def test_with_a_call_waiting_for_the_si_the_decision_still_begins_with_what_the_
     assert words == "pon música" and mind._gist(mind.conversation[-4:]).startswith("«pon música» →")
 
 
+def test_with_words_the_ear_was_unsure_of_the_decision_still_begins_with_what_the_wake_read(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # noche 2026-10-27 (P0.8, auditoría del prefijo): the ear's note went into the clock the wake had read without it,
+    # as the call waiting for the «sí» did (above), so a spoken turn the ear was unsure of left the slot before the
+    # person's words. It is a note of its own after the clock, and a note («[») is not taken for their words.
+    mind, server = _mind(tmp_path, _replies(_say("Vale.")), monkeypatch)
+    _before(mind)
+    assert Anticipation(mind).wake() is True
+    warmed = server.prefilled[-1]
+    mind.decide(3, "pon música", unsure=[("música", 0.41)])
+    assert server.prompts[-1].startswith(warmed)
+    clock, note, words = (m["content"] for m in server.bodies[-1]["messages"][-3:])
+    assert clock == mind._clock() and note.startswith("[Nota interna") and "«música» (41 %)" in note
+    assert words == "pon música" and mind._gist(mind.conversation[-4:]).startswith("«pon música» →")
+
+
 def test_the_wake_warm_and_the_early_decision_have_their_switches(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("BAXY_RENEW_EARLY", raising=False)
     monkeypatch.delenv("BAXY_RENEW_WAKE_WARM", raising=False)

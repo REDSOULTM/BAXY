@@ -1732,20 +1732,19 @@ class Mind:
         self._age_bodies()
         doubts = [note for note in (str(m.get("content") or "") for m in self.conversation[-2:])
                   if note.startswith(DOUBT_ASKED)]
-        notes = self._unsure_note(unsure or [])
-        clock = {"role": "user", "content": self._clock() + notes}
+        clock = {"role": "user", "content": self._clock()}
         self.conversation.append(clock)
-        # Noche 2026-10-27 (P0): the call waiting for the «sí» is a note of its own after the clock, so the prompt still
-        # begins with the clock the wake read into the slot (prefill) without it; as a note («[») it stays out of what
-        # the person said (_said, _gist, _founded).
-        if waiting := self._pending_note(pending).lstrip("\n"):
-            self.conversation.append({"role": "user", "content": waiting})
+        # Noche 2026-10-27 (P0, P0.8): what only this turn knows (the call waiting for the «sí», the words the ear was
+        # unsure of) is a note of its own after the clock, so the prompt still begins with the clock the wake read into
+        # the slot (prefill) without it; as a note («[») it stays out of what the person said (_said, _gist, _founded).
+        if notes := (self._pending_note(pending) + self._unsure_note(unsure or [])).lstrip("\n"):
+            self.conversation.append({"role": "user", "content": notes})
         request = {"role": "user", "content": text}
         self.conversation.append(request)
         try:
             self._trim()
             if _aid_on("clock_omitted"):
-                clock["content"] = self._clock() + notes  # the bodies as the trim left them
+                clock["content"] = self._clock()  # the bodies as the trim left them
             # Review 2026-10-22: a text that alone does not fit beside the prefix (a pasted log) failed the turn whole
             # and wordless, as only earlier turns can be trimmed: it keeps its start, halved until it fits, and the cut
             # is said where the model reads it.
@@ -1853,7 +1852,8 @@ class Mind:
         ``clock`` (al máximo, palanca 5, early.py: «Baxy» was heard): the next turn's clock is read too, as a turn with
         no call waiting for the person's «sí» begins, so the GPU is awake and the slot holds all but the person's words
         when they come. The prompt does not change: a clock of another minute is read by the decision itself from where
-        they differ (a call waiting for the «sí» is a note of its own after the clock, Mind.decide). BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
+        they differ (a call waiting for the «sí» and the ear's unsure words are a note of their own after the clock,
+        Mind.decide). BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
         turn = self._turn or {}
         if ((not clock and os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0")
                 or (not self.conversation and not clock) or self._beat is not None
@@ -3128,7 +3128,7 @@ class Mind:
         # moves in steps of ~15.6 ms, and every ms was a multiple of it. The voice's times (voice.speak) too.
         row = {"t": _dt.datetime.now().isoformat(timespec="milliseconds"), "stage": stage,
                "ms": round((time.perf_counter() - started) * 1000),
-               "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
+               "cache_n": timings.get("cache_n"), "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
         doubt = read_doubt(reply)
         if doubt is not None:

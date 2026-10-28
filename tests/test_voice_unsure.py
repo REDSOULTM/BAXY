@@ -106,7 +106,7 @@ def test_the_model_reads_the_unsure_words_beside_the_clock_and_never_in_the_pers
     messages = server.bodies[0]["messages"]
     note = UNSURE_NOTE.format(words="«Vole.» (31 %)")
     assert messages[-1] == {"role": "user", "content": "Vole."}
-    assert messages[-2]["content"].endswith("\n" + note)
+    assert messages[-2]["content"] == note and messages[-3]["content"] == mind._clock()  # P0.8: the clock as prefilled
     mind.decide(2, "Hola.")
     assert all(note not in str(m.get("content")) for m in server.bodies[1]["messages"][-2:])
 

@@ -88,7 +88,8 @@ class SlotServer:
         self.prefilled.append(prompt)
         before = len(self.read)
         self._read(prompt)
-        return {"timings": {"prompt_n": self.read[before], "prompt_ms": 1.0, "predicted_n": 1, "predicted_ms": 0.0}}
+        return {"timings": {"cache_n": len(prompt) - self.read[before], "prompt_n": self.read[before], "prompt_ms": 1.0,
+                            "predicted_n": 1, "predicted_ms": 0.0}}
 
     def tokenize(self, text: str) -> list[int]:
         return [0] * (len(text) // 4)
@@ -156,6 +157,22 @@ def test_the_next_decision_reads_only_its_own_words_and_gets_the_same_prompt(tmp
     row = [json.loads(line) for line in (tmp_path / "a" / "turns.jsonl").read_text(encoding="utf-8").splitlines()
            if '"warm.history"' in line][0]
     assert row["prompt_n"] == server.read[-2] and "text" not in row and "content" not in row
+    # P0.8: what the slot already held is traced too, so a broken prefix shows as a small cache_n beside a large prompt_n.
+    assert row["cache_n"] == len(read_ahead) - server.read[-2]
+
+
+def test_no_turn_changes_what_was_read_ahead_of_it(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # noche 2026-10-27 (P0.8, auditoría del prefijo): whatever only a turn knows (the ear's unsure words, a call waiting
+    # for the «sí») goes after what the wake read into the slot, or a long session reads its whole history again.
+    turns = [("abre paint", None, None), ("pon música", [("música", 0.4)], None),
+             ("no, déjalo", None, {"operation": "app.close", "arguments": {"appId": "Paint"}}),
+             ("sube el volumen", [("volumen", 0.5)], {"operation": "file.delete", "arguments": {"path": "a.txt"}})]
+    mind, server = _mind(tmp_path, [_say(f"Hecho {n}.") for n in range(len(turns))], monkeypatch)
+    for n, (text, unsure, pending) in enumerate(turns):
+        assert mind.prefill(clock=True) is True
+        first = len(server.prompts)
+        mind.decide(n, text, pending, unsure)
+        assert server.prompts[first].startswith(server.prefilled[-1]), text
 
 
 def test_a_confirmation_pressed_after_it_reads_on_from_what_was_read_ahead(tmp_path: Path,
