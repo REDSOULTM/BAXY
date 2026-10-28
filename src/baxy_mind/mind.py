@@ -2785,6 +2785,10 @@ class Mind:
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
                 and not turn.get("reread") and risk != "low_reversible" \
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
+            if risk == "work_loss" and not self._kernel_confirms(call["wire"]):
+                # P2.34: read again with its tools it could make the same call, and the kernel would run it unasked
+                # (system.power; any in Bypass): its doubt asks the person, with no tools.
+                return DOUBT_NOTE.format(call=call["wire"])
             turn["reread"] = True
             return REREAD_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its

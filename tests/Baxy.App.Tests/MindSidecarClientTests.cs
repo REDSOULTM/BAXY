@@ -191,6 +191,27 @@ public sealed class MindSidecarClientTests
         Assert.That(File.Exists(fake.StandardErrorLog + ".1"), Is.False);
     }
 
+    // P2.34: a log this run could not open still held the previous runs' stderr; forgetting said it was gone.
+    [Test]
+    public async Task TheStderrLogThisRunCouldNotOpenIsForgottenToo()
+    {
+        using var fake = new FakeMind();
+        File.WriteAllText(fake.StandardErrorLog, "previous run\n");
+        File.WriteAllText(fake.StandardErrorLog + ".1", "the run before\n");
+        MindSidecarClient mind;
+        using (new FileStream(fake.StandardErrorLog, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            mind = await FakeMind.StartClientAsync();
+        }
+
+        await using (mind)
+        {
+            Assert.That(await mind.TraceForgetAsync(CancellationToken.None), Is.True);
+            Assert.That((File.Exists(fake.StandardErrorLog), File.Exists(fake.StandardErrorLog + ".1")),
+                Is.EqualTo((false, false)));
+        }
+    }
+
     [Test]
     public void TheStderrLogStopsAtItsCapWithoutCuttingACharacter()
     {

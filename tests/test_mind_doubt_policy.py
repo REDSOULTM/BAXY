@@ -80,6 +80,28 @@ def test_an_unsure_action_the_model_chooses_again_on_reading_it_runs(tmp_path, m
     assert rows[0]["kind"] == "doubt_reread"
 
 
+@pytest.mark.parametrize(("mode", "wire", "op", "arguments"), [
+    ("", "system_power", "system.power", {"action": "shutdown"}),
+    ("bypass", "app_close", "app.close", {"appId": "notas"}),
+])
+def test_an_unsure_work_loss_action_the_kernel_runs_unasked_is_asked_without_tools(tmp_path, monkeypatch, mode, wire,
+                                                                                    op, arguments) -> None:
+    # P2.34: read again with its tools, the model could make the same call, and nobody asked before it ran: the kernel
+    # runs system.power unasked (identity), and every work_loss call in Bypass. Its doubt asks, as before pregunta-eco.
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path))
+    if mode:
+        (tmp_path / "confirmation-mode").write_text(mode, encoding="utf-8")
+    mind, server = _mind(tmp_path, [_call(wire, arguments, 0.3), _say("¿Cuál quieres?")])
+    mind.wire_to_op[wire] = op
+    mind.risk = {wire: "work_loss"}
+    result = mind.decide(1, "ahora ciérralo")
+    assert result["operation"] is None and result["reply"] == "¿Cuál quieres?"
+    assert not server.bodies[1].get("tools") or server.bodies[1].get("tool_choice") == "none"
+    rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
+    assert rows[0]["kind"] == "doubt_ask" and rows[0]["operation"] == op
+
+
 def _call_at(p_call: float, p_name: float) -> dict:
     reply = _call("app_open", {"appId": "notas"}, p_name)
     reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", p_call)
