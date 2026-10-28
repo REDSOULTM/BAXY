@@ -362,3 +362,73 @@ def test_the_judges_hash_is_taken_before_the_lines_are_judged(tmp_path, monkeypa
                                       "--judge", "local"])
     bench_falsedades.main()
     assert order == ["record", "judge"]
+
+
+# R8-NB-2 (2026-10-28): repeated with a label already used, the e2e bench read the earlier run's events.jsonl as its
+# own and stopped at once on that run's «conductor_not_ready», before the new App had emptied the file; the new App
+# would also have replayed the earlier commands/ from 00001 on. A used folder is refused and left as it was.
+EARLIER = (b'{"type": "meta", "t_ms": 339}\n'
+           b'{"type": "runtime", "ready": true, "mindReady": false, "t_ms": 189123}\n')
+
+
+def earlier_run(run_dir: Path, events: bool = True) -> dict:
+    (run_dir / "commands").mkdir(parents=True)
+    (run_dir / "commands" / "00001.json").write_bytes(b'{"exit": true}')
+    (run_dir / "results.jsonl").write_bytes(b'{"summary": {"ok": 3}}\n')
+    if events:
+        (run_dir / "events.jsonl").write_bytes(EARLIER)
+    return {p: p.read_bytes() for p in run_dir.rglob("*") if p.is_file()}
+
+
+def launches(monkeypatch) -> list:
+    launched = []
+    monkeypatch.setattr(bench_e2e.subprocess, "Popen", lambda *_, **options: launched.append(options) or
+                        SimpleNamespace())
+    monkeypatch.setattr(bench_e2e, "set_aside_notepad_tabs", lambda _: 0)
+    return launched
+
+
+@pytest.mark.parametrize("events", [True, False])
+def test_a_folder_an_earlier_conductor_wrote_is_refused_and_kept(tmp_path, monkeypatch, events) -> None:
+    run_dir = tmp_path / "r-e2e"
+    before = earlier_run(run_dir, events)
+    launched = launches(monkeypatch)
+    with pytest.raises(SystemExit, match="new label"):
+        bench_e2e.Conductor(run_dir, tmp_path / "perfil")
+    assert not launched and {p: p.read_bytes() for p in run_dir.rglob("*") if p.is_file()} == before
+
+
+def test_the_e2e_bench_refuses_a_used_label_before_the_desktop_is_looked_at(tmp_path, monkeypatch) -> None:
+    before = earlier_run(tmp_path / "runs" / "r-e2e")
+    cases = tmp_path / "cases.json"
+    cases.write_bytes(b'[{"id": "C1"}]')
+    monkeypatch.setattr(bench_e2e, "BANKS", tmp_path)
+    monkeypatch.setattr(bench_e2e, "Isolation", lambda _: pytest.fail("the isolation check ran"))
+    monkeypatch.setattr(sys, "argv", ["bench_e2e.py", "r", "--cases", str(cases)])
+    with pytest.raises(SystemExit, match="new label"):
+        bench_e2e.main()
+    assert {p: p.read_bytes() for p in (tmp_path / "runs" / "r-e2e").rglob("*") if p.is_file()} == before
+
+
+def test_a_run_void_before_its_conductor_starts_again_in_its_folder(tmp_path, monkeypatch) -> None:
+    run_dir = tmp_path / "r-e2e"
+    (run_dir / "commands").mkdir(parents=True)
+    (run_dir / "results.jsonl").write_bytes(b'{"summary": {"void": "x"}}\n')
+    launched = launches(monkeypatch)
+    conductor = bench_e2e.Conductor(run_dir, tmp_path / "perfil")
+    assert len(launched) == 1 and conductor.events.wait(lambda _: True, 0.2) is None
+    launched[0]["stdout"].close()
+
+
+def test_the_falsehood_bench_refuses_every_used_replica_before_one_runs(tmp_path, monkeypatch) -> None:
+    before = earlier_run(tmp_path / "runs" / "r-s1-falsedades")
+    (tmp_path / "runs" / "r-s1-falsedades" / "transcripts.json").write_bytes(b"[]")
+    cases = tmp_path / "cases.json"
+    cases.write_bytes(b"[]")
+    monkeypatch.setattr(bench_falsedades, "BANKS", tmp_path)
+    monkeypatch.setattr(bench_falsedades, "run_conversations", lambda *_: pytest.fail("a replica ran"))
+    monkeypatch.setattr(sys, "argv", ["bench_falsedades.py", "r", "--cases", str(cases), "--seeds", "0,1"])
+    with pytest.raises(SystemExit, match="new label"):
+        bench_falsedades.main()
+    assert (tmp_path / "runs" / "r-s1-falsedades" / "transcripts.json").read_bytes() == b"[]"
+    assert all(p.read_bytes() == data for p, data in before.items())

@@ -308,7 +308,7 @@ class Events:
 def refuse_a_used_run(run_dir: Path) -> None:
     """A folder an earlier conductor wrote in is not reused (R8-NB-2, 2026-10-28): its events.jsonl was read as this
     run's, so the earlier «conductor_not_ready» came back at once, before the new App emptied the file; and the new App
-    would replay its commands/ from 00001 on. A VOID run started no conductor, so its folder runs again."""
+    would replay its commands/ from 00001 on. A run found VOID before its conductor started runs again in its folder."""
     used = [p.name for p in (run_dir / "events.jsonl", run_dir / "commands") if p.is_file() or any(p.glob("*.json"))]
     if used:
         raise SystemExit(f"{run_dir} already holds a run ({', '.join(used)}): give this run a new label, or move that "

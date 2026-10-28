@@ -67,7 +67,6 @@ class BenchVoid(Exception):
 
 
 def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
-    refuse_a_used_run(run_dir)  # before its transcripts.json goes
     # transcripts.json is written at the end: one left by an earlier run would be judged (--judge-only) as this run's.
     (run_dir / "transcripts.json").unlink(missing_ok=True)
     isolation = Isolation(run_dir)
@@ -471,6 +470,8 @@ def main() -> None:
     run_dirs = {label: BANKS / "runs" / f"{label}-falsedades" for label, _ in replicas}
     for run_dir in run_dirs.values():
         run_dir.mkdir(parents=True, exist_ok=True)
+        if not args.judge_only:
+            refuse_a_used_run(run_dir)  # every replica's, before one runs and before its transcripts.json goes
     if args.judge_only:
         conversations = {label: json.loads((run_dirs[label] / "transcripts.json").read_text(encoding="utf-8"))
                          for label, _ in replicas}
