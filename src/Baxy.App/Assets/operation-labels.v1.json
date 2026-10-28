@@ -24,6 +24,7 @@
     "audio.app.volume.adjust": { "t": "Subir o bajar el volumen de una app", "g": "audio", "f": "musica" },
     "audio.app.volume.set": { "t": "Fijar el volumen de una app", "g": "audio", "f": "musica" },
     "audio.microphone.mute": { "t": "Silenciar el micrófono", "g": "audio", "f": "musica" },
+    "audio.microphone.status": { "t": "Ver el micrófono", "g": "audio", "f": "musica" },
     "audio.mute": { "t": "Silenciar el sonido", "g": "audio", "f": "musica" },
     "audio.status": { "t": "Ver el sonido", "g": "audio", "f": "musica" },
     "audio.volume": { "t": "Fijar el volumen", "g": "audio", "f": "musica" },

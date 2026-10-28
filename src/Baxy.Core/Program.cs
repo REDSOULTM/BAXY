@@ -143,6 +143,7 @@ internal static class Program
             new ExternalCapabilityHandler("audio.app.volume.adjust", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.app.volume.set", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.microphone.mute", externalCapabilityProvider),
+            new ExternalCapabilityHandler("audio.microphone.status", externalCapabilityProvider),
             new AudioMuteHandler(audioControlProvider),
             new AudioStatusHandler(audioControlProvider),
             new AudioVolumeHandler(audioControlProvider),

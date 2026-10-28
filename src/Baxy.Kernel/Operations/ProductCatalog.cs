@@ -116,6 +116,13 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "audio.microphone.mute.capture.endpoint.postread.v1",
             "Silencia o reactiva el micrófono predeterminado de Windows y corrobora la postlectura del endpoint de captura."),
+        // noche P1.1 (d): si está silenciado se leía con la operación que lo cambia.
+        Descriptor(
+            "audio.microphone.status",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "audio.microphone.status.capture.endpoint.read.v1",
+            "Lee si el micrófono predeterminado de Windows está silenciado, sin modificarlo."),
         Descriptor(
             "audio.mute",
             Schema([Boolean("state")], ["state"]),

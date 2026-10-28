@@ -3012,6 +3012,31 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // noche P1.1 (d): whether the microphone is muted is read, not found out by the call that changes it.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task MicrophoneStatusReadsTheCaptureEndpointWithoutChangingIt(bool muted)
+    {
+        var endpoint = new FakeAudioEndpoint("capture-private", muted: muted);
+        var adapter = new WindowsMicrophoneAdapter(() => endpoint);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "audio.microphone.status", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(adapter.CanHandle("audio.microphone.status"), Is.True);
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.Null);
+            Assert.That(receipt.Result?.GetProperty("muted").GetBoolean(), Is.EqualTo(muted));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo("windows_core_audio_capture_endpoint_read"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("capture-private"));
+            Assert.That(endpoint.ReadMuted(), Is.EqualTo(muted));
+        });
+    }
+
     // Owner's test 2026-09-21 (turn 205): «activa mi micrófono» on an already
     // active microphone ended in an unobserved effect. The state is the fact,
     // said before any boundary is crossed.
