@@ -24,6 +24,7 @@ from pathlib import Path
 import psutil
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import bench_guardas  # noqa: E402
 import run_meta  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -141,6 +142,17 @@ def decide(mind, case):
     return mind.decide(case["id"], case["text"], pending=case.get("pending"), unsure=case.get("unsure"))
 
 
+def hear(guards, case) -> None:
+    """The App's guards hear a case's words as the App would: the person's earlier words, then these (an answer to the
+    confirmation waiting when the case has one)."""
+    guards.reset()
+    before = [m for m in case.get("session") or case.get("history") or []
+              if isinstance(m, dict) and m.get("role") == "user"]
+    for message in before:
+        guards.heard(str(message.get("content") or ""))
+    guards.heard(case["text"], answering=bool(case.get("pending")))
+
+
 class CountedSystemOne:
     """System One as the mind calls it (choose), counting the times it was asked and the times no answer came back: its
     server down, an order slower than choose's timeout (2 s each), or an answer not of its shape. The mind then goes on
@@ -226,6 +238,7 @@ def main():
     parser.add_argument("--catalog", default=str(Path(os.environ["LOCALAPPDATA"]) / "BAXY" / "renew" / "catalog.configure.json"))
     parser.add_argument("--ctx", default="53248")
     parser.add_argument("--src", default=str(ROOT / "src"), help="the mind to measure (a copy for an A/B of the prompt)")
+    parser.add_argument("--guardas", help="the App's guard oracle (bench_guardas): also judge the decision the person sees")
     args = parser.parse_args()
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = args.temp
     sys.path.insert(0, args.src)
@@ -244,9 +257,11 @@ def main():
     gpu_before = gpu_used_mib()
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), extra_args=args.server_args.split(),
                        log_name=f"bench-{args.label}.log")
-    system_one = None
+    system_one = guards = None
     try:
         server.start()
+        if args.guardas:
+            guards = bench_guardas.Guards(args.guardas)
         if os.environ.get("BAXY_S1_GGUF", "").strip():  # System One, layer 2, as the product starts it (__main__.py)
             from baxy_mind.system_one import SystemOne  # noqa: E402
             system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
@@ -276,10 +291,16 @@ def main():
                     mind.load_session(case["session"])
                 else:
                     mind.new_session(case.get("history") or [])
-                result = decide(mind, case)
+                if guards is not None:
+                    hear(guards, case)
+                result = shown = decide(mind, case)
+                refused = []
+                if guards is not None:
+                    shown, _, refused, _ = bench_guardas.seen(mind, case["id"], result, guards, 3)
                 error = None
             except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
-                result, error = {"kind": "error"}, repr(exc)[:200]
+                result = shown = {"kind": "error"}
+                refused, error = [], repr(exc)[:200]
             latency = time.monotonic() - started
             arguments = result.get("arguments") if result.get("operation") else None
             verdict = judge(case["expect"], result, arguments, enums)
@@ -294,6 +315,11 @@ def main():
                          "kind": result.get("kind"), "operation": result.get("operation"), "arguments": arguments,
                          "reply": result.get("reply") or result.get("question"), "error": error,
                          "system_one": system_one.case if system_one is not None else None})
+            if guards is not None:
+                seen_arguments = shown.get("arguments") if shown.get("operation") else None
+                rows[-1].update(ok_seen=error is None and bool(judge(case["expect"], shown, seen_arguments, enums)),
+                                refused=refused, seen_kind=shown.get("kind"), seen_operation=shown.get("operation"),
+                                seen_arguments=seen_arguments, seen_reply=shown.get("reply") or shown.get("question"))
             print(f"{case['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
                   flush=True)
         measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
@@ -308,6 +334,7 @@ def main():
         summary = {"label": args.label, "cases": str(args.cases), "temp": args.temp,
                    "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in counted),
                    "n": len(counted), "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
+                   **bench_guardas.seen_summary(counted, args.guardas),
                    "excluded_retired": [r["id"] for r in rows if r["excluded"]],
                    # A case the model server failed (HTTP error, timeout) counts as wrong; a run with any is not clean.
                    "errors": sum(1 for r in rows if r["error"]), "error_ids": [r["id"] for r in rows if r["error"]],
@@ -327,6 +354,8 @@ def main():
         finally:  # a second Ctrl+C inside Qwen's close must not leave System One's running
             if system_one is not None:
                 system_one.close()
+            if guards is not None:
+                guards.close()
 
 
 if __name__ == "__main__":

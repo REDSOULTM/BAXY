@@ -35,6 +35,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bench_decision
+import bench_guardas
 
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
@@ -204,8 +205,10 @@ def trace_rows(trace: Path, start: int) -> tuple[list[dict], int]:
 
 
 def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lecturas: list[str], enums: dict, trace: Path,
-                  system_one: Any = None) -> list[dict]:
-    """Each turn to the mind in order, judged on its first decision and then closed as the App would (module text)."""
+                  system_one: Any = None, guards: Any = None) -> list[dict]:
+    """Each turn to the mind in order, judged on its first decision and then closed as the App would (module text).
+    With `guards` (bench_guardas.Guards, the App's own) every call goes through them first, and the turn is also judged
+    on the decision the person sees (ok_seen)."""
     system_tokens = len(server.tokenize(mind._system())) if mind.prefix_tokens else 0
     at = trace.stat().st_size if trace.is_file() else 0
     rows = []
@@ -215,11 +218,18 @@ def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lectura
         open_ask = bool((getattr(mind, "_turn", None) or {}).get("asked"))
         if system_one is not None:
             system_one.case = None
-        calls, error = [], None
-        decision = result = {"kind": "error"}
+        calls, error, refused = [], None, []
+        decision = result = shown = {"kind": "error"}
         try:
+            if guards is not None:
+                guards.heard(turn["text"])
             result = decision = mind.decide(turn["id"], turn["text"])
-            while result.get("kind") == "action" and len(calls) < MAX_CALLS:
+            if guards is not None:
+                shown, calls, refused, result = bench_guardas.seen(
+                    mind, turn["id"], decision, guards, MAX_CALLS,
+                    lambda op, arguments, index: observation(op, arguments, mind.risk.get(op.replace(".", "_"), ""),
+                                                             lecturas, turn["n"] * MAX_CALLS + index))
+            while guards is None and result.get("kind") == "action" and len(calls) < MAX_CALLS:
                 op = str(result.get("operation"))
                 calls.append(op)
                 result = mind.continue_turn(turn["id"], observation(
@@ -249,6 +259,13 @@ def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lectura
                      "trimmed_turns": mind.trimmed_turns, "conversation_messages": len(mind.conversation),
                      "context_shrunk": sum(1 for r in traced if r.get("kind") == "context_shrunk"),
                      "system_one": system_one.case if system_one is not None else None})
+        if guards is not None:
+            seen_arguments = shown.get("arguments") if shown.get("operation") else None
+            seen_verdict = bench_decision.judge(turn["expect"], shown, seen_arguments, enums)
+            rows[-1].update(ok_seen=shown.get("kind") != "error" and bool(seen_verdict), refused=refused,
+                            seen_kind=shown.get("kind"), seen_operation=shown.get("operation"),
+                            seen_arguments=seen_arguments,
+                            seen_reply=str(shown.get("reply") or shown.get("question") or "")[:REPLY_CHARS])
         print(f"{turn['n']:>2} {turn['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s "
               f"{decision.get('kind')} {decision.get('operation')} ctx={rows[-1]['context_max']}", flush=True)
     return rows
@@ -291,7 +308,7 @@ def correr(args: argparse.Namespace) -> None:
     inner = LlmServer(args.gguf, args.server, context=int(args.ctx), extra_args=args.server_args.split(),
                       log_name=f"bench-{args.label}.log")
     inner.start()
-    system_one = None
+    system_one = guards = None
     # What the bench starts it closes, whatever fails on the way (a server left up holds the GPU and its port).
     try:
         server = RecordingServer(inner)
@@ -318,7 +335,12 @@ def correr(args: argparse.Namespace) -> None:
             mind.trimmed_turns = kept_trim_count(mind.conversation, TRIMMED[:TRIMMED.index(":")])
         else:
             mind.new_session([])
-        rows = correr_turnos(mind, server, turns, session.get("lecturas") or [], enums, trace, system_one)
+        if args.guardas:
+            guards = bench_guardas.Guards(args.guardas)
+            # The oracle starts empty: a later tanda's guards hear the turn before it, as the App's heard it.
+            if args.desde > 1:
+                guards.heard(next(t["text"] for t in session["turnos"] if t["n"] == args.desde - 1))
+        rows = correr_turnos(mind, server, turns, session.get("lecturas") or [], enums, trace, system_one, guards)
         snapshot_path(args.label, args.hasta).write_text(json.dumps(mind.export_session(), ensure_ascii=False),
                                                          encoding="utf-8")
         # A question of the model's open at the end: the next tanda's load_session closes it as asked (the App's own
@@ -333,11 +355,14 @@ def correr(args: argparse.Namespace) -> None:
         inner.close()
         if system_one is not None:
             system_one.close()
+        if guards is not None:
+            guards.close()
     counted = [r for r in rows if not r["excluded"]]
     summary = {"label": args.label, "tanda": [args.desde, args.hasta], "sesion": str(args.sesion),
                "from_snapshot": str(earlier) if args.desde > 1 else None, "open_ask_at_end": open_at_end,
                "ok": sum(r["ok"] for r in counted), "n": len(counted),
                "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
+               **bench_guardas.seen_summary(counted, args.guardas),
                "errors": sum(1 for r in rows if r["error"]), "warm_s": round(warm_s, 1),
                "prefix_tokens": mind.prefix_tokens, "resources": measured, "system_one": s1,
                "run": bench_decision.run_record(args, inner, mind)}
@@ -345,7 +370,8 @@ def correr(args: argparse.Namespace) -> None:
         out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
         for row in rows:
             out.write(json.dumps(row, ensure_ascii=False) + "\n")
-    print(json.dumps({k: summary[k] for k in ("label", "tanda", "ok", "n", "accuracy", "errors")}, ensure_ascii=False))
+    print(json.dumps({k: summary[k] for k in ("label", "tanda", "ok", "n", "accuracy", "ok_seen", "errors") if k in summary},
+                     ensure_ascii=False))
 
 
 def _mean(values: list) -> float | None:
@@ -434,6 +460,7 @@ def main() -> None:
                                               / "catalog.configure.json"))
     run.add_argument("--ctx", default="53248")
     run.add_argument("--src", default=str(ROOT / "src"))
+    run.add_argument("--guardas", help="the App's guard oracle (bench_guardas): also judge the decision the person sees")
     report = sub.add_parser("resumir")
     report.add_argument("label")
     report.add_argument("--tramo", type=int, default=10)
