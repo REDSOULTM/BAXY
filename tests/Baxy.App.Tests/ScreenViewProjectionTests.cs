@@ -43,6 +43,22 @@ public sealed class ScreenViewProjectionTests
         Assert.That(view, Does.Not.Contain("Seleccionados"));
     }
 
+    // Feria 2026-10-27 (caso 18): the window's body, the one control a drag draws on, is marked in the view; no other.
+    [Test]
+    public void TheWindowsBodyIsMarkedAsTheOneADragDrawsOn()
+    {
+        string view = View(Steam.Replace(
+            "{\"i\":4,\"kind\":\"Button\",\"name\":\"Menú\",\"state\":\"collapsed\",\"value\":null}",
+            "{\"i\":4,\"kind\":\"Pane\",\"name\":\"(pane)\",\"state\":\"\",\"value\":null,\"body\":true}",
+            StringComparison.Ordinal));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(view, Does.Contain("[4] Pane «(pane)» (cuerpo de la ventana)\n"));
+            Assert.That(view.Split("cuerpo de la ventana").Length, Is.EqualTo(2));
+        });
+    }
+
     // BAXY Renew al máximo 7.2: the text read off the drawing repeats the names of the controls already listed.
     [Test]
     public void ALineOfTextThatOnlyRepeatsAListedControlsNameIsLeftOutAndCounted()

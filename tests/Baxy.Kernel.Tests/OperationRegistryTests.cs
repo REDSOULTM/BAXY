@@ -452,6 +452,29 @@ public sealed class OperationRegistryTests
         });
     }
 
+    // Feria 2026-10-27: a drag presses along a path no label of this policy can judge (on a page's body it may move what
+    // lies there): it asks, as the pointer's click does, with or without its arguments; bypass never asks.
+    [Test]
+    public void A_drag_on_a_looked_body_asks()
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.pointer.drag");
+        using JsonDocument document = JsonDocument.Parse("""{"window":18016,"index":7,"points":[0.1,0.2,0.9,0.8]}""");
+        using JsonDocument outside = JsonDocument.Parse("""{"window":18016,"index":7,"points":[0.1]}""");
+        OperationRisk risk = ProductCatalog.ToPolicyRisk(descriptor.Risk);
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.True);
+            Assert.That(OperationArgumentValidator.IsValid(outside.RootElement, descriptor.ArgumentsSchema), Is.False,
+                "a path needs two points");
+            Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, "input.pointer.drag", document.RootElement),
+                Is.EqualTo(PolicyDecision.RequireConfirmation));
+            Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, "input.pointer.drag"),
+                Is.EqualTo(PolicyDecision.RequireConfirmation));
+            Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Bypass, "input.pointer.drag", document.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
     // Closing every tab of the person's browser loses their session: that exact
     // argument asks in normal mode; any other action on the browser does not.
     [TestCase("close_all", PolicyDecision.RequireConfirmation)]

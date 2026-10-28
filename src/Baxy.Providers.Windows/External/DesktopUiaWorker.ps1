@@ -2558,6 +2558,8 @@ function Get-BodySurface($item,[string]$kind,[string]$name,$rect,$box){
 # como mucho uno (CEF, un lienzo) se lee por lo dibujado: el adaptador lee su texto sin pedirlo, con autoridad de
 # lineas; un cuerpo anadido la sacaria de ese regimen. Ya listado, se queda donde esta; un cuerpo que solo entro por la
 # reserva sale de ella y va al final como siempre (la base no cambia).
+# Feria 2026-10-27 (arrastrar para dibujar): el cuerpo va marcado (body), listado o anadido: input.pointer.drag solo
+# arrastra sobre el.
 function Add-ViewBody($controls,$body,$elements){
   if($null -eq $body){ return }
   $listed=$null
@@ -2567,8 +2569,9 @@ function Add-ViewBody($controls,$body,$elements){
     if($null -eq $listed -and ([string]$entry.id).Length -gt 0 -and [string]$entry.id -eq [string]$body.id){ $listed=$entry }
   }
   if($null -ne $listed -and [bool]$listed.reserved){ [void]$controls.Remove($listed); $listed=$null }
+  if($null -ne $listed){ $listed.body=$true }
   if($null -ne $listed -or $shown -le 1){ return }
-  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0 })
+  [void]$controls.Add(@{ kind=$body.kind; name=$body.name; id=$body.id; state=''; value=$null; shortcut=''; rect=$body.rect; repeated=0; body=$true })
   if(([string]$body.id).Length -gt 0){ $elements[[string]$body.id]=$body.item }
 }
 function Select-BodySurface($surfaces,$primary){
@@ -2742,7 +2745,7 @@ function Do-View($request){
   $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen }
   $ordered=@()
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType })
+    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType; body=[bool]$entry.body })
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
   # controles que pulsar, y su recorrido ni los trae.

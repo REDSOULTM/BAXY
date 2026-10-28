@@ -32,15 +32,16 @@ def test_the_installed_applications_leave_out_uninstallers_help_manuals_and_web_
 
 
 def test_the_raw_pointer_tool_tells_the_model_it_neither_drags_nor_draws(tmp_path: Path) -> None:
-    # Feria, caso 18: asked to draw lines on a drawing canvas, the model said it could draw and sent clicks on one point;
-    # no tool holds a button down while moving (dragging was retired from the catalog as a declared limit).
+    # Feria, caso 18: asked to draw lines on a drawing canvas, the model said it could draw and sent clicks on one point.
+    # The raw pointer still holds no button down while moving: drawing on a canvas is the drag tool, and a whole window
+    # moves with its own tools.
     mind, _ = _mind(tmp_path, [])
     mind.configure({"capabilities": [{"name": "input.pointer.control", "description": "Click.", "argumentsSchema": {
         "type": "object", "properties": {"action": {"type": "string"}}, "required": ["action"]}}]})
     tool = next(t for t in mind.tools if t["function"]["name"] == "input_pointer_control")["function"]
     assert "It cannot drag or draw" in tool["description"]
-    # Only dragging with the mouse is the limit: a whole window still moves with its own tools.
-    assert "no tool drags or draws with the mouse (moving a whole window is window_move" in tool["description"]
+    assert "drawing or dragging on a window's canvas is input_pointer_drag; moving a whole window is window_move" in (
+        tool["description"])
 
 
 def test_the_document_tool_says_how_much_text_fits_in_one_decision(tmp_path: Path) -> None:
@@ -52,3 +53,17 @@ def test_the_document_tool_says_how_much_text_fits_in_one_decision(tmp_path: Pat
     tool = next(t for t in mind.tools if t["function"]["name"] == "office_document_create")["function"]
     assert "about 350 words of text at most" in tool["description"]
     assert "250 words" not in tool["description"]
+
+
+def test_the_drag_tool_tells_the_model_it_draws_on_a_looked_body_with_relative_points(tmp_path: Path) -> None:
+    # Feria, caso 18: the drag is described by what it does (a button held along a path on the body of a look), where
+    # its points are (fractions of that body, never the screen), that it asks first and when it is done.
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": "input.pointer.drag", "description": "Arrastra.", "argumentsSchema": {
+        "type": "object", "properties": {"index": {"type": "integer"}, "points": {"type": "array", "items": {
+            "type": "number"}}, "window": {"type": "integer"}}, "required": ["index", "points", "window"]}}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "input_pointer_drag")["function"]
+    assert "«cuerpo de la ventana»" in tool["description"]
+    assert "BAXY asks the person first" in tool["description"]
+    assert "pointer_drag_postread_unread" in tool["description"]
+    assert "fractions of the body's width and height" in tool["parameters"]["properties"]["points"]["description"]
