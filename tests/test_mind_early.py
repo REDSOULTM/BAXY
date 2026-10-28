@@ -275,6 +275,26 @@ def test_hearing_the_wake_word_reads_the_next_turns_clock_ahead_and_the_prompt_d
     assert rows[-1]["clock"] is True and "text" not in rows[-1]
 
 
+def test_with_a_call_waiting_for_the_si_the_decision_still_begins_with_what_the_wake_read(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # noche 2026-10-27 (P0, sesión larga en el notebook): a new request while a call waited for the person's «sí» got no
+    # decision in the App's 30 s (decision_unavailable, 1 of 3). The note of that call went into the clock the wake had
+    # read without it, so the prompt left the slot before the person's words, and a hybrid model's slot is not read
+    # again from the middle (llm_server, context checkpoints): a long session went back to a checkpoint or was read
+    # whole (~20 s for 43k tokens). The note is a message of its own after the clock, and a note («[») is never taken
+    # for the person's words (review: _said, _gist and _founded leave out what starts so).
+    pending = {"operation": "app.close", "arguments": {"appId": "Paint"}}
+    mind, server = _mind(tmp_path, _replies(_say("Vale.")), monkeypatch)
+    _before(mind)
+    assert Anticipation(mind).wake() is True
+    warmed = server.prefilled[-1]
+    mind.decide(3, "pon música", pending=pending)
+    assert server.prompts[-1].startswith(warmed)
+    note, words = (m["content"] for m in server.bodies[-1]["messages"][-2:])
+    assert note.startswith("[Espera el sí de la persona: app_close") and "confirm_pending" in note
+    assert words == "pon música" and mind._gist(mind.conversation[-4:]).startswith("«pon música» →")
+
+
 def test_the_wake_warm_and_the_early_decision_have_their_switches(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("BAXY_RENEW_EARLY", raising=False)
     monkeypatch.delenv("BAXY_RENEW_WAKE_WARM", raising=False)
