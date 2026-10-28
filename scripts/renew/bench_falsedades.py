@@ -67,6 +67,8 @@ class BenchVoid(Exception):
 
 
 def run_conversations(cases: list[dict], run_dir: Path) -> list[dict]:
+    # transcripts.json is written at the end: one left by an earlier run would be judged (--judge-only) as this run's.
+    (run_dir / "transcripts.json").unlink(missing_ok=True)
     isolation = Isolation(run_dir)
     void = isolation.check()
     if void:
@@ -500,7 +502,7 @@ def main() -> None:
         judged_by, votes = judge_record(), len(JUDGE_SEEDS)
         judged = judge([conversations[label] for label, _ in replicas], run_dirs[replicas[0][0]])
     else:
-        judged_by, votes = juez_claude.record(), 1
+        judged_by, votes = juez_claude.record(), juez_claude.VOTES
         # The key (letter → run) beside the runs, never in what the judge reads.
         key = BANKS / "runs" / f"{args.label}-falsedades-clave-juez.json"
         by_run, models = juez_claude.judge({label: conversations[label] for label, _ in replicas}, conversation, key)

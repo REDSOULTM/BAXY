@@ -67,7 +67,9 @@ Corre el producto por el conductor. Lo juzgan oráculos que leen el estado del P
 
 La lectura a mano es la primaria. Desde el 2026-10-27 el juez del banco es Claude (`juez_claude.py`): a ciegas, una
 letra al azar por corrida y la clave aparte (`<label>-falsedades-clave-juez.json`), en tandas de 10 líneas de como
-mucho 5 minutos, 8 a la vez, con `CRITERIO_FALSEDADES.md`; cuenta las claras y, aparte, las dudosas. Las corridas
+mucho 5 minutos, 8 a la vez, con `CRITERIO_FALSEDADES.md`; cada línea se lee tres veces, cada vez barajada con otras
+conversaciones, y manda la mayoría (con un voto, la base s1 grabada cambiaba una clara de lectura en lectura). Cuenta
+las claras y, aparte, las dudosas. Una diferencia de un caso entre dos corridas sigue siendo ruido. Las corridas
 anteriores las leyó el juez Qwen3.6-35B IQ3 (contexto 16k, tres semillas, mayoría), que sigue en `--judge local`: sus
 cifras sólo se comparan con corridas de ese mismo juez (`summary.judge.juez`; sin ese campo, es el 35B). Re-juzgar una
 corrida vieja con otro juez aparta su `results.jsonl` como `results-juez-local.jsonl` en vez de pisarlo.
