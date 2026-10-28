@@ -66,7 +66,9 @@ import math
 import re
 import unicodedata
 import pathlib
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
+
+from .wire import operation_of, plain
 
 # How a completed call ended, in mind._outcome's words (mind.COMPLETED_OUTCOMES): passed in by the mind, so this module
 # never re-derives the outcome.
@@ -371,12 +373,14 @@ def _told(receipt: Receipt) -> str:
 
 # ---- the check --------------------------------------------------------------------------------------------------------
 def check(answer: str, request: str, receipts: list[Receipt], session: list[Call] | None,
-          catalog: dict[str, str] | None = None, tries: list[tuple[str, str]] | None = None) -> list[dict]:
+          catalog: dict[str, str] | None = None, tries: list[tuple[str, str]] | None = None,
+          wire_of: Callable[[str], str] = plain) -> list[dict]:
     """The findings of an answer against its turn: ``receipts`` are the turn's calls in order, ``session`` every call
     of the session before and in this turn as (operation, completed, read), or None when the session is not known whole (a
     kept session, or one past the calls the mind keeps): then nothing is said of calls that may have been there.
     ``catalog`` (each operation and its description) and ``tries`` (the conversation's earlier calls as (operation,
-    status)) are for the rule ``denial``, which is not read without the catalog.
+    status)) are for the rule ``denial``, which is not read without the catalog; ``wire_of`` names an operation as the
+    model sees it (wire.Wires.name).
     Each finding: {"rule", "said" (the model's words), "fact" (what contradicts them)}."""
     if not answer or not answer.strip():
         return []
@@ -489,7 +493,7 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     findings.extend(f for f in _not_read_names(answer, folded, raw_folded, statements, receipts) if f not in findings)
 
     # «No puedo borrar carpetas de X» with no call in the turn while a tool of the catalog does it (aid check_denial).
-    findings.extend(f for f in _denials(answer, folded, statements, receipts, catalog, tries) if f not in findings)
+    findings.extend(f for f in _denials(answer, folded, statements, receipts, catalog, tries, wire_of) if f not in findings)
 
     # «Salió «Hola mundo»» while no result of the turn shows that text.
     findings.extend(f for f in _outputs(answer, raw_folded, statements, receipts) if f not in findings)
@@ -517,7 +521,7 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
 def _does(kind: str, op: str, read: bool) -> bool:
     """Whether an operation can be what did an act of this kind: a read never did one, but for «busqué», «revisé»; a
     confirmation's own call (its operation not known here) can be any."""
-    op = op.replace("_", ".")  # a wire name (app_open) is its operation's (app.open): the catalog's names have no «_»
+    op = operation_of(op)  # a plain wire name (app_open) is its operation's (app.open): the catalog's ids have no «_»
     return op == "confirmation.answer" or ((not read or kind == "mirar") and _matches(op, KINDS[kind]["ops"]))
 
 
@@ -671,7 +675,7 @@ def _numbers(answer: str, folded: str, statements: list[tuple[int, int]],
         # A number of 309 digits or more is no float (inf): no reading, and int() of it failed the check and the turn.
         values = [reading for reading in values if math.isfinite(reading[1])]
         readings.extend(values)
-        if _matches(str(r.get("op")).replace("_", "."), _LEVEL_OPS):
+        if _matches(operation_of(str(r.get("op"))), _LEVEL_OPS):
             level_readings.extend(values)
     found: list[dict] = []
 
@@ -747,7 +751,7 @@ def _paths(receipts: list[Receipt]) -> list[str]:
 def _folders(answer: str, folded: str, raw_folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
              request: str) -> list[dict]:
     found: list[dict] = []
-    placed = [r for r in receipts if r.get("completed") and _matches(str(r.get("op")).replace("_", "."), _PLACE_OPS)]
+    placed = [r for r in receipts if r.get("completed") and _matches(operation_of(str(r.get("op"))), _PLACE_OPS)]
     where = []
     for r in placed:
         facts = _parsed(r)
@@ -908,7 +912,7 @@ def _names_shown(receipts: list[Receipt]) -> list[tuple[str, str]]:
             shown += [(hit.group("name").strip(), "la ventana") for t in titles
                       for hit in [_TITLE_NAME.match(t.strip())] if hit]
         observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
-        if not r.get("read") and _matches(str(r.get("op")).replace("_", "."), _PLACE_OPS):
+        if not r.get("read") and _matches(operation_of(str(r.get("op"))), _PLACE_OPS):
             for key in _NAME_FIELDS:
                 value = observed.get(key)
                 base = value.replace("/", "\\").rsplit("\\", 1)[-1] if isinstance(value, str) else ""
@@ -1213,7 +1217,8 @@ def _engines_unanswered(answer: str, folded: str, statements: list[tuple[int, in
 
 
 def _denials(answer: str, folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
-             catalog: dict[str, str] | None, tries: list[tuple[str, str]] | None) -> list[dict]:
+             catalog: dict[str, str] | None, tries: list[tuple[str, str]] | None,
+             wire_of: Callable[[str], str] = plain) -> list[dict]:
     """«No puedo borrar carpetas de X» in a turn with no call while the catalog has an operation that does it (rule
     ``denial``). ``catalog``: each operation of the session's catalog and the description the model reads; ``tries``:
     the session's earlier calls as (operation, status of their result): one of that act that did not complete (it
@@ -1247,7 +1252,7 @@ def _denials(answer: str, folded: str, statements: list[tuple[int, int]], receip
                 continue
             named = [op for op in dict.fromkeys(ops) if op in catalog][:2]
             if named:
-                facts = "; ".join(f"{op.replace('.', '_')} lo hace en el PC de la persona: «{_first_sentence(catalog[op])}»"
+                facts = "; ".join(f"{wire_of(op)} lo hace en el PC de la persona: «{_first_sentence(catalog[op])}»"
                                   for op in named)
                 return [{"rule": "denial", "said": _quote(answer, start, end), "fact": facts}]
     return []

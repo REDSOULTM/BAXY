@@ -47,7 +47,7 @@ HOLD_S = 5.0
 # writes it; the tests prove it equal), and two facts of the slot: it read the person's words (``_turned``, so the
 # warm-up never saves it) and the rows being held.
 SHARED = frozenset({"server", "system_one", "trace", "_log_lock", "foresee", "_turned", "_holding", "tools", "english",
-                    "arguments", "names", "wire_to_op", "risk", "effects", "constants"})
+                    "arguments", "names", "wire_to_op", "wires", "risk", "effects", "constants"})
 
 
 def early_silence() -> float | None:

@@ -19,6 +19,7 @@ import threading
 import time
 import unicodedata
 import urllib.error
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -30,6 +31,7 @@ from .protocol import whole_code_points
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 from . import web_focus
+from .wire import Wires, plain
 
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
@@ -1223,10 +1225,11 @@ ENDED = {"expired": ("confirmation_expired", "the time to answer ran out"),
          "dropped": ("confirmation_dropped", "something else was said after the question, so it no longer stood")}
 
 
-def ended_result(ended: dict[str, Any]) -> str:
-    """What confirm_pending reads when the call the person may think they answer ended without an answer."""
+def ended_result(ended: dict[str, Any], wire_of: Callable[[str], str] = plain) -> str:
+    """What confirm_pending reads when the call the person may think they answer ended without an answer; ``wire_of``:
+    the catalog's wire name of an operation (Wires.name)."""
     error, reason = ENDED.get(str(ended.get("ended")), ENDED["dropped"])
-    wire = str(ended["operation"]).replace(".", "_")
+    wire = wire_of(str(ended["operation"]))
     # A call the kernel challenged again after it had started (reconciliationRequired) may have had its effect.
     uncertain = ended.get("effectUncertain") is True
     told: dict[str, Any] = {"status": "failed", "error": error, "operation": ended["operation"]}
@@ -1403,6 +1406,7 @@ class Mind:
         self.system = SYSTEM  # the person's system text: with the last catalog's groups (CAN_DO_AREAS)
         self.names: list[str] = []  # the installed applications and games of the last catalog.configure
         self.wire_to_op: dict[str, str] = {}
+        self.wires = Wires([])  # the wire name the model sees for each operation of the last catalog, and back
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
         self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
         # P2.41: the modes in which the kernel asks the person before each tool runs, whatever its arguments («normal»,
@@ -1512,6 +1516,9 @@ class Mind:
         self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                                     if isinstance(e, dict) and e.get("name")})
         tools, wire_to_op, risk, effects, confirms = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}, {}
+        # PC-C72: no wire name is a proper prefix of another one (audio_volume ⊂ audio_volume_adjust made the 4B go on
+        # writing the long one); the descriptions cite the names as they are shown.
+        wires = Wires(str(cap.get("name") or "") for cap in capabilities)
         # Auditoría de la mente (w8): the constants of this catalog only; one a tool had in an earlier catalog was still
         # added to its calls.
         constants_of: dict[str, dict[str, Any]] = {}
@@ -1520,8 +1527,8 @@ class Mind:
             name = str(cap.get("name") or "")
             # Renew al máximo: the places stay in app_open's description too (P2.6 left them only in `place`; e2e E014
             # then opened msconfig for «abre la configuración de sonido», twice, on the notebook, 2026-10-22).
-            description = (self.english.get(name) or str(cap.get("description") or "")).replace(
-                "{app_places}", APP_PLACES_TEXT)
+            description = wires.cite((self.english.get(name) or str(cap.get("description") or "")).replace(
+                "{app_places}", APP_PLACES_TEXT))
             if name == "app.open" and apps:
                 description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
             if name == "game.launch" and games:
@@ -1541,8 +1548,9 @@ class Mind:
             # path when only the tool's text said it: own path set 3/8, with the meaning on the argument 6/8).
             for argument, meaning in (self.arguments.get(name) or {}).items():
                 if isinstance(schema["properties"].get(argument), dict):
-                    schema["properties"][argument]["description"] = meaning.replace("{app_places}", APP_PLACES_TEXT)
-            wire = name.replace(".", "_")
+                    schema["properties"][argument]["description"] = wires.cite(
+                        meaning.replace("{app_places}", APP_PLACES_TEXT))
+            wire = wires.name(name)
             tool = {"type": "function", "function": {"name": wire, "description": description, "parameters": schema}}
             tools.append(tool)
             wire_to_op[wire] = name
@@ -1554,6 +1562,7 @@ class Mind:
             confirms[wire] = [mode.lower() for mode in modes] \
                 if isinstance(modes, list) and all(isinstance(mode, str) for mode in modes) else None
         self.tools, self.wire_to_op, self.risk, self.effects, self.confirms = tools, wire_to_op, risk, effects, confirms
+        self.wires = wires
         if absent := [wire_to_op[wire] for wire, modes in confirms.items() if modes is None]:
             self._log("configure.confirms_absent", time.perf_counter(), None, operations=absent)
         areas = list(dict.fromkeys(str(cap["group"]) for cap in capabilities if cap.get("group")))
@@ -1636,10 +1645,9 @@ class Mind:
         """Whether the App says a call waits for the person's «sí» with these words."""
         return bool(isinstance(pending, dict) and pending.get("operation") and not pending.get("ended"))
 
-    @classmethod
-    def _confirming(cls, pending: dict[str, Any] | None) -> str | None:
+    def _confirming(self, pending: dict[str, Any] | None) -> str | None:
         """The tool of the call that waits for the person's «sí» with these words, as the App says it, or None."""
-        return str(pending["operation"]).replace(".", "_") if cls._waits(pending) else None  # type: ignore[index]
+        return self.wires.name(str(pending["operation"])) if self._waits(pending) else None  # type: ignore[index]
 
     @classmethod
     def _pending_op(cls, pending: dict[str, Any] | None) -> str | None:
@@ -1652,13 +1660,12 @@ class Mind:
         """The call whose question ended unanswered just before these words, as the App says it, or None."""
         return pending if isinstance(pending, dict) and pending.get("operation") and pending.get("ended") else None
 
-    @staticmethod
-    def _pending_note(pending: dict[str, Any] | None) -> str:
+    def _pending_note(self, pending: dict[str, Any] | None) -> str:
         """The call the kernel holds for the person's yes, when one is: after «sí» the model called that tool again
         instead of answering it (e2e practice E021, 3 of 3), and the kernel only asked again."""
         if not isinstance(pending, dict) or not pending.get("operation") or pending.get("ended"):
             return ""
-        wire = str(pending["operation"]).replace(".", "_")
+        wire = self.wires.name(str(pending["operation"]))
         arguments = pending.get("arguments")
         shown = f" {json.dumps(arguments, ensure_ascii=False)}" if isinstance(arguments, dict) else ""
         return (f"\n[Espera el sí de la persona: {wire}{shown}. Si sus palabras contestan a tu pregunta, llama a "
@@ -1974,7 +1981,7 @@ class Mind:
 
     def _ran_add(self, calling: Any, outcome: str, call_id: str | None = None) -> None:
         """One call of the session and how it ended, for the clock (8.1)."""
-        wire = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else str(calling or "?").replace(".", "_")
+        wire = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else self.wires.name(str(calling or "?"))
         self._ran, self._ran_count = [*self._ran, f"{wire} → {outcome}"][-SESSION_CALLS:], self._ran_count + 1
         self._ran_ids = [*self._ran_ids, call_id][-SESSION_CALLS:]
 
@@ -1982,7 +1989,7 @@ class Mind:
         """The session's call whose question ended unanswered, as the App says it, no longer waits for a «sí» (8.1)."""
         if ended is None:
             return
-        wire = str(ended["operation"]).replace(".", "_")
+        wire = self.wires.name(str(ended["operation"]))
         waiting = f"{wire} → {WAITS_FOR_YES}"
         if waiting in self._ran:
             last = len(self._ran) - 1 - self._ran[::-1].index(waiting)
@@ -2014,7 +2021,7 @@ class Mind:
                 named = None
             op = str(named or turn.get("pending_op") or CONFIRM_OPERATION)
         completed = outcome.startswith(COMPLETED_OUTCOMES)
-        read = self.risk.get(op.replace(".", "_")) == "read_only"
+        read = self.risk.get(self.wires.name(op)) == "read_only"
         try:
             arguments = json.loads(turn.get("calling_args") or "{}")
         except json.JSONDecodeError:
@@ -2039,7 +2046,7 @@ class Mind:
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
             self._ran_add(turn.get("calling"), NO_RESULT_RAN)
             op = str(turn.get("calling") or "?")  # it may have run: never a completed call of the session
-            self._session_call((op, False, self.risk.get(op.replace(".", "_")) == "read_only"))
+            self._session_call((op, False, self.risk.get(self.wires.name(op)) == "read_only"))
         if turn.get("asked"):
             self.conversation.append({"role": "tool", "tool_call_id": turn["asked"], "content": ASKED})
         pending = [c["id"] for c in turn.get("queue") or []]
@@ -2250,7 +2257,7 @@ class Mind:
             # answer check keeps the page as it came (received).
             observation = web_focus.focus(observation, self._web_queries(turn), json.loads(
                 turn.get("calling_args") or "{}"))
-        calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else calling.replace(".", "_")
+        calling = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else self.wires.name(calling)
         outcome = _outcome(observation, read=self.risk.get(calling) in READ_RISKS)
         if outcome.startswith(VERIFICATION["unchanged"]) and _aid_on("same_call_closes") and _same_done(
                 turn, calling, turn.get("calling_args"), VERIFICATION["readback"]):
@@ -2768,7 +2775,7 @@ class Mind:
             catalog = {self.wire_to_op[t["function"]["name"]]: str(t["function"].get("description") or "")
                        for t in self.tools if t["function"]["name"] in self.wire_to_op} if denials else None
             findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [],
-                                                self._calls, catalog=catalog,
+                                                self._calls, catalog=catalog, wire_of=self.wires.name,
                                                 tries=self._tries(turn["conv"]) if denials else None)
                         if f["rule"] not in CHECK_RULE_AIDS or _aid_on(CHECK_RULE_AIDS[f["rule"]])]
         except Exception as error:  # noqa: BLE001 - a check that fails finds nothing: the answer stands
@@ -3188,7 +3195,7 @@ class Mind:
             # A question that ended unanswered just before these words is told once, as what it is, and the model may
             # call that tool again (the kernel asks again for that exact invocation) or answer in words.
             ended = turn.pop("ended", None)
-            told = ended_result(ended) if ended else NOTHING_PENDING
+            told = ended_result(ended, self.wires.name) if ended else NOTHING_PENDING
             for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
                 turn["conv"].append({"role": "tool", "tool_call_id": call_id,
                                      "content": told if call_id == call["id"] else NOT_RUN})

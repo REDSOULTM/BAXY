@@ -94,8 +94,9 @@ def test_a_call_by_the_new_name_runs_its_operation_and_the_receipt_keeps_it(tmp_
     step = mind.decide(1, "baja el volumen a 20")
     assert step["kind"] == "action" and step["operation"] == "audio.volume"
     mind.continue_turn(2, json.dumps({"status": "completed", "observed": {"level": 20}}))
-    receipt = mind._turn["receipts"][0] if mind._turn else None
-    assert receipt is None or (receipt["op"] == "audio.volume" and receipt["tool"] == wire)
+    receipt = mind._turn["receipts"][0]
+    assert receipt["op"] == "audio.volume" and receipt["tool"] == wire and receipt["completed"]
+    assert any(row["function"]["name"] == wire for m in mind._turn["conv"] for row in m.get("tool_calls") or [])
 
 
 def test_the_notes_of_a_pending_or_ended_call_say_its_new_name(tmp_path: Path) -> None:
