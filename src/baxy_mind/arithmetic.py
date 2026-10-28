@@ -13,14 +13,15 @@ from typing import Callable
 from decimal import (Context, Decimal, DivisionByZero, Inexact, InvalidOperation, Overflow, Underflow, getcontext,
                      localcontext)
 
-_TOKEN = re.compile(r"\d+(?:[.,]\d+)*|\*\*|[^\W\d_]+|\S")
+_TOKEN = re.compile(r"log10\b|\d+(?:[.,]\d+)*|\*\*|[^\W\d_]+|\S", re.IGNORECASE)
 _ALIASES = {"×": "*", "÷": "/", "**": "^", "√": "sqrt", "∛": "cbrt"}
 _MAX_EXPONENT = 10000
 # Silent-failure review 2026-10-27: 300 nested parentheses, or a thousand «-», ran past Python's recursion limit and
 # failed the whole turn; each level takes about seven frames, the mind's turn already holds some.
 _MAX_DEPTH = 64
-# «1.500» is how a Spanish transcript writes fifteen hundred, and it read silently as 1.5.
-_GROUPED = re.compile(r"\d+[.,]\d{3}")
+# «1.500» is how a Spanish transcript writes fifteen hundred, and it read silently as 1.5. «0.125» or «1234.567» cannot
+# be a thousand and are decimals (review 2026-10-28: log10(0.001) was refused).
+_GROUPED = re.compile(r"[1-9]\d{0,2}[.,]\d{3}")
 
 
 def _not_arithmetic(part: str) -> ValueError:
@@ -29,7 +30,7 @@ def _not_arithmetic(part: str) -> ValueError:
 
 class _Parser:
     """expression: term (+ -) | term: unary (* /) | unary: (- +) unary | power
-    power: postfix [^ unary] | postfix: primary %* | primary: number | ( expression ) | (sqrt cbrt) primary.
+    power: postfix [^ unary] | postfix: primary %* | primary: number | ( expression ) | (sqrt cbrt log10 ln) primary.
     So -2 ^ 2 is -4, 2 ^ 3 ^ 2 is 2 ^ 9 and 15% is 0.15."""
 
     def __init__(self, expression: str) -> None:
@@ -110,20 +111,24 @@ class _Parser:
             if not self._take(")"):
                 raise self._unexpected()
             return value
-        if function := self._take("sqrt", "cbrt"):
+        if function := self._take("sqrt", "cbrt", "log10", "ln"):
             argument = self._nested(self._primary)
             if function == "sqrt":
                 if argument < 0:
                     raise ValueError("square root of a negative number")
                 return argument.sqrt()
-            return _cube_root(argument)
+            if function == "cbrt":
+                return _cube_root(argument)
+            if argument <= 0:
+                raise ValueError("logarithm of a number that is not positive")
+            return argument.log10() if function == "log10" else argument.ln()
         token = self.tokens[self.pos] if self.pos < len(self.tokens) else ""
         if not token[:1].isdecimal():
             raise self._unexpected()
         if token.count(".") + token.count(",") > 1:  # no thousands separators: «1,000.5» is ambiguous
             raise _not_arithmetic(token)
         if _GROUPED.fullmatch(token):
-            raise ValueError(f"ambiguous separator in {token}: write a thousand as 1000 and a decimal as 1.5")
+            raise ValueError(f"ambiguous separator in {token}: write a thousand as 1000 and a decimal as 1.5 or 2.3750")
         self.pos += 1
         return Decimal(token.replace(",", "."))
 
