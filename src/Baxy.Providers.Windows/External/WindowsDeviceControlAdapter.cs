@@ -164,6 +164,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           [pscustomobject]@{ok=$reached;effectObserved=$true;changed=$true;baselineValues=$baseline;values=$after}|ConvertTo-Json -Compress
         } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='brightness_failed'}|ConvertTo-Json -Compress;exit 2}
         """;
+    // C49 (noche 28-10): «baja el brillo» with no number is a step of 10, and a step down from 10 left the screen at 0,
+    // black. A step down stops at 10, or where it already is under 10; a level to end at (system.settings.set) is the
+    // only way to 0.
     internal const string BrightnessAdjustScript = BrightnessInstances + """
         $ErrorActionPreference='Stop';$delta=[int]$args[0];$effect=$false
         try {
@@ -172,7 +175,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           if($methods.Count -eq 0 -or $current.Count -eq 0){Write-BaxyBrightnessAbsent;exit 2}
           $expected=@{};$baseline=@()
           foreach($item in $current){
-            $before=[int]$item.CurrentBrightness;$target=[Math]::Max(0,[Math]::Min(100,$before+$delta))
+            $before=[int]$item.CurrentBrightness;$target=[Math]::Max([Math]::Min($before,10),[Math]::Min(100,$before+$delta))
             $baseline+=@($before);$expected[[string]$item.InstanceName]=$target
             $method=$methods|Where-Object {[string]$_.InstanceName -ceq [string]$item.InstanceName}|Select-Object -First 1
             if($null -eq $method){throw 'brightness_method_not_found'}
@@ -2799,7 +2802,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             response.RootElement.GetProperty("baselineValues").WriteTo(writer);
             writer.WritePropertyName("values");
             response.RootElement.GetProperty("values").WriteTo(writer);
-            // Ronda final: a step at the limit (up at 100, down at 0) changes nothing, and the receipt says so.
+            // Ronda final: a step at the limit (up at 100, down at 10 or under, C49) changes nothing, and the receipt says so.
             writer.WriteBoolean("changed", !JsonElement.DeepEquals(
                 response.RootElement.GetProperty("baselineValues"), response.RootElement.GetProperty("values")));
             writer.WriteString(
