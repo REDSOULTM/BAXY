@@ -106,9 +106,10 @@ def git_state(folder: str | Path) -> dict[str, Any] | None:
 
 def baxy_env(environ: dict[str, str] | None = None) -> dict[str, str]:
     """Every BAXY_* variable the run saw: the switches (BAXY_AYUDAS, BAXY_RENEW_PREFILL, BAXY_S1_*, BAXY_CONFIRM_FLOOR…)
-    and the paths."""
+    and the paths. A secret (BAXY_VISION_API_KEY, a token) is recorded as set, never its value: a summary gets copied."""
     source = os.environ if environ is None else environ
-    return {key: value for key, value in sorted(source.items()) if key.upper().startswith("BAXY_")}
+    return {key: "<definida>" if {"KEY", "TOKEN", "SECRET", "PASSWORD"} & set(key.upper().split("_")) else value
+            for key, value in sorted(source.items()) if key.upper().startswith("BAXY_")}
 
 
 def confirmation_mode(environ: dict[str, str] | None = None) -> str:
