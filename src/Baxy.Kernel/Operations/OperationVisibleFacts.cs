@@ -43,7 +43,8 @@ public static class OperationVisibleFacts
     //   effectReadBack:false           → delivered_only  sent and its effect never read: a console command that exited,
     //                                                     app.open's place, a power transition, a media command, a link
     //                                                     to a page the browser already showed (alreadyShown)
-    //   delivered, readBack not true   → delivered_only  keys and text Windows accepted, a queued key
+    //   delivered, readBack not true   → delivered_only  keys and text Windows accepted, a queued key, a paste whose
+    //                                                     text could not be read where it went (readBack not_readable)
     //   an operation that requires no observed effect (catalog) → output_only   a read: its output is the result
     //   otherwise                      → readback        the effect was read back (the engine turns an unverified success
     //                                                     into a failure)
