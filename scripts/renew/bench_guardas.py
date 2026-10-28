@@ -39,7 +39,7 @@ class Guards:
             raise GuardOracleError(f"no guard oracle at {oracle}")
         # What judged, taken before it runs: the launcher and the assemblies beside it (a .NET apphost is only a launcher).
         self.identity = {"path": found, **{p.name: run_meta.sha256_file(p) for p in sorted(
-            [pathlib.Path(found), *pathlib.Path(found).parent.glob("Baxy.*.dll")])}}
+            [pathlib.Path(found), *pathlib.Path(found).parent.glob("Baxy*.dll")])}}
         self._process = subprocess.Popen([found], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True,
                                          encoding="utf-8", bufsize=1)
 
