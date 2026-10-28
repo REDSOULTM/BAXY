@@ -1955,13 +1955,19 @@ class Mind:
         self._prune_refs()
 
     def _age_bodies(self) -> None:
-        """Aid «old_bodies» (noche P0.2, OLD_BODY_CHARS): before the newest closed turn, each result whose body is
-        longer than OLD_BODY_CHARS keeps only its turn's facts. The prefix is edited only there, once per turn, and the
-        read ahead does it before the next decision (prefill)."""
+        """Aid «old_bodies» (noche P0.2, OLD_BODY_CHARS): before the newest closed turn with results, each result whose
+        body is longer than OLD_BODY_CHARS keeps only its turn's facts. The prefix is edited only there, once per turn,
+        and the read ahead does it before the next decision (prefill)."""
         starts = self._turn_starts()
         if len(starts) < 2 or not _aid_on("old_bodies"):
             return
-        old = self.conversation[:starts[-1]]
+        # Revisión de PC-R1-W2: a turn with no results (a question answered in words, a doubt and its answer) aged the
+        # reading before it, and a third question about one reading found it gone. Only a newer reading ages one.
+        ends = [*starts[1:], len(self.conversation)]
+        read = [start for start, end in zip(starts, ends)
+                if any(m["role"] == "tool" and TURN_FACTS in str(m.get("content") or "")
+                       for m in self.conversation[start:end])]
+        old = self.conversation[:read[-1] if read else 0]
         if self._compact([m for m in old if str(m.get("content") or "").rfind(TURN_FACTS) > OLD_BODY_CHARS]):
             self._prune_refs()
 
