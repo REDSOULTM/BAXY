@@ -109,7 +109,7 @@ public sealed class ClipboardPasteSentToTests
         var fields = new FakeViewedFields("{}")
         {
             CaretAnswer = () =>
-                $$"""{"ok":true,"processId":4242,"text":"{{paragraph}}","unit":"paragraph","bounded":false,"selectionLength":0}""",
+                $$"""{"ok":true,"processId":{{Environment.ProcessId}},"text":"{{paragraph}}","unit":"paragraph","bounded":false,"selectionLength":0}""",
         };
         using var scripts = new KeyScript();
 
@@ -150,6 +150,39 @@ public sealed class ClipboardPasteSentToTests
         });
     }
 
+    // Review of R6-NB-3: a read that proves nothing is never «not there». The caret's re-read that does not answer, an
+    // edit control whose text no longer answers, and a mark of another window than the one the script pasted into
+    // (the person changed the front in between) all say not_readable, never paste_not_read_back.
+    [TestCase("caret")]
+    [TestCase("edit")]
+    [TestCase("front")]
+    public async Task AReadThatProvesNothingIsNotReadableNeverNotThere(string unread)
+    {
+        bool pasted = false;
+        var fields = new FakeViewedFields("{}")
+        {
+            CaretAnswer = () => pasted
+                ? """{"ok":false}"""
+                : $$"""{"ok":true,"processId":{{Environment.ProcessId}},"text":"Hola","unit":"paragraph","bounded":false,"selectionLength":0}""",
+        };
+        FakeFieldMessages messages = unread == "caret"
+            ? new FakeFieldMessages()
+            : new FakeFieldMessages().WithField(Edit, "RichEditD2DPT", "lista: ");
+        using var scripts = new KeyScript();
+        Action paste = unread == "edit" ? () => messages.Content.Remove(Edit) : () => pasted = true;
+
+        ExternalCapabilityReceipt receipt = await scripts.Adapter(
+                paste, messages, Copied, unread == "caret" ? fields : null,
+                scriptFront: unread == "front" ? Environment.ProcessId + 1 : null)
+            .InvokeAsync("clipboard.paste", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetString(), Is.EqualTo("not_readable"));
+        });
+    }
+
     private static JsonElement Json(string value) => JsonDocument.Parse(value).RootElement.Clone();
 
     // The key script on disk (the adapter checks it exists) and its answer, with the paste's effect on the fakes.
@@ -158,20 +191,22 @@ public sealed class ClipboardPasteSentToTests
         private readonly string _directory = Directory.CreateTempSubdirectory("baxy-paste-").FullName;
 
         internal WindowsDesktopInteractionAdapter Adapter(
-            Action paste, FakeFieldMessages messages, string? clipboard, FakeViewedFields? fields = null)
+            Action paste, FakeFieldMessages messages, string? clipboard, FakeViewedFields? fields = null,
+            int? scriptFront = null)
         {
             string script = Path.Combine(_directory, "DesktopKeyPress.ps1");
             File.WriteAllText(script, "# test fixture");
             return new WindowsDesktopInteractionAdapter(
-                new PastingRunner(paste), script, script, script, script,
-                new FakeDesktopKeyboard { Front = new DesktopForeground(4660, 4242, "Sin título: Bloc de notas") },
+                new PastingRunner(paste, scriptFront ?? Environment.ProcessId), script, script, script, script,
+                new FakeDesktopKeyboard { Front = new DesktopForeground(4660, Environment.ProcessId, "Sin título: Bloc de notas") },
                 fields, messages, () => clipboard);
         }
 
         public void Dispose() => Directory.Delete(_directory, recursive: true);
     }
 
-    private sealed class PastingRunner(Action paste) : IExternalProcessRunner
+    // The script's answer names the process it found in front before its keys (scriptFront).
+    private sealed class PastingRunner(Action paste, int scriptFront) : IExternalProcessRunner
     {
         public ValueTask<ExternalProcessResult> RunAsync(
             string executable, IReadOnlyList<string> arguments, TimeSpan timeout, CancellationToken cancellationToken)
@@ -179,7 +214,7 @@ public sealed class ClipboardPasteSentToTests
             Assert.That(arguments, Does.Contain("-PasteClipboard"));
             paste();
             return ValueTask.FromResult(new ExternalProcessResult(0,
-                $$"""{"version":1,"ok":true,"effectObserved":true,"action":"paste","foregroundTitleBefore":"Sin título: Bloc de notas","foregroundProcessIdBefore":{{Environment.ProcessId}},"error":null}""",
+                $$"""{"version":1,"ok":true,"effectObserved":true,"action":"paste","foregroundTitleBefore":"Sin título: Bloc de notas","foregroundProcessIdBefore":{{scriptFront}},"error":null}""",
                 string.Empty));
         }
     }

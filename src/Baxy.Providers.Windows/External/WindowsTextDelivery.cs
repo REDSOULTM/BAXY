@@ -407,6 +407,14 @@ internal sealed class WindowsTextDelivery
         return true;
     }
 
+    /// <summary>R6-NB-3: whether the marked control's text can be read whole now (its length answers, within a read, and
+    /// its text answers): a read-back that failed over a control that cannot be read proves nothing.</summary>
+    internal bool Readable(TypedMark mark)
+    {
+        int length = _messages.TextLength(mark.Field);
+        return length >= 0 && length <= ReadableText && _messages.Text(mark.Field, length) is not null;
+    }
+
     /// <summary>
     /// Práctica V5E023 («agrega al final»: the text went in before «Hola equipo…», and «agregué al final» was said): where
     /// a text read back in an edit control landed in the text the control held before, said as a fact the reply can be

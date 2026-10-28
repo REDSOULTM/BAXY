@@ -304,14 +304,15 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return ExternalJson.FailureBeforeEffect(operation, refusal);
         }
 
-        // R6-NB-3 (CU 36 C18, a paste into a new Notepad told «I did not look again»): the clipboard's text is marked
-        // where the keys go, before them, as a typed text is (SendInBurstAsync), and read back after them.
-        PasteMark? pasteMark = operation == "clipboard.paste"
-            ? await MarkPasteAsync(cancellationToken).ConfigureAwait(false)
-            : null;
         var effectBoundary = new ExternalEffectBoundary();
         try
         {
+            // R6-NB-3 (CU 36 C18, a paste into a new Notepad told «I did not look again»): the clipboard's text is marked
+            // where the keys go, before them, as a typed text is (SendInBurstAsync), and read back after them; inside
+            // the burst's restore.
+            PasteMark? pasteMark = operation == "clipboard.paste"
+                ? await MarkPasteAsync(cancellationToken).ConfigureAwait(false)
+                : null;
             if (operation != "input.keyboard.status")
             {
                 effectBoundary.Cross(cancellationToken);
@@ -355,7 +356,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // not an effect seen; a paste says besides whether its text was read back where it went (readBack).
             if (operation == "clipboard.paste")
             {
-                PasteRead read = await PasteReadsBackAsync(pasteMark, cancellationToken).ConfigureAwait(false);
+                PasteRead read = await PasteReadsBackAsync(pasteMark, root, cancellationToken).ConfigureAwait(false);
                 JsonElement pasted = AsDelivered(root, PastedInto(root), read);
                 return read.Found == false
                     ? new ExternalCapabilityReceipt(operation, effect, false, pasted, PasteNotReadBack)
@@ -913,9 +914,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text, out landed);
         // FT/proveedores goal (E2): the paragraph at the caret read again by UI Automation; a read that fails leaves
         // the text not read back, as before.
-        (bool caretReadBack, bool caretBounded) = caretBefore is { } caret
+        (bool caretReadBack, bool caretBounded, _) = caretBefore is { } caret
             ? await CaretReadsBackAsync(before, caret, text, cancellationToken).ConfigureAwait(false)
-            : (false, false);
+            : (false, false, false);
         bool readBack = editReadBack || caretReadBack;
         // A named window's text is held to its read-back only where one could be taken (a mark or a caret read before
         // the first key); with no window named (F004) or for the opened application, the read-back is the proof.
@@ -1110,14 +1111,16 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     }
 
     // FT/proveedores goal (E2): whether the paragraph at the caret, read again, holds the typed text
-    // (WindowsTextDelivery.CaretHolds), and whether a read was cut at its bound (the receipt says so).
-    private async ValueTask<(bool ReadBack, bool Bounded)> CaretReadsBackAsync(
+    // (WindowsTextDelivery.CaretHolds), and whether a read was cut at its bound (the receipt says so). R6-NB-3: and
+    // whether a read did not answer or was not made (cancelled), which proves nothing either way (Unanswered).
+    private async ValueTask<(bool ReadBack, bool Bounded, bool Unanswered)> CaretReadsBackAsync(
         DesktopForeground front, CaretText before, string text, CancellationToken cancellationToken)
     {
         // A read cut before, or a selection the text replaced: no read after can prove it.
         if (before.Bounded || before.SelectionLength != 0)
-            return (false, before.Bounded);
+            return (false, before.Bounded, false);
         bool bounded = false;
+        bool unanswered = false;
         for (int read = 0; read < CaretRereads && !bounded; read++)
         {
             if (read > 0)
@@ -1128,18 +1131,23 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 }
                 catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
+                    unanswered = true;
                     break;
                 }
             }
 
             if (await CaretTextAsync(front, cancellationToken).ConfigureAwait(false) is not { } after)
+            {
+                unanswered = true;
                 break;
+            }
+
             bounded |= after.Bounded;
             if (WindowsTextDelivery.CaretHolds(before, after, text))
-                return (true, bounded);
+                return (true, bounded, false);
         }
 
-        return (false, bounded);
+        return (false, bounded, unanswered);
     }
 
     /// <summary>
@@ -1473,7 +1481,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
     // R6-NB-3: the clipboard's text and where it was marked before a clipboard.paste: the focused edit control of the
     // window in front (Edit) or, in a document that is no edit control, the paragraph at its caret (Caret).
-    private readonly record struct PasteMark(string Text, DesktopForeground Front, TypedMark? Edit, CaretText? Caret);
+    // ClipboardSequence: the clipboard's sequence when its text was read, to tell it is the one the keys pasted.
+    private readonly record struct PasteMark(
+        string Text, DesktopForeground Front, TypedMark? Edit, CaretText? Caret, uint ClipboardSequence);
 
     /// <summary>R6-NB-3: whether a paste's text was read back where it went (<c>Found</c> null: nothing there could be
     /// read), and where it landed in what that control held.</summary>
@@ -1487,6 +1497,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// </summary>
     private async ValueTask<PasteMark?> MarkPasteAsync(CancellationToken cancellationToken)
     {
+        uint sequence = _keyboard.ClipboardSequence();
         string? text = _clipboardText?.Invoke();
         if (string.IsNullOrEmpty(text) || text.Any(char.IsControl) || text.Length > MaximumTypedText)
             return null;
@@ -1498,22 +1509,26 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             && await CaretTextAsync(front, cancellationToken).ConfigureAwait(false) is { Bounded: false, SelectionLength: 0 } read
                 ? read
                 : null;
-        return edit is null && caret is null ? null : new PasteMark(text, front, edit, caret);
+        return edit is null && caret is null ? null : new PasteMark(text, front, edit, caret, sequence);
     }
 
-    // R6-NB-3: the marked control read again, a settle apart, as a typed text's caret is (CaretRereads); a caret read
-    // cut at its bound proves nothing either way (not readable).
-    private async ValueTask<PasteRead> PasteReadsBackAsync(PasteMark? mark, CancellationToken cancellationToken)
+    // R6-NB-3: the marked control read again, a settle apart, as a typed text's caret is (CaretRereads). Only a control
+    // read whole and without the text says false: a read that did not answer, was cut at its bound or was cancelled
+    // proves nothing (not readable; a cancellation goes up as the act's own), and neither does a mark of another window
+    // or of another clipboard than the ones the script pasted (its foregroundProcessIdBefore, clipboardSequenceBefore).
+    private async ValueTask<PasteRead> PasteReadsBackAsync(
+        PasteMark? mark, JsonElement pasted, CancellationToken cancellationToken)
     {
-        if (mark is not { } marked)
+        if (mark is not { } marked || !PastedFrom(marked, pasted))
             return new PasteRead(null, null);
         if (marked.Edit is not { } edit)
         {
             if (marked.Caret is not { } caret)
                 return new PasteRead(null, null);
-            (bool found, bool bounded) = await CaretReadsBackAsync(marked.Front, caret, marked.Text, cancellationToken)
-                .ConfigureAwait(false);
-            return new PasteRead(found || !bounded ? found : null, null);
+            (bool found, bool bounded, bool unanswered) = await CaretReadsBackAsync(
+                marked.Front, caret, marked.Text, cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            return new PasteRead(found ? true : bounded || unanswered ? (bool?)null : false, null);
         }
 
         for (int read = 0; read < CaretRereads; read++)
@@ -1534,8 +1549,20 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 return new PasteRead(true, landed);
         }
 
-        return new PasteRead(false, null);
+        cancellationToken.ThrowIfCancellationRequested();
+        return new PasteRead(_delivery.Readable(edit) ? false : null, null);
     }
+
+    // The script's own reads before its keys: the process in front and the clipboard's sequence (a sequence it did not
+    // read, or one this side could not, is not compared).
+    private static bool PastedFrom(PasteMark mark, JsonElement pasted) =>
+        pasted.TryGetProperty("foregroundProcessIdBefore", out JsonElement process)
+        && process.ValueKind == JsonValueKind.Number
+        && process.TryGetInt32(out int processId) && processId == mark.Front.ProcessId
+        && (mark.ClipboardSequence == 0
+            || !pasted.TryGetProperty("clipboardSequenceBefore", out JsonElement sequence)
+            || sequence.ValueKind != JsonValueKind.Number
+            || (sequence.TryGetUInt32(out uint read) && read == mark.ClipboardSequence));
 
     private static bool Flag(JsonElement root, string name, bool absent) =>
         root.TryGetProperty(name, out JsonElement value) && value.ValueKind is JsonValueKind.True or JsonValueKind.False
