@@ -543,3 +543,13 @@ def test_a_message_tool_says_the_channel_is_the_persons_and_words_for_someone_wi
     assert "say them yourself in your reply" in tool["description"]
     channel = tool["parameters"]["properties"]["channel"]["description"]
     assert "never one they did not name" in channel and "ask them which" in channel
+
+
+def test_a_relative_volume_change_says_its_amount_when_no_number_was_said(tmp_path: Path) -> None:
+    # P2.38 (noche 28-10): «sube el volumen» sin cantidad quedaba entre actuar y preguntar «¿Cuánto le subo?» (audio 0,21
+    # a 0,57 en la primera decisión según el prompt); amount es obligatorio y su descripción sólo hablaba de un número dicho.
+    mind, _ = _mind(tmp_path, [])
+    schema = {"type": "object", "properties": {"amount": {"type": "integer"}, "direction": {"type": "string"}}}
+    mind.configure({"capabilities": [{"name": "audio.volume.adjust", "description": "Volume.", "argumentsSchema": schema}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "audio_volume_adjust")["function"]
+    assert tool["parameters"]["properties"]["amount"]["description"].endswith("or 10 when they said no number.")
