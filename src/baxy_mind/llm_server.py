@@ -388,7 +388,8 @@ class LlmServer:
         except (OSError, ValueError, http.client.HTTPException):
             saved = False
         keep = {state.name, kept.name} if saved else set()
-        earlier = [other for other in self.slot_dir.glob(f"{PREFIX}*.json") if other.name != kept.name]
+        earlier = [other for other in self.slot_dir.glob(f"{PREFIX}*.json")
+                   if other.name != kept.name and other.with_suffix(".slot").is_file()]
         if earlier:
             last = max(earlier, key=lambda other: (_stamp(str(other)) or [0, 0])[1])
             keep |= {last.name, last.with_suffix(".slot").name}
