@@ -21,9 +21,9 @@ public sealed class BrightnessStepFloorTests
     [TestCase(50, -10, 40)]
     [TestCase(5, 10, 15)]
     [TestCase(95, 10, 100)]
-    public void AStepDownNeverLeavesTheScreenUnderTen(int before, int delta, int after)
+    public async Task AStepDownNeverLeavesTheScreenUnderTen(int before, int delta, int after)
     {
-        using JsonDocument result = JsonDocument.Parse(RunAdjust(before, delta));
+        using JsonDocument result = JsonDocument.Parse(await RunAdjustAsync(before, delta));
 
         Assert.Multiple(() =>
         {
@@ -33,7 +33,7 @@ public sealed class BrightnessStepFloorTests
         });
     }
 
-    private static string RunAdjust(int before, int delta)
+    private static async Task<string> RunAdjustAsync(int before, int delta)
     {
         // Functions are found before cmdlets: the script's WMI reads and set go to this one-monitor fake.
         string script = "$global:level=" + before + """
@@ -55,11 +55,11 @@ public sealed class BrightnessStepFloorTests
         }
 
         start.ArgumentList.Add(Convert.ToBase64String(Encoding.Unicode.GetBytes(script)));
-        using Process process = Process.Start(start)!;
+        using Process process = Process.Start(start) ?? throw new InvalidOperationException("powershell did not start");
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = await process.StandardOutput.ReadToEndAsync();
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
-        Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
+        Assert.That(process.ExitCode, Is.EqualTo(0), await error);
         return output.Trim().Split('\n')[^1];
     }
 }
