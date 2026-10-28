@@ -65,8 +65,10 @@ def test_the_document_tool_says_it_does_not_open_word_and_how_to_show_the_file(t
         for name in ("office.document.create", "input.text.type", "app.open")]})
     tools = {t["function"]["name"]: t["function"]["description"] for t in mind.tools}
     assert "written without opening Word" in tools["office_document_create"]
-    assert "file_open, folder documents and name «BAXY\» followed by the result's name" in tools[
+    assert "file_open, folder documents and name «BAXY\\» followed by the result's name" in tools[
         "office_document_create"]
     assert "a text to compose for Word (a story, a letter, an essay: use office_document_create" in tools[
         "input_text_type"]
+    assert "open it first (app_open) and write the stated text there (a text you compose for Word goes to " \
+           "office_document_create)" in tools["input_text_type"]
     assert "opening Word to write a text you compose (use office_document_create" in tools["app_open"]
