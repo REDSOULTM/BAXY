@@ -123,14 +123,14 @@ public sealed class ComputerUsePressedNameTests
         });
     }
 
-    // Review of V, H2 and H3: what receives the press. Its whole name (the view's is cut at 80 characters, and a long
+    // Review of V, H2 and H3: what receives the press. Its whole name (the view's is cut at 160 characters, and a long
     // voice channel lost «Canal de voz» in the cut), and, when it does not press itself (the Text inside a link, whose
     // press lands on the link), its ancestors up to the first that does. Contracases: a text channel, a button that
     // presses itself inside a group that names a voice channel, and a label that is the whole name.
     [Test]
     public void WhatReceivesThePressIsJudgedByItsWholeName()
     {
-        const string Long = "Sala de música y charla de los viernes por la noche, Canal de voz, Los Amigos de Siempre";
+        const string Long = "Sala de música y charla de los viernes por la noche para hablar de todo lo que pasó en la semana y de lo que viene en la próxima, Canal de voz, Los Amigos de Siempre";
         JsonElement answer = RunWorker(
             """
             Add-Type -AssemblyName UIAutomationClient
