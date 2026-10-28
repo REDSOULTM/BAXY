@@ -256,7 +256,7 @@ def test_the_mind_gives_the_decision_model_its_requests_budget(tmp_path) -> None
     from baxy_mind.system_one import SystemOne
     laya = SystemOne("laya.gguf", "llama-server.exe")
     server = type("Server", (), {"deadline": None})()
-    Mind(server, tmp_path / "turns.jsonl", laya)  # type: ignore[arg-type]
+    Mind(server, tmp_path / "turns.jsonl", laya)
     assert laya.until() is None
     server.deadline = 123.0
     assert laya.until() == 123.0
