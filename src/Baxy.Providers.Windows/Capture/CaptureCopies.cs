@@ -6,9 +6,10 @@ using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.Capture;
 
-/// <summary>A verified copy of a private capture saved where the person asked: the known folder's key and the file's
-/// name in it (never its full path), and the SHA-256 of the PNG read back from disk.</summary>
-public sealed record SavedCaptureCopy(string Folder, string FileName, string Sha256);
+/// <summary>A verified copy of a private capture saved where the person asked: the known folder's key, the subfolder of
+/// it the copy went into (empty for the folder itself) and the file's name there (never its full path), and the SHA-256
+/// of the PNG read back from disk.</summary>
+public sealed record SavedCaptureCopy(string Folder, string Subdirectory, string FileName, string Sha256);
 
 /// <summary>
 /// Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a private capture copied as a PNG
@@ -32,6 +33,9 @@ internal static partial class CaptureCopies
         string? target = TargetDirectory(folder, knownFolder);
         if (target is null)
             throw new ScreenshotUnavailableException("capture_folder_unavailable", "The known folder is not available.");
+        // P2.44 causa 11 (V11D169): where inside the known folder it went (pictures: its Screenshots folder).
+        string subdirectory = knownFolder(folder) is { } root ? Path.GetRelativePath(Path.GetFullPath(root), target) : ".";
+        if (subdirectory == ".") subdirectory = string.Empty;
         byte[] bmp = File.ReadAllBytes(Path.Combine(privateDirectory, captureId + ".bmp"));
         byte[] png = EncodePng(bmp);
         string hash = Convert.ToHexStringLower(SHA256.HashData(png));
@@ -77,7 +81,7 @@ internal static partial class CaptureCopies
                 throw;
             }
 
-            return new SavedCaptureCopy(folder, name, hash);
+            return new SavedCaptureCopy(folder, subdirectory, name, hash);
         }
 
         throw new IOException("No free name for the saved capture.");

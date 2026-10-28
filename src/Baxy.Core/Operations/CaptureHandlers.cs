@@ -74,6 +74,7 @@ internal sealed class ScreenshotCaptureHandler(
             if (saved is not null)
             {
                 writer.WriteString("savedFolder", saved.Folder);
+                if (saved.Subdirectory.Length > 0) writer.WriteString("savedSubdirectory", saved.Subdirectory);
                 writer.WriteString("fileName", saved.FileName);
                 writer.WriteString("savedSha256", saved.Sha256);
             }
