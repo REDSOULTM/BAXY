@@ -117,9 +117,6 @@ public static class BaxyKeyInput {
     [DllImport("user32.dll")]
     public static extern bool IsWindowVisible(IntPtr window);
 
-    [DllImport("user32.dll")]
-    public static extern bool SetForegroundWindow(IntPtr window);
-
     // BAXY's input mark (BaxyInputMark.cs): the pause detector and the live harness tell BAXY's input by it.
     private static INPUT[] Marked(INPUT[] inputs) {
         for (int index = 0; index < inputs.Length; index++) {
