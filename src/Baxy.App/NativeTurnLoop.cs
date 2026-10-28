@@ -420,12 +420,15 @@ internal sealed class NativeTurnLoop
         {
             switch (step)
             {
-                case null:
+                // P0.12: the mind's error reply (its code traced by the client, mind.request.error) is a decision that did
+                // not come, as one never answered.
+                case null or { Kind: MindStep.Error }:
                     // Ronda final 24 (regla 3): a beat nobody asked for leaves no failed turn on the person's screen;
                     // its unreadable decision is only traced.
                     if (_beat)
                     {
-                        ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "beat.decision_unavailable", "");
+                        ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "beat.decision_unavailable",
+                            step?.Text ?? "");
                         return;
                     }
 

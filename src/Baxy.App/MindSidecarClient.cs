@@ -67,10 +67,13 @@ internal sealed record MindLoss(string Cause, string? Request = null, int? ExitC
 /// The model's move in the native loop. <see cref="Kind"/>: <c>action</c> (one tool call: <see cref="Operation"/> with
 /// its <see cref="Arguments"/>, which the kernel authorizes and the provider executes and verifies), <c>reply</c> (its
 /// answer to the person), <c>question</c> (one question it asks the person), <c>silence</c> (a heartbeat that found
-/// nothing needing attention). The App runs what the model chose and publishes what it wrote; it never rewrites either.
+/// nothing needing attention), <see cref="Error"/> (the mind answered the request with an error: <see cref="Text"/> is its
+/// code, or <c>invalid</c> when it is no stable label). The App runs what the model chose and publishes what it wrote; it
+/// never rewrites either.
 /// </summary>
 internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text)
 {
+    internal const string Error = "error";
 
     /// <summary>The operation the mind uses for the person's answer to a pending confirmation.</summary>
     internal const string ConfirmationAnswer = "confirmation.answer";
@@ -132,6 +135,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     internal const string DisabledEnvironmentVariable = "BAXY_MIND_DISABLED";
     internal const string PythonEnvironmentVariable = "BAXY_MIND_PYTHON";
     internal const string PythonPathEnvironmentVariable = "BAXY_MIND_PYTHONPATH";
+    // Where the mind writes its trace (src/baxy_mind/__main__.py, trace_dir): the App keeps the mind's stderr beside it.
+    internal const string TraceDirectoryEnvironmentVariable = "BAXY_RENEW_TRACE_DIR";
+    internal const string StandardErrorLogName = "mind-stderr.log";
     // One model decision (prefix cached) takes about a second; the budget covers a cold cache after a restart.
     internal static readonly TimeSpan TurnRequestTimeout = TimeSpan.FromSeconds(30);
     // The mind waits up to 60 s for its ear to load before it answers a voice.start (voice.py Voice.start). With the
@@ -234,7 +240,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 Path.GetDirectoryName(python)!,
                 arguments: ["-X", "utf8", "-m", "baxy_mind"],
                 environment: environment,
-                allowBreakaway: false));
+                allowBreakaway: false,
+                standardErrorLog: Path.Combine(TraceDirectory(), StandardErrorLogName)));
             _sidecar = sidecar;
             _pumpCancellation = new CancellationTokenSource();
             var helloCompletion = new TaskCompletionSource<JsonObject>(
@@ -494,8 +501,17 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "trace.forget" },
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
-        return reply is not null && Str(reply["type"]) == "trace.forgotten" && Flag(reply["cleared"]) == true;
+        bool cleared = reply is not null && Str(reply["type"]) == "trace.forgotten" && Flag(reply["cleared"]) == true;
+        // P0.12: the mind's stderr log names the request that failed and its error, as the trace does: it goes with it.
+        return (_sidecar?.ForgetStandardError() ?? true) && cleared;
     }
+
+    /// <summary>The mind's trace folder, as the mind resolves it (src/baxy_mind/__main__.py, trace_dir).</summary>
+    internal static string TraceDirectory() =>
+        Environment.GetEnvironmentVariable(TraceDirectoryEnvironmentVariable) is { } given
+            && !string.IsNullOrWhiteSpace(given)
+                ? given.Trim()
+                : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY", "renew");
 
     /// <summary>Push-to-talk let go: the direct request being heard ends now.</summary>
     public async Task<bool> VoiceReleaseAsync(TimeSpan timeout, CancellationToken cancellationToken)
@@ -524,11 +540,17 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return null;
         }
 
-        return ParseStep(await RequestAsync(request, TurnRequestTimeout, cancellationToken).ConfigureAwait(false));
+        return ParseStep(await RequestAsync(request, TurnRequestTimeout, cancellationToken,
+            returnProtocolError: true).ConfigureAwait(false));
     }
 
     internal static MindStep? ParseStep(JsonObject? reply)
     {
+        if (reply is not null && Str(reply["type"]) == "error")
+        {
+            return new MindStep(MindStep.Error, null, null, ShellTrace.SanitizeLabel(Str(reply["code"])));
+        }
+
         if (reply is null || Str(reply["type"]) != "turn.result")
         {
             return null;
@@ -751,9 +773,15 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(
                 cancellationToken, timeoutSource.Token);
             JsonObject reply = await completion.Task.WaitAsync(linked.Token).ConfigureAwait(false);
-            return Str(reply["type"]) == "error" && !returnProtocolError
-                ? null
-                : reply;
+            if (Str(reply["type"]) != "error")
+            {
+                return reply;
+            }
+
+            // P0.12: an error the mind answered left no trace; its code is a label (anything else reads «invalid»).
+            ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "mind.request.error",
+                $"{ShellTrace.SanitizeLabel(Str(reply["code"]))}.{requestType}.id.{requestId}");
+            return returnProtocolError ? reply : null;
         }
         catch (Exception exception) when (exception is not OperationCanceledException
             || !cancellationToken.IsCancellationRequested)

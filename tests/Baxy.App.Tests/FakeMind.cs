@@ -32,6 +32,9 @@ internal sealed class FakeMind : IDisposable
         SetVariable(MindSidecarClient.PythonPathEnvironmentVariable, Folder);
         SetVariable(MindSidecarClient.DisabledEnvironmentVariable, null);
         SetVariable("BAXY_DATA_DIR", DataRoot);
+        // The mind's stderr log goes beside its trace (MindSidecarClient.TraceDirectory): this test's folder, never the
+        // owner's %LOCALAPPDATA%\BAXY\renew.
+        SetVariable(MindSidecarClient.TraceDirectoryEnvironmentVariable, Folder);
         // What the App's first start leaves in its environment (MindRuntimeDiscovery.ApplyVerified fills the model's
         // variables), so every start a test runs finds the environment it verified, as each one after the first does.
         foreach (string name in (string[])["BAXY_MIND_LLM_GGUF", "BAXY_MIND_LLAMA_SERVER", "BAXY_MIND_NGL"])
@@ -45,6 +48,9 @@ internal sealed class FakeMind : IDisposable
     internal string Folder { get; }
 
     internal string DataRoot { get; }
+
+    /// <summary>Where the App keeps what the fake wrote to its stderr.</summary>
+    internal string StandardErrorLog => Path.Combine(Folder, MindSidecarClient.StandardErrorLogName);
 
     internal static MindStartupCatalog EmptyCatalog => new([], null, null);
 

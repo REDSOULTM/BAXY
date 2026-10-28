@@ -19,7 +19,8 @@ internal sealed class LocalJsonlSidecarDefinition
         IReadOnlyDictionary<string, string>? environment = null,
         bool drainStandardError = true,
         bool allowBreakaway = true,
-        bool childrenOutside = false)
+        bool childrenOutside = false,
+        string? standardErrorLog = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(executablePath);
@@ -45,6 +46,7 @@ internal sealed class LocalJsonlSidecarDefinition
         DrainStandardError = drainStandardError;
         AllowBreakaway = allowBreakaway;
         ChildrenOutside = allowBreakaway && childrenOutside;
+        StandardErrorLog = standardErrorLog;
     }
 
     internal string Name { get; }
@@ -74,6 +76,132 @@ internal sealed class LocalJsonlSidecarDefinition
     /// the Core's pipe closes.
     /// </summary>
     internal bool ChildrenOutside { get; }
+
+    /// <summary>
+    /// P0.12 (noche 2026-10-27): where the drained stderr is kept (<see cref="BoundedStandardErrorLog"/>), or null to drop
+    /// it. The mind's names the request that failed and why; dropped, a failed turn left no cause anywhere.
+    /// </summary>
+    internal string? StandardErrorLog { get; }
+}
+
+/// <summary>
+/// A sidecar's stderr on disk with a cap per run: the previous run's file is kept once as <c>.1</c> (a restart after a
+/// failure would overwrite its cause), and past the cap nothing more is written, never half a UTF-8 character. A disk
+/// that fails ends the log, never the drain: a full stderr pipe would block the sidecar.
+/// </summary>
+internal sealed class BoundedStandardErrorLog : IDisposable
+{
+    internal const int DefaultCapBytes = 256 * 1024;
+    private readonly object _gate = new();
+    private readonly string _path;
+    private readonly int _capBytes;
+    private FileStream? _file;
+    private int _written;
+
+    private BoundedStandardErrorLog(string path, FileStream file, int capBytes)
+    {
+        _path = path;
+        _file = file;
+        _capBytes = capBytes;
+    }
+
+    /// <summary>Starts the run's log, keeping the previous one as <c>.1</c>; null when the folder cannot be written.</summary>
+    internal static BoundedStandardErrorLog? Open(string path, int capBytes = DefaultCapBytes)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capBytes);
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
+            if (File.Exists(path))
+            {
+                File.Move(path, path + ".1", overwrite: true);
+            }
+
+            var file = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
+            return new BoundedStandardErrorLog(path, file, capBytes);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or ArgumentException or NotSupportedException)
+        {
+            return null;
+        }
+    }
+
+    internal void Write(ReadOnlySpan<byte> bytes)
+    {
+        lock (_gate)
+        {
+            if (_file is null || _written >= _capBytes)
+            {
+                return;
+            }
+
+            int take = Math.Min(bytes.Length, _capBytes - _written);
+            if (take < bytes.Length)
+            {
+                // The cap falls inside a character: the log stops before that character's first byte.
+                while (take > 0 && (bytes[take] & 0xC0) == 0x80)
+                {
+                    take--;
+                }
+
+                _written = _capBytes;
+            }
+            else
+            {
+                _written += take;
+            }
+
+            try
+            {
+                _file.Write(bytes[..take]);
+                _file.Flush();
+            }
+            catch (Exception exception) when (exception is IOException or ObjectDisposedException)
+            {
+                _file.Dispose();
+                _file = null;
+            }
+        }
+    }
+
+    /// <summary>Empties this run's log and deletes the previous run's; whether neither keeps anything.</summary>
+    internal bool Forget()
+    {
+        lock (_gate)
+        {
+            try
+            {
+                if (_file is not null)
+                {
+                    _file.SetLength(0);
+                    _file.Position = 0;
+                }
+                else
+                {
+                    File.Delete(_path);
+                }
+
+                _written = 0;
+                File.Delete(_path + ".1");
+                return true;
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        lock (_gate)
+        {
+            _file?.Dispose();
+            _file = null;
+        }
+    }
 }
 
 internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
@@ -82,6 +210,7 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
     private readonly Process _process;
     private readonly CancellationTokenSource _standardErrorPumpCancellation = new();
     private readonly Task _standardErrorPump;
+    private readonly BoundedStandardErrorLog? _standardErrorLog;
     private SafeFileHandle? _job;
     private int _stopped;
 
@@ -93,9 +222,13 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
         Definition = definition;
         _process = process;
         _job = job;
+        _standardErrorLog = definition.DrainStandardError && definition.StandardErrorLog is { } log
+            ? BoundedStandardErrorLog.Open(log)
+            : null;
         _standardErrorPump = definition.DrainStandardError
             ? PumpStandardErrorAsync(
                 process.StandardError.BaseStream,
+                _standardErrorLog,
                 _standardErrorPumpCancellation.Token)
             : Task.CompletedTask;
     }
@@ -103,6 +236,9 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
     internal LocalJsonlSidecarDefinition Definition { get; }
 
     internal Process Process => _process;
+
+    /// <summary>Forgets what the stderr log keeps (<see cref="BoundedStandardErrorLog.Forget"/>); true when none is kept.</summary>
+    internal bool ForgetStandardError() => _standardErrorLog?.Forget() ?? true;
 
     internal ValueTask WriteUtf8LineAsync(
         ReadOnlyMemory<byte> utf8Line,
@@ -237,6 +373,7 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
             _standardErrorPumpCancellation.Cancel();
             await ObserveStandardErrorPumpAsync().ConfigureAwait(false);
             _standardErrorPumpCancellation.Dispose();
+            _standardErrorLog?.Dispose();
         }
     }
 
@@ -251,6 +388,7 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
 
     private static async Task PumpStandardErrorAsync(
         Stream standardError,
+        BoundedStandardErrorLog? log,
         CancellationToken cancellationToken)
     {
         byte[] buffer = ArrayPool<byte>.Shared.Rent(StandardErrorBufferBytes);
@@ -266,6 +404,7 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
                     return;
                 }
 
+                log?.Write(buffer.AsSpan(0, read));
                 CryptographicOperations.ZeroMemory(buffer.AsSpan(0, read));
             }
         }

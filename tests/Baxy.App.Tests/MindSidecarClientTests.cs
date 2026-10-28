@@ -137,6 +137,116 @@ public sealed class MindSidecarClientTests
         });
     }
 
+    // P0.12 (noche 2026-10-27): a turn request the mind answered with an error came back as null, the same as one it
+    // never answered; its code reaches the turn's close now.
+    [Test]
+    public async Task ATurnRequestTheMindAnswersWithAnErrorComesBackWithItsCode()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject { ["fail"] = new JsonArray("turn.decide") });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+
+        MindStep? step = await mind.DecideAsync("hola", null, CancellationToken.None);
+
+        Assert.That((step?.Kind, step?.Text), Is.EqualTo(((string?)MindStep.Error, (string?)"request_failed")));
+        Assert.That(mind.IsReady, Is.True, "an answered error is no dead mind");
+    }
+
+    [TestCase("Request Failed")]
+    [TestCase("código")]
+    [TestCase(null)]
+    public void AnErrorCodeThatIsNoStableLabelIsNotCopied(string? code)
+    {
+        var reply = new JsonObject { ["type"] = "error" };
+        if (code is not null)
+        {
+            reply["code"] = code;
+        }
+
+        Assert.That(MindSidecarClient.ParseStep(reply)?.Text, Is.EqualTo("invalid"));
+        Assert.That(MindSidecarClient.ParseStep(new JsonObject { ["type"] = "error", ["code"] = new string('a', 65) })?.Text,
+            Is.EqualTo("invalid"));
+    }
+
+    // P0.12: the mind's stderr (baxy_mind_renew_failure:<request>:<error>) was read and dropped; the App keeps it beside
+    // the mind's trace, the previous run's once, and forgets both with the trace.
+    [Test]
+    public async Task TheMindsStderrIsKeptBesideItsTraceAndForgottenWithIt()
+    {
+        using var fake = new FakeMind();
+        File.WriteAllText(fake.StandardErrorLog, "previous run\n");
+        fake.Script(new JsonObject
+        {
+            ["stderr"] = new JsonObject { ["turn.decide"] = new JsonArray("baxy_mind_renew_failure:turn.decide:x") },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        Assert.That(File.ReadAllText(fake.StandardErrorLog + ".1"), Is.EqualTo("previous run\n"));
+
+        _ = await mind.DecideAsync("hola", null, CancellationToken.None);
+        Assert.That(await Eventually(() => Shared(fake.StandardErrorLog).Contains(
+            "baxy_mind_renew_failure:turn.decide:x", StringComparison.Ordinal)), Is.True);
+
+        Assert.That(await mind.TraceForgetAsync(CancellationToken.None), Is.True);
+        Assert.That(Shared(fake.StandardErrorLog), Is.Empty);
+        Assert.That(File.Exists(fake.StandardErrorLog + ".1"), Is.False);
+    }
+
+    [Test]
+    public void TheStderrLogStopsAtItsCapWithoutCuttingACharacter()
+    {
+        string folder = Path.Combine(Path.GetTempPath(), "baxy-app-tests", Guid.NewGuid().ToString("N"));
+        string path = Path.Combine(folder, "stderr.log");
+        try
+        {
+            using (BoundedStandardErrorLog log = BoundedStandardErrorLog.Open(path, capBytes: 8)!)
+            {
+                log.Write("abcdef"u8);
+                log.Write("ñññ"u8); // 2 bytes each: one fits whole, the next would cross the cap
+                log.Write("z"u8);
+            }
+
+            Assert.That(File.ReadAllText(path, new System.Text.UTF8Encoding(false, throwOnInvalidBytes: true)),
+                Is.EqualTo("abcdefñ"));
+
+            // Forgotten, the log starts again from its first byte.
+            using (BoundedStandardErrorLog log = BoundedStandardErrorLog.Open(path, capBytes: 8)!)
+            {
+                log.Write("abc"u8);
+                Assert.That(log.Forget(), Is.True);
+                log.Write("q"u8);
+            }
+
+            Assert.That((File.ReadAllText(path), File.Exists(path + ".1")), Is.EqualTo(("q", false)));
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
+    // The App holds the log open while the mind runs.
+    private static string Shared(string path)
+    {
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+    }
+
+    private static async Task<bool> Eventually(Func<bool> condition)
+    {
+        for (int attempt = 0; attempt < 250; attempt++)
+        {
+            if (condition())
+            {
+                return true;
+            }
+
+            await Task.Delay(20);
+        }
+
+        return false;
+    }
+
     [Test]
     public async Task AStartAbandonedBeforeTheHelloLeavesNoUnobservedFailure()
     {
