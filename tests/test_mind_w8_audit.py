@@ -445,7 +445,7 @@ def test_a_press_answers_the_call_the_turn_before_asked(tmp_path, monkeypatch) -
 
 
 def test_a_press_with_no_question_just_before_it_names_no_call(tmp_path, monkeypatch) -> None:
-    from test_mind_final import _call, _mind, _say
+    from test_mind_final import _mind, _say
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     mind, server = _mind(tmp_path, [_say("Hola."), _say("Listo.")])
     mind.decide(1, "hola")

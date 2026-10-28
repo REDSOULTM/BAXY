@@ -1178,7 +1178,6 @@ def _denials(answer: str, folded: str, statements: list[tuple[int, int]], receip
         if _REAL_LIMIT.search(folded, start, end):
             continue
         for hit in _DENIAL.finditer(folded, start, end):
-            clause = _clause_start(folded, start, hit.start())
             if any(not (m.group(0) == "si" and answer[m.start():m.start() + 2].lower() == "sí")
                    for m in _IF.finditer(folded, start, hit.start())):
                 continue  # «si no me dices dónde, no puedo…»: a condition, not a limit
