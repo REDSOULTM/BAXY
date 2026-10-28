@@ -148,7 +148,7 @@ def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_
     # aid of the mind stays on.
     monkeypatch.setenv("BAXY_AYUDAS", ",".join((
         "answer_check", "app_places_next", "ask_once", "calls_as_written", "clock_omitted", "close_unsaid",
-        "confirm_names_call", "dated_search", "facts_once", "field_focused_next", "look_click_cap",
+        "confirm_names_call", "dated_search", "facts_once", "field_focused_next", "look_click_cap", "named_fact",
         "result_dedup", "same_call_closes", "same_call_next", "say_once", "short_refs", "unopened_app",
         "written_not_window", "check_found", "check_read", "check_denial", "person_folder_sentence",
         "named_folder_theirs", "read_find_split", "game_epic_look")))

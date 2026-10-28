@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.mind import REREAD_NOTE, Mind
+from baxy_mind.mind import Mind
 
 
 class FakeServer:
@@ -422,66 +422,14 @@ def test_an_unsure_search_for_a_dated_question_or_a_curiosity_is_not_held(tmp_pa
     assert mind.decide(3, "busca algo")["operation"] is None  # any other unsure search is held as before
 
 
-def test_an_unsure_search_whose_query_says_a_name_the_person_said_is_read_again(tmp_path, monkeypatch) -> None:
-    # P2.48 (privacy): a name the person said goes to the web in a query the model chose, and a form cannot tell a brand
-    # from a person (a friend, a neighbour): the doubt of that search is read as any other's, and the model reads the
-    # request again with its tools (REREAD_NOTE). What it then does is its decision: the same search runs (owner's
-    # decision, 2026-10-25: a search never waits for the «sí»), and a reading it was not sure of becomes its question
+def test_an_unsure_search_for_what_or_who_a_named_thing_is_is_not_held(tmp_path, monkeypatch) -> None:
+    # Live on the notebook after the deploy (2026-10-27): web_search chosen for what a local brand is, under the
+    # threshold, became «¿Quieres que busque…?»: it is the call aid «named_fact» asks for, so its doubt does not hold it
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    for said, query in (("¿Qué es Zorvik?", "Zorvik"), ("Mi vecina Velmar Okonkwo me debe plata", "Velmar Okonkwo"),
-                        ("oye y eso del zorvik", "qué es Zorvik"), ("En el trabajo me recomendaron Zorvik",
-                                                                    "Zorvik opiniones")):
-        mind, server = _mind(tmp_path, [_call("web_search", {"query": query}, 0.3),
-                                        _say(f"¿Quieres que busque {query}?")])
-        mind.wire_to_op["web_search"] = "web.search"
-        assert mind.decide(1, said)["operation"] is None, said
-        assert server.bodies[1]["messages"][-1]["content"] == REREAD_NOTE.format(call="web_search"), said
-        assert "tool_choice" not in server.bodies[1], said  # read again with its tools, not only asked
-
-
-def test_a_question_with_a_name_answered_in_words_is_said_after_one_decision(tmp_path, monkeypatch) -> None:
-    # C27 (2026-10-28, from R6-PC-2's tests): no layer reads the words of a question that names something; whether it
-    # knows the name or looks it up is the model's, helped by web_search's description, and the reply costs no
-    # second decision (a capital, an acronym, a folder of the PC's or a greeting)
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    for said, answer in (("¿Cuál es la capital de Perú?", "La capital de Perú es Lima."),
-                         ("qué significa ONU", "ONU significa Organización de las Naciones Unidas."),
-                         ("¿ya me abriste la carpeta de Descargas?", "Todavía no abrí la carpeta Descargas."),
-                         ("¿Qué es Zorvik?", "Zorvik es una marca de quesos del sur."),
-                         ("Saluda a la Camila", "¡Hola, Camila!")):
-        mind, server = _mind(tmp_path, [_say(answer), _say("otra")])
-        mind.tools = [{"function": {"name": "web_search", "description": "Look it up.", "parameters": {}},
-                       "type": "function"}]
-        mind.wire_to_op["web_search"] = "web.search"
-        one = FakeSystemOne("web_search")  # the judge the old aid asked, ready to send it to the web
-        mind.system_one = one  # type: ignore[assignment]
-        assert mind.decide(1, said)["reply"] == answer, said
-        assert len(server.bodies) == 1 and one.asked == [], said
-
-
-def test_the_same_search_chosen_again_after_reading_again_runs(tmp_path, monkeypatch) -> None:
-    # P2.48: the doubt is no «sí»; read again, the model that chooses the same search again gets it run
-    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    mind, server = _mind(tmp_path, [_call("web_search", {"query": "Zorvik"}, 0.3)] * 2)
+    mind, _ = _mind(tmp_path, [_call("web_search", {"query": "Zorvik"}, 0.3), _say("¿Quieres que busque Zorvik?")])
     mind.wire_to_op["web_search"] = "web.search"
-    assert mind.decide(1, "¿Qué es Zorvik?")["operation"] == "web.search"
-    assert len(server.bodies) == 2
-
-
-@pytest.mark.parametrize("wire, operation", [("memory_recall", "memory.recall"), ("file_find", "file.find"),
-                                             ("web_fetch", "web.fetch")])
-def test_an_unsure_search_for_a_name_a_result_gave_is_held(tmp_path, monkeypatch, wire, operation) -> None:
-    # privacy review 2026-10-27: a name memory, a file or the web gave is held by the doubt as the person's are (P2.48)
-    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
-    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    mind, _ = _mind(tmp_path, [_call(wire, {"query": "Velmar"}, 0.9), _say("Velmar es tu vecino."),
-                               _call("web_search", {"query": "Velmar"}, 0.3), _say("¿Quieres que busque Velmar?")])
-    mind.wire_to_op.update({"web_search": "web.search", wire: operation})
-    mind.decide(1, "¿Qué hay de Velmar?")
-    mind.continue_turn(2, json.dumps({"status": "completed", "items": [{"text": "Velmar es mi vecino"}]}))
-    assert mind.decide(3, "¿Y Velmar qué tal?")["operation"] is None
+    assert mind.decide(1, "¿Qué es Zorvik?")["operation"] == "web.search"  # held, it would be the question
 
 
 # C16 (auditoría de la noche): after pregunta-eco a doubt reads again with the tools, and nothing held what that reading

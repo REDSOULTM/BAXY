@@ -679,6 +679,32 @@ _YEAR_ALONE = re.compile(r"^\D*(?<!\d)(?:1[5-9]|20)\d\d(?!\d)\D*$")
 # A curiosity asked for (feria 2026-10-27, «cuéntame un dato curioso…» from memory: «el estribo, en el pie»).
 _CURIOUS = re.compile(r"\b(?:datos? curios[oa]s?|curiosidad(?:es)? (?:de|del|sobre|acerca)|algo curioso|fun facts?)\b")
 _ASKS = re.compile(r"^\W*(quien|que|cual|cuales|cuando|cuanto|cuantos|cuantas|donde|como|who|what|which|when|how|where)\b")
+# Aid «named_fact» (feria 2026-10-27): what a local brand is, answered in words from memory as another kind of
+# product, with no doubt to read (p_call 0.05). Words that repeat a name the person wrote with a capital, past the start
+# of a sentence, say something of a thing with a name of its own: a form, not what was asked. System One judges then,
+# between those words and web_search, what the person asked for; only its web_search is looked up (_look_up_first).
+# PC-L, decision v11 2026-10-27: a capital, the letters of an acronym or what was opened, said with a name, went to the
+# web as well; only a question about what or who the named thing is, or asking to be told of it, is judged: at the
+# start, after a sentence or a comma, or after one word (by voice there is seldom a comma: «oye qué es…»).
+_ABOUT = re.compile(r"(?:^|[,;:.!?])\W*(?:[^\W\d_]+ )?(?:(?:que|quien(?:es)?) (?:es|son|era|eran|fue|fueron)"
+                    r"|(?:hablame|cuentame) (?:de|del|sobre|acerca)|que sabes (?:de|del|sobre)|conoces"
+                    r"|(?:what|who)(?:'s| is| are| was)|tell me about|do you know)\b")
+_SENTENCES = re.compile(r"[.!?¿¡:;\n]+")
+
+_WORDS = re.compile(r"[^\W\d_][\w'&-]*")
+_TOLD = re.compile(r"[^.!?]+[.!?]*")
+
+
+def _asked_about(text: str) -> str:
+    """The folded word that closes a question about what or who something is (_ABOUT), when it is a few words long;
+    empty otherwise. PC-L, decision v6 2026-10-27: the author of a book named before, or a word in a language, went to
+    the web: the named thing has to be what is asked about («qué es el jugo X», not «quién es el autor» of X)."""
+    folded = _fold(text)
+    about = _ABOUT.search(folded)
+    if about is None:
+        return ""
+    clause = _WORDS.findall(re.split(r"[,.;:!?¿¡]| (?:y|e|o|and|or) ", folded[about.end():], maxsplit=1)[0])
+    return clause[-1] if 0 < len(clause) <= 4 else ""
 
 
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
@@ -2644,6 +2670,13 @@ class Mind:
             turn["dated"] = True
             self._log("turn.dated", started, None)
             return self._look_up_first(request_id, stage, turn, body, reply, started)
+        if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
+                and not turn.get("named") and not turn.get("receipts") and not turn.get("private")
+                and _aid_on("named_fact") and self.system_one is not None and self.system_one.ready
+                and self._unkept(self._names_said(turn["text"], content) & {_asked_about(turn["text"])})):
+            looked = self._named_fact(request_id, stage, turn, body, reply, started)
+            if looked is not None:
+                return looked
         if (content and not turn.get("beat") and not turn.get("said_again")
                 and not any(r.get("completed") for r in turn.get("receipts") or [])
                 and _aid_on("say_once") and self._said_last(conv, content)):
@@ -2671,6 +2704,55 @@ class Mind:
         folded = _fold(text)
         return ((bool(_YEAR_ALONE.match(text)) and ("?" in text or bool(_ASKS.match(folded))))
                 or bool(_CURIOUS.search(folded)))
+
+    @classmethod
+    def _names_said(cls, text: str, content: str) -> set[str]:
+        """The person's words, folded, that the answer says in a sentence that is not a question (a question tells no
+        fact) and either of them wrote as a name: with a capital past the start of a sentence (aid «named_fact»). PC-L
+        review 2026-10-27: the voice may come in lowercase, and the model still writes a name with its capital."""
+        told = " ".join(sentence for sentence in _TOLD.findall(content) if not sentence.rstrip().endswith("?"))
+        said, said_names = cls._words_and_names(text)
+        words, names = cls._words_and_names(told)
+        return (said_names | names) & said & words
+
+    def _unkept(self, names: set[str]) -> bool:
+        """Whether there are names and none is in what a memory call returned in this conversation (privacy review
+        2026-10-27: a contact recalled in an earlier turn is the person's, never a web query)."""
+        kept = {c["id"] for m in self.conversation for c in m.get("tool_calls") or []
+                if self.wire_to_op.get(c["function"]["name"], "").startswith("memory.")}
+        return bool(names) and not any(
+            names & self._words_and_names(str(m.get("content") or ""))[0]
+            for m in self.conversation if m.get("role") == "tool" and m.get("tool_call_id") in kept)
+
+    @staticmethod
+    def _words_and_names(text: str) -> tuple[set[str], set[str]]:
+        """The words of a text, folded, and those written as a name: with a capital past the start of a sentence."""
+        words: set[str] = set()
+        names: set[str] = set()
+        for sentence in _SENTENCES.split(text):
+            found = _WORDS.findall(sentence)
+            words.update(_fold(word) for word in found)
+            names.update(_fold(word) for word in found[1:] if word[0].isupper())
+        return words, names
+
+    def _named_fact(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
+                    reply: dict | None, started: float) -> dict[str, Any] | None:
+        """Aid «named_fact»: System One judges between the words and web_search; its web_search is looked up as a
+        dated question is, and None leaves the words as they are."""
+        turn["named"] = True
+        if not any(t["function"]["name"] == "web_search" for t in self.tools):
+            return None
+        # PC-L review 2026-10-27 (privacy): who or what the person keeps in memory (a contact) is an option of its own,
+        # never looked up on the web.
+        options = {t["function"]["name"]: short(t["function"]["description"]) for t in self.tools
+                   if t["function"]["name"] in ("web_search", "memory_recall")}
+        options[ANSWER] = OPTION_TEXT[ANSWER]
+        judged = self.system_one.choose(turn["text"], self._said(), options)  # type: ignore[union-attr]
+        self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
+        self._log("turn.named", started, None)
+        if not judged or judged["choice"] != "web_search":
+            return None
+        return self._look_up_first(request_id, stage, turn, body, reply, started)
 
     def _look_up_first(self, request_id: Any, stage: str, turn: dict[str, Any], body: dict[str, Any],
                        reply: dict | None, started: float) -> dict[str, Any]:
@@ -2858,10 +2940,11 @@ class Mind:
             return None
         # Aid «dated_search» (soak of the fair, 2026-10-27): the web_search the model chose for a dated question or a
         # curiosity asked for, under the threshold, became «¿Quieres que busque…?» 6 times: it is the call that aid asks
-        # for, so its doubt does not hold it. P2.48 (privacy): one whose query repeats a name the person said is held as
-        # any other: a form cannot tell a brand from a person, and the name goes to the web. Read again, the model
-        # decides: the same search runs (a search never waits for the «sí»), or its question.
-        if call["wire"] == "web_search" and _aid_on("dated_search") and self._dated(turn["text"]):
+        # for, so its doubt does not hold it; the same for the one «named_fact» asks for (code review 2026-10-27), also
+        # when the model chose it itself for what or who a named thing is (live on the notebook after the deploy).
+        if call["wire"] == "web_search" and ((_aid_on("dated_search") and self._dated(turn["text"]))
+                                             or (_aid_on("named_fact") and (turn.get("named")
+                                                                            or _asked_about(turn["text"])))):
             return None
         doubt = read_doubt(reply, nth)
         if doubt is None:
