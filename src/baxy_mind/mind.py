@@ -1710,10 +1710,12 @@ class Mind:
         notes = self._unsure_note(unsure or [])
         clock = {"role": "user", "content": self._clock() + notes}
         self.conversation.append(clock)
-        # Noche 2026-10-27 (P0): the call waiting for the «sí» is told after the words, as when they answer the model's
-        # question, so the prompt still begins with the clock the wake read into the slot (prefill) without it.
-        waiting = self._pending_note(pending)
-        request = {"role": "user", "content": text + waiting}
+        # Noche 2026-10-27 (P0): the call waiting for the «sí» is a note of its own after the clock, so the prompt still
+        # begins with the clock the wake read into the slot (prefill) without it; as a note («[») it stays out of what
+        # the person said (_said, _gist, _founded).
+        if waiting := self._pending_note(pending).lstrip("\n"):
+            self.conversation.append({"role": "user", "content": waiting})
+        request = {"role": "user", "content": text}
         self.conversation.append(request)
         try:
             self._trim()
@@ -1725,7 +1727,7 @@ class Mind:
             keep = len(text)
             while keep > CUT_TEXT_FLOOR and not self._fits(self._turn_sizes()):
                 keep //= 2
-                request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep) + waiting
+                request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text, "said": text,
                           "pending": self._waits(pending), "ended": self._ended(pending), "answering": bool(doubts),
                           "answering_other": any(DOUBT_OTHER_ASKED in note for note in doubts),
@@ -1826,7 +1828,7 @@ class Mind:
         ``clock`` (al máximo, palanca 5, early.py: «Baxy» was heard): the next turn's clock is read too, as a turn with
         no call waiting for the person's «sí» begins, so the GPU is awake and the slot holds all but the person's words
         when they come. The prompt does not change: a clock of another minute is read by the decision itself from where
-        they differ (a call waiting for the «sí» is told after the person's words, Mind.decide). BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
+        they differ (a call waiting for the «sí» is a note of its own after the clock, Mind.decide). BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
         turn = self._turn or {}
         if ((not clock and os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0")
                 or (not self.conversation and not clock) or self._beat is not None

@@ -281,7 +281,8 @@ def test_with_a_call_waiting_for_the_si_the_decision_still_begins_with_what_the_
     # decision in the App's 30 s (decision_unavailable, 1 of 3). The note of that call went into the clock the wake had
     # read without it, so the prompt left the slot before the person's words, and a hybrid model's slot is not read
     # again from the middle (llm_server, context checkpoints): a long session went back to a checkpoint or was read
-    # whole (~20 s for 43k tokens). The note follows the person's words, as it does when they answer a question.
+    # whole (~20 s for 43k tokens). The note is a message of its own after the clock, and a note («[») is never taken
+    # for the person's words (review: _said, _gist and _founded leave out what starts so).
     pending = {"operation": "app.close", "arguments": {"appId": "Paint"}}
     mind, server = _mind(tmp_path, _replies(_say("Vale.")), monkeypatch)
     _before(mind)
@@ -289,8 +290,9 @@ def test_with_a_call_waiting_for_the_si_the_decision_still_begins_with_what_the_
     warmed = server.prefilled[-1]
     mind.decide(3, "pon música", pending=pending)
     assert server.prompts[-1].startswith(warmed)
-    words = server.bodies[-1]["messages"][-1]["content"]
-    assert words.startswith("pon música\n[Espera el sí de la persona: app_close") and "confirm_pending" in words
+    note, words = (m["content"] for m in server.bodies[-1]["messages"][-2:])
+    assert note.startswith("[Espera el sí de la persona: app_close") and "confirm_pending" in note
+    assert words == "pon música" and mind._gist(mind.conversation[-4:]).startswith("«pon música» →")
 
 
 def test_the_wake_warm_and_the_early_decision_have_their_switches(monkeypatch: pytest.MonkeyPatch) -> None:
