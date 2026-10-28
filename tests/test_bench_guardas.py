@@ -1,13 +1,13 @@
 """The benches' second number (C62, scripts/renew/bench_guardas.py): the decision the person sees after the App's guards,
 beside the first decision. The oracle here is a stand-in speaking the same JSON lines; the App's own is
 tests/Baxy.GuardOracle."""
-import json
 import sys
-from pathlib import Path
+import json
+import pathlib
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "renew"))
+sys.path[:0] = [str(pathlib.Path(__file__).resolve().parents[1] / "scripts" / "renew")]
 
 import bench_decision
 import bench_guardas
@@ -35,11 +35,11 @@ for line in sys.stdin:
 
 
 @pytest.fixture
-def oracle(tmp_path: Path):
+def oracle(tmp_path: pathlib.Path):
     script = tmp_path / "oracle.py"
-    script.write_text(ORACLE, encoding="utf-8")
+    script.write_bytes(ORACLE.encode("utf-8"))
     launcher = tmp_path / "oracle.cmd"
-    launcher.write_text(f'@"{sys.executable}" -I "{script}"\r\n', encoding="utf-8")
+    launcher.write_bytes(f'@"{sys.executable}" -I "{script}"\r\n'.encode("utf-8"))
     guards = bench_guardas.Guards(str(launcher))
     yield guards
     guards.close()
@@ -149,8 +149,8 @@ def test_the_minds_failure_after_a_refusal_ends_the_seen_decision_only(oracle) -
 
 def test_the_persons_words_leave_out_baxys_notes_and_keep_their_answers() -> None:
     conversation = [{"role": "user", "content": "[En este turno: carpeta Viajes]"}, {"role": "user", "content": "hola"},
-                    {"role": "assistant", "content": "", "tool_calls": [
-                        {"id": "q1", "function": {"name": "ask_user", "arguments": "{}"}}]},
+                    {"role": "assistant", "tool_calls": [
+                        {"id": "q1", "function": {"name": "ask_user", "arguments": "{}"}}], "content": ""},
                     {"role": "tool", "tool_call_id": "q1", "content": "por whatsapp"},
                     {"role": "tool", "tool_call_id": "c9", "content": "{\"status\": \"completed\"}"},
                     {"role": "role-state", "refs": {}}]

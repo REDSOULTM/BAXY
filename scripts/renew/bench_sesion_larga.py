@@ -290,7 +290,8 @@ def ended_asking(label: str, upto: int) -> bool:
     tandas = sorted((BANKS / "runs").glob(f"{label}-t[0-9][0-9]-{upto:02d}.jsonl"), key=lambda p: p.stat().st_mtime)
     if not tandas:
         return False
-    return bool(json.loads(tandas[-1].read_text(encoding="utf-8").splitlines()[0])["summary"].get("open_ask_at_end"))
+    first = tandas[-1].read_bytes().decode("utf-8").splitlines()[0]
+    return bool(json.loads(first)["summary"].get("open_ask_at_end"))
 
 
 def snapshot_path(label: str, upto: int) -> Path:

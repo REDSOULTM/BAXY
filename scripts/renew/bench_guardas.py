@@ -13,11 +13,11 @@ Oracle protocol, one JSON object per line each way: {"heard": words, "answering"
 {"ran": op, "arguments": {...}, "observation": text} → {}; {"reset": true} → {}. Any other answer stops the run
 (GuardOracleError): a run that went on without its guards would report first decisions as the ones seen.
 """
-import json
-import shutil
 import subprocess
-from pathlib import Path
-from typing import Any, Callable, NamedTuple
+import shutil
+import json
+import pathlib
+import typing
 
 import run_meta
 
@@ -39,16 +39,16 @@ class Guards:
             raise GuardOracleError(f"no guard oracle at {oracle}")
         # What judged, taken before it runs: the launcher and the assemblies beside it (a .NET apphost is only a launcher).
         self.identity = {"path": found, **{p.name: run_meta.sha256_file(p) for p in sorted(
-            [Path(found), *Path(found).parent.glob("Baxy.*.dll")])}}
+            [pathlib.Path(found), *pathlib.Path(found).parent.glob("Baxy.*.dll")])}}
         self._process = subprocess.Popen([found], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True,
                                          encoding="utf-8", bufsize=1)
 
     def _ask(self, request: dict) -> dict:
-        assert self._process.stdin is not None and self._process.stdout is not None
+        into, out = self._process.stdin, self._process.stdout
+        assert into and out
         try:
-            self._process.stdin.write(json.dumps(request, ensure_ascii=False) + "\n")
-            self._process.stdin.flush()
-            line = self._process.stdout.readline()
+            print(json.dumps(request, ensure_ascii=False), file=into, flush=True)
+            line = out.readline()
             answer = json.loads(line) if line else None
         except (OSError, ValueError) as exc:
             raise GuardOracleError(f"the guard oracle failed ({exc!r})") from exc
@@ -80,13 +80,13 @@ class Guards:
         self._state({"ran": operation, "arguments": arguments or {}, "observation": observation})
 
     def close(self) -> None:
-        if self._process.poll() is None:
-            assert self._process.stdin is not None
+        if self._process.poll() is None and self._process.stdin:
             self._process.stdin.close()
             try:
                 self._process.wait(timeout=10)
             except subprocess.TimeoutExpired:
-                self._process.kill()  # its own child, by its handle
+                # Its own child, by its handle.
+                self._process.kill()
 
 
 def person_words(conversation: list) -> list[str]:
@@ -110,12 +110,12 @@ def refusal_code(observation: str) -> str:
     """The code of a refusal the oracle gave (its «error», else its «status»)."""
     try:
         facts = json.loads(observation)
-    except (TypeError, ValueError):
+    except ValueError:
         return "?"
     return str(facts.get("error") or facts.get("code") or facts.get("status") or "?") if isinstance(facts, dict) else "?"
 
 
-class Seen(NamedTuple):
+class Seen(typing.NamedTuple):
     """A turn after the guards: the decision the person sees, the calls that went, the refusals' codes, the turn's last
     result, and the mind's failure on the way (None)."""
     shown: dict
@@ -125,8 +125,8 @@ class Seen(NamedTuple):
     error: str | None = None
 
 
-def seen(mind: Any, request_id: Any, first: dict, guards: Guards, limit: int,
-         observe: Callable[[str, dict | None, int], str] | None = None) -> Seen:
+def seen(mind: typing.Any, request_id: typing.Any, first: dict, guards: Guards, limit: int,
+         observe: typing.Callable[[str, dict | None, int], str] | None = None) -> Seen:
     """The turn from its first decision as the App runs it, up to `limit` calls: each call through the guards, a refused
     one back to the model with its refusal. The decision the person sees is the first call that goes, as it would run,
     or the model's words; a call still unruled when the calls are spent is none of them («unfinished»). With `observe`
@@ -156,8 +156,8 @@ def seen(mind: Any, request_id: Any, first: dict, guards: Guards, limit: int,
             result = mind.continue_turn(request_id, observation, final=calls == limit)
     except GuardOracleError:
         raise
-    except Exception as exc:  # noqa: BLE001 - the mind failed after the first decision: the turn ends there
-        return Seen(decision or {"kind": "error"}, went, refused, {"kind": "error"}, repr(exc)[:200])
+    except Exception as failure:  # noqa: BLE001 - the mind failed after the first decision: the turn ends there
+        return Seen(decision or {"kind": "error"}, went, refused, {"kind": "error"}, repr(failure)[:200])
     if result.get("kind") == "clarify":  # the App's «question» step (NetworkEgress.Asked)
         guards.asked()
     unfinished = {"kind": "unfinished"} if result.get("kind") == "action" else result

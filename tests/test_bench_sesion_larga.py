@@ -285,16 +285,16 @@ class FakeGuards:
     """The App's guard oracle (bench_guardas.Guards) as a test sets it: `refuse` op → its refusal's code, `route` op →
     the operation it runs as; what each request was, in order."""
 
-    def __init__(self, refuse: dict[str, str] | None = None, route: dict[str, str] | None = None) -> None:
+    def __init__(self, refuse: dict | None = None, route: dict | None = None):
         self.refuse, self.route, self.log = refuse or {}, route or {}, []
 
-    def reset(self) -> None:
+    def reset(self):
         self.log.append(("reset",))
 
-    def heard(self, words: str, answering: bool = False) -> None:
+    def heard(self, words: str, answering=False):
         self.log.append(("heard", words))
 
-    def asked(self) -> None:
+    def asked(self):
         self.log.append(("asked",))
 
     def call(self, operation: str, arguments: dict | None) -> dict:
@@ -304,7 +304,7 @@ class FakeGuards:
                                            "next": "answer them in words"})}
         return {"operation": self.route.get(operation, operation), "arguments": arguments, "note": None}
 
-    def ran(self, operation: str, arguments: dict | None, observation: str) -> None:
+    def ran(self, operation: str, arguments: dict | None, observation: str):
         self.log.append(("ran", operation))
 
 
@@ -321,7 +321,7 @@ def test_with_the_apps_guards_a_turn_is_also_judged_on_what_the_person_sees(tmp_
 
     server = bench.RecordingServer(Back({"saluda": _call("audio_volume", {"level": 1}),
                                          "lee notas.txt": _call("web_search", {"query": "notas"})}))
-    mind = Mind(server, tmp_path / "turns.jsonl")  # type: ignore[arg-type]
+    mind = Mind(server, tmp_path / "turns.jsonl")
     mind.configure(CATALOG)
     mind.call_tokens = [248058]
     mind.prefix_tokens = 1000
@@ -330,8 +330,8 @@ def test_with_the_apps_guards_a_turn_is_also_judged_on_what_the_person_sees(tmp_
     turns = [_turn(1, "saluda", {"kind": "text"}, "charla"),
              _turn(2, "lee notas.txt", {"kind": "call", "op": "file.read"}, "lectura")]
     rows = bench.correr_turnos(mind, server, turns, LECTURAS, {}, tmp_path / "turns.jsonl", guards=guards)
-    assert [r["ok"] for r in rows] == [False, False]  # the first decision, judged as before
-    assert [r["ok_seen"] for r in rows] == [True, True]  # what the App lets the person see
+    assert [row["ok"] for row in rows] == [False, False]  # the first decision, judged as before
+    assert [row["ok_seen"] for row in rows] == [True, True]  # what the App lets the person see
     assert rows[0]["refused"] == ["channel_not_said"] and rows[0]["calls"] == [] and rows[0]["seen_kind"] == "conversation"
     assert rows[1]["seen_operation"] == "file.read" and rows[1]["calls"] == ["file.read"] and rows[1]["refused"] == []
     assert guards.log[:3] == [("heard", "saluda"), ("call", "audio.volume"), ("heard", "lee notas.txt")]
