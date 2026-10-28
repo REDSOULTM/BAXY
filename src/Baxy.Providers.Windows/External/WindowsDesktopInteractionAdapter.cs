@@ -1521,7 +1521,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     {
         if (mark is not { } marked || !PastedFrom(marked, pasted))
             return new PasteRead(null, null);
-        if (marked.Edit is not { } edit)
+        if (marked.Edit is not { } edit || _delivery is not { } delivery)
         {
             if (marked.Caret is not { } caret)
                 return new PasteRead(null, null);
@@ -1545,12 +1545,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 }
             }
 
-            if (_delivery!.ReadsBack(edit, marked.Text, out string? landed))
+            if (delivery.ReadsBack(edit, marked.Text, out string? landed))
                 return new PasteRead(true, landed);
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        return new PasteRead(_delivery.Readable(edit) ? false : null, null);
+        return new PasteRead(delivery.Readable(edit) ? false : null, null);
     }
 
     // The script's own reads before its keys: the process in front and the clipboard's sequence (a sequence it did not
