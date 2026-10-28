@@ -171,6 +171,7 @@ public sealed class UiaQuietInputTests
     }
 
     [Test]
+    [InteractiveDesktop]
     public void TheClientsKeyNeverReachesTheScreenAndItsWaitIsAnswered()
     {
         // Through the client's own slots: a hotkey registered by it, then its unmarked key. The key is dropped (the
@@ -203,7 +204,7 @@ public sealed class UiaQuietInputTests
             $clock=[Diagnostics.Stopwatch]::StartNew()
             $woke=[QuietProbe]::WaitThrough($wait,2000,0x1cff)
             $fast=($clock.ElapsedMilliseconds -lt 500)
-            $read=[QuietProbe]::GetThrough($get)
+            $read=if($woke -eq 0){ [QuietProbe]::GetThrough($get) } else { 'none' }
             $again=[QuietProbe]::WaitThrough($wait,50,0x80)
             [void][QuietProbe]::UnregisterThrough($unregister,0x4242)
             $mouse=[QuietProbe]::SendMany($send,[uint32[]]@(0),[uint16[]]@(0))
@@ -338,6 +339,7 @@ public sealed class UiaQuietInputTests
     }
 
     [Test]
+    [InteractiveDesktop]
     public void TheNetHoldsItsBidKeyWithEveryModifier()
     {
         // The net wins the right to give the front back as the client does: a marked press of a hotkey of its own thread
@@ -469,8 +471,14 @@ public sealed class UiaQuietInputTests
         start.Environment["BAXY_QUIET_WORKER"] = worker;
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
-        Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
+        Task<string> answer = process.StandardOutput.ReadToEndAsync();
+        // The bound holds: a script that blocks (a real GetMessage on an empty queue) is closed, never waited on.
+        if (!process.WaitForExit(60_000))
+        {
+            process.Kill(entireProcessTree: true);
+            Assert.Fail("the script answers within 60 s");
+        }
+        string output = answer.Result;
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         if (error.Result.Length > 0)
             TestContext.Out.WriteLine(error.Result);

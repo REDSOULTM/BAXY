@@ -11,6 +11,7 @@ namespace Baxy.Providers.Windows.Tests;
 public sealed class WindowTitleResolutionTests
 {
     [Test]
+    [InteractiveDesktop]
     public void GlobalAndPagedNativeReadsPreserveLiteralTitleAndProcessSelectors()
     {
         // Three windows share one title (a title is the whole title, folded: auditoría final V3/G3), and one is
@@ -73,6 +74,7 @@ public sealed class WindowTitleResolutionTests
     }
 
     [Test]
+    [InteractiveDesktop]
     public void VisibleTitlesDistinguishWindowsSharingAnOwnerWithoutLosingProcessLookup()
     {
         string prefix = "BaxyC03-" + Guid.NewGuid().ToString("N");
