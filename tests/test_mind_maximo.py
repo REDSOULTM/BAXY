@@ -142,8 +142,14 @@ def test_a_call_whose_result_never_came_is_in_the_session_calls(tmp_path: Path) 
 def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_path: Path, monkeypatch) -> None:
     # 1.1: past its bound the history dropped whole turns (about three were left); the bodies of the oldest results go
     # first now, while their calls and the line of each turn's facts stay, and what is left out says its ids are gone.
-    # Without «old_bodies» (noche P0.2), which leaves these bodies out before the history reaches its bound.
-    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    # Without «old_bodies» (noche P0.2), which leaves these bodies out before the history reaches its bound; every other
+    # aid of the mind stays on.
+    monkeypatch.setenv("BAXY_AYUDAS", ",".join((
+        "answer_check", "app_places_next", "ask_once", "calls_as_written", "clock_omitted", "close_unsaid",
+        "confirm_names_call", "dated_search", "facts_once", "field_focused_next", "look_click_cap", "named_fact",
+        "result_dedup", "same_call_closes", "same_call_next", "say_once", "short_refs", "unopened_app",
+        "written_not_window", "check_found", "check_read", "check_denial", "person_folder_sentence",
+        "named_folder_theirs", "read_find_split", "game_epic_look")))
     from test_mind_final import _call, _mind, _say
     mind, _ = _mind(tmp_path, [_call("input_visible_controls", {"application": "Paint"}), _say("Listo.")] * 7)
     for turn in range(7):
