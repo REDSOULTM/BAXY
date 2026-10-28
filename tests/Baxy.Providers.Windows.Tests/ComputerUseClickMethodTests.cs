@@ -916,6 +916,7 @@ public sealed class ComputerUseClickMethodTests
     }
 
     [Test]
+    [InteractiveDesktop]
     public void AStaleIdentityLooksForItsLabelOnlyOnTheViewsWindowEvenWhenItIsBehind()
     {
         // Review of fix 2: the click by identity no longer brings the view's window forward. When the identity went

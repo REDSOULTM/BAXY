@@ -13,6 +13,7 @@ public sealed class InstalledApplicationWindowEnumerationTests
     // read with the least access (a program running as administrator too); reading it back by the main module, which
     // Windows refuses for such a program, failed every one. Here the read the inventory makes gives that path.
     [Test]
+    [InteractiveDesktop]
     public void AWindowIsReadBackByTheExecutableTheInventoryRead()
     {
         nint window = CreateWindowEx(0x08000000, "STATIC", "Image fixture", 0x90000000u, -31000, -31000, 120, 80, 0, 0, 0, 0);
@@ -54,6 +55,7 @@ public sealed class InstalledApplicationWindowEnumerationTests
     }
 
     [Test]
+    [InteractiveDesktop]
     public void InventoryIncludesEveryVisibleWindowOfOneProcessAndExcludesHiddenWindows()
     {
         nint foreground = GetForegroundWindow();
@@ -106,6 +108,7 @@ public sealed class InstalledApplicationWindowEnumerationTests
     // opening waited out its 30 s. The window that carries the shortcut's application id as its own is the
     // application's, whatever process draws it; that process's other windows, and a window declaring another id, are not.
     [Test]
+    [InteractiveDesktop]
     public void AWindowThatDeclaresTheShortcutsApplicationIdIsTheApplicationsWhateverItsProcess()
     {
         const string ApplicationId = "Baxy.Fixture.WebApplication";
@@ -200,6 +203,7 @@ public sealed class InstalledApplicationWindowEnumerationTests
     // desktop: the test process's own (an owned window and a hidden one above its unowned visible one are never its main
     // window) and every process running now. A window born or gone between the two reads may differ; it is read again.
     [Test]
+    [InteractiveDesktop]
     public void TheOnePassGivesEveryProcessTheWindowMainWindowHandleGivesIt()
     {
         var owned = new List<nint>();

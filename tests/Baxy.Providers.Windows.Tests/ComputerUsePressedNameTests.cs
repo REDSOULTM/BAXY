@@ -271,6 +271,7 @@ public sealed class ComputerUsePressedNameTests
     // so nothing is pressed either way).
     [TestCase("Sí", true)]
     [TestCase("No", false)]
+    [InteractiveDesktop]
     public void TheYesOfADialogThatReplacesAFileAsksAndItsNoGoesStraight(string label, bool asks)
     {
         (OperationResponse response, int acted, IReadOnlyList<string> commands) = ClickInDialog(

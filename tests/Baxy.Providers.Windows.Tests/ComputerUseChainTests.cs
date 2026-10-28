@@ -176,6 +176,7 @@ public sealed class ComputerUseChainTests
     [TestCase("Reemplazar", "dead", true, TestName = "not found in the opener's popup that died: one burst on the opener's window")]
     [TestCase("Archivo", "popup", false, TestName = "a name the window showed before the opener: lease untouched")]
     [TestCase("Reemplazar", "foreign", false, TestName = "a living window that is no popup of the opener: lease untouched")]
+    [InteractiveDesktop]
     public void ANotFoundItemOfTheOpenersPopupOpensOneBurstOnTheOpenersWindow(string item, string where, bool reopens)
     {
         WithWindow(opener => WithWindow(popup =>
@@ -239,6 +240,7 @@ public sealed class ComputerUseChainTests
     [TestCase("Dibujar", "9.1", "visible_control_identity_stale", false, TestName = "the opener itself in a manner: never")]
     [TestCase("Inicio", "42.7", "visible_control_identity_stale", false, TestName = "a name shown before the opener: never")]
     [TestCase("Marcador de resaltado: Amarillo, 5 mm", "42.7", null, false, TestName = "an arrow that opened: never")]
+    [InteractiveDesktop]
     public void AnItemPressedInAMannerAfterItsOpenerIsReopenedInOneBurst(string item, string id, string? error, bool reopens)
     {
         WithWindow(opener => WithWindow(popup =>
