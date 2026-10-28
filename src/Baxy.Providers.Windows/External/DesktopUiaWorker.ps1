@@ -1198,7 +1198,8 @@ function Get-ShownName($el){
   if($Actionable -notcontains $kind){ return '' }
   $labelName=''
   $label=Get-Prop $el 'LabeledBy'
-  if($null -ne $label){ $labelName=Get-Name $label }
+  # Su nombre crudo: Get-FallbackName lo formatea una sola vez y su corte (NameCut) es el que se cuenta.
+  if($null -ne $label){ $labelName=[string](Get-Prop $label 'Name') }
   return (Get-FallbackName ([string](Get-Prop $el 'HelpText')) $labelName ([string](Get-Prop $el 'AutomationId')) $kind ([string](Get-Prop $el 'ClassName')))
 }
 # Ronda 24 (v3-39): la clave con que la vista junta controles iguales. Un control elegido (selected, on) no es el

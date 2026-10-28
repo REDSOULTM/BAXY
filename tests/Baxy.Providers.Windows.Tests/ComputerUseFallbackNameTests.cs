@@ -111,8 +111,13 @@ public sealed class ComputerUseFallbackNameTests
             $long=('palabra ' * 30)+'final'
             $rowShown=Format-Name $row; $rowCut=$script:NameCut
             $longShown=Format-Name $long; $longCut=$script:NameCut
+            $Actionable=@('CheckBox')
+            $props=[pscustomobject]@{ Name=''; ControlType=[pscustomobject]@{ ProgrammaticName='ControlType.CheckBox' };
+                                      HelpText=''; AutomationId=''; ClassName='';
+                                      LabeledBy=[pscustomobject]@{ Cached=[pscustomobject]@{ Name=$long } } }
+            $labeledShown=Get-ShownName ([pscustomobject]@{ Cached=$props; Current=$props }); $labeledCut=$script:NameCut
             [Console]::Out.Write((ConvertTo-Json -Compress @($rowShown,$rowCut,$longShown,$longCut,$long.Length,
-              [bool](Test-NameMatch $longShown @($long)))))
+              [bool](Test-NameMatch $longShown @($long)),$labeledShown,$labeledCut)))
             """);
 
         string row = "Auriculares de prueba, categoria Dispositivo de audio, 80% de bateria, estado Conectado, voz y musica activos";
@@ -123,6 +128,8 @@ public sealed class ComputerUseFallbackNameTests
         Assert.That(shown.Length, Is.LessThanOrEqualTo(162));
         Assert.That(answer[3].GetInt32(), Is.EqualTo(answer[4].GetInt32() - (shown.Length - 2)), "the missing characters are counted");
         Assert.That(answer[5].GetBoolean(), Is.True, "the whole name still names the cut one");
+        Assert.That(answer[6].GetString(), Is.EqualTo(shown), "a control named by its long label is cut once");
+        Assert.That(answer[7].GetInt32(), Is.EqualTo(answer[3].GetInt32()), "and counts what its label lost");
     }
 
     [Test]
