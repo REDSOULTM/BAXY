@@ -1707,9 +1707,14 @@ class Mind:
         self._close_open_calls()
         doubts = [note for note in (str(m.get("content") or "") for m in self.conversation[-2:])
                   if note.startswith(DOUBT_ASKED)]
-        notes = self._pending_note(pending) + self._unsure_note(unsure or [])
+        notes = self._unsure_note(unsure or [])
         clock = {"role": "user", "content": self._clock() + notes}
         self.conversation.append(clock)
+        # Noche 2026-10-27 (P0): the call waiting for the «sí» is a note of its own after the clock, so the prompt still
+        # begins with the clock the wake read into the slot (prefill) without it; as a note («[») it stays out of what
+        # the person said (_said, _gist, _founded).
+        if waiting := self._pending_note(pending).lstrip("\n"):
+            self.conversation.append({"role": "user", "content": waiting})
         request = {"role": "user", "content": text}
         self.conversation.append(request)
         try:
@@ -1822,8 +1827,8 @@ class Mind:
 
         ``clock`` (al máximo, palanca 5, early.py: «Baxy» was heard): the next turn's clock is read too, as a turn with
         no call waiting for the person's «sí» begins, so the GPU is awake and the slot holds all but the person's words
-        when they come. The prompt does not change: a clock of another minute, or with a call waiting, is read by the
-        decision itself from where they differ. BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
+        when they come. The prompt does not change: a clock of another minute is read by the decision itself from where
+        they differ (a call waiting for the «sí» is a note of its own after the clock, Mind.decide). BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
         turn = self._turn or {}
         if ((not clock and os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0")
                 or (not self.conversation and not clock) or self._beat is not None

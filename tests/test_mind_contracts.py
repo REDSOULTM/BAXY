@@ -28,11 +28,12 @@ def test_a_no_on_a_confirmation_is_approve_false_in_the_call_and_the_conversatio
     assert mind.conversation[-2] == {"role": "user", "content": "No"}
 
 
-def test_a_pending_confirmation_is_told_in_the_clock(tmp_path: Path) -> None:
+def test_a_pending_confirmation_is_a_note_of_its_own_after_the_clock_as_read_ahead(tmp_path: Path) -> None:
     mind, server = _mind(tmp_path, [_say("¿Lo borro?")])
     mind.decide(1, "sí", pending={"operation": "file.delete", "arguments": {"path": "a.txt"}})
-    clock = server.bodies[0]["messages"][-2]["content"]
-    assert clock.startswith("[Reloj:") and "file_delete" in clock and "confirm_pending" in clock
+    clock, note, words = (m["content"] for m in server.bodies[0]["messages"][-3:])
+    assert clock.startswith("[Reloj:") and "[Espera el sí" not in clock and words == "sí"
+    assert note.startswith("[Espera el sí de la persona: file_delete") and "confirm_pending" in note
 
 
 # b) The thresholds at their edges (mutation: < turned into <=, or the layers' order swapped).
