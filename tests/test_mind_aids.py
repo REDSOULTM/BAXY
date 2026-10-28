@@ -545,6 +545,19 @@ def test_a_message_tool_says_the_channel_is_the_persons_and_words_for_someone_wi
     assert "never one they did not name" in channel and "ask them which" in channel
 
 
+def test_a_link_on_the_browser_page_is_looked_at_and_clicked_and_a_new_tab_opens_none(tmp_path: Path) -> None:
+    # R7-NB-6 (noche 28-10): «abre el primer resultado de la búsqueda que tengo en el navegador» opened a new tab nobody
+    # asked for and went back twice in it (CU 36 C07v, stable since 6005): no description said a link on the page in
+    # front is clicked where it is, nor that a new tab is empty.
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": name, "description": "Act.", "argumentsSchema": {"type": "object"}}
+                                     for name in ("browser.control", "input.visible.click")]})
+    control, click = _description(mind, "browser_control"), _description(mind, "input_visible_click")
+    assert "a new empty tab (it opens no link)" in control and "a link or result shown on the page" in control
+    assert "the active tab has no earlier page to go back to (that tab only, not the browser)" in control
+    assert "a link or result on the page in front of the browser" in click and "no new tab first" in click
+
+
 def test_a_relative_volume_change_says_its_amount_when_no_number_was_said(tmp_path: Path) -> None:
     # P2.38 (noche 28-10): «sube el volumen» sin cantidad quedaba entre actuar y preguntar «¿Cuánto le subo?» (audio 0,21
     # a 0,57 en la primera decisión según el prompt); amount es obligatorio y su descripción sólo hablaba de un número dicho.
