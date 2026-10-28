@@ -169,6 +169,11 @@ ALREADY_OPEN = "; ya estaba abierta antes de esta llamada"
 SAME_WINDOW = "; la ventana no cambió"
 AFTER_VIEW = "; su after es la ventana de después"
 REREAD = {True: "; releído después: quedó como se pidió", False: "; releído después: no quedó como se pidió"}
+# Noche NB r1, hallazgo 5 (T2-bloc, T5-bloc): a text written beside text the field already held (the receipt's
+# otherTextInField) was told «escribí» alone, and a window number that is no window (windowFound false) «no encontré el
+# campo de texto».
+OTHER_TEXT = "; el campo ya tenía otro texto: lo escrito quedó junto a ese texto"
+WINDOW_NOT_FOUND = "; la ventana pedida no existe: no se buscó ningún campo en ella"
 # What _read_in_part says after the part a read held, in full.
 PART_TAIL = "; lo demás no se leyó: un «no está» vale sólo para lo leído"
 # Aid «facts_once» (w7-breve, 2026-10-23): on the holdout v4 turn.continue wrote more after a tool (predicted p50 399 →
@@ -237,9 +242,11 @@ def _outcome(observation: str, read: bool = False) -> str:
         # The App's own completed result it could not read (result_unreadable) keeps its code.
         error = facts.get("error")
         code = f" ({error})" if isinstance(error, str) and error else ""
-        return told + code + where + before + seen + _read_in_part(shown)
+        other = OTHER_TEXT if shown.get("otherTextInField") is True else ""
+        return told + code + where + before + other + seen + _read_in_part(shown)
     error = facts.get("error") or facts.get("cause")
-    return (f"falló ({error})" if error else "falló") + reread + _looked_elsewhere(shown)
+    gone = WINDOW_NOT_FOUND if shown.get("windowFound") is False else ""
+    return (f"falló ({error})" if error else "falló") + reread + gone + _looked_elsewhere(shown)
 
 
 # Renew al máximo (w8): file_open of a path that was not there looked only at that path (searchedElsewhere false), and the
@@ -334,7 +341,8 @@ def _deduplicated(observation: str, outcome: str) -> str:
     words for it, written right after it) already says, so the model reads each fact once. On the holdout v4 the first
     spoken answer after a tool went 3.4 → 4.3 s p50, turn.continue reading 124 → 156 tokens. Left out only where the line
     says it: a completed call's status and verification («completado y verificado», «lectura: …»), its fullPath («en
-    C:\\…»), alreadyRunning true (ALREADY_OPEN), an after that is only {"same": true} (SAME_WINDOW) and stateAfter's
+    C:\\…»), alreadyRunning true (ALREADY_OPEN),
+    otherTextInField true (OTHER_TEXT), an after that is only {"same": true} (SAME_WINDOW) and stateAfter's
     requestedStateReached (REREAD). The rest stays as it came, in the App's compact JSON; a result with none of them is
     the App's own text."""
     try:
@@ -354,6 +362,8 @@ def _deduplicated(observation: str, outcome: str) -> str:
             del observed["fullPath"]
         if observed.get("alreadyRunning") is True and ALREADY_OPEN in outcome:
             del observed["alreadyRunning"]
+        if observed.get("otherTextInField") is True and OTHER_TEXT in outcome:
+            del observed["otherTextInField"]
         if observed.get("after") == {"same": True} and SAME_WINDOW in outcome:
             del observed["after"]
         after = observed.get("stateAfter")

@@ -957,6 +957,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // Práctica V5E023: where the text read back landed in what the edit control held.
             if (landed is not null)
                 writer.WriteString("landed", landed);
+            // Noche NB r1, hallazgo 5: whether the edit control read back holds text besides the one typed.
+            if (editReadBack && mark is { } marked)
+                writer.WriteBoolean("otherTextInField", marked.Expected > text.Length);
             if (typing && (window == 0 || openedApplication)
                 && Infrastructure.ModelAids.On(Infrastructure.ModelAids.TypedTargetNext))
                 writer.WriteString("next", TypedInto(before.Title, sentToProcess, window == 0, readBack));
@@ -967,6 +970,17 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             ? ExternalJson.Success(operation, result, effect)
             : new ExternalCapabilityReceipt(operation, effect, false, result, unread) { EffectMayHaveOccurred = true };
     }
+
+    // Noche NB r1, hallazgo 5 (T5-bloc: a window number that is no window, told «no encontré el campo de texto»): the
+    // window asked and that it was not found, so the reply can tell it apart from a field not found in a window there.
+    private static ExternalCapabilityReceipt WindowNotFound(string operation, nint window) =>
+        new(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("window", window);
+            writer.WriteBoolean("windowFound", false);
+            writer.WriteEndObject();
+        }), "input_window_not_found");
 
     // The entries a combo's list showed, as the worker read them.
     private static IReadOnlyList<string> Entries(JsonElement root) =>
@@ -1140,7 +1154,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         WindowsTextDelivery delivery = _delivery!;
         WindowIdentity identity = delivery.Messages.Identity(window);
         if (!identity.Alive)
-            return ExternalJson.FailureBeforeEffect(operation, "input_window_not_found");
+            return WindowNotFound(operation, window);
         if (key == "ctrl_v")
             return await PasteToWindowAsync(operation, identity, frontBefore, cancellationToken).ConfigureAwait(false);
         if (key is not null)
@@ -1288,7 +1302,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return ExternalJson.FailureBeforeEffect(operation, "input_field_not_readable");
         WindowIdentity identity = delivery.Messages.Identity(window != 0 ? window : frontBefore.Window);
         if (!identity.Alive)
-            return ExternalJson.FailureBeforeEffect(operation, "input_window_not_found");
+            return WindowNotFound(operation, window != 0 ? window : frontBefore.Window);
         nint field;
         if (index is int position)
         {
@@ -1349,7 +1363,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     {
         WindowIdentity identity = _delivery!.Messages.Identity(window);
         if (!identity.Alive)
-            return ExternalJson.FailureBeforeEffect(operation, "input_window_not_found");
+            return WindowNotFound(operation, window);
         if (!_fields!.TryViewedField(index, out nint viewed, out string controlId) || viewed != window)
             return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
         var effectBoundary = new ExternalEffectBoundary();
@@ -1528,6 +1542,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // back landed in what the field held.
             if (delivery.Landed is { } landed)
                 writer.WriteString("landed", landed);
+            // Noche NB r1, hallazgo 5: whether the field read back holds text besides the one written.
+            if (delivery.OtherText is bool other)
+                writer.WriteBoolean("otherTextInField", other);
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, true);

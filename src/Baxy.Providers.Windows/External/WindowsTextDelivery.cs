@@ -129,10 +129,12 @@ internal readonly record struct CaretText(string Text, string Unit, bool Bounded
 /// delivered, whether anything may have reached the field, the failure when it did not, and the entry of a list a «select»
 /// chose, as it was read (auditoría C9); and, read back, where the text landed in what the field held (Práctica V5E023,
 /// <see cref="WindowsTextDelivery.Landed"/>). Práctica V5E061: the part of the text a replacement changed
-/// (<see cref="WindowsTextDelivery.Replace"/>), and how many times the field's text held it when it was refused.</summary>
+/// (<see cref="WindowsTextDelivery.Replace"/>), and how many times the field's text held it when it was refused. Noche
+/// NB r1, hallazgo 5: read back by the edit control's messages, whether the field holds text besides the one written
+/// (<c>OtherText</c>; null by any other method).</summary>
 internal readonly record struct FieldDelivery(
     string Method, bool Delivered, bool EffectMayHaveOccurred, string? Error, string FieldClass, string? Entry = null,
-    string? Landed = null, string? Replaced = null, int Occurrences = 0);
+    string? Landed = null, string? Replaced = null, int Occurrences = 0, bool? OtherText = null);
 
 /// <summary>
 /// Text and keys delivered to the field of the mission's window by window messages (CONTRATO_VISTA_ACCION.md §2):
@@ -252,7 +254,8 @@ internal sealed class WindowsTextDelivery
         bool answered = _messages.ReplaceSelection(field, text);
         int after = _messages.TextLength(field);
         if (after == expected && Holds(field, text, after, replace, out string? now))
-            return new FieldDelivery("em_replacesel", true, true, null, fieldClass, Landed: Landed(was, now, text));
+            return new FieldDelivery("em_replacesel", true, true, null, fieldClass, Landed: Landed(was, now, text),
+                OtherText: expected > text.Length);
         // The control answered and its text did not move: it does not take EM_REPLACESEL, nothing was inserted. Unless
         // the insertion replaced a selection as long as itself and the text is too long to be read: then nothing tells
         // the two apart, and typing it again could put it in twice.
@@ -286,7 +289,8 @@ internal sealed class WindowsTextDelivery
         string? held = null;
         bool whole = queued == text.Length && after == expected && Holds(field, text, after, replace, out held);
         return whole
-            ? new FieldDelivery("wm_char", true, true, null, fieldClass, Landed: Landed(was, held, text))
+            ? new FieldDelivery("wm_char", true, true, null, fieldClass, Landed: Landed(was, held, text),
+                OtherText: expected > text.Length)
             : new FieldDelivery("wm_char", false, true,
                 Same(identity) ? "input_effect_not_verified" : "input_window_changed", fieldClass);
     }
