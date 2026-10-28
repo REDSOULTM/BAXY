@@ -341,13 +341,14 @@ def test_browser_navigate_says_a_search_in_a_named_engine_or_site_opens_its_resu
 
 # R7-NB-4 (e2e 2026-10-28, both arms, 3 blind judges): «busca X en …» on a video site played a video (p_name 0.99, the
 # results address not even a rival): media_play_youtube opened with «Search a video …», so a search asked there read as
-# its job, and the search-without-playing case was the last clause. It now opens with playing, and says first in «Do
-# not use when» that a search asked there without asking to play or watch opens the results page (mutation: either
-# sentence back).
-def test_media_play_youtube_is_playing_and_a_search_there_without_playing_opens_its_results_page() -> None:
+# its job, and the search-without-playing case was the last clause. It now opens with playing, its «Use when» says play
+# or watch, and its «Do not use when» says first that a search asked there without asking to play or watch opens its
+# results page (mutation: any of the three back).
+def test_media_play_youtube_starts_with_playing_and_a_search_there_without_playing_opens_its_results_page() -> None:
     path = Path(__file__).parents[1] / "src/baxy_mind/data/tool_descriptions.en.v1.json"
     description = json.loads(path.read_bytes())["tools"]["media.play.youtube"]
     assert description.startswith("Play ")
+    assert "should play or be watched" in description.split("Use when:")[1].split("Do not use when:")[0]
     do_not = description.split("Do not use when:")[1]
-    assert do_not.lstrip().startswith("a search the person asks for there without asking to play or watch")
-    assert "opens its results page (use browser_navigate)" in do_not
+    assert do_not.lstrip().startswith("a search the person asks for on YouTube without asking to play or watch")
+    assert "opens its results page (use browser_navigate," in do_not
