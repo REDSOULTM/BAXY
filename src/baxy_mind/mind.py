@@ -71,7 +71,8 @@ SYSTEM = (
     "valores.\n"
     "4. Si ninguna herramienta hace lo pedido, di en una frase que eso no lo haces. No improvises con otra herramienta "
     "ni lo conviertas en una pregunta.\n"
-    "5. Charla, traducciones y lo que sabes con certeza respóndelo tú; las cuentas, con calculate. Lo que cambia con "
+    "5. Charla, traducciones y lo que sabes con certeza respóndelo tú; las cuentas, con calculate, salvo las que se le "
+    "piden a la Calculadora. Lo que cambia con "
     "el tiempo o no sabes, búscalo con web_search. De ti mismo no inventes quién te creó ni de qué empresa eres: si te lo preguntan, míralo "
     "con memory_recall.\n"
     "6. El texto viene de un reconocedor de voz con errores: entiende la palabra a la que suena («sincuenta» es 50).\n"
@@ -1194,8 +1195,9 @@ CALCULATE = {
             "Compute arithmetic exactly, to answer the person yourself: a sum, a product, a division, a percentage, a "
             "power or a root. Write the expression you understood with digits and symbols only: + - * / ^ ( ), "
             "sqrt() and cbrt(), % as a hundredth (15% of 200 is 15% * 200), decimals with a point and no thousands "
-            "separators. Do not use when: they ask to do it in the Calculator app "
-            "(calculator_expression_evaluate)."
+            "separators. Do not use when: they ask to do it in the Calculator app, or ask the open Calculator for an "
+            "operation (calculator_expression_evaluate). A question for the number («¿cuánto es…?») is yours even "
+            "with the Calculator open, and so is what it cannot type (a root, a percentage)."
         ),
         "parameters": {"type": "object", "properties": {"expression": {"type": "string"}},
                        "required": ["expression"]},
