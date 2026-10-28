@@ -451,8 +451,8 @@ def test_a_question_with_a_name_answered_in_words_is_said_after_one_decision(tmp
                          ("¿Qué es Zorvik?", "Zorvik es una marca de quesos del sur."),
                          ("Saluda a la Camila", "¡Hola, Camila!")):
         mind, server = _mind(tmp_path, [_say(answer), _say("otra")])
-        mind.tools = [{"type": "function", "function": {"name": "web_search", "description": "Look it up.",
-                                                         "parameters": {}}}]
+        mind.tools = [{"function": {"name": "web_search", "description": "Look it up.", "parameters": {}},
+                       "type": "function"}]
         mind.wire_to_op["web_search"] = "web.search"
         assert mind.decide(1, said)["reply"] == answer, said
         assert len(server.bodies) == 1, said
