@@ -1188,8 +1188,9 @@ CALCULATE = {
             "Compute arithmetic exactly, to answer the person yourself: a sum, a product, a division, a percentage, a "
             "power or a root. Write the expression you understood with digits and symbols only: + - * / ^ ( ), "
             "sqrt() and cbrt(), % as a hundredth (15% of 200 is 15% * 200), decimals with a point and no thousands "
-            "separators. Do not use when: they ask to do it in the Calculator app, or ask for an operation while the "
-            "Calculator is open in front of them (calculator_expression_evaluate)."
+            "separators. Do not use when: they ask to do it in the Calculator app, or ask the open Calculator for an "
+            "operation (calculator_expression_evaluate). A question for the number («¿cuánto es…?») is yours even "
+            "with the Calculator open, and so is what it cannot type (a root, a percentage)."
         ),
         "parameters": {"type": "object", "properties": {"expression": {"type": "string"}},
                        "required": ["expression"]},

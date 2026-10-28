@@ -80,7 +80,7 @@ def test_the_calculator_app_and_calculate_send_each_other_what_is_theirs(tmp_pat
     mind, _ = _mind(tmp_path, [])
     app = mind.english["calculator.expression.evaluate"]
     assert "without tools" not in app and "(calculate)" in app
-    assert "the Calculator is open" in CALCULATE["function"]["description"]
+    assert "(calculator_expression_evaluate)" in CALCULATE["function"]["description"]
 
 
 def test_a_calculation_after_memory_keeps_its_expression_out_of_the_trace(tmp_path: Path) -> None:
