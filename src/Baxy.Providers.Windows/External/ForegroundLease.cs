@@ -220,7 +220,7 @@ internal sealed class ForegroundLease : IForegroundLease
     /// <summary>The pause the person must leave before BAXY acts (the goal's ≥ ~500 ms).</summary>
     internal const int QuietMs = 500;
 
-    /// <summary>The default ceiling of the wait, overridable with <c>BAXY_INPUT_PAUSE_MAX_WAIT_MS</c>.</summary>
+    /// <summary>The default ceiling of the wait.</summary>
     internal const int DefaultMaxWaitMs = 8000;
 
     /// <summary>The longest a burst waits for its own inputs to reach the detector before giving the front back.</summary>
@@ -251,7 +251,7 @@ internal sealed class ForegroundLease : IForegroundLease
     private const int KeysReadyPollMs = 15;
 
     private static readonly Lazy<ForegroundLease> SharedInstance = new(() => new ForegroundLease(
-        WindowsUserInputPause.Shared, new SystemLeaseClock(), WindowsLeaseDesktop.Instance, ConfiguredMaxWait()));
+        WindowsUserInputPause.Shared, new SystemLeaseClock(), WindowsLeaseDesktop.Instance));
 
     private readonly IUserInputPause _pause;
     private readonly ILeaseClock _clock;
@@ -584,15 +584,6 @@ internal sealed class ForegroundLease : IForegroundLease
 
         return front && RestoreCursor(saved, began);
     }
-
-    private static int ConfiguredMaxWait() =>
-        int.TryParse(
-            Environment.GetEnvironmentVariable("BAXY_INPUT_PAUSE_MAX_WAIT_MS"),
-            NumberStyles.Integer,
-            CultureInfo.InvariantCulture,
-            out int configured) && configured >= 0
-            ? configured
-            : DefaultMaxWaitMs;
 
     private readonly record struct Saved(
         nint Foreground,
