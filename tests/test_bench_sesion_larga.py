@@ -104,8 +104,9 @@ def test_a_read_gets_a_long_body_and_an_effect_a_verified_result() -> None:
 
 def test_each_turn_is_judged_on_its_decision_closed_with_its_results_and_measured_by_part(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    # Turn 1's long search is two turns old at turn 3: the aid «old_bodies» (noche P0.2) would leave out its body.
-    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    # Turn 1's long search is whole in turn 2 and, two turns old at turn 3, only its facts: that is the aid
+    # «old_bodies» (noche P0.2), so it is on whatever BAXY_AYUDAS this machine has.
+    monkeypatch.setenv("BAXY_AYUDAS", "old_bodies")
     script = {"busca el tiempo": _call("web_search", {"query": "tiempo"}),
               "pon el volumen al 3": _call("audio_volume", {"level": 3}),
               "cuéntame algo": _say("Claro, algo.")}

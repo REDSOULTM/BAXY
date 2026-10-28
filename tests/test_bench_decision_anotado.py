@@ -60,7 +60,7 @@ class FakeMind:
     def new_session(self, history):
         pass
 
-    def decide(self, case_id, text, pending=None):
+    def decide(self, case_id, text, pending=None, unsure=None):
         return {"kind": "conversation", "reply": "hola"}
 
 

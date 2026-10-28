@@ -35,7 +35,9 @@ def test_a_cut_history_keeps_room_so_the_next_turns_do_not_move_its_start(tmp_pa
     mind, server = _mind(tmp_path, [_say(f"Vale {n}.") for n in range(20)])  # never the last answer again (say_once)
     counted: list[str] = []
     server.tokenize = lambda text: counted.append(text) or [0] * (len(text) // 4)
-    room = 1500  # tokens; a turn here is ~160
+    # tokens; a turn here is ~160. With 1500, what TRIM_TO left free was just the three turns below, and a clock
+    # two letters longer (Wednesday) cut again at the third: 2000 leaves them a turn more, whatever the day.
+    room = 2000
     if bound == "tokens":
         monkeypatch.setattr(mind_module, "HISTORY_TURNS", 100)
         mind.prefix_tokens = server.context - TURN_ROOM_TOKENS - room

@@ -106,7 +106,7 @@ class FakeMind:
     def new_session(self, history):
         pass
 
-    def decide(self, case_id, text, pending=None):
+    def decide(self, case_id, text, pending=None, unsure=None):
         _raise_if_planned("decide", case_id)
         return {"kind": "conversation", "reply": "hola"}
 
