@@ -72,3 +72,13 @@ def test_the_document_tool_says_it_does_not_open_word_and_how_to_show_the_file(t
     assert "open it first (app_open) and write the stated text there (a text you compose for Word goes to " \
            "office_document_create)" in tools["input_text_type"]
     assert "opening Word to write a text you compose (use office_document_create" in tools["app_open"]
+
+
+def test_going_back_to_a_conversation_asks_when_the_person_did_not_say_which(tmp_path: Path) -> None:
+    # R13-PC-10 (long session L09, V11D227): with a vague reference to an earlier talk, 8 of 10 arms listed the kept
+    # conversations and opened one whose title the person never said. Which one is the person's to say: the tool says so.
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": "conversation.open", "description": "Open.", "argumentsSchema": {
+        "type": "object", "properties": {"conversation": {"type": "string"}}}}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "conversation_open")["function"]
+    assert "did not say which" in tool["description"]
