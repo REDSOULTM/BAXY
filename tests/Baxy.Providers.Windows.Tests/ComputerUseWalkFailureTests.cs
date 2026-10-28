@@ -22,9 +22,9 @@ public sealed class ComputerUseWalkFailureTests
     private static readonly string[] Functions =
         ["Format-Name", "Get-Cut", "Join-ViewControls", "Get-FoldedFields", "Test-WantedName", "Get-Folded", "Test-CenterWithin"];
 
-    // The shape of wab3 with neutral text: a chat preview whose emoji straddles the 60th character, another whose emoji
-    // straddles the start of the kept end; the first look (no words) and the look after the click (with the contact's
-    // name) over more controls than the cap.
+    // The shape of wab3 with neutral text: a chat preview whose emoji straddles the cut (the 160th character since R6-NB-5,
+    // with no space before it to fall back to), another one shorter than the cut that keeps its emoji whole; the first
+    // look (no words) and the look after the click (with the contact's name) over more controls than the cap.
     [Test]
     public void ALongNameCutAtAnEmojiNoLongerBreaksTheLookThatCarriesTheGoalsWords()
     {
@@ -38,10 +38,9 @@ public sealed class ComputerUseWalkFailureTests
               return $false
             }
             $flower=[char]::ConvertFromUtf32(0x1F33C)
-            $prefix='Contacto B 22:55 Persona C : texto de ejemplo '
-            $head=$prefix+('x'*(59-$prefix.Length))+$flower+' sigue el texto de ejemplo ... Chat silenciado'
+            $head=('x'*159)+$flower+' sigue el texto de ejemplo ... Chat silenciado'
             $tail=('Contacto D '+('y'*80))+$flower+('z'*15)
-            $old=$head.Substring(0,60)
+            $old=$head.Substring(0,160)
             $oldThrows=$false
             try { $null=Get-Folded $old } catch { $oldThrows=$true }
             $cutHead=Format-Name $head
@@ -58,8 +57,8 @@ public sealed class ComputerUseWalkFailureTests
               [string]$oldThrows,
               [string](Test-Broken $cutHead),
               [string](Test-Broken $cutTail),
-              [string]$cutHead.EndsWith('Chat silenciado'),
-              [string]$cutHead.StartsWith($prefix),
+              [string]($cutHead -ceq (('x'*159)+' '+[char]0x2026)),
+              [string]($cutTail -ceq $tail),
               [string](((Format-Name $plain) -ceq $plain) -and ((Format-Name (('A'*100)+' '+('B'*100))) -ceq (('A'*100)+' '+[char]0x2026))),
               [string]$first.controls.Count,
               [string]$after.controls.Count,
@@ -69,9 +68,10 @@ public sealed class ComputerUseWalkFailureTests
         Assert.That(answer.Split('|'), Is.EqualTo(new[]
         {
             "True",   // the old cut left half an emoji, and folding it threw: the look of wab3
-            "False",  // the start kept is whole
-            "False",  // the end kept is whole
-            "True", "True",
+            "False",  // the cut name keeps no half of the emoji
+            "False",  // the shorter name keeps its emoji whole
+            "True",   // the cut falls before the emoji, not between its halves
+            "True",   // the shorter name arrives whole
             "True",   // contracase: a name without pairs arrives whole up to 160, past it is cut at a word (R6-NB-5)
             "63",     // the look before the click: its 60 and, since no row was in them, the rows (C11, reserved room)
             "61", "1", "Abuela 23:18", // the look after it: the contact named by the goal's words, past the cap
