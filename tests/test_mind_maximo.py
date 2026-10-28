@@ -202,6 +202,71 @@ def test_a_turn_past_the_context_makes_room_in_its_history_before_it_ends(tmp_pa
     assert "8" * 4000 in results[-1]
 
 
+def _big_result(tmp_path: Path, chars: int, prefix: int = 40000):
+    """A turn whose one look returned `chars` characters (~chars/4 tokens with the fake tokenizer)."""
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {"application": "Paint"}), _say("Listo.")])
+    mind.prefix_tokens = prefix
+    mind.decide(1, "mira Paint")
+    text = "".join(str(n % 10) for n in range(chars))
+    observation = json.dumps({"status": "completed", "observed": {"text": text}})
+    mind.continue_turn(2, observation)
+    return mind, server, observation, text, _last_result(server)
+
+
+def _last_result(server) -> str:
+    return next(m["content"] for m in reversed(server.bodies[-1]["messages"]) if m.get("tool_call_id"))
+
+
+def test_a_result_past_the_room_of_a_turn_reaches_the_model_cut_and_says_so(tmp_path: Path) -> None:
+    # P0.10 (noche 27-10, NB-R1-X5): the mind had no bound per result and trusted the kernel's 8 KiB, but a process list
+    # reaches 48,000 characters and some turn.continue re-read 10-12k tokens. A result past the room the history keeps
+    # for one (RESULT_TOKENS) is cut by size before it is sent, never after a refusal, and the cut is said where the
+    # model reads; its facts line stays whole after it.
+    from baxy_mind.mind import CUT_RESULT, RESULT_TOKENS
+    mind, server, observation, text, content = _big_result(tmp_path, 48000)
+    assert len(server.bodies) == 2  # no refusal, no room made after it
+    body, facts = content.split("\n[En este turno: ")
+    kept, note = body.split(CUT_RESULT.split("{")[0])
+    assert kept.startswith('{"observed":{"text":"' + text[:1000]) and text[:9000] in kept
+    whole = len(kept) + int(note.split(" ")[0])
+    assert note == CUT_RESULT.format(n=whole - len(kept), total=whole)[len(CUT_RESULT.split("{")[0]):]
+    assert len(server.tokenize(body)) <= RESULT_TOKENS
+    assert facts.startswith("input_visible_controls → ")
+    # What the answer check reads is the result as it came.
+    assert mind._turn["receipts"][-1]["observation"] == observation
+
+
+def test_a_result_whose_tokens_cannot_be_counted_is_cut_by_characters_and_the_turn_goes_on(tmp_path: Path) -> None:
+    # Review of P0.10: the call was already counted as done when the tokenizer failed, and the turn broke with the result
+    # outside the conversation (the next decision then read it as never answered).
+    from test_mind_final import _call, _mind, _say
+    from baxy_mind.mind import CUT_RESULT, RESULT_TOKENS, TURN_FACTS
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {"application": "Paint"}), _say("Listo.")])
+    mind.prefix_tokens = 40000
+    mind.decide(1, "mira Paint")
+    server.tokenize = lambda text: (_ for _ in ()).throw(TimeoutError("budget spent"))
+    assert mind.continue_turn(2, json.dumps({"status": "completed", "observed": {"text": "7" * 48000}}))["kind"]
+    body = _last_result(server).split(TURN_FACTS)[0]
+    assert CUT_RESULT.split("{")[0] in body and len(body) <= RESULT_TOKENS
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_bytes().splitlines()]
+    assert any(row.get("stage") == "turn.result_cap" and row.get("error") == "TimeoutError" for row in rows)
+    assert any(row.get("stage") == "turn.aid" and row.get("aids", {}).get("result_cap") for row in rows)
+
+
+def test_a_result_within_the_room_of_a_turn_goes_whole(tmp_path: Path) -> None:
+    from baxy_mind.mind import CUT_RESULT, RESULT_TOKENS
+    _, _, _, text, content = _big_result(tmp_path, RESULT_TOKENS * 4 - 200)
+    assert text + '"}}\n[En este turno: ' in content and CUT_RESULT.split("{")[0] not in content
+
+
+def test_the_bound_per_result_is_an_aid_that_can_be_turned_off(tmp_path: Path, monkeypatch) -> None:
+    from baxy_mind.mind import CUT_RESULT
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    mind, server, observation, text, content = _big_result(tmp_path, 48000)
+    assert text in content and CUT_RESULT.split("{")[0] not in content
+
+
 # --- 9.2a: the notice is the model's words, not the code's (invariant 5: cero respuestas visibles fijas) ---------------
 # Feria 2026-10-27: written once at warm-up it was the same phrase in every turn; the model writes it for the turn's call.
 
