@@ -28,3 +28,5 @@ def test_a_window_not_found_is_told_apart_from_a_field_not_found() -> None:
     field = {"status": "failed", "error": "input_field_not_found"}
     assert _outcome(json.dumps(gone)) == "falló (input_window_not_found)" + WINDOW_NOT_FOUND
     assert WINDOW_NOT_FOUND not in _outcome(json.dumps(field))
+    told = _deduplicated(json.dumps(gone), _outcome(json.dumps(gone)))
+    assert json.loads(told)["observed"] == {"window": 125}

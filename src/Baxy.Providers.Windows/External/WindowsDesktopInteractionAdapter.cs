@@ -1302,7 +1302,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return ExternalJson.FailureBeforeEffect(operation, "input_field_not_readable");
         WindowIdentity identity = delivery.Messages.Identity(window != 0 ? window : frontBefore.Window);
         if (!identity.Alive)
-            return WindowNotFound(operation, window != 0 ? window : frontBefore.Window);
+            return window != 0
+                ? WindowNotFound(operation, window)
+                : ExternalJson.FailureBeforeEffect(operation, "input_window_not_found");
         nint field;
         if (index is int position)
         {

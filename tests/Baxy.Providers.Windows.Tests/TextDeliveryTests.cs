@@ -144,24 +144,28 @@ public sealed class TextDeliveryTests
 
     // Noche NB r1, hallazgo 5 (sesión larga, T2-bloc): the editor brought back a note that already had text, the text went
     // in after it and the reply said only «escribí». Whether the field read back holds text besides the typed one is said
-    // as a typed fact, true or false, by either path, with or without the aid that says where it landed.
-    [TestCase("", false)]
-    [TestCase("lista: ", true)]
-    public async Task ATextReadBackSaysWhetherTheFieldHoldsOtherText(string held, bool other)
+    // as a typed fact, true or false, by either path, with or without the aid that says where it landed. A selection the
+    // text replaced is not kept: a field whose whole text was selected holds only the typed one.
+    [TestCase("", 0, false)]
+    [TestCase("lista: ", 7, true)]
+    [TestCase("lista: ", 2, true)]
+    [TestCase("lista: ", 0, false)]
+    public async Task ATextReadBackSaysWhetherTheFieldHoldsOtherText(string held, int selectedFrom, bool other)
     {
         using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("none");
         FakeFieldMessages notepad = Notepad(held);
-        notepad.Selected[Edit] = (held.Length, held.Length);
+        notepad.Selected[Edit] = (selectedFrom, held.Length);
         var keyboard = new FakeDesktopKeyboard
         {
             Front = new DesktopForeground(4660, 4242, "Sin título: Bloc de notas"),
             FrontProcess = "Notepad",
-            EachCharacter = typed => notepad.Content[Edit] += "hola"[typed].ToString(),
+            EachCharacter = typed => notepad.Content[Edit] =
+                (typed == 0 ? notepad.Content[Edit][..selectedFrom] : notepad.Content[Edit]) + "hola"[typed],
         };
         ExternalCapabilityReceipt typed = await Adapter(keyboard, notepad).InvokeAsync(
             "input.text.type", Json("""{"text":"hola"}"""), CancellationToken.None);
         FakeFieldMessages named = Notepad(held);
-        named.Selected[Edit] = (held.Length, held.Length);
+        named.Selected[Edit] = (selectedFrom, held.Length);
         ExternalCapabilityReceipt sent = await Adapter(new FakeDesktopKeyboard(), named).InvokeAsync(
             "input.text.type", Json("""{"text":"hola","window":4660}"""), CancellationToken.None);
 

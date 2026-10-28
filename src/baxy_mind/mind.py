@@ -341,8 +341,8 @@ def _deduplicated(observation: str, outcome: str) -> str:
     words for it, written right after it) already says, so the model reads each fact once. On the holdout v4 the first
     spoken answer after a tool went 3.4 → 4.3 s p50, turn.continue reading 124 → 156 tokens. Left out only where the line
     says it: a completed call's status and verification («completado y verificado», «lectura: …»), its fullPath («en
-    C:\\…»), alreadyRunning true (ALREADY_OPEN),
-    otherTextInField true (OTHER_TEXT), an after that is only {"same": true} (SAME_WINDOW) and stateAfter's
+    C:\\…»), alreadyRunning true (ALREADY_OPEN), otherTextInField true (OTHER_TEXT), windowFound false
+    (WINDOW_NOT_FOUND), an after that is only {"same": true} (SAME_WINDOW) and stateAfter's
     requestedStateReached (REREAD). The rest stays as it came, in the App's compact JSON; a result with none of them is
     the App's own text."""
     try:
@@ -364,6 +364,8 @@ def _deduplicated(observation: str, outcome: str) -> str:
             del observed["alreadyRunning"]
         if observed.get("otherTextInField") is True and OTHER_TEXT in outcome:
             del observed["otherTextInField"]
+        if observed.get("windowFound") is False and WINDOW_NOT_FOUND in outcome:
+            del observed["windowFound"]
         if observed.get("after") == {"same": True} and SAME_WINDOW in outcome:
             del observed["after"]
         after = observed.get("stateAfter")

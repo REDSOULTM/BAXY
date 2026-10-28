@@ -130,8 +130,8 @@ internal readonly record struct CaretText(string Text, string Unit, bool Bounded
 /// chose, as it was read (auditoría C9); and, read back, where the text landed in what the field held (Práctica V5E023,
 /// <see cref="WindowsTextDelivery.Landed"/>). Práctica V5E061: the part of the text a replacement changed
 /// (<see cref="WindowsTextDelivery.Replace"/>), and how many times the field's text held it when it was refused. Noche
-/// NB r1, hallazgo 5: read back by the edit control's messages, whether the field holds text besides the one written
-/// (<c>OtherText</c>; null by any other method).</summary>
+/// NB r1, hallazgo 5: a text typed and read back by the edit control's messages says whether the field holds text
+/// besides the one written (<c>OtherText</c>); null for a replaced part, a key, or UI Automation.</summary>
 internal readonly record struct FieldDelivery(
     string Method, bool Delivered, bool EffectMayHaveOccurred, string? Error, string FieldClass, string? Entry = null,
     string? Landed = null, string? Replaced = null, int Occurrences = 0, bool? OtherText = null);
