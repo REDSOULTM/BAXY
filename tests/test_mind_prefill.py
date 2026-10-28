@@ -653,3 +653,116 @@ def test_the_sidecar_reads_again_once_a_request_it_gave_way_to_is_answered(tmp_p
                                                       + (f":{message['id']}" if "id" in message else "")))
     assert sidecar.main() == 0
     assert [e for e in events if e != "hello"] == ["turn.result:1", "gave way", "session.exported:2", "prefill"]
+
+
+def test_the_sidecar_does_not_read_again_while_an_early_decision_is_held(tmp_path: Path,
+                                                                        monkeypatch: pytest.MonkeyPatch) -> None:
+    # The mind holds the early decision's own state then (early.set_aside): it is read once that one is put back.
+    import threading
+    import time
+    from baxy_mind import __main__ as sidecar
+    servers: list = []
+    events: list[str] = []
+    done = threading.Event()
+    incoming = [{"type": "turn.decide", "id": 1, "text": "hola"}, {"type": "session.export", "id": 2}, None]
+
+    class FakeServer:
+        REQUEST_SECONDS = 24.0
+        name = "model.gguf"
+        deadline = None
+
+        def __init__(self, *args, **kwargs) -> None:
+            servers.append(self)
+
+        def start(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class FakeMind:
+        foresee = None
+        gave_way = None
+
+        def __init__(self, *args) -> None:
+            pass
+
+        def export_session(self) -> list:
+            return []
+
+        def prefill(self, clock: bool = False) -> bool:
+            self.gave_way = None
+            if "gave way" not in events:
+                until = time.monotonic() + 2
+                while not servers[0].yields() and time.monotonic() < until:
+                    time.sleep(0.01)
+                events.append("gave way")
+                self.gave_way, held[0] = clock, time.monotonic() + 0.3  # an early decision is held meanwhile
+                return False
+            events.append("prefill")
+            done.set()
+            return True
+
+    held = [0.0]
+
+    class FakeAnticipation:
+        warm = False
+
+        def __init__(self, *args, **kwargs) -> None:
+            pass
+
+        def settle(self, *args) -> None:
+            return None
+
+        def decide(self, request_id, *args) -> dict:
+            return {"type": "turn.result", "id": request_id}
+
+        def patience(self) -> float | None:
+            return max(0.0, held[0] - time.monotonic()) if held[0] else None
+
+        def expire(self) -> None:
+            if held[0] and time.monotonic() >= held[0]:
+                held[0] = 0.0
+                events.append("expired")
+
+    class FakeSpeech:
+        def foresee(self, text, done):
+            return True
+
+        def prepare(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+    class FakeVoice:
+        def __init__(self, *args, **kwargs) -> None:
+            self.speech = FakeSpeech()
+
+        def unsure(self, text: str) -> list:
+            return []
+
+        def stop(self) -> None:
+            pass
+
+    def read() -> dict | None:
+        if len(incoming) == 1:
+            done.wait(3)
+        return incoming.pop(0)
+
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF", "model.gguf")
+    monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", "llama-server.exe")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    monkeypatch.setattr(sidecar, "declared_build", lambda path: "b11609")
+    monkeypatch.setattr(sidecar, "LlmServer", FakeServer)
+    monkeypatch.setattr(sidecar, "Mind", FakeMind)
+    monkeypatch.setattr(sidecar, "Anticipation", FakeAnticipation)
+    monkeypatch.setattr(sidecar, "Voice", FakeVoice)
+    monkeypatch.setattr(sidecar.protocol, "read_message", read)
+    monkeypatch.setattr(sidecar.protocol, "write_message",
+                        lambda message: events.append(str(message.get("type"))
+                                                      + (f":{message['id']}" if "id" in message else "")))
+    assert sidecar.main() == 0
+    assert [e for e in events if e != "hello"] == ["turn.result:1", "gave way", "session.exported:2", "expired",
+                                                   "prefill"]
