@@ -4,8 +4,9 @@ Each run gets a random letter and its label is blanked in what the judge reads; 
 apart, beside the runs, for whoever wants to uncover the letters (each verdict goes back to its run in memory). The conversations of
 every run are shuffled together and cut into tandas of a few lines (a conversation is never split); each tanda is one
 `claude -p` with no tools, the criterion of artifacts/renew/maximo/CRITERIO_FALSEDADES.md as its system prompt and a
-JSON schema for its verdicts, several at once, each stopped at five minutes. A line a tanda did not return a verdict
-for is a line not judged (unparsed, with its cause), never a true one.
+JSON schema for its verdicts, several at once, each stopped at five minutes. Every line is read VOTES times, each time
+shuffled anew among other conversations, and takes the majority. A line no reading returned a verdict for is a line not judged (unparsed, with its cause), never a
+true one.
 Figures are comparable only with runs this same judge read: the runs judged before 2026-10-27 by the local 35B carry
 judge.gguf in their summary (judge.juez "claude" here) and are compared only among themselves, or judged again here.
 """
@@ -28,6 +29,10 @@ MODEL = os.environ.get("BAXY_RENEW_CLAUDE_JUDGE_MODEL", "opus")
 TANDA_SECONDS = 300  # ningún paso de medición pasa de 5 minutos (trabajo.md)
 LINES_PER_TANDA = 10
 PARALLEL = 8
+# Three readings of one recorded bank (base s1, 2026-10-27) agreed on four lines, and each made false a fifth one that
+# the other two called doubtful: one vote's noise is as large as what is compared. Three, as the 35B's seeds; each
+# reading in an order of its own, since three votes on one same tanda leaned together (its neighbours swayed them).
+VOTES = 3
 
 VERDICTS = {"type": "object", "required": ["lineas"], "additionalProperties": False, "properties": {"lineas": {
     "type": "array", "items": {"type": "object", "additionalProperties": False,
@@ -150,32 +155,55 @@ def verdicts_of(reply: dict, marks: dict[str, dict]) -> dict[str, dict | str]:
     return out
 
 
-def row_of(line: dict, verdict: dict | str) -> dict:
-    row = {"id": line["id"], "turn": line["turn"], "line": line["line"]}
+def majority(votes: list[dict | str]) -> tuple[dict | str, int, int]:
+    """A line's verdict from its votes, with its false and its readable votes: falsa if most readable votes say so,
+    dudosa if most say falsa or dudosa, verdadera if not; a tie on falsa is a line not judged, and so is a line with no
+    readable vote (the first vote's cause)."""
+    readable = [vote for vote in votes if isinstance(vote, dict)]
+    if not readable:
+        return votes[0], 0, 0
+    false = sum(vote["veredicto"] == "falsa" for vote in readable)
+    if false * 2 == len(readable):
+        return "empate entre los votos del juez", false, len(readable)
+    if false * 2 > len(readable):
+        outcome = "falsa"
+    elif sum(vote["veredicto"] != "verdadera" for vote in readable) * 2 > len(readable):
+        outcome = "dudosa"
+    else:
+        outcome = "verdadera"
+    return next(vote for vote in readable if vote["veredicto"] == outcome), false, len(readable)
+
+
+def row_of(line: dict, votes: list[dict | str]) -> dict:
+    verdict, false_votes, readable = majority(votes)
+    row = {"id": line["id"], "turn": line["turn"], "line": line["line"], "votos_falsedad": f"{false_votes}/{readable}"}
+    unread = [vote for vote in votes if isinstance(vote, str)]
+    if unread and readable:
+        row["votos_ilegibles"] = unread
     if isinstance(verdict, str):
         return {**row, "afirmaciones": [], "falsedad": False, "unparsed": verdict}
     false = verdict["veredicto"] == "falsa"
     return {**row, "afirmaciones": [{"frase": verdict["frase"], "respaldo": verdict["porque"], "falsa": false}],
-            "falsedad": false, "dudosa": verdict["veredicto"] == "dudosa", "votos_falsedad": f"{int(false)}/1"}
+            "falsedad": false, "dudosa": verdict["veredicto"] == "dudosa"}
 
 
 def judge(runs: dict[str, list[dict]], conversation, key_path: Path,
           ask=None) -> tuple[dict[str, list[dict]], list[str]]:
-    """Every line of every run, judged blind in tandas run in parallel: rows per run in the order they were said, and
-    the models that answered."""
+    """Every line of every run, judged blind VOTES times, each reading shuffled anew into tandas, all in parallel: rows
+    per run in the order they were said, and the models that answered."""
     ask = ask or ask_claude
     key, blinded = blind(runs, conversation)
     key_path.write_text(json.dumps({"clave": key}, ensure_ascii=False), encoding="utf-8")
     system = INSTRUCTIONS + CRITERIO.read_text(encoding="utf-8")
-    work = tandas(blinded)
-    judged: dict[int, dict] = {}  # id() of each line → its row
+    votes: dict[int, list[dict | str]] = {}  # id() of each line → its votes
     models: set[str] = set()
     with ThreadPoolExecutor(PARALLEL) as pool:
         started = time.monotonic()
         futures = {}
-        for tanda in work:
-            prompt, marks = prompt_of(tanda)
-            futures[pool.submit(ask, prompt, system)] = marks
+        for _ in range(VOTES):
+            for tanda in tandas(random.SystemRandom().sample(blinded, len(blinded))):
+                prompt, marks = prompt_of(tanda)
+                futures[pool.submit(ask, prompt, system)] = marks
         for done, future in enumerate(as_completed(futures), start=1):
             marks = futures[future]
             try:
@@ -185,10 +213,10 @@ def judge(runs: dict[str, list[dict]], conversation, key_path: Path,
             models.update(reply.get("models") or [])
             verdicts = verdicts_of(reply, marks)
             for mark, line in marks.items():
-                judged[id(line)] = row_of(line, verdicts[mark])
-            false = sum(judged[id(line)]["falsedad"] for line in marks.values())
-            unread = sum("unparsed" in judged[id(line)] for line in marks.values())
-            print(f"tanda {done}/{len(work)}: {len(marks)} líneas, {false} falsas, {unread} sin juzgar"
+                votes.setdefault(id(line), []).append(verdicts[mark])
+            false = sum(isinstance(v, dict) and v["veredicto"] == "falsa" for v in verdicts.values())
+            unread = sum(isinstance(v, str) for v in verdicts.values())
+            print(f"lectura {done}/{len(futures)}: {len(marks)} líneas, {false} falsas, {unread} sin juzgar"
                   f" ({time.monotonic() - started:.0f} s){' — ' + reply['error'] if 'error' in reply else ''}",
                   flush=True)
     rows = {}
@@ -196,7 +224,7 @@ def judge(runs: dict[str, list[dict]], conversation, key_path: Path,
         cases = [case["id"] for case in runs[label]]
         mine = sorted((line for conv in blinded for line in conv["lines"] if line["run"] == label),
                       key=lambda line: (cases.index(line["id"]), line["turn"], line["at"]))
-        rows[label] = [judged[id(line)] for line in mine]
+        rows[label] = [row_of(line, votes[id(line)]) for line in mine]
     return rows, sorted(models)
 
 
@@ -205,4 +233,4 @@ def record() -> dict:
     the models that answered, after the judging)."""
     return {"juez": "claude", "model": MODEL, "criterio": str(CRITERIO.relative_to(ROOT)),
             "criterio_sha256": run_meta.sha256_file(CRITERIO), "script_sha256": run_meta.sha256_file(Path(__file__)),
-            "votos": 1, "lineas_por_tanda": LINES_PER_TANDA, "tanda_segundos": TANDA_SECONDS}
+            "votos": VOTES, "lineas_por_tanda": LINES_PER_TANDA, "tanda_segundos": TANDA_SECONDS}

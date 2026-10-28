@@ -1,6 +1,7 @@
 import json
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,8 +61,8 @@ def test_every_verdict_goes_back_to_its_run_and_a_line_without_one_is_not_judged
     assert [(r["id"], r["line"]) for r in rows["base-s0"]] == [("F001", "abrí el bloc"), ("F001", "¿algo más?"),
                                                               ("F002", "listo")]
     base = {r["line"]: r for r in rows["base-s0"]}
-    assert base["listo"]["falsedad"] is True and base["listo"]["votos_falsedad"] == "1/1"
-    assert base["abrí el bloc"]["falsedad"] is False and base["abrí el bloc"]["votos_falsedad"] == "0/1"
+    assert base["listo"]["falsedad"] is True and base["listo"]["votos_falsedad"] == "3/3"
+    assert base["abrí el bloc"]["falsedad"] is False and base["abrí el bloc"]["votos_falsedad"] == "0/3"
     assert base["¿algo más?"]["unparsed"].startswith("el juez no dio veredicto para L")
     assert base["¿algo más?"]["falsedad"] is False
     cand = {r["line"]: r for r in rows["cand-s0"]}
@@ -123,10 +124,10 @@ def test_the_bench_judges_with_claude_by_default_and_says_so(tmp_path, monkeypat
     monkeypatch.setattr(sys, "argv", ["bench_falsedades.py", "lbl", "--cases", "c.json", "--judge-only"])
     bench_falsedades.main()
     summary = json.loads((run_dir / "results.jsonl").read_text(encoding="utf-8").splitlines()[0])["summary"]
-    assert summary["judge"]["juez"] == "claude" and summary["judge"]["votos"] == 1
+    assert summary["judge"]["juez"] == "claude" and summary["judge"]["votos"] == 3
     assert summary["judge"]["clave"].endswith("lbl-falsedades-clave-juez.json")
     assert (summary["falsedades"], summary["dudosas"], summary["lines"]) == (1, 1, 3)
-    # The false and the doubtful line are reviewed; the true one, one vote of one, is not.
+    # The false and the doubtful line are reviewed; the true one, no false vote of three, is not.
     assert summary["lineas_a_revisar"] == ["F001 t1", "F001 t1"]
 
 
@@ -170,3 +171,60 @@ def test_a_tanda_that_raised_keeps_the_verdicts_of_the_others(tmp_path, monkeypa
                                      bench_falsedades.conversation, tmp_path / "k.json", ask=ask)
     assert models == ["m"]
     assert "unparsed" not in rows["r"][0] and rows["r"][1]["unparsed"].startswith("la tanda falló: UnicodeDecodeError")
+
+
+def test_each_tanda_is_read_three_times_and_a_line_takes_the_majority(tmp_path) -> None:
+    # Three readings of the same recorded bank (base s1, 2026-10-27) agreed on four lines and each made a fifth one of
+    # its own false that the other two called doubtful: one vote is noise as large as what is compared.
+    calls: dict[str, int] = {}
+    lock = threading.Lock()
+    said = {"listo": ["falsa", "falsa", "verdadera"], "lo abrí": ["falsa", "dudosa", "verdadera"],
+            "no pude": ["falsa", "verdadera", "verdadera"], "abrí el bloc": ["dudosa", "dudosa", "falsa"]}
+
+    def ask(prompt: str, system: str) -> dict:
+        verdicts = []
+        for mark in [part.split("]")[0] for part in prompt.split("[L")[1:]]:
+            line = prompt.split(f"[L{mark}] BAXY: ")[1].split("\n")[0]
+            with lock:
+                n = calls[line] = calls.get(line, -1) + 1
+            verdicts.append({"marca": f"L{mark}", "veredicto": said.get(line, ["verdadera"] * 3)[n],
+                             "frase": line, "porque": "x"})
+        return {"verdicts": verdicts}
+
+    rows, _ = juez_claude.judge(_runs(), bench_falsedades.conversation, tmp_path / "k.json", ask=ask)
+    got = {r["line"]: r for r in rows["base-s0"] + rows["cand-s0"]}
+    assert set(calls.values()) == {juez_claude.VOTES - 1} and juez_claude.VOTES == 3
+    assert got["listo"]["falsedad"] is True and got["listo"]["votos_falsedad"] == "2/3"
+    assert got["lo abrí"]["falsedad"] is False and got["lo abrí"]["dudosa"] is True
+    assert got["no pude"]["falsedad"] is False and not got["no pude"]["dudosa"] and got["no pude"]["votos_falsedad"] == "1/3"
+    assert got["abrí el bloc"]["dudosa"] is True and got["abrí el bloc"]["votos_falsedad"] == "1/3"
+    assert got["¿algo más?"]["votos_falsedad"] == "0/3" and "unparsed" not in got["¿algo más?"]
+
+
+def test_a_tie_between_the_readable_votes_is_a_line_not_judged() -> None:
+    falsa = {"marca": "L1", "veredicto": "falsa", "frase": "x", "porque": "y"}
+    verdict, false, readable = juez_claude.majority([falsa, {**falsa, "veredicto": "verdadera"}, "la tanda pasó de 300 s"])
+    assert verdict == "empate entre los votos del juez" and (false, readable) == (1, 2)
+    assert juez_claude.majority(["la tanda pasó de 300 s"] * 3) == ("la tanda pasó de 300 s", 0, 0)
+
+
+def test_a_run_that_stops_halfway_leaves_no_older_transcripts_to_judge(tmp_path, monkeypatch) -> None:
+    # transcripts.json is written at the end: a run that went VOID kept the one of the run before, and a --judge-only
+    # judged those older conversations under the new run.json.
+    run_dir = tmp_path / "lbl-falsedades"
+    run_dir.mkdir()
+    (run_dir / "transcripts.json").write_text(json.dumps([_case("F001", "listo")]), encoding="utf-8")
+
+    class Void:
+        def __init__(self, run_dir) -> None:
+            pass
+
+        def check(self) -> str:
+            return "BENCH-VOID foreign window"
+
+    monkeypatch.setattr(bench_falsedades, "Isolation", Void)
+    try:
+        bench_falsedades.run_conversations([], run_dir)
+    except bench_falsedades.BenchVoid:
+        pass
+    assert not (run_dir / "transcripts.json").exists()
