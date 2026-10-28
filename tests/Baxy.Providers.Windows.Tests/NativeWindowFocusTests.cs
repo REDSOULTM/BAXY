@@ -21,6 +21,22 @@ public sealed class NativeWindowFocusTests
             10, (nint)foreground, window => owners.TryGetValue(window, out nint owner) ? owner : 0), Is.EqualTo(holds));
     }
 
+    // C37 (NB-R6, R6N2p3): resolving a process listed an application's untitled floating bar (owned, 437×23) first,
+    // and window.snap moved it instead of the document window. An owned window without a title is not one of the
+    // process's windows; an owned dialog with a title and an unowned window are.
+    [TestCase(11L, "", false)]
+    [TestCase(11L, "   ", false)]
+    [TestCase(12L, "Guardar como", true)]
+    [TestCase(10L, "", true)]
+    [TestCase(10L, "c13 - Word", true)]
+    public void AnOwnedWindowWithoutATitleIsNotListedForItsProcess(long window, string title, bool listed)
+    {
+        var owners = new Dictionary<nint, nint> { [11] = 10, [12] = 10 };
+        Assert.That(Win32WindowControlPlatform.ListedForProcess(
+            (nint)window, handle => owners.TryGetValue(handle, out nint owner) ? owner : 0, _ => title),
+            Is.EqualTo(listed));
+    }
+
     [TestCase("normal")]
     [TestCase("maximized")]
     public void VisibleWindowFocusDoesNotChangeShowState(string state)
