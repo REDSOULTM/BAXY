@@ -1,4 +1,4 @@
-# Handoff — arreglos de los fallos de la feria — 2026-10-27 — f74f0d0eb
+# Handoff — arreglos de los fallos de la feria — 2026-10-27 — f5d3bd162
 
 ## Objetivo
 
@@ -8,9 +8,10 @@ de la feria: `F:\BAXYeval\fallos\INFORME.md` en el PC.
 
 ## Estado
 
-- La rama `pc-arr-fallos` (hub) queda en **f74f0d0eb**: base 5677d108a más R1 a R6 y las ramas del notebook NB-W1,
-  NB-W3, NB-W5 y NB-W6. NB-L la despliega en el notebook a las 21:00, con el paquete publicado en el PC en
-  `F:\BAXYeval\deploy\f74f0d0eb\` (sólo cambian `Baxy.exe` y `core\baxy-core.exe`).
+- El código final de `pc-arr-fallos` (hub) es **f5d3bd162**: base 5677d108a más R1 a R6 y las ramas del notebook
+  NB-W1, NB-W3, NB-W5 y NB-W6. En el notebook está desplegado f74f0d0eb desde las 20:47. f5d3bd162 sólo añade un
+  cambio de mente (la búsqueda de «qué/quién es X» no la retiene la duda): para llevarlo basta `checkout --detach` en
+  la entrega. Paquete en `F:\BAXYeval\deploy\f5d3bd162\` (sólo cambian `Baxy.exe` y `core\baxy-core.exe`).
 - Medido frente a la base. El juez del banco de decisión es por reglas; el arnés y el catálogo son los volcados de
   cada kernel.
 
@@ -19,9 +20,9 @@ de la feria: `F:\BAXYeval\fallos\INFORME.md` en el PC.
   | Decisión v11 ×3 | 198,67 | 198,67 | 0 [−4, +4] |
   | v6 abierto s0 | 617 | 622 | +5 [−4, +14] |
   | Acciones equivocadas v6 | 78 | 74 | −4 |
-  | Batería parafraseada de la feria ×3 | 33,67 | 38,0 | +4,3 [+0,7, +8,7] |
-  | Batería held-out del NB (286) | 195 | 213 | +18 [+6, +30], p 0,006 |
-  | En vivo en el PC | 13/20 + 0/4 al escribir | 19/22 | |
+  | Batería parafraseada de la feria ×2 (f5d3bd162) | 33,67 | 39,5 | +5,8 [+1,3, +10,8], p 0,03 |
+  | Batería held-out del NB (286) (f5d3bd162) | 195 | 216 | +21 [+8, +34] |
+  | En vivo en el PC (f5d3bd162) | 13/20 + 0/4 al escribir | 20/22 | |
   | En vivo en el NB | 19/31 | 25/31 | |
   | Falsedades v11 en el NB, lectura a ciegas | 4 claras | 3 claras | |
 
