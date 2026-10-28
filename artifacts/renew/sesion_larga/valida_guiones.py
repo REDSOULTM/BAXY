@@ -104,17 +104,33 @@ def valida(path: Path) -> list[str]:
         if bench_decision.judge(e, {"kind": "conversation", "reply": "listo, hecho"}, None, ENUMS) is True \
                 and "text" not in {o["kind"] for o in e.get("options") or [e]}:
             errs.append(f"{where}: el juez acepta «listo, hecho» en un turno {e['kind']}")
-        if "lectura" in t:  # el texto que el turno debe recibir, en la ranura que lee su primera llamada
-            got = json.loads(bsl.observation("file.read", {}, "read_only", lecturas, t["n"] * bsl.MAX_CALLS + 1))
-            if not got["observed"]["text"].startswith(s["lecturas_base"][t["lectura"]][:500]):
-                errs.append(f"{where}: no recibe su lectura {t['lectura']} (falta coloca_lecturas.py)")
+        if "lectura" in t:  # el texto entero que el turno debe recibir, en la ranura que lee su primera llamada
+            base = s.get("lecturas_base")
+            if not base:
+                errs.append(f"{where}: lleva lectura y el guion no tiene lecturas_base (falta coloca_lecturas.py)")
+            bodied = 0
+            for op, args in ops_of(e):  # una opción sin cuerpo (browser.navigate) lo recibe en su browser.page.read
+                got = json.loads(bsl.observation(op, args, RISK.get(op, ""), lecturas, t["n"] * bsl.MAX_CALLS + 1))
+                bodied += bool(got["observed"])
+                if not got["observed"]:
+                    continue
+                body, want = got["observed"].get("text"), (base or [])[t["lectura"]] if base else ""
+                if body is None or not want:  # una búsqueda: sus resultados son trozos del texto
+                    continue
+                if not (body.startswith(want) or want.startswith(body)):
+                    errs.append(f"{where}: {op} no recibe su lectura {t['lectura']} (falta coloca_lecturas.py)")
+                elif len(want) > len(body):
+                    errs.append(f"{where}: su lectura {t['lectura']} pasa de {len(body)} caracteres y se corta")
+            if not bodied:
+                errs.append(f"{where}: ninguna operación aceptada recibe cuerpo en el runner (riesgo no read_only): "
+                            "su lectura no llega")
     # Las tandas de ses.sh (10 turnos) como las corta correr, y el cuerpo que observation da a lecturas y búsquedas.
     for desde in range(1, len(turns) + 1, 10):
         tanda = [t for t in turns if desde <= t["n"] <= desde + 9]
         if not tanda:
             errs.append(f"tanda {desde}: vacía")
         for t in tanda:
-            for op, args in ops_of(t["expect"])[:1]:
+            for op, args in ops_of(t["expect"]):
                 body = json.loads(bsl.observation(op, args, RISK.get(op, ""), lecturas, t["n"] * bsl.MAX_CALLS + 1))
                 if (op == "web.search" or RISK.get(op) in bsl.READ_RISKS) and not body["observed"]:
                     errs.append(f"turno {t['n']}: observation sin cuerpo para {op}")

@@ -5,8 +5,9 @@ usage: py -3.12 -X utf8 coloca_lecturas.py SESION.json [...]
 bench_sesion_larga.observation da a la llamada k (1..MAX_CALLS) del turno n el cuerpo que empieza en
 lecturas[(n * MAX_CALLS + k) % len(lecturas)]: con los textos tal cual, un turno que lee «la nota de las reglas» recibe
 el que toque por rotación, y el siguiente («mándale la hora que dice esa nota») no tiene el dato. Un turno con
-`"lectura": i` recibe en su primera llamada el texto i de `lecturas_base` (los textos del guion); las demás ranuras
-llevan los textos por rotación. Idempotente: se rehace siempre desde `lecturas_base`.
+`"lectura": i` recibe en sus llamadas el texto i de `lecturas_base` (los textos del guion; en la segunda y la tercera
+también, para el browser.page.read que sigue a un browser.navigate); las demás ranuras llevan los textos por rotación.
+Idempotente: se rehace siempre desde `lecturas_base`.
 """
 import json
 import sys
@@ -21,7 +22,8 @@ def coloca(session: dict) -> dict:
     slots = [base[i % len(base)] for i in range(last * MAX_CALLS + MAX_CALLS + 1)]
     for turn in session["turnos"]:
         if "lectura" in turn:
-            slots[turn["n"] * MAX_CALLS + 1] = base[turn["lectura"]]
+            for call in range(1, MAX_CALLS + 1):
+                slots[turn["n"] * MAX_CALLS + call] = base[turn["lectura"]]
     return {**session, "lecturas_base": base, "lecturas": slots}
 
 
