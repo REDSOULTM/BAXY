@@ -43,6 +43,7 @@ internal sealed partial class UserBrowserSurface
     // Noche r7 (pre-web-comprobar): what an unconfirmed navigation's address field showed after the link (addressSeen),
     // so the result says what was checked and why it was not enough, never the address itself.
     internal const string AddressNotRead = "not_read";
+    internal const string Unreadable = "unreadable";
     internal const string NoAddress = "no_address";
     internal const string PageFromBefore = "page_from_before";
     internal const string OtherPage = "other_page";
@@ -90,8 +91,9 @@ internal sealed partial class UserBrowserSurface
     // After a redirect of the same site, how long the destination itself may still arrive (about a second).
     private const int RedirectSettlePolls = 4;
     // Noche r7 (R7-NB-5): when the address field of a window whose title moved on still shows the page from before the
-    // link, how long before it is read again although the title does not move (about a second).
-    private const int StaleRereadPolls = 4;
+    // link, how long before it is read once more although the title does not move (two seconds). That one read is
+    // outside the AddressReads budget, so the title changes after it are still read and waited for.
+    private const int StaleRereadPolls = 8;
     // A baseline read that failed this fast (not one that ran out its time) is tried once more.
     private static readonly TimeSpan BaselineRetryWithin = TimeSpan.FromSeconds(3);
     // When the front window already showed the destination, how long before its address is read again (two seconds).
@@ -675,9 +677,10 @@ internal sealed partial class UserBrowserSurface
         bool clue = false;
         string? browserSegment = BrowserTitleSegment(before.Titles.Values);
         string seenLast = AddressNotRead;
-        // Noche r7 (R7-NB-5): a window whose address field still showed the page from before the link is read again
+        // Noche r7 (R7-NB-5): a window whose address field still showed the page from before the link is read once more
         // from this poll on, although its title does not move.
         var rereadAt = new Dictionary<nint, int>();
+        var reread = new HashSet<nint>();
 
         // The address read of a window: the arrival when it is the destination; a fresh address of the same site
         // is kept as a redirect. Anything else is noted by kind (seenLast), never by address.
@@ -685,7 +688,7 @@ internal sealed partial class UserBrowserSurface
         {
             if (!TryAddress(text, out Uri? observed))
             {
-                seenLast = NoAddress;
+                seenLast = text is null ? Unreadable : NoAddress;
                 return null;
             }
             if (ReachedTarget(target, observed))
@@ -693,7 +696,8 @@ internal sealed partial class UserBrowserSurface
             if (before.ShowedBefore(window, observed))
             {
                 seenLast = PageFromBefore;
-                rereadAt[window] = attempt + StaleRereadPolls;
+                if (reread.Add(window))
+                    rereadAt[window] = attempt + StaleRereadPolls;
             }
             else if (!ofSite(observed) || ContradictsTarget(target, observed))
                 seenLast = OtherPage;
@@ -708,7 +712,8 @@ internal sealed partial class UserBrowserSurface
             return null;
         }
 
-        for (; attempt < NavigationPolls && attempt <= redirectUntil && (reads < AddressReads || pending is not null);
+        for (; attempt < NavigationPolls && attempt <= redirectUntil
+            && (reads < AddressReads || pending is not null || rereadAt.Count > 0);
             attempt++)
         {
             await _platform.DelayAsync(Poll, cancellationToken).ConfigureAwait(false);
@@ -742,18 +747,21 @@ internal sealed partial class UserBrowserSurface
             }
             foreach (UserBrowserWindow window in changed)
             {
-                if (pending is not null || reads >= AddressReads)
+                if (pending is not null)
                     break;
                 // A window is read again only once its title moved on: an address
-                // field read while the new tab was still being built says nothing. Noche r7: or once a field that
-                // still showed the page from before the link has had a moment to catch up.
-                if (readTitles.TryGetValue(window.Handle, out string? read)
-                    && string.Equals(read, window.Title, StringComparison.Ordinal)
-                    && !(rereadAt.TryGetValue(window.Handle, out int due) && attempt >= due))
+                // field read while the new tab was still being built says nothing. Noche r7: or, once, when a field
+                // that still showed the page from before the link has had a moment to catch up.
+                bool due = rereadAt.TryGetValue(window.Handle, out int at) && attempt >= at;
+                bool moved = !readTitles.TryGetValue(window.Handle, out string? read)
+                    || !string.Equals(read, window.Title, StringComparison.Ordinal);
+                if (!due && (!moved || reads >= AddressReads))
                     continue;
-                rereadAt.Remove(window.Handle);
                 readTitles[window.Handle] = window.Title;
-                reads++;
+                if (due)
+                    rereadAt.Remove(window.Handle);
+                else
+                    reads++;
                 Task<string?> started = _platform.ReadAddressAsync(window.Handle, cancellationToken).AsTask();
                 if (!started.IsCompleted)
                 {
@@ -767,29 +775,40 @@ internal sealed partial class UserBrowserSurface
             if (alreadyShown && attempt + 1 == SamePagePolls && redirect.Address is null)
             {
                 alreadyShown = false;
-                if (await FrontShowsAsync(browser, target, cancellationToken).ConfigureAwait(false) is { } front)
-                    return front;
+                (PageObservation? front, string? frontSeen) =
+                    await FrontShowsAsync(browser, target, ofSite, cancellationToken).ConfigureAwait(false);
+                if (front is { } shownNow)
+                    return shownNow;
+                seenLast = frontSeen ?? seenLast;
             }
         }
-        if (alreadyShown && redirect.Address is null
-            && await FrontShowsAsync(browser, target, cancellationToken).ConfigureAwait(false) is { } last)
-            return last;
+        if (alreadyShown && redirect.Address is null)
+        {
+            (PageObservation? last, string? lastSeen) =
+                await FrontShowsAsync(browser, target, ofSite, cancellationToken).ConfigureAwait(false);
+            if (last is { } shownLast)
+                return shownLast;
+            seenLast = lastSeen ?? seenLast;
+        }
         return redirect.Address is null ? new(null, nint.Zero, Seen: seenLast, Changed: clue) : redirect;
     }
 
     /// <summary>
     /// The front window, when its address field shows the destination asked for. Only called when it showed it before
-    /// the link: its authority says so (<see cref="AlreadyShownAuthority"/>).
+    /// the link: its authority says so (<see cref="AlreadyShownAuthority"/>). Otherwise what the read showed, by kind
+    /// (<see cref="PageObservation.Seen"/>), or null when no window was there to read.
     /// </summary>
-    private async ValueTask<PageObservation?> FrontShowsAsync(
-        UserBrowserIdentity browser, Uri target, CancellationToken cancellationToken)
+    private async ValueTask<(PageObservation? Arrival, string? Seen)> FrontShowsAsync(
+        UserBrowserIdentity browser, Uri target, Func<Uri, bool> ofSite, CancellationToken cancellationToken)
     {
         if (FrontWindow(browser) is not { } front)
-            return null;
+            return (null, null);
         string? text = await _platform.ReadAddressAsync(front.Handle, cancellationToken).ConfigureAwait(false);
-        return TryAddress(text, out Uri? observed) && ReachedTarget(target, observed)
-            ? new PageObservation(observed, front.Handle, AlreadyShownAuthority)
-            : null;
+        if (!TryAddress(text, out Uri? observed))
+            return (null, text is null ? Unreadable : NoAddress);
+        if (ReachedTarget(target, observed))
+            return (new PageObservation(observed, front.Handle, AlreadyShownAuthority), null);
+        return (null, ofSite(observed) && !ContradictsTarget(target, observed) ? SameSiteNotKnownNew : OtherPage);
     }
 
     /// <summary>The address a moment later: a service that asks to sign in redirects after the first paint.</summary>

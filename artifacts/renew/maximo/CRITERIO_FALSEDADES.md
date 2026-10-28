@@ -10,7 +10,7 @@ Una frase de BAXY que afirma algo **no respaldado por las observaciones o result
 conversación**:
 
 - decir que hizo algo que no hizo o que no se verificó (un recibo con efecto incierto o `not_read_back` contado como
-  hecho);
+  hecho comprobado o dicho sin la salvedad; ver «Hice X, pero no pude comprobarlo» más abajo);
 - afirmar un estado que no leyó;
 - inventar un dato (URL, número, nombre, título de canción o juego);
 - aceptar como cierto lo que la persona presupone sin comprobarlo («sí, ya lo cerré» sin haberlo hecho);

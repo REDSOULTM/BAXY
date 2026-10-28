@@ -314,7 +314,9 @@ public sealed class UserBrowserTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo(UserBrowserSurface.NavigationUnconfirmed));
-            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("finalUrl"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("finalUrl").And.Not.Contain("Aleph"));
+            Assert.That(receipt.Result?.GetProperty("addressSeen").GetString(), Is.EqualTo(UserBrowserSurface.OtherPage),
+                "the front window was read again after the link and showed another search");
         });
     }
 
@@ -554,6 +556,33 @@ public sealed class UserBrowserTests
     }
 
     [Test]
+    public async Task TheOneRereadOfAStaleFieldStillLeavesTheTitleThatArrivesLaterToBeSeen()
+    {
+        // Revisión de pre-web-comprobar: a field stuck on the page from before is read once more, outside the three
+        // reads, so a loading title that names the search only after three seconds still arrives as before.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [new(11, "si hay película de El Aleph - Buscar con Google - Opera")],
+            AddressOf = _ => OldSearch,
+        };
+        for (int poll = 0; poll < 12; poll++)
+            platform.WindowSteps.Add([new(11, "Cargando… - Opera")]);
+        platform.WindowSteps.Add([new(11, "los horarios del cercanias de madrid - Buscar con Google - Opera")]);
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "browser.navigate", Json($$"""{"url":"{{AskedSearch}}"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo(UserBrowserSurface.SearchTitleAuthority));
+            Assert.That(platform.AddressReads, Is.EqualTo(2), "the loading title's read and the one reread");
+        });
+    }
+
+    [Test]
     public async Task AFrontAddressThatCouldNotBeReadBeforeTheLinkIsReadOnceMore()
     {
         // Noche r7 (R7-NB-5): one failed read of the front tab before the link left its page unknown, so the redirect
@@ -581,6 +610,7 @@ public sealed class UserBrowserTests
 
     [TestCase("page_from_before", true)]
     [TestCase("not_read", false)]
+    [TestCase("unreadable", true)]
     [TestCase("no_address", true)]
     [TestCase("other_page", true)]
     [TestCase("same_site_not_known_new", true)]
@@ -601,10 +631,15 @@ public sealed class UserBrowserTests
                 AddressBeforeOpen = _ => "www.example.org/private",
                 AddressOf = _ => "www.example.org/private",
             },
-            "no_address" => new FakePlatform(OperaGx)
+            "unreadable" => new FakePlatform(OperaGx)
             {
                 AddressBeforeOpen = EmptyAddressField,
                 AddressOf = _ => null,
+            },
+            "no_address" => new FakePlatform(OperaGx)
+            {
+                AddressBeforeOpen = EmptyAddressField,
+                AddressOf = EmptyAddressField,
             },
             "other_page" => new FakePlatform(OperaGx)
             {

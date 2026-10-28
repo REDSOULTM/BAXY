@@ -69,14 +69,17 @@ tomar el navegador.
      con otra consulta (uso real v3 t4, c10) y es nueva en esa ventana (ventana
      nueva, o la del frente cuando antes mostraba otra cosa). Si el campo de
      la ventana cuyo título cambió sigue mostrando la página de antes (Opera GX
-     tarda en ponerlo al día), se vuelve a leer al cabo de un segundo aunque el
-     título no se mueva, dentro de las tres lecturas (noche r7, R7-NB-5). Una
+     tarda en ponerlo al día), se lee una vez más a los dos segundos aunque el
+     título no se mueva; esa lectura no gasta ninguna de las tres que esperan
+     a un título nuevo (noche r7, R7-NB-5). Una
      dirección de otro sitio no se reporta nunca. Sin lectura que valga, el
      resultado es **incierto** (`user_browser_navigation_unconfirmed`, efecto
      posible) y dice qué se comprobó: `linkSent` (el enlace se entregó al
      navegador), `windowChanged` (alguna ventana suya cambió después) y
-     `addressSeen` (`not_read`, `no_address`, `page_from_before`, `other_page`
-     o `same_site_not_known_new`), nunca la dirección leída de una pestaña. Se
+     `addressSeen` (`not_read`, `unreadable`, `no_address`, `page_from_before`,
+     `other_page` o `same_site_not_known_new`), nunca la dirección leída de una
+     pestaña. `streaming.navigate` y `streaming.play.named` siguen devolviendo
+     su incierto sin esos datos. Se
      dice que se abrió, que no se pudo comprobar y que la persona puede
      comprobarlo: es honesto; dar por comprobada la página no lo es.
    - **YouTube**: la búsqueda HTTP de siempre da el id y el título del primer
