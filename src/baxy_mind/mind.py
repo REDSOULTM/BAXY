@@ -1680,9 +1680,10 @@ class Mind:
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None,
                unsure: list[tuple[str, float]] | None = None) -> dict[str, Any]:
         """``unsure``: the words of a spoken request the ear was not sure of (voice.Voice.unsure)."""
+        # Kept even if the decision fails: the App says how a question ended only once.
+        self._ran_unanswered(self._ended(pending))
         # Review 2026-10-22: a decision that fails (the model server down, an error) takes back what it added, so the
         # next turn never reads an old request without its answer as one still to do.
-        self._ran_unanswered(self._ended(pending))
         turn = self._turn
         if turn and turn.get("asked"):
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
@@ -1870,7 +1871,9 @@ class Mind:
         waiting = f"{wire} → {WAITS_FOR_YES}"
         if waiting in self._ran:
             last = len(self._ran) - 1 - self._ran[::-1].index(waiting)
-            told = f"{wire} → {UNANSWERED.get(str(ended.get('ended')), UNANSWERED['dropped'])}"
+            # One the kernel challenged again after it had started may have had its effect (as ended_result tells it).
+            told = f"{wire} → " + (NO_RESULT_RAN if ended.get("effectUncertain") is True
+                                   else UNANSWERED.get(str(ended.get("ended")), UNANSWERED["dropped"]))
             self._ran = [told if index == last else entry for index, entry in enumerate(self._ran)]
 
     def _ran_told(self) -> list[str]:

@@ -472,3 +472,15 @@ def test_a_question_that_ended_unanswered_no_longer_waits_in_the_clock(tmp_path,
     assert f"app_close → {WAITS_FOR_YES}" not in clock and "app_close → no se ejecutó" in clock
     mind.decide(4, "y otra más")
     assert f"app_close → {WAITS_FOR_YES}" not in _clock_of(server)
+
+
+def test_a_question_that_ended_after_its_call_may_have_started_says_so_in_the_clock(tmp_path) -> None:
+    from baxy_mind.mind import NO_RESULT_RAN
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Calculadora"}), _say("¿Cierro la Calculadora?"),
+                                    _say("Vale.")])
+    mind.wire_to_op = {"app_close": "app.close"}
+    mind.decide(1, "ciérrala")
+    mind.continue_turn(2, ASKS, final=True)
+    mind.decide(3, "otra cosa", {"operation": "app.close", "ended": "expired", "effectUncertain": True})
+    assert f"app_close → {NO_RESULT_RAN}" in _clock_of(server)
