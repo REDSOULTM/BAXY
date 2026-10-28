@@ -5328,7 +5328,7 @@ public sealed class ExternalAdaptersTests
     // operation; a model aid, off with the others. Holdout v6 V6E064 («el volumen déjamelo en treinta mientras veo la
     // serie» set Netflix's own volume): with that operation only named, the model answered in words in 4 of 4 runs; the
     // PC's own call is said with the person's level or amount, as said_folder says its call.
-    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "all", "audio_volume", "level 20")]
+    [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "all", "audio_volume_set", "level 20")]
     [TestCase("audio.app.volume.adjust", """{"app":"volumen","amount":10,"direction":"down"}""", "all",
         "audio_volume_adjust", "amount 10 and direction \"down\"")]
     [TestCase("audio.app.volume.set", """{"app":"volumen","level":20}""", "none", null, null)]

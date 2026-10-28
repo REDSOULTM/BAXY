@@ -753,6 +753,26 @@ public sealed class NativeTurnLoopTests
         });
     }
 
+    // e01442da5 (wire.py): message.send is message_send_set to the model (message_send ⊂ message_send_test). The call
+    // held for the person and the result of one that waits for the person's yes named message_send, a name the model is
+    // not shown; they name the call as the model sees it.
+    [Test]
+    public void ACallHeldForThePersonIsNamedAsTheModelSeesIt()
+    {
+        const BindingFlags Static = BindingFlags.Static | BindingFlags.NonPublic;
+        string next = (string)typeof(NativeTurnLoop).GetMethod("AskThePersonAbout", Static)!
+            .Invoke(null, ["message.send"])!;
+        string waiting = (string)typeof(NativeTurnLoop).GetMethod("Waiting", Static, [typeof(string), typeof(string)])!
+            .Invoke(null, ["{\"status\":\"completed\"}", "message.send"])!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.EndWith("calling message_send_set again is not their answer: it is a new call"));
+            Assert.That(waiting, Does.Contain("message_send_set waits for the person's yes and has not run"));
+            Assert.That(next + waiting, Does.Not.Match(@"\bmessage_send\b(?!_)"));
+        });
+    }
+
     private const string TodaysNext = "nothing ran: ask the person whether to do it; their answer goes in confirm_pending "
         + "(approve true or false); calling web_fetch again is not their answer: it is a new call";
 

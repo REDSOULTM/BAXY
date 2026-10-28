@@ -152,3 +152,18 @@ def test_every_tool_name_written_in_the_mind_is_one_the_catalog_shows() -> None:
     plain = {op.replace(".", "_"): op for op in _OPERATIONS}
     stale = sorted(name for name in written & set(plain) if wires.name(plain[name]) != name)
     assert stale == []
+
+
+def test_the_reference_of_wire_names_the_app_reads_is_what_the_mind_gives_over_the_whole_catalog() -> None:
+    """tests/fixtures/wire_names.v1.json is what the App's WireNames is checked against (WireNamesTests) and what the
+    scripts with no catalog at hand read (scripts/renew/wire_names.py): it stays what Wires gives the mind's catalog,
+    with the mind's own tools beside it, so the names the App cites never part from the ones the model sees."""
+    from baxy_mind.mind import ASK_USER, CALCULATE, CONFIRM
+    from baxy_mind.wire import Wires
+    reference = json.loads((Path(__file__).resolve().parent / "fixtures" / "wire_names.v1.json").read_text(
+        encoding="utf-8"))
+    fixed = [tool["function"]["name"] for tool in (ASK_USER, CONFIRM, CALCULATE)]
+    assert reference["fixed"] == fixed
+    assert sorted(reference["names"]) == sorted(_OPERATIONS)
+    wires = Wires(list(reference["names"]), fixed=fixed)
+    assert reference["names"] == {op: wires.name(op) for op in reference["names"]}
