@@ -484,3 +484,43 @@ def test_a_question_that_ended_after_its_call_may_have_started_says_so_in_the_cl
     mind.continue_turn(2, ASKS, final=True)
     mind.decide(3, "otra cosa", {"operation": "app.close", "ended": "expired", "effectUncertain": True})
     assert f"app_close → {NO_RESULT_RAN}" in _clock_of(server)
+
+
+@pytest.mark.parametrize("ended", ["dropped", "expired"])
+def test_a_question_that_ended_unanswered_no_longer_waits_in_its_own_turn(tmp_path, ended) -> None:
+    # Sesión larga sobre 8fa1e1430 (R7-NB-2): with the clock telling how the question ended, the turn that asked still
+    # said «espera el sí» in its facts line; the same close of a new window tramos later was a question again (clarify
+    # 0.46 against app 0.41, confirm 0.11 as a rival; «¿cierro la Calculadora o confirmo lo que pediste antes?»).
+    from baxy_mind.mind import WAITS_FOR_YES
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Calculadora"}), _say("¿Cierro la Calculadora?"),
+                                    _say("Vale."), _say("Hecho.")])
+    mind.wire_to_op = {"app_close": "app.close"}
+    mind.decide(1, "ciérrala")
+    mind.continue_turn(2, ASKS, final=True)
+    mind.decide(3, "otra cosa", {"operation": "app.close", "ended": ended})
+    mind.decide(4, "y otra más")
+    sent = server.bodies[-1]["messages"]
+    facts = [m["content"] for m in sent if m["role"] == "tool"]
+    assert len(facts) == 1 and f"app_close → {WAITS_FOR_YES}" not in facts[0]
+    assert "[En este turno: app_close → no se ejecutó: " in facts[0]
+
+
+def test_a_question_that_ended_unanswered_is_retold_in_its_turn_when_a_later_call_repeats_its_id(tmp_path) -> None:
+    # The model's ids may repeat (here every call is «c1»): the turn that asked is the one retold, not a later one.
+    from baxy_mind.mind import WAITS_FOR_YES
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Calculadora"}), _say("¿Cierro?"),
+                                    _call("app_open", {"appId": "Paint"}), _say("Abierto."), _say("Vale."),
+                                    _say("Hecho.")])
+    mind.wire_to_op = {"app_close": "app.close", "app_open": "app.open"}
+    mind.decide(1, "ciérrala")
+    mind.continue_turn(2, ASKS, final=True)
+    mind.decide(3, "abre paint")
+    mind.continue_turn(4, TRASHED, final=True)
+    mind.decide(5, "otra cosa", {"operation": "app.close", "ended": "dropped"})
+    mind.decide(6, "y otra")
+    sent = server.bodies[-1]["messages"]
+    facts = [m["content"] for m in sent if m["role"] == "tool"]
+    assert len(facts) == 2 and not any(f"app_close → {WAITS_FOR_YES}" in told for told in facts)
+    assert "app_close → no se ejecutó: su pregunta quedó sin respuesta" in facts[0]
