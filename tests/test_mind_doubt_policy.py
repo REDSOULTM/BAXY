@@ -518,3 +518,94 @@ def test_in_bypass_layer2_asks_about_an_unsure_call_normal_mode_would_confirm(tm
     assert mind.decide(1, "ahora ciérralo")["operation"] is None
     assert server.bodies[1].get("tool_choice") == "none"
     assert ", pero también podría ser " in server.bodies[1]["messages"][-1]["content"]
+
+
+# P2.40 (C16 M11): a reply with several calls ran the ones queued behind the first without reading their doubt, so a
+# power call the model wrote second ([app_open, system_power]) never asked. A queued call the kernel would run unasked
+# (_unasked) goes by the same rule as the first: its own doubt, read from its own opening, asks with no tools.
+def _calls(*calls: dict) -> dict:
+    """One reply with the calls of several _call replies, in order: each one's tokens after the one before it."""
+    logprobs, told = [], []
+    for index, reply in enumerate(calls):
+        if index:
+            logprobs += [_token("</tool_call>", 1.0), _token("\n", 1.0)]
+        logprobs += reply["choices"][0]["logprobs"]["content"]
+        told += [{**c, "id": f"c{index + 1}"} for c in reply["choices"][0]["message"]["tool_calls"]]
+    return {"choices": [{"message": {"content": "", "tool_calls": told}, "logprobs": {"content": logprobs}}]}
+
+
+@pytest.mark.parametrize("layer", [0, 2])
+def test_an_unsure_power_call_queued_second_is_asked_with_no_tools(tmp_path, monkeypatch, layer) -> None:
+    _unasked(tmp_path, monkeypatch, "")
+    mind, server, _ = _layer2(tmp_path, monkeypatch, "app_close", [
+        _calls(_call("app_open", {"appId": "notas"}, 0.95), _rival_call(0.3 if layer == 0 else 0.5)),
+        _say("¿Apago el PC?")])
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind.risk = {"system_power": "work_loss", "app_open": "read_only", "app_close": "work_loss"}
+    result = mind.decide(1, "abre las notas y después ciérralo")
+    assert result["operation"] is None and result["reply"] == "¿Apago el PC?"
+    assert server.bodies[1].get("tool_choice") == "none"
+    assert "system_power" in server.bodies[1]["messages"][-1]["content"]
+    rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
+    assert rows[0]["kind"] == "doubt_ask" and rows[0]["operation"] == "system.power"
+
+
+@pytest.mark.parametrize("second, risk", [
+    (_rival_call(0.95), "work_loss"),  # sure of the power call: it runs after the first, as before
+    (_call("app_close", {"appId": "notas"}, 0.3), "work_loss"),  # the kernel confirms it: its «sí» names it
+    (_call("app_close", {"appId": "notas"}, 0.3), "read_only"),  # nothing to confirm: queued as before
+])
+def test_a_queued_call_sure_or_that_the_kernel_confirms_is_queued_as_before(tmp_path, monkeypatch, second,
+                                                                            risk) -> None:
+    _unasked(tmp_path, monkeypatch, "")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_calls(_call("app_open", {"appId": "notas"}, 0.95), second)])
+    mind.wire_to_op["app_close"] = "app.close"
+    mind.risk = {"system_power": "work_loss", "app_open": "read_only", "app_close": risk}
+    result = mind.decide(1, "abre las notas y después ciérralo")
+    assert result["operation"] == "app.open"
+    assert [c["wire"] for c in mind._turn["queue"]] == [second["choices"][0]["message"]["tool_calls"][0]["function"]["name"]]
+    assert len(server.bodies) == 1
+
+
+# Held-out of P2.40, written by a subagent that never saw the change: a power call queued behind another, unsure, asks
+# before the first runs; with a queued call that confirms nothing, the reply runs as before.
+HELD_OUT_QUEUED = [
+    ("Cierra el reproductor y después apaga todo, que me voy", "app_close", {"appId": "spotify"}, "shutdown"),
+    ("Baja el volumen al diez y reinicia el compu, porfa", "volume_set", {"level": 10}, "restart"),
+    ("Googlea cómo actualizar drivers y pon el PC a dormir", "web_search", {"query": "cómo actualizar drivers"}, "sleep"),
+    ("Ábreme la calculadora y sácame de mi sesión al tiro", "app_open", {"appId": "calculator"}, "logoff"),
+    ("Terminé con el navegador, hasta ahí llegamos por hoy", "app_close", {"appId": "chrome"}, "shutdown"),
+    ("Silencia todo, que me acuesto; suspende el equipo", "volume_set", {"level": 0}, "sleep")]
+HELD_OUT_QUEUED_CLEAR = [
+    ("Lanza el reproductor y sube el volumen a setenta", ("app_open", {"appId": "spotify"}),
+     ("volume_set", {"level": 70})),
+    ("Quita la planilla y muéstrame el bloc de notas", ("app_close", {"appId": "excel"}), ("app_open", {"appId": "notepad"})),
+    ("Investiga el clima en Curicó y averigua el dólar de hoy", ("web_search", {"query": "clima en Curicó"}),
+     ("web_search", {"query": "precio del dólar hoy"}))]
+HELD_OUT_RISK = {"system_power": "work_loss", "app_open": "read_only", "app_close": "work_loss",
+                 "web_search": "read_only", "volume_set": "low_reversible"}
+
+
+def _held_out_mind(tmp_path, monkeypatch, replies):
+    _unasked(tmp_path, monkeypatch, "")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, replies)
+    mind.wire_to_op.update({w: w.replace("_", ".", 1) for w in HELD_OUT_RISK})
+    mind.risk = dict(HELD_OUT_RISK)
+    return mind, server
+
+
+@pytest.mark.parametrize("words, wire, arguments, action", HELD_OUT_QUEUED)
+def test_held_out_unsure_power_queued_second_is_asked(tmp_path, monkeypatch, words, wire, arguments, action) -> None:
+    mind, server = _held_out_mind(tmp_path, monkeypatch, [
+        _calls(_call(wire, arguments, 0.95), _call("system_power", {"action": action}, 0.3)), _say("¿Apago el PC?")])
+    assert mind.decide(1, words)["operation"] is None
+    assert server.bodies[1].get("tool_choice") == "none"
+
+
+@pytest.mark.parametrize("words, first, second", HELD_OUT_QUEUED_CLEAR)
+def test_held_out_unsure_queued_call_that_confirms_nothing_runs(tmp_path, monkeypatch, words, first, second) -> None:
+    mind, server = _held_out_mind(tmp_path, monkeypatch, [_calls(_call(*first, 0.95), _call(*second, 0.3))])
+    assert mind.decide(1, words)["operation"] == mind.wire_to_op[first[0]]
+    assert [c["wire"] for c in mind._turn["queue"]] == [second[0]] and len(server.bodies) == 1

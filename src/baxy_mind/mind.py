@@ -2456,13 +2456,18 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
-        note = self._held(stage, turn, final, calls[0], reply, body) if calls else None
+        held, note = (calls[0], self._held(stage, turn, final, calls[0], reply, body)) if calls else (None, None)
+        # P2.40 (C16 M11): the calls queued behind the first run without the model deciding again, so one the kernel
+        # would run unasked goes by the same rule, with its own doubt ([app_open, system_power] never asked).
+        for nth, call in enumerate(calls[1:], 1):
+            if note is None and self._unasked(call["wire"]):
+                held, note = call, self._held(stage, turn, final, call, reply, body, nth)
         if isinstance(note, dict):
             # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
             # the action the model doubted (and anything queued behind it, chosen on the same misreading). Review
             # 2026-10-22 (and B-MED-8): the words it wrote for the doubted call go with it, and the row says whose doubt
             # it carries (doubt_of) beside the operation that runs.
-            turn["doubt_of"] = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
+            turn["doubt_of"] = self.wire_to_op.get(held["wire"], held["wire"])
             calls, note, content = [note], None, ""
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
@@ -2472,7 +2477,7 @@ class Mind:
             # its own words, what they want.
             conv.append({"role": "user", "content": note})
             reread = not note.endswith(ASK_ONLY)
-            doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
+            doubted = self.wire_to_op.get(held["wire"], held["wire"])
             if doubted.startswith("memory."):
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
@@ -2751,8 +2756,9 @@ class Mind:
         return stage == "turn.decide" and not final and not turn.get("beat")
 
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
-              body: dict[str, Any]) -> str | dict[str, Any] | None:
-        """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
+              body: dict[str, Any], nth: int = 0) -> str | dict[str, Any] | None:
+        """The note that holds the turn's first action (or the reply's `nth` call, queued behind it), the call that
+        replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
         model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
         low_reversible, or recoverable_delete and the kernel confirms it. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
@@ -2773,7 +2779,7 @@ class Mind:
                                              or (_aid_on("named_fact") and (turn.get("named")
                                                                             or _asked_about(turn["text"])))):
             return None
-        doubt = read_doubt(reply)
+        doubt = read_doubt(reply, nth)
         if doubt is None:
             return None
         if call["wire"] == CONFIRM["function"]["name"]:

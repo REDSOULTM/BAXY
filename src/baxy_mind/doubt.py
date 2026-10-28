@@ -18,10 +18,10 @@ def _p(logprob: float | None) -> float:
     return math.exp(logprob) if logprob is not None else 0.0
 
 
-def read(reply: dict[str, Any] | None) -> dict[str, Any] | None:
+def read(reply: dict[str, Any] | None, nth: int = 0) -> dict[str, Any] | None:
     """Confidence of the decision in a chat reply with `logprobs`: for a call, p(open a call) × p(this tool's name); for
     words, 1 − p(open a call). Also the weakest name token's rivals (what else the model nearly called). None without
-    logprobs."""
+    logprobs. `nth`: the reply's call read, from its own opening (P2.40: one queued behind the first)."""
     try:
         content = (reply or {})["choices"][0]["logprobs"]["content"]
     except (KeyError, IndexError, TypeError):
@@ -30,8 +30,8 @@ def read(reply: dict[str, Any] | None) -> dict[str, Any] | None:
         return None
     # Review 2026-10-22: words written before the call («Claro,» then <tool_call>) are not the decision; the call is
     # measured from its own opening token, and a call whose opening is not in the logprobs gets no judgment.
-    opening = next((i for i, token in enumerate(content) if token.get("token") == CALL), None)
-    if opening is None and ((reply or {})["choices"][0].get("message") or {}).get("tool_calls"):
+    opening = next(iter([i for i, token in enumerate(content) if token.get("token") == CALL][nth:]), None)
+    if opening is None and (nth or ((reply or {})["choices"][0].get("message") or {}).get("tool_calls")):
         return None
     first = content[opening or 0]
     alternatives = {a["token"]: _p(a.get("logprob")) for a in first.get("top_logprobs") or []}
