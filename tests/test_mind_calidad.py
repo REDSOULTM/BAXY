@@ -191,6 +191,31 @@ def test_a_kept_prefix_that_cannot_be_written_or_cleaned_does_not_fail_the_warm_
     assert not (tmp_path / f"{llm_server.PREFIX}other.json").exists()
 
 
+def test_a_start_whose_prefix_differs_keeps_the_last_one_restored(
+        tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """P0.9 (feria, 2026-10-27): one start whose prefix had another key (its tools from a catalog that came late) saved
+    its own state and removed every other one, so the next usual start re-read the whole prefix too (~30 s instead of
+    under 3 s). The last state restored stays beside the one just saved; a third key removes the one used least
+    recently."""
+    monkeypatch.setenv("BAXY_VISION_SLOT_DIR", str(tmp_path))
+    monkeypatch.delenv("BAXY_MIND_LLAMA_PORT", raising=False)
+    server = llm_server.LlmServer("qwen.gguf", EXE)
+
+    def post(path: str, body: dict, _timeout: float) -> dict:
+        if "save" in path:
+            (tmp_path / body["filename"]).write_bytes(b"state")
+            return {"n_saved": 10}
+        return {"n_restored": 10 if (tmp_path / body["filename"]).is_file() else 0}
+
+    monkeypatch.setattr(server, "_post", post)
+    assert server.save_prefix("usual", {"prefix_tokens": 7})
+    assert server.save_prefix("late", {"prefix_tokens": 5})
+    assert server.restore_prefix("usual") == {"prefix_tokens": 7}
+    assert server.save_prefix("other", {"prefix_tokens": 6})
+    assert sorted(p.name for p in tmp_path.iterdir()) == [
+        f"{llm_server.PREFIX}{key}.{suffix}" for key in ("other", "usual") for suffix in ("json", "slot")]
+
+
 def test_the_model_servers_are_closed_even_when_the_voice_cannot_say_it_stopped(
         tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """At the end the voice says it stopped (a voice.event on stdout); with the App gone that write fails, and the

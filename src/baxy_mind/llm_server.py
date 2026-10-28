@@ -362,11 +362,19 @@ class LlmServer:
             reply = self._post("/slots/0?action=restore", {"filename": state.name}, 120)
         except (OSError, ValueError, http.client.HTTPException):
             return None
-        return facts if int(reply.get("n_restored") or 0) > 0 else None
+        if int(reply.get("n_restored") or 0) <= 0:
+            return None
+        try:
+            os.utime(state.with_suffix(".json"))  # the state used last: save_prefix keeps it (P0.9)
+        except OSError:
+            pass  # held this moment: the state was restored all the same
+        return facts
 
     def save_prefix(self, key: str, facts: dict[str, Any]) -> bool:
-        """The slot's state saved under ``key`` with ``facts`` beside it; every other key's state is removed. Only the
-        prefix may be in the slot: Mind.warm saves it before any turn."""
+        """The slot's state saved under ``key`` with ``facts`` beside it, and the state of one other key: the one saved
+        or restored last; every other is removed (each is ~1 GB). Only the prefix may be in the slot: Mind.warm saves
+        it before any turn. P0.9 (feria, 2026-10-27): with every other state removed, one start whose prefix had
+        another key (its tools from a catalog that came late) cost the next usual start the whole prefix too (~30 s)."""
         state = self.slot_dir / f"{PREFIX}{key}.slot"
         kept = state.with_suffix(".json")
         # Saving only spares the next start the warm-up: a file of the folder another process holds this moment (a
@@ -379,8 +387,14 @@ class LlmServer:
                 kept.write_text(json.dumps(facts, ensure_ascii=False), encoding="utf-8")
         except (OSError, ValueError, http.client.HTTPException):
             saved = False
+        keep = {state.name, kept.name} if saved else set()
+        earlier = [other for other in self.slot_dir.glob(f"{PREFIX}*.json")
+                   if other.name != kept.name and other.with_suffix(".slot").is_file()]
+        if earlier:
+            last = max(earlier, key=lambda other: (_stamp(str(other)) or [0, 0])[1])
+            keep |= {last.name, last.with_suffix(".slot").name}
         for stale in self.slot_dir.glob(f"{PREFIX}*"):
-            if not saved or stale.name not in (state.name, kept.name):
+            if stale.name not in keep:
                 try:
                     stale.unlink(missing_ok=True)
                 except OSError:

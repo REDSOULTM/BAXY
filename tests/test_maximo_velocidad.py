@@ -247,7 +247,7 @@ def test_a_start_restores_the_prefix_the_last_one_kept_instead_of_reading_it_aga
 
 
 @pytest.mark.parametrize("change", ["tools", "gguf", "context", "build"])
-def test_a_prefix_made_of_anything_else_is_read_again_and_replaces_the_one_kept(tmp_path: Path, change: str) -> None:
+def test_a_prefix_made_of_anything_else_is_read_again_and_kept_beside_the_one_before(tmp_path: Path, change: str) -> None:
     fake = _FakeLlama(tmp_path / "slots")
     _warmed(tmp_path, fake)
     old = fake.files()
@@ -264,7 +264,8 @@ def test_a_prefix_made_of_anything_else_is_read_again_and_replaces_the_one_kept(
         fake.build = "b11700-test"
     _warmed(tmp_path, fake, tools, gguf, context)
     assert fake.calls == WARM  # its key has no state: no restore asked, the warm-up as always, then kept
-    assert len(fake.files()) == 2 and not set(fake.files()) & set(old)  # the other key's state is removed
+    # P0.9: the other key's state stays too (a start with a late catalog must not cost the next one its prefix)
+    assert len(fake.files()) == 4 and set(old) < set(fake.files())
 
 
 def test_a_prefix_the_server_cannot_restore_is_read_again_and_kept_anew(tmp_path: Path) -> None:
