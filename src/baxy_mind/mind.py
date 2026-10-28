@@ -24,7 +24,7 @@ from typing import Any
 from .answer_check import check as check_answer
 from .arithmetic import evaluate
 from .doubt import read as read_doubt
-from .llm_server import LlmServer
+from .llm_server import LlmServer, Yielded
 from .protocol import whole_code_points
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
@@ -1343,6 +1343,9 @@ class Mind:
         # A person's turn or a heartbeat reached the model in this process: the slot holds more than the prefix, and
         # the warm-up no longer keeps it on disk (al máximo V1).
         self._turned = False
+        # The last read ahead gave way to a request (Yielded): its ``clock``, so the loop reads it again once nothing
+        # waits (review of NB-R1-X4: the App's session.export after every turn); None when it did not.
+        self.gave_way: bool | None = None
         # Al máximo, palanca 2 (early.py): while a decision is made early, its trace rows are held here (the thread that
         # makes it, and its rows) and written only if it is used; the voice thread's rows are written as always.
         self._holding: tuple[int, list[dict[str, Any]]] | None = None
@@ -1824,7 +1827,7 @@ class Mind:
         no call waiting for the person's «sí» begins, so the GPU is awake and the slot holds all but the person's words
         when they come. The prompt does not change: a clock of another minute, or with a call waiting, is read by the
         decision itself from where they differ. BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
-        turn = self._turn or {}
+        turn, self.gave_way = self._turn or {}, None
         if ((not clock and os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0")
                 or (not self.conversation and not clock) or self._beat is not None
                 or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
@@ -1845,6 +1848,10 @@ class Mind:
             # any turn), so the warm-up no longer keeps it on disk (Mind.warm), as after a turn.
             self._turned = True
             reply = self.server.prefill(rendered[:cut])
+        except Yielded:  # not a failure: it is read again once the request is answered (gave_way)
+            self._log("warm.history", started, None, yielded=True, **told)
+            self.gave_way = clock
+            return False
         except Exception as error:  # noqa: BLE001 - the next decision reads it itself, as it did before
             self._log("warm.history", started, None, failure=type(error).__name__, **told)
             return False

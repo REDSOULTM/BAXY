@@ -29,6 +29,7 @@ def test_the_output_opens_for_every_answer_of_a_person_s_turn(
     class FakeMind:
         notice = ""
         foresee = None
+        gave_way = None
 
         def __init__(self, *args) -> None:
             pass
