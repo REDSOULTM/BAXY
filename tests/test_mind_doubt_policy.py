@@ -616,3 +616,16 @@ def test_an_app_that_ran_the_unsure_action_has_it_read_as_any_call(tmp_path, mon
     called = [m for m in messages if m.get("tool_calls")]
     assert called and called[-1]["tool_calls"][0]["function"]["name"] == "input_visible_click"
     assert messages[-1]["role"] == "tool" and messages[-1]["tool_call_id"] == called[-1]["tool_calls"][0]["id"]
+
+
+def test_an_unsure_call_the_mind_itself_refuses_is_refused_as_any_and_leaves_no_mark(tmp_path, monkeypatch) -> None:
+    # Review of P2.43: a click on «Cerrar» nobody asked for is refused by the mind (aid «close_unsaid»), so it never goes
+    # to the App «unsure»; the refusal keeps a valid tool transcript and the next call runs and is answered as itself.
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass", [_call("app_open", {"name": "notepad"}, 0.99)])
+    mind.wire_to_op["app_open"] = "app.open"
+    server.replies.insert(0, _call("input_visible_click", {"label": "Cerrar"}, 0.3))
+    server.replies.pop(1)
+    result = mind.decide(1, "dale")
+    assert "unsure" not in result and "unsure" not in mind._turn
+    calls = {c["id"] for m in mind.conversation for c in m.get("tool_calls") or []}
+    assert all(m["tool_call_id"] in calls for m in mind.conversation if m.get("role") == "tool")

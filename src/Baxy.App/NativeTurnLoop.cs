@@ -471,12 +471,15 @@ internal sealed class NativeTurnLoop
 
             if (step.Unsure)
             {
-                // P2.43: nothing ran, so nothing is dropped, started or counted; the mind reads the typed answer.
+                // P2.43: nothing ran, so nothing is dropped, started or counted; the mind reads the typed answer. A mode
+                // file that cannot be read is weighed as Bypass, as the mind reads it (mind.py, _bypass): it asks.
                 string held = UnsureHeld(step.Operation!, step.Arguments!,
-                    Baxy.Kernel.Policy.ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()));
+                    Baxy.Kernel.Policy.ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(),
+                        out Baxy.Kernel.Policy.ConfirmationMode mode) ? mode : Baxy.Kernel.Policy.ConfirmationMode.Bypass);
                 ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.unsure_held",
                     JsonNode.Parse(held)?["outcome"]?.GetValue<string>() ?? "");
                 step = await mind.ContinueAsync(held, false, _beat, cancellationToken);
+                calls--;
                 continue;
             }
 

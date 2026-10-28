@@ -2021,7 +2021,7 @@ class Mind:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
         valid tool transcript and the model never reads an unanswered call as done."""
         turn = self._turn or {}
-        if turn.get("awaiting") and not turn.get("unsure"):  # a call sent «unsure» never ran nor entered it (P2.43)
+        if turn.get("awaiting") and (turn.get("unsure") or {}).get("id") != turn["awaiting"]:  # P2.43: never ran
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
             self._ran_add(turn.get("calling"), NO_RESULT_RAN)
             op = str(turn.get("calling") or "?")  # it may have run: never a completed call of the session
@@ -2212,7 +2212,7 @@ class Mind:
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
         conv = turn["conv"]
-        if unsure := turn.pop("unsure", None):
+        if (unsure := turn.pop("unsure", None)) and unsure["id"] == turn["awaiting"]:
             held = self._unsure_held(request_id, turn, unsure, observation)
             if held is not None:
                 return held
@@ -2507,9 +2507,13 @@ class Mind:
             calls, note, content = [note], None, ""
         if note is UNSURE:
             # P2.43: the doubted call goes to the App to be weighed with its arguments, not run; it enters the
-            # conversation only if an App that does not know «unsure» ran it (continue_turn).
-            turn["unsure"] = calls[0]
-            return self._result(request_id, turn, calls[0], reply, stage, started, "")
+            # conversation only if an App that does not know «unsure» ran it (continue_turn). One the mind itself
+            # refuses (_repeat_refused, _unopened) takes the usual way, which tells the model why.
+            name = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
+            if not self._repeat_refused(turn, name, calls[0]) and not self._unopened(turn, calls[0]):
+                turn["unsure"] = calls[0]
+                return self._result(request_id, turn, calls[0], reply, stage, started, "")
+            note = None
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads (the call it nearly made never enters the
