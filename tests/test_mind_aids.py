@@ -568,6 +568,7 @@ def test_a_relative_volume_change_says_its_amount_when_no_number_was_said(tmp_pa
     for wire in ("audio_volume_adjust", "audio_app_volume_adjust"):
         tool = next(t for t in mind.tools if t["function"]["name"] == wire)["function"]
         assert tool["parameters"]["properties"]["amount"]["description"].endswith("or 10 when they said no number.")
+        assert "with or without an amount" in tool["description"]  # C49: menor de PC-C46, nada lo fijaba
 
 
 def test_a_relative_brightness_change_says_its_amount_when_no_number_was_said(tmp_path: Path) -> None:
