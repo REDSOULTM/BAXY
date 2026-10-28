@@ -276,7 +276,8 @@ def test_a_falsehood_run_says_which_judge_judged_it(tmp_path, monkeypatch):
     monkeypatch.setattr(bench_falsedades, "judge", lambda replicas, log_dir: [[] for _ in replicas])
     monkeypatch.setattr(bench_falsedades.run_meta, "_cache_path", lambda: None)
     monkeypatch.delenv("BAXY_RENEW_SEED", raising=False)
-    monkeypatch.setattr(sys, "argv", ["bench_falsedades.py", "lbl", "--cases", "c.json", "--judge-only"])
+    monkeypatch.setattr(sys, "argv", ["bench_falsedades.py", "lbl", "--cases", "c.json", "--judge-only",
+                                      "--judge", "local"])
     bench_falsedades.main()
     summary = json.loads((run_dir / "results.jsonl").read_text(encoding="utf-8").splitlines()[0])["summary"]
     judge = summary["judge"]
@@ -357,6 +358,7 @@ def test_the_judges_hash_is_taken_before_the_lines_are_judged(tmp_path, monkeypa
     monkeypatch.setattr(bench_falsedades, "judge", lambda replicas, log_dir: order.append("judge") or [[]])
     monkeypatch.setattr(bench_falsedades, "judge_record", lambda: order.append("record") or {})
     monkeypatch.delenv("BAXY_RENEW_SEED", raising=False)
-    monkeypatch.setattr(sys, "argv", ["bench_falsedades.py", "lbl", "--cases", "c.json", "--judge-only"])
+    monkeypatch.setattr(sys, "argv", ["bench_falsedades.py", "lbl", "--cases", "c.json", "--judge-only",
+                                      "--judge", "local"])
     bench_falsedades.main()
     assert order == ["record", "judge"]
