@@ -365,7 +365,7 @@ public sealed class ProductCatalogTests
 
     // f6 estado: BAXY's own readings are a read with no effect (no «sí» in any mode), told which one by its scope.
     [Test]
-    public void AssistantStatusIsAReadOfTheModelOrTheSessionsInternetExits()
+    public void AssistantStatusIsAReadOfTheConfirmationModeTheModelOrTheSessionsInternetExits()
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("assistant.status");
         OperationArgumentsSchema schema = descriptor.ArgumentsSchema;
@@ -376,7 +376,7 @@ public sealed class ProductCatalogTests
             Assert.That(descriptor.EffectKinds, Is.Empty);
             Assert.That(descriptor.RequiresObservedEffect, Is.False);
             Assert.That(schema.Properties.Single().Name, Is.EqualTo("scope"));
-            Assert.That(schema.Properties.Single().AllowedValues, Is.EqualTo(new[] { "internet", "model" }));
+            Assert.That(schema.Properties.Single().AllowedValues, Is.EqualTo(new[] { "confirmation", "internet", "model" }));
             Assert.That(schema.Required, Is.EqualTo(new[] { "scope" }));
             Assert.That(ProductCatalog.ToPolicyRisk(descriptor.Risk), Is.EqualTo(OperationRisk.ReadOnly));
         });

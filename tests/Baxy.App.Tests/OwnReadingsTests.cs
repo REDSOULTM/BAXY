@@ -35,6 +35,34 @@ public sealed class OwnReadingsTests
         });
     }
 
+    // P1.1 (a): the confirmation mode is read, never said from memory: the same store the engine rereads at each call.
+    [TestCase(Baxy.Kernel.Policy.ConfirmationMode.Normal, "normal", true)]
+    [TestCase(Baxy.Kernel.Policy.ConfirmationMode.Bypass, "bypass", false)]
+    public void TheConfirmationModeIsTheOneTheEngineReads(Baxy.Kernel.Policy.ConfirmationMode mode, string said, bool asks)
+    {
+        JsonElement receipt = Completed(OwnReadings.Confirmation(mode));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.GetProperty("scope").GetString(), Is.EqualTo("confirmation"));
+            Assert.That(receipt.GetProperty("mode").GetString(), Is.EqualTo(said));
+            Assert.That(receipt.GetProperty("asksBeforeRiskyCalls").GetBoolean(), Is.EqualTo(asks));
+        });
+    }
+
+    // A mode file another program holds locked is not taken for «normal»: the call fails.
+    [Test]
+    public void AnUnreadableConfirmationModeFails()
+    {
+        OperationOutcome unread = OwnReadings.Confirmation(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unread.Succeeded, Is.False);
+            Assert.That(unread.ErrorCode, Is.EqualTo(OwnReadings.ConfirmationUnreadable));
+        });
+    }
+
     // A reading the PC did not give is left out (the view's «—»), never a zero; with neither, the call fails.
     [Test]
     public void AReadingThePcDidNotGiveIsLeftOutNeverZero()
