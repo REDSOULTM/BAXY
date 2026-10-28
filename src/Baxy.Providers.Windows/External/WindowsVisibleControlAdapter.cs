@@ -1114,6 +1114,7 @@ internal sealed class WindowsVisibleControlAdapter
 
         static string Entry(ViewControl control, ViewControl? was = null) =>
             $"[{control.Index}] {control.Kind} «{control.Name}»"
+            + (control.NameCut > 0 ? $" (nombre cortado: faltan {control.NameCut} caracteres)" : string.Empty)
             + (was is not null && was.State != control.State
                 ? $" {StateOrNone(was.State)} → {StateOrNone(control.State)}"
                 : control.State.Length > 0 ? " " + control.State : string.Empty)

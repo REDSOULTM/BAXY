@@ -1097,8 +1097,9 @@ function Get-Root([long]$hwnd,[switch]$Front){
   return @{ hwnd=$handle; root=$AE::FromHandle($handle) }
 }
 # R6-NB-5: un nombre de hasta 160 caracteres llega entero; uno mas largo se recorta por el final, en el ultimo limite
-# de palabra, con « …». Cortado por el medio (60 + « ... » + 16) perdia lo que una fila dice entre su nombre y su
-# final: el estado de un dispositivo de Configuracion («... 100% de ... tado Emparejado,»). $script:NameCut queda con
+# de palabra, con una elipsis (U+2026; el script se lee como ANSI, sin el caracter literal). Cortado por el medio
+# (60, «...» y 16) perdia lo que una fila dice entre su nombre y su final: el estado de un dispositivo de
+# Configuracion (100% de ... tado Emparejado). $script:NameCut queda con
 # los caracteres que faltan del ultimo nombre formateado (0 si llego entero): la vista lo pasa tipado (nameCut).
 function Format-Name([string]$name){
   $script:NameCut=0
@@ -1110,7 +1111,7 @@ function Format-Name([string]$name){
     if($space -gt 0){ $kept=$kept.Substring(0,$space) }
     $kept=$kept.TrimEnd()
     $script:NameCut=$name.Length-$kept.Length
-    $name=$kept+' …'
+    $name=$kept+' '+[char]0x2026
   }
   return $name
 }
