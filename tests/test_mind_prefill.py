@@ -158,6 +158,20 @@ def test_the_next_decision_reads_only_its_own_words_and_gets_the_same_prompt(tmp
     assert row["prompt_n"] == server.read[-2] and "text" not in row and "content" not in row
 
 
+def test_no_turn_changes_what_was_read_ahead_of_it(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # noche 2026-10-27 (P0.8, auditoría del prefijo): whatever only a turn knows (the ear's unsure words, a call waiting
+    # for the «sí») goes after what the wake read into the slot, or a long session reads its whole history again.
+    turns = [("abre paint", None, None), ("pon música", [("música", 0.4)], None),
+             ("no, déjalo", None, {"operation": "app.close", "arguments": {"appId": "Paint"}}),
+             ("sube el volumen", [("volumen", 0.5)], {"operation": "file.delete", "arguments": {"path": "a.txt"}})]
+    mind, server = _mind(tmp_path, [_say(f"Hecho {n}.") for n in range(len(turns))], monkeypatch)
+    for n, (text, unsure, pending) in enumerate(turns):
+        assert mind.prefill(clock=True) is True
+        first = len(server.prompts)
+        mind.decide(n, text, pending, unsure)
+        assert server.prompts[first].startswith(server.prefilled[-1]), text
+
+
 def test_a_confirmation_pressed_after_it_reads_on_from_what_was_read_ahead(tmp_path: Path,
                                                                           monkeypatch: pytest.MonkeyPatch) -> None:
     # The label of a Sí/No is a request of the person's too: the history before it has the same form.
