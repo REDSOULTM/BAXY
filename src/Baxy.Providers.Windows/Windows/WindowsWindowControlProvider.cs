@@ -1800,9 +1800,9 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     }
 
     /// <summary>
-    /// C37: an owned window without a title (an application's floating bar) is not one of its process's windows, as
-    /// the application-name path and the desktop inventory already hold; window.snap moved one in place of the
-    /// document window. An owned dialog with a title stays listed.
+    /// C37: an owned window without a title (an application's floating bar) is not one of its process's windows;
+    /// window.snap moved one in place of the document window. The application-name path and the desktop inventory
+    /// leave out every owned window; here an owned dialog with a title («Guardar como») stays listed.
     /// </summary>
     internal static bool ListedForProcess(nint window, Func<nint, nint> ownerOf, Func<nint, string> titleOf) =>
         ownerOf(window) == 0 || !string.IsNullOrWhiteSpace(titleOf(window));
