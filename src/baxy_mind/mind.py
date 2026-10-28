@@ -986,8 +986,8 @@ DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de ha
 # Pregunta-eco (noche 2026-10-27): told to ask with no tools, a model unsure of nothing but its own call could only ask
 # the request back («¿Quieres que busque…?», «¿Quieres conectarte a la red…?», «¿Quieres cerrar…?»), and a clear request
 # became a question (v11, the fair's battery). Layer 0 lets it read the request again with its tools: it does what was
-# asked, or asks only what is missing (identity: «una pregunta corta y concreta que desambigua»). That reading is not held
-# again by layer 0; layer 2 and the kernel's confirmations still apply. A «sí» under CONFIRM_FLOOR still only asks.
+# asked, or asks only what is missing (identity: «una pregunta corta y concreta que desambigua»). System One does not
+# hold that reading again (layers 0 and 2); the kernel's confirmations still apply. A «sí» under CONFIRM_FLOOR only asks.
 REREAD_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
                "{call}. Nada se hizo todavía. Vuelve a leer lo que dijo: si pide eso y no cabe otra lectura, hazlo; si "
                "cabe otra lectura o falta un dato, pregúntale en una frase corta sólo lo que falta.]")
@@ -1037,7 +1037,7 @@ DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro
                     "usar {call}, pero también podría ser {other}. Nada se hizo todavía. Vuelve a leer lo que dijo: si "
                     "pide una de las dos y no cabe otra lectura, hazla; si caben las dos, pregúntale en una frase corta "
                     "cuál quiere.]")
-# Al máximo 4.2 (SAGE-Agent): one question per misunderstanding. The person's words right after a doubt question (both
+# Al máximo 4.2 (SAGE-Agent): one question per misunderstanding. The person's words right after a doubt question (the
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
 DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
@@ -2612,8 +2612,8 @@ class Mind:
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
         candidates the person meant, and a different answer holds it — or, with BAXY_S1_CORRECT=1 and a tool of
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
-        runs; the answer to layer 2's own question is never turned into another one. Asking is never held: it already
-        puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
+        runs; the answer to layer 2's own question is never turned into another one, nor is the model's reading again
+        after either layer (turn["reread"]). Asking is never held: it already puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
         only a yes (PLAIN_YES), whatever System One's own thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] in (ASK_USER["function"]["name"],
                                                                      CALCULATE["function"]["name"]):
