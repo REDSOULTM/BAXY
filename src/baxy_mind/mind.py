@@ -921,8 +921,8 @@ HISTORY_TURNS = 8
 HISTORY_CHARS = 24000
 # Ronda final 44: the context also holds the tool prefix (about 42k of its 49,152 tokens with the descriptions of the
 # rondas finales, 37,999 at ff863b47f), so 24,000 characters of history (~7.9k tokens) no longer always fit beside it and
-# a turn failed whole. The history keeps the tokens the prefix leaves, less room for the turn: its reply (512) and one
-# result within the kernel's 8 KiB (~3k tokens).
+# a turn failed whole. The history keeps the tokens the prefix leaves, less room for the turn: its reply (DECISION_TOKENS)
+# and one result (RESULT_TOKENS, the rest).
 TURN_ROOM_TOKENS = 3584
 # Al máximo 1.4 (2026-10-22): a history past a bound is cut down to this share of every bound, not just under it. A cut
 # moves the conversation's start, and the model (hybrid: its cache is reused from the front) re-reads all the history
@@ -977,6 +977,9 @@ def _omitted(facts: str) -> str:
 # model reads it; never cut below this many characters.
 CUT_TEXT = "\n[Texto recortado para que quepa el turno: {n} caracteres más de lo que escribió la persona ya no se muestran]"
 CUT_TEXT_FLOOR = 500
+# P0.10 (noche 27-10): a result past RESULT_TOKENS keeps its start, cut by size and never by what it says, and the cut is
+# said where the model reads it.
+CUT_RESULT = "\n[Resultado recortado para que quepa el turno: {n} de sus {total} caracteres ya no se muestran]"
 
 # System One, layer 0 (doubt.py): what the model reads when it was not sure of the action it chose. Under BAXY_S1_DOUBT
 # (0.4, SYSTEM_ONE); on the 1,839 labelled real requests, below 0.4 held 95 of 210 wrong actions and asked instead of 10
@@ -1200,6 +1203,10 @@ CALCULATIONS = 4  # a turn's calculations; the next decision after the last is i
 # cap, not a length: a short answer still ends at its own end. Measured on the notebook (NB-L): ~36 tokens/s, ~2 tokens
 # a word; 768 is ~21 s, inside the App's 30 s for a decision (TurnRequestTimeout) with room for the prefix.
 DECISION_TOKENS = 768
+# P0.10 (noche 27-10, NB-R1-X5 on the notebook's trace): the mind trusted the kernel's 8 KiB per result, but a process
+# list, a console's output or an OCR reach 48,000 characters, and some turn.continue re-read 10-12k tokens (>2000 tokens
+# in 0.7 % of the results, p50 3.8 s each). One result takes at most the room the history leaves for it beside the reply.
+RESULT_TOKENS = TURN_ROOM_TOKENS - DECISION_TOKENS
 CALCULATED_FIRST = json.dumps({"status": "not_run", "reason": "written before the calculation's value; call it again "
                                                               "with that value if it is still needed"})
 
@@ -2168,6 +2175,8 @@ class Mind:
         shown, made = self._shorten(told, compact) if _aid_on("short_refs") else (told, {})
         if made:
             aids["short_refs"] = sorted(made) if turn.get("private") else made
+        if _aid_on("result_cap"):
+            shown = self._fit_result(shown)
         line = _said_once(done) if _aid_on("facts_once") else done
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": shown + "\n[En este turno: " + "; ".join(line) + "]" + note})
@@ -2193,6 +2202,23 @@ class Mind:
                 "read": self.risk.get(call["wire"]) == "read_only"})
         turn["queue"] = []
         return self._next(request_id, "turn.continue", turn, final=final)
+
+    def _fit_result(self, shown: str) -> str:
+        """Aid «result_cap» (P0.10): a result past RESULT_TOKENS keeps the start that fits and says how much is left out
+        (CUT_RESULT), before it is sent rather than after a refusal (_make_room). Counted as the history counts, only
+        with the server's tokenizer (a token is at least a character, so a shorter text is never counted)."""
+        if not self.prefix_tokens or len(shown) <= RESULT_TOKENS:
+            return shown
+        tokens = len(self.server.tokenize(shown))
+        if tokens <= RESULT_TOKENS:
+            return shown
+        keep = len(shown) * RESULT_TOKENS // tokens
+        while True:
+            cut = shown[:keep] + CUT_RESULT.format(n=len(shown) - keep, total=len(shown))
+            tokens = len(self.server.tokenize(cut))
+            if tokens <= RESULT_TOKENS or keep == 0:
+                return cut
+            keep = max(0, keep - (keep * (tokens - RESULT_TOKENS) // tokens) - 1)
 
     def confirm(self, request_id: Any, approve: bool, label: str) -> dict[str, Any]:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
