@@ -11,6 +11,7 @@ from __future__ import annotations
 import datetime as _dt
 import difflib
 import hashlib
+import http.client
 import json
 import os
 import re
@@ -937,7 +938,7 @@ TRIM_TO = 0.6
 # that session, −21 % on random 30-turn sessions of its turns; 0.6 here, +1 % and −10 %.
 # P0.11 (noche 27-10, offline replay of _trim on the notebook's 12,695 traced turns, not measured on the model): 60 % of
 # the cuts came from the count alone and TRIM_TO between 0.4 and 0.8 moved nothing; 10 turns cut to the same 3 (0.3)
-# instead of 8 to 3 cut 17 % less often and re-read 12 % less, the next cut seven turns later.
+# instead of 8 to 3 cut 17 % less often and re-read 12 % less, the next cut eight turns after it (six before).
 TRIM_TURNS_TO = 0.3
 # Ronda final 45 (regla 3): what is cut is said where the model reads, or it took what is left for the whole session
 # («nunca me lo dijiste» about a turn no longer shown).
@@ -2229,7 +2230,7 @@ class Mind:
                 if tokens <= RESULT_TOKENS or keep == 0:
                     return cut
                 keep = max(0, keep - (keep * (tokens - RESULT_TOKENS) // tokens) - 1)
-        except (OSError, RuntimeError, ValueError, KeyError) as error:
+        except (OSError, http.client.HTTPException, RuntimeError, ValueError, KeyError) as error:
             self._log("turn.result_cap", time.perf_counter(), None, error=type(error).__name__)
             keep = RESULT_TOKENS - len(CUT_RESULT) - 2 * len(str(len(shown)))
             return shown[:keep] + CUT_RESULT.format(n=len(shown) - keep, total=len(shown))
