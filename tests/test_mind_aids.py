@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from baxy_mind.mind import Mind, field_note
+from baxy_mind.mind import NEXT_NOT_DONE, Mind, field_note
 
 from test_mind_final import _call, _mind, _say
 
@@ -50,7 +50,8 @@ def test_the_cores_aids_are_traced_by_their_fields_and_never_change_the_result(t
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert tool.startswith(calculator + "\n")
     aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
-    assert aid["aids"] == {"calculator_next": {"next": "app_open can start the Calculator"}}
+    assert aid["aids"] == {"calculator_next": {"next": "app_open can start the Calculator"},
+                           "next_not_done": NEXT_NOT_DONE.strip()}
     # The model's own decision after the aid is its own row.
     assert _trace(mind)[-1]["stage"] == "turn.continue"
 
@@ -411,6 +412,59 @@ def test_a_failed_act_read_again_after_it_tells_whether_what_was_asked_holds() -
     assert _outcome(json.dumps({"status": "failed", "error": "x", "observed": {}})) == "falló (x)"
 
 
+def _last_result(server) -> str:
+    return [m.get("content") for m in server.bodies[-1]["messages"] if m.get("role") == "tool"][-1]
+
+
+APP_VOLUME_FAILED = json.dumps({"status": "failed", "error": "app_audio_session_not_found_on_default_output",
+                                "observed": {"version": 1, "appsWithAudio": ["spotify"],
+                                             "next": "if the person meant the whole PC, call audio_volume with level 15"}})
+
+
+@pytest.mark.parametrize("setting,told", [("all", True), ("next_not_done", True), ("none", False)])
+def test_a_failed_result_with_a_next_says_this_call_did_not_do_it(
+        tmp_path: Path, monkeypatch, setting: str, told: bool) -> None:
+    # Noche R6-NB-1 (sesión larga 7db8, T5): audio_app_volume_set failed with a next naming audio_volume, no call came
+    # after it, and the answer told the next as done («lo puse al 15») with the volume where it was.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, server = _mind(tmp_path, [_call("audio_app_volume_set", {"app": "volumen", "level": 15}), _say("Listo.")])
+    mind.decide(1, "deja el volumen en 15")
+    mind.continue_turn(2, APP_VOLUME_FAILED)
+    last = _last_result(server)
+    assert "[En este turno: audio_app_volume_set → falló (app_audio_session_not_found_on_default_output)]" in last
+    assert last.endswith(NEXT_NOT_DONE) is told
+    aids = [r for r in _trace(mind) if r["stage"] == "turn.aid"]
+    assert ("next_not_done" in (aids[-1]["aids"] if aids else {})) is told
+
+
+@pytest.mark.parametrize("result", [
+    {"status": "failed", "error": "x", "observed": {"next": " "}},
+    {"status": "failed", "error": "x", "effectUncertain": True, "observed": {"next": "look again"}},
+    {"status": "completed", "verification": "readback", "observed": {"next": "look again"}},
+])
+def test_only_a_failure_with_a_next_says_it(tmp_path: Path, monkeypatch, result: dict) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("audio_volume", {"level": 15}), _say("Listo.")])
+    mind.decide(1, "deja el volumen en 15")
+    mind.continue_turn(2, json.dumps(result))
+    assert NEXT_NOT_DONE not in _last_result(server)
+
+
+def test_a_click_repeated_with_a_next_from_the_second_is_still_counted_as_repeated(tmp_path: Path, monkeypatch) -> None:
+    # Review of R6-NB-1: the provider adds a next to the same unchanged click from the second time on; the facts line
+    # keeps grouping the two clicks.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    unchanged = {"status": "failed", "error": "visible_button_postread_unchanged"}
+    click = _call("input_visible_click", {"label": "Guardar"})
+    mind, server = _mind(tmp_path, [click, click, _say("No cambió.")])
+    mind.decide(1, "pulsa guardar")
+    for index in range(2):
+        repeated = {"observed": {"unchangedInARow": index + 1, "next": "this click changed nothing"}} if index else {}
+        mind.continue_turn(2 + index, json.dumps({**unchanged, **repeated}))
+    last = _last_result(server)
+    assert "input_visible_click ×2 con los mismos argumentos → falló (visible_button_postread_unchanged)" in last
+
+
 def test_a_retryable_call_that_did_nothing_is_never_told_as_maybe_done() -> None:
     # P2.15 (resultados honestos): «pending» is a retryable outcome; the kernel adds effectUncertain only when the effect
     # may have happened. Without it, «pudo o no ocurrir» told a call that did nothing as maybe done, and one that stayed
@@ -520,7 +574,8 @@ def test_the_apps_said_folder_refusal_is_traced_and_reaches_the_model_as_it_came
     tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert tool.startswith(refused + "\n")
     aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
-    assert aid["aids"] == {"said_folder": {"saidFolders": ["C:/perfil/obra"], "next": json.loads(refused)["next"]}}
+    assert aid["aids"] == {"said_folder": {"saidFolders": ["C:/perfil/obra"], "next": json.loads(refused)["next"]},
+                           "next_not_done": NEXT_NOT_DONE.strip()}
 
 
 def test_the_same_window_read_with_a_new_handle_each_time_is_the_same_result(tmp_path: Path, monkeypatch) -> None:
