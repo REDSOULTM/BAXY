@@ -208,6 +208,16 @@ public sealed class MindSidecarClientTests
             Assert.That(File.ReadAllText(path, new System.Text.UTF8Encoding(false, throwOnInvalidBytes: true)),
                 Is.EqualTo("abcdefñ"));
 
+            // A character split across two writes, the cap inside it: its first byte, written before, goes too.
+            using (BoundedStandardErrorLog log = BoundedStandardErrorLog.Open(path, capBytes: 3)!)
+            {
+                byte[] euro = "a€"u8.ToArray(); // 1 + 3 bytes
+                log.Write(euro.AsSpan(0, 2));
+                log.Write(euro.AsSpan(2));
+            }
+
+            Assert.That(File.ReadAllText(path), Is.EqualTo("a"));
+
             // Forgotten, the log starts again from its first byte.
             using (BoundedStandardErrorLog log = BoundedStandardErrorLog.Open(path, capBytes: 8)!)
             {

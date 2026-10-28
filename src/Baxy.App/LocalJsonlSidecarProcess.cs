@@ -118,13 +118,30 @@ internal sealed class BoundedStandardErrorLog : IDisposable
                 File.Move(path, path + ".1", overwrite: true);
             }
 
-            var file = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
+            // Unbuffered: a write the disk refuses fails here, never again later in a flush or a dispose.
+            var file = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete,
+                bufferSize: 0);
             return new BoundedStandardErrorLog(path, file, capBytes);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
             or ArgumentException or NotSupportedException)
         {
             return null;
+        }
+    }
+
+    /// <summary>Deletes a log at <paramref name="path"/> and its previous run's; whether neither is left.</summary>
+    internal static bool ForgetFiles(string path)
+    {
+        try
+        {
+            File.Delete(path);
+            File.Delete(path + ".1");
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return false;
         }
     }
 
@@ -138,25 +155,14 @@ internal sealed class BoundedStandardErrorLog : IDisposable
             }
 
             int take = Math.Min(bytes.Length, _capBytes - _written);
-            if (take < bytes.Length)
-            {
-                // The cap falls inside a character: the log stops before that character's first byte.
-                while (take > 0 && (bytes[take] & 0xC0) == 0x80)
-                {
-                    take--;
-                }
-
-                _written = _capBytes;
-            }
-            else
-            {
-                _written += take;
-            }
-
+            _written += take;
             try
             {
                 _file.Write(bytes[..take]);
-                _file.Flush();
+                if (_written >= _capBytes)
+                {
+                    DropUnfinishedCharacter(_file);
+                }
             }
             catch (Exception exception) when (exception is IOException or ObjectDisposedException)
             {
@@ -171,18 +177,15 @@ internal sealed class BoundedStandardErrorLog : IDisposable
     {
         lock (_gate)
         {
+            if (_file is null)
+            {
+                return ForgetFiles(_path);
+            }
+
             try
             {
-                if (_file is not null)
-                {
-                    _file.SetLength(0);
-                    _file.Position = 0;
-                }
-                else
-                {
-                    File.Delete(_path);
-                }
-
+                _file.SetLength(0);
+                _file.Position = 0;
                 _written = 0;
                 File.Delete(_path + ".1");
                 return true;
@@ -201,6 +204,34 @@ internal sealed class BoundedStandardErrorLog : IDisposable
             _file?.Dispose();
             _file = null;
         }
+    }
+
+    // At the cap the last character may be cut (within this write or across two): the log ends before its first byte.
+    private static void DropUnfinishedCharacter(FileStream file)
+    {
+        long length = file.Length;
+        int tail = (int)Math.Min(4, length);
+        Span<byte> last = stackalloc byte[4];
+        file.Position = length - tail;
+        file.ReadExactly(last[..tail]);
+        for (int index = tail - 1; index >= 0; index--)
+        {
+            byte lead = last[index];
+            if ((lead & 0xC0) == 0x80)
+            {
+                continue;
+            }
+
+            int needed = lead < 0x80 ? 1 : lead >= 0xF0 ? 4 : lead >= 0xE0 ? 3 : 2;
+            if (tail - index < needed)
+            {
+                file.SetLength(length - (tail - index));
+            }
+
+            break;
+        }
+
+        file.Position = file.Length;
     }
 }
 

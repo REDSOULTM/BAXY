@@ -503,7 +503,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             cancellationToken).ConfigureAwait(false);
         bool cleared = reply is not null && Str(reply["type"]) == "trace.forgotten" && Flag(reply["cleared"]) == true;
         // P0.12: the mind's stderr log names the request that failed and its error, as the trace does: it goes with it.
-        return (_sidecar?.ForgetStandardError() ?? true) && cleared;
+        return (_sidecar?.ForgetStandardError()
+            ?? BoundedStandardErrorLog.ForgetFiles(Path.Combine(TraceDirectory(), StandardErrorLogName))) && cleared;
     }
 
     /// <summary>The mind's trace folder, as the mind resolves it (src/baxy_mind/__main__.py, trace_dir).</summary>
