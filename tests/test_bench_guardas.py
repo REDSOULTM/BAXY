@@ -160,3 +160,92 @@ def test_the_persons_words_leave_out_baxys_notes_and_keep_their_answers() -> Non
 def test_the_oracle_is_given_by_its_full_path_never_by_a_name_looked_up() -> None:
     with pytest.raises(bench_guardas.GuardOracleError, match="no guard oracle"):
         bench_guardas.Guards("Baxy.GuardOracle.exe")
+
+
+class _Server:
+    made: list = []
+
+    def __init__(self, gguf, server, **options):
+        self.closed = False
+        self._process = type("P", (), {"pid": 4242})()
+        _Server.made.append(self)
+
+    def start(self):
+        pass
+
+    def wait_ready(self, timeout):
+        pass
+
+    def close(self):
+        self.closed = True
+
+
+class _Mind:
+    """Drafts by WhatsApp for «saluda…», calls «die» for «muere», and greets in words after a result."""
+
+    def __init__(self, server, trace, system_one=None):
+        pass
+
+    def configure(self, catalog):
+        pass
+
+    def warm(self):
+        pass
+
+    def new_session(self, history):
+        pass
+
+    def decide(self, case_id, text, pending=None, unsure=None):
+        if text == "muere":
+            return {"kind": "action", "operation": "die", "arguments": {}}
+        return _draft()
+
+    def continue_turn(self, request_id, observation, final=False):
+        return {"kind": "conversation", "reply": "¡Hola, Ana!"}
+
+
+def _main(tmp_path, monkeypatch, launcher, cases):
+    import types
+    _Server.made.clear()
+    package = types.ModuleType("baxy_mind")
+    package.__path__ = []
+    monkeypatch.setitem(sys.modules, "baxy_mind", package)
+    monkeypatch.setitem(sys.modules, "baxy_mind.llm_server", types.SimpleNamespace(LlmServer=_Server))
+    monkeypatch.setitem(sys.modules, "baxy_mind.mind", types.SimpleNamespace(Mind=_Mind))
+    monkeypatch.setattr(sys, "path", list(sys.path))
+    monkeypatch.setattr(bench_decision, "BANKS", tmp_path)
+    monkeypatch.setattr(bench_decision, "gpu_used_mib", lambda: None)
+    monkeypatch.setattr(bench_decision, "resources", lambda *a: {})
+    monkeypatch.setattr(bench_decision, "run_record", lambda *a: {})
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setenv("BAXY_DATA_DIR", str(tmp_path / "datos"))
+    monkeypatch.delenv("BAXY_S1_GGUF", raising=False)
+    catalog, given = tmp_path / "catalog.json", tmp_path / "cases.json"
+    catalog.write_bytes(json.dumps({"capabilities": []}).encode("utf-8"))
+    given.write_bytes(json.dumps(cases).encode("utf-8"))
+    monkeypatch.setattr(sys, "argv", ["bench_decision.py", "g", "--cases", str(given), "--catalog", str(catalog),
+                                      "--guardas", launcher])
+    bench_decision.main()
+    return [json.loads(line) for line in (tmp_path / "runs" / "g.jsonl").read_bytes().decode("utf-8").splitlines()]
+
+
+def test_the_decision_bench_writes_both_numbers_with_the_guards(tmp_path, monkeypatch, oracle) -> None:
+    launcher = oracle.identity["path"]
+    oracle.close()
+    lines = _main(tmp_path, monkeypatch, launcher, [
+        {"id": "S1", "text": "saluda a Ana, que está aquí", "expect": {"kind": "text"}},
+        {"id": "S2", "text": "escríbele a Ana por whatsapp", "expect": {"kind": "call", "op": "message.draft"}}])
+    summary, first, second = lines[0]["summary"], lines[1], lines[2]
+    assert (summary["ok"], summary["ok_seen"], summary["n"], summary["refused"]) == (1, 2, 2, 1)
+    assert first["ok"] is False and first["ok_seen"] is True and first["refused"] == ["channel_not_said"]
+    assert first["operation"] == "message.draft" and first["seen_kind"] == "conversation"  # the first decision kept
+    assert second["ok"] is True and second["ok_seen"] is True and second["seen_operation"] == "message.draft"
+    assert _Server.made[-1].closed
+
+
+def test_the_decision_bench_stops_when_the_oracle_dies_and_closes_the_server(tmp_path, monkeypatch, oracle) -> None:
+    launcher = oracle.identity["path"]
+    oracle.close()
+    with pytest.raises(bench_guardas.GuardOracleError):
+        _main(tmp_path, monkeypatch, launcher, [{"id": "D1", "text": "muere", "expect": {"kind": "text"}}])
+    assert _Server.made[-1].closed and not (tmp_path / "runs" / "g.jsonl").exists()
