@@ -672,6 +672,28 @@ public sealed class NativeTurnLoopTests
         Assert.That(asked?.EffectStarted, Is.EqualTo(reconciliationRequired));
     }
 
+    // C16: the «sí» to a heartbeat's proposal is sent again as the kernel's confirmation only for that same invocation and
+    // only when its earlier run cannot have acted; one the kernel asks to reconcile is asked to the person as such.
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public void AProposalsYesAnswersTheKernelOnlyForAnInvocationThatHasNotRunBefore(bool reconciliationRequired,
+        bool answered)
+    {
+        const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+        var registry = new RetryableOperationRegistry();
+        PreparedOperation proposal = registry.GetOrAdd(new RoutedOperation("system.recyclebin.empty", new JsonObject()));
+        PreparedOperation other = registry.GetOrAdd(new RoutedOperation("note.trash", new JsonObject()));
+        var pending = (PendingOperationConfirmation)typeof(PendingOperationConfirmation)
+            .GetConstructor(Private, [typeof(PreparedOperation), typeof(string), typeof(DateTimeOffset), typeof(bool)])!
+            .Invoke([proposal, "token", DateTimeOffset.UtcNow.AddMinutes(2), reconciliationRequired]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pending.AnsweredByProposal(proposal), Is.EqualTo(answered));
+            Assert.That(pending.AnsweredByProposal(other), Is.False);
+        });
+    }
+
     private const string TodaysNext = "nothing ran: ask the person whether to do it; their answer goes in confirm_pending "
         + "(approve true or false); calling web_fetch again is not their answer: it is a new call";
 
