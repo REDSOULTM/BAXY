@@ -396,6 +396,9 @@ def _aid_on(aid: str) -> bool:
 # «game_epic_look» (F016: «lanza Fortnite», an Epic game, split between game_launch, whose list is Steam's, and three
 # reads at 0.28-0.34, held and asked «¿abrir o instalar?»): the list is Steam's, and the read that looks in Steam and
 # Epic. Held 3/3 → game_installed_named at 0.66, 0/3; «lanza Rocket League» still game_launch (0.81 → 0.70).
+# «unsaved_not_read» (P1.1(b) F024 in falsedades v11, base and candidate: «no había nada sin guardar» after a close or
+# a minimize, with nothing read): unsaved changes are not readable, the receipt says so (the App's aid of the same id)
+# and the description names it.
 WORK_FOLDER = "BAXY's own work folder is only filesystem-sandbox, in BAXY's data under AppData"
 NAMED_FOLDER = (" Any folder of the person's home is theirs, even one whose name contains BAXY: it goes in subdirectory, "
                 f"with folder home ({WORK_FOLDER}).")
@@ -421,6 +424,11 @@ DESCRIPTION_AIDS = {
                                        "Steam and Epic without opening anything."),),
     "game.installed.named": (("game_epic_look", " It is also the look for a game the person wants to play that is not "
                                                 "in game_launch's list of installed games (Steam's only)."),),
+    "app.close": (("unsaved_not_read", " Whether a window held unsaved changes is not something BAXY can read "
+                                       "(unsavedChanges not_readable): closePrompted false says only that it closed "
+                                       "without asking to save, never that nothing was unsaved."),),
+    "window.minimize": (("unsaved_not_read", " A minimized window stays open as it was, nothing in it lost; whether it "
+                                             "holds unsaved changes is not read (unsavedChanges not_readable)."),),
 }
 
 def _fold(name: str) -> str:

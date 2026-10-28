@@ -246,18 +246,20 @@ def test_a_sentence_aid_ends_its_tools_description_only_when_on(tmp_path: Path, 
 FILES_AND_GAMES = {"capabilities": [
     {"name": name, "description": f"{name}.", "argumentsSchema": {"type": "object", "properties": {}}}
     for name in ("file.open", "file.read", "file.find", "filesystem.list", "filesystem.search", "game.launch",
-                 "game.installed.named")]}
+                 "game.installed.named", "app.close", "window.minimize")]}
 
 
 @pytest.mark.parametrize("setting,on", [
     ("named_folder_theirs", {"file_open", "file_read", "file_find", "filesystem_list", "filesystem_search"}),
     ("read_find_split", {"file_read", "file_find"}),
     ("game_epic_look", {"game_launch", "game_installed_named"}),
+    ("unsaved_not_read", {"app_close", "window_minimize"}),
     ("none", set())])
 def test_the_dudas_sentence_aids_end_only_their_tools_descriptions(tmp_path: Path, monkeypatch, setting: str,
                                                                    on: set[str]) -> None:
     # Renew al máximo (w9-dudas): F009 and E020 (a folder of the person's named with BAXY taken for BAXY's own), E018
-    # (file_read against file_find for a file's lines), F016 (an Epic game not in game_launch's Steam list).
+    # (file_read against file_find for a file's lines), F016 (an Epic game not in game_launch's Steam list). P1.1(b)
+    # F024: «nada sin guardar» said after a close or a minimize with nothing read.
     monkeypatch.setenv("BAXY_AYUDAS", "none")
     before, _ = _mind(tmp_path / "before", [])
     before.configure(FILES_AND_GAMES)

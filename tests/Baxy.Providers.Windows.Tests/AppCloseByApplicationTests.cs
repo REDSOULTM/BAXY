@@ -239,6 +239,75 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
+    // P1.1(b) F024 (falsedades v11, base y candidato): after a close or a minimize, «¿había algo sin guardar?» got «no,
+    // no había nada sin guardar» in a turn with no read. Windows only tells whether the application answered the polite
+    // close with a dialog of its own; whether it held unsaved changes is not readable, and the receipt says both. With
+    // the aid off, the receipt is as before.
+    [TestCase("{\"appId\":\"Paint\"}", "unsaved_not_read", true)]
+    [TestCase("{\"windowId\":\"win_a\"}", "unsaved_not_read", true)]
+    [TestCase("{\"appId\":\"Paint\"}", "none", false)]
+    [TestCase("{\"windowId\":\"win_a\"}", "none", false)]
+    public async Task AClosedWindowSaysItDidNotAskToSaveAndThatUnsavedChangesAreNotRead(string json, string aids, bool said)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var windows = new FakeWindows([Frame("win_a", 100, "dibujo - Paint")]);
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation(json), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded && outcome.Verified, Is.True);
+            Assert.That(outcome.Result!.Value.TryGetProperty("closePrompted", out JsonElement prompted)
+                && !prompted.GetBoolean(), Is.EqualTo(said));
+            Assert.That(outcome.Result!.Value.TryGetProperty("unsavedChanges", out JsonElement unsaved)
+                && unsaved.GetString() == "not_readable", Is.EqualTo(said));
+        });
+    }
+
+    // A window that only hid, or one that asked to save, closed nothing: neither field is said.
+    [TestCase("{\"appId\":\"Paint\"}", true)]
+    [TestCase("{\"windowId\":\"win_a\"}", true)]
+    [TestCase("{\"windowId\":\"win_a\"}", false)]
+    public async Task AWindowThatHidOrAskedToSaveSaysNothingOfUnreadChanges(string json, bool hides)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("unsaved_not_read");
+        var windows = new FakeWindows([Frame("win_a", 100, "Paint")])
+        {
+            Hides = hides ? "win_a" : null,
+            Prompts = hides ? null : "win_a",
+        };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation(json), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Result!.Value.TryGetProperty("closePrompted", out JsonElement prompted)
+                && !prompted.GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.TryGetProperty("unsavedChanges", out _), Is.False);
+        });
+    }
+
+    [TestCase(WindowControlAction.Minimize, "unsaved_not_read", true)]
+    [TestCase(WindowControlAction.Minimize, "none", false)]
+    [TestCase(WindowControlAction.Maximize, "unsaved_not_read", false)]
+    public async Task OnlyAMinimizedWindowSaysUnsavedChangesAreNotRead(WindowControlAction action, string aids, bool said)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var windows = new FakeWindows([Frame("win_a", 100, "dibujo - Paint")]);
+
+        OperationOutcome outcome = await new WindowActionHandler("window.minimize", action, windows)
+            .ExecuteAsync(Invocation("{\"windowId\":\"win_a\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded && outcome.Verified, Is.True);
+            Assert.That(outcome.Result!.Value.TryGetProperty("unsavedChanges", out JsonElement unsaved)
+                && unsaved.GetString() == "not_readable", Is.EqualTo(said));
+        });
+    }
+
     private sealed class FakeWindows(WindowCandidate[] windows) : IWindowControlProvider
     {
         internal WindowMinimizeAllResult? MinimizeAll { get; init; }
@@ -289,7 +358,8 @@ public sealed class AppCloseByApplicationTests
 
         public ValueTask<WindowActionResult> ExecuteAsync(
             string windowId, WindowControlAction action, CancellationToken cancellationToken) =>
-            throw new AssertionException("not used");
+            ValueTask.FromResult(new WindowActionResult(true, true,
+                windows.Single(candidate => candidate.WindowId == windowId) with { State = action.ToString() }, null));
 
         public ValueTask<WindowActionResult> SetBoundsAsync(
             string windowId, int? x, int? y, int? width, int? height, CancellationToken cancellationToken) =>
