@@ -559,9 +559,9 @@ def test_a_relative_volume_change_says_its_amount_when_no_number_was_said(tmp_pa
 
 def test_the_arguments_left_to_guess_say_what_the_code_does_with_them(tmp_path: Path) -> None:
     # R13-PC-3 (noche 28-10): tres decisiones que fallaban en todas las corridas o al filo. Un nombre de varias palabras
-    # se partía («la carpeta X del Y» como en el ejemplo); sin tienda dicha preguntaba la tienda, que es opcional y cuyo
-    # valor por omisión nadie le decía; y ante un título de nota preguntaba cuál, sin saber que el título que no existe
-    # vuelve con los parecidos y no borra nada (NoteHandlers: TitleNotFoundFacts).
+    # se partía («la carpeta X del Y», como «fotos del escritorio» del ejemplo); ante «¿lo compré?» sin tienda dicha
+    # preguntaba la tienda, que es opcional y cuyo valor por omisión nadie le decía; y ante un título de nota preguntaba
+    # cuál, sin saber que el título que no existe no borra nada y vuelve con los parecidos si los hay (TitleNotFoundFacts).
     mind, _ = _mind(tmp_path, [])
     schema = {"type": "object", "properties": {"name": {"type": "string"}, "store": {"type": "string"},
                                                "title": {"type": "string"}}}
@@ -570,6 +570,6 @@ def test_the_arguments_left_to_guess_say_what_the_code_does_with_them(tmp_path: 
     tools = {t["function"]["name"]: t["function"] for t in mind.tools}
     assert "all its words" in tools["file_compress"]["parameters"]["properties"]["name"]["description"]
     assert tools["game_entitlement_named"]["parameters"]["properties"]["store"]["description"].endswith(
-        "without one, Steam is looked up.")
+        "(Steam is looked up) rather than asking.")
     assert "did I buy it" in tools["game_entitlement_named"]["description"]
-    assert "nothing is deleted" in tools["note_trash"]["description"]
+    assert "deletes nothing" in tools["note_trash"]["description"]
