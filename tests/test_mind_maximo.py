@@ -139,9 +139,11 @@ def test_a_call_whose_result_never_came_is_in_the_session_calls(tmp_path: Path) 
     assert _clocks(server)[-1].endswith("en esta sesión: 1 (app_close → sin resultado: pudo o no ocurrir)]")
 
 
-def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_path: Path) -> None:
+def test_a_full_history_leaves_out_its_oldest_results_before_it_drops_turns(tmp_path: Path, monkeypatch) -> None:
     # 1.1: past its bound the history dropped whole turns (about three were left); the bodies of the oldest results go
     # first now, while their calls and the line of each turn's facts stay, and what is left out says its ids are gone.
+    # Without «old_bodies» (noche P0.2), which leaves these bodies out before the history reaches its bound.
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
     from test_mind_final import _call, _mind, _say
     mind, _ = _mind(tmp_path, [_call("input_visible_controls", {"application": "Paint"}), _say("Listo.")] * 7)
     for turn in range(7):
