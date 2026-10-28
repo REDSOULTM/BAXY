@@ -95,7 +95,7 @@ public sealed class ComputerUseAfterViewTests
             ExternalCapabilityReceipt receipt = Click(adapter, window, "Abrir", "1.1");
 
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(receipt.Result!.Value.GetProperty("after").GetRawText(),
+            Assert.That(receipt.Result.GetValueOrDefault().GetProperty("after").GetRawText(),
                 Is.EqualTo(surfaceChanged ? "{\"sameListed\":true}" : "{\"same\":true}"));
         });
     }
@@ -143,7 +143,7 @@ public sealed class ComputerUseAfterViewTests
             ExternalCapabilityReceipt receipt = Click(adapter, window, rows[0][1], "1.1");
 
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            JsonElement after = receipt.Result!.Value.GetProperty("after");
+            JsonElement after = receipt.Result.GetValueOrDefault().GetProperty("after");
             Assert.That(JsonElement.DeepEquals(after, Json(expected)), Is.True, after.GetRawText());
         });
     }
