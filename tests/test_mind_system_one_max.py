@@ -70,9 +70,11 @@ def test_a_correction_with_an_enum_code_and_a_said_file_name_runs(tmp_path, monk
 
 @pytest.mark.parametrize("filled", [{"fileName": "informe.pdf", "folder": "downloads"},  # a name nobody said
                                     {"fileName": "contrato.docx", "folder": "downloads"}])  # an extension nobody said
-def test_a_correction_with_a_file_name_or_folder_nobody_said_asks(tmp_path, monkeypatch, filled) -> None:
+def test_a_correction_with_a_file_name_or_folder_nobody_said_reads_first(tmp_path, monkeypatch, filled) -> None:
+    # Not corrected; and, P2.44 causa 4, not asked either: file_read's description names file_find, the model's read,
+    # as where its file comes from, so the find runs and the model decides with what it found.
     mind, _ = _corrects(tmp_path, monkeypatch, [FILE_FIND, FILE_READ], "file_find", "file_read", filled)
-    assert mind.decide(1, "resúmeme el PDF contrato que está en Descargas")["operation"] is None
+    assert mind.decide(1, "resúmeme el PDF contrato que está en Descargas")["operation"] == "file.find"
 
 
 @pytest.mark.parametrize("choice, filled, operation", [
@@ -88,12 +90,13 @@ def test_a_correction_with_an_application_or_game_of_the_catalog_runs(tmp_path, 
     assert mind.decide(1, "abre el teams o el worms")["operation"] == operation
 
 
-def test_an_invented_window_id_still_asks_beside_an_enum_code(tmp_path, monkeypatch) -> None:
-    # B-MED-1 stays closed: «left» is the enum's, «1» is an id no result listed.
+def test_an_invented_window_id_never_snaps_and_the_read_that_gives_it_runs(tmp_path, monkeypatch) -> None:
+    # B-MED-1 stays closed: «left» is the enum's, «1» is an id no result listed, and the snap never runs. P2.44 causa 4
+    # (V11D202): nor is it asked; window_snap's description says its windowId comes from window_resolve, which runs.
     mind, fills = _corrects(tmp_path, monkeypatch, [WINDOW_RESOLVE, WINDOW_SNAP], "window_resolve", "window_snap",
                             {"side": "left", "windowId": "1"})
-    assert mind.decide(1, "pon la ventana a la izquierda")["operation"] is None
-    assert fills == ["window_snap"]
+    assert mind.decide(1, "pon la ventana a la izquierda")["operation"] == "window.resolve"
+    assert fills == ["window_snap"]  # «corrige»'s fill, read again, not made again
 
 
 # ---- 2. Layer 0 does not hold what is reversible ----------------------------------------------------------------
