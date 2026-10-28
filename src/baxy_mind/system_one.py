@@ -79,6 +79,9 @@ class SystemOne:
         self.restarts = 0
         # Where an exit or a start again is told: (stage, fields), the mind's trace (Mind sets it); None, nowhere.
         self.on_event: Callable[..., None] | None = None
+        # When the request it answers for ends (time.monotonic(); Mind sets it to its server's deadline), None for none:
+        # its two orders took 2 s each past a decide's 24 s, and the App got no decision (P1.13, NB long session).
+        self.until: Callable[[], float | None] = lambda: None
 
     def start(self) -> None:
         self._launch()
@@ -163,7 +166,12 @@ class SystemOne:
         totals: dict[str, float] = {}
         try:
             for order in (list(options), list(reversed(options))):
-                answer = self._ask(text, history, {k: options[k] for k in order}, timeout)
+                end = self.until()
+                left = timeout if end is None else min(timeout, end - time.monotonic())
+                if left <= 0:
+                    self._tell("system_one.over_budget", answered_orders=1 if totals else 0)
+                    return None
+                answer = self._ask(text, history, {k: options[k] for k in order}, left)
                 if answer is None:
                     return None
                 for key, value in (answer.get("probabilities") or {}).items():
