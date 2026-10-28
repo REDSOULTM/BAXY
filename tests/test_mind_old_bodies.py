@@ -124,3 +124,15 @@ def test_a_result_just_over_the_bound_is_left_out_with_every_aid_on(tmp_path, mo
     session.say("pedido 2", _body(50), reply="Hecho 2.")
     session.say("pedido 3", reply="Hecho 3.")
     assert _results(session)[0].startswith(COMPACTED)
+
+
+def test_a_question_asked_with_ask_user_and_its_answer_age_no_body(tmp_path) -> None:
+    # Hallazgo del revisor de pruebas: the answer to ask_user is a tool message, with no line of the turn's facts.
+    from test_mind_w5_mem import _call as _tool
+    session = Session(tmp_path)
+    session.say("pedido 1", _body(OLD_BODY_CHARS * 3), reply="Hecho 1.")
+    session.server.replies += [_tool("ask_user", {"question": "¿Cuál de los dos?"}), _say("Hecho 2.")]
+    assert session.mind.decide("p2", "pedido 2")["kind"] == "clarify"
+    session.mind.decide("p2b", "el primero")
+    session.say("pedido 3", reply="Hecho 3.")
+    assert "x" * OLD_BODY_CHARS * 3 in _results(session)[0]
