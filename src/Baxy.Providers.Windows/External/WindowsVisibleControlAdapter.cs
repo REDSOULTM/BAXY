@@ -1114,6 +1114,7 @@ internal sealed class WindowsVisibleControlAdapter
 
         static string Entry(ViewControl control, ViewControl? was = null) =>
             $"[{control.Index}] {control.Kind} «{control.Name}»"
+            + (control.NameCut > 0 ? $" (nombre cortado: faltan {control.NameCut} caracteres)" : string.Empty)
             + (was is not null && was.State != control.State
                 ? $" {StateOrNone(was.State)} → {StateOrNone(control.State)}"
                 : control.State.Length > 0 ? " " + control.State : string.Empty)
@@ -2804,6 +2805,9 @@ internal sealed class WindowsVisibleControlAdapter
                     writer.WriteNumber("i", control.Index);
                     writer.WriteString("kind", control.Kind);
                     writer.WriteString("name", control.Name);
+                    // R6-NB-5: the characters a long name lost at its end (DesktopUiaWorker.ps1 Format-Name).
+                    if (control.NameCut > 0)
+                        writer.WriteNumber("nameCut", control.NameCut);
                     writer.WriteString("state", control.State);
                     if (control.Value is null)
                         writer.WriteNull("value");
@@ -2981,6 +2985,7 @@ internal sealed class WindowsVisibleControlAdapter
                 Index = controls.Count,
                 Kind = ReadString(item, "kind"),
                 Name = name,
+                NameCut = ReadInt(item, "nameCut"),
                 Id = ReadString(item, "id"),
                 State = ReadString(item, "state"),
                 Value = item.TryGetProperty("value", out JsonElement value)
@@ -4368,6 +4373,7 @@ internal sealed class WindowsVisibleControlAdapter
         internal int Index { get; set; }
         internal string Kind { get; set; } = string.Empty;
         internal string Name { get; set; } = string.Empty;
+        internal int NameCut { get; set; }
         internal string Id { get; set; } = string.Empty;
         internal string State { get; set; } = string.Empty;
         internal string? Value { get; set; }

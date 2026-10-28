@@ -75,6 +75,18 @@ public sealed class ScreenViewProjectionTests
             "[6] Button «Buscar»\n"));
     }
 
+    // R6-NB-5: a name the reader cut at its end says how many characters it lost; a whole one says nothing.
+    [Test]
+    public void ACutNameSaysHowManyCharactersAreMissing()
+    {
+        string view = View(Steam.Replace(
+            "\"name\":\"Menú\",",
+            "\"name\":\"Menú de una fila muy larga …\",\"nameCut\":42,"));
+
+        Assert.That(view, Does.Contain("[4] Button «Menú de una fila muy larga …» (nombre cortado: faltan 42 caracteres) (collapsed)\n"));
+        Assert.That(view, Does.Contain("[1] TabItem «Tienda»\n"));
+    }
+
     // BAXY Renew al máximo (F019, E015): Steam's library read only by OCR («Página principal» is the library's own
     // home) was told «la página principal de Steam» or «la tienda». The place the reader said is in sight comes right
     // after the window, with the text that tells it; a look that said none says no line.

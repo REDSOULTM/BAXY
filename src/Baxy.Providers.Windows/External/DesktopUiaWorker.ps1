@@ -1096,12 +1096,23 @@ function Get-Root([long]$hwnd,[switch]$Front){
   if($handle -eq [IntPtr]::Zero){ return $null }
   return @{ hwnd=$handle; root=$AE::FromHandle($handle) }
 }
+# R6-NB-5: un nombre de hasta 160 caracteres llega entero; uno mas largo se recorta por el final, en el ultimo limite
+# de palabra, con una elipsis (U+2026; el script se lee como ANSI, sin el caracter literal). Cortado por el medio
+# (60, «...» y 16) perdia lo que una fila dice entre su nombre y su final: el estado de un dispositivo de
+# Configuracion (100% de ... tado Emparejado). $script:NameCut queda con
+# los caracteres que faltan del ultimo nombre formateado (0 si llego entero): la vista lo pasa tipado (nameCut).
 function Format-Name([string]$name){
+  $script:NameCut=0
   if([string]::IsNullOrWhiteSpace($name)){ return '' }
   $name=($name -replace '\s+',' ').Trim()
-  # Un nombre largo conserva su principio y su final: el titulo de una pestana
-  # termina con el sitio («... - Sitio»), que es por lo que se la nombra.
-  if($name.Length -gt 80){ $name=(Get-Cut $name 0 60).TrimEnd()+' ... '+(Get-Cut $name ($name.Length-16) $name.Length).TrimStart() }
+  if($name.Length -gt 160){
+    $kept=Get-Cut $name 0 160
+    $space=$kept.LastIndexOf(' ')
+    if($space -gt 0){ $kept=$kept.Substring(0,$space) }
+    $kept=$kept.TrimEnd()
+    $script:NameCut=$name.Length-$kept.Length
+    $name=$kept+' '+[char]0x2026
+  }
   return $name
 }
 # Encargo WA5 (wab3, 4 de 4): un corte nunca parte un par sustituto (un emoji). Format-Name cortaba a los 60 entre las dos
@@ -1187,7 +1198,8 @@ function Get-ShownName($el){
   if($Actionable -notcontains $kind){ return '' }
   $labelName=''
   $label=Get-Prop $el 'LabeledBy'
-  if($null -ne $label){ $labelName=Get-Name $label }
+  # Su nombre crudo: Get-FallbackName lo formatea una sola vez y su corte (NameCut) es el que se cuenta.
+  if($null -ne $label){ $labelName=[string](Get-Prop $label 'Name') }
   return (Get-FallbackName ([string](Get-Prop $el 'HelpText')) $labelName ([string](Get-Prop $el 'AutomationId')) $kind ([string](Get-Prop $el 'ClassName')))
 }
 # Ronda 24 (v3-39): la clave con que la vista junta controles iguales. Un control elegido (selected, on) no es el
@@ -1269,7 +1281,7 @@ function Test-NameMatch([string]$name,[string[]]$aliases){
   foreach($alias in $aliases){
     if((Get-LabelFolded $alias) -ceq $seen){ return $true }
     # Un nombre largo se muestra recortado (Format-Name): la etiqueta que lo da entero (Get-AskingName) es el mismo.
-    if($alias.Length -gt 80 -and (Get-LabelFolded (Format-Name $alias)) -ceq $seen){ return $true }
+    if($alias.Length -gt 160 -and (Get-LabelFolded (Format-Name $alias)) -ceq $seen){ return $true }
   }
   return $false
 }
@@ -1331,7 +1343,7 @@ function Test-Asks([string]$text,$asks){
   if([string]::IsNullOrWhiteSpace($text)){ return $false }
   return [regex]::IsMatch((Get-AskFolded $text ([string]$asks.hint) ([string]$asks.confusables)),[string]$asks.pattern,[Text.RegularExpressions.RegexOptions]::CultureInvariant)
 }
-# Revision de V (H2, H3): lo que recibe la pulsacion. Su nombre crudo (Format-Name lo recorta a 80: un canal de voz de
+# Revision de V (H2, H3): lo que recibe la pulsacion. Su nombre crudo (Format-Name lo recortaba a 80: un canal de voz de
 # nombre largo perdia 'Canal de voz' en el recorte) y su nombre mostrado; y, si no se pulsa por si mismo (sin Invoke,
 # SelectionItem, Toggle ni ExpandCollapse: el Text de dentro de un enlace, cuya pulsacion legacy, render o de puntero cae
 # en el enlace), los de sus antecesores hasta el primero que si, como mucho LineageUp. El primero que pide mas que las
@@ -2665,6 +2677,7 @@ function Do-View($request){
     try {
       if($item.Cached.IsOffscreen -and -not $keepOffscreen){ continue }
       $name=Get-ShownName $item
+      $nameCut=[int]$script:NameCut
       $kind=$item.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
       if($script:BodyKinds -contains $kind){
         $surface=Get-BodySurface $item $kind $name (Get-Rect $item) $box
@@ -2715,7 +2728,7 @@ function Do-View($request){
       # decia al modelo que era el encabezado de la fila 1.
       $itemType=''
       if($kind -eq 'DataItem'){ try { $itemType=([string]$item.Cached.ItemType).Trim() } catch { $itemType='' }; if($itemType.Length -gt 40){ $itemType='' } }
-      $entry=@{ kind=$kind; name=$name; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total; itemType=$itemType }
+      $entry=@{ kind=$kind; name=$name; nameCut=$nameCut; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total; itemType=$itemType }
       $seen[$key]=$entry
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
@@ -2742,7 +2755,7 @@ function Do-View($request){
   $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen }
   $ordered=@()
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType })
+    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; nameCut=[int]$entry.nameCut; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType })
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
   # controles que pulsar, y su recorrido ni los trae.

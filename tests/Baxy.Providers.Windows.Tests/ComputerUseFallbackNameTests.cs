@@ -98,6 +98,40 @@ public sealed class ComputerUseFallbackNameTests
         }));
     }
 
+    /// <summary>
+    /// R6-NB-5: a long name was cut in the middle (60 + « ... » + 16) and a row lost what it says between its name and
+    /// its end, a device's state among them. Now a name up to 160 characters arrives whole, and a longer one is cut
+    /// at its end on a word boundary, saying how many characters it lost; a click by the whole name still finds it.
+    /// </summary>
+    [Test]
+    public void ALongNameIsCutWholeAtItsEndAndSaysHowMuchIsMissing()
+    {
+        JsonElement answer = RunWorker("""
+            $row='Auriculares de prueba, categoria Dispositivo de audio, 80% de bateria, estado Conectado, voz y musica activos'
+            $long=('palabra ' * 30)+'final'
+            $rowShown=Format-Name $row; $rowCut=$script:NameCut
+            $longShown=Format-Name $long; $longCut=$script:NameCut
+            $Actionable=@('CheckBox')
+            $props=[pscustomobject]@{ Name=''; ControlType=[pscustomobject]@{ ProgrammaticName='ControlType.CheckBox' };
+                                      HelpText=''; AutomationId=''; ClassName='';
+                                      LabeledBy=[pscustomobject]@{ Cached=[pscustomobject]@{ Name=$long } } }
+            $labeledShown=Get-ShownName ([pscustomobject]@{ Cached=$props; Current=$props }); $labeledCut=$script:NameCut
+            [Console]::Out.Write((ConvertTo-Json -Compress @($rowShown,$rowCut,$longShown,$longCut,$long.Length,
+              [bool](Test-NameMatch $longShown @($long)),$labeledShown,$labeledCut)))
+            """);
+
+        string row = "Auriculares de prueba, categoria Dispositivo de audio, 80% de bateria, estado Conectado, voz y musica activos";
+        Assert.That(answer[0].GetString(), Is.EqualTo(row), "a 109-character row arrives whole, with its state");
+        Assert.That(answer[1].GetInt32(), Is.Zero);
+        string shown = answer[2].GetString()!;
+        Assert.That(shown, Does.EndWith("palabra …"), "cut at its end, on a whole word");
+        Assert.That(shown.Length, Is.LessThanOrEqualTo(162));
+        Assert.That(answer[3].GetInt32(), Is.EqualTo(answer[4].GetInt32() - (shown.Length - 2)), "the missing characters are counted");
+        Assert.That(answer[5].GetBoolean(), Is.True, "the whole name still names the cut one");
+        Assert.That(answer[6].GetString(), Is.EqualTo(shown), "a control named by its long label is cut once");
+        Assert.That(answer[7].GetInt32(), Is.EqualTo(answer[3].GetInt32()), "and counts what its label lost");
+    }
+
     [Test]
     public void AClickByLabelFindsAControlNamedOnlyByItsFallback()
     {

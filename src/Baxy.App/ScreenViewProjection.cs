@@ -452,6 +452,12 @@ internal static class ScreenViewProjection
         var line = new StringBuilder();
         line.Append('[').Append((int?)control["i"]).Append("] ").Append((string?)control["kind"]).Append(" «")
             .Append((string?)control["name"]).Append('»');
+        // R6-NB-5: a long name is cut whole at its end, and the view says how much of it is missing.
+        if ((int?)control["nameCut"] is > 0 and int cut)
+        {
+            line.Append(" (nombre cortado: faltan ").Append(cut).Append(" caracteres)");
+        }
+
         // Only when the reader gave one: a control without its rectangle has no zone.
         if ((string?)control["zone"] is { } zone && Zones.TryGetValue(zone, out string? place))
         {
