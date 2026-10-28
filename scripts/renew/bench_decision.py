@@ -236,83 +236,92 @@ def main():
     runs.mkdir(parents=True, exist_ok=True)
     # The confirmation mode «corrige» reads is the bench's (normal), never the owner's file on this machine.
     os.environ.setdefault("BAXY_DATA_DIR", str(runs / f"{args.label}.datos"))
+    # The server's --slot-save-path is the run's own: in the product's folder two runs at once collided on its
+    # baxy_prefix_*.slot (WinError 32, 2026-10-25) and save_prefix removed the product's kept prefix.
+    os.environ.setdefault("BAXY_VISION_SLOT_DIR", str(runs / f"{args.label}.ranuras"))
     trace = runs / f"{args.label}.trace.jsonl"
     trace.unlink(missing_ok=True)  # the mind appends: a label run again kept the trace of the run before
     gpu_before = gpu_used_mib()
     server = LlmServer(args.gguf, args.server, context=int(args.ctx), extra_args=args.server_args.split(),
                        log_name=f"bench-{args.label}.log")
-    server.start()
     system_one = None
-    if os.environ.get("BAXY_S1_GGUF", "").strip():  # System One, layer 2, as the product starts it (__main__.py)
-        from baxy_mind.system_one import SystemOne  # noqa: E402
-        system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
-                               int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
-        system_one.start()
-        system_one = CountedSystemOne(system_one)
-    mind = Mind(server, trace, system_one)
-    catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
-    enums = enums_of(catalog)
-    mind.configure(catalog)
-    server.wait_ready(600)
-    t0 = time.monotonic()
-    mind.warm()
-    warm_s = time.monotonic() - t0
-    if system_one is not None:
-        wait_system_one(system_one)
-    cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))
-    rows, by_family = [], {}
-    for case in cases:
-        started = time.monotonic()
+    try:
+        server.start()
+        if os.environ.get("BAXY_S1_GGUF", "").strip():  # System One, layer 2, as the product starts it (__main__.py)
+            from baxy_mind.system_one import SystemOne  # noqa: E402
+            system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
+                                   int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
+            system_one.start()
+            system_one = CountedSystemOne(system_one)
+        mind = Mind(server, trace, system_one)
+        catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
+        enums = enums_of(catalog)
+        mind.configure(catalog)
+        server.wait_ready(600)
+        t0 = time.monotonic()
+        mind.warm()
+        warm_s = time.monotonic() - t0
         if system_one is not None:
-            system_one.case = None
+            wait_system_one(system_one)
+        cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))
+        rows, by_family = [], {}
+        for case in cases:
+            started = time.monotonic()
+            if system_one is not None:
+                system_one.case = None
+            try:
+                mind.new_session(case.get("history") or [])
+                result = decide(mind, case)
+                error = None
+            except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
+                result, error = {"kind": "error"}, repr(exc)[:200]
+            latency = time.monotonic() - started
+            arguments = result.get("arguments") if result.get("operation") else None
+            verdict = judge(case["expect"], result, arguments, enums)
+            excluded = verdict is None
+            ok = error is None and bool(verdict)
+            if not excluded:
+                fam = by_family.setdefault(str(case.get("family", "-")), [0, 0])
+                fam[0] += ok
+                fam[1] += 1
+            rows.append({"id": case["id"], "family": case.get("family"), "ok": ok, "excluded": excluded,
+                         "latency_s": round(latency, 3),
+                         "kind": result.get("kind"), "operation": result.get("operation"), "arguments": arguments,
+                         "reply": result.get("reply") or result.get("question"), "error": error,
+                         "system_one": system_one.case if system_one is not None else None})
+            print(f"{case['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
+                  flush=True)
+        measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
+        s1 = None
+        if system_one is not None:
+            # Asked, and not answered (the cases go on as Qwen decided): a run with many unanswered is not «with S1».
+            s1 = {"asked": system_one.asked, "unanswered": system_one.unanswered, "up_at_end": system_one.ready,
+                  "unanswered_ids": [r["id"] for r in rows if r["system_one"] == "unanswered"],
+                  "threads": int(os.environ.get("BAXY_S1_THREADS", "4") or 4)}
+        latencies = [r["latency_s"] for r in rows]
+        counted = [r for r in rows if not r["excluded"]]
+        summary = {"label": args.label, "cases": str(args.cases), "temp": args.temp,
+                   "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in counted),
+                   "n": len(counted), "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
+                   "excluded_retired": [r["id"] for r in rows if r["excluded"]],
+                   # A case the model server failed (HTTP error, timeout) counts as wrong; a run with any is not clean.
+                   "errors": sum(1 for r in rows if r["error"]), "error_ids": [r["id"] for r in rows if r["error"]],
+                   "p50": round(statistics.median(latencies), 3),
+                   "p90": round(statistics.quantiles(latencies, n=10)[8], 3) if len(latencies) > 2 else None,
+                   "warm_s": round(warm_s, 1), "families": by_family, "resources": measured, "system_one": s1,
+                   "run": run_record(args, server, mind)}
+        with open(runs / f"{args.label}.jsonl", "w", encoding="utf-8") as out:
+            out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
+            for row in rows:
+                out.write(json.dumps(row, ensure_ascii=False) + "\n")
+        print(json.dumps(summary, ensure_ascii=False))
+    finally:
+        # Whatever stopped the run (System One dead, a Ctrl+C, a catalog that does not read), no server outlives it.
         try:
-            mind.new_session(case.get("history") or [])
-            result = decide(mind, case)
-            error = None
-        except Exception as exc:  # noqa: BLE001 - a failed case is a failed case
-            result, error = {"kind": "error"}, repr(exc)[:200]
-        latency = time.monotonic() - started
-        arguments = result.get("arguments") if result.get("operation") else None
-        verdict = judge(case["expect"], result, arguments, enums)
-        excluded = verdict is None
-        ok = error is None and bool(verdict)
-        if not excluded:
-            fam = by_family.setdefault(str(case.get("family", "-")), [0, 0])
-            fam[0] += ok
-            fam[1] += 1
-        rows.append({"id": case["id"], "family": case.get("family"), "ok": ok, "excluded": excluded,
-                     "latency_s": round(latency, 3),
-                     "kind": result.get("kind"), "operation": result.get("operation"), "arguments": arguments,
-                     "reply": result.get("reply") or result.get("question"), "error": error,
-                     "system_one": system_one.case if system_one is not None else None})
-        print(f"{case['id']} {'-- ' if excluded else 'ok ' if ok else 'BAD'} {latency:5.2f}s {result.get('kind')} {result.get('operation')}",
-              flush=True)
-    measured = resources(server._process.pid, gpu_before)  # type: ignore[union-attr]
-    server.close()
-    s1 = None
-    if system_one is not None:
-        # Asked, and not answered (the cases go on as Qwen decided): a run with many unanswered is not «with S1».
-        s1 = {"asked": system_one.asked, "unanswered": system_one.unanswered, "up_at_end": system_one.ready,
-              "unanswered_ids": [r["id"] for r in rows if r["system_one"] == "unanswered"],
-              "threads": int(os.environ.get("BAXY_S1_THREADS", "4") or 4)}
-        system_one.close()
-    latencies = [r["latency_s"] for r in rows]
-    counted = [r for r in rows if not r["excluded"]]
-    summary = {"label": args.label, "cases": str(args.cases), "temp": args.temp,
-               "gguf": Path(args.gguf).name, "server_args": args.server_args, "ok": sum(r["ok"] for r in counted),
-               "n": len(counted), "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
-               "excluded_retired": [r["id"] for r in rows if r["excluded"]],
-               # A case the model server failed (HTTP error, timeout) counts as wrong; a run with any is not clean.
-               "errors": sum(1 for r in rows if r["error"]), "error_ids": [r["id"] for r in rows if r["error"]],
-               "p50": round(statistics.median(latencies), 3),
-               "p90": round(statistics.quantiles(latencies, n=10)[8], 3) if len(latencies) > 2 else None,
-               "warm_s": round(warm_s, 1), "families": by_family, "resources": measured, "system_one": s1,
-               "run": run_record(args, server, mind)}
-    with open(runs / f"{args.label}.jsonl", "w", encoding="utf-8") as out:
-        out.write(json.dumps({"summary": summary}, ensure_ascii=False) + "\n")
-        for row in rows:
-            out.write(json.dumps(row, ensure_ascii=False) + "\n")
-    print(json.dumps(summary, ensure_ascii=False))
+            server.close()
+        finally:  # a second Ctrl+C inside Qwen's close must not leave System One's running
+            if system_one is not None:
+                system_one.close()
 
 
 if __name__ == "__main__":
