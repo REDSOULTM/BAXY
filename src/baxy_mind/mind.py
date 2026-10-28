@@ -965,6 +965,12 @@ assert "su resultado está arriba" in VERIFICATION["output_only"]
 # A read says nothing of its body while it is there (OUTPUT_READ); once the body is gone its line says so, once.
 READ_OMITTED = "; lo que vio se omitió"
 _READ_KEPT = re.compile(re.escape(OUTPUT_READ) + "(?!" + re.escape(READ_OMITTED) + ")")
+# Noche P0.2 (BAXY más torpe con cada mensaje): between cuts every body of the last eight turns travelled whole, up to
+# 24,000 characters (~7.9k tokens) beside a prefix of ~38-42k in a context of 53,248, and a result may be 8 KiB (a
+# window's controls, a page): the model read what it saw turns ago as much as what it was asked now. A result longer than
+# this, of a turn before the newest closed one, keeps only its turn's facts, as a cut leaves it (1.1); by its size and age
+# only, never by what it says. The newest closed turn keeps its bodies (the follow-up «el segundo», «¿qué decía?»).
+OLD_BODY_CHARS = 1000
 
 
 def _omitted(facts: str) -> str:
@@ -1705,6 +1711,7 @@ class Mind:
                 turn.update(asked=asked, after_asked=after, text=said, **was)
                 raise
         self._close_open_calls()
+        self._age_bodies()
         doubts = [note for note in (str(m.get("content") or "") for m in self.conversation[-2:])
                   if note.startswith(DOUBT_ASKED)]
         notes = self._pending_note(pending) + self._unsure_note(unsure or [])
@@ -1830,6 +1837,7 @@ class Mind:
                 or turn.get("awaiting") or turn.get("asked") or turn.get("queue")):
             return False
         started = time.perf_counter()
+        self._age_bodies()  # as the next decision will show it, so it does not re-read from the older turn on
         after = [{"role": "user", "content": self._clock()}] if clock else []
         body = {"messages": [{"role": "system", "content": self._system()}, *self._history(self.conversation),
                              *after, {"role": "user", "content": PREFILL_MARK}],
@@ -1935,6 +1943,17 @@ class Mind:
         if dropped:
             self._drop(turns[dropped][0], dropped)
         self._prune_refs()
+
+    def _age_bodies(self) -> None:
+        """Aid «old_bodies» (noche P0.2, OLD_BODY_CHARS): before the newest closed turn, each result whose body is
+        longer than OLD_BODY_CHARS keeps only its turn's facts. The prefix is edited only there, once per turn, and the
+        read ahead does it before the next decision (prefill)."""
+        starts = self._turn_starts()
+        if len(starts) < 2 or not _aid_on("old_bodies"):
+            return
+        old = self.conversation[:starts[-1]]
+        if self._compact([m for m in old if str(m.get("content") or "").rfind(TURN_FACTS) > OLD_BODY_CHARS]):
+            self._prune_refs()
 
     def _prune_refs(self) -> None:
         """Revisión de calidad de la mente (2026-10-25): the short references the conversation no longer shows (their
