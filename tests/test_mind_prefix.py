@@ -43,6 +43,15 @@ def test_the_raw_pointer_tool_tells_the_model_it_neither_drags_nor_draws(tmp_pat
     assert "no tool drags or draws with the mouse (moving a whole window is window_move" in tool["description"]
 
 
+def test_the_rule_for_acting_inside_an_open_app_says_no_tool_draws() -> None:
+    # P2.44 causa 8 (HO222, HO225, HO230): asked to draw in a canvas app it had just opened, the model wrote «no puedo
+    # dibujar» and still called app_open on it; the limit was only in the raw pointer tool, not in rule 9, which
+    # promises to act inside an open app.
+    from baxy_mind.mind import SYSTEM
+    rule_9 = SYSTEM.split("\n9. ")[1].split("\n")[0]
+    assert "Ninguna herramienta dibuja, pinta ni arrastra con el ratón" in rule_9
+
+
 def test_the_document_tool_says_how_much_text_fits_in_one_decision(tmp_path: Path) -> None:
     # Review R6 and PC-L: a decision holds 768 tokens (DECISION_TOKENS), about 380 Spanish words in one call at ~2
     # tokens a word (measured on the notebook); the description says a conservative 350, not the 250 of 512 tokens.
