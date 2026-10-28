@@ -2346,9 +2346,16 @@ class Mind:
         if turn["queue"] and not final and completed:
             turn.pop("same_told_call", None)  # chosen before the notice was read
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.perf_counter(), "")
-        if (unsure := turn.pop("unsure", None)) and turn.pop("unsure_after", None) == answered and not final                 and completed:
-            # P2.40 with P2.43: the queued call held «unsure» goes to the App to be weighed once those before it ran.
-            turn["unsure"] = unsure
+        after = turn.pop("unsure_after", None)
+        if (unsure := turn.pop("unsure", None)) and after == answered and not final and completed:
+            # P2.40 with P2.43: the queued call held «unsure» goes to the App to be weighed once those before it ran;
+            # one the mind refuses now (_repeat_refused, _unopened) enters the conversation and _result says why.
+            if self._repeat_refused(turn, self.wire_to_op.get(unsure["wire"], unsure["wire"]), unsure)                     or self._unopened(turn, unsure):
+                conv.append({"role": "assistant", "content": "", "tool_calls": [
+                    {"id": unsure["id"], "type": "function", "function": {
+                        "name": unsure["wire"], "arguments": json.dumps(unsure["arguments"], ensure_ascii=False)}}]})
+            else:
+                turn["unsure"] = unsure
             return self._result(request_id, turn, unsure, None, "turn.continue", time.perf_counter(), "")
         for call in turn["queue"]:
             conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN if final else NOT_RUN_AFTER})
@@ -2537,13 +2544,13 @@ class Mind:
             # conversation only if an App that does not know «unsure» ran it (continue_turn). One the mind itself
             # refuses (_repeat_refused, _unopened) takes the usual way, which tells the model why. P2.40: held queued
             # behind others, those were not doubted: they run first, with their words, and it is weighed after them.
-            name = self.wire_to_op.get(held["wire"], held["wire"])
-            if not self._repeat_refused(turn, name, held) and not self._unopened(turn, held):
+            name, at = self.wire_to_op.get(held["wire"], held["wire"]), calls.index(held)
+            if at or not self._repeat_refused(turn, name, held) and not self._unopened(turn, held):
                 turn["unsure"] = held
                 turn.setdefault("weighed", []).append((held["wire"], _call_key(held["arguments"])))
-                at = calls.index(held)
                 if not at:
                     return self._result(request_id, turn, held, reply, stage, started, "")
+                # Queued, it is weighed (or refused, continue_turn) only once those before it ran.
                 calls, turn["unsure_after"] = calls[:at], calls[at - 1]["id"]
             note = None
         if note:
