@@ -98,8 +98,6 @@ No ejecutes los dos últimos sobre el perfil cotidiano.
 | `run_planner_corpus_gate.py` | Output/modelo | evalúa planes sin grounding, core ni efectos |
 | `run_user_behavior_gate.py` | Output/modelo | lenguaje visible de conversación/narración |
 | `test_mind_router_oracles.py` | Validación/modelo | router productivo contra oráculos congelados |
-| `test_mind_voice.py` | Output/audio sintético | SAPI→ASR headless; no usa voz humana |
-| `run_voice_system_gate.py` | Físico/output | abre mic/loopback; `--physical-output` habla y cancela SAPI |
 | `run_external_adapter_gate.py` | Físico/output | adapters reales; deja DOCX en `Documentos\BAXY` y puede conservar estado de apps/browser/media: no es totalmente autorrestaurable |
 | `run_hardware_effect_gate.py` | Físico/output | hardware/impresión/red/settings solo con targets descubiertos |
 | `run_bluetooth_radio_roundtrip_gate.py` | Físico/output | cambia radio Bluetooth y restaura baseline exacto |
@@ -163,12 +161,16 @@ holdout o reparar guards después de observar resultados invalida el claim.
 
 | Archivo | Clase | Función y cautela |
 |---|---|---|
-| `evaluate_wake_corpus.py` | Output/audio privado | calcula FAR/FRR sin persistir audio, nombres ni texto |
-| `run_wakeword_physical_room_gate.py` | Físico/output | reproduce un corpus por altavoz y evalúa solo la captura de micrófono; requiere `--physical-output` y no conserva audio |
 | `baxy-wakeword-production.yaml` | Configuración/training | entorno CUDA aislado y dependencias de training |
 | `install_baxy_wake_model.ps1` | Runtime | exige modelo y calibration report ligados por hash |
-| `test_mind_voice.py` | Output | gate sintético/headless |
-| `run_voice_system_gate.py` | Físico/output | gate integral del host |
+| `voice/make_baxy_voice.py` | Output | construye la voz hablada de BAXY mezclando estilos de Supertonic 3: copia los modelos y escribe `voice.bin` y `baxy-voice.json` en la carpeta de salida; no instala nada |
+| `voice/sintetizar_frases.py` | Output/audio sintético | escribe en `OUT_DIR` (fuera del repo) el set sintético de `voice/frases_hotwords.json` (varias voces, limpio y con ruido rosa); no reproduce nada |
+| `voice/medir_hotwords.py` | Output/audio sintético | mide el oído (Parakeet, CPU, ~1 GB de RAM) con y sin hotwords sobre ese set; voces sintéticas: ordena configuraciones, no acredita el producto |
+| `voice/medir_anticipada.py` | Output/audio sintético | cuándo cierra una petición y cuántas veces la transcripción anticipada es la de la petición, en silencio y con ruido; CPU |
+| `voice/hablar.py` | Físico/output | turnos hablados para A/B en vivo: `correr` lanza BAXY real con `scripts/run_renew.cmd` y le da WAV como si fueran el micrófono (`BAXY_RENEW_VOICE_FEED`); BAXY contesta por el altavoz, los turnos actúan sobre el PC y deja el perfil `%LOCALAPPDATA%\BAXY\hablar-LABEL`. Antes, ninguna otra BAXY abierta |
+
+Las pruebas headless de la voz son `tests/test_voice_*.py` y `tests/test_setup_mind_voice.py` (pytest, sin
+micrófono ni altavoz).
 
 Una evaluación promocionable exige corpus y límites estadísticos declarados.
 Una muestra positiva corta no acredita FAR por hora.
