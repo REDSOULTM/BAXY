@@ -262,3 +262,13 @@ def test_correr_runs_a_session_in_tandas_and_resumir_joins_them(tmp_path: Path, 
         assert "different sessions" in str(stop)  # never a report that mixes two sessions' turns
     else:
         raise AssertionError("resumir joined tandas of two sessions")
+
+
+def test_a_tanda_after_a_cut_keeps_the_count_of_the_turns_gone() -> None:
+    from baxy_mind.mind import TRIMMED, TRIMMED_GIST
+
+    mark = TRIMMED[:TRIMMED.index(":")]
+    assert bench.kept_trim_count([{"role": "user", "content": TRIMMED.format(n=7)}], mark) == 7
+    assert bench.kept_trim_count([{"role": "user", "content": TRIMMED_GIST.format(n=12, k=1, lines="x")}], mark) == 12
+    assert bench.kept_trim_count([{"role": "user", "content": "[Reloj: 3 de mayo]"}], mark) == 0
+    assert bench.kept_trim_count([], mark) == 0

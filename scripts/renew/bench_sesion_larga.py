@@ -31,6 +31,7 @@ import statistics
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bench_decision
@@ -147,11 +148,11 @@ class RecordingServer:
     and the prompt's tokens the server counted. The texts are copied when sent: the mind leaves out results' bodies in
     place afterwards."""
 
-    def __init__(self, inner) -> None:
+    def __init__(self, inner: Any) -> None:
         self.inner = inner
         self.sent: list[dict] = []
 
-    def chat(self, body, *more, **named):
+    def chat(self, body: dict, *more: Any, **named: Any) -> dict:
         messages = body.get("messages") or []
         parts = {"system": "", "history": "", "tool_results": ""}
         for message in messages:
@@ -170,11 +171,11 @@ class RecordingServer:
         record["prompt_tokens"] = (reply.get("usage") or {}).get("prompt_tokens")
         return reply
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         return getattr(self.inner, name)
 
 
-def sizes(server, record: dict, prefix_tokens: int, system_tokens: int) -> dict:
+def sizes(server: Any, record: dict, prefix_tokens: int, system_tokens: int) -> dict:
     """A chat's prompt in tokens, by part: the catalog is the prefix (system and tools, measured at warm-up) less the
     system; «otros» is what the template adds (roles, call markup) and what the parts do not count."""
     history = len(server.tokenize(record["parts"]["history"])) if record["parts"]["history"] else 0
@@ -202,8 +203,8 @@ def trace_rows(trace: Path, start: int) -> tuple[list[dict], int]:
     return rows, start + len(data)
 
 
-def correr_turnos(mind, server: RecordingServer, turns: list[dict], lecturas: list[str], enums: dict, trace: Path,
-                  system_one=None) -> list[dict]:
+def correr_turnos(mind: Any, server: RecordingServer, turns: list[dict], lecturas: list[str], enums: dict, trace: Path,
+                  system_one: Any = None) -> list[dict]:
     """Each turn to the mind in order, judged on its first decision and then closed as the App would (module text)."""
     system_tokens = len(server.tokenize(mind._system())) if mind.prefix_tokens else 0
     at = trace.stat().st_size if trace.is_file() else 0
@@ -253,15 +254,24 @@ def correr_turnos(mind, server: RecordingServer, turns: list[dict], lecturas: li
     return rows
 
 
+def kept_trim_count(conversation: list[dict], mark: str) -> int:
+    """How many turns the note of a cut at a kept session's start says are gone (0 without one), read as Mind._drop
+    reads it (`mark`: the note's text up to its colon): load_session starts the mind's count at 0 again and only its
+    next cut reads the note, so a tanda's first rows said 0."""
+    first = str((conversation[:1] or [{}])[0].get("content") or "")
+    told = re.match(r"\D*(\d+)", first) if first.startswith(mark) else None
+    return int(told.group(1)) if told else 0
+
+
 def snapshot_path(label: str, upto: int) -> Path:
     return BANKS / "runs" / f"{label}.sesion-{upto:02d}.json"
 
 
-def correr(args) -> None:
+def correr(args: argparse.Namespace) -> None:
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = args.temp
     sys.path.insert(0, args.src)
     from baxy_mind.llm_server import LlmServer
-    from baxy_mind.mind import Mind
+    from baxy_mind.mind import TRIMMED, Mind
 
     session = json.loads(Path(args.sesion).read_text(encoding="utf-8"))
     turns = [t for t in session["turnos"] if args.desde <= t["n"] <= args.hasta]
@@ -305,6 +315,7 @@ def correr(args) -> None:
             bench_decision.wait_system_one(system_one)
         if args.desde > 1:
             mind.load_session(json.loads(earlier.read_text(encoding="utf-8")))
+            mind.trimmed_turns = kept_trim_count(mind.conversation, TRIMMED[:TRIMMED.index(":")])
         else:
             mind.new_session([])
         rows = correr_turnos(mind, server, turns, session.get("lecturas") or [], enums, trace, system_one)
