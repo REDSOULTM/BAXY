@@ -347,7 +347,7 @@ def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None
                           "observed": {"version": 1, "messageWritten": False, "sent": False}})
     unsure = json.dumps({"status": "failed", "error": "message_delivery_not_verified", "effectUncertain": True})
     assert _outcome(stopped) == "falló (composer_has_person_draft): el mensaje no se escribió ni se envió"
-    assert _outcome(unsure) == "sin confirmar: pudo o no ocurrir"
+    assert _outcome(unsure) == "sin confirmar (message_delivery_not_verified): pudo o no ocurrir"
     typed = json.dumps({"status": "failed", "error": "message_recipient_changed_before_enter", "effectUncertain": True,
                         "observed": {"version": 1, "messageWritten": True, "enterPressed": False, "sent": False}})
     assert _outcome(typed) == "falló (message_recipient_changed_before_enter): el mensaje quedó escrito y no se envió"
@@ -379,8 +379,22 @@ def test_a_failed_act_read_again_after_it_tells_whether_what_was_asked_holds() -
     unsure = {"status": "failed", "error": "verification_failed", "effectUncertain": True,
               "observed": {"stateAfter": {"level": 40, "requestedStateReached": False}}}
     assert _outcome(json.dumps(reached)) == "falló (window_state_not_verified); releído después: quedó como se pidió"
-    assert _outcome(json.dumps(unsure)) == "sin confirmar: pudo o no ocurrir; releído después: no quedó como se pidió"
+    assert _outcome(json.dumps(unsure)) == ("sin confirmar (verification_failed): pudo o no ocurrir; releído después: "
+                                            "no quedó como se pidió")
     assert _outcome(json.dumps({"status": "failed", "error": "x", "observed": {}})) == "falló (x)"
+
+
+def test_a_retryable_call_that_did_nothing_is_never_told_as_maybe_done() -> None:
+    # P2.15 (resultados honestos): «pending» is a retryable outcome; the kernel adds effectUncertain only when the effect
+    # may have happened. Without it, «pudo o no ocurrir» told a call that did nothing as maybe done, and one that stayed
+    # unsure lost its code (the clicks read back unchanged or unread, a text not read back: all the same words).
+    from baxy_mind.mind import _outcome
+    nothing = json.dumps({"status": "pending", "error": "input_window_not_in_front"})
+    unsure = json.dumps({"status": "pending", "error": "visible_click_postread_unread", "effectUncertain": True})
+    assert _outcome(nothing) == ("no se completó (input_window_not_in_front): no llegó a hacer nada; "
+                                 "se puede intentar otra vez")
+    assert _outcome(unsure) == "sin confirmar (visible_click_postread_unread): pudo o no ocurrir"
+    assert _outcome(json.dumps({"status": "failed", "effectUncertain": True})) == "sin confirmar: pudo o no ocurrir"
 
 
 def test_a_not_found_tells_whether_other_places_were_searched() -> None:

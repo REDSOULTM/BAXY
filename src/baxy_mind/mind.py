@@ -214,8 +214,14 @@ def _outcome(observation: str, read: bool = False) -> str:
     reread = ""
     if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool):
         reread = REREAD[after["requestedStateReached"]]
-    if status == "pending" or facts.get("effectUncertain"):
-        return "sin confirmar: pudo o no ocurrir" + reread
+    # P2.15: the kernel says effectUncertain when the effect may have happened; a «pending» without it is a retryable
+    # call that did nothing. Either keeps its code, which tells what was or was not read.
+    error = facts.get("error") or facts.get("cause")
+    code = f" ({error})" if isinstance(error, str) and error else ""
+    if facts.get("effectUncertain"):
+        return "sin confirmar" + code + ": pudo o no ocurrir" + reread
+    if status == "pending":
+        return "no se completó" + code + ": no llegó a hacer nada; se puede intentar otra vez" + reread
     if status == "completed":
         # Al máximo 8.2: how it was verified is the result's own typed fact (OperationVisibleFacts' table in the kernel,
         # and the App's for memory and for a result it could not read); one without it is not taken as verified.
@@ -238,8 +244,7 @@ def _outcome(observation: str, read: bool = False) -> str:
         error = facts.get("error")
         code = f" ({error})" if isinstance(error, str) and error else ""
         return told + code + where + before + seen + _read_in_part(shown)
-    error = facts.get("error") or facts.get("cause")
-    return (f"falló ({error})" if error else "falló") + reread + _looked_elsewhere(shown)
+    return "falló" + code + reread + _looked_elsewhere(shown)
 
 
 # Renew al máximo (w8): file_open of a path that was not there looked only at that path (searchedElsewhere false), and the
