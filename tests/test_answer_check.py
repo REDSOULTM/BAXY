@@ -702,8 +702,8 @@ def test_an_engine_a_result_brings_is_not_flagged() -> None:
     assert "answered_by" not in _rules("Google vende el Pixel 10 en su tienda.", [_searched("DuckDuckGo", pixel)])
     assert "answered_by" not in _rules("Según Google News, hubo tres noticias.", [_searched("Google News", source="news")])
     opened = _r("browser.navigate", {"status": "completed", "verification": "readback",
-                                     "observed": {"url": "https://www.google.com/search?q=flash"}})
-    assert "answered_by" not in _rules("Abrí Google con flash y DuckDuckGo me dio mechanicalkeyboards.com.",
+                                     "observed": {"host": "google.cl", "title": "lentejas"}})
+    assert "answered_by" not in _rules("Abrí Google con lentejas y DuckDuckGo me dio mechanicalkeyboards.com.",
                                        [opened, _searched("DuckDuckGo")])
 
 
@@ -723,3 +723,30 @@ def test_the_mind_asks_again_when_the_answer_credits_an_engine_that_did_not_answ
     assert result["reply"] == second
     note = server.bodies[-1]["messages"][-1]["content"]
     assert "lo respondió DuckDuckGo (answeredBy)" in note and "«Google»" in note
+
+
+@pytest.mark.parametrize("answer", [
+    "Si quieres, también lo busco en Bing.",
+    "Respondió DuckDuckGo con mechanicalkeyboards.com. Google habría dado más.",
+    "Encontré mechanicalkeyboards.com. Puedes ver más en YouTube.",
+    "Te lo abro en Google Chrome si quieres.",
+])
+def test_an_engine_mentioned_but_not_credited_with_a_result_is_not_flagged(answer: str) -> None:
+    assert "answered_by" not in _rules(answer, [_searched("DuckDuckGo")])
+
+
+def test_the_query_a_result_echoes_does_not_bring_the_engine() -> None:
+    searched = _searched("DuckDuckGo")
+    searched["observation"] = searched["observation"].replace('"query": "mechanical keyboards"',
+                                                              '"query": "google mechanical keyboards"')
+    searched["arguments"] = {"query": "google mechanical keyboards"}
+    assert "answered_by" in _rules("Google me dio mechanicalkeyboards.com.", [searched])
+
+
+def test_an_odd_observation_or_several_sources_never_break_the_check() -> None:
+    odd = _r("web.search", {"status": "completed", "verification": "output_only", "observed": ["x"]})
+    assert _rules("Google me dio mechanicalkeyboards.com.", [odd]) == []
+    findings = check("Google me dio mechanicalkeyboards.com.", "",
+                     [_searched("DuckDuckGo"), _searched("Wikipedia", source="encyclopedia")], [])
+    assert [f["fact"] for f in findings if f["rule"] == "answered_by"] == [
+        "web_search: lo respondió DuckDuckGo, Wikipedia (answeredBy); ningún resultado de este turno viene de «Google»"]

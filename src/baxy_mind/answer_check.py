@@ -1180,27 +1180,35 @@ _ENGINES = tuple(dict.fromkeys(engine["host"].split(".")[-2] for engine in json.
 
 def _engines_unanswered(answer: str, folded: str, statements: list[tuple[int, int]],
                         receipts: list[Receipt]) -> list[dict]:
-    """Rule ``answered_by``: a statement that names an engine as a source in a turn whose completed web.search said
-    which source answered, while no result of the turn brings that engine's name (a page opened there, a result of
-    its own) and the statement names none of the sources that answered."""
-    answered = [(r, str(by)) for r in receipts if r.get("completed") and r.get("op") == "web.search"
-                for by in [(_parsed(r).get("observed") or {}).get("answeredBy")] if by]
-    if not answered:
+    """Rule ``answered_by``: a statement that names an engine beside a result of the turn's completed web.search (its
+    site's name or its title), while that search said another source answered, no result of the turn brings that
+    engine's name (a page opened there, a result of its own: not what was asked, nor the query a result echoes) and the
+    answer names none of the sources that answered. Not in a clause after «si / if» («si quieres, lo busco en Bing»)."""
+    searches = [observed for r in receipts if r.get("completed") and r.get("op") == "web.search"
+                for observed in [_parsed(r).get("observed")] if isinstance(observed, dict)]
+    sources = list(dict.fromkeys(by for observed in searches
+                                 for by in [observed.get("answeredBy")] if isinstance(by, str) and by))
+    if not sources or any(_fold(source) in folded for source in sources):
         return []
-    brought = _fold(" ".join(str(r.get("observation") or "") + json.dumps(r.get("arguments") or {}, ensure_ascii=False)
-                             for r in receipts))
-    sources = tuple(dict.fromkeys(_fold(by) for _, by in answered))
+    # A result told: the name of its site (mechanicalkeyboards of https://mechanicalkeyboards.com/) or its title.
+    told = {_fold(name).strip() for observed in searches for item in observed.get("results") or [] if isinstance(item, dict)
+            for name in [str(item.get("title") or ""),
+                         *(re.findall(r"^https?://(?:www\.)?([^/.]+)", str(item.get("url") or "")))]}
+    told = {name for name in told if len(name) >= 3}
+    brought = _fold(" ".join(str(v) for r in receipts for k, v in _walk(_parsed(r)) if k != "query"))
     for start, end in statements:
-        sentence = folded[start:end]
-        if any(source in sentence for source in sources):
+        if not any(re.search(rf"\b{re.escape(name)}\b", folded[start:end]) for name in told):
             continue
         for engine in _ENGINES:
-            hit = re.search(rf"\b{engine}\b", sentence)
-            if hit and not re.search(rf"\b{engine}\b", brought) and not _negated(folded, start, start + hit.start(), answer):
-                receipt, by = answered[-1]
-                return [{"rule": "answered_by", "said": _quote(answer, start, end),
-                         "fact": f"{_told(receipt)}: lo respondió {by} (answeredBy); ningún resultado de este turno "
-                                 f"viene de «{answer[start + hit.start():start + hit.end()]}»"}]
+            hit = re.search(rf"\b{re.escape(engine)}\b", folded[start:end])
+            if (not hit or re.search(rf"\b{re.escape(engine)}\b", brought)
+                    or _negated(folded, start, start + hit.start(), answer)
+                    or any(not (m.group(0) == "si" and answer[m.start():m.start() + 2].lower() == "sí")
+                           for m in _IF.finditer(folded, start, start + hit.start()))):
+                continue
+            return [{"rule": "answered_by", "said": _quote(answer, start, end),
+                     "fact": f"web_search: lo respondió {', '.join(sources)} (answeredBy); ningún resultado de este "
+                             f"turno viene de «{answer[start + hit.start():start + hit.end()]}»"}]
     return []
 
 
