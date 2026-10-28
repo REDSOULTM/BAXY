@@ -33,7 +33,7 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import bench_decision  # noqa: E402
+import bench_decision
 
 ROOT = Path(__file__).resolve().parents[2]
 BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
@@ -224,7 +224,7 @@ def correr_turnos(mind, server: RecordingServer, turns: list[dict], lecturas: li
                 result = mind.continue_turn(turn["id"], observation(
                     op, result.get("arguments"), mind.risk.get(op.replace(".", "_"), ""), lecturas,
                     turn["n"] * MAX_CALLS + len(calls)), final=len(calls) == MAX_CALLS)
-        except Exception as exc:  # noqa: BLE001 - a failed turn is a failed turn
+        except Exception as exc:
             # A decision that came is judged; a failure after it (a result's continuation) stays in «error».
             error = repr(exc)[:200]
         latency = time.monotonic() - started
@@ -260,8 +260,8 @@ def snapshot_path(label: str, upto: int) -> Path:
 def correr(args) -> None:
     os.environ["BAXY_RENEW_DECIDE_TEMPERATURE"] = args.temp
     sys.path.insert(0, args.src)
-    from baxy_mind.llm_server import LlmServer  # noqa: E402
-    from baxy_mind.mind import Mind  # noqa: E402
+    from baxy_mind.llm_server import LlmServer
+    from baxy_mind.mind import Mind
 
     session = json.loads(Path(args.sesion).read_text(encoding="utf-8"))
     turns = [t for t in session["turnos"] if args.desde <= t["n"] <= args.hasta]
@@ -286,7 +286,7 @@ def correr(args) -> None:
     try:
         server = RecordingServer(inner)
         if os.environ.get("BAXY_S1_GGUF", "").strip():  # as bench_decision starts it
-            from baxy_mind.system_one import SystemOne  # noqa: E402
+            from baxy_mind.system_one import SystemOne
             system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
                                    int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
             system_one.start()

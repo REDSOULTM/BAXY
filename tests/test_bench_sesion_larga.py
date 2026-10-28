@@ -7,8 +7,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "renew"))
 
-import bench_sesion_larga as bench  # noqa: E402
-from baxy_mind.mind import Mind  # noqa: E402
+import bench_sesion_larga as bench
+from baxy_mind.mind import Mind
 
 CATALOG = {"capabilities": [
     {"name": "web.search", "risk": "read_only", "argumentsSchema": {"type": "object", "properties": {
