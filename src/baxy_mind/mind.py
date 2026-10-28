@@ -983,6 +983,14 @@ CUT_TEXT_FLOOR = 500
 # of 1,530 right ones (phase 0, 2026-10-21).
 DOUBT_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
               "{call}. No hagas nada todavía: pregúntale en una frase corta qué quiere exactamente.]")
+# Pregunta-eco (noche 2026-10-27): told to ask with no tools, a model unsure of nothing but its own call could only ask
+# the request back («¿Quieres que busque…?», «¿Quieres conectarte a la red…?», «¿Quieres cerrar…?»), and a clear request
+# became a question (v11, the fair's battery). Layer 0 lets it read the request again with its tools: it does what was
+# asked, or asks only what is missing (identity: «una pregunta corta y concreta que desambigua»). That reading is not held
+# again by layer 0; layer 2 and the kernel's confirmations still apply. A «sí» under CONFIRM_FLOOR still only asks.
+REREAD_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a usar "
+               "{call}. Nada se hizo todavía. Vuelve a leer lo que dijo: si pide eso y no cabe otra lectura, hazlo; si "
+               "cabe otra lectura o falta un dato, pregúntale en una frase corta sólo lo que falta.]")
 # Aid «answer_check» (al máximo, lever 3; answer_check.py): what the model reads when its final answer contradicts the
 # turn's results, before it is spoken. Only the facts and what to do with them, never words to say (invariant 5): the
 # model writes its answer again, once, with no tools. Offline on the stored practice transcripts it flagged the 11 clear
@@ -1023,9 +1031,12 @@ _YES, _SOFT = ("(?:" + "|".join(r"\s+".join(map(re.escape, p.split())) for p in 
                 for phrases in (PLAIN_YES, YES_SOFTENERS))
 _PLAIN_YES = re.compile(rf"\W*{_YES}(?:\W+(?:{_YES}|{_SOFT}))*\W*")
 # Layer 2 (system_one.py): the model doubted and the decision model read the request otherwise.
+# Pregunta-eco (noche 2026-10-27): 34 of the 65 echoes in the stored runs, 22 of them with the decision model's choice
+# the tool expected; it reads again with its tools as after layer 0 (REREAD_NOTE).
 DOUBT_OTHER_NOTE = ("[Nota interna, no la escribió la persona: no estás seguro de haber entendido qué quiere; ibas a "
-                    "usar {call}, pero también podría ser {other}. No hagas nada todavía: pregúntale en una frase corta "
-                    "qué quiere exactamente.]")
+                    "usar {call}, pero también podría ser {other}. Nada se hizo todavía. Vuelve a leer lo que dijo: si "
+                    "pide una de las dos y no cabe otra lectura, hazla; si caben las dos, pregúntale en una frase corta "
+                    "cuál quiere.]")
 # Al máximo 4.2 (SAGE-Agent): one question per misunderstanding. The person's words right after a doubt question (both
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
@@ -2310,15 +2321,17 @@ class Mind:
             calls, note, content = [note], None, ""
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
-            # otherwise (layer 2). Nothing runs; it is told so where it reads and asks the person, in its own words, what
-            # they want (the call it nearly made never enters the conversation).
+            # otherwise (layer 2). Nothing runs; it is told so where it reads (the call it nearly made never enters the
+            # conversation). After layer 0 or 2 it decides again with its tools, once (REREAD_NOTE, DOUBT_OTHER_NOTE); an
+            # unsure «sí» (DOUBT_NOTE) only asks the person, in its own words, what they want.
             conv.append({"role": "user", "content": note})
+            reread = note != DOUBT_NOTE.format(call=calls[0]["wire"])
             doubted = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             if doubted.startswith("memory."):
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
-            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="doubt_ask",
-                      operation=doubted, arguments=None, content=None)
-            return self._next(request_id, stage, turn, final=True)
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                      kind="doubt_reread" if reread else "doubt_ask", operation=doubted, arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=not reread)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
                 {"id": c["id"], "type": "function",
@@ -2632,13 +2645,15 @@ class Mind:
         # words first and then the kernel asked again. work_loss it still holds (V6D131), and Bypass runs it unasked.
         risk = self.risk.get(call["wire"])
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
-                and risk != "low_reversible" \
+                and not turn.get("reread") and risk != "low_reversible" \
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
-            return DOUBT_NOTE.format(call=call["wire"])
+            turn["reread"] = True
+            return REREAD_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
-        if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
-            return None
+        if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO") \
+                or turn.get("reread"):
+            return None  # nor the model's reading again after a doubt (REREAD_NOTE, DOUBT_OTHER_NOTE): it decided
         options = self._candidates(call["wire"], doubt, body)
         judged = self.system_one.choose(turn["text"], self._said(), options)
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
@@ -2657,6 +2672,7 @@ class Mind:
             return None
         if turn.get("answering_other"):
             return None  # the person already answered layer 2's question about this request
+        turn["reread"] = True
         other = OPTION_TEXT.get(judged["choice"], judged["choice"])
         return DOUBT_OTHER_NOTE.format(call=call["wire"], other=other)
 

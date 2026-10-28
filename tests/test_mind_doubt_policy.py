@@ -48,7 +48,8 @@ def _mind(tmp_path: Path, replies: list) -> tuple[Mind, FakeServer]:
     return mind, server
 
 
-def test_an_unsure_action_does_not_run_and_the_model_asks_in_its_own_words(tmp_path, monkeypatch) -> None:
+def test_an_unsure_action_does_not_run_and_the_model_reads_again_and_asks_in_its_own_words(tmp_path,
+                                                                                            monkeypatch) -> None:
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
     mind, server = _mind(tmp_path, [_call("system_power", {"action": "shutdown"}, 0.3),
                                     _say("¿Qué quieres que cierre: la ventana de delante o el PC?")])
@@ -57,12 +58,26 @@ def test_an_unsure_action_does_not_run_and_the_model_asks_in_its_own_words(tmp_p
     assert result["operation"] is None
     assert result["reply"] == "¿Qué quieres que cierre: la ventana de delante o el PC?"
     second = server.bodies[1]
-    assert second["tool_choice"] == "none"
+    assert "tool_choice" not in second  # it decides again, with its tools
     assert "system_power" in second["messages"][-1]["content"]
     assert not any(m.get("tool_calls") for m in second["messages"])  # the call it nearly made is not in the conversation
     rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
-    assert rows[0]["kind"] == "doubt_ask" and rows[0]["operation"] == "system.power"
+    assert rows[0]["kind"] == "doubt_reread" and rows[0]["operation"] == "system.power"
     assert rows[0]["doubt"]["confidence"] < 0.4
+
+
+def test_an_unsure_action_the_model_chooses_again_on_reading_it_runs(tmp_path, monkeypatch) -> None:
+    # Pregunta-eco (noche 2026-10-27): told to ask, with no tools, all a model sure of nothing but its call could ask was
+    # the request itself («¿Quieres que busque…?», «¿Quieres conectarte a la red…?»). It reads the request again with its
+    # tools and the note that it doubted; the same call, read again, is not held again.
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "notas"}, 0.3),
+                                    _call("app_open", {"appId": "notas"}, 0.3)])
+    result = mind.decide(1, "abre las notas")
+    assert result["kind"] == "action" and result["operation"] == "app.open"
+    assert "app_open" in server.bodies[1]["messages"][-1]["content"]
+    rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
+    assert rows[0]["kind"] == "doubt_reread"
 
 
 def _call_at(p_call: float, p_name: float) -> dict:
@@ -88,7 +103,7 @@ def test_an_unsure_call_under_even_odds_is_held_with_the_note_that_names_it(tmp_
     assert mind.decide(1, "abre las notas")["operation"] is None
     assert "app_open" in server.bodies[1]["messages"][-1]["content"]
     rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
-    assert rows[0]["kind"] == "doubt_ask" and rows[0]["operation"] == "app.open" and rows[0]["doubt"]["p_call"] == p_call
+    assert rows[0]["kind"] == "doubt_reread" and rows[0]["operation"] == "app.open" and rows[0]["doubt"]["p_call"] == p_call
 
 
 @pytest.mark.parametrize("threshold", ["", "0.4"])
@@ -144,6 +159,20 @@ def test_layer2_holds_an_unsure_action_the_decision_model_reads_otherwise(tmp_pa
     assert "system_power" in note and "app_close" in note
     rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
     assert rows[0]["system_one"]["choice"] == "app_close"
+    assert "tool_choice" not in server.bodies[1]  # it reads the request again with its tools
+
+
+def test_layer2_lets_the_model_do_the_reading_it_chooses_on_reading_again(tmp_path, monkeypatch) -> None:
+    # Pregunta-eco (noche 2026-10-27): with both readings named and no tools, the question was «¿X o Y?» even for a
+    # request that said which. It reads again with its tools; that reading is not judged again.
+    mind, _, one = _layer2(tmp_path, monkeypatch, "app_close",
+                           [_rival_call(0.5), _call("app_close", {"appId": "notas"}, 0.5)])
+    mind.wire_to_op["app_close"] = "app.close"
+    result = mind.decide(1, "cierra las notas")
+    assert result["kind"] == "action" and result["operation"] == "app.close"
+    assert len(one.asked) == 1
+    rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
+    assert rows[0]["kind"] == "doubt_reread"
 
 
 @pytest.mark.parametrize("choice", ["system_power", None])
@@ -287,6 +316,7 @@ def test_a_yes_the_model_is_not_sure_of_is_held_and_asked(tmp_path, monkeypatch,
     if held:
         assert result["kind"] == "conversation" and result["operation"] is None
         assert "confirm_pending" in server.bodies[1]["messages"][-1]["content"]
+        assert server.bodies[1]["tool_choice"] == "none"  # it only asks: a reading again could approve the same «sí»
     else:
         assert result["kind"] == "action" and result["operation"] == "confirmation.answer"
         assert result["arguments"]["approve"] is approve
