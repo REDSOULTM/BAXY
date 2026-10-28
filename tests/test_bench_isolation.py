@@ -120,3 +120,48 @@ def test_the_replicas_summary_counts_each_case_across_seeds() -> None:
     assert across["casos_con_falsedad"] == {"F002": "3/3", "F013": "1/3", "F015": "1/3"}
     assert across["casos_en_mayoria"] == ["F002"] and across["lineas"] == 91
     assert across["lineas_a_revisar"][0] == "s0 F002 t1" and across["runs"] == ["x-s0", "x-s1", "x-s2"]
+
+
+# R8-NB-1: the tabs a case's setup and turns opened in the person's browser stayed open (NB-R7: 47 → 70+ tabs in Opera
+# GX, and a page left by one case changed the next one's result). They are told apart by UI Automation runtime id.
+def test_only_the_tabs_the_case_opened_are_closed() -> None:
+    before = {1: (True, {"42.1", "42.2"})}
+    now = {1: (True, {"42.1", "42.2", "42.9"}), 2: (True, {"42.7", "42.8"})}
+    close, unsure = bench_e2e.tabs_to_close(before, now)
+    assert close == {1: ["42.9"], 2: ["42.7", "42.8"]} and unsure == []
+    # A tab the turn closed is not reopened and nothing else moves.
+    assert bench_e2e.tabs_to_close(before, {1: (True, {"42.1"})}) == ({}, [])
+
+
+def test_tabs_whose_identity_cannot_be_trusted_are_left_and_said() -> None:
+    before = {1: (True, {"42.1", "42.2"}), 3: (False, {"42.5"})}
+    # Every tab of window 1 changed id while it still has tabs: the ids were rebuilt, so none is known to be the case's.
+    close, unsure = bench_e2e.tabs_to_close(before, {1: (True, {"43.1", "43.2", "43.3"}), 3: (True, {"42.5", "42.6"})})
+    assert close == {} and sorted(unsure) == ["1 ids_changed", "3 partial_before"]
+    close, unsure = bench_e2e.tabs_to_close(before, {1: (False, {"42.1", "42.2", "42.9"})})
+    assert close == {} and unsure == ["1 partial_now"]
+    # Without a list from before the case (the read did not finish), nothing is closed.
+    assert bench_e2e.tabs_to_close(None, {1: (True, {"42.1"})}) == ({}, ["no_list_before"])
+
+
+def test_the_case_runs_list_the_tabs_before_the_setup_and_close_the_new_ones_after(tmp_path, monkeypatch) -> None:
+    isolation = bench_e2e.Isolation(tmp_path)
+    lines = isolation.prelude("E003")
+    assert lines[-1] == bench_e2e.TABS_LIST and f"& '{bench_e2e.TABS}' -List" in lines[-1]
+    isolation.started("BENCH-READY\nBROWSER-WINDOW 10 whole\nBROWSER-TAB 10 42.1\nBROWSER-TABS-READ\n")
+    calls = []
+
+    def run_ps(path, env, timeout):
+        calls.append(path.read_text(encoding="utf-8-sig"))
+        if len(calls) == 1:
+            return 0, ("PROFILE-RESTORED\nBROWSER-WINDOW 10 whole\nBROWSER-TAB 10 42.1\nBROWSER-TAB 10 42.4\n"
+                       "BROWSER-TAB 10 42.5\nBROWSER-TABS-READ\n")
+        return 0, "TAB-CLOSED 10 42.4\nTAB-LEFT 10 42.5 offscreen\n"
+
+    monkeypatch.setattr(bench_e2e, "run_ps", run_ps)
+    report = isolation.after("E003", tmp_path)
+    assert bench_e2e.TABS_LIST in calls[0]
+    assert f"& '{bench_e2e.TABS}' -Window 10 -Close '42.4','42.5'" in calls[1]
+    assert report["browser_tabs_closed"] == ["10 42.4"] and report["browser_tabs_left"] == ["10 42.5 offscreen"]
+    summary = bench_e2e.profile_summary([{"id": "E003", "profile": report}])
+    assert summary["browser_tabs_left"] == ["E003: 10 42.5 offscreen"]

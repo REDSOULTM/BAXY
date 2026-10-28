@@ -87,17 +87,65 @@ def profile_report(out: str) -> dict:
     return report
 
 
+# R8-NB-1: the tabs a case's setup and turns opened in the person's browser stayed open (NB-R7: Opera GX from 47 to more
+# than 70 tabs, and a page one case left changed the next one's result). pestanas.ps1 lists them by UI Automation
+# runtime id before the setup and after the cleanup; the new ones are closed by that id, never by title or address.
+TABS = Path(__file__).resolve().parent / "pestanas.ps1"
+Tabs = dict[int, tuple[bool, set[str]]]  # window handle → (its strip read whole, the runtime ids of its tabs)
+# A list that fails never fails the case's setup: it is said, and without it no tab is closed.
+TABS_LIST = f"try {{ & '{TABS}' -List }} catch {{ \"BROWSER-TABS-FAILED $($_.Exception.Message)\" }}"
+
+
+def browser_tabs(out: str) -> Tabs | None:
+    """The BROWSER-* lines of pestanas.ps1 -List, or None when the list did not finish."""
+    if "BROWSER-TABS-READ" not in out:
+        return None
+    tabs: Tabs = {}
+    for line in out.splitlines():
+        parts = line.split()
+        if len(parts) == 3 and parts[0] == "BROWSER-WINDOW" and parts[1].isdigit():
+            tabs[int(parts[1])] = (parts[2] == "whole", set())
+        elif len(parts) == 3 and parts[0] == "BROWSER-TAB" and parts[1].isdigit() and int(parts[1]) in tabs:
+            tabs[int(parts[1])][1].add(parts[2])
+    return tabs
+
+
+def tabs_to_close(before: Tabs | None, now: Tabs) -> tuple[dict[int, list[str]], list[str]]:
+    """The tabs to close per window (those the case opened) and, «<hwnd> <reason>», the windows left alone because
+    which tabs are the case's cannot be told: a strip not read whole, or a window none of whose earlier tabs kept its
+    id while it still has tabs (the ids were rebuilt: closing «the new ones» would close the person's)."""
+    if before is None:
+        return {}, ["no_list_before"]
+    close, unsure = {}, []
+    for hwnd, (whole, ids) in sorted(now.items()):
+        was_whole, earlier = before.get(hwnd, (True, set()))
+        new = sorted(ids - earlier)
+        if not new:
+            continue
+        if not was_whole:
+            unsure.append(f"{hwnd} partial_before")
+        elif not whole:
+            unsure.append(f"{hwnd} partial_now")
+        elif earlier and not earlier & ids:
+            unsure.append(f"{hwnd} ids_changed")
+        else:
+            close[hwnd] = new
+    return close, unsure
+
+
 def profile_summary(rows: list[dict]) -> dict:
     """Across the cases of a run: what was moved to the quarantine and what a person must review, «id: path»."""
     def listed(*kinds):
         return [f"{row['id']}: {path}" for row in rows for kind in kinds for path in (row.get("profile") or {}).get(kind) or []]
     review = listed("changed", "missing", "new_kept", "left")
+    tabs_left = listed("browser_tabs_left")
     return {"profile_quarantined": listed("removed"), "profile_review": review,
             "target_windows_left": [row["id"] for row in rows if (row.get("profile") or {}).get("target_windows_left")],
+            "browser_tabs_left": tabs_left,
             # Audit w8-medir: what the cases changed, removed or left outside the sandbox and the bench did not undo is
             # there for the next case and the next configuration (holdout v4: tareas_hoy.txt, config.ini, q4/notes.txt
             # in the notebook's home, F007 and F036). A contaminated run says so; restore by hand before the next arm.
-            "contaminated": bool(review)}
+            "contaminated": bool(review or tabs_left)}
 
 
 # A case that never ran its turns is not the product's failure (CIERRE_PLAN: «un caso con setup_fallido es VOID»).
@@ -118,6 +166,7 @@ class Isolation:
         self.run_dir = run_dir
         self.owned: set[int] = set()  # target windows this run's cases opened and left open
         self.before: set[int] = set()
+        self.tabs: Tabs | None = None  # the person's browser tabs before the case's setup
 
     def env(self, base: dict) -> dict:
         return {**base, "BAXY_BENCH_OWNED_HWNDS": ",".join(str(h) for h in sorted(self.owned))}
@@ -130,10 +179,12 @@ class Isolation:
 
     def prelude(self, case_id: str) -> list[str]:
         """Lines run before the case's own setup, in the same script."""
-        return [f". '{LIB}'", "Assert-BenchPrecondition", "Show-TargetWindows", f"Save-BenchProfile -Name '{case_id}'"]
+        return [f". '{LIB}'", "Assert-BenchPrecondition", "Show-TargetWindows", f"Save-BenchProfile -Name '{case_id}'",
+                TABS_LIST]
 
     def started(self, setup_out: str) -> None:
         self.before = target_windows(setup_out)
+        self.tabs = browser_tabs(setup_out)
 
     def after(self, case_id: str, case_dir: Path) -> dict:
         """After the case's cleanup: the profile restored, and the target windows the case left open (they are the
@@ -141,11 +192,34 @@ class Isolation:
         script = case_dir / "isolation_after.ps1"
         quarantine = case_dir / "profile-quarantine"
         ps_file(script, [f". '{LIB}'", f"Restore-BenchProfile -Name '{case_id}' -Quarantine '{quarantine}'",
-                         "Show-TargetWindows"])
+                         "Show-TargetWindows", TABS_LIST])
         _, out = run_ps(script, dict(os.environ), 300)
         left_open = target_windows(out) - self.before - self.owned
         self.owned |= left_open
-        return {**profile_report(out), "target_windows_left": sorted(left_open)}
+        closed, tabs_left = self.close_tabs(out, case_dir)
+        return {**profile_report(out), "target_windows_left": sorted(left_open), "browser_tabs_closed": closed,
+                "browser_tabs_left": tabs_left}
+
+    def close_tabs(self, out: str, case_dir: Path) -> tuple[list[str], list[str]]:
+        """The tabs the case opened in the person's browser, closed by id: («<hwnd> <id>» closed, what was left and why).
+        A list after the case that did not finish leaves every tab, and says so."""
+        now = browser_tabs(out)
+        if now is None:
+            return [], ["no_list_after"]
+        close, left = tabs_to_close(self.tabs, now)
+        closed = []
+        for hwnd, ids in close.items():
+            script = case_dir / f"tabs_{hwnd}.ps1"
+            ps_file(script, [f"& '{TABS}' -Window {hwnd} -Close " + ",".join(f"'{i}'" for i in ids)])
+            code, done = run_ps(script, dict(os.environ), 60 + 5 * len(ids))
+            seen = set()
+            for line in done.splitlines():
+                mark, _, rest = line.strip().partition(" ")
+                if mark in ("TAB-CLOSED", "TAB-LEFT"):
+                    (closed if mark == "TAB-CLOSED" else left).append(rest)
+                    seen.add(rest.split()[1] if len(rest.split()) > 1 else "")
+            left += [f"{hwnd} {i} no_answer (exit {code})" for i in ids if i not in seen]
+        return closed, left
 
 
 NOTEPAD_TABS = Path(os.environ.get("LOCALAPPDATA", "")) / "Packages" / "Microsoft.WindowsNotepad_8wekyb3d8bbwe" / \
