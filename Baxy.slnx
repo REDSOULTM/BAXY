@@ -11,6 +11,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Baxy.App.Tests/Baxy.App.Tests.csproj" />
     <Project Path="tests/Baxy.Contracts.Tests/Baxy.Contracts.Tests.csproj" />
+    <Project Path="tests/Baxy.GuardOracle/Baxy.GuardOracle.csproj" />
     <Project Path="tests/Baxy.Kernel.Tests/Baxy.Kernel.Tests.csproj" />
     <Project Path="tests/Baxy.Providers.Windows.Tests/Baxy.Providers.Windows.Tests.csproj" />
     <Project Path="tests/Baxy.Setup.Tests/Baxy.Setup.Tests.csproj" />

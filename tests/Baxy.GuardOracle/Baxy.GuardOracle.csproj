@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Noche 2026-10-28: the App's shape guards for the Python decision benches (GuardOracle), a console of its own so the
+       product's executable keeps no switch for it. -->
+  <PropertyGroup>
+    <TargetFramework>$(BaxyWindowsTargetFramework)</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Baxy.App.Tests" />
+    <ProjectReference Include="..\..\src\Baxy.App\Baxy.App.csproj" />
+  </ItemGroup>
+</Project>

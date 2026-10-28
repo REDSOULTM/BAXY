@@ -1355,7 +1355,7 @@ internal sealed class NativeTurnLoop
         return observation;
     }
 
-    private static string StatusOf(string observation)
+    internal static string StatusOf(string observation)
     {
         try
         {
@@ -1375,7 +1375,7 @@ internal sealed class NativeTurnLoop
     // (verification none, OperationVisibleFacts' table).
     // The call is the model's own (the result answers its tool_call_id); about names another one, the call a
     // confirm_pending answered.
-    private static string Observation(
+    internal static string Observation(
         string status,
         string error,
         JsonObject? extra = null,
