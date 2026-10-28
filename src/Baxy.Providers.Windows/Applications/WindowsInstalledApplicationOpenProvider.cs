@@ -12,8 +12,7 @@ namespace Baxy.Providers.Windows.Applications;
 
 public sealed class WindowsInstalledApplicationOpenProvider :
     IApplicationOpenProvider,
-    IApplicationInventoryProvider,
-    IApplicationCatalogProvider
+    IApplicationInventoryProvider
 {
     // APPS1609 «Abre Steam»: a client that updates itself before showing anything
     // (Steam's login window at 4.6 s, its main window at 7.9 s after launch) never
