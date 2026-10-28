@@ -3082,6 +3082,12 @@ class Mind:
                "ms": round((time.perf_counter() - started) * 1000),
                "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
+        if timings:
+            # Noche P0.5: prompt_n is only what was read again. With the whole prompt (usage) and the prefix (tools,
+            # system and the warm-up's few words), each prompt splits into prefix, history and what is new (within those
+            # few tokens), and a cut shows as the cache it lost.
+            row.update(prompt_tokens=((reply or {}).get("usage") or {}).get("prompt_tokens"),
+                       prefix_n=self.prefix_tokens)
         doubt = read_doubt(reply)
         if doubt is not None:
             doubt.pop("written", None)  # the call's own text up to its weakest token: only for reading the rivals

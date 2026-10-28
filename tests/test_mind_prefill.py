@@ -388,3 +388,18 @@ def test_the_sidecar_answers_a_turn_s_notice_once_its_audio_is_kept_and_none_wit
     notice = [r for r in replies if r.get("type") == "turn.notice.result"]
     assert notice == [{"type": "turn.notice.result", "id": 1, "notice": "Busco vuelos a Lima." if ready else ""}]
     assert asked == (["notice"] if ready else [])
+
+
+def test_each_turn_row_says_how_long_its_prompt_was_and_how_much_of_it_is_the_prefix(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Noche P0.5: prompt_n alone is what was read again; with the whole prompt and the prefix (tools and system) the
+    # trace splits every prompt into prefix, history and what is new, and shows the turns a cut made read again.
+    reply = _say("Hola.")
+    reply.update(timings={"prompt_n": 40, "prompt_ms": 50.0, "predicted_n": 3, "predicted_ms": 9.0},
+                 usage={"prompt_tokens": 39040})
+    mind, _ = _mind(tmp_path, [reply], monkeypatch)
+    mind.prefix_tokens = 38500
+    mind.decide(1, "hola")
+    row = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_bytes().splitlines()
+           if b'"turn.decide"' in line][0]
+    assert (row["prompt_n"], row["prompt_tokens"], row["prefix_n"]) == (40, 39040, 38500)
