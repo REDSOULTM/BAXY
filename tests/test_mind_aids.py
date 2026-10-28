@@ -494,3 +494,24 @@ def test_the_same_window_read_with_a_new_handle_each_time_is_the_same_result(tmp
             {"windowId": f"win_{handle}", "title": "Sin título - Paint", "state": "maximized"}], "count": 1}}))
     last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert "window_resolve ya se llamó 3 veces en este turno" in last
+
+
+MESSAGE_SCHEMA = {"type": "object", "properties": {"channel": {"type": "string", "enum": ["discord", "whatsapp"]},
+                                                   "recipient": {"type": "string"}, "text": {"type": "string"}},
+                  "required": ["channel", "recipient", "text"]}
+MESSAGES = {"capabilities": [{"name": name, "description": "Write to someone.", "argumentsSchema": MESSAGE_SCHEMA}
+                             for name in ("message.draft", "message.send")]}
+
+
+@pytest.mark.parametrize("wire", ["message_draft", "message_send"])
+def test_a_message_tool_says_the_channel_is_the_persons_and_words_for_someone_with_them_are_said(
+        tmp_path: Path, wire: str) -> None:
+    # Feria 2026-10-27 (a greeting asked for someone in the room drafted a WhatsApp message by a channel nobody named;
+    # decision bench 0/9): the model reads that the channel is one the person named, and that words for someone with
+    # them, with no channel named, are said in its reply, not written to a client.
+    mind, _ = _mind(tmp_path, [])
+    mind.configure(MESSAGES)
+    tool = next(t for t in mind.tools if t["function"]["name"] == wire)["function"]
+    assert "say them yourself in your reply" in tool["description"]
+    channel = tool["parameters"]["properties"]["channel"]["description"]
+    assert "never one they did not name" in channel and "ask them which" in channel
