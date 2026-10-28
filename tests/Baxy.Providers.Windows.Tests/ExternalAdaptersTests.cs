@@ -3861,9 +3861,14 @@ public sealed class ExternalAdaptersTests
     }
 
     // Noche 2026-10-27 (P1.3): a one-word local name searched with no region came back as the English word it also is.
-    // The engine is asked in the person's Windows home region and the search language, and the receipt says the region.
-    [Test]
-    public async Task AWebSearchAsksTheEngineInTheHomeRegionAndSaysIt()
+    // The engine is asked in the person's Windows home region when it has that country in the search language (its own
+    // code: Britain is «uk»), and the receipt says the region; any other pair, or no home region, asks the whole world.
+    [TestCase("CL", "es", "q=Savory&kl=cl-es", "CL")]
+    [TestCase("GB", "en", "q=Savory&kl=uk-en", "GB")]
+    [TestCase("CL", "en", "q=Savory", null)]
+    [TestCase(null, "es", "q=Savory", null)]
+    public async Task AWebSearchAsksTheEngineInTheHomeRegionAndSaysIt(
+        string? homeRegion, string language, string body, string? region)
     {
         var handler = new SearchSourcesHttpHandler
         {
@@ -3873,16 +3878,17 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
         using WebBrowserAdapter adapter = new(
-            new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused")), http, homeRegion: "CL");
+            new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused")), http, homeRegion: homeRegion);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"Savory"}"""), CancellationToken.None);
+            "web.search", Json($$"""{"query":"Savory","language":"{{language}}"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(receipt.Result!.Value.GetProperty("region").GetString(), Is.EqualTo("CL"));
-            Assert.That(handler.Asked.Single().Body, Is.EqualTo("q=Savory&kl=cl-es"));
+            Assert.That(receipt.Result!.Value.TryGetProperty("region", out JsonElement said) ? said.GetString() : null,
+                Is.EqualTo(region));
+            Assert.That(handler.Asked.Single().Body, Is.EqualTo(body));
         });
     }
 

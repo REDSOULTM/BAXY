@@ -802,6 +802,20 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // results page or the endpoint does not answer, the html endpoint is asked once after a short wait.
     private const string GeneralSearchFallbackEndpoint = "https://html.duckduckgo.com/html/";
     private const string GeneralSearchFallbackAuthority = "duckduckgo_html_https";
+    // Noche 2026-10-27 (P1.3): with no region the engine answers for the whole world, and a one-word local name came back
+    // as the English word it also is («Savory»: the adjective; asked in cl-es, the brand). A web search is asked in the
+    // Windows home region when the engine has that country in the search language: its region («kl») as its parameters
+    // page lists them (duckduckgo.com/duckduckgo-help-pages/settings/params, read 2026-10-27), keyed by ISO country and
+    // language; Britain is «uk» there and Spanish in the United States «ue». Any other pair asks the whole world, and
+    // the receipt says no region. Only the region leaves, a country the PC's address already places it in.
+    private static readonly Dictionary<string, string> GeneralSearchRegions = new(StringComparer.Ordinal)
+    {
+        ["AR-es"] = "ar-es", ["CL-es"] = "cl-es", ["CO-es"] = "co-es", ["ES-es"] = "es-es", ["MX-es"] = "mx-es",
+        ["PE-es"] = "pe-es", ["US-es"] = "ue-es", ["VE-es"] = "ve-es",
+        ["AU-en"] = "au-en", ["CA-en"] = "ca-en", ["GB-en"] = "uk-en", ["ID-en"] = "id-en", ["IE-en"] = "ie-en",
+        ["IN-en"] = "in-en", ["MY-en"] = "my-en", ["NZ-en"] = "nz-en", ["PH-en"] = "ph-en", ["SG-en"] = "sg-en",
+        ["US-en"] = "us-en", ["ZA-en"] = "za-en",
+    };
     private const string GeneralSearchUserAgent =
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36";
     private static readonly TimeSpan GeneralSearchRetryDelay = TimeSpan.FromSeconds(1.5);
@@ -919,14 +933,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string authority = GeneralSearchAuthority;
+        string? kl = _homeRegion is null ? null : GeneralSearchRegions.GetValueOrDefault(_homeRegion + "-" + language);
         var reading = await ReadGeneralSearchAsync(
-            GeneralSearchEndpoint, ParseDuckDuckGoLitePage, query, language, cancellationToken).ConfigureAwait(false);
+            GeneralSearchEndpoint, ParseDuckDuckGoLitePage, query, language, kl, cancellationToken).ConfigureAwait(false);
         if (reading is not { IsResultsPage: true })
         {
             await Task.Delay(GeneralSearchRetryDelay, cancellationToken).ConfigureAwait(false);
             authority = GeneralSearchFallbackAuthority;
             reading = await ReadGeneralSearchAsync(
-                    GeneralSearchFallbackEndpoint, ParseDuckDuckGoHtmlPage, query, language, cancellationToken)
+                    GeneralSearchFallbackEndpoint, ParseDuckDuckGoHtmlPage, query, language, kl, cancellationToken)
                 .ConfigureAwait(false);
         }
         // A block, a captcha, an error page or no answer: nothing was searched, and the reply must not pretend the web
@@ -940,7 +955,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteString("url", result.Url);
                 writer.WriteString("snippet", result.Snippet);
             },
-            region: _homeRegion);
+            region: kl is null ? null : _homeRegion);
     }
 
     private async Task<ExternalCapabilityReceipt> NewsAsync(
@@ -1181,23 +1196,19 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // Both endpoints answer a form post (a GET of the lite one returns its search form with no results). Each result is
     // kept as the engine gave it when it is structurally one: an http or https address that is not the engine's own, a
     // title and bounded lengths. Null when the endpoint did not answer.
-    // Noche 2026-10-27 (P1.3): with no region the engine answers for the whole world, and a one-word local name came back
-    // as the English word it also is («Savory»: the adjective; asked in cl-es, the brand). With the Windows home region
-    // set, «kl» asks the engine in that region and the search language; only the country code leaves, which the PC's
-    // address already tells the engine.
+    // «kl», when not null, is the engine's region the search is asked in (GeneralSearchRegions).
     private async Task<(List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage)?>
         ReadGeneralSearchAsync(
             string endpoint,
             Func<string, IEnumerable<(string Title, string Url, string Snippet)>> parse,
             string query,
             string language,
+            string? kl,
             CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
-            Content = new FormUrlEncodedContent(_homeRegion is null
-                ? [new("q", query)]
-                : [new("q", query), new("kl", _homeRegion.ToLowerInvariant() + "-" + language)]),
+            Content = new FormUrlEncodedContent(kl is null ? [new("q", query)] : [new("q", query), new("kl", kl)]),
         };
         request.Headers.TryAddWithoutValidation("User-Agent", GeneralSearchUserAgent);
         request.Headers.TryAddWithoutValidation("Accept-Language", language == "en" ? "en-US,en;q=0.9" : "es-ES,es;q=0.9");
