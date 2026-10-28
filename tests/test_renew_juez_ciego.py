@@ -79,8 +79,50 @@ def test_join_refuses_a_missing_or_partial_or_malformed_batch(tmp_path):
         juez_ciego.juntar(out)
 
 
-def test_a_used_folder_is_refused(tmp_path):
+def test_a_used_folder_is_refused_and_the_key_stays_out_of_it(tmp_path):
     out = tmp_path / "juez"
     juez_ciego.paquetes(_bank(tmp_path, 2), [_run(tmp_path, ["fallo"] * 2)], 6, out, 1)
-    with pytest.raises(SystemExit, match="not empty"):
+    assert not list(out.glob("clave*")) and (tmp_path / "juez.clave.json").exists()
+    with pytest.raises(SystemExit, match="already exists"):
         juez_ciego.paquetes(_bank(tmp_path, 2), [_run(tmp_path, ["fallo"] * 2)], 6, out, 2)
+
+
+def test_a_case_of_two_runs_never_shares_a_batch_with_itself(tmp_path):
+    bank = _bank(tmp_path, 3)
+    base = _run(tmp_path, ["fallo"] * 3)
+    cand = tmp_path / "cand.jsonl"
+    cand.write_text(base.read_text(encoding="utf-8"), encoding="utf-8")
+    out = tmp_path / "juez"
+    for prompt in juez_ciego.paquetes(bank, [base, cand], 4, out, 3):
+        items = json.loads(prompt.read_text(encoding="utf-8").split("```json\n")[1].split("\n```")[0])
+        pedidos = [item["pedido"][0]["dice"] for item in items]
+        assert len(pedidos) == len(set(pedidos))
+    _judge(out, lambda item: {"cumple": True, "motivo": "x"})
+    summary = juez_ciego.juntar(out)
+    assert summary["n"] == 6 and {v["n"] for v in summary["por_corrida"].values()} == {3}
+
+
+def test_a_void_run_is_listed_and_a_short_run_refused(tmp_path):
+    void = tmp_path / "void.jsonl"
+    void.write_text(json.dumps({"summary": {"void": "ventana del dueño", "ok": 0, "n": 2}}) + "\n", encoding="utf-8")
+    out = tmp_path / "juez"
+    juez_ciego.paquetes(_bank(tmp_path, 2), [void, _run(tmp_path, ["fallo"] * 2)], 6, out, 1)
+    key = json.loads((tmp_path / "juez.clave.json").read_text(encoding="utf-8"))
+    assert key["no_juzgados"] == [{"run": str(void), "status": "void", "motivo": "ventana del dueño"}]
+    short = tmp_path / "short.jsonl"
+    short.write_text("\n".join((_run(tmp_path, ["fallo"] * 2).read_text(encoding="utf-8").splitlines())[:2]),
+                     encoding="utf-8")
+    with pytest.raises(SystemExit, match="summary says n=2"):
+        juez_ciego.paquetes(_bank(tmp_path, 2), [short], 6, tmp_path / "otro", 1)
+
+
+def test_the_judge_sees_a_confirmation_asked(tmp_path):
+    run = tmp_path / "results.jsonl"
+    run.write_text("\n".join(json.dumps(r) for r in [{"summary": {"n": 1}}, {
+        "id": "C0", "status": "fallo", "steps": [], "replies": [
+            {"turn": 1, "text": "", "asked_confirmation": True, "confirmation_text": "¿Lo cierro?", "answered": None}]}]),
+        encoding="utf-8")
+    [prompt] = juez_ciego.paquetes(_bank(tmp_path, 1), [run], 6, tmp_path / "juez", 1)
+    [item] = json.loads(prompt.read_text(encoding="utf-8").split("```json\n")[1].split("\n```")[0])
+    assert item["respuestas"][0]["pidio_confirmacion"] is True
+    assert item["respuestas"][0]["pregunta"] == "¿Lo cierro?"
