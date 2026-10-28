@@ -814,11 +814,20 @@ public sealed class ExternalAdaptersTests
                 Json($$"""{"captureId":"{{captureId}}"}"""),
                 CancellationToken.None);
 
+            // A capture the decoder cannot read fails with the adapter's code, not as a bare provider exception.
+            await File.WriteAllBytesAsync(
+                Path.Combine(directory.Path, captureId + ".bmp"), Enumerable.Repeat((byte)7, 64).ToArray());
+            ExternalCapabilityReceipt undecodable = await adapter.InvokeAsync(
+                "vision.describe",
+                Json($$"""{"captureId":"{{captureId}}"}"""),
+                CancellationToken.None);
+
             Assert.Multiple(() =>
             {
                 Assert.That(receipt.Verified, Is.False);
                 Assert.That(receipt.ErrorCode, Is.EqualTo("vision_provider_timeout"));
                 Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(undecodable.ErrorCode, Is.EqualTo("capture_vision_adapter_failed"));
             });
         }
         finally

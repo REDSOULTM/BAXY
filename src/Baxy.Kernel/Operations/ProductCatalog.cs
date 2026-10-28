@@ -1876,7 +1876,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "vision.describe.provider.capture.binding.v1",
             "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured; sólo se guardan las 16 últimas capturas.",
-            // Al máximo, flujos: CaptureVisionAdapter: the local endpoint has 90 s.
+            // Al máximo, flujos: CaptureVisionAdapter: the local endpoint has 80 s inside these 90 (P2.17).
             budget: TimeSpan.FromSeconds(90)),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
         // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:

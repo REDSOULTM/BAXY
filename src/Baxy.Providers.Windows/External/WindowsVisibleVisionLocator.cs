@@ -284,7 +284,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            // P2.17: the client's own time ran out on a question (the caller did not cancel); the slot went back.
+            // P2.17: the client's own time ran out on a question (the caller did not cancel); the finally above put the slot back.
             return pressedOnce
                 ? ExternalJson.FailureAfterEffect(operation, "visible_click_postread_invalid")
                 : ExternalJson.Failure(operation, "vision_provider_timeout");

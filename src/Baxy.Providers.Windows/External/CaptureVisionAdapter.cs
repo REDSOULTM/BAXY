@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -72,8 +73,9 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         {
             return ExternalJson.Failure(operation, "capture_not_found");
         }
+        // A capture the imaging decoder cannot read (COMException) fails here too, not as a bare provider exception.
         catch (Exception exception) when (exception is IOException
-            or UnauthorizedAccessException or JsonException or HttpRequestException)
+            or UnauthorizedAccessException or JsonException or HttpRequestException or COMException)
         {
             return effectBoundary.Failure(operation, "capture_vision_adapter_failed");
         }
