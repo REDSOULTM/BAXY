@@ -1102,6 +1102,19 @@ DOUBT_OTHER_ASK_NOTE = ("[Nota interna, no la escribió la persona: no estás se
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
 DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
+# P2.43: in Bypass the catalog cannot say whether a call confirms by its arguments (a click on «Enviar» does in normal
+# mode, one on «Siguiente» does not), so a doubt that would read again goes to the App as the action with «unsure»
+# (_held). The App never runs it: it answers the observation held «would_run_unasked» when the kernel would run that
+# exact invocation now without the «sí» normal mode asks for it (the doubt then asks, DOUBT_NOTE), or held HELD_UNSURE
+# otherwise (it reads again, REREAD_NOTE); P2.43b: a held outcome it does not know asks too. The mind reads only that
+# typed outcome, never the call's words.
+UNSURE = object()
+HELD_UNSURE = "unsure"
+# P2.43b: the reading again after a held doubt may choose another invocation (a click on «Siguiente» weighed, one on
+# «Enviar» chosen in doubt on reading again). A reading still under either layer's threshold goes to the App «unsure»
+# too when its key (operation and canonical arguments) was not weighed in this turn, at most this many weighings a
+# turn; past them its doubt asks, so it never loops and never runs unweighed. The same invocation, weighed, runs.
+UNSURE_WEIGHS = 2
 # Uso en la feria (2026-10-27): in the noise a short greeting came out in another language or as a word nobody said, and
 # the model answered it as said. How sure the ear was of each word (voice.Heard, Parakeet's per-token probabilities)
 # reaches the model beside the clock as a fact, as the pending «sí» does: the model decides, in its own words, whether to
@@ -1390,6 +1403,9 @@ class Mind:
         self.wire_to_op: dict[str, str] = {}
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
         self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
+        # P2.41: the modes in which the kernel asks the person before each tool runs, whatever its arguments («normal»,
+        # «bypass»: RiskPolicy.Evaluate, as the App sent them), by wire name (_unasked); None: the catalog did not say.
+        self.confirms: dict[str, list[str] | None] = {}
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -1493,7 +1509,7 @@ class Mind:
         # The same names, for the ear's hotwords (voice.hear_names): what the model is shown is what it may hear.
         self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                                     if isinstance(e, dict) and e.get("name")})
-        tools, wire_to_op, risk, effects = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}
+        tools, wire_to_op, risk, effects, confirms = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}, {}
         # Auditoría de la mente (w8): the constants of this catalog only; one a tool had in an earlier catalog was still
         # added to its calls.
         constants_of: dict[str, dict[str, Any]] = {}
@@ -1530,7 +1546,14 @@ class Mind:
             wire_to_op[wire] = name
             risk[wire] = str(cap.get("risk") or "")
             effects[wire] = [str(e) for e in cap.get("effects") or []]
-        self.tools, self.wire_to_op, self.risk, self.effects = tools, wire_to_op, risk, effects
+            # P2.41b: a catalog without the field (an older App, a bench's --catalog), or with one that is not a list of
+            # modes, is not one that confirms nothing: None (_unasked).
+            modes = cap.get("confirms")
+            confirms[wire] = [mode.lower() for mode in modes] \
+                if isinstance(modes, list) and all(isinstance(mode, str) for mode in modes) else None
+        self.tools, self.wire_to_op, self.risk, self.effects, self.confirms = tools, wire_to_op, risk, effects, confirms
+        if absent := [wire_to_op[wire] for wire, modes in confirms.items() if modes is None]:
+            self._log("configure.confirms_absent", time.perf_counter(), None, operations=absent)
         areas = list(dict.fromkeys(str(cap["group"]) for cap in capabilities if cap.get("group")))
         self.system = SYSTEM + CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else SYSTEM
         self.constants = constants_of
@@ -2010,7 +2033,7 @@ class Mind:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
         valid tool transcript and the model never reads an unanswered call as done."""
         turn = self._turn or {}
-        if turn.get("awaiting"):
+        if turn.get("awaiting") and (turn.get("unsure") or {}).get("id") != turn["awaiting"]:  # P2.43: never ran
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
             self._ran_add(turn.get("calling"), NO_RESULT_RAN)
             op = str(turn.get("calling") or "?")  # it may have run: never a completed call of the session
@@ -2201,6 +2224,12 @@ class Mind:
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
         conv = turn["conv"]
+        if (unsure := turn.get("unsure")) and unsure["id"] == turn["awaiting"]:
+            del turn["unsure"]
+            held = self._unsure_held(request_id, turn, unsure, observation)
+            if held is not None:
+                return held
+        answered = turn["awaiting"]
         # Every call of the turn so far with how it ended, at the end of the newest result: where the model writes its
         # answer, the facts it may tell are together (it told «no pude abrir Steam» after Steam opened, «lo guardé»
         # after the typing failed, 2026-10-15 falsehood bench).
@@ -2317,6 +2346,10 @@ class Mind:
         if turn["queue"] and not final and completed:
             turn.pop("same_told_call", None)  # chosen before the notice was read
             return self._result(request_id, turn, turn["queue"].pop(0), None, "turn.continue", time.perf_counter(), "")
+        if (unsure := turn.pop("unsure", None)) and turn.pop("unsure_after", None) == answered and not final                 and completed:
+            # P2.40 with P2.43: the queued call held «unsure» goes to the App to be weighed once those before it ran.
+            turn["unsure"] = unsure
+            return self._result(request_id, turn, unsure, None, "turn.continue", time.perf_counter(), "")
         for call in turn["queue"]:
             conv.append({"role": "tool", "tool_call_id": call["id"], "content": NOT_RUN if final else NOT_RUN_AFTER})
             turn.setdefault("receipts", []).append({
@@ -2325,6 +2358,32 @@ class Mind:
                 "read": self.risk.get(call["wire"]) == "read_only"})
         turn["queue"] = []
         return self._next(request_id, "turn.continue", turn, final=final)
+
+    def _unsure_held(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any],
+                     observation: str) -> dict[str, Any] | None:
+        """P2.43: the App's answer to a call sent «unsure». Held, it did not run: the doubt asks the person with no tools
+        unless the App says the kernel would not run it unasked (HELD_UNSURE): then it reads again with its tools.
+        None: an App that does not know «unsure» ran it, so the call enters the conversation and is read as any."""
+        try:
+            told = json.loads(observation)
+        except json.JSONDecodeError:
+            told = None
+        conv, turn["awaiting"] = turn["conv"], None
+        if not isinstance(told, dict) or told.get("status") != "held":
+            conv.append({"role": "assistant", "content": "", "tool_calls": [
+                {"id": call["id"], "type": "function",
+                 "function": {"name": call["wire"], "arguments": json.dumps(call["arguments"], ensure_ascii=False)}}]})
+            turn["awaiting"] = call["id"]
+            return None
+        asks = told.get("outcome") != HELD_UNSURE
+        if not asks:
+            turn["reread"] = True
+        conv.append({"role": "user", "content": (DOUBT_NOTE if asks else REREAD_NOTE).format(call=call["wire"])})
+        self._log("turn.continue", time.perf_counter(), None, text=None if turn.get("private") else turn["text"],
+                  kind="doubt_ask" if asks else "doubt_reread", operation=self.wire_to_op.get(call["wire"], call["wire"]),
+                  arguments=None, content=None)
+        # Decided again as the person's turn it doubted, as REREAD_NOTE and DOUBT_NOTE are after a doubt held in the mind.
+        return self._next(request_id, "turn.decide", turn, final=asks)
 
     def _fit_result(self, shown: str) -> str:
         """Aid «result_cap» (P0.10): a result past RESULT_TOKENS keeps the start that fits and says how much is left out
@@ -2458,9 +2517,12 @@ class Mind:
             calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
         held, note = (calls[0], self._held(stage, turn, final, calls[0], reply, body)) if calls else (None, None)
         # P2.40 (C16 M11): the calls queued behind the first run without the model deciding again, so one the kernel
-        # would run unasked goes by the same rule, with its own doubt ([app_open, system_power] never asked).
+        # would run unasked goes by the same rule, with its own doubt ([app_open, system_power] never asked); in Bypass,
+        # so does one the App weighs with its arguments (P2.43: a click on «Enviar» or on «Siguiente»), not one that only
+        # reads, is undone, or the kernel confirms in Bypass too.
         for nth, call in enumerate(calls[1:], 1):
-            if note is None and self._unasked(call["wire"]):
+            if note is None and (self._unasked(call["wire"]) or _bypass() and self.risk.get(call["wire"]) not in (
+                    "read_only", "low_reversible") and "bypass" not in (self.confirms.get(call["wire"]) or ())):
                 held, note = call, self._held(stage, turn, final, call, reply, body, nth)
         if isinstance(note, dict):
             # Layer 2 «corrige»: the decision model's tool, with the arguments the model itself wrote for it, replaces
@@ -2470,6 +2532,20 @@ class Mind:
             turn["doubt_of"] = self.wire_to_op.get(held["wire"], held["wire"])
             at = calls.index(held)  # the calls before a queued one held were not doubted: they stay, with their words
             calls, note, content = [*calls[:at], note], None, content if at else ""
+        if note is UNSURE:
+            # P2.43: the doubted call goes to the App to be weighed with its arguments, not run; it enters the
+            # conversation only if an App that does not know «unsure» ran it (continue_turn). One the mind itself
+            # refuses (_repeat_refused, _unopened) takes the usual way, which tells the model why. P2.40: held queued
+            # behind others, those were not doubted: they run first, with their words, and it is weighed after them.
+            name = self.wire_to_op.get(held["wire"], held["wire"])
+            if not self._repeat_refused(turn, name, held) and not self._unopened(turn, held):
+                turn["unsure"] = held
+                turn.setdefault("weighed", []).append((held["wire"], _call_key(held["arguments"])))
+                at = calls.index(held)
+                if not at:
+                    return self._result(request_id, turn, held, reply, stage, started, "")
+                calls, turn["unsure_after"] = calls[:at], calls[at - 1]["id"]
+            note = None
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads (the call it nearly made never enters the
@@ -2758,9 +2834,10 @@ class Mind:
         return stage == "turn.decide" and not final and not turn.get("beat")
 
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
-              body: dict[str, Any], nth: int = 0) -> str | dict[str, Any] | None:
+              body: dict[str, Any], nth: int = 0) -> str | dict[str, Any] | object | None:
         """The note that holds the turn's first action (or the reply's `nth` call, queued behind it), the call that
-        replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
+        replaces it, UNSURE (in Bypass, the App weighs the doubted call with its arguments before it reads again), or
+        None. Layer 0 (BAXY_S1_DOUBT): the
         model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
         low_reversible, or recoverable_delete and the kernel confirms it. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
@@ -2768,8 +2845,10 @@ class Mind:
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
         runs; the answer to layer 2's own question is never turned into another one, nor is the model's reading again
         after either layer (turn["reread"]), save a call the kernel would run unasked (_unasked): that one, at either
-        layer, only asks. Asking is never held: it already puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
-        only a yes (PLAIN_YES), whatever System One's own thresholds."""
+        layer, only asks; and, in Bypass, one under either layer's threshold that is another invocation than those
+        weighed (P2.43b): UNSURE, or past UNSURE_WEIGHS a question. Asking is never held: it already puts the person in
+        the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not only a yes
+        (PLAIN_YES), whatever System One's own thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] in (ASK_USER["function"]["name"],
                                                                      CALCULATE["function"]["name"]):
             return None
@@ -2802,18 +2881,29 @@ class Mind:
         # (_unasked): its doubt asks the person, with no tools, at either layer, also in the reading after another doubt.
         risk = self.risk.get(call["wire"])
         unasked = self._unasked(call["wire"])
+        # P2.43b: in Bypass, a reading again (not the person's answer) of another invocation than those weighed is weighed
+        # too; past UNSURE_WEIGHS its doubt asks, with no tools, so it neither loops nor runs unweighed.
+        weighs = turn.get("weighed") or []
+        fresh = turn.get("reread") and _bypass() and not turn.get("answering") \
+            and (call["wire"], _call_key(call["arguments"])) not in weighs
+        unweighed = UNSURE if len(weighs) < UNSURE_WEIGHS else DOUBT_NOTE.format(call=call["wire"])
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
-                and (unasked or not turn.get("reread")) and risk != "low_reversible" \
+                and (unasked or not turn.get("reread") or fresh) and risk != "low_reversible" \
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
             if unasked:
                 return DOUBT_NOTE.format(call=call["wire"])
+            if _bypass():
+                return unweighed if fresh else UNSURE  # P2.43: the App says whether the kernel would run it unasked
             turn["reread"] = True
             return REREAD_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
-        if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO") \
-                or (turn.get("reread") and not unasked):
-            return None  # nor the model's reading again after a doubt (REREAD_NOTE, DOUBT_OTHER_NOTE): it decided
+        if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
+            return None
+        if turn.get("reread") and not unasked:
+            # Nor the model's reading again after a doubt (REREAD_NOTE, DOUBT_OTHER_NOTE): it decided. P2.43b: save in
+            # Bypass one under BAXY_S1_VETO of another invocation, which the App weighs without the decision model.
+            return unweighed if fresh and risk != "low_reversible" else None
         options = self._candidates(call["wire"], doubt, body)
         judged = self.system_one.choose(turn["text"], self._said(), options)
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
@@ -2870,11 +2960,14 @@ class Mind:
 
     def _unasked(self, wire: str) -> bool:
         """Whether the kernel would run this tool without the person's «sí» though normal mode counts its risk as one to
-        confirm: one of CONFIRMED_RISKS it does not confirm now (system.power; any in Bypass), or, in Bypass, one that
-        goes out of the PC (external_communication: normal mode asks for those that reach a person)."""
-        risk = self.risk.get(wire)
-        return (risk in CONFIRMED_RISKS and not self._kernel_confirms(wire)) \
-            or (risk == "external_communication" and _bypass())
+        confirm: one of CONFIRMED_RISKS it does not confirm now (system.power; any in Bypass), or, in Bypass, one the
+        kernel confirms in normal mode and not in Bypass, by the modes it sent (self.confirms; P2.41: of
+        external_communication, normal mode asks only for those that reach a person, and Bypass still for message.send).
+        P2.41b: a tool the catalog sent without them keeps the rule from before, external_communication."""
+        risk, confirms = self.risk.get(wire), self.confirms.get(wire)
+        skipped = risk == "external_communication" if confirms is None \
+            else "normal" in confirms and "bypass" not in confirms
+        return (risk in CONFIRMED_RISKS and not self._kernel_confirms(wire)) or (_bypass() and skipped)
 
     def _corrected(self, wire: str, body: dict[str, Any], chosen: str = "") -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting
@@ -3092,6 +3185,8 @@ class Mind:
             if name == "web.fetch":
                 arguments = web_focus.widen(arguments)  # goal h-web: it reads a wider part
             result.update(kind="action", operation=name, arguments=arguments)
+            if turn.get("unsure") is call:
+                result["unsure"] = True
         elif content:
             result.update(reply=content)
         doubt_of = {"doubt_of": turn.pop("doubt_of")} if "doubt_of" in turn else {}
@@ -3100,8 +3195,8 @@ class Mind:
         private = bool(turn.get("private"))
         # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop): from the memory
         # call on, their words, the calls' arguments and the model's text.
-        self._log(stage, started, reply, text=None if private else turn["text"], kind=result["kind"],
-                  operation=result["operation"], arguments=call["arguments"] if call and not private else None,
+        self._log(stage, started, reply, text=None if private else turn["text"],
+                  kind="doubt_unsure" if result.get("unsure") else result["kind"], operation=result["operation"], arguments=call["arguments"] if call and not private else None,
                   content=None if private else content, **doubt_of)
         return result
 

@@ -63,6 +63,29 @@ public sealed class MindSidecarClientTests
     }
 
     [Test]
+    public void TheCatalogTheMindReadsCarriesTheModesInWhichTheKernelConfirmsEachTool()
+    {
+        // P2.41: the mind's doubt asks in words only about a call the kernel would run unasked (mind.py, _unasked), by
+        // RiskPolicy.Evaluate itself: a song or a page go direct in both modes, an email asks in normal mode, and a
+        // message to a person asks in Bypass too.
+        JsonObject request = MindSidecarClient.CreateCatalogConfigureRequest(
+            [.. ProductCatalog.ToolDescriptors.Select(static descriptor =>
+                ProductCatalog.CreateToolDescriptor(new OperationDefinition(descriptor)))],
+            applicationCatalog: null);
+        string Confirms(string name) => request["capabilities"]!.AsArray().OfType<JsonObject>()
+            .Single(tool => (string?)tool["name"] == name)["confirms"]!.ToJsonString();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Confirms("media.play.query"), Is.EqualTo("[]"));
+            Assert.That(Confirms("browser.navigate"), Is.EqualTo("[]"));
+            Assert.That(Confirms("email.send"), Is.EqualTo("[\"normal\"]"));
+            Assert.That(Confirms("message.send"), Is.EqualTo("[\"normal\",\"bypass\"]"));
+            Assert.That(Confirms("system.power"), Is.EqualTo("[]"));
+        });
+    }
+
+    [Test]
     public void TheCatalogTheMindReadsCarriesEachToolsGroupOfWhatItCanDo()
     {
         // Feria 2026-10-27: asked what it can do, the model named things no tool does; it reads the groups of the panel

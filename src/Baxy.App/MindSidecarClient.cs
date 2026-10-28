@@ -6,6 +6,8 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
+using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.App;
 
@@ -69,9 +71,10 @@ internal sealed record MindLoss(string Cause, string? Request = null, int? ExitC
 /// answer to the person), <c>question</c> (one question it asks the person), <c>silence</c> (a heartbeat that found
 /// nothing needing attention), <see cref="Error"/> (the mind answered the request with an error: <see cref="Text"/> is its
 /// code, or <c>invalid</c> when it is no stable label). The App runs what the model chose and publishes what it wrote; it
-/// never rewrites either.
+/// never rewrites either. <see cref="Unsure"/> (P2.43): System One doubted the action, so the App only weighs it
+/// (NativeTurnLoop.UnsureHeld) and never runs it.
 /// </summary>
-internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text)
+internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text, bool Unsure = false)
 {
     internal const string Error = "error";
 
@@ -337,6 +340,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 ["risk"] = capability.Risk,
                 // Feria 2026-10-27: what the model may say it can do (mind.py, AREAS), as the panel «Qué puedo hacer».
                 ["group"] = FieldStepProjection.Group(capability.Name),
+                // P2.41: the modes in which the kernel asks the person before it runs, whatever its arguments; the mind's
+                // doubt asks in words only about a call the kernel would run unasked (mind.py, _unasked).
+                ["confirms"] = new JsonArray([.. Enum.GetValues<ConfirmationMode>()
+                    .Where(mode => RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(capability.Risk), mode, capability.Name)
+                        == PolicyDecision.RequireConfirmation)
+                    .Select(static mode => (JsonNode?)mode.ToString().ToLowerInvariant())]),
             };
             if (capability.Effects is { } effects)
             {
@@ -568,7 +577,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                     "action",
                     operation,
                     reply["arguments"]?.DeepClone() as JsonObject ?? new JsonObject(),
-                    string.Empty);
+                    string.Empty,
+                    reply["unsure"] is JsonValue unsure && unsure.TryGetValue(out bool flagged) && flagged);
             case "clarify" when Str(reply["question"]) is { Length: > 0 } question:
                 return new MindStep("question", null, null, question.Trim());
             case "conversation" when Str(reply["reply"]) is { Length: > 0 } text:
