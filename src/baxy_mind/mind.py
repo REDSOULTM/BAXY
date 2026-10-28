@@ -138,6 +138,11 @@ BEAT_MARK = "[Latido: nadie te habló; lo que sigue lo dijiste o hiciste por tu 
 
 # How a call the kernel holds for the person's «sí» ended, in the words the model reads.
 WAITS_FOR_YES = "no se ejecutó: espera el sí de la persona"
+# Vivo larga (notebook, 2026-10-27): a call whose question ended unanswered (ENDED) kept «espera el sí» among the
+# session's calls for good, and the same call asked again turns later read as maybe answering it (confidence 0.998 the
+# first time, 0.53-0.70 after; «¿cierro la Calculadora o confirmo algo pendiente?» with no call, 2 of 5).
+UNANSWERED = {"expired": "no se ejecutó: se acabó el tiempo para contestar su pregunta",
+              "dropped": "no se ejecutó: su pregunta quedó sin respuesta"}
 # How a completed call was verified (the result's «verification»), in the words the model reads.
 # Auditoría de falsedades (w5-fals, 2026-10-22): «completado» is a word of something done, and the 4B told it as done
 # where nothing was: «¿abriste Spotify?» → a read of its windows («completado: lectura») → «Sí» in 9 of 9 runs of
@@ -1677,6 +1682,7 @@ class Mind:
         """``unsure``: the words of a spoken request the ear was not sure of (voice.Voice.unsure)."""
         # Review 2026-10-22: a decision that fails (the model server down, an error) takes back what it added, so the
         # next turn never reads an old request without its answer as one still to do.
+        self._ran_unanswered(self._ended(pending))
         turn = self._turn
         if turn and turn.get("asked"):
             # The person's next words answer the model's own ask_user: they are that call's result, in the same loop, so
@@ -1855,6 +1861,17 @@ class Mind:
         wire = CONFIRM["function"]["name"] if calling == CONFIRM_OPERATION else str(calling or "?").replace(".", "_")
         self._ran, self._ran_count = [*self._ran, f"{wire} → {outcome}"][-SESSION_CALLS:], self._ran_count + 1
         self._ran_ids = [*self._ran_ids, call_id][-SESSION_CALLS:]
+
+    def _ran_unanswered(self, ended: dict[str, Any] | None) -> None:
+        """The session's call whose question ended unanswered, as the App says it, no longer waits for a «sí» (8.1)."""
+        if ended is None:
+            return
+        wire = str(ended["operation"]).replace(".", "_")
+        waiting = f"{wire} → {WAITS_FOR_YES}"
+        if waiting in self._ran:
+            last = len(self._ran) - 1 - self._ran[::-1].index(waiting)
+            told = f"{wire} → {UNANSWERED.get(str(ended.get('ended')), UNANSWERED['dropped'])}"
+            self._ran = [told if index == last else entry for index, entry in enumerate(self._ran)]
 
     def _ran_told(self) -> list[str]:
         """The clock's calls of the session (8.1). Aid «clock_omitted» (auditoría de la mente, w8, 2026-10-23): one whose

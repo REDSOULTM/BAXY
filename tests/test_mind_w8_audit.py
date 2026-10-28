@@ -453,3 +453,22 @@ def test_a_press_with_no_question_just_before_it_names_no_call(tmp_path, monkeyp
     mind.continue_turn(3, TRASHED)
     facts = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
     assert "[En este turno: confirm_pending → completado y verificado" in facts
+
+
+@pytest.mark.parametrize("ended", ["dropped", "expired"])
+def test_a_question_that_ended_unanswered_no_longer_waits_in_the_clock(tmp_path, ended) -> None:
+    # Vivo larga (notebook, 2026-10-27): a close BAXY asked about and nobody answered stayed «espera el sí» in the
+    # session's calls for every later turn; the next close of the same app was read as maybe answering it (confidence
+    # 0.998 the first time, 0.53-0.70 after) and asked «¿cierro o confirmo algo pendiente?» with no call.
+    from baxy_mind.mind import WAITS_FOR_YES
+    from test_mind_final import _call, _mind, _say
+    mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Calculadora"}), _say("¿Cierro la Calculadora?"),
+                                    _say("Vale."), _say("Hecho.")])
+    mind.wire_to_op = {"app_close": "app.close"}
+    mind.decide(1, "ciérrala")
+    mind.continue_turn(2, ASKS, final=True)
+    mind.decide(3, "otra cosa", {"operation": "app.close", "ended": ended})
+    clock = _clock_of(server)
+    assert f"app_close → {WAITS_FOR_YES}" not in clock and "app_close → no se ejecutó" in clock
+    mind.decide(4, "y otra más")
+    assert f"app_close → {WAITS_FOR_YES}" not in _clock_of(server)
