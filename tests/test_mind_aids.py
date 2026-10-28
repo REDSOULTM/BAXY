@@ -221,6 +221,18 @@ def test_the_applications_with_places_are_named_from_the_data(tmp_path: Path) ->
         assert app in texts
 
 
+def test_an_applications_own_volume_says_what_its_app_is_and_where_the_whole_pc_goes(tmp_path: Path) -> None:
+    # Hallazgo 6 del notebook (27-10): «pon el volumen a 20» llamó audio_app_volume_set con app «PC»; el app de las dos
+    # herramientas por aplicación no tenía descripción.
+    mind, _ = _mind(tmp_path, [])
+    app = {"type": "object", "properties": {"app": {"type": "string"}, "level": {"type": "integer"}}}
+    mind.configure({"capabilities": [{"name": name, "description": "Volume.", "argumentsSchema": app}
+                                     for name in ("audio.app.volume.set", "audio.app.volume.adjust")]})
+    for wire, whole in (("audio_app_volume_set", "audio_volume"), ("audio_app_volume_adjust", "audio_volume_adjust")):
+        tool = next(t for t in mind.tools if t["function"]["name"] == wire)["function"]
+        assert whole in tool["parameters"]["properties"]["app"]["description"]
+
+
 SETTINGS_AND_TRASH = {"capabilities": [
     {"name": "system.settings.set", "description": "Set a setting.", "argumentsSchema": {"type": "object", "properties": {}}},
     {"name": "filesystem.known.trash.named", "description": "Delete by name.",
