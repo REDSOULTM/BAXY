@@ -268,8 +268,10 @@ internal sealed class LocalJsonlSidecarProcess : IAsyncDisposable
 
     internal Process Process => _process;
 
-    /// <summary>Forgets what the stderr log keeps (<see cref="BoundedStandardErrorLog.Forget"/>); true when none is kept.</summary>
-    internal bool ForgetStandardError() => _standardErrorLog?.Forget() ?? true;
+    /// <summary>Forgets what the stderr log keeps (<see cref="BoundedStandardErrorLog.Forget"/>), or the files of one this
+    /// run could not open, which still hold earlier runs'; true when none is kept.</summary>
+    internal bool ForgetStandardError() => _standardErrorLog?.Forget()
+        ?? (Definition.StandardErrorLog is not { } path || BoundedStandardErrorLog.ForgetFiles(path));
 
     internal ValueTask WriteUtf8LineAsync(
         ReadOnlyMemory<byte> utf8Line,
