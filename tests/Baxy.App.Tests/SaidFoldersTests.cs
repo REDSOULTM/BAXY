@@ -213,6 +213,22 @@ public sealed class SaidFoldersTests
             .And.Contain("to look there, call file_find with folder \"home\" and subdirectory \"banco-local\""));
     }
 
+    // Banco v6 V6D278 (0 of 106): «en mi carpeta BAXY-bench, ¿qué archivos hay?» with a BAXY-bench in the home folder
+    // and another on the Desktop. Of two folders of that name the note said only that filesystem_list cannot name one,
+    // with no call that looks there. The look is said for each of them.
+    [Test]
+    public void ALookAtTheWorkingFolderWithTwoFoldersOfTheNameSaidIsRefusedWithTheLookAtEach()
+    {
+        SaidFolders said = Heard("en mi carpeta banco-local, ¿qué archivos hay?");
+
+        string next = (string?)said.Rule("filesystem.list", Descriptor("filesystem.list"), new JsonObject())
+            ?.Refusal?["next"] ?? string.Empty;
+
+        Assert.That(next, Does.Contain("filesystem_list acts only in BAXY's own working folder")
+            .And.Contain("call file_find with folder \"home\" and subdirectory \"banco-local\"")
+            .And.Contain("folder \"desktop\" and subdirectory \"banco-local\""));
+    }
+
     // Práctica V5E040: «busca la factura en Documentos\Contabilidad» was a filesystem_search, which looks only in BAXY's
     // working folder, and BAXY said it found nothing. A search of the working folder in a turn that names a folder of
     // the person's runs as file_find in that folder (and the folder inside it said), and its note says so.
