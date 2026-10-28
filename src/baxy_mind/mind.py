@@ -2468,7 +2468,8 @@ class Mind:
             # 2026-10-22 (and B-MED-8): the words it wrote for the doubted call go with it, and the row says whose doubt
             # it carries (doubt_of) beside the operation that runs.
             turn["doubt_of"] = self.wire_to_op.get(held["wire"], held["wire"])
-            calls, note, content = [note], None, ""
+            at = calls.index(held)  # the calls before a queued one held were not doubted: they stay, with their words
+            calls, note, content = [*calls[:at], note], None, content if at else ""
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads (the call it nearly made never enters the
@@ -2481,7 +2482,8 @@ class Mind:
             if doubted.startswith("memory."):
                 turn["private"] = True  # review 2026-10-22: the words meant for memory, as after a memory call
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
-                      kind="doubt_reread" if reread else "doubt_ask", operation=doubted, arguments=None, content=None)
+                      kind="doubt_reread" if reread else "doubt_ask", operation=doubted, arguments=None, content=None,
+                      call_index=calls.index(held))
             return self._next(request_id, stage, turn, final=not reread)
         if calls:
             conv.append({"role": "assistant", "content": content, "tool_calls": [
@@ -3272,7 +3274,7 @@ class Mind:
             # few tokens), and a cut shows as the cache it lost.
             row.update(prompt_tokens=((reply or {}).get("usage") or {}).get("prompt_tokens"),
                        prefix_n=self.prefix_tokens)
-        doubt = read_doubt(reply)
+        doubt = read_doubt(reply, fields.get("call_index") or 0)  # P2.40: the doubt of the call held, if queued
         if doubt is not None:
             doubt.pop("written", None)  # the call's own text up to its weakest token: only for reading the rivals
             row["doubt"] = doubt

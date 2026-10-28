@@ -580,7 +580,7 @@ HELD_OUT_QUEUED = [
 HELD_OUT_QUEUED_CLEAR = [
     ("Lanza el reproductor y sube el volumen a setenta", ("app_open", {"appId": "spotify"}),
      ("volume_set", {"level": 70})),
-    ("Quita la planilla y muéstrame el bloc de notas", ("app_close", {"appId": "excel"}), ("app_open", {"appId": "notepad"})),
+    ("Quita la planilla y pásame el editor de texto", ("app_close", {"appId": "excel"}), ("app_open", {"appId": "notepad"})),
     ("Investiga el clima en Curicó y averigua el dólar de hoy", ("web_search", {"query": "clima en Curicó"}),
      ("web_search", {"query": "precio del dólar hoy"}))]
 HELD_OUT_RISK = {"system_power": "work_loss", "app_open": "read_only", "app_close": "work_loss",
@@ -609,3 +609,36 @@ def test_held_out_unsure_queued_call_that_confirms_nothing_runs(tmp_path, monkey
     mind, server = _held_out_mind(tmp_path, monkeypatch, [_calls(_call(*first, 0.95), _call(*second, 0.3))])
     assert mind.decide(1, words)["operation"] == mind.wire_to_op[first[0]]
     assert [c["wire"] for c in mind._turn["queue"]] == [second[0]] and len(server.bodies) == 1
+
+
+def test_in_bypass_an_unsure_external_call_queued_second_is_asked(tmp_path, monkeypatch) -> None:
+    _unasked(tmp_path, monkeypatch, "bypass")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, server = _mind(tmp_path, [_calls(_call("app_open", {"appId": "correo"}, 0.95),
+                                           _call("email_send", {"to": "ana"}, 0.3)), _say("¿A quién se lo mando?")])
+    mind.wire_to_op["email_send"] = "email.send"
+    mind.risk = {"app_open": "read_only", "email_send": "external_communication"}
+    assert mind.decide(1, "abre el correo y mándaselo")["operation"] is None
+    assert server.bodies[1].get("tool_choice") == "none"
+
+
+def test_an_unsure_power_call_queued_third_is_asked(tmp_path, monkeypatch) -> None:
+    mind, server = _held_out_mind(tmp_path, monkeypatch, [
+        _calls(_call("app_open", {"appId": "notas"}, 0.95), _call("volume_set", {"level": 0}, 0.95),
+               _call("system_power", {"action": "sleep"}, 0.3)), _say("¿Suspendo el PC?")])
+    assert mind.decide(1, "abre las notas, silencia y suspende")["operation"] is None
+    assert server.bodies[1].get("tool_choice") == "none"
+    rows = [json.loads(line) for line in mind.trace.read_text("utf-8").splitlines()]
+    assert rows[0]["kind"] == "doubt_ask" and rows[0]["operation"] == "system.power"
+    assert rows[0]["call_index"] == 2 and rows[0]["doubt"]["confidence"] < 0.4  # the doubt of the call held
+
+
+def test_layer2_correcting_a_queued_call_keeps_the_calls_before_it(tmp_path, monkeypatch) -> None:
+    _unasked(tmp_path, monkeypatch, "")
+    mind, server, _ = _correcting(tmp_path, monkeypatch, "low_reversible",
+                                  {"name": "app_close", "arguments": {"appId": "notas"}, "timings": {}})
+    server.replies[0] = _calls(_call("app_open", {"appId": "notas"}, 0.95), _rival_call(0.5))
+    mind.risk["app_open"] = "read_only"
+    result = mind.decide(1, "abre las notas y después ciérralo")
+    assert result["operation"] == "app.open"  # not doubted: it runs, and the correction waits behind it
+    assert [(c["wire"], c["arguments"]) for c in mind._turn["queue"]] == [("app_close", {"appId": "notas"})]
