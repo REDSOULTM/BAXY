@@ -1018,7 +1018,8 @@ internal sealed class NativeTurnLoop
     }
 
     // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
-    // asks for its confirmation too, the person's «sí» to this invocation is that confirmation (same token binding).
+    // asks for its confirmation too, the person's «sí» to this invocation is that confirmation (same token binding), unless
+    // the kernel says its earlier run may have acted: then the model asks them (AnsweredByProposal).
     private async Task<string> AnswerProposalAsync(
         PreparedOperation proposal,
         bool approve,
@@ -1051,7 +1052,7 @@ internal sealed class NativeTurnLoop
 
         string observation = await SendAsync(core, proposal, arguments, confirmationToken: null, answered: true,
             started, cancellationToken, said);
-        if (_pending is { } challenge && ReferenceEquals(challenge.Prepared, proposal))
+        if (_pending is { } challenge && challenge.AnsweredByProposal(proposal))
         {
             _pending = null;
             observation = await SendAsync(core, proposal, arguments, challenge.Token, answered: true, started,

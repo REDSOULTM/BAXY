@@ -25,6 +25,14 @@ internal sealed class PendingOperationConfirmation
 
     internal bool ReconciliationRequired { get; }
 
+    /// <summary>
+    /// Whether the person's «sí» to a heartbeat's proposal also answers this challenge: the same invocation, not one that
+    /// may have run already (C16). That one (<see cref="ReconciliationRequired"/>) asks the person as such: their «sí» came
+    /// before the kernel said its earlier run may have acted, and the kernel's yes is for one run only.
+    /// </summary>
+    internal bool AnsweredByProposal(PreparedOperation proposal) =>
+        ReferenceEquals(Prepared, proposal) && !ReconciliationRequired;
+
     internal static bool TryCreate(
         OperationResponse response,
         PreparedOperation prepared,
