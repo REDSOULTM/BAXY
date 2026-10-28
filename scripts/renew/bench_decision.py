@@ -315,9 +315,11 @@ def main():
         print(json.dumps(summary, ensure_ascii=False))
     finally:
         # Whatever stopped the run (System One dead, a Ctrl+C, a catalog that does not read), no server outlives it.
-        server.close()
-        if system_one is not None:
-            system_one.close()
+        try:
+            server.close()
+        finally:  # a second Ctrl+C inside Qwen's close must not leave System One's running
+            if system_one is not None:
+                system_one.close()
 
 
 if __name__ == "__main__":

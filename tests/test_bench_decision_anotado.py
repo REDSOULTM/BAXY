@@ -113,3 +113,17 @@ def test_two_runs_keep_their_prompt_prefix_in_folders_of_their_own(decision):
     run("a")
     run("b")
     assert FakeServer.made[0].slot_dir != FakeServer.made[1].slot_dir
+
+
+def test_a_second_ctrl_c_while_qwens_server_closes_still_closes_system_one(decision, monkeypatch):
+    # A second Ctrl+C inside LlmServer.close (its wait) stopped the finally there, with System One still running.
+    run, _ = decision
+    monkeypatch.setenv("BAXY_S1_GGUF", "laya.gguf")
+
+    def interrupted(self):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(FakeServer, "close", interrupted)
+    with pytest.raises(KeyboardInterrupt):
+        run("dos-ctrl-c")
+    assert DeadSystemOne.made[0].closed
