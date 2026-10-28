@@ -128,7 +128,8 @@ def test_only_the_tabs_the_case_opened_are_closed() -> None:
     before = {1: (True, {"42.1", "42.2"})}
     now = {1: (True, {"42.1", "42.2", "42.9"}), 2: (True, {"42.7", "42.8"})}
     close, unsure = bench_e2e.tabs_to_close(before, now)
-    assert close == {1: ["42.9"], 2: ["42.7", "42.8"]} and unsure == []
+    # A window that was not there is left: a browser the case restarted restores the person's session in a new one.
+    assert close == {1: ["42.9"]} and unsure == ["2 new_window"]
     # A tab the turn closed is not reopened and nothing else moves.
     assert bench_e2e.tabs_to_close(before, {1: (True, {"42.1"})}) == ({}, [])
 
@@ -143,7 +144,7 @@ def test_tabs_whose_identity_cannot_be_trusted_are_left_and_said() -> None:
     # A partial read after the case is said even when it shows nothing new (the case's tab may be in the unread part).
     assert bench_e2e.tabs_to_close(before, {1: (False, {"42.1"})}) == ({}, ["1 partial_now"])
     # A browser that was not running before: the window the setup opened may hold the person's restored session.
-    assert bench_e2e.tabs_to_close({}, {4: (True, {"42.1", "42.2"})}) == ({}, ["4 unknown_before"])
+    assert bench_e2e.tabs_to_close({}, {4: (True, {"42.1", "42.2"})}) == ({}, ["4 new_window"])
     assert bench_e2e.tabs_to_close({4: (True, set())}, {4: (True, {"42.1"})}) == ({}, ["4 unknown_before"])
     # Without a list from before the case (the read did not finish), nothing is closed.
     assert bench_e2e.tabs_to_close(None, {1: (True, {"42.1"})}) == ({}, ["no_list_before"])

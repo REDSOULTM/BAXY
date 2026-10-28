@@ -112,13 +112,12 @@ def browser_tabs(out: str) -> Tabs | None:
 
 def tabs_to_close(before: Tabs | None, now: Tabs) -> tuple[dict[int, list[str]], list[str]]:
     """The tabs to close per window (those the case opened) and, «<hwnd> <reason>», the windows left alone because
-    which tabs are the case's cannot be told: a strip not read whole (a tab may hide in the unread part), a window with
-    no tabs read before (a browser that was not running restores the person's session in the case's window), or a
-    window none of whose earlier tabs kept its id while it still has tabs (the ids were rebuilt: closing «the new ones»
-    would close the person's). A window that was not there is the case's only while the browser was running before."""
+    which tabs are the case's cannot be told: a strip not read whole (a tab may hide in the unread part), a window that
+    was not there or had no tabs read before (a browser restarted by the case, as limiteB's setups do, restores the
+    person's session in a new window), or a window none of whose earlier tabs kept its id while it still has tabs (the
+    ids were rebuilt: closing «the new ones» would close the person's)."""
     if before is None:
         return {}, ["no_list_before"]
-    running = any(earlier for _, earlier in before.values())
     close, unsure = {}, []
     for hwnd, (whole, ids) in sorted(now.items()):
         if not whole:
@@ -128,11 +127,13 @@ def tabs_to_close(before: Tabs | None, now: Tabs) -> tuple[dict[int, list[str]],
         new = sorted(ids - earlier)
         if not new:
             continue
-        if not was_whole:
+        if hwnd not in before:
+            unsure.append(f"{hwnd} new_window")
+        elif not was_whole:
             unsure.append(f"{hwnd} partial_before")
-        elif not earlier and (hwnd in before or not running):
+        elif not earlier:
             unsure.append(f"{hwnd} unknown_before")
-        elif earlier and not earlier & ids:
+        elif not earlier & ids:
             unsure.append(f"{hwnd} ids_changed")
         else:
             close[hwnd] = new
