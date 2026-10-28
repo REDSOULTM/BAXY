@@ -72,3 +72,22 @@ def test_the_document_tool_says_it_does_not_open_word_and_how_to_show_the_file(t
     assert "open it first (app_open) and write the stated text there (a text you compose for Word goes to " \
            "office_document_create)" in tools["input_text_type"]
     assert "opening Word to write a text you compose (use office_document_create" in tools["app_open"]
+
+
+def test_the_power_tool_says_what_each_action_does_to_the_pc(tmp_path: Path) -> None:
+    # R6-PC-6: in the long session, with history, signing out came out as system_power shutdown in 4 of 6 sessions; the
+    # action's five values reached the model bare and the tool's «Use when» named every transition but signing out. In
+    # Bypass (and in normal mode, by the identity) a power transition runs unasked: what tells the values apart is what
+    # the model reads.
+    mind, _ = _mind(tmp_path, [])
+    mind.configure({"capabilities": [{"name": "system.power", "description": "Power.", "argumentsSchema": {
+        "type": "object", "properties": {"action": {"type": "string", "enum": [
+            "lock", "restart", "shutdown", "signout", "sleep"]}}, "required": ["action"]}}]})
+    tool = next(t for t in mind.tools if t["function"]["name"] == "system_power")["function"]
+    action = tool["parameters"]["properties"]["action"]
+    meaning = action["description"]
+    for value in action["enum"]:
+        assert f"{value}:" in meaning
+    assert "signout: the person's Windows session ends" in meaning and "the PC stays on" in meaning
+    assert "shutdown: the PC turns off" in meaning
+    assert "cierra sesión" in tool["description"]
