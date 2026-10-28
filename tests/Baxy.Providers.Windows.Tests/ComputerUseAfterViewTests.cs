@@ -72,6 +72,34 @@ public sealed class ComputerUseAfterViewTests
         });
     }
 
+    // C67 (R8-NB-5): a click proved by the window's image (surfaceChanged) on a browser whose tree lists only an old
+    // document came back completed with after «same», which the model read as «the window did not change» and pressed
+    // again. The tree's view says only that its listed controls are the same («sameListed»), never the window unchanged;
+    // without the image changed, «same» stays.
+    [TestCase(true, TestName = "the image changed: only the listed controls are the same")]
+    [TestCase(false, TestName = "counter-case: the image did not change: the same window")]
+    public void AClickProvedByItsImageWhoseTreeListsTheSameIsNotTheSameWindow(bool surfaceChanged)
+    {
+        WithWindow(window =>
+        {
+            const string ViewSame =
+                "{\"ok\":true,\"error\":\"\",\"window\":\"\",\"controls\":[" +
+                "{\"kind\":\"Document\",\"name\":\"Inicio\",\"id\":\"1.1\",\"state\":\"\",\"value\":null}]," +
+                "\"controlCount\":1,\"partial\":false}";
+            string pressed = Pressed.Replace(
+                "\"surfaceChanged\":false", "\"surfaceChanged\":" + (surfaceChanged ? "true" : "false"),
+                StringComparison.Ordinal);
+            WindowsVisibleControlAdapter adapter = Adapter(new OrderedWorker(pressed, ViewSame));
+            RememberView(adapter, window, new ViewControlSpec(0, "1.1", "Document", "Inicio", ""));
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Abrir", "1.1");
+
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result!.Value.GetProperty("after").GetRawText(),
+                Is.EqualTo(surfaceChanged ? "{\"sameListed\":true}" : "{\"same\":true}"));
+        });
+    }
+
     [Test]
     public void AnIndexOfTheViewAfterIsPressedAndAnOldIndexThatIsGoneIsRefused()
     {
