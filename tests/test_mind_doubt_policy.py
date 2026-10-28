@@ -935,3 +935,40 @@ def test_in_bypass_a_safe_or_sure_call_queued_second_is_queued_as_before(tmp_pat
                                     _call("input_visible_click", {"label": "Siguiente"}, 0.95))
     assert mind.decide(1, "abre el correo y dale a siguiente")["operation"] == "app.open"
     assert [c["wire"] for c in mind._turn["queue"]] == ["input_visible_click"] and "unsure" not in mind._turn
+
+
+def test_in_bypass_an_unsure_typing_queued_behind_the_app_it_needs_is_weighed_once_it_opened(tmp_path,
+                                                                                              monkeypatch) -> None:
+    # Review of the merge: at deciding, the aid «unopened_app» would refuse the typing (its app not open yet), so the
+    # doubt was lost and, once the app opened, it ran unweighed. It is weighed when it goes, with the state of then.
+    _unasked(tmp_path, monkeypatch, "bypass")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    mind, _ = _mind(tmp_path, [_calls(_call("app_open", {"appId": "notas"}, 0.95),
+                                      _call("input_text_type", {"text": "hola"}, 0.3))])
+    mind.wire_to_op.update({"app_open": "app.open", "input_text_type": "input.text.type"})
+    mind.risk = {"app_open": "read_only", "input_text_type": "privacy_sensitive"}
+    mind.confirms = {"input_text_type": []}
+    mind.names = ["notas"]
+    assert mind.decide(1, "abre notas y escribe hola en notas")["operation"] == "app.open"
+    sent = mind.continue_turn(2, json.dumps({"status": "completed", "outcome": "app_opened"}))
+    assert sent["operation"] == "input.text.type" and sent["unsure"] is True
+
+
+def test_in_bypass_a_queued_click_an_old_app_ran_enters_the_conversation(tmp_path, monkeypatch) -> None:
+    mind, _ = _queued_click(tmp_path, monkeypatch, "Enviar", [_say("Listo.")])
+    mind.decide(1, "abre el correo y dale a enviar")
+    assert mind.continue_turn(2, json.dumps({"status": "completed", "outcome": "app_opened"}))["unsure"] is True
+    mind.continue_turn(3, json.dumps({"status": "completed", "outcome": "clicked"}))  # an App that does not know it
+    calls = [c["function"]["name"] for m in mind.conversation for c in m.get("tool_calls") or []]
+    tools = [m["tool_call_id"] for m in mind.conversation if m.get("role") == "tool"]
+    assert calls == ["app_open", "input_visible_click"] and len(tools) == 2  # read as any call that ran
+
+
+@pytest.mark.parametrize("risk", ["read_only", "low_reversible"])
+def test_in_bypass_an_unsure_call_queued_second_that_only_reads_or_is_undone_is_queued_as_before(tmp_path, monkeypatch,
+                                                                                                 risk) -> None:
+    mind, server = _queued_click(tmp_path, monkeypatch, "Siguiente", [])
+    mind.risk["input_visible_click"] = risk
+    assert mind.decide(1, "abre el correo y dale a siguiente")["operation"] == "app.open"
+    assert [c["wire"] for c in mind._turn["queue"]] == ["input_visible_click"] and "unsure" not in mind._turn
+    assert len(server.bodies) == 1
