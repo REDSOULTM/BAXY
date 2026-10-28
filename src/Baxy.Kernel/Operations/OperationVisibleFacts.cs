@@ -632,7 +632,8 @@ public static class OperationVisibleFacts
     // bookkeeping: the confirmation «token», the request «fingerprint», the
     // invocation, request and mission ids, and window and process handles
     // («hwnd», «handle», «windowHandle», «pid», «processId») of a provider's receipt: the window number an operation
-    // takes is the one a look shows («window <hwnd>», ScreenViewProjection), or app.open's windowId, not these
+    // takes is the one a look shows («window <hwnd>», ScreenViewProjection) or app.open's «window» (NB-R1 P1.12), and
+    // app.open's windowId for the window operations, not these
     // (revisión 2026-10-22, C-7: app.open's and a capture's windowHandle reopened e2e p3 E007).
     // An id a typed argument asks for travels: «id», «noteId» (note.update),
     // «deviceId» (peripheral.print, peripheral.scan, bluetooth.device.pair),

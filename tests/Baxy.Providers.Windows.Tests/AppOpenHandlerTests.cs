@@ -151,6 +151,30 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // NB-R1 P1.12 (en vivo, «escribe en el bloc de notas: …»): the opening gave only its windowId, a text the window
+    // operations take, and the model typed with window 1 and 125, numbers it made up (input_window_not_found). The
+    // opening says too the window number the input operations take, under the name of their argument.
+    [Test]
+    public async Task AVerifiedOpeningGivesTheWindowNumberTheInputOperationsTake()
+    {
+        var provider = new VerifiedOpening(@"C:\Windows\System32\notepad.exe");
+        var handler = new AppOpenHandler(
+            provider,
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+            windowIdFor: static window => window == 777 ? "w-777" : null,
+            frontOf: static _ => new OpenedWindowFront(true, "Notepad"));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Bloc de notas","foreground":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("window").GetInt64(), Is.EqualTo(777));
+            Assert.That(outcome.Result!.Value.GetProperty("windowId").GetString(), Is.EqualTo("w-777"));
+        });
+    }
+
     // Nobody in front (Windows reports no foreground window): not held, and no window is named.
     [Test]
     public async Task NoWindowInFrontIsNotTheOpenedOneAndNamesNone()
@@ -194,6 +218,7 @@ public sealed class AppOpenHandlerTests
             Assert.That(result.GetProperty("displayName").GetString(), Is.EqualTo("Steam"));
             Assert.That(result.GetProperty("opened").GetBoolean(), Is.True);
             Assert.That(result.GetProperty("windowId").GetString(), Is.EqualTo("w-777"));
+            Assert.That(result.GetProperty("window").GetInt64(), Is.EqualTo(777));
             Assert.That(result.GetProperty("place").GetString(), Is.EqualTo("library"));
         });
     }

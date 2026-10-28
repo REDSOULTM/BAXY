@@ -251,6 +251,8 @@ internal sealed class AppOpenHandler(
                     writer.WriteBoolean("opened", true);
                     if (windowIdFor?.Invoke((nint)providerResult.WindowHandle.GetValueOrDefault()) is { } windowId)
                         writer.WriteString("windowId", windowId);
+                    if (providerResult.WindowHandle is long window and not 0)
+                        writer.WriteNumber("window", window);
                     if (arguments.Place is not null) writer.WriteString("place", arguments.Place);
                 }),
                 effectMayHaveOccurred: true);
@@ -305,6 +307,7 @@ internal sealed class AppOpenHandler(
             FrontChanged: place?.FrontChanged == true,
             PlaceGame: game is null ? null : new PlacedGame(game.Number, game.Name),
             WindowId: windowIdFor?.Invoke((nint)openedWindow),
+            Window: openedWindow,
             ProcessName: front.Process,
             Foreground: front.Held,
             ForegroundHeldBy: front.HolderTitle is { } title ? new WindowName(title, front.HolderProcess ?? string.Empty) : null,
