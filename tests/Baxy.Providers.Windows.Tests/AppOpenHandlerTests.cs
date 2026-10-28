@@ -543,6 +543,9 @@ public sealed class AppOpenHandlerTests
             Assert.That(outcome.ErrorCode, Is.EqualTo("place_value_not_taken"));
             Assert.That(result.GetProperty("placeValue").GetString(), Is.EqualTo("Hollow Knight"));
             Assert.That(result.GetProperty("next").GetString(), Does.Contain("game (placeValue: the game's name)"));
+            // P2.15: the opening's hint («also opens») read as an opening done; a refusal says first that nothing opened.
+            Assert.That(result.GetProperty("next").GetString(), Does.StartWith("nothing was opened."));
+            Assert.That(result.GetProperty("next").GetString(), Does.Not.Contain("also"));
             Assert.That(opened, Is.Empty);
         });
     }

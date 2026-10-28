@@ -160,7 +160,8 @@ internal sealed class AppOpenHandler(
                     : owners.Count > 0
                         ? $"nothing was opened. app_open with appId \"{owners[0]}\" and place \"{arguments.Place}\" "
                             + $"opens {arguments.Place}, a place of {string.Join(" or ", owners)}, not of {arguments.AppId}"
-                        : PlacesNext(arguments.AppId, arguments.AppId);
+                        : PlacesNext($"nothing was opened. {arguments.AppId} opens straight at a place of its own",
+                            arguments.AppId);
                 return OperationOutcome.Failure(
                     placeOfApplication ? "place_value_not_taken" : "place_not_of_application",
                     result: Facts(writer =>
@@ -298,7 +299,8 @@ internal sealed class AppOpenHandler(
                         : string.Empty)
                     + "; whether it shows now "
                     + "was not checked: input_visible_controls can look before saying so"
-                : place is null && ModelAids.On(ModelAids.AppPlaces) ? PlacesNext(providerResult.DisplayName, arguments.AppId)
+                : place is null && ModelAids.On(ModelAids.AppPlaces)
+                    ? PlacesNext($"{providerResult.DisplayName} also opens straight at a place of its own", arguments.AppId)
                 : null,
             FrontChanged: place?.FrontChanged == true,
             PlaceGame: game is null ? null : new PlacedGame(game.Number, game.Name),
@@ -315,11 +317,13 @@ internal sealed class AppOpenHandler(
 
     // BAXY Renew cu (C04): opened with no place, an application that has places of its own says which, and what each
     // takes (the model clicked through Steam's store for a game's page that app_open opens by the game's name).
-    private static string? PlacesNext(string displayName, string appId)
+    // P2.15: «lead» starts the sentence, so a refusal says first that nothing opened (an opening's «also opens» read as
+    // one done).
+    private static string? PlacesNext(string lead, string appId)
     {
         IReadOnlyList<(string Place, string? Takes)> places = ApplicationPlaces.PlacesOf(appId);
         return places.Count == 0 ? null
-            : $"{displayName} also opens straight at a place of its own, by app_open with place: "
+            : $"{lead}, by app_open with place: "
                 + string.Join(", ", places.Select(place => place.Takes switch
                 {
                     "game" => $"{place.Place} (placeValue: the game's name)",

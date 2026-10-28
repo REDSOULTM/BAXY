@@ -60,7 +60,8 @@ internal sealed class WindowResolveHandler(
         // than the one guessed; the reply said neither was open. The windows on the desktop go back, as a look's.
         return hasApplication && code is ApplicationOpenErrorCodes.ApplicationNotFound or WindowControlErrorCodes.WindowNotFound
             && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WindowCandidates)
-            ? OperationOutcome.Failure(code, Candidates(_desktop(), _browser()))
+            ? OperationOutcome.Failure(code, Candidates(_desktop(), _browser(),
+                nameUnknown: code == ApplicationOpenErrorCodes.ApplicationNotFound))
             : OperationOutcome.Failure(code);
     }
 
@@ -103,8 +104,9 @@ internal sealed class WindowResolveHandler(
         return document.RootElement.Clone();
     }
 
+    // P2.15: «nameUnknown» (app_not_found) is a name no installed application bears, so no window was looked for by it.
     internal static JsonElement Candidates(
-        IReadOnlyList<(string Process, string Title)> windows, (string Name, string Process)? browser)
+        IReadOnlyList<(string Process, string Title)> windows, (string Name, string Process)? browser, bool nameUnknown)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
@@ -132,7 +134,9 @@ internal sealed class WindowResolveHandler(
                 writer.WriteEndObject();
             }
 
-            writer.WriteString("next", "no window was found under that name; these are the windows open on the desktop "
+            writer.WriteString("next", (nameUnknown
+                    ? "no installed application bears that name, so no window was looked for by it"
+                    : "no window was found under that name") + "; these are the windows open on the desktop "
                 + "(top first): if the one meant is among them, resolve it again by its process, or by the application's "
                 + "installed name" + (browser is { } named
                     ? $"; the person's web browser is {named.Name} (process {named.Process})"

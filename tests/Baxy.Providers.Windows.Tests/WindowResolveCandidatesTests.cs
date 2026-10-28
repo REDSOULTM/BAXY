@@ -38,6 +38,18 @@ public sealed class WindowResolveCandidatesTests
         });
     }
 
+    // P2.15: app_not_found is a name no installed application bears, so no window was looked for by it; «no window was
+    // found under that name» read as «it is not open». Only window_not_found says no window was found.
+    [TestCase("app_not_found", "no installed application bears that name")]
+    [TestCase("window_not_found", "no window was found under that name")]
+    public async Task ItsWayOutSaysWhatTheNameMatched(string code, string lead)
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        string next = (await Resolve(code)).Result!.Value.GetProperty("next").GetString()!;
+
+        Assert.That(next, Does.StartWith(lead));
+    }
+
     // Contracases: with the aids off, and for another failure, the code goes back alone, as before.
     [TestCase("none", "app_not_found")]
     [TestCase("all", "verification_failed")]
