@@ -326,3 +326,14 @@ def test_the_answer_to_ask_user_is_that_calls_result(tmp_path: Path) -> None:
     asked = messages[-2]["tool_calls"][0]["id"]
     assert messages[-1] == {"role": "tool", "tool_call_id": asked, "content": "a las 7"}
     assert sum(str(m.get("content", "")).startswith("[Reloj:") for m in messages) == 1
+
+
+# R6-NB-6 (CU 36 C06, estable desde 6005): a search asked for in a named engine was refused («No puedo hacer búsquedas
+# en Google directamente») with no step: browser_navigate's «Use when» named only a URL or site, and nothing said what
+# url opens that engine's results, so the model did not see that it can (mutation: the sentence dropped).
+def test_browser_navigate_says_a_search_in_a_named_engine_or_site_opens_its_results_address() -> None:
+    path = Path(__file__).parents[1] / "src/baxy_mind/data/tool_descriptions.en.v1.json"
+    descriptions = json.loads(path.read_text(encoding="utf-8"))["tools"]
+    use_when = descriptions["browser.navigate"].split("Use when:")[1].split("Do not use when:")[0]
+    assert "a search the person asks for in a search engine or a site with its own search" in use_when
+    assert "results address with the person's words as its query" in use_when
