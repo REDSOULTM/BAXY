@@ -243,7 +243,7 @@ def correr_turnos(mind, server: RecordingServer, turns: list[dict], lecturas: li
                      "calls": calls, "final_kind": result.get("kind") if error is None else "error", "error": error,
                      "chats": len(server.sent),
                      "context": sizes(server, first, mind.prefix_tokens, system_tokens) if first else None,
-                     "context_max": max((r["prompt_tokens"] or 0 for r in sent), default=None),
+                     "context_max": max((r["prompt_tokens"] for r in sent if r["prompt_tokens"] is not None), default=None),
                      "n_ctx": getattr(server, "context", None),
                      "trimmed_turns": mind.trimmed_turns, "conversation_messages": len(mind.conversation),
                      "context_shrunk": sum(1 for r in traced if r.get("kind") == "context_shrunk"),
@@ -281,41 +281,50 @@ def correr(args) -> None:
     inner = LlmServer(args.gguf, args.server, context=int(args.ctx), extra_args=args.server_args.split(),
                       log_name=f"bench-{args.label}.log")
     inner.start()
-    server = RecordingServer(inner)
     system_one = None
-    if os.environ.get("BAXY_S1_GGUF", "").strip():  # as bench_decision starts it
-        from baxy_mind.system_one import SystemOne  # noqa: E402
-        system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
-                               int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
-        system_one.start()
-        system_one = bench_decision.CountedSystemOne(system_one)
-    mind = Mind(server, trace, system_one)  # type: ignore[arg-type]
-    catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
-    enums = bench_decision.enums_of(catalog)
-    mind.configure(catalog)
-    inner.wait_ready(600)
-    t0 = time.monotonic()
-    mind.warm()
-    warm_s = time.monotonic() - t0
-    if system_one is not None:
-        bench_decision.wait_system_one(system_one)
-    if args.desde > 1:
-        mind.load_session(json.loads(earlier.read_text(encoding="utf-8")))
-    else:
-        mind.new_session([])
-    rows = correr_turnos(mind, server, turns, session.get("lecturas") or [], enums, trace, system_one)
-    snapshot_path(args.label, args.hasta).write_text(json.dumps(mind.export_session(), ensure_ascii=False),
-                                                     encoding="utf-8")
-    measured = bench_decision.resources(inner._process.pid, gpu_before)  # type: ignore[union-attr]
-    inner.close()
-    s1 = None
-    if system_one is not None:
-        s1 = {"asked": system_one.asked, "unanswered": system_one.unanswered, "up_at_end": system_one.ready,
-              "unanswered_ids": [r["id"] for r in rows if r["system_one"] == "unanswered"]}
-        system_one.close()
+    # What the bench starts it closes, whatever fails on the way (a server left up holds the GPU and its port).
+    try:
+        server = RecordingServer(inner)
+        if os.environ.get("BAXY_S1_GGUF", "").strip():  # as bench_decision starts it
+            from baxy_mind.system_one import SystemOne  # noqa: E402
+            system_one = SystemOne(os.environ["BAXY_S1_GGUF"].strip(), args.server,
+                                   int(os.environ.get("BAXY_S1_THREADS", "4") or 4))
+            system_one.start()
+            system_one = bench_decision.CountedSystemOne(system_one)
+        mind = Mind(server, trace, system_one)  # type: ignore[arg-type]
+        catalog = json.loads(Path(args.catalog).read_text(encoding="utf-8"))
+        enums = bench_decision.enums_of(catalog)
+        mind.configure(catalog)
+        inner.wait_ready(600)
+        t0 = time.monotonic()
+        mind.warm()
+        warm_s = time.monotonic() - t0
+        if not mind.prefix_tokens:  # without it the system and the catalog would count 0 and the mind trim by characters
+            raise SystemExit("the warm-up measured no prefix tokens; nothing was measured")
+        if system_one is not None:
+            bench_decision.wait_system_one(system_one)
+        if args.desde > 1:
+            mind.load_session(json.loads(earlier.read_text(encoding="utf-8")))
+        else:
+            mind.new_session([])
+        rows = correr_turnos(mind, server, turns, session.get("lecturas") or [], enums, trace, system_one)
+        snapshot_path(args.label, args.hasta).write_text(json.dumps(mind.export_session(), ensure_ascii=False),
+                                                         encoding="utf-8")
+        # A question of the model's open at the end: the next tanda's load_session closes it as asked (the App's own
+        # reload); in one run the next words would have answered it.
+        open_at_end = bool((getattr(mind, "_turn", None) or {}).get("asked"))
+        measured = bench_decision.resources(inner._process.pid, gpu_before)  # type: ignore[union-attr]
+        s1 = None
+        if system_one is not None:
+            s1 = {"asked": system_one.asked, "unanswered": system_one.unanswered, "up_at_end": system_one.ready,
+                  "unanswered_ids": [r["id"] for r in rows if r["system_one"] == "unanswered"]}
+    finally:
+        inner.close()
+        if system_one is not None:
+            system_one.close()
     counted = [r for r in rows if not r["excluded"]]
     summary = {"label": args.label, "tanda": [args.desde, args.hasta], "sesion": str(args.sesion),
-               "from_snapshot": str(earlier) if args.desde > 1 else None,
+               "from_snapshot": str(earlier) if args.desde > 1 else None, "open_ask_at_end": open_at_end,
                "ok": sum(r["ok"] for r in counted), "n": len(counted),
                "accuracy": round(sum(r["ok"] for r in counted) / max(1, len(counted)), 4),
                "errors": sum(1 for r in rows if r["error"]), "warm_s": round(warm_s, 1),
@@ -333,9 +342,9 @@ def _mean(values: list) -> float | None:
     return round(statistics.mean(values)) if values else None
 
 
-def resumir(rows: list[dict], tramo: int = 10, aislado: dict[str, bool] | None = None) -> dict:
+def resumir(rows: list[dict], tramo: int = 10, aislado: dict[tuple, bool] | None = None) -> dict:
     """The turns by stretches of `tramo`: accuracy, the prompt's mean and largest size with its parts, the turns cut
-    and the context_shrunk; with `aislado` (case id → ok each on its own), the same cases' accuracy alone."""
+    and the context_shrunk; with `aislado` ((bank, case id) → ok each on its own), the same cases' accuracy alone."""
     by_n = {r["n"]: r for r in rows}  # a turn run again in a later tanda: the later one
     ordered = [by_n[n] for n in sorted(by_n)]
     stretches = []
@@ -345,14 +354,15 @@ def resumir(rows: list[dict], tramo: int = 10, aislado: dict[str, bool] | None =
             continue
         counted = [r for r in part if not r["excluded"]]
         contexts = [r["context"] or {} for r in part]
-        alone = [aislado[r["case"]] for r in counted if aislado and r.get("case") in aislado]
+        alone = [aislado[(r.get("bank"), r.get("case"))] for r in counted
+                 if aislado and (r.get("bank"), r.get("case")) in aislado]
         stretches.append({
             "turnos": [begin, begin + tramo - 1], "ok": sum(r["ok"] for r in counted), "n": len(counted),
             "accuracy": round(sum(r["ok"] for r in counted) / len(counted), 4) if counted else None,
             "aislado": {"ok": sum(alone), "n": len(alone)} if aislado else None,
             "context_mean": {k: _mean([c.get(k) for c in contexts])
                              for k in ("total", "system", "catalog", "history", "tool_results", "otros")},
-            "context_max": max((r["context_max"] or 0 for r in part), default=None),
+            "context_max": max((r["context_max"] for r in part if r["context_max"] is not None), default=None),
             "trimmed_turns_end": part[-1]["trimmed_turns"], "context_shrunk": sum(r["context_shrunk"] for r in part),
             "open_ask_before": sum(r["open_ask_before"] for r in part),
             "errors": sum(1 for r in part if r["error"]),
@@ -416,7 +426,7 @@ def main() -> None:
     report = sub.add_parser("resumir")
     report.add_argument("label")
     report.add_argument("--tramo", type=int, default=10)
-    report.add_argument("--aislado", action="append", default=[], help="a bench_decision run (.jsonl) of the same cases")
+    report.add_argument("--aislado", action="append", default=[], help="BANK=RUN: a bench_decision run (.jsonl) of that bank's cases")
     args = parser.parse_args()
     if args.what == "armar":
         pairs = dict(f.split("=", 1) for f in args.fuente) if args.fuente else SOURCES
@@ -434,15 +444,21 @@ def main() -> None:
         correr(args)
     else:
         runs = BANKS / "runs"
-        rows = []
-        for path in sorted(runs.glob(f"{args.label}-t[0-9][0-9]-[0-9][0-9].jsonl")):
-            rows += [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()[1:] if line.strip()]
+        rows, sessions = [], set()
+        # Oldest first: a turn run again in a later tanda is the later one (resumir keeps the last row of a turn).
+        for path in sorted(runs.glob(f"{args.label}-t[0-9][0-9]-[0-9][0-9].jsonl"), key=lambda p: p.stat().st_mtime):
+            lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+            sessions.add(json.loads(lines[0])["summary"]["sesion"])
+            rows += [json.loads(line) for line in lines[1:]]
+        if len(sessions) > 1:
+            raise SystemExit(f"the tandas of {args.label} ran different sessions: {sorted(sessions)}")
         aislado = {}
-        for path in args.aislado:
+        for pair in args.aislado:
+            bank, path = pair.split("=", 1)
             for line in Path(path).read_text(encoding="utf-8").splitlines()[1:]:
                 row = json.loads(line)
                 if not row.get("excluded"):
-                    aislado[row["id"]] = bool(row["ok"])
+                    aislado[(bank, row["id"])] = bool(row["ok"])
         summary = {"label": args.label, **resumir(rows, args.tramo, aislado or None)}
         (runs / f"{args.label}.resumen.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1),
                                                          encoding="utf-8")

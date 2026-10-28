@@ -164,7 +164,7 @@ def _row(n: int, ok: bool, total: int, case: str | None = None, **more) -> dict:
 
 def test_the_report_aggregates_by_stretches_with_the_later_tanda_winning_and_the_cases_alone() -> None:
     rows = [_row(n, n != 3, 1000 + 100 * n) for n in range(1, 13)] + [_row(3, True, 1300)]  # turn 3 run again
-    summary = bench.resumir(rows, 10, {"c1": True, "c2": False, "c11": True})
+    summary = bench.resumir(rows, 10, {(None, "c1"): True, (None, "c2"): False, (None, "c11"): True})
     first, second = summary["tramos"]
     assert first["turnos"] == [1, 10] and first["ok"] == 10 and first["n"] == 10
     assert first["aislado"] == {"ok": 1, "n": 2}
@@ -254,3 +254,11 @@ def test_correr_runs_a_session_in_tandas_and_resumir_joins_them(tmp_path: Path, 
     report = json.loads((runs / "x.resumen.json").read_text(encoding="utf-8"))
     assert report["turnos"] == 3 and report["ok"] == 3 and report["missing"] == []
     assert (runs / "x.resumen.md").read_text(encoding="utf-8").startswith("# Sesión larga x")
+    assert json.loads(later.read_text(encoding="utf-8").splitlines()[0])["summary"]["open_ask_at_end"] is False
+    (runs / "x-t04-04.jsonl").write_text(json.dumps({"summary": {"sesion": "otra.json"}}) + "\n", encoding="utf-8")
+    try:
+        run("resumir", "x")
+    except SystemExit as stop:
+        assert "different sessions" in str(stop)  # never a report that mixes two sessions' turns
+    else:
+        raise AssertionError("resumir joined tandas of two sessions")
