@@ -555,3 +555,21 @@ def test_a_relative_volume_change_says_its_amount_when_no_number_was_said(tmp_pa
     for wire in ("audio_volume_adjust", "audio_app_volume_adjust"):
         tool = next(t for t in mind.tools if t["function"]["name"] == wire)["function"]
         assert tool["parameters"]["properties"]["amount"]["description"].endswith("or 10 when they said no number.")
+
+
+def test_the_arguments_left_to_guess_say_what_the_code_does_with_them(tmp_path: Path) -> None:
+    # R13-PC-3 (noche 28-10): tres decisiones que fallaban en todas las corridas o al filo. Un nombre de varias palabras
+    # se partía («la carpeta X del Y» como en el ejemplo); sin tienda dicha preguntaba la tienda, que es opcional y cuyo
+    # valor por omisión nadie le decía; y ante un título de nota preguntaba cuál, sin saber que el título que no existe
+    # vuelve con los parecidos y no borra nada (NoteHandlers: TitleNotFoundFacts).
+    mind, _ = _mind(tmp_path, [])
+    schema = {"type": "object", "properties": {"name": {"type": "string"}, "store": {"type": "string"},
+                                               "title": {"type": "string"}}}
+    mind.configure({"capabilities": [{"name": name, "description": "Tool.", "argumentsSchema": schema}
+                                     for name in ("file.compress", "game.entitlement.named", "note.trash")]})
+    tools = {t["function"]["name"]: t["function"] for t in mind.tools}
+    assert "all its words" in tools["file_compress"]["parameters"]["properties"]["name"]["description"]
+    assert tools["game_entitlement_named"]["parameters"]["properties"]["store"]["description"].endswith(
+        "without one, Steam is looked up.")
+    assert "did I buy it" in tools["game_entitlement_named"]["description"]
+    assert "nothing is deleted" in tools["note_trash"]["description"]
