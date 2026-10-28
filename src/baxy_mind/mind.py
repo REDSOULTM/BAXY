@@ -1109,6 +1109,11 @@ DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
 # again, REREAD_NOTE). The mind reads only that typed outcome, never the call's words.
 UNSURE = object()
 WOULD_RUN_UNASKED = "would_run_unasked"
+# P2.43b: the reading again after a held doubt may choose another invocation (a click on «Siguiente» weighed, one on
+# «Enviar» chosen in doubt on reading again). A reading System One would still doubt goes to the App «unsure» too when
+# its key (operation and canonical arguments) was not weighed in this turn, at most this many weighings a turn, so the
+# doubt never loops; the same invocation, already weighed, runs.
+UNSURE_WEIGHS = 2
 # Uso en la feria (2026-10-27): in the noise a short greeting came out in another language or as a word nobody said, and
 # the model answered it as said. How sure the ear was of each word (voice.Heard, Parakeet's per-token probabilities)
 # reaches the model beside the clock as a fact, as the pending «sí» does: the model decides, in its own words, whether to
@@ -1398,8 +1403,8 @@ class Mind:
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
         self.effects: dict[str, list[str]] = {}  # each tool's effects as the App sent them (al máximo 5.1), by wire name
         # P2.41: the modes in which the kernel asks the person before each tool runs, whatever its arguments («normal»,
-        # «bypass»: RiskPolicy.Evaluate, as the App sent them), by wire name (_unasked).
-        self.confirms: dict[str, list[str]] = {}
+        # «bypass»: RiskPolicy.Evaluate, as the App sent them), by wire name (_unasked); None: the catalog did not say.
+        self.confirms: dict[str, list[str] | None] = {}
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
         self.conversation: list[dict[str, Any]] = []
@@ -1540,8 +1545,11 @@ class Mind:
             wire_to_op[wire] = name
             risk[wire] = str(cap.get("risk") or "")
             effects[wire] = [str(e) for e in cap.get("effects") or []]
-            confirms[wire] = [str(mode) for mode in cap.get("confirms") or []]
+            # P2.41b: a catalog without the field (an older App, a bench's --catalog) is not one that confirms nothing.
+            confirms[wire] = None if cap.get("confirms") is None else [str(mode) for mode in cap["confirms"]]
         self.tools, self.wire_to_op, self.risk, self.effects, self.confirms = tools, wire_to_op, risk, effects, confirms
+        if absent := [wire_to_op[wire] for wire, modes in confirms.items() if modes is None]:
+            self._log("configure.confirms_absent", time.perf_counter(), None, operations=absent)
         areas = list(dict.fromkeys(str(cap["group"]) for cap in capabilities if cap.get("group")))
         self.system = SYSTEM + CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else SYSTEM
         self.constants = constants_of
@@ -2512,6 +2520,7 @@ class Mind:
             name = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             if not self._repeat_refused(turn, name, calls[0]) and not self._unopened(turn, calls[0]):
                 turn["unsure"] = calls[0]
+                turn.setdefault("weighed", []).append((calls[0]["wire"], _call_key(calls[0]["arguments"])))
                 return self._result(request_id, turn, calls[0], reply, stage, started, "")
             note = None
         if note:
@@ -2811,7 +2820,8 @@ class Mind:
         CORRECTABLE_RISKS, the model fills that tool and it runs instead; a low_reversible call it does not correct
         runs; the answer to layer 2's own question is never turned into another one, nor is the model's reading again
         after either layer (turn["reread"]), save a call the kernel would run unasked (_unasked): that one, at either
-        layer, only asks. Asking is never held: it already puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
+        layer, only asks; and, in Bypass, one either layer would still doubt that is another invocation than those
+        weighed (P2.43b): UNSURE, at most UNSURE_WEIGHS times a turn. Asking is never held: it already puts the person in the loop; confirming only when it approves under CONFIRM_FLOOR and the person's words are not
         only a yes (PLAIN_YES), whatever System One's own thresholds."""
         if not self._doubted(stage, turn, final) or call["wire"] in (ASK_USER["function"]["name"],
                                                                      CALCULATE["function"]["name"]):
@@ -2845,8 +2855,11 @@ class Mind:
         # (_unasked): its doubt asks the person, with no tools, at either layer, also in the reading after another doubt.
         risk = self.risk.get(call["wire"])
         unasked = self._unasked(call["wire"])
+        weighs = turn.get("weighed") or []  # P2.43b: in Bypass, a reading again of another invocation is weighed too
+        reweigh = turn.get("reread") and _bypass() and len(weighs) < UNSURE_WEIGHS \
+            and (call["wire"], _call_key(call["arguments"])) not in weighs
         if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
-                and (unasked or not turn.get("reread")) and risk != "low_reversible" \
+                and (unasked or not turn.get("reread") or reweigh) and risk != "low_reversible" \
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
             if unasked:
                 return DOUBT_NOTE.format(call=call["wire"])
@@ -2856,9 +2869,12 @@ class Mind:
             return REREAD_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
         # options are not made: each rival's name was completed on the slot for it (template + complete_name).
-        if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO") \
-                or (turn.get("reread") and not unasked):
-            return None  # nor the model's reading again after a doubt (REREAD_NOTE, DOUBT_OTHER_NOTE): it decided
+        if self.system_one is None or not self.system_one.ready or doubt["confidence"] >= _threshold("BAXY_S1_VETO"):
+            return None
+        if turn.get("reread") and not unasked:
+            # Nor the model's reading again after a doubt (REREAD_NOTE, DOUBT_OTHER_NOTE): it decided. P2.43b: save in
+            # Bypass one layer 2 would still doubt, of another invocation (UNSURE_WEIGHS): the App weighs it first.
+            return UNSURE if reweigh and risk != "low_reversible" else None
         options = self._candidates(call["wire"], doubt, body)
         judged = self.system_one.choose(turn["text"], self._said(), options)
         self._judged = {"options": list(options), **judged} if judged else {"options": list(options), "choice": None}
@@ -2917,10 +2933,12 @@ class Mind:
         """Whether the kernel would run this tool without the person's «sí» though normal mode counts its risk as one to
         confirm: one of CONFIRMED_RISKS it does not confirm now (system.power; any in Bypass), or, in Bypass, one the
         kernel confirms in normal mode and not in Bypass, by the modes it sent (self.confirms; P2.41: of
-        external_communication, normal mode asks only for those that reach a person, and Bypass still for message.send)."""
-        risk, confirms = self.risk.get(wire), self.confirms.get(wire) or []
-        return (risk in CONFIRMED_RISKS and not self._kernel_confirms(wire)) \
-            or (_bypass() and "normal" in confirms and "bypass" not in confirms)
+        external_communication, normal mode asks only for those that reach a person, and Bypass still for message.send).
+        P2.41b: a tool the catalog sent without them keeps the rule from before, external_communication."""
+        risk, confirms = self.risk.get(wire), self.confirms.get(wire)
+        skipped = risk == "external_communication" if confirms is None \
+            else "normal" in confirms and "bypass" not in confirms
+        return (risk in CONFIRMED_RISKS and not self._kernel_confirms(wire)) or (_bypass() and skipped)
 
     def _corrected(self, wire: str, body: dict[str, Any], chosen: str = "") -> dict[str, Any] | None:
         """The decision model's tool as a call the model filled itself (piece A), or None — the turn then asks: correcting

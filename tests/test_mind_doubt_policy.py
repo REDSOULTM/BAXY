@@ -594,11 +594,11 @@ def test_an_unsure_action_the_kernel_would_run_unasked_is_asked_with_no_tools(tm
 def test_an_unsure_action_held_otherwise_is_read_again_with_tools_and_runs_when_chosen_again(tmp_path,
                                                                                               monkeypatch) -> None:
     mind, server = _click_mind(tmp_path, monkeypatch, "bypass",
-                               [_call("input_visible_click", {"label": "Siguiente"}, 0.3)])
+                               [_call("input_visible_click", {"label": "Enviar"}, 0.3)])
     mind.decide(1, "dale")
     result = mind.continue_turn(2, json.dumps({"status": "held", "outcome": "unsure"}))
     assert "tool_choice" not in server.bodies[1]
-    assert result["kind"] == "action" and result["arguments"] == {"label": "Siguiente"} and "unsure" not in result
+    assert result["kind"] == "action" and result["arguments"] == {"label": "Enviar"} and "unsure" not in result
 
 
 def test_in_normal_mode_an_unsure_action_reads_again_in_the_mind_as_before(tmp_path, monkeypatch) -> None:
@@ -629,3 +629,118 @@ def test_an_unsure_call_the_mind_itself_refuses_is_refused_as_any_and_leaves_no_
     assert "unsure" not in result and "unsure" not in mind._turn
     calls = {c["id"] for m in mind.conversation for c in m.get("tool_calls") or []}
     assert all(m["tool_call_id"] in calls for m in mind.conversation if m.get("role") == "tool")
+
+
+# P2.43b (silent-failure-hunter on P2.43): the reading again after a held «unsure» was not weighed, though it may be
+# another invocation (a click on «Siguiente» weighed, then one on «Enviar» chosen in doubt: Bypass ran it unasked). A
+# doubted reading with another key (operation and canonical arguments) goes to the App «unsure» too, at most
+# UNSURE_WEIGHS times a turn, so the doubt never loops; the same invocation, already weighed, runs.
+def _weighed_again(mind: Mind, outcome: str = "unsure") -> dict:
+    return mind.continue_turn(9, json.dumps({"status": "held", "outcome": outcome}))
+
+
+def _first(server: FakeServer, reply: dict) -> None:
+    server.replies[0] = reply  # the doubted call of _click_mind, replaced
+
+
+def test_a_doubted_reading_again_of_another_invocation_is_weighed_and_asked_when_it_would_run_unasked(
+        tmp_path, monkeypatch) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass",
+                               [_call("input_visible_click", {"label": "Enviar"}, 0.3), _say("¿Lo envío?")])
+    _first(server, _call("input_visible_click", {"label": "Siguiente"}, 0.3))
+    assert mind.decide(1, "dale")["arguments"] == {"label": "Siguiente"}
+    again = _weighed_again(mind)
+    assert again["kind"] == "action" and again["unsure"] is True and again["arguments"] == {"label": "Enviar"}
+    asked = _weighed_again(mind, "would_run_unasked")
+    assert asked["kind"] == "conversation" and asked["reply"] == "¿Lo envío?"
+    assert server.bodies[-1].get("tool_choice") == "none"
+
+
+def test_a_sure_reading_again_of_another_invocation_runs(tmp_path, monkeypatch) -> None:
+    mind, _ = _click_mind(tmp_path, monkeypatch, "bypass", [_call("input_visible_click", {"label": "Siguiente"}, 0.9)])
+    mind.decide(1, "dale")
+    result = _weighed_again(mind)
+    assert result["arguments"] == {"label": "Siguiente"} and "unsure" not in result
+
+
+def test_the_weighing_of_a_doubt_is_bounded(tmp_path, monkeypatch) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass",
+                               [_call("input_visible_click", {"label": label}, 0.3)
+                                for label in ("Ver detalles", "Vaciar papelera")])
+    mind.decide(1, "dale")
+    assert _weighed_again(mind)["unsure"] is True  # the reading's other invocation, weighed
+    last = _weighed_again(mind)
+    assert last["kind"] == "action" and "unsure" not in last  # no third weighing: the doubt does not loop
+    assert len(server.bodies) == 3
+
+
+def test_in_normal_mode_the_reading_again_is_not_weighed(tmp_path, monkeypatch) -> None:
+    mind, _ = _click_mind(tmp_path, monkeypatch, "", [_call("input_visible_click", {"label": "Siguiente"}, 0.3)])
+    result = mind.decide(1, "dale")
+    assert result["arguments"] == {"label": "Siguiente"} and "unsure" not in result
+
+
+def test_in_bypass_the_reading_again_after_layer2_that_it_still_doubts_is_weighed(tmp_path, monkeypatch) -> None:
+    _unasked(tmp_path, monkeypatch, "bypass")
+    mind, server, one = _layer2(tmp_path, monkeypatch, "app_close",
+                                [_rival_call(0.5), _call("input_visible_click", {"label": "Enviar"}, 0.5)])
+    mind.wire_to_op["input_visible_click"] = "input.visible.click"
+    mind.risk = {"system_power": "read_only", "app_close": "read_only", "input_visible_click": "external_communication"}
+    mind.confirms = {"system_power": [], "app_close": [], "input_visible_click": []}
+    result = mind.decide(1, "dale")
+    assert ", pero también podría ser " in server.bodies[1]["messages"][-1]["content"]  # layer 2 held the first
+    assert result["unsure"] is True and result["arguments"] == {"label": "Enviar"}
+    assert len(one.asked) == 1  # the reading again is weighed by the App, not judged again
+
+
+# Held-out of P2.43b, written by a subagent that never saw the change: whatever the words and the labels, a doubted
+# reading of another invocation is weighed; the mind reads none of them.
+HELD_OUT_NEUTRAL = ["Ver detalles", "Mostrar más opciones", "Abrir carpeta", "Vista previa", "Ir al carrito",
+                    "Seguir leyendo"]
+HELD_OUT_REACHES = ["Publicar ahora", "Pagar $24.990", "Confirmar transferencia", "Vaciar papelera",
+                    "Borrar para todos", "Comprar ahora"]
+HELD_OUT_ASKED = ["ya po, apriétale nomás", "hácele no más, si está bien", "métele, sigue con eso",
+                  "ya, échale pa' delante", "pásale a lo que viene, cachai", "ya, la cuestión esa, apriétala"]
+
+
+@pytest.mark.parametrize("words, first, then", list(zip(HELD_OUT_ASKED, HELD_OUT_NEUTRAL, HELD_OUT_REACHES)))
+def test_held_out_doubted_readings_of_another_invocation_are_weighed(tmp_path, monkeypatch, words, first, then) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass", [_call("input_visible_click", {"label": then}, 0.3)])
+    _first(server, _call("input_visible_click", {"label": first}, 0.3))
+    assert mind.decide(1, words)["arguments"] == {"label": first}
+    again = _weighed_again(mind)
+    assert again["unsure"] is True and again["arguments"] == {"label": then}
+
+
+# P2.41b (review of cand5): a catalog without «confirms» (an older App, a bench's --catalog, a fixture) is not one that
+# says the kernel confirms nothing: in Bypass the doubt keeps the prudent rule from before P2.41 (external_communication
+# counts as confirmed in normal mode, so it asks), and the configure trace names the tools that came without the field.
+def _email_mind(tmp_path, monkeypatch, replies: list, **confirms) -> tuple[Mind, FakeServer]:
+    _unasked(tmp_path, monkeypatch, "bypass")
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    empty = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
+    mind, server = _mind(tmp_path, [_call("email_send", {}, 0.3), *replies])
+    mind.configure({"capabilities": [{"name": "email.send", "description": "Send an email", "argumentsSchema": empty,
+                                      "risk": "external_communication", **confirms},
+                                     {"name": "app.open", "description": "Open it", "argumentsSchema": empty,
+                                      "risk": "read_only", "confirms": []}]})
+    return mind, server
+
+
+def _absent_rows(tmp_path) -> list:
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    return [r["operations"] for r in rows if r["stage"] == "configure.confirms_absent"]
+
+
+def test_a_catalog_without_confirms_keeps_the_prudent_doubt_and_says_so(tmp_path, monkeypatch) -> None:
+    mind, server = _email_mind(tmp_path, monkeypatch, [_say("¿A quién se lo mando?")])
+    result = mind.decide(1, "mándaselo")
+    assert result["operation"] is None and "unsure" not in result
+    assert server.bodies[1].get("tool_choice") == "none"
+    assert _absent_rows(tmp_path) == [["email.send"]]
+
+
+def test_a_catalog_with_confirms_empty_is_read_as_the_kernel_sent_it(tmp_path, monkeypatch) -> None:
+    mind, _ = _email_mind(tmp_path, monkeypatch, [], confirms=[])
+    assert mind.decide(1, "mándaselo")["unsure"] is True
+    assert _absent_rows(tmp_path) == []
