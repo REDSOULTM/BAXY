@@ -469,6 +469,17 @@ internal sealed class NativeTurnLoop
                 return;
             }
 
+            if (step.Unsure)
+            {
+                // P2.43: nothing ran, so nothing is dropped, started or counted; the mind reads the typed answer.
+                string held = UnsureHeld(step.Operation!, step.Arguments!,
+                    Baxy.Kernel.Policy.ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()));
+                ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.unsure_held",
+                    JsonNode.Parse(held)?["outcome"]?.GetValue<string>() ?? "");
+                step = await mind.ContinueAsync(held, false, _beat, cancellationToken);
+                continue;
+            }
+
             string observation;
             _notice.Running(true);
             try
@@ -767,6 +778,33 @@ internal sealed class NativeTurnLoop
     /// <summary>A call on BAXY's own conversations (conversation.*): the App runs it, and only in a person's turn.</summary>
     internal static bool IsConversation(string operation) =>
         operation.StartsWith("conversation.", StringComparison.Ordinal);
+
+    internal const string WouldRunUnasked = "would_run_unasked";
+    internal const string Unsure = "unsure";
+
+    // P2.43: an action the mind sends «unsure» (System One doubted it) is weighed, never run. The catalog the mind has
+    // cannot say whether a call confirms by its arguments (a click on «Enviar» does in normal mode, one on «Siguiente»
+    // does not); the kernel's policy can, with this exact invocation: when normal mode would ask the person and the
+    // current mode would not, the observation says so (WouldRunUnasked, and the mind's doubt asks); otherwise held
+    // (Unsure: it reads the request again, and a call it makes then runs as any, the kernel asking what it confirms).
+    internal static string UnsureHeld(string operation, JsonObject arguments, Baxy.Kernel.Policy.ConfirmationMode mode)
+    {
+        string outcome = Unsure;
+        if (ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) && descriptor is not null)
+        {
+            using System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString());
+            OperationRisk risk = ProductCatalog.ToPolicyRisk(descriptor.Risk);
+            if (Baxy.Kernel.Policy.RiskPolicy.Evaluate(risk, Baxy.Kernel.Policy.ConfirmationMode.Normal, operation,
+                    given.RootElement) == Baxy.Kernel.Policy.PolicyDecision.RequireConfirmation
+                && Baxy.Kernel.Policy.RiskPolicy.Evaluate(risk, mode, operation, given.RootElement)
+                    == Baxy.Kernel.Policy.PolicyDecision.Allow)
+            {
+                outcome = WouldRunUnasked;
+            }
+        }
+
+        return new JsonObject { ["status"] = "held", ["outcome"] = outcome }.ToJsonString();
+    }
 
     // pc-f6-sesiones (APLAZADOS f4-accesibilidad, 2026-10-25): the conversations are the App's, not the engine's, so a
     // conversation.* call runs here, through the same gates an engine call has: the catalog's schema and the kernel's

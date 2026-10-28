@@ -537,7 +537,9 @@ def test_in_bypass_an_unsure_external_call_the_kernel_does_not_run_unasked_is_re
     mind, server = _mind(tmp_path, [_call(wire, {}, 0.3), _call(wire, {}, 0.3)])
     mind.configure({"capabilities": [{"name": operation, "description": "Do it", "argumentsSchema": empty,
                                       "risk": "external_communication", "confirms": confirms}]})
-    assert mind.decide(1, "hazlo")["operation"] == operation
+    sent = mind.decide(1, "hazlo")
+    assert sent["operation"] == operation and sent["unsure"] is True  # P2.43: weighed by the App with its arguments
+    assert mind.continue_turn(2, json.dumps({"status": "held", "outcome": "unsure"}))["operation"] == operation
     assert all("tool_choice" not in body for body in server.bodies)  # held, it read again with its tools
 
 
@@ -551,3 +553,66 @@ def test_in_bypass_an_unsure_external_call_the_kernel_confirms_only_in_normal_mo
                                       "risk": "external_communication", "confirms": ["normal"]}]})
     assert mind.decide(1, "mándaselo")["operation"] is None
     assert server.bodies[1].get("tool_choice") == "none"
+
+
+# P2.43: in Bypass the catalog cannot tell a click on «Enviar» (normal mode asks) from one on «Siguiente» (it does not):
+# the doubt that would read again sends the action with «unsure», which the App never runs; its typed answer says whether
+# the kernel would run that invocation unasked (then the doubt asks, with no tools) or not (it reads again with them).
+def _click_mind(tmp_path, monkeypatch, mode: str, replies: list) -> tuple[Mind, FakeServer]:
+    _unasked(tmp_path, monkeypatch, mode)
+    monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
+    label = {"type": "object", "properties": {"label": {"type": "string"}}, "required": ["label"],
+             "additionalProperties": False}
+    mind, server = _mind(tmp_path, [_call("input_visible_click", {"label": "Enviar"}, 0.3), *replies])
+    mind.configure({"capabilities": [{"name": "input.visible.click", "description": "Click it",
+                                      "argumentsSchema": label, "risk": "external_communication", "confirms": []}]})
+    return mind, server
+
+
+def test_in_bypass_an_unsure_action_goes_to_the_app_marked_unsure_and_nothing_else_is_decided(tmp_path,
+                                                                                               monkeypatch) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass", [])
+    result = mind.decide(1, "dale")
+    assert result["kind"] == "action" and result["operation"] == "input.visible.click"
+    assert result["unsure"] is True and result["arguments"] == {"label": "Enviar"}
+    assert len(server.bodies) == 1
+    assert not any(m.get("tool_calls") for m in mind.conversation)  # the doubted call is not in the conversation
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert rows[-1]["kind"] == "doubt_unsure"
+
+
+def test_an_unsure_action_the_kernel_would_run_unasked_is_asked_with_no_tools(tmp_path, monkeypatch) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass", [_say("¿Lo envío ya?")])
+    mind.decide(1, "dale")
+    result = mind.continue_turn(2, json.dumps({"status": "held", "outcome": "would_run_unasked"}))
+    assert result["kind"] == "conversation" and result["reply"] == "¿Lo envío ya?"
+    assert server.bodies[1].get("tool_choice") == "none"
+    assert "input_visible_click" in server.bodies[1]["messages"][-1]["content"]
+    assert not any(m.get("tool_calls") or m.get("role") == "tool" for m in server.bodies[1]["messages"])
+
+
+def test_an_unsure_action_held_otherwise_is_read_again_with_tools_and_runs_when_chosen_again(tmp_path,
+                                                                                              monkeypatch) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass",
+                               [_call("input_visible_click", {"label": "Siguiente"}, 0.3)])
+    mind.decide(1, "dale")
+    result = mind.continue_turn(2, json.dumps({"status": "held", "outcome": "unsure"}))
+    assert "tool_choice" not in server.bodies[1]
+    assert result["kind"] == "action" and result["arguments"] == {"label": "Siguiente"} and "unsure" not in result
+
+
+def test_in_normal_mode_an_unsure_action_reads_again_in_the_mind_as_before(tmp_path, monkeypatch) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "", [_say("¿Cuál de los dos botones?")])
+    result = mind.decide(1, "dale")
+    assert result["kind"] == "conversation" and "unsure" not in result
+    assert "tool_choice" not in server.bodies[1]
+
+
+def test_an_app_that_ran_the_unsure_action_has_it_read_as_any_call(tmp_path, monkeypatch) -> None:
+    mind, server = _click_mind(tmp_path, monkeypatch, "bypass", [_say("Listo.")])
+    mind.decide(1, "dale")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "none"}))
+    messages = server.bodies[1]["messages"]
+    called = [m for m in messages if m.get("tool_calls")]
+    assert called and called[-1]["tool_calls"][0]["function"]["name"] == "input_visible_click"
+    assert messages[-1]["role"] == "tool" and messages[-1]["tool_call_id"] == called[-1]["tool_calls"][0]["id"]

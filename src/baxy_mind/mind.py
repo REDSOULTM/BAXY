@@ -1102,6 +1102,13 @@ DOUBT_OTHER_ASK_NOTE = ("[Nota interna, no la escribió la persona: no estás se
 # notes start alike) or an ask_user answer it, and layer 0 does not hold them again: it asked in a loop, with no limit.
 # They still go to layer 2 (the decision model and «corrige», with its safeguards).
 DOUBT_ASKED = DOUBT_NOTE[:DOUBT_NOTE.index("{call}")]
+# P2.43: in Bypass the catalog cannot say whether a call confirms by its arguments (a click on «Enviar» does in normal
+# mode, one on «Siguiente» does not), so a doubt that would read again goes to the App as the action with «unsure»
+# (_held). The App never runs it: it answers the observation WOULD_RUN_UNASKED when the kernel would run that exact
+# invocation now without the «sí» normal mode asks for it (the doubt then asks, DOUBT_NOTE), or held otherwise (it reads
+# again, REREAD_NOTE). The mind reads only that typed outcome, never the call's words.
+UNSURE = object()
+WOULD_RUN_UNASKED = "would_run_unasked"
 # Uso en la feria (2026-10-27): in the noise a short greeting came out in another language or as a word nobody said, and
 # the model answered it as said. How sure the ear was of each word (voice.Heard, Parakeet's per-token probabilities)
 # reaches the model beside the clock as a fact, as the pending «sí» does: the model decides, in its own words, whether to
@@ -2014,7 +2021,7 @@ class Mind:
         """A call the App never answered (the turn ended first) gets its honest result, so the conversation stays a
         valid tool transcript and the model never reads an unanswered call as done."""
         turn = self._turn or {}
-        if turn.get("awaiting"):
+        if turn.get("awaiting") and not turn.get("unsure"):  # a call sent «unsure» never ran nor entered it (P2.43)
             self.conversation.append({"role": "tool", "tool_call_id": turn["awaiting"], "content": NO_RESULT})
             self._ran_add(turn.get("calling"), NO_RESULT_RAN)
             op = str(turn.get("calling") or "?")  # it may have run: never a completed call of the session
@@ -2205,6 +2212,10 @@ class Mind:
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
         conv = turn["conv"]
+        if unsure := turn.pop("unsure", None):
+            held = self._unsure_held(request_id, turn, unsure, observation)
+            if held is not None:
+                return held
         # Every call of the turn so far with how it ended, at the end of the newest result: where the model writes its
         # answer, the facts it may tell are together (it told «no pude abrir Steam» after Steam opened, «lo guardé»
         # after the typing failed, 2026-10-15 falsehood bench).
@@ -2329,6 +2340,32 @@ class Mind:
                 "read": self.risk.get(call["wire"]) == "read_only"})
         turn["queue"] = []
         return self._next(request_id, "turn.continue", turn, final=final)
+
+    def _unsure_held(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any],
+                     observation: str) -> dict[str, Any] | None:
+        """P2.43: the App's answer to a call sent «unsure». Held, it did not run: the doubt asks the person with no tools
+        when the kernel would have run it unasked (WOULD_RUN_UNASKED), and reads again with its tools otherwise. None: an
+        App that does not know «unsure» ran it, so the call enters the conversation and its result is read as any."""
+        try:
+            told = json.loads(observation)
+        except json.JSONDecodeError:
+            told = None
+        conv, turn["awaiting"] = turn["conv"], None
+        if not isinstance(told, dict) or told.get("status") != "held":
+            conv.append({"role": "assistant", "content": "", "tool_calls": [
+                {"id": call["id"], "type": "function",
+                 "function": {"name": call["wire"], "arguments": json.dumps(call["arguments"], ensure_ascii=False)}}]})
+            turn["awaiting"] = call["id"]
+            return None
+        asks = told.get("outcome") == WOULD_RUN_UNASKED
+        if not asks:
+            turn["reread"] = True
+        conv.append({"role": "user", "content": (DOUBT_NOTE if asks else REREAD_NOTE).format(call=call["wire"])})
+        self._log("turn.continue", time.perf_counter(), None, text=None if turn.get("private") else turn["text"],
+                  kind="doubt_ask" if asks else "doubt_reread", operation=self.wire_to_op.get(call["wire"], call["wire"]),
+                  arguments=None, content=None)
+        # Decided again as the person's turn it doubted, as REREAD_NOTE and DOUBT_NOTE are after a doubt held in the mind.
+        return self._next(request_id, "turn.decide", turn, final=asks)
 
     def _fit_result(self, shown: str) -> str:
         """Aid «result_cap» (P0.10): a result past RESULT_TOKENS keeps the start that fits and says how much is left out
@@ -2468,6 +2505,11 @@ class Mind:
             # it carries (doubt_of) beside the operation that runs.
             turn["doubt_of"] = self.wire_to_op.get(calls[0]["wire"], calls[0]["wire"])
             calls, note, content = [note], None, ""
+        if note is UNSURE:
+            # P2.43: the doubted call goes to the App to be weighed with its arguments, not run; it enters the
+            # conversation only if an App that does not know «unsure» ran it (continue_turn).
+            turn["unsure"] = calls[0]
+            return self._result(request_id, turn, calls[0], reply, stage, started, "")
         if note:
             # System One: the model was not sure of this action (layer 0), or was unsure and the decision model chose
             # otherwise (layer 2). Nothing runs; it is told so where it reads (the call it nearly made never enters the
@@ -2755,8 +2797,9 @@ class Mind:
         return stage == "turn.decide" and not final and not turn.get("beat")
 
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
-              body: dict[str, Any]) -> str | dict[str, Any] | None:
-        """The note that holds the turn's first action, the call that replaces it, or None. Layer 0 (BAXY_S1_DOUBT): the
+              body: dict[str, Any]) -> str | dict[str, Any] | object | None:
+        """The note that holds the turn's first action, the call that replaces it, UNSURE (in Bypass, the App weighs the
+        doubted call with its arguments before it reads again), or None. Layer 0 (BAXY_S1_DOUBT): the
         model's confidence is under the threshold, unless these words answer a question (DOUBT_ASKED) or the call is
         low_reversible, or recoverable_delete and the kernel confirms it. Layer 2
         (BAXY_S1_VETO, with a decision model): under that one, the decision model is asked which of the model's own
@@ -2803,6 +2846,8 @@ class Mind:
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
             if unasked:
                 return DOUBT_NOTE.format(call=call["wire"])
+            if _bypass():
+                return UNSURE  # P2.43: the App says whether the kernel would run this invocation unasked
             turn["reread"] = True
             return REREAD_NOTE.format(call=call["wire"])
         # Auditoría de la mente (w8): a decision model not up (loading, or its server gone) answers nothing, so its
@@ -3089,6 +3134,8 @@ class Mind:
             if name == "web.fetch":
                 arguments = web_focus.widen(arguments)  # goal h-web: it reads a wider part
             result.update(kind="action", operation=name, arguments=arguments)
+            if turn.get("unsure") is call:
+                result["unsure"] = True
         elif content:
             result.update(reply=content)
         doubt_of = {"doubt_of": turn.pop("doubt_of")} if "doubt_of" in turn else {}
@@ -3097,8 +3144,8 @@ class Mind:
         private = bool(turn.get("private"))
         # What the person keeps in memory stays out of the trace, as in the App's (NativeTurnLoop): from the memory
         # call on, their words, the calls' arguments and the model's text.
-        self._log(stage, started, reply, text=None if private else turn["text"], kind=result["kind"],
-                  operation=result["operation"], arguments=call["arguments"] if call and not private else None,
+        self._log(stage, started, reply, text=None if private else turn["text"],
+                  kind="doubt_unsure" if result.get("unsure") else result["kind"], operation=result["operation"], arguments=call["arguments"] if call and not private else None,
                   content=None if private else content, **doubt_of)
         return result
 
