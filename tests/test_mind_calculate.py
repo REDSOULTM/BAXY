@@ -83,6 +83,23 @@ def test_the_calculator_app_and_calculate_send_each_other_what_is_theirs(tmp_pat
     assert "(calculator_expression_evaluate)" in CALCULATE["function"]["description"]
 
 
+def test_the_calculator_opened_in_this_conversation_is_used_not_opened_again(tmp_path: Path) -> None:
+    # noche 2026-10-28 (P2.24, held-out R1-c03 9/10 fallos): «It must be open ... first (app_open)» was a condition the
+    # model could only meet by calling app_open again, with the Calculator just opened. With none open nothing is pressed
+    # and the result says so (calculator_window_not_found, with app_open as its next step).
+    app = _mind(tmp_path, [])[0].english["calculator.expression.evaluate"]
+    assert "first (app_open)" not in app and "calculator_window_not_found" in app
+
+
+def test_an_application_named_to_write_in_goes_to_app_open(tmp_path: Path) -> None:
+    # noche 2026-10-28 (P2.24, held-out R5-c13 4/10 fallos): with the application to write in named and not open, a note,
+    # a file or a look at a window that is not there won over opening it. Each says when app_open is the call.
+    english = _mind(tmp_path, [])[0].english
+    for operation in ("note.create", "file.write", "input.visible.controls"):
+        avoid = english[operation].split("Do not use when:")[1].split("Examples:")[0]
+        assert "(app_open" in avoid, operation
+
+
 def test_a_calculation_after_memory_keeps_its_expression_out_of_the_trace(tmp_path: Path) -> None:
     # privacy review 2026-10-27: figures of what the person keeps stay out of the trace, as every row after memory
     mind, server = _mind(tmp_path, [_call("memory_recall", {"query": "saldo"}),
