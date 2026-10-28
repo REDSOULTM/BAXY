@@ -2289,6 +2289,21 @@ internal sealed class WindowsVisibleControlAdapter
             new JsonObject { ["ok"] = true, ["controls"] = new JsonArray(), ["uiaFailed"] = reason }.ToJsonString());
     }
 
+    /// <summary>The reason a look whose walk did not end gives the model («uiaFailed»).</summary>
+    internal const string UnfinishedWalkReason = "la lectura del árbol accesible no terminó en su plazo";
+
+    /// <summary>P2.17: the answer a look goes on with when the worker did not answer its walk within
+    /// <see cref="WorkerViewBudget"/> (a slow tree; the worker was ended) on a window that is still there
+    /// (<paramref name="alive"/>): as <see cref="WithoutTree"/>, read from what it draws, and «partial». Null for a window
+    /// that is gone (its look fails as before).</summary>
+    internal static JsonDocument? UnfinishedWalk(nint window, Func<nint, bool> alive) =>
+        alive(window)
+            ? JsonDocument.Parse(new JsonObject
+            {
+                ["ok"] = true, ["controls"] = new JsonArray(), ["partial"] = true, ["uiaFailed"] = UnfinishedWalkReason,
+            }.ToJsonString())
+            : null;
+
     // The window of the application a look names (exactly: VisibleControlSurface.ResolveTitledWindowAsync); 0 when none
     // shows one.
     private static async ValueTask<nint> RequestedWindowAsync(string? application, CancellationToken cancellationToken) =>
@@ -2488,6 +2503,8 @@ internal sealed class WindowsVisibleControlAdapter
             Task.Run(() => CaptureQuietlyAsync(firstLooked, covered, cancellationToken), CancellationToken.None);
         Task<WrittenText>? textTask = includeText ? ReadTextAsync(captureTask, lines ? PlacedLinesRead : limit, cancellationToken, placed: lines) : null;
         JsonDocument? answer = await _worker.SendAsync(command, WorkerViewBudget, cancellationToken).ConfigureAwait(false);
+        bool unfinished = answer is null;
+        answer ??= UnfinishedWalk(hwnd, VisibleControlSurface.IsAlive);
         if (answer is null)
         {
             return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
@@ -2498,7 +2515,7 @@ internal sealed class WindowsVisibleControlAdapter
         // under it (measured: a WinUI frame activated by a click lay above its WebView2 editor, and the view kept the
         // caption parts while the person saw the editor) is read through that content window, linked to it as the
         // family surface over it is: the look's root stays the application's window.
-        if (hwnd == windowRoot && VisibleControlSurface.SurfaceFamily(hwnd) is null
+        if (!unfinished && hwnd == windowRoot && VisibleControlSurface.SurfaceFamily(hwnd) is null
             && answer.RootElement.TryGetProperty("ok", out JsonElement frameOk) && frameOk.ValueKind == JsonValueKind.True
             && VisibleControlSurface.TryBounds(hwnd, out int frameLeft, out int frameTop, out int frameRight, out int frameBottom))
         {
@@ -2522,6 +2539,8 @@ internal sealed class WindowsVisibleControlAdapter
                             ViewCommand(content, limit, wanted, tail),
                             WorkerViewBudget, cancellationToken)
                         .ConfigureAwait(false);
+                    unfinished = answer is null;
+                    answer ??= UnfinishedWalk(content, VisibleControlSurface.IsAlive);
                     if (answer is null)
                         return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
                 }
@@ -2533,7 +2552,8 @@ internal sealed class WindowsVisibleControlAdapter
         // taken again until the count of controls stops growing, within a bound.
         string toolkit = VisibleControlSurface.Toolkit(hwnd);
         bool treeWoken = false;
-        if (toolkit is "chromium" or "cef" or "qt" or "flutter")
+        // A walk that did not end is not read again: each read may take the budget once more.
+        if (!unfinished && toolkit is "chromium" or "cef" or "qt" or "flutter")
         {
             nint settling = hwnd;
             (answer, treeWoken) = await SettleTreeAsync(
