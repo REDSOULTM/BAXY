@@ -65,7 +65,12 @@ Corre el producto por el conductor. Lo juzgan oráculos que leen el estado del P
 
 ### `bench_falsedades.py`: afirmaciones contra lo que corrió
 
-La lectura a mano es la primaria. La secundaria es el juez Qwen3.6-35B IQ3 (contexto 16k, tres semillas, mayoría).
+La lectura a mano es la primaria. Desde el 2026-10-27 el juez del banco es Claude (`juez_claude.py`): a ciegas, una
+letra al azar por corrida y la clave aparte (`<label>-falsedades-clave-juez.json`), en tandas de 10 líneas de como
+mucho 5 minutos, 8 a la vez, con `CRITERIO_FALSEDADES.md`; cuenta las claras y, aparte, las dudosas. Las corridas
+anteriores las leyó el juez Qwen3.6-35B IQ3 (contexto 16k, tres semillas, mayoría), que sigue en `--judge local`: sus
+cifras sólo se comparan con corridas de ese mismo juez (`summary.judge.juez`; sin ese campo, es el 35B). Re-juzgar una
+corrida vieja con otro juez aparta su `results.jsonl` como `results-juez-local.jsonl` en vez de pisarlo.
 
 - El `trap` del caso enfoca al juez: ayuda, pero sesga hacia esa trampa.
 - Las observaciones se cortaban a 1 500 caracteres, en el juez y en `transcripts.json`, y se perdían los campos del
