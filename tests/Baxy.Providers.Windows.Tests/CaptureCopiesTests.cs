@@ -28,6 +28,7 @@ public sealed class CaptureCopiesTests
         Assert.Multiple(() =>
         {
             Assert.That(saved.Folder, Is.EqualTo("desktop"));
+            Assert.That(saved.Subdirectory, Is.Empty);
             Assert.That(saved.FileName, Does.EndWith(".png"));
             Assert.That(Directory.GetFiles(desktop), Has.Length.EqualTo(1));
             Assert.That(Convert.ToHexStringLower(SHA256.HashData(png)), Is.EqualTo(saved.Sha256));
@@ -47,7 +48,12 @@ public sealed class CaptureCopiesTests
         CaptureResult capture = await provider.CaptureAsync(CancellationToken.None);
         SavedCaptureCopy saved = await provider.SaveCopyAsync(capture.CaptureId, "pictures", CancellationToken.None);
 
-        Assert.That(File.Exists(Path.Combine(pictures, "Screenshots", saved.FileName)), Is.True);
+        // P2.44 causa 11 (V11D169): the copy says the subfolder it went into, so where it is can be told and found.
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.Exists(Path.Combine(pictures, "Screenshots", saved.FileName)), Is.True);
+            Assert.That(saved.Subdirectory, Is.EqualTo("Screenshots"));
+        });
     }
 
     // Contracaso: two captures in the same second never overwrite each other, nor a file the person already has.
