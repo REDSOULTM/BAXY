@@ -2933,7 +2933,7 @@ class Mind:
         if turn.get("answering_other"):
             return None  # the person already answered layer 2's question about this request
         if self.risk.get(call["wire"]) == "read_only" and not self.effects.get(call["wire"]) \
-                and self._unfounded(judged["choice"], body):
+                and self._reads_first(call["wire"], judged["choice"], body):
             # P2.44 causa 4 (V11D202, V11D086): the model read the window in front, the decision model chose window_snap,
             # which needs the windowId only that read gives. Not two readings: one, in two steps; «¿cuál de las dos?»
             # had the model ask which window or which side. The read runs, and the model decides with its result; a
@@ -3021,19 +3021,30 @@ class Mind:
             return None
         return {"id": self._new_id("s1"), "wire": wire, "arguments": filled["arguments"]}
 
-    def _unfounded(self, wire: str, body: dict[str, Any]) -> bool:
-        """Whether the decision model's tool cannot be called from what the conversation showed: as the model fills it,
-        a required argument holds a value no word of the person nor any result showed (_founded). The fill «corrige»
-        already made is read, not made again; one that failed, wrote nothing or another tool tells nothing."""
-        fill = self._judged.get("fill") if self._judged is not None else None
-        if fill is not None:
-            return fill == "unfounded"
+    def _reads_first(self, read: str, wire: str, body: dict[str, Any]) -> bool:
+        """Whether the model's read is the step before the decision model's tool: that tool's description names the
+        read (window_snap: «Its windowId comes from window_resolve, window_active or app_open»), and, as the model fills
+        it, a required argument holds a value no word of the person nor any result showed (_founded). The fill
+        «corrige» already made is read, not made again; one that failed, wrote nothing or another tool tells nothing
+        (in the trace, as «corrige» writes it). Never ask_user: its question is the model's own words."""
+        tool = next((t["function"] for t in self.tools if t["function"]["name"] == wire), None)
+        if wire == ASK_USER["function"]["name"] or tool is None \
+                or not re.search(rf"(?<!\w){re.escape(read)}(?!\w)", str(tool.get("description") or "")):
+            return False
+        why = self._judged if self._judged is not None else {}
+        if "fill" in why:
+            return why["fill"] == "unfounded"
         try:
             filled = self.server.fill_call(body, wire)
-        except Exception:  # noqa: BLE001 - a fill that failed tells nothing: layer 2 asks, as before
+        except Exception as error:  # noqa: BLE001 - a fill that failed tells nothing: layer 2 asks, as before
+            why["fill"] = {"failed": type(error).__name__}
             return False
-        return bool(filled) and filled.get("name") == wire \
-            and not self._founded(wire, filled.get("arguments") or {}, body["messages"])
+        if not filled or filled.get("name") != wire:
+            why["fill"] = "none" if not filled else {"other": str(filled.get("name"))}
+            return False
+        founded = self._founded(wire, filled.get("arguments") or {}, body["messages"])
+        why["fill"] = "founded" if founded else "unfounded"
+        return not founded
 
     def _founded(self, wire: str, arguments: dict[str, Any], messages: list[dict[str, Any]],
                  every: bool = False) -> bool:
