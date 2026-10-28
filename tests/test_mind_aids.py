@@ -570,6 +570,23 @@ def test_a_relative_volume_change_says_its_amount_when_no_number_was_said(tmp_pa
         assert tool["parameters"]["properties"]["amount"]["description"].endswith("or 10 when they said no number.")
 
 
+def test_a_relative_brightness_change_says_its_amount_when_no_number_was_said(tmp_path: Path) -> None:
+    # C49 (noche 28-10, medio 1 de PC-C46): with «with an amount» and amount undescribed, «baja el brillo» with no number
+    # fell on system_settings_set value 0, the screen black. Only the brightness half of R5-PC-2f: its volume
+    # descriptions went with the tanda that lowered FER024, H15-01 and R4N01.
+    mind, _ = _mind(tmp_path, [])
+    schema = {"type": "object", "properties": {"amount": {"type": "integer"}, "direction": {"type": "string"},
+                                               "setting": {"type": "string"}, "value": {"type": "integer"}}}
+    mind.configure({"capabilities": [{"name": name, "description": "Brightness.", "argumentsSchema": schema}
+                                     for name in ("system.settings.adjust", "system.settings.set")]})
+    tools = {t["function"]["name"]: t["function"] for t in mind.tools}
+    assert "with or without an amount" in tools["system_settings_adjust"]["description"]
+    amount = tools["system_settings_adjust"]["parameters"]["properties"]["amount"]["description"]
+    assert amount.endswith("or 10 when they said no number.")
+    assert "brightness up or down with no level to end at (use system_settings_adjust)" in (
+        tools["system_settings_set"]["description"])
+
+
 def test_the_arguments_left_to_guess_say_what_the_code_does_with_them(tmp_path: Path) -> None:
     # R13-PC-3 (noche 28-10): tres decisiones que fallaban en todas las corridas o al filo. Un nombre de varias palabras
     # se partía («la carpeta X del Y», como «fotos del escritorio» del ejemplo); ante «¿lo compré?» sin tienda dicha
