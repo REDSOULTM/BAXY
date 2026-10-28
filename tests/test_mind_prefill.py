@@ -212,15 +212,9 @@ def test_the_server_reads_the_text_into_its_one_slot_and_writes_nothing(monkeypa
                                        "temperature": 0.0, "cache_prompt": True, "id_slot": 0})]
 
 
-def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a_load(
-        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def _sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, incoming: list, events: list[str]):
+    """The sidecar's loop on a fake server, mind and voice, reading ``incoming`` and writing into ``events``."""
     from baxy_mind import __main__ as sidecar
-    events: list[str] = []
-    incoming = [{"type": "turn.decide", "id": 1, "text": "hola"}, {"type": "session.new", "id": 2},
-                {"type": "turn.continue", "id": 3, "observation": "{}"}, {"type": "session.load", "id": 4,
-                                                                         "conversation": []},
-                {"type": "turn.beat.end", "id": 5}, {"type": "turn.confirm", "id": 6, "approve": True, "label": "Sí"},
-                None]
 
     class FakeServer:
         REQUEST_SECONDS = 24.0
@@ -296,10 +290,41 @@ def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a
     monkeypatch.setattr(sidecar.protocol, "write_message",
                         lambda message: events.append(str(message.get("type"))
                                                       + (f":{message['id']}" if "id" in message else "")))
+    return sidecar, FakeMind
+
+
+def test_the_sidecar_reads_ahead_only_after_answering_and_only_after_a_turn_or_a_load(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    events: list[str] = []
+    incoming = [{"type": "turn.decide", "id": 1, "text": "hola"}, {"type": "session.new", "id": 2},
+                {"type": "turn.continue", "id": 3, "observation": "{}"}, {"type": "session.load", "id": 4,
+                                                                         "conversation": []},
+                {"type": "turn.beat.end", "id": 5}, {"type": "turn.confirm", "id": 6, "approve": True, "label": "Sí"},
+                None]
+    sidecar, _ = _sidecar(tmp_path, monkeypatch, incoming, events)
     assert sidecar.main() == 0
     assert [e for e in events if e != "hello"] == [
         "turn.result:1", "prefill", "session.ready:2", "turn.result:3", "prefill", "session.ready:4", "prefill",
         "turn.beat.ended:5", "prefill", "turn.result:6"]
+
+
+def test_a_request_that_fails_leaves_its_reason_in_the_trace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # P1.13: a decide past its budget answered request_failed, and its reason went only to the stderr the App drops.
+    events: list[str] = []
+    incoming = [{"type": "turn.decide", "id": 7, "text": "hola"}, None]
+    sidecar, fake_mind = _sidecar(tmp_path, monkeypatch, incoming, events)
+    rows: list[tuple] = []
+
+    def decide(self, request_id, text, pending, unsure=None):
+        raise TimeoutError("the request's time budget is spent")
+
+    monkeypatch.setattr(fake_mind, "decide", decide)
+    monkeypatch.setattr(fake_mind, "_log", lambda self, stage, started, reply, **fields: rows.append((stage, fields)),
+                        raising=False)
+    assert sidecar.main() == 0
+    assert "error:7" in events
+    assert rows == [("request.failed", {"kind": "turn.decide",
+                                        "failure": "TimeoutError(\"the request's time budget is spent\")"})]
 
 
 @pytest.mark.parametrize("ready", [True, False])

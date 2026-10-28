@@ -237,7 +237,7 @@ def test_the_decision_model_has_no_answer_off_its_options_or_when_one_order_fail
 def test_the_decision_model_answers_within_the_requests_budget(monkeypatch) -> None:
     # P1.13: a doubted decide asked it for 2 s per order past the request's 24 s, and the App got decision_unavailable.
     import time
-    laya, _ = _laya(monkeypatch, [{"probabilities": {"app_close": 1.0}}] * 2)
+    laya, _ = _laya(monkeypatch, [])
     given: list[float] = []
     laya._ask = lambda text, history, options, timeout: given.append(timeout) or {"probabilities": {"app_close": 1.0}}
     laya.until = lambda: time.monotonic() + 0.5

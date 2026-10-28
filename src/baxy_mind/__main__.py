@@ -279,6 +279,8 @@ def main() -> int:
                 sys.stderr.flush()
                 protocol.write_message(protocol.error_reply(request_id, "request_failed",
                                                             f"{surface}_runtime_failure"))
+                # P1.13: the App drops this stderr, and a decide past its budget left no row saying why.
+                mind._log("request.failed", arrived, None, kind=kind, failure=repr(error))
             if kind in PREFILLED_AFTER:
                 # Al máximo W5: the reply is already out; with no turn left open, the conversation is read as the next
                 # request will show it (Mind.prefill), on a budget of its own, while BAXY speaks. A request that comes
