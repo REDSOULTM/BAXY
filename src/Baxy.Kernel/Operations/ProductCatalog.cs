@@ -1139,7 +1139,7 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "media.control.smtc.postread.v1",
             "Controla una sesión SMTC seleccionada y verifica su estado posterior.",
-            // BAXY's own player (mpv, by its pipe), then the system's media controls (SMTC), then the YouTube tab of
+            // The system's media controls (SMTC), then the YouTube tab of
             // BAXY's browser, which CDP drives by a script run in the page as a user gesture, in a window that holds the
             // person's session: unless sourceApp names another session, which that tab's adapter refuses before any
             // effect (WebBrowserAdapter.ControlYouTubeTabAsync).

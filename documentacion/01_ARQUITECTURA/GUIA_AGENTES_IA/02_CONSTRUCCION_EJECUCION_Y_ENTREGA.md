@@ -325,16 +325,10 @@ $packageRoot = Join-Path $sourceRoot `
   "artifacts\product\build\package-$version-$shortCommit"
 $setupRoot = Join-Path $sourceRoot `
   "artifacts\setup\build\release-$version-$shortCommit"
-$mpvPath = '<ruta-absoluta-a-mpv.exe>'
-$vulkanPath = '<ruta-absoluta-a-vulkan-1.dll>'
-$ytDlpPath = '<ruta-absoluta-a-yt-dlp.exe>'
 
 .\scripts\build_product.ps1 `
   -Version $version `
-  -OutputRoot $buildRoot `
-  -MpvPath $mpvPath `
-  -VulkanLoaderPath $vulkanPath `
-  -YtDlpPath $ytDlpPath
+  -OutputRoot $buildRoot
 
 .\scripts\package_product.ps1 `
   -BuildRoot $buildRoot `
@@ -351,7 +345,6 @@ $ytDlpPath = '<ruta-absoluta-a-yt-dlp.exe>'
 - crea un snapshot de Git HEAD;
 - publica App self-contained single-file;
 - publica Core self-contained NativeAOT;
-- incorpora mpv, Vulkan loader y yt-dlp exactos;
 - valida el conjunto cerrado de payload;
 - escribe `build-manifest.json` canónico con hashes;
 - promociona atómicamente el resultado.

@@ -747,10 +747,9 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
 
     /// <summary>
     /// The otherSessions of a media.status result (6.1): those playing first, closed ones left out, at most
-    /// <see cref="StatusOtherSessionsLimit"/>, titles cut short; with none nothing is written. Renew al máximo (auditoría
-    /// de flujos): the local player's status writes them too.
+    /// <see cref="StatusOtherSessionsLimit"/>, titles cut short; with none nothing is written.
     /// </summary>
-    internal static void WriteOtherSessions(Utf8JsonWriter writer, IReadOnlyList<UserMediaSession> others)
+    private static void WriteOtherSessions(Utf8JsonWriter writer, IReadOnlyList<UserMediaSession> others)
     {
         UserMediaSession[] shown = others
             .Where(other => other.SourceAppUserModelId.Length > 0 && other.PlaybackStatus != "closed")

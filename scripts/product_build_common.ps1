@@ -43,9 +43,6 @@ $script:BaxyReviewedPayloadPaths = @(
     'core/SpotifyDesktopAutomation.ps1',
     'core/baxy-core.exe',
     "runtimes/$($script:BaxyRuntimeIdentifier)/native/WebView2Loader.dll",
-    'tools/mpv/mpv.exe',
-    'tools/mpv/vulkan-1.dll',
-    'tools/yt-dlp/yt-dlp.exe',
     'vcruntime140_cor3.dll',
     'wpfgfx_cor3.dll'
 )
