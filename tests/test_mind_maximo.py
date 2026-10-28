@@ -201,8 +201,11 @@ def _big_result(tmp_path: Path, chars: int, prefix: int = 40000):
     text = "".join(str(n % 10) for n in range(chars))
     observation = json.dumps({"status": "completed", "observed": {"text": text}})
     mind.continue_turn(2, observation)
-    content = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
-    return mind, server, observation, text, content
+    return mind, server, observation, text, _last_result(server)
+
+
+def _last_result(server) -> str:
+    return next(m["content"] for m in reversed(server.bodies[-1]["messages"]) if m.get("tool_call_id"))
 
 
 def test_a_result_past_the_room_of_a_turn_reaches_the_model_cut_and_says_so(tmp_path: Path) -> None:
@@ -234,9 +237,9 @@ def test_a_result_whose_tokens_cannot_be_counted_is_cut_by_characters_and_the_tu
     mind.decide(1, "mira Paint")
     server.tokenize = lambda text: (_ for _ in ()).throw(TimeoutError("budget spent"))
     assert mind.continue_turn(2, json.dumps({"status": "completed", "observed": {"text": "7" * 48000}}))["kind"]
-    body = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1].split(TURN_FACTS)[0]
+    body = _last_result(server).split(TURN_FACTS)[0]
     assert CUT_RESULT.split("{")[0] in body and len(body) <= RESULT_TOKENS
-    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_bytes().splitlines()]
     assert any(row.get("stage") == "turn.result_cap" and row.get("error") == "TimeoutError" for row in rows)
     assert any(row.get("stage") == "turn.aid" and row.get("aids", {}).get("result_cap") for row in rows)
 
