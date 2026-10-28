@@ -28,6 +28,7 @@ public static class BenchTabs {
     [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X; public int Y; }
     [DllImport("user32.dll")] static extern bool EnumWindows(EnumProc cb, IntPtr l);
     [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);
+    [DllImport("user32.dll")] public static extern bool IsWindow(IntPtr h);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetClassName(IntPtr h, StringBuilder sb, int n);
     [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
     [DllImport("user32.dll")] static extern bool ScreenToClient(IntPtr h, ref POINT p);
@@ -101,6 +102,8 @@ function Get-TabAt([System.Windows.Automation.AutomationElement]$Element) {
     return $null
 }
 function Close-Tab([int64]$Hwnd, [string]$Id) {
+    # Its window closed with an earlier tab of the case (the last one closes the window, and with it every tab).
+    if (-not [BenchTabs]::IsWindow([IntPtr]$Hwnd)) { return "TAB-CLOSED $Hwnd $Id window_closed" }
     $read = Get-WindowTabs $Hwnd
     $target = @($read.Tabs | Where-Object { $_.Id -eq $Id })
     if ($target.Count -eq 0) { return "TAB-LEFT $Hwnd $Id not_found" }
@@ -121,7 +124,11 @@ function Close-Tab([int64]$Hwnd, [string]$Id) {
     if (-not [BenchTabs]::MiddleClick([IntPtr]$Hwnd, $x, $y)) { return "TAB-LEFT $Hwnd $Id click_not_posted" }
     for ($i = 0; $i -lt 10; $i++) {
         Start-Sleep -Milliseconds 300
-        $now = @((Get-WindowTabs $Hwnd).Tabs | ForEach-Object { $_.Id })
+        if (-not [BenchTabs]::IsWindow([IntPtr]$Hwnd)) { return "TAB-CLOSED $Hwnd $Id window_closed" }
+        # Only a strip read whole says the tab is gone: an unread subtree may still hold it.
+        try { $again = Get-WindowTabs $Hwnd } catch { continue }
+        if (-not $again.Whole) { continue }
+        $now = @($again.Tabs | ForEach-Object { $_.Id })
         if ($now -notcontains $Id) {
             $lost = @($others | Where-Object { $now -notcontains $_ })
             if ($lost.Count -gt 0) { return "TAB-LEFT $Hwnd $Id other_tab_gone $($lost -join ',')" }
