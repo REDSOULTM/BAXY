@@ -583,7 +583,7 @@ public static class ProductCatalog
             Schema(
                 [
                     String("content", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home", "pictures"]),
                     Integer("limit", 1, 100),
                     String("order", values: ["name", "recent", "size"]),
                     String("query", maximumUtf8Bytes: 512, nonWhitespace: true),

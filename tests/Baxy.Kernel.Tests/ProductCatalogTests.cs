@@ -728,7 +728,9 @@ public sealed class ProductCatalogTests
     [TestCase("file.find", """{"folder":"desktop"}""", true)]
     [TestCase("file.find", """{"folder":"all_known","query":"*.pdf","order":"recent","limit":5}""", true)]
     [TestCase("file.find", """{"folder":"documents","content":"reunión","subdirectory":"trabajo"}""", true)]
-    [TestCase("file.find", """{"folder":"pictures"}""", false)]
+    // P2.44 causa 11 (V11D169): a capture saved to pictures is found in pictures, the folder the capture names.
+    [TestCase("file.find", """{"folder":"pictures","query":"*.png","order":"recent"}""", true)]
+    [TestCase("file.find", """{"folder":"projects"}""", false)]
     [TestCase("file.find", """{"query":"informe"}""", false)]
     [TestCase("file.read", """{"fileName":"informe.pdf","folder":"all_known","offset":4000,"maximumCharacters":4000}""", true)]
     [TestCase("file.read", """{"fileName":"notas/ideas.md","folder":"desktop"}""", true)]

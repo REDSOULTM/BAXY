@@ -516,6 +516,39 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // P2.44 causa 11 (V11D169): a capture saved to pictures goes into its Screenshots folder, and file.find finds it there
+    // by naming pictures, the folder the capture itself names; «all_known» stays Desktop, Documents and Downloads.
+    [Test]
+    public async Task PicturesIsReadWhenNamedAndAllKnownLeavesItOut()
+    {
+        using TemporaryDirectory temporary = new();
+        string pictures = Path.Combine(temporary.Path, "Pictures");
+        string desktop = Path.Combine(temporary.Path, "Desktop");
+        Directory.CreateDirectory(Path.Combine(pictures, "Screenshots"));
+        Directory.CreateDirectory(desktop);
+        await File.WriteAllBytesAsync(Path.Combine(pictures, "Screenshots", "Screenshot 2026-10-28 044000.png"), [1, 2, 3]);
+        var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]>
+        {
+            ["desktop"] = [desktop],
+            ["pictures"] = [pictures],
+        }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
+
+        ExternalCapabilityReceipt inPictures = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"pictures","query":"*.png","order":"recent"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt everywhere = await adapter.InvokeAsync(
+            "file.find", Json("""{"folder":"all_known","query":"*.png"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inPictures.Verified, Is.True, inPictures.ErrorCode);
+            Assert.That(inPictures.Result?.GetProperty("files").EnumerateArray()
+                .Select(file => file.GetProperty("relativePath").GetString()),
+                Is.EqualTo(new[] { Path.Combine("Screenshots", "Screenshot 2026-10-28 044000.png") }));
+            Assert.That(everywhere.Verified, Is.True, everywhere.ErrorCode);
+            Assert.That(everywhere.Result?.GetProperty("files").GetArrayLength(), Is.EqualTo(0));
+        });
+    }
+
     // The model copies the path the person said (e2e p3 F013): a full path inside the named folder is the same place as
     // its relative path, and one outside it is refused before anything is read.
     [Test]

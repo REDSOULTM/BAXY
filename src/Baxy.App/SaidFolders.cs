@@ -469,7 +469,7 @@ internal sealed class SaidFolders
             }
 
             string[] labels = folder == "all_known"
-                ? [.. folderArgument.AllowedValues.Where(static value => value is not ("all_known" or "home" or "projects"))]
+                ? [.. folderArgument.AllowedValues.Where(static value => value is not ("all_known" or "home" or "pictures" or "projects"))]
                 : [folder];
             var roots = new List<string>();
             foreach (string label in labels)
