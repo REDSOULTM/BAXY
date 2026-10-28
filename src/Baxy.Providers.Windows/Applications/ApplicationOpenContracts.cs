@@ -152,9 +152,3 @@ public sealed record InstalledApplicationCatalogSnapshot(
     bool Verified,
     bool Complete,
     IReadOnlyList<string> Names);
-
-public interface IApplicationCatalogProvider
-{
-    ValueTask<InstalledApplicationCatalogSnapshot> GetCatalogSnapshotAsync(
-        CancellationToken cancellationToken);
-}
