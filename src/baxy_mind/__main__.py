@@ -160,6 +160,15 @@ def main() -> int:
     threading.Thread(target=read, name="mind-reader", daemon=True).start()
     try:
         while True:
+            if mind.gave_way is not None and pending.empty() and anticipation.patience() is None:
+                # A read ahead gave way to a request (the App's session.export after every turn, review of NB-R1-X4):
+                # with that answered and nothing waiting or held, it is read now, on a budget of its own.
+                server.deadline = time.monotonic() + LlmServer.REQUEST_SECONDS
+                try:
+                    mind.prefill(mind.gave_way)
+                except Exception as error:  # noqa: BLE001 - the next request reads it itself
+                    sys.stderr.write(f"baxy_mind_renew_failure:prefill:{error!r}\n")
+                    sys.stderr.flush()
             try:
                 item = pending.get(timeout=anticipation.patience())
             except queue.Empty:
@@ -284,7 +293,7 @@ def main() -> int:
             if kind in PREFILLED_AFTER:
                 # Al máximo W5: the reply is already out; with no turn left open, the conversation is read as the next
                 # request will show it (Mind.prefill), on a budget of its own, while BAXY speaks. A request that comes
-                # meanwhile ends it (LlmServer.yields) and reads it itself.
+                # meanwhile ends it (LlmServer.yields), and it is read again once that one is answered (Mind.gave_way).
                 server.deadline = time.monotonic() + LlmServer.REQUEST_SECONDS
                 try:
                     mind.prefill()
