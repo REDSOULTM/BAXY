@@ -412,6 +412,10 @@ def test_a_failed_act_read_again_after_it_tells_whether_what_was_asked_holds() -
     assert _outcome(json.dumps({"status": "failed", "error": "x", "observed": {}})) == "falló (x)"
 
 
+def _last_result(server) -> str:
+    return [m.get("content") for m in server.bodies[-1]["messages"] if m.get("role") == "tool"][-1]
+
+
 APP_VOLUME_FAILED = json.dumps({"status": "failed", "error": "app_audio_session_not_found_on_default_output",
                                 "observed": {"version": 1, "appsWithAudio": ["spotify"],
                                              "next": "if the person meant the whole PC, call audio_volume with level 15"}})
@@ -426,7 +430,7 @@ def test_a_failed_result_with_a_next_says_this_call_did_not_do_it(
     mind, server = _mind(tmp_path, [_call("audio_app_volume_set", {"app": "volumen", "level": 15}), _say("Listo.")])
     mind.decide(1, "deja el volumen en 15")
     mind.continue_turn(2, APP_VOLUME_FAILED)
-    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    last = _last_result(server)
     assert "[En este turno: audio_app_volume_set → falló (app_audio_session_not_found_on_default_output)]" in last
     assert last.endswith(NEXT_NOT_DONE) is told
     aids = [r for r in _trace(mind) if r["stage"] == "turn.aid"]
@@ -443,7 +447,7 @@ def test_only_a_failure_with_a_next_says_it(tmp_path: Path, monkeypatch, result:
     mind, server = _mind(tmp_path, [_call("audio_volume", {"level": 15}), _say("Listo.")])
     mind.decide(1, "deja el volumen en 15")
     mind.continue_turn(2, json.dumps(result))
-    assert NEXT_NOT_DONE not in [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert NEXT_NOT_DONE not in _last_result(server)
 
 
 def test_a_click_repeated_with_a_next_from_the_second_is_still_counted_as_repeated(tmp_path: Path, monkeypatch) -> None:
@@ -457,7 +461,7 @@ def test_a_click_repeated_with_a_next_from_the_second_is_still_counted_as_repeat
     for index in range(2):
         repeated = {"observed": {"unchangedInARow": index + 1, "next": "this click changed nothing"}} if index else {}
         mind.continue_turn(2 + index, json.dumps({**unchanged, **repeated}))
-    last = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    last = _last_result(server)
     assert "input_visible_click ×2 con los mismos argumentos → falló (visible_button_postread_unchanged)" in last
 
 
