@@ -112,8 +112,9 @@ def test_each_turn_is_judged_on_its_decision_closed_with_its_results_and_measure
     assert [r["ok"] for r in rows] == [True, False, True]  # turn 2 called with level 3, not the expected 4
     assert [r["calls"] for r in rows] == [["web.search"], ["audio.volume"], []]
     assert [r["final_kind"] for r in rows] == ["conversation"] * 3
-    first, third = rows[0]["context"], rows[2]["context"]
-    assert first["tool_results"] == 0 and third["tool_results"] > 800  # turn 1's search is in turn 3's history
+    first, second, third = (r["context"] for r in rows)
+    assert first["tool_results"] == 0 and second["tool_results"] > 800  # turn 1's search is whole in turn 2's history
+    assert 0 < third["tool_results"] < second["tool_results"]  # and only its facts in turn 3's (old_bodies, P0.2)
     assert third["history"] > first["history"]
     assert third["system"] == len(mind._system()) // 4 and third["catalog"] == 1000 - third["system"]
     assert third["total"] == third["system"] + third["catalog"] + third["history"] + third["tool_results"] + third["otros"]
