@@ -96,6 +96,8 @@ def main() -> int:
     # None ends it (the App closed stdin); an int is the exit code (a protocol violation, or the pipe failing). The voice
     # puts its own items here too (al máximo, palancas 2 y 5, early.py): ("early", n, text), ("cancel", n), ("wake",).
     pending: queue.Queue[tuple | int | None] = queue.Queue()
+    # NB-R1 2026-10-27: a read ahead (a turn's warm.history, the wake's) gives way to whatever waits here.
+    server.yields = lambda: not pending.empty()
     anticipation = Anticipation(mind, warm=wake_warm())
     early_s = early_silence()
 
@@ -282,7 +284,7 @@ def main() -> int:
             if kind in PREFILLED_AFTER:
                 # Al máximo W5: the reply is already out; with no turn left open, the conversation is read as the next
                 # request will show it (Mind.prefill), on a budget of its own, while BAXY speaks. A request that comes
-                # meanwhile waits for it, and then does not read it itself.
+                # meanwhile ends it (LlmServer.yields) and reads it itself.
                 server.deadline = time.monotonic() + LlmServer.REQUEST_SECONDS
                 try:
                     mind.prefill()
