@@ -1,4 +1,5 @@
-"""bench_escenas cleans up after itself (PC-Q, 2026-10-25), with doubles of the mind and its llama-server."""
+"""bench_escenas cleans up after itself (PC-Q, 2026-10-25) and says what it measured, with doubles of the mind and its
+llama-server."""
 import json
 import sys
 import types
@@ -93,3 +94,27 @@ def test_the_scenes_server_dies_with_its_bench(escenas):
     _, held = escenas
     bench_escenas.main()
     assert held == [FakeServer.made[0]._process]
+
+
+def test_a_scenes_run_says_what_it_measured(escenas, monkeypatch):
+    """As bench_decision's run_record: without it tandas.py could not join the batches of a scenes bank."""
+    import run_meta
+    folder, _ = escenas
+    gguf, server, src = folder / "qwen.gguf", folder / "llama-server.exe", folder / "src"
+    gguf.write_bytes(b"gguf")
+    server.write_bytes(b"exe")
+    (src / "baxy_mind").mkdir(parents=True)
+    (src / "baxy_mind" / "mind.py").write_text("x = 1\n", encoding="utf-8")
+    monkeypatch.setattr(run_meta, "_cache_path", lambda: None)
+    monkeypatch.setenv("BAXY_AYUDAS", "1")
+    monkeypatch.setattr(sys, "argv", [*sys.argv, "--gguf", str(gguf), "--server", str(server), "--src", str(src)])
+    bench_escenas.main()
+    summary = json.loads((folder / "runs" / "lbl-escenas.jsonl").read_text(encoding="utf-8").splitlines()[0])["summary"]
+    run = summary["run"]
+    assert run["src"] == str(src) and run["mind_sha256"] == run_meta.tree_sha256(src / "baxy_mind")
+    assert run["judge_sha256"] == run_meta.sha256_file(Path(bench_escenas.__file__))
+    assert run["equivalence_sha256"] == run_meta.sha256_file(bench_escenas.EQUIVALENCE_FILE)
+    assert run["catalog"]["sha256"] == run_meta.sha256_file(folder / "catalog.json")
+    assert run["gguf"] == {"path": str(gguf), "bytes": 4, "sha256": run_meta.sha256_file(gguf)}
+    assert run["server"]["sha256"] == run_meta.sha256_file(server) and run["ctx"] == 53248
+    assert run["machine"] and "src_git" in run and run["env"]["BAXY_AYUDAS"] == "1"
