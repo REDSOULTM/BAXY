@@ -56,6 +56,18 @@ def test_the_cores_aids_are_traced_by_their_fields_and_never_change_the_result(t
     assert _trace(mind)[-1]["stage"] == "turn.continue"
 
 
+def test_the_standard_keypads_next_is_traced_as_the_calculators_aid(tmp_path: Path, monkeypatch) -> None:
+    # Ajuste c3, e2e E011: ( ) on the Standard keypad says how that keypad computes (WindowsDeviceControlAdapter).
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    standard = json.dumps({"status": "failed", "error": "calculator_needs_scientific_mode",
+                           "observed": {"mode": "standard", "next": "nothing was pressed"}})
+    mind, _ = _mind(tmp_path, [_call("calculator_expression_evaluate", {"expression": "(1+2)*3"}), _say("Listo.")])
+    mind.decide(1, "suma 1 más 2 y multiplícalo por 3 en la calculadora")
+    mind.continue_turn(2, standard)
+    aid = [r for r in _trace(mind) if r["stage"] == "turn.aid"][0]
+    assert aid["aids"]["calculator_next"] == {"next": "nothing was pressed"}
+
+
 CLICK_UNSURE = json.dumps({"status": "failed", "error": "visible_surface_changed_while_waiting"})
 CLICKED = json.dumps({"status": "completed", "observed": {"ok": True, "name": "TIENDA"}})
 

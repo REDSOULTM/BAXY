@@ -957,7 +957,7 @@ def _aids_seen(observation: str) -> dict[str, Any]:
         return {name: observed[name] for name in names if name in observed}
 
     seen: dict[str, Any] = dict(said)
-    if facts.get("error") == "calculator_window_not_found" and "next" in observed:
+    if facts.get("error") in ("calculator_window_not_found", "calculator_needs_scientific_mode") and "next" in observed:
         seen["calculator_next"] = picked("next")
     if observed.get("setting") == "accessible_mode" and picked("scope", "notAvailableYet"):
         seen["accessible_scope"] = picked("scope", "notAvailableYet")

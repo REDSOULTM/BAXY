@@ -123,6 +123,48 @@ public sealed class ExternalCapabilityHandlerTests
         });
     }
 
+    // Ajuste c3, e2e E011 («suma 250 más 175 y luego multiplica el resultado por 2»): «(250+175)*2» on the Standard
+    // keypad failed with calculator_needs_scientific_mode alone, and in 3 runs the model told the person the Calculator
+    // could not do it (once after six clicks on its system menu) or pressed the digits by hand; the runs that wrote
+    // «250+175*2» got 850 there. The failure now says the mode it read, that nothing was pressed, and how that keypad
+    // computes: a fact, never a mode switched nor an expression rewritten for the model.
+    [Test]
+    public async Task AParenthesisOnTheStandardKeypadSaysHowThatKeypadComputes()
+    {
+        string message = await CalculatorMessage(
+            """{"ok":false,"error":"calculator_needs_scientific_mode","mode":"standard"}""");
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement root = facts.RootElement;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(root.GetProperty("status").GetString(), Is.EqualTo("failed"));
+            Assert.That(root.GetProperty("error").GetString(), Is.EqualTo("calculator_needs_scientific_mode"));
+            Assert.That(root.TryGetProperty("effectUncertain", out _), Is.False);
+            Assert.That(root.GetProperty("observed").GetProperty("mode").GetString(), Is.EqualTo("standard"));
+            Assert.That(root.GetProperty("observed").GetProperty("next").GetString(), Is.EqualTo(
+                "nothing was pressed: the Calculator is in its Standard mode, whose keypad has no ( ) nor ^ and applies "
+                + "each operator in the order pressed, without precedence (2+3*4 gives 20 there); an expression written "
+                + "in that order without them is evaluated there"));
+        });
+    }
+
+    // With the aid off the failure is the one of the starting product: its code and no hint.
+    [Test]
+    public async Task AParenthesisOnTheStandardKeypadWithTheAidOffCarriesNoHint()
+    {
+        using IDisposable off = ModelAids.Use("none");
+        string message = await CalculatorMessage(
+            """{"ok":false,"error":"calculator_needs_scientific_mode","mode":"standard"}""");
+        using JsonDocument facts = JsonDocument.Parse(message);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("calculator_needs_scientific_mode"));
+            Assert.That(facts.RootElement.TryGetProperty("observed", out _), Is.False);
+        });
+    }
+
     // Contracaso: another failure of the Calculator (its keypad in another mode) carries no such hint.
     [Test]
     public async Task ACalculatorInAnotherModeCarriesNoAppOpenHint()

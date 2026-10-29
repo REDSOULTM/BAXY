@@ -1109,6 +1109,17 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         writer.WriteEndObject();
     });
 
+    // What an expression with ( ) or ^ on the Standard keypad saw: nothing pressed, and how that keypad computes.
+    private static readonly JsonElement CalculatorStandardKeypad = ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteString("mode", "standard");
+        writer.WriteString("next", "nothing was pressed: the Calculator is in its Standard mode, whose keypad has no ( ) "
+            + "nor ^ and applies each operator in the order pressed, without precedence (2+3*4 gives 20 there); an "
+            + "expression written in that order without them is evaluated there");
+        writer.WriteEndObject();
+    });
+
     // Holdout v5 V5E021/V5E029: numbers joined by + - * / ^, each inside any parentheses opened before it and closed
     // after it (balancing groups: every «(» closed by the end); an operator first continues from the number shown.
     // Whether the keypad has ^ and the parentheses is the script's to read (only the Scientific one has them).
@@ -1282,6 +1293,16 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             if (code == "calculator_window_not_found" && ModelAids.On(ModelAids.CalculatorNext))
             {
                 return new ExternalCapabilityReceipt(operation, false, false, CalculatorNotOpen, code);
+            }
+            // Ajuste c3, e2e E011: ( ) or ^ on the Standard keypad pressed nothing, and the code alone left the model with
+            // no way on (it told the person the Calculator could not, or pressed the digits by hand). The failure says the
+            // mode the script read and how that keypad computes (microsoft/calculator's README: Standard «evaluates
+            // commands immediately as they are entered»); the mode is never switched and nothing is rewritten here.
+            if (code == "calculator_needs_scientific_mode" && ModelAids.On(ModelAids.CalculatorNext)
+                && root.TryGetProperty("mode", out JsonElement read) && read.ValueKind == JsonValueKind.String
+                && read.GetString() == "standard")
+            {
+                return new ExternalCapabilityReceipt(operation, false, false, CalculatorStandardKeypad, code);
             }
             // A button pressed before the failure (or a display that did not show the expression) may have changed the
             // Calculator; a keypad without the buttons pressed nothing.

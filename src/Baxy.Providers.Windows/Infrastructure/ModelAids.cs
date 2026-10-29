@@ -11,7 +11,7 @@ public static class ModelAids
     /// <summary>
     /// E011: a calculator.expression.evaluate with no Calculator window says app_open can start it. Holdout v5 V5E021: a
     /// bare number, when the person's words name one operation on what it shows, goes as that operator and the number
-    /// (Baxy.App.SaidVerbs).
+    /// (Baxy.App.SaidVerbs). Ajuste c3 (E011): ( ) or ^ on the Standard keypad says how that keypad computes.
     /// </summary>
     public const string CalculatorNext = "calculator_next";
 
