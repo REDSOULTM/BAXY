@@ -90,12 +90,19 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         }
     }
 
+    // P2.4 (ajuste c3): the path as the person said it (PersonFolders.Place), as the known folder it is in and the rest
+    // of it inside that folder; null when none of the operation's folders holds it.
+    private (string Folder, string Name)? Said(string operation, JsonElement arguments) =>
+        PersonFolders.Place(arguments.TryGetProperty("path", out JsonElement path) && path.ValueKind == JsonValueKind.String
+            ? path.GetString() : null, PersonFolders.PathLabels(operation), _knownFolder) is { } said
+            ? (said.Label, said.Relative) : null;
+
     // ---- file.compress -------------------------------------------------------
 
     private ExternalCapabilityReceipt Compress(string operation, JsonElement arguments)
     {
-        string folder = ExternalJson.RequiredString(arguments, "folder");
-        string name = ExternalJson.RequiredString(arguments, "name").Trim();
+        if (Said(operation, arguments) is not (string folder, string name))
+            return ExternalJson.FailureBeforeEffect(operation, "known_path_outside_folder");
         string? root = ResolveKnownFolder(folder);
         if (root is null)
             return ExternalJson.FailureBeforeEffect(operation, "known_folder_missing");
@@ -184,8 +191,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        string folder = ExternalJson.RequiredString(arguments, "folder");
-        string name = ExternalJson.RequiredString(arguments, "name").Trim();
+        if (Said(operation, arguments) is not (string folder, string name))
+            return ExternalJson.FailureBeforeEffect(operation, "known_path_outside_folder");
         OpenTarget target = LocateOpenTarget(folder, name, cancellationToken: cancellationToken);
         if (target.Path is not { } path)
             return target.Error == "file_not_found"
@@ -630,10 +637,10 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
     {
         string? color = arguments.TryGetProperty("color", out JsonElement colorElement) && colorElement.ValueKind == JsonValueKind.String
             ? colorElement.GetString()?.Trim() : null;
-        string? folder = arguments.TryGetProperty("folder", out JsonElement folderElement) && folderElement.ValueKind == JsonValueKind.String
-            ? folderElement.GetString() : null;
-        string? name = arguments.TryGetProperty("name", out JsonElement nameElement) && nameElement.ValueKind == JsonValueKind.String
-            ? nameElement.GetString()?.Trim() : null;
+        bool pathGiven = arguments.TryGetProperty("path", out JsonElement pathElement)
+            && pathElement.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(pathElement.GetString());
+        (string? folder, string? name) = Said(operation, arguments) is (string label, string inside)
+            ? (label, inside) : ((string?)null, (string?)null);
         string previousWallpaper = CurrentWallpaperPath();
         string previousColor = Registry.GetValue(@"HKEY_CURRENT_USER\Control Panel\Colors", "Background", null) as string ?? string.Empty;
 
@@ -692,6 +699,8 @@ internal sealed partial class WindowsFileToolsAdapter : IExternalOperationAdapte
             return ExternalJson.Success(operation, result, effectObserved: true);
         }
 
+        if (pathGiven && folder is null)
+            return ExternalJson.FailureBeforeEffect(operation, "known_path_outside_folder");
         if (folder is null || string.IsNullOrWhiteSpace(name))
             return ExternalJson.FailureBeforeEffect(operation, "wallpaper_argument_invalid");
         string? root = ResolveKnownFolder(folder);

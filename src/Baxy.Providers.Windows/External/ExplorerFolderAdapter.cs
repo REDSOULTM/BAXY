@@ -68,19 +68,22 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
         if (extension.Length < 2 || extension.Length > 16 || extension.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             return ExternalJson.FailureBeforeEffect(operation, "extension_invalid");
 
-        string? named = arguments.TryGetProperty("folder", out JsonElement folderElement)
-            && folderElement.ValueKind == JsonValueKind.String ? folderElement.GetString() : null;
+        string? named = arguments.TryGetProperty("path", out JsonElement pathElement)
+            && pathElement.ValueKind == JsonValueKind.String ? pathElement.GetString() : null;
         if (named is not null)
         {
-            if (_knownFolder(named) is not { } known)
-                return ExternalJson.FailureBeforeEffect(operation, "known_folder_invalid");
+            // P2.4 (ajuste c3): the folder as the person said it (PersonFolders.Place), in one of the known folders.
+            if (Baxy.Providers.Windows.Filesystem.PersonFolders.Place(named,
+                    Baxy.Providers.Windows.Filesystem.PersonFolders.PathLabels(operation), _knownFolder) is not { } said
+                || _knownFolder(said.Label) is not { } known)
+                return ExternalJson.FailureBeforeEffect(operation, "known_path_outside_folder");
             // Holdout v5 V5E034/V5E044: a folder inside the known one, confined to it as the other known-folder tools.
-            if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectory))
+            if (said.Relative.Length > 0)
             {
                 try
                 {
                     known = WindowsKnownFileAdapter.SubdirectoryRoots(
-                        [(named, known)], subdirectory.GetString()?.Trim() ?? string.Empty, _privateRoots)[0].Root;
+                        [(said.Label, known)], said.Relative, _privateRoots)[0].Root;
                 }
                 catch (InvalidDataException exception)
                 {

@@ -27,9 +27,9 @@ public sealed class ToldVersionsTests
         using var engine = Engine(journal, ConfirmationMode.Normal, write);
 
         OperationResponse refused = await engine.ExecuteAsync(
-            Request("file.write", """{"relativePath":"notas.txt","text":"vacío"}"""), CancellationToken.None);
+            Request("file.write", """{"path":"notas.txt","text":"vacío"}"""), CancellationToken.None);
         OperationRequest retry = Request(
-            "file.write", $$"""{"relativePath":"notas.txt","text":"vacío","expectedSha256":"{{Current}}"}""");
+            "file.write", $$"""{"path":"notas.txt","text":"vacío","expectedSha256":"{{Current}}"}""");
         OperationResponse asked = await engine.ExecuteAsync(retry, CancellationToken.None);
         int replacedBeforeTheYes = write.Replaced;
         OperationResponse confirmed = await engine.ExecuteAsync(
@@ -58,13 +58,13 @@ public sealed class ToldVersionsTests
         using var journal = new InMemoryInvocationJournal();
         using var engine = Engine(journal, ConfirmationMode.Normal, write);
         await engine.ExecuteAsync(
-            Request("file.write", """{"relativePath":"notas.txt","text":"vacío"}"""), CancellationToken.None);
+            Request("file.write", """{"path":"notas.txt","text":"vacío"}"""), CancellationToken.None);
         OperationResponse asked = await engine.ExecuteAsync(
-            Request("file.write", $$"""{"relativePath":"notas.txt","text":"vacío","expectedSha256":"{{Current}}"}"""),
+            Request("file.write", $$"""{"path":"notas.txt","text":"vacío","expectedSha256":"{{Current}}"}"""),
             CancellationToken.None);
 
         OperationResponse other = await engine.ExecuteAsync(
-            Request("file.write", $$"""{"relativePath":"notas.txt","text":"otro","expectedSha256":"{{Current}}"}""")
+            Request("file.write", $$"""{"path":"notas.txt","text":"otro","expectedSha256":"{{Current}}"}""")
                 with { ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString() },
             CancellationToken.None);
 
@@ -85,15 +85,15 @@ public sealed class ToldVersionsTests
             $$"""{"fileSha256":"{{Current}}","text":"uno\ndos\ntres\n"}""")));
         using var journal = new InMemoryInvocationJournal();
         using var engine = Engine(journal, ConfirmationMode.Normal, write, read);
-        OperationRequest reading = Request("file.read", """{"fileName":"notas.txt","folder":"home"}""");
-        OperationRequest refused = Request("file.write", """{"relativePath":"notas.txt","text":"vacío"}""");
+        OperationRequest reading = Request("file.read", """{"path":"home/notas.txt"}""");
+        OperationRequest refused = Request("file.write", """{"path":"notas.txt","text":"vacío"}""");
         foreach (OperationRequest request in readFirst ? [reading, refused] : new[] { refused, reading })
         {
             await engine.ExecuteAsync(request, CancellationToken.None);
         }
 
         OperationResponse replaced = await engine.ExecuteAsync(
-            Request("file.write", $$"""{"relativePath":"notas.txt","text":"vacío","expectedSha256":"{{Current}}"}"""),
+            Request("file.write", $$"""{"path":"notas.txt","text":"vacío","expectedSha256":"{{Current}}"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -111,20 +111,20 @@ public sealed class ToldVersionsTests
         using (var engine = Engine(journal, ConfirmationMode.Bypass, write))
         {
             await engine.ExecuteAsync(
-                Request("file.write", """{"relativePath":"notas.txt","text":"vacío"}"""), CancellationToken.None);
+                Request("file.write", """{"path":"notas.txt","text":"vacío"}"""), CancellationToken.None);
             OperationResponse bypassed = await engine.ExecuteAsync(
-                Request("file.write", $$"""{"relativePath":"notas.txt","text":"vacío","expectedSha256":"{{Current}}"}"""),
+                Request("file.write", $$"""{"path":"notas.txt","text":"vacío","expectedSha256":"{{Current}}"}"""),
                 CancellationToken.None);
             Assert.That(bypassed.Status, Is.EqualTo(OperationStatuses.Completed));
         }
 
         using var normal = Engine(journal, ConfirmationMode.Normal, write);
         await normal.ExecuteAsync(
-            Request("file.write", """{"relativePath":"notas.txt","text":"vacío"}"""), CancellationToken.None);
+            Request("file.write", """{"path":"notas.txt","text":"vacío"}"""), CancellationToken.None);
         OperationResponse appended = await normal.ExecuteAsync(
             Request(
                 "file.write",
-                $$"""{"relativePath":"notas.txt","text":"cuatro","append":true,"expectedSha256":"{{Current}}"}"""),
+                $$"""{"path":"notas.txt","text":"cuatro","append":true,"expectedSha256":"{{Current}}"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -239,7 +239,7 @@ public sealed class ToldVersionsTests
         static string Hash(int value) => value.ToString("x64", System.Globalization.CultureInfo.InvariantCulture);
 
         static JsonElement Replace(string hash) =>
-            Json($$"""{"relativePath":"notas.txt","text":"vacío","expectedSha256":"{{hash}}"}""");
+            Json($$"""{"path":"notas.txt","text":"vacío","expectedSha256":"{{hash}}"}""");
     }
 
     private static MissionEngine Engine(

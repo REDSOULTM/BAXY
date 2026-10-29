@@ -133,16 +133,14 @@ internal sealed class SaidVerbs
     private (JsonObject, string)? Overwrite(JsonObject arguments, Func<string, JsonObject, string?> fileThere)
     {
         if (!ModelAids.On(ModelAids.OverwriteGuard) || !Says(Verbs.Value.Overwrite)
-            || Text(arguments["newText"]) is not { } text || Text(arguments["folder"]) is not { } folder
-            || folder == "all_known" || Text(arguments["fileName"]) is not { } fileName || Path.IsPathFullyQualified(fileName))
-            return null;
-        string? subdirectory = Text(arguments["subdirectory"]);
-        if (subdirectory is not null && Path.IsPathFullyQualified(subdirectory))
+            || Text(arguments["newText"]) is not { } text || Text(arguments["path"]) is not { } path
+            // A name alone is looked for by file.edit under Desktop, Documents and Downloads; file.write would write it in
+            // the person's home, another file.
+            || path.IndexOfAny(['/', '\\']) < 0)
             return null;
         var written = new JsonObject
         {
-            ["relativePath"] = subdirectory is null ? fileName : subdirectory.TrimEnd('/', '\\') + "/" + fileName,
-            ["folder"] = folder,
+            ["path"] = path,
             ["text"] = text,
             ["append"] = false,
         };

@@ -528,7 +528,7 @@ SEARCH_STOPPED = {"status": "failed", "error": "known_file_search_incomplete",
     ("¿No encontré ideas.txt?", False),
 ])
 def test_a_file_said_not_found_that_a_result_of_the_turn_found(answer: str, flagged: bool) -> None:
-    edit = _r("file.edit", SEARCH_STOPPED, {"folder": "home", "fileName": "ideas.txt"})
+    edit = _r("file.edit", SEARCH_STOPPED, {"path": "home/ideas.txt"})
     assert ("found" in _rules(answer, [edit], "en ideas.txt cambia regar los cactus por regar las orquídeas")) is flagged
 
 
@@ -550,7 +550,7 @@ def test_the_found_rule_is_an_aid_of_its_own(tmp_path: Path, monkeypatch, settin
     else:
         monkeypatch.setenv("BAXY_AYUDAS", setting)
     first = "No lo cambié: no encontré BAXY-bench\\ideas.txt en todo el tiempo."
-    mind, server = _mind(tmp_path, [_call("file_edit", {"folder": "home", "fileName": "ideas.txt"}), _say(first),
+    mind, server = _mind(tmp_path, [_call("file_edit", {"path": "home/ideas.txt"}), _say(first),
                                     _say("No lo cambié: la búsqueda encontró BAXY-bench\\ideas.txt y paró.")])
     mind.wire_to_op = {"file_edit": "file.edit"}
     mind.decide(1, "en ideas.txt cambia regar los cactus por regar las orquídeas")
@@ -592,7 +592,7 @@ READ_PART = {"status": "completed", "verification": "output_only",
     ("¿No leí recado.txt?", False),
 ])
 def test_a_file_said_not_read_that_a_result_of_the_turn_read_whole(answer: str, flagged: bool) -> None:
-    read = _r("file.read", READ_WHOLE, {"folder": "home", "subdirectory": "BAXY-bench", "fileName": "recado.txt"})
+    read = _r("file.read", READ_WHOLE, {"path": "BAXY-bench/recado.txt"})
     assert ("read" in _rules(answer, [read], "léeme el recado.txt de BAXY-bench")) is flagged
 
 
@@ -603,22 +603,22 @@ def test_a_file_said_not_read_that_a_result_of_the_turn_read_whole(answer: str, 
     "No leí recado.txt.",
 ])
 def test_a_file_read_only_in_part_may_be_said_not_read(answer: str) -> None:
-    read = _r("file.read", READ_PART, {"folder": "home", "fileName": "recado.txt"})
+    read = _r("file.read", READ_PART, {"path": "home/recado.txt"})
     assert "read" not in _rules(answer, [read], "léeme recado.txt")
 
 
 def test_a_read_that_failed_or_brought_no_text_or_an_open_that_failed_may_be_said_not_read() -> None:
     failed = _r("file.read", {"status": "failed", "error": "known_text_encoding_unsupported",
-                              "observed": {"reviewLabel": "recado.txt"}}, {"folder": "home", "fileName": "recado.txt"})
+                              "observed": {"reviewLabel": "recado.txt"}}, {"path": "home/recado.txt"})
     assert "read" not in _rules("No pude leer recado.txt: su codificación no se reconoce.", [failed])
     scanned = _r("file.read", {"status": "completed", "verification": "output_only", "observed": {
         "kind": "pdf", "reviewLabel": "boleta.pdf", "characters": 0, "hasMore": False, "endReached": True,
-        "pages": 1, "textPages": 0, "hasText": False, "text": ""}}, {"folder": "home", "fileName": "boleta.pdf"})
+        "pages": 1, "textPages": 0, "hasText": False, "text": ""}}, {"path": "home/boleta.pdf"})
     assert "read" not in _rules("No pude leer boleta.pdf: no tiene texto.", [scanned])
     # Its text read and its window not opened: «no pude abrir» tells the open that failed.
-    read = _r("file.read", READ_WHOLE, {"folder": "home", "fileName": "recado.txt"})
+    read = _r("file.read", READ_WHOLE, {"path": "home/recado.txt"})
     opened = _r("file.open", {"status": "failed", "error": "application_window_not_observed"},
-                {"folder": "home", "name": "recado.txt"})
+                {"path": "home/recado.txt"})
     assert "read" not in _rules("No pude abrir recado.txt en pantalla, pero lo leí.", [read, opened])
 
 
@@ -629,7 +629,7 @@ def test_the_read_rule_is_an_aid_of_its_own(tmp_path: Path, monkeypatch, setting
     else:
         monkeypatch.setenv("BAXY_AYUDAS", setting)
     first = "No pude leer recado.txt, así que no sé qué dice."
-    mind, server = _mind(tmp_path, [_call("file_read", {"folder": "home", "fileName": "recado.txt"}), _say(first),
+    mind, server = _mind(tmp_path, [_call("file_read", {"path": "home/recado.txt"}), _say(first),
                                     _say("Dice: comprar pan y llamar al dentista.")])
     mind.wire_to_op = {"file_read": "file.read"}
     mind.risk = {**mind.risk, "file_read": "read_only"}

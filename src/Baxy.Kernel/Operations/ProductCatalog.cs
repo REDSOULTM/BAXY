@@ -460,13 +460,12 @@ public static class ProductCatalog
             Schema(
                 [
                     String("color", types: NullableString, maximumUtf8Bytes: 32),
-                    String("folder", types: NullableString, values: ["desktop", "documents", "downloads", "pictures"]),
-                    String("name", types: NullableString, maximumUtf8Bytes: 200),
+                    PersonPath(NullableString),
                 ],
                 []),
             OperationRisks.LowReversible,
             "desktop.wallpaper.set.spi.registry.postread.v1",
-            "Cambia el fondo de escritorio a un color liso (#RRGGBB) o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior; sólo una imagen directa de la carpeta."),
+            "Cambia el fondo de escritorio a un color liso (#RRGGBB) o a una imagen de una carpeta conocida (su ruta como la dijo la persona) y verifica la postlectura del sistema; devuelve el fondo anterior; sólo una imagen directa de la carpeta."),
         // Auditoría de los pedidos reales (2026-10-17): cambiar la frecuencia o la resolución del monitor principal.
         Descriptor(
             "display.mode.set",
@@ -550,11 +549,8 @@ public static class ProductCatalog
         Descriptor(
             "file.compress",
             Schema(
-                [
-                    String("folder", values: ["desktop", "documents", "downloads", "pictures"]),
-                    String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
-                ],
-                ["folder", "name"]),
+                [PersonPath()],
+                ["path"]),
             OperationRisks.LowReversible,
             "file.compress.zip.archive.postread.v1",
             "Comprime un archivo o una carpeta de una carpeta conocida en un zip con el mismo nombre al lado y verifica que el zip existe y tiene entradas; sólo un elemento directo de la carpeta."),
@@ -567,14 +563,12 @@ public static class ProductCatalog
             "file.edit",
             Schema(
                 [
-                    String("fileName", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
                     String("newText", maximumUtf8Bytes: 65_536),
                     String("oldText", maximumUtf8Bytes: 65_536),
+                    PersonPath(),
                     Boolean("replaceAll"),
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
-                ["fileName", "folder", "newText", "oldText"]),
+                ["newText", "oldText", "path"]),
             OperationRisks.LowReversible,
             "file.edit.windows.known.exact.replace.recycle.postread.v1",
             "Reemplaza un texto exacto en un archivo de texto de hasta 4 MiB nombrado de forma única en una carpeta conocida (una vez, o todas si se pide; si aparece más de una vez sin pedirlo no cambia nada y dice cuántas), conserva su codificación, envía la versión anterior a la Papelera de reciclaje y verifica releyendo el archivo; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles y 8 segundos, y si el plazo corta la búsqueda no cambia nada y dice el archivo que vio (known_file_search_incomplete), que se edita nombrando su ruta."),
@@ -583,13 +577,12 @@ public static class ProductCatalog
             Schema(
                 [
                     String("content", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home", "pictures"]),
                     Integer("limit", 1, 100),
                     String("order", values: ["name", "recent", "size"]),
+                    PersonPath(),
                     String("query", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
-                ["folder"]),
+                []),
             OperationRisks.ReadOnly,
             "file.find.windows.known.name.content.bounded.v1",
             "Lista el primer nivel de una carpeta conocida de Windows, o busca bajo ella archivos por nombre (parte del nombre o patrón con * y ?) o por un texto dentro de sus archivos de texto, de forma acotada (20 resultados por defecto, 50 en el listado del primer nivel (sin ocultos ni de sistema), y 100 como mucho; hasta 12 niveles y 8 segundos, y una búsqueda cortada por el plazo lo dice; por contenido, mira hasta 2000 archivos de cualquier tipo y sólo lee los de texto de hasta 1 MiB, y para en el límite de aciertos y sólo ordena esos) y sin seguir puntos de reanálisis; devuelve cada archivo con su ruta relativa a la carpeta, nunca la absoluta; sin efecto; una vista muestra 20 como mucho (lo marca y no alcanza lo que pasa de ahí)."),
@@ -600,13 +593,12 @@ public static class ProductCatalog
                     // cu-v3-abrir-archivo: the installed application to open it with (as app.open's appId); without it,
                     // the default one.
                     String("application", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
                     // The person asked to see it (the model sets it, as app.open's): the opened application keeps the
                     // front; without it the file opens behind the person's window.
                     Boolean("foreground"),
-                    String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
+                    PersonPath(),
                 ],
-                ["folder", "name"]),
+                ["path"]),
             OperationRisks.LowReversible,
             "file.open.shell.window.process.postread.v1",
             "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada, o con la aplicación instalada que se nombre, y verifica la ventana o el proceso que aparece. Un archivo que no está en esa carpeta no se abre: el recibo dice dónde se vio uno con ese nombre exacto; dónde se vio busca 4 niveles en escritorio, documentos, descargas e imágenes, 5 lugares y 3 segundos como mucho (searchComplete); sólo abre documentos, imágenes, audio, vídeo y zip o 7z.",
@@ -618,13 +610,11 @@ public static class ProductCatalog
             "file.read",
             Schema(
                 [
-                    String("fileName", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
                     Integer("maximumCharacters", 200, 200_000),
                     Integer("offset", 0, 100_000_000),
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    PersonPath(),
                 ],
-                ["fileName", "folder"]),
+                ["path"]),
             OperationRisks.ReadOnly,
             "file.read.windows.known.text.pdf.paged.v1",
             "Localiza un archivo nombrado de forma única (por su nombre o su ruta relativa) en una carpeta conocida de Windows y devuelve una página de su texto desde offset: un archivo de texto en su codificación, o el texto que ya contiene un PDF (pypdf, sin OCR), hasta 4 MiB de texto o 64 MiB de PDF; dice qué tipo leyó, el largo total y si queda más; sin efecto; con un nombre que no aparece o aparece varias veces da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles y 8 segundos, y una búsqueda cortada por el plazo lo dice; la extracción de un PDF para a los 90 segundos.",
@@ -636,17 +626,15 @@ public static class ProductCatalog
                 [
                     Boolean("append"),
                     String("expectedSha256", types: NullableString, maximumLength: 64),
-                    // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): a known
-                    // folder may be the root instead of the sandbox; an existing file
-                    // there is never overwritten without its current hash.
-                    String("folder", values: ["desktop", "documents", "downloads", "home"]),
-                    String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                    // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): the person's folders are where it writes;
+                    // an existing file there is never overwritten without its current hash.
+                    PersonPath(),
                     String("text", maximumUtf8Bytes: 1_048_576),
                 ],
-                ["relativePath", "text"]),
+                ["path", "text"]),
             OperationRisks.LowReversible,
             "file.write.sandbox.known.cas.recycle.hash.v1",
-            "Escribe UTF-8 atómicamente en el sandbox o en una carpeta conocida; reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído; append rechaza un archivo de más de 10 MiB; el texto, 1 MiB como mucho."),
+            "Escribe UTF-8 atómicamente en una ruta de la persona como ella la dijo (escritorio, documentos, descargas o su carpeta de usuario); reemplazar exige el SHA-256 exacto observado antes y envía la versión anterior a la Papelera de reciclaje; append añade al final conservando lo que había; verifica el hash releído; append rechaza un archivo de más de 10 MiB; el texto, 1 MiB como mucho."),
         Descriptor(
             "filesystem.copy",
             FilesystemTransferSchema(),
@@ -656,16 +644,12 @@ public static class ProductCatalog
         Descriptor(
             "filesystem.create.directory",
             Schema(
-                [
-                    // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): a known
-                    // folder may be the root instead of the sandbox.
-                    String("folder", values: ["desktop", "documents", "downloads", "home"]),
-                    String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                ],
-                ["relativePath"]),
+                // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): the person's folders are where it makes it.
+                [PersonPath()],
+                ["path"]),
             OperationRisks.LowReversible,
             "filesystem.create.directory.sandbox.postread.v1",
-            "Crea un directorio relativo confinado al sandbox o a una carpeta conocida (escritorio, documentos, descargas, la carpeta del usuario) y verifica su identidad; una ruta absoluta dentro de esa carpeta vale como su ruta relativa."),
+            "Crea un directorio en una ruta de la persona como ella la dijo (ruta completa, carpeta conocida en español o inglés y el resto, o una carpeta de su usuario), confinado a escritorio, documentos, descargas o su carpeta de usuario, y verifica su identidad."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0701 «Dime cuantos archivos .py
         // hay en el directorio actual», D24): el directorio actual es la carpeta del
         // Explorador en primer plano; sin Explorador delante falla (no_explorer_in_front).
@@ -675,9 +659,8 @@ public static class ProductCatalog
             Schema(
                 [
                     String("extension", maximumUtf8Bytes: 16, nonWhitespace: true),
-                    String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
                     // Holdout v5 V5E034/V5E044: «¿cuántos pdf hay en BAXY-bench\facturas?» had no call.
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    PersonPath(),
                 ],
                 ["extension"]),
             OperationRisks.ReadOnly,
@@ -694,11 +677,8 @@ public static class ProductCatalog
         Descriptor(
             "filesystem.folder.open",
             Schema(
-                [
-                    String("folder", values: ["desktop", "documents", "downloads", "home", "pictures"]),
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
-                ],
-                ["folder"]),
+                [PersonPath()],
+                ["path"]),
             OperationRisks.LowReversible,
             "filesystem.folder.open.windows.shell.postread.v1",
             "Abre una carpeta conocida de Windows, o una subcarpeta suya, y verifica la ventana de Explorer observada.",
@@ -718,12 +698,8 @@ public static class ProductCatalog
         Descriptor(
             "filesystem.known.trash.named",
             Schema(
-                [
-                    String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("folder", values: ["all_known", "desktop", "documents", "downloads", "home"]),
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
-                ],
-                ["fileName", "folder"]),
+                [PersonPath()],
+                ["path"]),
             OperationRisks.RecoverableDelete,
             "filesystem.known.trash.named.windows.absence.v1",
             "Resuelve un archivo, o una carpeta con todo lo que tiene, nombrados de forma única y lo envía a la Papelera de reciclaje de Windows, de donde la persona lo recupera, y verifica que ya no está en su carpeta; con un nombre repetido da hasta 5 candidatos (candidatesTruncated); busca el nombre hasta 12 niveles."),
@@ -770,17 +746,16 @@ public static class ProductCatalog
             "filesystem.sandbox.move.named",
             Schema(
                 [
-                    // Holdout v5 V5E032/V5E040: a file of the person's (folder, subdirectory) moved or copied by name.
+                    // Holdout v5 V5E032/V5E040: a file of the person's (in the folder path names) moved or copied by name.
                     Boolean("copy"),
                     String("destinationRelativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
-                    String("folder", values: ["desktop", "documents", "downloads", "home"]),
+                    PersonPath(),
                     String("sourceFileName", maximumUtf8Bytes: 512, nonWhitespace: true),
-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["destinationRelativePath", "sourceFileName"]),
             OperationRisks.LowReversible,
             "filesystem.sandbox.move.named.hash.absence.v1",
-            "Mueve (o copia, con copy) un archivo de nombre único dentro del sandbox o, con folder, en esa carpeta conocida (o en su subcarpeta), sin sobrescribir, y verifica hash y ausencia (o permanencia) del origen."),
+            "Mueve (o copia, con copy) un archivo de nombre único dentro del sandbox o, con path, en esa carpeta de la persona (como ella la dijo), sin sobrescribir, y verifica hash y ausencia (o permanencia) del origen."),
         Descriptor(
             "filesystem.search",
             Schema(
@@ -2369,6 +2344,11 @@ public static class ProductCatalog
         long? maximum = null,
         OperationJsonType types = OperationJsonType.Integer) =>
         new(name, types, minimum: minimum, maximum: maximum);
+
+    // P2.4 (ajuste c3): the one argument of the file tools that says where, «as the person said it» (a full path, a known
+    // folder in Spanish or English and the rest, or only a name); the provider reads it (PersonFolders.Place).
+    private static OperationArgumentProperty PersonPath(OperationJsonType types = OperationJsonType.String) =>
+        String("path", types, maximumUtf8Bytes: 1_024, nonWhitespace: types == OperationJsonType.String);
 
     private static OperationArgumentProperty String(
         string name,

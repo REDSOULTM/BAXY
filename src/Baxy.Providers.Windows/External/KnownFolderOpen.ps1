@@ -29,12 +29,7 @@ try {
         'downloads' {(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path}
     }
     $path=[IO.Path]::GetFullPath($path)
-    if($Subdirectory -match '^([A-Za-z]:[\\/]|[\\/]{2})'){
-        # A full path inside the folder is the same place as its relative path; one outside it is refused.
-        $full=[IO.Path]::GetFullPath($Subdirectory)
-        if(-not $full.StartsWith($path.TrimEnd('\')+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'known_path_outside_folder'}
-        $Subdirectory=$full.Substring($path.TrimEnd('\').Length+1)
-    }
+    # The path the person said is read in C# (PersonFolders.Place): here only its part inside the known folder.
     if($Subdirectory){
         $parts=@($Subdirectory -split '[\\/]')
         if([IO.Path]::IsPathRooted($Subdirectory) -or ($parts | Where-Object {$_ -in @('','.','..')})){throw 'known_subdirectory_invalid'}

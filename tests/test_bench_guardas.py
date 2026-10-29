@@ -27,7 +27,7 @@ for line in sys.stdin:
     elif request.get("call") == "message.draft" and "whatsapp" not in heard:
         answer = {"refused": json.dumps({"status": "rejected", "error": "channel_not_said", "next": "words"})}
     elif request.get("call") == "filesystem.list":
-        answer = {"operation": "file.find", "arguments": {"folder": "home", "subdirectory": "x"}, "note": "routed"}
+        answer = {"operation": "file.find", "arguments": {"path": "home/x"}, "note": "routed"}
     elif "call" in request:
         answer = {"operation": request["call"], "arguments": request["arguments"], "note": None,
                   "held": "host_not_from_session" if "url" in request["arguments"] else None}
@@ -80,7 +80,7 @@ def test_a_call_that_goes_is_seen_as_it_would_run_and_the_decision_bench_stops_t
     mind = Mind()
     shown, went, refused, _, _, _ = bench_guardas.seen(
         mind, "c1", {"kind": "action", "operation": "filesystem.list", "arguments": {}}, oracle, 3)
-    assert shown == {"kind": "action", "operation": "file.find", "arguments": {"folder": "home", "subdirectory": "x"}}
+    assert shown == {"kind": "action", "operation": "file.find", "arguments": {"path": "home/x"}}
     assert went == ["file.find"] and refused == [] and mind.given == []
 
 

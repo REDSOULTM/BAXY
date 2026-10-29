@@ -526,8 +526,8 @@ def _aid_on(aid: str) -> bool:
 # a minimize, with nothing read): unsaved changes are not readable, the receipt says so (the App's aid of the same id)
 # and the description names it.
 WORK_FOLDER = "BAXY's own work folder is only filesystem-sandbox, in BAXY's data under AppData"
-NAMED_FOLDER = (" Any folder of the person's home is theirs, even one whose name contains BAXY: it goes in subdirectory, "
-                f"with folder home ({WORK_FOLDER}).")
+NAMED_FOLDER = (" Any folder of the person's home is theirs, even one whose name contains BAXY: it goes in path "
+                f"({WORK_FOLDER}).")
 SANDBOX_ONLY = (" This work folder is filesystem-sandbox, in BAXY's data under AppData: any other folder of the person's "
                 "home is file_find's, whatever its name.")
 DESCRIPTION_AIDS = {
@@ -536,7 +536,7 @@ DESCRIPTION_AIDS = {
         " A folder the person names, in their home or anywhere else, is theirs even if its name contains BAXY or bench: "
         "delete from it like from any other folder (BAXY's own work folder is only the one filesystem_list shows)."),),
     "file.open": (("named_folder_theirs", " Any folder of the person's home is theirs, even one whose name contains "
-                                          f"BAXY: open from it with folder home and that folder in name ({WORK_FOLDER})."),),
+                                          f"BAXY: open from it with that folder in path ({WORK_FOLDER})."),),
     "file.read": (("named_folder_theirs", NAMED_FOLDER),
                   ("read_find_split", " It also tells how many lines a named file has (totalLines), and it looks for the "
                                       "file itself: no file_find before it.")),
@@ -966,8 +966,6 @@ def _aids_seen(observation: str) -> dict[str, Any]:
     if observed.get("folder") == "baxy_work" and "entries" in observed:
         # Renew al máximo (w5, E020): a look at the working folder (filesystem_list, filesystem_search).
         seen["work_folder_scope"] = picked("folder", "next")
-    elif observed.get("folder") == "baxy_work" or "sameNameInHome" in observed:
-        seen["work_folder"] = picked("folder", "sameNameInHome", "next")
     return seen
 
 

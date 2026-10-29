@@ -261,17 +261,26 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 command.Add("-CopySelection");
             else if (operation == "clipboard.paste")
                 command.Add("-PasteClipboard");
-            else if (operation is "filesystem.folder.open" or "filesystem.file.open.latest")
+            else if (operation == "filesystem.file.open.latest")
             {
                 command.Add(ExternalJson.RequiredString(arguments, "folder"));
                 positional.Add(command[^1]);
-                if (operation == "filesystem.folder.open"
-                    && arguments.TryGetProperty("subdirectory", out JsonElement subdirectory)
-                    && subdirectory.ValueKind == JsonValueKind.String
-                    && !string.IsNullOrWhiteSpace(subdirectory.GetString()))
+            }
+            else if (operation == "filesystem.folder.open")
+            {
+                // P2.4 (ajuste c3): the folder as the person said it (PersonFolders.Place), as the script takes it: the
+                // known folder and the subfolder inside it.
+                if (Baxy.Providers.Windows.Filesystem.PersonFolders.Place(
+                        ExternalJson.RequiredString(arguments, "path"),
+                        Baxy.Providers.Windows.Filesystem.PersonFolders.PathLabels(operation),
+                        WindowsFileToolsAdapter.KnownFolderPath) is not { } said)
+                    return ExternalJson.FailureBeforeEffect(operation, "known_path_outside_folder");
+                command.Add(said.Label);
+                positional.Add(command[^1]);
+                if (said.Relative.Length > 0)
                 {
                     command.Add("-Subdirectory");
-                    command.Add(subdirectory.GetString()!);
+                    command.Add(said.Relative);
                     positional.Add(command[^1]);
                 }
             }

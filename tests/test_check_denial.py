@@ -14,12 +14,12 @@ from test_mind_aids import _trace
 from test_mind_final import _call, _mind, _say
 
 CATALOG = {
-    "filesystem.known.trash.named": "Delete a file, or a folder with everything in it (isFolder and entries say so), by "
-                                    "its name from a known folder (or a subdirectory of it; the user's home folder too) "
-                                    "by sending it to the Windows Recycle Bin, where the person can restore it. Use when: "
-                                    "borra or elimina the file or the folder X.",
-    "filesystem.create.directory": "Create a new folder in Desktop, Documents, Downloads, the user's home folder or BAXY's "
-                                   "private work folder. Use when: crea una carpeta.",
+    "filesystem.known.trash.named": "Delete a file, or a folder with everything in it (isFolder and entries say so), of "
+                                    "the person's (Desktop, Documents, Downloads or any folder of their home) by sending "
+                                    "it to the Windows Recycle Bin, where the person can restore it. Use when: borra or "
+                                    "elimina the file or the folder X.",
+    "filesystem.create.directory": "Create a new folder of the person's (in Desktop, Documents, Downloads or any folder "
+                                   "of their home). Use when: crea una carpeta.",
     "filesystem.sandbox.move.named": "Move, or copy (copy true), a file given by its exact file name. Use when: moving "
                                      "or copying a file the person names.",
     "file.find": "List the top level of a known folder, or find files under it by name. Use when: busca un archivo.",
@@ -140,7 +140,7 @@ DENIED = "No puedo borrar carpetas de BAXY-bench, solo archivos."
 def test_a_denial_is_asked_again_once_with_the_tool_and_may_act(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     mind, server = _configured(tmp_path, [_say(DENIED), _call("filesystem_known_trash_named",
-                                                              {"folder": "home", "name": "BAXY-bench\\old-drafts"})])
+                                                              {"path": "BAXY-bench\\old-drafts"})])
     result = mind.decide(1, "delete the old-drafts folder inside BAXY-bench")
     assert result["kind"] == "action" and result["operation"] == "filesystem.known.trash.named"
     note = server.bodies[-1]["messages"][-1]

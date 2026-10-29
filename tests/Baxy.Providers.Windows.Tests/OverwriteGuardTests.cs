@@ -23,7 +23,8 @@ namespace Baxy.Providers.Windows.Tests;
 public sealed class OverwriteGuardTests
 {
     private const string Players = "Benja, delantero\r\nTomi, defensa\r\nFeña, volante\r\n";
-    private const string Path = "Liga de Futbolito/jugadores.txt";
+    // P2.4: the file as the person said it, the known folder first.
+    private const string Path = "Documents/Liga de Futbolito/jugadores.txt";
 
     // The bench's sequence on the real provider and kernel: written without append, refused; read; written under the
     // hash the read gave. That replacement asks the person (no effect without the yes), and the append the refusal named
@@ -40,12 +41,12 @@ public sealed class OverwriteGuardTests
         using var engine = new MissionEngine(new OperationRegistry(FilesystemHandlers.Create(place.Provider)), journal);
 
         OperationResponse refused = await engine.ExecuteAsync(
-            Request("""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"Matías, arquero","folder":"documents"}"""),
+            Request("""{"path":"Documents/Liga de Futbolito/jugadores.txt","text":"Matías, arquero"}"""),
             CancellationToken.None);
         OperationResponse read = await engine.ExecuteAsync(
             Request($$"""{"resourceId":"{{original.ResourceId}}"}""", "filesystem.read.text"), CancellationToken.None);
         OperationResponse replaced = await engine.ExecuteAsync(
-            Request($$"""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"Matías, arquero","folder":"documents","expectedSha256":"{{original.Sha256}}"}"""),
+            Request($$"""{"path":"Documents/Liga de Futbolito/jugadores.txt","text":"Matías, arquero","expectedSha256":"{{original.Sha256}}"}"""),
             CancellationToken.None);
         string afterReplace = place.Text();
 
@@ -62,7 +63,7 @@ public sealed class OverwriteGuardTests
                 Assert.That(facts.GetProperty("next").GetString(), Is.EqualTo(
                     "nothing was written: jugadores.txt is already there with 3 lines (48 characters), and this call "
                     + "would replace all of it with the text, which keeps none of its lines. If the person asked to add "
-                    + "the text: file_write {\"relativePath\":\"Liga de Futbolito/jugadores.txt\",\"folder\":\"documents\","
+                    + "the text: file_write {\"path\":\"Documents/Liga de Futbolito/jugadores.txt\","
                     + "\"text\":\"Matías, arquero\",\"append\":true}, a new line at its end that keeps what it has. If the "
                     + "person asked to replace all it has: the same call with expectedSha256 (currentSha256). Their words "
                     + "pick the call, so ask them nothing: in normal mode BAXY itself asks their yes before a replacement"));
@@ -84,7 +85,7 @@ public sealed class OverwriteGuardTests
         }
 
         OperationResponse appended = await engine.ExecuteAsync(
-            Request("""{"relativePath":"Liga de Futbolito/jugadores.txt","folder":"documents","text":"Matías, arquero","append":true}"""),
+            Request("""{"path":"Documents/Liga de Futbolito/jugadores.txt","text":"Matías, arquero","append":true}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -107,7 +108,7 @@ public sealed class OverwriteGuardTests
         await using FileInvocationJournal journal = await place.Journal();
         using var engine = new MissionEngine(new OperationRegistry(FilesystemHandlers.Create(place.Provider)), journal);
         OperationRequest replace = Request(
-            $$"""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"Matías, arquero","folder":"documents","expectedSha256":"{{original.Sha256}}"}""");
+            $$"""{"path":"Documents/Liga de Futbolito/jugadores.txt","text":"Matías, arquero","expectedSha256":"{{original.Sha256}}"}""");
 
         OperationResponse asked = await engine.ExecuteAsync(replace, CancellationToken.None);
         string beforeTheYes = place.Text();
@@ -141,11 +142,11 @@ public sealed class OverwriteGuardTests
         using var engine = new MissionEngine(new OperationRegistry(FilesystemHandlers.Create(place.Provider)), journal);
 
         OperationResponse refused = await engine.ExecuteAsync(
-            Request("""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"pendiente","folder":"documents"}"""),
+            Request("""{"path":"Documents/Liga de Futbolito/jugadores.txt","text":"pendiente"}"""),
             CancellationToken.None);
         string told = refused.Result!.Value.GetProperty("currentSha256").GetString()!;
         OperationRequest replace = Request(
-            $$"""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"pendiente","folder":"documents","expectedSha256":"{{told}}"}""");
+            $$"""{"path":"Documents/Liga de Futbolito/jugadores.txt","text":"pendiente","expectedSha256":"{{told}}"}""");
         OperationResponse asked = await engine.ExecuteAsync(replace, CancellationToken.None);
         OperationResponse confirmed = await engine.ExecuteAsync(
             replace with
@@ -184,7 +185,7 @@ public sealed class OverwriteGuardTests
         await using FileInvocationJournal journal = await place.Journal();
         using var engine = new MissionEngine(new OperationRegistry([edit]), journal);
         OperationRequest everything = Request(
-            """{"fileName":"jugadores.txt","folder":"documents","subdirectory":"Liga de Futbolito","oldText":"Aleluya de Cohen\nGracias a la vida\nCanción de cuna","newText":"pendiente"}""",
+            """{"path":"Documents/Liga de Futbolito/jugadores.txt","oldText":"Aleluya de Cohen\nGracias a la vida\nCanción de cuna","newText":"pendiente"}""",
             "file.edit");
 
         OperationResponse asked = await engine.ExecuteAsync(everything, CancellationToken.None);
@@ -202,7 +203,7 @@ public sealed class OverwriteGuardTests
         place.Seed(Repertoire);
         OperationResponse line = await engine.ExecuteAsync(
             Request(
-                """{"fileName":"jugadores.txt","folder":"documents","oldText":"Gracias a la vida","newText":"Gracias a la vida (bis)"}""",
+                """{"path":"Documents/jugadores.txt","oldText":"Gracias a la vida","newText":"Gracias a la vida (bis)"}""",
                 "file.edit"),
             CancellationToken.None);
 
@@ -230,7 +231,7 @@ public sealed class OverwriteGuardTests
             new OperationRegistry(FilesystemHandlers.Create(place.Provider)),
             journal,
             new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Bypass });
-        string replace = $$"""{"relativePath":"Liga de Futbolito/jugadores.txt","text":"Matías, arquero","folder":"documents","expectedSha256":"{{original.Sha256}}"}""";
+        string replace = $$"""{"path":"Documents/Liga de Futbolito/jugadores.txt","text":"Matías, arquero","expectedSha256":"{{original.Sha256}}"}""";
 
         OperationResponse replaced = await engine.ExecuteAsync(Request(replace), CancellationToken.None);
 
@@ -264,9 +265,8 @@ public sealed class OverwriteGuardTests
 
         OperationResponse response = await engine.ExecuteAsync(Request(JsonSerializer.Serialize(new
         {
-            relativePath = Path,
+            path = Path,
             text,
-            folder = "documents",
             expectedSha256 = original.Sha256,
         })), CancellationToken.None);
 
@@ -288,9 +288,8 @@ public sealed class OverwriteGuardTests
 
         OperationOutcome refused = await Handle(place.Provider, JsonSerializer.Serialize(new
         {
-            relativePath = Path,
+            path = Path,
             text = Players + "Matías, arquero\r\n",
-            folder = "documents",
         }));
 
         Assert.Multiple(() =>
@@ -318,8 +317,8 @@ public sealed class OverwriteGuardTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(place.Provider.ReplacementAsksFirst(Path, "hola", hash, "documents"), Is.True);
-            Assert.That(place.Provider.ReplacementAsksFirst(Path, "hola", new string('0', 64), "documents"), Is.False);
+            Assert.That(place.Provider.ReplacementAsksFirst(Path, "hola", hash), Is.True);
+            Assert.That(place.Provider.ReplacementAsksFirst(Path, "hola", new string('0', 64)), Is.False);
             Assert.That(File.ReadAllBytes(full), Has.Length.EqualTo(6));
         });
     }
@@ -335,16 +334,15 @@ public sealed class OverwriteGuardTests
 
         OperationOutcome outcome = await Handle(place.Provider, JsonSerializer.Serialize(new
         {
-            relativePath = Path,
+            path = Path,
             text,
-            folder = "documents",
         }));
 
         string next = outcome.Result!.Value.GetProperty("next").GetString()!;
         Assert.Multiple(() =>
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo("version_conflict"));
-            Assert.That(next, Does.Contain("file_write with the same relativePath, folder and text, and append true"));
+            Assert.That(next, Does.Contain("file_write with the same path and text, and append true"));
             Assert.That(next, Does.Not.Contain("palabra palabra"));
         });
     }
@@ -400,7 +398,7 @@ public sealed class OverwriteGuardTests
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Full())!);
             File.WriteAllText(Full(), text, new System.Text.UTF8Encoding(false));
             // A no-op write of the same text gives its handle and hash without changing it (reachedState).
-            return Provider.WriteText(Path, text, null, "documents");
+            return Provider.WriteText(Path, text, null);
         }
 
         internal string Text() => File.ReadAllText(Full());

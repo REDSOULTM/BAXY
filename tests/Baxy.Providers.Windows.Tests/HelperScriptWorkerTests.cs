@@ -211,16 +211,16 @@ public sealed class HelperScriptWorkerTests
         WindowsDesktopInteractionAdapter adapter = root.Interaction(runner, worker);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "filesystem.folder.open", Json("""{"folder":"home","subdirectory":"-raro/tesis"}"""), CancellationToken.None);
+            "filesystem.folder.open", Json("""{"path":"home/-raro/tesis"}"""), CancellationToken.None);
         ExternalCapabilityReceipt bare = await adapter.InvokeAsync(
-            "filesystem.folder.open", Json("""{"folder":"downloads"}"""), CancellationToken.None);
+            "filesystem.folder.open", Json("""{"path":"downloads"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
             Assert.That(runner.Calls, Is.Zero, "no PowerShell is started for the script");
             Assert.That((string?)worker.Commands[0]["script"], Is.EqualTo("param($Folder,$Subdirectory) # fixture"));
             Assert.That(worker.Commands[0]["args"]!.AsArray().Select(node => (string?)node),
-                Is.EqualTo(new[] { "home", "-raro/tesis" }));
+                Is.EqualTo(new[] { "home", "-raro\\tesis" }));
             Assert.That(worker.Commands[1]["args"]!.AsArray().Select(node => (string?)node),
                 Is.EqualTo(new[] { "downloads" }));
             Assert.That(receipt.Verified, Is.True);
@@ -234,10 +234,10 @@ public sealed class HelperScriptWorkerTests
     {
         using var root = new Root();
         ExternalCapabilityReceipt fromWorker = await root.Interaction(new CountingRunner(), new AnsweringWorker(_ => null))
-            .InvokeAsync("filesystem.folder.open", Json("""{"folder":"home"}"""), CancellationToken.None);
+            .InvokeAsync("filesystem.folder.open", Json("""{"path":"home"}"""), CancellationToken.None);
         ExternalCapabilityReceipt fromProcess = await root.Interaction(
                 new CountingRunner(failure: new TimeoutException()), worker: null)
-            .InvokeAsync("filesystem.folder.open", Json("""{"folder":"home"}"""), CancellationToken.None);
+            .InvokeAsync("filesystem.folder.open", Json("""{"path":"home"}"""), CancellationToken.None);
 
         AssertSame(fromWorker, fromProcess, "desktop_interaction_adapter_failed");
     }
@@ -248,23 +248,24 @@ public sealed class HelperScriptWorkerTests
         using var root = new Root();
         ExternalCapabilityReceipt fromWorker = await root.Interaction(
                 new CountingRunner(), new AnsweringWorker(_ => """{"ok":false,"error":"script_no_receipt"}"""))
-            .InvokeAsync("filesystem.folder.open", Json("""{"folder":"home"}"""), CancellationToken.None);
+            .InvokeAsync("filesystem.folder.open", Json("""{"path":"home"}"""), CancellationToken.None);
         ExternalCapabilityReceipt fromProcess = await root.Interaction(new CountingRunner(string.Empty), worker: null)
-            .InvokeAsync("filesystem.folder.open", Json("""{"folder":"home"}"""), CancellationToken.None);
+            .InvokeAsync("filesystem.folder.open", Json("""{"path":"home"}"""), CancellationToken.None);
 
         AssertSame(fromWorker, fromProcess, "desktop_interaction_no_receipt");
     }
 
     // The product's folder script in the product's worker and in its own PowerShell, on refusals that open nothing:
-    // the receipt it writes before its «exit 2» arrives from both, with the same code.
-    [TestCase("..", "known_subdirectory_invalid")]
+    // the receipt it writes before its «exit 2» arrives from both, with the same code. A path out of the person's folders
+    // is refused before either runs (PersonFolders.Place), the same from both.
+    [TestCase("..", "known_path_outside_folder")]
     [TestCase("baxy-no-such-folder-7f3e", "known_folder_missing")]
     public async Task TheProductsFolderScriptRefusesTheSameInTheWorker(string subdirectory, string code)
     {
         string script = Path.Combine(AppContext.BaseDirectory, "KnownFolderOpen.ps1");
         string missing = Path.Combine(Path.GetTempPath(), "baxy-missing-" + Guid.NewGuid().ToString("N"));
         using var worker = new UiaWorkerHost(Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1"));
-        string arguments = $$"""{"folder":"home","subdirectory":"{{subdirectory}}"}""";
+        string arguments = $$"""{"path":"home/{{subdirectory}}"}""";
         ExternalCapabilityReceipt fromWorker = await Product(script, missing, worker)
             .InvokeAsync("filesystem.folder.open", Json(arguments), CancellationToken.None);
         ExternalCapabilityReceipt fromProcess = await Product(script, missing, worker: null)

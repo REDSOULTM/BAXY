@@ -992,7 +992,7 @@ _READ_OBJECT = re.compile(r"(?:[\s«\"“']|\b(?:el|la|los|las|un|una|tu|su|tus|
 
 def _read_whole(receipts: list[Receipt]) -> list[tuple[set[str], str, str, Receipt]]:
     """The files a completed read of the turn brought whole, as (their names and relative paths, lower case with
-    backslashes; its place as ``found`` writes one: the known folder, the subfolder and the file; the name the result
+    backslashes; its place as ``found`` writes one: the known folder and the path the call gave; the name the result
     gives; the receipt): a non-empty text with nothing of it left unread."""
     whole = []
     for r in receipts:
@@ -1009,15 +1009,15 @@ def _read_whole(receipts: list[Receipt]) -> list[tuple[set[str], str, str, Recei
             continue
         arguments = r.get("arguments") or {}
         names = [observed.get(key) for key in ("reviewLabel", "name", "fileName", "relativePath")]
-        names += [arguments.get(key) for key in ("fileName", "name", "relativePath")]
-        subdirectory = arguments.get("subdirectory")
-        given = arguments.get("fileName") or arguments.get("name")
-        if isinstance(subdirectory, str) and isinstance(given, str) and subdirectory.strip():
-            names.append(subdirectory.rstrip("\\/") + "\\" + given)
+        # P2.4: the path the call gave, as the person said it, and its last part (the file's own name).
+        given = arguments.get("path") or arguments.get("name")
+        given = given.strip().replace("/", "\\").rstrip("\\") if isinstance(given, str) and given.strip() else None
+        if given:
+            names += [given, given.rsplit("\\", 1)[-1]]
         paths = {n.strip().replace("/", "\\").lower() for n in names if isinstance(n, str) and n.strip()}
         if paths:
             label = next((n for n in names if isinstance(n, str) and n.strip()), "")
-            parts = [observed.get("folder") or arguments.get("folder"), subdirectory, given or label]
+            parts = [observed.get("folder") or arguments.get("folder"), given or label]
             place = "\\" + "\\".join(str(p).strip("\\/") for p in parts if isinstance(p, str) and p.strip())
             whole.append((paths, place.replace("/", "\\").lower(), str(observed.get("reviewLabel") or label), r))
     return whole

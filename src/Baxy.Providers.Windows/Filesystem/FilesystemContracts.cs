@@ -38,10 +38,9 @@ public sealed record FilesystemMutationResult(
     // FT/proveedores goal (review of receipts): the file was not there and this write made it (an append included):
     // «añadí a tu lista» cannot be said of a list that did not exist here.
     bool Created = false,
-    // E024 (pc-ayudas): a file.write that went to BAXY's own working folder (no folder, a relative path) says so, and
-    // a folder of the person's home with the same first part of the path is a fact beside it, never a redirection.
-    bool InWorkFolder = false,
-    string? SameNameInHome = null,
+    // Ronda 22 (r18 t4-c07, t1-c13): the known folder of the person's it was written in (its label), so the reply can
+    // say where without guessing; null for BAXY's own working folder.
+    string? Folder = null,
     // Renew al máximo (w8): the first folder of the path this write made (relative to the folder written in): a
     // subfolder named wrong was made silently and the file told as written where the person said.
     string? FolderCreated = null);
@@ -66,27 +65,26 @@ public interface IFilesystemProvider
     FilesystemEntry Hash(string resourceId);
 
     /// <summary>
-    /// Creates a directory in the sandbox, or rooted at a known folder ("desktop", "documents", "downloads"); null
-    /// keeps the sandbox root.
+    /// Creates a directory at a path as the person said it (P2.4: a full path, a known folder's name and the rest, or a
+    /// folder of their home; PersonFolders.Place), in one of their folders (desktop, documents, downloads, home).
     /// </summary>
-    FilesystemMutationResult CreateDirectory(string relativePath, string? folder);
+    FilesystemMutationResult CreateDirectory(string path);
 
     /// <summary>
-    /// Writes a text file in the sandbox or in a known folder: replacing an existing one takes its current SHA-256 and
-    /// sends its previous version to the Recycle Bin first; appending keeps what is there.
+    /// Writes a text file at a path as the person said it, as CreateDirectory reads it: replacing an existing one takes
+    /// its current SHA-256 and sends its previous version to the Recycle Bin first; appending keeps what is there.
     /// </summary>
     FilesystemMutationResult WriteText(
-        string relativePath,
+        string path,
         string text,
         string? expectedSha256,
-        string? folder = null,
         bool append = false);
 
     /// <summary>
     /// Holdout v6 V6E041/V6E048 (aid overwrite_guard): whether this replacement under the file's own hash would lose its
     /// text, so running it is the person's to allow (read only; none by default).
     /// </summary>
-    bool ReplacementAsksFirst(string relativePath, string text, string? expectedSha256, string? folder) => false;
+    bool ReplacementAsksFirst(string path, string text, string? expectedSha256) => false;
 
     FilesystemMutationResult Transfer(
         string resourceId,

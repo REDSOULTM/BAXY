@@ -121,7 +121,7 @@ def test_a_continuation_with_no_result_to_decide_from_is_still_refused(tmp_path:
 
 
 def test_the_turns_facts_say_where_a_file_was_made(tmp_path: Path) -> None:
-    mind, server = _mind(tmp_path, [_call("file_write", {"relativePath": "compras.txt", "folder": "home"}),
+    mind, server = _mind(tmp_path, [_call("file_write", {"path": "compras.txt"}),
                                     _say("Lo creé.")])
     mind.decide(1, "crea un archivo")
     observed = {"status": "completed", "verification": "readback",
@@ -160,7 +160,7 @@ def _refusing_past(server, limit: int) -> None:
 
 
 def test_the_last_answer_of_a_turn_of_paged_reads_always_comes(tmp_path: Path) -> None:
-    pages = [_call("file_read", {"fileName": "server.log", "folder": "home", "offset": 4000 * n}) for n in range(15)]
+    pages = [_call("file_read", {"path": "home/server.log", "offset": 4000 * n}) for n in range(15)]
     mind, server = _mind(tmp_path, [*pages, _say("Leí sólo una parte del archivo; en esa parte no vi errores.")])
     _refusing_past(server, LIMIT)
     assert mind.decide(1, "check server.log and tell me if there were any errors anywhere in the file")["kind"] == "action"
@@ -179,7 +179,7 @@ def test_the_last_answer_of_a_turn_of_paged_reads_always_comes(tmp_path: Path) -
 def test_the_last_answer_comes_even_when_its_newest_result_alone_does_not_fit(tmp_path: Path) -> None:
     # The last resort, only for the last answer: the newest result leaves out its body too, and its facts line (how much
     # of the file was read) stays where the model reads, said as omitted.
-    mind, server = _mind(tmp_path, [_call("file_read", {"fileName": "server.log", "folder": "home"}),
+    mind, server = _mind(tmp_path, [_call("file_read", {"path": "home/server.log"}),
                                     _say("No llegué a leer el final del archivo.")])
     _refusing_past(server, 3000)
     assert mind.decide(1, "check server.log")["kind"] == "action"
