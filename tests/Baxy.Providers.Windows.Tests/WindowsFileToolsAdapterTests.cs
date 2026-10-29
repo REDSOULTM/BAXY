@@ -40,7 +40,7 @@ public sealed class WindowsFileToolsAdapterTests
 
         ExternalCapabilityReceipt receipt = await Adapter().InvokeAsync(
             "file.compress",
-            JsonSerializer.SerializeToElement(new { folder = "desktop", name = "Nueva carpeta" }),
+            JsonSerializer.SerializeToElement(new { path = "desktop/Nueva carpeta" }),
             CancellationToken.None);
 
         Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
@@ -63,13 +63,13 @@ public sealed class WindowsFileToolsAdapterTests
         string privateArea = Path.Combine(_root, "AppData", "Local", "BAXY");
         Directory.CreateDirectory(privateArea);
         File.WriteAllText(Path.Combine(privateArea, "confirmation-mode"), "normal");
-        var adapter = new WindowsFileToolsAdapter(folder => folder == "home" ? _root : null, null)
+        var adapter = new WindowsFileToolsAdapter(folder => folder == "desktop" ? _root : null, null)
         {
             PrivateRoots = [privateArea],
         };
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "file.compress", JsonSerializer.SerializeToElement(new { folder = "home", name = "AppData" }), CancellationToken.None);
+            "file.compress", JsonSerializer.SerializeToElement(new { path = "desktop/AppData" }), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -83,19 +83,19 @@ public sealed class WindowsFileToolsAdapterTests
     public async Task ZippingWhatDoesNotExistOrTwiceIsAnHonestAbsence()
     {
         ExternalCapabilityReceipt missing = await Adapter().InvokeAsync(
-            "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "nada" }), CancellationToken.None);
+            "file.compress", JsonSerializer.SerializeToElement(new { path = "desktop/nada" }), CancellationToken.None);
         File.WriteAllText(Path.Combine(_root, "a.txt"), "x");
         File.WriteAllText(Path.Combine(_root, "a.txt.zip"), "y");
         ExternalCapabilityReceipt twice = await Adapter().InvokeAsync(
-            "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "a.txt" }), CancellationToken.None);
+            "file.compress", JsonSerializer.SerializeToElement(new { path = "desktop/a.txt" }), CancellationToken.None);
         ExternalCapabilityReceipt escape = await Adapter().InvokeAsync(
-            "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "..\\secret" }), CancellationToken.None);
+            "file.compress", JsonSerializer.SerializeToElement(new { path = "desktop/..\\secret" }), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
             Assert.That(missing.ErrorCode, Is.EqualTo("file_not_found"));
             Assert.That(twice.ErrorCode, Is.EqualTo("zip_already_exists"));
-            Assert.That(escape.ErrorCode, Is.EqualTo("file_name_invalid"));
+            Assert.That(escape.ErrorCode, Is.EqualTo("known_path_outside_folder"));
             Assert.That(missing.EffectMayHaveOccurred | twice.EffectMayHaveOccurred | escape.EffectMayHaveOccurred, Is.False);
         });
     }
@@ -117,10 +117,10 @@ public sealed class WindowsFileToolsAdapterTests
         using (new FileStream(held, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
         {
             first = await Adapter().InvokeAsync(
-                "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "Informe" }),
+                "file.compress", JsonSerializer.SerializeToElement(new { path = "desktop/Informe" }),
                 CancellationToken.None);
             again = await Adapter().InvokeAsync(
-                "file.compress", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "Informe" }),
+                "file.compress", JsonSerializer.SerializeToElement(new { path = "desktop/Informe" }),
                 CancellationToken.None);
         }
 
@@ -138,9 +138,9 @@ public sealed class WindowsFileToolsAdapterTests
     {
         File.WriteAllText(Path.Combine(_root, "run.exe"), "x");
         ExternalCapabilityReceipt missing = await Adapter().InvokeAsync(
-            "file.open", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "nada.zip" }), CancellationToken.None);
+            "file.open", JsonSerializer.SerializeToElement(new { path = "desktop/nada.zip" }), CancellationToken.None);
         ExternalCapabilityReceipt unsafeFile = await Adapter().InvokeAsync(
-            "file.open", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "run.exe" }), CancellationToken.None);
+            "file.open", JsonSerializer.SerializeToElement(new { path = "desktop/run.exe" }), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -335,7 +335,7 @@ public sealed class WindowsFileToolsAdapterTests
         ExternalCapabilityReceipt colour = await Adapter().InvokeAsync(
             "desktop.wallpaper.set", JsonSerializer.SerializeToElement(new { color = "turquesa brillante" }), CancellationToken.None);
         ExternalCapabilityReceipt text = await Adapter().InvokeAsync(
-            "desktop.wallpaper.set", JsonSerializer.SerializeToElement(new { folder = "desktop", name = "notas.txt" }), CancellationToken.None);
+            "desktop.wallpaper.set", JsonSerializer.SerializeToElement(new { path = "desktop/notas.txt" }), CancellationToken.None);
 
         Assert.Multiple(() =>
         {

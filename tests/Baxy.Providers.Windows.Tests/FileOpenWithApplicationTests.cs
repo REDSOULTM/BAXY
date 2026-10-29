@@ -137,7 +137,7 @@ public sealed class FileOpenWithApplicationTests
                         null, null, null, null, ApplicationOpenErrorCodes.ApplicationNotFound)));
             });
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("file.open", JsonSerializer.SerializeToElement(
-            new { folder = "documents", name = "baxy-prueba-v3\\paisaje.jpg", application = "Fotos" }), CancellationToken.None);
+            new { path = "documents/baxy-prueba-v3\\paisaje.jpg", application = "Fotos" }), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -167,7 +167,7 @@ public sealed class FileOpenWithApplicationTests
                     null, null, null, null, code),
                 Candidates: ["Fotos", "Fotos heredado"])));
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("file.open", JsonSerializer.SerializeToElement(
-            new { folder = "documents", name = "baxy-prueba-v3\\paisaje.jpg", application = "Fotis" }), CancellationToken.None);
+            new { path = "documents/baxy-prueba-v3\\paisaje.jpg", application = "Fotis" }), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -198,7 +198,7 @@ public sealed class FileOpenWithApplicationTests
                         null, null, null, null, ApplicationOpenErrorCodes.ApplicationNotFound)));
             });
         _ = await adapter.InvokeAsync("file.open", JsonSerializer.SerializeToElement(
-            new { folder = "documents", name = "baxy-prueba-v3\\paisaje.jpg", application = "Fotos", foreground = true }),
+            new { path = "documents/baxy-prueba-v3\\paisaje.jpg", application = "Fotos", foreground = true }),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -327,17 +327,17 @@ public sealed class FileOpenWithApplicationTests
                 throw new InvalidOperationException("never asked");
             });
         ExternalCapabilityReceipt program = await adapter.InvokeAsync("file.open", JsonSerializer.SerializeToElement(
-            new { folder = "documents", name = "baxy-prueba-v3\\run.exe", application = "Fotos" }), CancellationToken.None);
+            new { path = "documents/baxy-prueba-v3\\run.exe", application = "Fotos" }), CancellationToken.None);
         ExternalCapabilityReceipt escape = await adapter.InvokeAsync("file.open", JsonSerializer.SerializeToElement(
-            new { folder = "documents", name = "..\\secreto.jpg", application = "Fotos" }), CancellationToken.None);
+            new { path = "documents/..\\secreto.jpg", application = "Fotos" }), CancellationToken.None);
         ExternalCapabilityReceipt missing = await adapter.InvokeAsync("file.open", JsonSerializer.SerializeToElement(
-            new { folder = "documents", name = "nada.jpg", application = "Fotos" }), CancellationToken.None);
+            new { path = "documents/nada.jpg", application = "Fotos" }), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
             Assert.That(asked, Is.Zero);
             Assert.That(program.ErrorCode, Is.EqualTo("file_extension_not_openable"));
-            Assert.That(escape.ErrorCode, Is.EqualTo("file_name_invalid"));
+            Assert.That(escape.ErrorCode, Is.EqualTo("known_path_outside_folder"));
             Assert.That(missing.ErrorCode, Is.EqualTo("file_not_found"));
             Assert.That(program.EffectMayHaveOccurred | escape.EffectMayHaveOccurred | missing.EffectMayHaveOccurred, Is.False);
         });

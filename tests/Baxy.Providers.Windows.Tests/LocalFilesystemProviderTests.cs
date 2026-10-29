@@ -20,7 +20,7 @@ public sealed class LocalFilesystemProviderTests
     {
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox);
+        var provider = InOwnFolder(sandbox);
         provider.WriteText("same.txt", "inside", null);
         string outside = Path.Combine(temporary.Path, "same.txt");
         File.WriteAllText(outside, "outside");
@@ -57,7 +57,7 @@ public sealed class LocalFilesystemProviderTests
     public void ASearchAndAnAppendFindANameWhoseWordsAreOtherwiseSeparated()
     {
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"));
+        var provider = InOwnFolder(Path.Combine(temporary.Path, "sandbox"));
         provider.WriteText("lista_invitados.txt", "Ana", null);
         provider.WriteText("notas/Lista-Invitados.2025.md", "Luis", null);
         provider.WriteText("compras.txt", "pan", null);
@@ -84,7 +84,7 @@ public sealed class LocalFilesystemProviderTests
         // FT/proveedores goal (review of receipts): «notas.txt» to «Notas.txt» is the same file renamed, not a
         // destination that exists.
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
+        var provider = InOwnFolder(temporary.Path);
         provider.WriteText("notas.txt", "hola", null);
         FilesystemEntry entry = provider.List(string.Empty, 10).Entries.Single();
         FilesystemTextResult read = provider.ReadText(entry.ResourceId, 100);
@@ -102,7 +102,7 @@ public sealed class LocalFilesystemProviderTests
     public void ListReadWriteAndTransferUseOpaqueRevalidatedResources()
     {
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
+        var provider = InOwnFolder(temporary.Path);
         FilesystemMutationResult written = provider.WriteText("entrada.txt", "hola", null);
         FilesystemListResult listed = provider.List(string.Empty, 10);
         string resourceId = listed.Entries.Single().ResourceId;
@@ -127,7 +127,7 @@ public sealed class LocalFilesystemProviderTests
     {
         using TemporaryDirectory temporary = new();
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
-        var provider = new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox"), bin);
+        var provider = InOwnFolder(Path.Combine(temporary.Path, "sandbox"), bin);
         FilesystemMutationResult first = provider.WriteText("dato.txt", "uno", null);
         FilesystemMutationResult replay = provider.WriteText("dato.txt", "uno", null);
 
@@ -167,16 +167,16 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
-        var provider = new LocalFilesystemProvider(sandbox, bin);
+        var provider = InOwnFolder(sandbox, bin);
         FilesystemMutationResult original = provider.WriteText("BAXY-bench/notas.txt", before, null);
         await using FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(
             Path.Combine(temporary.Path, "journal.jsonl"), new JournalHmacAuthenticator(new byte[32]));
         using var engine = new MissionEngine(new OperationRegistry(FilesystemHandlers.Create(provider)), journal);
 
         OperationResponse refused = await engine.ExecuteAsync(
-            Request("file.write", """{"relativePath":"BAXY-bench/notas.txt","text":"vacío"}"""), CancellationToken.None);
+            Request("file.write", """{"path":"BAXY-bench/notas.txt","text":"vacío"}"""), CancellationToken.None);
         string told = refused.Result!.Value.GetProperty("currentSha256").GetString()!;
-        string replace = $$"""{"relativePath":"BAXY-bench/notas.txt","text":"vacío","expectedSha256":"{{told}}"}""";
+        string replace = $$"""{"path":"BAXY-bench/notas.txt","text":"vacío","expectedSha256":"{{told}}"}""";
         OperationResponse asked = await engine.ExecuteAsync(Request("file.write", replace), CancellationToken.None);
         string untouched = File.ReadAllText(Path.Combine(sandbox, "BAXY-bench", "notas.txt"));
         int recycledWithoutTheYes = bin.Recycled.Count;
@@ -216,14 +216,14 @@ public sealed class LocalFilesystemProviderTests
     {
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox, new KnownFileToolsTests.FolderRecycleBin(
+        var provider = InOwnFolder(sandbox, new KnownFileToolsTests.FolderRecycleBin(
             Path.Combine(temporary.Path, "bin")));
         Directory.CreateDirectory(Path.Combine(sandbox, "Proyectos"));
 
         async Task<OperationOutcome> Write(string relativePath)
         {
             using JsonDocument arguments = JsonDocument.Parse(
-                JsonSerializer.Serialize(new { relativePath, text = "hola" }));
+                JsonSerializer.Serialize(new { path = relativePath, text = "hola" }));
             return await new FilesystemHandler("file.write", provider).ExecuteAsync(
                 new OperationInvocation("r", "m", "i", arguments.RootElement.Clone()), CancellationToken.None);
         }
@@ -248,7 +248,7 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
         var bin = new RetakenNameBin(Path.Combine(temporary.Path, "bin"));
-        var provider = new LocalFilesystemProvider(sandbox, bin);
+        var provider = InOwnFolder(sandbox, bin);
         FilesystemMutationResult first = provider.WriteText("dato.txt", "uno", null);
 
         FilesystemProviderException? failure = Assert.Throws<FilesystemProviderException>(
@@ -286,7 +286,7 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"), accepts: false);
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox, bin);
+        var provider = InOwnFolder(sandbox, bin);
         FilesystemMutationResult first = provider.WriteText("dato.txt", "uno", null);
 
         Assert.Multiple(() =>
@@ -308,10 +308,10 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox, bin);
+        var provider = InOwnFolder(sandbox, bin);
         string path = Path.Combine(sandbox, "ventas.csv");
         File.WriteAllText(path, "a;b");
-        using JsonDocument arguments = JsonDocument.Parse("""{"relativePath":"ventas.csv","text":"c;d","append":true}""");
+        using JsonDocument arguments = JsonDocument.Parse("""{"path":"ventas.csv","text":"c;d","append":true}""");
 
         OperationOutcome outcome;
         using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
@@ -336,7 +336,7 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox, bin);
+        var provider = InOwnFolder(sandbox, bin);
         string path = Path.Combine(sandbox, "notas.txt");
         byte[] ansi = [0x63, 0x61, 0x66, 0xE9];
         File.WriteAllBytes(path, ansi);
@@ -358,7 +358,7 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox, bin);
+        var provider = InOwnFolder(sandbox, bin);
         File.WriteAllText(Path.Combine(sandbox, "lista.txt"), "pan\n", new UnicodeEncoding(false, true));
 
         FilesystemMutationResult appended = provider.WriteText("lista.txt", "leche\n", null, append: true);
@@ -412,9 +412,9 @@ public sealed class LocalFilesystemProviderTests
         };
 
         OperationOutcome outcome = await Handle(provider, "file.write",
-            """{"relativePath":"notas.txt","text":"revisar el router","folder":"home","append":true}""");
+            """{"path":"notas.txt","text":"revisar el router","append":true}""");
         OperationOutcome made = await Handle(provider, "file.write",
-            """{"relativePath":"lista.txt","text":"pan","folder":"home","append":true}""");
+            """{"path":"lista.txt","text":"pan","append":true}""");
 
         Assert.Multiple(() =>
         {
@@ -432,40 +432,21 @@ public sealed class LocalFilesystemProviderTests
             {
                 Assert.That(next.GetString(), Is.EqualTo(
                     $"nothing was written: notas.txt is not in {home}; a file of that name is in BAXY-bench/notas.txt, "
-                    + "and file_write with that relativePath and the same folder appends to it; without append, a new "
+                    + "and file_write with path \"home/BAXY-bench/notas.txt\" appends to it; without append, a new "
                     + "notas.txt is made here"));
             }
             if (hint == "call")
             {
                 Assert.That(next.GetString(), Is.EqualTo(
                     $"nothing was written: notas.txt is not in {home}; the file of that name is "
-                    + $"{Path.Combine(home, "BAXY-bench", "notas.txt")}, a file of the person's, not of BAXY's own working "
-                    + "folder: to add the text at its end, call file_write again with relativePath \"BAXY-bench/notas.txt\" "
-                    + "and folder \"home\" and append true; without append, a new notas.txt is made here"));
+                    + $"{Path.Combine(home, "BAXY-bench", "notas.txt")}, a file of the person's: to add the text at its "
+                    + "end, call file_write again with path \"home/BAXY-bench/notas.txt\" and append true; without "
+                    + "append, a new notas.txt is made here"));
             }
             // A name found nowhere (a hidden folder is not looked in) is made, as before.
             Assert.That(made.Succeeded, Is.True, made.ErrorCode);
             Assert.That(File.ReadAllText(Path.Combine(home, "lista.txt")), Is.EqualTo("pan"));
         });
-    }
-
-    // The same refusal in BAXY's working folder says the file is there, and the call with no folder.
-    [Test]
-    public void AnAppendInTheWorkingFolderToAFileFoundBelowSaysTheCallWithNoFolder()
-    {
-        using IDisposable setting = ModelAids.Use("all");
-        using TemporaryDirectory temporary = new();
-        string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox);
-        provider.WriteText("notas/recado.txt", "pan", null);
-
-        FilesystemProviderException refused = Assert.Throws<FilesystemProviderException>(
-            () => provider.WriteText("recado.txt", "leche", null, append: true))!;
-
-        Assert.That(refused.Result!.Value.GetProperty("next").GetString(), Does.Contain(
-            $"the file of that name is {Path.Combine(sandbox, "notas", "recado.txt")}, in BAXY's own working folder: to add "
-            + "the text at its end, call file_write again with relativePath \"notas/recado.txt\" and no folder and append "
-            + "true;"));
     }
 
     // Renew al máximo (w5, E020): «¿cuál es el archivo más grande dentro de BAXY-bench, en mi carpeta de usuario?» ran
@@ -480,7 +461,7 @@ public sealed class LocalFilesystemProviderTests
         using IDisposable setting = ModelAids.Use(aids);
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox);
+        var provider = InOwnFolder(sandbox);
 
         JsonElement empty = await Observed(provider, "filesystem.list", "{}");
         JsonElement missing = await Observed(provider, "filesystem.search", """{"query":"informe"}""");
@@ -525,11 +506,11 @@ public sealed class LocalFilesystemProviderTests
     {
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox);
+        var provider = InOwnFolder(sandbox);
 
         OperationOutcome outcome = await Handle(
             provider, "file.write",
-            $$"""{"relativePath":"nuevo.txt","text":"hola","expectedSha256":"{{expected}}"}""");
+            $$"""{"path":"nuevo.txt","text":"hola","expectedSha256":"{{expected}}"}""");
 
         Assert.Multiple(() =>
         {
@@ -551,10 +532,10 @@ public sealed class LocalFilesystemProviderTests
     {
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox);
+        var provider = InOwnFolder(sandbox);
 
         OperationOutcome outcome = await Handle(
-            provider, "file.write", """{"relativePath":"viaje/plan.txt","text":"hola","expectedSha256":""}""");
+            provider, "file.write", """{"path":"viaje/plan.txt","text":"hola","expectedSha256":""}""");
 
         Assert.Multiple(() =>
         {
@@ -569,11 +550,11 @@ public sealed class LocalFilesystemProviderTests
     {
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox);
+        var provider = InOwnFolder(sandbox);
         provider.WriteText("dato.txt", "uno", null);
 
         OperationOutcome outcome = await Handle(
-            provider, "file.write", """{"relativePath":"dato.txt","text":"dos"}""");
+            provider, "file.write", """{"path":"dato.txt","text":"dos"}""");
 
         Assert.Multiple(() =>
         {
@@ -596,13 +577,13 @@ public sealed class LocalFilesystemProviderTests
         using IDisposable setting = ModelAids.Use(aids);
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox);
+        var provider = InOwnFolder(sandbox);
         provider.WriteText("jugadores.txt", "Benja, delantero\r\n", null);
 
         OperationOutcome refused = await Handle(
-            provider, "file.write", """{"relativePath":"jugadores.txt","text":"Matías, arquero"}""");
+            provider, "file.write", """{"path":"jugadores.txt","text":"Matías, arquero"}""");
         OperationOutcome stale = await Handle(provider, "file.write",
-            $$"""{"relativePath":"jugadores.txt","text":"x","expectedSha256":"{{new string('0', 64)}}"}""");
+            $$"""{"path":"jugadores.txt","text":"x","expectedSha256":"{{new string('0', 64)}}"}""");
 
         Assert.Multiple(() =>
         {
@@ -629,14 +610,14 @@ public sealed class LocalFilesystemProviderTests
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
-        var provider = new LocalFilesystemProvider(sandbox, bin);
+        var provider = InOwnFolder(sandbox, bin);
         provider.WriteText("dato.txt", "uno", null);
 
         OperationOutcome refused = await Handle(
-            provider, "file.write", """{"relativePath":"dato.txt","text":"dos"}""");
+            provider, "file.write", """{"path":"dato.txt","text":"dos"}""");
         string seen = refused.Result!.Value.GetProperty("currentSha256").GetString()!;
         OperationOutcome written = await Handle(
-            provider, "file.write", $$"""{"relativePath":"dato.txt","text":"dos","expectedSha256":"{{seen}}"}""");
+            provider, "file.write", $$"""{"path":"dato.txt","text":"dos","expectedSha256":"{{seen}}"}""");
 
         Assert.Multiple(() =>
         {
@@ -654,7 +635,7 @@ public sealed class LocalFilesystemProviderTests
     {
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox);
+        var provider = InOwnFolder(sandbox);
         foreach (string name in new[] { "a.txt", "b.txt", "c.txt" }) provider.WriteText("notas/" + name, name, null);
 
         OperationOutcome cut = await Handle(
@@ -681,11 +662,11 @@ public sealed class LocalFilesystemProviderTests
     public async Task AWriteWhoseReadBackDoesNotMatchSaysWhetherTheChangeMayBeOnDisk(string name, bool effectMayHaveOccurred)
     {
         using TemporaryDirectory temporary = new();
-        var provider = new MisreadingProvider(new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox")));
+        var provider = new MisreadingProvider(InOwnFolder(Path.Combine(temporary.Path, "sandbox")));
         provider.WriteText("dato.txt", "igual", null);
 
         OperationOutcome outcome = await Handle(
-            provider, "file.write", $$"""{"relativePath":"{{name}}","text":"igual"}""");
+            provider, "file.write", $$"""{"path":"{{name}}","text":"igual"}""");
 
         Assert.Multiple(() =>
         {
@@ -698,7 +679,7 @@ public sealed class LocalFilesystemProviderTests
     public async Task AProviderFailureAfterTheMoveReachesTheOutcomeAsAPossibleEffect()
     {
         using TemporaryDirectory temporary = new();
-        var provider = new MisreadingProvider(new LocalFilesystemProvider(temporary.Path)) { TransferFailsAfterEffect = true };
+        var provider = new MisreadingProvider(InOwnFolder(temporary.Path)) { TransferFailsAfterEffect = true };
         FilesystemMutationResult source = provider.WriteText("origen.txt", "dato", null);
 
         OperationOutcome outcome = await Handle(
@@ -719,7 +700,7 @@ public sealed class LocalFilesystemProviderTests
     public void AFullTableOfHandlesRefusesBeforeTheChange()
     {
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
+        var provider = InOwnFolder(temporary.Path);
         FilesystemMutationResult source = provider.WriteText("origen.txt", "dato", null);
         for (int issued = 1; issued < 512; issued++)
             _ = provider.WriteText("origen.txt", "dato", null);
@@ -729,7 +710,7 @@ public sealed class LocalFilesystemProviderTests
             foreach (TestDelegate change in new TestDelegate[]
             {
                 () => provider.WriteText("nuevo/escrito.txt", "dato", null),
-                () => provider.CreateDirectory("carpeta", null),
+                () => provider.CreateDirectory("carpeta"),
                 () => provider.Transfer(source.ResourceId, "copia/copia.txt", source.Sha256!, move: false),
                 () => provider.Transfer(source.ResourceId, "movido/movido.txt", source.Sha256!, move: true),
             })
@@ -751,14 +732,14 @@ public sealed class LocalFilesystemProviderTests
     public async Task AHandleThatNoLongerResolvesAfterAWriteSaysWhetherTheChangeMayBeOnDisk(string name, bool effectMayHaveOccurred)
     {
         using TemporaryDirectory temporary = new();
-        var provider = new MisreadingProvider(new LocalFilesystemProvider(Path.Combine(temporary.Path, "sandbox")))
+        var provider = new MisreadingProvider(InOwnFolder(Path.Combine(temporary.Path, "sandbox")))
         {
             HashFailure = "resource_changed",
         };
         provider.WriteText("dato.txt", "igual", null);
 
         OperationOutcome outcome = await Handle(
-            provider, "file.write", $$"""{"relativePath":"{{name}}","text":"igual"}""");
+            provider, "file.write", $$"""{"path":"{{name}}","text":"igual"}""");
 
         Assert.Multiple(() =>
         {
@@ -766,6 +747,12 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(outcome.EffectMayHaveOccurred, Is.EqualTo(effectMayHaveOccurred));
         });
     }
+
+    // P2.4 (ajuste c3): file.write and filesystem.create.directory write only in the person's folders. A provider whose
+    // every known folder is its own folder writes, by name, where its list, search and handles read.
+    private static LocalFilesystemProvider InOwnFolder(string root, IRecycleBin? bin = null) => bin is null
+        ? new LocalFilesystemProvider(root) { KnownFolderPath = _ => Path.GetFullPath(root) }
+        : new LocalFilesystemProvider(root, bin) { KnownFolderPath = _ => Path.GetFullPath(root) };
 
     // The real provider, except that its hash read-back never matches (or fails, or its transfer fails after moving).
     private sealed class MisreadingProvider(LocalFilesystemProvider inner) : IFilesystemProvider
@@ -779,11 +766,9 @@ public sealed class LocalFilesystemProviderTests
         public FilesystemEntry Hash(string resourceId) => HashFailure is { } code
             ? throw new FilesystemProviderException(code)
             : inner.Hash(resourceId) with { Sha256 = new string('0', 64) };
-        public FilesystemMutationResult CreateDirectory(string relativePath, string? folder) =>
-            inner.CreateDirectory(relativePath, folder);
-        public FilesystemMutationResult WriteText(
-            string relativePath, string text, string? expectedSha256, string? folder = null, bool append = false) =>
-            inner.WriteText(relativePath, text, expectedSha256, folder, append);
+        public FilesystemMutationResult CreateDirectory(string path) => inner.CreateDirectory(path);
+        public FilesystemMutationResult WriteText(string path, string text, string? expectedSha256, bool append = false) =>
+            inner.WriteText(path, text, expectedSha256, append);
         public FilesystemMutationResult Transfer(
             string resourceId, string destinationRelativePath, string expectedSha256, bool move)
         {
@@ -812,7 +797,7 @@ public sealed class LocalFilesystemProviderTests
     public void BackupCreateVerifyAndRestorePreserveExactHash()
     {
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
+        var provider = InOwnFolder(temporary.Path);
         FilesystemMutationResult source = provider.WriteText("origen.txt", "respaldo", null);
         BackupReceipt created = provider.CreateBackup(source.ResourceId, source.Sha256!);
         BackupReceipt verified = provider.VerifyBackup(created.BackupId);
@@ -833,7 +818,7 @@ public sealed class LocalFilesystemProviderTests
     public void ABackupChangedSinceItWasMadeOrWithoutItsRecordedHashIsNotVerifiedNorRestored(bool changed)
     {
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
+        var provider = InOwnFolder(temporary.Path);
         FilesystemMutationResult source = provider.WriteText("origen.txt", "respaldo", null);
         BackupReceipt created = provider.CreateBackup(source.ResourceId, source.Sha256!);
         string backups = Path.Combine(temporary.Path, ".backups");
@@ -864,7 +849,7 @@ public sealed class LocalFilesystemProviderTests
     public void BackupListReturnsVerifiedNewestFirstAndHonorsLimit()
     {
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
+        var provider = InOwnFolder(temporary.Path);
         FilesystemMutationResult first = provider.WriteText("uno.txt", "uno", null);
         BackupReceipt older = provider.CreateBackup(first.ResourceId, first.Sha256!);
         FilesystemMutationResult second = provider.WriteText("dos.txt", "dos", null);
@@ -892,37 +877,16 @@ public sealed class LocalFilesystemProviderTests
     public void AbsoluteOrEscapingDestinationsFailClosed(string path)
     {
         using TemporaryDirectory temporary = new();
-        var provider = new LocalFilesystemProvider(temporary.Path);
+        var provider = InOwnFolder(temporary.Path);
         Assert.That(() => provider.WriteText(path, "x", null),
             Throws.TypeOf<FilesystemProviderException>());
     }
 
-    // A full path inside the folder is the same place as its relative path; one outside it is refused before writing.
+    // P2.4 (ajuste c3): file.write and filesystem.create.directory act only in the person's folders: a path outside all of
+    // them is refused before any effect, with no other way said (there is none); a list outside the working folder is
+    // refused as before.
     [Test]
-    public void AFullPathInsideTheFolderIsWrittenThereAndOneOutsideIsRefused()
-    {
-        using TemporaryDirectory temporary = new();
-        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
-        string sandbox = Path.Combine(temporary.Path, "sandbox");
-        var provider = new LocalFilesystemProvider(sandbox, bin) { KnownFolderPath = Absent(temporary) };
-
-        provider.WriteText(Path.Combine(sandbox, "viaje", "plan.txt"), "uno", null);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(File.ReadAllText(Path.Combine(sandbox, "viaje", "plan.txt")), Is.EqualTo("uno"));
-            Assert.That(
-                () => provider.WriteText(Path.Combine(temporary.Path, "fuera.txt"), "dos", null),
-                Throws.TypeOf<FilesystemProviderException>()
-                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_outside_sandbox"));
-            Assert.That(File.Exists(Path.Combine(temporary.Path, "fuera.txt")), Is.False);
-        });
-    }
-
-    // The refusal says what the call can do instead only where the operation takes a folder (round 1: the model wrote
-    // a path of the person's without folder and read a bare path_outside_sandbox).
-    [Test]
-    public void APathOutsideTheWorkingFolderSaysToNameTheFolderOnlyWhereTheCallTakesOne()
+    public void APathOutsideThePersonsFoldersIsRefusedBeforeAnyEffect()
     {
         using TemporaryDirectory temporary = new();
         string sandbox = Path.Combine(temporary.Path, "sandbox");
@@ -933,25 +897,25 @@ public sealed class LocalFilesystemProviderTests
         FilesystemProviderException written = Assert.Throws<FilesystemProviderException>(
             () => provider.WriteText(Path.Combine(outside, "nota.txt"), "uno", null))!;
         FilesystemProviderException created = Assert.Throws<FilesystemProviderException>(
-            () => provider.CreateDirectory(outside, null))!;
+            () => provider.CreateDirectory(outside))!;
         FilesystemProviderException listed = Assert.Throws<FilesystemProviderException>(
             () => provider.List(outside, 10))!;
 
         Assert.Multiple(() =>
         {
-            Assert.That(written.Code, Is.EqualTo("path_outside_sandbox"));
-            Assert.That(written.Result?.GetProperty("next").GetString(), Does.Contain("folder").And.Contain("home"));
-            Assert.That(created.Result?.GetProperty("next").GetString(),
-                Is.EqualTo(written.Result?.GetProperty("next").GetString()));
+            Assert.That(written.Code, Is.EqualTo("path_outside_folder"));
+            Assert.That(written.Result, Is.Null);
+            Assert.That(created.Code, Is.EqualTo("path_outside_folder"));
+            Assert.That(Directory.Exists(outside), Is.False);
             Assert.That(listed.Code, Is.EqualTo("path_outside_sandbox"));
             Assert.That(listed.Result, Is.Null);
         });
     }
 
-    // FT/proveedores goal (e2e E019): a full path with no folder that lies in a known folder of the person's is made
-    // there, the subfolders included; one in no known folder is still refused, and «..» never leaves the folder.
+    // FT/proveedores goal (e2e E019): a full path that lies in a known folder of the person's is made there, the
+    // subfolders included; one in no known folder is refused, and «..» never leaves the folder.
     [Test]
-    public void AFullPathWithNoFolderIsMadeInTheKnownFolderItLiesIn()
+    public void AFullPathIsMadeInTheKnownFolderItLiesIn()
     {
         using TemporaryDirectory temporary = new();
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
@@ -962,7 +926,7 @@ public sealed class LocalFilesystemProviderTests
             KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
         };
 
-        FilesystemMutationResult made = provider.CreateDirectory(Path.Combine(home, "BAXY-bench", "proyecto"), null);
+        FilesystemMutationResult made = provider.CreateDirectory(Path.Combine(home, "BAXY-bench", "proyecto"));
         FilesystemMutationResult written = provider.WriteText(
             Path.Combine(home, "BAXY-bench", "compras.txt"), "pan, leche y huevos", null);
 
@@ -972,9 +936,10 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(made.FullPath, Is.EqualTo(Path.Combine(home, "BAXY-bench", "proyecto")));
             Assert.That(File.ReadAllText(Path.Combine(home, "BAXY-bench", "compras.txt")), Is.EqualTo("pan, leche y huevos"));
             Assert.That(written.FullPath, Is.EqualTo(Path.Combine(home, "BAXY-bench", "compras.txt")));
+            Assert.That(made.Folder, Is.EqualTo("home"));
             Assert.That(() => provider.WriteText(Path.Combine(temporary.Path, "fuera.txt"), "dos", null),
                 Throws.TypeOf<FilesystemProviderException>()
-                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_outside_sandbox"));
+                    .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_outside_folder"));
             Assert.That(() => provider.WriteText(Path.Combine(home, "..", "fuera2.txt"), "tres", null),
                 Throws.TypeOf<FilesystemProviderException>());
             Assert.That(() => provider.WriteText(Path.Combine(home, "a\0b.txt"), "cuatro", null),
@@ -985,11 +950,11 @@ public sealed class LocalFilesystemProviderTests
         });
     }
 
-    // E024 (pc-ayudas): file.write with no folder wrote «proyecto/notas.txt» in BAXY's working folder while the person
-    // has a «proyecto» in their home, and the receipt only gave a full path. It now says the working folder
-    // (folder baxy_work) and, as a fact beside it, the home folder of the same name; the file is where it was written.
+    // P2.4 (ajuste c3; E006/E024: «en la carpeta BAXY-bench» was written in BAXY's working folder, with the person's
+    // BAXY-bench in their home): a path that names no known folder is in the person's home, a name alone directly in it,
+    // and the receipt says the folder (home) and the full path; nothing is written in the working folder.
     [Test]
-    public async Task AWriteWithNoFolderSaysItIsInTheWorkingFolderAndNamesAHomeFolderOfTheSameName()
+    public async Task APathThatNamesNoKnownFolderIsInTheHomeFolder()
     {
         using TemporaryDirectory temporary = new();
         var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
@@ -1001,38 +966,26 @@ public sealed class LocalFilesystemProviderTests
             KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
         };
 
-        JsonElement same = await WriteMessage(provider, """{"relativePath":"proyecto/notas.txt","text":"uno"}""");
-        JsonElement single = await WriteMessage(provider, """{"relativePath":"notas.txt","text":"dos"}""");
-        JsonElement other = await WriteMessage(provider, """{"relativePath":"otro/notas.txt","text":"tres"}""");
-        JsonElement named = await WriteMessage(provider, """{"relativePath":"proyecto/notas.txt","text":"cuatro","folder":"home"}""");
+        JsonElement same = await WriteMessage(provider, """{"path":"proyecto/notas.txt","text":"uno"}""");
+        JsonElement single = await WriteMessage(provider, """{"path":"notas.txt","text":"dos"}""");
 
         Assert.Multiple(() =>
         {
-            Assert.That(same.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
-            Assert.That(same.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(sandbox, "proyecto", "notas.txt")));
-            Assert.That(same.GetProperty("sameNameInHome").GetString(), Is.EqualTo(Path.Combine(home, "proyecto")));
-            Assert.That(same.GetProperty("next").GetString(), Is.EqualTo(
-                $"this file is in BAXY's own working folder, not in {Path.Combine(home, "proyecto")}, which also exists; "
-                + "file_write with folder home and the same relativePath writes it there"));
-            Assert.That(single.TryGetProperty("next", out _), Is.False);
-            Assert.That(File.ReadAllText(Path.Combine(sandbox, "proyecto", "notas.txt")), Is.EqualTo("uno"));
-            // Contracasos: a bare file name, or a first part the home does not hold, names no home folder.
-            Assert.That(single.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
-            Assert.That(single.TryGetProperty("sameNameInHome", out _), Is.False);
-            Assert.That(other.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
-            Assert.That(other.TryGetProperty("sameNameInHome", out _), Is.False);
-            // A folder of the person's named in the call is that folder, as before.
-            Assert.That(named.GetProperty("folder").GetString(), Is.EqualTo("home"));
-            Assert.That(named.TryGetProperty("sameNameInHome", out _), Is.False);
-            Assert.That(File.ReadAllText(Path.Combine(home, "proyecto", "notas.txt")), Is.EqualTo("cuatro"));
+            Assert.That(same.GetProperty("folder").GetString(), Is.EqualTo("home"));
+            Assert.That(same.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(home, "proyecto", "notas.txt")));
+            Assert.That(same.TryGetProperty("next", out _), Is.False);
+            Assert.That(File.ReadAllText(Path.Combine(home, "proyecto", "notas.txt")), Is.EqualTo("uno"));
+            Assert.That(single.GetProperty("folder").GetString(), Is.EqualTo("home"));
+            Assert.That(File.ReadAllText(Path.Combine(home, "notas.txt")), Is.EqualTo("dos"));
+            Assert.That(Directory.EnumerateFiles(sandbox, "*", SearchOption.AllDirectories), Is.Empty);
         });
     }
 
     // Al máximo, flujos (P263, 26 of 27 runs: «crea la carpeta Proyectos en Documentos» → relativePath
     // «Documentos/Proyectos» with no folder, made in BAXY's working folder): a first part that names one of the person's
-    // known folders the catalog's folder takes, in Spanish or English, is that folder, where Windows really keeps it
-    // (OneDrive's included), and the receipt's full path says so. A folder the catalog does not take («Imágenes») is
-    // only told beside the working folder, by its physical place, never by a «home\Imágenes» that does not exist.
+    // known folders, in Spanish or English, is that folder, where Windows really keeps it (OneDrive's included), and the
+    // receipt's full path says so; «Imágenes» is the person's Pictures (inside their home), never a «home\Imágenes» that
+    // does not exist; «home» first is a folder of that name inside the home folder.
     [Test]
     public async Task AFirstPartNamingAKnownFolderIsThatFolderWhereWindowsKeepsIt()
     {
@@ -1057,52 +1010,26 @@ public sealed class LocalFilesystemProviderTests
             },
         };
 
-        FilesystemMutationResult made = provider.CreateDirectory("Documentos/Proyectos", null);
+        FilesystemMutationResult made = provider.CreateDirectory("Documentos/Proyectos");
         FilesystemMutationResult english = provider.WriteText(@"documents\Proyectos\notas.txt", "uno", null);
         FilesystemMutationResult accented = provider.WriteText("ESCRITORIO/lista.txt", "dos", null);
-        JsonElement told = await WriteMessage(provider, """{"relativePath":"Imágenes/foto.txt","text":"tres"}""");
-        FilesystemMutationResult named = provider.WriteText("Documentos/nota.txt", "cuatro", null, "home");
+        JsonElement told = await WriteMessage(provider, """{"path":"Imágenes/foto.txt","text":"tres"}""");
+        FilesystemMutationResult named = provider.WriteText("home/Documentos/nota.txt", "cuatro", null);
 
         Assert.Multiple(() =>
         {
             Assert.That(made.FullPath, Is.EqualTo(Path.Combine(documents, "Proyectos")));
             Assert.That(Directory.Exists(Path.Combine(documents, "Proyectos")), Is.True);
             Assert.That(english.FullPath, Is.EqualTo(Path.Combine(documents, "Proyectos", "notas.txt")));
-            Assert.That(english.InWorkFolder, Is.False);
+            Assert.That(english.Folder, Is.EqualTo("documents"));
             Assert.That(accented.FullPath, Is.EqualTo(Path.Combine(desktop, "lista.txt")));
             Assert.That(Directory.Exists(Path.Combine(sandbox, "Documentos")), Is.False);
             Assert.That(Directory.Exists(Path.Combine(sandbox, "documents")), Is.False);
-            // Imágenes is not a folder the catalog takes: the working folder, with the person's Pictures told beside it.
-            Assert.That(told.GetProperty("folder").GetString(), Is.EqualTo("baxy_work"));
-            Assert.That(told.GetProperty("sameNameInHome").GetString(), Is.EqualTo(pictures));
-            // A folder named in the call is that folder, as before.
+            // Imágenes is the person's Pictures, in their home.
+            Assert.That(told.GetProperty("folder").GetString(), Is.EqualTo("home"));
+            Assert.That(told.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(pictures, "foto.txt")));
+            // «home» first: a folder named Documentos inside the home folder.
             Assert.That(named.FullPath, Is.EqualTo(Path.Combine(home, "Documentos", "nota.txt")));
-        });
-    }
-
-    // With the aid off (BAXY_AYUDAS=none) the receipt is the one of the starting product: the full path, no folder.
-    [Test]
-    public async Task AWriteWithNoFolderWithTheAidOffGivesOnlyTheFullPath()
-    {
-        using TemporaryDirectory temporary = new();
-        var bin = new KnownFileToolsTests.FolderRecycleBin(Path.Combine(temporary.Path, "bin"));
-        string sandbox = Path.Combine(temporary.Path, "sandbox");
-        string home = Path.Combine(temporary.Path, "home");
-        Directory.CreateDirectory(Path.Combine(home, "proyecto"));
-        var provider = new LocalFilesystemProvider(sandbox, bin)
-        {
-            KnownFolderPath = folder => folder == "home" ? home : Path.Combine(temporary.Path, "absent", folder),
-        };
-        using IDisposable off = ModelAids.Use("none");
-
-        JsonElement same = await WriteMessage(provider, """{"relativePath":"proyecto/notas.txt","text":"uno"}""");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(same.GetProperty("fullPath").GetString(), Is.EqualTo(Path.Combine(sandbox, "proyecto", "notas.txt")));
-            Assert.That(same.TryGetProperty("folder", out _), Is.False);
-            Assert.That(same.TryGetProperty("sameNameInHome", out _), Is.False);
-            Assert.That(same.TryGetProperty("next", out _), Is.False);
         });
     }
 
@@ -1127,19 +1054,19 @@ public sealed class LocalFilesystemProviderTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(() => provider.WriteText("AppData/Local/BAXY/1/confirmation-mode", "bypass", null, "home"),
+            Assert.That(() => provider.WriteText("AppData/Local/BAXY/1/confirmation-mode", "bypass", null),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
             Assert.That(() => provider.WriteText(mode, "bypass", null),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
-            Assert.That(() => provider.CreateDirectory("AppData/Local/BAXY/renew", "home"),
+            Assert.That(() => provider.CreateDirectory("AppData/Local/BAXY/renew"),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
             Assert.That(File.Exists(mode), Is.False);
-            provider.WriteText("nota.txt", "trabajo", null);
+            provider.WriteText(Path.Combine(sandbox, "nota.txt"), "trabajo", null);
             Assert.That(File.ReadAllText(Path.Combine(sandbox, "nota.txt")), Is.EqualTo("trabajo"));
-            provider.WriteText("AppData/Local/otra-app/ajustes.txt", "suyo", null, "home");
+            provider.WriteText("AppData/Local/otra-app/ajustes.txt", "suyo", null);
             Assert.That(File.Exists(Path.Combine(home, "AppData", "Local", "otra-app", "ajustes.txt")), Is.True);
         });
     }
@@ -1167,16 +1094,16 @@ public sealed class LocalFilesystemProviderTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(() => provider.WriteText("descarga.exe:Zone.Identifier", "", markHash, "home"),
+            Assert.That(() => provider.WriteText("descarga.exe:Zone.Identifier", "", markHash),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
-            Assert.That(() => provider.WriteText("descarga.exe:Zone.Identifier", "ZoneId=0", null, "home", append: true),
+            Assert.That(() => provider.WriteText("descarga.exe:Zone.Identifier", "ZoneId=0", null, append: true),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
-            Assert.That(() => provider.WriteText("descarga.exe:otro", "x", null, "home"),
+            Assert.That(() => provider.WriteText("descarga.exe:otro", "x", null),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
-            Assert.That(() => provider.CreateDirectory("carpeta:flujo", "home"),
+            Assert.That(() => provider.CreateDirectory("carpeta:flujo"),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("invalid_path"));
             Assert.That(File.ReadAllText(program + ":Zone.Identifier"), Is.EqualTo(mark));
@@ -1207,17 +1134,17 @@ public sealed class LocalFilesystemProviderTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(() => provider.WriteText(backups + id + ".bin", "falso", null, "home"),
+            Assert.That(() => provider.WriteText(backups + id + ".bin", "falso", null),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
-            Assert.That(() => provider.WriteText(backups + id + ".sha256", new string('b', 64), null, "home"),
+            Assert.That(() => provider.WriteText(backups + id + ".sha256", new string('b', 64), null),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
-            Assert.That(() => provider.CreateDirectory(backups + "dentro", "home"),
+            Assert.That(() => provider.CreateDirectory(backups + "dentro"),
                 Throws.TypeOf<FilesystemProviderException>()
                     .With.Property(nameof(FilesystemProviderException.Code)).EqualTo("path_reserved"));
             Assert.That(Directory.EnumerateFileSystemEntries(Path.Combine(sandbox, ".backups")), Is.Empty);
-            provider.WriteText("AppData/Local/BAXY/1/filesystem-sandbox/nota.txt", "trabajo", null, "home");
+            provider.WriteText("AppData/Local/BAXY/1/filesystem-sandbox/nota.txt", "trabajo", null);
             Assert.That(File.ReadAllText(Path.Combine(sandbox, "nota.txt")), Is.EqualTo("trabajo"));
         });
     }
@@ -1250,11 +1177,11 @@ public sealed class LocalFilesystemProviderTests
         Assert.Multiple(() =>
         {
             foreach (TestDelegate write in (TestDelegate[])[
-                () => provider.WriteText(programs + "/Startup/x.cmd", "calc", null, "home"),
+                () => provider.WriteText(programs + "/Startup/x.cmd", "calc", null),
                 () => provider.WriteText(Path.Combine(startup, "x.cmd"), "calc", null),
-                () => provider.WriteText(Path.Combine(alias, "x.cmd"), "calc", null, "home"),
-                () => provider.WriteText(programs + "/Startup/suyo.cmd", "calc", null, "home", append: true),
-                () => provider.CreateDirectory(programs + "/Startup/sub", "home"),
+                () => provider.WriteText(Path.Combine(alias, "x.cmd"), "calc", null),
+                () => provider.WriteText(programs + "/Startup/suyo.cmd", "calc", null, append: true),
+                () => provider.CreateDirectory(programs + "/Startup/sub"),
             ])
             {
                 Assert.That(write, Throws.TypeOf<FilesystemProviderException>()
@@ -1262,7 +1189,7 @@ public sealed class LocalFilesystemProviderTests
             }
             Assert.That(Directory.EnumerateFileSystemEntries(startup), Is.EqualTo(new[] { existing }));
             Assert.That(File.ReadAllText(existing), Is.EqualTo("@echo suyo"));
-            provider.WriteText(programs + "/otra-app/ajustes.txt", "suyo", null, "home");
+            provider.WriteText(programs + "/otra-app/ajustes.txt", "suyo", null);
             Assert.That(File.Exists(Path.Combine(Path.GetDirectoryName(startup)!, "otra-app", "ajustes.txt")), Is.True);
         });
     }
@@ -1294,13 +1221,13 @@ public sealed class LocalFilesystemProviderTests
         Assert.Multiple(() =>
         {
             foreach (TestDelegate write in (TestDelegate[])[
-                () => provider.WriteText("WindowsPowerShell/Microsoft.PowerShell_profile.ps1", "calc", null, "documents", append: true),
-                () => provider.WriteText("WindowsPowerShell/profile.ps1", "calc", null, "documents"),
-                () => provider.WriteText("PowerShell/Microsoft.PowerShell_profile.ps1", "calc", null, "documents"),
-                () => provider.WriteText("PowerShell/Microsoft.VSCode_profile.ps1", "calc", null, "documents"),
+                () => provider.WriteText("Documents/WindowsPowerShell/Microsoft.PowerShell_profile.ps1", "calc", null, append: true),
+                () => provider.WriteText("Documents/WindowsPowerShell/profile.ps1", "calc", null),
+                () => provider.WriteText("Documents/PowerShell/Microsoft.PowerShell_profile.ps1", "calc", null),
+                () => provider.WriteText("Documents/PowerShell/Microsoft.VSCode_profile.ps1", "calc", null),
                 () => provider.WriteText(Path.Combine(documents, "PowerShell", "profile.ps1"), "calc", null),
-                () => provider.CreateDirectory("PowerShell", "documents"),
-                () => provider.CreateDirectory("WindowsPowerShell/Modules/m", "documents"),
+                () => provider.CreateDirectory("Documents/PowerShell"),
+                () => provider.CreateDirectory("Documents/WindowsPowerShell/Modules/m"),
             ])
             {
                 Assert.That(write, Throws.TypeOf<FilesystemProviderException>()
@@ -1309,7 +1236,7 @@ public sealed class LocalFilesystemProviderTests
             Assert.That(Directory.EnumerateFileSystemEntries(windowsPowerShell), Is.EqualTo(new[] { existing }));
             Assert.That(File.ReadAllText(existing), Is.EqualTo("# suyo"));
             Assert.That(Directory.Exists(Path.Combine(documents, "PowerShell")), Is.False);
-            provider.WriteText("PowerShellNotas/perfil.txt", "suyo", null, "documents");
+            provider.WriteText("Documents/PowerShellNotas/perfil.txt", "suyo", null);
             Assert.That(File.Exists(Path.Combine(documents, "PowerShellNotas", "perfil.txt")), Is.True);
         });
     }

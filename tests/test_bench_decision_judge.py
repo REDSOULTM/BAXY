@@ -61,6 +61,54 @@ def test_an_any_case_checks_the_arguments_of_each_option() -> None:
     assert judge(expect, called, {"relativePath": "Proyectos"}) is False
 
 
+def test_an_expectation_with_the_arguments_p24_replaced_is_met_by_the_path_that_says_that_place() -> None:
+    # P2.4 (ajuste c3): one path «as the person said it» in place of folder + relativePath (decision2 P263).
+    expect = {"kind": "call", "op": "filesystem.create.directory", "args": {"folder": "documents", "relativePath": "proyectos"}}
+    called = {"kind": "action", "operation": "filesystem.create.directory"}
+    assert judge(expect, called, {"path": "Documentos/Proyectos"}) is True
+    assert judge(expect, called, {"path": "documents\\proyectos"}) is True
+    assert judge(expect, called, {"path": r"C:\Users\ana\OneDrive\Documentos\Proyectos"}) is True
+    assert judge(expect, called, {"path": "Proyectos"}) is False
+    assert judge(expect, called, {"path": "Escritorio/Proyectos"}) is False
+    assert judge(expect, called, {"path": "Documentos/Fotos"}) is False
+
+
+def test_a_folder_of_the_home_and_a_name_alone_keep_what_their_codes_meant() -> None:
+    # home: any folder of the person's that is no known folder (E024's BAXY-bench); all_known: no folder named.
+    read = {"kind": "action", "operation": "file.read"}
+    home = {"kind": "call", "op": "file.read", "args": {"folder": "home", "subdirectory": "BAXY-bench", "fileName": "notas.txt"}}
+    assert judge(home, read, {"path": "BAXY-bench/notas.txt"}) is True
+    assert judge(home, read, {"path": "home/BAXY-bench/notas.txt"}) is True
+    assert judge(home, read, {"path": r"C:\Users\ana\BAXY-bench\notas.txt"}) is True
+    assert judge(home, read, {"path": "notas.txt"}) is False
+    assert judge(home, read, {"path": "Documentos/BAXY-bench/notas.txt"}) is False
+    named_none = {"kind": "call", "op": "file.read", "args": {"folder": "all_known", "fileName": "informe"}}
+    assert judge(named_none, read, {"path": "informe.pdf"}) is True
+    assert judge(named_none, read, {"path": "Documentos/informe.pdf"}) is False
+    assert judge(named_none, read, {"path": r"C:\Users\ana\informe.pdf"}) is False
+
+
+def test_a_retired_operation_and_an_old_run_are_judged_through_the_path() -> None:
+    # document.text.read → file.read (catalog_equivalence), then its folder and fileName → path; an old run's call,
+    # written with folder and fileName, is judged by the path they make.
+    expect = {"kind": "call", "op": "document.text.read", "args": {"fileName": "notas", "folder": "desktop"}}
+    read = {"kind": "action", "operation": "file.read"}
+    assert judge(expect, read, {"path": "Escritorio/notas.txt"}) is True
+    assert judge(expect, read, {"path": "Descargas/notas.txt"}) is False
+    assert judge(expect, read, {"folder": "desktop", "fileName": "notas.txt"}) is True
+    assert judge(expect, read, {"folder": "downloads", "fileName": "notas.txt"}) is False
+    opened = {"kind": "call", "op": "file.open", "args": {"folder": "documents", "name": "reporte"}}
+    assert judge(opened, {"kind": "action", "operation": "file.open"}, {"path": "Documents/reporte.docx"}) is True
+    assert judge(opened, {"kind": "action", "operation": "file.open"}, {"path": "Descargas/reporte.docx"}) is False
+
+
+def test_an_expectation_already_written_with_path_is_judged_as_any_other_argument() -> None:
+    expect = {"kind": "call", "op": "file.write", "args": {"path": "re:baxy-bench[/\\\\]compras", "text": "pan"}}
+    written = {"kind": "action", "operation": "file.write"}
+    assert judge(expect, written, {"path": r"C:\Users\ana\BAXY-bench\compras.txt", "text": "pan, leche"}) is True
+    assert judge(expect, written, {"path": "compras.txt", "text": "pan"}) is False
+
+
 def test_an_any_case_whose_options_were_all_retired_is_not_counted() -> None:
     expect = {"kind": "any", "options": [{"kind": "call", "op": "routine.list"}, {"kind": "call_any", "ops": ["routine.read"]}]}
     assert judge(expect, {"kind": "action", "operation": "routine.list"}, {}) is None

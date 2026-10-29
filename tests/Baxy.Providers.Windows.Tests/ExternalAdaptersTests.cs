@@ -2543,23 +2543,23 @@ public sealed class ExternalAdaptersTests
 
         // A folder alone as the destination is that folder, with the file's own name.
         ExternalCapabilityReceipt moved = await Run("""
-            {"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"presupuesto_v2.xlsx","destinationRelativePath":"archivo-2025"}
+            {"path":"BAXY-bench","sourceFileName":"presupuesto_v2.xlsx","destinationRelativePath":"archivo-2025"}
             """);
         ExternalCapabilityReceipt copied = await Run("""
-            {"copy":true,"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"contrato-respaldo.txt"}
+            {"copy":true,"path":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"contrato-respaldo.txt"}
             """);
         ExternalCapabilityReceipt over = await Run("""
-            {"copy":true,"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"contrato-respaldo.txt"}
+            {"copy":true,"path":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"contrato-respaldo.txt"}
             """);
         ExternalCapabilityReceipt unmade = await Run("""
-            {"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"viejos/contrato.txt"}
+            {"path":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"viejos/contrato.txt"}
             """);
         ExternalCapabilityReceipt outside = await Run("""
-            {"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"../../fuera.txt"}
+            {"path":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"../../fuera.txt"}
             """);
         // Holdout v5 V5E040 (int11): a destination that repeats the subfolder, with no such folder inside it, is inside it.
         ExternalCapabilityReceipt repeated = await Run("""
-            {"copy":true,"folder":"home","subdirectory":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"BAXY-bench/contrato-copia.txt"}
+            {"copy":true,"path":"BAXY-bench","sourceFileName":"contrato.txt","destinationRelativePath":"BAXY-bench/contrato-copia.txt"}
             """);
 
         Assert.Multiple(() =>
@@ -2611,11 +2611,11 @@ public sealed class ExternalAdaptersTests
             operation, Json(arguments), CancellationToken.None).AsTask();
 
         ExternalCapabilityReceipt moved = await Run("filesystem.sandbox.move.named",
-            """{"folder":"home","sourceFileName":"lista invitados.txt","destinationRelativePath":"archivo"}""");
+            """{"path":"home","sourceFileName":"lista invitados.txt","destinationRelativePath":"archivo"}""");
         ExternalCapabilityReceipt copied = await Run("filesystem.sandbox.move.named",
-            """{"copy":true,"folder":"home","sourceFileName":"plan viaje.txt","destinationRelativePath":"archivo"}""");
+            """{"path":"home","copy":true,"sourceFileName":"plan viaje.txt","destinationRelativePath":"archivo"}""");
         ExternalCapabilityReceipt two = await Run("filesystem.sandbox.move.named",
-            """{"folder":"home","sourceFileName":"notas reunion.txt","destinationRelativePath":"archivo"}""");
+            """{"path":"home","sourceFileName":"notas reunion.txt","destinationRelativePath":"archivo"}""");
         ExternalCapabilityReceipt diff = await Run("filesystem.sandbox.diff.named",
             """{"leftFileName":"informe final.md","rightFileName":"informe final copia.md"}""");
         ExternalCapabilityReceipt work = await Run("filesystem.sandbox.move.named",
@@ -2663,7 +2663,7 @@ public sealed class ExternalAdaptersTests
 
         ExternalCapabilityReceipt moved = await adapter.InvokeAsync(
             "filesystem.sandbox.move.named",
-            Json("""{"folder":"home","sourceFileName":"contrato.txt","destinationRelativePath":"destino"}"""),
+            Json("""{"path":"home","sourceFileName":"contrato.txt","destinationRelativePath":"destino"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -2692,7 +2692,7 @@ public sealed class ExternalAdaptersTests
 
         ExternalCapabilityReceipt copied = await adapter.InvokeAsync(
             "filesystem.sandbox.move.named",
-            Json("{\"copy\":true,\"folder\":\"home\",\"sourceFileName\":\"contrato.txt\",\"destinationRelativePath\":\""
+            Json("{\"copy\":true,\"path\":\"home\",\"sourceFileName\":\"contrato.txt\",\"destinationRelativePath\":\""
                 + destination + "\"}"),
             CancellationToken.None);
 
@@ -2724,16 +2724,16 @@ public sealed class ExternalAdaptersTests
 
         ExternalCapabilityReceipt moved = await Run(new
         {
-            folder = "home", sourceFileName = "nota.cmd", destinationRelativePath = programs + "/Startup",
+            path = "home", sourceFileName = "nota.cmd", destinationRelativePath = programs + "/Startup",
         });
         ExternalCapabilityReceipt copied = await Run(new
         {
-            copy = true, folder = "home", sourceFileName = "nota.cmd",
+            copy = true, path = "home", sourceFileName = "nota.cmd",
             destinationRelativePath = Path.Combine(startup, "x.cmd"),
         });
         ExternalCapabilityReceipt inside = await Run(new
         {
-            copy = true, folder = "home", subdirectory = programs, sourceFileName = "otra.cmd",
+            copy = true, path = programs, sourceFileName = "otra.cmd",
             destinationRelativePath = "Startup/x.cmd",
         });
 
@@ -2790,7 +2790,7 @@ public sealed class ExternalAdaptersTests
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "filesystem.folder.open",
-            Json("""{"folder":"downloads"}"""),
+            Json("""{"path":"downloads"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>

@@ -52,7 +52,7 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (!MayRaise(arguments)
-            || !arguments.TryGetProperty("relativePath", out JsonElement path) || path.ValueKind != JsonValueKind.String
+            || !arguments.TryGetProperty("path", out JsonElement path) || path.ValueKind != JsonValueKind.String
             || !arguments.TryGetProperty("text", out JsonElement text) || text.ValueKind != JsonValueKind.String)
         {
             return ValueTask.FromResult(InvocationPreflightResult.Proceed);
@@ -61,8 +61,7 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
         return ValueTask.FromResult(_provider.ReplacementAsksFirst(
                 path.GetString()!,
                 text.GetString()!,
-                OptionalString(arguments, "expectedSha256"),
-                OptionalString(arguments, "folder"))
+                OptionalString(arguments, "expectedSha256"))
             ? InvocationPreflightResult.Raised(OperationRisk.Irreversible)
             : InvocationPreflightResult.Proceed);
     }
@@ -97,17 +96,12 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
                     RequiredString(arguments, "resourceId"),
                     OptionalInt(arguments, "maximumBytes") ?? 1_048_576)),
                 "filesystem.create.directory" => VerifiedMutation(
-                    _provider.CreateDirectory(
-                        RequiredString(arguments, "relativePath"),
-                        OptionalString(arguments, "folder")),
-                    OptionalString(arguments, "folder")),
+                    _provider.CreateDirectory(RequiredString(arguments, "path"))),
                 "file.write" => VerifiedMutation(_provider.WriteText(
-                    RequiredString(arguments, "relativePath"),
+                    RequiredString(arguments, "path"),
                     arguments.GetProperty("text").GetString()!,
                     OptionalString(arguments, "expectedSha256"),
-                    OptionalString(arguments, "folder"),
-                    OptionalBoolean(arguments, "append")),
-                    OptionalString(arguments, "folder")),
+                    OptionalBoolean(arguments, "append"))),
                 "filesystem.copy" => VerifiedMutation(TransferResult(arguments, move: false)),
                 "filesystem.move" => VerifiedMutation(TransferResult(arguments, move: true)),
                 _ => throw new InvalidOperationException("Unknown filesystem operation."),
@@ -142,9 +136,9 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
             RequiredString(arguments, "expectedSha256"),
             move);
 
-    // Ronda 22 (r18 t4-c07, t1-c13): the receipt says which known folder it was made in, beside reachedState
-    // (true when the folder or the same content was already there), so the reply can say where without guessing.
-    private JsonElement VerifiedMutation(FilesystemMutationResult result, string? folder = null)
+    // Ronda 22 (r18 t4-c07, t1-c13): the receipt says which known folder it was made in (FilesystemMutationResult.Folder),
+    // beside reachedState (true when the folder or the same content was already there).
+    private JsonElement VerifiedMutation(FilesystemMutationResult result)
     {
         if (result.Sha256 is not null)
         {
@@ -173,7 +167,7 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
             }
         }
 
-        return FilesystemResultJson.Mutation(result, folder);
+        return FilesystemResultJson.Mutation(result);
     }
 
     private JsonElement VerifiedBackup(BackupReceipt result)
@@ -242,7 +236,7 @@ internal static class FilesystemResultJson
         writer.WriteString("sha256", result.Sha256);
     });
 
-    public static JsonElement Mutation(FilesystemMutationResult result, string? folder = null) => Write(writer =>
+    public static JsonElement Mutation(FilesystemMutationResult result) => Write(writer =>
     {
         writer.WriteString("resourceId", result.ResourceId);
         writer.WriteString("name", result.Name);
@@ -252,23 +246,12 @@ internal static class FilesystemResultJson
         writer.WriteBoolean("reachedState", result.ReachedState);
         // BAXY Renew (file.write): whether the version it replaced went to the Recycle Bin, as observed.
         if (result.PreviousVersionRecycled is bool recycled) writer.WriteBoolean("previousVersionRecycled", recycled);
-        if (!string.IsNullOrEmpty(folder)) writer.WriteString("folder", folder);
-        // E024 (pc-ayudas): a write with no folder went to BAXY's own working folder, not to one of the person's.
-        else if (result.InWorkFolder) writer.WriteString("folder", "baxy_work");
+        if (!string.IsNullOrEmpty(result.Folder)) writer.WriteString("folder", result.Folder);
         if (result.FullPath is not null) writer.WriteString("fullPath", result.FullPath);
-        if (result.SameNameInHome is not null) writer.WriteString("sameNameInHome", result.SameNameInHome);
         if (result.Created) writer.WriteBoolean("created", true);
         // Renew al máximo (w8): a folder of the path this write made, so a subfolder named wrong is not told as the
         // person's existing one.
         if (result.FolderCreated is not null) writer.WriteString("folderCreated", result.FolderCreated);
-        // E006/E024 (pc-ayudas, lever 3b): with a folder of that name in the person's home, the fact and the option, as
-        // calculator_next: without it the model said «lo guardé en BAXY-bench» of the working folder (continuation probe,
-        // 2 of 3 per seed; 0 with it). Only with the home folder seen: a generic hint made it name a folder that is not.
-        if (result.SameNameInHome is not null)
-        {
-            writer.WriteString("next", $"this file is in BAXY's own working folder, not in {result.SameNameInHome}, "
-                + "which also exists; file_write with folder home and the same relativePath writes it there");
-        }
     });
 
     public static JsonElement Backup(BackupReceipt result) => Write(writer =>

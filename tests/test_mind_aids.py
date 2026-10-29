@@ -345,8 +345,8 @@ def test_a_file_written_after_typing_into_a_window_says_that_window_was_not_save
     # Falsedades F013: «guardé prueba.txt» with Notepad's tab still «Sin título» after file_write wrote the file.
     monkeypatch.setenv("BAXY_AYUDAS", setting)
     calls = [_call("input_text_type", {"text": "prueba 123"})] if typed else []
-    mind, server = _mind(tmp_path, [*calls, _call("file_write", {"relativePath": "proyectos/prueba.txt",
-                                                                 "text": "prueba 123", "folder": "home"}),
+    mind, server = _mind(tmp_path, [*calls, _call("file_write", {"path": "proyectos/prueba.txt",
+                                                                 "text": "prueba 123"}),
                                     _say("Listo.")])
     mind.decide(1, "escribe prueba 123 y guárdalo en proyectos como prueba.txt")
     if typed:
@@ -565,9 +565,9 @@ def test_the_apps_said_folder_refusal_is_traced_and_reaches_the_model_as_it_came
     # the trace keeps it as the aid said_folder, and the model reads the result untouched.
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     refused = json.dumps({"status": "rejected", "error": "said_folder_left_out", "saidFolders": ["C:/perfil/obra"],
-                          "next": "nothing ran: call file_write again with relativePath \"obra/lista.txt\""},
+                          "next": "nothing ran: call file_write again with path \"home/obra/lista.txt\""},
                          ensure_ascii=False)
-    mind, server = _mind(tmp_path, [_call("file_write", {"relativePath": "lista.txt", "text": "x", "folder": "home"}),
+    mind, server = _mind(tmp_path, [_call("file_write", {"path": "lista.txt", "text": "x"}),
                                     _say("Lo guardo en obra.")])
     mind.decide(1, "guarda lista.txt en la carpeta obra")
     mind.continue_turn(2, refused)
@@ -633,12 +633,12 @@ def test_the_arguments_left_to_guess_say_what_the_code_does_with_them(tmp_path: 
     # preguntaba la tienda, que es opcional y cuyo valor por omisión nadie le decía; y ante un título de nota preguntaba
     # cuál, sin saber que el título que no existe no borra nada y vuelve con los parecidos si los hay (TitleNotFoundFacts).
     mind, _ = _mind(tmp_path, [])
-    schema = {"type": "object", "properties": {"name": {"type": "string"}, "store": {"type": "string"},
+    schema = {"type": "object", "properties": {"path": {"type": "string"}, "store": {"type": "string"},
                                                "title": {"type": "string"}}}
     mind.configure({"capabilities": [{"name": name, "description": "Tool.", "argumentsSchema": schema}
                                      for name in ("file.compress", "game.entitlement.named", "note.trash")]})
     tools = {t["function"]["name"]: t["function"] for t in mind.tools}
-    assert "all its words" in tools["file_compress"]["parameters"]["properties"]["name"]["description"]
+    assert "all its words" in tools["file_compress"]["parameters"]["properties"]["path"]["description"]
     assert tools["game_entitlement_named"]["parameters"]["properties"]["store"]["description"].endswith(
         "(Steam is looked up) rather than asking.")
     assert "did I buy it" in tools["game_entitlement_named"]["description"]

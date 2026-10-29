@@ -84,7 +84,7 @@ public sealed class CalculatorFolderSpeedLiveCheck
             using var provider = new WindowsExternalCapabilityProvider(root);
             provider.Prewarm();
             JsonElement arguments = JsonDocument.Parse(
-                $$"""{"folder":"home","subdirectory":"{{name}}"}""").RootElement;
+                $$"""{"path":"home/{{name}}"}""").RootElement;
             ExternalCapabilityReceipt warm = await provider.InvokeAsync(
                 "filesystem.folder.open", arguments, CancellationToken.None);
             TestContext.Out.WriteLine($"warm ok={warm.Verified} error={warm.ErrorCode} result={warm.Result?.GetRawText()}");

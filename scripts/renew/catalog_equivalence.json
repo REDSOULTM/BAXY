@@ -29,5 +29,28 @@
  "routine.set.enabled": {"op": null},
  "message.send": {"op": null},
  "filesystem.trash.restore": {"op": null},
- "filesystem.sandbox.diff.named": {"op": "filesystem.sandbox.diff.named", "args": {"leftQuery": "leftFileName", "rightQuery": "rightFileName"}}
+ "filesystem.sandbox.diff.named": {"op": "filesystem.sandbox.diff.named", "args": {"leftQuery": "leftFileName", "rightQuery": "rightFileName"}},
+ "_path": {
+  "note": "P2.4 (ajuste c3): the file tools take one path as the person said it; an expectation written with the arguments it replaced (in this order) is checked against that path (bench_decision.path_ok)",
+  "ops": {
+   "file.write": ["folder", "relativePath"],
+   "filesystem.create.directory": ["folder", "relativePath"],
+   "file.read": ["folder", "subdirectory", "fileName"],
+   "file.edit": ["folder", "subdirectory", "fileName"],
+   "filesystem.known.trash.named": ["folder", "subdirectory", "fileName"],
+   "file.find": ["folder", "subdirectory"],
+   "filesystem.folder.open": ["folder", "subdirectory"],
+   "filesystem.explorer.count": ["folder", "subdirectory"],
+   "filesystem.sandbox.move.named": ["folder", "subdirectory"],
+   "file.open": ["folder", "name"],
+   "file.compress": ["folder", "name"],
+   "desktop.wallpaper.set": ["folder", "name"]
+  },
+  "folders": {
+   "desktop": ["desktop", "escritorio"],
+   "documents": ["documents", "documentos", "mis documentos"],
+   "downloads": ["downloads", "descargas"],
+   "pictures": ["pictures", "imagenes", "mis imagenes"]
+  }
+ }
 }

@@ -370,7 +370,7 @@ public sealed class ExternalCapabilityHandlerTests
 
     private static ValueTask<InvocationPreflightResult> Preflight(ExternalCapabilityReceipt? found) =>
         new ExternalCapabilityHandler("filesystem.known.trash.named", new PreflightProvider(found)).PreflightAsync(
-            Json("""{"folder":"desktop","fileName":"viejo.txt"}"""), CancellationToken.None);
+            Json("""{"path":"desktop/viejo.txt"}"""), CancellationToken.None);
 
     private sealed class PreflightProvider(ExternalCapabilityReceipt? found) : IExternalCapabilityProvider
     {

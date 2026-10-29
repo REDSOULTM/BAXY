@@ -47,7 +47,7 @@ public sealed class SaidVerbsTests
         {
             Assert.That((bool?)ruled!.Value.Arguments["append"], Is.True);
             Assert.That((string?)ruled.Value.Arguments["text"], Is.EqualTo("Matías, arquero"));
-            Assert.That((string?)ruled.Value.Arguments["relativePath"], Is.EqualTo("Liga de Futbolito/jugadores.txt"));
+            Assert.That((string?)ruled.Value.Arguments["path"], Is.EqualTo("documents/Liga de Futbolito/jugadores.txt"));
             Assert.That(ruled.Value.Note, Does.Contain("the person said to add to jugadores.txt: this call appended"));
         });
     }
@@ -67,7 +67,7 @@ public sealed class SaidVerbsTests
         if (append)
             call["append"] = true;
         if (!there)
-            call["relativePath"] = "Liga de Futbolito/nuevo.txt";
+            call["path"] = "documents/Liga de Futbolito/nuevo.txt";
 
         Assert.That(Rule(words, call), Is.Null);
     }
@@ -86,7 +86,7 @@ public sealed class SaidVerbsTests
         const string Words = "sobrescribe metas.txt de BAXY-bench con: correr 5 km los domingos";
         var call = new JsonObject
         {
-            ["relativePath"] = "BAXY-bench/metas.txt", ["folder"] = "documents", ["text"] = "correr 5 km los domingos",
+            ["path"] = "documents/BAXY-bench/metas.txt", ["text"] = "correr 5 km los domingos",
         };
 
         (JsonObject Arguments, string Note)? ruled = Rule(Words, call);
@@ -102,7 +102,7 @@ public sealed class SaidVerbsTests
         {
             Assert.That(ruled!.Value.Arguments.ToJsonString(), Is.EqualTo(new JsonObject
             {
-                ["relativePath"] = "BAXY-bench/metas.txt", ["folder"] = "documents", ["text"] = "correr 5 km los domingos",
+                ["path"] = "documents/BAXY-bench/metas.txt", ["text"] = "correr 5 km los domingos",
                 ["append"] = false, ["expectedSha256"] = hash,
             }.ToJsonString()));
             Assert.That(ruled.Value.Note, Does.Contain("the person said to overwrite metas.txt: this call replaces all"));
@@ -130,7 +130,7 @@ public sealed class SaidVerbsTests
         {
             Assert.That(ruled!.Value.Arguments.ToJsonString(), Is.EqualTo(new JsonObject
             {
-                ["relativePath"] = "Liga de Futbolito/jugadores.txt", ["folder"] = "documents", ["text"] = "pendiente",
+                ["path"] = "documents/Liga de Futbolito/jugadores.txt", ["text"] = "pendiente",
                 ["append"] = false, ["expectedSha256"] = hash,
             }.ToJsonString()));
             Assert.That(ruled.Value.Note, Does.Contain("the person said to overwrite jugadores.txt: this call is file_write"));
@@ -271,15 +271,13 @@ public sealed class SaidVerbsTests
     {
         ["sourceFileName"] = "jugadores.txt",
         ["destinationRelativePath"] = "Respaldo/jugadores.txt",
-        ["folder"] = "documents",
-        ["subdirectory"] = "Liga de Futbolito",
+        ["path"] = "documents/Liga de Futbolito",
         ["copy"] = copy,
     };
 
     private static JsonObject Write(string text) => new()
     {
-        ["relativePath"] = "Liga de Futbolito/jugadores.txt",
-        ["folder"] = "documents",
+        ["path"] = "documents/Liga de Futbolito/jugadores.txt",
         ["text"] = text,
     };
 
@@ -299,9 +297,7 @@ public sealed class SaidVerbsTests
 
     private static JsonObject Edit(string? subdirectory) => new()
     {
-        ["fileName"] = "jugadores.txt",
-        ["folder"] = "documents",
-        ["subdirectory"] = subdirectory,
+        ["path"] = subdirectory is null ? "documents/jugadores.txt" : $"documents/{subdirectory}/jugadores.txt",
         ["oldText"] = "Benja, delantero",
         ["newText"] = "pendiente",
     };

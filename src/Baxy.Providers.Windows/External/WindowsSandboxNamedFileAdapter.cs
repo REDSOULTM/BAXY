@@ -81,9 +81,14 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
             .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         bool copy = arguments.TryGetProperty("copy", out JsonElement copyElement)
             && copyElement.ValueKind == JsonValueKind.True;
-        if (arguments.TryGetProperty("folder", out JsonElement folder))
-            return InFolder(operation, arguments, folder.GetString() ?? string.Empty, sourceName, relativeDestination,
-                copy, effectBoundary);
+        // P2.4 (ajuste c3): with path, the folder of the person's it names as they said it (PersonFolders.Place).
+        if (arguments.TryGetProperty("path", out JsonElement path))
+        {
+            if (PersonFolders.Place(path.GetString(), PersonFolders.PathLabels(operation), _knownFolder) is not { } said)
+                return ExternalJson.Failure(operation, "known_path_outside_folder");
+            return InFolder(operation, said.Label, said.Relative.Length == 0 ? null : said.Relative, sourceName,
+                relativeDestination, copy, effectBoundary);
+        }
         string source = ResolveUnique(sourceName);
         string destination = ConfinedDestination(relativeDestination);
         if (File.Exists(destination) || Directory.Exists(destination))
@@ -103,8 +108,8 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
     // folder, with the file's own name), never outside the folder named nor in BAXY's own area.
     private ExternalCapabilityReceipt InFolder(
         string operation,
-        JsonElement arguments,
         string label,
+        string? subdirectory,
         string sourceName,
         string relativeDestination,
         bool copy,
@@ -113,10 +118,8 @@ internal sealed class WindowsSandboxNamedFileAdapter : IExternalOperationAdapter
         if (_knownFolder(label) is not { } known)
             return ExternalJson.Failure(operation, "known_folder_invalid");
         string root = Path.GetFullPath(known).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        string? subdirectory = null;
-        if (arguments.TryGetProperty("subdirectory", out JsonElement subdirectoryElement))
+        if (subdirectory is not null)
         {
-            subdirectory = subdirectoryElement.GetString()?.Trim() ?? string.Empty;
             root = WindowsKnownFileAdapter.SubdirectoryRoots([(label, root)], subdirectory, _privateRoots)[0].Root;
             if (!Directory.Exists(root))
                 return ExternalJson.Failure(operation, "known_subdirectory_not_found");

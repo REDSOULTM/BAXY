@@ -36,7 +36,7 @@ public sealed class KnownFileToolsTests
         using (new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
         {
             read = await adapter.InvokeAsync(
-                "file.read", Json("""{"folder":"home","fileName":"ventas.csv"}"""), CancellationToken.None);
+                "file.read", Json("""{"path":"home/ventas.csv"}"""), CancellationToken.None);
         }
 
         Assert.That(read.ErrorCode, Is.EqualTo("file_in_use"));
@@ -58,16 +58,16 @@ public sealed class KnownFileToolsTests
             [privateArea]);
 
         ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
-            """{"folder":"home","fileName":"AppData\\Local\\BAXY\\1\\confirmation-mode","oldText":"normal","newText":"bypass"}"""),
+            """{"path":"home/AppData\\Local\\BAXY\\1\\confirmation-mode","oldText":"normal","newText":"bypass"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt byFullPath = await adapter.InvokeAsync("file.read", Json(
-            JsonSerializer.Serialize(new { folder = "home", fileName = mode })), CancellationToken.None);
+            JsonSerializer.Serialize(new { path = mode })), CancellationToken.None);
         ExternalCapabilityReceipt inside = await adapter.InvokeAsync("file.find", Json(
-            """{"folder":"home","subdirectory":"AppData/Local/BAXY"}"""), CancellationToken.None);
+            """{"path":"home/AppData/Local/BAXY"}"""), CancellationToken.None);
         ExternalCapabilityReceipt around = await adapter.InvokeAsync("file.find", Json(
-            """{"folder":"home","subdirectory":"AppData/Local","query":"confirmation-mode"}"""), CancellationToken.None);
+            """{"path":"home/AppData/Local","query":"confirmation-mode"}"""), CancellationToken.None);
         ExternalCapabilityReceipt trashed = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"home","subdirectory":"AppData/Local","fileName":"BAXY"}"""), CancellationToken.None);
+            """{"path":"home/AppData/Local/BAXY"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -100,9 +100,9 @@ public sealed class KnownFileToolsTests
             [privateArea]);
 
         ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find", Json(
-            """{"folder":"home","subdirectory":"AppData/Local/Application Data/BAXY/1"}"""), CancellationToken.None);
+            """{"path":"home/AppData/Local/Application Data/BAXY/1"}"""), CancellationToken.None);
         ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
-            """{"folder":"home","subdirectory":"AppData/Local/Application Data/BAXY/1","fileName":"confirmation-mode","oldText":"normal","newText":"bypass"}"""),
+            """{"path":"home/AppData/Local/Application Data/BAXY/1/confirmation-mode","oldText":"normal","newText":"bypass"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -115,7 +115,7 @@ public sealed class KnownFileToolsTests
     }
 
     // Renew al máximo (auditoría de flujos, archivos): «¿qué hay en C:\Users\ana\Documents?» with the folder's own full
-    // path as subdirectory is the folder itself; it was refused as known_path_outside_folder, a path outside it.
+    // path is the folder itself; it was refused as known_path_outside_folder, a path outside it.
     [Test]
     public async Task TheKnownFolderItselfNamedByItsFullPathIsTheFolder()
     {
@@ -127,9 +127,9 @@ public sealed class KnownFileToolsTests
             new FolderRecycleBin(Path.Combine(temporary.Path, "bin")), []);
 
         ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find", Json(JsonSerializer.Serialize(
-            new { folder = "documents", subdirectory = documents + Path.DirectorySeparatorChar })), CancellationToken.None);
+            new { path = documents + Path.DirectorySeparatorChar })), CancellationToken.None);
         ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(JsonSerializer.Serialize(
-            new { folder = "documents", subdirectory = documents, fileName = "informe.txt" })), CancellationToken.None);
+            new { path = Path.Combine(documents, "informe.txt") })), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -156,7 +156,7 @@ public sealed class KnownFileToolsTests
             [privateArea]);
 
         ExternalCapabilityReceipt trashed = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"home","subdirectory":"AppData","fileName":"Local"}"""), CancellationToken.None);
+            """{"path":"home/AppData/Local"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -184,20 +184,20 @@ public sealed class KnownFileToolsTests
         Task<ExternalCapabilityReceipt> Run(string operation, object arguments) =>
             adapter.InvokeAsync(operation, Json(JsonSerializer.Serialize(arguments)), CancellationToken.None).AsTask();
 
-        ExternalCapabilityReceipt read = await Run("file.read", new { folder = "home", fileName = script });
+        ExternalCapabilityReceipt read = await Run("file.read", new { path = script });
         ExternalCapabilityReceipt found = await Run("file.find",
-            new { folder = "home", subdirectory = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup" });
+            new { path = "home/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup" });
         ExternalCapabilityReceipt byPath = await Run("file.edit", new
         {
-            folder = "home", fileName = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/arranque.cmd",
+            path = "home/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/arranque.cmd",
             oldText = "hola", newText = "calc",
         });
         ExternalCapabilityReceipt byFullPath = await Run("file.edit",
-            new { folder = "home", fileName = script, oldText = "hola", newText = "calc" });
+            new { path = script, oldText = "hola", newText = "calc" });
         ExternalCapabilityReceipt bySubdirectory = await Run("file.edit", new
         {
-            folder = "home", subdirectory = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup",
-            fileName = "arranque.cmd", oldText = "hola", newText = "calc",
+            path = "AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Startup/arranque.cmd",
+            oldText = "hola", newText = "calc",
         });
 
         Assert.Multiple(() =>
@@ -232,10 +232,10 @@ public sealed class KnownFileToolsTests
         Task<ExternalCapabilityReceipt> Run(string operation, object arguments) =>
             adapter.InvokeAsync(operation, Json(JsonSerializer.Serialize(arguments)), CancellationToken.None).AsTask();
 
-        ExternalCapabilityReceipt read = await Run("file.read", new { folder = "documents", fileName = profile });
+        ExternalCapabilityReceipt read = await Run("file.read", new { path = profile });
         ExternalCapabilityReceipt edited = await Run("file.edit", new
         {
-            folder = "documents", fileName = "PowerShell/Microsoft.PowerShell_profile.ps1", oldText = "hola", newText = "calc",
+            path = "documents/PowerShell/Microsoft.PowerShell_profile.ps1", oldText = "hola", newText = "calc",
         });
 
         Assert.Multiple(() =>
@@ -264,12 +264,12 @@ public sealed class KnownFileToolsTests
         var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin, []);
 
         ExternalCapabilityReceipt? asked = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
-            """{"folder":"home","fileName":"informe final"}"""), CancellationToken.None);
+            """{"path":"home/informe final"}"""), CancellationToken.None);
         ExternalCapabilityReceipt trashed = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"home","fileName":"informe final"}"""), CancellationToken.None);
+            """{"path":"home/informe final"}"""), CancellationToken.None);
         bool before = Directory.Exists(folder);
         ExternalCapabilityReceipt? exact = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
-            """{"folder":"home","fileName":"informe_final"}"""), CancellationToken.None);
+            """{"path":"home/informe_final"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -300,7 +300,7 @@ public sealed class KnownFileToolsTests
         var adapter = new WindowsKnownFileAdapter(new Dictionary<string, string[]> { ["home"] = [home] }, bin, []);
 
         ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(
-            """{"folder":"home","fileName":"lista.txt","oldText":"leche","newText":"huevos"}"""), CancellationToken.None);
+            """{"path":"home/lista.txt","oldText":"leche","newText":"huevos"}"""), CancellationToken.None);
 
         string[] kept = [.. Directory.EnumerateFiles(home, ".baxy-edit-*")];
         Assert.Multiple(() =>
@@ -380,7 +380,7 @@ public sealed class KnownFileToolsTests
         }
 
         ExternalCapabilityReceipt read = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"all_known","fileName":"informe"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"informe"}"""), CancellationToken.None);
 
         // The walks it replaces: the name's own, then (none found) the stem's, each the first six in walk order.
         var options = new EnumerationOptions
@@ -440,16 +440,16 @@ public sealed class KnownFileToolsTests
         File.SetLastWriteTimeUtc(Path.Combine(documents, "Presupuesto viejo.txt"), DateTime.UtcNow.AddDays(-3));
 
         ExternalCapabilityReceipt listed = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"desktop"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"desktop"}"""), CancellationToken.None);
         ExternalCapabilityReceipt named = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"all_known","query":"presupuesto","order":"recent"}"""),
+            "file.find", Json("""{"query":"presupuesto","order":"recent"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt pattern = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"all_known","query":"*.pdf"}"""), CancellationToken.None);
+            "file.find", Json("""{"query":"*.pdf"}"""), CancellationToken.None);
         ExternalCapabilityReceipt inside = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"desktop","subdirectory":"proyectos"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"desktop/proyectos"}"""), CancellationToken.None);
         ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"desktop","subdirectory":"no-existe"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"desktop/no-existe"}"""), CancellationToken.None);
 
         Assert.That(listed.Verified, Is.True, listed.ErrorCode);
         Assert.Multiple(() =>
@@ -496,11 +496,11 @@ public sealed class KnownFileToolsTests
         }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
 
         ExternalCapabilityReceipt inHome = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"home","query":"lista"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"home","query":"lista"}"""), CancellationToken.None);
         ExternalCapabilityReceipt everywhere = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"all_known","query":"lista"}"""), CancellationToken.None);
+            "file.find", Json("""{"query":"lista"}"""), CancellationToken.None);
         ExternalCapabilityReceipt read = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"home","fileName":"BAXY-bench/lista.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"home/BAXY-bench/lista.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -534,12 +534,12 @@ public sealed class KnownFileToolsTests
         }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
 
         ExternalCapabilityReceipt inPictures = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"pictures","query":"*.png","order":"recent"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"pictures","query":"*.png","order":"recent"}"""), CancellationToken.None);
         ExternalCapabilityReceipt everywhere = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"all_known","query":"*.png"}"""), CancellationToken.None);
+            "file.find", Json("""{"query":"*.png"}"""), CancellationToken.None);
         // file.read names no pictures folder, so its «not found» never sends it there.
         ExternalCapabilityReceipt unread = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"all_known","fileName":"nada.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"nada.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -569,22 +569,19 @@ public sealed class KnownFileToolsTests
         {
             ["home"] = [home],
         }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
-        string Args(string key, string value) => JsonSerializer.Serialize(new Dictionary<string, string>
-        {
-            ["folder"] = "home", [key] = value,
-        });
+        string Args(string path) => JsonSerializer.Serialize(new Dictionary<string, string> { ["path"] = path });
 
         ExternalCapabilityReceipt read = await adapter.InvokeAsync(
-            "file.read", Json(Args("fileName", Path.Combine(home, "BAXY-bench", "lista.txt"))), CancellationToken.None);
+            "file.read", Json(Args(Path.Combine(home, "BAXY-bench", "lista.txt"))), CancellationToken.None);
         ExternalCapabilityReceipt found = await adapter.InvokeAsync(
-            "file.find", Json(Args("subdirectory", Path.Combine(home, "BAXY-bench"))), CancellationToken.None);
+            "file.find", Json(Args(Path.Combine(home, "BAXY-bench"))), CancellationToken.None);
         ExternalCapabilityReceipt outside = await adapter.InvokeAsync(
-            "file.read", Json(Args("fileName", Path.Combine(temporary.Path, "fuera.txt"))), CancellationToken.None);
+            "file.read", Json(Args(Path.Combine(temporary.Path, "fuera.txt"))), CancellationToken.None);
         ExternalCapabilityReceipt outsideFolder = await adapter.InvokeAsync(
-            "file.find", Json(Args("subdirectory", temporary.Path)), CancellationToken.None);
+            "file.find", Json(Args(temporary.Path)), CancellationToken.None);
         // A full path to a file directly in the folder that is not there is not another file of that name below it.
         ExternalCapabilityReceipt elsewhere = await adapter.InvokeAsync(
-            "file.read", Json(Args("fileName", Path.Combine(home, "lista.txt"))), CancellationToken.None);
+            "file.read", Json(Args(Path.Combine(home, "lista.txt"))), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -617,11 +614,11 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(refusingDesktop, "queda.txt"), "x");
 
         ExternalCapabilityReceipt file = await adapter.InvokeAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"viejo.txt"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"desktop/viejo.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt folder = await adapter.InvokeAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"CarterTest"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"desktop/CarterTest"}"""), CancellationToken.None);
         ExternalCapabilityReceipt refused = await refusing.InvokeAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"queda.txt"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"desktop/queda.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -658,7 +655,7 @@ public sealed class KnownFileToolsTests
         }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true));
 
         ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"viejo.txt"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"viejo.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -667,7 +664,7 @@ public sealed class KnownFileToolsTests
             if (hint)
             {
                 Assert.That(next.GetString(), Is.EqualTo("viejo.txt is not in desktop, subfolders included; nothing else "
-                    + "on the PC was searched; folder \"home\" searches more"));
+                    + "on the PC was searched; a path that begins with \"home\" searches more"));
             }
         });
     }
@@ -687,15 +684,15 @@ public sealed class KnownFileToolsTests
         WindowsKnownFileAdapter adapter = Home(home);
 
         ExternalCapabilityReceipt found = await adapter.InvokeAsync("file.find",
-            Json("""{"folder":"home","subdirectory":"taller","query":"*.txt"}"""), CancellationToken.None);
+            Json("""{"path":"home/taller","query":"*.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt listed = await adapter.InvokeAsync("file.find",
-            Json("""{"folder":"home","subdirectory":"taller","order":"size"}"""), CancellationToken.None);
+            Json("""{"path":"home/taller","order":"size"}"""), CancellationToken.None);
         ExternalCapabilityReceipt trash = await adapter.InvokeAsync("filesystem.known.trash.named",
-            Json("""{"folder":"home","subdirectory":"taller","fileName":"lejos.txt"}"""), CancellationToken.None);
+            Json("""{"path":"home/taller/lejos.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read",
-            Json("""{"folder":"home","subdirectory":"taller","fileName":"lejos.txt"}"""), CancellationToken.None);
-        ExternalCapabilityReceipt byPath = await adapter.InvokeAsync("file.read",
-            Json("""{"folder":"home","fileName":"taller/lejos.txt"}"""), CancellationToken.None);
+            Json("""{"path":"home/taller/lejos.txt"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt byPath = await adapter.InvokeAsync("file.read", Json(JsonSerializer.Serialize(
+            new { path = Path.Combine(home, "taller", "lejos.txt") })), CancellationToken.None);
 
         static string[] Strings(JsonElement array) => [.. array.EnumerateArray().Select(item => item.GetString()!)];
         Assert.Multiple(() =>
@@ -728,9 +725,9 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(documents, "viejas", "notas.txt"), "x");
 
         ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"nada.txt"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"nada.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt ambiguous = await adapter.InvokeAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"notas.txt"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"notas.txt"}"""), CancellationToken.None);
 
         JsonElement[] candidates = [.. ambiguous.Result!.Value.GetProperty("candidates").EnumerateArray()];
         Assert.Multiple(() =>
@@ -763,11 +760,11 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(desktop, "viejo.txt"), "x");
 
         ExternalCapabilityReceipt? missing = await adapter.PreflightAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"nada.txt"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"nada.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt? ambiguous = await adapter.PreflightAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"all_known","fileName":"notas.txt"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"notas.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt? one = await adapter.PreflightAsync(
-            "filesystem.known.trash.named", Json("""{"folder":"desktop","fileName":"viejo.txt"}"""), CancellationToken.None);
+            "filesystem.known.trash.named", Json("""{"path":"desktop/viejo.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -803,9 +800,9 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(desktop, "fotos", "grande.txt"), new string('x', 500));
 
         ExternalCapabilityReceipt listed = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"desktop","order":"size"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"desktop","order":"size"}"""), CancellationToken.None);
         ExternalCapabilityReceipt searched = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"desktop","query":"*.txt","order":"size"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"desktop","query":"*.txt","order":"size"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -833,9 +830,9 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(documents, "grande.log"), new string('x', 1_100_000));
 
         ExternalCapabilityReceipt found = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"documents","content":"reunión con juan"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"documents","content":"reunión con juan"}"""), CancellationToken.None);
         ExternalCapabilityReceipt narrowed = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"documents","content":"pan","query":"*.md"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"documents","content":"pan","query":"*.md"}"""), CancellationToken.None);
 
         Assert.That(found.Verified, Is.True, found.ErrorCode);
         Assert.Multiple(() =>
@@ -870,10 +867,10 @@ public sealed class KnownFileToolsTests
             TextPdf("Primera pagina del informe", "Segunda pagina con el cierre"));
 
         ExternalCapabilityReceipt first = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"documents","fileName":"informe.pdf","maximumCharacters":200}"""),
+            "file.read", Json("""{"path":"documents/informe.pdf","maximumCharacters":200}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt rest = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"documents","fileName":"informe.pdf","offset":28}"""),
+            "file.read", Json("""{"path":"documents/informe.pdf","offset":28}"""),
             CancellationToken.None);
 
         Assert.That(first.Verified, Is.True, first.ErrorCode);
@@ -935,15 +932,15 @@ public sealed class KnownFileToolsTests
         byte[] before = await File.ReadAllBytesAsync(path);
 
         ExternalCapabilityReceipt ambiguous = await adapter.InvokeAsync(
-            "file.edit", Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"lunes","newText":"martes"}"""),
+            "file.edit", Json("""{"path":"desktop/notas.txt","oldText":"lunes","newText":"martes"}"""),
             CancellationToken.None);
         byte[] untouched = await File.ReadAllBytesAsync(path);
         ExternalCapabilityReceipt once = await adapter.InvokeAsync(
             "file.edit",
-            Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"Reunión el lunes","newText":"Reunión el martes"}"""),
+            Json("""{"path":"desktop/notas.txt","oldText":"Reunión el lunes","newText":"Reunión el martes"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt absent = await adapter.InvokeAsync(
-            "file.edit", Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"domingo","newText":"sábado"}"""),
+            "file.edit", Json("""{"path":"desktop/notas.txt","oldText":"domingo","newText":"sábado"}"""),
             CancellationToken.None);
         byte[] after = await File.ReadAllBytesAsync(path);
 
@@ -987,8 +984,7 @@ public sealed class KnownFileToolsTests
 
         ExternalCapabilityReceipt edited = await adapter.InvokeAsync("file.edit", Json(JsonSerializer.Serialize(new
         {
-            folder = "desktop",
-            fileName = "repertorio.txt",
+            path = "desktop/repertorio.txt",
             oldText = "Aleluya de Cohen" + other + "Gracias a la vida" + other,
             newText = "Aleluya de Cohen" + other + "Te recuerdo Amanda" + other + "Gracias a la vida" + other,
         })), CancellationToken.None);
@@ -1018,9 +1014,9 @@ public sealed class KnownFileToolsTests
         logger.Flush();
 
         ExternalCapabilityReceipt read = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"desktop","fileName":"servidor.log"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"desktop/servidor.log"}"""), CancellationToken.None);
         ExternalCapabilityReceipt found = await adapter.InvokeAsync(
-            "file.find", Json("""{"folder":"desktop","content":"disco lleno"}"""), CancellationToken.None);
+            "file.find", Json("""{"path":"desktop","content":"disco lleno"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -1041,10 +1037,10 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(path, "Reunión el lunes\n");
 
         ExternalCapabilityReceipt name = await adapter.InvokeAsync(
-            "file.edit", Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"notas.txt","newText":"x"}"""),
+            "file.edit", Json("""{"path":"desktop/notas.txt","oldText":"notas.txt","newText":"x"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt other = await adapter.InvokeAsync(
-            "file.edit", Json("""{"folder":"desktop","fileName":"notas.txt","oldText":"reunion","newText":"x"}"""),
+            "file.edit", Json("""{"path":"desktop/notas.txt","oldText":"reunion","newText":"x"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -1075,13 +1071,13 @@ public sealed class KnownFileToolsTests
 
         ExternalCapabilityReceipt all = await adapter.InvokeAsync(
             "file.edit",
-            Json("""{"folder":"documents","fileName":"informe.md","oldText":"2024","newText":"2025","replaceAll":true}"""),
+            Json("""{"path":"documents/informe.md","oldText":"2024","newText":"2025","replaceAll":true}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt refused = await noBin.InvokeAsync(
-            "file.edit", Json("""{"folder":"documents","fileName":"informe.md","oldText":"2024","newText":"2025"}"""),
+            "file.edit", Json("""{"path":"documents/informe.md","oldText":"2024","newText":"2025"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt encoding = await adapter.InvokeAsync(
-            "file.edit", Json("""{"folder":"documents","fileName":"ansi.txt","oldText":"caf","newText":"te"}"""),
+            "file.edit", Json("""{"path":"documents/ansi.txt","oldText":"caf","newText":"te"}"""),
             CancellationToken.None);
 
         Assert.That(all.Verified, Is.True, all.ErrorCode);
@@ -1127,9 +1123,9 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(home, "sub", "notas.txt"), "abajo");
 
         ExternalCapabilityReceipt stopped = await Home(home, StopAfter(1)).InvokeAsync(
-            "file.read", Json("""{"folder":"home","fileName":"notas.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"home/notas.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt whole = await Home(home).InvokeAsync(
-            "file.read", Json("""{"folder":"home","fileName":"notas.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"home/notas.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -1155,7 +1151,7 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(home, "sub", "registro.log"), "evento 1");
 
         ExternalCapabilityReceipt read = await Home(home).InvokeAsync(
-            "file.read", Json("""{"folder":"home","fileName":"registro.log"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"home/registro.log"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -1180,7 +1176,7 @@ public sealed class KnownFileToolsTests
         }
 
         ExternalCapabilityReceipt stopped = await Home(home, StopAfter(2)).InvokeAsync(
-            "file.read", Json("""{"folder":"home","fileName":"notas.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"home/notas.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -1206,9 +1202,9 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(home, "lejos", "notas.txt"), "x");
 
         ExternalCapabilityReceipt stopped = await Home(home, StopAfter(1)).InvokeAsync(
-            "file.read", Json("""{"folder":"home","fileName":"notas.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"home/notas.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt nowhere = await Home(home).InvokeAsync(
-            "file.read", Json("""{"folder":"home","fileName":"nada.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"home/nada.txt"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -1219,8 +1215,8 @@ public sealed class KnownFileToolsTests
             if (hint)
             {
                 Assert.That(next.GetString(), Is.EqualTo("the search of home stopped at its 8 s limit: notas.txt is not "
-                    + "in the part walked, and the rest was not searched; a subdirectory or the relativePath file_find "
-                    + "gives looks only there"));
+                    + "in the part walked, and the rest was not searched; a path with the folder it is in (file_find's "
+                    + "folder and relativePath) looks only there"));
             }
             Assert.That(nowhere.ErrorCode, Is.EqualTo("known_file_not_found"));
             Assert.That(nowhere.Result!.Value.GetProperty("searchScope").TryGetProperty("timeLimitReached", out _),
@@ -1247,7 +1243,7 @@ public sealed class KnownFileToolsTests
         DateTime start = DateTime.UtcNow;
 
         ExternalCapabilityReceipt missing = await Home(home, () => { calls++; return start; }).InvokeAsync(
-            "file.read", Json("""{"folder":"home","fileName":"notas"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"home/notas"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -1281,9 +1277,9 @@ public sealed class KnownFileToolsTests
             new Dictionary<string, string[]> { ["home"] = [home] }, bin, utcNow: StopAfter(1));
 
         ExternalCapabilityReceipt refused = await adapter.InvokeAsync("file.edit", Json(
-            """{"folder":"home","fileName":"notas.txt","oldText":"lunes","newText":"martes"}"""), CancellationToken.None);
+            """{"path":"home/notas.txt","oldText":"lunes","newText":"martes"}"""), CancellationToken.None);
         ExternalCapabilityReceipt byPath = await Home(home, StopAfter(0)).InvokeAsync("file.edit", Json(
-            """{"folder":"home","fileName":"sub/notas.txt","oldText":"lunes","newText":"martes"}"""),
+            """{"path":"home/sub/notas.txt","oldText":"lunes","newText":"martes"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -1300,7 +1296,7 @@ public sealed class KnownFileToolsTests
             {
                 Assert.That(next.GetString(), Is.EqualTo("nothing was changed: the search of home found notas.txt and "
                     + "stopped at its 8 s limit before the rest of the folder, so another file of that name may be there. "
-                    + "If notas.txt is the file the person means, call file_edit again with fileName \"notas.txt\""));
+                    + "If notas.txt is the file the person means, call file_edit again with path \"home/notas.txt\""));
             }
             Assert.That(File.ReadAllText(Path.Combine(home, "notas.txt")), Is.EqualTo("lunes"), "nothing was written");
             Assert.That(bin.Recycled, Is.Empty, "nothing went to the bin");
@@ -1336,26 +1332,26 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(cancion, "lunes");
 
         ExternalCapabilityReceipt trash = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"facturacion marzo.pdf"}"""),
+            """{"path":"documents/facturas pyme/facturacion marzo.pdf"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt? asked = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"facturacion marzo.pdf"}"""),
+            """{"path":"documents/facturas pyme/facturacion marzo.pdf"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt folder = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"desktop","fileName":"Fotos Anejas"}"""), CancellationToken.None);
+            """{"path":"desktop/Fotos Anejas"}"""), CancellationToken.None);
         ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(
-            """{"folder":"all_known","fileName":"informe reunion.txt"}"""), CancellationToken.None);
+            """{"path":"informe reunion.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt byPath = await adapter.InvokeAsync("file.read", Json(
-            """{"folder":"documents","fileName":"facturas pyme/informe reunion"}"""), CancellationToken.None);
+            JsonSerializer.Serialize(new { path = Path.Combine(pyme, "informe reunion") })), CancellationToken.None);
         ExternalCapabilityReceipt edit = await adapter.InvokeAsync("file.edit", Json(
-            """{"folder":"desktop","fileName":"CANCION.TXT","oldText":"lunes","newText":"martes"}"""),
+            """{"path":"desktop/CANCION.TXT","oldText":"lunes","newText":"martes"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt nothingAlike = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"factura abril.pdf"}"""),
+            """{"path":"documents/facturas pyme/factura abril.pdf"}"""),
             CancellationToken.None);
         // The exact name, named again, is one target: the read before the yes leaves the call to ask.
         ExternalCapabilityReceipt? exact = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","subdirectory":"facturas pyme","fileName":"facturación-marzo.pdf"}"""),
+            """{"path":"documents/facturas pyme/facturación-marzo.pdf"}"""),
             CancellationToken.None);
 
         static string[] Names(ExternalCapabilityReceipt receipt) =>
@@ -1364,7 +1360,8 @@ public sealed class KnownFileToolsTests
                 : [];
         static string? Next(ExternalCapabilityReceipt? receipt) =>
             receipt?.Result is { } result && result.TryGetProperty("next", out JsonElement next) ? next.GetString() : null;
-        const string elsewhere = "; nothing else on the PC was searched; folder \"desktop\" or \"documents\" searches more";
+        const string elsewhere = "; nothing else on the PC was searched; a path that begins with \"desktop\" or "
+            + "\"documents\" searches more";
         Assert.Multiple(() =>
         {
             foreach (ExternalCapabilityReceipt refused in new[] { trash, folder, read, byPath, edit, nothingAlike })
@@ -1382,12 +1379,12 @@ public sealed class KnownFileToolsTests
             Assert.That(Next(trash), Is.EqualTo(near
                 ? "no file or folder is named exactly facturacion marzo.pdf; these have the same words with other "
                     + "separators, case or accents: \"facturación-marzo.pdf\"; to use one, call again with its exact name "
-                    + "as fileName"
+                    + "as the last part of path"
                 : "facturacion marzo.pdf is not in documents/facturas pyme, subfolders included" + elsewhere));
             Assert.That(Next(read), Is.EqualTo(near
                 ? "no file is named exactly informe reunion.txt; these have the same words with other separators, "
                     + "case, accents or extension: \"Informe_Reunión.txt\"; to use one, call again with its exact name "
-                    + "as fileName"
+                    + "as the last part of path"
                 : "informe reunion.txt is not in desktop, documents, subfolders included; nothing else on the PC was "
                     + "searched"));
             Assert.That(Next(byPath), near ? Does.Contain("\"Informe_Reunión.txt\"") : Is.Null);
@@ -1429,20 +1426,20 @@ public sealed class KnownFileToolsTests
         Task<ExternalCapabilityReceipt> Run(string operation, string arguments) =>
             adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None).AsTask();
 
-        ExternalCapabilityReceipt found = await Run("file.find", """{"folder":"all_known","query":"lista invitados"}""");
-        ExternalCapabilityReceipt read = await Run("file.read", """{"folder":"all_known","fileName":"lista invitados.txt"}""");
+        ExternalCapabilityReceipt found = await Run("file.find", """{"query":"lista invitados"}""");
+        ExternalCapabilityReceipt read = await Run("file.read", """{"path":"lista invitados.txt"}""");
         ExternalCapabilityReceipt edited = await Run("file.edit",
-            """{"folder":"desktop","fileName":"Lista-Invitados.txt","oldText":"Ana","newText":"Ana y Pedro"}""");
-        ExternalCapabilityReceipt exactRead = await Run("file.read", """{"folder":"all_known","fileName":"plan viaje.txt"}""");
+            """{"path":"desktop/Lista-Invitados.txt","oldText":"Ana","newText":"Ana y Pedro"}""");
+        ExternalCapabilityReceipt exactRead = await Run("file.read", """{"path":"plan viaje.txt"}""");
         ExternalCapabilityReceipt? asked = await adapter.PreflightAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","fileName":"presupuesto 2026.xlsx"}"""), CancellationToken.None);
+            """{"path":"documents/presupuesto 2026.xlsx"}"""), CancellationToken.None);
         ExternalCapabilityReceipt trashed = await Run("filesystem.known.trash.named",
-            """{"folder":"documents","fileName":"presupuesto 2026.xlsx"}""");
-        ExternalCapabilityReceipt twoRead = await Run("file.read", """{"folder":"all_known","fileName":"notas reunion.txt"}""");
+            """{"path":"documents/presupuesto 2026.xlsx"}""");
+        ExternalCapabilityReceipt twoRead = await Run("file.read", """{"path":"notas reunion.txt"}""");
         ExternalCapabilityReceipt twoEdit = await Run("file.edit",
-            """{"folder":"all_known","fileName":"notas reunion.txt","oldText":"lunes","newText":"martes"}""");
+            """{"path":"notas reunion.txt","oldText":"lunes","newText":"martes"}""");
         ExternalCapabilityReceipt twoTrash = await Run("filesystem.known.trash.named",
-            """{"folder":"all_known","fileName":"notas reunion.txt"}""");
+            """{"path":"notas reunion.txt"}""");
 
         static string[] Candidates(ExternalCapabilityReceipt receipt) =>
             [.. receipt.Result!.Value.GetProperty("candidates").EnumerateArray()
@@ -1490,24 +1487,24 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(Path.Combine(documents, "facturas pyme", "factura.pdf"), "x");
 
         ExternalCapabilityReceipt trash = await adapter.InvokeAsync("filesystem.known.trash.named", Json(
-            """{"folder":"documents","subdirectory":"facturas pymes","fileName":"factura.pdf"}"""), CancellationToken.None);
+            """{"path":"documents/facturas pymes/factura.pdf"}"""), CancellationToken.None);
         ExternalCapabilityReceipt read = await adapter.InvokeAsync("file.read", Json(
-            """{"folder":"documents","subdirectory":"facturas pymes/2026","fileName":"factura.pdf"}"""),
+            """{"path":"documents/facturas pymes/2026/factura.pdf"}"""),
             CancellationToken.None);
 
         const string before = "factura.pdf is not in no folder, subfolders included; nothing else on the PC was "
-            + "searched; folder \"desktop\" or \"documents\" searches more";
+            + "searched; a path that begins with \"desktop\" or \"documents\" searches more";
         Assert.Multiple(() =>
         {
             Assert.That(trash.ErrorCode, Is.EqualTo("known_file_not_found"));
             Assert.That(read.ErrorCode, Is.EqualTo("known_file_not_found"));
             Assert.That(trash.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(missing
                 ? "documents has no subfolder \"facturas pymes\" (documents/facturas pymes does not exist), so "
-                    + "factura.pdf was not looked for; file_find on documents with no subdirectory lists its folders"
+                    + "factura.pdf was not looked for; file_find with path \"documents\" lists its folders"
                 : before));
             Assert.That(read.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(missing
                 ? "documents has no subfolder \"facturas pymes/2026\" (documents/facturas pymes/2026 does not exist), "
-                    + "so factura.pdf was not looked for; file_find on documents with no subdirectory lists its folders"
+                    + "so factura.pdf was not looked for; file_find with path \"documents\" lists its folders"
                 : before));
             Assert.That(bin.Recycled, Is.Empty);
         });
@@ -1535,15 +1532,15 @@ public sealed class KnownFileToolsTests
             adapter.InvokeAsync("file.find", Json(arguments), CancellationToken.None).AsTask();
 
         ExternalCapabilityReceipt byName = await Run(
-            """{"folder":"documents","subdirectory":"Viaje Sur","query":"patente"}""");
-        ExternalCapabilityReceipt whole = await Run("""{"folder":"documents","query":"hotel"}""");
-        ExternalCapabilityReceipt pattern = await Run("""{"folder":"documents","subdirectory":"Viaje Sur","query":"*.pdf"}""");
-        ExternalCapabilityReceipt matched = await Run("""{"folder":"documents","query":"patente"}""");
+            """{"path":"documents/Viaje Sur","query":"patente"}""");
+        ExternalCapabilityReceipt whole = await Run("""{"path":"documents","query":"hotel"}""");
+        ExternalCapabilityReceipt pattern = await Run("""{"path":"documents/Viaje Sur","query":"*.pdf"}""");
+        ExternalCapabilityReceipt matched = await Run("""{"path":"documents","query":"patente"}""");
         ExternalCapabilityReceipt byContent = await Run(
-            """{"folder":"documents","subdirectory":"Viaje Sur","content":"pasaporte"}""");
-        ExternalCapabilityReceipt empty = await Run("""{"folder":"desktop","query":"patente"}""");
+            """{"path":"documents/Viaje Sur","content":"pasaporte"}""");
+        ExternalCapabilityReceipt empty = await Run("""{"path":"desktop","query":"patente"}""");
         ExternalCapabilityReceipt inside = await Run(
-            """{"folder":"documents","subdirectory":"Viaje Sur","content":"patente"}""");
+            """{"path":"documents/Viaje Sur","content":"patente"}""");
 
         static string? Next(ExternalCapabilityReceipt receipt) =>
             receipt.Result!.Value.TryGetProperty("next", out JsonElement next) ? next.GetString() : null;
@@ -1553,12 +1550,12 @@ public sealed class KnownFileToolsTests
             Assert.That(byName.Result!.Value.GetProperty("matchCount").GetInt32(), Is.Zero);
             Assert.That(Next(byName), Is.EqualTo(aid
                 ? "no file name in documents/Viaje Sur contains \"patente\": this search matched names only, so the "
-                    + "text inside its 3 files was not searched; to search inside them, call file_find with folder "
-                    + "\"documents\", subdirectory \"Viaje Sur\" and content \"patente\""
+                    + "text inside its 3 files was not searched; to search inside them, call file_find with path "
+                    + "\"documents/Viaje Sur\" and content \"patente\""
                 : null));
             Assert.That(Next(whole), Is.EqualTo(aid
                 ? "no file name in documents contains \"hotel\": this search matched names only, so the text inside "
-                    + "its 4 files was not searched; to search inside them, call file_find with folder \"documents\" "
+                    + "its 4 files was not searched; to search inside them, call file_find with path \"documents\" "
                     + "and content \"hotel\""
                 : null));
             Assert.That(Next(pattern), Is.Null);
@@ -1585,7 +1582,7 @@ public sealed class KnownFileToolsTests
         await File.WriteAllTextAsync(path, "lista de compras\n");
 
         ExternalCapabilityReceipt edit = await adapter.InvokeAsync("file.edit", Json(
-            """{"folder":"desktop","fileName":"Sin título.txt","oldText":"Hola mundo","newText":"Hola BAXY"}"""),
+            """{"path":"desktop/Sin título.txt","oldText":"Hola mundo","newText":"Hola BAXY"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>

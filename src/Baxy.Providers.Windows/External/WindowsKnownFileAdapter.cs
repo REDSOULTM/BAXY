@@ -54,16 +54,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         var effectBoundary = new ExternalEffectBoundary();
         try
         {
-            (string Label, string Root)[] roots = ArgumentRoots(arguments, out bool inSubdirectory);
+            CallPlace place = PlaceOf(operation, arguments);
             return ValueTask.FromResult(operation switch
             {
-                "file.edit" => Edit(operation, roots, arguments, effectBoundary),
-                "file.find" => Find(operation, roots, arguments, inSubdirectory, cancellationToken),
-                "file.read" => Read(operation, roots, arguments, cancellationToken),
+                "file.edit" => Edit(operation, place, arguments, effectBoundary),
+                "file.find" => Find(operation, place.Roots, arguments, place.InSubdirectory, cancellationToken),
+                "file.read" => Read(operation, place, arguments, cancellationToken),
                 "filesystem.known.duplicates" => Duplicates(
-                    operation, roots, arguments, cancellationToken),
-                "filesystem.known.trash.named" => Trash(
-                    operation, roots, arguments, effectBoundary),
+                    operation, place.Roots, arguments, cancellationToken),
+                "filesystem.known.trash.named" => Trash(operation, place, effectBoundary),
                 _ => ExternalJson.Failure(operation, "known_file_operation_invalid"),
             });
         }
@@ -88,15 +87,36 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         }
     }
 
-    // The folders a call names: its folder, or the subdirectory it names under it.
-    private (string Label, string Root)[] ArgumentRoots(JsonElement arguments, out bool inSubdirectory)
+    // The folders a call is in (Roots, a subfolder of a known folder when InSubdirectory) and, for a call that names one
+    // file or folder, its name (Name) and whether it is looked up only at its place (Exact) rather than by its name under
+    // the folders.
+    private sealed record CallPlace((string Label, string Root)[] Roots, bool InSubdirectory, string Name, bool Exact);
+
+    // P2.4 (ajuste c3): the call's path as the person said it, read by PersonFolders.Place. file.find looks in the folder
+    // it names (all_known without one); file.read, file.edit and the delete name a file or folder: a full path names that
+    // one, looked up at its place by a read or an edit (BAXY Renew audit 2026-10-15: one directly in the folder became a
+    // bare name searched in its subfolders); any other is its last part looked for under the folder before it (as
+    // subdirectory was), and a name alone under all_known.
+    private CallPlace PlaceOf(string operation, JsonElement arguments)
     {
-        (string Label, string Root)[] roots = Roots(ExternalJson.RequiredString(arguments, "folder"));
-        inSubdirectory = arguments.TryGetProperty("subdirectory", out JsonElement subdirectory);
-        return inSubdirectory
-            ? SubdirectoryRoots(roots, subdirectory.GetString()?.Trim()
-                ?? throw new InvalidDataException("known_subdirectory_invalid"), _privateRoots)
-            : roots;
+        if (operation == "filesystem.known.duplicates")
+            return new(Roots(ExternalJson.RequiredString(arguments, "folder")), false, string.Empty, false);
+        bool find = operation == "file.find";
+        string? path = OptionalText(arguments, "path");
+        if (path is null && find)
+            return new(Roots("all_known"), false, string.Empty, false);
+        if (!find && PersonFolders.NameOnly(path))
+            return new(Roots("all_known"), false, path!, false);
+        SaidPath said = PersonFolders.Place(path, PersonFolders.PathLabels(operation), label =>
+                _configuredRoots.TryGetValue(label, out string[]? roots) && roots.Length > 0 ? roots[0] : null)
+            ?? throw new InvalidDataException("known_path_outside_folder");
+        (string folder, string name) = find ? (said.Relative, string.Empty) : said.Split();
+        bool exact = said.Full && operation is "file.read" or "file.edit";
+        if (exact)
+            (folder, name) = (string.Empty, said.Relative);
+        (string Label, string Root)[] known = Roots(said.Label);
+        return folder.Length == 0 ? new(known, false, name, exact)
+            : new(SubdirectoryRoots(known, folder, _privateRoots), true, name, exact);
     }
 
     private ExternalCapabilityReceipt Duplicates(
@@ -325,12 +345,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (!ModelAids.On(ModelAids.FindContentNext) || stopped || walked == 0
             || query.Contains('*') || query.Contains('?'))
             return null;
-        string? folder = OptionalText(arguments, "folder");
-        string? subdirectory = OptionalText(arguments, "subdirectory");
-        if (folder is null) return null;
-        string call = subdirectory is null
-            ? $"folder \"{folder}\" and content \"{query}\""
-            : $"folder \"{folder}\", subdirectory \"{subdirectory}\" and content \"{query}\"";
+        string call = OptionalText(arguments, "path") is { } path
+            ? $"path \"{path}\" and content \"{query}\""
+            : $"content \"{query}\"";
         return $"no file name in {string.Join(", ", PlacesLooked(searched))} contains \"{query}\": this search "
             + $"matched names only, so the text inside its {walked} file{(walked == 1 ? "" : "s")} was not searched; "
             + $"to search inside {(walked == 1 ? "it" : "them")}, call file_find with {call}";
@@ -530,10 +547,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             return ValueTask.FromResult<ExternalCapabilityReceipt?>(null);
         try
         {
-            (string Label, string Root)[] roots = ArgumentRoots(arguments, out _);
+            CallPlace place = PlaceOf(operation, arguments);
             if (operation == "filesystem.known.trash.named")
-                return ValueTask.FromResult(TrashTarget(operation, roots, arguments, out _));
-            return ValueTask.FromResult(PlanEdit(operation, roots, arguments, out EditPlan? plan) is null
+                return ValueTask.FromResult(TrashTarget(operation, place, out _));
+            return ValueTask.FromResult(PlanEdit(operation, place, arguments, out EditPlan? plan) is null
                 && TextLoss.Of(plan!.Text, plan.Replaced.Edited!) is not null
                     ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
                     : null);
@@ -550,11 +567,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     private ExternalCapabilityReceipt Trash(
         string operation,
-        IReadOnlyList<(string Label, string Root)> roots,
-        JsonElement arguments,
+        CallPlace place,
         ExternalEffectBoundary effectBoundary)
     {
-        if (TrashTarget(operation, roots, arguments, out KnownEntry target) is { } refused)
+        if (TrashTarget(operation, place, out KnownEntry target) is { } refused)
             return refused;
         (string label, _, string source) = target;
         bool isFolder = Directory.Exists(source);
@@ -585,13 +601,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // walked) or several (with their places).
     private ExternalCapabilityReceipt? TrashTarget(
         string operation,
-        IReadOnlyList<(string Label, string Root)> roots,
-        JsonElement arguments,
+        CallPlace place,
         out KnownEntry target)
     {
         target = default;
-        string fileName = ExternalJson.RequiredString(arguments, "fileName").Trim();
-        if (fileName != Path.GetFileName(fileName)
+        (string Label, string Root)[] roots = place.Roots;
+        string fileName = place.Name.Trim();
+        if (fileName.Length == 0 || fileName != Path.GetFileName(fileName)
             || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
             || fileName.Contains('*') || fileName.Contains('?'))
             return ExternalJson.Failure(operation, "known_file_name_invalid");
@@ -671,16 +687,14 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     private ExternalCapabilityReceipt Read(
         string operation,
-        IReadOnlyList<(string Label, string Root)> roots,
+        CallPlace place,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
         int offset = Math.Max(0, ExternalJson.OptionalInt(arguments, "offset", 0));
         int maximumCharacters = Math.Clamp(
             ExternalJson.OptionalInt(arguments, "maximumCharacters", DefaultReadCharacters), 200, 200_000);
-        if (Locate(operation, roots, ExternalJson.RequiredString(arguments, "fileName"), out KnownEntry file,
-                out bool walkStopped)
-            is { } refused)
+        if (Locate(operation, place, out KnownEntry file, out bool walkStopped) is { } refused)
             return refused;
         var info = new FileInfo(file.Path);
         Action<Utf8JsonWriter> seen = StoppedWalkFacts(file, walkStopped);
@@ -893,11 +907,11 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // found whatever its line breaks, and the new one is written with the file's (TextReplacement).
     private ExternalCapabilityReceipt Edit(
         string operation,
-        IReadOnlyList<(string Label, string Root)> roots,
+        CallPlace place,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary)
     {
-        if (PlanEdit(operation, roots, arguments, out EditPlan? plan) is { } refused)
+        if (PlanEdit(operation, place, arguments, out EditPlan? plan) is { } refused)
             return refused;
         (KnownEntry file, byte[] before, _, string oldText, string newText, TextReplacement.Replaced replaced) = plan!;
         byte[] after = TextFileEncoding.EncodeLike(before, replaced.Edited!);
@@ -966,7 +980,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     private ExternalCapabilityReceipt? PlanEdit(
         string operation,
-        IReadOnlyList<(string Label, string Root)> roots,
+        CallPlace place,
         JsonElement arguments,
         out EditPlan? plan)
     {
@@ -980,9 +994,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (oldText.Length == 0) return ExternalJson.Failure(operation, "known_edit_old_text_empty");
         if (string.Equals(oldText, newText, StringComparison.Ordinal))
             return ExternalJson.Failure(operation, "known_edit_text_unchanged");
-        if (Locate(operation, roots, ExternalJson.RequiredString(arguments, "fileName"), out KnownEntry file,
-                out bool walkStopped)
-            is { } refused)
+        if (Locate(operation, place, out KnownEntry file, out bool walkStopped) is { } refused)
             return refused;
         // Renew al máximo (velocidad): one file of that name seen before the walk's time limit is read as the one seen,
         // but never written: a copy deeper in what was not walked may be the one the person meant. Nothing is changed;
@@ -1087,16 +1099,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteString("next", $"nothing was changed: the search of {file.Label} found {relativePath} and "
                     + $"stopped at its {WalkTimeLimit.TotalSeconds:0} s limit before the rest of the folder, so another "
                     + $"file of that name may be there. If {relativePath} is the file the person means, call "
-                    + $"{WireNames.Of(operation)} again with fileName \"{relativePath}\"");
+                    + $"{WireNames.Of(operation)} again with path \"{file.Label}/{relativePath}\"");
             writer.WriteEndObject();
         }), "known_file_search_incomplete");
     }
 
 
-    // file.read and file.edit name one file: by its name, found once anywhere under the folder, by its path
-    // relative to the known folder (as file.find gives it, without a subdirectory), or by its full path inside the
-    // folder. Two or more are refused with their places; none, with the files whose name without its extension is the
-    // one asked, so the next call can name the right one.
+    // file.read and file.edit name one file: by its name, found once anywhere under the folder, or by its full path
+    // (Exact: its path inside the folder, looked up only there). Two or more are refused with their places; none, with
+    // the files whose name without its extension is the one asked, so the next call can name the right one.
     // Renew al máximo (velocidad): a bare name is looked for in one walk with file.find's time limit; under home the
     // walk had none and took 12-83 s (twice over when the name was not there: once for it, once for its stem). When
     // the limit stops the walk, whatever is said carries it (searchScope.timeLimitReached): none is «not in what was
@@ -1105,24 +1116,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // (known_file_search_incomplete).
     private ExternalCapabilityReceipt? Locate(
         string operation,
-        IReadOnlyList<(string Label, string Root)> roots,
-        string requested,
+        CallPlace place,
         out KnownEntry located,
         out bool walkStopped)
     {
         located = default;
         walkStopped = false;
-        string name = requested.Trim().Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-        // A full path names that one file: it is looked up at its place, never by its name elsewhere under the folder
-        // (BAXY Renew audit 2026-10-15: one directly in the folder became a bare name searched in its subfolders).
-        bool fullPath = Path.IsPathFullyQualified(name);
-        if (fullPath)
-        {
-            (string Label, string Root)[] holding = [.. roots.Where(item => IsInside(item.Root, name))];
-            if (holding.Length == 0) return ExternalJson.Failure(operation, "known_path_outside_folder");
-            roots = [holding[0]];
-            name = Path.GetRelativePath(holding[0].Root, Path.GetFullPath(name));
-        }
+        (string Label, string Root)[] roots = place.Roots;
+        string name = place.Name.Trim();
+        bool exact = place.Exact;
         string[] parts = name.Split(Path.DirectorySeparatorChar);
         if (name.Length == 0 || Path.IsPathRooted(name) || name.Contains('*') || name.Contains('?')
             || parts.Any(part => part is "" or "." or ".." || part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
@@ -1134,7 +1136,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string stem = parts[^1];
         string? folded = ModelAids.On(ModelAids.NearNames) && SpokenFileNames.Folded(stem) is { Length: > 0 } words
             ? words : null;
-        if (fullPath || parts.Length > 1)
+        if (exact)
         {
             foreach ((string label, string root) in roots)
             {
@@ -1143,7 +1145,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 if (File.Exists(path) && !CrossesReparsePoint(root, path)) matches.Add(new KnownEntry(label, root, path));
             }
             // Holdout v5 (V5E052): a path no file has is looked for alike only in the folder it names, its top level.
-            for (int index = 0; matches.Count == 0 && index < roots.Count; index++)
+            for (int index = 0; matches.Count == 0 && index < roots.Length; index++)
             {
                 (string label, string root) = roots[index];
                 string folder = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(root, name)))!;
@@ -1164,6 +1166,12 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                         stems.Add(new KnownEntry(label, root, file));
                 }
             }
+        }
+        // P2.4: with a subfolder said, the file of that name directly in it is that one, with no walk (the path a result
+        // gave, «documents/proyecto/notas.txt», names that file); only with none there is it looked for under it.
+        else if (place.InSubdirectory && DirectlyIn(roots, name) is { } there)
+        {
+            matches.Add(there);
         }
         else
         {
@@ -1200,7 +1208,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         {
             string[] searched = PlacesLooked(roots);
             string? missing = searched.Length == 0 ? MissingSubdirectoryNext(roots, stem) : null;
-            bool walked = !fullPath && parts.Length == 1;
+            bool walked = !exact;
             return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -1224,6 +1232,17 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             : null);
     }
 
+    // The one file of that name directly in one of the folders (not BAXY's own, not through a link); null for none or
+    // several.
+    private KnownEntry? DirectlyIn(IReadOnlyList<(string Label, string Root)> roots, string name)
+    {
+        KnownEntry[] there = [.. roots
+            .Select(item => new KnownEntry(item.Label, item.Root, Path.GetFullPath(Path.Combine(item.Root, name))))
+            .Where(item => File.Exists(item.Path) && !BaxyPrivateArea.Holds(_privateRoots, item.Path)
+                && !CrossesReparsePoint(item.Root, item.Path))];
+        return there.Length == 1 ? there[0] : null;
+    }
+
     // The files a name found nowhere offers: its name with another extension, and (aid near_names, folded not null) the
     // names that fold to the same words.
     private static bool StemOrAlike(string fileName, string requested, string? folded) =>
@@ -1239,7 +1258,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         + $"other separators, {otherwise}: "
         + string.Join(", ", alike.Take(CandidatesShown).Select(item => $"\"{Path.GetFileName(item.Path)}\"")
             .Distinct(StringComparer.Ordinal))
-        + "; to use one, call again with its exact name as fileName";
+        + "; to use one, call again with its exact name as the last part of path";
 
     // Holdout v5 (V5E047): a subdirectory that is not there walked no folder, and the next said «X is not in no folder».
     // Which subfolder of which known folder does not exist, as the model names it.
@@ -1253,16 +1272,16 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (missing.Length == 0) return null;
         return string.Join("; ", missing.Select(item =>
                 $"{item.Label} has no subfolder \"{item.Place[(item.Label.Length + 1)..]}\" ({item.Place} does not exist)"))
-            + $", so {fileName} was not looked for; file_find on "
-            + string.Join(" or ", missing.Select(item => item.Label).Distinct(StringComparer.Ordinal))
-            + " with no subdirectory lists its folders";
+            + $", so {fileName} was not looked for; file_find with path "
+            + string.Join(" or ", missing.Select(item => $"\"{item.Label}\"").Distinct(StringComparer.Ordinal))
+            + " lists its folders";
     }
 
     // A walk the time limit stopped knows only what it walked: the name is not in that part, and the rest is unknown.
     private static string StoppedWalkScope(string fileName, string[] searched) =>
         $"the search of {(searched.Length == 0 ? "the folder" : string.Join(", ", searched))} stopped at its "
         + $"{WalkTimeLimit.TotalSeconds:0} s limit: {fileName} is not in the part walked, and the rest was not searched; "
-        + "a subdirectory or the relativePath file_find gives looks only there";
+        + "a path with the folder it is in (file_find's folder and relativePath) looks only there";
 
     // P2.44 causa 11: the folder only file.find takes (where a saved capture goes); a call by file name cannot name it.
     private const string FindOnlyFolder = "pictures";
@@ -1275,7 +1294,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string where = searched.Length == 0 ? "no folder" : string.Join(", ", searched);
         return $"{fileName} is not in {where}, subfolders included; nothing else on the PC was searched"
             + (others.Length == 0 ? string.Empty
-                : $"; folder {string.Join(" or ", others.Select(key => $"\"{key}\""))} searches more");
+                : $"; a path that begins with {string.Join(" or ", others.Select(key => $"\"{key}\""))} searches more");
     }
 
     // Ronda final 41 (regla 3): at most this many candidates are given, and a list cut there says so
@@ -1597,25 +1616,13 @@ if __name__ == "__main__":
         ["pictures"] = [Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)],
     };
 
-    // The folder inside each known folder that subdirectory names, confined to it (also for ExplorerFolderAdapter).
+    // The folder inside each known folder that subdirectory (a path's part inside it, PersonFolders.Place) names,
+    // confined to it (also for ExplorerFolderAdapter and WindowsSandboxNamedFileAdapter).
     internal static (string Label, string Root)[] SubdirectoryRoots(
         IReadOnlyList<(string Label, string Root)> roots,
         string subdirectory,
         IReadOnlyList<string> privateRoots)
     {
-        if (!string.IsNullOrWhiteSpace(subdirectory) && Path.IsPathFullyQualified(subdirectory))
-        {
-            // Renew al máximo (auditoría de flujos): the known folder's own full path is that folder, not a path outside it.
-            string named = Path.GetFullPath(subdirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-            (string Label, string Root)[] itself = [.. roots.Where(item => string.Equals(named,
-                Path.GetFullPath(item.Root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
-                StringComparison.OrdinalIgnoreCase))];
-            if (itself.Length > 0) return [itself[0]];
-            (string Label, string Root)[] holding = [.. roots.Where(item => IsInside(item.Root, subdirectory))];
-            if (holding.Length == 0) throw new InvalidDataException("known_path_outside_folder");
-            roots = [holding[0]];
-            subdirectory = Path.GetRelativePath(holding[0].Root, Path.GetFullPath(subdirectory));
-        }
         if (string.IsNullOrWhiteSpace(subdirectory)
             || Path.IsPathRooted(subdirectory)
             || subdirectory.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
@@ -1636,15 +1643,6 @@ if __name__ == "__main__":
                 throw new InvalidDataException("known_subdirectory_reparse_point");
             return (item.Label, candidate);
         }).ToArray();
-    }
-
-    // A full path strictly inside a folder (the folder itself is not a path inside it). The model copies the path the
-    // person said; a full path inside the named folder is the same place as its relative path (BAXY Renew 2026-10-15,
-    // e2e p3 F013), and one outside it is refused before any effect.
-    private static bool IsInside(string root, string path)
-    {
-        string folder = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        return Path.GetFullPath(path).StartsWith(folder + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string Identity(string label, string path)

@@ -31,7 +31,7 @@ public sealed class FileOpenPackagedLiveDesktopCheck
         nint front = GetForegroundWindow();
         var watch = Stopwatch.StartNew();
         ExternalCapabilityReceipt receipt = await new WindowsFileToolsAdapter().InvokeAsync("file.open",
-            JsonSerializer.SerializeToElement(new { folder = "documents", name = "baxy-prueba-v3\\" + file, application }),
+            JsonSerializer.SerializeToElement(new { path = "documents/baxy-prueba-v3\\" + file, application }),
             CancellationToken.None);
         long elapsed = watch.ElapsedMilliseconds;
         int processId = receipt.Result is { } result && result.TryGetProperty("processId", out JsonElement id) ? id.GetInt32() : 0;
@@ -87,7 +87,7 @@ public sealed class FileOpenPackagedLiveDesktopCheck
         if (Environment.GetEnvironmentVariable("BAXY_CU_ARCHIVO_EMPAQUETADO_LIVE") != "1")
             Assert.Ignore("BAXY_CU_ARCHIVO_EMPAQUETADO_LIVE=1 is needed to touch the desktop.");
         ExternalCapabilityReceipt receipt = await new WindowsFileToolsAdapter().InvokeAsync("file.open",
-            JsonSerializer.SerializeToElement(new { folder = "documents", name = "baxy-prueba-v3\\notas.txt", application = interpreter }),
+            JsonSerializer.SerializeToElement(new { path = "documents/baxy-prueba-v3\\notas.txt", application = interpreter }),
             CancellationToken.None);
         TestContext.Out.WriteLine($"{interpreter} notas.txt: verified={receipt.Verified} error={receipt.ErrorCode}");
         Assert.Multiple(() =>

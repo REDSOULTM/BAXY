@@ -104,7 +104,7 @@ public sealed class GuardOracleTests
             oracle.Answer(heard.ToJsonString());
 
             JsonNode answer = JsonNode.Parse(oracle.Answer(
-                """{"call": "file.write", "arguments": {"relativePath": "recados.txt", "text": "comprar pan", "folder": "home"}}"""))!;
+                """{"call": "file.write", "arguments": {"path": "recados.txt", "text": "comprar pan"}}"""))!;
 
             Assert.That((string?)JsonNode.Parse((string)answer["refused"]!)!["error"], Is.EqualTo("said_folder_left_out"));
         }

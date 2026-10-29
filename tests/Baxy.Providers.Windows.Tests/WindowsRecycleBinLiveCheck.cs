@@ -21,7 +21,7 @@ public sealed class WindowsRecycleBinLiveCheck
         string folder = Path.Combine(Path.GetTempPath(), "baxy-recycle-live-" + Guid.NewGuid().ToString("N"));
         try
         {
-            var provider = new LocalFilesystemProvider(folder);
+            var provider = new LocalFilesystemProvider(folder) { KnownFolderPath = _ => folder };
             FilesystemMutationResult first = provider.WriteText("baxy-recycle-live.txt", "primera versión", null);
             FilesystemMutationResult second = provider.WriteText("baxy-recycle-live.txt", "segunda versión", first.Sha256);
 

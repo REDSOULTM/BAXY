@@ -17,8 +17,8 @@ namespace Baxy.App;
 /// it out and acted in their home, in a known folder or in BAXY's working folder, and the reply told the named folder
 /// («lo agregué a tareas.txt en proyecto» of a file written in the home folder; «proyecto no lo tenía» after looking
 /// only in Desktop, Documents and Downloads). In a turn the person opened, the folders their words name are the place
-/// of its file calls: a call whose place the catalog's arguments say (folder, subdirectory, relativePath, fileName,
-/// name; BAXY's working folder for a filesystem call without folder) and that is not inside one of them is, before
+/// of its file calls: a call whose place the catalog's arguments say (path, as PersonFolders.Place reads it; folder and
+/// name; BAXY's working folder for a filesystem call without either) and that is not inside one of them is, before
 /// anything runs, routed into it when it only reads (the result says so), or refused with the call that names it
 /// (anything else: nothing is written, deleted or opened outside what the person named). The same call written again
 /// exactly as before runs as written, and its result says that it acted outside the folder the person named: the model
@@ -297,7 +297,7 @@ internal sealed class SaidFolders
         // that filesystem_list cannot name one).
         JsonObject[] finds = reach.Sandbox && descriptor.Risk == OperationRisks.ReadOnly
             && ProductCatalog.TryGet("file.find", out ProductOperationDescriptor? find) && find is not null
-            ? [.. targets.Select(place => Express(find, Shared(arguments, find), place)).OfType<JsonObject>()] : [];
+            ? [.. targets.Select(place => Express("file.find", find, Shared(arguments, find), place)).OfType<JsonObject>()] : [];
         JsonObject? found = targets.Count == 1 ? finds.FirstOrDefault() : null;
         string? look = finds.Length == 0 || finds.Length < targets.Count ? null
             : "to look there, call file_find with " + (found is not null ? Changes(new JsonObject(), found)
@@ -332,14 +332,14 @@ internal sealed class SaidFolders
 
         string wire = WireNames.Of(operation);
         if (descriptor.Risk == OperationRisks.ReadOnly && targets.Count == 1
-            && Express(descriptor, arguments, targets[0]) is { } routed)
+            && Express(operation, descriptor, arguments, targets[0]) is { } routed)
         {
             return new(routed, $"the person named {named}: this call looked in {targets[0].Path} "
                 + $"({Changes(arguments, routed)}) instead of {where}, as it was written; to look at {where} itself, "
                 + "call it again exactly as before", null);
         }
 
-        (Place Place, JsonObject? Arguments)[] options = [.. targets.Select(place => (place, Express(descriptor, arguments, place)))];
+        (Place Place, JsonObject? Arguments)[] options = [.. targets.Select(place => (place, Express(operation, descriptor, arguments, place)))];
         string again = $"if the person asked for {where} itself, call it again exactly as before";
         string next;
         if (options.Any(option => option.Arguments is not null))
@@ -354,7 +354,7 @@ internal sealed class SaidFolders
                 + "not there. If "
                 + $"{which} is the place of this call, call {wire} again with "
                 + string.Join(", or ", options.Where(option => option.Arguments is not null).Select(option =>
-                    Changes(arguments, option.Arguments!, whole: true) + (targets.Count == 1
+                    Changes(arguments, option.Arguments!) + (targets.Count == 1
                         ? Reached(operation, descriptor, option.Arguments!, option.Place)
                         : $" for {option.Place.Path}{Holding(option.Place, reach.Leaf)}")))
                 + "; " + again;
@@ -367,8 +367,8 @@ internal sealed class SaidFolders
         }
         else
         {
-            string values = string.Join(", ", descriptor.ArgumentsSchema.Properties
-                .First(static property => property.Name == "folder").AllowedValues);
+            string values = string.Join(", ", PersonFolders.PathLabels(operation) is { Count: > 0 } labels ? labels
+                : descriptor.ArgumentsSchema.Properties.First(static property => property.Name == "folder").AllowedValues);
             next = $"nothing ran: {who} {named}, and {wire} reaches only the folders {values}, so it cannot "
                 + $"act there (it would act in {where}); {again}";
         }
@@ -392,7 +392,7 @@ internal sealed class SaidFolders
     private Ruling? NameAsSaid(string operation, JsonObject arguments)
     {
         if (operation != "filesystem.create.directory" || !ModelAids.On(ModelAids.SaidName)
-            || Text(arguments["relativePath"]) is not { } relative || Parts(relative) is not { Length: > 0 } parts)
+            || Text(arguments["path"]) is not { } relative || Parts(relative) is not { Length: > 0 } parts)
             return null;
         string leaf = parts[^1];
         // A spelling no folder name can hold («informe: tercer trimestre») is not offered: the call would fail.
@@ -401,7 +401,7 @@ internal sealed class SaidFolders
             || !_told.Add("name\n" + arguments.ToJsonString()))
             return null;
         var respelled = (JsonObject)arguments.DeepClone();
-        respelled["relativePath"] = string.Join('/', [.. parts[..^1], theirs]);
+        respelled["path"] = string.Join('/', [.. parts[..^1], theirs]);
         return new(arguments, null, new JsonObject
         {
             ["status"] = "rejected",
@@ -440,39 +440,16 @@ internal sealed class SaidFolders
     private Reach? ReachOf(string operation, ProductOperationDescriptor descriptor, JsonObject arguments)
     {
         IReadOnlyList<OperationArgumentProperty> properties = descriptor.ArgumentsSchema.Properties;
-        OperationArgumentProperty? folderArgument = properties.FirstOrDefault(static property => property.Name == "folder");
         bool Takes(string name) => properties.Any(property => property.Name == name);
-        if (folderArgument is null)
-            return operation.StartsWith("filesystem.", StringComparison.Ordinal) ? new([], true, null) : null;
-        string? folder = Text(arguments["folder"]);
         try
         {
-            if (Takes("relativePath"))
-            {
-                if (Text(arguments["relativePath"]) is not { } relative)
-                    return null;
-                string leaf = Path.GetFileName(relative.TrimEnd('/', '\\'));
-                if (folder is not null)
-                    return Root(folder) is { } root ? new([Combine(root, relative)], false, leaf) : null;
-                // As the working folder's provider reads it: a full path is its place, a known folder's name first is
-                // that folder, and anything else is the working folder.
-                if (Path.IsPathFullyQualified(relative))
-                    return new([Path.GetFullPath(relative)], false, leaf);
-                string[] parts = Parts(relative);
-                return parts.Length > 1 && PersonFolders.Names.TryGetValue(PersonFolders.Fold(parts[0]), out string? named)
-                    && folderArgument.AllowedValues.Contains(named) && Root(named) is { } known
-                        ? new([Path.GetFullPath(Path.Combine([known, .. parts[1..]]))], false, leaf)
-                        : new([], true, leaf);
-            }
-
-            if (folder is null)
-            {
-                // Without folder the work folder's own operations act in it (holdout v5 V5E032/V5E040: moving and
-                // copying by name).
-                return operation.StartsWith("filesystem.sandbox.", StringComparison.Ordinal)
-                    ? new([], true, Takes("sourceFileName") ? Text(arguments["sourceFileName"]) : null) : null;
-            }
-
+            if (Takes("path"))
+                return PathReach(operation, arguments);
+            OperationArgumentProperty? folderArgument = properties.FirstOrDefault(static property => property.Name == "folder");
+            if (folderArgument is null || Text(arguments["folder"]) is not { } folder)
+                return folderArgument is null && operation.StartsWith("filesystem.", StringComparison.Ordinal)
+                    ? new([], true, null) : null;
+            // A known folder taken whole (a backup, the newest file, a download, a capture), or a name in it.
             string[] labels = folder == "all_known"
                 ? [.. folderArgument.AllowedValues.Where(static value => value is not ("all_known" or "home" or "projects"))]
                 : [folder];
@@ -484,23 +461,9 @@ internal sealed class SaidFolders
                 roots.Add(root);
             }
 
-            if (Takes("subdirectory") && Text(arguments["subdirectory"]) is { } subdirectory)
-                roots = Path.IsPathFullyQualified(subdirectory) ? [Path.GetFullPath(subdirectory)]
-                    : [.. roots.Select(root => Combine(root, subdirectory))];
-            string? name = Takes("name") ? Text(arguments["name"]) : null;
-            string? item = name ?? (Takes("fileName") ? Text(arguments["fileName"]) : null)
-                ?? (Takes("sourceFileName") ? Text(arguments["sourceFileName"]) : null);
-            if (item is null)
-            {
-                string? query = Takes("query") ? Text(arguments["query"]) : null;
-                return new(roots, false, query is not null && query.IndexOfAny(['*', '?']) < 0 ? query : null);
-            }
-
-            string itemLeaf = Path.GetFileName(item.TrimEnd('/', '\\'));
-            // A name is that item in the folder; a bare fileName is looked for anywhere under it.
-            return Path.IsPathFullyQualified(item) ? new([Path.GetFullPath(item)], false, itemLeaf)
-                : name is not null || Parts(item).Length > 1 ? new([.. roots.Select(root => Combine(root, item))], false, itemLeaf)
-                : new(roots, false, itemLeaf);
+            if ((Takes("name") ? Text(arguments["name"]) : null) is not { } name)
+                return new(roots, false, null);
+            return new([.. roots.Select(root => Combine(root, name))], false, Path.GetFileName(name.TrimEnd('/', '\\')));
         }
         catch (Exception exception) when (exception is ArgumentException or NotSupportedException or PathTooLongException)
         {
@@ -509,49 +472,123 @@ internal sealed class SaidFolders
         }
     }
 
-    // The call with the folder named in place of the one it gave, as its own arguments say it (folder, subdirectory, or
-    // the path or name inside the folder); null when its arguments cannot name that folder.
-    private JsonObject? Express(ProductOperationDescriptor descriptor, JsonObject arguments, Place place)
+    // The known folders a path is read against here: every one a file tool's path may be in.
+    private static readonly string[] PathLabels = ["desktop", "documents", "downloads", "home", "pictures"];
+
+    // Where a call with a path acts, as its provider reads that path (PersonFolders.Place; WindowsKnownFileAdapter for a
+    // read, an edit and a delete): the folder file.find, the folder's opening and count and the named move act in, or
+    // the file the others name. A read, an edit or a delete looks for its name: a name alone under Desktop, Documents and
+    // Downloads, and any other (but a read's or an edit's full path) under the folder before it. Without a path, file.find
+    // looks under those three, the named move acts in BAXY's working folder, and the count in the Explorer in front.
+    private Reach? PathReach(string operation, JsonObject arguments)
     {
-        IReadOnlyList<OperationArgumentProperty> properties = descriptor.ArgumentsSchema.Properties;
-        bool Takes(string name) => properties.Any(property => property.Name == name);
-        if (Holder(descriptor, place) is not (string label, string relative))
+        string? query = Text(arguments["query"]);
+        string? leafOfQuery = query is not null && query.IndexOfAny(['*', '?']) < 0 ? query : null;
+        if (Text(arguments["path"]) is not { } said)
+        {
+            return operation.StartsWith("filesystem.sandbox.", StringComparison.Ordinal)
+                ? new([], true, Text(arguments["sourceFileName"]))
+                : operation == "file.find" && AllKnown() is { } known ? new(known, false, leafOfQuery)
+                : null;
+        }
+
+        if (operation is "file.read" or "file.edit" or "filesystem.known.trash.named" && PersonFolders.NameOnly(said))
+            return AllKnown() is { } known ? new(known, false, said.Trim()) : null;
+        if (PersonFolders.Place(said, PathLabels, _known) is not { } place)
             return null;
-        var routed = (JsonObject)arguments.DeepClone();
-        routed["folder"] = label;
-        if (Takes("subdirectory"))
+        string full = place.Relative.Length == 0 ? place.Root : Path.Combine(place.Root, place.Relative);
+        switch (operation)
         {
-            if (relative.Length == 0)
-                routed.Remove("subdirectory");
-            else
-                routed["subdirectory"] = relative;
-            if (Text(routed["fileName"]) is { } fileName)
-                routed["fileName"] = Path.GetFileName(fileName.TrimEnd('/', '\\'));
-            // A destination inside the folder, without the folder's own path it repeats (V5E032: «BAXY-bench/…»).
-            if (Text(routed["destinationRelativePath"]) is { } destination)
-                routed["destinationRelativePath"] = Inside(destination, relative);
-            return routed;
+            case "file.find":
+                return new([full], false, leafOfQuery);
+            case "filesystem.folder.open" or "filesystem.explorer.count":
+                return new([full], false, null);
+            case "filesystem.sandbox.move.named":
+                return new([full], false, Text(arguments["sourceFileName"]));
         }
 
-        string? key = Takes("relativePath") ? "relativePath" : Takes("name") ? "name" : null;
-        if (key is not null && Text(arguments[key]) is { } given)
-        {
-            string inside = Inside(given, relative);
-            routed[key] = relative.Length == 0 ? inside : relative + "/" + inside;
-            return routed;
-        }
+        string leaf = Path.GetFileName(full);
+        if (operation is "file.read" or "file.edit" or "filesystem.known.trash.named"
+            && (!place.Full || operation == "filesystem.known.trash.named"))
+            return new([Path.GetDirectoryName(full)!], false, leaf);
 
-        return relative.Length == 0 && key is null ? routed : null;
+        return new([full], false, leaf);
     }
 
-    // The deepest known folder of the call's folder argument that holds the place, and the place's path inside it (empty
-    // for that folder itself); null when the call has no folder argument or none of its folders holds the place.
-    private (string Label, string Relative)? Holder(ProductOperationDescriptor descriptor, Place place)
+    // Desktop, Documents and Downloads, where a name alone is looked for; null when one of them is not known.
+    private string[]? AllKnown()
     {
-        if (descriptor.ArgumentsSchema.Properties.FirstOrDefault(static property => property.Name == "folder") is not { } folder)
+        var roots = new List<string>();
+        foreach (string label in (string[])["desktop", "documents", "downloads"])
+        {
+            if (Root(label) is not { } root)
+                return null;
+            roots.Add(root);
+        }
+
+        return [.. roots];
+    }
+
+    // The call with the folder named in place of the one it gave: its path, the folder as the deepest known folder of the
+    // operation that holds it and the path inside that one («home/banco-local», as a result names a place), with what the
+    // call names inside it after it (the name a read, an edit or a delete looks for; the path inside the folder a write,
+    // an opening or a zip gave); or its folder (and a name in it) for a call that takes a known folder whole; null when
+    // the operation's folders cannot hold it.
+    private JsonObject? Express(string operation, ProductOperationDescriptor descriptor, JsonObject arguments, Place place)
+    {
+        var routed = (JsonObject)arguments.DeepClone();
+        if (Takes(descriptor, "path"))
+        {
+            if (Folder(operation, place) is not { } folder)
+                return null;
+            string? given = Text(arguments["path"]);
+            string? inside = operation switch
+            {
+                "file.find" or "filesystem.folder.open" or "filesystem.explorer.count" or "filesystem.sandbox.move.named"
+                    => string.Empty,
+                "file.read" or "file.edit" or "filesystem.known.trash.named"
+                    => given is null ? null : Path.GetFileName(given.TrimEnd('/', '\\')),
+                _ => given is null ? null : Inside(given, place.Path),
+            };
+            if (inside is null)
+                return null;
+            routed["path"] = inside.Length == 0 ? folder : folder + "/" + inside;
+            // A destination inside the folder, without the folder's own path it repeats (V5E032: «BAXY-bench/…»).
+            if (Text(routed["destinationRelativePath"]) is { } destination)
+                routed["destinationRelativePath"] = Inside(destination, place.Path);
+            return routed;
+        }
+
+        if (descriptor.ArgumentsSchema.Properties.FirstOrDefault(static property => property.Name == "folder") is not { } argument
+            || Holder(argument.AllowedValues, place) is not (string label, string relative))
             return null;
+        routed["folder"] = label;
+        if (Takes(descriptor, "name") && Text(arguments["name"]) is { } name)
+        {
+            string inside = Inside(name, relative);
+            routed["name"] = relative.Length == 0 ? inside : relative + "/" + inside;
+            return routed;
+        }
+
+        return relative.Length == 0 ? routed : null;
+    }
+
+    private static bool Takes(ProductOperationDescriptor descriptor, string name) =>
+        descriptor.ArgumentsSchema.Properties.Any(property => property.Name == name);
+
+    // The place as a path of the operation says it: the deepest of its known folders that holds it, and the path inside
+    // that one («home/banco-local»); null when none of them does.
+    private string? Folder(string operation, Place place) =>
+        Holder(PersonFolders.PathLabels(operation), place) is (string label, string relative)
+            ? relative.Length == 0 ? label : label + "/" + relative
+            : null;
+
+    // The deepest of those known folders that holds the place, and the place's path inside it (empty for that folder
+    // itself); null when none of them holds it.
+    private (string Label, string Relative)? Holder(IEnumerable<string> labels, Place place)
+    {
         (string Label, string Root)? holder = null;
-        foreach (string label in folder.AllowedValues)
+        foreach (string label in labels)
         {
             if (label is not ("all_known" or "projects") && Root(label) is { } root && Within(place.Path, root)
                 && (holder is null || root.Length > holder.Value.Root.Length))
@@ -567,29 +604,24 @@ internal sealed class SaidFolders
     // the folder, the model wrote it and then left the folder out of its next call (44 of them; final5 V6E048: file_edit
     // fixed, file_read in it, then file_edit and file_write without it, three refusals, ~20 s); and told relativePath
     // "BAXY-bench/facturas2025" and folder "home", it wrote relativePath "facturas2025" (27; V6E064, V8E067). The call is
-    // said with where it acts, and the folder with how every call of the turn in it names it. Only in the forms this
-    // call's arguments take (e2e final6c V6E044: file_write, told «as subdirectory», which it has not, answered without
-    // calling).
-    private string Reached(string operation, ProductOperationDescriptor descriptor, JsonObject routed, Place place) =>
-        (ReachOf(operation, descriptor, routed) is { Sandbox: false, Items.Count: > 0 } reach
-            ? $" (it acts in {string.Join(", ", reach.Items)})" : string.Empty)
-        + (Holder(descriptor, place) is not (string label, string relative) ? string.Empty
-            : relative.Length == 0 ? $"; any other call of this turn in that folder says it the same way, folder \"{label}\""
-            : $"; any other call of this turn in that folder says it the same way: folder \"{label}\" with \"{relative}\" "
-                + Forms(descriptor));
-
-    // How the call's arguments put a path inside its folder: as subdirectory, or at the start of relativePath or name.
-    private static string Forms(ProductOperationDescriptor descriptor)
+    // said with where it acts, and the folder with how every call of the turn in it names it (P2.4: a path that begins
+    // with the folder's).
+    private string Reached(string operation, ProductOperationDescriptor descriptor, JsonObject routed, Place place)
     {
-        bool Takes(string name) => descriptor.ArgumentsSchema.Properties.Any(property => property.Name == name);
-        string start = (Takes("relativePath"), Takes("name")) switch
+        string acts = ReachOf(operation, descriptor, routed) is { Sandbox: false, Items.Count: > 0 } reach
+            ? $" (it acts in {string.Join(", ", reach.Items)})" : string.Empty;
+        if (Takes(descriptor, "path"))
         {
-            (true, true) => "at the start of relativePath or name",
-            (true, false) => "at the start of relativePath",
-            (false, true) => "at the start of name",
-            _ => string.Empty,
-        };
-        return !Takes("subdirectory") ? start : start.Length == 0 ? "as subdirectory" : "as subdirectory, or " + start;
+            return acts + (Folder(operation, place) is { } folder
+                ? $"; any other call of this turn in that folder says it the same way, with a path that begins \"{folder}\""
+                : string.Empty);
+        }
+
+        return acts + (descriptor.ArgumentsSchema.Properties.FirstOrDefault(static property => property.Name == "folder")
+            is { } argument && Holder(argument.AllowedValues, place) is (string label, string relative)
+            && relative.Length == 0
+                ? $"; any other call of this turn in that folder says it the same way, folder \"{label}\""
+                : string.Empty);
     }
 
     // What a path the call gave names inside the folder: a full path's last part; a relative one without a known
@@ -599,7 +631,8 @@ internal sealed class SaidFolders
         if (Path.IsPathFullyQualified(given))
             return Path.GetFileName(given.TrimEnd('/', '\\'));
         List<string> parts = [.. Parts(given)];
-        if (parts.Count > 1 && PersonFolders.Names.ContainsKey(PersonFolders.Fold(parts[0])))
+        if (parts.Count > 1 && PersonFolders.Fold(parts[0]) is var first
+            && (first == "home" || PersonFolders.Names.ContainsKey(first)))
             parts.RemoveAt(0);
         string[] own = Parts(relative);
         for (int count = Math.Min(own.Length, parts.Count - 1); count > 0; count--)
@@ -622,22 +655,30 @@ internal sealed class SaidFolders
     {
         ["filesystem.copy"] = ("filesystem.sandbox.move.named", "sourceFileName", true),
         ["filesystem.move"] = ("filesystem.sandbox.move.named", "sourceFileName", false),
-        ["filesystem.read.text"] = ("file.read", "fileName", false),
+        ["filesystem.read.text"] = ("file.read", "path", false),
     };
 
     // That operation as a call in the folder named: what the call gave that it also takes (a destination, inside the
-    // folder), the folder, and the name it still needs; null when it has none or cannot name that folder.
+    // folder), the folder, and the name it still needs (in a read's path, after the folder); null when it has none or
+    // cannot name that folder.
     private string? Twin(string operation, JsonObject arguments, Place place)
     {
         if (!Twins.TryGetValue(operation, out (string Operation, string Name, bool Copy) twin)
-            || !ProductCatalog.TryGet(twin.Operation, out ProductOperationDescriptor? other) || other is null
-            || Express(other, Shared(arguments, other), place) is not { } routed)
+            || !ProductCatalog.TryGet(twin.Operation, out ProductOperationDescriptor? other) || other is null)
+            return null;
+        string wire = WireNames.Of(twin.Operation);
+        string head = $"{WireNames.Of(operation)} cannot name a folder of theirs, and {wire} does it there: call {wire} with ";
+        if (twin.Name == "path")
+        {
+            return Folder(twin.Operation, place) is { } folder
+                ? head + $"a path that begins \"{folder}/\" and ends with the file's own name" : null;
+        }
+
+        if (Express(twin.Operation, other, Shared(arguments, other), place) is not { } routed)
             return null;
         if (twin.Copy)
             routed["copy"] = true;
-        string wire = WireNames.Of(twin.Operation);
-        return $"{WireNames.Of(operation)} cannot name a folder of theirs, and {wire} does it there: call {wire} with "
-            + $"{Changes(new JsonObject(), routed)}, and {twin.Name} the file's own name";
+        return head + $"{Changes(new JsonObject(), routed)}, and {twin.Name} the file's own name";
     }
 
     // The arguments of a call that another operation also takes (a search's query, for file_find).
@@ -653,20 +694,14 @@ internal sealed class SaidFolders
         return shared;
     }
 
-    // The arguments that differ, as the model writes them: folder "home" and subdirectory "proyecto". Whole: a place
-    // given by folder and subdirectory is said with both (holdout v6 V6E034: told only the subdirectory of a call that
-    // had folder "home", the model wrote it without that folder). A path inside a folder that changed is said with it
-    // (holdout v6 V6E065: told only folder "home" for a call whose relativePath already held the folder named, the
-    // model wrote that path again without it).
-    private static string Changes(JsonObject given, JsonObject routed, bool whole = false)
+    // The arguments that differ, as the model writes them: path "C:\\Users\\ana\\proyecto" (P2.4: the place whole, in one
+    // argument; holdout v6 V6E034 and V6E065 were a place split in folder and subdirectory or relativePath, said in part).
+    private static string Changes(JsonObject given, JsonObject routed)
     {
-        bool split = whole && routed.ContainsKey("subdirectory");
-        bool moved = !JsonNode.DeepEquals(routed["folder"], given["folder"]);
         var changes = new List<string>();
         foreach ((string key, JsonNode? value) in routed)
         {
-            if (!JsonNode.DeepEquals(value, given[key]) || (split && key is "folder" or "subdirectory")
-                || (moved && key == "relativePath"))
+            if (!JsonNode.DeepEquals(value, given[key]))
                 changes.Add($"{key} {value?.ToJsonString(AsWritten) ?? "null"}");
         }
 

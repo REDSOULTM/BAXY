@@ -115,18 +115,18 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         }
     }
 
-    public FilesystemMutationResult CreateDirectory(string relativePath, string? folder)
+    public FilesystemMutationResult CreateDirectory(string path)
     {
-        (string root, relativePath) = RootFor(folder, relativePath);
+        (string label, string root, string relativePath) = PlaceOf(path, "filesystem.create.directory");
         lock (_gate)
         {
-            string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
-            if (File.Exists(path)) throw Error("destination_exists");
-            bool reached = Directory.Exists(path);
+            string full = ResolveIn(root, relativePath, allowMissingLeaf: true);
+            if (File.Exists(full)) throw Error("destination_exists");
+            bool reached = Directory.Exists(full);
             EnsureHandleRoom();
-            if (!reached) Directory.CreateDirectory(path);
-            EnsureSafePathIn(root, path, allowMissingLeaf: false);
-            return Mutation(path, root, reached);
+            if (!reached) Directory.CreateDirectory(full);
+            EnsureSafePathIn(root, full, allowMissingLeaf: false);
+            return Mutation(full, root, reached) with { Folder = label };
         }
     }
 
@@ -138,30 +138,28 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     /// the hash only when it is given. The same content already there is the state reached, with nothing written.
     /// </summary>
     public FilesystemMutationResult WriteText(
-        string relativePath,
+        string path,
         string text,
         string? expectedSha256,
-        string? folder = null,
         bool append = false)
     {
-        string calledPath = relativePath;
-        (string root, relativePath) = RootFor(folder, relativePath);
+        (string folder, string root, string relativePath) = PlaceOf(path, "file.write");
         string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
         lock (_gate)
         {
-            string path = ResolveIn(root, relativePath, allowMissingLeaf: true, takesFolder: true);
-            if (Directory.Exists(path)) throw Error("destination_is_directory");
-            bool exists = File.Exists(path);
+            string file = ResolveIn(root, relativePath, allowMissingLeaf: true);
+            if (Directory.Exists(file)) throw Error("destination_is_directory");
+            bool exists = File.Exists(file);
             // Renew al máximo (w5, E024): «añade a notas.txt, en la carpeta BAXY-bench» came with the subfolder
             // left out, and the append made a new home\notas.txt beside the person's. An append presupposes the file:
             // missing here and found below the same folder, nothing is written and the places are told.
-            if (append && !exists && SameNameBelow(root, path) is { Length: > 0 } elsewhere)
-                throw AppendTargetElsewhere(path, elsewhere, root, folder);
+            if (append && !exists && SameNameBelow(root, file) is { Length: > 0 } elsewhere)
+                throw AppendTargetElsewhere(file, elsewhere, root, folder);
             byte[] previous = [];
             if (exists && append)
             {
-                if (new FileInfo(path).Length > MaximumAppendTargetBytes) throw Error("file_too_large");
-                previous = File.ReadAllBytes(path);
+                if (new FileInfo(file).Length > MaximumAppendTargetBytes) throw Error("file_too_large");
+                previous = File.ReadAllBytes(file);
                 // FT/proveedores goal (review of receipts): a file with no byte order mark that is not UTF-8 (ANSI) took
                 // the new line in UTF-8, its accents garbled next to the old ones, and was told verified; file.edit
                 // refuses such a file, and so does an append.
@@ -171,9 +169,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 ? [.. previous, .. TextFileEncoding.EncodeAppended(previous, normalizedText)]
                 : StrictUtf8.GetBytes(normalizedText);
             string desiredHash = Hex(SHA256.HashData(bytes));
-            string? current = !exists ? null : append ? Hex(SHA256.HashData(previous)) : HashFile(path);
+            string? current = !exists ? null : append ? Hex(SHA256.HashData(previous)) : HashFile(file);
             if (current is not null && string.Equals(current, desiredHash, StringComparison.Ordinal))
-                return WhereWritten(Mutation(path, root, reachedState: true, previousVersionRecycled: false), root, path);
+                return Mutation(file, root, reachedState: true, previousVersionRecycled: false) with { Folder = folder };
             bool conflict = current is null
                 ? expectedSha256 is not null
                 : append
@@ -182,25 +180,25 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             // Holdout v6 V6E041 (aid overwrite_guard): what a refused replacement of a file there would lose; one under
             // the file's own hash asks the person first in normal mode (FilesystemHandler's preflight, ReplacementAsksFirst).
             TextLoss? loss = conflict && current is not null && !append && ModelAids.On(ModelAids.OverwriteGuard)
-                ? LossOf(path, normalizedText)
+                ? LossOf(file, normalizedText)
                 : null;
             // BAXY Renew (notebook): a hash expected of a file that is not there is no other version of it.
             if (conflict)
             {
                 throw WriteRefused(
-                    current is null ? "expected_hash_for_missing_file" : "version_conflict", path, exists, append,
-                    current, current is null ? 0 : append ? previous.Length : new FileInfo(path).Length,
+                    current is null ? "expected_hash_for_missing_file" : "version_conflict", file, exists, append,
+                    current, current is null ? 0 : append ? previous.Length : new FileInfo(file).Length,
                     replaceOrAppend: current is not null && !append && !IsHash(expectedSha256),
-                    loss: loss is null ? null : new LossTold(loss, calledPath, folder, text));
+                    loss: loss is null ? null : new LossTold(loss, path, text));
             }
 
             // A refused write leaves nothing behind: the folder of a new file is made only now.
             EnsureHandleRoom();
-            string? folderCreated = FirstMissingFolder(root, Path.GetDirectoryName(path)!);
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
+            string? folderCreated = FirstMissingFolder(root, Path.GetDirectoryName(file)!);
+            Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+            EnsureSafePathIn(root, Path.GetDirectoryName(file)!, allowMissingLeaf: false);
             string temporary = Path.Combine(
-                Path.GetDirectoryName(path)!, ".baxy-write-" + Guid.NewGuid().ToString("N") + ".tmp");
+                Path.GetDirectoryName(file)!, ".baxy-write-" + Guid.NewGuid().ToString("N") + ".tmp");
             bool recycled = false, keepNewText = false;
             try
             {
@@ -213,19 +211,19 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 }
                 if (exists && append)
                 {
-                    if (!string.Equals(HashFile(path), current, StringComparison.Ordinal))
-                        throw WriteRefused("version_conflict", path, exists, append);
-                    File.Move(temporary, path, overwrite: true);
+                    if (!string.Equals(HashFile(file), current, StringComparison.Ordinal))
+                        throw WriteRefused("version_conflict", file, exists, append);
+                    File.Move(temporary, file, overwrite: true);
                 }
                 else if (exists)
                 {
                     // The previous version is the person's: it goes to the Recycle Bin before the new one takes its
                     // place, and when the bin cannot take it nothing is replaced.
-                    if (!_recycleBin.Recycle(path)) throw Error("previous_version_not_recycled");
+                    if (!_recycleBin.Recycle(file)) throw Error("previous_version_not_recycled");
                     recycled = true;
                     try
                     {
-                        File.Move(temporary, path);
+                        File.Move(temporary, file);
                     }
                     catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
                     {
@@ -237,98 +235,37 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 }
                 else
                 {
-                    File.Move(temporary, path);
+                    File.Move(temporary, file);
                 }
             }
             finally
             {
                 if (!keepNewText && File.Exists(temporary)) File.Delete(temporary);
             }
-            if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
+            if (!string.Equals(HashFile(file), desiredHash, StringComparison.Ordinal))
                 throw AfterEffect("verification_failed");
-            return WhereWritten(
-                Mutation(path, root, reachedState: false, previousVersionRecycled: recycled) with
-                {
-                    Created = !exists,
-                    FolderCreated = folderCreated,
-                },
-                root, path);
-        }
-    }
-
-    // E024 (pc-ayudas): a write into the working folder says so, and a folder in the person's home named as the path's
-    // first part is told beside it (only read: nothing is moved, nothing refused, the model chooses what to do).
-    private FilesystemMutationResult WhereWritten(FilesystemMutationResult result, string root, string path)
-    {
-        if (!ModelAids.On(ModelAids.WorkFolder) || !string.Equals(root, _root, StringComparison.OrdinalIgnoreCase))
-            return result;
-        string[] parts = Path.GetRelativePath(_root, path)
-            .Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-        string? sameName = null;
-        if (parts.Length > 1)
-        {
-            try
+            return Mutation(file, root, reachedState: false, previousVersionRecycled: recycled) with
             {
-                // Al máximo, flujos: a known folder by the name a person gives it is where Windows keeps it («Imágenes»
-                // is Pictures, or OneDrive's), never a «home\Imágenes» that does not exist.
-                string candidate = KnownFolderNames.TryGetValue(Fold(parts[0]), out string? known)
-                    ? KnownFolderPath(known)
-                    : Path.Combine(RootFor("home"), parts[0]);
-                if (Directory.Exists(candidate) && !Inside(_root, candidate)
-                    && !string.Equals(candidate, _root, StringComparison.OrdinalIgnoreCase))
-                    sameName = candidate;
-            }
-            catch (FilesystemProviderException) { }
+                Created = !exists,
+                FolderCreated = folderCreated,
+                Folder = folder,
+            };
         }
-
-        return result with { InWorkFolder = true, SameNameInHome = sameName };
     }
 
-    /// <summary>
-    /// The sandbox root, or one of the person's known folders when the
-    /// catalog argument names it. Known folders never use the sandbox's
-    /// backups; the same reparse-point and traversal checks apply.
-    /// </summary>
-    // FT/proveedores goal (e2e E019): a full path with no folder is the place the person said, so it is read inside the
-    // known folder it lies in, the working folder first. Refused as outside the working folder, the model retried
-    // with folder home and the path cut to its last part («proyecto»), and the folder was made in the wrong place.
-    // Al máximo, flujos (P263, 26 of 27 runs: «Documentos/Proyectos» with no folder was made in the working folder): a
-    // relative path whose first part names a known folder the catalog's folder takes is that folder, as folder would
-    // name it, with the rest of the path inside it.
-    private (string Root, string RelativePath) RootFor(string? folder, string relativePath)
+    // P2.4 (ajuste c3): file.write's and filesystem.create.directory's path as the person said it, read by
+    // PersonFolders.Place: the known folder it is in (its label and root) and the rest of it inside that folder. FT/
+    // proveedores goal (e2e E019): a full path is the place the person said; al máximo, flujos (P263, 26 of 27 runs:
+    // «Documentos/Proyectos» was made in the working folder): a known folder's name first is that folder; any other is
+    // a folder of the person's home (E006/E024: «en la carpeta BAXY-bench» went to the working folder).
+    // DECISIONES_DUENO, point 2: they write in the person's folders (PersonFolders.PathLabels).
+    private (string Label, string Root, string RelativePath) PlaceOf(string path, string operation)
     {
-        if (folder is null && !Path.IsPathFullyQualified(relativePath ?? string.Empty)
-            && (relativePath ?? string.Empty).Split(['/', '\\'], 2) is [var first, var rest]
-            && !string.IsNullOrWhiteSpace(rest)
-            && KnownFolderNames.TryGetValue(Fold(first), out string? named)
-            && named is "desktop" or "documents" or "downloads")
-            return (RootFor(named), rest);
-        if (folder is not null || !Path.IsPathFullyQualified(relativePath ?? string.Empty))
-            return (RootFor(folder), relativePath!);
-        // ResolveIn refuses it the same way; here it must not reach GetFullPath, which throws on it.
-        if (relativePath!.Contains('\0')) throw Error("invalid_path");
-        string full = Path.GetFullPath(relativePath);
-        if (Inside(full, _root)) return (_root, relativePath);
-        foreach (string known in (string[])["desktop", "documents", "downloads", "home"])
-        {
-            string root;
-            try { root = RootFor(known); }
-            catch (FilesystemProviderException) { continue; }
-            if (Inside(full, root)) return (root, relativePath);
-        }
-
-        return (_root, relativePath);
+        if (path.Contains('\0')) throw Error("invalid_path");
+        SaidPath said = PersonFolders.Place(path, PersonFolders.PathLabels(operation), KnownFolderPath)
+            ?? throw Error("path_outside_folder");
+        return (said.Label, RootFor(said.Label), said.Relative);
     }
-
-    // The person's known folders by the names a person gives them (PersonFolders.Names). The catalog's folder takes
-    // desktop, documents and downloads; pictures, music and videos are only told.
-    private static IReadOnlyDictionary<string, string> KnownFolderNames => PersonFolders.Names;
-
-    private static string Fold(string value) => PersonFolders.Fold(value);
-
-    private static bool Inside(string full, string root) =>
-        full.StartsWith(root.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar,
-            StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Where each known folder of the person's is (tests point them away from the real profile).</summary>
     internal Func<string, string> KnownFolderPath { get; init; } = static folder =>
@@ -340,10 +277,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     /// <summary>The folders Windows runs at sign-in (<see cref="AutostartArea"/>); tests point it at a temporary folder.</summary>
     internal IReadOnlyList<string> AutostartRoots { get; init; } = AutostartArea.DefaultRoots();
 
-    private string RootFor(string? folder)
+    private string RootFor(string folder)
     {
-        if (folder is null) return _root;
-        if (folder is not ("desktop" or "documents" or "downloads" or "home")) throw Error("invalid_folder");
         string path = KnownFolderPath(folder);
         if (string.IsNullOrWhiteSpace(path) || !Path.IsPathFullyQualified(path) || !Directory.Exists(path))
             throw Error("known_folder_unavailable");
@@ -551,8 +486,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private string Resolve(string relative, bool allowMissingLeaf) =>
         ResolveIn(_root, relative, allowMissingLeaf);
 
-    // takesFolder: the operation has a folder argument, so a path outside the working folder can name the person's.
-    private string ResolveIn(string root, string relative, bool allowMissingLeaf, bool takesFolder = false)
+    private string ResolveIn(string root, string relative, bool allowMissingLeaf)
     {
         relative ??= string.Empty;
         // A full path inside the folder is the same place as its relative path: the model copies the path the person
@@ -563,7 +497,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         if (!full.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
             && !string.Equals(full, root, StringComparison.OrdinalIgnoreCase))
             throw string.Equals(root, _root, StringComparison.OrdinalIgnoreCase)
-                ? OutsideTheSandbox(takesFolder)
+                ? Error("path_outside_sandbox")
                 : Error("path_outside_folder");
         // Revisión de calidad (archivos): a «:» past the folder names a stream of a file («descarga.exe:Zone.Identifier»,
         // the mark SmartScreen reads), never a file of the person's; it reached the Recycle Bin as one.
@@ -680,22 +614,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     // A failure once the file was already written, moved or copied: the change may be on disk.
     private static FilesystemProviderException AfterEffect(string code) => new(code) { EffectMayHaveOccurred = true };
 
-    // A path outside the working folder: where the operation takes a folder, the refusal says how to name the person's.
-    private static FilesystemProviderException OutsideTheSandbox(bool takesFolder) =>
-        new("path_outside_sandbox")
-        {
-            Result = takesFolder
-                ? ExternalJson.Create(writer =>
-                {
-                    writer.WriteStartObject();
-                    writer.WriteString("next", "without folder, relativePath is read inside your working folder; a "
-                        + "folder of the person's needs folder (desktop, documents, downloads, or home for "
-                        + "C:\\Users\\<name>\\...) with the rest of the path in relativePath");
-                    writer.WriteEndObject();
-                })
-                : null,
-        };
-
     // What a refused write saw: whether the file is there, where, and whether the call appended. Al máximo, flujos: and
     // the version of it the refusal was decided on (its SHA-256 and size), so a replace that came without the hash goes
     // straight in a second call instead of a file.read first; its previous version still goes to the Recycle Bin. Hallazgo
@@ -745,22 +663,22 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     /// the file's text (TextLoss), so in normal mode the person is asked first, bound to the call (FilesystemHandler's
     /// preflight); in bypass it goes straight. Read only.
     /// </summary>
-    public bool ReplacementAsksFirst(string relativePath, string text, string? expectedSha256, string? folder)
+    public bool ReplacementAsksFirst(string path, string text, string? expectedSha256)
     {
         if (!ModelAids.On(ModelAids.OverwriteGuard) || !IsHash(expectedSha256)) return false;
         try
         {
-            (string root, string inner) = RootFor(folder, relativePath);
+            (_, string root, string inner) = PlaceOf(path, "file.write");
             string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
             lock (_gate)
             {
-                string path = ResolveIn(root, inner, allowMissingLeaf: true, takesFolder: true);
-                if (!File.Exists(path)) return false;
-                string current = HashFile(path);
+                string file = ResolveIn(root, inner, allowMissingLeaf: true);
+                if (!File.Exists(file)) return false;
+                string current = HashFile(file);
                 string desired = Hex(SHA256.HashData(StrictUtf8.GetBytes(normalizedText)));
                 return string.Equals(current, expectedSha256, StringComparison.Ordinal)
                     && !string.Equals(current, desired, StringComparison.Ordinal)
-                    && LossOf(path, normalizedText) is not null;
+                    && LossOf(file, normalizedText) is not null;
             }
         }
         catch (Exception exception) when (exception is FilesystemProviderException or IOException
@@ -818,18 +736,13 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private static string AppendCall(LossTold told)
     {
         if (told.Text.Length > MaximumTextRepeated)
-        {
-            return told.Folder is null
-                ? "file_write with the same relativePath and text, and append true"
-                : "file_write with the same relativePath, folder and text, and append true";
-        }
+            return "file_write with the same path and text, and append true";
 
         using var buffer = new MemoryStream();
         using (var writer = new Utf8JsonWriter(buffer, CallWriting))
         {
             writer.WriteStartObject();
-            writer.WriteString("relativePath", told.RelativePath);
-            if (told.Folder is not null) writer.WriteString("folder", told.Folder);
+            writer.WriteString("path", told.Path);
             writer.WriteString("text", told.Text);
             writer.WriteBoolean("append", true);
             writer.WriteEndObject();
@@ -837,8 +750,8 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         return "file_write " + Encoding.UTF8.GetString(buffer.ToArray());
     }
 
-    // A loss as a version_conflict tells it: the call's own path, folder and text (the call still needs the hash).
-    private sealed record LossTold(TextLoss Loss, string RelativePath, string? Folder, string Text);
+    // A loss as a version_conflict tells it: the call's own path and text (the call still needs the hash).
+    private sealed record LossTold(TextLoss Loss, string Path, string Text);
 
     // Renew al máximo (w5, E024): how far an append to a missing file looks for one of that name below its folder.
     private const int SameNameDepth = 6;
@@ -886,10 +799,10 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
 
     // Holdout v6 V6E044 (cien s1 and s2): told that «a file of that name is in BAXY-bench/gastos.txt, and file_write
     // with that relativePath and the same folder appends to it», the model answered «gastos.txt está en mi carpeta de
-    // trabajo» and wrote nothing. With aid «append_elsewhere_call» the file is said by its full path and whose it is (the
-    // person's, or BAXY's own working folder's), and the append as the call that makes it; a call whose folder came from
-    // the path's first part (no folder given, a known folder's name) keeps the sentence of before.
-    private FilesystemProviderException AppendTargetElsewhere(string path, string[] elsewhere, string root, string? folder) =>
+    // trabajo» and wrote nothing. With aid «append_elsewhere_call» the file is said by its full path and as the person's,
+    // and the append as the call that makes it (its path as the folder it is in and the path inside it, P2.4).
+    private static FilesystemProviderException AppendTargetElsewhere(
+        string path, string[] elsewhere, string root, string folder) =>
         new("append_target_missing")
         {
             Result = ExternalJson.Create(writer =>
@@ -901,29 +814,26 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 writer.WriteStartArray("sameNameIn");
                 foreach (string item in elsewhere) writer.WriteStringValue(item);
                 writer.WriteEndArray();
-                bool work = string.Equals(root, _root, StringComparison.OrdinalIgnoreCase);
-                if (ModelAids.On(ModelAids.AppendElsewhereCall) && (folder is not null || work))
+                string[] paths = [.. elsewhere.Select(item => $"\"{folder}/{item}\"")];
+                if (ModelAids.On(ModelAids.AppendElsewhereCall))
                 {
                     string name = Path.GetFileName(path);
                     bool one = elsewhere.Length == 1;
                     IEnumerable<string> full = elsewhere.Select(item =>
                         Path.Combine(root, item.Replace('/', Path.DirectorySeparatorChar)));
-                    string whose = work ? "in BAXY's own working folder"
-                        : $"{(one ? "a file" : "files")} of the person's, not of BAXY's own working folder";
                     writer.WriteString("next", $"nothing was written: {name} is not in "
                         + $"{Path.GetDirectoryName(Path.GetFullPath(path))}; "
                         + $"{(one ? "the file of that name is" : "the files of that name are")} {string.Join(" and ", full)}, "
-                        + $"{whose}: to add the text at {(one ? "its end" : "the end of one")}, call file_write again with "
-                        + "relativePath " + string.Join(" or ", elsewhere.Select(item => $"\"{item}\""))
-                        + (folder is null ? " and no folder" : $" and folder \"{folder}\"")
+                        + $"{(one ? "a file" : "files")} of the person's: to add the text at {(one ? "its end" : "the end of one")}, "
+                        + "call file_write again with path " + string.Join(" or ", paths)
                         + $" and append true; without append, a new {name} is made here");
                 }
                 else if (ModelAids.On(ModelAids.AppendElsewhere))
                 {
                     string name = Path.GetFileName(path);
                     writer.WriteString("next", $"nothing was written: {name} is not in {Path.GetDirectoryName(Path.GetFullPath(path))}; "
-                        + $"a file of that name is in {string.Join(" and ", elsewhere)}, and file_write with that "
-                        + $"relativePath and the same folder appends to it; without append, a new {name} is made here");
+                        + $"a file of that name is in {string.Join(" and ", elsewhere)}, and file_write with path "
+                        + $"{string.Join(" or ", paths)} appends to it; without append, a new {name} is made here");
                 }
                 writer.WriteEndObject();
             }),

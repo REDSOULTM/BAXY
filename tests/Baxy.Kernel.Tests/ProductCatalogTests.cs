@@ -724,24 +724,28 @@ public sealed class ProductCatalogTests
 
     // BAXY Renew agent tools (2026-10-15): the four file operations take their typed arguments and nothing else.
     // Reading and finding change nothing; writing and editing are reversible (what they replace goes to the Recycle
-    // Bin first), so Normal runs every one of them without asking.
-    [TestCase("file.find", """{"folder":"desktop"}""", true)]
-    [TestCase("file.find", """{"folder":"all_known","query":"*.pdf","order":"recent","limit":5}""", true)]
-    [TestCase("file.find", """{"folder":"documents","content":"reunión","subdirectory":"trabajo"}""", true)]
+    // Bin first), so Normal runs every one of them without asking. P2.4 (ajuste c3): where is one path, as the person
+    // said it; the folder, subdirectory, relativePath and fileName of before are no arguments of theirs.
+    [TestCase("file.find", """{"path":"Escritorio"}""", true)]
+    [TestCase("file.find", """{"query":"*.pdf","order":"recent","limit":5}""", true)]
+    [TestCase("file.find", """{"path":"Documentos/trabajo","content":"reunión"}""", true)]
     // P2.44 causa 11 (V11D169): a capture saved to pictures is found in pictures, the folder the capture names.
-    [TestCase("file.find", """{"folder":"pictures","query":"*.png","order":"recent"}""", true)]
-    [TestCase("file.find", """{"folder":"projects"}""", false)]
-    [TestCase("file.find", """{"query":"informe"}""", false)]
-    [TestCase("file.read", """{"fileName":"informe.pdf","folder":"all_known","offset":4000,"maximumCharacters":4000}""", true)]
-    [TestCase("file.read", """{"fileName":"notas/ideas.md","folder":"desktop"}""", true)]
-    [TestCase("file.read", """{"fileName":"notas.txt","folder":"desktop","offset":-1}""", false)]
-    [TestCase("file.read", """{"fileName":"notas.txt","folder":"desktop","maximumCharacters":100}""", false)]
-    [TestCase("file.write", """{"relativePath":"hola.txt","text":"hola","folder":"desktop"}""", true)]
-    [TestCase("file.write", """{"relativePath":"lista.txt","text":"pan","append":true}""", true)]
-    [TestCase("file.write", """{"relativePath":"hola.txt","text":"hola","folder":"all_known"}""", false)]
-    [TestCase("file.edit", """{"fileName":"notas.txt","folder":"desktop","oldText":"lunes","newText":"martes"}""", true)]
-    [TestCase("file.edit", """{"fileName":"notas.txt","folder":"desktop","oldText":"2024","newText":"","replaceAll":true}""", true)]
-    [TestCase("file.edit", """{"fileName":"notas.txt","folder":"desktop","oldText":"lunes"}""", false)]
+    [TestCase("file.find", """{"path":"pictures","query":"*.png","order":"recent"}""", true)]
+    [TestCase("file.find", """{"query":"informe"}""", true)]
+    [TestCase("file.find", """{"folder":"desktop"}""", false)]
+    [TestCase("file.find", """{"path":" "}""", false)]
+    [TestCase("file.read", """{"path":"informe.pdf","offset":4000,"maximumCharacters":4000}""", true)]
+    [TestCase("file.read", """{"path":"C:\\Users\\ana\\Desktop\\notas\\ideas.md"}""", true)]
+    [TestCase("file.read", """{"path":"desktop/notas.txt","offset":-1}""", false)]
+    [TestCase("file.read", """{"path":"desktop/notas.txt","maximumCharacters":100}""", false)]
+    [TestCase("file.read", """{"fileName":"notas.txt","folder":"desktop"}""", false)]
+    [TestCase("file.write", """{"path":"Escritorio/hola.txt","text":"hola"}""", true)]
+    [TestCase("file.write", """{"path":"lista.txt","text":"pan","append":true}""", true)]
+    [TestCase("file.write", """{"relativePath":"hola.txt","text":"hola","folder":"desktop"}""", false)]
+    [TestCase("file.write", """{"text":"hola"}""", false)]
+    [TestCase("file.edit", """{"path":"desktop/notas.txt","oldText":"lunes","newText":"martes"}""", true)]
+    [TestCase("file.edit", """{"path":"notas.txt","oldText":"2024","newText":"","replaceAll":true}""", true)]
+    [TestCase("file.edit", """{"path":"notas.txt","oldText":"lunes"}""", false)]
     public void TheFileOperationsTakeTypedArgumentsAndNeverAskInNormalMode(string operation, string json, bool expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);

@@ -25,9 +25,6 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C02): a click that changed nothing on a control already chosen says it was already so.</summary>
     public const string AlreadySelected = "already_selected";
 
-    /// <summary>E024: a file.write with no folder says it went to BAXY's working folder (and a home folder of that name).</summary>
-    public const string WorkFolder = "work_folder";
-
     /// <summary>F019, E015: an app.open with a place says the place was only asked for and how to look.</summary>
     public const string PlaceUnverified = "place_unverified";
 
@@ -73,7 +70,7 @@ public static class ModelAids
     /// </summary>
     public const string NearNames = "near_names";
 
-    /// <summary>Holdout v5 (V5E047, «is not in no folder»): a known file call whose subdirectory does not exist says so, as a relative path.</summary>
+    /// <summary>Holdout v5 (V5E047, «is not in no folder»): a known file call whose path names a subfolder that does not exist says so, as a relative path.</summary>
     public const string MissingSubdirectory = "missing_subdirectory";
 
     /// <summary>Holdout v5 (V5E061, another file's whole content as oldText): a file.edit whose oldText is not in the file says it may not be the file meant.</summary>
@@ -299,7 +296,7 @@ public static class ModelAids
     /// Práctica e2e V6E035 («¿qué archivo de mi carpeta X tiene anotado el dato Y?», c3-junto-s0: file.find with query Y
     /// three times, no name with Y, and «ningún archivo en X menciona Y» with Y written inside one): a file.find by name
     /// (not a pattern) that matched none says that only names were matched, how many files under it had their text
-    /// unread, and the file_find call with the same folder and subdirectory and content Y (WindowsKnownFileAdapter).
+    /// unread, and the file_find call with the same path and content Y (WindowsKnownFileAdapter).
     /// </summary>
     public const string FindContentNext = "find_content_next";
 

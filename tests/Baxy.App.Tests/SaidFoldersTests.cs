@@ -51,7 +51,7 @@ public sealed class SaidFoldersTests
     public void AWriteThatLeavesOutAFullPathSaidIsRefusedWithTheCallThatNamesIt()
     {
         SaidFolders said = Heard($@"guarda en {_home}\banco-local un archivo recados.txt que diga: comprar pan");
-        var call = new JsonObject { ["relativePath"] = "recados.txt", ["text"] = "comprar pan", ["folder"] = "home" };
+        var call = new JsonObject { ["path"] = "home/recados.txt", ["text"] = "comprar pan" };
 
         SaidFolders.Ruling? first = said.Rule("file.write", Descriptor("file.write"), call);
         SaidFolders.Ruling? again = said.Rule("file.write", Descriptor("file.write"), call);
@@ -64,7 +64,7 @@ public sealed class SaidFoldersTests
             Assert.That(next, Does.StartWith("nothing ran, and no limit of BAXY's stopped it: the person named "));
             Assert.That(next, Does.Not.Contain("outside"));
             Assert.That((bool?)first.Refusal["reachable"], Is.True);
-            Assert.That(next, Does.Contain("call file_write again with relativePath \"banco-local/recados.txt\""));
+            Assert.That(next, Does.Contain("call file_write again with path \"home/banco-local/recados.txt\""));
             Assert.That(next, Does.Contain(Path.Combine(_home, "recados.txt")));
             Assert.That(first.Refusal["saidFolders"]!.AsArray().Select(static node => (string?)node),
                 Is.EqualTo(new[] { Path.Combine(_home, "banco-local") }));
@@ -75,16 +75,14 @@ public sealed class SaidFoldersTests
         });
     }
 
-    [TestCase("banco-local/recados.txt", "home")]
-    [TestCase(@"banco-local\recados.txt", "home")]
-    [TestCase("{home}\\banco-local\\recados.txt", "home")]
-    [TestCase("{home}\\banco-local\\recados.txt", null)]
-    public void AWriteInsideTheFolderSaidRunsAsItIs(string relativePath, string? folder)
+    [TestCase("banco-local/recados.txt")]
+    [TestCase(@"banco-local\recados.txt")]
+    [TestCase("home/banco-local/recados.txt")]
+    [TestCase("{home}\\banco-local\\recados.txt")]
+    public void AWriteInsideTheFolderSaidRunsAsItIs(string path)
     {
         SaidFolders said = Heard($@"guarda en {_home}\banco-local un archivo recados.txt que diga: comprar pan");
-        var call = new JsonObject { ["relativePath"] = relativePath.Replace("{home}", _home), ["text"] = "pan" };
-        if (folder is not null)
-            call["folder"] = folder;
+        var call = new JsonObject { ["path"] = path.Replace("{home}", _home), ["text"] = "pan" };
 
         Assert.That(said.Rule("file.write", Descriptor("file.write"), call), Is.Null);
     }
@@ -94,13 +92,7 @@ public sealed class SaidFoldersTests
     public void AnAppendThatLeavesOutAFolderNamedByItsNameIsRefused()
     {
         SaidFolders said = Heard("pon al final de apuntes.txt, en la carpeta banco-local, la frase revisar la estufa");
-        var call = new JsonObject
-        {
-            ["relativePath"] = "apuntes.txt",
-            ["text"] = "revisar la estufa",
-            ["folder"] = "home",
-            ["append"] = true,
-        };
+        var call = new JsonObject { ["path"] = "home/apuntes.txt", ["text"] = "revisar la estufa", ["append"] = true };
 
         SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"), call);
 
@@ -108,17 +100,12 @@ public sealed class SaidFoldersTests
         string next = (string?)ruling?.Refusal?["next"] ?? string.Empty;
         Assert.Multiple(() =>
         {
-            Assert.That(next, Does.Contain("call file_write again with relativePath \"banco-local/apuntes.txt\" (it acts in "
+            Assert.That(next, Does.Contain("call file_write again with path \"home/banco-local/apuntes.txt\" (it acts in "
                 + Path.Combine(_home, "banco-local", "apuntes.txt") + ");"));
-            Assert.That(next, Does.Not.Contain("folder \"desktop\""));
+            Assert.That(next, Does.Not.Contain("\"desktop/"));
             Assert.That(next, Does.Contain("If " + Path.Combine(_home, "banco-local")
                 + " (apuntes.txt is there) is the place of this call"));
-            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
-            {
-                ["relativePath"] = "banco-local/apuntes.txt",
-                ["text"] = "revisar la estufa",
-                ["folder"] = "home",
-            }), Is.Null);
+            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "home/banco-local/apuntes.txt", ["text"] = "revisar la estufa" }), Is.Null);
         });
     }
 
@@ -130,20 +117,14 @@ public sealed class SaidFoldersTests
     {
         File.WriteAllText(Path.Combine(_home, "banco-local", "lista_invitados.txt"), "Ana\n");
         SaidFolders said = Heard("agrega a Pedro al final de lista invitados.txt, en la carpeta banco-local");
-        SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"), new JsonObject
-        {
-            ["relativePath"] = "lista invitados.txt",
-            ["text"] = "Pedro",
-            ["folder"] = "home",
-            ["append"] = true,
-        });
+        SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "home/lista invitados.txt", ["text"] = "Pedro", ["append"] = true });
 
         string next = (string?)ruling?.Refusal?["next"] ?? string.Empty;
         Assert.Multiple(() =>
         {
             Assert.That(next, Does.Contain("If " + Path.Combine(_home, "banco-local")
                 + " (lista_invitados.txt is there) is the place of this call"));
-            Assert.That(next, Does.Not.Contain("folder \"desktop\""));
+            Assert.That(next, Does.Not.Contain("\"desktop/"));
         });
     }
 
@@ -153,15 +134,15 @@ public sealed class SaidFoldersTests
     {
         SaidFolders said = Heard("crea compras.txt en banco-local con leche");
         SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"),
-            new JsonObject { ["relativePath"] = "compras.txt", ["text"] = "leche", ["folder"] = "home" });
+            new JsonObject { ["path"] = "home/compras.txt", ["text"] = "leche" });
 
         string next = (string?)ruling?.Refusal?["next"] ?? string.Empty;
         Assert.Multiple(() =>
         {
             Assert.That(next, Does.Contain("If one of them is the place of this call"));
-            Assert.That(next, Does.Contain("relativePath \"banco-local/compras.txt\" for "
+            Assert.That(next, Does.Contain("path \"home/banco-local/compras.txt\" for "
                 + Path.Combine(_home, "banco-local") + " (no compras.txt there)"));
-            Assert.That(next, Does.Contain("relativePath \"banco-local/compras.txt\" and folder \"desktop\" for "));
+            Assert.That(next, Does.Contain("path \"desktop/banco-local/compras.txt\" for "));
         });
     }
 
@@ -171,7 +152,7 @@ public sealed class SaidFoldersTests
     public void AReadThatLeavesOutTheFolderNamedIsRoutedThere()
     {
         SaidFolders said = Heard("¿qué archivo pesa más dentro de banco-local, en mi carpeta de usuario?");
-        var call = new JsonObject { ["folder"] = "home", ["order"] = "size" };
+        var call = new JsonObject { ["path"] = "home", ["order"] = "size" };
 
         SaidFolders.Ruling? routed = said.Rule("file.find", Descriptor("file.find"), call);
         SaidFolders.Ruling? again = said.Rule("file.find", Descriptor("file.find"), call);
@@ -180,9 +161,9 @@ public sealed class SaidFoldersTests
         {
             Assert.That(routed?.Refusal, Is.Null);
             Assert.That(routed?.Arguments.ToJsonString(),
-                Is.EqualTo("{\"folder\":\"home\",\"order\":\"size\",\"subdirectory\":\"banco-local\"}"));
+                Is.EqualTo("{\"path\":\"home/banco-local\",\"order\":\"size\"}"));
             Assert.That(routed?.Note, Does.Contain("this call looked in " + Path.Combine(_home, "banco-local")
-                + " (subdirectory \"banco-local\") instead of " + _home));
+                + " (path \"home/banco-local\") instead of " + _home));
             Assert.That(again?.Arguments.ToJsonString(), Is.EqualTo(call.ToJsonString()));
             Assert.That(again?.Note, Does.Contain("it did not look at or change anything in that folder"));
         });
@@ -194,10 +175,10 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard("lee apuntes.txt de banco-local");
 
         SaidFolders.Ruling? routed = said.Rule("file.read", Descriptor("file.read"),
-            new JsonObject { ["fileName"] = Path.Combine(_home, "apuntes.txt"), ["folder"] = "all_known" });
+            new JsonObject { ["path"] = Path.Combine(_home, "apuntes.txt") });
 
         Assert.That(routed?.Arguments.ToJsonString(),
-            Is.EqualTo("{\"fileName\":\"apuntes.txt\",\"folder\":\"home\",\"subdirectory\":\"banco-local\"}"));
+            Is.EqualTo("{\"path\":\"home/banco-local/apuntes.txt\"}"));
     }
 
     // E020 shape: BAXY's working folder is not the person's.
@@ -210,7 +191,7 @@ public sealed class SaidFoldersTests
             ?.Refusal?["next"] ?? string.Empty;
 
         Assert.That(next, Does.Contain("filesystem_list acts only in BAXY's own working folder")
-            .And.Contain("to look there, call file_find with folder \"home\" and subdirectory \"banco-local\""));
+            .And.Contain("to look there, call file_find with path \"home/banco-local\""));
     }
 
     // Banco v6 V6D278 (0 of 106): «en mi carpeta BAXY-bench, ¿qué archivos hay?» with a BAXY-bench in the home folder
@@ -225,19 +206,19 @@ public sealed class SaidFoldersTests
             ?.Refusal?["next"] ?? string.Empty;
 
         Assert.That(next, Does.Contain("filesystem_list acts only in BAXY's own working folder")
-            .And.Contain("call file_find with folder \"home\" and subdirectory \"banco-local\"")
-            .And.Contain("folder \"desktop\" and subdirectory \"banco-local\""));
+            .And.Contain("call file_find with path \"home/banco-local\"")
+            .And.Contain("path \"desktop/banco-local\""));
     }
 
     // Práctica V5E040: «busca la factura en Documentos\Contabilidad» was a filesystem_search, which looks only in BAXY's
     // working folder, and BAXY said it found nothing. A search of the working folder in a turn that names a folder of
     // the person's runs as file_find in that folder (and the folder inside it said), and its note says so.
     [TestCase(@"busca la factura en Documentos\Contabilidad", "factura",
-        "{\"query\":\"factura\",\"folder\":\"documents\",\"subdirectory\":\"Contabilidad\"}", "Documents/Contabilidad")]
+        "{\"query\":\"factura\",\"path\":\"documents/Contabilidad\"}", "Documents/Contabilidad")]
     [TestCase("busca el contrato en mis descargas", "contrato",
-        "{\"query\":\"contrato\",\"folder\":\"downloads\"}", "Downloads")]
+        "{\"query\":\"contrato\",\"path\":\"downloads\"}", "Downloads")]
     [TestCase("busca en cajones dónde está el file llaves.txt, que no me acuerdo en cuál lo dejé", "llaves.txt",
-        "{\"query\":\"llaves.txt\",\"folder\":\"home\",\"subdirectory\":\"cajones\"}", "cajones")]
+        "{\"query\":\"llaves.txt\",\"path\":\"home/cajones\"}", "cajones")]
     public void ASearchOfTheWorkingFolderRunsAsFileFindInTheFolderNamed(
         string words, string query, string arguments, string folder)
     {
@@ -308,7 +289,7 @@ public sealed class SaidFoldersTests
 
         Assert.That(steps.Select(static step => (step.Operation, step.Arguments.ToJsonString())), Is.EqualTo(new[]
         {
-            ("file.find", "{\"query\":\"factura\",\"folder\":\"documents\",\"subdirectory\":\"Contabilidad\"}"),
+            ("file.find", "{\"query\":\"factura\",\"path\":\"documents/Contabilidad\"}"),
         }));
     }
 
@@ -341,7 +322,7 @@ public sealed class SaidFoldersTests
             Assert.That(again?.Refusal, Is.Null);
             Assert.That(again?.Operation, Is.Null);
             Assert.That(again?.Note, Does.Contain("it did not look at or change anything in that folder; to look there, "
-                + "call file_find with query \"llaves.txt\" and folder \"home\" and subdirectory \"cajones\""));
+                + "call file_find with query \"llaves.txt\" and path \"home/cajones\""));
         });
     }
 
@@ -352,10 +333,10 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard("manda a la papelera viejo.txt de la carpeta banco-local");
 
         string next = (string?)said.Rule("filesystem.known.trash.named", Descriptor("filesystem.known.trash.named"),
-            new JsonObject { ["fileName"] = "viejo.txt", ["folder"] = "all_known" })?.Refusal?["next"] ?? string.Empty;
+            new JsonObject { ["path"] = "viejo.txt" })?.Refusal?["next"] ?? string.Empty;
 
         Assert.That(next, Does.Contain(
-            "call filesystem_known_trash_named again with folder \"home\" and subdirectory \"banco-local\" (it acts in "
+            "call filesystem_known_trash_named again with path \"home/banco-local/viejo.txt\" (it acts in "
             + Path.Combine(_home, "banco-local") + ");"));
     }
 
@@ -366,9 +347,9 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard($@"en {_home}\banco-local crea una carpeta obra con las subcarpetas a y b");
 
         SaidFolders.Ruling? ruling = said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
-            new JsonObject { ["relativePath"] = "obra/a", ["folder"] = "home" });
+            new JsonObject { ["path"] = "home/obra/a" });
 
-        Assert.That((string?)ruling?.Refusal?["next"], Does.Contain("relativePath \"banco-local/obra/a\""));
+        Assert.That((string?)ruling?.Refusal?["next"], Does.Contain("path \"home/banco-local/obra/a\""));
     }
 
     [Test]
@@ -381,10 +362,10 @@ public sealed class SaidFoldersTests
             Assert.That(said.Places().Select(static place => place.Path),
                 Is.EqualTo(new[] { Path.Combine(_home, "Documents", "obra") }));
             Assert.That((string?)said.Rule("file.write", Descriptor("file.write"),
-                    new JsonObject { ["relativePath"] = "lista.md", ["text"] = "x", ["folder"] = "documents" })
-                ?.Refusal?["next"], Does.Contain("relativePath \"obra/lista.md\""));
+                    new JsonObject { ["path"] = "documents/lista.md", ["text"] = "x" })
+                ?.Refusal?["next"], Does.Contain("path \"documents/obra/lista.md\""));
             Assert.That(said.Rule("file.write", Descriptor("file.write"),
-                new JsonObject { ["relativePath"] = "obra/lista.md", ["text"] = "x", ["folder"] = "documents" }), Is.Null);
+                new JsonObject { ["path"] = "documents/obra/lista.md", ["text"] = "x" }), Is.Null);
         });
     }
 
@@ -396,12 +377,12 @@ public sealed class SaidFoldersTests
         Assert.Multiple(() =>
         {
             Assert.That((string?)said.Rule("file.write", Descriptor("file.write"),
-                    new JsonObject { ["relativePath"] = "notas.txt", ["text"] = "x", ["folder"] = "home" })
-                ?.Refusal?["next"], Does.Contain("call file_write again with relativePath \"notas.txt\" and folder \"desktop\" (it acts in "
+                    new JsonObject { ["path"] = "home/notas.txt", ["text"] = "x" })
+                ?.Refusal?["next"], Does.Contain("call file_write again with path \"desktop/notas.txt\" (it acts in "
                     + Path.Combine(_home, "Desktop", "notas.txt") + "); any other call of this turn in that folder says it the same way, "
-                    + "folder \"desktop\";"));
+                    + "with a path that begins \"desktop\";"));
             Assert.That(said.Rule("file.write", Descriptor("file.write"),
-                new JsonObject { ["relativePath"] = "notas.txt", ["text"] = "x", ["folder"] = "desktop" }), Is.Null);
+                new JsonObject { ["path"] = "desktop/notas.txt", ["text"] = "x" }), Is.Null);
         });
     }
 
@@ -414,13 +395,8 @@ public sealed class SaidFoldersTests
         Assert.Multiple(() =>
         {
             Assert.That(said.Rule("file.write", Descriptor("file.write"),
-                new JsonObject { ["relativePath"] = "apuntes.txt", ["text"] = "uno", ["folder"] = "desktop" }), Is.Null);
-            Assert.That(said.Rule("file.read", Descriptor("file.read"), new JsonObject
-            {
-                ["fileName"] = "apuntes.txt",
-                ["folder"] = "home",
-                ["subdirectory"] = "banco-local",
-            }), Is.Null);
+                new JsonObject { ["path"] = "desktop/apuntes.txt", ["text"] = "uno" }), Is.Null);
+            Assert.That(said.Rule("file.read", Descriptor("file.read"), new JsonObject { ["path"] = "home/banco-local/apuntes.txt" }), Is.Null);
         });
     }
 
@@ -443,7 +419,7 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard(words);
 
         Assert.That(said.Rule("file.write", Descriptor("file.write"),
-            new JsonObject { ["relativePath"] = "compras.txt", ["text"] = "leche", ["folder"] = "home" }), Is.Null);
+            new JsonObject { ["path"] = "home/compras.txt", ["text"] = "leche" }), Is.Null);
     }
 
     [Test]
@@ -475,7 +451,7 @@ public sealed class SaidFoldersTests
         {
             SaidFolders said = Heard($@"guarda en {_home}\banco-local recados.txt");
             Assert.That(said.Rule("file.write", Descriptor("file.write"),
-                new JsonObject { ["relativePath"] = "recados.txt", ["text"] = "x", ["folder"] = "home" }), Is.Null);
+                new JsonObject { ["path"] = "home/recados.txt", ["text"] = "x" }), Is.Null);
         }
         finally
         {
@@ -497,7 +473,7 @@ public sealed class SaidFoldersTests
                     ["type"] = "turn.result",
                     ["kind"] = "action",
                     ["operation"] = "file.write",
-                    ["arguments"] = new JsonObject { ["relativePath"] = "recados.txt", ["text"] = "pan", ["folder"] = "home" },
+                    ["arguments"] = new JsonObject { ["path"] = "home/recados.txt", ["text"] = "pan" },
                 },
                 ["turn.continue"] = new JsonObject
                 {
@@ -536,7 +512,7 @@ public sealed class SaidFoldersTests
         {
             Assert.That((steps[0].Operation, steps[0].Status, steps[0].Sent), Is.EqualTo(("file.write", "rejected", false)));
             Assert.That((string?)observed?["error"], Is.EqualTo(SaidFolders.LeftOut));
-            Assert.That((string?)observed?["next"], Does.Contain("relativePath \"banco-local/recados.txt\""));
+            Assert.That((string?)observed?["next"], Does.Contain("path \"home/banco-local/recados.txt\""));
         });
     }
 
@@ -596,7 +572,7 @@ public sealed class SaidFoldersTests
                     ["type"] = "turn.result",
                     ["kind"] = "action",
                     ["operation"] = "file.write",
-                    ["arguments"] = new JsonObject { ["relativePath"] = "pagina.txt", ["text"] = "x", ["folder"] = "home" },
+                    ["arguments"] = new JsonObject { ["path"] = "home/pagina.txt", ["text"] = "x" },
                 },
                 ["turn.continue"] = new JsonObject
                 {
@@ -627,7 +603,7 @@ public sealed class SaidFoldersTests
             Assert.That(said.Places().Select(static place => place.Path),
                 Is.EqualTo(new[] { Path.Combine(_home, "Documents") }));
             Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
-                new JsonObject { ["folder"] = "documents", ["relativePath"] = "Viaje Chiloé 2027" }), Is.Null);
+                new JsonObject { ["path"] = "documents/Viaje Chiloé 2027" }), Is.Null);
         });
     }
 
@@ -639,14 +615,14 @@ public sealed class SaidFoldersTests
     {
         SaidFolders said = Heard("en documentos crea la carpeta viaje chiloe 2027 y dentro un archivo itinerario.txt");
         Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
-            new JsonObject { ["folder"] = "documents", ["relativePath"] = "viaje chiloe 2027" }), Is.Null);
+            new JsonObject { ["path"] = "documents/viaje chiloe 2027" }), Is.Null);
         Directory.CreateDirectory(Path.Combine(_home, "Documents", "viaje chiloe 2027"));
 
         SaidFolders.Ruling? write = said.Rule("file.write", Descriptor("file.write"),
-            new JsonObject { ["folder"] = "documents", ["relativePath"] = "itinerario.txt", ["text"] = "día 1" });
+            new JsonObject { ["path"] = "documents/itinerario.txt", ["text"] = "día 1" });
 
         Assert.That((string?)write?.Refusal?["next"],
-            Does.Contain("call file_write again with relativePath \"viaje chiloe 2027/itinerario.txt\""));
+            Does.Contain("call file_write again with path \"documents/viaje chiloe 2027/itinerario.txt\""));
     }
 
     // Holdout v8 (falsedades #16, cien and final2, s0 and s1): «haz una carpeta cumple_benja en BAXY-bench, adentro un
@@ -662,33 +638,27 @@ public sealed class SaidFoldersTests
         Directory.CreateDirectory(bench);
         File.WriteAllText(Path.Combine(bench, "invitados.txt"), "ana\n");
         SaidFolders said = Heard("haz una carpeta cumple_benja en taller-bench, adentro un archivo lista.txt que diga globos");
-        var make = new JsonObject { ["relativePath"] = "taller-bench/cumple_benja", ["folder"] = "home" };
+        var make = new JsonObject { ["path"] = "home/taller-bench/cumple_benja" };
         Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"), make), Is.Null);
         Directory.CreateDirectory(party);
         said.Ran("filesystem.create.directory", make, "completed");
 
-        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject
-        {
-            ["relativePath"] = "lista.txt", ["text"] = "globos", ["folder"] = "home",
-        })?.Refusal?["next"] ?? string.Empty;
+        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "home/lista.txt", ["text"] = "globos" })?.Refusal?["next"] ?? string.Empty;
         File.WriteAllText(Path.Combine(party, "lista.txt"), "globos\n");
         SaidFolders.Ruling? read = said.Rule("file.read", Descriptor("file.read"),
-            new JsonObject { ["fileName"] = "lista.txt", ["folder"] = "home" });
+            new JsonObject { ["path"] = "home/lista.txt" });
         SaidFolders.Ruling? beside = said.Rule("file.read", Descriptor("file.read"),
-            new JsonObject { ["fileName"] = "invitados.txt", ["folder"] = "home" });
+            new JsonObject { ["path"] = "home/invitados.txt" });
 
         Assert.Multiple(() =>
         {
             Assert.That(next, Does.Contain($"If {party}, the folder this turn made in it, is the place of this call, call "
-                + $"file_write again with relativePath \"taller-bench/cumple_benja/lista.txt\" (it acts in "
+                + $"file_write again with path \"home/taller-bench/cumple_benja/lista.txt\" (it acts in "
                 + $"{Path.Combine(party, "lista.txt")})"));
-            Assert.That(next, Does.Not.Contain("\"taller-bench/lista.txt\""));
-            Assert.That(read?.Arguments["subdirectory"]?.GetValue<string>(), Is.EqualTo("taller-bench/cumple_benja"));
-            Assert.That(beside?.Arguments["subdirectory"]?.GetValue<string>(), Is.EqualTo("taller-bench"));
-            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
-            {
-                ["relativePath"] = "taller-bench/notas.txt", ["text"] = "x", ["folder"] = "home",
-            }), Is.Null);
+            Assert.That(next, Does.Not.Contain("\"home/taller-bench/lista.txt\""));
+            Assert.That(read?.Arguments["path"]?.GetValue<string>(), Is.EqualTo("home/taller-bench/cumple_benja/lista.txt"));
+            Assert.That(beside?.Arguments["path"]?.GetValue<string>(), Is.EqualTo("home/taller-bench/invitados.txt"));
+            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "home/taller-bench/notas.txt", ["text"] = "x" }), Is.Null);
         });
     }
 
@@ -702,8 +672,8 @@ public sealed class SaidFoldersTests
         string bench = Path.Combine(_home, "taller-bench");
         string trips = Path.Combine(bench, "viajes");
         Directory.CreateDirectory(bench);
-        var make = new JsonObject { ["relativePath"] = "taller-bench/viajes", ["folder"] = "home" };
-        var write = new JsonObject { ["relativePath"] = "itinerario.txt", ["text"] = "vuelo a las 9", ["folder"] = "home" };
+        var make = new JsonObject { ["path"] = "home/taller-bench/viajes" };
+        var write = new JsonObject { ["path"] = "home/itinerario.txt", ["text"] = "vuelo a las 9" };
         SaidFolders said = Heard("hazme una carpeta viajes en taller-bench");
         Directory.CreateDirectory(trips);
         said.Ran("filesystem.create.directory", make, "completed");
@@ -719,8 +689,8 @@ public sealed class SaidFoldersTests
         {
             Assert.That(next, Does.StartWith("nothing ran, and no limit of BAXY's stopped it: the person's previous request named «taller-bench»"));
             Assert.That(next, Does.Contain($"If {trips}, the folder that request made in it, is the place of this call, "
-                + "call file_write again with relativePath \"taller-bench/viajes/itinerario.txt\""));
-            Assert.That(next, Does.Not.Contain("\"taller-bench/itinerario.txt\""));
+                + "call file_write again with path \"home/taller-bench/viajes/itinerario.txt\""));
+            Assert.That(next, Does.Not.Contain("\"home/taller-bench/itinerario.txt\""));
             Assert.That(cleared.Rule("file.write", Descriptor("file.write"), write), Is.Null);
         });
     }
@@ -733,13 +703,13 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard("cuántos pdf hay en facturas luz");
 
         SaidFolders.Ruling? ruling = said.Rule("filesystem.explorer.count", Descriptor("filesystem.explorer.count"),
-            new JsonObject { ["extension"] = ".pdf", ["folder"] = "home" });
+            new JsonObject { ["extension"] = ".pdf", ["path"] = "home" });
 
         Assert.Multiple(() =>
         {
             Assert.That(ruling?.Refusal, Is.Null);
-            Assert.That((string?)ruling?.Arguments["subdirectory"], Is.EqualTo("Facturas Luz"));
-            Assert.That(ruling?.Note, Does.Contain("subdirectory \"Facturas Luz\""));
+            Assert.That((string?)ruling?.Arguments["path"], Is.EqualTo("home/Facturas Luz"));
+            Assert.That(ruling?.Note, Does.Contain("path \"home/Facturas Luz\""));
         });
     }
 
@@ -754,16 +724,13 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard(@"reemplaza horario.txt en Documentos\Turnos Farmacia, por: martes");
 
         SaidFolders.Ruling? trash = said.Rule("filesystem.known.trash.named", Descriptor("filesystem.known.trash.named"),
-            new JsonObject { ["fileName"] = "horario.txt", ["folder"] = "documents" });
+            new JsonObject { ["path"] = "documents/horario.txt" });
 
         Assert.Multiple(() =>
         {
             Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { shifts }));
-            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
-            {
-                ["relativePath"] = "Turnos Farmacia/horario.txt", ["text"] = "martes", ["folder"] = "documents",
-            }), Is.Null);
-            Assert.That((string?)trash?.Refusal?["next"], Does.Contain("subdirectory \"Turnos Farmacia\""));
+            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "documents/Turnos Farmacia/horario.txt", ["text"] = "martes" }), Is.Null);
+            Assert.That((string?)trash?.Refusal?["next"], Does.Contain("path \"documents/Turnos Farmacia/horario.txt\""));
         });
     }
 
@@ -812,14 +779,8 @@ public sealed class SaidFoldersTests
         {
             Assert.That(next, Does.Contain("call filesystem_sandbox_move_named again with"));
             Assert.That(next, Does.Contain("destinationRelativePath \"archivo-2025/presupuesto.xlsx\""));
-            Assert.That(next, Does.Contain("folder \"home\" and subdirectory \"contabilidad\""));
-            Assert.That(said.Rule("filesystem.sandbox.move.named", move, new JsonObject
-            {
-                ["sourceFileName"] = "presupuesto.xlsx",
-                ["destinationRelativePath"] = "archivo-2025/presupuesto.xlsx",
-                ["folder"] = "home",
-                ["subdirectory"] = "contabilidad",
-            }), Is.Null);
+            Assert.That(next, Does.Contain("path \"home/contabilidad\""));
+            Assert.That(said.Rule("filesystem.sandbox.move.named", move, new JsonObject { ["sourceFileName"] = "presupuesto.xlsx", ["destinationRelativePath"] = "archivo-2025/presupuesto.xlsx", ["path"] = "home/contabilidad" }), Is.Null);
         });
     }
 
@@ -838,19 +799,10 @@ public sealed class SaidFoldersTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(Next(new JsonObject
-            {
-                ["sourceFileName"] = "contrato.txt",
-                ["destinationRelativePath"] = "banco-local/respaldo.txt",
-                ["folder"] = "home",
-            }), Does.Contain("again with destinationRelativePath \"respaldo.txt\" and folder \"home\" and subdirectory "
-                + $"\"banco-local\" (it acts in {bench});"));
-            Assert.That(Next(new JsonObject
-            {
-                ["sourceFileName"] = "contrato.txt",
-                ["destinationRelativePath"] = "respaldo.txt",
-                ["subdirectory"] = "banco-local",
-            }), Does.Contain($"again with subdirectory \"banco-local\" and folder \"home\" (it acts in {bench});"));
+            Assert.That(Next(new JsonObject { ["sourceFileName"] = "contrato.txt", ["destinationRelativePath"] = "banco-local/respaldo.txt", ["path"] = "home" }), Does.Contain("again with destinationRelativePath \"respaldo.txt\" and path "
+                + $"\"home/banco-local\" (it acts in {bench});"));
+            // P2.4: the folder said as the path is the place, whole, and the call runs there.
+            Assert.That(Next(new JsonObject { ["sourceFileName"] = "contrato.txt", ["destinationRelativePath"] = "respaldo.txt", ["path"] = "banco-local" }), Is.Empty);
         });
     }
 
@@ -861,18 +813,18 @@ public sealed class SaidFoldersTests
     // the folder named (aid «said_folder_counterpart»); with the aid off, as before.
     [TestCase("filesystem.copy", "all",
         "filesystem_copy cannot name a folder of theirs, and filesystem_sandbox_move_named does it there: call "
-        + "filesystem_sandbox_move_named with destinationRelativePath \"respaldo.txt\" and folder \"home\" and subdirectory "
-        + "\"archivador\" and copy true, and sourceFileName the file's own name. If the person asked")]
+        + "filesystem_sandbox_move_named with destinationRelativePath \"respaldo.txt\" and path \"home/archivador\" "
+        + "and copy true, and sourceFileName the file's own name. If the person asked")]
     [TestCase("filesystem.move", "all",
         "filesystem_move cannot name a folder of theirs, and filesystem_sandbox_move_named does it there: call "
-        + "filesystem_sandbox_move_named with destinationRelativePath \"respaldo.txt\" and folder \"home\" and subdirectory "
-        + "\"archivador\", and sourceFileName the file's own name. If the person asked")]
+        + "filesystem_sandbox_move_named with destinationRelativePath \"respaldo.txt\" and path \"home/archivador\", "
+        + "and sourceFileName the file's own name. If the person asked")]
     [TestCase("filesystem.read.text", "all",
-        "filesystem_read_text cannot name a folder of theirs, and file_read does it there: call file_read with folder "
-        + "\"home\" and subdirectory \"archivador\", and fileName the file's own name. If the person asked")]
+        "filesystem_read_text cannot name a folder of theirs, and file_read does it there: call file_read with a path "
+        + "that begins \"home/archivador/\" and ends with the file's own name. If the person asked")]
     [TestCase("filesystem.copy", "said_folder", "filesystem_copy cannot name a folder of theirs. If the person asked")]
     [TestCase("filesystem.read.text", "said_folder",
-        "to look there, call file_find with folder \"home\" and subdirectory \"archivador\". If the person asked")]
+        "to look there, call file_find with path \"home/archivador\". If the person asked")]
     public void ACallOfTheWorkingFolderIsRefusedWithTheCallThatDoesItInTheFolderNamed(
         string operation, string aids, string told)
     {
@@ -945,17 +897,12 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard("en mis documentos dentro de la carpeta recetas abuela crea un archivo sopaipillas punto "
             + "txt que diga harina zapallo y manteca");
 
-        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject
-        {
-            ["relativePath"] = "recetas_abuela/sopaipillas.txt",
-            ["text"] = "harina zapallo y manteca",
-            ["folder"] = "documents",
-        })?.Refusal?["next"] ?? string.Empty;
+        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "documents/recetas_abuela/sopaipillas.txt", ["text"] = "harina zapallo y manteca" })?.Refusal?["next"] ?? string.Empty;
 
         Assert.Multiple(() =>
         {
             Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { recipes }));
-            Assert.That(next, Does.Contain("call file_write again with relativePath \"Recetas Abuela/sopaipillas.txt\" (it acts in "
+            Assert.That(next, Does.Contain("call file_write again with path \"documents/Recetas Abuela/sopaipillas.txt\" (it acts in "
                 + Path.Combine(recipes, "sopaipillas.txt") + ");"));
             // Counter-case: said alone, recetas is that folder.
             Assert.That(Heard("crea lista.txt en la carpeta recetas").Places().Select(static place => place.Path),
@@ -974,15 +921,12 @@ public sealed class SaidFoldersTests
         File.WriteAllText(Path.Combine(bench, "gastos.txt"), "luz 32000\r\n");
         SaidFolders said = Heard(words);
 
-        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject
-        {
-            ["relativePath"] = "gastos.txt", ["text"] = "gas 18000", ["folder"] = "home", ["append"] = true,
-        })?.Refusal?["next"] ?? string.Empty;
+        string next = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "home/gastos.txt", ["text"] = "gas 18000", ["append"] = true })?.Refusal?["next"] ?? string.Empty;
 
         Assert.Multiple(() =>
         {
             Assert.That(said.Places().Select(static place => place.Path), Is.EqualTo(new[] { bench }));
-            Assert.That(next, Does.Contain("call file_write again with relativePath \"BAXY-bench/gastos.txt\" (it acts in "
+            Assert.That(next, Does.Contain("call file_write again with path \"home/BAXY-bench/gastos.txt\" (it acts in "
                 + Path.Combine(bench, "gastos.txt") + ");"));
             // BAXY's own name, however it is spelled, is how the person speaks to it, never a folder (home has «baxy»).
             Assert.That(Heard("baxi, crea notas.txt").Places(), Is.Empty);
@@ -1002,10 +946,7 @@ public sealed class SaidFoldersTests
         Directory.CreateDirectory(Path.Combine(_home, "cajon", "bino"));
         SaidFolders said = Heard("escribe notas.txt en la carpeta vaca que diga hola");
 
-        SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"), new JsonObject
-        {
-            ["relativePath"] = "Baca/notas.txt", ["text"] = "hola", ["folder"] = "home",
-        });
+        SaidFolders.Ruling? ruling = said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "home/Baca/notas.txt", ["text"] = "hola" });
 
         Assert.Multiple(() =>
         {
@@ -1040,7 +981,7 @@ public sealed class SaidFoldersTests
     {
         SaidFolders said = Heard("en documentos crea una carpeta que se llame viaje chiloé 2027 y adentro un archivo");
         ProductOperationDescriptor create = Descriptor("filesystem.create.directory");
-        var call = new JsonObject { ["relativePath"] = "viaje_chiloe_2027", ["folder"] = "documents" };
+        var call = new JsonObject { ["path"] = "documents/viaje_chiloe_2027" };
 
         SaidFolders.Ruling? ruling = said.Rule("filesystem.create.directory", create, call);
         SaidFolders.Ruling? again = said.Rule("filesystem.create.directory", create, call);
@@ -1048,15 +989,15 @@ public sealed class SaidFoldersTests
         Assert.Multiple(() =>
         {
             Assert.That((string?)ruling?.Refusal?["error"], Is.EqualTo(SaidFolders.NameChanged));
-            Assert.That((string?)ruling?.Refusal?["next"], Does.Contain("relativePath \"viaje chiloé 2027\""));
+            Assert.That((string?)ruling?.Refusal?["next"], Does.Contain("path \"documents/viaje chiloé 2027\""));
             Assert.That(again?.Refusal, Is.Null);
             Assert.That(said.Rule("filesystem.create.directory", create,
-                new JsonObject { ["relativePath"] = "Viaje Chiloé 2027", ["folder"] = "documents" }), Is.Null);
+                new JsonObject { ["path"] = "documents/Viaje Chiloé 2027" }), Is.Null);
             Assert.That(said.Rule("filesystem.create.directory", create,
-                new JsonObject { ["relativePath"] = "fotos", ["folder"] = "documents" }), Is.Null);
+                new JsonObject { ["path"] = "documents/fotos" }), Is.Null);
             // Only a name that folds to the same words: «viaje chiloe 2026» is another name, not theirs respelled.
             Assert.That(said.Rule("filesystem.create.directory", create,
-                new JsonObject { ["relativePath"] = "viaje chiloe 2026", ["folder"] = "documents" }), Is.Null);
+                new JsonObject { ["path"] = "documents/viaje chiloe 2026" }), Is.Null);
         });
     }
 
@@ -1067,7 +1008,7 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard("crea en documentos la carpeta mis_notas_2027");
 
         Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
-            new JsonObject { ["relativePath"] = "mis_notas_2027", ["folder"] = "documents" }), Is.Null);
+            new JsonObject { ["path"] = "documents/mis_notas_2027" }), Is.Null);
     }
 
     // Revisión de nb-w11-revision: the person's words with a character no folder name can hold («informe: tercer
@@ -1080,7 +1021,7 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard(words);
 
         Assert.That(said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
-            new JsonObject { ["relativePath"] = made, ["folder"] = "documents" })?.Refusal, Is.Null);
+            new JsonObject { ["path"] = "documents/" + made })?.Refusal, Is.Null);
     }
 
     // Holdout v6 V6E065: a call into BAXY's working folder whose relativePath already began with the folder named was told
@@ -1094,12 +1035,15 @@ public sealed class SaidFoldersTests
         SaidFolders said = Heard("crea una carpeta que se llame cotizaciones en taller-bench");
 
         SaidFolders.Ruling? ruling = said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
-            new JsonObject { ["relativePath"] = "taller-bench/cotizaciones" });
+            new JsonObject { ["path"] = "taller-bench/cotizaciones" });
 
-        Assert.That((string?)ruling?.Refusal?["next"], Does.Contain(
-            "call filesystem_create_directory again with relativePath \"taller-bench/cotizaciones\" and folder \"home\" "
+        // P2.4: a path that names no known folder is in the home folder, so this one is already in the folder named.
+        Assert.That(ruling, Is.Null);
+        Assert.That((string?)said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
+            new JsonObject { ["path"] = "documents/cotizaciones" })?.Refusal?["next"], Does.Contain(
+            "call filesystem_create_directory again with path \"home/taller-bench/cotizaciones\" "
             + $"(it acts in {Path.Combine(_home, "taller-bench", "cotizaciones")}); any other call of this turn in that "
-            + "folder says it the same way: folder \"home\" with \"taller-bench\" at the start of relativePath;"));
+            + "folder says it the same way, with a path that begins \"home/taller-bench\";"));
     }
 
     // e2e final6c V6E044: told file_write's folder «as subdirectory, or at the start of relativePath or name», forms
@@ -1112,24 +1056,19 @@ public sealed class SaidFoldersTests
         Directory.CreateDirectory(bench);
         SaidFolders said = Heard("anota en gastos.txt de BAXY-bench: gas 18000");
 
-        string write = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject
-        {
-            ["relativePath"] = "gastos.txt", ["text"] = "gas 18000", ["folder"] = "home", ["append"] = true,
-        })?.Refusal?["next"] ?? string.Empty;
+        string write = (string?)said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "home/gastos.txt", ["text"] = "gas 18000", ["append"] = true })?.Refusal?["next"] ?? string.Empty;
         string edit = (string?)Heard("anota en gastos.txt de BAXY-bench: gas 18000").Rule("file.edit",
-            Descriptor("file.edit"), new JsonObject
-            {
-                ["fileName"] = "gastos.txt", ["folder"] = "home", ["oldText"] = "gas", ["newText"] = "gas 18000",
-            })?.Refusal?["next"] ?? string.Empty;
+            Descriptor("file.edit"), new JsonObject { ["path"] = "home/gastos.txt", ["oldText"] = "gas", ["newText"] = "gas 18000" })?.Refusal?["next"] ?? string.Empty;
 
         Assert.Multiple(() =>
         {
-            Assert.That(write, Does.Contain("call file_write again with relativePath \"BAXY-bench/gastos.txt\" (it acts in "
-                + Path.Combine(bench, "gastos.txt") + "); any other call of this turn in that folder says it the same way: "
-                + "folder \"home\" with \"BAXY-bench\" at the start of relativePath;"));
+            Assert.That(write, Does.Contain("call file_write again with path \"home/BAXY-bench/gastos.txt\" (it acts in "
+                + Path.Combine(bench, "gastos.txt") + "); any other call of this turn in that folder says it the same way, "
+                + "with a path that begins \"home/BAXY-bench\";"));
             Assert.That(write, Does.Not.Contain("subdirectory"));
-            Assert.That(edit, Does.Contain("any other call of this turn in that folder says it the same way: folder \"home\" "
-                + "with \"BAXY-bench\" as subdirectory;"));
+            Assert.That(edit, Does.Contain("call file_edit again with path \"home/BAXY-bench/gastos.txt\""));
+            Assert.That(edit, Does.Contain("any other call of this turn in that folder says it the same way, with a path "
+                + "that begins \"home/BAXY-bench\";"));
         });
     }
 
@@ -1145,26 +1084,16 @@ public sealed class SaidFoldersTests
         File.WriteAllText(Path.Combine(choir, "repertorio.txt"), "uno\r\ndos\r\n");
         SaidFolders said = Heard("sobrescribe repertorio.txt de mi carpeta Coro Taller en Documentos con la palabra pendiente");
 
-        string next = (string?)said.Rule("file.edit", Descriptor("file.edit"), new JsonObject
-        {
-            ["fileName"] = "repertorio.txt", ["folder"] = "documents", ["oldText"] = "uno", ["newText"] = "pendiente",
-        })?.Refusal?["next"] ?? string.Empty;
+        string next = (string?)said.Rule("file.edit", Descriptor("file.edit"), new JsonObject { ["path"] = "documents/repertorio.txt", ["oldText"] = "uno", ["newText"] = "pendiente" })?.Refusal?["next"] ?? string.Empty;
 
         Assert.Multiple(() =>
         {
-            Assert.That(next, Does.Contain($"call file_edit again with folder \"documents\" and subdirectory \"Coro Taller\" "
-                + $"(it acts in {choir}); any other call of this turn in that folder says it the same way: folder "
-                + "\"documents\" with \"Coro Taller\" as subdirectory;"));
+            Assert.That(next, Does.Contain($"call file_edit again with path \"documents/Coro Taller/repertorio.txt\" "
+                + $"(it acts in {choir}); any other call of this turn in that folder says it the same way, with a path that "
+                + "begins \"documents/Coro Taller\";"));
             // As told, each form runs where the person said.
-            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject
-            {
-                ["relativePath"] = "Coro Taller/repertorio.txt", ["text"] = "pendiente", ["folder"] = "documents",
-            }), Is.Null);
-            Assert.That(said.Rule("file.edit", Descriptor("file.edit"), new JsonObject
-            {
-                ["fileName"] = "repertorio.txt", ["folder"] = "documents", ["subdirectory"] = "Coro Taller",
-                ["oldText"] = "uno", ["newText"] = "pendiente",
-            }), Is.Null);
+            Assert.That(said.Rule("file.write", Descriptor("file.write"), new JsonObject { ["path"] = "documents/Coro Taller/repertorio.txt", ["text"] = "pendiente" }), Is.Null);
+            Assert.That(said.Rule("file.edit", Descriptor("file.edit"), new JsonObject { ["path"] = "documents/Coro Taller/repertorio.txt", ["oldText"] = "uno", ["newText"] = "pendiente" }), Is.Null);
         });
     }
 
@@ -1181,14 +1110,14 @@ public sealed class SaidFoldersTests
         var said = new SaidFolders(Known);
         said.Heard("haz la carpeta fotos_2025 en taller-bench");
         said.Heard("uy, me equivoqué de año, era fotos_2026");
-        var made = new JsonObject { ["relativePath"] = "fotos_2026", ["folder"] = "home" };
-        var opened = new JsonObject { ["folder"] = "home", ["name"] = "horario.txt" };
+        var made = new JsonObject { ["path"] = "home/fotos_2026" };
+        var opened = new JsonObject { ["path"] = "home/horario.txt" };
 
         SaidFolders.Ruling? first = said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"), made);
         SaidFolders.Ruling? again = said.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"), made);
         SaidFolders.Ruling? open = said.Rule("file.open", Descriptor("file.open"), opened);
         SaidFolders.Ruling? read = said.Rule("file.read", Descriptor("file.read"),
-            new JsonObject { ["fileName"] = "horario.txt", ["folder"] = "home" });
+            new JsonObject { ["path"] = "home/horario.txt" });
 
         var named = new SaidFolders(Known);
         named.Heard("haz la carpeta fotos_2025 en taller-bench");
@@ -1203,13 +1132,13 @@ public sealed class SaidFoldersTests
             string next = (string?)first?.Refusal?["next"] ?? string.Empty;
             Assert.That(next, Does.StartWith("nothing ran, and no limit of BAXY's stopped it: the person's previous request named «taller-bench»"));
             Assert.That(next, Does.Contain(
-                "call filesystem_create_directory again with relativePath \"taller-bench/fotos_2026\""));
+                "call filesystem_create_directory again with path \"home/taller-bench/fotos_2026\""));
             Assert.That(again?.Refusal, Is.Null);
             Assert.That(again?.Note, Does.Contain("outside it, as it was written"));
-            Assert.That((string?)open?.Refusal?["next"], Does.Contain("call file_open again with name \"taller-bench/horario.txt\""));
+            Assert.That((string?)open?.Refusal?["next"], Does.Contain("call file_open again with path \"home/taller-bench/horario.txt\""));
             Assert.That(read, Is.Null);
             Assert.That(named.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"),
-                new JsonObject { ["relativePath"] = "fotos_2026", ["folder"] = "desktop" }), Is.Null);
+                new JsonObject { ["path"] = "desktop/fotos_2026" }), Is.Null);
             Assert.That(cleared.Rule("filesystem.create.directory", Descriptor("filesystem.create.directory"), made), Is.Null);
         });
     }
@@ -1217,21 +1146,18 @@ public sealed class SaidFoldersTests
     // Revisión de nb-w11-multi: words that name a place that is no folder by its name (their home folder, BAXY's working
     // folder) are a place of their own: the previous request's folder does not rule them. A write in the home folder for
     // «en mi carpeta de usuario» was refused with the call that writes it in the previous request's folder.
-    [TestCase("guarda recados.txt en mi carpeta de usuario que diga pan", "file.write", "home")]
-    [TestCase("guarda recados.txt en tu carpeta de trabajo que diga pan", "filesystem.create.directory", null)]
-    [TestCase("guarda recados.txt en la carpeta de baxy que diga pan", "filesystem.create.directory", null)]
-    public void ATurnThatNamesAPlaceThatIsNoFolderByItsNameIsNotRuledByThePreviousRequest(
-        string words, string operation, string? folder)
+    [TestCase("guarda recados.txt en mi carpeta de usuario que diga pan", "file.write")]
+    [TestCase("guarda recados.txt en tu carpeta de trabajo que diga pan", "filesystem.create.directory")]
+    [TestCase("guarda recados.txt en la carpeta de baxy que diga pan", "filesystem.create.directory")]
+    public void ATurnThatNamesAPlaceThatIsNoFolderByItsNameIsNotRuledByThePreviousRequest(string words, string operation)
     {
         Directory.CreateDirectory(Path.Combine(_home, "taller-bench"));
         var said = new SaidFolders(Known);
         said.Heard("haz la carpeta fotos_2025 en taller-bench");
         said.Heard(words);
-        var call = new JsonObject { ["relativePath"] = "recados.txt" };
+        var call = new JsonObject { ["path"] = "recados.txt" };
         if (operation == "file.write")
             call["text"] = "pan";
-        if (folder is not null)
-            call["folder"] = folder;
 
         Assert.That(said.Rule(operation, Descriptor(operation), call)?.Refusal, Is.Null);
     }

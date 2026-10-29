@@ -35,19 +35,78 @@ BANKS = Path(os.environ.get("BAXY_RENEW_BANKS", r"F:\BAXYeval\renew_v1"))
 # place (op null) is left out of the count: no answer can be checked honestly against an action BAXY no longer has. Public, versioned, and applied without opening the banks.
 EQUIVALENCE_FILE = Path(__file__).with_name("catalog_equivalence.json")
 EQUIVALENCE = json.loads(EQUIVALENCE_FILE.read_text(encoding="utf-8")) if EQUIVALENCE_FILE.is_file() else {}
+# P2.4 (ajuste c3): the file tools take one path «as the person said it» in place of folder, subdirectory, relativePath,
+# fileName or name. An expectation written with those (in the order «_path» lists them for each operation) is met by a
+# path that says the same place (path_ok); an old run's call written with them is judged by the path they make.
+PATH_RULES = EQUIVALENCE.get("_path") or {}
+PATH_ARGS: dict[str, list[str]] = PATH_RULES.get("ops") or {}
+KNOWN_FOLDERS: dict[str, set[str]] = {code: set(names) for code, names in (PATH_RULES.get("folders") or {}).items()}
+FULL_PATH = re.compile(r"^[a-z]:[\\/]", re.IGNORECASE)
 
 
 def current(op, args=None):
     """The operation and arguments that meet an expectation written for «op» in today's catalog."""
-    entry = EQUIVALENCE.get(op)
-    if not entry:
-        return op, dict(args or {}), {}
-    renamed = {}
-    for name, want in (args or {}).items():
-        target = (entry.get("args") or {}).get(name, name)
-        if target is not None:
-            renamed[target] = want
-    return entry["op"], renamed, dict(entry.get("fixed") or {})
+    entry = EQUIVALENCE.get(op) if op != "_path" else None
+    fixed = {}
+    if entry:
+        renamed = {}
+        for name, want in (args or {}).items():
+            target = (entry.get("args") or {}).get(name, name)
+            if target is not None:
+                renamed[target] = want
+        op, args, fixed = entry["op"], renamed, dict(entry.get("fixed") or {})
+    else:
+        args = dict(args or {})
+    parts = PATH_ARGS.get(op) or []
+    if any(name in args for name in parts):
+        said = [[name, args.pop(name)] for name in parts if name in args]
+        args["path"] = {"path_of": said}
+    return op, args, fixed
+
+
+def path_ok(said, got) -> bool:
+    """Whether a path names the place an expectation said with the arguments it replaced (``said``: [argument, value]
+    pairs): a known folder (desktop, documents, downloads, pictures) is one of its parts, by its name in Spanish or
+    English; home, a path that begins with no known folder's name (or a full path); all_known, no known folder named and
+    no full path (the person named none); any other value is part of the path, its separators either way, or a «re:»
+    pattern over it."""
+    if not isinstance(got, str) or not got.strip():
+        return False
+    text = norm(got).replace("\\", "/").strip()
+    parts = [part.strip() for part in text.split("/") if part.strip()]
+    full = FULL_PATH.match(text) is not None
+    named = set().union(*KNOWN_FOLDERS.values()) if KNOWN_FOLDERS else set()
+    for name, want in said:
+        if name == "folder" and isinstance(want, str) and not want.startswith("re:"):
+            code = norm(want).strip()
+            if code == "all_known":
+                ok = not full and not any(part in named for part in parts)
+            elif code == "home":
+                ok = full or (bool(parts) and parts[0] not in named)
+            else:
+                ok = any(part in KNOWN_FOLDERS.get(code, {code}) for part in parts)
+        elif isinstance(want, str) and want.startswith("re:"):
+            ok = re.search(want[3:], norm(got)) is not None or re.search(want[3:], text) is not None
+        else:
+            ok = norm(want).replace("\\", "/") in text
+        if not ok:
+            return False
+    return True
+
+
+def legacy_path(arguments) -> str | None:
+    """The path a call written with the arguments P2.4 replaced says (an old run's row, judged again): its folder (none
+    for all_known), its subdirectory and its file's name or relative path; a full path is the path."""
+    arguments = arguments or {}
+    pieces = [piece for piece in (arguments.get("subdirectory"), arguments.get("relativePath")
+                                  or arguments.get("fileName") or arguments.get("name"))
+              if isinstance(piece, str) and piece.strip()]
+    if pieces and FULL_PATH.match(pieces[-1]):
+        return pieces[-1]
+    folder = arguments.get("folder")
+    head = [] if (pieces and FULL_PATH.match(pieces[0])) or not isinstance(folder, str) or folder == "all_known" \
+        else [folder]
+    return "/".join(head + pieces) or None
 
 
 def norm(value):
@@ -66,6 +125,8 @@ def enums_of(catalog: dict) -> dict[str, dict[str, set[str]]]:
 
 
 def arg_ok(want, got, codes=None):
+    if isinstance(want, dict) and "path_of" in want:
+        return path_ok(want["path_of"], got)
     if got is None:
         return False
     if isinstance(want, bool):
@@ -101,8 +162,11 @@ def judge(expect, result, arguments, enums=None):
         if op is None:  # retired with no replacement: not counted
             return None
         codes = enums.get(op) or {}
+        given = dict(arguments or {})
+        if isinstance(args.get("path"), dict) and "path" not in given:
+            given["path"] = legacy_path(given)
         return (kind == "action" and result.get("operation") == op
-                and all(arg_ok(v, (arguments or {}).get(k), codes.get(k)) for k, v in {**args, **fixed}.items()))
+                and all(arg_ok(v, given.get(k), codes.get(k)) for k, v in {**args, **fixed}.items()))
     if expect["kind"] == "call_any":
         live = [current(candidate) for candidate in expect["ops"]]
         if all(op is None for op, _, _ in live):

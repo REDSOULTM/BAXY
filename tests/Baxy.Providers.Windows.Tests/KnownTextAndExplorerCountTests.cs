@@ -53,27 +53,27 @@ public sealed class KnownTextAndExplorerCountTests
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"folder":"desktop","subdirectory":"ETC\\Programacion\\Probando Gemma 4\\gemma4_agent","fileName":"ROADMAP.md","maximumCharacters":200}"""),
+            Json("""{"path":"desktop/ETC\\Programacion\\Probando Gemma 4\\gemma4_agent/ROADMAP.md","maximumCharacters":200}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt whole = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"folder":"desktop","fileName":"roadmap.md"}"""),
+            Json("""{"path":"desktop/roadmap.md"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt byPath = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"folder":"desktop","fileName":"ETC/Programacion/Probando Gemma 4/gemma4_agent/ROADMAP.md"}"""),
+            Json("""{"path":"desktop/ETC/Programacion/Probando Gemma 4/gemma4_agent/ROADMAP.md"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt binary = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"folder":"desktop","fileName":"binario.md"}"""),
+            Json("""{"path":"desktop/binario.md"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt missing = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"folder":"desktop","fileName":"nada.md"}"""),
+            Json("""{"path":"desktop/nada.md"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt escaping = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"folder":"desktop","fileName":"..\\secreto.txt"}"""),
+            Json("""{"path":"desktop/..\\secreto.txt"}"""),
             CancellationToken.None);
 
         Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
@@ -100,7 +100,7 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(byPath.Result?.GetProperty("text").GetString(), Is.EqualTo(content));
             Assert.That(binary.ErrorCode, Is.EqualTo("known_file_not_text"));
             Assert.That(missing.ErrorCode, Is.EqualTo("known_file_not_found"));
-            Assert.That(escaping.ErrorCode, Is.EqualTo("known_file_name_invalid"));
+            Assert.That(escaping.ErrorCode, Is.EqualTo("known_path_outside_folder"));
         });
     }
 
@@ -122,7 +122,7 @@ public sealed class KnownTextAndExplorerCountTests
         {
             ExternalCapabilityReceipt page = await adapter.InvokeAsync(
                 "file.read",
-                Json($$"""{"folder":"documents","fileName":"informe.txt","offset":{{offset}},"maximumCharacters":1000}"""),
+                Json($$"""{"path":"documents/informe.txt","offset":{{offset}},"maximumCharacters":1000}"""),
                 CancellationToken.None);
             Assert.That(page.Verified, Is.True, page.ErrorCode);
             pages.Add(page.Result!.Value);
@@ -131,7 +131,7 @@ public sealed class KnownTextAndExplorerCountTests
         }
         ExternalCapabilityReceipt past = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"folder":"documents","fileName":"informe.txt","offset":999999}"""),
+            Json("""{"path":"documents/informe.txt","offset":999999}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -176,13 +176,13 @@ public sealed class KnownTextAndExplorerCountTests
         });
 
         ExternalCapabilityReceipt utf16 = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"desktop","fileName":"procesos.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"desktop/procesos.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt twice = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"all_known","fileName":"notas.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"notas.txt"}"""), CancellationToken.None);
         ExternalCapabilityReceipt stem = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"documents","fileName":"notas"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"documents/notas"}"""), CancellationToken.None);
         ExternalCapabilityReceipt named = await adapter.InvokeAsync(
-            "file.read", Json("""{"folder":"desktop","fileName":"viejo\\notas.txt"}"""), CancellationToken.None);
+            "file.read", Json("""{"path":"desktop/viejo\\notas.txt"}"""), CancellationToken.None);
 
         Assert.That(utf16.Verified, Is.True, utf16.ErrorCode);
         Assert.Multiple(() =>
@@ -223,7 +223,7 @@ public sealed class KnownTextAndExplorerCountTests
         ExternalCapabilityReceipt none = await noneInFront.InvokeAsync(
             "filesystem.explorer.count", Json("""{"extension":"py"}"""), CancellationToken.None);
         ExternalCapabilityReceipt named = await noneInFront.InvokeAsync(
-            "filesystem.explorer.count", Json("""{"extension":"py","folder":"desktop"}"""), CancellationToken.None);
+            "filesystem.explorer.count", Json("""{"path":"desktop","extension":"py"}"""), CancellationToken.None);
 
         Assert.That(counted.Verified, Is.True, counted.ErrorCode);
         Assert.Multiple(() =>
@@ -337,9 +337,9 @@ public sealed class KnownTextAndExplorerCountTests
         Func<string, string?> known = folder => folder == "home" ? home : null;
         var adapter = new ExplorerFolderAdapter(new ScriptedRunner("{}"), known, []);
 
-        async Task<ExternalCapabilityReceipt> Count(string subdirectory) => await adapter.InvokeAsync(
+        async Task<ExternalCapabilityReceipt> Count(string path) => await adapter.InvokeAsync(
             "filesystem.explorer.count",
-            Json($$"""{"extension":"pdf","folder":"home","subdirectory":"{{subdirectory.Replace("\\", "\\\\")}}"}"""),
+            Json($$"""{"extension":"pdf","path":"{{path.Replace("\\", "\\\\")}}"}"""),
             CancellationToken.None);
 
         ExternalCapabilityReceipt relative = await Count("BAXY-bench/facturas");
@@ -355,7 +355,7 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(relative.Result?.GetProperty("subfoldersNotOpened").GetInt32(), Is.EqualTo(1));
             Assert.That(full.Result?.GetProperty("count").GetInt32(), Is.EqualTo(2), full.ErrorCode);
             Assert.That(missing.ErrorCode, Is.EqualTo("known_subdirectory_not_found"));
-            Assert.That(outside.ErrorCode, Is.EqualTo("known_subdirectory_invalid"));
+            Assert.That(outside.ErrorCode, Is.EqualTo("known_path_outside_folder"));
             Assert.That(outside.Verified, Is.False);
         });
     }
