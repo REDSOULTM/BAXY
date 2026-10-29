@@ -152,8 +152,17 @@ internal sealed class NetworkEgress
         }
 
         string[] words = [.. Regex.Split(Folded(query), @"[^\p{L}\p{Nd}]+").Where(static word => word.Length >= 4)];
+        // Ajuste c3, e2e E008 («busca en internet en qué año se fundó la ONU», query «año fundación ONU»: refused in 12 of
+        // 12 runs, and 3 of them told the person nothing was searched): a word under 4 letters is weighed only when the
+        // query writes it as an acronym, 2 or 3 capitals («ONU», «BBC»), the way a name too short for the rule above is
+        // written; it is the person's when they said it or a result gave it, exactly. A short word in lower case or with
+        // one capital («de», «Los») is still not weighed.
+        string[] acronyms = [.. Regex.Split(query, @"[^\p{L}\p{M}\p{Nd}]+")
+            .Where(static word => word.Length is 2 or 3 && word.All(char.IsUpper))
+            .Select(Folded)];
         if (words.Length == 0 || words.Any(word => _words.Concat(_given).Any(said => SameWord(
                 SaidFolders.Sounded(word).Trim(), SaidFolders.Sounded(said).Trim())))
+            || acronyms.Any(acronym => _words.Contains(acronym) || _given.Contains(acronym))
             || !_queriesRefused.Add(operation + "\n" + string.Join(' ', words)))
         {
             return null;

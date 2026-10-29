@@ -67,6 +67,34 @@ public sealed class NetworkEgressTests
         Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = query }), Is.Null);
     }
 
+    // Ajuste c3, e2e E008: «año fundación ONU» for «busca en internet en qué año se fundó la ONU» was refused in every
+    // run (its only word of 4 letters or more, «fundación», is not «fundó»). An acronym the query writes in capitals is
+    // weighed: the person's when they said it, never one they did not; a short word in lower case is still not weighed.
+    [Test]
+    public void AnAcronymThePersonSaidIsTheirWord()
+    {
+        static NetworkEgress Hearing(string words)
+        {
+            var egress = new NetworkEgress();
+            egress.Heard(words);
+            return egress;
+        }
+
+        const string Asked = "busca en internet en qué año se fundó la ONU";
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Hearing(Asked).Unsaid("web.search", new JsonObject
+            {
+                ["query"] = "año fundación ONU", ["source"] = "web",
+            }), Is.Null);
+            Assert.That(Hearing(Asked).Unsaid("web.search", new JsonObject { ["query"] = "fundación OEA" })?.Code,
+                Is.EqualTo("query_not_said"));
+            Assert.That(Hearing("uno de zentrovox").Unsaid("web.search", new JsonObject { ["query"] = "de Centro Box" })
+                ?.Code, Is.EqualTo("query_not_said"));
+        });
+    }
+
     [Test]
     public void OnlyTheTextASearchSendsIsWeighed()
     {
