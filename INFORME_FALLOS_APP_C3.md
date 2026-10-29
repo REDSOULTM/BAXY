@@ -43,7 +43,7 @@ cambio en la aserción de «ONU»; con él pasa, y sigue rechazando «fundación
 `web_search_unavailable`) ante un estado HTTP no 2xx, un error de red o un cuerpo que no es su JSON, y no guarda cuál.
 En 2 de 7 llamadas a `encyclopedia` falló en ~500 ms (no fue el tiempo de espera); desde el PC, 6 de 6 peticiones
 iguales con el mismo User-Agent dieron 200 (curl, 2026-10-29). Con lo registrado no se sabe si fue un 429 de Wikimedia o
-la red del NB: arreglarlo sería adivinar. Si vuelve a salir, el siguiente paso es registrar el estado HTTP en el recibo.
+la red del NB: arreglarlo sería adivinar. Si vuelve a salir, conviene registrar el estado HTTP en el recibo para tener la causa.
 Con el arreglo de arriba la primera llamada ya no se rechaza, así que este fallo sólo cuenta si la fuente cae de verdad.
 
 **Cómo comprobarlo en vivo.** En una copia de `ft-c3-app` compilada en el NB:
@@ -115,7 +115,7 @@ descripción de `task_list` dice que sin `status` sólo lista las abiertas. Es d
 |---|---|---|
 | 1 | `dotnet test tests/Baxy.App.Tests -c Release --nologo -v:minimal` | 466 pass, 0 fallos |
 | 1 | `dotnet test tests/Baxy.Providers.Windows.Tests -c Release --nologo -v:minimal` | 3505 pass, 0 fallos |
-| 1 | runtime python `-m pytest tests/test_mind_aids.py tests/test_mind_bucle.py -q` | 126 pass |
+| 1 | pruebas de la mente con el Python del runtime (`test_mind_aids.py` y `test_mind_bucle.py`, `-q`) | 126 pass |
 | 2 | `ruff check src/baxy_mind/mind.py tests/test_mind_aids.py` (ruff 0.15.12 del sistema; el runtime no trae ruff) | sin hallazgos |
 | 2 | `dotnet build Baxy.slnx -c Release --nologo -v:minimal -m:4` | 0 advertencias, 0 errores |
 
