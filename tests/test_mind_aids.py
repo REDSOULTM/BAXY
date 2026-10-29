@@ -542,6 +542,125 @@ def test_a_read_in_a_turn_is_told_by_the_risk_the_app_sent(tmp_path: Path) -> No
                          "cambiar nada]")
 
 
+# Plan c3, fila 0.2 (estado explícito del resultado; research_notes/ft/13 §2): each call's entry in the facts line opens
+# with its status and says, from the result's own fields, whether what came back was empty, partial or stale.
+def _read_result(observed: dict | None = None, **facts) -> str:
+    result = {"status": "completed", "verification": "output_only", **facts}
+    if observed is not None:
+        result["observed"] = observed
+    return json.dumps(result)
+
+
+@pytest.mark.parametrize("observed,said", [
+    ({"entries": [{"name": "a.txt"}], "count": 1}, ""),
+    ({"entries": [], "count": 0}, "; vacío: no trajo ningún elemento"),
+    ({"count": 0, "searchScope": {"filesScanned": 12}}, "; vacío: no trajo ningún elemento"),
+    ({"windows": [], "observationScope": "visible_top_level_windows"}, "; vacío: no trajo ningún elemento"),
+    ({"pages": 1, "hasText": False, "text": ""}, "; vacío: su texto está en blanco"),
+    ({"text": "hola", "words": []}, ""),
+    ({"current": {"temperature": 14}, "alerts": []}, ""),
+    ({"text": "", "layout": {"lines": 3}}, ""),
+    ({"level": 0}, ""),
+    ({}, ""),
+])
+def test_an_output_that_came_back_empty_says_so_by_its_own_fields(observed: dict, said: str) -> None:
+    # 2609.14758: an «ok» with an empty payload was told with a made-up value 8.1 % of the time; an error, never.
+    from baxy_mind.mind import OUTPUT_READ, _outcome
+    assert _outcome(_read_result(observed), read=True) == OUTPUT_READ + said
+
+
+def test_only_an_output_is_told_empty_and_an_empty_page_of_a_longer_list_is_a_part() -> None:
+    from baxy_mind.mind import EMPTY, PART_TAIL, _outcome
+    act = json.dumps({"status": "completed", "verification": "readback", "observed": {"closed": [], "count": 0}})
+    assert EMPTY not in _outcome(act)
+    page = _outcome(_read_result({"windows": [], "count": 0, "totalCount": 5, "hasMore": True}), read=True)
+    assert EMPTY not in page and page.endswith("; leído en parte: se muestran 0 de 5" + PART_TAIL)
+
+
+@pytest.mark.parametrize("observed,said", [
+    ({"entries": [{"name": "a"}] * 20, "count": 20, "totalCount": 57, "hasMore": True}, ": se muestran 20 de 57"),
+    ({"windows": [{"title": "x"}] * 8, "windowsShown": 8, "windowsCount": 23, "truncated": True},
+     ": windows: se muestran 8 de 23"),
+    ({"stdout": "…", "truncated": True}, ": parte de lo leído se cortó por tamaño"),
+    ({"body": "…", "bodyTruncated": True}, ": parte de lo leído se cortó por tamaño"),
+    ({"notes": [{"id": 1}], "hasMore": True, "nextOffset": 1}, ": hay más sin mostrar"),
+    ({"count": 0, "searchScope": {"filesScanned": 4, "resultsMayBeTruncated": True}}, ": 4 archivos recorridos"),
+])
+def test_a_list_shorter_than_its_total_or_cut_for_its_size_is_told_as_read_in_part(observed: dict, said: str) -> None:
+    # 2609.14758: a partial payload under an «ok» was the worst case, 18.6 %. The line says what part, from the result's
+    # own numbers, and that a «no está» covers only that part.
+    from baxy_mind.mind import OUTPUT_READ, PART_TAIL, _outcome
+    told = _outcome(_read_result(observed), read=True)
+    assert told.startswith(OUTPUT_READ) and told.endswith("; leído en parte" + said + PART_TAIL)
+
+
+def test_the_kernels_cut_marks_are_said_once_in_the_line_and_not_in_the_result(tmp_path: Path) -> None:
+    from baxy_mind.mind import OBSERVED_LEFT_OUT, _deduplicated, _outcome
+    cut = _read_result({"text": "abc…", "truncated": True})
+    assert json.loads(_deduplicated(cut, _outcome(cut, read=True))) == {"observed": {"text": "abc…"}}
+    omitted = _read_result(observedLimit="omitted")
+    assert _outcome(omitted, read=True).endswith(OBSERVED_LEFT_OUT)
+    assert json.loads(_deduplicated(omitted, _outcome(omitted, read=True))) == {}
+    failed = json.dumps({"status": "failed", "error": "ocr_failed", "observedLimit": "omitted"})
+    assert _outcome(failed) == "falló (ocr_failed)" + OBSERVED_LEFT_OUT
+
+
+@pytest.mark.parametrize("error,stale", [
+    ("invalid_or_expired_window_id", True),
+    ("visible_control_identity_stale", True),
+    ("bluetooth_identity_expired", True),
+    ("confirmation_expired", False),
+    ("tooltip_budget_spent", False),
+    ("window_not_found", False),
+])
+def test_a_failure_because_what_it_named_is_from_an_old_reading_says_it_is_stale(error: str, stale: bool) -> None:
+    # Auditoría de falsedades (F001): an expired windowId with Steam still open was told «la ventana se cerró».
+    from baxy_mind.mind import STALE, _outcome
+    told = _outcome(json.dumps({"status": "failed", "error": error}))
+    assert told == f"falló ({error})" + (STALE if stale else "")
+
+
+def test_the_empty_and_stale_wordings_are_said_once_in_a_line() -> None:
+    from baxy_mind.mind import EMPTY, STALE, _said_once
+    line = _said_once([f"file_search → lectura: sólo miró{EMPTY}", f"file_search → lectura: sólo miró{EMPTY}",
+                       f"window_focus → falló (invalid_or_expired_window_id){STALE}",
+                       f"window_focus → falló (invalid_or_expired_window_id){STALE}"])
+    assert line == [f"file_search → lectura: sólo miró{EMPTY}", "file_search → lectura: sólo miró; vacío",
+                    f"window_focus → falló (invalid_or_expired_window_id){STALE}",
+                    "window_focus → falló (invalid_or_expired_window_id); obsoleto"]
+
+
+def test_the_mind_s_cut_joins_what_the_line_already_says_was_read_in_part() -> None:
+    from baxy_mind.mind import OUTPUT_READ, PART_TAIL, _cut_told
+    cut = "el resultado se recortó para que quepa el turno: 10 de sus 30 caracteres no se muestran"
+    assert _cut_told(OUTPUT_READ, 10, 30) == f"{OUTPUT_READ}; leído en parte: {cut}{PART_TAIL}"
+    assert _cut_told(f"{OUTPUT_READ}; leído en parte{PART_TAIL}", 10, 30) == f"{OUTPUT_READ}; leído en parte: {cut}{PART_TAIL}"
+    assert (_cut_told(f"{OUTPUT_READ}; leído en parte: líneas 1–9 de 90{PART_TAIL}", 10, 30)
+            == f"{OUTPUT_READ}; leído en parte: líneas 1–9 de 90, {cut}{PART_TAIL}")
+
+
+def test_the_clock_says_earlier_readings_are_of_their_time_once_a_call_ran(tmp_path: Path) -> None:
+    from baxy_mind.mind import STALE_TURNS
+    mind, server = _mind(tmp_path, [_say("Hola."), _call("app_open", {"appId": "Paint"}), _say("Abrí Paint."),
+                                    _say("Sí.")])
+    mind.decide(1, "hola")
+    assert STALE_TURNS not in mind._clock()
+    mind.decide(2, "abre paint")
+    mind.continue_turn(3, OPENED)
+    assert f"aún no se ejecutó ninguna herramienta en este turno{STALE_TURNS}; llamadas" in mind._clock()
+
+
+def test_an_empty_read_reaches_the_model_with_its_status_in_the_turn_line(tmp_path: Path) -> None:
+    mind, server = _mind(tmp_path, [_call("file_search", {"name": "ideas"}), _say("No encontré ideas.")])
+    mind.configure({"capabilities": [{"name": "file.search", "risk": "read_only",
+                                      "argumentsSchema": {"type": "object", "properties": {}}}]})
+    mind.decide(1, "busca ideas")
+    mind.continue_turn(2, _read_result({"files": [], "count": 0}))
+    tool = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert tool == ('{"observed":{"files":[],"count":0}}\n[En este turno: file_search → lectura: sólo miró, sin abrir, '
+                    'cerrar ni cambiar nada; vacío: no trajo ningún elemento]')
+
+
 def test_the_apps_place_owner_is_traced_and_reaches_the_model_as_it_came(tmp_path: Path, monkeypatch) -> None:
     # Renew al máximo (w7, apps): the App opened «Configuración» at sound instead of «Configuración del sistema»
     # (SaidApplication.cs); the trace keeps it as the aid place_owner, and the model reads the result untouched.

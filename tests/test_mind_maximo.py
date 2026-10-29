@@ -1,6 +1,7 @@
 """BAXY Renew al máximo, tanda 1 (artifacts/renew/maximo/MAXIMO.md): resources and latency without changing decisions.
 Each test holds one lever, so it can be measured and withdrawn on its own."""
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -222,15 +223,20 @@ def test_a_result_past_the_room_of_a_turn_reaches_the_model_cut_and_says_so(tmp_
     # P0.10 (noche 27-10, NB-R1-X5): the mind had no bound per result and trusted the kernel's 8 KiB, but a process list
     # reaches 48,000 characters and some turn.continue re-read 10-12k tokens. A result past the room the history keeps
     # for one (RESULT_TOKENS) is cut by size before it is sent, never after a refusal, and the cut is said where the
-    # model reads; its facts line stays whole after it.
-    from baxy_mind.mind import CUT_RESULT, RESULT_TOKENS
+    # model reads; its facts line stays whole after it. Plan c3 (estado explícito): the body marks where it was cut and
+    # the call's line tells the cut among what was read in part, with how much was left out of how much.
+    from baxy_mind.mind import CUT_RESULT, PART_TAIL, RESULT_CUT_TOLD, RESULT_TOKENS
     mind, server, observation, text, content = _big_result(tmp_path, 48000)
     assert len(server.bodies) == 2  # no refusal, no room made after it
     body, facts = content.split("\n[En este turno: ")
-    kept, note = body.split(CUT_RESULT.split("{")[0])
+    assert body.endswith(CUT_RESULT)
+    kept = body[:-len(CUT_RESULT)]
     assert kept.startswith('{"observed":{"text":"' + text[:1000]) and text[:9000] in kept
-    whole = len(kept) + int(note.split(" ")[0])
-    assert note == CUT_RESULT.format(n=whole - len(kept), total=whole)[len(CUT_RESULT.split("{")[0]):]
+    told = re.search(re.escape(RESULT_CUT_TOLD).replace(re.escape("{n}"), r"(\d+)").replace(
+        re.escape("{total}"), r"(\d+)"), facts)
+    left, whole = (int(n) for n in told.groups())
+    assert whole - left == len(kept)
+    assert "; leído en parte: " + told.group(0) + PART_TAIL in facts
     assert len(server.tokenize(body)) <= RESULT_TOKENS
     assert facts.startswith("input_visible_controls → ")
     # What the answer check reads is the result as it came.
@@ -247,8 +253,9 @@ def test_a_result_whose_tokens_cannot_be_counted_is_cut_by_characters_and_the_tu
     mind.decide(1, "mira Paint")
     server.tokenize = lambda text: (_ for _ in ()).throw(TimeoutError("budget spent"))
     assert mind.continue_turn(2, json.dumps({"status": "completed", "observed": {"text": "7" * 48000}}))["kind"]
-    body = _last_result(server).split(TURN_FACTS)[0]
-    assert CUT_RESULT.split("{")[0] in body and len(body) <= RESULT_TOKENS
+    body, facts = _last_result(server).split(TURN_FACTS)
+    assert body.endswith(CUT_RESULT) and len(body) <= RESULT_TOKENS
+    assert "; leído en parte: el resultado se recortó para que quepa el turno: " in facts
     rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_bytes().splitlines()]
     assert any(row.get("stage") == "turn.result_cap" and row.get("error") == "TimeoutError" for row in rows)
     assert any(row.get("stage") == "turn.aid" and row.get("aids", {}).get("result_cap") for row in rows)
@@ -257,14 +264,14 @@ def test_a_result_whose_tokens_cannot_be_counted_is_cut_by_characters_and_the_tu
 def test_a_result_within_the_room_of_a_turn_goes_whole(tmp_path: Path) -> None:
     from baxy_mind.mind import CUT_RESULT, RESULT_TOKENS
     _, _, _, text, content = _big_result(tmp_path, RESULT_TOKENS * 4 - 200)
-    assert text + '"}}\n[En este turno: ' in content and CUT_RESULT.split("{")[0] not in content
+    assert text + '"}}\n[En este turno: ' in content and CUT_RESULT not in content and "recortó" not in content
 
 
 def test_the_bound_per_result_is_an_aid_that_can_be_turned_off(tmp_path: Path, monkeypatch) -> None:
     from baxy_mind.mind import CUT_RESULT
     monkeypatch.setenv("BAXY_AYUDAS", "none")
     mind, server, observation, text, content = _big_result(tmp_path, 48000)
-    assert text in content and CUT_RESULT.split("{")[0] not in content
+    assert text in content and CUT_RESULT not in content and "recortó" not in content
 
 
 # --- 9.2a: the notice is the model's words, not the code's (invariant 5: cero respuestas visibles fijas) ---------------
