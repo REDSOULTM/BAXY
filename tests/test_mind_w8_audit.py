@@ -10,7 +10,7 @@ from test_mind_doubt_policy import _token
 
 
 def _unsure_yes() -> dict:
-    reply = _sure_call("confirm_pending", {"approve": True}, 0.78)
+    reply = _sure_call("confirm_pending", {"answer": "yes"}, 0.78)
     reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", 1.0)
     return reply
 
@@ -419,7 +419,7 @@ def test_an_answer_to_a_confirmation_says_which_call_it_answered(tmp_path, monke
     # turn that asked was cut; the App says which call waits with the person's words.
     from test_mind_final import _call, _mind, _say
     monkeypatch.setenv("BAXY_AYUDAS", setting)
-    mind, server = _mind(tmp_path, [_call("confirm_pending", {"approve": True}), _say("Listo, a la papelera."),
+    mind, server = _mind(tmp_path, [_call("confirm_pending", {"answer": "yes"}), _say("Listo, a la papelera."),
                                     _say("Sí.")])
     pending = {"operation": "filesystem.known.trash.named", "arguments": {"fileName": "notas.txt"}}
     assert mind.decide(1, "sí", pending)["operation"] == "confirmation.answer"
