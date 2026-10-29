@@ -50,6 +50,20 @@ def current(op, args=None):
     return entry["op"], renamed, dict(entry.get("fixed") or {})
 
 
+# Prefijo c3, S4: confirm_pending answers yes, no or unclear; it was a boolean approve. An expectation written for the
+# boolean, and a run judged with it, mean the same answer (approve true is yes, false is no), compared as a code.
+CONFIRM_OP = "confirmation.answer"
+CONFIRM_ANSWERS = {"answer": {"yes", "no", "unclear"}}
+
+
+def confirm_answer(arguments):
+    """Arguments of a confirmation.answer in today's form: {"approve": true|false} is {"answer": "yes"|"no"}."""
+    arguments = dict(arguments or {})
+    if isinstance(arguments.get("approve"), bool) and "answer" not in arguments:
+        arguments["answer"] = "yes" if arguments.pop("approve") else "no"
+    return arguments
+
+
 def norm(value):
     text = unicodedata.normalize("NFKD", str(value).lower())
     return "".join(ch for ch in text if not unicodedata.combining(ch))
@@ -101,6 +115,8 @@ def judge(expect, result, arguments, enums=None):
         if op is None:  # retired with no replacement: not counted
             return None
         codes = enums.get(op) or {}
+        if op == CONFIRM_OP:
+            args, arguments, codes = confirm_answer(args), confirm_answer(arguments), CONFIRM_ANSWERS
         return (kind == "action" and result.get("operation") == op
                 and all(arg_ok(v, (arguments or {}).get(k), codes.get(k)) for k, v in {**args, **fixed}.items()))
     if expect["kind"] == "call_any":
@@ -118,7 +134,11 @@ def judge(expect, result, arguments, enums=None):
     if expect["kind"] == "ask":
         # A spoken answer that asks the person something is a question, wherever its «?» is («¿Qué juego quieres
         # abrir? Necesito el nombre.»).
-        return kind == "clarify" or (kind == "conversation" and "?" in str(result.get("reply", "")))
+        # S4: an unclear answer to a confirmation is asking again (the App keeps the call; the model asks), also for an
+        # expectation written before it existed.
+        return kind == "clarify" or (kind == "conversation" and "?" in str(result.get("reply", ""))) or (
+            kind == "action" and result.get("operation") == CONFIRM_OP
+            and confirm_answer(arguments).get("answer") == "unclear")
     if expect["kind"] == "text":
         reply = str(result.get("reply", ""))
         if kind != "conversation" or not reply.strip():

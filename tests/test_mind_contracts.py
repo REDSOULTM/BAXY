@@ -18,13 +18,13 @@ def _sure(name: str, arguments: dict, confidence: float) -> dict:
     return _doubted(name, arguments, confidence / 0.95)
 
 
-# a) The person's No and the pending confirmation (mutation: approve always True; the pending note dropped).
-def test_a_no_on_a_confirmation_is_approve_false_in_the_call_and_the_conversation(tmp_path: Path) -> None:
+# a) The person's No and the pending confirmation (mutation: answer always yes; the pending note dropped).
+def test_a_no_on_a_confirmation_is_answer_no_in_the_call_and_the_conversation(tmp_path: Path) -> None:
     mind, _ = _mind(tmp_path, [])
     result = mind.confirm(1, False, "No")
-    assert result["operation"] == "confirmation.answer" and result["arguments"] == {"approve": False}
+    assert result["operation"] == "confirmation.answer" and result["arguments"] == {"answer": "no"}
     call = mind.conversation[-1]["tool_calls"][0]["function"]
-    assert call["name"] == "confirm_pending" and json.loads(call["arguments"]) == {"approve": False}
+    assert call["name"] == "confirm_pending" and json.loads(call["arguments"]) == {"answer": "no"}
     assert mind.conversation[-2] == {"role": "user", "content": "No"}
 
 
@@ -115,14 +115,14 @@ def test_the_doubt_never_holds_a_confirmation(tmp_path: Path, monkeypatch) -> No
     # System One's threshold never holds it; only a yes under CONFIRM_FLOOR is held (test_mind_doubt_policy.py).
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.99")
     monkeypatch.delenv("BAXY_CONFIRM_FLOOR", raising=False)
-    mind, _ = _doubt_mind(tmp_path, [_sure("confirm_pending", {"approve": True}, 0.97)])
+    mind, _ = _doubt_mind(tmp_path, [_sure("confirm_pending", {"answer": "yes"}, 0.97)])
     pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
     assert mind.decide(1, "sí, dale", pending=pending)["operation"] == "confirmation.answer"
 
 
 # F005 (notebook's falsehood bench): an approval with nothing pending never reaches the App; the model answers in words.
 def test_a_confirmation_with_nothing_pending_is_not_sent(tmp_path: Path) -> None:
-    mind, server = _mind(tmp_path, [_call("confirm_pending", {"approve": True}), _say("No, todavía no lo hice.")])
+    mind, server = _mind(tmp_path, [_call("confirm_pending", {"answer": "yes"}), _say("No, todavía no lo hice.")])
     result = mind.decide(1, "¿ya lo subiste?")
     assert result["operation"] is None and result["reply"] == "No, todavía no lo hice."
     told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
@@ -136,7 +136,7 @@ def test_a_confirmation_with_nothing_pending_is_not_sent(tmp_path: Path) -> None
 def test_an_answer_to_a_question_never_approves_a_confirmation_that_no_longer_waits(tmp_path: Path) -> None:
     pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
     mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Cuál otro?"}),
-                                    _call("confirm_pending", {"approve": True}), _say("No hay nada esperando tu sí.")])
+                                    _call("confirm_pending", {"answer": "yes"}), _say("No hay nada esperando tu sí.")])
     assert mind.decide(1, "sí, pero el otro", pending=pending)["kind"] == "clarify"
     result = mind.decide(2, "el informe", pending=None)
     assert result["operation"] is None and result["reply"] == "No hay nada esperando tu sí."
@@ -147,10 +147,10 @@ def test_an_answer_to_a_question_never_approves_a_confirmation_that_no_longer_wa
 def test_an_answer_to_a_question_can_answer_a_confirmation_asked_since(tmp_path: Path) -> None:
     pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
     mind, server = _mind(tmp_path, [_call("ask_user", {"question": "¿Cuál borro?"}),
-                                    _call("confirm_pending", {"approve": True})])
+                                    _call("confirm_pending", {"answer": "yes"})])
     assert mind.decide(1, "borra eso")["kind"] == "clarify"
     result = mind.decide(2, "sí", pending=pending)
-    assert result["operation"] == "confirmation.answer" and result["arguments"] == {"approve": True}
+    assert result["operation"] == "confirmation.answer" and result["arguments"] == {"answer": "yes"}
     answer = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][0]
     assert answer.startswith("sí\n[Espera el sí de la persona: file_delete") and "confirm_pending" in answer
 
@@ -161,7 +161,7 @@ def test_an_answer_to_a_question_can_answer_a_confirmation_asked_since(tmp_path:
 def test_a_si_to_a_question_that_ended_reads_how_it_ended_and_may_ask_again(tmp_path: Path, how: str,
                                                                            error: str) -> None:
     ended = {"operation": "app.close", "ended": how}
-    mind, server = _mind(tmp_path, [_call("confirm_pending", {"approve": True}), _call("app_close", {"windowId": 7})])
+    mind, server = _mind(tmp_path, [_call("confirm_pending", {"answer": "yes"}), _call("app_close", {"windowId": 7})])
     mind.wire_to_op["app_close"] = "app.close"
     result = mind.decide(1, "sí", pending=ended)
     assert "[Espera el sí" not in server.bodies[0]["messages"][-2]["content"]
@@ -173,8 +173,8 @@ def test_a_si_to_a_question_that_ended_reads_how_it_ended_and_may_ask_again(tmp_
 
 def test_an_ended_question_is_told_once_and_then_nothing_waits(tmp_path: Path) -> None:
     ended = {"operation": "file.delete", "ended": "expired", "effectUncertain": True}
-    mind, server = _mind(tmp_path, [_call("confirm_pending", {"approve": True}),
-                                    _call("confirm_pending", {"approve": True}), _say("Esa pregunta ya venció.")])
+    mind, server = _mind(tmp_path, [_call("confirm_pending", {"answer": "yes"}),
+                                    _call("confirm_pending", {"answer": "yes"}), _say("Esa pregunta ya venció.")])
     result = mind.decide(1, "sí", pending=ended)
     assert result["operation"] is None and result["reply"] == "Esa pregunta ya venció."
     told = [json.loads(m["content"]) for m in server.bodies[-1]["messages"] if m["role"] == "tool"]

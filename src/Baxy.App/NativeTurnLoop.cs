@@ -549,7 +549,8 @@ internal sealed class NativeTurnLoop
             if (_askedAt == ConfirmationAsk.Unpublished)
             {
                 _askedAt = Stopwatch.GetTimestamp();
-                if (Waiting() is { } asked)
+                // Asked again after an unclear answer (AskedAgain): its card still shows.
+                if (!_asking && Waiting() is { } asked)
                 {
                     _asking = true;
                     _host.ConfirmationAsked?.Invoke(asked);
@@ -965,8 +966,14 @@ internal sealed class NativeTurnLoop
     // the model called shell_command_run again instead of confirm_pending). Ronda final: «only asks again» was false
     // in the next turn, where the same call runs (DropPending).
     private static string AskThePersonAbout(string operation) =>
-        "nothing ran: ask the person whether to do it; their answer goes in confirm_pending (approve true or false); "
-        + $"calling {WireNames.Of(operation)} again is not their answer: it is a new call";
+        "nothing ran: ask the person whether to do it; their answer goes in confirm_pending (answer yes, no or "
+        + $"unclear); calling {WireNames.Of(operation)} again is not their answer: it is a new call";
+
+    // Prefijo c3, S4 (T6): words that settle nothing («sí pero el otro», «no sé») neither run the waiting call nor
+    // cancel it; the model asks again, and «sin manos» (00_IDENTIDAD, Accesibilidad): an answer said aloud settles it.
+    private const string AskAgain =
+        "nothing ran and it still waits: ask the person again, in one short sentence they can answer by voice, whether "
+        + "to do exactly this call (never ask them to click, press or type); something else they want is a new call";
 
     // Holdout v5 (H5): what a call held for a host no result gave reads besides, with the hosts the results did give.
     private const string ResultHostsNext =
@@ -989,9 +996,10 @@ internal sealed class NativeTurnLoop
 
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
-        if (arguments["approve"] is not JsonValue value || !value.TryGetValue(out bool approve))
+        if (arguments["answer"] is not JsonValue value || !value.TryGetValue(out string? answer)
+            || answer is not (Yes or No or Unclear))
         {
-            // Ronda final: an answer without a boolean approve is not the person's «no»; the waiting call stays and
+            // Ronda final: an answer that is not yes, no or unclear is not the person's «no»; the waiting call stays and
             // the model reads what it gave, as with any other call whose arguments do not fit.
             return Record(MindStep.ConfirmationAnswer, arguments, started, Observation("failed", "invalid_arguments",
                 new JsonObject { ["argumentsGiven"] = arguments.DeepClone() }));
@@ -1009,9 +1017,12 @@ internal sealed class NativeTurnLoop
             }.ToJsonString(SaidFolders.AsWritten));
         }
 
+        bool approve = answer == Yes;
         if (_proposal is { } proposal && _proposalExpiresUtc > _time.GetUtcNow())
         {
-            return await AnswerProposalAsync(proposal, approve, started, cancellationToken);
+            return answer == Unclear
+                ? AskedAgain(proposal, arguments, started)
+                : await AnswerProposalAsync(proposal, approve, started, cancellationToken);
         }
 
         PendingOperationConfirmation? pending = HasPendingConfirmation ? _pending : null;
@@ -1029,6 +1040,11 @@ internal sealed class NativeTurnLoop
                 ? Observation("failed", "nothing_pending", new JsonObject { ["reason"] = NothingPendingReason })
                 : Observation("failed", "confirmation_expired", new JsonObject { ["reason"] = ExpiredReason },
                     about: expired, effectUncertain: effectStarted));
+        }
+
+        if (answer == Unclear)
+        {
+            return AskedAgain(pending.Prepared, arguments, started);
         }
 
         JsonObject pendingArguments = PrivateArguments(pending.Prepared);
@@ -1057,6 +1073,27 @@ internal sealed class NativeTurnLoop
 
         return await SendAsync(core, pending.Prepared, pendingArguments, pending.Token, answered: true, started,
             cancellationToken, said);
+    }
+
+    // The answers confirm_pending gives (prefijo c3, S4): the Sí and No buttons are yes and no.
+    private const string Yes = "yes";
+    private const string No = "no";
+    private const string Unclear = "unclear";
+
+    // An unclear answer: the waiting call stays as it is (its card too), and the line the model says next is its question
+    // again (Publish), which the person's next words or the card answer; a turn that ends without saying one drops it
+    // (DropUnasked), as a call never asked.
+    private string AskedAgain(PreparedOperation waiting, JsonObject arguments, long started)
+    {
+        _askedAt = ConfirmationAsk.Unpublished;
+        string operation = waiting.OperationName;
+        JsonObject facts = WithArguments(new JsonObject
+        {
+            ["status"] = "needs_confirmation",
+            ["operation"] = operation,
+        }, "arguments", operation, PrivateArguments(waiting));
+        facts["next"] = AskAgain;
+        return Record(MindStep.ConfirmationAnswer, arguments, started, facts.ToJsonString(SaidFolders.AsWritten));
     }
 
     // Auditoría de la App (2026-10-23): the owner's switches (Settings) are read when the call is approved too, by voice

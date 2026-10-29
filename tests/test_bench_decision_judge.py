@@ -3,6 +3,8 @@ the goal «ayudas», SEALED_AYUDAS.md) the words count, normalized; without them
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "renew"))
 
 from bench_decision import judge  # noqa: E402
@@ -145,3 +147,29 @@ def test_an_any_case_hands_the_codes_to_each_option() -> None:
     expect = {"kind": "any", "options": [{"kind": "call", "op": "browser.control", "args": {"action": "close"}},
                                          {"kind": "ask"}]}
     assert judge(expect, _call("browser.control"), {"action": "close_all"}, enums_of(CATALOG)) is False
+
+
+# Prefijo c3, S4: confirm_pending answers yes, no or unclear; an expectation and a run of the boolean it replaced are read
+# as the same answer, and an unclear answer meets an expectation of asking.
+def _answered(arguments: dict) -> dict:
+    return {"kind": "action", "operation": "confirmation.answer", "arguments": arguments}
+
+
+@pytest.mark.parametrize("want, got, met", [
+    ({"approve": True}, {"answer": "yes"}, True),
+    ({"approve": False}, {"answer": "no"}, True),
+    ({"approve": True}, {"answer": "unclear"}, False),
+    ({"approve": False}, {"answer": "unclear"}, False),
+    ({"answer": "yes"}, {"approve": True}, True),
+    ({"answer": "no"}, {"approve": True}, False),
+    ({"answer": "no"}, {"answer": "not now"}, False),
+])
+def test_a_confirmation_answer_is_the_same_in_the_boolean_and_in_answer(want: dict, got: dict, met: bool) -> None:
+    expect = {"kind": "call", "op": "confirmation.answer", "args": want}
+    assert judge(expect, _answered(got), got) is met
+
+
+def test_an_unclear_answer_to_a_confirmation_is_asking_again() -> None:
+    assert judge({"kind": "ask"}, _answered({"answer": "unclear"}), {"answer": "unclear"}) is True
+    assert judge({"kind": "ask"}, _answered({"answer": "yes"}), {"answer": "yes"}) is False
+    assert judge({"kind": "ask"}, _answered({"approve": False}), {"approve": False}) is False

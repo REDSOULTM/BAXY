@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using NUnit.Framework;
@@ -123,7 +123,7 @@ public sealed class NativeTurnLoopTests
                     ["type"] = "turn.result",
                     ["kind"] = "action",
                     ["operation"] = "confirmation.answer",
-                    ["arguments"] = new JsonObject { ["approve"] = true },
+                    ["arguments"] = new JsonObject { ["answer"] = "yes" },
                 },
                 ["turn.continue"] = new JsonObject
                 {
@@ -301,7 +301,7 @@ public sealed class NativeTurnLoopTests
             ["type"] = "turn.result",
             ["kind"] = "action",
             ["operation"] = "confirmation.answer",
-            ["arguments"] = new JsonObject { ["approve"] = true },
+            ["arguments"] = new JsonObject { ["answer"] = "yes" },
         };
         fake.Script(new JsonObject
         {
@@ -684,6 +684,112 @@ public sealed class NativeTurnLoopTests
         },
     };
 
+    // Prefijo c3, S4 (T6): words that settle nothing neither run the waiting call nor cancel it. The model reads that it
+    // still waits and how to ask again (by voice, never a click); the line it says next is the same call's question
+    // again, under the same card, and the person's next words answer it.
+    [Test]
+    public async Task AnUnclearAnswerLeavesTheCallWaitingAndTheNextLineAsksItAgain()
+    {
+        using var fake = new FakeMind();
+        fake.Script(HeldFetch());
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var published = new List<(string Text, string Route)>();
+        var outcomes = new List<string>();
+        var asked = new List<NativeTurnConfirmation>();
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = (text, route) => published.Add((text, route)),
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            ConfirmationAsked = asked.Add,
+            ConfirmationResolved = outcomes.Add,
+        });
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        fake.Script(Answers("unclear", Reply("¿Abro exfil.example, sí o no?")));
+        await loop.RunAsync("sí, pero la otra", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        JsonNode? observed = JsonNode.Parse((string)fake.Requests("turn.continue")[^1]["observation"]!);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)observed?["status"], Is.EqualTo("needs_confirmation"));
+            Assert.That((string?)observed?["operation"], Is.EqualTo("web.fetch"));
+            Assert.That((string?)observed?["arguments"]?["url"], Is.EqualTo("https://exfil.example/c"));
+            Assert.That((string?)observed?["next"], Does.Contain("answer by voice"));
+            Assert.That((string?)observed?["next"], Does.Contain("never ask them to click"));
+            Assert.That(loop.HasPendingConfirmation, Is.True);
+            Assert.That(outcomes, Is.Empty);
+            Assert.That(published[^1], Is.EqualTo(("¿Abro exfil.example, sí o no?", PublicResponseRoute.Confirmation)));
+            Assert.That(asked, Has.Count.EqualTo(1));
+        });
+
+        fake.Script(Answers("no", Reply("Vale, no la abro.")));
+        await loop.RunAsync("no", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)fake.Requests("turn.decide")[^1]["pendingConfirmation"]?["operation"],
+                Is.EqualTo("web.fetch"));
+            Assert.That((string?)JsonNode.Parse((string)fake.Requests("turn.continue")[^1]["observation"]!)?["error"],
+                Is.EqualTo("declined_by_person"));
+            Assert.That(loop.HasPendingConfirmation, Is.False);
+            Assert.That(outcomes, Is.EqualTo(new[] { "declined" }));
+        });
+    }
+
+    // After an unclear answer the model answers in words: a «sí» it gives itself to the same words runs nothing, and a
+    // turn that ends without asking again leaves no call for words that answer no question.
+    [Test]
+    public async Task AnUnclearAnswerNotAskedAgainRunsNothingAndDropsTheCall()
+    {
+        using var fake = new FakeMind();
+        fake.Script(HeldFetch());
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var published = new List<(string Text, string Route)>();
+        var outcomes = new List<string>();
+        NativeTurnLoop loop = PersonLoop(mind, published, outcomes);
+        await loop.RunAsync("lee la página", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        fake.Script(Answers("unclear", Answer("yes")));
+        await loop.RunAsync("no sé, sí", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(fake.Requests("turn.continue").Select(static request => (bool?)request["final"]),
+                Is.EqualTo(new bool?[] { true, true }));
+            Assert.That(loop.HasPendingConfirmation, Is.False);
+            Assert.That(outcomes, Is.EqualTo(new[] { "dropped" }));
+        });
+    }
+
+    private static JsonObject Answer(string answer) => new()
+    {
+        ["type"] = "turn.result",
+        ["kind"] = "action",
+        ["operation"] = "confirmation.answer",
+        ["arguments"] = new JsonObject { ["answer"] = answer },
+    };
+
+    // The person's words answer the waiting call with this answer; what the mind decides after its result, then.
+    private static JsonObject Answers(string answer, JsonObject then) => new()
+    {
+        ["reply"] = new JsonObject
+        {
+            ["turn.decide"] = Answer(answer),
+            ["turn.continue"] = then,
+        },
+    };
+
+    private static JsonObject Reply(string reply) =>
+        new() { ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = reply };
+
     private static JsonObject Says(string reply) => new()
     {
         ["reply"] = new JsonObject
@@ -774,7 +880,7 @@ public sealed class NativeTurnLoopTests
     }
 
     private const string TodaysNext = "nothing ran: ask the person whether to do it; their answer goes in confirm_pending "
-        + "(approve true or false); calling web_fetch again is not their answer: it is a new call";
+        + "(answer yes, no or unclear); calling web_fetch again is not their answer: it is a new call";
 
     private static string Search(params string[] urls) =>
         new JsonObject

@@ -1093,12 +1093,12 @@ DENIAL_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía
 # Renew al máximo (confirmaciones, 2026-10-23): a «sí» the model is not sure is one. On the real model (29 answers to a
 # pending trash of notas.txt, 3 seeds, int7) every plain yes («sí», «dale», «ya po», «okey», «go ahead», «zí») confirmed at
 # ≥ 0.998 and «sí pero el otro» at 0.77-0.79, which would have trashed the file the person had just said was not the
-# one; under this floor an approve:true is held and the model asks, so nothing runs on it. «sí no» confirmed at 0.99:
-# no confidence tells it apart (a limit, said so in the report). BAXY_CONFIRM_FLOOR sets it; 0 turns it off.
+# one; under this floor an answer yes (approve:true then) is held and the model asks, so nothing runs on it. «sí no»
+# confirmed at 0.99: no confidence tells it apart (a limit, said so in the report). BAXY_CONFIRM_FLOOR sets it; 0 turns it off.
 CONFIRM_FLOOR = 0.95
 # Menos preguntas (decisión del dueño 2026-10-25: BAXY pide el sí sólo para lo peligroso, sin preguntas innecesarias): a
 # held «sí» costs two more questions, the model's own and the kernel's again (the App drops the call its question left
-# behind). Words that are only a yes are one, whatever the model's confidence: the floor holds an approve:true only when
+# behind). Words that are only a yes are one, whatever the model's confidence: the floor holds an answer yes only when
 # the person said something besides a yes («sí pero el otro», «sí no», «ya, espera»). The words are read folded (lower
 # case, no accents), whole, a yes first and then yeses or the softeners that may follow one («sí po», «hágale pues»).
 PLAIN_YES = ("si", "sip", "ya", "dale", "ok", "okay", "okey", "oki", "vale", "va", "venga", "claro", "claro que si",
@@ -1228,8 +1228,8 @@ ASKED = json.dumps({"status": "asked", "reason": "the person saw the question; t
 # the exact invocation the kernel challenged again with its token, or drops it.
 CONFIRM_OPERATION = "confirmation.answer"
 # Renew al máximo (F005 of the notebook's falsehood bench, 2026-10-22): «¿ya lo subiste?» was answered with
-# confirm_pending approve:true and nothing waiting for a «sí»; with a confirmation pending it would have approved what
-# nobody approved. Without one, the call never reaches the App: its result says so and the model answers in words.
+# confirm_pending approve:true (answer yes today) and nothing waiting for a «sí»; with a confirmation pending it would
+# have approved what nobody approved. Without one, the call never reaches the App: its result says so and the model answers in words.
 # F010 (int3, 2026-10-22): «nothing waiting» read as «already done» («la borré sin pedirte permiso» after a delete that
 # had failed); the result says this call did nothing and that only earlier results tell what was done.
 NOTHING_PENDING = json.dumps({"status": "failed", "error": "nothing_pending",
@@ -1257,16 +1257,23 @@ def ended_result(ended: dict[str, Any], wire_of: Callable[[str], str] = plain) -
     told["next"] = f"to do it now, call {wire} again: the person will be asked again"
     return json.dumps(told)
 
+# Prefijo c3, S4 (T6 of BRIEF_FT_C3): a boolean had no answer for words that settle nothing; «sí pero el otro» and «sí
+# no» were approve:true in conf-int7. «unclear» leaves the call waiting and the model asks again (the App, Unclear). The
+# examples are none of the 29 answers of the confirmation mini bench (renew_v4\mini), which measures this.
 CONFIRM = {
     "type": "function",
     "function": {
         "name": "confirm_pending",
         "description": (
             "Give the person's answer to the confirmation you asked them for (an action that needed their «sí»). "
-            "Use when: you asked «¿Lo borro?» and they said «sí, dale» (approve true) or «no, déjalo» (approve false). "
+            "Use when: you asked «¿Lo borro?» and they answered: answer yes for a plain yes («sí, dale»), no for a "
+            "plain no («no, déjalo»), unclear when their words do not settle it («sí, pero el de ayer», «no estoy "
+            "seguro», «espérate un poco», or they talk about something else, «¿y ese cuál era?»): the action keeps "
+            "waiting, neither run nor cancelled, and you ask again. "
             "Do not use when: nothing is waiting for confirmation, or they asked for something new instead."
         ),
-        "parameters": {"type": "object", "properties": {"approve": {"type": "boolean"}}, "required": ["approve"]},
+        "parameters": {"type": "object", "properties": {"answer": {"type": "string", "enum": ["yes", "no", "unclear"]}},
+                       "required": ["answer"]},
     },
 }
 
@@ -1688,7 +1695,7 @@ class Mind:
         arguments = pending.get("arguments")
         shown = f" {json.dumps(arguments, ensure_ascii=False)}" if isinstance(arguments, dict) else ""
         return (f"\n[Espera el sí de la persona: {wire}{shown}. Si sus palabras contestan a tu pregunta, llama a "
-                f"confirm_pending con approve true o false.]")
+                f"confirm_pending con answer yes, no o unclear.]")
 
     @staticmethod
     def _unsure_note(unsure: list[tuple[str, float]]) -> str:
@@ -2033,12 +2040,19 @@ class Mind:
         if ended is None:
             return
         wire = self.wires.name(str(ended["operation"]))
-        waiting = f"{wire} → {WAITS_FOR_YES}"
-        if waiting in self._ran:
-            last = len(self._ran) - 1 - self._ran[::-1].index(waiting)
-            # One the kernel challenged again after it had started may have had its effect (as ended_result tells it).
-            told = f"{wire} → " + (NO_RESULT_RAN if ended.get("effectUncertain") is True
-                                   else UNANSWERED.get(str(ended.get("ended")), UNANSWERED["dropped"]))
+        if f"{wire} → {WAITS_FOR_YES}" not in self._ran:
+            return
+        first = len(self._ran) - 1 - self._ran[::-1].index(f"{wire} → {WAITS_FOR_YES}")
+        # Prefijo c3, S4: an unclear answer left the same question waiting, and its confirm_pending says so too (named
+        # with aid «confirm_names_call», bare without it).
+        confirm = CONFIRM["function"]["name"]
+        again = {f"{confirm} ({wire}) → {WAITS_FOR_YES}", f"{confirm} → {WAITS_FOR_YES}"}
+        # One the kernel challenged again after it had started may have had its effect (as ended_result tells it).
+        how = (NO_RESULT_RAN if ended.get("effectUncertain") is True
+               else UNANSWERED.get(str(ended.get("ended")), UNANSWERED["dropped"]))
+        for last in [first, *(index for index in range(first + 1, len(self._ran)) if self._ran[index] in again)]:
+            waiting = self._ran[last]
+            told = waiting[:-len(WAITS_FOR_YES)] + how
             self._ran = [told if index == last else entry for index, entry in enumerate(self._ran)]
             # Sesión larga sobre 8fa1e1430 (R7-NB-2): and so does the turn that asked, which the model reads beside the
             # clock: its facts line still said «espera el sí», and the same close of a new window tramos later was a
@@ -2498,21 +2512,26 @@ class Mind:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
         confirm_pending call it stands for enter the conversation as they are, with no model call in between."""
         started = time.perf_counter()
-        # The press answers the card of the call the turn before had just asked (its last result waits for the «sí»).
-        asked = (self._turn or {}).get("last_call")
-        confirming = asked[0] if asked and asked[2] == WAITS_FOR_YES else None
+        # The press answers the card of the call the turn before had just asked (its last result waits for the «sí»): its
+        # own, or the one an unclear answer of that turn left waiting (its confirm_pending's result waits too).
+        turn = self._turn or {}
+        asked = turn.get("last_call")
+        confirming = None
+        if asked and asked[2] == WAITS_FOR_YES:
+            confirming = turn.get("confirming") if asked[0] == CONFIRM["function"]["name"] else asked[0]
         self._close_open_calls()
         call_id = self._new_id("confirm")
+        answer = {"answer": "yes" if approve else "no"}
         self.conversation.append({"role": "user", "content": label})
         self.conversation.append({"role": "assistant", "content": "", "tool_calls": [
             {"id": call_id, "type": "function",
-             "function": {"name": CONFIRM["function"]["name"], "arguments": json.dumps({"approve": approve})}}]})
+             "function": {"name": CONFIRM["function"]["name"], "arguments": json.dumps(answer)}}]})
         self._turn = {"conv": self.conversation, "queue": [], "awaiting": call_id, "text": label,
                       "calling": CONFIRM_OPERATION, "confirming": confirming}
         self._log("turn.confirm", started, None, text=label, kind="action", operation=CONFIRM_OPERATION,
-                  arguments={"approve": approve})
+                  arguments=answer)
         return {"type": "turn.result", "id": request_id, "kind": "action", "operation": CONFIRM_OPERATION,
-                "arguments": {"approve": approve}, "reply": "", "question": ""}
+                "arguments": answer, "reply": "", "question": ""}
 
     def _make_room(self, conv: list[dict[str, Any]], final: bool = False) -> bool:
         """One step of room for an open turn past the context, whether there was one: the earlier turns' results leave
@@ -2956,7 +2975,7 @@ class Mind:
             # into a question that dropped nothing and asked again at every unsure «sí».
             floor = CONFIRM_FLOOR if os.environ.get("BAXY_CONFIRM_FLOOR") is None else _threshold("BAXY_CONFIRM_FLOOR")
             return (DOUBT_NOTE.format(call=call["wire"])
-                    if turn.get("pending") and call["arguments"].get("approve") is True
+                    if turn.get("pending") and call["arguments"].get("answer") == "yes"
                     and doubt["confidence"] < floor and not _PLAIN_YES.fullmatch(_fold(turn["text"])) else None)
         # Al máximo, System One 2: layer 0 never holds a low_reversible call; its error is undone and the kernel verifies
         # it. On 26 runs of decision2 with System One (2026-10-22) it held 23, 22 of them right without System One (P040
