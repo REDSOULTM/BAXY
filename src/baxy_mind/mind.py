@@ -195,6 +195,30 @@ OTHER_TEXT = "; el campo ya tenía otro texto: lo escrito quedó junto a ese tex
 WINDOW_NOT_FOUND = "; la ventana pedida no existe: no se buscó ningún campo en ella"
 # What _read_in_part says after the part a read held, in full.
 PART_TAIL = "; lo demás no se leyó: un «no está» vale sólo para lo leído"
+# Plan c3, fila 0.2 (estado explícito del resultado; research_notes/ft/13 §2, arXiv 2609.14758): a model fabricates 0 %
+# after a status:error, 8.1 % after an «ok» with an empty payload and 18.6 % after a partial one, and a status line it
+# must read before answering took 14.1 % to 0.87 %. Each call's entry in the facts line is that line: its first words
+# are the status (completado / lectura / falló / no se completó / sin confirmar / no se ejecutó / cancelado), and what
+# the result's own fields say it held is told after them, derived from those fields and never from the tool: an output
+# that came back empty (EMPTY, EMPTY_TEXT), one read or shown only in part (_read_in_part, RESULT_CUT_TOLD,
+# OBSERVED_LEFT_OUT) and a failure because what the call named came from a reading that no longer holds (STALE). That
+# results of earlier turns are of their time is the clock's (Mind._clock).
+EMPTY = "; vacío: no trajo ningún elemento"
+EMPTY_TEXT = "; vacío: su texto está en blanco"
+STALE = "; obsoleto: el id que usó es de una lectura anterior y ya no vale"
+# A failure code that says the id or the reading it named is no longer valid (visible_control_identity_stale,
+# invalid_or_expired_window_id, bluetooth_identity_expired…); a confirmation that expired is no reading, and a budget
+# spent (tooltip_budget_spent) is no id.
+_STALE_CODE = re.compile(r"(?<![a-z])(?:stale|expired)(?![a-z])")
+# The kernel's own marks of a cut (OperationVisibleFacts: «truncated», «resultsMayBeTruncated», any «…Truncated») and of
+# an observation left out whole for its size («observedLimit»: «omitted»).
+TRUNCATED_PART = "parte de lo leído se cortó por tamaño"
+MORE_PART = "hay más sin mostrar"
+OBSERVED_LEFT_OUT = "; no se muestra nada de lo que vio: no cabía en el resultado"
+# Aid «result_cap»: the cut the mind made said in the line, not in the body (CUT_RESULT only marks where it is).
+RESULT_CUT_TOLD = "el resultado se recortó para que quepa el turno: {n} de sus {total} caracteres no se muestran"
+# The clock's: a result of an earlier turn is what was read then, not the state now (the reading is old, not wrong).
+STALE_TURNS = " y lo leído en turnos anteriores es de entonces"
 # Aid «facts_once» (w7-breve, 2026-10-23): on the holdout v4 turn.continue wrote more after a tool (predicted p50 399 →
 # 487 ms). A facts line of several calls said the same long wording once per call (E022: «lectura: sólo miró, sin
 # abrir, cerrar ni cambiar nada; lo que vio está arriba» seven times), and the answer after it retold the pages; without
@@ -204,7 +228,12 @@ PART_TAIL = "; lo demás no se leyó: un «no está» vale sólo para lo leído"
 SAID_AGAIN = {OUTPUT_READ: "lectura: sólo miró",
               VERIFICATION["delivered_only"]: "enviado sin verificar",
               VERIFICATION["unchanged"]: "ya estaba así antes de esta llamada",
-              PART_TAIL: ""}
+              PART_TAIL: "",
+              EMPTY: "; vacío",
+              EMPTY_TEXT: "; vacío",
+              STALE: "; obsoleto"}
+# The wordings above that come after an outcome's first words (the rest open it).
+_SAID_WITHIN = (PART_TAIL, EMPTY, EMPTY_TEXT, STALE)
 
 
 def _outcome(observation: str, read: bool = False) -> str:
@@ -245,8 +274,11 @@ def _outcome(observation: str, read: bool = False) -> str:
     code = f" ({error})" if isinstance(error, str) and error else ""
     if facts.get("effectUncertain"):
         return "sin confirmar" + code + ": pudo o no ocurrir" + reread
+    stale = (STALE if isinstance(error, str) and _STALE_CODE.search(error) and not error.startswith("confirmation")
+             else "")
+    left = OBSERVED_LEFT_OUT if facts.get("observedLimit") == "omitted" and "observed" not in facts else ""
     if status == "pending":
-        return "no se completó" + code + reread
+        return "no se completó" + code + stale + reread
     if status == "completed":
         # Al máximo 8.2: how it was verified is the result's own typed fact (OperationVisibleFacts' table in the kernel,
         # and the App's for memory and for a result it could not read); one without it is not taken as verified.
@@ -269,9 +301,11 @@ def _outcome(observation: str, read: bool = False) -> str:
         error = facts.get("error")
         code = f" ({error})" if isinstance(error, str) and error else ""
         other = OTHER_TEXT if shown.get("otherTextInField") is True else ""
-        return told + code + where + before + other + seen + _read_in_part(shown)
+        # Plan c3 (EMPTY): only a call whose result is its output (output_only) is told empty by what that output holds.
+        empty = _empty(shown) if verification == "output_only" else ""
+        return told + code + where + before + other + seen + empty + _read_in_part(shown) + left
     gone = WINDOW_NOT_FOUND if shown.get("windowFound") is False else ""
-    return "falló" + code + reread + gone + _looked_elsewhere(shown)
+    return "falló" + code + stale + reread + gone + _looked_elsewhere(shown) + left
 
 
 # Renew al máximo (w8): file_open of a path that was not there looked only at that path (searchedElsewhere false), and the
@@ -291,18 +325,54 @@ def _number(facts: dict[str, Any], key: str) -> int | None:
     return value if isinstance(value, int) and not isinstance(value, bool) else None
 
 
+def _empty(shown: dict[str, Any]) -> str:
+    """Plan c3 (EMPTY): whether an output says it holds nothing, by its own fields: its «count» of what it shows is 0
+    (and no «totalCount» says there is more), or, without a count and with no object of its own that holds something
+    (a forecast, a window), every list it brings is empty and its «text», if it has one, is blank. An output with none
+    of these (a level, a state) is not told empty."""
+    count = _number(shown, "count")
+    text = shown.get("text")
+    blank = not isinstance(text, str) or not text.strip()
+    if count is not None:
+        return EMPTY if count == 0 and not _number(shown, "totalCount") and blank else ""
+    if any(isinstance(value, dict) and value for value in shown.values()):
+        return ""
+    lists = [value for value in shown.values() if isinstance(value, list)]
+    if lists:
+        return EMPTY if not any(lists) and blank else ""
+    return EMPTY_TEXT if isinstance(text, str) and blank else ""
+
+
+def _cut_flagged(shown: dict[str, Any]) -> bool:
+    """Whether the result or its search scope carries a cut mark set (TRUNCATED_PART)."""
+    scope = shown.get("searchScope") if isinstance(shown.get("searchScope"), dict) else {}
+    return any(value is True and (key in ("truncated", "resultsMayBeTruncated") or key.endswith("Truncated"))
+               for where in (shown, scope) for key, value in where.items())
+
+
 def _read_in_part(shown: dict[str, Any]) -> str:
     """Holdout v4 (falsedad): pages of a file read up to line ~1,904 of 3,000, the last read failed, and the answer was
     «revisé todo el archivo y no apareció». A read whose result says it holds only part of what it read (readInPart: a
     page of a file or a web page, a search that did not read every file, a log read that stopped at its limit, a listing
     or a count of a folder's top level with subfolders or hidden entries it did not look at) is told so in the outcome
-    line, with how much of the total its own numbers give, and that a «no está» covers only that part."""
+    line, with how much of the total its own numbers give, and that a «no está» covers only that part. Plan c3: so is a
+    list that shows fewer than its total («count» under «totalCount», a list «xShown» under its «xCount»), one with more
+    to page («hasMore») and one the kernel or the provider cut for its size (_cut_flagged)."""
     listed, total_entries = _number(shown, "entriesShown"), _number(shown, "count")
     # A listing the observation cut to what it shows (the kernel's «entriesShown») is a part too.
     cut = listed is not None and total_entries is not None and listed < total_entries
-    if shown.get("readInPart") is not True and not cut:
+    total_count = _number(shown, "totalCount")
+    fewer = total_entries is not None and total_count is not None and total_entries < total_count
+    lists = [(key[:-5], value, _number(shown, key[:-5] + "Count")) for key, value in shown.items()
+             if key.endswith("Shown") and key != "entriesShown" and isinstance(value, int)]
+    lists = [(name, value, whole) for name, value, whole in lists if whole is not None and value < whole]
+    flagged, more = _cut_flagged(shown), shown.get("hasMore") is True
+    if shown.get("readInPart") is not True and not (cut or fewer or lists or flagged or more):
         return ""
     part = []
+    if fewer:
+        part.append(f"se muestran {total_entries} de {total_count}")
+    part.extend(f"{name}: se muestran {value} de {whole}" for name, value, whole in lists)
     first, last, total = (_number(shown, k) for k in ("fromLine", "toLine", "totalLines"))
     offset, returned = _number(shown, "offset"), _number(shown, "returnedCharacters")
     characters = _number(shown, "characters")
@@ -336,8 +406,22 @@ def _read_in_part(shown: dict[str, Any]) -> str:
         part.append(f"sólo los {cap} eventos más recientes del registro")
     if shown.get("endReached") is False:
         part.append("no llegó al final")
+    if flagged and not part:
+        part.append(TRUNCATED_PART)
+    if more and not part:
+        part.append(MORE_PART)
     detail = (": " + ", ".join(part)) if part else ""
     return f"; leído en parte{detail}{PART_TAIL}"
+
+
+def _cut_told(outcome: str, left_out: int, total: int) -> str:
+    """Aid «result_cap»: an outcome with the mind's cut of the result told among what was read in part."""
+    cut = RESULT_CUT_TOLD.format(n=left_out, total=total)
+    head, tail, rest = outcome.partition(PART_TAIL)
+    if not tail:
+        return outcome + "; leído en parte: " + cut + PART_TAIL
+    joiner = ", " if ": " in head[head.rfind("; leído en parte"):] else ": "
+    return head + joiner + cut + tail + rest
 
 
 def _said_once(done: list[str]) -> list[str]:
@@ -349,7 +433,7 @@ def _said_once(done: list[str]) -> list[str]:
         head, arrow, outcome = entry.partition(" → ")
         if arrow:
             for full, again in SAID_AGAIN.items():
-                if full == PART_TAIL:
+                if full in _SAID_WITHIN:
                     if full in outcome:
                         outcome = outcome.replace(full, again) if full in seen else outcome
                         seen.add(full)
@@ -367,9 +451,10 @@ def _deduplicated(observation: str, outcome: str) -> str:
     spoken answer after a tool went 3.4 → 4.3 s p50, turn.continue reading 124 → 156 tokens. Left out only where the line
     says it: a completed call's status and verification («completado y verificado», «lectura: …»), its fullPath («en
     C:\\…»), alreadyRunning true (ALREADY_OPEN), otherTextInField true (OTHER_TEXT), windowFound false
-    (WINDOW_NOT_FOUND), an after that is only {"same": true} (SAME_WINDOW) and stateAfter's
-    requestedStateReached (REREAD). The rest stays as it came, in the App's compact JSON; a result with none of them is
-    the App's own text."""
+    (WINDOW_NOT_FOUND), an after that is only {"same": true} (SAME_WINDOW), stateAfter's requestedStateReached
+    (REREAD), the kernel's «truncated» true (the line's «leído en parte») and its «observedLimit» omitted
+    (OBSERVED_LEFT_OUT). The rest stays as it came, in the App's compact JSON; a result with none of them is the App's
+    own text."""
     try:
         facts = json.loads(observation)
     except json.JSONDecodeError:
@@ -380,6 +465,8 @@ def _deduplicated(observation: str, outcome: str) -> str:
     if shown.get("status") == "completed" and outcome.startswith(COMPLETED_OUTCOMES):
         shown.pop("status")
         shown.pop("verification", None)
+    if facts.get("observedLimit") == "omitted" and OBSERVED_LEFT_OUT in outcome:
+        shown.pop("observedLimit")
     if isinstance(facts.get("observed"), dict):
         observed = dict(facts["observed"])
         where = observed.get("fullPath")
@@ -397,6 +484,8 @@ def _deduplicated(observation: str, outcome: str) -> str:
         if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool) \
                 and REREAD[after["requestedStateReached"]] in outcome:
             observed["stateAfter"] = {k: v for k, v in after.items() if k != "requestedStateReached"}
+        if observed.get("truncated") is True and "; leído en parte" in outcome:
+            del observed["truncated"]
         if observed or not facts["observed"]:
             shown["observed"] = observed
         else:
@@ -1051,8 +1140,9 @@ def _omitted(facts: str) -> str:
 CUT_TEXT = "\n[Texto recortado para que quepa el turno: {n} caracteres más de lo que escribió la persona ya no se muestran]"
 CUT_TEXT_FLOOR = 500
 # P0.10 (noche 27-10): a result past RESULT_TOKENS keeps its start, cut by size and never by what it says, and the cut is
-# said where the model reads it.
-CUT_RESULT = "\n[Resultado recortado para que quepa el turno: {n} de sus {total} caracteres ya no se muestran]"
+# said where the model reads it: marked here where the kept start ends, and told with its size in the call's facts line
+# (RESULT_CUT_TOLD; plan c3: the line says it, so the body no longer says it again).
+CUT_RESULT = "…"
 
 # System One, layer 0 (doubt.py): what the model reads when it was not sure of the action it chose. Under BAXY_S1_DOUBT
 # (0.4, SYSTEM_ONE); on the 1,839 labelled real requests, below 0.4 held 95 of 210 wrong actions and asked instead of 10
@@ -1712,13 +1802,14 @@ class Mind:
         # last «[En este turno: …]» the model saw was the previous turn's, and lines of turns without calls were false
         # 24 % of the time against 6 % (falsedades p5-p8); decision2 on the notebook gained by that mechanism (P041
         # stopped inventing, P049 stopped looking up the clock): 227/230 vs 226. Al máximo 8.1: and the session's calls.
+        # Plan c3 (estado explícito): and that what the results above show is of when they were read (STALE_TURNS).
         ran = str(self._ran_count or "ninguna")
         if self._ran:
             last = "" if len(self._ran) == self._ran_count else f", las {len(self._ran)} últimas"
             ran += f"{last} ({' / '.join(self._ran_told())})"
         return (f"{CLOCK_MARK} {self._clock_time()}; "
                 "los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna herramienta en este "
-                f"turno; llamadas a herramientas en esta sesión: {ran}]")
+                f"turno{STALE_TURNS if self._ran_count else ''}; llamadas a herramientas en esta sesión: {ran}]")
 
     @staticmethod
     def _clock_time() -> str:
@@ -2332,6 +2423,18 @@ class Mind:
         if outcome.startswith(VERIFICATION["unchanged"]) and _aid_on("same_call_closes") and _same_done(
                 turn, calling, turn.get("calling_args"), VERIFICATION["readback"]):
             outcome = SET_BY_SAME + outcome[len(VERIFICATION["unchanged"]):]
+        # Aid «result_dedup» (w6-lat): what the facts line below says of this result is not said in it again.
+        compact = _aid_on("result_dedup")
+        body = _deduplicated(observation, outcome) if compact else observation
+        # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long
+        # address in a result reaches the model as a short reference, and the mind puts the address back in its calls.
+        shown, made = self._shorten(body, compact) if _aid_on("short_refs") else (body, {})
+        capped = 0
+        if _aid_on("result_cap"):
+            fitted, left_out = self._fit_result(shown)
+            if left_out:
+                # Plan c3: the cut is told in the call's line, as any part read (RESULT_CUT_TOLD).
+                capped, outcome, shown = len(shown), _cut_told(outcome, left_out, len(shown)), fitted
         # Aid «confirm_names_call» (auditoría de la mente, w8, P5): an answer to a confirmation says which call it
         # answered («confirm_pending (filesystem_known_trash_named) → …»), here and in the clock; once its turn is cut,
         # «confirm_pending → completado y verificado» no longer said what was done. Only when the App said which call
@@ -2405,19 +2508,10 @@ class Mind:
             pairs[pair] = pairs.get(pair, 0) + 1
         turn["look"] = ([_call_key(turn.get("calling_args")), _result_key(observation)]
                         if calling == "input_visible_controls" else None)
-        # Aid «result_dedup» (w6-lat): what the facts line below says of this result is not said in it again.
-        compact = _aid_on("result_dedup")
-        told = _deduplicated(observation, outcome) if compact else observation
-        # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long
-        # address in a result reaches the model as a short reference, and the mind puts the address back in its calls.
-        shown, made = self._shorten(told, compact) if _aid_on("short_refs") else (told, {})
         if made:
             aids["short_refs"] = sorted(made) if turn.get("private") else made
-        if _aid_on("result_cap"):
-            fitted = self._fit_result(shown)
-            if fitted != shown:
-                aids["result_cap"] = len(shown)  # the trace says which results the model read in part
-                shown = fitted
+        if capped:
+            aids["result_cap"] = capped  # the trace says which results the model read in part
         line = _said_once(done) if _aid_on("facts_once") else done
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": shown + "\n[En este turno: " + "; ".join(line) + "]" + note})
@@ -2484,29 +2578,30 @@ class Mind:
         # Decided again as the person's turn it doubted, as REREAD_NOTE and DOUBT_NOTE are after a doubt held in the mind.
         return self._next(request_id, "turn.decide", turn, final=asks)
 
-    def _fit_result(self, shown: str) -> str:
-        """Aid «result_cap» (P0.10): a result past RESULT_TOKENS keeps the start that fits and says how much is left out
-        (CUT_RESULT), before it is sent rather than after a refusal (_make_room). Counted as the history counts, only
+    def _fit_result(self, shown: str) -> tuple[str, int]:
+        """Aid «result_cap» (P0.10): a result past RESULT_TOKENS keeps the start that fits, marked where it ends
+        (CUT_RESULT), before it is sent rather than after a refusal (_make_room); with how many of its characters are
+        left out (0: it goes whole), which its facts line tells (RESULT_CUT_TOLD). Counted as the history counts, only
         with the server's tokenizer (a token is at least a character, so a shorter text is never counted). The call has
         already been counted as done when this runs, so a tokenizer that fails does not fail the turn: the result keeps
         RESULT_TOKENS characters, which fit."""
         if not self.prefix_tokens or len(shown) <= RESULT_TOKENS:
-            return shown
+            return shown, 0
         try:
             tokens = len(self.server.tokenize(shown))
             if tokens <= RESULT_TOKENS:
-                return shown
+                return shown, 0
             keep = len(shown) * RESULT_TOKENS // tokens
             while True:
-                cut = shown[:keep] + CUT_RESULT.format(n=len(shown) - keep, total=len(shown))
+                cut = shown[:keep] + CUT_RESULT
                 tokens = len(self.server.tokenize(cut))
                 if tokens <= RESULT_TOKENS or keep == 0:
-                    return cut
+                    return cut, len(shown) - keep
                 keep = max(0, keep - (keep * (tokens - RESULT_TOKENS) // tokens) - 1)
         except (OSError, http.client.HTTPException, RuntimeError, ValueError, KeyError) as error:
             self._log("turn.result_cap", time.perf_counter(), None, error=type(error).__name__)
-            keep = RESULT_TOKENS - len(CUT_RESULT) - 2 * len(str(len(shown)))
-            return shown[:keep] + CUT_RESULT.format(n=len(shown) - keep, total=len(shown))
+            keep = RESULT_TOKENS - len(CUT_RESULT)
+            return shown[:keep] + CUT_RESULT, len(shown) - keep
 
     def confirm(self, request_id: Any, approve: bool, label: str) -> dict[str, Any]:
         """The person pressed Sí or No on a pending confirmation: their answer (the button's label) and the
