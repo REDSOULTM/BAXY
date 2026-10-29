@@ -3484,3 +3484,26 @@ confirmaciones ≥ 6/8; decisión sin pérdida y ya_hecho +8/40; falsedades ≤;
 - 14:3x renew-cien recibe también la revisión de arranque (777fa1f16 → d9da2603c: un «apagar» dado mientras la palabra
   espera al oído ya no queda detrás de su carga) y la guarda de los perfiles de PowerShell (33b6dabb8 → 854f7d235); sin
   medir en el holdout v6. App 214, Providers 3119.
+
+## Ajuste c3 (plan `research_notes/ft/00_PLAN_FT_C3.md` v6, sesión líder del PC, desde 2026-10-29)
+
+Primer «adelante» del dueño el 29-10 ~01:15 (`PROMPT_FT_C3_NOCHE.md`, permisos totales). Latido fuera y apagado
+(decisión del dueño 29-10). Se escribe por tanda; el detalle de cada tanda está en el buzón.
+
+| Hora (29-10) | Hecho | Evidencia |
+|---|---|---|
+| 00:20 | Modelo de tiro desde el PC: el pod no recibe ninguna clave; el PC sube `build_c3`, recoge GGUF con sha y apaga (`scripts/renew/ft/pc/{lanzar_cola,recoger_pod,terminar_pods}`) | `GET /v1/pods` 200; `terminar_pods.ps1 -SoloComprobar` sin pods |
+| 00:40 | Banco ciego c3 sellado antes de tocar datos | `F:/BAXYeval/ft_v1/holdout_c3/holdout_c3.7z` sha `e07d5acf…f400a1`; JSON en claro borrado |
+| 00:45 | 0.1: se mantiene el orden del catálogo | OR 1,09 IC95 [0,49; 3,69], p 0,30 (`research_notes/ft/prep/POSICION_CATALOGO.md`) |
+| 01:00 | 0.6b en `ft-c3-ayudas` (0c2035f70): `game_title_not_said` con interruptor, `said_operator` partido de `calculator_next`, `ayudas_ids.py`, `bench_decision --only` | Release 0/0; suites .NET 0 fallos; pytest 1389 |
+| 02:00 | Prefijo c3 = `ft-c3` 7ee83b524: S4 `answer` yes/no/unclear + estado explícito en cada resultado + P2.4 `path` único | Release 0 errores; Kernel 988, App 465, Contracts 74, Providers 3503, Setup 486; pytest 1423 (+3 omitidas de voz) |
+| 02:05 | Catálogo exacto (187 ops; 19 piden el sí en normal) + 4 catálogos neutros; v2 → c3: 2620 de 4293; fuga contra 235 bancos (37 sellados descifrados): 1807 limpios, 0 canarios | `F:/BAXYeval/ft_v1/c3/` |
+| 02:10 | c2rep: 1807 ejemplos / 2255 muestras, 4 prefijos ~44,0-44,3k tokens, `prefix.json` sha `f6b60a1b…e488`; prefijo del PC `b69082b6…89b8` (47.416 tokens) | `F:/BAXYeval/ft_v1/c3/render_c2rep/` |
+| 01:09-02:13 | Pods: ft-pod-1 `sxkoldxlpc9wrx` y ft-pod-2 `dik0tpzb8v0bsr`, RTX 5090 Secure US$1,19/h; calibración M1 9,0 s/paso, M2 8,1 s/paso (mediana), pico 31,3 de 32 GiB; `--check` a 2048: Δ 0,002-0,005 | `F:/BAXYeval/ft_v1/out/logs-pod1/calibracion.json` |
+| 02:15 | Base del día PC, decision2 ×3, c2e1 + prefijo c3, catálogo del PC, S1 apagado: 227 / 226 / 226 de 268 (con el prefijo del oficial c2e1 hacía 232-234) | `F:/BAXYeval/renew_v1/runs/base-c3-d2-s{0,1,2}.jsonl` |
+
+Desvíos del plan, con su motivo: Tailscale fuera de los pods (con el modelo de tiro no hace falta y daría al pod camino
+hasta el PC y el NB); c2rep entrena sin la semilla del dueño (decisión del dueño), sin latido y sin lo que fuga
+(1807 de los 4016 ejemplos de c2): mide la receta, no replica c2; la pregunta de confirmación la sigue escribiendo el
+modelo (el plan decía el kernel, pero hoy no es así y una frase fija del kernel choca con el invariante 5); el banco de
+escenas sale de las puertas (latido fuera); sin GGUF de referencia en el pod (la subida desde casa va a ~0,15 MB/s).
