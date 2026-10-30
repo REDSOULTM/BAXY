@@ -1713,7 +1713,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Switched(operation, result, effect);
     }
 
-    private const string ClientChannelLocateScript = """
+    internal const string ClientChannelLocateScript = """
         $ErrorActionPreference='Stop';$label=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
         Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes
 
@@ -1727,9 +1727,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # Ronda final 28 (regla 3): the dialog of the page that holds an element (Chromium exposes role=dialog as a UIA
         # Window, ax_platform_node_win.cc), read up to the page or the window itself; $null when it is in none. The
         # quick switcher is such a dialog; the server, channel and message lists and the message box are in none.
+        # Ajuste c3 (F09, M6, live on the notebook): a search with no match left the focus on the switcher's dialog
+        # itself, which the walk from its parent never found: no Escape was sent and the switcher stayed open
+        # (switcherNotClosed). The walk starts at the element, so a focus on the dialog is a focus inside it.
         function Dialog-Of($element) {
           if($null -eq $element -or $element.Current.ProcessId -ne $clientPid){return $null}
-          $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker;$node=$walker.GetParent($element)
+          $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker;$node=$element
           for($up=0;$up -lt 60 -and $null -ne $node;$up++){
             if($node.Current.NativeWindowHandle -eq $h.ToInt32() -or $node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Document){return $null}
             if($node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Window){return $node}

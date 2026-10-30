@@ -544,4 +544,60 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             }
         });
     }
+
+    // Ajuste c3 (F09, M6, live on the notebook): client.channel.locate with no match said switcherNotClosed and the next
+    // look had the focus on the switcher's dialog itself. The script's Dialog-Of walked from the element's parent, so a
+    // focus on the dialog was in no dialog: no Escape went and the switcher stayed open. The script's own Dialog-Of,
+    // taken by its syntax tree, over described elements: the dialog itself is the dialog; the client's window, a page
+    // and an element of another process are in none.
+    [Test]
+    public void TheSwitchersDialogHoldingTheFocusItselfIsTheDialogTheEscapeCloses()
+    {
+        string script = WindowsDeviceControlAdapter.ClientChannelLocateScript;
+        string run = """
+            $ErrorActionPreference='Stop'
+            Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes
+            $tokens=$null;$errors=$null
+            $ast=[System.Management.Automation.Language.Parser]::ParseInput($env:BAXY_LOCATE_SCRIPT,[ref]$tokens,[ref]$errors)
+            $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Dialog-Of' },$true))
+            if($found.Count -ne 1){ throw 'Dialog-Of missing' }
+            . ([scriptblock]::Create($found[0].Extent.Text))
+            $clientPid=7;$h=[IntPtr]100
+            function New-Element([int]$process,[int]$handle,$type){ return (New-Object psobject -Property @{ Current=(New-Object psobject -Property @{ ProcessId=$process; NativeWindowHandle=$handle; ControlType=$type }) }) }
+            $window=[System.Windows.Automation.ControlType]::Window
+            $dialog=New-Element 7 0 $window
+            $answers=@(
+              [string]([object]::ReferenceEquals((Dialog-Of $dialog),$dialog)),
+              [string]($null -eq (Dialog-Of (New-Element 7 100 $window))),
+              [string]($null -eq (Dialog-Of (New-Element 7 0 ([System.Windows.Automation.ControlType]::Document)))),
+              [string]($null -eq (Dialog-Of (New-Element 9 0 $window))))
+            [Console]::Out.Write(($answers -join ','))
+            """;
+        var start = new ProcessStartInfo("powershell.exe")
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+        foreach (string argument in new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand" })
+        {
+            start.ArgumentList.Add(argument);
+        }
+
+        start.ArgumentList.Add(Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(run)));
+        start.Environment["BAXY_LOCATE_SCRIPT"] = script;
+        using Process process = Process.Start(start)!;
+        Task<string> error = process.StandardError.ReadToEndAsync();
+        string output = process.StandardOutput.ReadToEnd();
+        Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
+        Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
+        Assert.That(output.Trim().Split(','), Is.EqualTo(new[]
+        {
+            "True", // the switcher's dialog holding the focus is that dialog: the Escape goes to it
+            "True", // the client's own window is no dialog
+            "True", // a page is no dialog
+            "True", // another process's element is in none
+        }));
+    }
 }
