@@ -493,6 +493,22 @@ public sealed class ComputerUseClickMethodTests
         });
     }
 
+    // Ajuste c3 (F09, M3): the worker's own proofs of a press that renamed its control («Iniciar» became «Pausa») or
+    // that made a chosen control name it («Color 1: Rojo oscuro») hold the click; their absence does not.
+    [Test]
+    public void AControlRenamedByThePressOrAChosenOneNamingItHolds()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
+                "{\"ok\":true,\"effectObserved\":true,\"renamed\":true,\"renamedTo\":\"Pausa\",\"method\":\"invoke\"}")), Is.True);
+            Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
+                "{\"ok\":true,\"effectObserved\":true,\"chosenNamed\":true,\"chosenNow\":\"Color 1: Rojo oscuro\",\"method\":\"select\"}")), Is.True);
+            Assert.That(WindowsVisibleControlAdapter.PostreadHolds(Json(
+                "{\"ok\":true,\"effectObserved\":true,\"renamed\":false,\"chosenNamed\":false,\"method\":\"invoke\"}")), Is.False);
+        });
+    }
+
     // Review of the branch, findings 2 and 7, on the worker's own text: a row's posted press goes only to the window
     // that holds it; opening a tree item never chooses it; the last way (Select) is not waited for.
     [Test]

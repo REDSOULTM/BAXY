@@ -4041,7 +4041,14 @@ internal sealed class WindowsVisibleControlAdapter
             && fieldValue.ValueKind == JsonValueKind.True;
         bool dialogOpened = root.TryGetProperty("dialogOpened", out JsonElement dialogValue)
             && dialogValue.ValueKind == JsonValueKind.True;
-        return dismissed || selected || toggled || surface || targeted || opened || fieldTook || dialogOpened;
+        // Ajuste c3 (F09, M3): the pressed control itself renamed by the press («Iniciar» became «Pausa»), or a control
+        // the last look read as chosen that names the pressed one now and did not before («Color 1: Rojo oscuro»).
+        bool renamed = root.TryGetProperty("renamed", out JsonElement renamedValue)
+            && renamedValue.ValueKind == JsonValueKind.True;
+        bool chosenNamed = root.TryGetProperty("chosenNamed", out JsonElement chosenValue)
+            && chosenValue.ValueKind == JsonValueKind.True;
+        return dismissed || selected || toggled || surface || targeted || opened || fieldTook || dialogOpened
+            || renamed || chosenNamed;
     }
 
     private static ExternalCapabilityReceipt ReceiptFromWorker(

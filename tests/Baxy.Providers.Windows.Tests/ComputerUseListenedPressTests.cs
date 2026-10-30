@@ -241,6 +241,46 @@ public sealed class ComputerUseListenedPressTests
         }));
     }
 
+    // Ajuste c3 (F09, M3, live on the notebook): «Iniciar» of the Clock's stopwatch became «Pausa» (it started) and the
+    // click was told visible_click_postread_unread; «Rojo oscuro» of Paint's palette turned the chosen «Color 1: Negro»
+    // into «Color 1: Rojo oscuro» and the click was told visible_button_postread_unchanged. The press's own control
+    // renamed, or a control the last look read chosen that names the pressed one now and did not before, holds the click
+    // with the name read now. Counter-cases: a name that stays, a chosen one that already named it, and one that changed
+    // without naming the pressed control stay «unchanged» (the adapter's surface reads decide).
+    [Test]
+    public void AControlRenamedByItsPressOrAChosenOneThatNamesItNowHoldsTheClick()
+    {
+        string answer = Run(Worker(), ["Do-Postread", "Click-Result", "Test-Renamed", "Test-ChosenNamed", "Get-CurrentName", "Format-Name", "Get-Cut"], """
+            function Test-Selected($el){ return $false }
+            function Get-Toggle($el){ return $null }
+            function Test-FieldTook($el,$before){ return $false }
+            function Test-LineageToggled($toggles){ return $false }
+            $current=New-Object psobject -Property @{ IsEnabled=$true; IsOffscreen=$false; Name='' }
+            $el=New-Object psobject -Property @{ Current=$current }
+            $swatch=New-Object psobject -Property @{ Current=(New-Object psobject -Property @{ Name='Color 1: Rojo oscuro' }) }
+            $answers=foreach($case in @(
+              @{ before='Iniciar'; now='Pausa'; chosen=@() },
+              @{ before='Rojo oscuro'; now='Rojo oscuro'; chosen=@(@{ el=$swatch; name='Color 1: Negro' }) },
+              @{ before='Iniciar'; now='Iniciar'; chosen=@() },
+              @{ before='Rojo oscuro'; now='Rojo oscuro'; chosen=@(@{ el=$swatch; name='Color 1: Rojo oscuro' }) },
+              @{ before='Verde'; now='Verde'; chosen=@(@{ el=$swatch; name='Color 1: Negro' }) })){
+              $current.Name=$case.now
+              $script:Pending=@{ native=$null; element=$el; toggleBefore=$null; lineage=@(); lineageToggles=@(); name=$case.before; identity='b.1'; kind='Button'; method='invoke'; placeBefore=$null; top=[IntPtr]0; topEnabled=$null; nameBefore=$case.before; chosenBefore=$case.chosen }
+              $read=Do-Postread @{}
+              [string]$read.ok+'|'+[string]$read.error+'|'+[string]$read.renamedTo+'|'+[string]$read.chosenNow
+            }
+            [Console]::Out.Write((@($answers) -join ','))
+            """);
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "True||Pausa|",                                // the stopwatch's «Iniciar» renamed by its own press
+            "True|||Color 1: Rojo oscuro",                 // the chosen colour now names the pressed swatch
+            "False|visible_button_postread_unchanged||",   // contracase: the name stays
+            "False|visible_button_postread_unchanged||",   // contracase: the chosen one already named it before
+            "False|visible_button_postread_unchanged||",   // contracase: a chosen one that does not name the pressed control
+        }));
+    }
+
     // Ronda 21 (t-menu-2): a context menu or an opening by the control's arrow is not proven by the element's selection,
     // which it may have had before the act (the tree node already chosen): the post-read answers «unchanged» and the
     // adapter's surface and born-popup reads decide. Contracase: a plain click's selection still holds.

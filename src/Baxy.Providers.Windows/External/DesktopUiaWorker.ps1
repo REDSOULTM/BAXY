@@ -2753,7 +2753,10 @@ function Do-View($request){
   # Ronda 21 (t-drag-4): el cuerpo de la ventana va siempre, fuera del tope: ya listado, se queda donde esta.
   $body=Select-BodySurface $surfaces $primary
   Add-ViewBody $controls $body $elements
-  $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen }
+  # Ajuste c3 (F09, M3): las identidades de lo que la vista leyo elegido (selected, on), cuyo nombre el clic siguiente
+  # lee antes de pulsar y su postread despues (Get-ChosenBefore, Test-ChosenNamed).
+  $chosenIds=@($controls | Where-Object { $null -ne $_ -and @(([string]$_.state) -split ' ' | Where-Object { $_ -eq 'selected' -or $_ -eq 'on' }).Count -gt 0 -and ([string]$_.id).Length -gt 0 } | ForEach-Object { [string]$_.id })
+  $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen; chosen=$chosenIds }
   $ordered=@()
   foreach($entry in $controls){
     $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; nameCut=[int]$entry.nameCut; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType })
@@ -3301,6 +3304,46 @@ function Test-LineageToggled($toggles){
   }
   return $false
 }
+# Ajuste c3 (F09, M3): el nombre de un control leido ahora (Current, no la cache de la vista), formateado como lo dice
+# una mirada; vacio si no se puede leer.
+function Get-CurrentName($el){
+  try { return (Format-Name ([string]$el.Current.Name)) } catch { return '' }
+}
+# Los elegidos (selected, on) que la ultima vista de esta ventana leyo, con su nombre de ahora, sin el control que se va a
+# pulsar: a lo sumo 24, pocos en cualquier ventana.
+function Get-ChosenBefore($hwnd,$button){
+  $out=@()
+  if($null -eq $script:LastView -or [long]$script:LastView.hwnd -ne [long]$hwnd){ return $out }
+  foreach($id in @($script:LastView.chosen | Select-Object -First 24)){
+    $el=$script:LastView.elements[[string]$id]
+    if($null -eq $el){ continue }
+    try { if([System.Windows.Automation.Automation]::Compare($el,$button)){ continue } } catch {}
+    $name=Get-CurrentName $el
+    if($name.Length -gt 0){ $out+=@(@{ el=$el; name=$name }) }
+  }
+  return $out
+}
+# El nombre nuevo del control pulsado, si su nombre de ahora es otro que el de antes del clic; $null si no cambio o no
+# se lee (un control que ya no esta lo dice absentOrDisabled).
+function Test-Renamed($el,[string]$before){
+  if($before.Length -eq 0){ return $null }
+  $now=Get-CurrentName $el
+  if($now.Length -eq 0 -or $now -ceq $before){ return $null }
+  return $now
+}
+# El nombre de ahora de un elegido que nombra lo pulsado y antes del clic no lo nombraba («Color 1: Negro» -> «Color 1:
+# Rojo oscuro» al pulsar «Rojo oscuro»); $null si ninguno.
+function Test-ChosenNamed($chosen,[string]$pressed){
+  if($pressed.Length -eq 0){ return $null }
+  foreach($entry in @($chosen)){
+    if($null -eq $entry){ continue }
+    $was=[string]$entry.name
+    if($was.IndexOf($pressed,[StringComparison]::OrdinalIgnoreCase) -ge 0){ continue }
+    $now=Get-CurrentName $entry.el
+    if($now.Length -gt 0 -and $now -cne $was -and $now.IndexOf($pressed,[StringComparison]::OrdinalIgnoreCase) -ge 0){ return $now }
+  }
+  return $null
+}
 function Do-Postread($request){
   $pending=$script:Pending
   if($null -eq $pending){ return (Click-Result $false $false 'visible_click_no_pending' '' '' $false $false $false '') }
@@ -3371,8 +3414,28 @@ function Do-Postread($request){
       return $doubt
     }
   }
+  # Ajuste c3 (F09, M3, en vivo): «Iniciar» del cronometro paso a llamarse «Pausa» y el clic se dijo
+  # visible_click_postread_unread; el color «Rojo oscuro» de la paleta de Paint hizo que el elegido «Color 1: Negro» se
+  # llamara «Color 1: Rojo oscuro» y el clic se dijo visible_button_postread_unchanged. El mismo control (su identidad)
+  # con otro nombre que antes del clic, o uno de los que la vista leyo elegidos que ahora nombra lo pulsado y antes no,
+  # son el efecto de la pulsacion, leidos en el arbol.
+  $renamed=$null; $chosenNamed=$null
+  if(-not $absent -and -not $selected -and -not $toggled -and -not $fieldTook -and $null -ne $pending.element){
+    $renamed=Test-Renamed $pending.element ([string]$pending.nameBefore)
+    if($null -eq $renamed){ $chosenNamed=Test-ChosenNamed @($pending.chosenBefore) ([string]$pending.nameBefore) }
+  }
   # Un dialogo modal deshabilita a su dueno: la ventana del clic, habilitada antes y deshabilitada ahora, abrio uno.
   $dialog=($pending.topEnabled -eq $true -and $null -ne $pending.top -and -not [BaxyUiaWorkerNative]::IsWindowEnabled($pending.top))
+  if($null -ne $renamed -or $null -ne $chosenNamed){
+    $script:Pending=$null
+    $took=Click-Result $true $true '' $pending.name $pending.identity $false $false $false $pending.kind
+    $took.method=[string]$pending.method
+    # Sus propias claves, que el adaptador reconoce como prueba (PostreadHolds), con el nombre que se leyo ahora.
+    if($null -ne $renamed){ $took.renamed=$true; $took.renamedTo=$renamed }
+    else { $took.chosenNamed=$true; $took.chosenNow=$chosenNamed }
+    if($pending.blocked){ $took.blocked=$true }
+    return $took
+  }
   if($fieldTook -or $dialog){
     $script:Pending=$null
     $took=Click-Result $true $true '' $pending.name $pending.identity $false $false $false $pending.kind
@@ -3639,6 +3702,10 @@ function Do-ClickJudged($request){
   # Auditoría final (regla 3): the control's own state before the press, so its postread counts only what changed
   # (a control already offscreen, disabled or selected is no proof of this press).
   $stateBefore=Get-PressState $button
+  # Ajuste c3 (F09, M3): el nombre del control y los de los elegidos de la ultima vista, leidos antes de pulsar: el
+  # postread los compara (Test-Renamed, Test-ChosenNamed).
+  $nameBefore=Get-CurrentName $button
+  $chosenBefore=@(Get-ChosenBefore $target.hwnd $button)
   # A tab already the selected one is the state asked for: nothing is pressed and it is said as that (changed:false).
   # Any other control already selected is pressed (a row opens, a page goes back), and its mark proves nothing.
   if($manner.Length -eq 0 -and $kind -eq 'TabItem' -and $stateBefore.selected -eq $true){
@@ -3663,7 +3730,7 @@ function Do-ClickJudged($request){
     }
     $pending=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
     $pending.manner=$manner
-    if($null -ne $script:Pending){ $script:Pending.manner=$manner; $script:Pending.stateBefore=$stateBefore }
+    if($null -ne $script:Pending){ $script:Pending.manner=$manner; $script:Pending.stateBefore=$stateBefore; $script:Pending.nameBefore=$nameBefore; $script:Pending.chosenBefore=$chosenBefore }
     return $pending
   }
   $fieldBefore=$(if(@('Edit','Document','ComboBox') -contains $kind){ Get-FieldState $button } else { $null })
@@ -3685,7 +3752,7 @@ function Do-ClickJudged($request){
   if([string]$done.method -eq 'container'){ return (Click-Result $false $false 'visible_control_is_container' $name $identity $false $false $false $kind) }
   if([string]$done.method -eq 'covered'){ return (Click-Result $false $false 'visible_control_covered' $name $identity $false $false $false $kind) }
   $pressed=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
-  if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled; $script:Pending.stateBefore=$stateBefore; $script:Pending.gridFocusBefore=$gridFocusBefore }
+  if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled; $script:Pending.stateBefore=$stateBefore; $script:Pending.gridFocusBefore=$gridFocusBefore; $script:Pending.nameBefore=$nameBefore; $script:Pending.chosenBefore=$chosenBefore }
   if($null -ne $script:Pending -and $null -ne $witness -and [string]$done.method -eq 'toggle'){
     $facts=Get-ClickFacts $button
     $script:Pending.witness=$witness; $script:Pending.root=$root; $script:Pending.retried=$false
