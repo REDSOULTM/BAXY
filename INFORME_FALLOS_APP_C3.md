@@ -518,3 +518,158 @@ anterior (cd07a749d) falló una vez `ConfirmationAuthorityTokenTests.Only_the_ex
 vale si es la única; el recibo nombra la fila elegida. Si cada fila expone además un hijo con el nombre exacto, el
 exacto gana sin ambigüedad (comportamiento de antes). La descripción de `search` en `tool_descriptions.en.v1.json`
 sigue diciendo «named exactly»: no se tocó (es entrada del modelo y de los datos del ajuste); decide el líder.
+
+# Prueba en vivo en el PC (30-10)
+
+REDPC, 08:24–08:58, con el escritorio cedido por el dueño. Motor real sin modelo: `baxy-core.exe` de este worktree
+(Release, warnings como errores: 0 y 0) con su perfil de datos aparte (`%LOCALAPPDATA%\BAXY\c3-vivo-pc`), movido por
+`F:\BAXYeval\ft_v1\c3\app_vivo\vivo_cu.py`. Es el grabador del F09 con tres pasos más: imagen de la ventana de delante,
+nunca de un chat; ventana por título; n-ésima copia. Planes, recibos (`tanda_*\grabacion.jsonl`) e imágenes en
+`F:\BAXYeval\ft_v1\c3\app_vivo\`. En WhatsApp y Discord cada nombre que no es de la interfaz y cada texto leído se
+taparon antes de guardarse en el registro. No se abrió ningún chat ni se escribió a nadie. Lo único tecleado allí fue «zzqxprueba».
+
+| Arreglo | ¿Visto en vivo? | Recibo obtenido | Evidencia |
+|---|---|---|---|
+| M3 Reloj (renombre) | sí | «Iniciar» del cronómetro → `completed`, `renamedTo: Pausa`. «Pausa» → `completed`, `renamedTo: Iniciar` | `tanda_a`, pasos 7 y 11; `reloj_9_crono_iniciado.png` (corre a 00:01:59) |
+| M3 Paint (elegido) | sí | «Colores» abierta y «Rojo oscuro» → `completed`, `chosenNow: Color 1: Rojo oscuro` | `tanda_a`, paso paint 7; `paint_10_color_elegido.png` |
+| M2 Microsoft Store | sí | `input.text.type` «editor de fotos», sin ventana → `completed`, `readBack: true`, `authority: win32_sendinput_and_uia_value_reread` | `tanda_a`, paso store 4; `store_6_buscador_escrito.png` |
+| M5 copias con índice propio | sí | Temporizador: 4 `Button «Iniciar»` con índices 11, 14, 17 y 20, uno por temporizador. El clic en el 14 → `completed`, `renamedTo: Temporizador activado, Pausa`, y arrancó el segundo (3 min) | `tanda_a`, pasos 18–23; `reloj_22_temp_segundo_iniciado.png` |
+| M1 WhatsApp | sí | Ráfaga `search: zzqxprueba` → `visible_search_result_not_found`, ya no `input_text_not_read_back`. El subacto de escribir quedó `ok` | `tanda_b`, paso whatsapp 3 |
+| M1 Discord | sí, tras M6b | Antes de M6b: `visible_button_postread_unchanged`, porque el buscador seguía abierto por `locate`. Después: ráfaga → escribe en «Cambio Rápido» → `visible_search_result_not_found` | `tanda_b`, paso 6; `tanda_b2`, paso 6 |
+| M6 Discord, buscador cerrado | **no; arreglado aquí (M6b)** | Con c8b75b1b5: `found: false`, `switcherNotClosed: true`, y la mirada siguiente con el foco en el `Window` del buscador. Con M6b: buscador cerrado y foco en la vista de Discord | `tanda_b`, paso 3; `tanda_b2`, paso 5; `tanda_b3`, paso 2 |
+| E017 Ctrl+S en el Bloc de notas | **no; causa nueva, sin arreglar** | `ctrl_s` → `delivered`, 4 de 4 eventos, Bloc de notas delante. El título sigue «*prueba_e017…» y el disco no cambia | `tanda_e017`; `e017_archivo\` |
+| E010 candidatos de app.open | sí | `app.open calc.exe` → `app_not_found`, `candidates`: [Calculadora, Photometric Calc…, Access, …] | `tanda_e010_e011`, paso e010 0 |
+| E011 Calculadora | sí | «(250+175)*2» → `calculator_needs_scientific_mode` con `mode: standard` y `next`. «250+175*2» → `completed`, `value: 850`, `La expresión es 425 × 2=` | `tanda_e010_e011`, pasos 2 y 3 |
+| M1b elección por prefijo | no | — | Haría falta un chat real con un nombre que empiece por lo buscado. No se hizo (orden: no abrir chats reales) |
+| E008 búsqueda web | no | — | La guarda `query_not_said` es de la App y compara con lo que dijo la persona. El core sin turno no la ejerce; hace falta el e2e con modelo |
+| E014 Settings | no | — | Windows del PC en español, y la Configuración del dueño estaba abierta (abrirla en Sonido movía su ventana) |
+
+## M6b — el primer Escape sólo vacía el buscador rápido de Discord (arreglado)
+
+**Qué se vio.** Discord 1.0.9266. Con M6 (c8b75b1b5), `locate` sin coincidencia seguía diciendo `switcherNotClosed`.
+Para trazarlo, el guion real se sacó del adaptador con trazas que sólo dan booleanos y tipos de control
+(`diagnostico\extraer_locate.py`) y se corrió contra Discord:
+
+- Antes del Escape: foco en un `ComboBox` dentro del diálogo, el campo con el nombre, Discord delante.
+- Tras el Escape: el campo queda vacío y el foco sigue en el `ComboBox` del diálogo. A los 2,3 s seguía igual.
+- Un segundo Escape: foco en el `Document` de Discord y fuera de todo diálogo. El buscador se cerró.
+
+Con `input.key.press escape` de BAXY pasa lo mismo: el primero vacía el campo (`value ""`) y el segundo cierra
+(`tanda_b2`, pasos 9–14). Así que `Dialog-Of` no era la única causa. En la vuelta siguiente el guion encontraba el foco
+en un diálogo, se paraba (`client_dialog_after_shortcut`) y el buscador quedaba abierto. Por eso la ráfaga M1 de Discord
+pulsaba un botón tapado.
+
+**Arreglo (proveedor, `WindowsDeviceControlAdapter.ClientChannelLocateScript`).** El cierre pasa a `Close-Switcher`.
+Lee una sola vez el diálogo donde está el foco y manda el primer Escape sólo si ese diálogo tiene el nombre escrito y
+Discord está delante. Manda un segundo Escape sólo si se cumplen las tres cosas:
+
+- el foco sigue en ese mismo diálogo (`Automation.Compare`);
+- su campo quedó vacío;
+- Discord sigue delante.
+
+La lectura lenta del campo va primero, y el frente y la identidad se comprueban justo antes de la tecla.
+`Field-Shows` acepta el diálogo que debe mirar. No nombra ninguna aplicación nueva: el guion ya es el de Discord.
+
+**Prueba.** `R24ClienteEnFrioListoPorInteraccionTests.TheSwitcherEmptiedByTheFirstEscapeIsClosedByASecondOneInTheSameDialog`
+corre el `Close-Switcher` real por su árbol sintáctico. Tiene 8 casos, y en cada contracaso decide una sola guarda:
+
+- se vacía y cierra al segundo Escape;
+- un Escape basta;
+- el foco pasa a otro diálogo con el campo vacío;
+- el campo sigue con el nombre;
+- Discord pierde el frente con el campo vacío;
+- el campo no tiene el nombre;
+- el foco está desde el principio en otro diálogo vacío;
+- Discord no está delante.
+
+Roja contra c8b75b1b5 con los 6 primeros casos y la aserción ajustada de la prueba de M6: 7 de 7 rojas
+(`Close-Switcher missing`; `app_vivo\m6b_rojo.log`). Los dos últimos casos se añadieron tras la revisión. Verde
+después: R24 38 de 38. Revisión por el agente `revisor-privacidad`:
+
+- medio: el diálogo comprobado y el que recibía el Escape se leían por separado;
+- bajo: el orden de las comprobaciones;
+- medio: la prueba no aislaba cada guarda.
+
+Los tres están arreglados antes del commit.
+
+**En vivo con el arreglo.** `tanda_b2` y `tanda_b3`: tras `locate` la mirada no tiene el buscador (sin `ComboBox`, foco
+en la vista de Discord). Pero con «zzqxprueba» el recibo fue `client_quick_switcher_not_read` en las dos, tras ~45 s
+(5 vueltas, cada una abre, escribe y cierra). Sin coincidencia, Discord no lista filas nuevas, y el guion dice «no leído»
+en vez de «no existe» (regla de la ronda final 29). Queda para el líder, sin tocar:
+
+- **(a) Los 45 s** de una búsqueda sin coincidencia.
+- **(b) Un riesgo, no medido aparte.** En la primera corrida (`tanda_b`, paso 3) el recibo fue `found: false` con 15
+  filas leídas tras escribir un nombre que no existe. Con un filtro aplicado no debería haber ninguna. Lo probable es que
+  fueran las filas recientes que Discord pintó tarde: la regla «distintas de las de antes» las tomó porque antes no se
+  leyó ninguna. Si es así, `found: false` puede salir con filas sin filtrar, es decir, un falso «no está» de un canal que
+  existe pero no está entre los recientes.
+
+## E017 — la causa es el atajo en español, no la forma del acorde (sin arreglar)
+
+**Qué se vio.** Bloc de notas 11.2607.14.0 en español, sobre un archivo de prueba (`%TEMP%\baxy-e017\prueba_e017.txt`,
+ahora en `app_vivo\e017_archivo\`):
+
+- `input.key.press ctrl_s` con la ventana → `delivered`, 4 de 4 eventos, el Bloc de notas ya delante (no hubo frente
+  que devolver). El documento siguió modificado y el disco igual.
+- Con `diagnostico\acorde_variantes.ps1` desde otro proceso, ninguna forma de Ctrl+S guardó: sólo teclas virtuales
+  sostenidas (dos veces), teclas virtuales con código de exploración, o sólo códigos de exploración.
+- El foco estaba en el editor (`RichEditD2DPT`, `HasKeyboardFocus`) y una tecla Unicode sí entró
+  (`diagnostico\foco_notepad.ps1`).
+- «Guardar» del menú por UIA guardó, y su `AcceleratorKey` es **Ctrl+G**.
+- **Ctrl+G guardó en las dos formas**: los cuatro eventos en un solo `SendInput`, como antes de 2dc466867, y sostenido.
+
+El menú Archivo de este Bloc de notas declara estos atajos:
+
+| Orden del menú | Atajo |
+|---|---|
+| Nueva pestaña | Ctrl+U |
+| Abrir | Ctrl+A |
+| Guardar | Ctrl+G |
+| Guardar como | Ctrl+Mayúsculas+S |
+| Guardar todo | Ctrl+Alt+S |
+| Cerrar pestaña | Ctrl+W |
+
+**Causa.** En el Bloc de notas en español, guardar es Ctrl+G y Ctrl+S no hace nada. Eso explica los 16 de 16 del PC y
+del NB (Windows en español) y el «Save As» de la VM, que está en inglés. El acorde de un solo `SendInput` no era la
+causa. 2dc466867 (`HoldChord`) no hace daño, pero su justificación es falsa.
+
+**No se arregló.** No hay un arreglo general claro sin una decisión de producto. La descripción de `input_key_press`
+enseña «Ctrl+S/Z/F/T/W», y el modelo pulsa Ctrl+S. Salidas posibles:
+
+- **(1)** El proveedor lee el `AcceleratorKey` de los menús de la ventana. Hace falta decidir cómo sabe que `ctrl_s`
+  quería decir «guardar» sin una tabla de nombres por idioma.
+- **(2)** El modelo guarda por el menú «Archivo > Guardar» con clic: datos del ajuste y descripción.
+- **(3)** Una operación de guardar del documento.
+
+Además conviene decidir si se revierte 2dc466867, como decía su propia sección, o se deja y se corrige su comentario.
+Ctrl+A abre «Abrir» en este Bloc de notas: un «selecciona todo» por tecla allí abre un diálogo.
+
+## Otras cosas vistas
+
+- WhatsApp: con el texto ya escrito, el campo de búsqueda se llama «WhatsApp». Un clic por ese nombre con su índice dio
+  `visible_control_label_mismatch` (`tanda_limpiar_wa`). El campo se vació con Ctrl+A y Retroceso tras una mirada que lo
+  mostraba con el foco (`tanda_limpiar_wa2`: valor `""`).
+- Al empezar, el título de WhatsApp decía «(2) WhatsApp», y al terminar «(1) WhatsApp». Tenía un chat abierto por el
+  dueño (redactor de mensajes presente). Puede que traerlo al frente marcara leído un mensaje de ese chat abierto, o que
+  el dueño lo leyera en el teléfono. No se puede distinguir con lo registrado.
+- Un clic en «Cronómetro» ya elegido da `failed` `visible_button_postread_unchanged` con `alreadySelected: true`. Es el
+  contrato de antes, el mismo que grabó el F09.
+
+## Estado del escritorio y verificación
+
+| Comprobación | Resultado |
+|---|---|
+| Procesos abiertos por la prueba | Reloj, Paint, Store, el Bloc de notas y la Calculadora: cerrados por PID |
+| Temporizador de 3 min que arrancó M5 | Pausado y reiniciado: los 4 «No iniciado» (`tanda_a_restaurar2`) |
+| Reloj | Vuelve a abrir en Cronómetro |
+| Bloc de notas | La pestaña de prueba se cerró por su menú tras guardar; `TabState` vuelve a sus 2 ficheros de antes |
+| WhatsApp | Maximizado, buscador vacío |
+| Discord | Minimizado en «Amigos» |
+| Ventana de delante | Claude, como al empezar (`frente_ahora.ps1`: `front claude`) |
+| GPU | 999 MiB usados |
+| Build | `dotnet build Baxy.slnx -c Release -m:2` → 0 advertencias, 0 errores (`app_vivo\build_final.log`) |
+| `Baxy.Providers.Windows.Tests` | 3547 de 3547 |
+| `Baxy.App.Tests` | 467 de 467 |
+
+Eventos 7040 de las últimas 3 horas: 2. Son el ida y vuelta de BITS de las 07:52 y 07:54, antes de la prueba (que empezó
+a las 08:24). La comprobación del registro de msconfig no se corrió: la guarda del harness la deniega.

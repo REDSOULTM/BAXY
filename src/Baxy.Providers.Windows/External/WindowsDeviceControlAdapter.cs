@@ -1751,9 +1751,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           ,$r
         }
         # Ronda final 29 (regla 3): whether a field of the switcher's dialog holds exactly the typed name (its value read
-        # through ValuePattern); a field that cannot be read says no.
-        function Field-Shows([string]$text) {
-          $dialog=Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)
+        # through ValuePattern); a field that cannot be read says no. Without a dialog given, the one holding the focus.
+        function Field-Shows([string]$text,$dialog=$null) {
+          if($null -eq $dialog){$dialog=Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)}
           if($null -eq $dialog){return $false}
           # Ronda final 40: Discord 1.0.9261 gives its switcher's field as a ComboBox (the notebook's live read), so an Edit
           # or a ComboBox holding the typed name both count.
@@ -1767,6 +1767,29 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             }
           }
           $false
+        }
+        function Client-InFront { [BaxyClientWin]::GetForegroundWindow() -eq $h }
+        function Focus-Dialog { Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement) }
+        function Same-Element($a,$b) { [System.Windows.Automation.Automation]::Compare($a,$b) }
+        function Send-Escape { [void][BaxyMarkedKeys]::Press(0x1B,$false) }
+        # Closes the switcher this run typed into; says whether it was left open (leftOpen). The switcher is closed only
+        # with Discord still in front (an Escape never reaches another window) and only while its dialog holds the name
+        # typed (Ronda final 31 and the privacy review of M6: an Escape on Discord's own view or on another dialog of
+        # Discord's, a call or a confirmation, declines or cancels it).
+        # Ajuste c3 (live on the PC, 30-10, Discord 1.0.9266): the first Escape only empties the switcher's field and
+        # leaves it open with the focus inside; a second Escape closes it. It goes only to that same dialog, now empty.
+        # Both Escapes are bound to one dialog read once (the one the name was checked in); the slow field read goes
+        # first and the front and the dialog's identity are checked last, right before the key.
+        function Close-Switcher([string]$text) {
+          $typedIn=Focus-Dialog
+          if(-not ($null -ne $typedIn -and (Field-Shows $text $typedIn) -and (Client-InFront))){return $true}
+          Send-Escape;Start-Sleep -Milliseconds 300
+          $still=Focus-Dialog
+          if($null -ne $still -and (Field-Shows '' $still) -and (Same-Element $still $typedIn) -and (Client-InFront)){
+            Send-Escape;Start-Sleep -Milliseconds 300
+            $still=Focus-Dialog
+          }
+          $null -ne $still
         }
         # The product and its console compete for the foreground while this runs; a lost focus can drop the
         # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
@@ -1810,18 +1833,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             if($now.Count -gt 0 -and ($now -join "`n") -ne $rowsBefore -and (Field-Shows $label)){$items=$now;$state.read=$true;break}
             Start-Sleep -Milliseconds 500
           }
-          # The switcher is closed only with Discord still in front (an Escape never reaches another window). Ronda final
-          # 29 (regla 3): a switcher not closed, or still holding the focus after the Escape, is said (leftOpen).
-          # Ronda final 31 (regla 3): and only with the focus still inside the switcher's dialog (an Escape on Discord's
-          # own view declines a call).
-          $state.leftOpen=$true
-          # Ajuste c3 (F09, M6, revision de privacidad): now that a focus on a dialog itself counts, the Escape goes only
-          # to the dialog that holds the name typed into it (the switcher this run opened), never to another dialog of
-          # Discord's (a call, a confirmation) that took the focus meanwhile.
-          if([BaxyClientWin]::GetForegroundWindow() -eq $h -and (Field-Shows $label)){
-            [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
-            $state.leftOpen=$null -ne (Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement))
-          }
+          # Ronda final 29 (regla 3): a switcher not closed, or still holding the focus after the Escape, is said (leftOpen).
+          $state.leftOpen=Close-Switcher $label
         }
         # Ronda final 26 (regla 3): a window the look restored from minimized goes back to minimized (SW_SHOWMINNOACTIVE),
         # read back; the receipt says how it was left.

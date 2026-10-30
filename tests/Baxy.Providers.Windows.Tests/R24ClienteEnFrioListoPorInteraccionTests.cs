@@ -600,6 +600,78 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             "True", // another process's element is in none
         }));
         // Review of privacy: the Escape goes only to the dialog holding the name typed (the switcher), never to another.
-        Assert.That(script, Does.Contain("GetForegroundWindow() -eq $h -and (Field-Shows $label)){"));
+        Assert.That(script, Does.Contain("if(-not ($null -ne $typedIn -and (Field-Shows $text $typedIn) -and (Client-InFront))){return $true}"));
+        Assert.That(script, Does.Contain("$state.leftOpen=Close-Switcher $label"));
+    }
+
+    // Ajuste c3 (live on the PC, 30-10, Discord 1.0.9266): client.channel.locate with no match still said
+    // switcherNotClosed. Traced live: the first Escape only empties the switcher's field and leaves the switcher open
+    // with the focus in it (2.3 s later still there); a second Escape closes it. The script's own Close-Switcher, taken by
+    // its syntax tree, over a described switcher: each case gives the Escapes sent and whether it was left open.
+    // Each counter-case leaves exactly one guard to decide (review of privacy): the other dialog and the lost front have
+    // an empty field too.
+    [TestCase("empties", "2,False")] // the live Discord: the first Escape empties the field, the second closes it
+    [TestCase("closes", "1,False")] // a switcher that one Escape closes gets one Escape
+    [TestCase("otherDialog", "1,True")] // the focus went to another dialog with an empty field (a call): no second Escape
+    [TestCase("stillTyped", "1,True")] // the same dialog still holds the name: the Escape did nothing, no second one
+    [TestCase("frontLost", "1,True")] // the front left Discord, the field empty: no second Escape (another window)
+    [TestCase("notTyped", "0,True")] // the switcher does not hold the name typed: no Escape at all
+    [TestCase("otherFirst", "0,True")] // the focus is on another dialog with an empty field from the start: no Escape
+    [TestCase("noFront", "0,True")] // the switcher holds the name but Discord is not in front: no Escape
+    public void TheSwitcherEmptiedByTheFirstEscapeIsClosedByASecondOneInTheSameDialog(string client, string expected)
+    {
+        string run = """
+            $ErrorActionPreference='Stop'
+            $tokens=$null;$errors=$null
+            $ast=[System.Management.Automation.Language.Parser]::ParseInput($env:BAXY_LOCATE_SCRIPT,[ref]$tokens,[ref]$errors)
+            $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Close-Switcher' },$true))
+            if($found.Count -ne 1){ throw 'Close-Switcher missing' }
+            . ([scriptblock]::Create($found[0].Extent.Text))
+            $client=$env:BAXY_CLIENT;$switcher=@{escapes=0};$dialog=New-Object psobject;$other=New-Object psobject
+            function Start-Sleep { }
+            function Send-Escape { $switcher.escapes++ }
+            function Client-InFront { -not ($client -eq 'noFront' -or ($client -eq 'frontLost' -and $switcher.escapes -gt 0)) }
+            function Same-Element($a,$b){ [object]::ReferenceEquals($a,$b) }
+            function Focus-Dialog {
+              if($client -eq 'otherFirst'){ return $other }
+              if($switcher.escapes -eq 0){ return $dialog }
+              switch($client){
+                'empties' { if($switcher.escapes -eq 1){ return $dialog }; return $null }
+                'closes' { return $null }
+                'otherDialog' { return $other }
+                default { return $dialog }
+              }
+            }
+            # What the field of the dialog asked about holds: another dialog's field is empty; the switcher's holds the
+            # name until an Escape empties it (only a switcher that stays open with the name keeps it).
+            function Field-Shows([string]$text,$in){
+              if($null -eq $in){ throw 'Field-Shows without its dialog' }
+              $holds=$(if(-not [object]::ReferenceEquals($in,$dialog)){''}elseif($client -eq 'notTyped'){''}elseif($switcher.escapes -eq 0 -or $client -eq 'stillTyped'){'zzqxprueba'}else{''})
+              $holds -eq $text
+            }
+            $open=Close-Switcher 'zzqxprueba'
+            [Console]::Out.Write([string]$switcher.escapes + ',' + [string]$open)
+            """;
+        var start = new ProcessStartInfo("powershell.exe")
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+        foreach (string argument in new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand" })
+        {
+            start.ArgumentList.Add(argument);
+        }
+
+        start.ArgumentList.Add(Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(run)));
+        start.Environment["BAXY_LOCATE_SCRIPT"] = WindowsDeviceControlAdapter.ClientChannelLocateScript;
+        start.Environment["BAXY_CLIENT"] = client;
+        using Process process = Process.Start(start)!;
+        Task<string> error = process.StandardError.ReadToEndAsync();
+        string output = process.StandardOutput.ReadToEnd();
+        Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
+        Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
+        Assert.That(output.Trim(), Is.EqualTo(expected));
     }
 }
