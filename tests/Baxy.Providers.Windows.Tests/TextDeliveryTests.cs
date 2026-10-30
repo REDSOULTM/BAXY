@@ -1150,8 +1150,8 @@ public sealed class TextDeliveryTests
     // paragraph of the frame's own process could be read. M1: the same in a Chromium field for a named window (WhatsApp's
     // and Discord's search, inside a search burst), whose paragraph at the caret did not grow by the text. The field
     // with the keyboard's focus inside the window is read by its value, as the look reads it, before and after the keys.
-    private static string FieldValue(string value, bool bounded = false) =>
-        JsonSerializer.Serialize(new { ok = true, error = "", kind = "Edit", unit = "value", text = value, length = value.Length, bounded });
+    private static string FieldValue(string value, bool bounded = false, string id = "42.15") =>
+        JsonSerializer.Serialize(new { ok = true, error = "", kind = "Edit", id, unit = "value", text = value, length = value.Length, bounded });
 
     private static (FakeDesktopKeyboard Keyboard, FakeFieldMessages Messages) DrawnField(Action<int>? eachCharacter, string process) =>
         (new FakeDesktopKeyboard
@@ -1199,9 +1199,11 @@ public sealed class TextDeliveryTests
     }
 
     // The field's value does not hold the text (the keys went elsewhere, the field rewrote it), held it already, a read
-    // was cut at its bound, or the worker answered nothing for the focus (a password, a focus outside the window): the
-    // honest input_text_not_read_back, its effect possible. A bounded value leaves the caret's paragraph to try.
+    // was cut at its bound, the focus is another field after the keys (which may hold text of its own), or the worker
+    // answered nothing for the focus (a password, a focus outside the window): the honest input_text_not_read_back, its
+    // effect possible. A bounded value leaves the caret's paragraph to try.
     [TestCase("nothing")]
+    [TestCase("moved")]
     [TestCase("already")]
     [TestCase("rewritten")]
     [TestCase("bounded")]
@@ -1216,6 +1218,7 @@ public sealed class TextDeliveryTests
             {
                 "refused" => () => """{"ok":false,"error":"focus_field_password"}""",
                 "bounded" => () => FieldValue(value, bounded: true),
+                "moved" => () => FieldValue(value, id: value.Length == 0 ? "42.15" : "42.16"),
                 _ => () => FieldValue(value),
             },
         };

@@ -1176,8 +1176,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             string text = read.GetString()!;
             bool cut = bounded.ValueKind == JsonValueKind.True || text.Length > WindowsTextDelivery.CaretReadableText;
             // A field's value has no selection read: one the text replaced makes the value grow by less than the text,
-            // which CaretHolds never takes as typed.
-            return new CaretText(text, "value", cut, 0);
+            // which CaretHolds never takes as typed. The field's identity goes in its unit, so a value read after the
+            // keys is compared only with the same field's (the focus may have gone to another field holding text).
+            string field = root.TryGetProperty("id", out JsonElement id) && id.ValueKind == JsonValueKind.String
+                ? id.GetString()! : string.Empty;
+            return new CaretText(text, "value " + field, cut, 0);
         }
     }
 

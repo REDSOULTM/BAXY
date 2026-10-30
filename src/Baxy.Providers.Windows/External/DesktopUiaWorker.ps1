@@ -4505,7 +4505,8 @@ function Do-TextCaret($request){
 # marco, o un TextPattern que no crece con lo escrito), aunque la mirada siguiente leia el campo con ese texto. Esto lee
 # lo mismo que lee la mirada: el valor (ValuePattern) del campo que tiene el foco del teclado, si es un Edit o un ComboBox
 # DENTRO de la ventana pedida (su arbol, no su proceso: el campo de la Store es de otro proceso que su marco; el de otra
-# ventana nunca se lee), nunca el de una contrasena, como mucho «max» caracteres y diciendo si se corto. Solo lee.
+# ventana nunca se lee), nunca el de una contrasena, como mucho «max» caracteres y diciendo si se corto, con la
+# identidad del campo. Solo lee.
 function Do-FocusValue($request){
   $target=Get-Root ([long]$request.hwnd)
   if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='active_window_not_found' } }
@@ -4529,7 +4530,8 @@ function Do-FocusValue($request){
   if($null -eq $text){ return @{ ok=$false; error='focus_value_unreadable' } }
   $bounded=$text.Length -gt $max
   if($bounded){ $text=$text.Substring(0,$max) }
-  return @{ ok=$true; error=''; kind=$kind; unit='value'; text=$text; length=$text.Length; bounded=$bounded }
+  # Su identidad: el valor de despues solo se compara con el del mismo campo (el foco pudo pasar a otro con texto).
+  return @{ ok=$true; error=''; kind=$kind; id=(Get-Id $node); unit='value'; text=$text; length=$text.Length; bounded=$bounded }
 }
 
 # CONTRATO_VISTA_ACCION.md §8.2: un accionable que sigue sin nombre tras el respaldo (§8.1) es candidato a leer su
