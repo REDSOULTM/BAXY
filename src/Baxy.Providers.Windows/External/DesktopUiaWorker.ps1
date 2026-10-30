@@ -1207,6 +1207,16 @@ function Get-ShownName($el){
 # duplicado de uno igual sin elegir: el desplegable «Perfil predeterminado» elige «Windows PowerShell» y la lista de
 # perfiles tiene otro «Windows PowerShell»; descartar el elegido borraba el dato. Dos filas iguales sin estado distinto
 # siguen juntas (x2).
+# Ajuste c3 (F09, M5): una copia de un control ya visto (mismo tipo, nombre y estado) es otro control que pulsar cuando
+# es accionable, tiene identidad propia y su centro no cae dentro de ninguna de las copias ya listadas (un Button dentro
+# de otro del mismo nombre es el mismo control dicho dos veces).
+function Test-CopyApart([string]$kind,$rect,[string]$id,$rects){
+  if($Actionable -notcontains $kind -or $id.Length -eq 0 -or $null -eq $rect){ return $false }
+  foreach($other in @($rects)){
+    if($null -eq $other -or (Test-CenterWithin $other $rect) -or (Test-CenterWithin $rect $other)){ return $false }
+  }
+  return $true
+}
 function Get-SeenKey([string]$kind,[string]$name,[string]$state){
   $key=$kind+'|'+$name
   $chosen=@(([string]$state) -split ' ' | Where-Object { $_ -eq 'selected' -or $_ -eq 'on' })
@@ -2666,6 +2676,7 @@ function Do-View($request){
   $titleBars=@()
   foreach($item in $all){ try { if(([string]$item.Cached.ControlType.ProgrammaticName) -eq 'ControlType.TitleBar'){ $titleBars+=@(Get-Rect $item) } } catch {} }
   $seen=@{}
+  $copyRects=@{}
   $primary=New-Object System.Collections.ArrayList
   $secondary=New-Object System.Collections.ArrayList
   $elements=@{}
@@ -2704,9 +2715,17 @@ function Do-View($request){
       }
       $rect=Get-Rect $item
       $key=Get-SeenKey $kind $name $stateInfo.state
+      $copy=$false
       if($seen.ContainsKey($key)){
-        $seen[$key].repeated=[int]$seen[$key].repeated+1
-        continue
+        # Ajuste c3 (F09, M5, en vivo): los tres «Iniciar» del Reloj, uno por temporizador, iban juntos en una entrada
+        # (×3) con un solo indice, y el segundo y el tercero no se podian pulsar. Una copia accionable con identidad
+        # propia y en otro sitio (Test-CopyApart) lleva su propia entrada; lo demas igual sigue junto (×N).
+        if(-not (Test-CopyApart $kind $rect (Get-Id $item) $copyRects[$key])){
+          $seen[$key].repeated=[int]$seen[$key].repeated+1
+          continue
+        }
+        $copy=$true
+        $copyRects[$key]=@($copyRects[$key])+@($rect)
       }
       $total++
       $id=Get-Id $item
@@ -2730,7 +2749,7 @@ function Do-View($request){
       $itemType=''
       if($kind -eq 'DataItem'){ try { $itemType=([string]$item.Cached.ItemType).Trim() } catch { $itemType='' }; if($itemType.Length -gt 40){ $itemType='' } }
       $entry=@{ kind=$kind; name=$name; nameCut=$nameCut; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total; itemType=$itemType }
-      $seen[$key]=$entry
+      if(-not $copy){ $seen[$key]=$entry; $copyRects[$key]=@($rect) }
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
       if($id.Length -gt 0){ $elements[$id]=$item }

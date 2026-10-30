@@ -463,6 +463,59 @@ public sealed class ComputerUseViewOrderTests
         });
     }
 
+    // Ajuste c3 (F09, M5, live on the notebook): the Clock's three «Iniciar», one for each timer, were one entry of the
+    // view («Button «Iniciar» ×3») with one index, so the second and the third could not be pressed. A copy that can be
+    // pressed, has an identity of its own and lies elsewhere gets its own entry (and index); a copy inside an earlier
+    // one (the same control said twice), one with no identity, and the copies of what does not act stay one entry ×N.
+    [Test]
+    public void ACopyOfAnActionableControlElsewhereGetsItsOwnEntry()
+    {
+        string answer = Run(["Get-SeenKey", "Test-CenterWithin"], """
+            # The walk of Do-View itself (the foreach that keys what it saw), the worker's own $Actionable, and its
+            # Test-CopyApart when it has one.
+            $copyApart=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Test-CopyApart' },$true))
+            if($copyApart.Count -eq 1){ . ([scriptblock]::Create($copyApart[0].Extent.Text)) }
+            $actionable=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -eq '$Actionable' },$true))
+            if($actionable.Count -ne 1){ throw 'data missing: $Actionable' }
+            . ([scriptblock]::Create($actionable[0].Extent.Text))
+            $view=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Do-View' },$true))
+            $walk=@($view[0].Body.FindAll({ param($node) $node -is [System.Management.Automation.Language.ForEachStatementAst] -and $node.Extent.Text -match 'Get-SeenKey' },$true))
+            if($walk.Count -ne 1){ throw 'the walk of Do-View is missing' }
+            function Get-ShownName($el){ return [string]$el.Shown }
+            function Get-State($el){ return @{ state=''; value=$null } }
+            function Get-Rect($el){ return $el.Rect }
+            function Get-Id($el){ return [string]$el.Id }
+            function New-Control([string]$kind,[string]$name,[string]$id,$rect){
+              $type=New-Object psobject -Property @{ ProgrammaticName=('ControlType.'+$kind) }
+              $cached=New-Object psobject -Property @{ IsOffscreen=$false; ControlType=$type; ClassName=''; AcceleratorKey=''; AccessKey=''; ItemType='' }
+              return (New-Object psobject -Property @{ Cached=$cached; Shown=$name; Id=$id; Rect=$rect })
+            }
+            $script:BodyKinds=@(); $keepOffscreen=$false; $titleBars=@(); $box=$null
+            $seen=@{}; $copyRects=@{}; $elements=@{}; $focused=$null; $total=0
+            $primary=New-Object System.Collections.ArrayList; $secondary=New-Object System.Collections.ArrayList
+            $surfaces=New-Object System.Collections.ArrayList
+            $all=@(
+              (New-Control 'Button' 'Iniciar' '1.1' @{ x=600; y=100; w=40; h=40 }),
+              (New-Control 'Button' 'Iniciar' '1.2' @{ x=600; y=300; w=40; h=40 }),
+              (New-Control 'Button' 'Iniciar' '1.3' @{ x=900; y=300; w=40; h=40 }),
+              (New-Control 'Button' 'Iniciar' '1.4' @{ x=605; y=105; w=30; h=30 }),
+              (New-Control 'Text' 'min' '2.1' @{ x=10; y=10; w=20; h=10 }),
+              (New-Control 'Text' 'min' '2.2' @{ x=10; y=50; w=20; h=10 }),
+              (New-Control 'Button' 'Expandir' '3.1' @{ x=10; y=500; w=20; h=20 }),
+              (New-Control 'Button' 'Expandir' '' @{ x=50; y=500; w=20; h=20 }))
+            . ([scriptblock]::Create($walk[0].Extent.Text))
+            [Console]::Out.Write((@(@($primary)+@($secondary) | ForEach-Object { $_.kind+'|'+$_.name+'|'+$_.id+'|'+[int]$_.repeated }) -join ','))
+            """);
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "Button|Iniciar|1.1|1", // the first, with the copy drawn inside it counted
+            "Button|Iniciar|1.2|0", // the second timer's, its own entry
+            "Button|Iniciar|1.3|0", // the third's
+            "Button|Expandir|3.1|1", // a copy with no identity cannot be pressed apart: counted
+            "Text|min|2.1|1",       // what does not act stays one entry ×N
+        }));
+    }
+
     private static string Run(string[] functions, string body)
     {
         string script = """
