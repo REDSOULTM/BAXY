@@ -599,5 +599,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             "True", // a page is no dialog
             "True", // another process's element is in none
         }));
+        // Review of privacy: the Escape goes only to the dialog holding the name typed (the switcher), never to another.
+        Assert.That(script, Does.Contain("GetForegroundWindow() -eq $h -and (Field-Shows $label)){"));
     }
 }

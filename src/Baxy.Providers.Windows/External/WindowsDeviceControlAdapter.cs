@@ -1815,7 +1815,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           # Ronda final 31 (regla 3): and only with the focus still inside the switcher's dialog (an Escape on Discord's
           # own view declines a call).
           $state.leftOpen=$true
-          if([BaxyClientWin]::GetForegroundWindow() -eq $h -and $null -ne (Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement))){
+          # Ajuste c3 (F09, M6, revision de privacidad): now that a focus on a dialog itself counts, the Escape goes only
+          # to the dialog that holds the name typed into it (the switcher this run opened), never to another dialog of
+          # Discord's (a call, a confirmation) that took the focus meanwhile.
+          if([BaxyClientWin]::GetForegroundWindow() -eq $h -and (Field-Shows $label)){
             [void][BaxyMarkedKeys]::Press(0x1B,$false);Start-Sleep -Milliseconds 300
             $state.leftOpen=$null -ne (Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement))
           }
