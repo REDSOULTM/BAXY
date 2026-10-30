@@ -129,7 +129,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             return Failure(request, request.ApplicationId, ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(request.ApplicationId, catalog);
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
+            request.ApplicationId, catalog, _platform.LocateExecutable);
         if (resolution.Entry is null)
         {
             return Failure(
@@ -384,7 +385,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             return false;
         }
 
-        return InstalledApplicationResolver.Resolve(applicationId, catalog).Entry is { } entry && OpensSystemTool(entry);
+        return InstalledApplicationResolver.Resolve(applicationId, catalog, _platform.LocateExecutable).Entry is { } entry
+            && OpensSystemTool(entry);
     }
 
     // The rule of the guard above for one catalog entry (also what the installed list leaves out, CreateCatalogSnapshot).
@@ -416,7 +418,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(applicationName, catalog);
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
+            applicationName, catalog, _platform.LocateExecutable);
         if (resolution.Ambiguous)
         {
             return new(applicationName, null, false, false,
@@ -617,9 +620,10 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             IReadOnlyList<InstalledApplicationEntry> catalog =
                 await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
-            // This effect prerequisite accepts only a complete installed name (the resolver's only rule).
+            // This effect prerequisite accepts only what the resolver resolves: a complete installed name, a package's own
+            // name, or the file name of a program an installed application launches.
             InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
-                applicationName, catalog);
+                applicationName, catalog, _platform.LocateExecutable);
             if (resolution.Ambiguous)
                 return ([], ApplicationOpenErrorCodes.ApplicationAmbiguous, null);
             if (resolution.Entry is not { } entry)
@@ -648,7 +652,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         try
         {
             IReadOnlyList<InstalledApplicationEntry> catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
-            return InstalledApplicationResolver.Resolve(applicationName, catalog).Entry is { } entry
+            return InstalledApplicationResolver.Resolve(applicationName, catalog, _platform.LocateExecutable).Entry
+                is { } entry
                 ? _platform.RunningProcesses(entry)
                 : [];
         }
@@ -680,7 +685,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 ApplicationOpenErrorCodes.InventoryFailed);
         }
 
-        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(applicationName, catalog);
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
+            applicationName, catalog, _platform.LocateExecutable);
         if (resolution.Ambiguous)
         {
             return new(applicationName, null, false, false, 0, false,
@@ -960,7 +966,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             entry = InstalledApplicationResolver.Resolve(
                 request.ApplicationId,
-                await ReadCatalogAsync(cancellationToken, request.ApplicationId).ConfigureAwait(false)).Entry;
+                await ReadCatalogAsync(cancellationToken, request.ApplicationId).ConfigureAwait(false),
+                _platform.LocateExecutable).Entry;
             // An application without a window identity is refused by the opening below, before any launch.
             theirs = entry is null || !_platform.IdentifiesWindows(entry)
                 ? [] : [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)];
@@ -1640,6 +1647,10 @@ internal sealed record InstalledApplicationEntry(
     string? TargetPath = null,
     string? TargetArguments = null);
 
+// Ajuste c3: a program Windows itself finds by its file name (App Paths, the system folders), and what its file says it
+// is; read, never run.
+internal sealed record InstalledExecutable(string Path, string? Description);
+
 internal sealed record InstalledApplicationObservation(
     int ProcessId,
     long ProcessCreationTimeUtcTicks,
@@ -1685,6 +1696,9 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // Whether Windows gives the application an identity its windows can be told by: a package, or the executable its
     // shortcut launches (auditoría final V1). Without one, no window is ever said to be the application's.
     bool IdentifiesWindows(InstalledApplicationEntry entry) => true;
+
+    // Ajuste c3: where Windows finds a program by its bare file name («calc.exe»), never running it; null if nowhere.
+    InstalledExecutable? LocateExecutable(string fileName) => null;
 
     IReadOnlyList<InstalledApplicationObservation> Inventory(InstalledApplicationEntry entry);
 
@@ -1811,7 +1825,8 @@ internal static class InstalledApplicationResolver
     // «Motion» is never Notion, and «Notepad» is never Notepad++ (auditoría final V2: punctuation is part of a name). Without one, nothing is resolved and the closest names are only said.
     internal static InstalledApplicationResolution Resolve(
         string query,
-        IReadOnlyList<InstalledApplicationEntry> catalog)
+        IReadOnlyList<InstalledApplicationEntry> catalog,
+        Func<string, InstalledExecutable?>? locateExecutable = null)
     {
         string normalizedQuery = Normalize(query);
         if (normalizedQuery.Length == 0)
@@ -1841,14 +1856,25 @@ internal static class InstalledApplicationResolver
 
         // BAXY Renew cu (C18): a name that is no catalog name may be a packaged application's own identity, which no
         // language translates («Microsoft.WindowsNotepad» is Notepad, the catalog naming it «Bloc de notas»). Only one
-        // entry bearing it resolves; a classic program's executable is no name (auditoría D1: «chrome» stays unresolved),
-        // and «Notepad» is still never Notepad++.
+        // entry bearing it resolves, and «Notepad» is still never Notepad++.
         InstalledApplicationEntry[] byIdentity = entries
             .Where(item => PackageName(item) is { } package && Normalize(package) == normalizedQuery)
             .ToArray();
         if (byIdentity.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1)
         {
             return new InstalledApplicationResolution(byIdentity[0], false);
+        }
+
+        // Ajuste c3 (e2e del NB: app.open «calc.exe» said the Calculadora was not in the start menu): a program's bare
+        // file name, with or without «.exe», is the installed application that launches that program. Several are said,
+        // none chosen; the program itself is never launched, only the catalog entry is opened as by its name.
+        if (ExecutableFileName(query) is { } fileName
+            && Launching(fileName, locateExecutable?.Invoke(fileName), entries) is { Length: > 0 } launching)
+        {
+            return launching.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1
+                ? new InstalledApplicationResolution(launching[0], false)
+                : new InstalledApplicationResolution(null, true,
+                    [.. launching.Select(static item => item.Name.Trim()).Distinct(StringComparer.OrdinalIgnoreCase)]);
         }
 
         // Closest first: the names that hold every word asked, then those with a word that begins with the start of one
@@ -1881,16 +1907,75 @@ internal static class InstalledApplicationResolver
     // program (no «family_publisher!app» identity).
     internal static string? PackageName(InstalledApplicationEntry entry)
     {
-        string id = entry.AppUserModelId;
-        int bang = id.IndexOf('!', StringComparison.Ordinal);
-        int underscore = id.IndexOf('_', StringComparison.Ordinal);
-        if (!string.IsNullOrWhiteSpace(entry.TargetPath) || bang <= 0 || underscore <= 0 || underscore > bang)
+        if (!string.IsNullOrWhiteSpace(entry.TargetPath) || PackageSegment(entry.AppUserModelId) is not { } name)
             return null;
-        string family = id[..underscore];
-        string name = family[(family.LastIndexOf('.') + 1)..];
         return name.StartsWith("Windows", StringComparison.Ordinal) && name.Length > "Windows".Length
             ? name["Windows".Length..]
             : name;
+    }
+
+    // The last part of a packaged application's family, its publisher left out («WindowsCalculator» of
+    // «Microsoft.WindowsCalculator_8wekyb3d8bbwe!App»); null for a classic program (no «family_publisher!app» identity).
+    private static string? PackageSegment(string id)
+    {
+        int bang = id.IndexOf('!', StringComparison.Ordinal);
+        int underscore = id.IndexOf('_', StringComparison.Ordinal);
+        if (bang <= 0 || underscore <= 0 || underscore > bang)
+            return null;
+        string family = id[..underscore];
+        return family[(family.LastIndexOf('.') + 1)..];
+    }
+
+    // Ajuste c3: a program's bare file name, «.exe» added when it has no extension; null for a path, another extension
+    // or several words.
+    private static string? ExecutableFileName(string query)
+    {
+        string name = query.Trim();
+        if (name.Length == 0 || name.Any(char.IsWhiteSpace) || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            return null;
+        string extension = Path.GetExtension(name);
+        return extension.Length == 0 ? name + ".exe"
+            : extension.Equals(".exe", StringComparison.OrdinalIgnoreCase) ? name : null;
+    }
+
+    // The entries that launch that program: a shortcut that targets a file of that name or the very file Windows finds
+    // by it, or the package that file lies in (App Paths names a packaged program inside its WindowsApps folder). A
+    // system program none of them launches, which only starts another one (calc.exe starts the Calculator package), is
+    // the entry it describes itself as: by its installed name, or by its package's full own name («Windows Calculator»
+    // is Microsoft.WindowsCalculator).
+    private static InstalledApplicationEntry[] Launching(
+        string fileName,
+        InstalledExecutable? located,
+        InstalledApplicationEntry[] entries)
+    {
+        string? family = located is null ? null : PackageFamily(located.Path);
+        InstalledApplicationEntry[] launching = [.. entries.Where(item =>
+            (item.TargetPath is { Length: > 0 } target
+                && (string.Equals(Path.GetFileName(target), fileName, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(target, located?.Path, StringComparison.OrdinalIgnoreCase)))
+            || (family is not null && item.AppUserModelId.StartsWith(family + "!", StringComparison.OrdinalIgnoreCase)))];
+        if (launching.Length > 0 || located?.Description is not { } description || Normalize(description).Length == 0)
+            return launching;
+
+        string described = Normalize(description);
+        string joined = described.Replace(" ", string.Empty, StringComparison.Ordinal);
+        return [.. entries.Where(item => Normalize(item.Name) == described
+            || (PackageSegment(item.AppUserModelId) is { } segment && Normalize(segment) == joined))];
+    }
+
+    // The package a file of a WindowsApps folder lies in («…\WindowsApps\Microsoft.Paint_11.2605.81.0_x64__8wekyb3d8bbwe\
+    // PaintApp\mspaint.exe»: name, version, architecture, resource and publisher, so Microsoft.Paint_8wekyb3d8bbwe); null
+    // for a file anywhere else.
+    private static string? PackageFamily(string path)
+    {
+        string[] parts = path.Split(['\\', '/'], StringSplitOptions.RemoveEmptyEntries);
+        int at = Array.FindIndex(parts, static part => part.Equals("WindowsApps", StringComparison.OrdinalIgnoreCase));
+        if (at < 0 || at + 2 >= parts.Length)
+            return null;
+        string[] package = parts[at + 1].Split('_');
+        return package.Length == 5 && package[0].Length > 0 && package[4].Length > 0
+            ? $"{package[0]}_{package[4]}"
+            : null;
     }
 
     internal static bool IsUsable(InstalledApplicationEntry entry) =>
@@ -1928,6 +2013,55 @@ internal static class InstalledApplicationResolver
 
 internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledApplicationPlatform
 {
+    // Ajuste c3: where Windows finds a program by its bare file name, as its Run box does: App Paths (the person's, then
+    // the machine's), then the system folders. The file is read for what it says it is, never run.
+    public InstalledExecutable? LocateExecutable(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName) || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            return null;
+        string? path = AppPath(RegistryHive.CurrentUser, fileName)
+            ?? AppPath(RegistryHive.LocalMachine, fileName)
+            ?? new[] { Environment.SystemDirectory, Environment.GetFolderPath(Environment.SpecialFolder.Windows) }
+                .Select(folder => Path.Combine(folder, fileName))
+                .FirstOrDefault(File.Exists);
+        if (path is null)
+            return null;
+
+        string? description = null;
+        try
+        {
+            description = FileVersionInfo.GetVersionInfo(path).FileDescription;
+        }
+        // A packaged program's folder may not be readable; its package still tells it.
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+        }
+
+        return new InstalledExecutable(path, string.IsNullOrWhiteSpace(description) ? null : description.Trim());
+    }
+
+    private static string? AppPath(RegistryHive hive, string fileName)
+    {
+        try
+        {
+            using RegistryKey baseKey = RegistryKey.OpenBaseKey(hive, RegistryView.Default);
+            using RegistryKey? key = baseKey.OpenSubKey(
+                $@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\{fileName}",
+                writable: false);
+            return key?.GetValue(null) is string value
+                && value.Trim().Trim('"') is { Length: > 0 } path
+                && Path.IsPathFullyQualified(path)
+                ? path
+                : null;
+        }
+        catch (Exception exception) when (exception is UnauthorizedAccessException
+            or IOException
+            or System.Security.SecurityException)
+        {
+            return null;
+        }
+    }
+
     public bool ShowsEmptyFrame(InstalledApplicationEntry entry) =>
         entry.AppUserModelId.Contains('!') && External.VisibleControlSurface.ShowsEmptyFrame(entry.AppUserModelId);
 

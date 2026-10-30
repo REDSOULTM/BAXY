@@ -276,8 +276,133 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Ajuste c3 (e2e del NB): app.open {"appId": "calc.exe"} said the Calculadora was not in the start menu; with
+    // «Calculator» it opened. A program's file name («calc.exe», «mspaint», with or without «.exe», never a path) is the
+    // installed application that launches it: the one whose shortcut targets it, whose package holds it (App Paths), or,
+    // for a system program that only starts another one (calc.exe starts the Calculator package), the one it describes
+    // itself as. Only catalog entries resolve; the program found is never launched.
+    private static readonly IReadOnlyList<InstalledApplicationEntry> ExecutableCatalog =
+    [
+        new("Calculadora", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App"),
+        new("Paint", "Microsoft.Paint_8wekyb3d8bbwe!App"),
+        new("Editor de texto", "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App"),
+        new("Steam", "Valve.Steam", @"C:\Program Files (x86)\Steam\steam.exe"),
+        new("Google Chrome", "Chrome", @"C:\Program Files\Google\Chrome\Application\chrome.exe"),
+        new("Notepad++", "Notepad++.Classic", @"C:\Program Files\Notepad++\notepad++.exe"),
+    ];
+
+    private static readonly Dictionary<string, InstalledExecutable> SystemExecutables =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["calc.exe"] = new(@"C:\WINDOWS\System32\calc.exe", "Windows Calculator"),
+            ["mspaint.exe"] = new(
+                @"C:\Program Files\WindowsApps\Microsoft.Paint_11.2605.81.0_x64__8wekyb3d8bbwe\PaintApp\mspaint.exe",
+                null),
+            ["notepad.exe"] = new(
+                @"C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2607.14.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe",
+                null),
+            ["chrome.exe"] = new(@"C:\Program Files\Google\Chrome\Application\chrome.exe", "Google Chrome"),
+            ["cmd.exe"] = new(@"C:\WINDOWS\System32\cmd.exe", "Procesador de comandos de Windows"),
+        };
+
+    [TestCase("calc.exe", "Calculadora")]
+    [TestCase("CALC", "Calculadora")]
+    [TestCase("mspaint", "Paint")]
+    [TestCase("notepad.exe", "Editor de texto")]
+    [TestCase("chrome.exe", "Google Chrome")]
+    [TestCase("steam.exe", "Steam")]
+    [TestCase("Notepad++.exe", "Notepad++")]
+    public void AProgramsFileNameResolvesToTheInstalledApplicationThatLaunchesIt(string query, string expected)
+    {
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
+            query, ExecutableCatalog, SystemExecutables.GetValueOrDefault);
+
+        Assert.That(resolution.Entry?.Name, Is.EqualTo(expected));
+    }
+
+    // A program no installed application launches (cmd.exe is on the system, nada.exe nowhere) and a path resolve
+    // nothing, as any name that is no installed one; the path is never even looked for.
+    [TestCase("cmd.exe")]
+    [TestCase("nada-c3.exe")]
+    [TestCase(@"C:\WINDOWS\System32\calc.exe")]
+    [TestCase("calc.bat")]
+    public void AProgramNoInstalledApplicationLaunchesOrAPathResolvesNothing(string query)
+    {
+        var looked = new List<string>();
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
+            query, ExecutableCatalog, name =>
+            {
+                looked.Add(name);
+                return SystemExecutables.GetValueOrDefault(name);
+            });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Ambiguous, Is.False);
+            Assert.That(resolution.Candidates, Has.Count.EqualTo(5));
+            Assert.That(looked, Has.None.Contains('\\'));
+        });
+    }
+
+    // Two installed applications whose shortcuts launch programs of that same file name: nothing is chosen, both are said.
+    [Test]
+    public void AProgramsFileNameTwoApplicationsLaunchIsAmbiguousAndSaysThem()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            .. ExecutableCatalog,
+            new("Desinstalar A", "Vendor.A.Uninstall", @"C:\Program Files\A\uninstall.exe"),
+            new("Desinstalar B", "Vendor.B.Uninstall", @"C:\Program Files\B\uninstall.exe"),
+        ];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
+            "uninstall.exe", catalog, SystemExecutables.GetValueOrDefault);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Ambiguous, Is.True);
+            Assert.That(resolution.Candidates, Is.EquivalentTo(new[] { "Desinstalar A", "Desinstalar B" }));
+        });
+    }
+
+    [Test]
+    public async Task AnOpeningOfAProgramsFileNameOpensTheInstalledApplicationThatLaunchesIt()
+    {
+        var platform = new FakePlatform(ExecutableCatalog) { ObservationAfterActivation = Launched() };
+        foreach ((string name, InstalledExecutable executable) in SystemExecutables)
+            platform.Executables[name] = executable;
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult opened = await provider.OpenAsync(Request("calc.exe"), CancellationToken.None);
+        ApplicationOpenResult refused = await provider.OpenAsync(Request("cmd.exe"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(opened.Succeeded, Is.True);
+            Assert.That(opened.DisplayName, Is.EqualTo("Calculadora"));
+            Assert.That(refused.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.ApplicationNotFound));
+            Assert.That(platform.ActivateCalls, Is.EqualTo(1));
+        });
+    }
+
+    // Windows' own places for a program's file name (App Paths, the system folders), read and never run.
+    [Test]
+    public void TheSystemLocatesAProgramByItsFileNameOnly()
+    {
+        var platform = new WindowsInstalledApplicationPlatform();
+        Assert.Multiple(() =>
+        {
+            Assert.That(platform.LocateExecutable("cmd.exe")?.Path,
+                Is.EqualTo(Path.Combine(Environment.SystemDirectory, "cmd.exe")).IgnoreCase);
+            Assert.That(platform.LocateExecutable("nada-c3-inexistente.exe"), Is.Null);
+            Assert.That(platform.LocateExecutable(@"..\cmd.exe"), Is.Null);
+        });
+    }
+
     // BAXY Renew cu (C18): an inbox application by its package's own name, which no language translates; a classic
-    // program by its executable never (auditoría D1).
+    // program never by a name its executable only resembles (auditoría D1: «Notepad» is not notepad++.exe).
     [TestCase("Notepad", "Bloc de notas", "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App")]
     [TestCase("calculator", "Calculadora", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App")]
     public void AnInboxApplicationResolvesByItsPackagesOwnName(string query, string name, string id)
@@ -2637,6 +2762,10 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         public bool WindowIdentity { get; init; } = true;
 
         public bool IdentifiesWindows(InstalledApplicationEntry entry) => WindowIdentity;
+
+        public Dictionary<string, InstalledExecutable> Executables { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+        public InstalledExecutable? LocateExecutable(string fileName) => Executables.GetValueOrDefault(fileName);
 
         public InstalledApplicationObservation? ObservationAfterActivation { get; init; }
 
