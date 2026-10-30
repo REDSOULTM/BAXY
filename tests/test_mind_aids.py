@@ -232,6 +232,16 @@ def test_the_applications_with_places_are_named_from_the_data(tmp_path: Path) ->
     assert "{app_places}" not in texts
     for app in ("«Epic Games Launcher» (game, results, store)", "«Steam» (", "«Discord» (directs)", "«Configuración» ("):
         assert app in texts
+    # The other Start names of an application are not named to the model again: the tool's text stays as it was.
+    assert "Settings»" not in texts
+
+
+def test_the_other_start_name_of_an_application_has_its_places() -> None:
+    # Ajuste c3 (e2e de la VM, Windows en inglés, E014): «Settings» is «Configuración» there, with the same places.
+    from baxy_mind.mind import places_note
+    assert "app_open con appId «Settings» y place" in places_note("Settings")
+    assert "sound" in places_note("Settings")
+    assert places_note("Settings app") == ""
 
 
 def test_an_applications_own_volume_says_what_its_app_is_and_where_the_whole_pc_goes(tmp_path: Path) -> None:

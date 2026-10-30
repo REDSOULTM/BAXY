@@ -578,16 +578,18 @@ def _as_read(observation: Any) -> str:
 
 def _app_places() -> dict[str, dict[str, str]]:
     """The places of each application with an address of its own (app_places.v1.json, the kernel's data), by folded
-    name: place → the placeValue it takes, empty for none."""
+    name (its own and the other Start names the data give it, «names»): place → the placeValue it takes, empty for
+    none."""
     try:
         data = json.loads((_DATA / "app_places.v1.json").read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
     slots = {"{query}": "lo que se busca", "{game}": "el número del juego", "{slug}": "el nombre del juego"}
-    return {_fold(app): {place: next((meaning for slot, meaning in slots.items() if slot in str(entry.get("address"))),
-                                     "")
-                         for place, entry in (body.get("places") or {}).items()}
-            for app, body in (data.get("applications") or {}).items() if isinstance(body, dict)}
+    return {_fold(name): {place: next((meaning for slot, meaning in slots.items() if slot in str(entry.get("address"))),
+                                      "")
+                          for place, entry in (body.get("places") or {}).items()}
+            for app, body in (data.get("applications") or {}).items() if isinstance(body, dict)
+            for name in (app, *(body.get("names") or []))}
 
 
 APP_PLACES = _app_places()

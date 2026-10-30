@@ -129,6 +129,36 @@ public sealed class ApplicationPlacesTests
     public void TwoNamesAreTheSameApplicationAsTheDataCompareThem(string? one, string? other, bool same) =>
         Assert.That(ApplicationPlaces.SameApplication(one, other), Is.EqualTo(same));
 
+    // Ajuste c3 (e2e de la VM, Windows en inglés, E014 «abre la configuración de sonido», 3 de 4 corridas): the model wrote
+    // {"appId":"Settings","place":"sound"}, the name the Start catalog gives the application there, and the data knew it
+    // only as «Configuración»: no place of it had an address, and the App sent the call to «Configuración», which that
+    // Windows does not list (app_not_found). The other Start name the data declare is the same application, with the same
+    // places, and nothing else.
+    [Test]
+    public void TheOtherStartNameOfAnApplicationHasItsPlaces()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(ApplicationPlaces.Address("Settings", "sound", null), Is.EqualTo("ms-settings:sound"));
+            Assert.That(ApplicationPlaces.PlacesOf("settings").Select(place => place.Place),
+                Is.EqualTo(ApplicationPlaces.PlacesOf("Configuración").Select(place => place.Place)));
+            Assert.That(ApplicationPlaces.SameApplication("Settings", "Configuración"), Is.True);
+            Assert.That(ApplicationPlaces.SameApplication("Settings", "Steam"), Is.False);
+            Assert.That(ApplicationPlaces.Address("Settings app", "sound", null), Is.Null);
+            // The application is told by the name the data give it first, as before.
+            Assert.That(ApplicationPlaces.ApplicationsWith("sound"), Is.EqualTo(new[] { "Configuración" }));
+        });
+    }
+
+    // Another Start name blank, or already another application's name, is refused whole.
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"names":[" "],"places":{"p":{"address":"a://x"}}}}}""")]
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"names":["b"],"places":{}},"B":{"schemes":["b"],"places":{}}}}""")]
+    public void AnOtherNameBlankOrTakenIsRefused(string json)
+    {
+        using JsonDocument document = JsonDocument.Parse(json);
+        Assert.Throws<InvalidDataException>(() => ApplicationPlaces.Read(document));
+    }
+
     // What a place shows is text long enough to tell it by, never an empty list: refused whole.
     [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","shows":[]}}}}}""")]
     [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","shows":["Inicio"," . "]}}}}}""")]

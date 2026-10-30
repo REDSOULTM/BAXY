@@ -35,6 +35,9 @@ public sealed class SaidApplicationTests
     [TestCase("abre la configuración del sistema en sonido", "Configuración del sistema", "sound")]
     [TestCase("abre la configuración de sonido", "Configuración", "sound")]
     [TestCase("abre la configuración de sonido", "configuracion", "sound")]
+    // Ajuste c3 (e2e de la VM, Windows en inglés, E014): «Settings» is that Windows' Start name for the same application,
+    // and its call was sent to «Configuración», which that Windows does not list.
+    [TestCase("abre la configuración de sonido", "Settings", "sound")]
     [TestCase("abre la configuración de sonido", "Configuración del sistema", null)]
     [TestCase("abre la tienda", "Discord", "store")]
     [TestCase("", "Configuración del sistema", "sound")]

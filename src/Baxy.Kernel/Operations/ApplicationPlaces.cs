@@ -226,11 +226,14 @@ public static class ApplicationPlaces
 
     /// <summary>
     /// Práctica e2e E014: whether two names are one application as the data compare them (case, accents and spacing left
-    /// out), so the place a look shows is told against the one app.open asked; false when either is missing.
+    /// out, or two Start names the data give one entry), so the place a look shows is told against the one app.open
+    /// asked; false when either is missing.
     /// </summary>
     public static bool SameApplication(string? one, string? other) =>
         !string.IsNullOrWhiteSpace(one) && !string.IsNullOrWhiteSpace(other)
-        && string.Equals(Fold(one), Fold(other), StringComparison.Ordinal);
+        && (string.Equals(Fold(one), Fold(other), StringComparison.Ordinal)
+            || (Loaded.Value.TryGetValue(Fold(one), out Application? first)
+                && Loaded.Value.TryGetValue(Fold(other), out Application? second) && ReferenceEquals(first, second)));
 
     /// <summary>
     /// Revisión w11-rev4: whether the data declare a text <paramref name="place"/> of <paramref name="application"/>
@@ -317,14 +320,37 @@ public static class ApplicationPlaces
             string? catalog = entry.Value.TryGetProperty("gameCatalog", out JsonElement named) ? named.GetString() : null;
             bool signIn = entry.Value.TryGetProperty("startsBehindSignIn", out JsonElement behind)
                 && behind.ValueKind == JsonValueKind.True;
-            applications[Fold(entry.Name)] = new Application(
+            var application = new Application(
                 schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog), signIn)
             {
                 Shows = shows,
             };
+            foreach (string name in (string[])[entry.Name, .. ReadNames(entry)])
+            {
+                if (!applications.TryAdd(Fold(name), application))
+                {
+                    throw new InvalidDataException($"app_places: {entry.Name}/names");
+                }
+            }
         }
 
         return applications;
+    }
+
+    // Ajuste c3 (e2e de la VM, Windows en inglés, E014): the other names the Start catalog gives the same application in
+    // another display language («Settings» where Spanish Windows says «Configuración»), each the same entry with the same
+    // places. None blank; a name already another application's is refused with the whole data (checked as they are added).
+    private static string[] ReadNames(JsonProperty entry)
+    {
+        if (!entry.Value.TryGetProperty("names", out JsonElement declared))
+        {
+            return [];
+        }
+
+        string[] names = [.. declared.EnumerateArray().Select(name => name.GetString() ?? string.Empty)];
+        return names.Any(name => Fold(name).Length == 0)
+            ? throw new InvalidDataException($"app_places: {entry.Name}/names")
+            : names;
     }
 
     // An act opens with one of its application's schemes and carries exactly the game's slot; its confirming names are
