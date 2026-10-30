@@ -1851,12 +1851,16 @@ internal static class InstalledApplicationResolver
             return new InstalledApplicationResolution(byIdentity[0], false);
         }
 
-        // Closest first: the names that hold every word asked, then by edit distance.
+        // Closest first: the names that hold every word asked, then those with a word that begins with the start of one
+        // asked, then by edit distance.
         string[] words = normalizedQuery.Split(' ');
+        string[] starts = [.. words.Select(Start).Where(static start => start.Length >= MinimumStart)];
         string[] closest = [.. entries
             .Select(item => item.Name.Trim())
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(name => words.All(Normalize(name).Split(' ').Contains) ? 0 : 1)
+            .ThenBy(name => Normalize(name).Split(' ')
+                .Any(word => starts.Any(start => word.StartsWith(start, StringComparison.Ordinal))) ? 0 : 1)
             .ThenBy(name => Levenshtein(normalizedQuery, Normalize(name)))
             .ThenBy(static name => name, StringComparer.OrdinalIgnoreCase)
             .Take(CandidateCount)];
@@ -1864,6 +1868,13 @@ internal static class InstalledApplicationResolver
     }
 
     internal static string Normalize(string value) => CatalogNames.Normalize(value);
+
+    // Ajuste c3 (e2e del PC, E010: «calc.exe» said Access, Calendar, CapCut, Claude and CODEX, not the Calculadora
+    // installed): a word's start, its letters and digits up to the first other sign («calc» of «calc.exe»). Only from
+    // three on does a name that begins with it come first: shorter ones begin too many names.
+    private const int MinimumStart = 3;
+
+    private static string Start(string word) => new([.. word.TakeWhile(char.IsLetterOrDigit)]);
 
     // A packaged application's own name: its package's, without the publisher and without the «Windows» every inbox
     // application's package carries («Microsoft.WindowsCalculator_8wekyb3d8bbwe!App»: Calculator); null for a classic

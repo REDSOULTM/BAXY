@@ -252,6 +252,30 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Ajuste c3 (e2e del PC, c2c1-sA s1, E010 «abre la calculadora y calcula 12 por 7»): app.open «calc.exe» said Access,
+    // Calendar, CapCut, Claude and CODEX, and not the Calculadora installed, whose name «calc» begins; the model answered
+    // that there was no calculator. A name one of whose words begins with what was asked (three letters or more, up to
+    // the first sign) comes first among the closest; it is still only said, never opened.
+    [TestCase("calc.exe", "Calculadora")]
+    [TestCase("spoti", "Spotify")]
+    public void AClosestNameThatBeginsWithWhatWasAskedComesFirst(string query, string closest)
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            .. Catalog, new("Access", "Microsoft.Office.MSACCESS.EXE.15"), new("Calendar", "Calendar.App"),
+            new("CapCut", "CapCut.App"), new("Claude", "Claude.App"), new("CODEX", "Codex.App"),
+            new("Calculadora", "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App"),
+        ];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(query, catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Candidates![0], Is.EqualTo(closest));
+        });
+    }
+
     // BAXY Renew cu (C18): an inbox application by its package's own name, which no language translates; a classic
     // program by its executable never (auditoría D1).
     [TestCase("Notepad", "Bloc de notas", "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App")]
