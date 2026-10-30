@@ -2846,7 +2846,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         try
         {
             // Control + N, pressed in order and released in reverse: four events.
-            return burst.MayAct && burst.HoldsWindow && keyboard.Holds(handle) && keyboard.PressChord([0x11, 0x4E]) == 4;
+            return burst.MayAct && burst.HoldsWindow && keyboard.Holds(handle)
+                && keyboard.PressChord([0x11, 0x4E], () => burst.MayAct && keyboard.Holds(handle)) == 4;
         }
         finally
         {
@@ -2862,7 +2863,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         try
         {
             // Escape, pressed and released: two events.
-            return burst.MayAct && burst.HoldsWindow && keyboard.Holds(handle) && keyboard.PressChord([0x1B]) == 2;
+            return burst.MayAct && burst.HoldsWindow && keyboard.Holds(handle)
+                && keyboard.PressChord([0x1B], () => burst.MayAct && keyboard.Holds(handle)) == 2;
         }
         finally
         {

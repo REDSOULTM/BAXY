@@ -116,6 +116,59 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
+    // Ajuste c3 (e2e E017: Ctrl+S «delivered» to Windows 11 Notepad 16 of 16 times, and no «Guardar como» opened): a
+    // chord is held as a person holds it. Each key goes down in order with the keyboard's pace after it, so the last one
+    // is still down, with the ones before it, when the window reads it; then all go up in reverse. Never four events at
+    // once.
+    [Test]
+    public void AChordIsHeldTheKeyboardsPaceBeforeItIsReleased()
+    {
+        (uint accepted, string[] events) = Held([0x11, 0x53], goOn: 2);
+        (uint single, string[] escape) = Held([0x1B], goOn: 1);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(events, Is.EqualTo(new[] { "11 down", "pause", "53 down", "pause", "53 up", "11 up" }));
+            Assert.That(accepted, Is.EqualTo(4u));
+            Assert.That(escape, Is.EqualTo(new[] { "1B down", "pause", "1B up" }), "a single key is held too");
+            Assert.That(single, Is.EqualTo(2u));
+        });
+    }
+
+    // Review of this change (revisor de privacidad): held key by key, a chord is no longer one indivisible SendInput, so
+    // each key goes down only while the window still holds the front and the person has not acted; what went down
+    // always goes up, and the count says the chord was not whole.
+    [Test]
+    public void AChordStopsWhereTheWindowLostTheFrontAndReleasesWhatWentDown()
+    {
+        (uint accepted, string[] events) = Held([0x11, 0x53], goOn: 1);
+        (uint none, string[] nothing) = Held([0x11, 0x53], goOn: 0);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(events, Is.EqualTo(new[] { "11 down", "pause", "11 up" }));
+            Assert.That(accepted, Is.EqualTo(2u));
+            Assert.That(nothing, Is.Empty);
+            Assert.That(none, Is.Zero);
+        });
+    }
+
+    private static (uint Accepted, string[] Events) Held(ushort[] keys, int goOn)
+    {
+        var events = new List<string>();
+        int asked = 0;
+        uint accepted = WindowsDesktopKeyboard.HoldChord(
+            keys,
+            () => asked++ < goOn,
+            (key, up) =>
+            {
+                events.Add($"{key:X2} {(up ? "up" : "down")}");
+                return 1;
+            },
+            () => events.Add("pause"));
+        return (accepted, [.. events]);
+    }
+
     [Test]
     public async Task AKeyOutsideTheCatalogIsRefusedBeforeAnythingIsSent()
     {
@@ -1118,8 +1171,18 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
 
     public int InputSize => IntPtr.Size == 8 ? 40 : 28;
 
-    public uint PressChord(IReadOnlyList<ushort> virtualKeys)
+    public uint PressChord(IReadOnlyList<ushort> virtualKeys, Func<bool> keepGoing)
     {
+        // As the real keyboard: a key goes down only while keepGoing holds before it.
+        int pressed = 0;
+        while (pressed < virtualKeys.Count && keepGoing())
+            pressed++;
+        if (pressed < virtualKeys.Count)
+        {
+            Chords.Add([.. virtualKeys.Take(pressed)]);
+            return Accept(pressed * 2);
+        }
+
         Chords.Add(virtualKeys.ToArray());
         if (CopyChanges && virtualKeys.Contains((ushort)0x43))
             Clipboard++;

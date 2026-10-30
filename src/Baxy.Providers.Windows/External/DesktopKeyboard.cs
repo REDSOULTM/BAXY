@@ -18,8 +18,11 @@ internal interface IDesktopKeyboard
     /// else its process's name; empty when it cannot be read.</summary>
     string ProcessName(nint window);
 
-    /// <summary>Presses the keys in order and releases them in reverse; the events Windows accepted.</summary>
-    uint PressChord(IReadOnlyList<ushort> virtualKeys);
+    /// <summary>
+    /// Presses the keys in order, each held the keyboard's pace while <paramref name="keepGoing"/> holds before it, and
+    /// releases the ones pressed in reverse; the events Windows accepted, fewer than two per key when it stopped.
+    /// </summary>
+    uint PressChord(IReadOnlyList<ushort> virtualKeys, Func<bool> keepGoing);
 
     /// <summary>
     /// Types each UTF-16 unit as a Unicode key down and up while <paramref name="keepGoing"/> holds before each one
@@ -95,16 +98,43 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
 
     public string ProcessName(nint window) => VisibleControlSurface.ViewProcess(window).ProcessName;
 
-    public uint PressChord(IReadOnlyList<ushort> virtualKeys)
+    public uint PressChord(IReadOnlyList<ushort> virtualKeys, Func<bool> keepGoing) =>
+        HoldChord(virtualKeys, keepGoing, (key, up) => Send([Key(key, 0, up ? KeyUp : 0)]), () => Thread.Sleep(KeyPace));
+
+    /// <summary>
+    /// Ajuste c3 (e2e E017, «… y guárdalo como lista.txt»): Ctrl+S sent as one SendInput of its four events reached
+    /// Windows 11 Notepad 16 times of 16 on the PC and the notebook (receipt «delivered»), and no «Guardar como» opened
+    /// in any of them, nor did an «s» appear in the text; on the VM's classic Notepad the same receipt opened «Save As»
+    /// (1 of 1). That editor reads each key when it gets to it (measured 2026-10-07, see <see cref="TypeText"/>: keys
+    /// faster than it takes them come out wrong, and virtual keys lose their Shift): by then every key of the chord was
+    /// already up. So a chord is held as a person holds it: each key goes down in order with the keyboard's pace after
+    /// it, the last one still down, with the ones before it, when the window reads it; then they go up in reverse.
+    /// Before each key goes down <paramref name="keepGoing"/> must still hold (the window in front, the person not
+    /// acting), as before each typed character: otherwise no other key goes down. Whatever went down always goes up.
+    /// </summary>
+    internal static uint HoldChord(
+        IReadOnlyList<ushort> virtualKeys, Func<bool> keepGoing, Func<ushort, bool, uint> send, Action pause)
     {
-        var inputs = new Input[virtualKeys.Count * 2];
-        for (int index = 0; index < virtualKeys.Count; index++)
+        uint accepted = 0;
+        var down = new List<ushort>(virtualKeys.Count);
+        try
         {
-            inputs[index] = Key(virtualKeys[index], 0, 0);
-            inputs[virtualKeys.Count + index] = Key(virtualKeys[virtualKeys.Count - index - 1], 0, KeyUp);
+            foreach (ushort key in virtualKeys)
+            {
+                if (!keepGoing())
+                    break;
+                accepted += send(key, false);
+                down.Add(key);
+                pause();
+            }
+        }
+        finally
+        {
+            for (int index = down.Count - 1; index >= 0; index--)
+                accepted += send(down[index], true);
         }
 
-        return Send(inputs);
+        return accepted;
     }
 
     public uint TypeText(string text, Func<bool> keepGoing)

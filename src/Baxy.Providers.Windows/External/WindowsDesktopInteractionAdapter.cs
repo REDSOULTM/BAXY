@@ -766,7 +766,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 focusAt = field;
             }
 
-            accepted = _keyboard.PressChord(chord);
+            // Ajuste c3 (E017): a chord is held key by key now, so each key goes down only while the window still holds
+            // the front and the person has not acted, as each typed character.
+            accepted = _keyboard.PressChord(chord, KeepGoing);
         }
         else if (window == 0)
         {

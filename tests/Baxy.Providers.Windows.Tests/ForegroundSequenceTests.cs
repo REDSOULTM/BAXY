@@ -1041,7 +1041,8 @@ public sealed class ForegroundSequenceTests
 
         public string ProcessName(nint window) => "programa";
 
-        public uint PressChord(IReadOnlyList<ushort> virtualKeys) => (uint)virtualKeys.Count * 2;
+        public uint PressChord(IReadOnlyList<ushort> virtualKeys, Func<bool> keepGoing) =>
+            (uint)virtualKeys.TakeWhile(_ => keepGoing()).Count() * 2;
 
         public uint TypeText(string text, Func<bool> keepGoing)
         {
