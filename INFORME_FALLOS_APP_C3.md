@@ -303,3 +303,187 @@ Ctrl+S (2dc466867) es el único sin evidencia en vivo y es el primero que convie
 del diff de proveedores por el agente `revisor-privacidad`: su hallazgo medio (un acorde ya no indivisible podía caer en
 la ventana de la persona) y el bajo (teclas abajo sin `finally`) están arreglados en el mismo commit. La rama no está
 subida a `hub`.
+
+# Tercera vuelta: fallos del motor genérico de pantalla vistos al grabar F09 (2026-10-30)
+
+Encargo: los fallos del motor de computer use que el ayudante de la familia F09 (mirar → pulsar → escribir →
+comprobar) vio en vivo en el NB (`F:\BAXYeval\ft_v1\c3\familias\F09\informe.md`, «Fallos del motor vistos en vivo»,
+M1–M7; capturas en `familias\F09\vivo\tanda_*.jsonl`). Cada arreglo es general (por tipo de control y estructura del
+árbol, ninguna app nombrada en código) y su prueba se vio roja antes del cambio.
+
+## Resumen
+
+| # | Fallo | De quién | Arreglo | Estado |
+|---|---|---|---|---|
+| M1 | La búsqueda en un paso (`input.visible.click` con `search`) no termina en WhatsApp ni Discord | Proveedor (relectura del texto) | 34fdaced0 + 15b1e278f | arreglado, sin vivo |
+| M2 | `input.text.type` en el buscador de la Microsoft Store → `input_text_not_read_back` con el texto puesto | Proveedor (misma causa) | 34fdaced0 + 15b1e278f | arreglado, sin vivo |
+| M3 | El postread niega clics que actuaron: «Iniciar» del cronómetro (`postread_unread`), color de Paint (`postread_unchanged`) | Worker UIA (postread) | 68a001e21 + fcf96b814 + e5e4923fa (pruebas) | arreglado, sin vivo |
+| M5 | Un control repetido (×N) tiene un solo índice | Worker UIA (vista) | dfc844072 | arreglado, sin vivo |
+| M6 | `client.channel.locate` sin coincidencia deja abierto el buscador rápido de Discord | Proveedor (guion del cliente) | 840853a74 + 3e48e4bf7 | arreglado, sin vivo |
+| M4 | Epic sólo por OCR: las líneas no llevan índice; dos «...» no se distinguen | Contrato de la vista | — | sólo diagnóstico |
+| M7 | Desinstalar en Epic pide dos «sí» | Decisión de producto | — | sólo descrito (no se toca) |
+
+## M1 y M2 — el texto escrito por teclado en un campo de Chromium o de una app empaquetada no se releía
+
+**Qué se vio.** WhatsApp (`tanda_b3` whatsapp3#3): la ráfaga pulsó el Edit «Buscar un chat o iniciar uno nuevo»
+(`method: target`, `focused: true`), escribió «zzqxprueba» y el subacto `input.text.type` dio
+`input_text_not_read_back`; la ráfaga se paró ahí, antes de buscar el resultado. La mirada siguiente (#5) leía el campo
+enfocado con `value: "zzqxprueba"`. Discord (discord3#3): igual, con el ComboBox del buscador rápido. Microsoft Store
+(`tanda_a` store#4): `input.text.type` sin `window` → `input_text_not_read_back`, `foregroundProcessIdBefore` 13200 (el
+marco de ApplicationFrameHost) con `sentTo.process` WinStore.App; la mirada #7 leía `Edit «Buscar» = editor de fotos`.
+
+**Causa.** `WindowsDesktopInteractionAdapter.SendInBurstAsync` sólo sabía releer un texto de dos formas: la marca de un
+control Edit de Win32 (no existe en Chromium ni en XAML) y el párrafo del cursor por TextPattern (`textcaret`), que se
+limita al proceso de la ventana de delante. En la Store el campo es de otro proceso que su marco: no hay lectura y, sin
+ventana nombrada, el texto queda «no releído». En los campos de Chromium el párrafo del cursor no creció con lo escrito
+(en vivo no se pudo aislar si por el texto de ayuda del campo o por el ancestro con TextPattern; las dos dejan la misma
+huella). La mirada, en cambio, lee el ValuePattern del control con el foco dentro del árbol de la ventana, y ahí el
+texto estaba. En la ráfaga de búsqueda un subacto no verificado corta la ráfaga (`SearchBurst.RunAsync`, paso 3): de
+ahí que M1 no llegara nunca a elegir el resultado.
+
+**Arreglo (34fdaced0, revisado en 15b1e278f).** Comando nuevo del worker `focusvalue` (`Do-FocusValue`): el valor
+(ValuePattern) del Edit o ComboBox que tiene el foco, sólo si está dentro del árbol de la ventana pedida (por
+ascendencia, no por proceso), nunca una contraseña, acotado a 8192 caracteres y con su identidad (RuntimeId). El
+adaptador lo lee antes de la primera tecla y otra vez después (hasta 3 lecturas, como el párrafo), y el texto cuenta
+como releído si el valor del mismo campo creció en el texto y lo contiene una vez más (`CaretHolds`, la misma regla que
+el párrafo). Sólo donde no hay valor entero de un campo se sigue usando el párrafo del cursor (Word sigue igual). El
+valor no sale del adaptador: el recibo dice `readBack`, `readBackBounded` y `authority:
+win32_sendinput_and_uia_value_reread`. Con una ventana nombrada, el texto queda obligado a esa relectura cuando se pudo
+tomar (antes, sin marca ni párrafo, se daba por bueno por la cuenta de teclas de Windows).
+
+**Pruebas.** `TextDeliveryTests.ATextTypedIntoADrawnFieldIsReadBackByTheFocusedFieldsValue` (Store sin ventana; campo de
+Chromium con ventana nombrada y un párrafo que no crece), `ATextTheFocusedFieldsValueDoesNotHoldIsNotVerified` (nada
+escrito, ya estaba, reescrito, cortado, el foco pasó a otro campo, el worker se niega) y
+`TheWorkersFocusedValueReadStaysInTheWindowAndReadsOnlyAFieldsValue`. Contra el adaptador y el worker de 086ebfde3 (NB,
+corrida «roja»): las dos de la primera y tres de la segunda en rojo (`input_text_not_read_back`, `authority
+win32_sendinput_return_count`, se pedía el párrafo del cursor) y la del worker en rojo (no existe `Do-FocusValue`).
+
+**Lo que no se pudo verificar en vivo.** La cola e2e del NB seguía corriendo (`cola_nb_c2cr2.fin` no existía) y el PC
+está reservado: ni WhatsApp, ni Discord, ni la Store se abrieron. Queda por ver: (1) que el ValuePattern del campo de
+Chromium ya tiene el texto cuando el adaptador lo relee (la mirada del F09 lo confirma después, no dentro de la
+ráfaga); (2) que la ráfaga, con la relectura ya buena, llega a elegir el resultado antes de su techo de 2 s
+(`SearchBurst.CapMs`): en WhatsApp la ráfaga fallida ya iba en 1985 ms; ahora el párrafo del cursor no se lee cuando hay
+valor, lo que ahorra lecturas, pero si el techo corta antes de que la lista muestre el resultado el recibo dirá
+`visible_search_result_not_found` con lo visto. Cómo comprobarlo: con la cola terminada, el driver del F09
+(`grabador/grabar_cu.py`) con «zzqxprueba» en los dos buscadores (debe dar `visible_search_result_not_found`, ya no
+`input_text_not_read_back`) y el buscador de la Store con «editor de fotos» (debe dar `completed` con
+`win32_sendinput_and_uia_value_reread`).
+
+## M3 — el postread negaba clics que sí actuaron
+
+**Qué se vio.** Reloj (`tanda_a2` reloj2#4): clic en «Iniciar» (índice 13) → `visible_click_postread_unread`; la mirada
+#6 tenía en el mismo índice `Button «Pausa»` y el grupo «Cronómetro, En marcha». Paint (paint2#6): clic en
+`ListItem «Rojo oscuro»` de la paleta abierta → `visible_button_postread_unchanged`; la mirada #7 tenía
+`RadioButton «Color 1: Rojo oscuro» (selected)` donde antes estaba «Color 1: Negro».
+
+**Causa.** `Do-Postread` del worker sólo acepta como efecto que el control desaparezca o se deshabilite, que quede
+seleccionado o conmutado (él o su línea del mismo nombre), que un campo tome el foco o cambie de valor, o que se abra un
+diálogo modal; si no, el adaptador mira la imagen de la ventana. Un botón que cambia de nombre al pulsarse
+(Iniciar → Pausa) y un elegido de la ventana que pasa a nombrar lo pulsado no eran prueba, y la imagen de esas ventanas
+no se leyó (Reloj: `unread`) o no se vio cambiar en su plazo (Paint: `unchanged`).
+
+**Arreglo (68a001e21, revisado en fcf96b814).** Antes de pulsar, el worker lee el nombre actual del control y el de los
+controles que la última vista de esa ventana leyó elegidos (`selected`/`on`, a lo sumo 24; la vista guarda sus
+identidades). El postread acepta dos pruebas nuevas, cada una con su clave (`PostreadHolds`): `renamed` (el mismo
+control tiene otro nombre; `renamedTo` dice cuál) y `chosenNamed` (un elegido que antes no nombraba lo pulsado ahora sí,
+como palabra entera; `chosenNow` dice cómo se llama). Tras la revisión de privacidad, el renombre sólo cuenta si el
+nombre de antes del clic es el mismo que leyó la última mirada (uno que cambia solo, un contador, no prueba nada), y el
+nombre pulsado que busca en el elegido debe tener al menos dos caracteres.
+
+**Pruebas.** `ComputerUseListenedPressTests.AControlRenamedByItsPressOrAChosenOneThatNamesItNowHoldsTheClick` (corre el
+`Do-Postread` real por su árbol sintáctico: Iniciar → Pausa, Color 1 → Rojo oscuro y cinco contracasos, más
+`Test-NameSteady`) y `ComputerUseClickMethodTests.AControlRenamedByThePressOrAChosenOneNamingItHolds`. Rojas contra
+086ebfde3 (los dos primeros casos dan `visible_button_postread_unchanged`; `PostreadHolds` no conocía las claves).
+
+**Sin vivo.** Cómo comprobarlo: Reloj → Cronómetro → clic en «Iniciar» por índice (debe dar `completed` con
+`renamedTo: Pausa`) y luego «Pausa»; Paint → «Colores» con `manner: open` → un color (debe dar `chosenNow: Color 1: …`).
+Cerrar Reloj y Paint por PID.
+
+## M5 — un control repetido tenía un solo índice
+
+**Qué se vio.** Reloj, pestaña Temporizador (reloj2#13): `Button «Iniciar»` con `repeated: 2` (×3 en la proyección),
+uno por temporizador, y lo mismo «Expandir» y «Mantener visible»: sólo la primera copia tenía índice e identidad.
+
+**Causa.** `Do-View` junta en una entrada todo lo que tiene el mismo tipo, nombre y estado elegido (`Get-SeenKey`) y
+cuenta las copias; sólo la primera queda en la vista y en el mapa de identidades.
+
+**Arreglo (dfc844072).** Una copia que se puede pulsar (tipo de `$Actionable`), con identidad propia y cuyo centro no
+cae dentro de una copia ya listada (ni al revés) lleva su propia entrada, con su índice y su zona. Siguen juntas (×N)
+las copias de lo que no actúa (Text), las que no tienen identidad y la que está dibujada dentro de otra (el mismo
+control dicho dos veces). Consecuencia: un clic sólo por etiqueta sobre un nombre repetido ya no pulsa la primera copia
+en silencio (`NamedInView` exige un único control de ese nombre): el modelo tiene que dar el índice.
+
+**Prueba.** `ComputerUseViewOrderTests.ACopyOfAnActionableControlElsewhereGetsItsOwnEntry`: corre el recorrido real de
+`Do-View` sobre controles descritos. Roja contra 086ebfde3 (`Button|Iniciar|1.1|3` en una sola entrada).
+
+**Sin vivo, y un aviso para los datos.** Las muestras del F09 que muestran «Iniciar ×3» describen la vista de antes; con
+este cambio esa vista tiene tres líneas `[i] Button «Iniciar» (zona)`. Revisión de privacidad: en listas con una acción
+destructiva por fila («Eliminar» ×N) el modelo elige ahora por índice y zona, sin el nombre de la fila; la confirmación
+del kernel sigue reteniendo lo destructivo. Una lista con muchas copias consume el tope de la vista (60).
+
+## M6 — el buscador rápido de Discord quedaba abierto sin coincidencia
+
+**Qué se vio.** `tanda_b2` discord2#3: `client.channel.locate {name: zzqxprueba}` → `found: false`,
+`switcherNotClosed: true`; la mirada #4 tenía el foco en un `Window` (el diálogo del buscador), no en su campo.
+
+**Causa.** El guion (`WindowsDeviceControlAdapter.ClientChannelLocateScript`) cierra el buscador con Escape sólo si
+`Dialog-Of` del foco devuelve un diálogo, y `Dialog-Of` empezaba a subir desde el padre del elemento: con el foco en el
+diálogo mismo no encontraba ninguno, no se mandaba Escape y el recibo decía, con razón, `switcherNotClosed`. Es la única
+lectura compatible con la evidencia (con el Escape mandado desde el campo el buscador se habría cerrado, y con el foco
+ya en el diálogo la relectura de después habría dado `leftOpen` falso); no se pudo reproducir en vivo.
+
+**Arreglo (840853a74, revisado en 3e48e4bf7).** `Dialog-Of` empieza en el propio elemento. Tras la revisión de
+privacidad, el Escape sólo va al diálogo que tiene el nombre escrito (`Field-Shows $label`), nunca a otro diálogo de
+Discord (una llamada, una confirmación) que tome el foco.
+
+**Prueba.** `R24ClienteEnFrioListoPorInteraccionTests.TheSwitchersDialogHoldingTheFocusItselfIsTheDialogTheEscapeCloses`:
+el `Dialog-Of` real del guion sobre elementos descritos. El mismo cuerpo contra el `Dialog-Of` de 086ebfde3 falla (sube
+desde el padre del diálogo; medido en PowerShell, sin la App). En la corrida «roja» del NB esta prueba pasó porque ahí
+sólo se volvieron atrás los ficheros de M1–M3 y M5.
+
+**Sin vivo.** Cómo comprobarlo: con Discord abierto y la cola terminada, `client.channel.locate` con un nombre sin
+coincidencia; el recibo no debe llevar `switcherNotClosed` y la mirada siguiente no debe tener el foco en el diálogo.
+
+## M4 — Epic leído sólo por OCR (diagnóstico)
+
+`tanda_a3` epic3#2: 0 controles UIA (`toolkit: unreal`); todo llega como `text` por zonas (`windows_media_ocr_lines`),
+sin índice ni posición. Un clic por etiqueta va a `WindowsVisibleOcrLocator`, que busca la línea; con dos líneas
+iguales («...» de dos juegos) de la misma altura no devuelve ninguna y no se pulsa nada (lo honesto: no adivina). Para
+poder elegir hay que dar a cada rótulo OCR un índice (o su posición) en la vista y aceptar `index` sobre esas marcas en
+el clic: es un cambio del contrato de la vista y de la proyección que lee el modelo, y en el NB no hay una cuenta con
+dos juegos instalados para medirlo. No se tocó. Recomendación: decidirlo junto con una prueba en vivo con un juego
+gratis instalado antes de entrenar más Epic.
+
+## M7 — la doble confirmación al desinstalar en Epic (descrita, no cambiada)
+
+En `tanda_a` epic#11 el primer clic en «Desinstalar» del menú «...» quedó `pending / confirmation_required`; el
+«Desinstalar» del diálogo propio de Epic es otra invocación con verbo destructivo y RiskPolicy la retiene otra vez, así
+que la persona dice «sí» dos veces. Es la regla del invariante 4 (la confirmación se liga a la invocación exacta): cada
+clic destructivo confirma el suyo. Las dos salidas son de producto: dejarlo (las muestras del F09 lo modelan, con la
+segunda pregunta nombrando el diálogo de Epic) o que la confirmación del primero cubra el diálogo que ese mismo clic
+abre, lo que exigiría ligar la confirmación a una cadena de dos invocaciones. Queda para el líder o el dueño.
+
+## Verificación (NB, prioridad baja, `-m:2`)
+
+Todo en `D:\BAXYeval\wt\ft-c3-app` (rama ft-c3-app-nb avanzada a hub/ft-c3-app), con `start /belownormal`; guiones
+`D:\BAXYeval\ft_v1\c3\F09\f09_rojo.cmd` y `f09_verde.cmd`, salidas `arreglos_rojo.log` y `arreglos_verde.log` al lado.
+En el PC (reservado) sólo se editó, se hizo git y se corrieron los cuerpos PowerShell de las pruebas de M3, M5 y M6
+sobre el worker y el guion (nuevo y de 086ebfde3), sin build ni la App.
+
+| Peldaño | Comando | Resultado |
+|---|---|---|
+| rojo | `dotnet test tests\Baxy.Providers.Windows.Tests -c Release -m:2 --filter <las 7 pruebas nuevas>` con el adaptador, `WindowsTextDelivery`, `WindowsVisibleControlAdapter` y el worker de 086ebfde3 | 9 rojas, 5 verdes (las verdes: contracasos «cortado» y «se niega», y M6, cuyo fichero no se volvió atrás) |
+| 2 | `dotnet build Baxy.slnx -c Release --nologo -v:minimal -m:2` (TreatWarningsAsErrors en Directory.Build.props), cabeza e5e4923fa | 0 advertencias, 0 errores |
+| 1 | `dotnet test tests\Baxy.Providers.Windows.Tests -c Release --no-build` | 3499 pass, 0 fallos (en 840853a74 fallaron 2 pruebas viejas del postread que cargaban `Do-Postread` sin sus funciones nuevas: arregladas en e5e4923fa) |
+| 1 | `dotnet test tests\Baxy.App.Tests -c Release --no-build` | 467 pass, 0 fallos |
+| 1 | `dotnet test tests\Baxy.Kernel.Tests -c Release --no-build` | 991 pass, 0 fallos |
+
+No se corrió el peldaño 3 entero (la rama no tiene `scripts/test_source_quality.ps1`; no hay cambios de Python ni de la
+interfaz) ni ninguna prueba en vivo: `D:\BAXYeval\ft_v1\c3\cola_nb_c2cr2.fin` no existía al terminar (la cola e2e
+del NB seguía) y el PC está reservado hasta las 10:00. Ninguno de los cinco arreglos tiene evidencia en vivo; cada
+sección dice cómo comprobarlo. Revisión del diff por el agente `revisor-privacidad`: sin hallazgos altos; los medios y
+bajos se arreglaron en 15b1e278f (el valor releído es del mismo campo), fcf96b814 (renombre sólo con el nombre estable
+desde la mirada; elegido por palabra entera y de dos caracteres al menos) y 3e48e4bf7 (Escape sólo al diálogo con el
+nombre escrito); el de las copias destructivas por índice queda anotado en M5. Push a `hub` tras el chequeo de
+privacidad del PC (`privacidad.py` sin avisos; un primer aviso por un nombre de clase de ventana en una prueba se
+arregló antes de subir).
