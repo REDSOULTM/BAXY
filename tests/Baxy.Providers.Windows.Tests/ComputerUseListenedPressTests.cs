@@ -298,7 +298,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void AMenuOrAnOpeningIsNotProvenByTheElementsSelection()
     {
-        string answer = Run(Worker(), ["Do-Postread", "Click-Result"], """
+        string answer = Run(Worker(), ["Do-Postread", "Click-Result", "Test-Renamed", "Test-ChosenNamed", "Get-CurrentName", "Format-Name", "Get-Cut"], """
             function Test-Selected($el){ return $true }
             function Get-Toggle($el){ return $null }
             function Test-FieldTook($el,$before){ return $false }
@@ -326,7 +326,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void ALineageToggleProvesAPlainClickButNoMenuOrOpening()
     {
-        string answer = Run(Worker(), ["Do-Postread", "Click-Result", "Test-LineageToggled"], """
+        string answer = Run(Worker(), ["Do-Postread", "Click-Result", "Test-LineageToggled", "Test-Renamed", "Test-ChosenNamed", "Get-CurrentName", "Format-Name", "Get-Cut"], """
             function Test-Selected($el){ return $false }
             function Get-Toggle($el){ return [string]$el.Mark }
             function Test-FieldTook($el,$before){ return $false }
