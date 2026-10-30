@@ -487,3 +487,34 @@ desde la mirada; elegido por palabra entera y de dos caracteres al menos) y 3e48
 nombre escrito); el de las copias destructivas por índice queda anotado en M5. Push a `hub` tras el chequeo de
 privacidad del PC (`privacidad.py` sin avisos; un primer aviso por un nombre de clase de ventana en una prueba se
 arregló antes de subir).
+
+## M1b — la búsqueda en un paso no elegía un resultado nombrado con más cosas (2026-10-30)
+
+**Causa.** Con el texto ya releído (M1), `SearchBurst.ResultNaming` exigía que el nombre del resultado fuera
+exactamente lo buscado; las filas de los buscadores de chat dicen más («Martina, 13:42, …», «Martina, Mensaje
+directo»), así que la ráfaga miraba hasta el techo y acababa en `visible_search_result_not_found` con `seen`.
+
+**Arreglo (cd07a749d + 9e9b65f51).** El exacto sigue primero y en la primera mirada. Si no hay exacto, vale un
+resultado cuyo nombre (plegado: mayúsculas, acentos, espacios) empieza por lo buscado como unidad y sigue con coma,
+dos puntos, salto de línea o guion con espacio; no vale «Martina Soto», «Martinez», «Cotele-memes» ni una pestaña
+(se nombra por su página). Entre los que valen, los que la búsqueda listó tras el texto van antes que una fila que la
+ventana ya mostraba. La decisión por prefijo espera a que dos miradas seguidas listen los mismos nombres (una lista
+que se llena puede traer el exacto). Un nombre distinto → se pulsa (y si llega a una persona sigue pidiendo
+confirmación, `visible_search_result_needs_confirmation`); varios distintos → no se pulsa nada y el recibo es
+`visible_search_result_ambiguous` con `candidates` (máx. 20; `candidateCount` y `truncated` si hay más), sin
+`seen`, `effectMayHaveOccurred` (el buscador quedó abierto con el texto). `choose` sigue la misma regla, así que el
+nombre de un candidato copiado tal cual lo elige. Techo (2 s) igual.
+
+**Prueba.** `SearchBurstTests`: 8 rojas antes del cambio en el NB (`m1_rojo.log`: 5 casos de la teoría, las dos filas
+de chat y la ambigüedad), verdes después junto con los contracasos («Mar», «Cotele-memes», «Martina Soto», la fila de
+la barra lateral, la lista que se llena, el canal de voz que pide confirmación, el exacto y `choose` ante candidatos).
+
+**Verificación (NB, `start /belownormal`, `-m:2`, cabeza 9e9b65f51, `m1_verde.log`).** Build Release de `Baxy.slnx`
+con warnings como errores: 0 advertencias. Providers.Windows 3516/3516, App 467/467, Kernel 991/991. En la corrida
+anterior (cd07a749d) falló una vez `ConfirmationAuthorityTokenTests.Only_the_exact_token_grants_not_a_truncated_or_altered_one`
+(ajena: cambia el último carácter base64url de 'A' a 'B', que sólo toca bits de relleno y decodifica igual); sin vivo.
+
+**Riesgos que quedan.** Un grupo cuyo nombre empieza por el de la persona («Martina, Pedro y Juan») es una fila que
+vale si es la única; el recibo nombra la fila elegida. Si cada fila expone además un hijo con el nombre exacto, el
+exacto gana sin ambigüedad (comportamiento de antes). La descripción de `search` en `tool_descriptions.en.v1.json`
+sigue diciendo «named exactly»: no se tocó (es entrada del modelo y de los datos del ajuste); decide el líder.
