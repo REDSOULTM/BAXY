@@ -92,6 +92,14 @@ internal interface IViewedFields
         nint window, int processId, int maximum, CancellationToken cancellationToken) =>
         ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
 
+    /// <summary>Ajuste c3 (F09, M1 and M2): the value of the field (an Edit or a ComboBox, never a password) that holds
+    /// the keyboard's focus inside <paramref name="window"/>'s own tree, read by UI Automation's ValuePattern as a look
+    /// reads it (the worker's «focusvalue»), at most <paramref name="maximum"/> characters and said when it was cut; null
+    /// when nothing answers.</summary>
+    ValueTask<System.Text.Json.JsonDocument?> FocusedValueAsync(
+        nint window, int maximum, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
+
     /// <summary>Auditoría del núcleo 2026-10-23: what holds the keyboard's focus (the worker's «focuskind», a read) and
     /// whether it lies inside <paramref name="window"/> (0: the window in front); null when nothing answers.</summary>
     ValueTask<System.Text.Json.JsonDocument?> FocusKindAsync(nint window, CancellationToken cancellationToken) =>

@@ -720,10 +720,18 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // (heldToReadBack, below).
         bool readsBack = typing;
         TypedMark? mark = readsBack ? _delivery?.Mark(before.Window, text.Length) : null;
+        // Ajuste c3 (F09, M1 and M2: «zzqxprueba» typed into WhatsApp's and Discord's search, «editor de fotos» into the
+        // Microsoft Store's, each told input_text_not_read_back while the next look read the field holding it): a field
+        // drawn by Chromium or XAML has no Win32 mark, and its paragraph at the caret did not prove it (the Store's field
+        // is of another process than its frame; a Chromium field's paragraph did not grow by the text). The field with
+        // the keyboard's focus inside the window is read by its value, as a look reads it, before the first key.
+        CaretText? valueBefore = readsBack && mark is null
+            ? await FocusedValueAsync(before.Window, cancellationToken).ConfigureAwait(false)
+            : null;
         // FT/proveedores goal (E2): a document that is no edit control (Word's «_WwG») has no Win32 mark, and its text
         // was never read back. Its paragraph at the caret is read by UI Automation instead, before the first key, of the
-        // front's own process only.
-        CaretText? caretBefore = readsBack && mark is null
+        // front's own process only. Ajuste c3 (F09): only where no whole value of a field was read.
+        CaretText? caretBefore = readsBack && mark is null && valueBefore is not { Bounded: false }
             ? await CaretTextAsync(before, cancellationToken).ConfigureAwait(false)
             : null;
         // BAXY Renew al máximo (e2e E017, pc-lote-A-s1: «lista: pilas, cables» typed into a busy Notepad landed as «lista
@@ -923,15 +931,22 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         AwaitTaken((int)(accepted / 2));
         string? landed = null;
         bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text, out landed);
+        // Ajuste c3 (F09): the focused field's value read again (the same field: the window's focus), a settle apart.
+        (bool valueReadBack, bool valueBounded, _) = valueBefore is { } value
+            ? await ReadsBackAsync(token => FocusedValueAsync(before.Window, token), value, text, cancellationToken)
+                .ConfigureAwait(false)
+            : (false, false, false);
         // FT/proveedores goal (E2): the paragraph at the caret read again by UI Automation; a read that fails leaves
         // the text not read back, as before.
-        (bool caretReadBack, bool caretBounded, _) = caretBefore is { } caret
+        (bool caretReadBack, bool caretBounded, _) = caretBefore is { } caret && !valueReadBack
             ? await CaretReadsBackAsync(before, caret, text, cancellationToken).ConfigureAwait(false)
             : (false, false, false);
-        bool readBack = editReadBack || caretReadBack;
-        // A named window's text is held to its read-back only where one could be taken (a mark or a caret read before
-        // the first key); with no window named (F004) or for the opened application, the read-back is the proof.
-        bool heldToReadBack = window == 0 || openedApplication || mark is not null || caretBefore is not null;
+        bool readBack = editReadBack || valueReadBack || caretReadBack;
+        // A named window's text is held to its read-back only where one could be taken (a mark, a field's value or a
+        // caret read before the first key); with no window named (F004) or for the opened application, the read-back is
+        // the proof.
+        bool heldToReadBack = window == 0 || openedApplication || mark is not null || valueBefore is not null
+            || caretBefore is not null;
         string? unread = readsBack && heldToReadBack && !readBack ? "input_text_not_read_back" : null;
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -958,8 +973,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             if (readsBack)
                 writer.WriteBoolean("readBack", readBack);
             // FT/proveedores goal (E2): a paragraph read cut at its bound (CaretReadableText) proves nothing, and says so.
-            if (caretBefore is not null)
-                writer.WriteBoolean("readBackBounded", caretBounded);
+            if (caretBefore is not null || valueBefore is not null)
+                writer.WriteBoolean("readBackBounded", caretBounded || valueBounded);
             if (bursts.Current is not null)
             {
                 writer.WriteNumber("waitedMs", bursts.WaitedMs);
@@ -974,6 +989,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 writer.WriteString("focusAt", focusAt);
             writer.WriteString("authority", focusAt is not null ? "uia_focus_reread_and_win32_sendinput"
                 : editReadBack ? "win32_sendinput_and_edit_text_reread"
+                : valueReadBack ? "win32_sendinput_and_uia_value_reread"
                 : caretReadBack ? "win32_sendinput_and_uia_text_reread"
                 : "win32_sendinput_return_count");
             if (unread is null)
@@ -1124,8 +1140,52 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     // FT/proveedores goal (E2): whether the paragraph at the caret, read again, holds the typed text
     // (WindowsTextDelivery.CaretHolds), and whether a read was cut at its bound (the receipt says so). R6-NB-3: and
     // whether a read did not answer or was not made (cancelled), which proves nothing either way (Unanswered).
-    private async ValueTask<(bool ReadBack, bool Bounded, bool Unanswered)> CaretReadsBackAsync(
-        DesktopForeground front, CaretText before, string text, CancellationToken cancellationToken)
+    private ValueTask<(bool ReadBack, bool Bounded, bool Unanswered)> CaretReadsBackAsync(
+        DesktopForeground front, CaretText before, string text, CancellationToken cancellationToken) =>
+        ReadsBackAsync(token => CaretTextAsync(front, token), before, text, cancellationToken);
+
+    // Ajuste c3 (F09, M1 and M2): the value of the field with the keyboard's focus inside the window (the worker's
+    // «focusvalue»), as a CaretText of unit «value» compared by CaretHolds; null when nothing answers or the read failed.
+    // Nothing of the value leaves this side.
+    private async ValueTask<CaretText?> FocusedValueAsync(nint window, CancellationToken cancellationToken)
+    {
+        if (_fields is null || window == 0)
+            return null;
+        JsonDocument? answer;
+        try
+        {
+            answer = await _fields.FocusedValueAsync(window, WindowsTextDelivery.CaretReadableText, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
+        if (answer is null)
+            return null;
+        using (answer)
+        {
+            JsonElement root = answer.RootElement;
+            if (root.ValueKind != JsonValueKind.Object
+                || !root.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+                || !root.TryGetProperty("text", out JsonElement read) || read.ValueKind != JsonValueKind.String
+                || !root.TryGetProperty("bounded", out JsonElement bounded)
+                || bounded.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+                return null;
+            string text = read.GetString()!;
+            bool cut = bounded.ValueKind == JsonValueKind.True || text.Length > WindowsTextDelivery.CaretReadableText;
+            // A field's value has no selection read: one the text replaced makes the value grow by less than the text,
+            // which CaretHolds never takes as typed.
+            return new CaretText(text, "value", cut, 0);
+        }
+    }
+
+    // FT/proveedores goal (E2), ajuste c3 (F09): whether a read taken before the keys, read again (up to CaretRereads
+    // times, a settle apart), holds the typed text by CaretHolds.
+    private async ValueTask<(bool ReadBack, bool Bounded, bool Unanswered)> ReadsBackAsync(
+        Func<CancellationToken, ValueTask<CaretText?>> reread, CaretText before, string text,
+        CancellationToken cancellationToken)
     {
         // A read cut before, or a selection the text replaced: no read after can prove it.
         if (before.Bounded || before.SelectionLength != 0)
@@ -1147,7 +1207,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 }
             }
 
-            if (await CaretTextAsync(front, cancellationToken).ConfigureAwait(false) is not { } after)
+            if (await reread(cancellationToken).ConfigureAwait(false) is not { } after)
             {
                 unanswered = true;
                 break;

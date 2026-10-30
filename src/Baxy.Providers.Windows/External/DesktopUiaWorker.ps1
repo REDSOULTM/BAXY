@@ -21,6 +21,7 @@
 #   {"cmd":"reveal","hwnd":123,"aliases":["Omega"],"direction":"down","amount":10}   (trae a la vista un elemento fuera de ella)
 #   {"cmd":"field","hwnd":123,"controlId":"42.1837.4","text":"hola","replace":false}   (texto dirigido; sin «text», solo lo lee)
 #   {"cmd":"textcaret","hwnd":123,"processId":4242,"max":8192}   (el parrafo del cursor del foco, por TextPattern; solo lee)
+#   {"cmd":"focusvalue","hwnd":123,"max":8192}   (el valor del campo con el foco dentro de la ventana, por ValuePattern; solo lee)
 #   {"cmd":"focuskind","hwnd":123}   (lo que tiene el foco del teclado: tipo, nombre, editable, TextPattern, dentro de la ventana; solo lee)
 #   {"cmd":"script","script":"...","args":["123"]}   (un guion de UserBrowserScripts, $args como en -Command)
 #   {"cmd":"unnamed","hwnd":123,"limit":24}   (accionables sin nombre ni respaldo: candidatos a leer su tooltip)
@@ -4412,6 +4413,38 @@ function Do-TextCaret($request){
   if($bounded){ $text=$text.Substring(0,$max) }
   return @{ ok=$true; error=''; processId=$process; kind=$kind; unit=$unit; text=$text; length=$text.Length; bounded=$bounded; selectionLength=$selected }
 }
+# Ajuste c3 (F09, M1 y M2): un texto escrito por teclado en un campo de Chromium (el buscador de WhatsApp, el de Discord)
+# o en el de una app empaquetada (la Microsoft Store, cuyo marco es de ApplicationFrameHost y cuyo campo es de
+# WinStore.App) no se releia: no hay control Edit de Win32 y el parrafo del cursor no lo daba (otro proceso que el
+# marco, o un TextPattern que no crece con lo escrito), aunque la mirada siguiente leia el campo con ese texto. Esto lee
+# lo mismo que lee la mirada: el valor (ValuePattern) del campo que tiene el foco del teclado, si es un Edit o un ComboBox
+# DENTRO de la ventana pedida (su arbol, no su proceso: el campo de la Store es de otro proceso que su marco; el de otra
+# ventana nunca se lee), nunca el de una contrasena, como mucho «max» caracteres y diciendo si se corto. Solo lee.
+function Do-FocusValue($request){
+  $target=Get-Root ([long]$request.hwnd)
+  if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='active_window_not_found' } }
+  $max=0; try { $max=[int]$request.max } catch {}
+  if($max -le 0 -or $max -gt 8192){ $max=8192 }
+  $node=$null; try { $node=$AE::FocusedElement } catch {}
+  if($null -eq $node){ return @{ ok=$false; error='focus_not_found' } }
+  $kind=''; try { $kind=([string]$node.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
+  if(@('Edit','ComboBox') -notcontains $kind){ return @{ ok=$false; error='focus_not_a_field' } }
+  $password=$true; try { $password=[bool]$node.Current.IsPassword } catch { $password=$true }
+  if($password){ return @{ ok=$false; error='focus_field_password' } }
+  $inside=$false; $up=$node; $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+  for($depth=0; $depth -lt 64 -and $null -ne $up; $depth++){
+    if([System.Windows.Automation.Automation]::Compare($up,$target.root)){ $inside=$true; break }
+    try { $up=$walker.GetParent($up) } catch { $up=$null }
+  }
+  if(-not $inside){ return @{ ok=$false; error='focus_window_mismatch' } }
+  $found=$null
+  if(-not $node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$found)){ return @{ ok=$false; error='focus_value_not_found' } }
+  $text=$null; try { $text=[string]([System.Windows.Automation.ValuePattern]$found).Current.Value } catch { $text=$null }
+  if($null -eq $text){ return @{ ok=$false; error='focus_value_unreadable' } }
+  $bounded=$text.Length -gt $max
+  if($bounded){ $text=$text.Substring(0,$max) }
+  return @{ ok=$true; error=''; kind=$kind; unit='value'; text=$text; length=$text.Length; bounded=$bounded }
+}
 
 # CONTRATO_VISTA_ACCION.md §8.2: un accionable que sigue sin nombre tras el respaldo (§8.1) es candidato a leer su
 # tooltip: no un campo (se identifica por su valor), no uno sin rectangulo, ni uno del tamano de una zona (un boton que
@@ -4552,6 +4585,7 @@ while($true){
     elseif($cmd -eq 'field'){ Send-Line (Invoke-Kept $request { param($r) Do-Field $r }) }
     elseif($cmd -eq 'focus'){ Send-Line (Invoke-Kept $request { param($r) Do-Focus $r }) }
     elseif($cmd -eq 'textcaret'){ Send-Line (Do-TextCaret $request) }
+    elseif($cmd -eq 'focusvalue'){ Send-Line (Do-FocusValue $request) }
     elseif($cmd -eq 'focuskind'){ Send-Line (Do-FocusKind $request) }
     elseif($cmd -eq 'unnamed'){ Send-Line (Do-Unnamed $request) }
     elseif($cmd -eq 'tooltips'){ Send-Line (Do-Tooltips $request) }

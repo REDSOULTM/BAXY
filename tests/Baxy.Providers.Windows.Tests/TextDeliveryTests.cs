@@ -1144,6 +1144,125 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // Ajuste c3 (F09, M2, live on the notebook): «editor de fotos» typed with no window named into the Microsoft Store's
+    // search box went in (the next look read «Edit «Buscar» = editor de fotos») and was told input_text_not_read_back:
+    // the Store's frame is ApplicationFrameHost's and its field is WinStore.App's, so no Win32 mark and no caret
+    // paragraph of the frame's own process could be read. M1: the same in a Chromium field for a named window (WhatsApp's
+    // and Discord's search, inside a search burst), whose paragraph at the caret did not grow by the text. The field
+    // with the keyboard's focus inside the window is read by its value, as the look reads it, before and after the keys.
+    private static string FieldValue(string value, bool bounded = false) =>
+        JsonSerializer.Serialize(new { ok = true, error = "", kind = "Edit", unit = "value", text = value, length = value.Length, bounded });
+
+    private static (FakeDesktopKeyboard Keyboard, FakeFieldMessages Messages) DrawnField(Action<int>? eachCharacter, string process) =>
+        (new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(4660, 4242, "Microsoft Store"),
+            FrontProcess = process,
+            EachCharacter = eachCharacter,
+        }, new FakeFieldMessages().WithField(4672, "XamlDrawnFieldHost", string.Empty));
+
+    [TestCase(false, "WinStore.App")]
+    [TestCase(true, "msedgewebview2")]
+    public async Task ATextTypedIntoADrawnFieldIsReadBackByTheFocusedFieldsValue(bool namedWindow, string process)
+    {
+        string typed = namedWindow ? "zzqxprueba" : "editor de fotos";
+        string value = string.Empty;
+        // The caret's paragraph proves nothing here: of another process (the Store) or not grown by the text (Chromium).
+        var fields = new FakeViewedFields("{}")
+        {
+            CaretAnswer = namedWindow ? () => Caret("Buscar un chat o iniciar uno nuevo") : () => """{"ok":false,"error":"caret_text_not_found"}""",
+            ValueAnswer = () => FieldValue(value),
+        };
+        (FakeDesktopKeyboard keyboard, FakeFieldMessages messages) = DrawnField(index =>
+        {
+            if (index == typed.Length - 1)
+                value += typed;
+        }, process);
+        string arguments = namedWindow
+            ? JsonSerializer.Serialize(new { text = typed, window = 4660 })
+            : JsonSerializer.Serialize(new { text = typed });
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("win32_sendinput_and_uia_value_reread"));
+            Assert.That(fields.ValueRequests, Is.All.EqualTo((nint)4660), "only the window the keys went to is read");
+            Assert.That(fields.ValueRequests, Has.Count.EqualTo(2), "one read before the keys, one after");
+            Assert.That(fields.CaretRequests, Is.Empty, "a field's whole value was read: no caret paragraph is asked for");
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain(typed), "nothing of the field is in the receipt");
+            Assert.That(keyboard.Texts, Is.EqualTo(new[] { typed }));
+        });
+    }
+
+    // The field's value does not hold the text (the keys went elsewhere, the field rewrote it), held it already, a read
+    // was cut at its bound, or the worker answered nothing for the focus (a password, a focus outside the window): the
+    // honest input_text_not_read_back, its effect possible. A bounded value leaves the caret's paragraph to try.
+    [TestCase("nothing")]
+    [TestCase("already")]
+    [TestCase("rewritten")]
+    [TestCase("bounded")]
+    [TestCase("refused")]
+    public async Task ATextTheFocusedFieldsValueDoesNotHoldIsNotVerified(string how)
+    {
+        string value = how == "already" ? "editor" : string.Empty;
+        var fields = new FakeViewedFields("{}")
+        {
+            CaretAnswer = () => """{"ok":false,"error":"caret_text_not_found"}""",
+            ValueAnswer = how switch
+            {
+                "refused" => () => """{"ok":false,"error":"focus_field_password"}""",
+                "bounded" => () => FieldValue(value, bounded: true),
+                _ => () => FieldValue(value),
+            },
+        };
+        (FakeDesktopKeyboard keyboard, FakeFieldMessages messages) = DrawnField(index =>
+        {
+            if (index == 5 && how is not ("nothing" or "already"))
+                value += how == "rewritten" ? "editar" : "editor";
+        }, "WinStore.App");
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"editor"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_text_not_read_back"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.False);
+            Assert.That(fields.CaretRequests, how is "bounded" or "refused" ? Is.Not.Empty : Is.Empty,
+                "a value cut or not read leaves the caret's paragraph to try");
+        });
+    }
+
+    // The worker's «focusvalue» only reads, within the window asked (its tree, never the window in front by default), an
+    // Edit's or a ComboBox's value only, never a password's, bounded and said so.
+    [Test]
+    public void TheWorkersFocusedValueReadStaysInTheWindowAndReadsOnlyAFieldsValue()
+    {
+        string path = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
+        Assume.That(File.Exists(path), "the worker script is copied next to the tests");
+        string script = File.ReadAllText(path, System.Text.Encoding.UTF8);
+        int at = script.IndexOf("function Do-FocusValue(", StringComparison.Ordinal);
+        Assert.That(at, Is.GreaterThanOrEqualTo(0));
+        string body = script[at..script.IndexOf("\nfunction ", at + 1, StringComparison.Ordinal)];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(script, Does.Contain("elseif($cmd -eq 'focusvalue'){ Send-Line (Do-FocusValue $request) }"));
+            Assert.That(body, Does.Contain("Get-Root ([long]$request.hwnd)").And.Not.Contain("-Front"));
+            Assert.That(body, Does.Contain("@('Edit','ComboBox') -notcontains $kind"));
+            Assert.That(body, Does.Contain("IsPassword"));
+            Assert.That(body, Does.Contain("Compare($up,$target.root)"));
+            Assert.That(body, Does.Not.Contain("SetValue").And.Not.Contain("SetFocus").And.Not.Contain("TextPattern"));
+            Assert.That(body, Does.Contain("bounded=$bounded"));
+        });
+    }
+
     [TestCase("", "hola", "hola", true)]
     [TestCase("a ", "it's", "a it’s", true)]
     [TestCase("", "x -- y", "x — y", true)]
@@ -1299,6 +1418,18 @@ internal sealed class FakeViewedFields(string answer) : IViewedFields
     {
         CaretRequests.Add((window, processId));
         return ValueTask.FromResult(CaretAnswer is null ? null : JsonDocument.Parse(CaretAnswer()));
+    }
+
+    // Ajuste c3 (F09): the worker's «focusvalue» answer, read anew each time (null: it does not answer), and the windows
+    // it was asked to read.
+    internal Func<string>? ValueAnswer { get; init; }
+
+    internal List<nint> ValueRequests { get; } = [];
+
+    public ValueTask<JsonDocument?> FocusedValueAsync(nint window, int maximum, CancellationToken cancellationToken)
+    {
+        ValueRequests.Add(window);
+        return ValueTask.FromResult(ValueAnswer is null ? null : JsonDocument.Parse(ValueAnswer()));
     }
 }
 

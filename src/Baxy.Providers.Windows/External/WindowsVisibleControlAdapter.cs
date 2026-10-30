@@ -4306,6 +4306,23 @@ internal sealed class WindowsVisibleControlAdapter
             WorkerClickBudget,
             cancellationToken);
 
+    /// <summary>Ajuste c3 (F09, M1 and M2): the value of the field with the keyboard's focus inside
+    /// <paramref name="window"/>'s tree, read by ValuePattern (the worker's «focusvalue», a read: no front kept, no
+    /// pattern invoked); null when the worker did not answer.</summary>
+    public ValueTask<JsonDocument?> FocusedValueAsync(
+        nint window,
+        int maximum,
+        CancellationToken cancellationToken) =>
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
+            new JsonObject
+            {
+                ["cmd"] = "focusvalue",
+                ["hwnd"] = window,
+                ["max"] = maximum,
+            }.ToJsonString(),
+            WorkerClickBudget,
+            cancellationToken);
+
     /// <summary>Auditoría del núcleo 2026-10-23: what holds the keyboard's focus and whether it lies inside
     /// <paramref name="window"/> (0: the one in front), read by UI Automation (the worker's «focuskind»: nothing pressed,
     /// focused or brought up); null when the worker did not answer.</summary>
