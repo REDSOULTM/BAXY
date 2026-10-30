@@ -3342,6 +3342,15 @@ function Get-ChosenBefore($hwnd,$button){
   }
   return $out
 }
+# Si el nombre del control antes de pulsar es el que la ultima vista de la ventana leyo para el (su cache): uno que
+# cambio desde la mirada cambia solo, y su cambio despues del clic no prueba la pulsacion.
+function Test-NameSteady($hwnd,[string]$id,[string]$now){
+  if($now.Length -eq 0 -or $id.Length -eq 0 -or $null -eq $script:LastView -or [long]$script:LastView.hwnd -ne [long]$hwnd){ return $false }
+  $viewed=$script:LastView.elements[$id]
+  if($null -eq $viewed){ return $false }
+  $seen=''; try { $seen=Format-Name ([string]$viewed.Cached.Name) } catch { return $false }
+  return ($seen -ceq $now)
+}
 # El nombre nuevo del control pulsado, si su nombre de ahora es otro que el de antes del clic; $null si no cambio o no
 # se lee (un control que ya no esta lo dice absentOrDisabled).
 function Test-Renamed($el,[string]$before){
@@ -3351,15 +3360,17 @@ function Test-Renamed($el,[string]$before){
   return $now
 }
 # El nombre de ahora de un elegido que nombra lo pulsado y antes del clic no lo nombraba («Color 1: Negro» -> «Color 1:
-# Rojo oscuro» al pulsar «Rojo oscuro»); $null si ninguno.
+# Rojo oscuro» al pulsar «Rojo oscuro»); $null si ninguno. Revision de privacidad: como palabras enteras y con al
+# menos dos caracteres (un «1» o una «A» pulsados estan dentro de casi cualquier nombre).
 function Test-ChosenNamed($chosen,[string]$pressed){
-  if($pressed.Length -eq 0){ return $null }
+  if($pressed.Trim().Length -lt 2){ return $null }
+  $whole='(?<![\p{L}\p{N}])'+[regex]::Escape($pressed)+'(?![\p{L}\p{N}])'
   foreach($entry in @($chosen)){
     if($null -eq $entry){ continue }
     $was=[string]$entry.name
-    if($was.IndexOf($pressed,[StringComparison]::OrdinalIgnoreCase) -ge 0){ continue }
+    if([regex]::IsMatch($was,$whole,'IgnoreCase')){ continue }
     $now=Get-CurrentName $entry.el
-    if($now.Length -gt 0 -and $now -cne $was -and $now.IndexOf($pressed,[StringComparison]::OrdinalIgnoreCase) -ge 0){ return $now }
+    if($now.Length -gt 0 -and $now -cne $was -and [regex]::IsMatch($now,$whole,'IgnoreCase')){ return $now }
   }
   return $null
 }
@@ -3440,7 +3451,7 @@ function Do-Postread($request){
   # son el efecto de la pulsacion, leidos en el arbol.
   $renamed=$null; $chosenNamed=$null
   if(-not $absent -and -not $selected -and -not $toggled -and -not $fieldTook -and $null -ne $pending.element){
-    $renamed=Test-Renamed $pending.element ([string]$pending.nameBefore)
+    if([bool]$pending.nameSteady){ $renamed=Test-Renamed $pending.element ([string]$pending.nameBefore) }
     if($null -eq $renamed){ $chosenNamed=Test-ChosenNamed @($pending.chosenBefore) ([string]$pending.nameBefore) }
   }
   # Un dialogo modal deshabilita a su dueno: la ventana del clic, habilitada antes y deshabilitada ahora, abrio uno.
@@ -3723,7 +3734,10 @@ function Do-ClickJudged($request){
   $stateBefore=Get-PressState $button
   # Ajuste c3 (F09, M3): el nombre del control y los de los elegidos de la ultima vista, leidos antes de pulsar: el
   # postread los compara (Test-Renamed, Test-ChosenNamed).
+  # Revision de privacidad: un nombre que cambia solo (un contador, una hora) no prueba nada; el renombre solo cuenta si
+  # el nombre de ahora es el que leyo la ultima vista de esta ventana para ese control.
   $nameBefore=Get-CurrentName $button
+  $nameSteady=Test-NameSteady $target.hwnd $identity $nameBefore
   $chosenBefore=@(Get-ChosenBefore $target.hwnd $button)
   # A tab already the selected one is the state asked for: nothing is pressed and it is said as that (changed:false).
   # Any other control already selected is pressed (a row opens, a page goes back), and its mark proves nothing.
@@ -3749,7 +3763,7 @@ function Do-ClickJudged($request){
     }
     $pending=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
     $pending.manner=$manner
-    if($null -ne $script:Pending){ $script:Pending.manner=$manner; $script:Pending.stateBefore=$stateBefore; $script:Pending.nameBefore=$nameBefore; $script:Pending.chosenBefore=$chosenBefore }
+    if($null -ne $script:Pending){ $script:Pending.manner=$manner; $script:Pending.stateBefore=$stateBefore; $script:Pending.nameBefore=$nameBefore; $script:Pending.nameSteady=$nameSteady; $script:Pending.chosenBefore=$chosenBefore }
     return $pending
   }
   $fieldBefore=$(if(@('Edit','Document','ComboBox') -contains $kind){ Get-FieldState $button } else { $null })
@@ -3771,7 +3785,7 @@ function Do-ClickJudged($request){
   if([string]$done.method -eq 'container'){ return (Click-Result $false $false 'visible_control_is_container' $name $identity $false $false $false $kind) }
   if([string]$done.method -eq 'covered'){ return (Click-Result $false $false 'visible_control_covered' $name $identity $false $false $false $kind) }
   $pressed=Pressed-Result $done $button $name $identity $kind $toggleBefore $lineage
-  if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled; $script:Pending.stateBefore=$stateBefore; $script:Pending.gridFocusBefore=$gridFocusBefore; $script:Pending.nameBefore=$nameBefore; $script:Pending.chosenBefore=$chosenBefore }
+  if($null -ne $script:Pending){ $script:Pending.fieldBefore=$fieldBefore; $script:Pending.top=$target.hwnd; $script:Pending.topEnabled=$topEnabled; $script:Pending.stateBefore=$stateBefore; $script:Pending.gridFocusBefore=$gridFocusBefore; $script:Pending.nameBefore=$nameBefore; $script:Pending.nameSteady=$nameSteady; $script:Pending.chosenBefore=$chosenBefore }
   if($null -ne $script:Pending -and $null -ne $witness -and [string]$done.method -eq 'toggle'){
     $facts=Get-ClickFacts $button
     $script:Pending.witness=$witness; $script:Pending.root=$root; $script:Pending.retried=$false

@@ -245,12 +245,14 @@ public sealed class ComputerUseListenedPressTests
     // click was told visible_click_postread_unread; «Rojo oscuro» of Paint's palette turned the chosen «Color 1: Negro»
     // into «Color 1: Rojo oscuro» and the click was told visible_button_postread_unchanged. The press's own control
     // renamed, or a control the last look read chosen that names the pressed one now and did not before, holds the click
-    // with the name read now. Counter-cases: a name that stays, a chosen one that already named it, and one that changed
-    // without naming the pressed control stay «unchanged» (the adapter's surface reads decide).
+    // with the name read now. Counter-cases: a name that stays, a chosen one that already named it, one that changed
+    // without naming the pressed control, a control whose name had already changed since the look (it changes by itself:
+    // review of privacy), and a pressed name too short to be told apart inside another stay «unchanged» (the adapter's
+    // surface reads decide). Test-NameSteady compares the name before the press with the last look's.
     [Test]
     public void AControlRenamedByItsPressOrAChosenOneThatNamesItNowHoldsTheClick()
     {
-        string answer = Run(Worker(), ["Do-Postread", "Click-Result", "Test-Renamed", "Test-ChosenNamed", "Get-CurrentName", "Format-Name", "Get-Cut"], """
+        string answer = Run(Worker(), ["Do-Postread", "Click-Result", "Test-Renamed", "Test-ChosenNamed", "Test-NameSteady", "Get-CurrentName", "Format-Name", "Get-Cut"], """
             function Test-Selected($el){ return $false }
             function Get-Toggle($el){ return $null }
             function Test-FieldTook($el,$before){ return $false }
@@ -258,17 +260,23 @@ public sealed class ComputerUseListenedPressTests
             $current=New-Object psobject -Property @{ IsEnabled=$true; IsOffscreen=$false; Name='' }
             $el=New-Object psobject -Property @{ Current=$current }
             $swatch=New-Object psobject -Property @{ Current=(New-Object psobject -Property @{ Name='Color 1: Rojo oscuro' }) }
+            $tab=New-Object psobject -Property @{ Current=(New-Object psobject -Property @{ Name='Tema: A' }) }
             $answers=foreach($case in @(
               @{ before='Iniciar'; now='Pausa'; chosen=@() },
               @{ before='Rojo oscuro'; now='Rojo oscuro'; chosen=@(@{ el=$swatch; name='Color 1: Negro' }) },
               @{ before='Iniciar'; now='Iniciar'; chosen=@() },
               @{ before='Rojo oscuro'; now='Rojo oscuro'; chosen=@(@{ el=$swatch; name='Color 1: Rojo oscuro' }) },
-              @{ before='Verde'; now='Verde'; chosen=@(@{ el=$swatch; name='Color 1: Negro' }) })){
+              @{ before='Verde'; now='Verde'; chosen=@(@{ el=$swatch; name='Color 1: Negro' }) },
+              @{ before='Iniciar'; now='Pausa'; chosen=@(); ticking=$true },
+              @{ before='A'; now='A'; chosen=@(@{ el=$tab; name='Tema: B' }) })){
               $current.Name=$case.now
-              $script:Pending=@{ native=$null; element=$el; toggleBefore=$null; lineage=@(); lineageToggles=@(); name=$case.before; identity='b.1'; kind='Button'; method='invoke'; placeBefore=$null; top=[IntPtr]0; topEnabled=$null; nameBefore=$case.before; chosenBefore=$case.chosen }
+              $script:Pending=@{ native=$null; element=$el; toggleBefore=$null; lineage=@(); lineageToggles=@(); name=$case.before; identity='b.1'; kind='Button'; method='invoke'; placeBefore=$null; top=[IntPtr]0; topEnabled=$null; nameBefore=$case.before; nameSteady=(-not [bool]$case.ticking); chosenBefore=$case.chosen }
               $read=Do-Postread @{}
               [string]$read.ok+'|'+[string]$read.error+'|'+[string]$read.renamedTo+'|'+[string]$read.chosenNow
             }
+            # Test-NameSteady: the name before the press against the last look's cache of that control.
+            $script:LastView=@{ hwnd=[IntPtr]77; elements=@{ 'b.1'=(New-Object psobject -Property @{ Cached=(New-Object psobject -Property @{ Name='Iniciar' }) }) } }
+            $answers+=@([string](Test-NameSteady ([IntPtr]77) 'b.1' 'Iniciar'), [string](Test-NameSteady ([IntPtr]77) 'b.1' 'Pausa'), [string](Test-NameSteady ([IntPtr]78) 'b.1' 'Iniciar'))
             [Console]::Out.Write((@($answers) -join ','))
             """);
         Assert.That(answer.Split(','), Is.EqualTo(new[]
@@ -278,6 +286,9 @@ public sealed class ComputerUseListenedPressTests
             "False|visible_button_postread_unchanged||",   // contracase: the name stays
             "False|visible_button_postread_unchanged||",   // contracase: the chosen one already named it before
             "False|visible_button_postread_unchanged||",   // contracase: a chosen one that does not name the pressed control
+            "False|visible_button_postread_unchanged||",   // contracase: a name that had changed since the look
+            "False|visible_button_postread_unchanged||",   // contracase: «A» is inside «Tema: A», too short to tell
+            "True", "False", "False",                      // steady as the look read it; changed since; another window
         }));
     }
 
