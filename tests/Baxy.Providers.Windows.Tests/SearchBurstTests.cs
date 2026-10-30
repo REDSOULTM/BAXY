@@ -229,9 +229,19 @@ public sealed class SearchBurstTests
     [TestCase("Button", "Comprimir Cotele", "", false)]
     [TestCase("ListItem", "Cotelería", "", false)]
     [TestCase("ListItem", "Cotle", "", false)]
+    // F09 M1 (ajuste c3): a result whose name begins with the search as a whole, then a separator (a comma, a colon, a
+    // line break, a spaced dash), is that result with more said of it; a hyphen glued to it is another name.
+    [TestCase("ListItem", "Cotele, 13:42, nos vemos mañana", "", true)]
+    [TestCase("ListItem", "cotelé , Mensaje directo", "", true)]
+    [TestCase("DataItem", "Cotele: 3 mensajes sin leer", "", true)]
+    [TestCase("ListItem", "Cotele\n13:42", "", true)]
+    [TestCase("Button", "Cotele - Servidor", "", true)]
+    [TestCase("ListItem", "Cotele-memes", "", false)]
+    [TestCase("ListItem", "Cotele Soto, ayer", "", false)]
+    [TestCase("Edit", "Cotele, 13:42", "", false)]
     public void TheResultIsTheExactNameAndNeverAFieldNorASwitch(string kind, string name, string state, bool chosen) =>
         Assert.That(
-            SearchBurst.ResultNaming([Control("1.1", kind, name, state)], "Cotele", null, "5.1") is not null,
+            SearchBurst.ResultNaming([Control("1.1", kind, name, state)], "Cotele", null, "5.1").Chosen is not null,
             Is.EqualTo(chosen));
 
     // Auditoría B1: with «choose», exactly that name, whatever the search typed.
@@ -241,8 +251,8 @@ public sealed class SearchBurstTests
         {
             WindowsVisibleControlAdapter.ViewControl[] listed =
                 [Control("1.1", "ListItem", "Cotele"), Control("1.2", "ListItem", "Cotele (canal de voz)")];
-            Assert.That(SearchBurst.ResultNaming(listed, "Cotele", "cotele (canal de voz)", "5.1")?.Id, Is.EqualTo("1.2"));
-            Assert.That(SearchBurst.ResultNaming(listed, "Cotele", "Cotele canal", "5.1"), Is.Null);
+            Assert.That(SearchBurst.ResultNaming(listed, "Cotele", "cotele (canal de voz)", "5.1").Chosen?.Id, Is.EqualTo("1.2"));
+            Assert.That(SearchBurst.ResultNaming(listed, "Cotele", "Cotele canal", "5.1").Chosen, Is.Null);
         });
 
     // Ronda 25 (banco r23 c7 and s13): the Text a search box draws with its value, or the search itself, is no result;
@@ -254,13 +264,119 @@ public sealed class SearchBurstTests
         box.Value = "cotele";
         Assert.Multiple(() =>
         {
-            Assert.That(SearchBurst.ResultNaming([box, Control("2.2", "Text", "cotele")], "Cotele", null, "5.1"), Is.Null);
+            Assert.That(SearchBurst.ResultNaming([box, Control("2.2", "Text", "cotele")], "Cotele", null, "5.1").Chosen, Is.Null);
             Assert.That(SearchBurst.ResultNaming([box, Control("2.2", "Text", "cotele"), Control("3.1", "ListItem", "Cotele")],
-                "Cotele", null, "5.1")?.Id, Is.EqualTo("3.1"));
+                "Cotele", null, "5.1").Chosen?.Id, Is.EqualTo("3.1"));
         });
     }
 
     // ---------------------------------------------------------------- reopen (pasada r15b, v3-09)
+    // F09 M1 (ajuste c3, live on two chat applications): their search lists a person's row with more than the name
+    // («Martina, 13:42, …», «Martina, Mensaje directo»); the burst presses the one row that begins with the search.
+    [TestCase("Martina, 13:42, nos vemos mañana")]
+    [TestCase("Martina, Mensaje directo")]
+    public void TheOneResultThatBeginsWithTheSearchIsPressed(string row)
+    {
+        var lease = new Lease();
+        var acts = new Acts(lease)
+        {
+            Looks =
+            [
+                [Opener, SwitcherBox],
+                [Opener, SwitcherBox, Control("12.3", "ListItem", "Martín Soto, ayer"), Control("12.4", "ListItem", row)],
+            ],
+        };
+
+        ExternalCapabilityReceipt receipt = Run(lease, acts, search: "Martina");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(acts.Calls.Last(), Is.EqualTo("choose 12.4 " + row));
+            Assert.That(receipt.Result!.Value.GetProperty("name").GetString(), Is.EqualTo(row));
+        });
+    }
+
+    // Contracase: «Mar» is not the beginning of «Martina, …» as a whole; nothing is pressed and the burst says what it saw.
+    [Test]
+    public void ASearchThatIsOnlyTheStartOfAWordPressesNothing()
+    {
+        var lease = new Lease();
+        var acts = new Acts(lease)
+        {
+            Looks = [[Opener, SwitcherBox], [Opener, SwitcherBox, Control("12.4", "ListItem", "Martina, 13:42, hola")]],
+        };
+
+        ExternalCapabilityReceipt receipt = Run(lease, acts, search: "Mar");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(SearchBurst.ResultNotFound));
+            Assert.That(acts.Calls, Has.None.StartsWith("choose"));
+            Assert.That(receipt.Result!.Value.GetProperty("seen").EnumerateArray().Select(name => name.GetString()),
+                Is.EqualTo(new[] { "Martina, 13:42, hola" }));
+        });
+    }
+
+    // Contracase: two different rows begin with the search and none is it: nothing is pressed, and the receipt says the
+    // ambiguity with both names (a copy of one of them, the same name twice, is one candidate) for the model to ask.
+    [Test]
+    public void TwoDifferentResultsThatBeginWithTheSearchAreAskedNeverGuessed()
+    {
+        var lease = new Lease();
+        var acts = new Acts(lease)
+        {
+            Looks =
+            [
+                [Opener, SwitcherBox],
+                [
+                    Opener, SwitcherBox, Control("12.4", "ListItem", "Martina, 13:42, hola"),
+                    Control("12.5", "Text", "Martina, 13:42, hola"), Control("12.6", "ListItem", "Martina, ayer, chao"),
+                ],
+            ],
+        };
+
+        ExternalCapabilityReceipt receipt = Run(lease, acts, search: "Martina");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(SearchBurst.ResultAmbiguous));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True, "the opener was pressed and the text typed");
+            Assert.That(acts.Calls, Has.None.StartsWith("choose"));
+            Assert.That(lease.Clock.NowMs, Is.LessThan(1_000 + SearchBurst.CapMs), "it says so at once, not at the ceiling");
+            JsonElement result = receipt.Result!.Value;
+            Assert.That(result.GetProperty("candidates").EnumerateArray().Select(name => name.GetString()),
+                Is.EqualTo(new[] { "Martina, 13:42, hola", "Martina, ayer, chao" }));
+            Assert.That(result.TryGetProperty("seen", out _), Is.False);
+            JsonElement last = result.GetProperty("acts").EnumerateArray().Last();
+            Assert.That(last.GetProperty("error").GetString(), Is.EqualTo(SearchBurst.ResultAmbiguous));
+            Assert.That(lease.Events, Is.EqualTo(new[] { "acquire " + (long)Window, "restore" }));
+        });
+    }
+
+    // The exact name keeps its place: with it listed, the rows that only begin with it are no ambiguity; and «choose»
+    // naming one of the candidates presses that one.
+    [TestCase(null, "12.5")]
+    [TestCase("Martina, ayer, chao", "12.6")]
+    public void TheExactNameOrTheChosenOneSettlesIt(string? choose, string pressed)
+    {
+        var lease = new Lease();
+        WindowsVisibleControlAdapter.ViewControl[] listed =
+        [
+            Opener, SwitcherBox, Control("12.4", "ListItem", "Martina, 13:42, hola"), Control("12.5", "ListItem", "Martina"),
+            Control("12.6", "ListItem", "Martina, ayer, chao"),
+        ];
+        var acts = new Acts(lease) { Looks = [[Opener, SwitcherBox], listed] };
+
+        ExternalCapabilityReceipt receipt = Run(lease, acts, choose, "Martina");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(acts.Calls.Last(), Does.StartWith("choose " + pressed + " "));
+        });
+    }
+
     private static readonly WindowsVisibleControlAdapter.ViewControl Tab = Control("10.1", "TabItem", "Dibujar");
     private static readonly WindowsVisibleControlAdapter.ViewControl Yellow =
         Control("18.7", "SplitButton", "Marcador de resaltado: Amarillo, 5 mm", "collapsed");
@@ -519,9 +635,9 @@ public sealed class SearchBurstTests
         });
     }
 
-    private static ExternalCapabilityReceipt Run(Lease lease, Acts acts, string? choose = null) =>
+    private static ExternalCapabilityReceipt Run(Lease lease, Acts acts, string? choose = null, string search = "Cotele") =>
         new SearchBurst(lease, lease.Clock, acts)
-            .RunAsync("input.visible.click", Window, Opener.Name, Opener.Id, [Opener, Composer], "Cotele", choose, CancellationToken.None)
+            .RunAsync("input.visible.click", Window, Opener.Name, Opener.Id, [Opener, Composer], search, choose, CancellationToken.None)
             .AsTask().GetAwaiter().GetResult();
 
     private static WindowsVisibleControlAdapter.ViewControl Control(string id, string kind, string name, string state = "") =>

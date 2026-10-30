@@ -61,6 +61,12 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
     /// <summary>No result named the destination before the ceiling: nothing was pressed after the text.</summary>
     internal const string ResultNotFound = "visible_search_result_not_found";
 
+    /// <summary>
+    /// None is the destination's name and several different results begin with it: nothing was pressed after the text,
+    /// and the receipt lists them (<c>candidates</c>) for the model to ask which.
+    /// </summary>
+    internal const string ResultAmbiguous = "visible_search_result_ambiguous";
+
     /// <summary>The opening did not show that it took the keyboard (nothing opened, or an earlier field kept it).</summary>
     internal const string FocusUnproven = "visible_search_focus_unproven";
 
@@ -102,6 +108,8 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         bool? chosenSurface = null;
         // Auditoría B1: what the last look showed as results, said when none of them was the one named.
         IReadOnlyList<string> seen = [];
+        // F09 M1: the different results that began with the destination, said when none was it.
+        IReadOnlyList<string> candidates = [];
         bool restored;
         try
         {
@@ -136,6 +144,20 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
             {
                 writer.WriteStartArray("seen");
                 foreach (string name in seen)
+                    writer.WriteStringValue(name);
+                writer.WriteEndArray();
+            }
+
+            if (stopped == ResultAmbiguous)
+            {
+                if (candidates.Count > SeenNames)
+                {
+                    writer.WriteNumber("candidateCount", candidates.Count);
+                    writer.WriteBoolean("truncated", true);
+                }
+
+                writer.WriteStartArray("candidates");
+                foreach (string name in candidates.Take(SeenNames))
                     writer.WriteStringValue(name);
                 writer.WriteEndArray();
             }
@@ -186,7 +208,8 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
             if (!typed.Verified || typed.ErrorCode is not null)
                 return typed.ErrorCode ?? "input_effect_not_verified";
 
-            // 4. The result of exactly that name, read inside the burst while the search fills its list.
+            // 4. The result of that name, read inside the burst while the search fills its list; several that only begin
+            // with it are asked, never guessed.
             HashSet<string> shownIds = shown.Select(control => control.Id).ToHashSet(StringComparer.Ordinal);
             WindowsVisibleControlAdapter.ViewControl? result = null;
             while (true)
@@ -195,9 +218,15 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
                     return Refused(whileLooking == CapReached ? ResultNotFound : whileLooking, Click, "label", choose ?? search);
                 IReadOnlyList<WindowsVisibleControlAdapter.ViewControl>? listed = await acts.LookAsync(window, cancellationToken)
                     .ConfigureAwait(false);
-                result = listed is null ? null : ResultNaming(listed, search, choose, controlId, shownIds);
+                ResultChoice found = listed is null ? new ResultChoice(null, []) : ResultNaming(listed, search, choose, controlId, shownIds);
+                result = found.Chosen;
                 if (result is not null)
                     break;
+                if (found.Candidates.Count > 1)
+                {
+                    candidates = found.Candidates;
+                    return Refused(ResultAmbiguous, Click, "label", choose ?? search);
+                }
                 if (listed is not null)
                     seen = [.. Results(listed, controlId).Select(control => control.Name).Distinct(StringComparer.Ordinal).Take(SeenNames)];
                 await clock.DelayAsync(ResultLookMs, cancellationToken).ConfigureAwait(false);
@@ -458,14 +487,20 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         return opened;
     }
 
+    /// <summary>The result a look settles on, or, with none, the different names that only began with the destination.</summary>
+    internal readonly record struct ResultChoice(WindowsVisibleControlAdapter.ViewControl? Chosen, IReadOnlyList<string> Candidates);
+
     /// <summary>
-    /// The result that names the destination (auditoría B1): no field, no switch, never the opener, and exactly the name
-    /// searched for, folded (case, accents, spaces); with <paramref name="choose"/>, exactly that name instead. Never one
-    /// that only holds it or differs by a typo: nothing is pressed and the burst says the names it saw. A descriptive
-    /// control named as the search or as a field's value only repeats it (Discord's «cotele» drawn as a Text, c7). A
-    /// result kind before any other.
+    /// The result that names the destination (auditoría B1): no field, no switch, never the opener, and the name searched
+    /// for, folded (case, accents, spaces); with <paramref name="choose"/>, that name instead. The exact name first. F09
+    /// M1 (ajuste c3, two chat applications live): a search lists a row with more than the name («Martina, 13:42, …»,
+    /// «Martina, Mensaje directo»), so a result whose name begins with the destination as a whole, then a separator, is
+    /// it too (<see cref="BeginsWith"/>); when different names begin so and none is the destination, none is chosen and
+    /// they go back as <see cref="ResultChoice.Candidates"/>. Never one that only holds it inside, a longer word or a
+    /// typo: nothing is pressed and the burst says the names it saw. A descriptive control named as the search or as a
+    /// field's value only repeats it (Discord's «cotele» drawn as a Text, c7). A result kind before any other.
     /// </summary>
-    internal static WindowsVisibleControlAdapter.ViewControl? ResultNaming(
+    internal static ResultChoice ResultNaming(
         IReadOnlyList<WindowsVisibleControlAdapter.ViewControl> controls,
         string search,
         string? choose,
@@ -473,17 +508,46 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         IReadOnlyCollection<string>? shownBefore = null)
     {
         string wanted = WindowsVisibleOcrLocator.Fold(choose ?? search);
+        if (wanted.Length == 0)
+            return new ResultChoice(null, []);
         HashSet<string> echoes = [.. controls.Where(control => control.Kind is "Edit" or "ComboBox")
             .Select(control => WindowsVisibleOcrLocator.Fold(control.Value ?? string.Empty))
             .Append(WindowsVisibleOcrLocator.Fold(search)).Where(echo => echo.Length > 0)];
-        return Results(controls, openerId)
-            .Where(control => wanted.Length > 0 && WindowsVisibleOcrLocator.Fold(control.Name) == wanted
-                && !(DescriptiveKinds.Contains(control.Kind) && echoes.Contains(wanted)))
-            // What the search listed after the text before what the window already showed (a server of the same name
-            // in its side bar, measured on a chat application).
-            .OrderBy(control => shownBefore is not null && shownBefore.Contains(control.Id))
-            .ThenBy(control => Array.IndexOf(ResultKinds, control.Kind) is var rank && rank >= 0 ? rank : ResultKinds.Length)
-            .FirstOrDefault();
+        WindowsVisibleControlAdapter.ViewControl[] named = [.. Results(controls, openerId)
+            .Where(control => !(DescriptiveKinds.Contains(control.Kind) && echoes.Contains(WindowsVisibleOcrLocator.Fold(control.Name))))];
+        WindowsVisibleControlAdapter.ViewControl[] exact =
+            [.. named.Where(control => WindowsVisibleOcrLocator.Fold(control.Name) == wanted)];
+        if (exact.Length > 0)
+            return new ResultChoice(Best(exact), []);
+        WindowsVisibleControlAdapter.ViewControl[] held = [.. named.Where(control => BeginsWith(control, wanted))];
+        // The same name twice (a row and its own text) is one result; two different names are a question.
+        string[] different = [.. held.GroupBy(control => WindowsVisibleOcrLocator.Fold(control.Name), StringComparer.Ordinal)
+            .Select(group => group.First().Name)];
+        return different.Length == 1 ? new ResultChoice(Best(held), []) : new ResultChoice(null, different);
+
+        // What the search listed after the text before what the window already showed (a server of the same name in its
+        // side bar, measured on a chat application).
+        WindowsVisibleControlAdapter.ViewControl Best(IEnumerable<WindowsVisibleControlAdapter.ViewControl> results) =>
+            results.OrderBy(control => shownBefore is not null && shownBefore.Contains(control.Id))
+                .ThenBy(control => Array.IndexOf(ResultKinds, control.Kind) is var rank && rank >= 0 ? rank : ResultKinds.Length)
+                .First();
+    }
+
+    // F09 M1: the name begins with the destination as a whole, then a comma, a colon, a line break or a dash with a space
+    // after it («Martina, 13:42», «Cotele - Servidor»); a hyphen glued to it is part of another name («Cotele-memes»), and
+    // a space or a longer word is another name («Martina Soto», «Martinez»). A tab is named by its page or document
+    // («Cotele - Resultados de la búsqueda»), never a result in the search's list.
+    private static bool BeginsWith(WindowsVisibleControlAdapter.ViewControl control, string wanted)
+    {
+        if (control.Kind == "TabItem")
+            return false;
+        string folded = WindowsVisibleOcrLocator.Fold(string.Concat(control.Name.Select(character =>
+            character is '\r' or '\n' or (char)0x2028 or (char)0x2029 ? ',' : character)));
+        if (!folded.StartsWith(wanted, StringComparison.Ordinal))
+            return false;
+        string rest = folded[wanted.Length..].TrimStart();
+        return rest.Length > 0 && (rest[0] is ',' or ':'
+            || (rest[0] is '-' or '–' or '—' && (rest.Length == 1 || rest[1] == ' ')));
     }
 
     // What a look shows that could be a result: a control with an identity, not the opener, no field and no switch.
