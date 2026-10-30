@@ -377,6 +377,68 @@ public sealed class SearchBurstTests
         });
     }
 
+    // A list still filling: a row that only begins with the search is not pressed on the first look that shows it; the
+    // exact name the next look brings is.
+    [Test]
+    public void ARowThatOnlyBeginsWithTheSearchWaitsForTheListToSettle()
+    {
+        var lease = new Lease();
+        WindowsVisibleControlAdapter.ViewControl held = Control("12.4", "ListItem", "Martina, 13:42, hola");
+        var acts = new Acts(lease)
+        {
+            Looks = [[Opener, SwitcherBox], [Opener, SwitcherBox, held], [Opener, SwitcherBox, held, Control("12.5", "ListItem", "Martina")]],
+        };
+
+        ExternalCapabilityReceipt receipt = Run(lease, acts, search: "Martina");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(acts.Calls.Last(), Is.EqualTo("choose 12.5 Martina"));
+        });
+    }
+
+    // A row the window already showed before the text (a chat in its side bar) gives way to the one the search listed:
+    // no ambiguity between them.
+    [Test]
+    public void TheRowTheSearchListedGoesBeforeOneTheWindowAlreadyShowed()
+    {
+        var lease = new Lease();
+        WindowsVisibleControlAdapter.ViewControl sideBar = Control("3.1", "ListItem", "Martina, 2 mensajes sin leer");
+        var acts = new Acts(lease)
+        {
+            Looks = [[Opener, SwitcherBox, sideBar], [Opener, SwitcherBox, sideBar, Control("12.4", "ListItem", "Martina, Mensaje directo")]],
+        };
+
+        ExternalCapabilityReceipt receipt = Run(lease, acts, search: "Martina");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(acts.Calls.Last(), Is.EqualTo("choose 12.4 Martina, Mensaje directo"));
+        });
+    }
+
+    // A row that only begins with the search and whose press reaches a person is still pressed only when the invocation
+    // names it.
+    [Test]
+    public void ARowThatBeginsWithTheSearchAndReachesAPersonAsksFirst()
+    {
+        var lease = new Lease();
+        var acts = new Acts(lease)
+        {
+            Looks = [[Opener, SwitcherBox], [Opener, SwitcherBox, Control("12.4", "ListItem", "Cotele, Canal de voz")]],
+        };
+
+        ExternalCapabilityReceipt receipt = Run(lease, acts);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(SearchBurst.ResultNeedsConfirmation));
+            Assert.That(acts.Calls, Has.None.StartsWith("choose"));
+        });
+    }
+
     private static readonly WindowsVisibleControlAdapter.ViewControl Tab = Control("10.1", "TabItem", "Dibujar");
     private static readonly WindowsVisibleControlAdapter.ViewControl Yellow =
         Control("18.7", "SplitButton", "Marcador de resaltado: Amarillo, 5 mm", "collapsed");

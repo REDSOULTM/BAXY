@@ -212,6 +212,7 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
             // with it are asked, never guessed.
             HashSet<string> shownIds = shown.Select(control => control.Id).ToHashSet(StringComparer.Ordinal);
             WindowsVisibleControlAdapter.ViewControl? result = null;
+            string? heldBefore = null;
             while (true)
             {
                 if (Interrupted() is { } whileLooking)
@@ -219,14 +220,28 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
                 IReadOnlyList<WindowsVisibleControlAdapter.ViewControl>? listed = await acts.LookAsync(window, cancellationToken)
                     .ConfigureAwait(false);
                 ResultChoice found = listed is null ? new ResultChoice(null, []) : ResultNaming(listed, search, choose, controlId, shownIds);
-                result = found.Chosen;
-                if (result is not null)
-                    break;
-                if (found.Candidates.Count > 1)
+                if (found.Chosen is { } exactNow && found.Candidates.Count == 0)
                 {
+                    result = exactNow;
+                    break;
+                }
+
+                // A choice by names that only begin with the destination waits for a second look listing the same ones:
+                // a list still filling may bring the exact name, or another that begins so.
+                string? heldNow = found.Candidates.Count > 0 ? string.Join('\n', found.Candidates) : null;
+                if (heldNow is not null && heldNow == heldBefore)
+                {
+                    if (found.Chosen is { } heldOne)
+                    {
+                        result = heldOne;
+                        break;
+                    }
+
                     candidates = found.Candidates;
                     return Refused(ResultAmbiguous, Click, "label", choose ?? search);
                 }
+
+                heldBefore = heldNow;
                 if (listed is not null)
                     seen = [.. Results(listed, controlId).Select(control => control.Name).Distinct(StringComparer.Ordinal).Take(SeenNames)];
                 await clock.DelayAsync(ResultLookMs, cancellationToken).ConfigureAwait(false);
@@ -487,7 +502,11 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         return opened;
     }
 
-    /// <summary>The result a look settles on, or, with none, the different names that only began with the destination.</summary>
+    /// <summary>
+    /// What a look settles on: <see cref="Chosen"/> the exact result, or the one that only begins with the destination;
+    /// <see cref="Candidates"/> the different names that only begin with it (one, when it is the one chosen; none with the
+    /// exact name).
+    /// </summary>
     internal readonly record struct ResultChoice(WindowsVisibleControlAdapter.ViewControl? Chosen, IReadOnlyList<string> Candidates);
 
     /// <summary>
@@ -520,10 +539,14 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         if (exact.Length > 0)
             return new ResultChoice(Best(exact), []);
         WindowsVisibleControlAdapter.ViewControl[] held = [.. named.Where(control => BeginsWith(control, wanted))];
+        // Of those, what the search listed after the text, when it listed any, and not a row the window already showed
+        // (a chat's row in its side bar).
+        if (shownBefore is not null && held.Any(control => !shownBefore.Contains(control.Id)))
+            held = [.. held.Where(control => !shownBefore.Contains(control.Id))];
         // The same name twice (a row and its own text) is one result; two different names are a question.
         string[] different = [.. held.GroupBy(control => WindowsVisibleOcrLocator.Fold(control.Name), StringComparer.Ordinal)
             .Select(group => group.First().Name)];
-        return different.Length == 1 ? new ResultChoice(Best(held), []) : new ResultChoice(null, different);
+        return different.Length == 1 ? new ResultChoice(Best(held), different) : new ResultChoice(null, different);
 
         // What the search listed after the text before what the window already showed (a server of the same name in its
         // side bar, measured on a chat application).
