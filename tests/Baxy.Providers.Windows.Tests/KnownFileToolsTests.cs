@@ -1306,6 +1306,59 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Humo ampliado del despliegue c3 (PC, 31-10): «bórrala» of a folder just made on a Desktop that holds a large tree
+    // took 100 s before the yes was asked and 90 s more after it: the delete walked Desktop, Documents and Downloads whole,
+    // with no limit, once for the files and once again for the folders, before the question and again after the yes.
+    // It walks once with file.find's limit; the one seen when the limit stops it is not trashed (a deeper one of that name
+    // may be the one meant), and its full path, looked up only at its place, trashes it with no walk.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task ADeleteOfTheOneSeenBeforeTheLimitTrashesNothingAndItsFullPathTrashesIt(string aids, bool hint)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "home");
+        string folder = Path.Combine(home, "prueba c3");
+        Directory.CreateDirectory(folder);
+        Directory.CreateDirectory(Path.Combine(home, "zz", "hondo"));
+        await File.WriteAllTextAsync(Path.Combine(home, "zz", "hondo", "a.txt"), "x");
+        var bin = new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true);
+        var adapter = new WindowsKnownFileAdapter(
+            new Dictionary<string, string[]> { ["home"] = [home] }, bin, utcNow: StopAfter(1));
+
+        ExternalCapabilityReceipt? asked = await adapter.PreflightAsync("filesystem.known.trash.named",
+            Json("""{"path":"home/prueba c3"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt refused = await new WindowsKnownFileAdapter(
+            new Dictionary<string, string[]> { ["home"] = [home] }, bin, utcNow: StopAfter(1)).InvokeAsync(
+            "filesystem.known.trash.named", Json("""{"path":"home/prueba c3"}"""), CancellationToken.None);
+        bool stillThere = Directory.Exists(folder);
+        ExternalCapabilityReceipt byPath = await new WindowsKnownFileAdapter(
+            new Dictionary<string, string[]> { ["home"] = [home] }, bin, utcNow: StopAfter(0)).InvokeAsync(
+            "filesystem.known.trash.named", Json(JsonSerializer.Serialize(new { path = folder })), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked?.ErrorCode, Is.EqualTo("known_file_search_incomplete"));
+            Assert.That(refused.ErrorCode, Is.EqualTo("known_file_search_incomplete"));
+            Assert.That(refused.EffectMayHaveOccurred, Is.False);
+            JsonElement result = refused.Result!.Value;
+            Assert.That(result.GetProperty("relativePath").GetString(), Is.EqualTo("prueba c3"));
+            Assert.That(result.GetProperty("searchScope").GetProperty("timeLimitReached").GetBoolean(), Is.True);
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            if (hint)
+            {
+                Assert.That(next.GetString(), Is.EqualTo("nothing was sent to the Recycle Bin: the search of home found "
+                    + "prueba c3 and stopped at its 8 s limit before the rest of the folder, so another one of that name "
+                    + "may be there. If prueba c3 is the one the person means, call filesystem_known_trash_named again "
+                    + $"with path \"{folder}\""));
+            }
+            Assert.That(stillThere, Is.True, "nothing went to the bin before its full path");
+            Assert.That(byPath.ErrorCode, Is.Null);
+            Assert.That(Directory.Exists(folder), Is.False);
+            Assert.That(bin.Recycled, Has.Count.EqualTo(1));
+        });
+    }
+
     // Holdout v5 (V5E052, «manda a la papelera factura marzo punto pdf de documentos facturas pyme»): a voice dictates no
     // hyphen, and «factura marzo.pdf» matched nothing while factura-marzo.pdf was there; nothing was offered, so the
     // file could never be reached. With aid near_names, a name matched by no file exactly gives, from the same walk, the

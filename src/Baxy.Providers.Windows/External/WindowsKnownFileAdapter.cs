@@ -94,9 +94,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     // P2.4 (ajuste c3): the call's path as the person said it, read by PersonFolders.Place. file.find looks in the folder
     // it names (all_known without one); file.read, file.edit and the delete name a file or folder: a full path names that
-    // one, looked up at its place by a read or an edit (BAXY Renew audit 2026-10-15: one directly in the folder became a
-    // bare name searched in its subfolders); any other is its last part looked for under the folder before it (as
-    // subdirectory was), and a name alone under all_known.
+    // one, looked up at its place (BAXY Renew audit 2026-10-15: one directly in the folder became a bare name searched in
+    // its subfolders; humo c3, 31-10: a delete walked the Desktop whole for it); any other is its last part looked for
+    // under the folder before it (as subdirectory was), and a name alone under all_known.
     private CallPlace PlaceOf(string operation, JsonElement arguments)
     {
         if (operation == "filesystem.known.duplicates")
@@ -111,7 +111,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 _configuredRoots.TryGetValue(label, out string[]? roots) && roots.Length > 0 ? roots[0] : null)
             ?? throw new InvalidDataException("known_path_outside_folder");
         (string folder, string name) = find ? (said.Relative, string.Empty) : said.Split();
-        bool exact = said.Full && operation is "file.read" or "file.edit";
+        bool exact = said.Full && operation is "file.read" or "file.edit" or "filesystem.known.trash.named";
         if (exact)
             (folder, name) = (string.Empty, said.Relative);
         (string Label, string Root)[] known = Roots(said.Label);
@@ -598,7 +598,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     }
 
     // The one file or folder of that name in the known folders, or the refusal: an invalid name, none (with the folders
-    // walked) or several (with their places).
+    // walked) or several (with their places). Humo ampliado del despliegue c3 (PC, 31-10): the walk had no limit and went
+    // twice over the folders (files, then folders), before the yes and again after it: 100 s and 90 s on a Desktop that
+    // holds a large tree. It walks once, with file.find's limit; the one seen when the limit stops it is not trashed (a
+    // deeper one of that name may be the one meant) and its full path, looked up only at its place (Exact), trashes it.
     private ExternalCapabilityReceipt? TrashTarget(
         string operation,
         CallPlace place,
@@ -607,6 +610,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         target = default;
         (string Label, string Root)[] roots = place.Roots;
         string fileName = place.Name.Trim();
+        if (place.Exact)
+            return TrashAtPlace(operation, roots, fileName, out target);
         if (fileName.Length == 0 || fileName != Path.GetFileName(fileName)
             || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
             || fileName.Contains('*') || fileName.Contains('?'))
@@ -616,7 +621,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         string? folded = ModelAids.On(ModelAids.NearNames) && SpokenFileNames.Folded(fileName) is { Length: > 0 } words
             ? words : null;
         List<KnownEntry> found = [], same = [], near = [];
-        foreach (KnownEntry item in Enumerate(roots).Concat(EnumerateDirectories(roots)))
+        var walk = new WalkBudget(_utcNow, WalkTimeLimit);
+        foreach (KnownEntry item in EnumerateEntries(roots, walk))
         {
             string name = Path.GetFileName(item.Path);
             if (string.Equals(name, fileName, StringComparison.OrdinalIgnoreCase))
@@ -634,17 +640,18 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 && SpokenFileNames.Folded(name) == folded)
                 near.Add(item);
         }
+        bool stopped = walk.Reached;
         KnownEntry[] matches = found.Count > 0 ? [.. found] : [.. same];
         // Revisión de calidad (archivos): a folder that only has the words of the name said («informe_final» for «informe
         // final») is not trashed on that name: the yes was asked for the name said, and the whole folder would go. It is
         // told as a candidate, by its own name and as a folder, so the next call (and its yes) names it.
         if (found.Count == 0 && matches.Length == 1 && Directory.Exists(matches[0].Path))
-            return CandidatesRefusal(operation, "known_file_not_found", matches, kinds: true,
+            return CandidatesRefusal(operation, "known_file_not_found", matches, stopped, kinds: true,
                 next: NearNamesNext("no file or folder", fileName, matches, "and it is a folder, trashed whole",
-                    walkStopped: false));
+                    stopped));
         if (matches.Length == 0 && near.Count > 0)
-            return CandidatesRefusal(operation, "known_file_not_found", near,
-                next: NearNamesNext("no file or folder", fileName, near, "case or accents", walkStopped: false));
+            return CandidatesRefusal(operation, "known_file_not_found", near, stopped,
+                next: NearNamesNext("no file or folder", fileName, near, "case or accents", stopped));
         // BAXY Renew (notebook): none says the known folders it walked; two or more, their places as file.read
         // gives them, so the next call can name the right one.
         if (matches.Length == 0)
@@ -658,22 +665,66 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 foreach (string label in searched)
                     writer.WriteStringValue(label);
                 writer.WriteEndArray();
-                WriteWalkScope(writer);
+                WriteWalkScope(writer, stopped);
                 // Renew al máximo (E027): «all_known» walked desktop, documents and downloads, the file was in a folder
                 // of home, and the answer was «no lo encontré en ninguna carpeta de tu PC». Said where it was not.
                 if (missing is not null)
                     writer.WriteString("next", missing);
                 else if (ModelAids.On(ModelAids.SearchScope))
-                    writer.WriteString("next", NotFoundScope(fileName, searched));
+                    writer.WriteString("next", stopped ? StoppedWalkScope(fileName, searched)
+                        : NotFoundScope(fileName, searched));
                 writer.WriteEndObject();
             }), "known_file_not_found");
         }
-        if (matches.Length > 1) return CandidatesRefusal(operation, "known_file_ambiguous", matches);
-        // Renew al máximo (auditoría de flujos): a folder that holds BAXY's own area would take it to the bin with it.
-        if (Directory.Exists(matches[0].Path)
-            && _privateRoots.Any(root => BaxyPrivateArea.Holds([matches[0].Path], root)))
+        if (matches.Length > 1) return CandidatesRefusal(operation, "known_file_ambiguous", matches, stopped);
+        if (stopped) return SearchIncompleteRefusal(operation, matches[0]);
+        return Trashable(operation, matches[0], out target);
+    }
+
+    // A full path names one file or folder, looked up only at its place: none there is said with no walk.
+    private ExternalCapabilityReceipt? TrashAtPlace(
+        string operation,
+        (string Label, string Root)[] roots,
+        string name,
+        out KnownEntry target)
+    {
+        target = default;
+        if (name.Length == 0 || Path.IsPathRooted(name) || name.Contains('*') || name.Contains('?')
+            || name.Split(Path.DirectorySeparatorChar).Any(part => part is "" or "." or ".."
+                || part.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0))
+            return ExternalJson.Failure(operation, "known_file_name_invalid");
+        List<KnownEntry> there = [];
+        foreach ((string label, string root) in roots)
+        {
+            string path = Path.GetFullPath(Path.Combine(root, name));
+            if (BaxyPrivateArea.Holds(_privateRoots, path)) return ExternalJson.Failure(operation, "path_reserved");
+            if ((File.Exists(path) || Directory.Exists(path)) && !CrossesReparsePoint(root, path))
+                there.Add(new KnownEntry(label, root, path));
+        }
+        if (there.Count == 1)
+            return Trashable(operation, there[0], out target);
+        if (there.Count > 1)
+            return CandidatesRefusal(operation, "known_file_ambiguous", there);
+        string[] searched = PlacesLooked(roots);
+        return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteStartArray("searchedFolders");
+            foreach (string label in searched)
+                writer.WriteStringValue(label);
+            writer.WriteEndArray();
+            writer.WriteBoolean("walked", false);
+            writer.WriteEndObject();
+        }), "known_file_not_found");
+    }
+
+    // Renew al máximo (auditoría de flujos): a folder that holds BAXY's own area would take it to the bin with it.
+    private ExternalCapabilityReceipt? Trashable(string operation, KnownEntry entry, out KnownEntry target)
+    {
+        target = default;
+        if (Directory.Exists(entry.Path) && _privateRoots.Any(root => BaxyPrivateArea.Holds([entry.Path], root)))
             return ExternalJson.Failure(operation, "path_reserved");
-        target = matches[0];
+        target = entry;
         return null;
     }
 
@@ -1095,11 +1146,18 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             WriteWalkScope(writer, walkStopped: true);
             // Holdout v6 V6E055: «stopped» before «found» and the call only described, the model answered «no
             // encontré» in 2 of 4 runs; the call that edits the one found is said as said_folder says its call.
+            // A delete names the one seen by its full path, looked up only there (its known folder and name would walk
+            // again and stop again).
             if (ModelAids.On(ModelAids.SearchScope))
-                writer.WriteString("next", $"nothing was changed: the search of {file.Label} found {relativePath} and "
-                    + $"stopped at its {WalkTimeLimit.TotalSeconds:0} s limit before the rest of the folder, so another "
-                    + $"file of that name may be there. If {relativePath} is the file the person means, call "
-                    + $"{WireNames.Of(operation)} again with path \"{file.Label}/{relativePath}\"");
+                writer.WriteString("next", operation == "filesystem.known.trash.named"
+                    ? $"nothing was sent to the Recycle Bin: the search of {file.Label} found {relativePath} and stopped "
+                        + $"at its {WalkTimeLimit.TotalSeconds:0} s limit before the rest of the folder, so another one of "
+                        + $"that name may be there. If {relativePath} is the one the person means, call "
+                        + $"{WireNames.Of(operation)} again with path \"{file.Path}\""
+                    : $"nothing was changed: the search of {file.Label} found {relativePath} and "
+                        + $"stopped at its {WalkTimeLimit.TotalSeconds:0} s limit before the rest of the folder, so another "
+                        + $"file of that name may be there. If {relativePath} is the file the person means, call "
+                        + $"{WireNames.Of(operation)} again with path \"{file.Label}/{relativePath}\"");
             writer.WriteEndObject();
         }), "known_file_search_incomplete");
     }
@@ -1550,15 +1608,18 @@ if __name__ == "__main__":
         MaxRecursionDepth = 12,
     };
 
-    private IEnumerable<KnownEntry> EnumerateDirectories(
-        IReadOnlyList<(string Label, string Root)> roots)
+    // The files and folders under the folders, in one walk that stops at the budget's limit.
+    private IEnumerable<KnownEntry> EnumerateEntries(
+        IReadOnlyList<(string Label, string Root)> roots,
+        WalkBudget budget)
     {
         foreach ((string label, string root) in roots)
         {
             if (!Directory.Exists(root)) continue;
-            foreach (string directory in Directory.EnumerateDirectories(root, "*", WalkOptions(label)))
+            foreach (string entry in Directory.EnumerateFileSystemEntries(root, "*", WalkOptions(label)))
             {
-                if (!BaxyPrivateArea.Holds(_privateRoots, directory)) yield return new KnownEntry(label, root, directory);
+                if (budget.Expired()) yield break;
+                if (!BaxyPrivateArea.Holds(_privateRoots, entry)) yield return new KnownEntry(label, root, entry);
             }
         }
     }

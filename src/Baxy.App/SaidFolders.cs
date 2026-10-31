@@ -272,8 +272,12 @@ internal sealed class SaidFolders
         }
 
         string who = earlier ? "the person's previous request named" : "the person named";
+        // Humo c3 (PC, 31-10): a folder made on the Desktop, then «bórrala»; the delete of that folder was
+        // refused as acting in the Desktop, with a call that looked for it inside itself. A call that names the folder
+        // said itself acts on it.
         if (places.Count == 0
-            || (reach.Items.Count > 0 && reach.Items.All(item => places.Any(place => Within(item, place.Path)))))
+            || (reach.Items.Count > 0 && reach.Items.All(item => places.Any(place => Within(item, place.Path)
+                || (reach.Leaf is { Length: > 0 } leaf && Same(Combine(item, leaf), place.Path))))))
             return null;
         string named = Said(places);
         string where = reach.Sandbox ? "BAXY's own working folder" : string.Join(", ", reach.Items);

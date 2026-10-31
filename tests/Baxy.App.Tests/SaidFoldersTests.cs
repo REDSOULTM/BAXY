@@ -340,6 +340,34 @@ public sealed class SaidFoldersTests
             + Path.Combine(_home, "banco-local") + ");"));
     }
 
+    // Humo ampliado del despliegue c3 (PC, 31-10): a folder made on the Desktop, then «bórrala».
+    // The folder made is the place the previous request named, and the delete of that folder itself was refused as acting
+    // in the Desktop, «not there», with a call that looks for prueba c3 inside prueba c3 (known_file_not_found): five
+    // calls before the one that ran. A call that names the folder said itself acts on it, not outside it; one that names
+    // something else beside it still leaves it out.
+    [Test]
+    public void ACallOnTheFolderSaidItselfIsNotLeavingItOut()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "Desktop", "prueba c3"));
+        var said = new SaidFolders(Known);
+        said.Heard("haz la carpeta prueba c3 en el escritorio");
+        said.Heard("bórrala");
+        SaidFolders now = Heard("borra la carpeta prueba c3 del escritorio");
+        var trash = Descriptor("filesystem.known.trash.named");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(said.Rule("filesystem.known.trash.named", trash, new JsonObject { ["path"] = "desktop/prueba c3" }),
+                Is.Null);
+            Assert.That(said.Rule("filesystem.known.trash.named", trash,
+                new JsonObject { ["path"] = Path.Combine(_home, "Desktop", "prueba c3") }), Is.Null);
+            Assert.That(now.Rule("filesystem.known.trash.named", trash, new JsonObject { ["path"] = "desktop/prueba c3" }),
+                Is.Null);
+            Assert.That(said.Rule("filesystem.known.trash.named", trash, new JsonObject { ["path"] = "desktop/otra.txt" })
+                ?.Refusal, Is.Not.Null);
+        });
+    }
+
     // E019 shape: with a full path said, a folder elsewhere with the name of the one to make is not a place.
     [Test]
     public void AFolderMadeOutsideTheFullPathSaidIsRefusedEvenIfOneOfThatNameExists()
