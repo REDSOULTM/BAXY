@@ -2357,6 +2357,7 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         DateTime deadline = DateTime.UtcNow + LabelWaitBudget;
+        var settle = new LabelWaitSettle();
         while (true)
         {
             ViewResult view = await BuildViewAsync(
@@ -2366,7 +2367,7 @@ internal sealed class WindowsVisibleControlAdapter
                 return view.Receipt;
             // A walk that did not end is not waited on again: each look may take the worker's budget once more.
             if (waitForLabel is null || view.Unfinished || view.Names.Any(name => SameLabel(waitForLabel, name))
-                || DateTime.UtcNow >= deadline)
+                || DateTime.UtcNow >= deadline || settle.Look(view.Names))
             {
                 NoteOpenedLooked(view.Receipt, view.Names);
                 return view.Receipt;
