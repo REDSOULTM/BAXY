@@ -29,6 +29,14 @@ internal interface IFieldMessages
     /// process; 0 when it has none or several (which one would take a text is not known then).</summary>
     nint SoleEditOf(nint window);
 
+    /// <summary>Ajuste c3: the edit control a Win32 control is written through: the control itself when it is one, the
+    /// edit of an editable combo box; 0 for any other.</summary>
+    nint EditOf(nint control) => WindowsTextDelivery.IsEditClass(ClassName(control)) ? control : 0;
+
+    /// <summary>Ajuste c3: the name field of the common file dialog the window is (<see cref="CommonFileDialog"/>); 0 when
+    /// the window is no such dialog.</summary>
+    nint FileNameFieldOf(nint window) => 0;
+
     /// <summary>WM_GETTEXTLENGTH; -1 when the control did not answer.</summary>
     int TextLength(nint hwnd);
 
@@ -163,6 +171,10 @@ internal sealed class WindowsTextDelivery
     internal const int ReadableText = 1 << 20;
     private const long EsPassword = 0x0020;
     private const long EsReadOnly = 0x0800;
+    private const long EsMultiline = 0x0004;
+
+    /// <summary>ES_MULTILINE: an edit control of several lines is a document, never replaced whole.</summary>
+    internal static bool IsMultiline(long style) => (style & EsMultiline) != 0;
 
     // The single keys a classic control handles in its own window procedure, or its dialog in its message loop.
     private static readonly HashSet<string> PostableKeys = new(StringComparer.Ordinal)
@@ -197,6 +209,31 @@ internal sealed class WindowsTextDelivery
 
         return false;
     }
+
+    /// <summary>
+    /// Ajuste c3 (E017 and the smoke of 31-10, live on the notebook): a Win32 control that takes no text, whose letters a
+    /// keyboard's text would turn into something else: a push button, check box or radio button (Button: its access keys),
+    /// a tree, a list or a list box (they move their selection to the item those letters begin), a tab strip, a scroll bar,
+    /// a slider, a header or a toolbar. These are Windows' own control classes, not applications.
+    /// </summary>
+    internal static bool TakesNoText(string? className)
+    {
+        if (string.IsNullOrEmpty(className))
+            return false;
+        foreach (string part in className.Split('.'))
+        {
+            if (NoTextClasses.Contains(part))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static readonly HashSet<string> NoTextClasses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Button", "SysTreeView32", "SysListView32", "ListBox", "ComboLBox", "SysTabControl32", "ScrollBar",
+        "msctls_trackbar32", "SysHeader32", "ToolbarWindow32",
+    };
 
     /// <summary>A classic control whose window procedure (or whose dialog's message loop) takes queued keys: the edit
     /// controls and the common list, tree, combo and button classes.</summary>
@@ -657,6 +694,25 @@ internal sealed partial class WindowsFieldMessages : IFieldMessages
         return count == 1 ? sole : 0;
     }
 
+    public nint EditOf(nint control)
+    {
+        string className = ClassName(control);
+        if (WindowsTextDelivery.IsEditClass(className))
+            return control;
+        // An editable combo box writes through its own Edit (ComboBoxEx32 holds a ComboBox that holds it).
+        nint inner = className switch
+        {
+            "ComboBox" => FindWindowExW(control, 0, "Edit", null),
+            "ComboBoxEx32" => FindWindowExW(control, 0, "ComboBox", null) is var combo and not 0
+                ? FindWindowExW(combo, 0, "Edit", null)
+                : 0,
+            _ => 0,
+        };
+        return inner != 0 && Belongs(control, inner) ? inner : 0;
+    }
+
+    public nint FileNameFieldOf(nint window) => CommonFileDialog.Read(window)?.NameField ?? 0;
+
     public int TextLength(nint hwnd)
     {
         if (SendMessageTimeoutW(hwnd, WmGetTextLength, 0, 0, AbortIfHung, Timeout, out nint length) == 0)
@@ -768,6 +824,9 @@ internal sealed partial class WindowsFieldMessages : IFieldMessages
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool EnumChildWindows(nint parent, EnumChildProc callback, nint parameter);
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial nint FindWindowExW(nint parent, nint after, string? className, string? title);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

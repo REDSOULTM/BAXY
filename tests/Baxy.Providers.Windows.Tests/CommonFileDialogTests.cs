@@ -104,6 +104,31 @@ public sealed class CommonFileDialogTests
     public void TheFolderIsThePathTheAddressShows(string address, string? folder) =>
         Assert.That(CommonFileDialog.FolderOf(address), Is.EqualTo(folder));
 
+    // Ajuste c3 (humo del 31-10, en vivo en el NB): a click on «Escritorio» in the navigation pane leaves the address
+    // showing the place by the name the shell gives it («Dirección: Escritorio»), no path; the save was told completed
+    // with pathKnown false and nothing checked. A known folder (desktop, documents, downloads…) is shown by the name the
+    // shell gives it in the person's language: that name, alone after the label, is that folder's path. Any other name,
+    // or one two places share, gives none.
+    [TestCase("Dirección: Escritorio", "E:\\Usuarios\\ana\\Escritorio")]
+    [TestCase("Address: Downloads", "E:\\Usuarios\\ana\\Downloads")]
+    [TestCase("Dirección: \u200eDocumentos", "C:\\Users\\ana\\Documents")]
+    [TestCase("Dirección: Mi Escritorio", null)]
+    [TestCase("Dirección: Este equipo", null)]
+    [TestCase("Dirección: Música", null)]
+    [TestCase("Dirección: C:\\Users\\ana\\Escritorio", "C:\\Users\\ana\\Escritorio")]
+    public void AKnownFolderShownByItsNameIsItsPath(string address, string? folder)
+    {
+        CommonFileDialog.KnownPlace[] places =
+        [
+            new("Escritorio", "E:\\Usuarios\\ana\\Escritorio"),
+            new("Downloads", "E:\\Usuarios\\ana\\Downloads"),
+            new("Documentos", "C:\\Users\\ana\\Documents"),
+            new("Música", "C:\\Users\\ana\\Music"),
+            new("Música", "D:\\Música"),
+        ];
+        Assert.That(CommonFileDialog.FolderOf(address, places), Is.EqualTo(folder));
+    }
+
     [TestCase("C:\\Users\\ana\\BAXY-bench", "lista.txt", "C:\\Users\\ana\\BAXY-bench\\lista.txt")]
     [TestCase("C:\\Users\\ana\\OneDrive", "D:\\BAXYeval\\dlg_prueba\\np\\lista.txt", "D:\\BAXYeval\\dlg_prueba\\np\\lista.txt")]
     [TestCase(null, "D:\\x\\lista.txt", "D:\\x\\lista.txt")]

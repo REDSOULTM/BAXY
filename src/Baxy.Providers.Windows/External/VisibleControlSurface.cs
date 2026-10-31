@@ -1842,22 +1842,34 @@ internal static partial class VisibleControlSurface
     /// Goal v3 point 2 (modal surface): a window that a modal dialog of its own disabled («Guardar como», «Cambiar
     /// tamaño», «Fuente») is acted on through that dialog, as a person does: the enabled pop-up Windows names for it
     /// (GW_ENABLEDPOPUP), of the same process and visible, followed while that one is disabled by another. An enabled
-    /// window, or one without such a pop-up, is itself.
+    /// window, or one without such a pop-up, is itself. Ajuste c3 (live on the notebook, 31-10: Paint's «Guardar como»):
+    /// the pop-up Windows names may be a tooltip the dialog owns, which takes no input (<see cref="TakesInput"/>); the
+    /// window that owns it is the surface then.
     /// </summary>
     internal static nint ModalSurface(nint window) => ModalSurface(
         window,
         IsWindowEnabled,
         hwnd => GetWindow(hwnd, 6),
         IsAlive,
-        hwnd => GetWindowThreadProcessId(hwnd, out uint process) == 0 ? 0 : process);
+        hwnd => GetWindowThreadProcessId(hwnd, out uint process) == 0 ? 0 : process,
+        TakesInput,
+        hwnd => GetWindow(hwnd, 4));
+
+    /// <summary>Whether a window takes a person's input: one transparent to the mouse (WS_EX_TRANSPARENT) or never
+    /// activated (WS_EX_NOACTIVATE), as a tooltip, does not.</summary>
+    internal static bool TakesInput(nint hwnd) => (GetWindowLongPtrW(hwnd, -20).ToInt64() & (0x20 | 0x08000000)) == 0;
 
     internal static nint ModalSurface(
-        nint window, Func<nint, bool> enabled, Func<nint, nint> enabledPopup, Func<nint, bool> alive, Func<nint, uint> process)
+        nint window, Func<nint, bool> enabled, Func<nint, nint> enabledPopup, Func<nint, bool> alive, Func<nint, uint> process,
+        Func<nint, bool>? takesInput = null, Func<nint, nint>? owner = null)
     {
         nint surface = window;
         for (int depth = 0; depth < 4 && surface != 0 && !enabled(surface); depth++)
         {
             nint popup = enabledPopup(surface);
+            // A pop-up that takes no input (a tooltip) stands for the window that owns it.
+            for (int up = 0; up < 4 && popup != 0 && popup != surface && takesInput is not null && !takesInput(popup); up++)
+                popup = owner?.Invoke(popup) ?? 0;
             if (popup == 0 || popup == surface || !alive(popup) || process(popup) != process(window))
                 break;
             surface = popup;

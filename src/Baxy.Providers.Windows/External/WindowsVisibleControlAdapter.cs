@@ -1208,8 +1208,17 @@ internal sealed class WindowsVisibleControlAdapter
         _vision = vision;
         _focus = focus ?? new NoOpenedApplicationFocus();
         _timing = timing ?? VisibleClickTiming.Default;
-        _requestedWindow = requestedWindow ?? RequestedWindowAsync;
+        _requestedWindow = requestedWindow ?? ((application, token) => application is null
+            ? ValueTask.FromResult<nint>(0)
+            : NamedWindowAsync(application, VisibleControlSurface.ResolveTitledWindowAsync, InstalledExecutables, token));
     }
+
+    /// <summary>
+    /// Ajuste c3: the executables running the windows of the installed application a name resolves to, by the catalog
+    /// app.open and window.resolve use (<see cref="Applications.WindowsInstalledApplicationOpenProvider"/>); null (the
+    /// test seams) asks nothing.
+    /// </summary>
+    internal Func<string, CancellationToken, ValueTask<IReadOnlyList<string>>>? InstalledExecutables { get; set; }
 
     public bool CanHandle(string operation) =>
         operation is "input.visible.click" or "input.visible.controls";
@@ -2426,12 +2435,35 @@ internal sealed class WindowsVisibleControlAdapter
             }.ToJsonString())
             : null;
 
-    // The window of the application a look names (exactly: VisibleControlSurface.ResolveTitledWindowAsync); 0 when none
-    // shows one.
-    private static async ValueTask<nint> RequestedWindowAsync(string? application, CancellationToken cancellationToken) =>
-        application is null
-            ? 0
-            : await VisibleControlSurface.ResolveTitledWindowAsync(application, cancellationToken).ConfigureAwait(false);
+    /// <summary>
+    /// The window a look names by <paramref name="application"/>: the one the window's own facts give
+    /// (<paramref name="titled"/>: its executable, description or title, or an executable a verified opening taught).
+    /// Ajuste c3 (smoke of 31-10, live on the notebook): window.resolve found «Bloc de notas» by the installed
+    /// application's name and the look by that same name answered application_window_not_found (its executable is
+    /// «Notepad», its title «base.txt: Bloc de notas»). When those facts find nothing, the installed applications are
+    /// asked (<paramref name="installedExecutables"/>, the catalog app.open and window.resolve resolve names with): the
+    /// executable running that application's windows is learned for the name, as a verified opening teaches it, and the
+    /// window is looked for again (each executable in turn when its windows run several). 0 when none is.
+    /// </summary>
+    internal static async ValueTask<nint> NamedWindowAsync(
+        string application,
+        Func<string, CancellationToken, ValueTask<nint>> titled,
+        Func<string, CancellationToken, ValueTask<IReadOnlyList<string>>>? installedExecutables,
+        CancellationToken cancellationToken)
+    {
+        nint found = await titled(application, cancellationToken).ConfigureAwait(false);
+        if (found != 0 || installedExecutables is null)
+            return found;
+        foreach (string executable in await installedExecutables(application, cancellationToken).ConfigureAwait(false))
+        {
+            VisibleControlSurface.NoteApplicationExecutable(application, executable);
+            found = await titled(application, cancellationToken).ConfigureAwait(false);
+            if (found != 0)
+                return found;
+        }
+
+        return 0;
+    }
 
     /// <summary>A tree read with at most this many controls may still be being built (PLAN_GENERAL A2).</summary>
     internal const int SleepingTreeControls = 3;

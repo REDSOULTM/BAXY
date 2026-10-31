@@ -830,3 +830,100 @@ empezaron antes de la prueba (21:55). El worktree NB `ft-c3-app-nb` está en 857
 
 Verificación (PC, prioridad baja, afinidad 4 núcleos, `-m:2`): `dotnet build Baxy.slnx -c Release` 0 advertencias y 0
 errores; `Baxy.Providers.Windows.Tests` 3626/3626, `Baxy.App.Tests` 467/467, `Baxy.Kernel.Tests` 991/991.
+
+---
+
+# Quinta vuelta: lo que vio el humo del 31-10 en «Guardar como» (Bloc de notas, Paint, Edge)
+
+El humo de la noche (App de e43e08c8b, modelo c3r9b_1-sA, NB) pidió guardar lo abierto en el Bloc de notas en el
+escritorio con otro nombre: quedó guardado en el escritorio con el nombre de origen, y en otra corrida la mirada no
+encontró el Bloc de notas que `window.resolve` acababa de encontrar. Todo se reprodujo en vivo en el NB con el motor
+real y sin modelo (arnés `vivo_dlg.py`, tarea interactiva `BAXY-c3-dlg2`, ya quitada). Evidencia en
+`F:\BAXYeval\ft_v1\c3\app_vivo\dialogo2\` (planes, `tanda_*\grabacion.jsonl`, `rojo_pruebas.log`, `rojo2.log`).
+Tandas `r*` y `a*`: motor viejo (85722532b, mismo envío de texto que e43e08c8b); `v*`, `n*` y `f*`: con el arreglo.
+
+## Causas (medidas)
+
+1. **El texto tras un clic en el árbol de navegación caía en el árbol.** El foco queda en `SysTreeView32`; el texto
+   sin índice iba por teclado (sus letras mueven la selección del árbol) y el recibo era `completed` con
+   `readBack: false` y `authority: win32_sendinput_return_count`: nada se comprobó (r1 paso 30, a1, a3, a4).
+2. **Un nombre puesto por índice no lo tomaba el diálogo.** Con índice, el campo de nombre (un `Edit` Win32) recibía
+   el texto por `ValuePattern.SetValue` de UI Automation: se releía bien, pero el diálogo guardaba con el nombre que
+   ya tenía («base.txt ya existe» al pedir `sv1.txt`; en Edge, «pagina de prueba.html»). Escrito por los mensajes del
+   propio control (`EM_REPLACESEL`, como escribe el teclado), el diálogo sí lo toma (todas las tandas con el arreglo y
+   las de la cuarta vuelta).
+3. **El escritorio elegido en el árbol no tenía ruta.** La dirección muestra «Dirección: Escritorio», sin ruta; el
+   recibo de «Guardar» era `completed` con `pathKnown: false` y nada comprobado (humo, a3 y a4: Paint guardó
+   «Sin título.paint» y Edge «pagina de prueba.html» en el escritorio, ambos `completed`).
+4. **`window.resolve` y la mirada resolvían el nombre distinto.** `window.resolve` usa el catálogo de apps instaladas
+   (el mismo que `app.open`): «Bloc de notas» → Notepad.exe. La mirada sólo miraba el ejecutable («Notepad»), su
+   descripción y el título («base.txt: Bloc de notas», sin « - »), más lo aprendido de un `app.open`. Con el Bloc de
+   notas abierto por la persona: `application_window_not_found` (r2). No dependía de que estuviera detrás.
+5. **(visto en Paint) La mirada leía un tooltip.** Con «Guardar como» de Paint abierto, `GW_ENABLEDPOPUP` de la ventana
+   deshabilitada devolvía un `tooltips_class32` del diálogo (transparente al ratón, nunca activo): tres miradas
+   seguidas leyeron una ventana «» vacía (n5, con `ventanas.ps1`). El recibo de «¿reemplazar?» nombraba ese tooltip
+   («Fecha de creación: …») como la ventana que respondía.
+
+## Arreglo (nada nombra una app ni un idioma)
+
+- Texto sin índice para un diálogo de archivos común cuyo foco no es un control de edición: va entero al campo de
+  nombre del diálogo (el de `CommonFileDialog`), por sus mensajes, y se relee; el recibo lleva
+  `intoField: "file_name"`. La tecla siguiente (Enter) pone antes el foco en ese campo (como tras un valor puesto sin
+  foco).
+- Texto sin índice para cualquier otra ventana cuyo foco es un control Win32 que no toma texto (botón, árbol, lista,
+  pestañas, barra de desplazamiento, deslizador, cabecera, barra de herramientas): `input_focus_not_a_field`, nada
+  enviado (generaliza la regla del botón de la cuarta vuelta).
+- Texto por índice a un control que es ventana propia (`42.<hwnd>`) y es un `Edit`/RichEdit, o un combo editable a
+  través de su `Edit`: por los mensajes del control (sobre su selección; entero con `replace` o si es el campo de
+  nombre de un diálogo de archivos), nunca `SetValue`. Un control de varias líneas sigue sin reemplazarse entero.
+- La carpeta de un diálogo cuya dirección muestra un nombre: si ese nombre, solo tras la etiqueta, es el que el shell
+  da a una carpeta conocida (escritorio, documentos, descargas, imágenes, música, vídeos: `SHGetKnownFolderPath` y
+  `SHGetFileInfo`, en el idioma de la persona), su ruta. Así el recibo comprueba el archivo.
+- La mirada por nombre que no encuentra ventana pregunta al catálogo de apps instaladas del Core (el de `app.open` y
+  `window.resolve`, vía `WindowsExternalCapabilityProvider.ResolveApplicationsWith`); el ejecutable que corre sus
+  ventanas se aprende para ese nombre (como tras un `app.open` verificado) y se vuelve a buscar.
+- `ModalSurface` no se queda en una ventana emergente que no toma entrada (`WS_EX_TRANSPARENT`/`WS_EX_NOACTIVATE`): la
+  superficie es la ventana que la posee. El recibo del diálogo tampoco nombra una ventana así como la que respondió.
+
+## En vivo en el NB: app × resultado
+
+| App | Paso | Antes (motor viejo) | Después |
+|---|---|---|---|
+| Bloc de notas | «Escritorio» en el árbol + nombre sin índice + «Guardar» | texto al árbol, `completed` sin releer; «Guardar»: `file_dialog_still_open`, nada guardado (a1) | `em_replacesel` al campo, `completed` `exists` `…\Escritorio\c3dlg2 uno-f.txt` (f1) |
+| Bloc de notas | igual, confirmado con Enter | — | Enter con el foco puesto antes en el campo: `completed` `exists` `c3dlg2 dos-f.txt` (f1) |
+| Bloc de notas | nombre por índice + «Guardar» | `setvalue`; el diálogo usó el nombre viejo: «base.txt ya existe» (r1) | `em_replacesel`, `completed` `exists` `sv-f.txt` (f1, v1) |
+| Bloc de notas | ruta entera sin índice | `completed` `exists` (r1) | igual (f1) |
+| Bloc de notas abierto por la persona, detrás | `window.resolve` + mirada «Bloc de notas» | `application_window_not_found` (r2) | ve la ventana (v2, f2) |
+| Paint | «Escritorio» + nombre sin índice + «Guardar» | texto al árbol; `completed`, `pathKnown: false`; guardó «Sin título.paint» (a3) | `completed` `exists` `c3dlg2 paint-f.paint` (f3) |
+| Paint | nombre por índice | la mirada leía el tooltip vacío (n3, n5) | `completed` `exists` `dibujo-f.paint` (f3, n6) |
+| Paint | nombre que ya existe | — | `file_dialog_answered_by_another_window` por «Confirmar Guardar como» (f5) |
+| Edge (diálogo de otro proceso) | «Escritorio» + nombre sin índice + «Guardar» | texto al árbol; `completed`, `pathKnown: false`; guardó «pagina de prueba.html» (a4) | `completed` `exists` `c3dlg2 edge-f.html` (f4) |
+| Edge | nombre por índice | `setvalue`; el diálogo usó el nombre viejo («ya existe», a4) | `completed` `exists` `edge-f.html` (f4, n4) |
+
+Los archivos que las tandas dejaron en el escritorio del NB se movieron a `D:\BAXYeval\dlg2_prueba\restos`. Nada
+quedó abierto (Bloc de notas, Paint, Edge, Calculadora y `baxy-core` cerrados por PID); la ventana «Configuración» que
+ya estaba abierta en el NB no se tocó. Eventos 7040 en las últimas 3 h: 8, ninguno en la última hora.
+
+## Pruebas (rojo antes, verde después)
+
+| Prueba | Rojo | Verde |
+|---|---|---|
+| `TextDeliveryTests.ATextIsNotTypedIntoAFocusedButton` (árbol, lista, list box) | 3 rojas | verdes |
+| `TextDeliveryTests.AViewedEditControlTakesTheTextByItsMessagesAndNotBySetValue` | roja (`setvalue`) | verde |
+| `TextDeliveryTests.ATextForAFileDialogWhoseFocusIsNoFieldGoesIntoItsNameField` | roja (teclado al árbol) | verde |
+| `CommonFileDialogTests.AKnownFolderShownByItsNameIsItsPath` (7 casos) | 3 rojas | verdes |
+| `ComputerUseWindowIdentityTests.ALookByTheInstalledNameFindsTheWindowItsApplicationRuns` | roja | verde |
+| `ComputerUseTiposUiaTests.APopUpThatTakesNoInputStandsForTheWindowThatOwnsIt` | roja (`rojo2.log`) | verde |
+| `ATextIntoAFileDialogsNameFieldByItsIndexIsTheWholeName`, `AViewedDocumentEditIsNotReplacedWhole` | escritas tras el cambio (contrato) | verdes |
+
+`OwnedWindowOf` sin tooltip sólo se comprobó en vivo (f5): no tiene costura de prueba.
+
+## Lo que no se cubrió
+
+- Sin modelo: el arnés manda las operaciones que el modelo mandaría. La App con modelo no se probó (lo decide la
+  sesión principal, igual que el despliegue).
+- Un foco que no es Win32 (XAML, Chromium) y no toma texto no se detecta: el texto sigue yendo por teclado con el
+  recibo de siempre. Cuando el árbol del diálogo está desplazado a la carpeta actual y no muestra «Escritorio», el
+  modelo tiene que subir el árbol o escribir la ruta entera (la vista ya dice que la ruta entera guarda ahí).
+- La dirección de una subcarpeta de un lugar conocido sin ruta («Escritorio › x»), las bibliotecas y «Este equipo»
+  siguen sin ruta (`pathKnown: false`).

@@ -639,6 +639,26 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         }
     }
 
+    /// <summary>
+    /// Ajuste c3 (smoke of 31-10): the executables running the visible windows of the installed application
+    /// <paramref name="applicationName"/> resolves to, as window.resolve resolves it (a window that only declares the
+    /// application's id runs another program and is left out); empty when the name resolves to none, ambiguously, or
+    /// the catalog cannot be read. A look by that name learns them (WindowsVisibleControlAdapter.NamedWindowAsync).
+    /// </summary>
+    internal async ValueTask<IReadOnlyList<string>> RunningExecutablesAsync(
+        string applicationName,
+        CancellationToken cancellationToken)
+    {
+        var resolution = await ResolveApplicationWindowsAsync(applicationName, cancellationToken).ConfigureAwait(false);
+        return resolution.ErrorCode is not null
+            ? []
+            : [.. resolution.Windows
+                .Where(static window => window.Visible && !window.DeclaredByWindow
+                    && Path.IsPathFullyQualified(window.ExecutablePath))
+                .Select(static window => Path.GetFullPath(window.ExecutablePath))
+                .Distinct(StringComparer.OrdinalIgnoreCase)];
+    }
+
     // Renew al máximo (auditoría de flujos): the processes of an installed application that run with no visible window
     // (Steam in the notification area), told by the executable its windows are told by; empty when it resolves to none
     // or its catalog cannot be read.

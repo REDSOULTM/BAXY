@@ -101,6 +101,8 @@ internal static class Program
         // Computer use: the first view of a mission pays neither the UI Automation worker's start nor its first look.
         externalCapabilityProvider.Prewarm();
         var installedApplicationProvider = new WindowsInstalledApplicationOpenProvider();
+        // A look by an application's installed name finds its window as window.resolve does (ajuste c3).
+        externalCapabilityProvider.ResolveApplicationsWith(installedApplicationProvider);
         // The catalog read (a cold PowerShell at sign-in) starts now, beside the
         // journal check, instead of after it; the hello waits for it only
         // within its own budget (CoreStartupBudget).

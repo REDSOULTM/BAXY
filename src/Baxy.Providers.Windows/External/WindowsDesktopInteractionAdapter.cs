@@ -597,22 +597,31 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return await ReplaceInFieldAsync(operation, replacing, text, window, index, cancellationToken)
                 .ConfigureAwait(false);
         // Ajuste c3 (E017, live on the notebook): a text typed into a dialog whose focus was its «Guardar» button went by the
-        // keyboard, and its letters were the dialog's access keys («G» pressed &Guardar). A focused push button, check box
-        // or radio button (Win32 class Button) takes no text: nothing is sent, and the receipt says where the focus is.
-        if (typing && window != 0 && index is null && _delivery is not null && _focusOwed is null
-            && _delivery.Messages.FocusOf(window) is var focusedControl and not 0
-            && _delivery.Messages.ClassName(focusedControl) == "Button")
-            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
-            {
-                writer.WriteStartObject();
-                writer.WriteNumber("window", window);
-                writer.WriteString("focusedClass", "Button");
-                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.SaveDialogNext))
-                    writer.WriteString("next", "the window's keyboard focus is on a button, which takes no text (its letters "
-                        + "would press the window's access keys): nothing was typed; type into the field by its index "
-                        + "(input_text_type with index) or click the field first");
-                writer.WriteEndObject();
-            }), "input_focus_not_a_field");
+        // keyboard, and its letters were the dialog's access keys («G» pressed &Guardar); in the smoke of 31-10 the focus
+        // was the navigation tree after a click on «Escritorio», the letters moved its selection and the text was told
+        // completed with nothing read back. A common file dialog whose focus is on no edit control takes the text in its
+        // name field, the one field it has for a name; any other window whose focus is a Win32 control that takes no text
+        // (a button, a tree, a list…) gets nothing, and the receipt says where the focus is.
+        if (typing && window != 0 && index is null && _delivery is not null && _focusOwed is null)
+        {
+            nint focusedControl = _delivery.Messages.FocusOf(window);
+            string focusedClass = focusedControl == 0 ? string.Empty : _delivery.Messages.ClassName(focusedControl);
+            if (!WindowsTextDelivery.IsEditClass(focusedClass) && _delivery.Messages.FileNameFieldOf(window) is var name and not 0)
+                return await IntoFileNameAsync(operation, text, window, name, cancellationToken).ConfigureAwait(false);
+            if (WindowsTextDelivery.TakesNoText(focusedClass))
+                return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("window", window);
+                    writer.WriteString("focusedClass", focusedClass);
+                    if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.SaveDialogNext))
+                        writer.WriteString("next", "the window's keyboard focus is on a control that takes no text (a button, "
+                            + "whose letters would press the window's access keys, or a tree or list, whose letters move "
+                            + "its selection): nothing was typed; type into the field by its index (input_text_type with "
+                            + "index) or click the field first");
+                    writer.WriteEndObject();
+                }), "input_focus_not_a_field");
+        }
         if (window != 0 && _delivery is not null)
         {
             // Read before anything is sent: the receipt states the front as it was, not as the delivery left it.
@@ -1313,6 +1322,51 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     }
 
     /// <summary>
+    /// Ajuste c3 (smoke of 31-10, live on the notebook): a text for a common file dialog whose focus is on no edit
+    /// control, written whole into the dialog's name field by that edit control's messages (as typing over its selected
+    /// name does, the write the dialog takes for the name it saves or opens) and read back there; the receipt says it went
+    /// to that field (<c>intoField</c>). The keyboard's focus stays where it was: a key that follows (Enter) puts it on
+    /// the name field first, as after a value set without the focus.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> IntoFileNameAsync(
+        string operation, string text, nint window, nint nameField, CancellationToken cancellationToken)
+    {
+        WindowsTextDelivery delivery = _delivery!;
+        WindowIdentity identity = delivery.Messages.Identity(window);
+        if (!identity.Alive)
+            return WindowNotFound(operation, window);
+        DesktopForeground frontBefore = _keyboard.Foreground();
+        FieldDelivery? written = await delivery.TypeAsync(identity, nameField, text, cancellationToken, replace: true)
+            .ConfigureAwait(false);
+        if (written is not { } done)
+            return ExternalJson.FailureBeforeEffect(operation, "input_field_not_reachable");
+        ExternalCapabilityReceipt receipt = FieldReceipt(operation, null, text, identity, frontBefore, done);
+        if (!receipt.Verified)
+            return receipt;
+        _unfocusedValue = (identity, NativeControlId(nameField), _fields?.Clicks ?? 0, Ticks());
+        return receipt with
+        {
+            Result = ExternalJson.Extended(receipt.Result, writer => writer.WriteString("intoField", "file_name")),
+        };
+    }
+
+    // The identity UI Automation gives a control that is a window of its own: «42.» and its handle.
+    private static string NativeControlId(nint hwnd) =>
+        "42." + ((long)hwnd).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    // The control a viewed identity names when it is a window of its own («42.<hwnd>») of the step's window; 0 otherwise.
+    private nint NativeControl(string controlId, nint window)
+    {
+        const string Prefix = "42.";
+        return controlId.StartsWith(Prefix, StringComparison.Ordinal)
+            && long.TryParse(controlId.AsSpan(Prefix.Length), System.Globalization.NumberStyles.None,
+                System.Globalization.CultureInfo.InvariantCulture, out long handle)
+            && handle > 0 && _delivery!.Messages.Belongs(window, (nint)handle)
+                ? (nint)handle
+                : 0;
+    }
+
+    /// <summary>
     /// The key or text of a mission's step delivered to its window without keyboard or foreground; null when no
     /// message reaches it and the keyboard must (a chord, a key outside a classic control, a field without a writable
     /// value nor an edit control's window). A text goes to the field the step names (its <c>index</c> in the last
@@ -1363,6 +1417,29 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         {
             if (_fields is null || !_fields.TryViewedField(position, out nint viewed, out string controlId) || viewed != window)
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
+            // Ajuste c3 (smoke of 31-10, live on the notebook): «sv1.txt» set by UI Automation's SetValue into a «Guardar
+            // como» name field read back as set, and the dialog saved under its old name; the same field written by its
+            // edit control's messages is the name it saves. A viewed field that is a Win32 edit control (or an editable
+            // combo box, through its edit) takes the text by those messages, as typing writes it: over its selection
+            // (all of it, with «replace», or when it is a file dialog's name field, whose text is the one name it
+            // takes), never a document replaced whole.
+            if (NativeControl(controlId, window) is var own and not 0 && delivery.Messages.EditOf(own) is var edit and not 0)
+            {
+                if (replace && WindowsTextDelivery.IsMultiline(delivery.Messages.Style(edit)))
+                    return ExternalJson.FailureBeforeEffect(operation, "input_field_not_replaceable");
+                replace |= delivery.Messages.FileNameFieldOf(window) == edit;
+                FieldDelivery? written = await delivery.TypeAsync(identity, edit, text, cancellationToken, replace)
+                    .ConfigureAwait(false);
+                if (written is { } done)
+                {
+                    // Revision 1 of r24b: written without the keyboard's focus, the next key goes to this field first.
+                    _unfocusedValue = done.Delivered && delivery.Messages.FocusOf(window) != edit
+                        ? (identity, controlId, _fields.Clicks, Ticks())
+                        : null;
+                    return FieldReceipt(operation, key, text, identity, frontBefore, done);
+                }
+            }
+
             var effectBoundary = new ExternalEffectBoundary();
             JsonDocument? answer;
             try

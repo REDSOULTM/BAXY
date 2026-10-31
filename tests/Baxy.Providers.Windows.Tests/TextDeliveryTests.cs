@@ -66,7 +66,13 @@ public sealed class TextDeliveryTests
     // «Guardar» button went by the keyboard, its letters were the dialog's access keys («G» pressed &Guardar) and the
     // dialog tried to save; the text was told completed. A text for a window whose focus is a push button, a check box or
     // a radio button (class Button: none takes text) is refused before any key; one whose focus is an edit still goes.
+    // Ajuste c3 (humo del 31-10, en vivo en el NB): after a click on «Escritorio» in a dialog's navigation pane its focus
+    // stayed on the tree, the text went there by the keyboard (its letters move the tree's selection) and was told
+    // completed with nothing read back. A tree, a list, a tab strip or a scroll bar takes no text either.
     [TestCase("Button", "input_focus_not_a_field", false)]
+    [TestCase("SysTreeView32", "input_focus_not_a_field", false)]
+    [TestCase("SysListView32", "input_focus_not_a_field", false)]
+    [TestCase("ListBox", "input_focus_not_a_field", false)]
     [TestCase("Edit", null, true)]
     public async Task ATextIsNotTypedIntoAFocusedButton(string focused, string? error, bool typed)
     {
@@ -82,6 +88,106 @@ public sealed class TextDeliveryTests
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(keyboard.Texts.Count + (messages.Content.GetValueOrDefault(Edit) == "D:\\prueba\\lista.txt" ? 1 : 0) > 0,
                 Is.EqualTo(typed));
+        });
+    }
+
+    // Ajuste c3 (humo del 31-10, en vivo en el NB): «sv1.txt» set by UI Automation's SetValue into the name field of a
+    // «Guardar como» read back as set, and the dialog saved under its old name («base.txt ya existe»); the same field
+    // written by its edit control's messages, as typing writes it, is the name the dialog saves. A viewed field that is a
+    // Win32 edit control (its own window, UI Automation's «42.<hwnd>») takes the text by its messages, never SetValue.
+    [Test]
+    public async Task AViewedEditControlTakesTheTextByItsMessagesAndNotBySetValue()
+    {
+        var keyboard = new FakeDesktopKeyboard();
+        FakeFieldMessages messages = new FakeFieldMessages().WithField(Edit, "Edit", "base");
+        messages.Selected[Edit] = (0, 4);
+        _ = messages.WithField(4662, "SysTreeView32", string.Empty);
+        var fields = new FakeViewedFields(
+            """{"ok":true,"error":"","kind":"Edit","className":"Edit","nativeHwnd":4661,"method":"setvalue","delivered":true}""")
+        {
+            Ids = { [21] = "42.4661" },
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"sv1.txt","window":4660,"index":21}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("method").GetString(), Is.EqualTo("em_replacesel"));
+            Assert.That(messages.Content[Edit], Is.EqualTo("sv1.txt"));
+            Assert.That(fields.Requests.Where(static request => request.Text is not null), Is.Empty,
+                "the worker set no value");
+            Assert.That(keyboard.Texts, Is.Empty);
+        });
+    }
+
+    // An edit control of several lines is a document: written by its messages, it is still never replaced whole.
+    [Test]
+    public async Task AViewedDocumentEditIsNotReplacedWhole()
+    {
+        var keyboard = new FakeDesktopKeyboard();
+        FakeFieldMessages messages = new FakeFieldMessages().WithField(Edit, "RichEditD2DPT", "Querido Ron: ");
+        messages.Styles[Edit] = 0x0004;
+        var fields = new FakeViewedFields("""{"ok":true,"error":"","kind":"Document","method":"","delivered":false}""")
+        {
+            Ids = { [0] = "42.4661" },
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"otro","window":4660,"index":0,"replace":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_field_not_replaceable"));
+            Assert.That(messages.Content[Edit], Is.EqualTo("Querido Ron: "));
+        });
+    }
+
+    // A file dialog's name field holds the one name the dialog takes: a text into it by its index is that name, whole,
+    // wherever its caret was left (typed at the caret, «base» and «sv1.txt» would be «basesv1.txt»).
+    [Test]
+    public async Task ATextIntoAFileDialogsNameFieldByItsIndexIsTheWholeName()
+    {
+        var keyboard = new FakeDesktopKeyboard();
+        FakeFieldMessages messages = new FakeFieldMessages().WithField(Edit, "Edit", "base");
+        messages.FileNameField = Edit;
+        var fields = new FakeViewedFields("""{"ok":true,"error":"","kind":"Edit","method":"","delivered":false}""")
+        {
+            Ids = { [21] = "42.4661" },
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"sv1.txt","window":4660,"index":21}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(messages.Content[Edit], Is.EqualTo("sv1.txt"));
+        });
+    }
+
+    // Ajuste c3 (humo del 31-10): a text for a common file dialog whose focus is on no field (its navigation tree after a
+    // click on a place) is the name the dialog saves or opens: it goes into the dialog's own name field, whole, by that
+    // field's messages, and is read back there; nothing goes by the keyboard to the tree.
+    [Test]
+    public async Task ATextForAFileDialogWhoseFocusIsNoFieldGoesIntoItsNameField()
+    {
+        var keyboard = new FakeDesktopKeyboard { Front = new DesktopForeground(4660, 4242, "Guardar como") };
+        FakeFieldMessages messages = new FakeFieldMessages().WithField(Edit, "Edit", "sv1.txt");
+        _ = messages.WithField(4662, "SysTreeView32", string.Empty);
+        messages.FileNameField = Edit;
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages).InvokeAsync(
+            "input.text.type", Json("""{"text":"c3dlg2 uno.txt","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.ErrorCode, Is.Null);
+            Assert.That(messages.Content[Edit], Is.EqualTo("c3dlg2 uno.txt"));
+            Assert.That(receipt.Result?.GetProperty("intoField").GetString(), Is.EqualTo("file_name"));
+            Assert.That(keyboard.Texts, Is.Empty, "nothing went to the tree by the keyboard");
         });
     }
 
@@ -1395,10 +1501,13 @@ internal sealed class FakeViewedFields(string answer) : IViewedFields
     // What happens on the desktop while the worker sets the value (the front moving, measured on a XAML search box).
     internal Action? OnField { get; init; }
 
+    // Identities a test gives some indexes (a Win32 control's own window is «42.<hwnd>» in UI Automation).
+    internal Dictionary<int, string> Ids { get; } = [];
+
     public bool TryViewedField(int index, out nint window, out string controlId)
     {
         window = ViewWindow;
-        controlId = index switch { 3 => "4.2.7", _ => "4.2." + index };
+        controlId = Ids.TryGetValue(index, out string? id) ? id : index switch { 3 => "4.2.7", _ => "4.2." + index };
         return true;
     }
 
@@ -1517,6 +1626,11 @@ internal sealed class FakeFieldMessages : IFieldMessages
     internal bool ReportsFocus { get; init; } = true;
 
     public nint FocusOf(nint window) => ReportsFocus && Belongs(window, Focus) ? Focus : 0;
+
+    // Ajuste c3: the name field of the common file dialog window 4660 is (0: the window is no such dialog).
+    internal nint FileNameField { get; set; }
+
+    public nint FileNameFieldOf(nint window) => window == 4660 ? FileNameField : 0;
 
     public nint SoleEditOf(nint window)
     {

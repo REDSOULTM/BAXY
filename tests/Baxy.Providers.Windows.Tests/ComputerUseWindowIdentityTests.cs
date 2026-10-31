@@ -67,6 +67,36 @@ public sealed class ComputerUseWindowIdentityTests
         });
     }
 
+    // Ajuste c3 (humo del 31-10, en vivo en el NB): window.resolve found «Bloc de notas» by the installed application's
+    // name (the catalog that app.open uses) and the look by that same name answered application_window_not_found: the
+    // look knew only the executable («Notepad»), its description and the title («base.txt: Bloc de notas»). A name the
+    // look does not find on its own is asked of the installed applications; the executable running that application's
+    // windows is learned for that name, as a verified opening teaches it, and the look finds the window by it.
+    [Test]
+    public async Task ALookByTheInstalledNameFindsTheWindowItsApplicationRuns()
+    {
+        const string image = @"C:\Program Files\WindowsApps\Prueba.Notas_1.0\Notas\Notas.exe";
+        const string named = "Bloc de prueba C3";
+        var asked = new List<string>();
+        ValueTask<nint> Titled(string application, CancellationToken token) =>
+            ValueTask.FromResult<nint>(VisibleControlSurface.LearnedExecutableOf(application, image) ? 4660 : 0);
+        ValueTask<IReadOnlyList<string>> Installed(string application, CancellationToken token)
+        {
+            asked.Add(application);
+            return ValueTask.FromResult<IReadOnlyList<string>>(application == named ? [image] : []);
+        }
+
+        nint found = await WindowsVisibleControlAdapter.NamedWindowAsync(named, Titled, Installed, CancellationToken.None);
+        nint none = await WindowsVisibleControlAdapter.NamedWindowAsync("Nada instalado C3", Titled, Installed, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found, Is.EqualTo((nint)4660));
+            Assert.That(none, Is.EqualTo((nint)0));
+            Assert.That(asked, Is.EqualTo(new[] { named, "Nada instalado C3" }));
+        });
+    }
+
     // PLAN_GENERAL A1, measured on redpc 2026-10-21: the toolkit by the window's own class and its children's classes.
     [TestCase("UnrealWindow", "", "unreal")]
     [TestCase("SDL_app", "CefBrowserWindow,Chrome_RenderWidgetHostHWND,Chrome_WidgetWin_1", "cef")]

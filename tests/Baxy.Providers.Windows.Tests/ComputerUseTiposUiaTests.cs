@@ -444,6 +444,24 @@ public sealed class ComputerUseTiposUiaTests
         });
     }
 
+    // Ajuste c3 (en vivo en el NB, 31-10): with Paint's «Guardar como» open, the enabled pop-up Windows named for the
+    // disabled main window was a tooltip the dialog owns (tooltips_class32, transparent to the mouse, never activated):
+    // three looks in a row read an empty window «» and no field. A pop-up that takes no input is no dialog a person
+    // acts in: the window that owns it is.
+    [Test]
+    public void APopUpThatTakesNoInputStandsForTheWindowThatOwnsIt()
+    {
+        var enabled = new HashSet<nint> { 20, 21 };
+        var popups = new Dictionary<nint, nint> { [10] = 21 };
+        var owners = new Dictionary<nint, nint> { [21] = 20, [20] = 10 };
+
+        nint surface = VisibleControlSurface.ModalSurface(
+            10, enabled.Contains, hwnd => popups.GetValueOrDefault(hwnd), _ => true, _ => 7,
+            takesInput: hwnd => hwnd != 21, owner: hwnd => owners.GetValueOrDefault(hwnd));
+
+        Assert.That(surface, Is.EqualTo((nint)20));
+    }
+
     [Test]
     public void ADialogThatOpenedAnotherIsFollowedToTheEnabledOne()
     {

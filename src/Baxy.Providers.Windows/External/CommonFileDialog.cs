@@ -69,7 +69,8 @@ internal static partial class CommonFileDialog
     private static partial Regex PathShown();
 
     /// <summary>Pure: the dialog's facts from its class and its child windows; null when it is no common file dialog.</summary>
-    internal static Facts? Recognize(nint dialog, string dialogClass, IReadOnlyList<ChildWindow> children)
+    internal static Facts? Recognize(
+        nint dialog, string dialogClass, IReadOnlyList<ChildWindow> children, IReadOnlyList<KnownPlace>? places = null)
     {
         if (!string.Equals(dialogClass, DialogClass, StringComparison.Ordinal)
             || !children.Any(static child => child.Class == "SHELLDLL_DefView"))
@@ -108,7 +109,32 @@ internal static partial class CommonFileDialog
         string? shown = address.Handle == 0 ? null : Plain(address.Text);
         return new Facts(dialog, accept.Handle, Plain(accept.Text).Replace("&", string.Empty, StringComparison.Ordinal),
             cancel.Handle, Plain(cancel.Text).Replace("&", string.Empty, StringComparison.Ordinal), name.Handle,
-            name.Handle == 0 ? null : name.Text, shown, FolderOf(shown));
+            name.Handle == 0 ? null : name.Text, shown, places is null ? FolderOf(shown) : FolderOf(shown, places));
+    }
+
+    /// <summary>A known folder of the person (desktop, documents, downloads…): the name the shell shows it by, and its path.</summary>
+    internal readonly record struct KnownPlace(string Name, string Path);
+
+    /// <summary>
+    /// Pure. Ajuste c3 (smoke of 31-10, live on the notebook): a click on «Escritorio» in the navigation pane leaves the
+    /// address showing the place by the name the shell gives it («Dirección: Escritorio»), with no path, and the save was
+    /// told completed with nothing checked. The folder an address shows: its path when it shows one; else the known
+    /// folder (<paramref name="places"/>: desktop, documents, downloads…, by the names the shell gives them in the
+    /// person's language) whose name is all the address shows after its label; null when none or more than one is.
+    /// </summary>
+    internal static string? FolderOf(string? address, IReadOnlyList<KnownPlace> places)
+    {
+        if (FolderOf(address) is { } folder)
+            return folder;
+        if (string.IsNullOrWhiteSpace(address))
+            return null;
+        string shown = Plain(address).Trim();
+        KnownPlace[] named = [.. places.Where(place => place.Name.Length > 0 && (string.Equals(shown, place.Name,
+                StringComparison.OrdinalIgnoreCase) || (shown.EndsWith(place.Name, StringComparison.OrdinalIgnoreCase)
+                && shown.Length > place.Name.Length + 1 && shown[^(place.Name.Length + 1)] == ' '
+                && shown[^(place.Name.Length + 2)] == ':')))
+            .DistinctBy(static place => place.Path, StringComparer.OrdinalIgnoreCase)];
+        return named.Length == 1 ? named[0].Path : null;
     }
 
     /// <summary>Pure: the folder an address bar shows, when it is a path of the disk or a share; null for a place that
@@ -268,8 +294,71 @@ internal static partial class CommonFileDialog
         };
         _ = EnumChildWindows(window, each, 0);
         GC.KeepAlive(each);
-        return Recognize(window, dialogClass, children);
+        return Recognize(window, dialogClass, children, KnownPlaces.Value);
     }
+
+    // The person's known folders a dialog's navigation pane offers, read once: the name the shell shows each by and its path.
+    private static readonly Lazy<List<KnownPlace>> KnownPlaces = new(ReadKnownPlaces);
+
+    // FOLDERID_Desktop, Documents, Downloads, Pictures, Music, Videos (KnownFolders.h).
+    private static readonly Guid[] KnownFolderIds =
+    [
+        new("B4BFCC3A-DB2C-424C-B029-7FE99A87C641"),
+        new("FDD39AD0-238F-46AF-ADB4-6C85480369C7"),
+        new("374DE290-123F-4565-9164-39C4925E467B"),
+        new("33E28130-4E1E-4676-835A-98395C3BC3BB"),
+        new("4BD8D571-6D19-48D3-BE97-422220080E43"),
+        new("18989B1D-99B5-455B-841C-AB7C74E4DDFC"),
+    ];
+
+    private static unsafe List<KnownPlace> ReadKnownPlaces()
+    {
+        var places = new List<KnownPlace>();
+        foreach (Guid id in KnownFolderIds)
+        {
+            if (SHGetKnownFolderPath(id, 0, 0, out nint pointer) != 0 || pointer == 0)
+                continue;
+            string? path;
+            try
+            {
+                path = Marshal.PtrToStringUni(pointer);
+            }
+            finally
+            {
+                Marshal.FreeCoTaskMem(pointer);
+            }
+
+            if (string.IsNullOrEmpty(path) || !System.IO.Path.IsPathFullyQualified(path))
+                continue;
+            var info = default(ShellFileInfo);
+            if (SHGetFileInfoW(path, 0, ref info, (uint)sizeof(ShellFileInfo), ShgfiDisplayName) == 0)
+                continue;
+            string name = Plain(new string(info.DisplayName)).Trim();
+            if (name.Length > 0)
+                places.Add(new KnownPlace(name, path));
+        }
+
+        return places;
+    }
+
+    private const uint ShgfiDisplayName = 0x000000200;
+
+    // SHFILEINFOW.
+    [StructLayout(LayoutKind.Sequential)]
+    private unsafe struct ShellFileInfo
+    {
+        public nint Icon;
+        public int IconIndex;
+        public uint Attributes;
+        public fixed char DisplayName[260];
+        public fixed char TypeName[80];
+    }
+
+    [LibraryImport("shell32.dll", EntryPoint = "SHGetFileInfoW", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial nint SHGetFileInfoW(string path, uint attributes, ref ShellFileInfo info, uint size, uint flags);
+
+    [LibraryImport("shell32.dll")]
+    private static partial int SHGetKnownFolderPath(in Guid id, uint flags, nint token, out nint path);
 
     /// <summary>
     /// Live: waits (bounded) for the dialog to close, to be answered by another of its windows, or to stay open; once
@@ -346,13 +435,15 @@ internal static partial class CommonFileDialog
     internal const int EndingWaitMs = 3000;
     internal const int FileWaitMs = 5000;
 
-    // The title of the visible window the dialog owns (what disabled it), or null.
+    // The title of the visible window the dialog owns (what disabled it), or null. Live on the notebook (Paint, 31-10): a
+    // tooltip the dialog owns («Fecha de creación: …») was named instead of «Confirmar Guardar como»; a window that takes
+    // no input is never what answers the dialog.
     private static string? OwnedWindowOf(nint dialog)
     {
         string? title = null;
         EnumChildProc each = (top, _) =>
         {
-            if (IsWindowVisible(top) && GetWindow(top, GwOwner) == dialog)
+            if (IsWindowVisible(top) && GetWindow(top, GwOwner) == dialog && VisibleControlSurface.TakesInput(top))
             {
                 title = Text(top);
                 return false;

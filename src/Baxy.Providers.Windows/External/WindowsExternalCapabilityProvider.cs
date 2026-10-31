@@ -460,6 +460,18 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// (<see cref="WindowsVisibleControlAdapter.PrewarmAsync"/>). Never blocks the caller; a start that fails
     /// leaves the first view to start it, as before.
     /// </summary>
+    /// <summary>
+    /// Ajuste c3 (smoke of 31-10): a look by an application's name that no window's own facts give asks the installed
+    /// applications, with the same catalog app.open and window.resolve use (<paramref name="applications"/>, the Core's
+    /// one, so the catalog is read once).
+    /// </summary>
+    public void ResolveApplicationsWith(Applications.WindowsInstalledApplicationOpenProvider applications)
+    {
+        ArgumentNullException.ThrowIfNull(applications);
+        foreach (WindowsVisibleControlAdapter adapter in _adapters.OfType<WindowsVisibleControlAdapter>())
+            adapter.InstalledExecutables = applications.RunningExecutablesAsync;
+    }
+
     public void Prewarm()
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
