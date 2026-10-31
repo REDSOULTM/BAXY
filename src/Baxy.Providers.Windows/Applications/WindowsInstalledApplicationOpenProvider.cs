@@ -484,7 +484,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 continue;
             }
 
-            string name = entry.Name.Trim().Normalize(NormalizationForm.FormC);
+            // Ajuste c3 (humos del 31-10): a shortcut's localized name may hold another white space than the space
+            // («Windows PowerShell ISE 5.1» with a no-break one), which the hello's contract refuses, and with it the
+            // whole list. The model is shown it with a space; the resolver folds white space, so it still opens.
+            string name = new([.. entry.Name.Trim().Normalize(NormalizationForm.FormC)
+                .Select(static character => char.IsWhiteSpace(character) ? ' ' : character)]);
             string key;
             try
             {
