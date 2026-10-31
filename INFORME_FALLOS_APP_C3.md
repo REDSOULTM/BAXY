@@ -673,3 +673,110 @@ Ctrl+A abre «Abrir» en este Bloc de notas: un «selecciona todo» por tecla al
 
 Eventos 7040 de las últimas 3 horas: 2. Son el ida y vuelta de BITS de las 07:52 y 07:54, antes de la prueba (que empezó
 a las 08:24). La comprobación del registro de msconfig no se corrió: la guarda del harness la deniega.
+
+# Cuarta vuelta: el diálogo de archivos de Windows en cualquier app (E017, 30-10 y 31-10)
+
+Orden del dueño: «tiene que funcionar», y no sólo en el Bloc de notas: cualquier app que abra el explorador de archivos
+para guardar o abrir. Todo se probó en vivo en el NB (REDNOTE) con el motor real de este worktree y sin modelo
+(`vivo_dlg.py`, derivado del grabador del PC; tarea interactiva `BAXY-c3-dialogo`). Evidencia en
+`F:\BAXYeval\ft_v1\c3\app_vivo\dialogo\` (planes, `nb\tanda_*\grabacion.jsonl`, volcados Win32 y UIA del diálogo, logs
+rojos y verdes). Carpetas de prueba: `D:\BAXYeval\dlg_prueba\{np,paint,chrome,word}`.
+
+## Qué fallaba (antes)
+
+| Dónde | Paso | Recibo | Qué pasó de verdad |
+|---|---|---|---|
+| PC e2e `c3pc-c3r9b_1-sB-s0` | «Guardar» con el nombre «lista.txt» | `completed` (el botón desapareció) | El diálogo estaba en su última carpeta; el archivo fue a esa carpeta y no a `BAXY-bench`. BAXY dijo «guardé lista.txt en …\BAXY-bench» |
+| PC e2e `c3pc-c3r9b_1-sB-s1` | `Programacion` del panel de navegación con `manner: open` | `visible_press_raised` ×2 | El nodo era una hoja: `Expand` lanza antes de hacer nada; el recibo decía «efecto dudoso» |
+| PC e2e `c3pc-c3r10_1-sA-s2` | «Guardar» en `(C:)` | `visible_click_postread_unread` | Archivo MISSING |
+| NB `tanda_n2` (motor sin arreglo) | «Guardar» con un nombre inválido | `completed` con `dialogOpened` | Se abrió el aviso de error del diálogo encima; nada guardado |
+| NB `tanda_n2` | `ctrl_s` al Bloc de notas | `completed`, sólo «entregado» | Nada cambió (Guardar es Ctrl+G en español) |
+| NB `tanda_n3` (primer arreglo) | texto con el foco en el botón «Guardar» | `completed` por teclado | Sus letras fueron teclas de acceso: la «G» pulsó &Guardar |
+| NB `tanda_p1` (Paint) | «Guardar» por etiqueta | `visible_button_ambiguous` | Nada pulsado |
+| NB `tanda_c1` (Chrome) | mirada a Chrome con «Guardar como» abierto | vista de Chrome «tapada por Guardar como» | Chrome dibuja el diálogo desde otro de sus procesos; la mirada nunca lo leía |
+
+## Causa
+
+1. **El motor no sabía qué es un diálogo de archivos.** El clic en «Guardar» se juzgaba como cualquier botón: que
+   desapareciera, o que la ventana dueña quedara deshabilitada (`dialogOpened`), contaba como hecho. Ni el aviso de error
+   encima ni la carpeta donde fue el archivo entraban en el recibo.
+2. **La vista no decía la carpeta.** La barra de dirección es el control 58 de 60 en el Bloc de notas; con el tope de 10 o
+   15 del e2e no salía nunca, y la nota de `SaveField` (que buscaba «Nombre de archivo»/«File name» y
+   «Dirección:»/«Address:» por texto) tampoco salía.
+3. **`manner: open` en un nodo hoja** llamaba a `Expand`, que lanza en una hoja.
+4. **Un atajo que la app no tiene no cambia nada y el recibo no lo decía.**
+5. **Chrome** muestra el diálogo desde otro proceso y `ModalSurface` sólo sigue diálogos del mismo proceso.
+
+No era UIPI ni integridad (el diálogo es del mismo usuario y nivel), ni un Invoke sobre un botón dividido: el
+«Guardar» de todos los diálogos medidos es un `Button` Win32 con id 1 (IDOK), y su Invoke actúa.
+
+## Arreglo (367031bd9, nada nombra una app ni un idioma)
+
+- **`CommonFileDialog`** reconoce el diálogo por su estructura Win32, medida en vivo en el Bloc de notas, Paint y
+  Chrome: ventana `#32770` con la vista de carpetas del shell (`SHELLDLL_DefView`) y los botones IDOK (1) e IDCANCEL (2).
+  El campo de nombre es el único `Edit` dentro de un `ComboBox` fuera de la barra de dirección y del buscador (o `cmb13` y
+  `edt1` en el diálogo de estilo explorador). La carpeta es la ruta que muestra la miga de la barra de dirección, desde su
+  unidad o recurso compartido: la etiqueta («Dirección:», «Address:», la de cualquier idioma) no se lee.
+- **El recibo de confirmar es lo que hizo el diálogo.** Tras un clic en IDOK (por su identidad UIA `42.<hwnd>`, o por su
+  rótulo si se pulsó de otra forma) o un Enter con el diálogo delante (salvo con el foco en otro botón), se espera hasta
+  3 s a que el diálogo termine y hasta 5 s a que el archivo aparezca:
+
+  | Final | Recibo |
+  |---|---|
+  | Cerrado y el archivo está | `completed` con `fileDialog: {closed: true, path, exists: true}` (un nombre sin extensión encuentra el archivo con la extensión que puso el tipo) |
+  | Cerrado sin archivo | `failed` `file_dialog_file_missing` |
+  | Otra ventana del diálogo encima (error, «¿reemplazar?») | `failed` `file_dialog_answered_by_another_window` con `answeredBy` |
+  | Sigue abierto | `failed` `file_dialog_still_open` con `folderNow` y `nameNow` |
+
+  Un clic cuyo post-read se perdió (`visible_click_postread_unread`) y cuyo diálogo cerró con el archivo ahí queda
+  `completed`. «Guardar» por rótulo ambiguo se repite por la identidad de IDOK.
+- **La vista dice el diálogo.** La mirada lleva `window.fileDialog` (`folder` o `shown`, `name`, `path`, `accept` y los
+  índices si los listó). La vista que lee el modelo lo dice en una línea tras el foco, con cualquier tope:
+  `Diálogo de archivos de Windows: carpeta «D:\…»; su campo de nombre [11] tiene «Sin título», que daría D:\…\Sin
+  título; una ruta entera escrita en ese campo (C:\…\nombre.ext) guarda o abre ahí sin recorrer carpetas; «Guardar»
+  [16] lo confirma`. Sustituye a `SaveField` (borrado).
+- El diálogo de archivos que una ventana posee se mira como su diálogo modal aunque lo dibuje otro proceso (Chrome).
+- `manner: open` en un nodo hoja: `visible_control_cannot_open`, sin enviar nada.
+- Un atajo (Ctrl o Alt con otra tecla) mira su ventana: título, si está habilitada, sus ventanas visibles y la de delante,
+  hasta 1 s. Si nada cambió: `windowChanged: false` y un `next` que dice que puede no ser el atajo de esa app en su idioma
+  y que los menús muestran los suyos (`[atajo …]`).
+- Un texto para una ventana cuyo foco es un botón (clase `Button`) no se teclea: `input_focus_not_a_field`.
+
+## Cambio del contrato que lee el modelo (los datos se regeneran después)
+
+| Dónde | Antes | Ahora |
+|---|---|---|
+| Vista de un diálogo de archivos | Nota tras el `Edit` «Nombre de archivo», sólo si estaban listados el campo, «Guardar» y la dirección en español o inglés | Línea `Diálogo de archivos de Windows: carpeta «…»; su campo de nombre [i] tiene «…», que daría …; una ruta entera …; «Guardar» [j] lo confirma` tras `Foco:`, siempre que la ventana sea el diálogo (ayuda `save_dialog_next`) |
+| Mirada a una app cuyo diálogo es de otro proceso (Chrome) | La ventana de la app, «tapada por Guardar como» | El diálogo, como diálogo modal |
+| Recibo de confirmar el diálogo | `completed` con `absentOrDisabled` o `dialogOpened` | `completed` con `fileDialog`, o `failed` con `file_dialog_answered_by_another_window`, `file_dialog_still_open` o `file_dialog_file_missing` y su `next` |
+| `input_visible_click` con `manner: open` en un nodo hoja | `visible_press_raised` (efecto dudoso) | `visible_control_cannot_open` (nada enviado) |
+| `input_key_press` de un atajo | `completed` `delivered_only` | Igual, más `windowChanged` y, si es `false`, `next` (ayuda nueva `shortcut_unchanged_next`) |
+| `input_text_type` con el foco en un botón | `completed` por teclado | `failed` `input_focus_not_a_field` antes de teclear |
+
+**Atajos por idioma.** La vista ya daba el atajo que declara cada entrada de menú cuando el menú está abierto (Goal v3
+B3: `[atajo Ctrl+G]` en «Guardar» del Bloc de notas en español). Con el menú cerrado no se puede leer sin abrirlo: las
+entradas de la barra de menús de WinUI no existen en el árbol hasta entonces. Pero **`input_key_press` no tiene
+`ctrl_g`**: su `key` es una lista cerrada del catálogo (`ProductCatalog`, `ctrl_s`, `ctrl_o`…). Aunque el modelo lea
+`[atajo Ctrl+G]` no puede pulsarlo; su camino es el menú por clic. Ampliar la lista a `ctrl_<letra>` es un cambio del
+catálogo con su riesgo (Ctrl+letra borra o envía en algunas apps) y queda para el líder.
+
+## Visión
+
+No hizo falta en ningún diálogo probado: el diálogo común tiene árbol UIA completo y además se lee por Win32. La visión
+(Qwen en CPU) debería entrar sólo en selectores de archivos dibujados por la propia app sin árbol accesible: el de GTK
+(GIMP, Inkscape), Java Swing o selectores web dentro de una app. Ahí `CommonFileDialog` no reconoce nada (no hay
+`#32770` con `SHELLDLL_DefView`) y el recibo de confirmar es el de siempre; el respaldo sería escribir la ruta entera y
+comprobar el archivo, no navegar por imagen. No se implementó: no hay ninguno instalado en el NB para medirlo.
+
+## Pruebas (rojo antes, verde después)
+
+| Prueba | Rojo | Verde |
+|---|---|---|
+| `ScreenViewProjectionTests.AFileDialog…` (2, 6 casos) | 5 de 6 rojas (`rojo_vista.log`) | 30/30 de la clase |
+| `CommonFileDialogTests` (estructura, carpeta, ruta, IDOK, recibo, post-read perdido, clic ambiguo, diálogo de otro proceso, escritura en la mirada) y `ComputerUseSpeedTests.AShortcutSaysWhetherAnythingOfItsWindowChanged` | 9 rojas con `Apply` y `Shortcut` anulados (`rojo_proveedor.log`) | 50/50 |
+| `ComputerUseListenedPressTests.ALeafNodeCannotOpenAndNothingIsSent` (corre `Invoke-MannerControl` real) | roja (`rojo_hoja.log`) | verde |
+| `TextDeliveryTests.ATextIsNotTypedIntoAFocusedButton` | roja (`rojo_boton.log`) | verde |
+| `AcceptByIdentity`, `OwnedBy` | rojos en vivo (Paint `visible_button_ambiguous`, Chrome «tapada») | verdes |
+
+Verificación (PC, prioridad baja, afinidad 4 núcleos, `-m:2`): `dotnet build Baxy.slnx -c Release` 0 advertencias y 0
+errores; `Baxy.Providers.Windows.Tests` 3626/3626, `Baxy.App.Tests` 467/467, `Baxy.Kernel.Tests` 991/991.
