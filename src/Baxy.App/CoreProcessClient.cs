@@ -44,6 +44,9 @@ internal sealed class CoreProcessClient : IAsyncDisposable
 
     public event Action? Disconnected;
 
+    // Ajuste c3 (humos del 31-10): the installed applications the core read after its hello (catalog.applications).
+    public event Action<ApplicationCatalogSnapshot>? ApplicationCatalogChanged;
+
     public bool IsReady => _ready && _process is { HasExited: false };
 
     public IReadOnlyList<OperationDescriptor> Capabilities => _capabilities;
@@ -333,6 +336,16 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                         throw new InvalidDataException("El core emitió más de un saludo local.");
                     }
 
+                    continue;
+                }
+
+                if (string.Equals(messageType, ProtocolTypes.ApplicationCatalogUpdate, StringComparison.Ordinal))
+                {
+                    ApplicationCatalogSnapshot catalog = ProtocolJson.DeserializeApplicationCatalogUpdate(utf8Line)
+                        .ApplicationCatalog;
+                    catalog = catalog with { Names = catalog.Names.ToArray() };
+                    _applicationCatalog = catalog;
+                    ApplicationCatalogChanged?.Invoke(catalog);
                     continue;
                 }
 
