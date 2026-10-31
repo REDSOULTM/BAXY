@@ -45,14 +45,16 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 # the App asks only then): never one it already wrote in the turn, none once it answered. What is
 # asked is an instruction, not a phrase; a phrase it does not write usably (empty, more than NOTICE_MAX_CHARS or
 # NOTICE_MAX_WORDS, more than one line, markup) is not said. Fase 3 (H7): a 1,81 s notice held the reply that came
-# behind it; it is said only while a call runs now, before the next decision even starts.
+# behind it; it is said only while a call runs now, before the next decision even starts. Banco ciego c3 (2026-10-31):
+# at 6 words and 60 characters 143 of 393 notices were thrown away and 75 of 77 turns silent past 8 s had none; what the
+# model writes of what it does takes 7 to 10 words («Abro LibreOffice Writer y entro a Opciones.»).
 NOTICE_ASK = ("[Esto no lo dice la persona. Lo que acabas de pedir a la herramienta sigue en curso y tarda unos segundos. "
               "Escribe sólo una frase muy breve que dirás en voz alta para que la persona sepa qué estás haciendo ahora, "
               "sin decir que ya lo hiciste ni ningún resultado.{said}]")
 NOTICE_SAID = " Ya dijiste {said}: di otra cosa."
 NOTICE_RUNNING = json.dumps({"status": "running"})
-NOTICE_MAX_CHARS = 60
-NOTICE_MAX_WORDS = 6
+NOTICE_MAX_CHARS = 64
+NOTICE_MAX_WORDS = 10
 # The notice's own budget: the result of the call it speaks of may come meanwhile, and its next decision waits for it.
 NOTICE_SECONDS = 1.5
 

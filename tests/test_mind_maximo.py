@@ -333,6 +333,15 @@ def test_a_notice_the_model_did_not_write_usably_is_not_said(tmp_path: Path, wri
     assert mind.notice_of() == ""
 
 
+# Banco ciego c3 (2026-10-31): 77 turnos del candidato pasaron 8 s en silencio y sólo 2 tuvieron aviso; de 393 avisos
+# pedidos, 143 se tiraron por largos, y las frases normales de lo que hace tienen 7 a 10 palabras.
+@pytest.mark.parametrize("written", ["Abro LibreOffice Writer y entro a Opciones.",
+                                     "Estoy esperando que se abra la ventana de Configuración."])
+def test_a_plain_notice_of_seven_to_ten_words_is_said(tmp_path: Path, written: str) -> None:
+    mind, _ = _calling(tmp_path, written)
+    assert mind.notice_of() == written
+
+
 def test_a_failed_notice_call_says_none_and_the_turn_goes_on(tmp_path: Path) -> None:
     from test_mind_final import _say
     mind, server = _calling(tmp_path, TimeoutError("slow"))
