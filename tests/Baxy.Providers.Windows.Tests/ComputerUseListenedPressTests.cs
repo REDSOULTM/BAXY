@@ -292,6 +292,37 @@ public sealed class ComputerUseListenedPressTests
         }));
     }
 
+    // Ajuste c3 (E017, live on the notebook 30-10: «Documentos» of a «Guardar como» dialog's navigation pane opened with
+    // manner open came back visible_press_raised, effect ambiguous, twice in pc-c3r9b_1-sB s1): a leaf node has nothing to
+    // open, and its Expand raised before doing anything. It is refused before anything is sent; a collapsed node still
+    // opens, and one already open is still said so.
+    [Test]
+    public void ALeafNodeCannotOpenAndNothingIsSent()
+    {
+        string answer = Run(Worker(), ["Invoke-MannerControl"], """
+            function Get-ClickFacts($el){ return @{ toolbarProxy=$false } }
+            $answers=foreach($state in @('LeafNode','Collapsed','Expanded')){
+              $current=New-Object psobject -Property @{ ExpandCollapseState=[System.Windows.Automation.ExpandCollapseState]::$state }
+              $pattern=New-Object psobject -Property @{ Current=$current; Expanded=0 }
+              $pattern | Add-Member -MemberType ScriptMethod -Name Expand -Value {
+                if($this.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::LeafNode){ throw [System.InvalidOperationException]::new('leaf') }
+                $this.Expanded++; $this.Current.ExpandCollapseState=[System.Windows.Automation.ExpandCollapseState]::Expanded }
+              $el=New-Object psobject -Property @{ Pattern=$pattern }
+              $el | Add-Member -MemberType ScriptMethod -Name TryGetCurrentPattern -Value { param($id,[ref]$found) $found.Value=$this.Pattern; return $true }
+              $done=$null
+              try { $done=Invoke-MannerControl $el $null ([IntPtr]0) 'open' } catch { $done=@{ error='raised' } }
+              [string]$done.error+'|'+[string]$done.opened+'|'+[string]$pattern.Expanded
+            }
+            [Console]::Out.Write((@($answers) -join ','))
+            """);
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "visible_control_cannot_open||0",   // the leaf node: refused, Expand never called
+            "|True|1",                          // contracase: a collapsed node opens
+            "visible_control_already_open||0",  // contracase: one already open opens nothing
+        }));
+    }
+
     // Ronda 21 (t-menu-2): a context menu or an opening by the control's arrow is not proven by the element's selection,
     // which it may have had before the act (the tree node already chosen): the post-read answers «unchanged» and the
     // adapter's surface and born-popup reads decide. Contracase: a plain click's selection still holds.

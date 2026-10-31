@@ -62,6 +62,29 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // Ajuste c3 (E017, live on the notebook 30-10): a text typed into a «Guardar como» dialog whose focus was on its
+    // «Guardar» button went by the keyboard, its letters were the dialog's access keys («G» pressed &Guardar) and the
+    // dialog tried to save; the text was told completed. A text for a window whose focus is a push button, a check box or
+    // a radio button (class Button: none takes text) is refused before any key; one whose focus is an edit still goes.
+    [TestCase("Button", "input_focus_not_a_field", false)]
+    [TestCase("Edit", null, true)]
+    public async Task ATextIsNotTypedIntoAFocusedButton(string focused, string? error, bool typed)
+    {
+        var keyboard = new FakeDesktopKeyboard { Front = new DesktopForeground(4660, 4242, "Guardar como") };
+        FakeFieldMessages messages = new FakeFieldMessages().WithField(Edit, focused, focused == "Edit" ? string.Empty : "&Guardar");
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages).InvokeAsync(
+            "input.text.type", Json("""{"text":"D:\\prueba\\lista.txt","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(keyboard.Texts.Count + (messages.Content.GetValueOrDefault(Edit) == "D:\\prueba\\lista.txt" ? 1 : 0) > 0,
+                Is.EqualTo(typed));
+        });
+    }
+
     // A document, or a field whose text must be kept, is never replaced: the edit control inserts at its caret.
     [Test]
     public async Task AFieldWithTextIsWrittenAtItsCaretByItsEditControl()

@@ -2029,10 +2029,13 @@ function Invoke-MannerControl($el,$root,[IntPtr]$top,[string]$manner){
     # pulsa con el raton fisico sin lease (ver Select-ClickMethods): no se abre de esa manera y nada se envia.
     if([bool](Get-ClickFacts $el).toolbarProxy){ return @{ error='visible_control_cannot_open' } }
     if(-not $el.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){ return @{ error='visible_control_cannot_open' } }
-    $ec=([System.Windows.Automation.ExpandCollapsePattern]$pattern)
+    $ec=$pattern
     $expanded=[System.Windows.Automation.ExpandCollapseState]::Expanded
     # Revision B3, hallazgo 6: lo que ya estaba abierto no lo abre este paso; nada se envia y no hay prueba que dar.
     if($ec.Current.ExpandCollapseState -eq $expanded){ return @{ error='visible_control_already_open' } }
+    # Ajuste c3 (E017, en vivo en el NB): un nodo hoja («Documentos» del panel de navegacion de un dialogo de archivos) no
+    # tiene nada que abrir y su Expand lanzaba antes de hacer nada (visible_press_raised, efecto dudoso): nada se envia.
+    if($ec.Current.ExpandCollapseState -eq [System.Windows.Automation.ExpandCollapseState]::LeafNode){ return @{ error='visible_control_cannot_open' } }
     # Lo que se abre se cierra cuando su ventana pierde la activacion: la red no devuelve este frente (como «expand»).
     try { [BaxyFrontKeeper]::Release() } catch {}
     # Revision de fable/cu-v3-recibo-del-clic-por-estado (hallazgo 7): abrir no elige. Elegir un elemento de arbol navega

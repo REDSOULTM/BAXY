@@ -58,6 +58,10 @@ internal interface IDesktopKeyboard
     /// <summary>The clipboard's sequence number (GetClipboardSequenceNumber), which every write moves on; 0: not
     /// known.</summary>
     uint ClipboardSequence() => 0;
+
+    /// <summary>Ajuste c3 (E017): what a shortcut can visibly change of this window (<see cref="WindowWitness"/>); null:
+    /// not read.</summary>
+    WindowWitness? Witness(nint window) => null;
 }
 
 internal readonly record struct DesktopForeground(nint Window, int ProcessId, string Title);
@@ -65,6 +69,8 @@ internal readonly record struct DesktopForeground(nint Window, int ProcessId, st
 internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
 {
     public uint ClipboardSequence() => GetClipboardSequenceNumber();
+
+    public WindowWitness? Witness(nint window) => WindowWitness.Read(window);
 
     [LibraryImport("user32.dll")]
     private static partial uint GetClipboardSequenceNumber();

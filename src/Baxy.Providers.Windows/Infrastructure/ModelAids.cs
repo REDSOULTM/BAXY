@@ -259,11 +259,19 @@ public static class ModelAids
     /// <summary>
     /// Práctica e2e E017 («guárdalo como lista.txt en C:\Users\ana\BAXY-bench»: in Notepad's «Guardar como» the model
     /// pressed «Guardar» with «Nombre de archivo» still holding «lista pilas, cables», and said it saved lista.txt): a look
-    /// at a modal save dialog (a «Nombre de archivo»/«File name» edit and a «Guardar»/«Save» button) says, after that
-    /// edit, that what it holds is the name the file gets, in the folder the dialog's address shows, and that a full path
-    /// written in it saves there (ScreenViewProjection.SaveField).
+    /// at Windows' common file dialog, told by its structure in any application and language (CommonFileDialog), says
+    /// the folder its address shows, what its name field holds and the path they make, that a whole path written there
+    /// saves or opens there, and the button that confirms (ScreenViewProjection.FileDialogLine); and the receipt of a
+    /// confirmation that did not end in the file says what to do next (CommonFileDialog.Apply).
     /// </summary>
     public const string SaveDialogNext = "save_dialog_next";
+
+    /// <summary>
+    /// Ajuste c3 (E017: Ctrl+S to a Spanish Notepad, whose «Guardar» is Ctrl+G, told completed 16 of 16 times): a shortcut
+    /// after which nothing of its window changed (WindowWitness) says that it may not be that application's key in its
+    /// language, that its menus show their own keys while open, and that a menu entry is pressed by its label.
+    /// </summary>
+    public const string ShortcutUnchangedNext = "shortcut_unchanged_next";
 
     /// <summary>
     /// Prueba en vivo de la versión final (renew_v6, «abre la biblioteca de Steam»: Steam opened with no place, and six

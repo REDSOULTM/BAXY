@@ -175,7 +175,20 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         _focusOwed = TakeUnfocusedValue();
         try
         {
+            // Ajuste c3 (E017): an Enter that confirms a common file dialog is judged on the dialog, as its button's click.
+            CommonFileDialog.Facts? fileDialog = operation == "input.key.press" ? EnterConfirms(arguments) : null;
+            DateTime actedUtc = DateTime.UtcNow;
             ExternalCapabilityReceipt receipt = await InvokeActAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            if (fileDialog is not null && (receipt.Verified || receipt.EffectObserved))
+            {
+                CommonFileDialog.Outcome outcome = await CommonFileDialog.AwaitAsync(fileDialog, actedUtc, cancellationToken)
+                    .ConfigureAwait(false);
+                receipt = CommonFileDialog.Apply(receipt, fileDialog, outcome,
+                    Infrastructure.ModelAids.On(Infrastructure.ModelAids.SaveDialogNext));
+                if (outcome.Ending == CommonFileDialog.Ending.Closed)
+                    return receipt;
+            }
+
             // Renew al máximo (7.1): a text or a key completed in a named window carries the view of that window after
             // it (the visible controls' adapter reads it again; it becomes the last view); nothing when it was not read.
             if (operation is "input.text.type" or "input.key.press" && _fields is not null
@@ -211,6 +224,22 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     + "(input_visible_controls) gives the labels")),
             }
             : receipt;
+
+    // Ajuste c3 (E017): the common file dialog an Enter would confirm: the one the key goes to (the window it names, or
+    // the one in front, which a modal dialog of the named window is), unless its focus is on a push button other than
+    // the one that saves or opens (Cancelar takes the Enter then, and the dialog closes without saving).
+    private CommonFileDialog.Facts? EnterConfirms(JsonElement arguments)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object || !arguments.TryGetProperty("key", out JsonElement key)
+            || key.ValueKind != JsonValueKind.String || key.GetString() != "enter")
+            return null;
+        nint front = _keyboard.Foreground().Window;
+        CommonFileDialog.Facts? facts = CommonFileDialog.Read(NamedWindow(arguments)) ?? CommonFileDialog.Read(front);
+        if (facts is null)
+            return null;
+        nint focus = _delivery?.Messages.FocusOf(facts.Dialog) ?? 0;
+        return focus != 0 && focus != facts.Accept && _delivery!.Messages.ClassName(focus) == "Button" ? null : facts;
+    }
 
     // The window a step names («window»); 0 when it names none or not as a handle.
     private static nint NamedWindow(JsonElement arguments) =>
@@ -567,6 +596,23 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         if (replacing is not null)
             return await ReplaceInFieldAsync(operation, replacing, text, window, index, cancellationToken)
                 .ConfigureAwait(false);
+        // Ajuste c3 (E017, live on the notebook): a text typed into a dialog whose focus was its «Guardar» button went by the
+        // keyboard, and its letters were the dialog's access keys («G» pressed &Guardar). A focused push button, check box
+        // or radio button (Win32 class Button) takes no text: nothing is sent, and the receipt says where the focus is.
+        if (typing && window != 0 && index is null && _delivery is not null && _focusOwed is null
+            && _delivery.Messages.FocusOf(window) is var focusedControl and not 0
+            && _delivery.Messages.ClassName(focusedControl) == "Button")
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("window", window);
+                writer.WriteString("focusedClass", "Button");
+                if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.SaveDialogNext))
+                    writer.WriteString("next", "the window's keyboard focus is on a button, which takes no text (its letters "
+                        + "would press the window's access keys): nothing was typed; type into the field by its index "
+                        + "(input_text_type with index) or click the field first");
+                writer.WriteEndObject();
+            }), "input_focus_not_a_field");
         if (window != 0 && _delivery is not null)
         {
             // Read before anything is sent: the receipt states the front as it was, not as the delivery left it.
@@ -675,6 +721,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // Windows accepted, while clipboard.copy checks the clipboard; with nothing selected nothing was copied.
         bool copies = !typing && key is "ctrl_c" or "ctrl_x";
         uint clipboardBefore = copies ? _keyboard.ClipboardSequence() : 0;
+        // Ajuste c3 (E017): a shortcut (Ctrl or Alt with another key) is watched on its window: whether it changed what a
+        // shortcut changes (ShortcutChangedAsync), so a key the application has not (Ctrl+S in a Spanish Notepad, whose
+        // «Guardar» is Ctrl+G) is not told back as a mute completed.
+        WindowWitness? witnessBefore = !typing && !copies && Shortcut(chord) ? _keyboard.Witness(before.Window) : null;
         effectBoundary.Cross(cancellationToken);
         uint expected = typing ? (uint)text.Length * 2 : (uint)chord.Length * 2;
         // The person touched the keyboard or the mouse between the pause and the first key: nothing goes.
@@ -899,6 +949,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return SentFailure("desktop_interaction_adapter_failed");
         }
 
+        // Read while the window still holds the front: given back to the person, the front would always differ.
+        bool? windowChanged = witnessBefore is { } witnessed && !interrupted && verified
+            ? (bool?)await ShortcutChangedAsync(before.Window, witnessed, cancellationToken).ConfigureAwait(false)
+            : null;
         DesktopForeground after = _keyboard.Foreground();
         // Given back before the receipt, which says whether it was.
         bool? restored = bursts.Current is null ? null : bursts.Restore();
@@ -970,6 +1024,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             writer.WriteNumber("foregroundProcessIdBefore", before.ProcessId);
             writer.WriteNumber("foregroundProcessIdAfter", after.ProcessId);
             WriteSentTo(writer, before, sentToProcess);
+            if (windowChanged is bool shortcutChanged)
+            {
+                writer.WriteBoolean("windowChanged", shortcutChanged);
+                if (!shortcutChanged && Infrastructure.ModelAids.On(Infrastructure.ModelAids.ShortcutUnchangedNext))
+                    writer.WriteString("next", ShortcutUnchanged);
+            }
+
             if (readsBack)
                 writer.WriteBoolean("readBack", readBack);
             // FT/proveedores goal (E2): a paragraph read cut at its bound (CaretReadableText) proves nothing, and says so.
@@ -1011,6 +1072,33 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         return unread is null
             ? ExternalJson.Success(operation, result, effect)
             : new ExternalCapabilityReceipt(operation, effect, false, result, unread) { EffectMayHaveOccurred = true };
+    }
+
+    // Ajuste c3 (E017): Ctrl or Alt held with another key, a shortcut (Alt+Tab is one too: its change is the front).
+    internal static bool Shortcut(IReadOnlyList<ushort> chord) =>
+        chord.Count > 1 && chord.Any(static key => key is 0x11 or 0x12);
+
+    internal const int ShortcutWaitMs = 1000;
+    private const int ShortcutPollMs = 100;
+
+    internal const string ShortcutUnchanged = "nothing of the window changed after this shortcut (its title, a dialog or "
+        + "menu opened, its enabled state, the window in front): a shortcut that only edits the content changes none of "
+        + "that, but one meant to open, save or close did not; the application may use another key in its language. Its "
+        + "menus show their own shortcuts in a look while open ([atajo …]); a menu entry is pressed by its label "
+        + "(input_visible_click) when its key is not one input_key_press sends";
+
+    // Ajuste c3 (E017): whether the window's witness changed within ShortcutWaitMs of the shortcut (a window gone is a
+    // change: Ctrl+W closed it).
+    private async ValueTask<bool> ShortcutChangedAsync(nint window, WindowWitness before, CancellationToken cancellationToken)
+    {
+        for (int waited = 0; ; waited += ShortcutPollMs)
+        {
+            if (_keyboard.Witness(window) is not { } now || now != before)
+                return true;
+            if (waited >= ShortcutWaitMs)
+                return false;
+            await Task.Delay(ShortcutPollMs, cancellationToken).ConfigureAwait(false);
+        }
     }
 
     // Noche NB r1, hallazgo 5 (T5-bloc: a window number that is no window, told «no encontré el campo de texto»): the

@@ -133,6 +133,13 @@ internal static class ScreenViewProjection
 
                 text.Append('\n');
             }
+
+            // Ajuste c3 (E017): Windows' common file dialog, as the provider read it by its structure (window.fileDialog).
+            if (window["fileDialog"] is JsonObject fileDialog
+                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.SaveDialogNext))
+            {
+                text.Append(FileDialogLine(fileDialog)).Append('\n');
+            }
         }
 
         // BAXY Renew al máximo (F019, E015: Steam's library home, «Página principal», told «la página principal de
@@ -213,24 +220,11 @@ internal static class ScreenViewProjection
             && (drawn || count > controls.Count || (bool?)view["partial"] == true || (bool?)view["frameOnly"] == true
                 || (string?)view["uiaFailed"] is { Length: > 0 });
         text.Append(notWhole ? "Controles (no es la lista completa de la ventana: puede tener más):\n" : "Controles:\n");
-        string? saveFolder = null;
-        JsonObject? saveField = Baxy.Providers.Windows.Infrastructure.ModelAids.On(
-                Baxy.Providers.Windows.Infrastructure.ModelAids.SaveDialogNext)
-            ? SaveField(view, controls, out saveFolder)
-            : null;
         foreach (JsonNode? node in controls)
         {
             if (node is JsonObject control)
             {
                 text.Append(Control(control)).Append('\n');
-                // Práctica e2e E017: «Guardar» pressed with the field still holding the text's first words, and
-                // «guardé lista.txt en BAXY-bench» said. What the field holds and where it saves, beside it.
-                if (ReferenceEquals(control, saveField))
-                {
-                    text.Append("(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra el diálogo")
-                        .Append(saveFolder is { Length: > 0 } ? ", " + saveFolder : string.Empty)
-                        .Append("; una ruta entera escrita en él, C:\\…\\nombre.ext, lo guarda en esa ruta)\n");
-                }
             }
         }
 
@@ -377,44 +371,51 @@ internal static class ScreenViewProjection
         return true;
     }
 
-    // Windows' common save dialog, by its structure and not by the application that opened it: a modal window with a
-    // «Nombre de archivo»/«File name» edit and a «Guardar»/«Save» button (an «Abrir»/«Open» dialog has the edit and not
-    // the button). The folder is the one its address bar names («Dirección: …»/«Address: …»), when the reader listed it;
-    // the tree's selected item is not taken for it (in E017 it was «ana» while the address was BAXY-bench).
-    private static JsonObject? SaveField(JsonObject view, JsonArray controls, out string? folder)
+    // Ajuste c3 (E017): Windows' common file dialog as the provider read it by its structure (CommonFileDialog), whatever
+    // the look listed and whatever the language: the folder its address shows, what its name field holds and the path
+    // they make, that a whole path written there saves or opens there, and the button that confirms. In E017 the model
+    // pressed «Guardar» with the field holding the text's first words, or typed «lista.txt» with the dialog in its last
+    // folder, and said it saved in the folder asked: the address bar was past the look's limit (10 or 15 controls).
+    private static string FileDialogLine(JsonObject dialog)
     {
-        folder = null;
-        if (view["window"] is not JsonObject window || (bool?)window["modal"] != true)
+        var line = new StringBuilder("Diálogo de archivos de Windows: carpeta ");
+        if ((string?)dialog["folder"] is { Length: > 0 } folder)
         {
-            return null;
+            line.Append('«').Append(folder).Append('»');
+        }
+        else if ((string?)dialog["shown"] is { Length: > 0 } shown)
+        {
+            line.Append('«').Append(shown).Append("» (no es una carpeta del disco)");
+        }
+        else
+        {
+            line.Append("sin leer");
         }
 
-        JsonObject[] all = controls.OfType<JsonObject>().ToArray();
-        JsonObject? field = all.FirstOrDefault(static control => (string?)control["kind"] == "Edit"
-            && Label((string?)control["name"]) is "nombre de archivo" or "file name");
-        if (field is null || !all.Any(static control => (string?)control["kind"] == "Button"
-            && Label((string?)control["name"]) is "guardar" or "save"))
+        if (dialog["name"] is JsonNode name)
         {
-            return null;
-        }
-
-        foreach (JsonObject control in all.Where(static control => (string?)control["kind"] == "ToolBar"))
-        {
-            // The reader keeps the direction marks Windows puts around a folder's name («\u200eBAXY-bench»).
-            string name = Folded(new string(((string?)control["name"] ?? string.Empty)
-                .Where(static c => c is not ('\u200e' or '\u200f')).ToArray()));
-            foreach (string prefix in (string[])["Dirección:", "Address:"])
+            line.Append("; su campo de nombre");
+            if ((int?)dialog["nameIndex"] is int nameIndex)
             {
-                if (name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
-                    && name[prefix.Length..].Trim() is { Length: > 0 } shown)
-                {
-                    folder = shown;
-                    return field;
-                }
+                line.Append(" [").Append(nameIndex).Append(']');
             }
+
+            line.Append(" tiene «").Append((string?)name).Append('»');
+            if ((string?)dialog["path"] is { Length: > 0 } path)
+            {
+                line.Append(", que daría ").Append(path);
+            }
+
+            line.Append("; una ruta entera escrita en ese campo (C:\\…\\nombre.ext) guarda o abre ahí sin recorrer carpetas");
         }
 
-        return field;
+        line.Append("; «").Append((string?)dialog["accept"]).Append('»');
+        if ((int?)dialog["acceptIndex"] is int acceptIndex)
+        {
+            line.Append(" [").Append(acceptIndex).Append(']');
+        }
+
+        return line.Append(" lo confirma").ToString();
     }
 
     // The places of the application other than the one in sight, sorted, each with what its placeValue takes (as
@@ -439,10 +440,6 @@ internal static class ScreenViewProjection
         "selection" => "(hay texto seleccionado: lo que se escriba lo reemplaza)",
         _ => null,
     };
-
-    // A control's name as a label: its access key's «&», a closing «:» and the case left out.
-    private static string Label(string? name) =>
-        Folded((name ?? string.Empty).Replace("&", string.Empty)).TrimEnd(':').Trim().ToLowerInvariant();
 
     private static string Folded(string? text) => string.Join(' ',
         (text ?? string.Empty).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));

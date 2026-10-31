@@ -107,27 +107,27 @@ public sealed class ScreenViewProjectionTests
         });
     }
 
-    // Práctica e2e E017: Notepad's «Guardar como», as the look read it (cut to the controls that matter).
+    // Práctica e2e E017: Notepad's «Guardar como», as the look read it (cut to the controls that matter), with the facts
+    // the provider read of the dialog by its structure (window.fileDialog, CommonFileDialog): the address bar was past
+    // the look's limit and is not listed.
     private const string SaveAs =
         "{\"version\":2,\"ok\":true,\"error\":\"\"," +
-        "\"window\":{\"title\":\"Guardar como\",\"process\":\"Notepad\",\"hwnd\":9045810,\"foreground\":true,\"modal\":true}," +
+        "\"window\":{\"title\":\"Guardar como\",\"process\":\"Notepad\",\"hwnd\":9045810,\"foreground\":true,\"modal\":true," +
+        "\"fileDialog\":{\"folder\":\"C:\\\\Users\\\\ana\\\\BAXY-bench\",\"name\":\"lista pilas, cables\",\"nameIndex\":21," +
+        "\"path\":\"C:\\\\Users\\\\ana\\\\BAXY-bench\\\\lista pilas, cables\",\"accept\":\"Guardar\",\"acceptIndex\":26}}," +
         "\"controls\":[" +
         "{\"i\":13,\"kind\":\"TreeItem\",\"name\":\"ana\",\"state\":\"selected\",\"value\":\"ana\"}," +
-        "{\"i\":20,\"kind\":\"ComboBox\",\"name\":\"Nombre de archivo:\",\"state\":\"collapsed\",\"value\":\"lista pilas, cables\"}," +
         "{\"i\":21,\"kind\":\"Edit\",\"name\":\"Nombre de archivo:\",\"zone\":\"B\",\"state\":\"focused\",\"value\":\"lista pilas, cables\"}," +
-        "{\"i\":26,\"kind\":\"Button\",\"name\":\"Guardar\",\"zone\":\"BR\",\"state\":\"\",\"value\":null,\"shortcut\":\"Alt+G\"}," +
-        "{\"i\":27,\"kind\":\"Button\",\"name\":\"Cancelar\",\"zone\":\"BR\",\"state\":\"\",\"value\":null}," +
-        "{\"i\":55,\"kind\":\"ToolBar\",\"name\":\"Dirección: C:\\\\Users\\\\ana\\\\BAXY-bench\",\"zone\":\"T\",\"state\":\"\",\"value\":null}]," +
-        "\"controlCount\":6,\"textAuthority\":\"not_read\",\"authority\":\"uia\"}";
+        "{\"i\":26,\"kind\":\"Button\",\"name\":\"Guardar\",\"zone\":\"BR\",\"state\":\"\",\"value\":null,\"shortcut\":\"Alt+G\"}]," +
+        "\"controlCount\":40,\"textAuthority\":\"not_read\",\"authority\":\"uia\"}";
 
-    private const string SaveFieldLine =
-        "[21] Edit «Nombre de archivo:» (abajo) = lista pilas, cables (focused)\n" +
-        "(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra el diálogo, " +
-        "C:\\Users\\ana\\BAXY-bench; una ruta entera escrita en él, C:\\…\\nombre.ext, lo guarda en esa ruta)\n" +
-        "[26] Button «Guardar»";
+    private const string FileDialogLine =
+        "Diálogo de archivos de Windows: carpeta «C:\\Users\\ana\\BAXY-bench»; su campo de nombre [21] tiene «lista pilas, " +
+        "cables», que daría C:\\Users\\ana\\BAXY-bench\\lista pilas, cables; una ruta entera escrita en ese campo " +
+        "(C:\\…\\nombre.ext) guarda o abre ahí sin recorrer carpetas; «Guardar» [26] lo confirma\n";
 
     [Test]
-    public void ASaveDialogsFileNameSaysItIsTheNameInTheFolderItsAddressShows()
+    public void AFileDialogSaysItsFolderAndWhatItsNameFieldGivesWhateverTheLookListed()
     {
         string on;
         string off;
@@ -143,49 +143,32 @@ public sealed class ScreenViewProjectionTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(on, Does.Contain(SaveFieldLine));
-            Assert.That(on.Split("(lo que tiene este campo").Length, Is.EqualTo(2), "said once, after the edit only");
-            Assert.That(off, Is.EqualTo(on.Replace(
-                "(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra el diálogo, " +
-                "C:\\Users\\ana\\BAXY-bench; una ruta entera escrita en él, C:\\…\\nombre.ext, lo guarda en esa ruta)\n",
-                string.Empty)));
+            Assert.That(on, Does.Contain("es el diálogo modal que bloquea la ventana\n"));
+            Assert.That(on, Does.Contain(FileDialogLine));
+            Assert.That(on.Split("Diálogo de archivos de Windows").Length, Is.EqualTo(2), "said once");
+            Assert.That(off, Is.EqualTo(on.Replace(FileDialogLine, string.Empty)));
         });
     }
 
-    [Test]
-    public void ASaveDialogWithNoAddressListedNamesNoFolder()
+    // A place of the address that is no folder of the disk, a name field the look did not list and a dialog with no name
+    // field (picking a folder) are said as they are; a window with no fileDialog says nothing, whatever its controls.
+    [TestCase("\"folder\":\"C:\\\\Users\\\\ana\\\\BAXY-bench\",", "\"shown\":\"Dirección: Este equipo\",",
+        "carpeta «Dirección: Este equipo» (no es una carpeta del disco); su campo de nombre [21] tiene «lista pilas, cables»")]
+    [TestCase(",\"path\":\"C:\\\\Users\\\\ana\\\\BAXY-bench\\\\lista pilas, cables\"", "",
+        "su campo de nombre [21] tiene «lista pilas, cables»; una ruta entera")]
+    [TestCase("\"nameIndex\":21,", "", "; su campo de nombre tiene «lista pilas, cables», que daría")]
+    [TestCase("\"acceptIndex\":26", "\"acceptIndex\":null", "; «Guardar» lo confirma\n")]
+    [TestCase(",\"fileDialog\":{", ",\"other\":{", null)]
+    public void AFileDialogLineSaysOnlyWhatWasRead(string from, string to, string? expected)
     {
-        string look = SaveAs.Replace("\"kind\":\"ToolBar\",\"name\":\"Dirección: ", "\"kind\":\"ToolBar\",\"name\":\"Banda ");
         using IDisposable setting = ModelAids.Use(ModelAids.SaveDialogNext);
 
-        string view = (string?)Project("{\"status\":\"completed\"}", look)["view"] ?? string.Empty;
+        string view = (string?)Project("{\"status\":\"completed\"}", SaveAs.Replace(from, to))["view"] ?? string.Empty;
 
-        Assert.That(view, Does.Contain(
-            "(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra el diálogo; " +
-            "una ruta entera escrita en él, C:\\…\\nombre.ext, lo guarda en esa ruta)\n"));
-    }
-
-    // An «Abrir» dialog has the same edit and no «Guardar»; a message box has neither; a window that is not modal is not
-    // the dialog; and the English dialog is the same dialog.
-    [TestCase("\"name\":\"Guardar\"", "\"name\":\"&Abrir\"", false)]
-    [TestCase("\"kind\":\"Edit\",\"name\":\"Nombre de archivo:\"", "\"kind\":\"Text\",\"name\":\"¿Quiere guardar los cambios?\"", false)]
-    [TestCase(",\"modal\":true", "", false)]
-    [TestCase("\"name\":\"Guardar\"", "\"name\":\"&Save\"", true)]
-    public void OnlyAModalSaveDialogSaysWhatItsFileNameIs(string from, string to, bool said)
-    {
-        string look = SaveAs.Replace(from, to);
-        if (said)
-        {
-            look = look.Replace("\"name\":\"Nombre de archivo:\"", "\"name\":\"File name:\"")
-                .Replace("Dirección: ", "Address: ");
-        }
-
-        using IDisposable setting = ModelAids.Use(ModelAids.SaveDialogNext);
-
-        string view = (string?)Project("{\"status\":\"completed\"}", look)["view"] ?? string.Empty;
-
-        Assert.That(view.Contains("(lo que tiene este campo es el nombre que recibe el archivo, en la carpeta que muestra "
-            + "el diálogo, C:\\Users\\ana\\BAXY-bench;"), Is.EqualTo(said));
+        if (expected is null)
+            Assert.That(view, Does.Not.Contain("Diálogo de archivos"));
+        else
+            Assert.That(view, Does.Contain(expected));
     }
 
     // Prueba en vivo de la versión final (renew_v6, «abre la biblioteca de Steam»): Steam opened with no place, and six

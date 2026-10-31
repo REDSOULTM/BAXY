@@ -401,6 +401,43 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
+    // Ajuste c3 (E017, live on the PC and the notebook): Ctrl+S to a Spanish Windows 11 Notepad, whose «Guardar» is Ctrl+G,
+    // came back completed with nothing opened. A shortcut after which nothing of its window changed (title, enabled
+    // state, its windows, the front) says so beside the delivery; one that opened a dialog says it changed; a key that is
+    // no shortcut (Enter) is not watched.
+    [TestCase("ctrl_s", null, false)]
+    [TestCase("ctrl_s", "disabled", true)]
+    [TestCase("ctrl_shift_s", "windows", true)]
+    [TestCase("ctrl_w", "title", true)]
+    [TestCase("enter", "title", null)]
+    public async Task AShortcutSaysWhetherAnythingOfItsWindowChanged(string key, string? what, bool? changed)
+    {
+        var before = new WindowWitness("*lista: Bloc de notas", true, "4660", 4660);
+        var keyboard = new FakeDesktopKeyboard
+        {
+            WitnessBefore = before,
+            WitnessAfter = what switch
+            {
+                "disabled" => before with { Enabled = false },
+                "windows" => before with { Windows = "4660,5120" },
+                "title" => before with { Title = "lista.txt: Bloc de notas" },
+                _ => before,
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await Keys(keyboard).InvokeAsync(
+            "input.key.press", Json($$"""{"key":"{{key}}","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result!.Value.TryGetProperty("windowChanged", out JsonElement said)
+                ? said.GetBoolean() : (bool?)null, Is.EqualTo(changed));
+            Assert.That(receipt.Result!.Value.TryGetProperty("next", out JsonElement next)
+                && next.GetString() == WindowsDesktopInteractionAdapter.ShortcutUnchanged, Is.EqualTo(changed == false));
+        });
+    }
+
     [Test]
     public async Task AKeyIsNotPressedWhenThePersonActedRightAfterThePause()
     {
@@ -1195,6 +1232,13 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
     internal bool CopyChanges { get; init; }
 
     public uint ClipboardSequence() => Clipboard;
+
+    // Ajuste c3 (E017): what a shortcut can change of the window, before any key and once one was sent (null: not read).
+    internal WindowWitness? WitnessBefore { get; init; }
+
+    internal WindowWitness? WitnessAfter { get; init; }
+
+    public WindowWitness? Witness(nint window) => Chords.Count == 0 ? WitnessBefore : WitnessAfter;
 
     // The windows that hold the front, by handle; a window brought to the front holds it when Frontable says so.
     internal HashSet<nint> Holding { get; } = [];

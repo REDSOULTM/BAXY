@@ -1394,13 +1394,34 @@ internal sealed class WindowsVisibleControlAdapter
 
         // Revision 3 of r24b (finding 3): counted before it acts, so a focus owed to a field is void after any click.
         Interlocked.Increment(ref _clicks);
+        // Ajuste c3 (E017): a common file dialog the click may confirm, read before it (CommonFileDialog).
+        CommonFileDialog.Facts? fileDialog = FileDialogBefore(arguments);
+        DateTime actedUtc = DateTime.UtcNow;
         try
         {
             receipt = await ClickAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            // Live on the notebook (Paint's «Guardar como», 30-10): «Guardar» by its label alone was ambiguous (another
+            // element of the dialog has that name) and nothing was pressed. The dialog's own button that saves or opens
+            // is known by its structure (IDOK): the same click goes to it by its identity.
+            if (fileDialog is not null && receipt.ErrorCode == "visible_button_ambiguous"
+                && AcceptByIdentity(fileDialog, arguments) is { } byIdentity)
+                receipt = await ClickAsync(operation, byIdentity, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
             _pressedUnchanged = null;
+        }
+
+        if (fileDialog is not null && _actedWindow == fileDialog.Dialog
+            && (receipt.Verified || receipt.EffectObserved || receipt.EffectMayHaveOccurred)
+            && PressedAccept(fileDialog, receipt.Result, arguments))
+        {
+            CommonFileDialog.Outcome outcome = await CommonFileDialog.AwaitAsync(fileDialog, actedUtc, cancellationToken)
+                .ConfigureAwait(false);
+            receipt = CommonFileDialog.Apply(receipt, fileDialog, outcome,
+                Infrastructure.ModelAids.On(Infrastructure.ModelAids.SaveDialogNext));
+            if (outcome.Ending == CommonFileDialog.Ending.Closed)
+                return receipt;
         }
 
         string? clickedType = _indexedType;
@@ -1453,6 +1474,83 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         return RepeatedUnchanged(receipt, arguments);
+    }
+
+    /// <summary>Ajuste c3 (E017): a look's facts of a common file dialog: the folder its address shows (a path of the disk,
+    /// else as shown), the name its field holds, the path they make, its button that saves or opens, and the indexes the
+    /// look gave its name field and that button (UI Automation's id of a window's element is «42.» and its handle).</summary>
+    internal static void WriteFileDialog(Utf8JsonWriter writer, CommonFileDialog.Facts facts, IReadOnlyList<ViewControl> controls)
+    {
+        int? IndexOf(nint handle) => controls.FirstOrDefault(control =>
+            control.Id == "42." + handle.ToString(CultureInfo.InvariantCulture))?.Index;
+        writer.WriteStartObject("fileDialog");
+        if (facts.Folder is { } folder)
+            writer.WriteString("folder", folder);
+        else if (facts.Address is { } shown)
+            writer.WriteString("shown", shown);
+        if (facts.NameField != 0)
+        {
+            writer.WriteString("name", facts.Name ?? string.Empty);
+            if (IndexOf(facts.NameField) is int nameIndex)
+                writer.WriteNumber("nameIndex", nameIndex);
+        }
+
+        if (facts.Path is { } path)
+            writer.WriteString("path", path);
+        writer.WriteString("accept", facts.AcceptText);
+        if (IndexOf(facts.Accept) is int acceptIndex)
+            writer.WriteNumber("acceptIndex", acceptIndex);
+        writer.WriteEndObject();
+    }
+
+    // Ajuste c3 (E017): the window the click will act in (the one it names, else the last look's, else the one in front),
+    // when it is a common file dialog.
+    private CommonFileDialog.Facts? FileDialogBefore(JsonElement arguments)
+    {
+        nint window = arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("window", out JsonElement named)
+            && named.ValueKind == JsonValueKind.Number && named.TryGetInt64(out long handle) && handle > 0
+                ? (nint)handle
+                : 0;
+        if (window == 0)
+        {
+            lock (_viewLock)
+            {
+                window = _lastView?.Hwnd ?? 0;
+            }
+        }
+
+        return CommonFileDialog.Read(window) ?? (window == VisibleControlSurface.FrontWindow()
+            ? null
+            : CommonFileDialog.Read(VisibleControlSurface.FrontWindow()));
+    }
+
+    /// <summary>Ajuste c3 (E017): a click by the label of the dialog's button that saves or opens, with no index, control or
+    /// manner of its own, as the same click by that button's identity (UI Automation's «42.» and its handle); null for
+    /// any other click.</summary>
+    internal static JsonElement? AcceptByIdentity(CommonFileDialog.Facts facts, JsonElement arguments)
+    {
+        if (arguments.ValueKind != JsonValueKind.Object || arguments.TryGetProperty("index", out _)
+            || arguments.TryGetProperty("controlId", out _) || arguments.TryGetProperty("manner", out _)
+            || arguments.TryGetProperty("search", out _)
+            || !arguments.TryGetProperty("label", out JsonElement label) || label.ValueKind != JsonValueKind.String
+            || !CommonFileDialog.PressedAccept(facts, null, label.GetString(), "Button"))
+            return null;
+        return ExternalJson.Extended(arguments, writer =>
+            writer.WriteString("controlId", "42." + facts.Accept.ToString(CultureInfo.InvariantCulture)));
+    }
+
+    /// <summary>Ajuste c3 (E017): whether the click pressed the dialog's button that saves or opens: by the pressed control
+    /// the receipt names, or, when the receipt names none (its post-read was lost), by the label the click asked for.</summary>
+    internal static bool PressedAccept(CommonFileDialog.Facts facts, JsonElement? result, JsonElement arguments)
+    {
+        static string? Text(JsonElement node, string name) =>
+            node.ValueKind == JsonValueKind.Object && node.TryGetProperty(name, out JsonElement value)
+            && value.ValueKind == JsonValueKind.String ? value.GetString() : null;
+        if (result is { ValueKind: JsonValueKind.Object } pressed
+            && (Text(pressed, "controlIdentity") is not null || Text(pressed, "name") is not null))
+            return CommonFileDialog.PressedAccept(facts, Text(pressed, "controlIdentity"), Text(pressed, "name"),
+                Text(pressed, "kind"));
+        return CommonFileDialog.PressedAccept(facts, null, Text(arguments, "label"), "Button");
     }
 
     // C67 (R8-NB-5): a click proved by the window's image (surfaceChanged) on a browser whose tree lists only an old
@@ -2498,6 +2596,13 @@ internal sealed class WindowsVisibleControlAdapter
                 nint disabled = hwnd;
                 hwnd = VisibleControlSurface.ModalSurface(hwnd);
                 modal = hwnd != disabled;
+                // Ajuste c3 (E017, live: Chrome draws its «Guardar como» from another of its processes): the common file
+                // dialog the window owns is seen as its modal dialog, whatever process draws it.
+                if (!modal && CommonFileDialog.OwnedBy(hwnd) is var ownedDialog and not 0)
+                {
+                    hwnd = ownedDialog;
+                    modal = true;
+                }
                 // A minimized window is shown behind the person's own before its tree is read (it shrinks while
                 // minimized) and before it is captured.
                 shownBehind = VisibleControlSurface.ShowBehind(hwnd);
@@ -2706,6 +2811,7 @@ internal sealed class WindowsVisibleControlAdapter
                 _viewsRead++;
             }
 
+            CommonFileDialog.Facts? fileDialog = CommonFileDialog.Read(hwnd);
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
@@ -2721,6 +2827,11 @@ internal sealed class WindowsVisibleControlAdapter
                 // the modal dialog that disabled the window, not of the window itself.
                 if (modal)
                     writer.WriteBoolean("modal", true);
+                // Ajuste c3 (E017): a common file dialog, by its structure (CommonFileDialog), with the folder its address
+                // shows and the name its field holds, whatever the look's limit listed (E017's looks of 10 and 15 never
+                // reached the address bar, and the model saved into the dialog's last folder).
+                if (fileDialog is { } dialogFacts)
+                    WriteFileDialog(writer, dialogFacts, controls);
                 // Ronda final 22 (regla 3): the window was minimized; the look showed it behind the person's own,
                 // without activating it, and it stays so.
                 if (shownBehind)
