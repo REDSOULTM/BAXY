@@ -768,6 +768,56 @@ No hizo falta en ningún diálogo probado: el diálogo común tiene árbol UIA c
 `#32770` con `SHELLDLL_DefView`) y el recibo de confirmar es el de siempre; el respaldo sería escribir la ruta entera y
 comprobar el archivo, no navegar por imagen. No se implementó: no hay ninguno instalado en el NB para medirlo.
 
+## En vivo en el NB con el arreglo (31-10): app × diálogo
+
+Motor real de 85722532b compilado en el NB (Release, 0 advertencias y 0 errores), sin modelo. Cada fila es un recibo
+real; «archivo» es lo que el arnés vio en el disco después (`exists`). Resumen de todas las tandas en
+`app_vivo\dialogo\resumen_tandas.txt`.
+
+| App (cómo se abrió el diálogo) | Diálogo | Carpeta y nombre | Recibo | Archivo | ¿Funciona? |
+|---|---|---|---|---|---|
+| Bloc de notas (Archivo › Guardar como, por clic) | Guardar como | ruta entera en el nombre, «Guardar» | `completed`, `fileDialog {closed, path: D:\…\np\lista.txt, exists}` | sí | **sí** (`tanda_n6`) |
+| Bloc de notas | Guardar como | sólo «lista2.txt» (carpeta del diálogo), Enter | `completed`, `path: D:\…\np\lista2.txt` | sí | **sí** |
+| Bloc de notas (Archivo › Abrir) | Abrir | ruta entera, «Abrir» | `completed`, `exists` | (abrió lista.txt) | **sí** |
+| Bloc de notas | Guardar como | carpeta que no existe | `failed` `file_dialog_answered_by_another_window` («La ruta no existe») | no | **sí, honesto** (`tanda_n5`) |
+| Bloc de notas | Guardar como | nombre inválido «mal\|nombre» | `failed` `file_dialog_answered_by_another_window` | no | **sí, honesto** (`tanda_n3`) |
+| Bloc de notas | — | `ctrl_s` (no es su atajo en español) | `completed` + `windowChanged: false` + `next` | — | **sí, honesto** |
+| Paint (`ctrl_shift_s`, `windowChanged: true`) | Guardar como | ruta sin extensión, «Guardar» por rótulo (ambiguo → IDOK) | `completed`, `path: …\paint\dibujo.paint` | sí | **sí** (`tanda_p2`) |
+| Paint (`ctrl_o`) | Abrir | archivo que no existe, Enter | `failed` `file_dialog_answered_by_another_window` | — | **sí, honesto** |
+| Paint | Abrir | tras «Aceptar», ruta con `replace`, Enter | `completed`, `exists` | (abrió dibujo.paint) | **sí** |
+| Chrome (`ctrl_s`; diálogo de otro proceso) | Guardar como | la mirada ve el diálogo modal; ruta entera, «Guardar» | `completed`, `exists` | sí | **sí** (`tanda_c2`; con Enter en `tanda_c1`) |
+| Chrome (`ctrl_o`) | Abrir | carpeta mostrada «Dirección: <inicio>» (no es ruta: `shown`); ruta entera, «Abrir» | `completed`, `exists` | (abrió la copia) | **sí** |
+| Edge (`ctrl_s`) | Guardar como | ruta entera, «Guardar» | `completed`, `exists` | sí | **sí** (`tanda_e2`) |
+| Edge (`ctrl_o`) | Abrir | ruta entera, «Abrir» | `completed`, `exists` | (abrió la copia) | **sí**; en `tanda_e1`, con el archivo aún sin guardar: `file_dialog_answered_by_another_window`, honesto |
+| Word (Pestaña Archivo › Guardar como › Examinar, por clic) | Guardar como | ruta sin extensión, «Guardar» | `completed`, `path: …\word\informe.rtf` | sí | **sí** (`tanda_w5`) |
+| Word (Pestaña Archivo › Abrir › Examinar) | Abrir | ruta entera, Enter | `completed`, `exists` | (abrió base.rtf) | **sí** |
+| VS Code | — | — | — | — | **no probado**: un editor es ventana protegida (contrato «Seguridad v2»): BAXY no actúa en él si la persona no lo nombra; su diálogo es el mismo IFileDialog |
+| Excel, PowerPoint | — | — | — | — | **no probado**: arrancan en la pantalla de inicio, sin libro; su «Examinar» abre el mismo diálogo que Word |
+
+Variantes cubiertas: el diálogo moderno (IFileDialog) de una app Win32 clásica (Paint), de una WinUI (Bloc de notas),
+de Office (Examinar) y el de Chromium dibujado desde otro proceso (Chrome, Edge); Guardar como y Abrir; confirmar por
+clic, por rótulo ambiguo y por Enter; carpeta del disco y lugar sin ruta («Inicio»). «Seleccionar carpeta» no se pudo
+abrir sin una app que lo pida; su estructura es la misma (`#32770`, `SHELLDLL_DefView`, IDOK). El diálogo de estilo
+explorador (`GetSaveFileName` con plantilla) no apareció en ninguna app instalada: lo cubre la prueba con su árbol
+(`cmb13`/`edt1`), sin vivo.
+
+**Incidente (`tanda_w1`).** Word arrancado con `/w` abrió un documento del dueño en vez de uno nuevo y el arnés escribió
+«informe de prueba» en él. No se guardó: Word se cerró sin guardar (por PID; el NB se reinició después, no por esta
+prueba) y la carpeta de autorrecuperación de Word no tiene nada posterior. Desde entonces el arnés exige la ventana
+esperada antes de escribir (`require_fg`, `find_window` con `required`) y Word se probó sobre un `.rtf` de prueba.
+
+**Visto de paso, sin tocar.** El clic en «Archivo» del Bloc de notas y en «Pestaña Archivo» de Word devuelve
+`visible_click_postread_unread` aunque el menú se abra (el paso siguiente lo pulsa). `app.open notepad` justo después
+del reinicio del NB dio `inventory_failed` una vez. Un campo de nombre de archivo tiene `ComboBox` y `Edit` con el mismo
+nombre: un clic sólo por el rótulo «Nombre de archivo:» es `visible_button_ambiguous` (con el índice va bien).
+
+## Estado del NB al terminar
+
+Procesos abiertos por las pruebas cerrados por PID (Bloc de notas, Paint, Chrome y Edge con perfiles de prueba en
+`D:\BAXYeval\dlg_prueba`, Word); ningún `baxy-core`, `WINWORD`, `mspaint` ni `Notepad` vivos. Tarea `BAXY-c3-dialogo`
+quitada. Eventos 7040 de las últimas 3 horas: los ida y vuelta de BITS e IsolationSession de cada 10 minutos, que
+empezaron antes de la prueba (21:55). El worktree NB `ft-c3-app-nb` está en 85722532b.
+
 ## Pruebas (rojo antes, verde después)
 
 | Prueba | Rojo | Verde |
