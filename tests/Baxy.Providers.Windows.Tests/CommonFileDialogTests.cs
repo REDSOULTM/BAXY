@@ -17,7 +17,7 @@ public sealed class CommonFileDialogTests
 
     // Notepad's «Guardar como» as Win32 gave it: the name combo's Edit (1001) under a FloatNotifySink, the type combo with
     // no Edit, the shell's view, the address band's breadcrumb, the search box and the push buttons IDOK and IDCANCEL.
-    internal static Child[] SaveAs(string name = "lista pilas, cables", string address = "Dirección: C:\\Users\\usuario\\BAXY-bench") =>
+    internal static Child[] SaveAs(string name = "lista pilas, cables", string address = "Dirección: C:\\Users\\ana\\BAXY-bench") =>
     [
         new(12519206, Dialog, "DUIViewWndClassName", 0, true, ""),
         new(984624, 12519206, "DirectUIHWND", 0, true, ""),
@@ -56,8 +56,8 @@ public sealed class CommonFileDialogTests
             Assert.That(facts.Cancel, Is.EqualTo((nint)1377872));
             Assert.That(facts.NameField, Is.EqualTo((nint)1967706), "not the search box's edit");
             Assert.That(facts.Name, Is.EqualTo("lista pilas, cables"));
-            Assert.That(facts.Folder, Is.EqualTo("C:\\Users\\usuario\\BAXY-bench"));
-            Assert.That(facts.Path, Is.EqualTo("C:\\Users\\usuario\\BAXY-bench\\lista pilas, cables"));
+            Assert.That(facts.Folder, Is.EqualTo("C:\\Users\\ana\\BAXY-bench"));
+            Assert.That(facts.Path, Is.EqualTo("C:\\Users\\ana\\BAXY-bench\\lista pilas, cables"));
         });
     }
 
@@ -93,19 +93,19 @@ public sealed class CommonFileDialogTests
 
     // The folder is the path the address shows from its drive or share on, whatever the label before it says; a place
     // that is no folder of the disk gives none.
-    [TestCase("Dirección: C:\\Users\\usuario\\BAXY-bench", "C:\\Users\\usuario\\BAXY-bench")]
+    [TestCase("Dirección: C:\\Users\\ana\\BAXY-bench", "C:\\Users\\ana\\BAXY-bench")]
     [TestCase("Address: D:\\BAXYeval\\dlg_prueba", "D:\\BAXYeval\\dlg_prueba")]
     [TestCase("アドレス: C:\\", "C:\\")]
     [TestCase("Dirección: \\\\servidor\\compartida\\informes", "\\\\servidor\\compartida\\informes")]
-    [TestCase("Dirección: \u200eC:\\Users\\usuario\u200e", "C:\\Users\\usuario")]
+    [TestCase("Dirección: \u200eC:\\Users\\ana\u200e", "C:\\Users\\ana")]
     [TestCase("Dirección: Este equipo", null)]
     [TestCase("Dirección: Bibliotecas\\Documentos", null)]
     [TestCase("", null)]
     public void TheFolderIsThePathTheAddressShows(string address, string? folder) =>
         Assert.That(CommonFileDialog.FolderOf(address), Is.EqualTo(folder));
 
-    [TestCase("C:\\Users\\usuario\\BAXY-bench", "lista.txt", "C:\\Users\\usuario\\BAXY-bench\\lista.txt")]
-    [TestCase("C:\\Users\\usuario\\OneDrive", "D:\\BAXYeval\\dlg_prueba\\np\\lista.txt", "D:\\BAXYeval\\dlg_prueba\\np\\lista.txt")]
+    [TestCase("C:\\Users\\ana\\BAXY-bench", "lista.txt", "C:\\Users\\ana\\BAXY-bench\\lista.txt")]
+    [TestCase("C:\\Users\\ana\\OneDrive", "D:\\BAXYeval\\dlg_prueba\\np\\lista.txt", "D:\\BAXYeval\\dlg_prueba\\np\\lista.txt")]
     [TestCase(null, "D:\\x\\lista.txt", "D:\\x\\lista.txt")]
     [TestCase("C:\\a", "\"lista.txt\"", "C:\\a\\lista.txt")]
     [TestCase("C:\\a\\b", "..\\lista.txt", "C:\\a\\lista.txt")]
@@ -138,9 +138,9 @@ public sealed class CommonFileDialogTests
         CommonFileDialog.Ending ending = Enum.Parse<CommonFileDialog.Ending>(end);
         ExternalCapabilityReceipt pressed = ExternalJson.Success("input.visible.click", Json(
             """{"ok":true,"name":"Guardar","kind":"Button","controlIdentity":"42.13895204","dialogOpened":true,"effectObserved":true}"""));
-        var outcome = new CommonFileDialog.Outcome(ending, "C:\\Users\\usuario\\BAXY-bench\\lista.txt", exists,
+        var outcome = new CommonFileDialog.Outcome(ending, "C:\\Users\\ana\\BAXY-bench\\lista.txt", exists,
             ending == CommonFileDialog.Ending.Blocked ? "Guardar como" : null,
-            ending == CommonFileDialog.Ending.Open ? "C:\\Users\\usuario\\Documents" : null, null);
+            ending == CommonFileDialog.Ending.Open ? "C:\\Users\\ana\\Documents" : null, null);
 
         ExternalCapabilityReceipt receipt = CommonFileDialog.Apply(pressed, Facts(), outcome, next: true);
 
@@ -150,7 +150,7 @@ public sealed class CommonFileDialogTests
             Assert.That(receipt.Verified, Is.EqualTo(verified));
             Assert.That(receipt.ErrorCode, Is.EqualTo(error));
             Assert.That(said.GetProperty("closed").GetBoolean(), Is.EqualTo(ending == CommonFileDialog.Ending.Closed));
-            Assert.That(said.GetProperty("path").GetString(), Is.EqualTo("C:\\Users\\usuario\\BAXY-bench\\lista.txt"));
+            Assert.That(said.GetProperty("path").GetString(), Is.EqualTo("C:\\Users\\ana\\BAXY-bench\\lista.txt"));
             Assert.That(receipt.Result!.Value.TryGetProperty("next", out _), Is.EqualTo(!verified));
             Assert.That(receipt.EffectMayHaveOccurred, Is.EqualTo(!verified));
         });
@@ -238,7 +238,7 @@ public sealed class CommonFileDialogTests
         });
 
         Assert.That(written.GetProperty("fileDialog").GetRawText(), Is.EqualTo(
-            """{"folder":"C:\\Users\\usuario\\BAXY-bench","name":"lista pilas, cables","nameIndex":22,"path":"C:\\Users\\usuario\\BAXY-bench\\lista pilas, cables","accept":"Guardar","acceptIndex":29}"""));
+            """{"folder":"C:\\Users\\ana\\BAXY-bench","name":"lista pilas, cables","nameIndex":22,"path":"C:\\Users\\ana\\BAXY-bench\\lista pilas, cables","accept":"Guardar","acceptIndex":29}"""));
     }
 
     private static CommonFileDialog.Facts Facts() => CommonFileDialog.Recognize(Dialog, "#32770", SaveAs())!;

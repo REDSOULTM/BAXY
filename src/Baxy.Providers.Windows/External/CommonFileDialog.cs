@@ -61,7 +61,7 @@ internal static partial class CommonFileDialog
     private const int NameEdit = 0x0480;
     private const string DialogClass = "#32770";
 
-    // The bands of the dialog whose Edit is not the name: the address bar and the search box.
+    // The bands of the dialog whose Edit is not the name (its address band and its search band).
     private static readonly string[] OtherBands = ["Address Band Root", "UniversalSearchBand", "Search Box"];
 
     // A path in what the address shows, from its drive or share on; the label before it is the language's.
