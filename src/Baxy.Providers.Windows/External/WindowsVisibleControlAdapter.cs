@@ -979,6 +979,20 @@ internal sealed class WindowsVisibleControlAdapter
             string title = ReadString(root, "window");
             bool afterCut = root.TryGetProperty("controlCount", out JsonElement total) && total.ValueKind == JsonValueKind.Number
                 && total.TryGetInt32(out int counted) && counted > controls.Count;
+            var listed = new List<int>();
+            JsonElement difference = ViewDifference(
+                before.Controls, before.TreeTitle, controls, disabled, title, cut: before.Cut || afterCut, told: listed);
+            // Ajuste c3: what the model knows by index: the view before (as it was told), with the indices this «after»
+            // lists now being the controls it lists.
+            var told = new Dictionary<int, ViewControl>(
+                before.Told ?? before.Controls.GroupBy(static control => control.Index)
+                    .ToDictionary(static group => group.Key, static group => group.First()));
+            foreach (int index in listed)
+            {
+                if (controls.FirstOrDefault(control => control.Index == index) is { } now)
+                    told[index] = now;
+            }
+
             lock (_viewLock)
             {
                 if (!ReferenceEquals(_lastView, before))
@@ -991,11 +1005,12 @@ internal sealed class WindowsVisibleControlAdapter
                     Wanted = before.Wanted,
                     Tail = before.Tail,
                     Application = before.Application,
+                    Told = told,
                 };
                 _viewsRead++;
             }
 
-            return ViewDifference(before.Controls, before.TreeTitle, controls, disabled, title, cut: before.Cut || afterCut);
+            return difference;
         }
     }
 
@@ -1020,7 +1035,8 @@ internal sealed class WindowsVisibleControlAdapter
         IReadOnlyList<ViewControl> disabledAfter,
         string afterTitle,
         int cap = AfterViewCap,
-        bool cut = false)
+        bool cut = false,
+        ICollection<int>? told = null)
     {
         var matched = new ViewControl?[after.Count];
         var used = new HashSet<ViewControl>(ReferenceEqualityComparer.Instance);
@@ -1046,28 +1062,29 @@ internal sealed class WindowsVisibleControlAdapter
             }
         }
 
-        List<string> changed = [], appeared = [], moved = [];
+        // Each listed entry with the index it tells (-1: none), so what the model was told by index is known (Told).
+        List<(int Index, string Text)> changed = [], appeared = [], moved = [];
         bool focusOnly = true;
         for (int i = 0; i < after.Count; i++)
         {
             ViewControl now = after[i];
             if (matched[i] is not { } was)
-                appeared.Add(Entry(now));
+                appeared.Add((now.Index, Entry(now)));
             else if (was.Kind != now.Kind || was.Name != now.Name || was.State != now.State
                 || (was.Value ?? string.Empty) != (now.Value ?? string.Empty))
             {
-                changed.Add(Entry(now, was));
+                changed.Add((now.Index, Entry(now, was)));
                 focusOnly &= was.Kind == now.Kind && was.Name == now.Name
                     && (was.Value ?? string.Empty) == (now.Value ?? string.Empty)
                     && WithoutFocus(was.State) == WithoutFocus(now.State);
             }
             else if (was.Index != now.Index)
-                moved.Add($"[{now.Index}] {now.Kind} «{now.Name}» was [{was.Index}]");
+                moved.Add((now.Index, $"[{now.Index}] {now.Kind} «{now.Name}» was [{was.Index}]"));
         }
 
-        List<string> gone = cut ? [] : [.. before.Where(was => !used.Contains(was)).Select(was =>
+        List<(int Index, string Text)> gone = cut ? [] : [.. before.Where(was => !used.Contains(was)).Select(was => (-1,
             $"{was.Kind} «{was.Name}»"
-            + (disabledAfter.Any(off => off.Kind == was.Kind && off.Name == was.Name) ? " disabled" : string.Empty))];
+            + (disabledAfter.Any(off => off.Kind == was.Kind && off.Name == was.Name) ? " disabled" : string.Empty)))];
         bool titled = beforeTitle.Length > 0 && afterTitle.Length > 0 && beforeTitle != afterTitle;
         // A cut view does not know its unlisted controls the same.
         focusOnly &= changed.Count > 0 && appeared.Count + gone.Count + moved.Count == 0 && !titled && !cut;
@@ -1099,15 +1116,20 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteBoolean("focusOnly", true);
             writer.WriteEndObject();
 
-            void WriteList(string name, List<string> entries)
+            void WriteList(string name, List<(int Index, string Text)> entries)
             {
                 int shown = Math.Min(entries.Count, room);
                 if (shown == 0)
                     return;
                 room -= shown;
                 writer.WriteStartArray(name);
-                foreach (string entry in entries.Take(shown))
+                foreach ((int index, string entry) in entries.Take(shown))
+                {
                     writer.WriteStringValue(entry);
+                    if (index >= 0)
+                        told?.Add(index);
+                }
+
                 writer.WriteEndArray();
             }
         });
@@ -1400,6 +1422,7 @@ internal sealed class WindowsVisibleControlAdapter
         // Only when that index's control is the one the click goes to (ClickAsync notes it): an index the label does not
         // name, or of a look of another window, leaves the label to its cascade, which presses another control.
         _indexedType = null;
+        _indexSeen = null;
 
         // Revision 3 of r24b (finding 3): counted before it acts, so a focus owed to a field is void after any click.
         Interlocked.Increment(ref _clicks);
@@ -1435,6 +1458,8 @@ internal sealed class WindowsVisibleControlAdapter
 
         string? clickedType = _indexedType;
         _indexedType = null;
+        receipt = WithSeenIndex(receipt, _indexSeen);
+        _indexSeen = null;
 
         // BAXY Renew cu (C11): Excel in a normal window folds its ribbon groups into collapsed entries («Fuente»), and a
         // click on «Negrita» by its label found nothing, three times. The refusal says which collapsed entries the last
@@ -1611,6 +1636,9 @@ internal sealed class WindowsVisibleControlAdapter
 
     // The item type of the last view's control a click by index goes to (BAXY Renew cu, C11); null for any other click.
     private string? _indexedType;
+
+    // Ajuste c3: a click's index whose control the view after an act moved (WithSeenIndex), noted by ClickAsync.
+    private ViewedIndex? _indexSeen;
 
     private ExternalCapabilityReceipt RepeatedUnchanged(ExternalCapabilityReceipt receipt, JsonElement arguments)
     {
@@ -1810,13 +1838,17 @@ internal sealed class WindowsVisibleControlAdapter
 
             // Renew al máximo (B-CU-1): an index is of the last view's window; with the click naming another one it is
             // not that window's control (it was pressed in the window looked at before, behind the named one).
+            // Ajuste c3 (humos del 31-10): the control the model saw at that index, wherever the view after an act put
+            // it; a control gone is never replaced by whatever occupies its index now (the label's cascade looks for it).
             ViewControl? chosen = view is not null && (namedWindow == 0 || view.Hwnd == namedWindow)
-                ? view.Controls.FirstOrDefault(control => control.Index == position)
+                ? SeenControl(view, position)
                 : null;
             if (chosen is not null && SameLabel(label, chosen.Name))
             {
                 controlId = chosen.Id.Length > 0 ? chosen.Id : null;
                 _indexedType = chosen.ItemType;
+                if (chosen.Index != position)
+                    _indexSeen = new ViewedIndex(view!.Hwnd, chosen.Id, position, chosen.Index, false, null, null);
             }
             else
             {
@@ -3130,6 +3162,7 @@ internal sealed class WindowsVisibleControlAdapter
                 Name = name,
                 NameCut = ReadInt(item, "nameCut"),
                 Id = ReadString(item, "id"),
+                Aid = ReadString(item, "aid"),
                 State = ReadString(item, "state"),
                 Value = item.TryGetProperty("value", out JsonElement value)
                     && value.ValueKind == JsonValueKind.String
@@ -4366,11 +4399,101 @@ internal sealed class WindowsVisibleControlAdapter
             view = _lastView;
         }
 
-        ViewControl? chosen = view?.Controls.FirstOrDefault(control => control.Index == index);
+        // Ajuste c3: the control the model saw at the index, wherever the view after an act put it; none when gone.
+        ViewControl? chosen = view is null ? null : SeenControl(view, index);
         window = chosen is null ? 0 : view!.Hwnd;
         controlId = chosen?.Id ?? string.Empty;
         rect = chosen?.RectValue;
         return chosen is not null;
+    }
+
+    public ViewedIndex? ViewedAt(int index)
+    {
+        LastView? view;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        return view is null ? null : ResolveSeen(index, view.Hwnd, view.Controls, view.Told);
+    }
+
+    /// <summary>
+    /// Ajuste c3 (humos del 31-10, NB): what an index the model gave means. It names the control the model saw there:
+    /// the one <paramref name="told"/> holds at it (its last look, with what each «after» since listed anew), or, when
+    /// the model saw the view whole (<paramref name="told"/> null or without that index), the view's own. That same
+    /// control is found in <paramref name="current"/> by its runtime id, else, once, by its automation id, kind and name;
+    /// found elsewhere, its index now is said. Not found, it is gone: nothing at that index stands for it, and the one
+    /// control of <paramref name="current"/> with its kind and name, if there is a single one, is said as its
+    /// equivalent. Null when the index names nothing the model saw.
+    /// </summary>
+    internal static ViewedIndex? ResolveSeen(
+        int index, nint window, IReadOnlyList<ViewControl> current, IReadOnlyDictionary<int, ViewControl>? told)
+    {
+        ViewControl? at = current.FirstOrDefault(control => control.Index == index);
+        if (told is null || !told.TryGetValue(index, out ViewControl? seen))
+            return at is null ? null : new ViewedIndex(window, at.Id, index, null, false, null, null);
+        ViewControl? same = SameControl(seen, current);
+        if (same is not null)
+            return new ViewedIndex(window, same.Id, index, same.Index == index ? null : same.Index, false, null, null);
+        ViewControl[] equivalents = [.. current.Where(control => control.Kind == seen.Kind && control.Name == seen.Name)];
+        return new ViewedIndex(0, string.Empty, index, null, true, equivalents.Length == 1 ? equivalents[0].Index : null,
+            $"{seen.Kind} «{seen.Name}»");
+    }
+
+    // The control of the view that is the one seen: its runtime id, else the only one with its automation id, kind and name.
+    private static ViewControl? SameControl(ViewControl seen, IReadOnlyList<ViewControl> current)
+    {
+        if (seen.Id.Length > 0 && current.FirstOrDefault(control => control.Id == seen.Id) is { } byId)
+            return byId;
+        ViewControl[] alike = [.. current.Where(control => control.Aid == seen.Aid && control.Kind == seen.Kind
+            && control.Name == seen.Name)];
+        return alike.Length == 1 ? alike[0] : null;
+    }
+
+    // The control of the view the model saw at an index (ResolveSeen); null when none or gone.
+    private static ViewControl? SeenControl(LastView view, int index) =>
+        ResolveSeen(index, view.Hwnd, view.Controls, view.Told) is { Gone: false } seen
+            ? view.Controls.FirstOrDefault(control => control.Index == (seen.NowAt ?? index))
+            : null;
+
+    /// <summary>
+    /// Ajuste c3: a receipt of an act by an index with what that index meant: the index now of the control the model saw
+    /// there when the view after an act moved it (<c>indexAsked</c>, <c>indexNow</c>), or, for a refusal of a control
+    /// gone, what was seen there and its equivalent's index (and a «next» with the aid on).
+    /// </summary>
+    internal static ExternalCapabilityReceipt WithSeenIndex(ExternalCapabilityReceipt receipt, ViewedIndex? seen)
+    {
+        if (seen is not { } index)
+            return receipt;
+        if (index.Gone && receipt.ErrorCode == "visible_control_identity_stale" && !receipt.EffectObserved)
+            return receipt with
+            {
+                Result = ExternalJson.Extended(receipt.Result, writer =>
+                {
+                    writer.WriteNumber("index", index.Asked);
+                    writer.WriteString("seen", index.Seen);
+                    writer.WriteBoolean("gone", true);
+                    if (index.Equivalent is int equivalent)
+                        writer.WriteNumber("equivalentIndex", equivalent);
+                    if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.IndexLabelNext))
+                        writer.WriteString("next", $"nothing was done: [{index.Asked}] was {index.Seen} when you saw it, and "
+                            + "that control is no longer in the window (the view after the last act renumbered it)"
+                            + (index.Equivalent is int same
+                                ? $"; [{same}] is the one control with its kind and name now"
+                                : "; look again (input_visible_controls) before naming it"));
+                }),
+            };
+        return index.NowAt is int now && now != index.Asked && receipt.Result is { ValueKind: JsonValueKind.Object }
+            ? receipt with
+            {
+                Result = ExternalJson.Extended(receipt.Result, writer =>
+                {
+                    writer.WriteNumber("indexAsked", index.Asked);
+                    writer.WriteNumber("indexNow", now);
+                }),
+            }
+            : receipt;
     }
 
     /// <summary>The field the last view handed out at this index, and that view's window: what input.text.type's
@@ -4542,6 +4665,9 @@ internal sealed class WindowsVisibleControlAdapter
         internal string Name { get; set; } = string.Empty;
         internal int NameCut { get; set; }
         internal string Id { get; set; } = string.Empty;
+
+        // Ajuste c3: the control's UI Automation AutomationId, which a runtime id that changed keeps.
+        internal string Aid { get; set; } = string.Empty;
         internal string State { get; set; } = string.Empty;
         internal string? Value { get; set; }
         internal string Shortcut { get; set; } = string.Empty;
@@ -4568,6 +4694,11 @@ internal sealed class WindowsVisibleControlAdapter
         // Holdout v4 (en vivo, the Steam library): the application the look named, whose places a repeated unchanged
         // click is told with.
         internal string? Application { get; init; }
+
+        // Ajuste c3: the control the model was told at each index, when it is not this view's own numbering (a view read
+        // after an act whose «after» listed only some of its controls): the last look's, with what each «after» since
+        // listed anew. Null: the model saw this view whole (a look).
+        internal IReadOnlyDictionary<int, ViewControl>? Told { get; init; }
     }
 
     // Unfinished: the worker's walk did not end within its budget (P2.17), so the look is not taken again.

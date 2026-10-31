@@ -2751,7 +2751,12 @@ function Do-View($request){
       # decia al modelo que era el encabezado de la fila 1.
       $itemType=''
       if($kind -eq 'DataItem'){ try { $itemType=([string]$item.Cached.ItemType).Trim() } catch { $itemType='' }; if($itemType.Length -gt 40){ $itemType='' } }
-      $entry=@{ kind=$kind; name=$name; nameCut=$nameCut; id=$id; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total; itemType=$itemType }
+      # Ajuste c3: el AutomationId del control, que conserva aunque su RuntimeId cambie (un indice que el modelo vio se
+      # sigue a ese mismo control cuando la vista se renumera tras un acto).
+      $aid=''
+      try { $aid=[string](Get-Prop $item 'AutomationId') } catch { $aid='' }
+      if($null -eq $aid -or $aid.Length -gt 128){ $aid='' }
+      $entry=@{ kind=$kind; name=$name; nameCut=$nameCut; id=$id; aid=$aid; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total; itemType=$itemType }
       if(-not $copy){ $seen[$key]=$entry; $copyRects[$key]=@($rect) }
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }

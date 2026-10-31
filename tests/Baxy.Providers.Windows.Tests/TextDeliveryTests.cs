@@ -144,6 +144,57 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // Ajuste c3 (humos del 31-10): a text by an index whose control the view after a click moved goes to that control
+    // where it is now, and the receipt says the index now; one whose control is gone writes nothing anywhere and says
+    // what the model saw there and, when one control is it again by kind and name, that one's index.
+    [Test]
+    public async Task ATextByAnIndexGoesToTheControlSeenThereWhereverItIsNow()
+    {
+        var keyboard = new FakeDesktopKeyboard();
+        FakeFieldMessages messages = new FakeFieldMessages().WithField(Edit, "Edit", "origen c3");
+        messages.FileNameField = Edit;
+        var moved = new FakeViewedFields("""{"ok":true,"error":"","kind":"ListItem","method":"","delivered":false}""")
+        {
+            Seen = new ViewedIndex(4660, "42.4661", 27, 30, false, null, null),
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, moved).InvokeAsync(
+            "input.text.type", Json("""{"text":"prueba c3 guardado.txt","window":4660,"index":27}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(messages.Content[Edit], Is.EqualTo("prueba c3 guardado.txt"));
+            Assert.That(receipt.Result!.Value.GetProperty("indexNow").GetInt32(), Is.EqualTo(30));
+            Assert.That(receipt.Result!.Value.GetProperty("indexAsked").GetInt32(), Is.EqualTo(27));
+        });
+    }
+
+    [Test]
+    public async Task ATextByAnIndexWhoseControlIsGoneWritesNothing()
+    {
+        var keyboard = new FakeDesktopKeyboard();
+        FakeFieldMessages messages = new FakeFieldMessages().WithField(Edit, "Edit", "origen c3");
+        var gone = new FakeViewedFields("""{"ok":true,"error":"","kind":"Edit","method":"setvalue","delivered":true}""")
+        {
+            Seen = new ViewedIndex(0, string.Empty, 27, null, true, 31, "Edit «Nombre de archivo:»"),
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, messages, gone).InvokeAsync(
+            "input.text.type", Json("""{"text":"prueba","window":4660,"index":27}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_control_identity_stale"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(gone.Requests, Is.Empty, "the worker wrote nothing");
+            Assert.That(messages.Content[Edit], Is.EqualTo("origen c3"));
+            Assert.That(keyboard.Texts, Is.Empty);
+            Assert.That(receipt.Result!.Value.GetProperty("seen").GetString(), Is.EqualTo("Edit «Nombre de archivo:»"));
+            Assert.That(receipt.Result!.Value.GetProperty("equivalentIndex").GetInt32(), Is.EqualTo(31));
+        });
+    }
+
     // A file dialog's name field holds the one name the dialog takes: a text into it by its index is that name, whole,
     // wherever its caret was left (typed at the caret, «base» and «sv1.txt» would be «basesv1.txt»).
     [Test]
@@ -1503,6 +1554,14 @@ internal sealed class FakeViewedFields(string answer) : IViewedFields
 
     // Identities a test gives some indexes (a Win32 control's own window is «42.<hwnd>» in UI Automation).
     internal Dictionary<int, string> Ids { get; } = [];
+
+    // Ajuste c3: what the last view says of an index the model saw (moved or gone); null: the index as it is.
+    internal ViewedIndex? Seen { get; init; }
+
+    public ViewedIndex? ViewedAt(int index) =>
+        Seen ?? (TryViewedField(index, out nint window, out string controlId)
+            ? new ViewedIndex(window, controlId, index, null, false, null, null)
+            : null);
 
     public bool TryViewedField(int index, out nint window, out string controlId)
     {

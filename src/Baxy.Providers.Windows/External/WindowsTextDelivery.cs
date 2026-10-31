@@ -67,10 +67,26 @@ internal interface IFieldMessages
     ValueTask SettleAsync(CancellationToken cancellationToken);
 }
 
+/// <summary>
+/// Ajuste c3: what an index the model gave means in the last view: the window and identity of the control it saw there
+/// (<paramref name="ControlId"/>, empty when <paramref name="Gone"/>), the index asked, its index now when the view after
+/// an act moved it, and, for a control gone, what the model saw there and the index of the one control that is it again
+/// by kind and name, if any.
+/// </summary>
+internal readonly record struct ViewedIndex(
+    nint Window, string ControlId, int Asked, int? NowAt, bool Gone, int? Equivalent, string? Seen);
+
 /// <summary>The fields of the last view (WindowsVisibleControlAdapter): what a text aimed at a field names.</summary>
 internal interface IViewedFields
 {
     bool TryViewedField(int index, out nint window, out string controlId);
+
+    /// <summary>Ajuste c3: the control the model saw at <paramref name="index"/> (<see cref="ViewedIndex"/>); null when
+    /// no view handed it out.</summary>
+    ViewedIndex? ViewedAt(int index) =>
+        TryViewedField(index, out nint window, out string controlId)
+            ? new ViewedIndex(window, controlId, index, null, false, null, null)
+            : null;
 
     /// <summary><paramref name="replace"/>: the step sets the field to the text (a form's value), so its current
     /// content is replaced; never in a document or a password (the worker refuses those).</summary>

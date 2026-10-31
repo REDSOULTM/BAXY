@@ -979,3 +979,62 @@ en la vista no cambien tras un acto.
 
 «Configuración de sonido» con B («Settings»): no es de 7cf26e904 y lo lleva otro agente. Aquí no se cambia nada. Un
 arreglo hecho antes de la corrección quedó sólo en local (rama `dlg2-settings-local`, 1bc73cdb4, sin subir).
+
+---
+
+# Séptima vuelta: un índice nombra el control que el modelo vio (clic y escritura, en cualquier ventana)
+
+Encargo de la sesión principal tras la sexta vuelta: «un índice que manda el modelo se refiere al control que él VIO en su
+última mirada, no a la posición actual». Causa medida en la sexta vuelta: tras el clic en «Escritorio» la lectura de
+después renumeró la ventana (el campo de nombre pasó de [27] a [30], y la «after» recortada a 20 entradas no lo dijo); el
+modelo escribió por [27] y la App tomó el [27] nuevo, una carpeta del escritorio de la persona.
+
+## Arreglo
+
+- La última vista guarda, además de su numeración, lo que el modelo sabe por índice (`LastView.Told`): la mirada entera
+  y, tras cada acto, lo que su «after» listó con índice (`ViewDifference` dice qué índices listó). Una mirada nueva lo
+  borra (el modelo vio la ventana entera).
+- `ResolveSeen`: el índice nombra el control visto ahí. Ese mismo control se busca en la vista actual por su RuntimeId;
+  si cambió, por AutomationId + rol + nombre (sólo si hay uno). Si está en otro índice, se actúa sobre él y el recibo
+  lleva `indexAsked` e `indexNow`. Si ya no está, no se actúa sobre nada: el recibo es `visible_control_identity_stale`
+  con `seen` (lo que había), `gone` y, si un único control tiene su rol y su nombre, `equivalentIndex` (y su `next` con la
+  ayuda `index_label_next`). Nunca se toma lo que ocupa ahora ese índice.
+- Vale para `input.visible.click` por índice (el control visto, si su rótulo lo nombra; si no, la cascada por rótulo de
+  siempre), `input.text.type` por índice (escribir, reemplazar, elegir entrada) e `input.scroll` por índice, en
+  cualquier ventana. El worker añade `aid` (AutomationId) a cada control de la vista.
+
+## Pruebas (rojo antes, verde después: `rojo4.log`)
+
+`ComputerUseAfterViewTests.AnIndexMeansTheControlTheModelSawThereNotWhatTheRenumberedViewHasThere` (escritura y clic tras
+una «after» recortada: [21] es el campo, ahora en [22]), `…AnIndexWhoseControlIsGoneActsOnNothingAndSaysSo`,
+`…TheSameControlIsItsRuntimeIdElseItsAutomationIdKindAndNameOnce` (5 casos),
+`TextDeliveryTests.ATextByAnIndexGoesToTheControlSeenThereWhereverItIsNow` y `…WhoseControlIsGoneWritesNothing`: 5 rojas
+con el código anterior, verdes con el cambio.
+
+## En vivo en el NB: App completa publicada aparte (f344224ae, `Baxy.exe` 7d9eff7c…), sin tocar la producción
+
+GGUF por variable: A = `BAXY-Qwen3.5-4B-ft-c3-c3r9b_1-sA-Q4_K_M.gguf` (la desplegada), B = `…-sB-Q4_K_M.gguf`.
+
+| Modelo | Prueba | Resultado | Qué pasó |
+|---|---|---|---|
+| A | configuración de sonido ×3 | 3/3 abre | `app.open Configuración place sound` (A1–A3) |
+| A | Guardar como (A1) | a medias | sin índice «prueba c3» → al campo de nombre (`intoField`) → «Guardar»: `prueba c3.txt` en el escritorio, comprobado; el modelo recortó el nombre |
+| A | Guardar como (A2, A3) | no valen | índice 27→30 escrito y «Guardar» 34→37 bien; el «¿reemplazar?» salió por el `prueba c3.txt` que dejó A1 (el arnés no lo apartaba); se repitieron como A4 y A5 |
+| A | Guardar como (A4) | **bien** | «Escritorio» → texto por [27] → `indexAsked 27, indexNow 30` → «Guardar» → `…\Escritorio\prueba c3 guardado.txt`, `exists` |
+| A | Guardar como (A5) | falla, dicha | el modelo no escribe: pulsa «Editar» tres veces; BAXY dice que no pudo cambiar el nombre |
+| B | Guardar como (B1) | a medias | sin «Escritorio»: guardó `prueba c3 guardado.txt` en la carpeta del diálogo; el recibo da esa ruta y la respuesta dice «en el escritorio» (del modelo) |
+| B | Guardar como (B2) | a medias, dicha | clic en un rótulo «prueba c3 guardado.txt» que no existe → «Guardar» → `origen c3.txt` en el escritorio, y lo dice |
+| B | Guardar como (B3) | **bien** | texto [27]→[30] y «Guardar» [34]→[37]: `…\Escritorio\prueba c3 guardado.txt`, `exists` |
+
+Antes (App 7cf26e904, mismas pruebas con B a las 03:47): 0 de 3, dos de ellas por `input_field_not_reachable` en [27].
+Con el arreglo, las cinco veces que el modelo usó un índice viejo (A2, A4, B3) se actuó sobre el control que había visto.
+
+**Visto y no tocado (para la sesión principal):** un clic por un rótulo que no está en la ventana («prueba c3 guardado.txt»
+en B2, «Editar» en A5) bajó por la cascada hasta la visión, que pulsó un punto (`method: pointer`, `controlIdentity
+vision.…`) y volvió `completed`. Es la debilidad del localizador por visión ya anotada en E011: localiza rótulos que no
+están. No es de esta tarea y no se tocó.
+
+**Incidente:** a las 04:31 lancé una repetición (A4) sin la comprobación de procesos, mientras otro agente corría su
+prueba en vivo (`c3-nombres`, `nb_vivo.ps1`). Mi Bloc de notas de prueba estuvo abierto unos dos minutos en su
+escritorio. Lo cerré por PID, paré mi tarea y repetí a las 04:53 con el NB libre. Su prueba de 04:30 a 04:33 puede
+haber tenido ese Bloc de notas delante.

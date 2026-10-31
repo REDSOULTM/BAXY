@@ -178,7 +178,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // Ajuste c3 (E017): an Enter that confirms a common file dialog is judged on the dialog, as its button's click.
             CommonFileDialog.Facts? fileDialog = operation == "input.key.press" ? EnterConfirms(arguments) : null;
             DateTime actedUtc = DateTime.UtcNow;
-            ExternalCapabilityReceipt receipt = await InvokeActAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            // Ajuste c3: what the text's index meant (the control the model saw there), said in its receipt.
+            ViewedIndex? seenIndex = operation == "input.text.type" && _fields is not null && IndexOf(arguments) is int at
+                ? _fields.ViewedAt(at)
+                : null;
+            ExternalCapabilityReceipt receipt = WindowsVisibleControlAdapter.WithSeenIndex(
+                await InvokeActAsync(operation, arguments, cancellationToken).ConfigureAwait(false), seenIndex);
             if (fileDialog is not null && (receipt.Verified || receipt.EffectObserved))
             {
                 CommonFileDialog.Outcome outcome = await CommonFileDialog.AwaitAsync(fileDialog, actedUtc, cancellationToken)
@@ -239,6 +244,23 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return null;
         nint focus = _delivery?.Messages.FocusOf(facts.Dialog) ?? 0;
         return focus != 0 && focus != facts.Accept && _delivery!.Messages.ClassName(focus) == "Button" ? null : facts;
+    }
+
+    // The index a step names («index»), as a number; null otherwise.
+    private static int? IndexOf(JsonElement arguments) =>
+        arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("index", out JsonElement named)
+        && named.ValueKind == JsonValueKind.Number && named.TryGetInt32(out int index)
+            ? index
+            : null;
+
+    // Ajuste c3 (humos del 31-10): the field the model saw at an index of the last view, wherever the view after an act put
+    // it (IViewedFields.ViewedAt); false when no view handed it out or that control is gone (never what is there now).
+    private bool SeenField(int index, out nint window, out string controlId)
+    {
+        ViewedIndex? seen = _fields?.ViewedAt(index);
+        window = seen is { Gone: false } found ? found.Window : 0;
+        controlId = seen is { Gone: false } kept ? kept.ControlId : string.Empty;
+        return window != 0 && controlId.Length > 0;
     }
 
     // The window a step names («window»); 0 when it names none or not as a handle.
@@ -1415,7 +1437,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         bool fieldFocused = false, insertion = index is not null && !replace;
         if (index is int position)
         {
-            if (_fields is null || !_fields.TryViewedField(position, out nint viewed, out string controlId) || viewed != window)
+            if (_fields is null || !SeenField(position, out nint viewed, out string controlId) || viewed != window)
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
             // Ajuste c3 (smoke of 31-10, live on the notebook): «sv1.txt» set by UI Automation's SetValue into a «Guardar
             // como» name field read back as set, and the dialog saved under its old name; the same field written by its
@@ -1569,7 +1591,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         nint field;
         if (index is int position)
         {
-            if (_fields is null || !_fields.TryViewedField(position, out nint viewed, out string controlId) || viewed != window)
+            if (_fields is null || !SeenField(position, out nint viewed, out string controlId) || viewed != window)
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
             // Only the field's description: no text is given to the worker, so nothing is written.
             using JsonDocument? answer = await _fields.FieldAsync(window, controlId, null, false, cancellationToken)
@@ -1627,14 +1649,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         WindowIdentity identity = _delivery!.Messages.Identity(window);
         if (!identity.Alive)
             return WindowNotFound(operation, window);
-        if (!_fields!.TryViewedField(index, out nint viewed, out string controlId) || viewed != window)
+        if (!SeenField(index, out nint viewed, out string controlId) || viewed != window)
             return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
         var effectBoundary = new ExternalEffectBoundary();
         JsonDocument? answer;
         try
         {
             effectBoundary.Cross(cancellationToken);
-            answer = await _fields.EntryAsync(window, controlId, text, cancellationToken).ConfigureAwait(false);
+            answer = await _fields!.EntryAsync(window, controlId, text, cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {

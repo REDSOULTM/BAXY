@@ -42,6 +42,122 @@ public sealed class ComputerUseAfterViewTests
         new(3, "1.4", "Button", "Salir", ""),
     ];
 
+    // Ajuste c3 (humos del 31-10 en el NB, modelo sB): a click on «Escritorio» in a «Guardar como» filled its file list;
+    // the view after renumbered the window and the name field went from [27] to [30], told only in an «after» cut at its
+    // cap. The model wrote by [27], the field it saw, and the App took [27] of the new numbering (a folder of the
+    // person's desktop). An index means the control the model saw at it: the one its last look listed there, unless an
+    // «after» it was given since listed that index anew. That same control (its runtime id, else its automation id, kind
+    // and name, once) is the one acted on wherever it is now, and the receipt says where; a control gone is never
+    // replaced by whatever occupies its index now.
+    private static string Control(string kind, string name, string id, string state = "") =>
+        "{\"kind\":\"" + kind + "\",\"name\":\"" + name + "\",\"id\":\"" + id + "\",\"state\":\"" + state + "\",\"value\":null}";
+
+    private static ViewControlSpec[] DialogSeen =>
+    [
+        new(0, "1.1", "TreeItem", "Escritorio", ""),
+        .. Enumerable.Range(1, 20).Select(i => new ViewControlSpec(i, "3." + i, "Button", "b" + i, "")),
+        new(21, "42.77", "Edit", "Nombre de archivo:", ""),
+        new(22, "42.78", "Button", "Guardar", ""),
+    ];
+
+    private static string DialogAfter(bool fieldStays) =>
+        "{\"ok\":true,\"error\":\"\",\"window\":\"Guardar como\",\"controls\":[" +
+        string.Join(',', [
+            Control("TreeItem", "Escritorio", "1.1", "selected"),
+            .. Enumerable.Range(1, 20).Select(i => Control("Button", "b" + i, "3." + i, "readonly")),
+            Control("ListItem", "carpeta de la persona", "2.1"),
+            .. fieldStays ? [Control("Edit", "Nombre de archivo:", "42.77")] : Array.Empty<string>(),
+            Control("Button", "Guardar", "42.78")]) +
+        "],\"controlCount\":" + (fieldStays ? 24 : 23) + ",\"partial\":false}";
+
+    [Test]
+    public void AnIndexMeansTheControlTheModelSawThereNotWhatTheRenumberedViewHasThere()
+    {
+        WithWindow(window =>
+        {
+            string pressedField = Pressed.Replace("\"Abrir\"", "\"Nombre de archivo:\"", StringComparison.Ordinal)
+                .Replace("\"Button\"", "\"Edit\"", StringComparison.Ordinal)
+                .Replace("\"1.1\"", "\"42.77\"", StringComparison.Ordinal);
+            var worker = new OrderedWorker(Pressed, DialogAfter(fieldStays: true), pressedField);
+            WindowsVisibleControlAdapter adapter = Adapter(worker);
+            RememberView(adapter, window, DialogSeen);
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Escritorio", "1.1");
+
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(Strings(receipt.Result!.Value.GetProperty("after"), "appeared"), Is.Empty,
+                "the cap left the new item and the moved field untold");
+            Assert.Multiple(() =>
+            {
+                Assert.That(adapter.TryViewedField(21, out nint viewed, out string id), Is.True);
+                Assert.That(id, Is.EqualTo("42.77"), "[21] is the name field the look listed, not the folder now at [21]");
+                Assert.That(viewed, Is.EqualTo(window));
+                Assert.That(adapter.ViewedAt(21), Is.EqualTo(new ViewedIndex(window, "42.77", 21, 22, false, null, null)));
+                Assert.That(adapter.TryViewedField(0, out _, out string told) && told == "1.1", Is.True,
+                    "an index the after listed is the control it listed");
+            });
+
+            // A click by that index presses the field where it is now and says its index now.
+            ExternalCapabilityReceipt field = adapter.InvokeAsync(
+                    "input.visible.click",
+                    Json("{\"label\":\"Nombre de archivo:\",\"index\":21,\"window\":" + (long)window + "}"),
+                    CancellationToken.None)
+                .AsTask().GetAwaiter().GetResult();
+            Assert.Multiple(() =>
+            {
+                Assert.That(field.Verified, Is.True, field.ErrorCode);
+                Assert.That(worker.Commands[2], Does.Contain("42.77"), "the field the look listed was pressed");
+                Assert.That(field.Result!.Value.GetProperty("indexNow").GetInt32(), Is.EqualTo(22));
+                Assert.That(field.Result!.Value.GetProperty("indexAsked").GetInt32(), Is.EqualTo(21));
+            });
+        });
+    }
+
+    // The same control: its runtime id; a control whose runtime id changed, by its automation id, kind and name when one
+    // control alone has them; anything else is gone, and only one control alone with its kind and name is its equivalent.
+    [Test]
+    public void TheSameControlIsItsRuntimeIdElseItsAutomationIdKindAndNameOnce()
+    {
+        static WindowsVisibleControlAdapter.ViewControl C(int index, string id, string aid, string kind, string name) =>
+            new() { Index = index, Id = id, Aid = aid, Kind = kind, Name = name };
+        var told = new Dictionary<int, WindowsVisibleControlAdapter.ViewControl> { [5] = C(5, "1.9", "nameBox", "Edit", "Nombre") };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsVisibleControlAdapter.ResolveSeen(5, 7, [C(0, "7.7", "nameBox", "Edit", "Nombre"), C(5, "1.2", "", "ListItem", "x")], told),
+                Is.EqualTo(new ViewedIndex(7, "7.7", 5, 0, false, null, null)), "its id changed: automation id, kind and name");
+            Assert.That(WindowsVisibleControlAdapter.ResolveSeen(5, 7, [C(0, "7.7", "otro", "Edit", "Nombre"), C(5, "1.2", "", "ListItem", "x")], told),
+                Is.EqualTo(new ViewedIndex(0, string.Empty, 5, null, true, 0, "Edit «Nombre»")), "gone; one equivalent");
+            Assert.That(WindowsVisibleControlAdapter.ResolveSeen(5, 7,
+                    [C(0, "7.7", "a", "Edit", "Nombre"), C(1, "7.8", "b", "Edit", "Nombre"), C(5, "1.2", "", "ListItem", "x")], told),
+                Is.EqualTo(new ViewedIndex(0, string.Empty, 5, null, true, null, "Edit «Nombre»")), "gone; no single equivalent");
+            Assert.That(WindowsVisibleControlAdapter.ResolveSeen(5, 7, [C(5, "1.9", "nameBox", "Edit", "Nombre")], told),
+                Is.EqualTo(new ViewedIndex(7, "1.9", 5, null, false, null, null)), "where it was");
+            Assert.That(WindowsVisibleControlAdapter.ResolveSeen(3, 7, [C(3, "1.3", "", "Button", "B")], null),
+                Is.EqualTo(new ViewedIndex(7, "1.3", 3, null, false, null, null)), "a view the model saw whole");
+        });
+    }
+
+    [Test]
+    public void AnIndexWhoseControlIsGoneActsOnNothingAndSaysSo()
+    {
+        WithWindow(window =>
+        {
+            WindowsVisibleControlAdapter adapter = Adapter(new OrderedWorker(Pressed, DialogAfter(fieldStays: false)));
+            RememberView(adapter, window, DialogSeen);
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Escritorio", "1.1");
+
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.Multiple(() =>
+            {
+                Assert.That(adapter.TryViewedField(21, out _, out _), Is.False, "the folder now at [21] is never taken");
+                Assert.That(adapter.ViewedAt(21), Is.EqualTo(new ViewedIndex(0, string.Empty, 21, null, true, null,
+                    "Edit «Nombre de archivo:»")));
+            });
+        });
+    }
+
     [Test]
     public void ACompletedClickCarriesTheViewAfterItWithTheNewIndices()
     {
