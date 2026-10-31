@@ -161,6 +161,39 @@ public sealed class KeypadInvokeTests
         }));
     }
 
+    // Auditoría de fallos de la App (e2e E011): the order BAXY computed for a parenthesised expression is what the
+    // Standard keypad presses instead of refusing it; only there, only for that refusal, and only an order of numbers and
+    // + - * / (a power is never pressed there).
+    [Test]
+    public void TheStandardKeypadTakesTheOrderGivenForItsParenthesesRefusal()
+    {
+        string answer = Run("""
+            $answers=@(
+              (Get-StandardOrder 'calculator_needs_scientific_mode' 'standard' '250+175*2'),
+              (Get-StandardOrder 'calculator_needs_scientific_mode' 'standard' ''),
+              (Get-StandardOrder 'calculator_needs_scientific_mode' 'standard' '2^2'),
+              (Get-StandardOrder 'calculator_mode_not_supported' 'other' '250+175*2'),
+              (Get-StandardOrder '' 'scientific' '250+175*2')
+            )
+            [Console]::Out.Write(($answers -join ','))
+            """);
+
+        Assert.That(answer.Split(','), Is.EqualTo(new[] { "250+175*2", "", "", "", "" }));
+    }
+
+    [Test]
+    public void TheCalculatorScriptPressesTheOrderBeforeItsRefusalIsSaid()
+    {
+        string script = WindowsDeviceControlAdapter.CalculatorScript;
+        int order = script.IndexOf("$inOrder=Get-StandardOrder $refusal $mode", StringComparison.Ordinal);
+        int refused = script.IndexOf("if($refusal){", StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(order, Is.GreaterThan(0));
+            Assert.That(refused, Is.GreaterThan(order));
+        });
+    }
+
     // Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): an expression that starts with an operator continues
     // from the number the display shows (nothing is cleared); one that starts with a number or a parenthesis clears.
     // A continued expression is proved by a display that changed from what it showed before the presses.

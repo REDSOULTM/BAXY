@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
@@ -162,6 +163,63 @@ public sealed class ExternalCapabilityHandlerTests
         {
             Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("calculator_needs_scientific_mode"));
             Assert.That(facts.RootElement.TryGetProperty("observed", out _), Is.False);
+        });
+    }
+
+    // Auditoría de fallos de la App (e2e del 29 y 30-10, E011): with the hint above the model still had to rewrite an
+    // expression that was right, and 7 of the 108 failures of two days of e2e were «(250+175)*2» refused on the Standard
+    // keypad (the person told the Calculator could not). BAXY computes an order of the same numbers and operators that
+    // the Standard keypad, applying each operator in the order pressed, takes to the value the parentheses mean.
+    [TestCase("(250+175)*2", "250+175*2")]
+    [TestCase("2*(3+4)", "3+4*2")]
+    [TestCase("(2+3*4)*2", "3*4+2*2")]
+    [TestCase("(10+2)/4", "10+2/4")]
+    [TestCase("((1+2)*3-4)/5", "1+2*3-4/5")]
+    [TestCase("(1.5+2)*4", "1.5+2*4")]
+    public void AParenthesisedExpressionHasAnOrderTheStandardKeypadComputesTheSame(string keys, string inOrder) =>
+        Assert.That(WindowsDeviceControlAdapter.CalculatorStandardOrder(keys), Is.EqualTo(inOrder));
+
+    // Contracases: no such order without the keypad's memory (a group subtracted, divided or two groups multiplied),
+    // a power (no ^ there), an expression without parentheses (pressed as written, as before) or one that continues from
+    // the number shown.
+    [TestCase("10-(2+3)")]
+    [TestCase("10/(2+3)")]
+    [TestCase("(1+2)*(3+4)")]
+    [TestCase("(2+3)^2")]
+    [TestCase("2+3*4")]
+    [TestCase("*(2+3)")]
+    public void AnExpressionWithoutSuchAnOrderHasNone(string keys) =>
+        Assert.That(WindowsDeviceControlAdapter.CalculatorStandardOrder(keys), Is.Null);
+
+    // The order goes to the script with the expression, and the receipt keeps the expression as asked and says what
+    // the Standard keypad pressed (pressedInOrder) and the value its display shows.
+    [Test]
+    public async Task TheStandardKeypadPressesTheOrderAndTheReceiptSaysSo()
+    {
+        var runner = new CapturingRunner("""{"ok":true,"typed":"250+175*2","inOrder":true,"mode":"standard","before":"0","displayName":"Se muestra 850","expressionName":"425 × 2=","value":"850"}""");
+        OperationOutcome outcome = await Calculator(runner, "(250+175)*2");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(Encoding.UTF8.GetString(Convert.FromBase64String(runner.Arguments[^1])), Is.EqualTo("250+175*2"));
+            Assert.That(outcome.Result?.GetProperty("expression").GetString(), Is.EqualTo("(250+175)*2"));
+            Assert.That(outcome.Result?.GetProperty("pressedInOrder").GetString(), Is.EqualTo("250+175*2"));
+            Assert.That(outcome.Result?.GetProperty("value").GetString(), Is.EqualTo("850"));
+        });
+    }
+
+    // Contracase: an expression without parentheses goes as before (no order), and its receipt says none.
+    [Test]
+    public async Task AnExpressionWithoutParenthesesGoesWithoutAnOrder()
+    {
+        var runner = new CapturingRunner("""{"ok":true,"typed":"6*7","mode":"standard","before":"0","displayName":"Se muestra 42","expressionName":"6 × 7=","value":"42"}""");
+        OperationOutcome outcome = await Calculator(runner, "6*7");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Encoding.UTF8.GetString(Convert.FromBase64String(runner.Arguments[^2])), Is.EqualTo("6*7"));
+            Assert.That(outcome.Result?.TryGetProperty("pressedInOrder", out _), Is.False);
         });
     }
 
@@ -361,11 +419,13 @@ public sealed class ExternalCapabilityHandlerTests
     private static async Task<string> CalculatorMessage(string scriptOutput) =>
         OperationVisibleFacts.FromOutcome("calculator.expression.evaluate", await Calculator(scriptOutput, "6*7"));
 
-    private static async Task<OperationOutcome> Calculator(string scriptOutput, string expression)
+    private static Task<OperationOutcome> Calculator(string scriptOutput, string expression) =>
+        Calculator(new ScriptedRunner(scriptOutput), expression);
+
+    private static async Task<OperationOutcome> Calculator(IExternalProcessRunner runner, string expression)
     {
         const string operation = "calculator.expression.evaluate";
-        var adapter = new WindowsDeviceControlAdapter(
-            Path.GetTempPath(), Path.GetTempPath(), new ScriptedRunner(scriptOutput));
+        var adapter = new WindowsDeviceControlAdapter(Path.GetTempPath(), Path.GetTempPath(), runner);
         return await new ExternalCapabilityHandler(operation, new AdapterProvider(adapter))
             .ExecuteAsync(
                 new OperationInvocation(
@@ -378,6 +438,18 @@ public sealed class ExternalCapabilityHandlerTests
         public ValueTask<ExternalProcessResult> RunAsync(
             string executable, IReadOnlyList<string> arguments, TimeSpan timeout, CancellationToken cancellationToken) =>
             ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
+    }
+
+    private sealed class CapturingRunner(string output) : IExternalProcessRunner
+    {
+        public IReadOnlyList<string> Arguments { get; private set; } = [];
+
+        public ValueTask<ExternalProcessResult> RunAsync(
+            string executable, IReadOnlyList<string> arguments, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            Arguments = arguments;
+            return ValueTask.FromResult(new ExternalProcessResult(0, output, ""));
+        }
     }
 
     private sealed class AdapterProvider(WindowsDeviceControlAdapter adapter) : IExternalCapabilityProvider

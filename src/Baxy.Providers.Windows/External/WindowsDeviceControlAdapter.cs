@@ -988,6 +988,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           if($mode -ne 'scientific' -and $keys -match '[\^()]'){ return 'calculator_needs_scientific_mode' }
           return ''
         }
+        # Auditoría de fallos de la App (e2e E011): an expression whose ( ) the Standard keypad lacks is pressed there in
+        # the order BAXY computed for it (CalculatorStandardOrder: the same value with each operator applied in the order
+        # pressed), when one was given; only for that refusal, and only numbers and + - * / (^ is never on that keypad).
+        function Get-StandardOrder([string]$refusal,[string]$mode,[string]$inOrder){
+          if($refusal -eq 'calculator_needs_scientific_mode' -and $mode -eq 'standard' -and $inOrder -match '^[0-9.+\-*/]+$'){ return $inOrder }
+          return ''
+        }
         # Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): an expression that starts with an operator
         # continues from the number the display shows; any other clears the display first.
         function Test-ContinuesDisplay([string]$keys){ return ($keys -match '^[-+*/^]') }
@@ -1046,6 +1053,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $keypad=Read-Keypad;$buttons=$keypad.buttons;$names=$keypad.names;$ids=$keypad.ids
         $mode=Get-KeypadMode $ids
         $refusal=Get-ModeRefusal $mode $keys
+        $inOrder=Get-StandardOrder $refusal $mode $(if($args.Count -gt 2){[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[2]))}else{''})
+        if($inOrder){ $keys=$inOrder; $refusal='' }
         if($refusal){[pscustomobject]@{ok=$false;error=$refusal;mode=$mode}|ConvertTo-Json -Compress;exit 9}
         $plan=Select-KeypadPresses ($keys+'=') $names $map $ids
         if($null -eq $plan){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
@@ -1088,7 +1097,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         if(-not (Test-ShowsLastOperand $exprName $value $keys $start)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';displayName=$name;expressionName=$exprName}|ConvertTo-Json -Compress;exit 8}
         # What the display showed before: the number a continued expression started from, or what the clear removed.
         $was=$(if($before.value -match '^-?\d'){$before.value}else{$before.name})
-        [pscustomobject]@{ok=$true;typed=$keys;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value;mode=$mode;continued=[bool]$continued;before=$was}|ConvertTo-Json -Compress
+        [pscustomobject]@{ok=$true;typed=$keys;inOrder=[bool]$inOrder;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value;mode=$mode;continued=[bool]$continued;before=$was}|ConvertTo-Json -Compress
         """;
 
     // The keypad's buttons by the characters they press (src/baxy_mind/data/keypad_keys.v1.json, embedded).
@@ -1191,6 +1200,88 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return new CalculatorVerdict(keys, refused, reasons, longNumbers, operators);
     }
 
+    /// <summary>
+    /// Auditoría de fallos de la App (e2e del 29 y 30-10, E011): «(250+175)*2» is right, and the Standard keypad, which
+    /// has no ( ) and applies each operator in the order pressed (microsoft/calculator's README: Standard «evaluates
+    /// commands immediately as they are entered»), refused it. The same numbers and operators in an order that keypad
+    /// takes to the value the parentheses mean (with the usual precedence inside them, as the Scientific keypad computes):
+    /// a group first and a number after it («250+175*2»), or a group after a number when the operator is + or *, whose
+    /// operands commute. Null when the expression has no parentheses (pressed as written, as before), has ^ (not on that
+    /// keypad), continues from the number shown, or needs the keypad's memory (a group subtracted or divided, two groups).
+    /// </summary>
+    internal static string? CalculatorStandardOrder(string keys)
+    {
+        if (!keys.Contains('(', StringComparison.Ordinal) || keys.Contains('^', StringComparison.Ordinal)
+            || !CalculatorExpression.IsMatch(keys) || "+-*/".Contains(keys[0], StringComparison.Ordinal))
+        {
+            return null;
+        }
+        int at = 0;
+        CalculatorNode tree = CalculatorSum(keys, ref at);
+        return at == keys.Length ? CalculatorInOrder(tree) : null;
+    }
+
+    // A number, or an operator with its two operands.
+    private sealed record CalculatorNode(string? Number, char Operator = '\0', CalculatorNode? Left = null, CalculatorNode? Right = null);
+
+    // The shape was already checked (CalculatorExpression): numbers, + - * /, and balanced parentheses.
+    private static CalculatorNode CalculatorSum(string keys, ref int at)
+    {
+        CalculatorNode left = CalculatorProduct(keys, ref at);
+        while (at < keys.Length && keys[at] is '+' or '-')
+        {
+            char op = keys[at++];
+            left = new CalculatorNode(null, op, left, CalculatorProduct(keys, ref at));
+        }
+        return left;
+    }
+
+    private static CalculatorNode CalculatorProduct(string keys, ref int at)
+    {
+        CalculatorNode left = CalculatorFactor(keys, ref at);
+        while (at < keys.Length && keys[at] is '*' or '/')
+        {
+            char op = keys[at++];
+            left = new CalculatorNode(null, op, left, CalculatorFactor(keys, ref at));
+        }
+        return left;
+    }
+
+    private static CalculatorNode CalculatorFactor(string keys, ref int at)
+    {
+        if (keys[at] == '(')
+        {
+            at++;
+            CalculatorNode inner = CalculatorSum(keys, ref at);
+            at++;
+            return inner;
+        }
+        int start = at;
+        while (at < keys.Length && (char.IsAsciiDigit(keys[at]) || keys[at] == '.'))
+        {
+            at++;
+        }
+        return new CalculatorNode(keys[start..at]);
+    }
+
+    // Pressed in this order, each operator applied to what the display holds, the keypad reaches the node's value.
+    private static string? CalculatorInOrder(CalculatorNode node)
+    {
+        if (node.Number is { } number)
+        {
+            return number;
+        }
+        if (node.Right!.Number is { } right)
+        {
+            return CalculatorInOrder(node.Left!) is { } before ? before + node.Operator + right : null;
+        }
+        if (node.Operator is '+' or '*' && node.Left!.Number is { } left)
+        {
+            return CalculatorInOrder(node.Right) is { } before ? before + node.Operator + left : null;
+        }
+        return null;
+    }
+
     /// <summary>What <see cref="CalculatorCheck"/> read of an expression: accepted when it gives no reason.</summary>
     internal sealed record CalculatorVerdict(
         string Keys, string Refused, IReadOnlyList<string> Reasons, IReadOnlyList<string> LongNumbers, int Operators);
@@ -1268,14 +1359,18 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // not waited for, and their typing in their own window does not stop the expression half pressed (v3 point 0:
         // waiting for the pause is only for an act that has no other way than real input).
         effectBoundary.Cross(token);
+        // Auditoría de fallos de la App (E011): an expression with parentheses carries the order the Standard keypad
+        // presses for it, used only if the script reads that keypad (the mode is never switched).
+        string[] scriptArguments = CalculatorStandardOrder(normalized) is { } inOrder
+            ? [Encode(normalized), Encode(KeypadKeys.Value), Encode(inOrder)]
+            : [Encode(normalized), Encode(KeypadKeys.Value)];
         // Renew al máximo (rendimiento): with the product's UI Automation worker the script runs there, already
         // loaded, not in a PowerShell started cold for it (the same script, arguments and budget).
         ExternalProcessResult process = Scripts is { } worker
             ? await UiaWorkerScript.RunAsync(
-                worker, CalculatorScript, [Encode(normalized), Encode(KeypadKeys.Value)], TimeSpan.FromSeconds(60), token)
+                worker, CalculatorScript, scriptArguments, TimeSpan.FromSeconds(60), token)
                 .ConfigureAwait(false)
-            : await RunPowerShellAsync(
-                CalculatorScript, [Encode(normalized), Encode(KeypadKeys.Value)], token).ConfigureAwait(false);
+            : await RunPowerShellAsync(CalculatorScript, scriptArguments, token).ConfigureAwait(false);
 
         using JsonDocument document = ParseLastJson(process.Output);
         JsonElement root = document.RootElement;
@@ -1297,7 +1392,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             // Ajuste c3, e2e E011: ( ) or ^ on the Standard keypad pressed nothing, and the code alone left the model with
             // no way on (it told the person the Calculator could not, or pressed the digits by hand). The failure says the
             // mode the script read and how that keypad computes (microsoft/calculator's README: Standard «evaluates
-            // commands immediately as they are entered»); the mode is never switched and nothing is rewritten here.
+            // commands immediately as they are entered»); the mode is never switched. Only an expression with no order for
+            // that keypad comes here (CalculatorStandardOrder: a power, a group subtracted or divided, two groups).
             if (code == "calculator_needs_scientific_mode" && ModelAids.On(ModelAids.CalculatorNext)
                 && root.TryGetProperty("mode", out JsonElement read) && read.ValueKind == JsonValueKind.String
                 && read.GetString() == "standard")
@@ -1321,6 +1417,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("expression", normalized);
+            // Auditoría de fallos de la App (E011): what the Standard keypad pressed for an expression with parentheses.
+            if (Bool(root, "inOrder") && root.TryGetProperty("typed", out JsonElement typed)
+                && typed.ValueKind == JsonValueKind.String)
+            {
+                writer.WriteString("pressedInOrder", typed.GetString());
+            }
             // Holdout v5 V5E021/V5E029: the mode it was pressed in, and what the display showed before: the number a
             // continued expression started from, or what the clear removed (read, never assumed).
             if (root.TryGetProperty("mode", out JsonElement mode) && mode.ValueKind == JsonValueKind.String)
