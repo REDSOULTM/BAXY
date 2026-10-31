@@ -252,6 +252,29 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Ajuste c3 (humo del NB, 31-10: app.open {"appId":"Settings","place":"sound"} on a Spanish Windows said «No encontré
+    // Configuración de sonido; sí hay WSL Settings…»): a name the application places' data give the same application
+    // (app_places «names») is the installed entry of its other name, either way round; with neither installed, nothing.
+    [TestCase("Settings", "Configuración")]
+    [TestCase("settings", "Configuración")]
+    [TestCase("Configuración", "Settings")]
+    public void ANameTheDataGiveTheSameApplicationResolvesToItsInstalledEntry(string query, string installed)
+    {
+        InstalledApplicationEntry[] others =
+        [
+            new("Paint", "Microsoft.Paint_8wekyb3d8bbwe!App"),
+            new("WSL Settings", "MicrosoftCorporationII.WindowsSubsystemForLinux_8wekyb3d8bbwe!Settings"),
+        ];
+        InstalledApplicationEntry[] catalog =
+            [.. others, new(installed, "windows.immersivecontrolpanel_cw5n1h2txyewy!microsoft.windows.immersivecontrolpanel")];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(InstalledApplicationResolver.Resolve(query, catalog).Entry?.Name, Is.EqualTo(installed));
+            Assert.That(InstalledApplicationResolver.Resolve(query, others).Entry, Is.Null);
+        });
+    }
+
     // Ajuste c3 (e2e del PC, c2c1-sA s1, E010 «abre la calculadora y calcula 12 por 7»): app.open «calc.exe» said Access,
     // Calendar, CapCut, Claude and CODEX, and not the Calculadora installed, whose name «calc» begins; the model answered
     // that there was no calculator. A name one of whose words begins with what was asked (three letters or more, up to
