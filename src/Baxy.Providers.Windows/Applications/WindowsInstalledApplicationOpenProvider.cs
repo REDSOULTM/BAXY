@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using Baxy.Contracts;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Infrastructure;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
@@ -483,7 +484,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 continue;
             }
 
-            string name = entry.Name.Trim().Normalize(NormalizationForm.FormC);
+            // Ajuste c3 (humos del 31-10): a shortcut's localized name may hold another white space than the space
+            // («Windows PowerShell ISE 5.1» with a no-break one), which the hello's contract refuses, and with it the
+            // whole list. The model is shown it with a space; the resolver folds white space, so it still opens.
+            string name = new([.. entry.Name.Trim().Normalize(NormalizationForm.FormC)
+                .Select(static character => char.IsWhiteSpace(character) ? ' ' : character)]);
             string key;
             try
             {
@@ -1883,6 +1888,17 @@ internal static class InstalledApplicationResolver
         if (byIdentity.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1)
         {
             return new InstalledApplicationResolution(byIdentity[0], false);
+        }
+
+        // Ajuste c3 (humo del NB, 31-10: «Settings» on a Spanish Windows, whose Start catalog says «Configuración»): a name
+        // the application places' data give the same application in another display language is its installed entry,
+        // as the place it is asked with already is (ApplicationPlaces.SameApplication). Only one entry resolves.
+        InstalledApplicationEntry[] declared = entries
+            .Where(item => ApplicationPlaces.SameApplication(query, item.Name))
+            .ToArray();
+        if (declared.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1)
+        {
+            return new InstalledApplicationResolution(declared[0], false);
         }
 
         // Ajuste c3 (e2e del NB: app.open «calc.exe» said the Calculadora was not in the start menu): a program's bare

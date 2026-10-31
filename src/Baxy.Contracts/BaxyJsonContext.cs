@@ -10,6 +10,7 @@ namespace Baxy.Contracts;
     GenerationMode = JsonSourceGenerationMode.Default)]
 [JsonSerializable(typeof(ProtocolHello))]
 [JsonSerializable(typeof(ApplicationCatalogSnapshot))]
+[JsonSerializable(typeof(ApplicationCatalogUpdate))]
 [JsonSerializable(typeof(GameCatalogSnapshot))]
 [JsonSerializable(typeof(GameCatalogEntry))]
 [JsonSerializable(typeof(GameCatalogEntry[]))]

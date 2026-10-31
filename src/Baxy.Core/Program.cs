@@ -28,6 +28,7 @@ internal static class Program
 {
     private const int MaximumLineBytes = 1024 * 1024;
     private static readonly long StartedAt = System.Diagnostics.Stopwatch.GetTimestamp();
+    private static readonly SemaphoreSlim OutputLock = new(1, 1);
 
     public static async Task<int> Main()
     {
@@ -106,9 +107,9 @@ internal static class Program
         // The catalog read (a cold PowerShell at sign-in) starts now, beside the
         // journal check, instead of after it; the hello waits for it only
         // within its own budget (CoreStartupBudget).
-        Task<InstalledApplicationCatalogSnapshot> catalogRead = installedApplicationProvider
-            .GetCatalogSnapshotAsync(cancellationToken)
-            .AsTask();
+        var keptCatalog = new KeptApplicationCatalog(Path.Combine(dataRoot, KeptApplicationCatalog.FileName));
+        Task<InstalledApplicationCatalogSnapshot> catalogRead = ReadAndKeepCatalogAsync(
+            installedApplicationProvider, keptCatalog, cancellationToken);
         var audioControlProvider = new WindowsAudioControlProvider(
             Path.Combine(dataRoot, "audio", "control-state"));
         var systemStatusProvider = new WindowsSystemStatusProvider();
@@ -206,13 +207,15 @@ internal static class Program
                     System.Diagnostics.Stopwatch.GetElapsedTime(StartedAt),
                     cancellationToken)
                 .ConfigureAwait(false);
-            await WriteHelloAsync(
+            ApplicationCatalogSnapshot? sent = await WriteHelloAsync(
                     output,
                     registry,
                     catalogRead,
+                    keptCatalog,
                     externalCapabilityProvider,
                     cancellationToken)
                 .ConfigureAwait(false);
+            _ = SendLateCatalogAsync(output, catalogRead, sent, cancellationToken);
         }
         catch
         {
@@ -276,16 +279,18 @@ internal static class Program
         return 0;
     }
 
-    private static async ValueTask WriteHelloAsync(
+    private static async ValueTask<ApplicationCatalogSnapshot?> WriteHelloAsync(
         Stream output,
         OperationRegistry registry,
         Task<InstalledApplicationCatalogSnapshot> catalogRead,
+        KeptApplicationCatalog keptCatalog,
         WindowsExternalCapabilityProvider externalCapabilityProvider,
         CancellationToken cancellationToken)
     {
         ProtocolHello hello = await CreateHelloAsync(
             registry,
             catalogRead,
+            keptCatalog,
             externalCapabilityProvider,
             cancellationToken).ConfigureAwait(false);
         byte[] helloMessage = ProtocolJson.SerializeToUtf8Bytes(hello);
@@ -316,6 +321,56 @@ internal static class Program
             output,
             helloMessage,
             cancellationToken).ConfigureAwait(false);
+        return hello.ApplicationCatalog;
+    }
+
+    // Ajuste c3 (humos del 31-10): a verified read is kept for the next start, whose read may be late.
+    private static async Task<InstalledApplicationCatalogSnapshot> ReadAndKeepCatalogAsync(
+        WindowsInstalledApplicationOpenProvider provider,
+        KeptApplicationCatalog keptCatalog,
+        CancellationToken cancellationToken)
+    {
+        InstalledApplicationCatalogSnapshot read = await provider.GetCatalogSnapshotAsync(cancellationToken)
+            .ConfigureAwait(false);
+        keptCatalog.Keep(read);
+        return read;
+    }
+
+    // Ajuste c3 (humos del 31-10): a read that ends after the hello, saying other names than the hello did, goes to the
+    // App at once (catalog.applications), so the mind is not left the whole session without the list. A failed read
+    // or write sends nothing and is said on stderr; requests are answered as before.
+    private static async Task SendLateCatalogAsync(
+        Stream output,
+        Task<InstalledApplicationCatalogSnapshot> catalogRead,
+        ApplicationCatalogSnapshot? sent,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            InstalledApplicationCatalogSnapshot live = await catalogRead.ConfigureAwait(false);
+            InstalledApplicationCatalogSnapshot? update = HelloCatalogWait.LateUpdate(
+                sent is null ? new(false, false, []) : new(sent.Verified, sent.Complete, sent.Names), live);
+            if (update is null)
+            {
+                return;
+            }
+
+            await WriteMessageAsync(
+                output,
+                ProtocolJson.SerializeToUtf8Bytes(new ApplicationCatalogUpdate(
+                    ProtocolTypes.ApplicationCatalogUpdate,
+                    new ApplicationCatalogSnapshot(
+                        ApplicationCatalogContract.CurrentVersion, true, update.Complete, [.. update.Names]))),
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            Console.Error.WriteLine("BAXY core ended before sending the installed applications read late.");
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"BAXY core could not send the installed applications read late: {exception.GetType().Name}");
+        }
     }
 
     /// <summary>
@@ -397,6 +452,7 @@ internal static class Program
     private static async ValueTask<ProtocolHello> CreateHelloAsync(
         OperationRegistry registry,
         Task<InstalledApplicationCatalogSnapshot> applicationCatalogRead,
+        KeptApplicationCatalog keptCatalog,
         WindowsExternalCapabilityProvider externalCapabilityProvider,
         CancellationToken cancellationToken)
     {
@@ -415,6 +471,7 @@ internal static class Program
                 await HelloCatalogWait.WithinAsync(
                     applicationCatalogRead,
                     System.Diagnostics.Stopwatch.GetElapsedTime(StartedAt),
+                    keptCatalog.Load,
                     cancellationToken).ConfigureAwait(false);
             applicationCatalog = new ApplicationCatalogSnapshot(
                 ApplicationCatalogContract.CurrentVersion,
@@ -496,6 +553,8 @@ internal static class Program
         ArrayPool<byte> pool = ArrayPool<byte>.Shared;
         int wireLength = checked(message.Length + 1);
         byte[] wire = pool.Rent(wireLength);
+        // Ajuste c3: a late catalog (SendLateCatalogAsync) is written beside the responses; one line at a time.
+        await OutputLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             message.Span.CopyTo(wire);
@@ -507,6 +566,7 @@ internal static class Program
         }
         finally
         {
+            OutputLock.Release();
             CryptographicOperations.ZeroMemory(wire.AsSpan(0, wireLength));
             pool.Return(wire);
         }

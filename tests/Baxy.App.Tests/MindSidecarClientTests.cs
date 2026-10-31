@@ -31,6 +31,30 @@ public sealed class MindSidecarClientTests
         Assert.That(status, Is.True, "voice.status waited behind the turn");
     }
 
+    // Ajuste c3 (humos del 31-10): the mind configured without the installed applications (the core's hello had none)
+    // gets them when the core says them, once; the same list again sends nothing.
+    [Test]
+    public async Task AMindConfiguredWithoutTheInstalledListGetsItWhenItArrivesOnce()
+    {
+        using var fake = new FakeMind();
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var arrived = new Baxy.Contracts.ApplicationCatalogSnapshot(
+            Baxy.Contracts.ApplicationCatalogContract.CurrentVersion, true, true, ["Bloc de notas", "Configuración"]);
+
+        bool first = await mind.UpdateApplicationCatalogAsync(arrived, TimeSpan.FromSeconds(10), CancellationToken.None);
+        bool again = await mind.UpdateApplicationCatalogAsync(arrived, TimeSpan.FromSeconds(10), CancellationToken.None);
+
+        IReadOnlyList<JsonObject> configured = fake.Requests("catalog.configure");
+        Assert.Multiple(() =>
+        {
+            Assert.That(first, Is.True);
+            Assert.That(again, Is.True);
+            Assert.That(configured, Has.Count.EqualTo(2));
+            Assert.That(configured[^1]["applicationCatalog"]?["names"]?.AsArray().Select(static n => (string?)n),
+                Is.EqualTo(new[] { "Bloc de notas", "Configuración" }));
+        });
+    }
+
     [Test]
     public void ALateNoticeIsNotADeadMind()
     {

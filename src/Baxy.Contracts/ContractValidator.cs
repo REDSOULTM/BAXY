@@ -49,6 +49,18 @@ public static class ContractValidator
         }
     }
 
+    public static void Validate(ApplicationCatalogUpdate value)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+        RequireType(value.Type, ProtocolTypes.ApplicationCatalogUpdate);
+        if (value.ApplicationCatalog is null || !value.ApplicationCatalog.Verified)
+        {
+            ThrowInvalid("an applicationCatalog update must carry a verified catalog");
+        }
+
+        Validate(value.ApplicationCatalog);
+    }
+
     public static void Validate(ApplicationCatalogSnapshot value)
     {
         ArgumentNullException.ThrowIfNull(value);

@@ -438,6 +438,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         Action disconnectedHandler = () => OnCoreDisconnected(client);
         _coreDisconnectedHandler = disconnectedHandler;
         client.Disconnected += disconnectedHandler;
+        client.ApplicationCatalogChanged += catalog => _ = SendMindApplicationCatalogAsync(client, catalog);
         _coreClient = client;
         TaskCompletionSource<MindStartupCatalog>? startupCatalog = null;
         using var startupMindAbandoned = new CancellationTokenSource();
@@ -1452,6 +1453,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindReady);
             _mindReadyAt = DateTimeOffset.UtcNow;
             OnPropertyChanged(nameof(IsMindReady));
+            // Ajuste c3: a list of installed applications the core read after the mind's catalog was taken.
+            if (_coreClient?.ApplicationCatalog is { Verified: true } installed)
+            {
+                await mind.UpdateApplicationCatalogAsync(installed, MindCatalogUpdateBudget, linked.Token);
+            }
+
             MindVoiceStatus? voice = await mind.VoiceStatusAsync(TimeSpan.FromSeconds(10), linked.Token);
             IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
             SetVoicePieces(voice);
@@ -1626,6 +1633,27 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (!_isDisposed && !IsReady && _coreClient is null)
             RecoverCoreWhenIdle();
+    }
+
+    private static readonly TimeSpan MindCatalogUpdateBudget = TimeSpan.FromSeconds(120);
+
+    // Ajuste c3 (humos del 31-10): the installed applications the core read after its hello go to a ready mind at once;
+    // a mind still starting is given them once it is ready (InitializeMindAsync).
+    private async Task SendMindApplicationCatalogAsync(CoreProcessClient core, ApplicationCatalogSnapshot catalog)
+    {
+        if (!ReferenceEquals(_coreClient, core) || _mindClient is not { IsReady: true } mind)
+        {
+            return;
+        }
+
+        try
+        {
+            await mind.UpdateApplicationCatalogAsync(catalog, MindCatalogUpdateBudget, _mindLifetimeCancellation.Token);
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
+        {
+            // The mind or the App is ending; the next mind is configured from the core's current list.
+        }
     }
 
     private void OnCoreDisconnected(CoreProcessClient client)

@@ -36,6 +36,9 @@ public static class ProtocolTypes
     public const string OperationRequest = "operation.request";
     public const string OperationResponse = "operation.response";
     public const string ProtocolError = "protocol.error";
+
+    // Ajuste c3: the installed applications the core read after its hello, sent once they say other names.
+    public const string ApplicationCatalogUpdate = "catalog.applications";
 }
 
 public static class OperationStatuses

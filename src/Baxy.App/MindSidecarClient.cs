@@ -165,6 +165,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
     public bool IsReady => _ready && _sidecar?.Process is { HasExited: false };
 
+    // The catalog the mind took last (catalog.ready), and one update of its installed list at a time.
+    private MindStartupCatalog? _configured;
+    private readonly SemaphoreSlim _catalogUpdate = new(1, 1);
+
     /// <summary>The mind's process while it runs (the rail reads the memory the model takes).</summary>
     public int? ProcessId => _sidecar?.Process is { HasExited: false } process ? process.Id : null;
 
@@ -319,7 +323,52 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         bool ready = reply is not null
             && Str(reply["type"]) == "catalog.ready"
             && Number(reply["count"]) == capabilities.Count;
+        if (ready)
+        {
+            _configured = new MindStartupCatalog(capabilities, applicationCatalog, gameCatalog);
+        }
+
         return ready;
+    }
+
+    /// <summary>
+    /// Ajuste c3 (humos del 31-10): the installed applications the core read after its hello go to the mind, with the
+    /// catalog it was configured with otherwise unchanged; a list it already has sends nothing. False when the mind is
+    /// not configured yet or did not take it.
+    /// </summary>
+    public async Task<bool> UpdateApplicationCatalogAsync(
+        ApplicationCatalogSnapshot applicationCatalog,
+        TimeSpan timeout,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(applicationCatalog);
+        await _catalogUpdate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            if (_configured is not { } configured || !IsReady)
+            {
+                return false;
+            }
+
+            if (configured.ApplicationCatalog is { } had
+                && had.Verified == applicationCatalog.Verified
+                && had.Complete == applicationCatalog.Complete
+                && had.Names.SequenceEqual(applicationCatalog.Names, StringComparer.Ordinal))
+            {
+                return true;
+            }
+
+            return await ConfigureCatalogAsync(
+                configured.Capabilities,
+                applicationCatalog,
+                configured.GameCatalog,
+                timeout,
+                cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            _catalogUpdate.Release();
+        }
     }
 
     internal static JsonObject CreateCatalogConfigureRequest(

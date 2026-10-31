@@ -11,6 +11,12 @@ public static class ProtocolJson
         return JsonSerializer.SerializeToUtf8Bytes(value, BaxyJsonContext.Default.ProtocolHello);
     }
 
+    public static byte[] SerializeToUtf8Bytes(ApplicationCatalogUpdate value)
+    {
+        ContractValidator.Validate(value);
+        return JsonSerializer.SerializeToUtf8Bytes(value, BaxyJsonContext.Default.ApplicationCatalogUpdate);
+    }
+
     public static byte[] SerializeToUtf8Bytes(OperationRequest value)
     {
         ContractValidator.Validate(value);
@@ -64,6 +70,9 @@ public static class ProtocolJson
 
     public static ProtocolHello DeserializeHello(ReadOnlySpan<byte> utf8Json) =>
         DeserializeAndValidate(utf8Json, BaxyJsonContext.Default.ProtocolHello, ContractValidator.Validate);
+
+    public static ApplicationCatalogUpdate DeserializeApplicationCatalogUpdate(ReadOnlySpan<byte> utf8Json) =>
+        DeserializeAndValidate(utf8Json, BaxyJsonContext.Default.ApplicationCatalogUpdate, ContractValidator.Validate);
 
     public static OperationRequest DeserializeRequest(ReadOnlySpan<byte> utf8Json) =>
         DeserializeAndValidate(utf8Json, BaxyJsonContext.Default.OperationRequest, ContractValidator.Validate);

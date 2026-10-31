@@ -20,6 +20,14 @@ public sealed record ApplicationCatalogSnapshot(
     [property: JsonRequired] bool Complete,
     [property: JsonRequired] IReadOnlyList<string> Names);
 
+/// <summary>
+/// Ajuste c3 (humos del 31-10): the installed applications the core read after its hello, when they are not the ones
+/// the hello carried; always a verified read.
+/// </summary>
+public sealed record ApplicationCatalogUpdate(
+    [property: JsonRequired] string Type,
+    [property: JsonRequired] ApplicationCatalogSnapshot ApplicationCatalog);
+
 public sealed record GameCatalogSnapshot(
     [property: JsonRequired] int Version,
     [property: JsonRequired] bool Verified,
