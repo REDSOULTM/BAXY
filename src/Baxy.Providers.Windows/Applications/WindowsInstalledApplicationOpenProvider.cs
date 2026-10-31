@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using Baxy.Contracts;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Infrastructure;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
@@ -1883,6 +1884,17 @@ internal static class InstalledApplicationResolver
         if (byIdentity.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1)
         {
             return new InstalledApplicationResolution(byIdentity[0], false);
+        }
+
+        // Ajuste c3 (humo del NB, 31-10: «Settings» on a Spanish Windows, whose Start catalog says «Configuración»): a name
+        // the application places' data give the same application in another display language is its installed entry,
+        // as the place it is asked with already is (ApplicationPlaces.SameApplication). Only one entry resolves.
+        InstalledApplicationEntry[] declared = entries
+            .Where(item => ApplicationPlaces.SameApplication(query, item.Name))
+            .ToArray();
+        if (declared.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1)
+        {
+            return new InstalledApplicationResolution(declared[0], false);
         }
 
         // Ajuste c3 (e2e del NB: app.open «calc.exe» said the Calculadora was not in the start menu): a program's bare
