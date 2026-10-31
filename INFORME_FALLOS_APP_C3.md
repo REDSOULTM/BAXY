@@ -927,3 +927,55 @@ ya estaba abierta en el NB no se tocó. Eventos 7040 en las últimas 3 h: 8, nin
   modelo tiene que subir el árbol o escribir la ruta entera (la vista ya dice que la ruta entera guarda ahí).
 - La dirección de una subcarpeta de un lugar conocido sin ruta («Escritorio › x»), las bibliotecas y «Este equipo»
   siguen sin ruta (`pathKnown: false`).
+
+---
+
+# Sexta vuelta: «Guardar como» en los humos del 31-10 (A y B), parte App y parte modelo
+
+Pedido de los humos: «guarda lo que tengo abierto en el Bloc de notas con Guardar como, en el escritorio, con el nombre
+prueba c3 guardado.txt». Evidencia: `captura-*\dialogo\events.jsonl` de `D:\BAXYeval\deploy\c3-e43e08c8bc68\`,
+`c3-7cf26e904821\` y `c3-sB-e43e08c8bc68\` (NB), y las pasadas `D:\BAXYeval\dlg2\vivo_app_{1,2,3}\`. Copia en
+`F:\BAXYeval\wt\c3-dlg2-evid\`.
+
+| Humo | Modelo + App | Operaciones del modelo tras abrir «Guardar como» | Recibos de la App | Resultado |
+|---|---|---|---|---|
+| 01:28 y 01:30 | sA + 3df619e01 | `input.text.type {"text":"prueba c3","index":27}` (índice de la mirada vigente) → «Guardar» → «Sí» al «¿reemplazar?» | `setvalue` `completed`, pero el diálogo usó el nombre viejo («origen c3.txt ya existe») | sobrescribió `origen c3.txt` |
+| 01:40 | sA + e43e08c8b | «Escritorio» [11] → «Guardar» [34] | `completed` con `pathKnown: false` | `origen c3.txt` en el escritorio |
+| 03:01 | sB + 7cf26e904 | «Escritorio» [11] → «Guardar» [34] | `completed` con `path …\Escritorio\origen c3.txt`, `exists` | `origen c3.txt` en el escritorio (lo dijo) |
+| 03:18 | sB + e43e08c8b | «Escritorio» [11] → `input.text.type {"text":"prueba c3","index":27}` → «Guardar» [34] → `input.key.press {"key":"enter","consequence":"overwrite"}` a la ventana del Bloc de notas → «sí» | texto: `input_field_not_reachable`; «Guardar»: `completed`, `pathKnown: false`; Enter: al editor, el documento queda «Modificado» | `origen c3.txt` en el escritorio y un salto de línea en el documento |
+| 03:47, pasada 1 | sB + 7cf26e904 (App publicada aparte) | «Escritorio» [11] → clic en «Nombre de archivo:» [26] → mirada → «Guardar» [37] | clic: `visible_button_ambiguous`; «Guardar»: `completed`, `path …\Escritorio\origen c3.txt`, `exists` | `origen c3.txt` en el escritorio (lo dijo) |
+| 03:48 y 03:49, pasadas 2 y 3 | sB + 7cf26e904 | pregunta qué guardar; con «sí»: «Escritorio» [11] → `input.text.type {"text":"prueba c3","index":27}` → mirada → «Guardar» [37] | texto: `input_field_not_reachable`, nada enviado; «Guardar»: `file_dialog_answered_by_another_window` («Confirmar Guardar como»: `origen c3.txt` ya existía de la pasada 1) | nada guardado; BAXY pregunta si reemplaza |
+
+**Por qué `input_field_not_reachable` tras «Escritorio» (03:18 y pasadas 2 y 3).** El clic en el árbol llena la lista
+de archivos y la App vuelve a numerar la vista con lo que leyó después del clic: el campo de nombre pasa de [27] a
+[30], y el recibo del clic lo dice (`after.changed: "[30] Edit «Nombre de archivo:» … = origen c3"`). El modelo escribe
+en [27], el índice de la mirada anterior, que ahora es un elemento de la lista (`ListItem` de una carpeta del escritorio
+de la persona). La App no envía nada y lo dice. Con la mirada al día, la App escribe donde debe: en el arnés, con la misma
+secuencia y el índice de una mirada nueva, 7cf26e904 da `em_replacesel` y `completed` con `exists`
+`…\Escritorio\c3dlg2 tres.txt` (g1). El motor viejo, en el mismo caso (g0), da `setvalue` y `pathKnown: false`.
+
+**Parte de la App (arreglada en 7cf26e904, no hay nada nuevo que tocar):**
+
+- Escrito con `SetValue`, el nombre no siempre lo tomaba el diálogo (01:28 y 01:30, r1). Ahora un `Edit` Win32 se
+  escribe por sus mensajes.
+- El recibo de «Guardar» tras «Escritorio» decía `completed` sin ruta (01:40, 03:18). Ahora lleva la ruta y comprueba
+  el archivo (03:01, pasada 1).
+
+**Parte del modelo (no se toca la App):**
+
+- No escribe el nombre: A a las 01:40, B a las 03:01 y en la pasada 1, donde además intenta un clic en el campo con un
+  rótulo que comparten dos controles.
+- Escribe con el índice viejo tras un clic que cambió la vista: 03:18 y pasadas 2 y 3.
+- Escribe «prueba c3» en vez del nombre pedido «prueba c3 guardado.txt»: en todos los casos en que escribe.
+- Sigue después de un fallo: pulsa «Guardar» aunque la escritura falló (03:18, pasadas 2 y 3). A las 03:18 manda además
+  Enter «overwrite» al documento del Bloc de notas.
+
+Para los datos: «Guardar como con nombre» (el nombre entero pedido, con la mirada al día después de navegar, antes de
+«Guardar») y «no confirmar tras un fallo de escritura».
+
+Decisión para la sesión principal, no tomada aquí: una ayuda de la App sería que el fallo de un texto por índice en un
+diálogo de archivos diga el índice actual de su campo de nombre (`next`), o que los índices de los controles que siguen
+en la vista no cambien tras un acto.
+
+«Configuración de sonido» con B («Settings»): no es de 7cf26e904 y lo lleva otro agente. Aquí no se cambia nada. Un
+arreglo hecho antes de la corrección quedó sólo en local (rama `dlg2-settings-local`, 1bc73cdb4, sin subir).
