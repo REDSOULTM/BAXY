@@ -178,8 +178,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             // Ronda B (falta 4): the post-read's baseline is the window as it is right before the press, after the
             // model's answer; compared with the capture the model read, any redraw during that wait passed for the
             // press's effect. The window in front is no longer the one read: nothing is pressed.
-            VisibleControlSurface.CapturedWindow? current =
-                await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+            VisibleControlSurface.CapturedWindow? current = await _capture(cancellationToken).ConfigureAwait(false);
             if (current is not { } baseline || baseline.Hwnd != before.Hwnd)
                 return ExternalJson.FailureBeforeEffect(operation, "input_window_not_in_front");
             // Auditoría final (regla 3): what a window changes by itself proves nothing. PLAN_GENERAL A4: its own motion is
@@ -189,9 +188,22 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             // Auditoría final (regla 3): the person's touch counts from before the press is sent.
             long pressedAt = Environment.TickCount64;
             object? roots = press?.WatchRoots(before.Hwnd);
+            // Ajuste c3 (E011, séptima vuelta: «Editar» and a file name asked for on a «Guardar como» that has neither,
+            // each pressed somewhere by the pointer and told completed): the point answered is the label only when the
+            // words read there hold it, or when the control there bears it (the worker presses that one by its way).
+            // Neither: nothing is pressed, and the label is not found here (the cascade says so, with the names the
+            // last look had); the same drawing is not asked about again.
+            bool written = LabelWrittenAt(layout, label, x, y);
             LocatedPointPress.Outcome pressed = await LocatedPointPress.PressAsync(
-                press, operation, before.Hwnd, screenX, screenY, label, before, null, cancellationToken)
+                press, operation, before.Hwnd, screenX, screenY, label, before, null, cancellationToken,
+                pointerAllowed: written)
                 .ConfigureAwait(false);
+            if (pressed.Failure is { ErrorCode: LocatedPointPress.PointNotTheLabel })
+            {
+                _memory.Note(label, before, null);
+                return null;
+            }
+
             if (pressed.Failure is { } refused)
                 return refused;
             pressedOnce = true;
@@ -331,6 +343,48 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
         }
 
         return other;
+    }
+
+    /// <summary>
+    /// Ajuste c3 (E011, séptima vuelta): whether the words read at a located point are the label: a run of a line's words
+    /// that holds the whole label (folded) and lies under the point, with a word's room around it. Another word of the same
+    /// line, blank room or nothing read is not the label.
+    /// </summary>
+    internal static bool LabelWrittenAt(IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? layout, string label, int x, int y)
+    {
+        string wanted = WindowsVisibleOcrLocator.Fold(label);
+        if (layout is null || wanted.Length == 0)
+            return false;
+        foreach (WindowsVisibleOcrLocator.LayoutLine line in layout)
+        {
+            IReadOnlyList<WindowsVisibleOcrLocator.LayoutWord> words = line.Words
+                ?? [new WindowsVisibleOcrLocator.LayoutWord(line.Text, line.X, line.Y, line.Width, line.Height)];
+            for (int start = 0; start < words.Count; start++)
+            {
+                // The shortest run from this word that holds the label, when the label needs this first word.
+                for (int end = start; end < words.Count; end++)
+                {
+                    if (!Holds(start, end))
+                        continue;
+                    if ((end == start || !Holds(start + 1, end)) && Covers(words.Skip(start).Take(end - start + 1), x, y))
+                        return true;
+                    break;
+                }
+            }
+
+            bool Holds(int from, int to) => WindowsVisibleOcrLocator.Fold(
+                string.Join(' ', words.Skip(from).Take(to - from + 1).Select(static word => word.Text)))
+                .Contains(wanted, StringComparison.Ordinal);
+        }
+
+        return false;
+
+        static bool Covers(IEnumerable<WindowsVisibleOcrLocator.LayoutWord> run, int x, int y) => run.Any(word =>
+        {
+            double sideways = Math.Max(WordMargin, word.Height);
+            return x >= word.X - sideways && x <= word.X + word.Width + sideways
+                && y >= word.Y - WordMargin && y <= word.Y + word.Height + WordMargin;
+        });
     }
 
     private const string HeldFile = "baxy_vision_hold.bin";

@@ -49,6 +49,10 @@ public static class ModelAids
     /// <summary>BAXY Renew cu (C11): a click whose label no control has lists the collapsed entries of the last look.</summary>
     public const string CollapsedNext = "collapsed_next";
 
+    /// <summary>Ajuste c3 (E011, séptima vuelta): a click whose label no control has lists the last look's controls whose
+    /// names are closest to it, by index.</summary>
+    public const string ClosestLabels = "closest_labels";
+
     /// <summary>Renew al máximo (6.3): a failed app.open says whether its launch was issued and where to look next.</summary>
     public const string OpenRecovery = "open_recovery";
 

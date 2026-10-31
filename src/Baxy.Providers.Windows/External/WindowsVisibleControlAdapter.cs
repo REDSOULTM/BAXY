@@ -172,6 +172,9 @@ internal interface IPointPress
 /// </summary>
 internal static class LocatedPointPress
 {
+    /// <summary>A point the pointer was not allowed to press and no control there bore the label: nothing was pressed.</summary>
+    internal const string PointNotTheLabel = "visible_point_not_the_label";
+
     internal readonly record struct Outcome(
         ExternalCapabilityReceipt? Failure,
         string Method,
@@ -208,7 +211,8 @@ internal static class LocatedPointPress
         PointRelocator? relocate,
         CancellationToken cancellationToken,
         string? controlId = null,
-        (int W, int H)? remembered = null)
+        (int W, int H)? remembered = null,
+        bool pointerAllowed = true)
     {
         IPointPress presser = press ?? PointerOnlyPress.Instance;
         PointPressed pressed = !string.IsNullOrEmpty(controlId)
@@ -267,6 +271,15 @@ internal static class LocatedPointPress
         {
             return new Outcome(
                 ExternalJson.FailureAfterEffect(operation, "visible_point_press_unconfirmed"),
+                string.Empty, false, string.Empty, null);
+        }
+
+        // Ajuste c3 (E011, séptima vuelta): a point nothing proved to be the label (vision's, with no word of it there) is
+        // pressed only through a control there that bears the label; the pointer never presses it.
+        if (!pointerAllowed)
+        {
+            return new Outcome(
+                ExternalJson.FailureBeforeEffect(operation, PointNotTheLabel),
                 string.Empty, false, string.Empty, null);
         }
 
@@ -1474,8 +1487,7 @@ internal sealed class WindowsVisibleControlAdapter
             receipt = receipt with { Result = JsonDocument.Parse(withType.ToJsonString()).RootElement.Clone() };
         }
 
-        if (receipt.ErrorCode == "visible_button_not_found" && receipt.Result is null
-            && Infrastructure.ModelAids.On(Infrastructure.ModelAids.CollapsedNext))
+        if (receipt.ErrorCode == "visible_button_not_found" && receipt.Result is null)
         {
             LastView? seen;
             lock (_viewLock)
@@ -1483,7 +1495,11 @@ internal sealed class WindowsVisibleControlAdapter
                 seen = _lastView;
             }
 
-            if (seen is not null && CollapsedHint(seen.Controls) is { } hint)
+            string asked = arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("label", out JsonElement named)
+                && named.ValueKind == JsonValueKind.String ? named.GetString()!.Trim() : string.Empty;
+            if (seen is not null && NotFoundHint(seen.Controls, asked,
+                    Infrastructure.ModelAids.On(Infrastructure.ModelAids.CollapsedNext),
+                    Infrastructure.ModelAids.On(Infrastructure.ModelAids.ClosestLabels)) is { } hint)
                 receipt = receipt with { Result = hint };
         }
 
@@ -4280,23 +4296,44 @@ internal sealed class WindowsVisibleControlAdapter
 
     // Nothing was pressed: the failure says the names seen instead (auditoría P3), for the model to name one exactly.
     // Ronda final 19 (regla 3): with the count of all of them when the list is a first part (<paramref name="total"/>).
-    /// <summary>The collapsed entries of a look (a folded ribbon group, a closed menu or list), by index and name, as a
-    /// fact for a label no control had; null when the look showed none.</summary>
-    internal static JsonElement? CollapsedHint(IReadOnlyList<ViewControl> controls)
+    /// <summary>For a label no control had, as facts from the last look: the controls whose names are closest to it
+    /// (<paramref name="closest"/>; ajuste c3, E011: what vision pointed at is no longer pressed, so the model is told
+    /// what it may have meant) and its collapsed entries (<paramref name="collapsed"/>: a folded ribbon group, a closed
+    /// menu or list), each by index and name; null when the look showed neither.</summary>
+    internal static JsonElement? NotFoundHint(IReadOnlyList<ViewControl> controls, string label, bool collapsed, bool closest)
     {
-        ViewControl[] folded = [.. controls.Where(Folded).Take(CollapsedHintLimit)];
-        if (folded.Length == 0)
+        static string Entry(ViewControl control) => $"[{control.Index}] {control.Kind} «{control.Name}»";
+        ViewControl[] folded = collapsed ? [.. controls.Where(Folded).Take(CollapsedHintLimit)] : [];
+        ViewControl[] near = closest
+            ? [.. SteamLocalAdapter.ClosestTitles(label, controls.Select(static control => control.Name))
+                .Select(name => controls.First(control => control.Name == name))]
+            : [];
+        if (folded.Length == 0 && near.Length == 0)
             return null;
         return ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
-            writer.WriteStartArray("collapsed");
-            foreach (ViewControl control in folded)
-                writer.WriteStringValue($"[{control.Index}] {control.Kind} «{control.Name}»");
-            writer.WriteEndArray();
-            writer.WriteString("next", "nothing was pressed: no control of the window has that name now; your last look "
-                + "showed these collapsed entries, and what a window keeps folded may be inside one (open it with "
-                + "manner open, then look again)");
+            if (near.Length > 0)
+            {
+                writer.WriteStartArray("closest");
+                foreach (ViewControl control in near)
+                    writer.WriteStringValue(Entry(control));
+                writer.WriteEndArray();
+            }
+
+            if (folded.Length > 0)
+            {
+                writer.WriteStartArray("collapsed");
+                foreach (ViewControl control in folded)
+                    writer.WriteStringValue(Entry(control));
+                writer.WriteEndArray();
+            }
+
+            writer.WriteString("next", "nothing was pressed: no control of the window has that name now"
+                + (near.Length > 0 ? "; the names your last look showed closest to it are in closest (name one exactly, "
+                    + "with its index, if it is the one you meant)" : string.Empty)
+                + (folded.Length > 0 ? "; your last look showed these collapsed entries, and what a window keeps folded "
+                    + "may be inside one (open it with manner open, then look again)" : string.Empty));
             writer.WriteEndObject();
         });
     }
