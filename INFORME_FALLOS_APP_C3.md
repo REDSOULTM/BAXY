@@ -1038,3 +1038,55 @@ están. No es de esta tarea y no se tocó.
 prueba en vivo (`c3-nombres`, `nb_vivo.ps1`). Mi Bloc de notas de prueba estuvo abierto unos dos minutos en su
 escritorio. Lo cerré por PID, paré mi tarea y repetí a las 04:53 con el NB libre. Su prueba de 04:30 a 04:33 puede
 haber tenido ese Bloc de notas delante.
+
+---
+
+# Octava vuelta: la visión ya no pulsa un rótulo que la ventana no tiene (E011)
+
+Lo visto en la séptima vuelta (A5 «Editar», B2 un nombre de archivo pedido como botón, los dos en un «Guardar como» que
+no tiene ninguno): la cascada bajaba hasta la visión, el modelo de visión respondía un punto y, como ni el OCR ponía otra
+palabra ahí ni el árbol tenía ahí un control con ese nombre, el puntero lo pulsaba igual; con la superficie cambiada, el
+recibo salía `completed`.
+
+## Causa
+
+`WindowsVisibleVisionLocator` sólo rechazaba un punto que caía sobre **otra** palabra (`OtherTextAt`, el caso del
+carrito); un punto en blanco, en un icono o en una zona sin texto se daba por bueno y `LocatedPointPress` pasaba al
+puntero en cuanto el worker decía que ahí nada llevaba el nombre (`visible_point_no_pattern`). Nada exigía que el punto
+fuera el rótulo.
+
+## Arreglo (ft-c3-vision, 015aef031)
+
+- Un punto de la visión se pulsa sólo si es el rótulo: las palabras leídas ahí lo contienen entero
+  (`LabelWrittenAt`: una racha de palabras de la línea que contiene el rótulo y está bajo el punto; otra palabra de la
+  misma línea no vale), o el control que hay ahí lleva ese nombre (el worker ya sólo pulsa por su vía un control cuyo
+  nombre es la etiqueta). Si ninguna de las dos, `LocatedPointPress` no deja pasar al puntero (`pointerAllowed`), nada se
+  pulsa, la visión no encontró el rótulo (y lo recuerda para ese mismo dibujo) y el clic termina en
+  `visible_button_not_found`.
+- Ese «no encontrado» nombra, además de las entradas plegadas de siempre, los controles de la última mirada cuyo nombre
+  más se parece al rótulo (`closest`, por índice; ayuda `closest_labels`, con el criterio de `ClosestTitles`).
+- La prueba del cambio de superficie tras el clic ya existía (`ok = changed || targeted`) y no cambia.
+- Coste: un icono sin nombre en el árbol y sin palabras debajo ya no se pulsa por visión; lo cubre la etapa del tooltip.
+
+## Pruebas
+
+`VisionPointLabelTests` (5): rojo con 8a7d9cd6a (el puntero pulsaba: `visible_click_postread_unread` tras una pulsación),
+verde con el arreglo; `CollapsedHintTests` (3, uno nuevo). Suites en Release con avisos como errores, prioridad baja y
+afinidad F: Providers.Windows 3655/3655, App 468/468, Kernel 991/991. Registros en
+`F:\BAXYeval\ft_v1\c3\app_vivo\vision\`.
+
+## En vivo en el NB (baxy-core aparte de cada commit, sin modelo de BAXY, llama-server propio sólo para la visión)
+
+Mismo plan: el Bloc de notas abre un archivo de prueba, Ctrl+Mayús+S, mirada del diálogo, clic por «Editar», mirada,
+clic por un nombre de archivo que no existe, mirada, «Cancelar».
+
+| Clic | Antes (8a7d9cd6a) | Ahora (015aef031) |
+|---|---|---|
+| «Editar» | `completed`, `vision.472.296`, puntero (9,6 s) | `visible_button_not_found`, nada pulsado (7,8 s) |
+| nombre de archivo como botón | `completed`, `vision.253.366`, puntero; el campo de nombre perdió el foco (8,6 s) | `visible_button_not_found`, nada pulsado, con `closest` (8,7 s) |
+| «Cancelar» (control) | `completed` por el árbol | `completed` por el árbol |
+
+Sin mirada antes del clic (primera pasada, la mirada se pidió mal): antes, «Editar» `completed` por puntero y el nombre
+`visible_button_postread_unchanged` tras otra pulsación; ahora, los dos `visible_button_not_found`. Registros en
+`F:\BAXYeval\ft_v1\c3\app_vivo\vision\nb\`. Lo que la prueba abrió se cerró por PID y el NB quedó sin BAXY, llama-server
+ni Bloc de notas.
