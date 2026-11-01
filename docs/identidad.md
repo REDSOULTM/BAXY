@@ -1,13 +1,11 @@
 # La identidad de BAXY
 
-Esto no es una lista de deseos. Son **decisiones tomadas** por el autor del
-producto el 2026-08-16, respondiendo una por una las 52 preguntas de
-[`00_IDENTIDAD_PREGUNTAS.md`](00_IDENTIDAD_PREGUNTAS.md), con los intentos
-anteriores del proyecto sobre la mesa.
+Estas son las **decisiones de diseño** que definen BAXY, tomadas el 2026-08-16 respondiendo una por una las 52
+preguntas de [00_IDENTIDAD_PREGUNTAS.md](construccion/catalogo-y-kernel/00_IDENTIDAD_PREGUNTAS.md), con los
+prototipos anteriores del proyecto sobre la mesa. Algunas se aclararon después (al final del documento).
 
-Léelo antes de empezar tu objetivo. Si una decisión de diseño tuya contradice algo
-de aquí, la que cambia es la tuya. Si crees que una decisión de aquí está mal,
-**no la ignores en silencio**: anótalo en `APLAZADOS.md` con el motivo y sigue.
+Una contribución que contradiga algo de aquí se discute primero en un issue. Lo que se ve y no se persigue todavía
+se anotaba en [APLAZADOS.md](construccion/catalogo-y-kernel/APLAZADOS.md).
 
 ---
 
@@ -258,7 +256,7 @@ que mató a las cuatro versiones anteriores:
   nada**. Es escribirlo bien, y es lo que hace que cualquier pieza se pueda cambiar.
 - **El mecanismo de cambio** —la medición que decide y la declaración en el
   manifiesto— **sí cuesta trabajo**, así que lo llevan las piezas que de verdad se
-  van a comparar contra un candidato. Están en [`03_COSTURAS.md`](03_COSTURAS.md).
+  van a comparar contra un candidato. Están en [`03_COSTURAS.md`](construccion/catalogo-y-kernel/03_COSTURAS.md).
 
 Lo que **no** se escribe nunca: una interfaz con un solo implementador «por si
 algún día», un registro de plugins, o configuración para elegir entre
