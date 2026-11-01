@@ -192,7 +192,7 @@ cambias un fichero, vuelve a registrar.
 |---|---|---|---|
 | **Voz de BAXY** (Supertonic 3, CPU) | `BAXY_RENEW_TTS_DIR` / `-VoiceDirectory` | `duration_predictor.int8.onnx`, `text_encoder.int8.onnx`, `vector_estimator.int8.onnx`, `vocoder.int8.onnx`, `tts.json`, `unicode_indexer.bin`, `voice.bin`, `baxy-voice.json` | Se **construye** con `scripts/voice/make_baxy_voice.py` a partir de la release de sherpa-onnx `sherpa-onnx-supertonic-3-tts-int8-2026-05-11` (abajo) |
 | **Reconocedor** (Parakeet, CPU) | `BAXY_RENEW_STT_DIR` / `-SttDirectory` (y `BAXY_MIND_STT_DIR` para `bootstrap.ps1`) | `encoder.int8.onnx`, `decoder.int8.onnx`, `joiner.int8.onnx`, `tokens.txt` | El producto se midió con «Parakeet Ultra», una variante propia que **no se publica**. La alternativa documentada es el bundle oficial `sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8` (abajo). **Que la mente funcione igual con él está sin verificar** (carga los mismos cuatro ficheros, `voice.py`) |
-| **Palabra de activación** «BAXY» (k4) | `BAXY_RENEW_WAKE_DIR` / `-WakeDirectory` | `config.json`, `baxy_wake_runtime.py` y los ONNX que nombra | **No se publica ni se puede descargar.** Sin ella, se le habla con el botón del micrófono (modo directo de `voice.py`) |
+| **Activación por voz** («BAXY», detector k4) | `BAXY_RENEW_WAKE_DIR` / `-WakeDirectory` | `config.json`, `baxy_wake_runtime.py` y los ONNX que nombra | **No se publica ni se puede descargar.** Sin ella, se le habla con el botón del micrófono (modo directo de `voice.py`) |
 | **Proyector de visión** (clic por visión, en CPU) | `BAXY_MIND_MMPROJ` / `-VisionProjector` | El fichero `.gguf` | No está en el repositorio de BAXY. La ficha de Hugging Face dice que BAXY usa el `mmproj` de Qwen3.5-4B. La documentación (`docs/construccion/catalogo-y-kernel/computer-use/DECISION_VISION_V3.md`) cita `https://huggingface.co/unsloth/Qwen3.5-4B-GGUF`, que tiene `mmproj-F16.gguf` (672.423.616 bytes). **Que sea exactamente el que se usó está sin verificar** |
 | **System One** (modelo de decisión «Laya») | `BAXY_S1_GGUF` / `-SystemOneGguf` | El fichero `.gguf` | **No se publica.** Sin él, System One no consulta a ese modelo |
 
@@ -363,7 +363,7 @@ Todas son opcionales si el runtime está registrado. Si se definen, mandan sobre
 | `BAXY_MIND_MMPROJ` | El proyector de visión |
 | `BAXY_VISION_OFF=1` | Apaga la visión |
 | `BAXY_MIND_LLAMA_PORT` | Puerto fijo del servidor (8077 con visión) |
-| `BAXY_RENEW_TTS_DIR`, `BAXY_RENEW_STT_DIR`, `BAXY_RENEW_WAKE_DIR` | La voz, el reconocedor y la palabra de activación |
+| `BAXY_RENEW_TTS_DIR`, `BAXY_RENEW_STT_DIR`, `BAXY_RENEW_WAKE_DIR` | La voz, el reconocedor y el detector de activación |
 | `BAXY_RENEW_MIC` | Índice del micrófono |
 | `BAXY_RENEW_CTX` | Contexto del modelo (53248) |
 | `BAXY_RENEW_KV` | Tipo de la caché KV (`q8_0`) |
