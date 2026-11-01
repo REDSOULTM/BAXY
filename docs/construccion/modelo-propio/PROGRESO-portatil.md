@@ -1,0 +1,512 @@
+# BAXY Renew — notas del notebook (portátil, apoyo)
+
+Rama `renew-nb`. El estado estructurado lo lleva el líder en `metas.json`; aquí van las notas del apoyo.
+
+## 2026-10-15 — arranque
+
+- Notebook: RTX 3060 Laptop 6 GB. GGUF `D:\BAXYRuntime\experiments\models\qwen35-4b-e87f1764\Qwen3.5-4B-Q4_K_M.gguf`,
+  llama-server en `<evaluacion>\llama`, banco en `<evaluacion>\renew_bench`.
+- `catalog.configure.json` copiado del PC a `%LOCALAPPDATA%\BAXY\renew\` (sha256 `2d3cf7e2…e693`), porque el banco
+  lo lee de ahí.
+
+## Ronda 1 medida (banco de práctica `cases.json`, 90 casos, en el notebook)
+
+| Corrida | Código | Resultado | p50 | p90 |
+|---|---|---|---|---|
+| `en02v2` (PC) | antes de la ronda 1 | 85/90 | 0,74 s | 1,16 s |
+| `r1-nb` (notebook) | `bd6a4ba3` (ronda 1) | 80/90 | 0,80 s | 1,27 s |
+
+- Gana R13 y R61. Pierde R46 («skipea esta song» → `media.status`), R72 y R74 (debían preguntar; actuó), y
+  R86/R88/R89/R90: pedidos imposibles (uber, rappi, transferir, llamar por teléfono) que ahora reciben una pregunta en
+  vez de «eso no lo hago».
+- **El mismo código anterior a la ronda 1** (`7fbf1ce38`, corrida `pre-r1-nb`) da **82/90 en el notebook**, contra
+  85/90 en el PC. Fallan R13, R25, R34, R61, R72, R82, R86 y R90.
+- **Conclusión:** entre corridas hay ±3 casos de ruido, porque se decide a temperatura 0,2 sin semilla fija. La ronda
+  1 (80) no es peor de forma demostrable que la anterior (82) en la misma GPU.
+- **Recomendación para el marco:** semilla fija (`seed` en el cuerpo de la petición) o varias corridas por variante
+  antes de comparar.
+
+## Falsedades del uso real (2026-10-15 01:45–01:55, PC)
+
+Fuentes: `conversation.v1.jsonl`, la traza `renew/turns.jsonl` y el journal firmado `journal/missions.jsonl` del PC.
+
+**Lo que dice el journal:** todas las acciones de esa sesión se ejecutaron y quedaron verificadas por el proveedor
+(app.open Steam, ya abierto; los cuatro cambios de volumen 36→26→16→46→30; Chrome con la búsqueda; YouTube en
+Opera GX; Gmail y el clic en «Recibidos»; las dos `browser.navigate` a la tienda de Steam). La ruta `conversation` del
+registro no significa «sin herramientas»: es la ruta del texto final que el modelo escribe dentro del bucle.
+
+**Las falsedades reales:**
+
+1. **Negar lo hecho y prometer sin llamar.** Ante «no lo hiciste», el modelo respondió sin herramientas «Tienes
+   razón, no lo hice. Lo siento. Voy a abrir Steam y buscar Doom Eternal ahora mismo». Las dos acciones constaban
+   como verificadas en el journal.
+2. **Repetir una acción ante una queja.** Ante «no lo bajaste mentiroso», volvió a bajar el volumen (26→16).
+3. **Una URL inventada y contada como hecho.** Inventó la URL de la tienda con appId 1046000 y luego 281390. El
+   proveedor sólo verificó la barra de direcciones, así que «te llevé a la página de Doom Eternal» no estaba
+   verificado. Además, el autor pedía el cliente de Steam, no el navegador.
+4. **Un plan pendiente que se traga la orden nueva.** Con la confirmación de `app.close {"windowId":"18titans"}`
+   pendiente, «cierra 18titans» y «cierra chrome» no llegaron al modelo. `MindPlanSession` pasó el texto por
+   `ConfirmationReplyParser` (regex), vio que no era «sí» y re-publicó la confirmación. La redacción convirtió esos
+   hechos en «No puedo cerrar Chrome porque mi última orden pendiente era…». Esto es el arnés de confirmación que el
+   autor decidió reescribir (botones Sí/No; por voz, el modelo interpreta con una herramienta, sin regex).
+5. **Tono:** «¡Listo!», «Lo siento» y «¿Te gustaría…?» en casi cada respuesta, contra la identidad (sin disculpas
+   ni relleno).
+
+**Causa probable de 1–2:** entre turnos, la mente rearma el historial sólo con el texto de usuario y asistente
+(`mind.decide`, `history[-13:]`). Las llamadas y los resultados verificados de los turnos anteriores se pierden, así
+que ante «no lo hiciste» el modelo no tiene la evidencia y le da la razón a la persona. Arreglo candidato
+(protocolo): conservar en la conversación de la mente los mensajes `tool_calls` y `role:"tool"` de los turnos
+recientes. Investigación en curso (BFCL multiturno, documentación de Qwen y OpenAI, plantilla de Qwen3.5).
+
+**El arreglo espera a que el líder selle los holdouts:** ajustar el prompt o el protocolo antes del sello
+contaminaría el marco.
+
+## Limpieza de código muerto (commit `cb1c92486`)
+
+- Se borraron las 546 pruebas de Python, `tests/data`, `tests/fixtures`, `Baxy.Integration.Tests`, los 27 JSON
+  huérfanos de `src/baxy_mind/data` y 16 scripts sin uso. En total, 858 ficheros y 321 mil líneas.
+- Siguen pasando las suites de Contracts (70), Kernel (559), Setup (477) y Providers (2170). La solución compila en
+  Release.
+- No se tocó ningún `.cs` del arnés: el líder lo retira con el arnés nuevo.
+
+## Voz que habla, paso A: Piper (`voice_output.py`)
+
+- **Piper residente:** un solo `piper.exe` con `--json-input`, una línea por frase con `output_file` (CLI
+  documentada de Piper).
+  - Sintetizar una frase tarda 0,19 s p50 (máximo 0,27 s), contra 0,82 s lanzando un proceso por frase como
+    Definitivo.
+  - La voz carga al arrancar la mente en 0,65 s.
+- **Salida:** se abre el dispositivo por defecto en cada frase, para seguir el cambio entre audífonos y parlantes.
+  Con `latency="low"`, la latencia del dispositivo baja de 183 a 91 ms.
+- **De `voice.speak` al primer sonido:** 365 ms p50 (325–528 ms), medido sola. Con llama-server cargando en
+  paralelo, 466 y 576 ms. La traza `turns.jsonl` anota cada frase (`stage: voice.speak`, `sound_ms`, `sound_at`),
+  para medir del texto al primer sonido.
+- **Cancelación:** silencio en 47–63 ms. No queda ningún WAV en disco.
+- **RAM de Piper:** 97 MB privados (105 MB de working set).
+- **Mientras BAXY habla no se escucha el micrófono** (como Definitivo), para que su propia voz no lo despierte ni
+  entre en un pedido. La interrupción por voz es el paso B: la evidencia de Definitivo (`PRUEBAS_AEC129_134.md`) da
+  8/8 interrupciones falsas sin cancelación de eco en parlantes, y 0/8 con ella.
+- Pendiente: con respuestas largas, sintetizar frase por frase adelantaría el primer sonido. Hoy son 1–2 frases.
+
+## Perfil de 4 GB (VRAM medida con `nvidia-smi`, notebook RTX 3060 6 GB)
+
+| Modelo | Huecos y contexto | KV | VRAM | RAM (working set / privada) |
+|---|---|---|---|---|
+| Q4_K_M | 2, `-kvu`, `-c 81920` (el de hoy) | q8_0 | **4648 MiB** | 3166 / 5688 MB |
+| Q4_K_M | 2, `-kvu`, `-c 49152` | q8_0 | 3944 MiB | 3133 / 4979 MB |
+| Q4_K_M | 1, `-c 40960` | q8_0 | 3718 MiB | 3124 / 4690 MB |
+| Q4_K_M | 2, `-kvu`, `-c 81920` | q4_0 | 4008 MiB | 3166 / 5046 MB |
+
+- **El perfil de hoy pasa de 4 GB.** Con `-kvu` el pool es compartido, así que bastan ~49k tokens en total: la
+  decisión ocupa ~39k y la redacción unos cientos. Eso deja el Q4_K_M con dos huecos en 3944 MiB, sin cambiar de
+  modelo.
+- El IQ4_XS de unsloth (sha `658a9e7e…`, la misma familia que el Q4_K_M en uso) está en
+  `<evaluacion>\models\Qwen3.5-4B-IQ4_XS.gguf` para medirlo.
+
+### RAM real de llama-server
+
+Medido con `psutil.memory_full_info`, 2026-10-15:
+
+| Contexto | USS (RAM física privada) | Working set | Commit |
+|---|---|---|---|
+| `-c 49152` | 495 MB | 3240 MB | 5084 MB |
+| `-c 81920` | 528 MB | 3273 MB | 5792 MB |
+
+- **De dónde salen los otros números:**
+  - Los ~2,7 GB que van del USS al working set son el GGUF mapeado en memoria: páginas de fichero compartidas que
+    Windows puede recuperar.
+  - El commit incluye el respaldo que WDDM reserva para la VRAM, así que no es RAM en uso.
+  - Los «5,7 GB privados» del traspaso son ese commit.
+- **Sin mapear el modelo:** con `--no-mmap`, llama-server no llega a arrancar en este equipo, así que se descarta.
+- **Cómo medir la meta de 4 GB de RAM:** la medida honesta es el USS de llama-server más el de la mente. Conviene
+  anotar también el working set, que incluye el GGUF mapeado.
+
+## Voz que habla, paso B: interrumpir hablando encima (medido, pausado)
+
+- **Qué se probó.** Piper en los parlantes Realtek del notebook (al 30 %) y el micrófono interno. AEC3 de
+  `pywebrtc-audio`, ya instalado en el runtime, con el propio audio de Piper como referencia: es el diseño de WebRTC
+  con la señal que se reproduce, sin captura loopback. Se probó BAXY solo (E1) y BAXY con otra voz encima que no está
+  en la referencia (E2, voz SAPI).
+  Script: `%TEMP%\claude\nb\bargein_probe.py`.
+- **Corrida 1.**
+  - El eco crudo tuvo una mediana de 0,051, y la salida final de AEC3 de 0,006 (unos 19 dB menos). Quedan picos:
+    p95 de 0,083 y máximo de 0,218.
+  - Con la otra voz encima, la salida final fue menor que el eco residual: el supresor no lineal de AEC3 se come
+    también la voz de la persona cuando hablan los dos.
+- **Corrida 2, con el mismo código.** El eco crudo bajó a 0,0013 de mediana, y la salida lineal quedó por encima de
+  la del micrófono, es decir, el filtro no convergió. Lo más probable es que el arreglo de micrófonos Realtek aplique
+  su propia cancelación de eco del driver, y que no siempre.
+- **Conclusión.** En este hardware no se puede fijar un umbral honesto con energía o con el VAD de WebRTC sobre AEC3.
+  Definitivo llegó a 0/8 interrupciones falsas con su cadena completa: captura WASAPI cruda con marcas de tiempo del
+  dispositivo, loopback y Silero VAD.
+- **Qué queda hoy.**
+  - BAXY no se escucha a sí mismo: mientras habla, no oye el micrófono.
+  - La App ya corta la voz cuando la persona escribe o manda un mensaje.
+  - Interrumpir por voz queda pendiente, por debajo de lo que el líder repartió: herramientas, brazos y perfil de
+    4 GB.
+- **Segundo intento, con Silero VAD en ONNX** (sin torch, el modelo que trae `silero_vad`). Regla de Definitivo:
+  tres bloques seguidos con probabilidad de voz ≥ 0,5.
+
+  | Señal | BAXY solo (interrupción falsa) | Persona encima (detectada) |
+  |---|---|---|
+  | Cruda | 4/4 | 3/3 |
+  | AEC lineal | 4/4 | 3/3 |
+  | AEC final | 2/4 | 2/3 |
+
+  La cruda y la lineal confunden siempre la voz de BAXY con la de una persona. La final no separa los casos: p90 de
+  0,81 sin persona contra 0,84 con ella.
+- **Límite medido.** Con la referencia aproximada (el PCM que reproduce Piper) y este micrófono, la interrupción por
+  voz no es fiable. Lo que llegó a 0/8 en Definitivo fue la cadena completa: WASAPI crudo, loopback y marcas de
+  tiempo del dispositivo para alinear la referencia.
+- **Diseño propuesto, sin implementar todavía.** Portar esa cadena (`voice_capture.py`, `LoopbackReference`,
+  `webrtc_aec.py`), o activar la interrupción sólo con salida de audífonos, según el factor de forma del dispositivo
+  de Windows, que no tiene camino de eco. Las dos máquinas usan audífonos HyperX por defecto. Falta medirlo con la
+  persona real y con los audífonos puestos.
+
+## Herramientas de agente
+
+Investigación y propuesta en `investigacion/herramientas-agente.md`.
+
+- **`web.fetch` (nuevo).** Lee una página pública como texto: su título, la dirección final y el texto acotado (500
+  a 20 000 caracteres).
+  - Reutiliza `SearchPageReader`: sólo direcciones públicas, sin cookies ni referrer, y revisa de nuevo cada
+    redirección. La prosa sale de las mismas expresiones de `SearchPageExcerpt`, sin la cabecera, los scripts, el
+    menú ni el pie.
+  - Es de solo lectura, como `web.search`: entra información y no sale nada de la persona, salvo la dirección.
+  - Toca Kernel (`ProductCatalog`), Core (`ExternalCapabilityHandlers`), Providers (`WebBrowserAdapter`,
+    `SearchPageReader`, `SearchPageExcerpt`) y las dos descripciones de la mente.
+- **`shell.command.run` (cambio de riesgo).**
+  - `RiskPolicy.ShellMayChange` confirma con el comando exacto todo lo que no sea demostrablemente de solo lectura.
+    Lo es una tubería de cmdlets de una lista corta de lectura (más `git status`, `log`, `diff` y `show`), sin
+    `> < & ; \` { } $ ( ) [ ] @`. Ante la duda, pregunta.
+  - Se quitó la lista negra del proveedor, que rechazaba algunos comandos y dejaba pasar escrituras (`Set-Content`,
+    `>`), borrados por .NET o con `cmd /c "del"` y envíos (`Invoke-WebRequest -Method Post`, `curl -d`,
+    `Send-MailMessage`).
+  - Es la postura de la identidad: se confirma lo que destruye y lo que sale al mundo, y no se niega lo peligroso,
+    porque para eso está el modo. Por eso no se preguntó al autor.
+  - Pruebas: `RiskPolicyShellTests` (9 comandos de solo lectura corren directo; 24 de escritura, borrado, envío o
+    código piden confirmación; el bypass corre sin preguntar) y `WebFetchReadsAPublicPageAsText`.
+- **Herramientas de archivo (rama `nb-file-tools`): seis operaciones pasan a cuatro.**
+  - `file.find` sustituye a `filesystem.known.list` y `.search`: sin `query` ni `content` lista el primer nivel; con
+    `query` busca por nombre (parte del nombre o patrón `*`/`?`; se retiró la lista de palabras `word`/`spreadsheet`
+    que interpretaba la consulta); con `content` busca dentro de los archivos de texto (2 000 archivos, 1 MiB por
+    archivo, sin binarios ni puntos de reanálisis) y da la primera línea. Cada archivo trae su `relativePath`.
+  - `file.read` sustituye a `document.text.read` y `document.pdf.read`: nombre o ruta relativa, `offset` y
+    `maximumCharacters` (4 000 por defecto para los dos tipos, porque la mente corta la observación a 6 000);
+    dice `kind`, `characters`, `hasMore` y `nextOffset` antes del texto. Un UTF-16 con BOM ya es texto (antes el
+    sondeo de bytes de control lo daba por binario). Sin coincidencia o con dos, el fallo trae los candidatos.
+  - `file.write` sustituye a `filesystem.write.text` y absorbe `filesystem.sandbox.append.named` (`append`): al
+    reemplazar, la versión anterior va antes a la Papelera de reciclaje (`WindowsRecycleBin`, SHFileOperation con
+    deshacer; guarda una copia hasta ver crecer la papelera de esa unidad y la repone si no creció) y el resultado
+    dice `previousVersionRecycled`. Se arregló `Issue(path)` con la raíz del sandbox en la rama «mismo contenido»
+    (con el Escritorio en D: fallaba con `path_not_found`).
+  - `file.edit` (nueva): reemplazo exacto, una vez o todas con `replaceAll`; con 0 o varias sin pedirlo no cambia
+    nada y dice cuántas. Conserva codificación y BOM, rechaza un ANSI que no es UTF-8 válido, recicla la versión
+    anterior y relee (sha256, apariciones).
+  - Se quedan `filesystem.list`, `.search` y `.read.text`: dan los `resourceId` del sandbox que usan copy, move,
+    trash y hash, y `file.find`/`file.read` no cubren el sandbox.
+- **Diferido:** el plan propio (Qwen3.5-4B saca 17,6 en DeepPlanning y el bucle es de 6 pasos). Unir `reminder.*` con
+  `notification.*` en `schedule` lo lleva otra sesión.
+
+## Cómo se exponen las herramientas: cuatro brazos
+
+Banco de práctica 2 (`renew_v1/practica/decision2.json`, 270 casos), Q4_K_M, semilla 0, en el notebook.
+
+| Brazo | Qué ve el modelo | Aciertos | p50 | Calentamiento | Sólo A acierta / sólo el brazo (McNemar exacto) |
+|---|---|---|---|---|---|
+| A, el de hoy | 189 herramientas con «Use when / Do not use when / Examples» y la lista de 522 apps | **220 (81,5 %)** | 0,80 s | 16,8 s | — |
+| B, compacto | sólo la primera frase, sin apps | 210 (77,8 %) | 0,69 s | 8,3 s | 18 / 8 (p = 0,076) |
+| C, guía a demanda | B más `skill_read` (la guía completa de una herramienta, en el mismo turno) | 213 (78,9 %) | 0,67 s | 8,4 s | 14 / 7 (p = 0,19) |
+| D, sin apps | A sin la lista de apps de `app.open` | 214 (79,3 %) | 0,69 s | 8,4 s | 16 / 10 (p = 0,33) |
+
+- **Las guías se quedan.** El compacto pierde justo donde importan: preguntar (3/10 contra 5/10) y los errores de
+  dictado (4/10 contra 6/10).
+- **Las skills a demanda no le sirven a este modelo tal cual.** En 270 casos el 4B no llamó `skill_read` ni una vez.
+  El índice corto con la guía bajo pedido, que el autor pidió medir contra «todas en el prompt», queda medido: un
+  modelo de 4B no consulta por su cuenta.
+- **La lista de apps se queda.**
+  - Confirmado en un segundo banco (`renew_bench/cases.json`, 90 casos): sin la lista, 79/90 contra 83/90, y dos de
+    los casos perdidos son `app.open` (R09, R12).
+  - Sumando los dos bancos, sólo A acierta 21 casos y sólo D acierta 11.
+  - **Corrección:** la lista son 2943 tokens de un prefijo de 34 257 (8,6 %, medido con `/apply-template` y
+    `/tokenize`), no «la mitad». Las diferencias de calentamiento y p50 entre brazos venían del orden de las corridas:
+    la primera carga el GGUF con el disco en frío. En el banco de 90, D calienta en 16,0 s contra 17,7 s, y su p50 es
+    0,835 s contra 0,852 s.
+- **La VRAM no depende del brazo** (4666 MiB en los cuatro): la fija el pool de KV (`-c`). Un prefijo más corto sólo
+  permite pedir un `-c` menor.
+- El código de los brazos se retiró de `mind.py`, porque el ganador es el código actual.
+
+## Perfil de 4 GB con el brazo ganador (banco de práctica 2, 270 casos)
+
+| Modelo | Huecos y contexto | Aciertos | p50 | p90 | VRAM | Working set / commit de llama-server |
+|---|---|---|---|---|---|---|
+| Q4_K_M | 2, `-kvu`, `-c 81920` (el de hoy) | 220 (81,5 %) | 0,80 s | 1,66 s | 4666 MiB | 3422 / 5887 MB |
+| Q4_K_M | **1, `-c 49152`** | **227 (84,1 %)** | 0,78 s | 1,61 s | **3912 MiB** | 3339 / 5100 MB |
+| IQ4_XS | 1, `-c 49152` | 227 (84,1 %) | 0,75 s | 1,44 s | 3658 MiB | 3130 / 4838 MB |
+
+- **Los dos caben en 4 GB sin perder aciertos.** El mismo Q4_K_M basta con un hueco: la mente nueva ya no usa el
+  hueco 1, porque no hay redacción ni extracción de argumentos aparte.
+- **Sobre los 7 casos de diferencia:** pasar de 220 a 227 es ruido de cambiar la disposición de la caché, no una
+  mejora real del hueco único (ver la tabla de McNemar de arriba).
+- **El IQ4_XS deja 254 MiB más de margen** con los mismos aciertos y algo más de velocidad. Es la reserva si el
+  arnés crece.
+- **El contexto alcanza:** el prefijo de ~34k tokens, más el historial (24 000 caracteres, ~7k tokens), más el
+  turno, entran en 49 152. La lista de apps se queda, porque quitarla cuesta aciertos.
+
+## `schedule.alarms`: una sola operación para alarmas y recordatorios
+
+- **Qué reemplaza.** Las 12 operaciones de antes: `notification.schedule`, `list`, `cancel.at`, `cancel.latest`,
+  `diagnose`, `dismiss` y `list.due`, más `reminder.create`, `delete`, `list`, `resolve.exact` y `restore`. Se
+  retiraron con sus descripciones, su manejador de Core (`ReminderHandlers.cs`), sus relaciones de plan y sus entradas
+  del suelo.
+- **Hallazgo de honestidad.** `reminder.*` sólo guardaba un JSON que nada leía, así que esos recordatorios nunca
+  sonaban: BAXY podía decir «te lo recuerdo» sin que nada fuera a avisar. Sólo `notification.schedule` sonaba de
+  verdad, por el Programador de tareas de Windows, y ése es el camino que queda.
+- **Argumentos.**
+  - `action` puede ser `create`, `list`, `cancel` o `diagnose`.
+  - `kind` (alarma o recordatorio) y `recurrence` (diaria u horaria) son opcionales.
+  - Al crear, la hora es la de la persona: `inMinutes`, `inSeconds` para temporizadores cortos, o `at` en hora local
+    (`HH:mm` en 24 horas, la próxima vez que llega esa hora, o `YYYY-MM-DDTHH:mm`).
+  - El modelo ya no escribe UTC. En la prueba de punta a punta E004 del líder, el modelo escribía mal `dueUtc` y
+    repetía la llamada fallida 15 veces.
+- **Qué devuelve.** El resultado trae `dueLocal`, para que BAXY diga la hora tal como la vive la persona.
+- **Cancelar.** Con `at` cancela la de esa hora exacta, en 24 horas; sin `at`, la última. Se retiró el camino am/pm
+  (`Period`) del backend nativo, del script y de la petición.
+- **Medido.**
+  - Kernel 591/591, Providers 2160/2160 (`ScheduleTimeTests`: minutos, segundos, una hora que ya pasó salta a mañana,
+    fecha y hora local, entradas inválidas), Contracts 70 y Setup 477.
+  - Prueba en vivo contra el Programador de tareas real del notebook: crear un recordatorio a 30 minutos, listarlo
+    y cancelarlo, y la tarea desaparece. Pasó en 321 ms.
+- **Cobertura.** Se perdió restaurar un recordatorio borrado y su campo de «detalles», que eran de un sistema que no
+  sonaba. Cancelar por título no existe: se lista y se cancela por hora.
+
+## Recursos del arnés con todo cargado (notebook, 2026-10-15, código del líder ya fusionado, un solo hueco)
+
+La mente por su protocolo: catálogo listo y caliente en 21,2 s, una decisión («sube el volumen a 40») y una frase
+hablada por Piper mientras se mide. Sin k4 ni Ultra, porque en el notebook no hay voz de entrada; el total con la voz
+se mide en el PC.
+
+| Proceso | USS (RAM física privada) | Working set | Commit |
+|---|---|---|---|
+| llama-server | 659 MB | 3404 MB (incluye el GGUF mapeado) | 5107 MB (incluye el respaldo WDDM de la VRAM) |
+| mente (Python) | 29 MB | 54 MB | 567 MB |
+| Piper | 94 MB | 104 MB | 95 MB |
+| **total** | **783 MB** | **3580 MB** | — |
+
+- **VRAM: 3902 MiB** (la GPU estaba en 0 antes de empezar), dentro de 4096.
+- **RAM: dentro de los 4 GB** con cualquiera de las dos medidas, el USS (783 MB) o el working set (3,5 GB).
+- **Al margen:** en esa corrida, «sube el volumen a 40» se decidió como `audio.volume.adjust` y no como
+  `audio.volume`. Es un error del modelo, no del arnés; los bancos lo cuentan.
+
+## Herramientas de archivo fusionadas, y el catálogo nuevo medido
+
+- **Las cuatro herramientas.** `file.find`, `file.read`, `file.write` y `file.edit`, hechas por un agente en la rama
+  `nb-file-tools` y fusionadas con `schedule.alarms`, sustituyen a seis operaciones: `document.text.read`,
+  `document.pdf.read`, `filesystem.known.list`, `filesystem.known.search`, `filesystem.write.text` y
+  `filesystem.sandbox.append.named`.
+- **El catálogo queda en 195 descriptores y 194 herramientas.**
+- **La versión anterior se puede recuperar.** Al reemplazar o editar, va primero a la Papelera de reciclaje real de
+  Windows (`WindowsRecycleBin`), así que no hace falta confirmar.
+  - La «papelera» que existía (`filesystem.known.trash.named`) era una carpeta privada de BAXY sin forma de restaurar.
+    `filesystem.trash.restore` no reconoce lo que esa operación borra: queda anotado para la re-auditoría.
+- **Verde sobre la fusión:** Kernel 606, Providers 2170, Contracts 70 y Setup 477.
+- **Juez con equivalencias.** En `scripts/renew/bench_decision.py`, `RENAMED` hace que una expectativa escrita con el
+  nombre viejo la cumpla la operación nueva, con los argumentos que la vuelven el mismo pedido. Los casos, sellados o
+  no, no se editan.
+- **Catálogo viejo contra nuevo** (misma mente, `decision2`, 270 casos). El catálogo nuevo se generó desde
+  `ProductCatalog.ToolDescriptors`, como lo manda la App, en `renew_v1/catalog.nb-tools.json`.
+  - Viejo, con el juez original: 224. Nuevo, con equivalencias: **227**. Sólo el viejo acierta 4 y sólo el nuevo 7
+    (p = 0,55).
+  - En los 25 casos de operaciones sustituidas, de 19 a **24**. Menos herramientas solapadas eligen mejor, y no se
+    pierde nada en el resto.
+
+## Auditoría de reglas y arreglos de los proveedores (reparto aceptado por el líder, 12:20)
+
+Auditoría de todo baxy-renew (sólo lectura) en `investigacion/auditoria-reglas-1.md`: 55 violaciones y 51 zonas
+grises. El reparto quedó así: el notebook arregla los proveedores fuera de computer use, y el PC se encarga de
+computer use, la App y la mente.
+
+| Commit | Pieza | Medido |
+|---|---|---|
+| `1f2f33fd8` | El aviso de `schedule.alarms` se muestra de verdad (notificación de Windows comprobada en el historial; `msg.exe` no existe en Windows 11 Home) y el recibo se escribe después de sonar | prueba en vivo: suena a los 15 s con la notificación leída del historial |
+| `2f9c3ba7c` | La visión sólo acepta un modelo en loopback (`LocalVisionEndpoint`); `nearby` sólo por https. Nombres exactos tras plegar: Wi-Fi, juego, volumen por app y navegador. La zona horaria ya no quita artículos | Providers 2178/2178 |
+| `27c63e474` | El color se escribe en `#RRGGBB`, sin diccionario. `web.download` declara en el recibo y en la descripción cuándo baja la portada (`og:image`) de una página | WindowsFileTools 26/26 |
+| `a5fe636e7` | Una instalación o desinstalación de winget que sigue en curso ya no es un éxito. El `toggle` de Spotify verifica lo que pulsó: antes nunca verificaba y siempre decía `paused` | en vivo: `playing` y después `paused` |
+| `4574604aa` | Se retiran las 7 `routine.*`, que nada ejecutaba. El catálogo queda en 188 descriptores | Kernel 606, Providers 2176, Setup 477, Contracts 70 |
+| `2ab2b0bb4` | `WindowsInventoryAdapter` queda sólo como respaldo PnP de la lista Bluetooth | Providers 2175/2175 |
+| `4f14582e4` | `web.search` sin interpretación: `source` tipado (web, news, encyclopedia, currency, sports, places) con argumentos tipados; resultados tal cual | Providers 2121 |
+| `c4491571f` | `web.fetch` por páginas (`offset`, `hasMore`, `nextOffset`), en tramos de 4 000 caracteres | Providers 2121 |
+| `fe7335a61` | La terminal pide confirmación para `git` (`log --output` escribe, `diff` corre programas del repositorio); `cwd` sólo con las claves del catálogo | Kernel 606 |
+| `d631ccb8a` | `due` de una tarea sin zona es hora local, como se le dice al modelo (antes se tomaba como UTC) | tareas 4/4 |
+| `0075c505f` | Una ruta absoluta dentro de la carpeta nombrada es su ruta relativa (`file.read/edit/find/write`, `subdirectory` de `folder.open` y `trash.named`); fuera, falla antes de efecto (`known_path_outside_folder`). `folder.open` dice el código de su rechazo | Providers 2124/2124; `.ps1` en vivo, 4 rechazos sin abrir nada |
+| `24765b5ed` | `package.install` en una llamada (resuelve, instala y verifica tras el sí del núcleo); un nombre que no es de un solo paquete falla antes de efecto con los candidatos de winget. Se retiran `package.install.prepare/commit`. La tabla de winget se lee por columnas de pantalla (un nombre con caracteres anchos corría el Id) | Providers 2141/2141 |
+| `2ed56c86b` | `filesystem.explorer.count` cuenta en la carpeta conocida que se nombra (`folder`) o en el Explorador de delante; sin ninguno, `no_explorer_in_front` (antes tomaba el Escritorio sin decirlo) | Providers 2141/2141 |
+| `6c8389ee2` | O1: `web.download` sólo con `url`; fuera `query`, que raspaba la página de imágenes de Bing | WindowsFileTools 26/26 |
+| `4539be234` | O3: fuera `MicrosoftGraphCalendarAdapter`, apilado sobre Outlook y activado sólo por una variable que nadie fija | Providers 2139/2139 |
+| `f690c0c75` | `filesystem.known.trash.named` manda archivo o carpeta a la Papelera de reciclaje de Windows (la papelera privada no tenía vuelta); `WindowsRecycleBin` acepta carpetas; se retira `filesystem.path.ensure.absent` (interno, nada lo invocaba) | Providers 2139/2139; carpeta a la Papelera real en vivo |
+| `1e48afdb6` | Spotify S1-S7 (agente en rama `nb-spotify`): sin listas de palabras ni ranking; el modo búsqueda pulsa el primer resultado de Spotify sólo con la página de resultados a la vista (grupo «Spotify – Buscar», leído en vivo); el recibo dice lo observado; ya sonando, `alreadyPlaying` sin efecto | Providers 2143/2143; sin reproducir en vivo (cuenta compartida con el PC) |
+| `d889976a8` | Fusión de `baxy-renew`: descripciones clave a clave contra la base; fuera un `web.fetch` duplicado | Kernel 537 |
+| `23111a347` | `file.read`: `totalLines` y `lines` contados bien (un salto final contaba una línea de más: E018 137 → 138 era nuestro); `file.find`: `order` `size` y el recorrido acotado a 8 s con `timeLimitReached` | Providers 2152/2152 |
+| `489135edc` | `media.control`: `sourceApp` es el id que dio `media.status`, comparado entero en los cuatro reproductores (mpv, primero, ignoraba `sourceApp` y se pausaba con «pausa Spotify») | Providers 2158/2158 |
+| `e0d22fd43` | El diagnóstico de cierres lee la aplicación según el esquema de cada evento (1026 daba el mensaje entero; 1001, el bucket) | en vivo: catdump.exe, Sunshine.exe/KERNELBASE.dll, Baxy.exe |
+| `c842a4e7a` | `network.status`: `online` según la conectividad de Windows y `connectivity` internet/constrained/local/none (antes bastaba una interfaz arriba, como Tailscale) | Providers 2159/2159; en vivo: Ethernet → InternetAccess |
+| `bd8ab336c` | D-P3: fuera las marcas del script de Spotify que citaban una prueba inexistente | parse 0 errores |
+
+**Producto completo en el notebook (conductor, 13:01).**
+
+- El perfil tiene que colgar directamente de `%LOCALAPPDATA%\BAXY\`. Uno en Temp hace fallar al núcleo con «could
+  not validate its private data directory» y la App informa `blocked_environment`.
+- Arranque en 30 s. «hola» se responde en 555 ms y **Piper empieza a sonar a los 713 ms** de llegar el texto (la
+  meta es ≤ 2,5 s).
+- El banco de punta a punta de práctica corre aquí sin E026, porque «para» apagó o bloqueó el PC del líder.
+
+## Renew al máximo (2026-10-22, apoyo del PC; prompt PROMPT_MAXIMO_NOTEBOOK.md)
+
+**Dónde se trabaja.** Worktree `BAXY-Renew-s1` fijo en 86991ca9d para la línea base (no se edita mientras corre);
+el trabajo va en `BAXY-Renew-mx` (rama `nb-maximo-fix`, que se sube a `hub/nb-maximo`); la Tanda 0 de la fase B en
+worktrees `BAXY-Renew-b-{media,steam,apps,memoria,sistema,cu}` (ramas `nb-b-*`), uno por subagente. Scripts de banco en
+`%TEMP%\claude\nb\mx` (`base_s1b.sh`, `vigia.sh`, `laya_dev.py`, `casos_d.py`).
+
+**Trampa nueva: `F:` del notebook es hoy un USB del autor («PREPARAR_MULTIBOOT»).** Los casos e2e y de falsedades de
+práctica (iguales al PC por sha256) cargan `<evaluacion>\...\bench.ps1`: la primera semilla dio 0/30. Se corre con
+copias `practice.nbD.json` (e2e y falsedades) que sólo cambian `F:` por `D:` (96 y 40 rutas). El holdout v4 tendrá lo
+mismo: al abrirlo aquí, la misma sustitución.
+
+**Fase A (cerrada por el líder, `MAXIMO.md`).**
+- `maximo/PALANCAS-nb.md` (2a65e88db): 45 palancas de las áreas 3, 6, 7, 10, 11 y 12, errores reales por área y el
+  diseño del holdout v4 (adoptado tal cual).
+- Recursos medidos aquí (86991ca9d, `measure_resources`): System One apagado VRAM 3902 MiB, RAM del producto 2438 MiB;
+  encendido **4091 MiB** (+189: Laya sin `-dev none` usa la GPU) y 2719 MiB.
+- Hallazgos que cambiaron el objetivo: la base no tenía `hub/pc-cu` (el autor ordenó fusionarlo; c1177101d); el parche de
+  semilla de los scripts viejos ya no cambia la semilla (`"seed": 0,` desde c7abe77ed); 9 textos de decision2 están en
+  los datos de Laya.
+- Verificación cruzada de las 7 palancas del PC de más de 2 puntos: P13.1, P2.1 y P2.4 tumbadas; P4.3, P1.1, P1.2 y
+  P8.1 con reservas; ninguna sostiene más de 2 puntos.
+
+**Fase B (en curso).**
+- `maximo/REVISION-nb.md`: 4 revisores (apps/Steam/medios, ventanas/CU, sistema/archivos/memoria, bancos/System One).
+- Arreglados con prueba que fallaba antes: **B-SYS-1** (0ff4df60f: el modelo podía encender Bypass escribiendo
+  `confirmation-mode` por `file.write` con `folder: home`; la papelera por nombre reciclaba la carpeta BAXY) y
+  **B-CU-1 + B-CU-3** (14e88b2d0: clic y scroll por índice en la ventana de otra vista; worker desfasado tras un saludo
+  cancelado). Providers entero sobre 96d592064: 2485/2485.
+- Palancas 12.2/12.3/12.5 (83c178b8b): `scripts/renew/pareado.py` y `scripts/renew/neutras.py`.
+- Pendientes míos: el resto de la Tanda 0 (6 subagentes), 3.1 (`-dev none` de Laya, espera la fusión de fx-mente del
+  líder; experimento listo en `laya_dev.py`), Tandas 2 y 3 (6.x, 7.4).
+
+**Al día, 2026-10-22 16:00.**
+- Línea base e2e (86991ca9d, s0-s2 intercaladas, mismo binario): System One encendido 21,33 / apagado 21,67 de 30;
+  Δ +0,33 con IC95 [−2,33; +3,33], McNemar p=0,25, pass^3 18 frente a 16. En e2e, S1 no se distingue del ruido.
+- Tanda 0 y Tanda 2 del notebook en `hub/nb-maximo` 153b7a068, fusionadas por el líder en renew-maximo 69a306d00.
+  Suites sobre 153b7a068: Providers 2570, App 24, Kernel 616, Contracts 69, todo verde. 6.5 (ActivateApplication) no
+  se hizo: en este PC el gestor de activación ya dio falsos fallos con apps que abren; queda la sonda en vivo diseñada.
+- Verificación cruzada de las palancas del PC: P13.1, P2.1 y P2.4 tumbadas (el líder las sacó de MAXIMO.md).
+- Cola de medidas encadenada en `%TEMP%\claude\nb\mx`: `cola2.sh` (tanda 1 del PC en sesión larga: A ca9d75de0,
+  B 492336c75 = 3.3, C = 3.3 + sólo el diff de 1.4; luego 3.1 de Laya), `cola3b.sh` (e2e ×3 de A 11347dd0d, B lv-t2
+  05cf4b052, C nb-maximo-fix 153b7a068; falsedades s0-s2 de C; las de A/B las corre el PC) y `cola4.sh` (sonda en vivo
+  de la 7.4, rama `nb-t3places`).
+- 3.1 (`-dev none` de Laya): cambio y prueba hechos, sin commit hasta medir VRAM, latencia y elecciones (cola2).
+
+**Al día, 2026-10-22 19:30 (modo ráfaga del autor hasta mañana 10:00; latido fuera).**
+- Medido en el notebook: tanda 1 del PC en sesión larga (3.3 −950 MiB de pico de RAM de Qwen; 3.3+1.4 −4..−7 s de
+  relectura) y 3.1 (`-dev none`: VRAM con S1 3902 en vez de 4091, Laya 140 → 687 ms por pregunta, 60/60 iguales):
+  las tres se quedaron. E2E ×3 de la tanda 2 del PC (+1,5, IC [0; 3,5]) y de mi Tanda 0+2 (+0,67, IC [−0,67; 2,33]):
+  ninguna pierde. Falsedades de mi rama (s0-s2, criterio escrito): 4 claras + 1 dudosa en 60 conversaciones.
+- Hallazgos graves cerrados hoy: B-SYS-1 y su hueco por la unión «Application Data» (el modelo podía poner Bypass),
+  clic por índice en otra ventana (B-CU-1), salto de línea que podía enviar un borrador sin el sí (mensajería),
+  winget que desinstalaba con un id equivocado, cookies que ataban búsquedas entre sí, game.launch que lanzaba otro
+  juego (title obligatorio). Abierto y avisado al líder: el modelo pulsó «Sí» en «¿Quieres reemplazarlo?» sin
+  preguntar (propuesta: prevuelo del adaptador de clic que pide el sí ante diálogos destructivos).
+- Incidentes de escritorio: un Administrador de tareas elevado apareció a las 17:36 (lo cerró el líder por ssh);
+  GameInputSvc volvió a tomar el frente a las 16:48 (las colas nuevas lo limpian antes de cada corrida). Trampa de
+  pruebas: crear ventanas Win32 en el hilo de la prueba y esperar con GetResult() se interbloquea si el código lee su
+  título desde otro hilo (ayudante `Pumped` en ComputerUseSpeedTests).
+- Colas en `%TEMP%\claude\nb\mx`: `cola5.sh` (recursos de contexto 53 248: VRAM 3990), `cola8.sh` (int 1e4496020 vs
+  renew-maximo d9a971bbe: e2e ×2, falsedades ×3, recursos, sesión larga). Turnero de compilaciones: `dotnet_turno.sh`.
+
+## Renew al 100 % sin reentrenar, fase 3 (2026-10-24 19:45, apoyo del PC; prompt PROMPT_CIEN_NOTEBOOK.md)
+
+**Dónde se trabaja.** Worktree `BAXY-Renew-s1`, rama `nb-cien` (desde `hub/renew-cien` 4b956a806; código = int10f
+19be8b42a); arreglos en ramas cortas `nb-w10-…`. Scripts y salidas en `%TEMP%\claude\nb\cien`. Reparto del líder
+(canal de mensajes 19:44): H7 latencia, H9 `engine_no_answer`, los arreglos de H2 en proveedores, uso del PC y archivos, recursos y
+sesión larga de cada integración; diagnóstico H2 de V5E021, 023, 029 (cu) y V5E032, 034, 040, 043, 044 (archivos).
+
+**Tareas abiertas (19:50).**
+- H2: tres subagentes de sólo lectura (cu; archivos 032/034/040; archivos 043/044) con las trazas s0 (copiadas del PC a
+  `<evaluacion>\renew_v1\runs\pc-ho5-final-s0-e2e-e2e`) y s1; resumen en `artifacts/renew/maximo/H2-nb.md`.
+- H7: el A/B en GPU del llama parcheado ya estaba hecho (2026-10-23 21:40: 50/50 peticiones idénticas, fuera de
+  prompt+predict p50 128,8 → 47,6 ms, e2e 29/30 igual que stock), y el A/B hablado de int10c también (anticipada −0,36 s
+  y precalentar al oír «Baxy» −0,26 s en la primera respuesta; ya van encendidas por defecto). Falta saber dónde está el
+  +0,9 s de la e2e: un subagente lo desglosa por etapa con ho5-{inicio,maximo,final}-s1 (misma máquina).
+- H9: cero `engine_no_answer` en todas las corridas del holdout v5 (6 del portátil y las del PC). Cola `frio2.sh`: 12 arranques
+  de Steam en frío (5 y 15 min cerrado, tres frases) sobre hv5-final con la traza del App y los códigos de salida del
+  core (`<evaluacion>\repro-eno\frio2`).
+- Trampa: `mx/despierto.ps1` nunca mantuvo despierto el portátil: en PowerShell 5.1 `0x80000003` es un Int32 negativo y la
+  llamada a `SetThreadExecutionState(uint)` fallaba cada 30 s (también durante el holdout v5, que se bloqueó a las 11:00).
+  Copia arreglada en `cien/despierto.ps1` (`[uint32]2147483651`).
+
+**Al día, 2026-10-24 20:45.**
+- Ramas en hub: `nb-w10-cuenta` fd2ed124e y `nb-w10-mover` 8780e0f34 (H2 archivos), `nb-w10-aviso` 3cfe46f68 (H7), en
+  int11 066802ea2; `nb-w10-clic` c8d3e613c y `nb-w10-calc` 37f6038cf (H2 uso del PC), para int11b. Detalle y pruebas
+  en `maximo/H2-nb.md` y `maximo/H7-nb.md`.
+- Las e2e de práctica pasaron al portátil (el autor usa el PC). Cola `cien/cola_c3.sh`: base int10f (worktree hv5-final) frente
+  a int11 (worktree `BAXY-Renew-int11`), prac 30 + h2 20 (`renew_v6/practica/e2e_h2.nbD.json`, 69 rutas F:→D:) ×3
+  semillas intercaladas, luego falsedades de práctica ×3; `nvidia-smi` a 1 Hz en `cien/gpu-estado.csv`.
+- VOID mío: `c3-base-s0-prac-e2e.void-frio2` (la limpieza final de la cola de Steam en frío mató el producto).
+- H9 sin repro todavía (1/1 bien en frío; 0 en todo el holdout v5); cada e2e guarda `app-trace.jsonl` y
+  `core-disconnect.jsonl`.
+
+**Al día, 2026-10-24 22:45.**
+- E2E de práctica en el portátil, int11 066802ea2 frente a la base int10f, 3 semillas intercaladas, GPU caliente en los dos
+  (streaming), `pareado.py`: H2 (los 20 casos v5) 1,0 → 7,0, Δ +6,0 IC95 [+2,33; +10,0], McNemar p 0,016, suben
+  V5E016 032 034 045 047 060 062 y no baja ninguno, pass^3 0 → 4; práctica (30) 29,0 → 28,0, Δ −1,0 IC95
+  [−2,67; +0,67], baja sólo E012 (el recibo de input.text.type sugería ctrl_a: en el Bloc de notas en español abre
+  «Abrir»; arreglado por el PC en int11b). Primera respuesta p50, mediana de 6 corridas: 4 400 → 4 035 ms.
+- **H9 resuelto.** Primera repro con la traza del App (int11 s2, E015, «abre Steam y ve a la biblioteca»): el core salió
+  con código 70, «Window content capture came back black»: ShellApplicationPlaceOpener capturaba la ventana de Steam en
+  frío antes de entregar la dirección y la IOException llegaba a Program.Main. Arreglo en el proveedor
+  `nb-w10-negra` 4bc235b34 (Providers 3070/3070) y en el motor (PC, w10-motor).
+- `nb-w10-dictado` 3c267c810 (Providers 3069/3069): lo que int11 aún fallaba de archivos (V5E040, V5E043, V5E044). En
+  int11c aec328933, que se mide a continuación (e2e ×3, falsedades ×3, recursos con oído).
+
+**Al día, 2026-10-25 01:40.**
+- int11c aec328933 medido (e2e ×3, intercalado con base e int11): H2 1,0 | 7,0 | 10,67 (int11c − base +9,67, IC95
+  [+6,0; +13,67], p Holm 0,001, 12 suben y ninguno baja); práctica 29,0 | 28,0 | 28,0 (baja E029, fallo del oráculo).
+- Falsedades de práctica a ciegas (×3, clave en `<evaluacion>\renew_v6\practica\clave-c3`): claras base 2 | int11 2 |
+  int11c 6. Causas de int11c: F013 ×3 (guardar por «Guardar como» con el nombre que no era; lo empujaba la ayuda
+  typed_in_window del PC, que se retira en int11f), F019 (H9, arreglado en int11d), F009 (el nombre «BAXY-bench», límite
+  del modelo, como E027) y F001.
+- Ramas nuevas en hub: `nb-w10-negra` 4bc235b34 (H9), `nb-w10-guardar` fd5063832 (ayuda save_dialog_next, E017/F013).
+- En curso (`cien/cola_c3h.sh`): int11f f1d041344 (int11e − typed_in_window) frente a int11g 03fa1e306 (int11f −
+  w10-lectura), falsedades ×3 y e2e ×2 intercaladas; regla del PC: w10-lectura se queda sólo si int11f no tiene más
+  falsedades claras que int11g y no pierde e2e de práctica. Luego lectura a ciegas base/int11f/int11g y recursos con oído
+  del que gane.
+
+**Al día, 2026-10-25 04:10: candidato int11f.**
+- int11f f1d041344 (int11e − typed_in_window) frente a int11g 03fa1e306 (int11f − w10-lectura), regla pre-registrada del PC
+  (01:25): falsedades claras a ciegas ×3 (`<evaluacion>\renew_v6\practica\ciego-fg-lectura.md`, clave `clave-fg`): base 2 |
+  int11f 1 | int11g 1; e2e de práctica ×2 intercalada: int11g 28,5 → int11f 29,5 (Δ +1,0, IC95 [0,0; +2,5], pass^2 27 →
+  29), H2 11,0 → 11,5. Se queda w10-lectura: el candidato es int11f. Cero engine_no_answer y cero core-disconnect.
+- Recursos con oído real de int11f (k4 + Parakeet Ultra): con voz VRAM 3 989 MiB y RAM del producto 3 672 MiB (sin oído
+  3 980 / 2 712), `vram_attribution: ok`; dentro de 4 096 / 4 096.
+- Suites del portátil sobre int11f: Providers 3 113/3 113, pytest 666 (1 omitida: necesita la librería del banco en su unidad).
+- E027 y F009 («BAXY-bench» tomado por la carpeta privada de BAXY): límite del modelo según la ablación del PC (con
+  «Proyectos-bench» p_call 0,99); va al brief del ajuste fino.
+- Sesión larga (22 turnos, `mx/sesion_larga.py`, S1 explícito) int11f | base int10f: 22/22 decisiones; pico USS de
+  llama-server 2 087 | 2 079 MiB; checkpoints borrados 0 | 0; relectura total 31,8 | 37,5 s; relectura de las decisiones
+  11,2 | 10,7 s (p50 348 | 306 ms).
+
+**Al día, 2026-10-25 10:45: holdout v6 del portátil y propuestas para la fase siguiente.**
+- Holdout v6 (portátil, s0 y s1, 76 casos, 75 puntuados): e2e inicio 49 / 49 | final_v5 56 / 55 | cien 57 / 57; cien −
+  final_v5 +1,5 (IC95 [−2,0; +5,5]); confirmaciones 6 / 6 de 8; primera respuesta p50 cien 3,74 / 3,84 s frente a
+  final_v5 4,31 s. Falsedades s0 y s1 de los tres brazos: 6 corridas válidas (la VOID de cien s0 se repitió entera),
+  copiadas al PC con SHA-256 para su lectura a ciegas (`<evaluacion>/renew_v6/fals-nb`). V6E022 falla en el setup en todas
+  las corridas del portátil: fallo del banco (el bloqueo de primer plano de Windows impide traer el Bloc delante).
+- Tercera semilla de cien en v6 (fuera del plan, descriptiva): 58/76; su p50 4,70 s está contaminado por compilaciones
+  .NET de los agentes del portátil (TTS +30 % ms/carácter, generación +11 % ms/token); desde entonces `mx/dotnet_turno.sh`
+  espera mientras exista `cien/medir.lock`.
+- El PC congeló cien = int11f f1d041344 (10:22). Las ramas `nb-w11-*` son propuestas para la fase siguiente, encontradas
+  después de abrir v6 y sin medir en holdout; no entran en renew-cien. Integración: `hub/nb-w11-junto` (revision, arch,
+  multi, clausula, llama, texto, vivo, cursor, flaky); pendientes cu (en revisión independiente) e inicio. Se mide en los
+  bancos de práctica que cien ya corrió (30 + 20 H2, ×2) para ver que nada empeora; v6 sólo descriptivo.
+- `hablar.py` caía al final de cada brazo en el portátil (run_renew.cmd termina tras lanzar la app): arreglado en
+  `nb-w11-clausula` 5c0446a47; el A/B hablado de la primera cláusula se relanzó.
