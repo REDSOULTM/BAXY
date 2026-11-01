@@ -104,11 +104,11 @@ Detalle en `documentacion/LIMITES_DE_BAXY.md`.
   - Leer lo último (imp-dc-leer): 3/3 en msg1–3 y 3/3 en zt.
   - Entrar a voz con «sí» y salir: 5/5 con una sola pregunta tras VZ. Con «no» no entra: s11, s13 y c7, 3/3.
   - Salir sin llamada activa: lo dice y no pulsa nada, 2/2.
-- **WhatsApp**, con el contacto individual «Abuela».
+- **WhatsApp**, con el contacto individual «(contacto)».
   - Abrir: 3/3 (wac1–3) y 2/3 en zt; el fallo de zt3 lo arregla TZ-DC3.
   - Enviar: 6/6, y 3/3 en zt. En Normal pregunta y con «sí» envía: 3/3.
-  - Leer lo último: la respuesta es correcta, porque el chat «Abuela» no tiene mensajes de ella («En lo que muestra el
-    chat no hay mensajes de Abuela.», 3/3 en zt). WA-LEER deja la lectura lista. **Falta la prueba en vivo con un
+  - Leer lo último: la respuesta es correcta, porque el chat «(contacto)» no tiene mensajes de ella («En lo que muestra el
+    chat no hay mensajes de (contacto).», 3/3 en zt). WA-LEER deja la lectura lista. **Falta la prueba en vivo con un
     mensaje de ella.**
 
 **Identidad** comprobada en vivo en los dos PC: notebook el 11-10 y el 12-10 a las 01:47; PC el 12-10 entre las
@@ -186,7 +186,7 @@ ni las ramas fusionadas entre YT y la ronda TZ (C7Y5, E5…), cuyo saldo no se s
 | c2, x8 (Calculadora con tecleo) | 2/3 en el definitivo; 3/3 en fx, fv y zf | La primera tecla se perdía mientras el marco UWP pasaba el foco a su contenido | Cerrado por K |
 | c6 (Discord enviar) | 2/3 en zt | zt1: Discord recibió las teclas con el frente y no las escribió (entorno; 42/42 en PC) | Entorno; el final ya no dice «escribí» lo no visto (TZ-DC3). c6 3/3 en zu y zw |
 | imp-wa-abrir / enviar / leer | 2/3 en zt; 2/3, 1/3, 0/3 en zu | zt3: llegada tardía (TZ-DC3); zu: chat fuera de la parte alta de la lista (TZ-WA2) | **3/3 los tres en zw** |
-| WhatsApp leer lo último | Correcto, 3/3 | El chat «Abuela» no tiene mensajes de ella | Falta la prueba en vivo con un mensaje de ella |
+| WhatsApp leer lo último | Correcto, 3/3 | El chat «(contacto)» no tiene mensajes de ella | Falta la prueba en vivo con un mensaje de ella |
 | Tandas: Spotify sonando negado (z6 t4-c01 t4) | Final falso a, 1 de 6 corridas | Corrección ya cumplida que se niega | Cerrado por TZ-HOLD: z7–z10 «Ya está sonando «…» en Spotify.» 4/4 |
 | Tandas: «elegí el modo Oscuro» con el modo ya puesto (t4-c04 t3) | Dudoso en z7 | Escribir en la búsqueda contaba como elegir | Cerrado por TZ-OSC2: z9 y z10 «Abrí «Configuración» y «Oscuro» ya estaba elegido.» |
 | Tandas: datos de memoria (t2-c09 t1, t3-c17, t1-c03 t3, t4-c02 t3) | Final falso b en las 6 corridas (3–5 por corrida) | El modelo responde de memoria sin fuente | Límite declarado en `LIMITES_DE_BAXY.md` § datos de memoria |

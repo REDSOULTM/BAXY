@@ -49,7 +49,7 @@ del equipo: no debe copiarse ni clonarse para continuar una tarea.
 
 Después:
 
-1. Lee [AGENTS.md](../../../AGENTS.md). Sus reglas son operativas y
+1. Lee [AGENTS.md](../../../../../AGENTS.md). Sus reglas son operativas y
    obligatorias.
 2. Revisa el estado actual en
    [REGISTRO_DE_MANTENIBILIDAD.md](../REGISTRO_DE_MANTENIBILIDAD.md). No

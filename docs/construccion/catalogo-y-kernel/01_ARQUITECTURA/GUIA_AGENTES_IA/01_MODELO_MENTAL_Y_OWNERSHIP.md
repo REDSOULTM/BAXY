@@ -321,7 +321,7 @@ Ownership: lenguaje natural, propuesta de plan y subsistema de voz local.
 | `tools/` | builders offline; no runtime de ejecución |
 
 La descripción de mensajes y variables está en
-[src/baxy_mind/README.md](../../../src/baxy_mind/README.md). Las dependencias
+src/baxy_mind/README.md. Las dependencias
 directas están en `requirements-runtime-win-x64.in`; el grafo exacto y sus
 hashes están en `pylock.runtime-win-x64.toml`.
 

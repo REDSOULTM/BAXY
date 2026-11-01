@@ -322,7 +322,7 @@ porque su contador de tasa necesita dos muestras.
 
 El fingerprint optimizado conserva exactamente los golden hashes y la
 independencia del orden JSON; el benchmark vive junto a esas regresiones en
-[`RequestFingerprintTests.cs`](../../../tests/Baxy.Kernel.Tests/RequestFingerprintTests.cs).
+[`RequestFingerprintTests.cs`](../../../../../tests/Baxy.Kernel.Tests/RequestFingerprintTests.cs).
 
 ### Gates del modelo y del turno
 
@@ -366,12 +366,12 @@ pareada y 1,031 s en p95; sólo 3/7 pares ganaron, la compatibilidad C aumentó
 40,5 % y la extracción E 53,9 %.
 
 El pinning de slots se agotó con el
-[`benchmark_llama_slot_pinning.py`](../../../experiments/mind_router_spike/benchmark_llama_slot_pinning.py)
+`benchmark_llama_slot_pinning.py`
 y la cadena de artefactos
-[A/B](../../../artifacts/fixes/llama_slot_pinning_ab_20260729.json),
-[orden inverso](../../../artifacts/fixes/llama_slot_pinning_ab_reverse_20260729.json),
-[tercera réplica](../../../artifacts/fixes/llama_slot_pinning_promoted_smoke_20260729.json)
-y [veredicto](../../../artifacts/fixes/llama_slot_pinning_verdict_20260729.json).
+A/B,
+orden inverso,
+tercera réplica
+y veredicto.
 La tercera réplica empeoró p50 90,9 ms y el total 1,289 s. En 18 pares
 agregados sólo ganó 9/18; la mediana fue −10,7 ms, pero el peor caso añadió
 0,956 s. No existe `id_slot` en las solicitudes productivas.
@@ -383,9 +383,9 @@ el orden de los brazos. Ganó 7/12 pares, con extremos de −0,788 a +0,669 s.
 Además, las medianas `cache_n` y `prompt_n` fueron idénticas en
 P/G/L/V/C/E/chat: no reutilizó un solo token adicional en este workload. Se
 rechazó sin cambiar producción; quedan el
-[`benchmark`](../../../experiments/mind_router_spike/benchmark_llama_checkpoint_spacing.py)
+`benchmark`
 y el
-[`veredicto`](../../../artifacts/fixes/llama_checkpoint_spacing_verdict_20260729.json).
+`veredicto`.
 
 ### Agotamiento de los últimos candidatos, 2026-07-29
 
@@ -396,7 +396,7 @@ semántica, órdenes A/B opuestos y servidor fresco por brazo:
   fueron exactas, V empezó y terminó antes de P en las nueve acciones y el p50
   de acción mejoró en las tres corridas. El ahorro agregado fue 0,765 s, unos
   85 ms por acción. El
-  [veredicto](../../../artifacts/fixes/guard_count_overlap_verdict_20260729.json)
+  veredicto
   acredita que el máximo siguió siendo tres inferencias concurrentes.
 - V y C conservan el JSON Schema genérico. La compactación reducía el p50 de V
   aproximadamente 29,8 % y el de C 22,5 %, pero C perdió de forma estable
@@ -404,46 +404,46 @@ semántica, órdenes A/B opuestos y servidor fresco por brazo:
   bajó su p50 34,8 %, pero convirtió cinco resultados antes correctos en
   incorrectos, incluidos conocimiento técnico y misiones compuestas. Se
   rechazó y se retiró del runtime; quedan el
-  [gate de corpus](../../../artifacts/fixes/compact_validator_corpus_verdict_20260729.json)
+  gate de corpus
   y la
-  [ampliación](../../../artifacts/fixes/compact_v_expanded_corpus_ab_20260729.json).
+  ampliación.
 - Pedir a P JSON minificado ahorraba 39–43 % de tokens y unos 0,29–0,30 s de
   p50 E2E, pero cambió 7/11 y 5/11 semánticas primarias en órdenes opuestos,
   alteró tres decisiones finales por réplica y perdió un modo esperado en
   ambas. La política conserva su prompt y schema; véase el
-  [veredicto](../../../artifacts/fixes/primary_minified_prompt_verdict_20260729.json).
+  veredicto.
 - Forzar `top_k=1` sólo en los validadores a temperatura cero tampoco es una
   equivalencia de greedy en este modelo. En un orden cambió P y dos V de
   `zero` a `multiple`, convirtió dos acciones en planes y omitió C/E. En el
   orden exacto inverso, el p50 E2E empeoró 48,9 ms. Producción no recibió ese
   sampler; véase el
-  [veredicto](../../../artifacts/fixes/llama_structured_top_k1_verdict_20260729.json).
+  veredicto.
 - `--kv-unified` conservó modos, decisiones y argumentos, pero cambió dos
   respuestas libres y empeoró p50 5,595→7,663 s, 37,0 %, y el total 39,9 %.
   Se mantuvieron buffers KV separados; véase el
-  [veredicto](../../../artifacts/fixes/llama_kv_unified_verdict_20260729.json).
+  veredicto.
 - La release oficial b10182 se descargó y verificó sólo en una carpeta
   temporal. Tres réplicas exactas frente a b9980 cambiaron de dirección:
   −3,72 %, +3,54 % y +6,14 % en p50. Sólo una de tres mejoró; no se instaló ni
   se cambió el manifest. Véase el
-  [veredicto](../../../artifacts/fixes/llama_b9980_b10182_verdict_20260729.json).
+  veredicto.
 - `GGML_CUDA_GRAPH_OPT=1`, opción experimental del backend CUDA, aceleró V y
   chat aislados, pero empeoró el p50 E2E en ambos órdenes. En 12 casos por
   perfil, p50 subió 1,25 % y el trabajo total 0,70 %; P/G/L fueron 3,62/4,30/
   5,37 % más lentos. No se añadió al entorno; véase el
-  [veredicto](../../../artifacts/fixes/llama_cuda_graph_opt_verdict_20260729.json).
+  veredicto.
 - Cuantizar K y V de Q8 a Q4 no conservó calidad ni produjo una ganancia
   repetible. En un orden pareció bajar el p50 E2E 245,9 ms, pero cambió tokens,
   contenido y decisiones; al invertirlo volvió a cambiar la salida y empeoró
   p50 526,3 ms, total E2E 3,443 s y trabajo estructurado 5,049 s. KV permanece
   en Q8; véase el
-  [veredicto](../../../artifacts/fixes/llama_kv_q4_verdict_20260729.json).
+  veredicto.
 - Forzar `CUDA_MODULE_LOADING=EAGER` conservó tokens, salidas y decisiones,
   pero empeoró el arranque frío en ambos órdenes. Frente a `LAZY`,
   startup→primera respuesta aumentó 1,701/0,308 s y
   startup→workload 2,416/0,468 s. El valor predeterminado `LAZY` permanece;
   véase el
-  [veredicto](../../../artifacts/fixes/cuda_module_loading_verdict_20260729.json).
+  veredicto.
 - `ngram-mod` se agotó con cuatro servidores frescos por perfil y órdenes
   opuestos. Los defaults 24/48/64 propusieron 613 tokens y aceptaron 123
   (20,1 %) por brazo, sólo en P; mejoraron el p50 E2E, pero cambiaron tokens de
@@ -452,7 +452,7 @@ semántica, órdenes A/B opuestos y servidor fresco por brazo:
   redujo p50 264,0/259,1 ms, pero cambió contenido visible y tokens de P y
   todavía añadió 0,343/1,003 s al trabajo estructurado. No se hizo un barrido
   posterior ni se activó speculative decoding; véase el
-  [veredicto conjunto](../../../artifacts/fixes/llama_ngram_mod_verdict_20260729.json).
+  veredicto conjunto.
 - El cierre MTP sobre el binario temporal b10182 tampoco habilita una perilla
   neutral. El control `--spec-type none` cargó y completó el workload, pero
   `draft-mtp --spec-draft-n-max 1` terminó antes de `ready`: b10182 informó que
@@ -460,7 +460,7 @@ semántica, órdenes A/B opuestos y servidor fresco por brazo:
   Por tanto no existe un par de latencia válido. Incorporar el assistant GGUF
   que documenta Google sería un activo nuevo, con hashes, memoria, packaging y
   certificación de calidad propios; no se descargó ni instaló. Véase el
-  [veredicto](../../../artifacts/fixes/llama_b10182_mtp_verdict_20260729.json).
+  veredicto.
 - El priming concurrente de los prefijos token-exactos P/G/L sí hizo más
   rápido el turno una vez pagado el priming: las medianas pareadas mejoraron
   0,367 y 0,266 s en órdenes opuestos. Sin embargo, preparar los tres slots
@@ -469,10 +469,10 @@ semántica, órdenes A/B opuestos y servidor fresco por brazo:
   conservaron salida, payload y total de tokens exactos; `cache_n` pasó de
   0/0/0 a 562/149/209 en P/G/L, de modo que la reutilización existió pero sólo
   trasladó más latencia al warmup. Quedan el
-  [harness](../../../experiments/mind_router_spike/benchmark_first_turn_prefix_priming.py),
-  el [A/B](../../../artifacts/fixes/first_turn_prefix_priming_ab_20260729.json)
+  harness,
+  el A/B
   y su
-  [orden inverso](../../../artifacts/fixes/first_turn_prefix_priming_ab_reverse_20260729.json).
+  orden inverso.
 - Persistir esos prefijos mediante `/slots/{id}?action=save|restore` tampoco
   habilitó un arranque más rápido. b9980 informó
   `n_restored=562/154/214` y leyó 5.192.260/1.512.700/2.101.900 bytes para
@@ -482,11 +482,11 @@ semántica, órdenes A/B opuestos y servidor fresco por brazo:
   de la caché porque los prompts se reprocesaron completos. Se rechazó el
   mecanismo, se borraron sus archivos temporales y no cambió producción,
   instalación ni manifest. Evidencia:
-  [harness](../../../experiments/mind_router_spike/benchmark_first_turn_prefix_restore.py),
-  [selección automática](../../../artifacts/fixes/first_turn_prefix_restore_mechanism_probe_20260729.json),
-  [slots fijados](../../../artifacts/fixes/first_turn_prefix_restore_pinned_probe_20260729.json)
+  harness,
+  selección automática,
+  slots fijados
   y
-  [veredicto conjunto](../../../artifacts/fixes/first_turn_prefix_cache_verdict_20260729.json).
+  veredicto conjunto.
 
 Los providers también agotaron esperas artificiales sin abreviar sus
 postcondiciones:
@@ -539,7 +539,7 @@ interacción y media.
 ### Presupuesto físico final
 
 El artefacto
-[`mind_budget_gate.json`](../../../artifacts/product/mind_budget_gate.json)
+`mind_budget_gate.json`
 ejerció por perfil 30 decisiones, 10 extracciones y 5 narraciones, 45
 solicitudes en total, con catálogo de 168 operaciones y cero errores:
 
@@ -589,10 +589,10 @@ del código de producto sobre 30 turnos fue:
 Hubo 30/30 respuestas válidas, cero diferencias de decisión y cero efectos
 ejecutados. El p50 no se presenta como mejora: el cambio sólo actúa cuando P
 entra en retry. Evidencia:
-[producto](../../../artifacts/fixes/gpu_turn_tail_retry_reuse_product_20260730.json),
-[baseline emparejada](../../../artifacts/fixes/gpu_turn_tail_retry_reuse_pair_baseline_after_20260730.json)
+producto,
+baseline emparejada
 y
-[órdenes A/B](../../../artifacts/fixes/gpu_turn_tail_retry_reuse_guard_language_full_20260730.json).
+órdenes A/B.
 
 Se rechazaron tres atajos que reducían tiempo pero no conservaban el producto:
 
@@ -623,8 +623,8 @@ inseguras, obtuvo cero ganancias y cero pérdidas y dio p50 5,5807 s. Por tanto,
 la concurrencia no explica esa pérdida absoluta, pero ninguno de los dos
 artefactos es un gate verde:
 
-- [preflight paralelo](../../../artifacts/fixes/turn_policy_gate_latency_final_preflight_20260729.json);
-- [preflight serial](../../../artifacts/fixes/turn_policy_gate_serial_preflight_20260729.json).
+- preflight paralelo;
+- preflight serial.
 
 El cierre Full del checkout aprobó **1.381 pruebas Python + 382 subtests**. En
 .NET aprobó **2.232** con **18 omisiones ambientales**: Contracts 51; Kernel
@@ -639,7 +639,7 @@ un caso crítico, perdió cero y no añadió acciones inseguras ni violaciones d
 autoridad, pero sumó 0,2305 s de media en esta muestra. El estado absoluto
 quedó `failed` porque ambos brazos conservaron un falso positivo inseguro y
 baja exactitud; no se presenta como certificación integral:
-[reporte](../../../artifacts/fixes/turn_policy_gate_final_scheduler_preflight_20260729.json).
+reporte.
 
 ## Fuentes externas contrastadas
 
@@ -852,11 +852,11 @@ La promoción quedó respaldada por 241 pruebas focales, `Fast` verde y `Full`
 verde: 1.388 pruebas Python + 382 subtests y 2.237 pruebas .NET, con 18
 omisiones ambientales. Evidencia:
 
-- [veredicto de reutilización](../../../artifacts/fixes/validated_inference_reuse_verdict_20260730.json);
-- [audit E5 completo](../../../artifacts/fixes/turn_evidence_fastpath_full_audit_20260730.json) y
-  [falso negativo físico de G](../../../artifacts/fixes/turn_evidence_guard_fastpath_operation_gate_20260730.json);
-- [P=112 base inversa](../../../artifacts/fixes/gpu_turn_primary_max112_order2_baseline_20260730.json) y
-  [P=112 candidato inverso](../../../artifacts/fixes/gpu_turn_primary_max112_order2_candidate_20260730.json).
+- veredicto de reutilización;
+- audit E5 completo y
+  falso negativo físico de G;
+- P=112 base inversa y
+  P=112 candidato inverso.
 
 Después de esta promoción, un turno nuevo y no repetido continúa dominado por
 P. Acercarlo al chat E2B puro exige cambiar el contrato P/whitespace, incorporar
@@ -1550,11 +1550,11 @@ Corregirlos exige ampliar `app.open`, `app.installed`, `capture.screenshot`,
 `browser.navigate.named` y los planes compuestos que los contienen, que es otra
 afirmación con su propio radio de impacto. No se hace aquí.
 
-Evidencia: [veredicto](../../../artifacts/fixes/social_envelope_verdict_20260731.json),
-[A/B físico](../../../artifacts/fixes/social_envelope_20260731.json),
-[oráculo de equivalencia](../../../artifacts/fixes/social_envelope_equivalence_20260731.json),
-[probe](../../../experiments/mind_router_spike/probe_social_envelope.py) y
-[detector](../../../scripts/detect_social_envelope_equivalence.py).
+Evidencia: veredicto,
+A/B físico,
+oráculo de equivalencia,
+probe y
+detector.
 
 ## Calidad del tool calling: dónde se pierde de verdad, 2026-07-31
 
@@ -1614,9 +1614,9 @@ esa ruta sobre ellos, que es el mejor proxy disponible de una paráfrasis no
 reconocida pero no es una muestra fuera de distribución. Dos corridas dieron
 0,447 y 0,465, de modo que el titular es estable a unos ±2 puntos y las
 diferencias menores no se leen como señal. Evidencia:
-[veredicto](../../../artifacts/fixes/policy_tool_quality_verdict_20260731.json),
-[medición](../../../artifacts/fixes/policy_tool_quality_20260731.json) y
-[probe](../../../experiments/mind_router_spike/probe_policy_tool_quality.py).
+veredicto,
+medición y
+probe.
 
 ## El shortlist decide qué puede nombrar el modelo, 2026-07-31
 
@@ -1709,10 +1709,10 @@ que el reconocedor ya posee. Además **sube el techo** de todo lo que venga
 después: cualquier mejora de prompt o schema sólo actúa donde la candidata está
 presente, y eso pasó del 60,5 % al 87,7 % del corpus.
 
-Evidencia: [veredicto](../../../artifacts/fixes/shortlist_floor_verdict_20260731.json),
-[barrido y oráculo](../../../artifacts/fixes/shortlist_recall_20260731.json),
-[A/B físico](../../../artifacts/fixes/policy_tool_quality_20260731.json) y
-[detector](../../../scripts/detect_shortlist_recall.py).
+Evidencia: veredicto,
+barrido y oráculo,
+A/B físico y
+detector.
 
 ## Lo que le pasa a la persona cuando el camino determinista no la cubre
 
@@ -1813,9 +1813,9 @@ A/B físico y su propia compuerta —la disciplina que usaron R3 y R10 para el
 reconocedor, no el trato más liviano que admitió un ranking de shortlist—.
 
 Evidencia:
-[veredicto](../../../artifacts/fixes/paraphrase_tool_quality_verdict_20260731.json),
-[medición](../../../artifacts/fixes/paraphrase_tool_quality_20260731.json) y
-[probe](../../../experiments/mind_router_spike/probe_paraphrase_tool_quality.py).
+veredicto,
+medición y
+probe.
 
 ## El modelo responde cada mensaje, 2026-07-31
 
@@ -1843,9 +1843,9 @@ La lección de método: la puerta del A/B de R16 comparaba `kind`, `operation`,
 `effectOperations` y `question`. **Una puerta sobre la decisión contractual no ve
 una respuesta visible rota**, y este defecto estaba en aquel artefacto desde el
 principio. Evidencia:
-[veredicto](../../../artifacts/fixes/farewell_reply_verdict_20260731.json),
-[A/B](../../../artifacts/fixes/farewell_reply_20260731.json) y
-[probe](../../../experiments/mind_router_spike/probe_farewell_reply.py).
+veredicto,
+A/B y
+probe.
 
 ## Límites que requieren otra decisión
 

@@ -132,15 +132,15 @@ El detalle del grafo está en
 
 | ADR | Decisión vigente |
 |---|---|
-| [ADR-0001](../../contexto/04_arquitectura/ADR/ADR-0001-arquitectura-base-baxy-1.md) | Host .NET 10 y core .NET 10 NativeAOT en procesos separados |
-| [ADR-0002](../../contexto/04_arquitectura/ADR/ADR-0002-estado-gpu-local.md) | GPU local por DXGI y PDH, sin `nvidia-smi` |
-| [ADR-0003](../../contexto/04_arquitectura/ADR/ADR-0003-paquete-release-reproducible.md) | Build y paquete reproducibles desde snapshot Git |
-| [ADR-0004](../../contexto/04_arquitectura/ADR/ADR-0004-setup-embebido-transaccional.md) | Setup NativeAOT embebido, atestado y transaccional |
-| [ADR-0005](../../contexto/04_arquitectura/ADR/ADR-0005-mente-modelos-y-runtime.md) | Sidecar Python, router E5, Qwen3/llama.cpp y STT local |
-| [ADR-0006](../../contexto/04_arquitectura/ADR/ADR-0006-planner-hibrido-durable.md) | Planner híbrido, acotado y durable sin autoridad de ejecución |
-| [ADR-0007](../../contexto/04_arquitectura/ADR/ADR-0007-voz-local-wake-stt-tts.md) | Voz local, wake verificable y salida cancelable |
-| [ADR-0008](../../contexto/04_arquitectura/ADR/ADR-0008-restauracion-field-ui-historica.md) | Restauración literal de BAXY Field dentro del host actual |
-| [ADR-0009](../../contexto/04_arquitectura/ADR/ADR-0009-evidencia-corpus-turnos.md) | Evidencia de turnos unilateral: conversación o abstención |
+| [ADR-0001](../ADR/ADR-0001-arquitectura-base-baxy-1.md) | Host .NET 10 y core .NET 10 NativeAOT en procesos separados |
+| [ADR-0002](../ADR/ADR-0002-estado-gpu-local.md) | GPU local por DXGI y PDH, sin `nvidia-smi` |
+| [ADR-0003](../ADR/ADR-0003-paquete-release-reproducible.md) | Build y paquete reproducibles desde snapshot Git |
+| [ADR-0004](../ADR/ADR-0004-setup-embebido-transaccional.md) | Setup NativeAOT embebido, atestado y transaccional |
+| [ADR-0005](../ADR/ADR-0005-mente-modelos-y-runtime.md) | Sidecar Python, router E5, Qwen3/llama.cpp y STT local |
+| [ADR-0006](../ADR/ADR-0006-planner-hibrido-durable.md) | Planner híbrido, acotado y durable sin autoridad de ejecución |
+| [ADR-0007](../ADR/ADR-0007-voz-local-wake-stt-tts.md) | Voz local, wake verificable y salida cancelable |
+| [ADR-0008](../ADR/ADR-0008-restauracion-field-ui-historica.md) | Restauración literal de BAXY Field dentro del host actual |
+| [ADR-0009](../ADR/ADR-0009-evidencia-corpus-turnos.md) | Evidencia de turnos unilateral: conversación o abstención |
 
 Los scorecards, cortes numerados y mapas anteriores conservan su valor de
 procedencia. Sus conteos y frases de “pendiente” describen el momento en que

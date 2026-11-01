@@ -2,10 +2,10 @@
 
 > Actualización de planificación, 2026-09-04: la separación histórica siguiente
 > no autoriza declarar el producto terminado. Voz/accesibilidad se comprueban en
-> C08/C09; [fase 12](sprints/12_PRODUCTO_FINAL.md) es el owner explícito de los
+> C08/C09; fase 12 es el owner explícito de los
 > diferidos A.1–A.3 (hardware, ciclo de instalación y firma). La equivalencia
 > provisional de texto por voz de B.1 no aplica a C08 ni al cierre final.
-> Véase [revisión](sprints/REVISION_SPRINTS_2026-09-04.md).
+> Véase revisión.
 
 Estado: **vigente desde 2026-08-15**. Este documento manda sobre cualquier
 criterio de cierre anterior. Si `objetivo.md`, `00_META_VIGENTE.md` o un prompt de

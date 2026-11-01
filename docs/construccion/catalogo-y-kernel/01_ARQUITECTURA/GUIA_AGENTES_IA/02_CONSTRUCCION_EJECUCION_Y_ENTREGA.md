@@ -162,7 +162,7 @@ vínculos por hash propios.
 ### Activos privados
 
 Cuando una prueba necesita corpus o muestras ignoradas, sigue
-[AGENT_TRASPASO.md](../../../AGENT_TRASPASO.md). La restauración verifica hashes y
+AGENT_TRASPASO.md. La restauración verifica hashes y
 conteos:
 
 ```powershell

@@ -269,5 +269,5 @@ la proporcionó como override explícito.
 - [Decisión vigente](DECISION_VIGENTE.md)
 - [Registro de mantenibilidad](REGISTRO_DE_MANTENIBILIDAD.md)
 - [Contrato de producto](../01_CONTRATO_PRODUCTO.md)
-- [Índice documental](../00_LEEME.md)
-- [ADR canónicos](../../contexto/04_arquitectura/ADR/README.md)
+- Índice documental
+- ADR canónicos

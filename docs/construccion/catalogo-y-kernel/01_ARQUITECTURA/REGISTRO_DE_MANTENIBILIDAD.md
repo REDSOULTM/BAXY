@@ -415,17 +415,17 @@ Este cierre distingue cambios activos, microbenchmarks y gates E2E:
   empeoró p50 90,9 ms y el total 1,289 s; en 18 pares agregados ganó 9/18, con
   mediana −10,7 ms y un peor caso de +0,956 s. Se conservó el scheduler
   automático y no hay `id_slot` en producción. Quedan el
-  [benchmark](../../experiments/mind_router_spike/benchmark_llama_slot_pinning.py)
+  benchmark
   y el
-  [veredicto](../../artifacts/fixes/llama_slot_pinning_verdict_20260729.json).
+  veredicto.
 - Densificar los checkpoints de host RAM de b9980 de 32/256 a 64/64 tampoco se
   promovió. Las salidas fueron exactas, pero el efecto cambió con el orden:
   7/12 pares ganaron, con extremos −0,788/+0,669 s. `cache_n` y `prompt_n`
   quedaron idénticos en P/G/L/V/C/E/chat, por lo que no hubo reutilización
   adicional que justificara la varianza. Quedan el
-  [benchmark](../../experiments/mind_router_spike/benchmark_llama_checkpoint_spacing.py)
+  benchmark
   y el
-  [veredicto](../../artifacts/fixes/llama_checkpoint_spacing_verdict_20260729.json).
+  veredicto.
 - El solape de catálogo y journal del arranque Core también se revirtió: 20
   pares NativeAOT fríos, todos con `hello` y catálogo exactos, dieron p50
   3.274,385→3.308,206 ms; la mediana pareada empeoró 80,837 ms y sólo 8/20
@@ -435,7 +435,7 @@ Este cierre distingue cambios activos, microbenchmarks y gates E2E:
   a menos de un segundo; no se presenta como medición física E2E.
 
 El
-[gate físico final de presupuesto](../../artifacts/product/mind_budget_gate.json)
+gate físico final de presupuesto
 ejerció por perfil 30 `turn.decide`, 10 `arguments` y 5 `narrate`, catálogo
 168 y cero errores:
 
@@ -462,8 +462,8 @@ slot también quedó `failed`, reprodujo métricas y acciones inseguras, obtuvo
 cero ganancias/pérdidas y dio p50 5,5807 s. Esto descarta la concurrencia como
 causa de la pérdida absoluta, no acredita el corpus. Evidencia:
 
-- [preflight paralelo](../../artifacts/fixes/turn_policy_gate_latency_final_preflight_20260729.json);
-- [preflight serial](../../artifacts/fixes/turn_policy_gate_serial_preflight_20260729.json).
+- preflight paralelo;
+- preflight serial.
 
 #### Agotamiento adicional de latencia, 2026-07-29
 
@@ -473,64 +473,64 @@ La campaña siguió sin modificar la instalación ni ejecutar efectos externos:
   aún decodifica. Tres réplicas, incluido el orden inverso, conservaron salidas
   exactas; el p50 de acción mejoró 138/49/26 ms y nueve acciones ahorraron
   0,765 s agregados. El máximo siguió siendo tres POST activos. Evidencia:
-  [veredicto G→V](../../artifacts/fixes/guard_count_overlap_verdict_20260729.json).
+  veredicto G→V.
 - V/C compactos se retiraron. El primer gate de 40 casos reprodujo dos pérdidas
   correctas de C (`memory.forget` y `game.launch`) en ambos órdenes. La
   ampliación de V a 72 casos detectó cinco transiciones correcto→incorrecto
   aunque reducía p50 34,8 %. V y C conservan JSON Schema genérico. Evidencia:
-  [gate conjunto](../../artifacts/fixes/compact_validator_corpus_verdict_20260729.json)
-  y [V ampliado](../../artifacts/fixes/compact_v_expanded_corpus_ab_20260729.json).
+  gate conjunto
+  y V ampliado.
 - El preflight de esa variante compacta quedó `failed`; no es un gate del
   runtime final ni se presenta como verde:
-  [artefacto](../../artifacts/fixes/turn_policy_gate_compact_vc_preflight_20260729.json).
+  artefacto.
 - Forzar P a minificar JSON ahorraba 39–43 % de tokens y 0,29–0,30 s de p50,
   pero cambió semánticas y tres decisiones finales por réplica:
-  [veredicto](../../artifacts/fixes/primary_minified_prompt_verdict_20260729.json).
+  veredicto.
 - `top_k=1` en validadores a temperatura cero cambió P, dos V y dos acciones
   finales en un orden; en el orden exacto inverso empeoró p50 48,9 ms. No se
   cambió el sampler:
-  [veredicto](../../artifacts/fixes/llama_structured_top_k1_verdict_20260729.json).
+  veredicto.
 - `--kv-unified` empeoró p50 37,0 % y total 39,9 %, además de cambiar dos
   respuestas libres:
-  [veredicto](../../artifacts/fixes/llama_kv_unified_verdict_20260729.json).
+  veredicto.
 - La release oficial b10182 se verificó en `%TEMP%`, nunca se instaló. Sus tres
   réplicas exactas frente a b9980 dieron −3,72/+3,54/+6,14 % de p50; sólo una
   mejoró y el runtime registrado permanece b9980:
-  [veredicto](../../artifacts/fixes/llama_b9980_b10182_verdict_20260729.json).
+  veredicto.
 - `GGML_CUDA_GRAPH_OPT=1` conservó payloads, tokens y decisiones, pero empeoró
   el p50 E2E en ambos órdenes; agregado: p50 +1,25 %, total +0,70 %. Acelerar V
   no compensó P/G/L:
-  [veredicto](../../artifacts/fixes/llama_cuda_graph_opt_verdict_20260729.json).
+  veredicto.
 - KV Q4 frente a Q8 cambió tokens, contenido y decisiones. La aparente mejora
   inicial de 245,9 ms de p50 se convirtió en una regresión de 526,3 ms al
   invertir el orden, con +3,443 s de total E2E:
-  [veredicto](../../artifacts/fixes/llama_kv_q4_verdict_20260729.json).
+  veredicto.
 - `CUDA_MODULE_LOADING=EAGER` fue token-exacto, pero frente a `LAZY` aumentó
   startup→primera respuesta 1,701/0,308 s y startup→workload 2,416/0,468 s
   en órdenes opuestos:
-  [veredicto](../../artifacts/fixes/cuda_module_loading_verdict_20260729.json).
+  veredicto.
 - `ngram-mod` default 24/48/64 aceptó 123/613 drafts (20,1 %) por brazo, sólo
   en P, cambió tokens de G y empeoró el total estructurado 2,104/1,971 s. El
   único perfil denso 24/4/16 aceptó 203/319 (63,6 %) y bajó p50 E2E
   264,0/259,1 ms, pero cambió contenido y tokens de P y mantuvo una regresión
   estructurada de 0,343/1,003 s. No se hizo otro barrido ni se cambió el
   servidor:
-  [veredicto conjunto](../../artifacts/fixes/llama_ngram_mod_verdict_20260729.json).
+  veredicto conjunto.
 - El cierre `draft-mtp --spec-draft-n-max 1` sobre b10182 quedó
   `not_applicable`: el control target-only completó el workload, pero el
   candidato no alcanzó `ready` porque el GGUF registrado no contiene capas
   MTP. No existe un A/B de latencia válido. Añadir el assistant GGUF oficial
   sería cambiar activos, hashes y certificación; no se descargó ni instaló:
-  [veredicto](../../artifacts/fixes/llama_b10182_mtp_verdict_20260729.json).
+  veredicto.
 - El priming concurrente token-exacto de P/G/L reutilizó de verdad los
   prefijos (`cache_n=562/149/209`, frente a 0/0/0) y conservó salida, payload y
   total de tokens en 12/12 pares. Una vez primado, el primer turno mejoró
   0,367/0,266 s en órdenes opuestos; al contar el priming, `ready`→respuesta
   empeoró 0,438/0,539 s y startup→respuesta 0,437/0,461 s. Se rechazó porque
   trasladaba más latencia de la que retiraba. Evidencia:
-  [harness](../../experiments/mind_router_spike/benchmark_first_turn_prefix_priming.py),
-  [A/B](../../artifacts/fixes/first_turn_prefix_priming_ab_20260729.json) y
-  [orden inverso](../../artifacts/fixes/first_turn_prefix_priming_ab_reverse_20260729.json).
+  harness,
+  A/B y
+  orden inverso.
 - El intento persistente con `--slot-save-path` guardó y restauró
   562/154/214 entradas P/G/L; verificar los hashes más restaurar los tres
   slots costó 48,8 ms en el probe fijado. Aun así, los POST reales devolvieron
@@ -538,11 +538,11 @@ La campaña siguió sin modificar la instalación ni ejecutar efectos externos:
   fue leído, pero el prompt se procesó completo. El cold total fijado quedó
   2,6 ms peor. Se rechazó, los archivos temporales se limpiaron y no se tocó
   manifest, instalación ni runtime. Evidencia:
-  [harness](../../experiments/mind_router_spike/benchmark_first_turn_prefix_restore.py),
-  [automático](../../artifacts/fixes/first_turn_prefix_restore_mechanism_probe_20260729.json),
-  [fijado](../../artifacts/fixes/first_turn_prefix_restore_pinned_probe_20260729.json)
+  harness,
+  automático,
+  fijado
   y
-  [veredicto](../../artifacts/fixes/first_turn_prefix_cache_verdict_20260729.json).
+  veredicto.
 - Providers de carpeta, selección, Spotify UIA, Spotify Web API y SMTC observan
   inmediatamente sólo cuando existe una postcondición que no puede confundirse
   con estado previo. Mensajería conserva 900 ms al cambiar destinatario;
@@ -567,7 +567,7 @@ acciones inseguras ni violaciones de autoridad; frente al brazo sin evidencia
 sumó 0,2305 s de media (p50 5,0324→5,3687 s). El estado absoluto permanece
 `failed`: ambos brazos conservaron un falso positivo inseguro y baja exactitud
 en esta muestra pública pequeña. Evidencia:
-[reporte](../../artifacts/fixes/turn_policy_gate_final_scheduler_preflight_20260729.json).
+reporte.
 
 #### Cierre incremental de cola, 2026-07-30
 
@@ -589,9 +589,9 @@ turnos confirmó 30/30 válidos, cero efectos y decisiones idénticas a la base:
 p50 4,7751→4,8929 s, p95 17,3578→15,8986 s, máximo
 17,7454→17,1046 s y total 170,3081→169,3441 s. El p50 queda explícitamente
 como ruido/regresión neutral porque el cambio sólo actúa en retry. Evidencia:
-[producto](../../artifacts/fixes/gpu_turn_tail_retry_reuse_product_20260730.json)
+producto
 y
-[base emparejada](../../artifacts/fixes/gpu_turn_tail_retry_reuse_pair_baseline_after_20260730.json).
+base emparejada.
 
 Se rechazaron GBNF directo en retry por cambios de decisión/respuesta/efecto,
 P/V 256/64 por inestabilidad y mayor total en un orden, y presupuestos de
@@ -1044,7 +1044,7 @@ tocó manifests o instalación):
 #### Revisión integral y promoción del arranque E5 (2026-07-30, quinta pasada)
 
 La revisión integral produjo el mapa canónico
-[`MAPA_TURNO_END_TO_END_20260730.md`](../MAPA_TURNO_END_TO_END_20260730.md) y
+`MAPA_TURNO_END_TO_END_20260730.md` y
 el ledger estructurado
 `artifacts/fixes/integral_review_ledger_20260730.json`, sin estados
 «pendiente»:
@@ -4592,7 +4592,7 @@ completa. El ledger compacto vigente tiene SHA-256
 ## 2026-08-11 — R94: MVP consolidado, corte A en 169/169 y corte C en rojo
 
 Baseline vigente del MVP:
-[`documentacion/00_MVP_CONSOLIDADO_2026-08-11.md`](../00_MVP_CONSOLIDADO_2026-08-11.md).
+`documentacion/00_MVP_CONSOLIDADO_2026-08-11.md`.
 
 **Compuerta Full verde sobre el árbol final.** 11/11 etapas, **3.799 pruebas
 .NET** (59 + 2.705 + 116 + 442 + 477) con 0 fallos y 0 omitidas, **7.964

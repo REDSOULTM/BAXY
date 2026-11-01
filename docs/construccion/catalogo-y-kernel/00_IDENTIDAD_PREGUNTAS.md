@@ -339,7 +339,7 @@ que decidieras reescribirlo otra vez, y cómo lo evitamos?
 Respondidas el 2026-08-16, en sesión, una por una. **La 12 y la 14 quedaron
 absorbidas** por la 48 y la 13 respectivamente y no se preguntaron aparte.
 
-El documento que manda es [`00_IDENTIDAD.md`](00_IDENTIDAD.md) — esto de abajo es
+El documento que manda es [`00_IDENTIDAD.md`](../../identidad.md) — esto de abajo es
 el acta literal.
 
 ### A. Quién es BAXY
