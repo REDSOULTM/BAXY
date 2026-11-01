@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Vulnerabilidad de seguridad
+    url: https://github.com/REDSOULTM/BAXY/security/advisories/new
+    about: Infórmala en privado, no en un issue público.
+  - name: Instalación
+    url: https://github.com/REDSOULTM/BAXY/blob/main/docs/instalacion.md
+    about: Guía paso a paso y problemas comunes.

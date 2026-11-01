@@ -1,193 +1,67 @@
-# BAXY — lo primero que lees
+# AGENTS.md
 
-Este repositorio es **BAXY Definitivo**. Confirma que estás en él:
-`git rev-parse --show-toplevel` termina en `BAXY Definitivo`, y la raíz contiene
-`Baxy.slnx`, `main.py` y este fichero. Rama de trabajo: la de tu goal; `codex/kiro-goal-c03`
-integra los goals y `main` recibe lo cerrado.
+Guía corta para agentes de programación (y personas) que trabajan en este repositorio. Para qué es BAXY y cómo
+funciona: el [README](README.md) y [docs/arquitectura.md](docs/arquitectura.md).
 
-**Cuidado con el nombre.** En la misma carpeta `Programacion` hay otro repositorio
-llamado `BAXY` a secas: es el intento anterior, **fuente de herencia, no sitio de
-trabajo**. Nada de lo que escribas va allí.
+## Mapa
 
-## Qué haces aquí
-
-Los once goals de producto y la Fase 3.5 (comprensión) están cerrados; su evidencia
-salió del repositorio el 2026-10-06 (ver «Buscar antes de leer»). El último estado
-medido está en `documentacion/SEMANTICA.md` («Segunda vuelta»). El motor de *computer
-use* (Fase 4 y sus goals v2 y v3) está integrado; su contrato, mediciones y progreso
-viven en `documentacion/computer-use/`.
-
-**Si te han dado un goal, ésa es tu única instrucción.** Este fichero no te dice qué
-hacer, sólo dónde estás y cómo moverte. Si no te han dado ninguno, pregunta al dueño.
-
-## Los dos documentos que mandan
-
-1. **[`documentacion/00_IDENTIDAD.md`](documentacion/00_IDENTIDAD.md)** — qué es
-   BAXY. No son preferencias: son decisiones del dueño del producto con los cuatro
-   intentos anteriores conocidos sobre la mesa. El Goal 09.5 concilia cualquier
-   fuente histórica añadida después. Si un diseño tuyo las contradice, cambias tú.
-2. **Tu goal**. Trae dentro las cinco leyes, lo ya medido y rechazado, y sus
-   criterios de cierre.
-
-Cualquier otro documento que parezca decirte qué hacer y no sea tu goal está
-caducado: es **evidencia**, no instrucción. Si contradice al goal, manda el goal y
-lo anotas en `documentacion/APLAZADOS.md`.
-
-## Las cinco leyes
-
-Aquí en corto; enteras, con su porqué, dentro de cada goal.
-
-1. **Hereda primero, estado del arte después, construye al final.**
-2. **Nada de sobreingeniería.** Si añades una capa, retira la que sustituye.
-3. **Sólo se arregla lo que bloquea** (goals 01–10). Lo demás, una línea en
-   `documentacion/APLAZADOS.md`.
-4. **Lo más ligero que cumpla.** 4 GB de VRAM es el techo, no el objetivo.
-   Evalúa cada modelo con perfiles basados en papers, documentación y reproducciones
-   de usuarios; verifica backend y ajustes efectivos. Compara calidad, latencia,
-   RAM y VRAM. Un fallo con defaults no descarta el modelo.
-5. **Arquitectura modular.** Una responsabilidad por pieza, cero código muerto.
-
-## Los seis invariantes
-
-No se re-derivan, nunca:
-
-1. El catálogo tipado es la única fuente de operaciones. La mente propone, el kernel
-   autoriza, el provider ejecuta.
-2. Nada se afirma sin verificar.
-3. Estados terminales honestos.
-4. La confirmación se liga a la invocación exacta.
-5. Cero respuestas visibles fijas.
-6. Local y privado. El modelo corre en la máquina. BAXY puede consultar la web; lo
-   que no puede es enviar contenido del usuario — la línea es de dirección, no de
-   conexión.
-
-## Mapa mínimo
-
-Producto híbrido **.NET 10 + Python 3.12 + React/TS**, sólo Windows.
+Producto híbrido **.NET 10 + Python 3.12 + React/TypeScript**, sólo Windows. La shell es PowerShell.
 
 | Pieza | Dónde | Qué hace |
 |---|---|---|
-| Entrada de desarrollo | `main.py` | Único arranque en desarrollo: `py main.py` |
-| Mente | `src/baxy_mind/` | Conversa, clasifica, propone operación o plan |
-| Contratos | `src/Baxy.Contracts/` | Tipos del protocolo mente↔kernel |
-| Catálogo + kernel | `src/Baxy.Kernel/` | Universo cerrado de operaciones; autoriza |
-| Core | `src/Baxy.Core/` | Decide el outcome verificable |
-| Providers | `src/Baxy.Providers.Windows/` | Efectos y lecturas reales sobre el PC |
-| App / UI | `src/Baxy.App/`, `src/Baxy.FieldUi/` | Shell y GUI (React+TS) |
-| Setup | `src/Baxy.Setup/` | Instalación reproducible |
-| Pruebas .NET | `tests/Baxy.*.Tests/` | Por proyecto dueño |
-| Pruebas Python | `tests/test_*.py` | ~400 ficheros, pytest |
-| Tooling | `scripts/` | Gates, builds, corpus, evidencia |
+| Arranque de desarrollo | `main.py` | `py -3.12 main.py`: compila lo que cambió y lanza la App |
+| App | `src/Baxy.App/` | Ventana WPF + WebView2, canal con la mente, voz |
+| Interfaz | `src/Baxy.FieldUi/` | React + TypeScript; `dist/` se versiona |
+| Core | `src/Baxy.Core/` | `baxy-core.exe` (NativeAOT), manejadores de operaciones |
+| Kernel | `src/Baxy.Kernel/` | Catálogo (`Operations/ProductCatalog.cs`), riesgo, confirmación, diario |
+| Contratos | `src/Baxy.Contracts/` | Protocolo `baxy.local.v1` |
+| Proveedores | `src/Baxy.Providers.Windows/` | Efectos y lecturas reales sobre Windows |
+| Mente | `src/baxy_mind/` | `mind.py` (el turno), `llm_server.py`, `answer_check.py`, voz |
+| Pruebas | `tests/Baxy.*.Tests/`, `tests/test_*.py` | NUnit por proyecto; pytest para la mente |
+| Scripts | `scripts/` | Arranque, compilación, empaquetado, voz y bancos (`scripts/renew/`) |
 
-**Enrutador completo — dónde miro si quiero tocar X, qué archivos importan si falla
-Y:** [`docs/AI_CONTEXT_MAP.md`](docs/AI_CONTEXT_MAP.md). Ábrelo antes de explorar a
-ciegas.
+## Invariantes
 
-## Tres cosas de esta máquina
+No se re-derivan:
 
-- La shell es **PowerShell** y el producto es sólo Windows. Los comandos de este
-  fichero son literales, no traducciones de otro sistema.
-- El esfuerzo de razonamiento de este repositorio es **`high` como suelo**. `xhigh` se
-  sube en la sesión concreta que lo merezca —un diseño abierto, un fallo que no se
-  explica—, nunca de forma fija.
-- **BAXY no es una aplicación web.** Su interfaz vive en `src/Baxy.FieldUi` dentro de
-  un shell de escritorio y aquí no hay herramientas de navegador: un cambio de interfaz
-  se verifica ejecutando el producto (`py main.py`) y con sus pruebas, y dices qué no
-  pudiste verificar.
+1. El catálogo tipado es la única fuente de operaciones. La mente propone, el kernel autoriza, el proveedor ejecuta.
+2. Nada se afirma sin verificar.
+3. Estados terminales honestos: un efecto ambiguo no reintentable es `failed` con `effectMayHaveOccurred`.
+4. La confirmación se liga a la invocación exacta.
+5. Cero respuestas visibles fijas: el modelo formula cada mensaje.
+6. Local y privado: BAXY puede leer la web, pero no envía contenido de la persona.
 
-## Escalera de validación
+Y dos reglas de diseño: **nada de código que nombre una aplicación** (mecanismos generales y datos en
+`src/baxy_mind/data/`) y **cero código muerto** (si una pieza sustituye a otra, la otra se va).
 
-Sube un peldaño sólo cuando el cambio lo justifique. No ejecutes la compuerta entera
-después de cada línea.
+## Validar
+
+Sube sólo hasta el peldaño que el cambio justifica:
 
 | Nivel | Cuándo | Comando |
 |---|---|---|
-| 0 | Diagnóstico sin editar | `git status --short --branch`, `grep` acotado |
-| 1 | Tras editar | El test dueño: `py -m pytest tests/test_X.py -q` o `dotnet test tests/Baxy.Kernel.Tests -c Release` |
-| 2 | Cambio integrado que toca fuente | `.\scripts\test_source_quality.ps1` (estática multilenguaje + build Release) |
-| 3 | Cierre de tanda, contrato compartido, ejecución, persistencia | `.\scripts\test_source_quality.ps1 -Mode Full` (+ suites .NET y pytest) |
-| 4 | Publish, hardware, voz, ciclo instalado | No es implícito en Full. Ver la guía 05 de abajo |
+| 1 | Tras editar | La prueba de lo que tocaste: `py -3.12 -m pytest tests/test_X.py -q` o `dotnet test tests/Baxy.Kernel.Tests -c Release --nologo` |
+| 2 | Cambio de código integrado | `dotnet build Baxy.slnx -c Release -warnaserror` y `py -3.12 -m pytest -q tests` |
+| 3 | Antes de fusionar | Las suites .NET de los proyectos tocados, pytest entero y `ruff check .` |
+| 4 | Conducta del modelo o de la App | Los bancos de `scripts/renew/` (ver `docs/evaluacion.md`) |
 
-**La entrega se cierra en nivel 3, verde entero.** Un rojo bloquea, sin excepción y
-sin nota al pie. No se cierra con `skip`, `xfail`, umbral relajado ni fallback. Un
-skip no cuenta como pass: dilo como «suite X: N pass, M skips ambientales».
+Un arreglo empieza por una prueba que falla. Un skip no cuenta como pass. Di el comando y el resultado exactos.
+Las pruebas en vivo y los bancos e2e manejan el escritorio real: no los lances en una sesión con trabajo abierto, y
+cierra por PID lo que una prueba abra (nunca por nombre de proceso).
 
-Detalle por ownership y matriz de pruebas:
-`documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md`.
+## Buscar y leer
 
-## Buscar antes de leer
+- Ámbito por defecto: `src tests scripts main.py`. Busca con ripgrep acotado y lee sólo el rango que necesitas.
+- No abras enteros `tests/data/*.jsonl` ni `src/Baxy.FieldUi/dist/`: mide antes con `git ls-tree -r -l HEAD -- ruta`.
+- Salida corta primero: `pytest -q`, `dotnet ... -v:minimal`, `git status --short`, `git diff --stat`.
+- La historia del proyecto (decisiones, mediciones, rechazos) está en `docs/construccion/`. Antes de abrir una línea
+  de investigación, busca ahí: muchas cosas ya se midieron.
 
-El árbol sólo guarda lo que BAXY necesita (~1.200 ficheros versionados). Ámbito por
-defecto: **`src tests scripts main.py`**.
+## Privacidad
 
-- Localiza con la tool `grep` —es ripgrep por dentro— acotada a ese ámbito, y **lee
-  sólo el rango** con `read_file`, no el fichero entero. Para una operación pública
-  extremo a extremo, busca su nombre literal (`"operacion.exacta"`) en `src tests`.
-- En la shell **no existe `rg`**: es PowerShell. `run_terminal_command` se reserva para
-  lo que de verdad necesita shell —git, pytest, dotnet, procesos—, no para leer ni
-  buscar.
-- La evidencia histórica (corridas, corpus, la biblioteca de los cuatro BAXY
-  anteriores con sus rechazos medidos, experimentos, goals cerrados) está **fuera del
-  repositorio**, en `..\BAXY-archivo-2026-10-06\` (léase su `LEEME.md`), y en el
-  historial de Git. Antes de abrir una línea de investigación, busca ahí: es la ley 1.
-  Una ruta `artifacts/…`, `biblioteca/…` o `experiments/…` citada en un documento
-  vive ahí con la misma ruta relativa. Se abre con ruta exacta, nunca se recorre.
+Nunca escribas en el repositorio datos personales: rutas de usuario, peticiones reales, nombres, correos, claves,
+capturas. Los bancos con peticiones reales viven fuera del repositorio; aquí sólo van cifras agregadas y huellas.
 
-## Ficheros que no se leen enteros
+## Commits
 
-Los datos de prueba grandes (`tests/data/*.jsonl`) y `src/Baxy.FieldUi/dist/`
-cuestan la sesión si se abren enteros.
-
-Comprueba el tamaño antes de abrir: `git ls-tree -r -l HEAD -- ruta`. Con JSONL, lee
-las primeras líneas con `read_file` y cuenta con `grep`; con JSON grande, `grep` por
-clave. Nunca completo, y nunca `Get-Content` sin `-TotalCount`.
-
-## Salida de comandos
-
-Pide una señal pequeña primero y sube el detalle sólo si hace falta.
-
-- `pytest -q` (nunca `-v` de entrada). Si falla: `--lf -x -q`, y sólo entonces el
-  traceback del test concreto.
-- `dotnet build`/`test`: `--nologo`, `-v:minimal`. Nunca `-v:detailed`.
-- Lo que tarda —la compuerta, una corrida de medición, un build Release— va en
-  **segundo plano** y sigues con trabajo independiente; recoges el resultado con
-  `get_command_or_subagent_output`, sin sondear en bucle.
-- Salida enorme e imprevisible: redirígela a un fichero temporal fuera del árbol y
-  consúltala con `grep`. No la traigas entera al contexto.
-- `git log --oneline -10`, `git diff --stat` antes de `git diff`.
-- Nunca `git status` sin `--short`, ni recorrer `node_modules/` o el archivo.
-
-Pero no ocultes lo que necesitas para diagnosticar: si un fallo no se explica con la
-señal corta, sube el detalle de ese fallo concreto, no de la suite entera.
-
-## Subagentes
-
-Por defecto, **no**. `spawn_subagent` arranca una sesión hija que **hereda tu modelo**:
-paga contexto y razonamiento otra vez para volver con un informe que además tienes que
-leer. El intento anterior de este proyecto gastó 322 sesiones de subagente: ahí está la
-advertencia.
-
-Delega sólo cuando se cumplan las tres: (a) es **exploración de sólo lectura** y
-acotada, (b) el resultado cabe en rutas + rangos + conclusión, (c) traerlo al hilo
-principal costaría más contexto que la respuesta. Arquitectura, implementación difícil
-y revisión final se quedan contigo.
-
-## Handoff y terminado
-
-El estado se deja **escrito en el repositorio a medida que avanzas**, no al final: una
-compactación no puede borrar horas de trabajo pensado.
-
-Al cerrar una sesión larga o al agotar el contexto, deja el handoff siguiendo
-[`docs/AI_HANDOFF_TEMPLATE.md`](docs/AI_HANDOFF_TEMPLATE.md) — pequeño, de alta
-utilidad, no un diario de la conversación.
-
-Una tarea está terminada cuando: la conducta pedida existe o el diagnóstico está
-demostrado; el ownership es correcto; el nivel de validación que corresponde pasó y lo
-dices con el comando y el resultado exactos; el diff no lleva código, flags ni assets
-sin propósito; la documentación vigente sigue siendo cierta; y otro agente puede
-continuar sin reconstruir tus decisiones.
-
----
-
-*Este fichero tiene un tope duro: Grok lo trunca a los 10.000 caracteres, por el
-final. Si lo alargas, mide con `grok inspect` en el mismo commit.*
+Pequeños y por tema, con el área al principio (`Mente: …`, `App: …`, `Proveedores: …`, `Documentación: …`).
