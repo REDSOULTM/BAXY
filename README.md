@@ -1,7 +1,7 @@
 <h1 align="center">BAXY</h1>
 
 <p align="center">
-  <b>Tu propio Jarvis para Windows: vive en tu PC, habla con voz propia y no dice «listo» sin haberlo comprobado.</b>
+  <b>Un compañero para Windows: vive en tu PC, habla con voz propia y maneja tu escritorio por voz o por texto.</b>
 </p>
 
 <p align="center">
@@ -34,8 +34,8 @@ Lo que lo distingue:
   Q4_K_M (2,7 GB).
 - **Voz propia.** Palabra de activación, transcripción local con Parakeet y una voz sintética propia hecha con
   Supertonic.
-- **Comprueba lo que hace.** Cada acción devuelve un recibo verificado por el sistema; BAXY sólo dice lo que el
-  recibo confirma. Si no pudo comprobarlo, lo dice.
+- **Revisa lo que hace.** Cada acción devuelve un recibo del sistema y BAXY responde a partir de él. Aun así, puede
+  equivocarse (ver [resultados](#resultados-medidos)).
 - **Pregunta antes de hacer algo irreversible.** Borrar, enviar o cerrar algo con trabajo sin guardar pide tu confirmación,
   ligada a esa acción exacta.
 
@@ -58,7 +58,7 @@ Más de 180 herramientas tipadas, agrupadas por área:
 | Conversación | Responder preguntas, calcular (con aritmética real, no de memoria) y consultar el tiempo |
 
 Un turno típico: dices «BAXY, abre la calculadora y calcula 12 por 37». BAXY decide las llamadas, el sistema las
-ejecuta y verifica, y BAXY contesta con su voz en una frase sólo con lo que el recibo confirmó.
+ejecuta y verifica, y BAXY contesta con su voz en una frase a partir del recibo.
 
 ## Arquitectura
 
@@ -100,7 +100,7 @@ Detalle de cada pieza en [docs/arquitectura.md](docs/arquitectura.md).
 
 ## Principios
 
-1. **Decir sólo lo verificado.** «Se envió el comando» no es «se hizo». Un resultado ambiguo se dice como tal.
+1. **No dar por hecho lo que no se vio.** «Se envió el comando» no es «se hizo». Un resultado ambiguo se dice como tal.
 2. **Confirmar lo destructivo.** La confirmación se liga a la invocación exacta, no a una intención parecida.
 3. **Privado por diseño.** La línea es de dirección, no de conexión: BAXY lee la web, pero no envía contenido tuyo.
    Lo que recuerda de ti se puede ver, corregir y borrar.

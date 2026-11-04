@@ -1,7 +1,7 @@
 <h1 align="center">BAXY</h1>
 
 <p align="center">
-  <b>Your own Jarvis for Windows: it lives on your PC, speaks with its own voice, and never says "done" until it has checked.</b>
+  <b>A companion for Windows: it lives on your PC, speaks with its own voice, and runs your desktop by voice or by text.</b>
 </p>
 
 <p align="center">
@@ -32,8 +32,8 @@ What makes it different:
 - **Its own model.** [BAXY-Qwen3.5-4B](https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF) is Qwen3.5-4B with a
   LoRA fine-tune for choosing and chaining BAXY's tools. It runs on `llama.cpp`, quantized to Q4_K_M (2.7 GB).
 - **Its own voice.** Wake word, local transcription with Parakeet, and a custom synthetic voice built on Supertonic.
-- **Checks what it does.** Every action returns a receipt verified by the system; BAXY only says what the receipt
-  confirms. When it could not check, it says so.
+- **Reviews what it does.** Every action returns a receipt from the system and BAXY answers from it. It can still
+  get things wrong (see [results](#measured-results)).
 - **Asks before anything irreversible.** Deleting, sending, or closing something with unsaved work requires your
   confirmation, bound to that exact action.
 
@@ -95,7 +95,7 @@ flowchart LR
 
 ## Principles
 
-1. **Say only what was verified.** "The command was sent" is not "it was done". An ambiguous result is reported as
+1. **Don't assume what wasn't seen.** "The command was sent" is not "it was done". An ambiguous result is reported as
    ambiguous.
 2. **Confirm what is destructive**, bound to the exact invocation.
 3. **Private by design.** The line is about direction, not connection: BAXY reads the web but never sends your
