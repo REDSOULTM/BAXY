@@ -545,7 +545,7 @@ internal sealed class TooltipLabelCache
             var file = new JsonObject { ["version"] = 1, ["windows"] = Document().DeepClone() };
             string temporary = _path + ".tmp";
             File.WriteAllText(temporary, file.ToJsonString(), new System.Text.UTF8Encoding(false));
-            File.Move(temporary, _path, overwrite: true);
+            global::Baxy.Kernel.AtomicFileReplacement.ReplaceOrCreate(temporary, _path);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {

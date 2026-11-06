@@ -428,6 +428,163 @@ public sealed class DesktopInteractionOpenedApplicationTests
         });
     }
 
+    // Encargo A9 (U27, 0 of 6 in the fleet): on the bench's VMs the Notepad started by the bench stayed behind the
+    // desktop («Program Manager»: SetForegroundWindow's rules), so Ctrl+C and the select-all went to the desktop. A copy
+    // or a select-all with no window now goes to the person's window, brought up by the lease before the helper runs.
+    // The receipt is the adapter's (it names the window the keys reached): windowFrom beside it made the model select
+    // all when only the selection was asked (banco de decisiones, A9).
+    [TestCase("clipboard.copy")]
+    [TestCase("input.select.all")]
+    // Encargo A11: a paste is the same keys' helper (Ctrl+V to the window in front) and takes the same rule.
+    [TestCase("clipboard.paste")]
+    public async Task ACopyOrASelectAllWithTheDesktopInFrontGoesToThePersonsWindow(string operation)
+    {
+        const long notepad = 7070;
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter(operation, lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening { Fresh = false }, Steam), null,
+            () => new OpenedKeyboardWindow((nint)notepad, "lista.txt - Notepad"));
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(operation, Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(lease.Taken, Is.EqualTo(new nint[] { (nint)notepad }));
+            Assert.That(adapter.Window, Is.EqualTo(notepad));
+            Assert.That(receipt.Result?.TryGetProperty("windowFrom", out _), Is.False);
+        });
+    }
+
+    // Encargo A9: with the person's window in front (no surface to go to), the copy acts on the front, as before.
+    [Test]
+    public async Task ACopyWithThePersonsWindowInFrontActsOnTheFront()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("clipboard.copy", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening { Fresh = false }, Steam), null, () => null);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(adapter.Window, Is.Null);
+            Assert.That(lease.Taken, Is.Empty);
+            Assert.That(receipt.Result?.TryGetProperty("windowFrom", out _), Is.False);
+        });
+    }
+
+    // Encargo A11: with the person's window in front, a paste acts on the front too (nothing taken, no window named).
+    [Test]
+    public async Task APasteWithThePersonsWindowInFrontActsOnTheFront()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("clipboard.paste", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening { Fresh = false }, Steam), null, () => null);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync("clipboard.paste", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(adapter.Window, Is.Null);
+            Assert.That(lease.Taken, Is.Empty);
+        });
+    }
+
+    // Encargo A11: with BAXY's own window in front a paste was judged there and refused (protected_window, its next
+    // pointing to app_open), while a copy and a look go to the person's window below. The paste now goes there too: the
+    // refusal judges the window it is sent to (the person's), and the lease brings it up before the helper runs.
+    [Test]
+    public async Task APasteWithBaxyInFrontGoesToThePersonsWindowNotRefused()
+    {
+        const long notepad = 7070;
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("clipboard.paste", lease);
+        // Refused only where BAXY is: the act that names no window (the front, BAXY's own).
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, (_, arguments) => WindowsExternalCapabilityProvider.NamesNoWindow(arguments),
+            Keyboard(new Opening { Fresh = false }, Steam), null,
+            () => new OpenedKeyboardWindow((nint)notepad, "lista.txt - Notepad"));
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync("clipboard.paste", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.Not.EqualTo("protected_window"));
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(adapter.Window, Is.EqualTo(notepad));
+            Assert.That(lease.Taken, Is.EqualTo(new nint[] { (nint)notepad }));
+        });
+    }
+
+    // Encargo A11: a paste that names its window keeps it; the rule is only for one that names none.
+    [Test]
+    public async Task APasteThatNamesItsWindowKeepsIt()
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter("clipboard.paste", lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening { Fresh = false }, Steam), null,
+            () => throw new AssertionException("the person's surface is not read for a paste that names its window"));
+
+        _ = await provider.InvokeAsync("clipboard.paste", Json("""{"window":4321}"""), CancellationToken.None);
+
+        Assert.That(adapter.Window, Is.EqualTo(4321));
+    }
+
+    // Encargo A9: the rule is the copy's and the select-all's; a key and a text keep theirs (the key keeps the front,
+    // the text goes below BAXY only with BAXY in front).
+    [TestCase("input.key.press", """{"key":"ctrl_c"}""")]
+    [TestCase("input.text.type", """{"text":"hola"}""")]
+    public async Task AKeyOrATextDoesNotTakeTheCopysRule(string operation, string arguments)
+    {
+        var lease = new TakingLease();
+        var adapter = new RecordingAdapter(operation, lease);
+        using var provider = new WindowsExternalCapabilityProvider(
+            [adapter], lease, null, Keyboard(new Opening { Fresh = false }, Steam), () => null,
+            () => throw new AssertionException("the copy's surface is not read for a key or a text"));
+
+        _ = await provider.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.That(adapter.Window, Is.Null);
+    }
+
+    // Encargo A9, the rule itself: only with the desktop, the taskbar or BAXY's own window in front, the topmost window of
+    // another process with a usable surface; never the desktop nor the taskbar, wherever they are in the order.
+    [Test]
+    public void TheCopysWindowIsThePersonsOnlyWithTheDesktopOrBaxyInFront()
+    {
+        nint chat = 11, notepad = 22, desktop = 33, taskbar = 44, other = 55;
+        var processes = new Dictionary<nint, uint>
+        {
+            [0] = 0, [chat] = 4242, [notepad] = 5151, [desktop] = 6161, [taskbar] = 6161, [other] = 7171,
+        };
+        var images = new Dictionary<int, string>
+        {
+            [4242] = @"C:\Program Files\BAXY\Baxy.exe",
+            [5151] = @"C:\Windows\System32\notepad.exe",
+            [6161] = @"C:\Windows\explorer.exe",
+            [7171] = @"C:\Apps\editor.exe",
+        };
+        nint For(nint front, IEnumerable<nint> topDown) => VisibleControlSurface.SurfaceForFrontKeys(
+            front, window => processes[window], _ => true, window => window == desktop || window == taskbar,
+            () => topDown, process => images.GetValueOrDefault(process));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(For(desktop, [taskbar, notepad, other, desktop]), Is.EqualTo(notepad), "the desktop in front");
+            Assert.That(For(taskbar, [taskbar, notepad, desktop]), Is.EqualTo(notepad), "the taskbar in front");
+            Assert.That(For(chat, [chat, notepad, desktop]), Is.EqualTo(notepad), "BAXY in front");
+            Assert.That(For(notepad, [notepad, other, desktop]), Is.EqualTo(nint.Zero), "the person's window in front");
+            Assert.That(For(desktop, [taskbar, chat, desktop]), Is.EqualTo(nint.Zero), "only the shell and BAXY");
+            Assert.That(For(0, [notepad]), Is.EqualTo(nint.Zero), "nobody's front");
+        });
+    }
+
     private static WindowsDesktopInteractionAdapter Adapter(FakeDesktopKeyboard keyboard) => new(
         new NoRunner(),
         "KnownFolderOpen.ps1",

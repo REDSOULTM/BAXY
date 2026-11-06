@@ -50,6 +50,16 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         return ValueTask.FromResult(CaptureCopies.Save(_directory, captureId, folder, KnownFolder, _time.GetUtcNow()));
     }
 
+    public ValueTask<SavedCaptureCopy> SaveCopyAtAsync(
+        string captureId, string path, IReadOnlyCollection<string> labels, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (Filesystem.PersonFolders.Place(path, labels, KnownFolder) is not { } place)
+            throw new ScreenshotUnavailableException("known_path_outside_folder", "The path is outside the person's folders.");
+        return ValueTask.FromResult(
+            CaptureCopies.Save(_directory, captureId, place.Label, KnownFolder, _time.GetUtcNow(), place.Relative));
+    }
+
     /// <summary>
     /// A window looked at only inside this process (computer use: the visible-control view, a click's surface before
     /// and after): encoded and hashed in memory, never written. Storing it as a verified capture wrote, flushed to
@@ -174,16 +184,37 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
     /// </summary>
     internal const int RetainedCaptures = 16;
 
+    // Uso-108 (agent-desktop core/src/refs/refs_store_prune.rs, 60 s so a write in flight stays): a Core killed between
+    // the write and the move runs no «finally», and its temporary, a whole screen under a name of its own, was never seen
+    // again by this pruning. By the real clock, the file's own.
+    internal static readonly TimeSpan OrphanedTemporaryAge = TimeSpan.FromSeconds(60);
+
     private void PruneOlderCaptures(string kept)
     {
         FileInfo[] captures;
+        FileInfo[] temporaries;
         try
         {
-            captures = new DirectoryInfo(_directory).GetFiles("capture_*.bmp");
+            var directory = new DirectoryInfo(_directory);
+            captures = directory.GetFiles("capture_*.bmp");
+            temporaries = directory.GetFiles(".capture_*.tmp");
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
             return;
+        }
+
+        foreach (FileInfo orphan in temporaries.Where(
+            static temporary => DateTime.UtcNow - temporary.LastWriteTimeUtc > OrphanedTemporaryAge))
+        {
+            try
+            {
+                orphan.Delete();
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // Still held: it goes with a later capture.
+            }
         }
 
         foreach (FileInfo old in captures

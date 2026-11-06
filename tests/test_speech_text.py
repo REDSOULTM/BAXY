@@ -1,8 +1,9 @@
 """What BAXY's voice reads (src/baxy_mind/speech_text.py): numbers with their gender, times, dates, money, units and
-English names as a Latin-American says them."""
+English names as a Latin-American says them; and, with the interface in English, the same as an English speaker says
+them."""
 import pytest
 
-from baxy_mind.speech_text import cardinal, spoken
+from baxy_mind.speech_text import Utterance, cardinal, cardinal_en, language, ordinal_en, spoken
 
 
 @pytest.mark.parametrize(("n", "words"), [
@@ -44,3 +45,101 @@ def test_spoken(text: str, said: str) -> None:
 
 def test_words_that_contain_a_name_are_left_alone() -> None:
     assert spoken("Steamboat y apps") == "Steamboat y aps"
+
+
+# --- English (Steam release: the interface in English, voice.speak's «lang» «en») ------------------------------------
+
+@pytest.mark.parametrize(("n", "words"), [
+    (0, "zero"), (75, "seventy five"), (105, "one hundred five"), (1000, "one thousand"), (1500, "one thousand five hundred"),
+    (2026, "two thousand twenty six"), (21000, "twenty one thousand"), (1_000_001, "one million one"),
+    (2_500_000_000, "two billion five hundred million"), (-7, "minus seven"),
+])
+def test_cardinal_en(n: int, words: str) -> None:
+    assert cardinal_en(n) == words
+
+
+@pytest.mark.parametrize(("n", "words"), [
+    (1, "first"), (2, "second"), (3, "third"), (4, "fourth"), (5, "fifth"), (8, "eighth"), (9, "ninth"), (12, "twelfth"),
+    (20, "twentieth"), (21, "twenty first"), (100, "one hundredth"),
+])
+def test_ordinal_en(n: int, words: str) -> None:
+    assert ordinal_en(n) == words
+
+
+@pytest.mark.parametrize(("text", "said"), [
+    # numbers: US thousands and decimals, any size, negatives, letters written against them
+    ("You have 21 files and 1 folder.", "You have twenty one files and one folder."),
+    ("It is 1,500 and 1,250,000.", "It is one thousand five hundred and one million two hundred fifty thousand."),
+    ("Use 1.5 or 0.25 of it.", "Use one point five or zero point two five of it."),
+    ("It went down to -7.", "It went down to minus seven."),
+    ("In 4K and 1080p.", "In four K and one thousand eighty p."),
+    # percentages
+    ("I set the volume to 30%.", "I set the volume to thirty percent."),
+    ("The CPU is at 0.69 %.", "The CPU is at zero point six nine percent."),
+    # money
+    ("It costs $1,990.", "It costs one thousand nine hundred ninety dollars."),
+    ("It is $1, US$5, USD 20 or 15 USD.", "It is one dollar, five dollars, twenty dollars or fifteen dollars."),
+    ("Pay $4.99 or $0.50.", "Pay four dollars and ninety nine cents or fifty cents."),
+    # times
+    ("At 10:30 and at 10:00.", "At ten thirty and at ten o'clock."),
+    ("At 10:05 a.m. and 5 pm.", "At ten oh five A M and five P M."),
+    ("It ends at 21:00 or 00:15.", "It ends at nine P M or twelve fifteen A M."),
+    ("Meet at 10 a.m. tomorrow.", "Meet at ten A M tomorrow."),
+    ("It ends at 9 p.m. Then rest.", "It ends at nine P M. Then rest."),  # the sentence still ends there
+    # dates: month names; a slash date only when its order is certain
+    ("On November 4, 2026.", "On November fourth, twenty twenty six."),
+    ("On 4 November 2026 and May 2026.", "On the fourth of November twenty twenty six and May twenty twenty six."),
+    ("Due 2026-11-04.", "Due November fourth, twenty twenty six."),
+    ("On 10/17/2026 or 17/10/2026.", "On October seventeenth, twenty twenty six or October seventeenth, twenty twenty six."),
+    ("On 11/04/2026.", "On eleven slash four slash twenty twenty six."),
+    ("Open 24/7.", "Open twenty four/seven."),
+    # review 2026-11-04: without a year a slash pair is not a date (a score, a fraction)
+    ("All 3/3. Then 1/2 of it.", "All three/three. Then one/two of it."),
+    # a bare 1100-2099 is a year after a word that places it in time or closing a clause; elsewhere a quantity
+    ("In 1984 and 1905.", "In nineteen eighty four and nineteen oh five."),
+    ("Since 1999, by 2030 and in 2005 we grew.", "Since nineteen ninety nine, by twenty thirty and in two thousand five we "
+                                                 "grew."),
+    ("It was 2026. It has 2026 files and 2,026 rows.", "It was twenty twenty six. It has two thousand twenty six files and "
+                                                       "two thousand twenty six rows."),
+    # dotted groups, digit by digit
+    ("Ping 192.168.1.20 or 1.2.3.", "Ping one nine two dot one six eight dot one dot two zero or one dot two dot three."),
+    # units
+    ("It is 1 km away at 21 km/h.", "It is one kilometer away at twenty one kilometers per hour."),
+    ("It weighs 2.5 kg and it is 17 °C.", "It weighs two point five kilograms and it is seventeen degrees Celsius."),
+    ("It is -3 °F, 1 °C and 60 mph.", "It is minus three degrees Fahrenheit, one degree Celsius and sixty miles per hour."),
+    ("16 GB, 512 MB, 2 TB at 3.2 GHz.", "sixteen gigabytes, five hundred twelve megabytes, two terabytes at three point two "
+                                        "gigahertz."),
+    ("Wait 2 h 30 min and 1 h.", "Wait two hours thirty minutes and one hour."),
+    # ordinals, abbreviations, «@»
+    ("Your 1st, 2nd, 3rd and 21st try.", "Your first, second, third and twenty first try."),
+    ("Mr. Smith, Mrs. Lee, Ms. Kim and Dr. Jones.", "Mister Smith, Missus Lee, Miz Kim and Doctor Jones."),
+    ("Apples, e.g. green ones, vs. pears.", "Apples, for example green ones, versus pears."),
+    ("Room No. 5.", "Room number five."),
+    ("Write to ana@example.com.", "Write to ana at example.com."),
+    ("Let me see… done — all set.", "Let me see... done, all set."),
+    # no Spanish respellings
+    ("Opened Steam and Spotify, BAXY.", "Opened Steam and Spotify, BAXY."),
+    # «etc.» closing a sentence keeps the sentence's end; mid-sentence it does not
+    ("Apples, pears, etc. Then rest, etc. and more.", "Apples, pears, et cetera. Then rest, et cetera and more."),
+    ("Fruit, etc.", "Fruit, et cetera."),
+    # «AM»/«PM» only right after a clock time, written as one
+    ("Is it 3 Am I? PM Smith at 5 PM, 7 A.M. sharp.", "Is it three Am I? PM Smith at five P M, seven A M sharp."),
+])
+def test_spoken_en(text: str, said: str) -> None:
+    assert spoken(text, "en") == said
+    assert spoken(Utterance(text, "en")) == said  # an Utterance says itself in its own language
+
+
+@pytest.mark.parametrize(("tag", "lang"), [
+    ("en", "en"), ("EN", "en"), ("en-US", "en"), ("en_GB", "en"), ("es", "es"), ("es-CL", "es"), (None, "es"), ("", "es"),
+    ("fr", "es"), (5, "es"),
+])
+def test_an_unknown_or_missing_language_is_spanish(tag: object, lang: str) -> None:
+    assert language(tag) == lang
+    assert Utterance("Hola.", tag).lang == lang
+
+
+def test_spanish_stays_as_it_was_for_a_plain_text_and_a_spanish_utterance() -> None:
+    text = "Son $1.990 a las 10:30, Sr. Pérez, en Steam."
+    assert spoken(text) == spoken(text, "es") == spoken(Utterance(text, "es")) == spoken(Utterance(text, None))
+    assert spoken(text) == "Son mil novecientos noventa pesos a las diez y media, señor Pérez, en Estím."

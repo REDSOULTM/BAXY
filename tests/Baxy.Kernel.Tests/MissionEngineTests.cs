@@ -368,6 +368,32 @@ public sealed class MissionEngineTests
         });
     }
 
+    // Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca»): in Bypass the retry of an execution
+    // that began and did not end runs again unasked.
+    [Test]
+    public async Task InBypassAnUncertainRetryRunsWithoutAsking()
+    {
+        var handler = new FailOnceHandler();
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal,
+            new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Bypass });
+        OperationRequest request = CreateRequest("{\"title\":\"Compras\",\"content\":\"pan\"}");
+
+        Assert.That(
+            async () => await engine.ExecuteAsync(request, CancellationToken.None),
+            Throws.TypeOf<InvalidOperationException>());
+        OperationResponse retried = await engine.ExecuteAsync(
+            request with { RequestId = Guid.NewGuid().ToString("D") },
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(retried.ErrorCode, Is.Not.EqualTo("confirmation_required"));
+            Assert.That(retried.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(2));
+        });
+    }
+
     // Revisión 2026-10-22 (K-5): a JSON string with a lone surrogate («\uD800») parses, but reading it as text throws;
     // it used to escape the engine before any terminal state and end the core (exit 70). It is refused as invalid
     // arguments, in a value or in a name, and nothing runs.
@@ -390,30 +416,25 @@ public sealed class MissionEngineTests
         });
     }
 
-    // Auditoría del núcleo 2026-10-23: an invocation whose earlier run may have acted is never run again without the
-    // person: not in Bypass, and not on the yes given before that run (it was for that run only).
+    // Auditoría del núcleo 2026-10-23: in normal mode an invocation whose earlier run may have acted is never run again
+    // without the person, not on the yes given before that run (it was for that run only). Bypass asks nothing since
+    // the owner's decision of 2026-11-02 (InBypassAnUncertainRetryRunsWithoutAsking).
     [Test]
-    public async Task AnUncertainStartAsksBeforeRunningAgainEvenInBypassAndOnAnEarlierYes()
+    public async Task AnUncertainStartAsksBeforeRunningAgainInNormalModeAndOnAnEarlierYes()
     {
         var handler = new RetryableOnceHandler(OperationRisk.Irreversible, effectMayHaveOccurred: false);
-        ConfirmationMode mode = ConfirmationMode.Normal;
         using var journal = new InMemoryInvocationJournal();
         using var engine = new MissionEngine(
             new OperationRegistry([handler]),
             journal,
-            new MissionEngineOptions { ConfirmationMode = () => mode });
+            new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Normal });
         OperationRequest request = CreateRequest("{}");
         await journal.RecordStartedAsync(request, RequestFingerprint.Compute(request), CancellationToken.None);
 
-        mode = ConfirmationMode.Bypass;
-        OperationResponse inBypass = await engine.ExecuteAsync(request, CancellationToken.None);
-        mode = ConfirmationMode.Normal;
         (OperationResponse asked, OperationResponse confirmed) = await UncertainStart.RetryAsync(engine, request);
 
         Assert.Multiple(() =>
         {
-            Assert.That(inBypass.ErrorCode, Is.EqualTo("confirmation_required"));
-            Assert.That(inBypass.Result!.Value.GetProperty("reconciliationRequired").GetBoolean(), Is.True);
             Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
             // The yes to the reconciliation runs it; a retryable run with nothing done keeps it pending.
             Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Pending));

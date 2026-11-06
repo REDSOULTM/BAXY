@@ -251,7 +251,7 @@ public sealed class ExternalAdaptersTests
         var adapter = new WindowsProcessTerminationAdapter(platform);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "system.process.terminate.named", Json("""{"name":"svchost"}"""), CancellationToken.None);
+            "system.process.terminate.named", Json("""{"name":"node"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -317,7 +317,7 @@ public sealed class ExternalAdaptersTests
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "system.process.terminate.named",
-            Json("""{"name":"explorer.exe"}"""),
+            Json("""{"name":"steamwebhelper.exe"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -352,6 +352,41 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.Result?.GetProperty("monitors")[0]
                 .GetProperty("value").GetInt32(), Is.EqualTo(64));
+        });
+    }
+
+    // Encargo 80: Windows' light or dark mode is read from where Windows keeps it, not from a page's words: 0 dark, 1 light,
+    // the two choices apart «custom» (Microsoft's «Light, Dark, or Custom»), and no value at all Windows' default.
+    [TestCase(0, 0, "dark", "dark", "dark", "hkcu_themes_personalize")]
+    [TestCase(1, 1, "light", "light", "light", "hkcu_themes_personalize")]
+    [TestCase(0, 1, "custom", "dark", "light", "hkcu_themes_personalize")]
+    [TestCase(1, 0, "custom", "light", "dark", "hkcu_themes_personalize")]
+    [TestCase(null, null, "light", "light", "light", "windows_default_light_no_value_set")]
+    public async Task ColorModeIsReadFromWhereWindowsKeepsIt(
+        int? windows, int? apps, string mode, string windowsMode, string appsMode, string authority)
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new WindowsDeviceControlAdapter(temporary.Path, temporary.Path, new StubProcessRunner(""))
+        {
+            PersonalizeValue = name => name switch
+            {
+                "SystemUsesLightTheme" => windows,
+                "AppsUseLightTheme" => apps,
+                _ => throw new InvalidOperationException(name),
+            },
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "system.settings.status", Json("""{"setting":"color_mode"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.Result?.GetProperty("mode").GetString(), Is.EqualTo(mode));
+            Assert.That(receipt.Result?.GetProperty("windowsMode").GetString(), Is.EqualTo(windowsMode));
+            Assert.That(receipt.Result?.GetProperty("appsMode").GetString(), Is.EqualTo(appsMode));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo(authority));
         });
     }
 
@@ -404,6 +439,47 @@ public sealed class ExternalAdaptersTests
             Assert.That(all.Result?.TryGetProperty("readInPart", out _), Is.False);
             Assert.That(all.Result?.GetProperty("endReached").GetBoolean(), Is.True);
         });
+    }
+
+    // Banco ciego c3 C3-130 s0 («termina explorer.exe desde el Administrador de tareas»): the force-kill of explorer.exe
+    // was accepted and asked «Should I force-kill explorer.exe?»; a yes would have taken the taskbar and the desktop.
+    // A process of Windows' shell or session is refused before the person is asked, and never ended.
+    [TestCase("explorer.exe")]
+    [TestCase("DWM")]
+    [TestCase("sihost")]
+    [TestCase("StartMenuExperienceHost.exe")]
+    [TestCase("winlogon")]
+    public async Task ForceKillingAProcessOfWindowsShellOrSessionIsRefusedBeforeTheQuestion(string name)
+    {
+        var identity = new WindowsProcessIdentity(4242, 638900000000000000);
+        var platform = new StubProcessTerminationPlatform(
+            [[identity], []], terminateResult: WindowsProcessTermination.Terminated);
+        var adapter = new WindowsProcessTerminationAdapter(platform);
+        JsonElement arguments = Json(JsonSerializer.Serialize(new { name }));
+
+        ExternalCapabilityReceipt? preflight = await ((IExternalOperationAdapter)adapter).PreflightAsync(
+            "system.process.terminate.named", arguments, CancellationToken.None);
+        ExternalCapabilityReceipt invoked = await adapter.InvokeAsync(
+            "system.process.terminate.named", arguments, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(preflight?.ErrorCode, Is.EqualTo("process_part_of_windows"));
+            Assert.That(preflight?.EffectMayHaveOccurred, Is.False);
+            Assert.That(invoked.ErrorCode, Is.EqualTo("process_part_of_windows"));
+            Assert.That(platform.Terminated, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task ForceKillingAnOrdinaryProgramHasNoPreflightFailure()
+    {
+        var platform = new StubProcessTerminationPlatform([], terminateResult: WindowsProcessTermination.Terminated);
+        ExternalCapabilityReceipt? preflight = await ((IExternalOperationAdapter)new WindowsProcessTerminationAdapter(
+            platform)).PreflightAsync("system.process.terminate.named", Json("""{"name":"steam.exe"}"""),
+            CancellationToken.None);
+
+        Assert.That(preflight, Is.Null);
     }
 
     [Test]
@@ -649,6 +725,44 @@ public sealed class ExternalAdaptersTests
             Assert.That(invented.EffectObserved, Is.False);
             Assert.That(missing.ErrorCode, Is.EqualTo("capture_not_found"));
             Assert.That(missing.EffectObserved, Is.False);
+            // With no capture kept, the way to one.
+            Assert.That(missing.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                "capture_screenshot {} takes a capture; this call read nothing: no capture is kept with the id "
+                + "«capture_00000000000000000000000000000000», and none is kept at all"));
+        });
+    }
+
+    // uso-88 (diag-946e F10 c2: «capture_9d0d…284», one digit short, failed bare as capture_identity_invalid and the
+    // answer was «la imagen no quedó guardada»): an id that is not a kept capture's fails naming the newest capture
+    // kept, as the same call with it written.
+    [Test]
+    public async Task AMiscopiedCaptureIdFailsNamingTheNewestCaptureKept()
+    {
+        using TemporaryDirectory temporary = new();
+        string older = "capture_" + new string('a', 32);
+        string newest = "capture_9d0d79cae9964288c5f5da38f7bc2841";
+        await File.WriteAllBytesAsync(Path.Combine(temporary.Path, older + ".bmp"), WideCapture());
+        await File.WriteAllBytesAsync(Path.Combine(temporary.Path, newest + ".bmp"), WideCapture());
+        File.SetLastWriteTimeUtc(Path.Combine(temporary.Path, older + ".bmp"), DateTime.UtcNow.AddMinutes(-5));
+        File.WriteAllText(Path.Combine(temporary.Path, "capture_notes.txt"), "not a capture");
+        using var adapter = new CaptureVisionAdapter(temporary.Path);
+
+        ExternalCapabilityReceipt shortId = await adapter.InvokeAsync(
+            "vision.describe", Json("""{"captureId":"capture_9d0d79cae9964288c5f5da38f7bc284"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt absent = await adapter.InvokeAsync(
+            "ocr.read", Json("""{"captureId":"capture_9d0d79cae9964288c5f5da38f7bc2842"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(shortId.ErrorCode, Is.EqualTo("capture_identity_invalid"));
+            Assert.That(shortId.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                "vision_describe {\"captureId\":\"" + newest + "\"} reads the newest capture kept; this call read "
+                + "nothing: «capture_9d0d79cae9964288c5f5da38f7bc284» is not a capture's id"));
+            Assert.That(absent.ErrorCode, Is.EqualTo("capture_not_found"));
+            Assert.That(absent.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                "ocr_read {\"captureId\":\"" + newest + "\"} reads the newest capture kept; this call read nothing: "
+                + "no capture is kept with the id «capture_9d0d79cae9964288c5f5da38f7bc2842»"));
         });
     }
 
@@ -691,6 +805,14 @@ public sealed class ExternalAdaptersTests
         }
     }
 
+    // Encargo 34: with no OCR engine, the call that can describe the capture comes first, with its argument written.
+    [Test]
+    public void NoOcrEngineStartsWithTheDescriptionOfTheCapture() =>
+        Assert.That(CaptureVisionAdapter.EngineMissingNext("capture_" + new string('b', 32)), Is.EqualTo(
+            "vision_describe {\"captureId\":\"capture_" + new string('b', 32) + "\"} can describe it; this call read "
+            + "nothing: Windows has no OCR for this language and Tesseract is not installed, so this capture cannot be "
+            + "read as text here"));
+
     // Renew al máximo (w8): a Tesseract that starts and fails is told as that, with what to do, never as a missing
     // Windows OCR language pack (windows_ocr_language_not_available, as every Tesseract failure was).
     [Test]
@@ -725,13 +847,71 @@ public sealed class ExternalAdaptersTests
                 Assert.That(failed.Result!.Value.GetProperty("exitCode").GetInt32(), Is.Not.Zero);
                 Assert.That(failed.Result!.Value.GetProperty("next").GetString(), Does.Contain("vision_describe"));
                 Assert.That(french.ErrorCode, Is.EqualTo("windows_ocr_language_not_available"));
-                Assert.That(french.Result!.Value.GetProperty("next").GetString(), Does.Contain("Spanish and English"));
+                // Encargo 34: the read without the language comes first, as the call with its argument written.
+                Assert.That(french.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(
+                    "ocr_read {\"captureId\":\"capture_" + new string('a', 32) + "\"}, without «language», reads "
+                    + "Spanish and English; this call read nothing: neither Windows OCR nor Tesseract has this language"));
             });
         }
         finally
         {
             Environment.SetEnvironmentVariable("BAXY_TESSERACT_EXE", previousExecutable);
             Environment.SetEnvironmentVariable("BAXY_TESSDATA_DIR", previousTessdata);
+        }
+    }
+
+    // Encargo 48 (banco de uso F10, 4 of 4): «dime qué número de turno me salió en lo que tengo abierto» took a capture,
+    // its description failed with vision_provider_not_configured and nothing more, and the answer was «no puedo ver la
+    // pantalla» with the number written in the Notepad in front. The failure leads with the read of the window in front
+    // (its process; a protected one, or none, keeps the call without it).
+    [Test]
+    [NonParallelizable]
+    public async Task ADescriptionWithNoVisionModelLeadsWithReadingTheWindowInFront()
+    {
+        using var directory = new TemporaryDirectory();
+        string captureId = "capture_" + new string('b', 32);
+        await File.WriteAllBytesAsync(Path.Combine(directory.Path, captureId + ".bmp"), WideCapture());
+        string? endpoint = Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT");
+        string? model = Environment.GetEnvironmentVariable("BAXY_VISION_MODEL");
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", null);
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", null);
+            using var notepad = new CaptureVisionAdapter(directory.Path)
+            {
+                ApplicationInFront = _ => ValueTask.FromResult<string?>("Notepad"),
+            };
+            using var none = new CaptureVisionAdapter(directory.Path)
+            {
+                ApplicationInFront = _ => ValueTask.FromResult<string?>(null),
+            };
+            string arguments = $$"""{"captureId":"{{captureId}}","prompt":"¿qué número sale?"}""";
+            ExternalCapabilityReceipt named = await notepad.InvokeAsync(
+                "vision.describe", Json(arguments), CancellationToken.None);
+            ExternalCapabilityReceipt unnamed = await none.InvokeAsync(
+                "vision.describe", Json(arguments), CancellationToken.None);
+
+            // uso-88 (diag-bc8c F10, 2 of 6 answered «no hay un modelo de visión» with the number on screen): the OCR of
+            // this same capture comes first, as the call with its argument written; the window's read stays beside it.
+            string ocr = "ocr_read {\"captureId\":\"" + captureId + "\"} reads the text in this capture, and ";
+            const string Rest = " the text the window in front shows; this call described nothing: no vision "
+                + "model is configured on this PC, so no capture can be described here";
+            Assert.Multiple(() =>
+            {
+                Assert.That(named.ErrorCode, Is.EqualTo("vision_provider_not_configured"));
+                Assert.That(named.Verified, Is.False);
+                Assert.That(named.EffectObserved, Is.False);
+                Assert.That(named.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                    ocr + "input_visible_controls {\"application\":\"Notepad\",\"includeText\":true}" + Rest));
+                Assert.That(unnamed.ErrorCode, Is.EqualTo("vision_provider_not_configured"));
+                Assert.That(unnamed.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                    ocr + "input_visible_controls {\"includeText\":true}" + Rest));
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", endpoint);
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", model);
         }
     }
 
@@ -779,6 +959,112 @@ public sealed class ExternalAdaptersTests
         {
             Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", endpoint);
             Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", model);
+        }
+    }
+
+    // Uso 104 (F31, uso real 04-11: 5 of 5 turns with vision.describe spent the next decision's whole budget re-reading
+    // the conversation): a description goes to the slot that holds the mind's conversation, so it sets the slot's state
+    // aside first and puts it back after, as the click's vision does, and asks on that same slot.
+    [Test]
+    [NonParallelizable]
+    public async Task ADescriptionSetsTheMindsSlotAsideAndPutsItBack()
+    {
+        using var directory = new TemporaryDirectory();
+        using var slots = new TemporaryDirectory();
+        string captureId = "capture_" + new string('a', 32);
+        await File.WriteAllBytesAsync(Path.Combine(directory.Path, captureId + ".bmp"), WideCapture());
+        string[] names = ["BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL", "BAXY_VISION_SLOT", "BAXY_VISION_SLOT_DIR"];
+        string?[] saved = [.. names.Select(Environment.GetEnvironmentVariable)];
+        var asked = new List<string>();
+        string? chat = null;
+        string? held = null;
+        using var http = new HttpClient(new LambdaHttpHandler(async (request, token) =>
+        {
+            asked.Add(request.RequestUri!.PathAndQuery);
+            string body = await request.Content!.ReadAsStringAsync(token);
+            if (request.RequestUri.AbsolutePath.StartsWith("/slots/", StringComparison.Ordinal))
+            {
+                held = JsonDocument.Parse(body).RootElement.GetProperty("filename").GetString();
+                await File.WriteAllTextAsync(Path.Combine(slots.Path, held!), "state", token);
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") };
+            }
+            chat = body;
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("""{"choices":[{"message":{"content":"Una ventana."}}]}"""),
+            };
+        }));
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "http://127.0.0.1:8090/v1/chat/completions");
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", "vision-test");
+            Environment.SetEnvironmentVariable("BAXY_VISION_SLOT", "0");
+            Environment.SetEnvironmentVariable("BAXY_VISION_SLOT_DIR", slots.Path);
+            using var adapter = new CaptureVisionAdapter(directory.Path, http);
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "vision.describe", Json($$"""{"captureId":"{{captureId}}"}"""), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.True);
+                Assert.That(asked, Is.EqualTo(new[]
+                {
+                    "/slots/0?action=save", "/v1/chat/completions", "/slots/0?action=restore",
+                }));
+                Assert.That(JsonDocument.Parse(chat!).RootElement.GetProperty("id_slot").GetInt32(), Is.Zero);
+                // The file holds the person's conversation: it stays on disk no longer than the question.
+                Assert.That(Directory.GetFiles(slots.Path), Is.Empty);
+            });
+        }
+        finally
+        {
+            for (int index = 0; index < names.Length; index++)
+                Environment.SetEnvironmentVariable(names[index], saved[index]);
+        }
+    }
+
+    // A slot that could not be set aside costs a slower next decision, not the description the person asked for.
+    [Test]
+    [NonParallelizable]
+    public async Task ADescriptionStillAnswersWhenTheSlotCouldNotBeSetAside()
+    {
+        using var directory = new TemporaryDirectory();
+        using var slots = new TemporaryDirectory();
+        string captureId = "capture_" + new string('a', 32);
+        await File.WriteAllBytesAsync(Path.Combine(directory.Path, captureId + ".bmp"), WideCapture());
+        string[] names = ["BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL", "BAXY_VISION_SLOT", "BAXY_VISION_SLOT_DIR"];
+        string?[] saved = [.. names.Select(Environment.GetEnvironmentVariable)];
+        var asked = new List<string>();
+        using var http = new HttpClient(new LambdaHttpHandler((request, _) =>
+        {
+            asked.Add(request.RequestUri!.PathAndQuery);
+            return Task.FromResult(request.RequestUri.AbsolutePath.StartsWith("/slots/", StringComparison.Ordinal)
+                ? new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                : new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("""{"choices":[{"message":{"content":"Una ventana."}}]}"""),
+                });
+        }));
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "http://127.0.0.1:8090/v1/chat/completions");
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", "vision-test");
+            Environment.SetEnvironmentVariable("BAXY_VISION_SLOT", "0");
+            Environment.SetEnvironmentVariable("BAXY_VISION_SLOT_DIR", slots.Path);
+            using var adapter = new CaptureVisionAdapter(directory.Path, http);
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "vision.describe", Json($$"""{"captureId":"{{captureId}}"}"""), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.True);
+                Assert.That(asked, Is.EqualTo(new[] { "/slots/0?action=save", "/v1/chat/completions" }));
+            });
+        }
+        finally
+        {
+            for (int index = 0; index < names.Length; index++)
+                Environment.SetEnvironmentVariable(names[index], saved[index]);
         }
     }
 
@@ -902,6 +1188,31 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("observedState").GetString(),
                 Is.EqualTo("scroll_y:640"));
             Assert.That(receipt.Result?.GetProperty("targetId").GetString(), Is.EqualTo("page-7"));
+        });
+    }
+
+    // Ajuste c4 (C3-061, 083, 097, 146): a tab step on a session whose browser ended sent nothing, so its receipt says
+    // failed before any effect, not an uncertain one.
+    [Test]
+    public async Task BrowserControlOnABrowserThatEndedFailsBeforeAnyEffect()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserControlSession(
+            temporary.Path,
+            new(false, false, "close", "", "", "cdp_session_closed"));
+        using var http = new HttpClient(new StubHttpHandler("<rss><channel></channel></rss>"));
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "browser.control",
+            Json("""{"action":"close"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("cdp_session_closed"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
         });
     }
 
@@ -1301,7 +1612,7 @@ public sealed class ExternalAdaptersTests
             temporary.Path,
             new(false, true, "Wednesday", "https://www.netflix.com/search?q=Wednesday",
                 "Netflix", "page-10", 0, UserBrowserSurface.StreamingTitleNotFound, "",
-                ["Merlina", "Wednesday Addams: la serie"]));
+                ["Merlina", "Wednesday Addams: la serie", "Faro Norte: T1:E3 Wednesday"]));
         using var http = new HttpClient(new StubHttpHandler(""));
         using var adapter = new WebBrowserAdapter(browser, http);
 
@@ -1314,9 +1625,14 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("streaming_title_not_found"));
-            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
-            Assert.That(receipt.Result?.GetProperty("candidates").GetArrayLength(), Is.EqualTo(2));
-            Assert.That(receipt.Result?.GetProperty("candidates")[0].GetString(), Is.EqualTo("Merlina"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("candidates").GetArrayLength(), Is.EqualTo(3));
+            Assert.That(receipt.Result?.GetProperty("candidates")[0].GetProperty("title").GetString(),
+                Is.EqualTo("Merlina"));
+            Assert.That(receipt.Result?.GetProperty("candidates")[1].TryGetProperty("kind", out _), Is.False);
+            // Uso real 02-11: an episode of another series holding the title is said as an episode.
+            Assert.That(receipt.Result?.GetProperty("candidates")[2].GetProperty("kind").GetString(),
+                Is.EqualTo("episode"));
         });
     }
 
@@ -3010,6 +3326,320 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Banco de uso 03-11 (U27, «copia todo lo que dice el bloc de notas»): clipboard.copy with nothing selected failed as
+    // clipboard_not_changed alone. The failure says the selection's length and the focused field's text length in the
+    // window in front (lengths only, nothing of the text).
+    [Test]
+    public async Task ACopyOfNothingSaysTheSelectionAndTheFieldLengths()
+    {
+        using TemporaryDirectory temporary = new();
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        await File.WriteAllTextAsync(keyScript, "# test fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false,\"error\":\"clipboard_not_changed\"," +
+            "\"acceptedEvents\":4,\"expectedEvents\":4}");
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            CaretAnswer = () => """{"ok":true,"processId":4242,"text":"lista de prueba","unit":"line","bounded":false,"selectionLength":0}""",
+            ValueAnswer = () => """{"ok":true,"text":"lista de prueba","bounded":false,"id":"7"}""",
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            runner, keyScript, keyScript, keyScript, keyScript, new FakeDesktopKeyboard(), fields);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(receipt.Result?.GetProperty("selectionLength").GetInt32(), Is.Zero);
+            Assert.That(receipt.Result?.GetProperty("focusedTextLength").GetInt32(), Is.EqualTo("lista de prueba".Length));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("lista de prueba"));
+        });
+    }
+
+    // Encargo 17 (banco uso-cf8d, U27): Windows 11's Notepad's text area is a Document with no value, so the focused value
+    // read gave no length and the failure said only the empty selection. The length of its text, read by its TextPattern
+    // («focusvalue» with lengthOnly), is said instead; nothing of the text.
+    [Test]
+    public async Task ACopyOfNothingInADocumentWithNoValueSaysItsTextLength()
+    {
+        using TemporaryDirectory temporary = new();
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        await File.WriteAllTextAsync(keyScript, "# test fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false,\"error\":\"clipboard_not_changed\"," +
+            "\"acceptedEvents\":4,\"expectedEvents\":4}");
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            CaretAnswer = () => """{"ok":true,"processId":4242,"text":"","unit":"line","bounded":false,"selectionLength":0}""",
+            ValueAnswer = () => """{"ok":false,"error":"focus_not_a_field"}""",
+            LengthAnswer = () => """{"ok":true,"kind":"Document","length":42,"bounded":false}""",
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            runner, keyScript, keyScript, keyScript, keyScript, new FakeDesktopKeyboard(), fields);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(receipt.Result?.GetProperty("selectionLength").GetInt32(), Is.Zero);
+            Assert.That(receipt.Result?.GetProperty("focusedTextLength").GetInt32(), Is.EqualTo(42));
+            Assert.That(receipt.Result?.TryGetProperty("focusedTextBounded", out _), Is.False);
+            Assert.That(fields.LengthRequests, Has.Count.EqualTo(1));
+        });
+    }
+
+    // Encargo 27 (banco uso-d4bd, U27): «copia todo lo que dice el bloc de notas» failed with focusedTextLength 7 for a
+    // document of 35. A copy goes to the window in front, and a Notepad started by a process that is not in front does
+    // not take it (SetForegroundWindow's rules; measured on two bench VMs: started from the bench's task it stayed behind
+    // Program Manager, and the worker read the focus of the desktop). The lengths were of another window's focus, and
+    // nothing said whose: the failure names the window the keys went to, as a paste and a typed text do (sentTo).
+    [Test]
+    public async Task ACopyOfNothingNamesTheWindowTheKeysWentTo()
+    {
+        using TemporaryDirectory temporary = new();
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        await File.WriteAllTextAsync(keyScript, "# test fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false,\"error\":\"clipboard_not_changed\"," +
+            "\"acceptedEvents\":4,\"expectedEvents\":4,\"foregroundProcessIdBefore\":4242," +
+            "\"foregroundProcessIdAfter\":4242,\"foregroundTitleBefore\":\"Documento - Editor\"}");
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            CaretAnswer = () => """{"ok":true,"processId":4242,"text":"","unit":"line","bounded":false,"selectionLength":0}""",
+            ValueAnswer = () => """{"ok":false,"error":"focus_not_a_field"}""",
+            LengthAnswer = () => """{"ok":true,"kind":"Document","length":7,"bounded":false}""",
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            runner, keyScript, keyScript, keyScript, keyScript, new FakeDesktopKeyboard(), fields);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("title").GetString(),
+                Is.EqualTo("Documento - Editor"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("process").GetString(), Is.EqualTo("Editor"));
+            Assert.That(receipt.Result?.GetProperty("focusedTextLength").GetInt32(), Is.EqualTo(7));
+        });
+    }
+
+    // Encargo 35 (bancos ab-d4-1d y uso-8ded, U27, 0 of 6): «copia todo lo que dice el bloc de notas» got selectionLength 0
+    // and focusedTextLength 35 and answered «no había nada seleccionado», never selecting. With nothing selected and text
+    // in the field, the failure's next leads with the call that selects it, then the copy (encargos 20, 28 and 34).
+    [Test]
+    public async Task ACopyOfNothingFromAFieldWithTextLeadsWithTheCallThatSelectsIt()
+    {
+        using TemporaryDirectory temporary = new();
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        await File.WriteAllTextAsync(keyScript, "# test fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false,\"error\":\"clipboard_not_changed\"," +
+            "\"acceptedEvents\":4,\"expectedEvents\":4,\"foregroundProcessIdBefore\":4242," +
+            "\"foregroundProcessIdAfter\":4242,\"foregroundTitleBefore\":\"Documento - Editor\"}");
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            CaretAnswer = () => """{"ok":true,"processId":4242,"text":"","unit":"line","bounded":false,"selectionLength":0}""",
+            ValueAnswer = () => """{"ok":false,"error":"focus_not_a_field"}""",
+            LengthAnswer = () => """{"ok":true,"kind":"Document","length":35,"bounded":false}""",
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            runner, keyScript, keyScript, keyScript, keyScript, new FakeDesktopKeyboard(), fields);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(receipt.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                "if the person asked for all of its text: input_select_all {} and then clipboard_copy {} copy all 35 "
+                + "characters of the text in Documento - Editor; this call copied nothing: nothing was selected"));
+        });
+    }
+
+    // Encargo 45 (banco ab-93-ce, U27, 0 of 2): with the route above the model asked «¿Quieres que seleccione todo y lo
+    // copie?» although the person had asked to copy it all: the failure said its effect was uncertain. It is not: the
+    // clipboard was read again unchanged and the window that took Ctrl+C, still in front, had nothing selected, where the
+    // copy does nothing (WM_COPY copies the selection). The effect is known, so the failure is not ambiguous. A console is
+    // apart: there Ctrl+C is an interrupt, an effect of its own; and a window that left the front was not read.
+    [Test]
+    public async Task ACopyOfNothingFromTheWindowInFrontIsAFailureWhoseEffectIsKnown()
+    {
+        using TemporaryDirectory temporary = new();
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        await File.WriteAllTextAsync(keyScript, "# test fixture");
+        const string Copied = "{\"version\":1,\"ok\":false,\"effectObserved\":false,\"error\":\"clipboard_not_changed\","
+            + "\"acceptedEvents\":4,\"expectedEvents\":4,\"foregroundProcessIdBefore\":4242,"
+            + "\"foregroundProcessIdAfter\":4242,\"foregroundTitleBefore\":\"Documento - Editor\"}";
+        FakeViewedFields Fields() => new("""{"ok":true}""")
+        {
+            CaretAnswer = () => """{"ok":true,"processId":4242,"text":"","unit":"line","bounded":false,"selectionLength":0}""",
+            ValueAnswer = () => """{"ok":false,"error":"focus_not_a_field"}""",
+            LengthAnswer = () => """{"ok":true,"kind":"Document","length":35,"bounded":false}""",
+        };
+
+        ExternalCapabilityReceipt field = await new WindowsDesktopInteractionAdapter(
+                new CapturingProcessRunner(Copied), keyScript, keyScript, keyScript, keyScript, new FakeDesktopKeyboard(),
+                Fields())
+            .InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt console = await new WindowsDesktopInteractionAdapter(
+                new CapturingProcessRunner(Copied), keyScript, keyScript, keyScript, keyScript,
+                new FakeDesktopKeyboard { FrontClass = "ConsoleWindowClass" }, Fields())
+            .InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+        ExternalCapabilityReceipt moved = await new WindowsDesktopInteractionAdapter(
+                new CapturingProcessRunner(Copied.Replace("\"foregroundProcessIdBefore\":4242", "\"foregroundProcessIdBefore\":777",
+                    StringComparison.Ordinal)),
+                keyScript, keyScript, keyScript, keyScript, new FakeDesktopKeyboard(), Fields())
+            .InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(field.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(field.EffectMayHaveOccurred, Is.False);
+            Assert.That(console.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(console.EffectMayHaveOccurred, Is.True);
+            Assert.That(moved.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    // Encargo 94: the last resort's Ctrl+A raised a dialog (it is «Abrir» in a language): the receipt says so, closed or
+    // not, with the state: nothing selected.
+    [TestCase(true, "which was closed again")]
+    [TestCase(false, "which is still open")]
+    public async Task ADialogSelectAllRaisedIsSaidInItsReceipt(bool closed, string said)
+    {
+        using TemporaryDirectory temporary = new();
+        string script = Path.Combine(temporary.Path, "DesktopSelectAll.ps1");
+        await File.WriteAllTextAsync(script, "# test fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":true,\"error\":\"select_all_opened_dialog\","
+            + "\"dialogOpened\":{\"title\":\"Ventana Lumbre\",\"closed\":" + (closed ? "true" : "false") + "}}");
+
+        ExternalCapabilityReceipt receipt = await new WindowsDesktopInteractionAdapter(
+                runner, script, script, script, script, new FakeDesktopKeyboard())
+            .InvokeAsync("input.select.all", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("select_all_opened_dialog"));
+            Assert.That(receipt.Result?.GetProperty("dialogOpened").GetProperty("title").GetString(), Is.EqualTo("Ventana Lumbre"));
+            Assert.That(receipt.Result?.GetProperty("next").GetString(),
+                Does.Contain("selected nothing").And.Contain("Ventana Lumbre").And.Contain(said));
+        });
+    }
+
+    // Encargo 61 (banco de uso U45, diag-f11d c2 and c4): in a console the failure offered select all and copy, a route that
+    // fails there (select_all_postcondition_not_verified), and the model gave up with the command's output already read.
+    // Both ways to Ctrl+C, the copy and the key: Windows Terminal sends it to the shell when nothing is selected.
+    [TestCase("clipboard.copy", """{}""")]
+    [TestCase("input.key.press", """{"key":"ctrl_c","window":4660}""")]
+    public async Task ACopyOfNothingFromAConsoleSaysWhatWritesTheTextItShowed(string operation, string arguments)
+    {
+        using TemporaryDirectory temporary = new();
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        await File.WriteAllTextAsync(keyScript, "# test fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false,\"error\":\"clipboard_not_changed\","
+            + "\"acceptedEvents\":4,\"expectedEvents\":4}");
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            CaretAnswer = () => """{"ok":true,"processId":4242,"text":"","unit":"line","bounded":false,"selectionLength":0}""",
+            ValueAnswer = () => """{"ok":false,"error":"focus_not_a_field"}""",
+            LengthAnswer = () => """{"ok":true,"kind":"Document","length":35,"bounded":false}""",
+        };
+        var keyboard = new FakeDesktopKeyboard
+        {
+            FrontClass = "CASCADIA_HOSTING_WINDOW_CLASS", Clipboard = 7, CopyChanges = false,
+        };
+
+        ExternalCapabilityReceipt receipt = await new WindowsDesktopInteractionAdapter(
+                runner, keyScript, keyScript, keyScript, keyScript, keyboard, fields)
+            .InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(receipt.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                "file_write {\"path\":\"<the file>\",\"text\":\"<what it showed>\"} writes what input_visible_controls "
+                + "with includeText read from this console; this call copied nothing: a console has no selection here "
+                + "and its Ctrl+C is its interrupt"));
+        });
+    }
+
+    // Encargo 35: a selection that was there (the copy failed for another reason) or a field with no text has nothing a
+    // select-all would add: no next.
+    [TestCase(3, 35)]
+    [TestCase(0, 0)]
+    public async Task ACopyWithASelectionOrNoTextHasNoSelectAllNext(int selection, int length)
+    {
+        using TemporaryDirectory temporary = new();
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        await File.WriteAllTextAsync(keyScript, "# test fixture");
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false,\"error\":\"clipboard_not_changed\"," +
+            "\"acceptedEvents\":4,\"expectedEvents\":4,\"foregroundProcessIdBefore\":4242," +
+            "\"foregroundProcessIdAfter\":4242,\"foregroundTitleBefore\":\"Documento - Editor\"}");
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            CaretAnswer = () => "{\"ok\":true,\"processId\":4242,\"text\":\"\",\"unit\":\"line\",\"bounded\":false," +
+                "\"selectionLength\":" + selection + "}",
+            ValueAnswer = () => """{"ok":false,"error":"focus_not_a_field"}""",
+            LengthAnswer = () => "{\"ok\":true,\"kind\":\"Document\",\"length\":" + length + ",\"bounded\":false}",
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            runner, keyScript, keyScript, keyScript, keyScript, new FakeDesktopKeyboard(), fields);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(receipt.Result?.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
+    // Encargo 27: the lengths are read after the keys, in the window then in front. When that is no longer the window the
+    // keys went to (the script read its process before them), they would be another window's: none is said, and the
+    // window named is the one that took the keys.
+    [Test]
+    public async Task ACopyWhoseWindowLeftTheFrontSaysNoLengthOfAnotherWindow()
+    {
+        using TemporaryDirectory temporary = new();
+        string keyScript = Path.Combine(temporary.Path, "DesktopKeyPress.ps1");
+        await File.WriteAllTextAsync(keyScript, "# test fixture");
+        int tookTheKeys = Environment.ProcessId;
+        string program = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
+        var runner = new CapturingProcessRunner(
+            "{\"version\":1,\"ok\":false,\"effectObserved\":false,\"error\":\"clipboard_not_changed\"," +
+            "\"acceptedEvents\":4,\"expectedEvents\":4,\"foregroundProcessIdBefore\":" + tookTheKeys + "," +
+            "\"foregroundProcessIdAfter\":" + tookTheKeys + ",\"foregroundTitleBefore\":\"Program Manager\"}");
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            CaretAnswer = () => """{"ok":true,"processId":4242,"text":"","unit":"line","bounded":false,"selectionLength":0}""",
+            ValueAnswer = () => """{"ok":true,"text":"hola","bounded":false,"id":"7"}""",
+            LengthAnswer = () => """{"ok":true,"kind":"Document","length":7,"bounded":false}""",
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            runner, keyScript, keyScript, keyScript, keyScript, new FakeDesktopKeyboard(), fields);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("clipboard.copy", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("title").GetString(),
+                Is.EqualTo("Program Manager"));
+            Assert.That(receipt.Result?.GetProperty("sentTo").GetProperty("process").GetString(), Is.EqualTo(program));
+            Assert.That(receipt.Result?.TryGetProperty("focusedTextLength", out _), Is.False);
+            Assert.That(receipt.Result?.TryGetProperty("selectionLength", out _), Is.False);
+            Assert.That(fields.LengthRequests, Is.Empty);
+        });
+    }
+
     [Test]
     public async Task TextInputIsSentInProcessAndPointerInputUsesTheVerifiedDesktopInputScript()
     {
@@ -3497,12 +4127,13 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    [TestCase("system.settings.set", """{"setting":"brightness","value":30}""")]
-    [TestCase("system.settings.adjust", """{"setting":"brightness","direction":"down","amount":10}""")]
-    [TestCase("system.settings.status", """{"setting":"brightness"}""")]
-    public async Task BrightnessOnAMonitorThatDoesNotExposeItIsTheComputersLimit(string operation, string arguments)
+    [TestCase("system.settings.set", """{"setting":"brightness","value":30}""", "changed")]
+    [TestCase("system.settings.adjust", """{"setting":"brightness","direction":"down","amount":10}""", "changed")]
+    [TestCase("system.settings.status", """{"setting":"brightness"}""", "read")]
+    public async Task BrightnessOnAMonitorThatDoesNotExposeItIsTheComputersLimit(string operation, string arguments,
+        string done)
     {
-        // Encargo H2 (redpc, estado_antes «Brightness []»: WMI answers its brightness classes with «not supported»): the
+        // Encargo H2 (development PC, estado_antes «Brightness []»: WMI answers its brightness classes with «not supported»): the
         // absence is read before anything is changed and answered as such, never as a change left unconfirmed.
         using TemporaryDirectory temporary = new();
         var runner = new StubProcessRunner(
@@ -3523,6 +4154,10 @@ public sealed class ExternalAdaptersTests
             Assert.That(script, Does.Contain("-ne 'NotSupported'"), "only WMI's «not supported» is the absence");
             Assert.That(absent, Is.GreaterThan(0));
             Assert.That(firstSet < 0 || absent < firstSet, Is.True, "the absence is answered before any set");
+            // Encargo 28 (U24): the page where Windows keeps the screen's settings comes first, written as its call.
+            Assert.That(receipt.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                "app_open {\"appId\":\"Settings\",\"place\":\"display\"} opens the Display page of Settings; this call "
+                + $"{done} nothing: no screen of this PC gives Windows its brightness"));
         });
     }
 
@@ -3591,11 +4226,11 @@ public sealed class ExternalAdaptersTests
         using TemporaryDirectory temporary = new();
         var delays = new RecordingDelay();
         var runner = new SequencedProcessRunner([
-            "{\"ok\":true,\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
-            "{\"ok\":true,\"profiles\":[\"Galaxy Phone 5G 0000\",\"Other\"]}",
+            "{\"ok\":true,\"profiles\":[\"Galaxy A34 5G C6CC\",\"Other\"]}",
+            "{\"ok\":true,\"profiles\":[\"Galaxy A34 5G C6CC\",\"Other\"]}",
             "{\"ok\":true,\"connected\":false,\"profile\":\"\"}",
             "",
-            "{\"ok\":true,\"connected\":true,\"profile\":\"Galaxy Phone 5G 0000\"}",
+            "{\"ok\":true,\"connected\":true,\"profile\":\"Galaxy A34 5G C6CC\"}",
         ]);
         var adapter = new WindowsDeviceControlAdapter(
             temporary.Path, temporary.Path, runner, delays.DelayAsync);
@@ -3607,7 +4242,7 @@ public sealed class ExternalAdaptersTests
             CancellationToken.None);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "wifi.connect.named",
-            Json("""{"profileName":"galaxy phone 5g 0000"}"""),
+            Json("""{"profileName":"galaxy a34 5g c6cc"}"""),
             CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -4009,7 +4644,8 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(block.Verified, Is.False);
             Assert.That(block.ErrorCode, Is.EqualTo("web_search_unavailable"));
-            Assert.That(block.Result, Is.Null);
+            Assert.That(block.Result!.Value.GetProperty("next").GetString(), Does.StartWith(
+                """browser_navigate_set {"url":"https://duckduckgo.com/?q=Windows%2011%20calculator"}"""));
             Assert.That(none.Verified, Is.False);
             Assert.That(none.ErrorCode, Is.EqualTo("web_search_no_results"));
             Assert.That(down.ErrorCode, Is.EqualTo("web_search_unavailable"));
@@ -4017,6 +4653,105 @@ public sealed class ExternalAdaptersTests
                 receipt => !receipt.EffectObserved && !receipt.EffectMayHaveOccurred));
         });
     }
+
+    // Encargo 41 (U29, R18): from a cloud address DuckDuckGo lets one or two searches through and then answers 202 with
+    // its check that a person is asking («anomaly») for more than ten minutes, on both endpoints; the model got
+    // web_search_unavailable with nothing to do next. The failure still searched nothing and says so, and its next leads
+    // with the call that opens the same search, in the same region, in the person's browser for them to look at.
+    [Test]
+    public async Task ASearchTheEngineRefusesLeadsWithOpeningItInThePersonsBrowser()
+    {
+        const string anomaly = """<html><body><form id="challenge-form" action="//duckduckgo.com/anomaly.js">"""
+            + "Unfortunately, bots use DuckDuckGo too.</form></body></html>";
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new(HttpStatusCode.Accepted, anomaly, "text/html"),
+            ["html.duckduckgo.com"] = new(HttpStatusCode.Accepted, anomaly, "text/html"),
+        };
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = new(
+            new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused")), http, homeRegion: "CL");
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"receta de lentejas & arroz","language":"es"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(receipt.EffectObserved || receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(handler.Asked.Select(static asked => asked.Uri.Host),
+                Is.EqualTo(new[] { "lite.duckduckgo.com", "html.duckduckgo.com" }));
+            JsonElement result = receipt.Result!.Value;
+            Assert.That(result.GetProperty("query").GetString(), Is.EqualTo("receta de lentejas & arroz"));
+            Assert.That(result.GetProperty("searchPageUrl").GetString(),
+                Is.EqualTo("https://duckduckgo.com/?q=receta%20de%20lentejas%20%26%20arroz&kl=cl-es"));
+            // Uso 80 (diag-a947: 38 of 44 searches refused on the fleet, U29 0/6): what each page of the engine answered,
+            // and a next that is the search itself done in the person's browser, its results read there with the page
+            // read (the chain the model followed 6 of 6 times in U31's rescue, where Edge on the same address got them).
+            Assert.That(Asked(result), Is.EqualTo(new[]
+            {
+                "lite.duckduckgo.com challenge 202", "html.duckduckgo.com challenge 202",
+            }));
+            Assert.That(result.GetProperty("next").GetString(), Is.EqualTo(
+                """browser_navigate_set {"url":"https://duckduckgo.com/?q=receta%20de%20lentejas%20%26%20arroz&kl=cl-es"}"""
+                + RouteInTheBrowser));
+        });
+    }
+
+    private const string RouteInTheBrowser = " does this search in the person's browser instead, and browser_page_read {}"
+        + " then reads its results there, the same engine's results this call would have given";
+
+    // Uso 80: a refusal says what each page of the engine answered, as it answered: a status that is no check (429), a
+    // page that did not answer in time, and no connection at all, which the person's browser may still have (a proxy
+    // only the browser passes); the next is the same search in the person's browser in every case.
+    [Test]
+    public async Task ASearchRefusalSaysWhatEachPageOfTheEngineAnswered()
+    {
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["lite.duckduckgo.com"] = new((HttpStatusCode)429, "Too Many Requests", "text/plain"),
+        };
+        handler.Silent.Add("html.duckduckgo.com");
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+        using var down = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter downAdapter = SearchAdapter(temporary, down);
+
+        ExternalCapabilityReceipt mixed = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"capital de Australia"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt offline = await downAdapter.InvokeAsync(
+            "web.search", Json("""{"query":"capital de Australia"}"""), CancellationToken.None);
+
+        const string next = """browser_navigate_set {"url":"https://duckduckgo.com/?q=capital%20de%20Australia"}"""
+            + RouteInTheBrowser;
+        Assert.Multiple(() =>
+        {
+            Assert.That(mixed.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(Asked(mixed.Result!.Value), Is.EqualTo(new[]
+            {
+                "lite.duckduckgo.com refused 429", "html.duckduckgo.com no_answer -",
+            }));
+            Assert.That(mixed.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(next));
+            Assert.That(offline.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(Asked(offline.Result!.Value), Is.EqualTo(new[]
+            {
+                "lite.duckduckgo.com unreachable -", "html.duckduckgo.com unreachable -",
+            }));
+            Assert.That(offline.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(next));
+            Assert.That(new[] { mixed, offline }, Has.All.Matches<ExternalCapabilityReceipt>(
+                receipt => !receipt.EffectObserved && !receipt.EffectMayHaveOccurred));
+        });
+    }
+
+    // Each page of the engine a refused search asked, as «endpoint outcome status» («-» without one).
+    private static string[] Asked(JsonElement result) => result.GetProperty("asked").EnumerateArray()
+        .Select(static asked => string.Join(' ', asked.GetProperty("endpoint").GetString(),
+            asked.GetProperty("outcome").GetString(),
+            asked.TryGetProperty("httpStatus", out JsonElement status) ? status.GetInt32().ToString(CultureInfo.InvariantCulture) : "-"))
+        .ToArray();
 
     // Arreglos de uso real (2026-10-26): after a burst the lite endpoint answered a page with no results in a quarter of
     // a second (a throttle), and every search said it could not look it up. The request reads as a browser's, and a
@@ -4069,15 +4804,15 @@ public sealed class ExternalAdaptersTests
     }
 
     // Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca»: with nearby, this PC's city and its
-    // country (M81: Curico is also in Indiana), read from its public address, join the query; no coordinates
+    // country (M81: Valparaiso is also in Indiana), read from its public address, join the query; no coordinates
     // leave, and the receipt says the query as it was sent.
     [Test]
     public async Task ASearchNearbyCarriesThisPcsCityAndCountryAndNothingElse()
     {
         string page = SearchResultsPage(
-            ("Comida para llevar en Curico", "https://example.com/valpo", "Locales de comida para llevar"));
+            ("Comida para llevar en Valparaiso", "https://example.com/valpo", "Locales de comida para llevar"));
         var handler = new RoutingHttpHandler(page,
-            """{"success":true,"country":"Chile","region":"Curico","city":"Curico","latitude":-34.9828,"longitude":-71.2394}""");
+            """{"success":true,"country":"Chile","region":"Valparaiso","city":"Valparaiso","latitude":-33.0363,"longitude":-71.6297}""");
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
         using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
@@ -4088,7 +4823,7 @@ public sealed class ExternalAdaptersTests
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("comida para llevar Curico, Chile"));
+            Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("comida para llevar Valparaiso, Chile"));
             Assert.That(handler.Asked.Where(uri => !uri.Host.Contains("ipwho", StringComparison.Ordinal)),
                 Has.All.Matches<Uri>(uri => !uri.Query.Contains("33.03", StringComparison.Ordinal)
                     && !uri.Query.Contains("71.62", StringComparison.Ordinal)));
@@ -4268,13 +5003,114 @@ public sealed class ExternalAdaptersTests
             Assert.That(first.GetProperty("source").GetString(), Is.EqualTo("Diario Uno"));
             Assert.That(first.GetProperty("url").GetString(), Is.EqualTo("https://news.google.com/rss/articles/abc"));
             Assert.That(first.GetProperty("published").GetString(), Is.EqualTo("Mon, 28 Sep 2026 12:00:00 GMT"));
+            // uso-82: how a Google News link Google News did not resolve is read (this feed's article pages are no pages).
+            Assert.That(receipt.Result!.Value.GetProperty("next").GetString(),
+                Does.Contain("Google News link").And.Contain("web_fetch"));
             Assert.That(receipt.Result!.Value.GetProperty("results")[1].GetProperty("title").GetString(),
                 Is.EqualTo("El fútbol argentino vuelve este fin de semana"));
-            Assert.That(Uri.UnescapeDataString(handler.Asked[0].Uri.Query),
+            // The feed's searches (each result's link is then asked of Google News: ANewsSearchGivesTheArticleEachLinkLeadsTo).
+            List<AskedRequest> searches = handler.Asked.Where(asked => asked.Uri.AbsolutePath == "/rss/search").ToList();
+            Assert.That(Uri.UnescapeDataString(searches[0].Uri.Query),
                 Is.EqualTo("?q=dólar blue hoy&hl=es-419&gl=CL&ceid=CL:es-419"));
-            Assert.That(Uri.UnescapeDataString(handler.Asked[1].Uri.Query),
+            Assert.That(Uri.UnescapeDataString(searches[1].Uri.Query),
                 Is.EqualTo("?q=dollar today&hl=en-US&gl=US&ceid=US:en"));
             Assert.That(handler.Asked[0].UserAgent, Does.Match(ProjectUserAgent));
+        });
+    }
+
+    // uso-82: the feed's links are Google News links; the article each leads to is asked of Google News in one request
+    // (each link's page carries its signature) and the result's url is that article. A link Google News does not resolve
+    // keeps its Google News link, and the receipt says how that one is read.
+    [Test]
+    public async Task ANewsSearchGivesTheArticleEachLinkLeadsTo()
+    {
+        const string feed = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <rss version="2.0"><channel><title>Noticias</title>
+            <item><title>La final - Diario Uno</title><link>https://news.google.com/rss/articles/CBMiabc?oc=5</link><pubDate>Mon, 28 Sep 2026 12:00:00 GMT</pubDate><source url="https://www.example.com.ar">Diario Uno</source></item>
+            <item><title>Otra nota - Diario Dos</title><link>https://news.google.com/rss/articles/CBMidef?oc=5</link><pubDate>Mon, 28 Sep 2026 11:00:00 GMT</pubDate><source url="https://www.example.com">Diario Dos</source></item>
+            </channel></rss>
+            """;
+        const string googlePage = """<html><body><div data-n-a-sg="sg_abc" data-n-a-ts="1793769327"></div></body></html>""";
+        const string answer = ")]}'\n\n"
+            + """[["wrb.fr","Fbv4je","[\"garturlres\",\"https://www.example.com.ar/deportes/final-copa\",1]",null,null,null,"1"]]""";
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("news.google.com/rss/search", new(HttpStatusCode.OK, feed, "application/rss+xml")));
+        handler.Routes.Add(("news.google.com/rss/articles/CBMiabc", new(HttpStatusCode.OK, googlePage, "text/html")));
+        handler.Routes.Add(("news.google.com/rss/articles/CBMidef", new(HttpStatusCode.OK, "<html>Google News</html>", "text/html")));
+        handler.Routes.Add(("batchexecute", new(HttpStatusCode.OK, answer, "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"final copa","source":"news"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            JsonElement results = receipt.Result!.Value.GetProperty("results");
+            Assert.That(results[0].GetProperty("url").GetString(), Is.EqualTo("https://www.example.com.ar/deportes/final-copa"));
+            Assert.That(results[0].GetProperty("source").GetString(), Is.EqualTo("Diario Uno"));
+            Assert.That(results[1].GetProperty("url").GetString(), Is.EqualTo("https://news.google.com/rss/articles/CBMidef"));
+            Assert.That(receipt.Result!.Value.GetProperty("next").GetString(), Does.Contain("news.google.com"));
+            Assert.That(handler.Asked.Count(asked => asked.Uri.AbsolutePath.EndsWith("batchexecute", StringComparison.Ordinal)),
+                Is.EqualTo(1));
+            Assert.That(Uri.UnescapeDataString(handler.Asked.Single(asked => asked.Body is not null).Body!),
+                Does.Contain("\\\"CBMiabc\\\",1793769327,\\\"sg_abc\\\"").And.Not.Contain("CBMidef"));
+        });
+    }
+
+    // uso-82 (AMD e2e 2026-11-04, «¿Quién ganó la Copa América 2024?»): a news result's url is a Google News link, and
+    // web.fetch of it read Google's own page, with no article in it; the model wrote an outlet address none of the
+    // results gave. Now the link is followed to the outlet's article (Google News says where it leads), the receipt says
+    // so, and a link Google News does not resolve is told as such.
+    [Test]
+    public async Task WebFetchOfAGoogleNewsLinkReadsTheArticleItLeadsTo()
+    {
+        const string googlePage = """<html><body><c-wiz><div jscontroller="aLI87" data-n-a-sg="AdwtSYOt_sg" data-n-a-ts="1793769327"></div></c-wiz></body></html>""";
+        const string answer = ")]}'\n\n"
+            + """[["wrb.fr","Fbv4je","[\"garturlres\",\"https://www.example.com.ar/deportes/final-copa\",1]",null,null,null,"1"]]""";
+        const string article = """<html><head><title>La final</title></head><body><article><p>Argentina venció 1 a 0 a Colombia en la final.</p></article></body></html>""";
+        var handler = new SearchSourcesHttpHandler
+        {
+            ["www.example.com.ar"] = new(HttpStatusCode.OK, article, "text/html"),
+        };
+        handler.Routes.Add(("news.google.com/rss/articles/CBMiabc", new(HttpStatusCode.OK, googlePage, "text/html")));
+        handler.Routes.Add(("news.google.com/rss/articles/CBMisinfirma", new(HttpStatusCode.OK, "<html>Google News</html>", "text/html")));
+        handler.Routes.Add(("batchexecute", new(HttpStatusCode.OK, answer, "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://news.google.com/rss/articles/CBMiabc"}"""), CancellationToken.None);
+        int askedForTheFirst = handler.Asked.Count;
+        ExternalCapabilityReceipt unresolved = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://news.google.com/rss/articles/CBMisinfirma"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("requestedUrl").GetString(),
+                Is.EqualTo("https://news.google.com/rss/articles/CBMiabc"));
+            Assert.That(read.Result?.GetProperty("finalUrl").GetString(),
+                Is.EqualTo("https://www.example.com.ar/deportes/final-copa"));
+            Assert.That(read.Result?.GetProperty("redirectedBy").GetString(), Is.EqualTo("Google News"));
+            Assert.That(read.Result?.GetProperty("text").GetString(), Does.Contain("Argentina venció 1 a 0 a Colombia"));
+            Assert.That(handler.Asked.Select(asked => asked.Uri.Host + asked.Uri.AbsolutePath).Take(askedForTheFirst),
+                Is.EqualTo(new[]
+                {
+                    "news.google.com/rss/articles/CBMiabc", "news.google.com/_/DotsSplashUi/data/batchexecute",
+                    "www.example.com.ar/deportes/final-copa",
+                }));
+            // Only the link's id, with its page's signature, goes to Google News.
+            Assert.That(Uri.UnescapeDataString(handler.Asked[1].Body ?? ""),
+                Does.Contain("\\\"CBMiabc\\\",1793769327,\\\"AdwtSYOt_sg\\\""));
+            Assert.That(unresolved.Verified, Is.False);
+            Assert.That(unresolved.ErrorCode, Is.EqualTo("web_fetch_news_link_unresolved"));
+            Assert.That(handler.Asked.Skip(askedForTheFirst).Select(asked => asked.Uri.Host + asked.Uri.AbsolutePath),
+                Is.EqualTo(new[] { "news.google.com/rss/articles/CBMisinfirma" }));
         });
     }
 
@@ -4472,12 +5308,12 @@ public sealed class ExternalAdaptersTests
     {
         var handler = new SearchSourcesHttpHandler();
         handler.Routes.Add(("ipwho.is", new(HttpStatusCode.OK,
-            """{"success":true,"country":"Chile","region":"Curico","city":"Curico","latitude":-34.9828,"longitude":-71.2394}""",
+            """{"success":true,"country":"Chile","region":"Valparaiso","city":"Valparaiso","latitude":-33.0363,"longitude":-71.6297}""",
             "application/json")));
-        handler.Routes.Add(("q=Curico, Chile", new(HttpStatusCode.OK,
-            """[{"boundingbox":["-35.03","-34.93","-71.30","-71.18"],"display_name":"Curicó, Chile"}]""", "application/json")));
+        handler.Routes.Add(("q=Valparaiso, Chile", new(HttpStatusCode.OK,
+            """[{"boundingbox":["-33.10","-33.00","-71.70","-71.55"],"display_name":"Valparaíso, Chile"}]""", "application/json")));
         handler.Routes.Add(("q=pharmacy", new(HttpStatusCode.OK,
-            """[{"osm_type":"node","osm_id":1,"name":"Farmacia Central","type":"pharmacy","display_name":"Farmacia Central, Curicó, Chile"}]""",
+            """[{"osm_type":"node","osm_id":1,"name":"Farmacia Central","type":"pharmacy","display_name":"Farmacia Central, Valparaíso, Chile"}]""",
             "application/json")));
         handler.Routes.Add(("q=Nowhere Land", new(HttpStatusCode.OK, "[]", "application/json")));
         using TemporaryDirectory temporary = new();
@@ -4494,7 +5330,7 @@ public sealed class ExternalAdaptersTests
         Assert.Multiple(() =>
         {
             Assert.That(near.Verified, Is.True, near.ErrorCode);
-            Assert.That(near.Result?.GetProperty("sent").GetProperty("place").GetString(), Is.EqualTo("Curico, Chile"));
+            Assert.That(near.Result?.GetProperty("sent").GetProperty("place").GetString(), Is.EqualTo("Valparaiso, Chile"));
             JsonElement first = near.Result!.Value.GetProperty("results")[0];
             Assert.That(first.GetProperty("name").GetString(), Is.EqualTo("Farmacia Central"));
             Assert.That(first.TryGetProperty("distanceMeters", out _), Is.False);
@@ -4564,6 +5400,33 @@ public sealed class ExternalAdaptersTests
 
     // BAXY Renew agent tools (2026-10-15): web.fetch reads one public page as text, its title and the address it was
     // read from; never its scripts, styles, menu or footer, and never an address of this PC or its network.
+    // Uso real 04-11 (F40): a page whose text was all skipped came back «completed» with text "": nothing was read, and
+    // the result says so, how much was left out and how the page is seen in the browser.
+    [TestCase("<html><head><title>Solo menú</title></head><body><nav>Inicio Tienda Comunidad</nav></body></html>", 23)]
+    [TestCase("<html><head><title>Solo menú</title><script>app()</script></head><body><div id=\"root\"></div></body></html>", 0)]
+    public async Task APageWithNoTextLeftIsNoCompletedRead(string page, int skipped)
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(new RoutingHttpHandler(page, "{}"));
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://tienda.example.com/juego"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.False);
+            Assert.That(read.ErrorCode, Is.EqualTo("web_fetch_no_text"));
+            Assert.That(read.Result?.GetProperty("title").GetString(), Is.EqualTo("Solo menú"));
+            Assert.That(read.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://tienda.example.com/juego"));
+            Assert.That(read.Result?.GetProperty("skippedSectionCharacters").GetInt32(), Is.EqualTo(skipped));
+            Assert.That(read.Result?.GetProperty("next").GetString(),
+                Does.Contain("browser_navigate").And.Contain("https://tienda.example.com/juego")
+                    .And.Contain("browser_page_read"));
+        });
+    }
+
     [Test]
     public async Task WebFetchReadsAPublicPageAsText()
     {
@@ -4967,6 +5830,9 @@ public sealed class ExternalAdaptersTests
         // before the answer of the whole host.
         internal List<(string Contains, HttpAnswer Answer)> Routes { get; } = [];
 
+        // Hosts that never answer: the request ends as HttpClient's own timeout does.
+        internal HashSet<string> Silent { get; } = new(StringComparer.OrdinalIgnoreCase);
+
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -4974,6 +5840,8 @@ public sealed class ExternalAdaptersTests
             Asked.Add(new AskedRequest(uri, request.Headers.UserAgent.ToString(),
                 request.Headers.Select(static header => header.Key).ToArray(),
                 request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken)));
+            if (Silent.Contains(uri.Host))
+                throw new TaskCanceledException("timed out", new TimeoutException());
             string address = Uri.UnescapeDataString(uri.AbsoluteUri);
             HttpAnswer? answer = Routes.FirstOrDefault(route => address.Contains(route.Contains, StringComparison.Ordinal)).Answer;
             if (answer is null && !_answers.TryGetValue(uri.Host, out answer))
@@ -5024,6 +5892,21 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("name").GetString(), Is.EqualTo(Path.GetFileName(path)));
             Assert.That(text, Is.EqualTo("Cuento\nHabía una vez un faro \"azul\" y un barco.\nLlegó la noche.\nY amaneció 🌙.\nFin."));
         });
+    }
+
+    // Encargo 75 (U43): the file went to the documents' own folder under a name with a suffix; it was then looked for in
+    // the folder the person named, by that name alone. The receipt says where it really is.
+    [Test]
+    public async Task ADocumentsReceiptSaysTheWholePathOfTheFileItWrote()
+    {
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create", Json("""{"format":"docx","title":"Acta"}"""), CancellationToken.None);
+
+        string path = Directory.GetFiles(temporary.Path, "*.docx").Single();
+        Assert.That(receipt.Result?.GetProperty("fullPath").GetString(), Is.EqualTo(path));
     }
 
     // file.open shows the document by «BAXY\» and the receipt's name, and refuses a name with «..» in it: a title ending
@@ -5087,6 +5970,44 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Banco de entorno del NB (U44, 2 of 3): the table sent as a workbook's paragraphs was refused bare and the model
+    // gave up. The refusal leads with the app.open call of the program Windows opens .xlsx files with (by its file
+    // name, which app.open resolves), a new blank workbook in front; with no program registered it says that instead,
+    // and with the aid off it is bare as before.
+    [TestCase("all", "\"C:\\Program Files\\Office Suite\\root\\SHEETS.EXE\" \"%1\"",
+        """app_open {"appId":"SHEETS.EXE","newDocument":true,"foreground":true,"forControl":true} opens a new blank workbook""")]
+    [TestCase("all", null, "this call wrote nothing")]
+    [TestCase("none", "\"C:\\Program Files\\Office Suite\\root\\SHEETS.EXE\" \"%1\"", null)]
+    public async Task ParagraphsForASpreadsheetLeadWithTheProgramThatOpensWorkbooks(
+        string aids, string? command, string? next)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var asked = new List<string>();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner("{}"),
+            associatedCommand: extension => { asked.Add(extension); return command; });
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "office.document.create",
+            Json("""{"format":"xlsx","title":"precios","paragraphs":["Producto\nPrecio\nPan\n100"]}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("office_paragraphs_docx_only"));
+            Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
+            if (next is null)
+                Assert.That(receipt.Result, Is.Null);
+            else
+                Assert.That(receipt.Result!.Value.GetProperty("next").GetString(), Does.StartWith(next));
+            if (command is null && next is not null)
+                Assert.That(receipt.Result!.Value.GetProperty("next").GetString(),
+                    Does.EndWith("no program on this PC opens .xlsx files"));
+            if (next is not null)
+                Assert.That(asked, Is.EqualTo(new[] { ".xlsx" }));
+        });
+    }
+
     [Test]
     public async Task OutlookCalendarListProjectsOpaqueEventIdentities()
     {
@@ -5108,8 +6029,68 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(eventId, Does.StartWith("event_"));
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("private-entry"));
+            // Encargo 65: the application whose calendar it read, weighed against the tabs the person names.
+            Assert.That(receipt.Result?.GetProperty("readFrom").GetString(), Is.EqualTo("Outlook"));
         });
     }
+
+    // Banco de uso 05-11 (F12): an event at 11:20 here was read as «14:20Z» and said as «2:20 PM»: the reader was
+    // right and the model read the UTC out as the hour. Each instant also comes in this PC's own hour, as an alarm's does
+    // (dueLocal), at that instant's own offset: a date across a daylight change keeps its own.
+    [Test]
+    public async Task ACalendarEventSaysItsHourHereBesideItsUtc()
+    {
+        const string output = """
+            {"ok":true,"effectObserved":false,"events":[{"entryId":"e","title":"Reunión de prueba","startUtc":"2026-11-09T14:20:00.0000000Z","endUtc":"2026-11-09T15:40:00.0000000Z"},{"entryId":"f","title":"Otra","startUtc":"2026-07-09T14:20:00.0000000Z","endUtc":"2026-07-09T15:40:00.0000000Z"}]}
+            """;
+        using TemporaryDirectory temporary = new();
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner(output));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "calendar.event.list",
+            Json("""{"startUtc":"2026-07-01T00:00:00Z","endUtc":"2026-12-01T00:00:00Z"}"""),
+            CancellationToken.None);
+
+        JsonElement first = receipt.Result!.Value.GetProperty("events")[0];
+        JsonElement second = receipt.Result!.Value.GetProperty("events")[1];
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.GetProperty("startLocal").GetString(), Is.EqualTo(HourHere("2026-11-09T14:20:00Z")));
+            Assert.That(first.GetProperty("endLocal").GetString(), Is.EqualTo(HourHere("2026-11-09T15:40:00Z")));
+            Assert.That(second.GetProperty("startLocal").GetString(), Is.EqualTo(HourHere("2026-07-09T14:20:00Z")));
+            Assert.That(first.GetProperty("startUtc").GetString(), Is.EqualTo("2026-11-09T14:20:00.0000000Z"));
+        });
+    }
+
+    // The same with the event a create read back, and with a mail's arrival: «te llegó a las 14:20» is the same mistake.
+    [Test]
+    public async Task ACreatedEventAndAMailSayTheirHourHere()
+    {
+        const string created = """
+            {"ok":true,"effectObserved":true,"entryId":"e","title":"Dentista","startUtc":"2026-11-09T18:00:00.0000000Z","endUtc":"2026-11-09T19:00:00.0000000Z"}
+            """;
+        const string mail = """
+            {"ok":true,"effectObserved":false,"entryId":"m","subject":"Aviso","sender":"a@example.test","receivedUtc":"2026-11-02T10:26:00Z","body":"hola","bodyLength":4}
+            """;
+        using TemporaryDirectory temporary = new();
+        ExternalCapabilityReceipt made = await new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner(created)).InvokeAsync(
+            "calendar.event.create",
+            Json("""{"startUtc":"2026-11-09T18:00:00Z","endUtc":"2026-11-09T19:00:00Z","title":"Dentista"}"""),
+            CancellationToken.None);
+        ExternalCapabilityReceipt read = await new MicrosoftAccountAdapter(temporary.Path, new StubProcessRunner(mail)).InvokeAsync(
+            "email.latest.read", Json("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(made.Result?.GetProperty("startLocal").GetString(), Is.EqualTo(HourHere("2026-11-09T18:00:00Z")));
+            Assert.That(made.Result?.GetProperty("endLocal").GetString(), Is.EqualTo(HourHere("2026-11-09T19:00:00Z")));
+            Assert.That(read.Result?.GetProperty("receivedLocal").GetString(), Is.EqualTo(HourHere("2026-11-02T10:26:00Z")));
+        });
+    }
+
+    private static string HourHere(string utc) =>
+        DateTimeOffset.Parse(utc, System.Globalization.CultureInfo.InvariantCulture).ToLocalTime()
+            .ToString("dddd yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
 
     // Renew al máximo (w5): a time with its own offset is that instant, sent to Outlook in UTC; it came back
     // «microsoft_desktop_adapter_failed», read as Outlook failing. One with no offset is refused before anything runs,
@@ -5337,9 +6318,10 @@ public sealed class ExternalAdaptersTests
     {
         using IDisposable setting = ModelAids.Use(aids);
         string[] withAudio = ["Spotify", "chrome", "Discord", "mpv", "steam", "opera", "Teams", "zoom", "vlc", "obs64"];
+        AudioSessionProgram[] programs = [.. withAudio.Select(static name => new AudioSessionProgram(name, null))];
         IExternalOperationAdapter adapter = operation == "audio.app.volume.set"
-            ? new WindowsAppVolumeSetAdapter((_, _, _, _) => null, () => withAudio)
-            : new WindowsAppVolumeAdapter((_, _, _, _) => null, () => withAudio);
+            ? new WindowsAppVolumeSetAdapter((_, _, _, _) => null, () => programs)
+            : new WindowsAppVolumeAdapter((_, _, _, _) => null, () => programs);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
 
@@ -5359,6 +6341,116 @@ public sealed class ExternalAdaptersTests
             Assert.That(named, Is.EqualTo(withAudio.Take(8).ToArray()));
             Assert.That(receipt.Result.Value.GetProperty("next").GetString(), Does.Contain(" is " + systemOperation + ",")
                 .And.EndWith($"if the person meant the whole PC, call {systemOperation} with {systemArguments}"));
+            Assert.That(receipt.Result.Value.TryGetProperty("personBrowser", out _), Is.False, "no browser known");
+        });
+    }
+
+    // Banco de uso 03-11 (R09, «baja el volumen del navegador a 20»): the model took «el navegador» as one browser, the
+    // failure named the processes with audio (another browser among them) and the model asked. The failure says which
+    // browser is the person's own (Windows' default), as a window's failure does (WindowControlHandlers).
+    [TestCase("audio.app.volume.set", """{"app":"navegadorx","level":20}""")]
+    [TestCase("audio.app.volume.adjust", """{"app":"navegadorx","amount":10,"direction":"down"}""")]
+    public async Task AnAppWithNoAudioSessionSaysThePersonsBrowser(string operation, string arguments)
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        AudioSessionProgram[] withAudio = [new("reproductorx", null), new("navegadory", null)];
+        (string Name, string Process)? browser = ("Navegador Y", "navegadory");
+        IExternalOperationAdapter adapter = operation == "audio.app.volume.set"
+            ? new WindowsAppVolumeSetAdapter((_, _, _, _) => null, () => withAudio, () => browser)
+            : new WindowsAppVolumeAdapter((_, _, _, _) => null, () => withAudio, () => browser);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("app_audio_session_not_found_on_default_output"));
+            JsonElement own = receipt.Result!.Value.GetProperty("personBrowser");
+            Assert.That(own.GetProperty("name").GetString(), Is.EqualTo("Navegador Y"));
+            Assert.That(own.GetProperty("process").GetString(), Is.EqualTo("navegadory"));
+        });
+    }
+
+    // Encargo 82 (vivo del 81): the application said is the one on the list and its session did not take the call. The
+    // next led with that same call («no application with audio is named X, and X is the one…»); the model tried it,
+    // failed again, and moved the whole PC's volume, which nobody asked for. It says so and writes no call.
+    [TestCase("""{"app":"Contoso.Sound.Deck","level":40}""")]
+    [TestCase("""{"app":"contoso sound deck","level":40}""")]
+    public async Task ANextNeverLeadsWithTheCallThatJustFailed(string arguments)
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        AudioSessionProgram[] withAudio = [new("python", null), new("Contoso.Sound.Deck", null)];
+        var adapter = new WindowsAppVolumeSetAdapter((_, _, _, _) => null, () => withAudio);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("audio.app.volume.set", Json(arguments), CancellationToken.None);
+
+        string next = receipt.Result!.Value.GetProperty("next").GetString()!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("app_audio_session_not_found_on_default_output"));
+            Assert.That(next, Does.Not.Contain("audio_app_volume_set {"));
+            Assert.That(next, Does.Not.Contain("audio_volume_set"));
+            Assert.That(next, Does.Contain("Contoso.Sound.Deck"));
+        });
+    }
+
+    // Uso 81 (banco de decisiones e35-H-R09a, 16/20 -> 9/20 with a new catalog): after the failure the model answered in
+    // words instead of trying again with the application that does play. A failure whose next leads with the exact call
+    // is followed (encargos 28, 48). So when one application with audio, and only one, has a name that matches what was
+    // said by form (a word said inside one of its names, or one of its names inside what was said), the next leads with
+    // the same call naming that application's process, with the same level or amount. Its names: its process, the name
+    // Windows shows for it (its session's display name, else its executable's description) and that name's forms in the
+    // name-equivalence data («navegador de microsoft» for Microsoft Edge: R09). A name no application has, or that two
+    // have, gets no call.
+    [TestCase("audio.app.volume.set", """{"app":"el discord","level":20}""", false,
+        """audio_app_volume_set {"app":"DiscordPTB","level":20} sets the volume of DiscordPTB to 20; """)]
+    [TestCase("audio.app.volume.adjust", """{"app":"discord","amount":10,"direction":"down"}""", false,
+        """audio_app_volume_adjust {"app":"DiscordPTB","amount":10,"direction":"down"} turns the volume of DiscordPTB """
+        + "down by 10; ")]
+    [TestCase("audio.app.volume.set", """{"app":"Elden","level":35}""", false,
+        """audio_app_volume_set {"app":"eldenring","level":35} sets the volume of eldenring to 35; """)]
+    [TestCase("audio.app.volume.set", """{"app":"navegador","level":20}""", false,
+        """audio_app_volume_set {"app":"msedge","level":20} sets the volume of msedge (Microsoft Edge) to 20; this """
+        + "call changed nothing: no application with audio is named \"navegador\", and msedge is the one whose names "
+        + "match it")]
+    [TestCase("audio.app.volume.set", """{"app":"navegador","level":20}""", true, null)]
+    [TestCase("audio.app.volume.set", """{"app":"el juego","level":20}""", false, null)]
+    [TestCase("audio.app.volume.set", """{"app":"microsoft","level":20}""", false, null)]
+    public async Task AnAppWithNoAudioSessionLeadsWithTheCallOfTheOneAppWhoseNameMatches(
+        string operation, string arguments, bool chromeToo, string? leads)
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        AudioSessionProgram[] withAudio =
+        [
+            new("python", "Python"),
+            new("DiscordPTB", "Discord PTB"),
+            new("eldenring", "ELDEN RING™"),
+            new("msedge", "Microsoft Edge"),
+            new("ms-teams", "Microsoft Teams"),
+            .. chromeToo ? new AudioSessionProgram[] { new("chrome", "Google Chrome") } : [],
+        ];
+        IExternalOperationAdapter adapter = operation == "audio.app.volume.set"
+            ? new WindowsAppVolumeSetAdapter((_, _, _, _) => null, () => withAudio)
+            : new WindowsAppVolumeAdapter((_, _, _, _) => null, () => withAudio);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+        using IDisposable off = ModelAids.Use("app_volume_candidates");
+        ExternalCapabilityReceipt aidOff = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("app_audio_session_not_found_on_default_output"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            JsonElement result = receipt.Result!.Value;
+            Assert.That(result.GetProperty("appsWithAudio").EnumerateArray().Select(static item => item.GetString()),
+                Is.EqualTo(withAudio.Select(static program => program.Process)));
+            Assert.That(result.TryGetProperty("shownAs", out _), Is.False, "the shown names are said in the next only");
+            string next = result.GetProperty("next").GetString()!;
+            if (leads is null)
+                Assert.That(next, Does.StartWith("only these applications have a volume of their own"));
+            else
+                Assert.That(next, Does.StartWith(leads));
+            Assert.That(aidOff.Result!.Value.GetProperty("next").GetString(),
+                Does.StartWith("only these applications have a volume of their own"), "aid off");
         });
     }
 
@@ -5392,6 +6484,34 @@ public sealed class ExternalAdaptersTests
                 Is.EqualTo("outlook_mapi_sent_postread"));
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("private-inbox-entry"));
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("private-sent-entry"));
+        });
+    }
+
+    // Encargo 65 (cosecha F2, uso real 03-11): a request for the newest mail of one sender in a webmail read Outlook's
+    // newest mail (another sender) and the answer said there was no mail from that sender. The receipt says what it read: the application
+    // (readFrom), the account whose Inbox it is, and that it is that one newest mail, searched by no sender.
+    [Test]
+    public async Task TheLatestMailReadSaysWhoseInboxItReadAndThatItSearchesNoSender()
+    {
+        const string output = "{\"ok\":true,\"effectObserved\":false,\"entryId\":\"private-inbox-entry\"," +
+            "\"subject\":\"Aviso\",\"sender\":\"avisos@example.test\",\"receivedUtc\":\"2026-11-02T10:26:00Z\"," +
+            "\"body\":\"hola\",\"bodyLength\":4,\"account\":\"persona@example.test\"}";
+        using TemporaryDirectory temporary = new();
+        var runner = new StubProcessRunner(output);
+        var adapter = new MicrosoftAccountAdapter(temporary.Path, runner);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "email.latest.read", Json("{}"), CancellationToken.None);
+
+        string script = runner.LastArguments.Single(argument => argument.Contains("GetDefaultFolder(6)", StringComparison.Ordinal));
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.Result?.GetProperty("readFrom").GetString(), Is.EqualTo("Outlook"));
+            Assert.That(receipt.Result?.GetProperty("account").GetString(), Is.EqualTo("persona@example.test"));
+            Assert.That(receipt.Result?.GetProperty("covers").GetString(), Does.Contain("newest mail")
+                .And.Contain("no sender"));
+            Assert.That(script, Does.Contain("account=$account"));
         });
     }
 
@@ -5497,6 +6617,10 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("email_message_id_invalid"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.Result!.Value.GetProperty("argument").GetString(), Is.EqualTo("expectedMessageId"));
+            // Encargo 34: the read that gives it comes first, as the call the model makes.
+            Assert.That(receipt.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(
+                "email_latest_read {} gives the messageId that expectedMessageId takes (email_ and 24 hex digits); this "
+                + "call sent nothing"));
         });
     }
 
@@ -5528,12 +6652,13 @@ public sealed class ExternalAdaptersTests
 
     // Renew al máximo (w5): an id no list of this Core gave (an older session's, or made up) was a bare «expired»; with
     // the aid identity_relist it says nothing was done and which list gives the ids. BAXY_AYUDAS=none: the code alone.
+    // Encargo 34: the list that gives the ids comes first, as the call the model makes.
     [TestCase("all", "bluetooth.device.pair", """{"deviceId":"bluetooth_0000"}""", "bluetooth_identity_expired",
-        "this deviceId is not one bluetooth_device_list gave since BAXY started, and nothing was paired; "
-        + "bluetooth_device_list gives the ids to use")]
+        "bluetooth_device_list {} gives the ids to use; this deviceId is not one bluetooth_device_list gave since BAXY "
+        + "started, and nothing was paired")]
     [TestCase("all", "wifi.connect", """{"profileId":"wifi_0000"}""", "wifi_profile_identity_expired",
-        "this profileId is not one wifi_profile_list gave since BAXY started, and nothing was connected; "
-        + "wifi_profile_list gives the ids to use")]
+        "wifi_profile_list {} gives the ids to use; this profileId is not one wifi_profile_list gave since BAXY "
+        + "started, and nothing was connected")]
     [TestCase("none", "bluetooth.device.pair", """{"deviceId":"bluetooth_0000"}""", "bluetooth_identity_expired", null)]
     public async Task AnIdNoListGaveSaysNothingWasDoneAndWhichListGivesOne(
         string aids, string operation, string arguments, string code, string? next)
@@ -5634,6 +6759,33 @@ public sealed class ExternalAdaptersTests
         });
     }
 
+    // Banco de uso 2026-11-03 (U05): with no Spotify on the PC the script launched «spotify:» and waited for a window that
+    // never came, twice, about a minute. A PC where Windows has no handler for the client's protocol fails at once, before
+    // anything runs, with its code and the fact that an audio file is opened with file_open.
+    // Encargo 28 (U05): the calls that play it come first, the search written with the words asked; nothing ran, after.
+    [TestCase("media.play.exact", """{"provider":"spotify","title":"Canción Inventada"}""",
+        """file_find {"query":"Canción Inventada"} finds an audio file of this PC by that name and file_open plays it""")]
+    [TestCase("media.play.query", """{"provider":"spotify","query":"canciones inventadas"}""",
+        """file_find {"query":"canciones inventadas"} finds an audio file of this PC by those words and file_open plays it""")]
+    public async Task SpotifyNotInstalledFailsAtOnceAndSaysHowAnAudioFileOpens(string operation, string arguments,
+        string route)
+    {
+        var runner = new ThrowingProcessRunner(new InvalidOperationException("the script must not run"));
+        var adapter = new SpotifyDesktopAdapter(runner, clientInstalled: static () => false);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("spotify_not_installed"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(runner.Calls, Is.Zero);
+            Assert.That(receipt.Result?.GetProperty("next").GetString(), Does.StartWith(route)
+                .And.EndWith("; this call ran nothing: Spotify is not installed on this PC"));
+        });
+    }
+
     // Renew al máximo (auditoría de flujos): a search whose playback holds none of the words searched says so as a field
     // of its own (queryMatched:false), never only in the titles; a playback that holds one carries no such field.
     [TestCase("romeo santos propuesta indecente", "Propuesta Indecente - Spotify", false)]
@@ -5646,7 +6798,7 @@ public sealed class ExternalAdaptersTests
             ["ok"] = true,
             ["effectObserved"] = true,
             ["title"] = windowTitle,
-            ["selectedControl"] = "Reproducir Los Bunkers",
+            ["selectedControl"] = "Reproducir Bachata Clásica",
             ["observedNowPlaying"] = nowPlaying,
             ["playbackEvidence"] = "now_playing_changed",
             ["processId"] = 42,
@@ -6059,6 +7211,33 @@ public sealed class ExternalAdaptersTests
             "media.control", Json("""{"action":"next"}"""), CancellationToken.None);
 
         Assert.That(receipt.ErrorCode, Is.EqualTo("media_session_not_found"));
+    }
+
+    // Banco ciego c3 (C3-078 s0/s2, «abre con foobar2000 … y ponlo a sonar»): media.control play with sourceApp
+    // foobar2000 ended in the tab's «not the YouTube tab», which replaced what the system media session answered, and
+    // the reply said foobar2000 was no YouTube player. The tab is not that source's player: what the session read stays.
+    [TestCase("media_session_not_found")]
+    [TestCase("smtc_session_access_failed")]
+    [TestCase("media_control_action_invalid")]
+    public async Task ANamedDesktopSourceKeepsTheSystemSessionAnswerOverTheTabsRefusal(string sessionError)
+    {
+        using TemporaryDirectory temporary = new();
+        var session = new StubExternalAdapter(new ExternalCapabilityReceipt(
+            "media.control", false, false, null, sessionError));
+        var browser = new StubYouTubeTabSession(temporary.Path, result: null, hasEndpoint: true);
+        using var http = new HttpClient();
+        var tab = new WebBrowserAdapter(browser, http);
+        using var provider = new WindowsExternalCapabilityProvider([session, tab]);
+
+        ExternalCapabilityReceipt receipt = await provider.InvokeAsync(
+            "media.control", Json("""{"action":"play","sourceApp":"foobar2000"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(sessionError));
+            Assert.That(session.Calls, Is.EqualTo(1));
+            Assert.That(browser.Calls, Is.Zero);
+        });
     }
 
     // media.control's sourceApp names a player by the id media.status gave it, compared whole (BAXY Renew audit

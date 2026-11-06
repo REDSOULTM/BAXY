@@ -167,7 +167,7 @@ public sealed class R24FaithfulPlaybackTests
         "los horarios del cercanías de madrid - Buscar con Google - Opera", true)]
     [TestCase("https://www.google.com/search?q=como+hacer+un+pivot+table+en+excel",
         "como hacer un pivot table en excel - Buscar con Google - Opera", true)]
-    [TestCase("https://www.bing.com/search?q=clima+curico", "clima curicó - Search - Opera", true)]
+    [TestCase("https://www.bing.com/search?q=clima+valparaiso", "clima valparaíso - Search - Opera", true)]
     // Contracaso: a search title missing one of the words asked is not the arrival.
     [TestCase("https://www.google.com/search?q=los+horarios+del+cercanias+de+madrid",
         "los horarios del metro de madrid - Buscar con Google - Opera", false)]
@@ -195,7 +195,7 @@ public sealed class R24FaithfulPlaybackTests
         "Nueva pestaña - Personal - Microsoft\u200b Edge", "Microsoft\u200b Edge", false)]
     // Contracaso: another window of the browser whose video moved on and names the words is no results page.
     [TestCase("https://www.google.com/search?q=opera", "Opera de París en vivo - YouTube - Opera", "Opera", false)]
-    [TestCase("https://www.google.com/search?q=clima+curico", "clima curicó en vivo - YouTube - Opera", "Opera", false)]
+    [TestCase("https://www.google.com/search?q=clima+valparaiso", "clima valparaíso en vivo - YouTube - Opera", "Opera", false)]
     public void ASearchTitleIsReadWithoutTheBrowsersSegment(string target, string title, string? segment, bool arrives) =>
         Assert.That(UserBrowserSurface.SearchTitleArrives(new Uri(target), title, segment), Is.EqualTo(arrives));
 

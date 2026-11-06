@@ -43,7 +43,7 @@ public sealed class KnownTextAndExplorerCountTests
     {
         using TemporaryDirectory temporary = new();
         string desktop = Path.Combine(temporary.Path, "desktop");
-        string project = Path.Combine(desktop, "ETC", "Programacion", "Probando Gemma 4", "gemma4_agent");
+        string project = Path.Combine(desktop, "Proyectos", "Pruebas", "Probando Agente 4", "agente4_local");
         Directory.CreateDirectory(project);
         string content = "# ROADMAP\n\nFase 1: agente local.\nFase 2: memoria.\n";
         await File.WriteAllTextAsync(Path.Combine(project, "ROADMAP.md"), content, new UTF8Encoding(true));
@@ -53,7 +53,7 @@ public sealed class KnownTextAndExplorerCountTests
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"path":"desktop/ETC\\Programacion\\Probando Gemma 4\\gemma4_agent/ROADMAP.md","maximumCharacters":200}"""),
+            Json("""{"path":"desktop/Proyectos\\Pruebas\\Probando Agente 4\\agente4_local/ROADMAP.md","maximumCharacters":200}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt whole = await adapter.InvokeAsync(
             "file.read",
@@ -61,7 +61,7 @@ public sealed class KnownTextAndExplorerCountTests
             CancellationToken.None);
         ExternalCapabilityReceipt byPath = await adapter.InvokeAsync(
             "file.read",
-            Json("""{"path":"desktop/ETC/Programacion/Probando Gemma 4/gemma4_agent/ROADMAP.md"}"""),
+            Json("""{"path":"desktop/Proyectos/Pruebas/Probando Agente 4/agente4_local/ROADMAP.md"}"""),
             CancellationToken.None);
         ExternalCapabilityReceipt binary = await adapter.InvokeAsync(
             "file.read",
@@ -94,7 +94,7 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(receipt.Result?.GetProperty("endReached").GetBoolean(), Is.True);
             Assert.That(receipt.Result?.TryGetProperty("readInPart", out _), Is.False);
             Assert.That(receipt.Result?.GetProperty("reviewLabel").GetString(), Is.EqualTo("ROADMAP.md"));
-            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("gemma4_agent"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("agente4_local"));
             Assert.That(whole.Verified, Is.True, whole.ErrorCode);
             Assert.That(byPath.Verified, Is.True, byPath.ErrorCode);
             Assert.That(byPath.Result?.GetProperty("text").GetString(), Is.EqualTo(content));
@@ -357,6 +357,50 @@ public sealed class KnownTextAndExplorerCountTests
             Assert.That(missing.ErrorCode, Is.EqualTo("known_subdirectory_not_found"));
             Assert.That(outside.ErrorCode, Is.EqualTo("known_path_outside_folder"));
             Assert.That(outside.Verified, Is.False);
+        });
+    }
+
+    // Banco ciego c3 C3-044 («¿cuántos archivos hay en BAXY-bench\fotos?», a folder that does not exist): «*» as the
+    // extension failed extension_invalid before the folder was looked at, and the reply said the extension had to be
+    // like «.jpg» instead of that the folder is not there. A wildcard counts every file, and the folder is said first.
+    [Test]
+    public async Task AWildcardExtensionCountsEveryFileAndAMissingFolderIsSaidBeforeTheExtension()
+    {
+        using TemporaryDirectory temporary = new();
+        string home = Path.Combine(temporary.Path, "perfil");
+        string photos = Path.Combine(home, "BAXY-bench", "fotos");
+        Directory.CreateDirectory(photos);
+        foreach (string name in new[] { "a.jpg", "b.png", "c" })
+            await File.WriteAllTextAsync(Path.Combine(photos, name), "x");
+        var adapter = new ExplorerFolderAdapter(new ScriptedRunner("{}"), folder => folder == "home" ? home : null, []);
+
+        async Task<ExternalCapabilityReceipt> Count(string extension, string path) => await adapter.InvokeAsync(
+            "filesystem.explorer.count",
+            Json(JsonSerializer.Serialize(new { extension, path })),
+            CancellationToken.None);
+
+        foreach (string wildcard in new[] { "*", "*.*" })
+        {
+            ExternalCapabilityReceipt all = await Count(wildcard, "BAXY-bench/fotos");
+            Assert.That(all.Verified, Is.True, all.ErrorCode);
+            Assert.Multiple(() =>
+            {
+                Assert.That(all.Result?.GetProperty("count").GetInt32(), Is.EqualTo(3));
+                Assert.That(all.Result?.GetProperty("filesInFolder").GetInt32(), Is.EqualTo(3));
+                Assert.That(all.Result?.GetProperty("extension").GetString(), Is.EqualTo("*"));
+            });
+        }
+
+        ExternalCapabilityReceipt missingAll = await Count("*", "BAXY-bench/recibos");
+        ExternalCapabilityReceipt missingInvalid = await Count("a:b", "BAXY-bench/recibos");
+        ExternalCapabilityReceipt invalid = await Count("a:b", "BAXY-bench/fotos");
+        ExternalCapabilityReceipt jpg = await Count("jpg", "BAXY-bench/fotos");
+        Assert.Multiple(() =>
+        {
+            Assert.That(missingAll.ErrorCode, Is.EqualTo("known_subdirectory_not_found"));
+            Assert.That(missingInvalid.ErrorCode, Is.EqualTo("known_subdirectory_not_found"));
+            Assert.That(invalid.ErrorCode, Is.EqualTo("extension_invalid"));
+            Assert.That(jpg.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1), jpg.ErrorCode);
         });
     }
 }

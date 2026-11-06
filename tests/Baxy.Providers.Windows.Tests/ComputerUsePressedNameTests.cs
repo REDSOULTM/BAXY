@@ -52,7 +52,7 @@ public sealed class ComputerUsePressedNameTests
         ("Vaciar la papelera cuando el disco se llena de archivos viejos", "papelera", false),
         // The data's exception, a label that already asks, a format character inside the verb.
         ("Enviar búsqueda", "búsqueda", false),
-        ("Enviar a Ron92", "Enviar", false),
+        ("Enviar a Nube77", "Enviar", false),
         ("En\u200Bviar mensaje", "mensaje", true),
         ("Un título largo - Sitio", "Sitio", false),
         // Auditoría del núcleo 2026-10-23: a look-alike letter (Cyrillic) inside the verb, and ending a program unsaved.
@@ -442,7 +442,7 @@ public sealed class ComputerUsePressedNameTests
             start.Environment[name] = value;
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the worker functions answer");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return JsonDocument.Parse(output).RootElement.Clone();

@@ -32,6 +32,10 @@ public sealed record ActiveWindowCaptureProvenance(
 public sealed class ScreenshotUnavailableException(string code, string message) : IOException(message)
 {
     public string Code { get; } = code;
+
+    /// <summary>Encargo 17 (U23): the facts the failure carries for the model (a copy's folder that is not there:
+    /// CaptureCopies.MissingFolder); null when the code says it all.</summary>
+    public System.Text.Json.JsonElement? Result { get; init; }
 }
 
 /// <summary>Captures fail with <see cref="IOException"/> and never store a partial image.</summary>
@@ -43,6 +47,13 @@ public interface IScreenshotProvider
     /// <summary>Ronda 22: saves a verified PNG copy of the capture just taken into the known folder named
     /// (desktop, documents, downloads, pictures), under a new dated name. A provider that cannot keep copies says so.</summary>
     ValueTask<SavedCaptureCopy> SaveCopyAsync(string captureId, string folder, CancellationToken cancellationToken) =>
+        throw new NotSupportedException("This capture provider does not save copies.");
+
+    /// <summary>Banco de uso 03-11 (U23): the same copy into a folder of the person's given by its path, as a file
+    /// tool's path is read (PersonFolders.Place, inside <paramref name="labels"/>); a folder that is not there is never
+    /// made.</summary>
+    ValueTask<SavedCaptureCopy> SaveCopyAtAsync(
+        string captureId, string path, IReadOnlyCollection<string> labels, CancellationToken cancellationToken) =>
         throw new NotSupportedException("This capture provider does not save copies.");
 }
 

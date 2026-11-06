@@ -107,6 +107,105 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         return true;
     }
 
+    /// <summary>
+    /// What the model reads of a memory call whose result is not opened (it did not complete): the engine's facts, and
+    /// for one the store refused because the memory is off, the call that turns it on, first. Uso 83 (banco diag-946e, F13 6 of 6): with only
+    /// memory_disabled BAXY said «la memoria está apagada» and never offered to turn it on, and memory.list said «no
+    /// tengo nada guardado» of a memory it had not read (switched off, the store keeps its records). memory.enable waits
+    /// for the person's «sí» (RiskPolicy), so the call is the question; the same call goes again once it is on.
+    /// </summary>
+    internal static string Failed(string operationName, OperationResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        string message = OperationResponseProjection.Create(response, operationName).Message;
+        bool reads = operationName is "memory.recall" or "memory.list";
+        if (response.ErrorCode != "memory_disabled"
+            || !(reads || operationName is "memory.save" or "memory.sensitive.save" or "memory.correct"))
+        {
+            return message;
+        }
+
+        try
+        {
+            if (JsonNode.Parse(message) is not JsonObject facts || facts.ContainsKey("next"))
+            {
+                return message;
+            }
+
+            facts["next"] = WireNames.Call("memory.enable", [])
+                + " asks the person whether to turn BAXY's memory on (it turns on only with their yes"
+                + (reads ? "; what it keeps was not read while it is off" : "")
+                + $"); once it is on, {WireNames.Of(operationName)} again with the same arguments "
+                + (reads ? "reads it" : "saves this");
+            return facts.ToJsonString(new JsonSerializerOptions
+            {
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            });
+        }
+        catch (JsonException)
+        {
+            return message;
+        }
+    }
+
+    /// <summary>
+    /// Encargo 82 (vivo del 81): a memory.save of a name the store already keeps otherwise failed with memory_conflict
+    /// alone, and the model asked the person «¿hay otra regla guardada…?». From the exact recall of that name
+    /// (<paramref name="recalled"/>): what is kept, unless it is sensitive (a value is said back only as a save says it,
+    /// TryProjectMutation), and the call that corrects it, which the person decides; the same value has nothing to
+    /// correct. With nothing read, the failure stays as the engine said it.
+    /// </summary>
+    internal static string Conflict(string failed, JsonElement saveArguments, JsonElement recalled)
+    {
+        try
+        {
+            string? value = !saveArguments.TryGetProperty("value", out JsonElement said) ? null : said.ValueKind switch
+            {
+                JsonValueKind.String => said.GetString(),
+                JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False => said.GetRawText(),
+                _ => null,
+            };
+            if (JsonNode.Parse(failed) is not JsonObject facts
+                || string.IsNullOrWhiteSpace(value)
+                || !recalled.TryGetProperty("records", out JsonElement records)
+                || records.ValueKind != JsonValueKind.Array
+                || records.GetArrayLength() == 0
+                || !TryGetBoundedText(records[0], "selector", MaximumSelectorUtf8Bytes, allowEmpty: false, out string stored)
+                || !TryGetBoundedText(records[0], "value", MaximumValueUtf8Bytes, allowEmpty: false, out string kept, allowLineBreaks: true)
+                || !TryGetEnumText(records[0], "retention", ["persistent", "session", "temporary"], out string retention)
+                || !TryGetEnumText(records[0], "sensitivity", ["normal", "personal", "sensitive", "secret"], out string sensitivity))
+            {
+                return failed;
+            }
+
+            string selector = stored.ToLowerInvariant();
+            bool hidden = sensitivity is "sensitive" or "secret" || SensitiveText.Contains(kept);
+            string shown = TruncateText(kept, 512, "…");
+            facts["kept"] = hidden
+                ? new JsonObject { ["selector"] = selector, ["sensitive"] = true }
+                : new JsonObject { ["selector"] = selector, ["value"] = shown };
+            string correct = WireNames.Call("memory.correct", new JsonObject
+            {
+                ["selector"] = selector,
+                ["value"] = value,
+                ["retention"] = retention,
+            });
+            facts["next"] = !hidden && string.Equals(kept.Trim(), value.Trim(), StringComparison.Ordinal)
+                ? $"nothing new was saved: BAXY already keeps \"{selector}\" with this same value"
+                : $"nothing was saved: BAXY already keeps \"{selector}\" "
+                    + (hidden ? "with a value that is not shown" : $"as \"{shown}\"")
+                    + $"; ask the person whether to replace it, and with their yes {correct} does";
+            return facts.ToJsonString(new JsonSerializerOptions
+            {
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            });
+        }
+        catch (JsonException)
+        {
+            return failed;
+        }
+    }
+
     private static bool TryProjectConfiguration(
         JsonElement payload,
         string operationName,
@@ -240,17 +339,28 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         }
 
         var observed = new JsonObject { ["deletedCount"] = deleted };
-        if (privateArguments is { ValueKind: JsonValueKind.Object } arguments
+        bool all = privateArguments is { ValueKind: JsonValueKind.Object } arguments
             && arguments.TryGetProperty("scope", out JsonElement scope)
             && scope.ValueKind == JsonValueKind.String
-            && scope.GetString() == "all")
+            && scope.GetString() == "all";
+        if (all)
         {
             // Estabilización M: «olvida todo lo que sabes de mí» is told as everything forgotten, not one datum.
             observed["scope"] = "all";
         }
 
+        // Encargo 92 (banco diag-b1e7, F13 turno 3): a forget that matched nothing (a datum never saved, the memory off)
+        // came back as memory_forget_empty alone, and 2 of 6 answers said «la memoria sigue con ese dato» or «Borré…
+        // pero no quedó nada». What the store said goes with it: nothing matched, nothing was deleted, nothing changed.
         message = deleted == 0 && operationName != "memory.session.clear"
-            ? TurnVisibleFacts.Failure("memory_forget_empty")
+            ? TurnVisibleFacts.Failure("memory_forget_empty", new JsonObject
+            {
+                ["deletedCount"] = 0,
+                ["changed"] = false,
+                ["next"] = "nothing was deleted: BAXY "
+                    + (all ? "keeps no saved memories" : "keeps no saved memory that matches it")
+                    + ", so there was nothing to forget and nothing changed",
+            })
             : CompletedFacts(operationName, "memory_deleted", observed, responseReplayed || replayed);
         return true;
     }

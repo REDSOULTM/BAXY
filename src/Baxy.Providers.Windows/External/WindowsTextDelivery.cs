@@ -74,7 +74,11 @@ internal interface IFieldMessages
 /// by kind and name, if any.
 /// </summary>
 internal readonly record struct ViewedIndex(
-    nint Window, string ControlId, int Asked, int? NowAt, bool Gone, int? Equivalent, string? Seen);
+    nint Window, string ControlId, int Asked, int? NowAt, bool Gone, int? Equivalent, string? Seen, string? Kind = null);
+
+/// <summary>Encargo 36: a field of the last view that takes text (an edit box or a document not read-only), by the index
+/// the model saw it at, its control type and its name as the view gave them.</summary>
+internal readonly record struct ViewedTextField(int Index, string Kind, string Name);
 
 /// <summary>The fields of the last view (WindowsVisibleControlAdapter): what a text aimed at a field names.</summary>
 internal interface IViewedFields
@@ -119,8 +123,31 @@ internal interface IViewedFields
     /// <summary>Ajuste c3 (F09, M1 and M2): the value of the field (an Edit or a ComboBox, never a password) that holds
     /// the keyboard's focus inside <paramref name="window"/>'s own tree, read by UI Automation's ValuePattern as a look
     /// reads it (the worker's «focusvalue»), at most <paramref name="maximum"/> characters and said when it was cut; null
-    /// when nothing answers.</summary>
+    /// when nothing answers. Uso real 02-11 (encargo 2, B): a field that publishes no value (a rich text box), by its own
+    /// TextPattern's text; never a document.</summary>
     ValueTask<System.Text.Json.JsonDocument?> FocusedValueAsync(
+        nint window, int maximum, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
+
+    /// <summary>Encargo 75 (R01): the active cell of a grid in <paramref name="window"/>: its address, row, column, value
+    /// and whether it is being edited (the worker's «activecell», a read), and the value of the cell at
+    /// <paramref name="at"/> when given; null when nothing answers.</summary>
+    ValueTask<System.Text.Json.JsonDocument?> ActiveCellAsync(
+        nint window, (int Row, int Column)? at, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
+
+    /// <summary>Encargo 115: the address and value of the cells of the same grid from <paramref name="row"/> and
+    /// <paramref name="column"/>, row after row (the worker's «activecell» with a range, a read); null when nothing
+    /// answers.</summary>
+    ValueTask<System.Text.Json.JsonDocument?> CellRangeAsync(
+        nint window, int row, int column, int rows, int columns, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
+
+    /// <summary>Encargo 17 (U27): the length of the text of what holds the keyboard's focus inside
+    /// <paramref name="window"/>'s own tree, never a password's: a field's value or, without one, its TextPattern's
+    /// document range, a document's too (the worker's «focusvalue» with lengthOnly); at most <paramref name="maximum"/>
+    /// and said when it was cut. Nothing of the text answers; null when nothing answers.</summary>
+    ValueTask<System.Text.Json.JsonDocument?> FocusedTextLengthAsync(
         nint window, int maximum, CancellationToken cancellationToken) =>
         ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
 
@@ -128,6 +155,42 @@ internal interface IViewedFields
     /// whether it lies inside <paramref name="window"/> (0: the window in front); null when nothing answers.</summary>
     ValueTask<System.Text.Json.JsonDocument?> FocusKindAsync(nint window, CancellationToken cancellationToken) =>
         ValueTask.FromResult<System.Text.Json.JsonDocument?>(null);
+
+    /// <summary>Encargo 98: the whole text of what holds the keyboard's focus inside <paramref name="window"/> selected by
+    /// UI Automation's TextPattern and read back (the worker's «focusselect»); false when it could not be, and nothing
+    /// was pressed.</summary>
+    ValueTask<bool> SelectFocusedTextAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(false);
+
+    /// <summary>Encargo 98: what a shortcut can change without a window of its own (the worker's «focusstate», a read);
+    /// null when nothing answers or the focus lies outside <paramref name="window"/>.</summary>
+    ValueTask<FocusState?> FocusStateAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<FocusState?>(null);
+
+    /// <summary>Encargo 98: asks the dialog drawn inside <paramref name="window"/> that holds the focus to close, by UI
+    /// Automation (the worker's «focusdialogclose»); false when it could not be asked.</summary>
+    ValueTask<bool> CloseFocusedDialogAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(false);
+
+    /// <summary>Encargo 100: what tells whether a find key may go blind in <paramref name="window"/> (the worker's «focusfind», a
+    /// read); null when nothing answers.</summary>
+    ValueTask<FindReach?> FindReachAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<FindReach?>(null);
+
+    /// <summary>Encargo 100: how many tabs <paramref name="window"/> shows by UI Automation (the worker's «tabcount», a read);
+    /// null when nothing answers.</summary>
+    ValueTask<int?> TabCountAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<int?>(null);
+
+    /// <summary>Auditoría de falsedades 2026-11-04 (P6, K-2): whether any field of <paramref name="window"/> (0: the
+    /// window in front) that takes text —enabled, neither read-only nor a password— holds text, read by UI Automation
+    /// (the worker's «heldtext»: nothing of the text answers); null when nothing answers.</summary>
+    ValueTask<bool?> HoldsTextAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<bool?>(null);
+
+    /// <summary>Encargo 36: the fields that take text in the last view of <paramref name="window"/>, by the index the
+    /// model saw each at; empty when the last view is of another window or there is none.</summary>
+    IReadOnlyList<ViewedTextField> TextFieldsOf(nint window) => [];
 
     /// <summary>Revisión de la guarda F013 (teclas): whether <paramref name="key"/> (Enter or space) sent to
     /// <paramref name="window"/> (0: the one in front) would answer yes to a dialog that asks about destroying something,
@@ -163,10 +226,13 @@ internal readonly record struct CaretText(string Text, string Unit, bool Bounded
 /// <see cref="WindowsTextDelivery.Landed"/>). Práctica V5E061: the part of the text a replacement changed
 /// (<see cref="WindowsTextDelivery.Replace"/>), and how many times the field's text held it when it was refused. Noche
 /// NB r1, hallazgo 5: a text typed and read back by the edit control's messages says whether the field holds text
-/// besides the one written (<c>OtherText</c>); null for a replaced part, a key, or UI Automation.</summary>
+/// besides the one written (<c>OtherText</c>); null for a replaced part, a key, or UI Automation. Uso-108 (B12): a value
+/// that does not match says what stayed, when it was read: what the field holds now (<c>FieldNow</c>, cut as
+/// <see cref="WindowsTextDelivery.ValueNow"/>), or that it holds what it held (<c>FieldUnchanged</c>).</summary>
 internal readonly record struct FieldDelivery(
     string Method, bool Delivered, bool EffectMayHaveOccurred, string? Error, string FieldClass, string? Entry = null,
-    string? Landed = null, string? Replaced = null, int Occurrences = 0, bool? OtherText = null);
+    string? Landed = null, string? Replaced = null, int Occurrences = 0, bool? OtherText = null, string? FieldNow = null,
+    bool FieldUnchanged = false);
 
 /// <summary>
 /// Text and keys delivered to the field of the mission's window by window messages (CONTRATO_VISTA_ACCION.md §2):
@@ -309,6 +375,9 @@ internal sealed class WindowsTextDelivery
 
         int expected = Expected(field, before, text.Length);
         string? was = replace ? null : Was(field, before);
+        // Uso-108 (B12): the value a replacement replaces, to say what stayed if it does not match. Only a value: an
+        // insertion's field may be a whole document.
+        string? value = replace && before <= ReadableText ? _messages.Text(field, before) : null;
 
         if (!Same(identity))
             return new FieldDelivery("em_replacesel", false, replace, "input_window_changed", fieldClass);
@@ -321,7 +390,7 @@ internal sealed class WindowsTextDelivery
         // the insertion replaced a selection as long as itself and the text is too long to be read: then nothing tells
         // the two apart, and typing it again could put it in twice.
         if (!answered || after != before || (after == expected && after > ReadableText))
-            return new FieldDelivery("em_replacesel", false, true, "input_effect_not_verified", fieldClass);
+            return WhatStayed(new FieldDelivery("em_replacesel", false, true, "input_effect_not_verified", fieldClass), field, value);
 
         int queued = 0;
         foreach (char character in text)
@@ -352,8 +421,8 @@ internal sealed class WindowsTextDelivery
         return whole
             ? new FieldDelivery("wm_char", true, true, null, fieldClass, Landed: Landed(was, held, text),
                 OtherText: expected > text.Length)
-            : new FieldDelivery("wm_char", false, true,
-                Same(identity) ? "input_effect_not_verified" : "input_window_changed", fieldClass);
+            : WhatStayed(new FieldDelivery("wm_char", false, true,
+                Same(identity) ? "input_effect_not_verified" : "input_window_changed", fieldClass), field, value);
     }
 
     /// <summary>
@@ -417,6 +486,23 @@ internal sealed class WindowsTextDelivery
     // as one character where its WM_GETTEXT gives «\r\n»; a classic Edit counts both.
     private static bool IsRichEdit(string className) =>
         className.Split('.').Any(static part => part.StartsWith("RichEdit", StringComparison.OrdinalIgnoreCase));
+
+    // Uso-108 (B12): what stayed in a control whose value does not match, read after the delivery; nothing without a value
+    // read before or a text read now.
+    private FieldDelivery WhatStayed(FieldDelivery failed, nint field, string? value)
+    {
+        if (value is null || failed.Error != "input_effect_not_verified")
+            return failed;
+        int length = _messages.TextLength(field);
+        string? now = length is >= 0 and <= ReadableText ? _messages.Text(field, length) : null;
+        if (now is null)
+            return failed;
+        return Plain(now) == Plain(value) ? failed with { FieldUnchanged = true } : failed with { FieldNow = ValueNow(Plain(now)) };
+    }
+
+    /// <summary>Uso-108 (B12): what a receipt says of a value: its first 120 characters, and an ellipsis when it goes on.</summary>
+    internal static string ValueNow(string value) =>
+        value.Length > 120 ? value[..(char.IsHighSurrogate(value[119]) ? 119 : 120)] + "\u2026" : value;
 
     // A control's text with its line breaks as one character, as Holds reads it.
     private static string Plain(string value) => value.Replace("\r", string.Empty, StringComparison.Ordinal);
@@ -550,23 +636,48 @@ internal sealed class WindowsTextDelivery
     /// tolerantly (<see cref="Typographic"/>, on both sides), and so is the capital Word's AutoCorrect puts on the first
     /// letter of a sentence (measured live, 2026-10-18: «hola desde baxy» typed into a blank document became «Hola desde
     /// baxy», and the exact check left a text that was there unverified); any other rewrite (an autocorrected word) is
-    /// not the text typed, and leaves it not read back. Nothing of the paragraph leaves this check.
+    /// not the text typed, and leaves it not read back. Encargo 18 (banco de uso, U45: «ver» typed into a terminal, there
+    /// in the next look, told input_text_not_read_back): a console pads each row with blanks to its width, so its row
+    /// never grew by the text (measured live, Windows Terminal and the Windows console: 244 characters before and after);
+    /// the blanks at the end of each line are not compared. Nothing of the paragraph leaves this check.
     /// </summary>
     internal static bool CaretHolds(CaretText before, CaretText after, string text)
     {
         if (before.Bounded || after.Bounded || before.SelectionLength != 0
             || !string.Equals(before.Unit, after.Unit, StringComparison.Ordinal))
             return false;
-        string typed = Typographic(text);
+        string typed = Typographic(Unpadded(text));
+        // A text of blanks alone is compared as it is (nothing of it would be left).
+        bool unpadded = typed.Length > 0;
+        if (!unpadded)
+            typed = Typographic(text);
         if (typed.Length == 0)
             return false;
-        string was = Typographic(before.Text);
-        string now = Typographic(after.Text);
+        string was = Typographic(unpadded ? Unpadded(before.Text) : before.Text);
+        string now = Typographic(unpadded ? Unpadded(after.Text) : after.Text);
         if (now.Length < was.Length + typed.Length)
             return false;
         string capital = char.ToUpperInvariant(typed[0]) + typed[1..];
         return Occurrences(now, typed) > Occurrences(was, typed)
             || (capital != typed && Occurrences(now, capital) > Occurrences(was, capital));
+    }
+
+    // Encargo 18: a text without the blanks at the end of each of its lines (a console's row padding).
+    private static string Unpadded(string value)
+    {
+        var kept = new System.Text.StringBuilder(value.Length);
+        int line = 0;
+        for (int at = 0; at <= value.Length; at++)
+        {
+            if (at < value.Length && value[at] is not ('\r' or '\n'))
+                continue;
+            kept.Append(value.AsSpan(line, at - line).TrimEnd(' '));
+            if (at < value.Length)
+                kept.Append(value[at]);
+            line = at + 1;
+        }
+
+        return kept.ToString();
     }
 
     // The quotes and dashes Word's AutoFormat as you type puts for the typed ones, as the typed ones; a run of dashes

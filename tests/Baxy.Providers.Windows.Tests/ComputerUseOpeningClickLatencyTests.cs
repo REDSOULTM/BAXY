@@ -155,6 +155,64 @@ public sealed class ComputerUseOpeningClickLatencyTests
         });
     }
 
+    // Uso-111 (live, Edge and Chromium): a caret left blinking in a page's field made the whole window «animated», and the
+    // press of the page's button, whose effect was there to see, was told visible_click_postread_unread.
+    private static VisibleControlSurface.CapturedWindow Painted(nint window, bool caret, bool changedElsewhere, bool video = false)
+    {
+        const int Size = 640;
+        int stride = Size * 3;
+        var image = new byte[54 + (stride * Size)];
+        image[0] = (byte)'B';
+        image[1] = (byte)'M';
+        BitConverter.TryWriteBytes(image.AsSpan(10), 54);
+        BitConverter.TryWriteBytes(image.AsSpan(18), Size);
+        BitConverter.TryWriteBytes(image.AsSpan(22), Size);
+        BitConverter.TryWriteBytes(image.AsSpan(28), (short)24);
+        if (caret)
+        {
+            image[54] = 255;
+            // A video moves all over the first rows of cells, not in one corner.
+            for (int cell = 0; video && cell < 20 * 3; cell++)
+                image[54 + (stride * (cell / 20 * 32)) + (3 * (cell % 20 * 32))] = 255;
+        }
+        if (changedElsewhere)
+            image[54 + (stride * 600) + (3 * 600)] = 255;
+        return new VisibleControlSurface.CapturedWindow(window, image, 0, 0, Size, Size, $"c{caret}e{changedElsewhere}");
+    }
+
+    [TestCase(true, false, null)]
+    [TestCase(false, false, "visible_click_postread_unread")]
+    [TestCase(true, true, "visible_click_postread_unread")]
+    public async Task AWindowThatMovesInACornerProvesThePressWhereItDoesNotMove(bool pageChanged, bool video, string? error)
+    {
+        bool clicked = false;
+        int shots = 0;
+        var worker = new RoutedWorker(request =>
+        {
+            clicked |= (string?)request["cmd"] == "click";
+            return (string?)request["cmd"] switch
+            {
+                "click" => PendingClick,
+                "postread" => UnchangedControl,
+                _ => null,
+            };
+        });
+        ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint window, bool? selfDrawn, CancellationToken token) =>
+            ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
+                Painted(window, caret: shots++ % 2 == 0, changedElsewhere: clicked && pageChanged, video));
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: Capture);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Enviar","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+            Assert.That(receipt.Verified, Is.EqualTo(error is null));
+            Assert.That(receipt.EffectObserved, Is.True, "it pressed");
+        });
+    }
+
     // C02 (BAXY Renew cu): a control the worker read as already chosen before the click is its own proof that the click
     // changed nothing, with no image of the window: still said unchanged, with what is already shown.
     [Test]

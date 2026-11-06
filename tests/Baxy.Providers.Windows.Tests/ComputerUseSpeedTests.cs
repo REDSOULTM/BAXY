@@ -279,6 +279,33 @@ public sealed class ComputerUseSpeedTests
         });
     }
 
+    // Uso-111 (G8, live): the field is read through the window's keyboard focus: with the front given back it is another
+    // window's, and a text that did arrive said input_text_not_read_back.
+    [Test]
+    public async Task ATextForANamedWindowIsReadBackBeforeTheFrontIsGivenBack()
+    {
+        var keyboard = new FakeDesktopKeyboard();
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            ValueAnswer = () => keyboard.Burst is { Restores: > 0 }
+                ? """{"ok":false,"error":"focus_window_mismatch"}"""
+                : $$"""{"ok":true,"text":"{{string.Concat(keyboard.Texts)}}","bounded":false,"id":"7"}""",
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            new NoProcessRunner(), "folder.ps1", "file.ps1", "select.ps1", "keys.ps1", keyboard, fields);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.text.type", Json("""{"text":"hola","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.Null);
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("readBack").GetBoolean(), Is.True);
+            Assert.That(receipt.Result?.GetProperty("restored").GetBoolean(), Is.True);
+        });
+    }
+
     // Companion rule (GOAL_COMPUTER_USE_V3 point 0, fix 3): the keys for a named window go inside a burst of the
     // foreground lease, after the person's pause, and the front is given back before the receipt, which says so.
     [Test]
@@ -398,6 +425,42 @@ public sealed class ComputerUseSpeedTests
         {
             Assert.That(receipt.Verified, Is.EqualTo(verified), receipt.ErrorCode);
             Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+        });
+    }
+
+    // Banco de uso 03-11 (U27): a Ctrl+C that copied nothing says what there was to copy in the window it went to: the
+    // selection's length and the focused field's text length (lengths only); a read that does not answer is left out.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ACopyOfNothingSaysTheSelectionAndTheFieldLengths(bool answers)
+    {
+        var keyboard = new FakeDesktopKeyboard { Clipboard = 7, CopyChanges = false };
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            CaretAnswer = answers
+                ? () => """{"ok":true,"processId":4242,"text":"lista de prueba","unit":"line","bounded":false,"selectionLength":0}"""
+                : null,
+            ValueAnswer = answers ? () => """{"ok":true,"text":"lista de prueba","bounded":false,"id":"7"}""" : null,
+        };
+        var adapter = new WindowsDesktopInteractionAdapter(
+            new NoProcessRunner(), "folder.ps1", "file.ps1", "select.ps1", "keys.ps1", keyboard, fields);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.key.press", Json("""{"key":"ctrl_c","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("clipboard_not_changed"));
+            JsonElement result = receipt.Result!.Value;
+            Assert.That(result.TryGetProperty("selectionLength", out JsonElement selection), Is.EqualTo(answers));
+            Assert.That(result.TryGetProperty("focusedTextLength", out JsonElement length), Is.EqualTo(answers));
+            if (answers)
+            {
+                Assert.That(selection.GetInt32(), Is.Zero);
+                Assert.That(length.GetInt32(), Is.EqualTo("lista de prueba".Length));
+            }
+
+            Assert.That(result.GetRawText(), Does.Not.Contain("lista de prueba"), "nothing of the text leaves");
         });
     }
 
@@ -833,7 +896,7 @@ public sealed class ComputerUseSpeedTests
     public async Task AScrollByIndexOnAViewWhoseWindowIsGoneIsRefusedBeforeAnyEffect()
     {
         // The handle of a window that is gone: the view is answered by the scripted worker, the window is not alive.
-        // A made-up constant is not enough (Full of 6d554a246 on redpc: 0x7FFF0F1E was a visible VS Code window there,
+        // A made-up constant is not enough (Full of 6d554a246 on the development PC: 0x7FFF0F1E was a visible VS Code window there,
         // so the scroll went on to the pattern); a window this test creates and destroys has a handle Windows does not
         // hand out again (the slot comes back with another uniqueness).
         long front = GoneWindow();
@@ -905,8 +968,8 @@ public sealed class ComputerUseSpeedTests
     [Test]
     public void AScrollByIndexOfAnotherWindowsViewIsRefusedBeforeAnyEffect()
     {
-        nint viewed = CreateWindowEx(0x08000080, "STATIC", "BAXY scroll fixture viewed", 0x90000000u, -31000, -31000, 200, 120, 0, 0, 0, 0);
-        nint named = CreateWindowEx(0x08000080, "STATIC", "BAXY scroll fixture named", 0x90000000u, -31000, -31000, 200, 120, 0, 0, 0, 0);
+        nint viewed = PumpedWindow.Create("BAXY scroll fixture viewed");
+        nint named = PumpedWindow.Create("BAXY scroll fixture named");
         Assert.That(viewed != 0 && named != 0, Is.True, $"CreateWindowEx failed: {Marshal.GetLastPInvokeError()}");
         try
         {
@@ -933,8 +996,8 @@ public sealed class ComputerUseSpeedTests
         }
         finally
         {
-            _ = DestroyWindow(viewed);
-            _ = DestroyWindow(named);
+            PumpedWindow.Destroy(viewed);
+            PumpedWindow.Destroy(named);
         }
     }
 
@@ -1200,6 +1263,11 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
     public string ProcessName(nint window) =>
         Chords.Count + Texts.Count > 0 && ProcessOnceSent is string after ? after : FrontProcess;
 
+    // The window class of the window in front (empty: not read, as the interface's default).
+    internal string FrontClass { get; init; } = "";
+
+    public string ClassName(nint window) => FrontClass;
+
     internal int? AcceptOnly { get; init; }
 
     internal List<ushort[]> Chords { get; } = [];
@@ -1221,6 +1289,8 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
         }
 
         Chords.Add(virtualKeys.ToArray());
+        if (PersonActsOnceSent && Burst is not null)
+            Burst.UserActed = true;
         if (CopyChanges && virtualKeys.Contains((ushort)0x43))
             Clipboard++;
         return Accept(virtualKeys.Count * 2);
@@ -1238,7 +1308,42 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
 
     internal WindowWitness? WitnessAfter { get; init; }
 
-    public WindowWitness? Witness(nint window) => Chords.Count == 0 ? WitnessBefore : WitnessAfter;
+    public WindowWitness? Witness(nint window) =>
+        Chords.Count == 0 && !RaisesWithoutChord ? WitnessBefore : WitnessAfter;
+
+    // Encargo 98: the dialog a key raised, seen once a key went (or at once: the keys are the caller's); and the ones asked
+    // to close, which go when ClosesRaised says so.
+    internal RaisedWindow? Raised { get; init; }
+
+    internal bool RaisesWithoutChord { get; init; }
+
+    internal bool ClosesRaised { get; init; } = true;
+
+    internal List<nint> ClosedRaised { get; } = [];
+
+    public RaisedWindow? RaisedSince(WindowWitness before, nint window) =>
+        Chords.Count > 0 || RaisesWithoutChord ? Raised : null;
+
+    public bool CloseRaised(nint raised)
+    {
+        ClosedRaised.Add(raised);
+        return ClosesRaised;
+    }
+
+    // Encargo 100: the browsers before any key, and what they show once one went (in order; the last one stays).
+    internal BrowserWitness? BrowsersBefore { get; init; }
+
+    internal IReadOnlyList<BrowserSighting> Sightings { get; init; } = [];
+
+    private int _sightings;
+
+    public BrowserWitness? Browsers() => BrowsersBefore;
+
+    public BrowserSighting BrowserSince(BrowserWitness before, int sentToProcess) =>
+        Sightings.Count == 0 ? default : Sightings[Math.Min(_sightings++, Sightings.Count - 1)];
+
+    // Encargo 100: the person acts as soon as a chord went (their input while the key's effect shows).
+    internal bool PersonActsOnceSent { get; init; }
 
     // The windows that hold the front, by handle; a window brought to the front holds it when Frontable says so.
     internal HashSet<nint> Holding { get; } = [];
@@ -1249,6 +1354,14 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
 
     // The windows the front was handed back to (the person's), outside any lease.
     internal List<nint> GivenBack { get; } = [];
+
+    // Why the window in front cannot take BAXY's input (it runs above us); null: it can.
+    internal string? FrontAbove { get; init; }
+
+    public string? RunsAbove(int processId) => FrontAbove;
+
+    // Whether its bursts say the window had not taken the keyboard when their wait ran out.
+    internal bool BurstKeysNotConfirmed { get; init; }
 
     // The person's pause, as the foreground lease reports it: refused when the person never paused.
     internal string? PauseRefusal { get; init; }
@@ -1296,11 +1409,25 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
     // by someone else in between).
     internal bool LosesFrontOnceFronted { get; init; }
 
+    // What the next reads of the front find, each in turn (the person going to another window meanwhile).
+    internal Queue<DesktopForeground> FrontReads { get; } = new();
+
     public DesktopForeground Foreground()
     {
+        if (FrontReads.TryDequeue(out DesktopForeground read))
+            return read;
         if (LosesFrontOnceFronted && Fronted.Count > 0)
             Holding.Clear();
         return Now ?? (_typed && ProcessAfterTyping is int after ? Front with { ProcessId = after } : Front);
+    }
+
+    // Uso-108: the paces asked of a text (0: the keyboard's own).
+    internal List<int> Paces { get; } = [];
+
+    public uint TypeText(string text, Func<bool> keepGoing, int pace)
+    {
+        Paces.Add(pace);
+        return TypeText(text, keepGoing);
     }
 
     public uint TypeText(string text, Func<bool> keepGoing)
@@ -1349,6 +1476,7 @@ internal sealed class FakeDesktopKeyboard : IDesktopKeyboard
             Refusal = Holds(window) ? null : "input_window_not_in_front",
             WaitedMs = WaitedMs,
             UserActed = PersonActsAfter == 0 && Bursts.Count < PersonActsInBursts,
+            KeysNotConfirmed = BurstKeysNotConfirmed,
         };
         Bursts.Add(Burst);
         return ValueTask.FromResult<IInputBurst>(Burst);
@@ -1382,6 +1510,8 @@ internal sealed class FakeInputBurst : IInputBurst
     public bool UserReached => UserActed && !OnlyMoved;
 
     public bool HoldsWindow { get; set; } = true;
+
+    public bool KeysNotConfirmed { get; init; }
 
     internal int Restores { get; private set; }
 

@@ -96,9 +96,36 @@ public sealed class DeclaredTextFieldPressTests
         Assert.That(fields.Asked, Is.Zero);
     }
 
-    private static async Task<(OperationResponse, Keys, Fields)> Press(string arguments, string? focus, KeyWindowKind kind)
+    // Auditoría de falsedades 2026-11-04 (P6, b5bd S03 ciclo 6): «mándale por el chat de prueba al taller de cerámica…» →
+    // input_text_type wrote the message in the chat's field, then input_key_press {"key":"enter","window":…} with neither
+    // target nor onto went unasked (a chat whose process is no known messaging client is an ordinary window to K-2
+    // refinada) and the message was sent; BAXY asked «¿Le envío el mensaje…?» afterwards. Such an Enter asks while any
+    // field of its window that takes text holds text, and when that cannot be read; with every field empty it goes as
+    // K-2 refinada lets it. Space presses or types, and an Enter onto a named control is judged by that name: neither
+    // is read here.
+    [TestCase("""{"key":"enter","window":7}""", true, true, 1)]
+    [TestCase("""{"key":"enter","window":7}""", null, true, 1)]
+    [TestCase("""{"key":"enter"}""", true, true, 1)]
+    [TestCase("""{"key":"enter","window":7}""", false, false, 1)]
+    [TestCase("""{"key":"space","window":7}""", true, false, 0)]
+    [TestCase("""{"key":"enter","window":7,"onto":"Buscar"}""", true, false, 0)]
+    public async Task AnUndeclaredEnterAsksWhileAFieldOfItsWindowHoldsText(
+        string arguments, bool? held, bool asks, int reads)
     {
-        var fields = new Fields(focus);
+        (OperationResponse response, Keys keys, Fields fields) = await Press(arguments, null, KeyWindowKind.Ordinary, held);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.ErrorCode, Is.EqualTo(asks ? "confirmation_required" : null));
+            Assert.That(keys.Pressed, Is.EqualTo(asks ? 0 : 1));
+            Assert.That(fields.HeldRead, Is.EqualTo(reads));
+        });
+    }
+
+    private static async Task<(OperationResponse, Keys, Fields)> Press(
+        string arguments, string? focus, KeyWindowKind kind, bool? held = null)
+    {
+        var fields = new Fields(focus, held);
         var adapter = new WindowsDesktopInteractionAdapter(
             new NoProcessRunner(), "folder.ps1", "file.ps1", "select.ps1", "keys.ps1", new FakeDesktopKeyboard(), fields)
         {
@@ -157,9 +184,17 @@ public sealed class DeclaredTextFieldPressTests
             adapter.PreflightMayRaise(operation, arguments);
     }
 
-    private sealed class Fields(string? focus) : IViewedFields
+    private sealed class Fields(string? focus, bool? held = null) : IViewedFields
     {
         public int Asked { get; private set; }
+
+        public int HeldRead { get; private set; }
+
+        public ValueTask<bool?> HoldsTextAsync(nint window, CancellationToken cancellationToken)
+        {
+            HeldRead++;
+            return ValueTask.FromResult(held);
+        }
 
         public bool TryViewedField(int index, out nint window, out string controlId)
         {

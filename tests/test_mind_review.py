@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from baxy_mind.mind import ANSWERED_NOTE
+
 from test_mind_final import _call, _mind, _say
 
 
@@ -87,7 +89,7 @@ def test_an_answer_to_a_question_whose_decision_failed_still_answers_it_next_tim
         mind.decide(2, "a las 7")
     assert mind.decide(3, "a las 7")["kind"] == "action"
     messages = server.bodies[-1]["messages"]
-    assert [m["content"] for m in messages if m["role"] == "tool"] == ["a las 7"]
+    assert [m["content"] for m in messages if m["role"] == "tool"] == ["a las 7" + ANSWERED_NOTE]
     assert [m["role"] for m in messages[-2:]] == ["assistant", "tool"]  # the answer, not a new request
 
 

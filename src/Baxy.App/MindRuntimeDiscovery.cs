@@ -3,6 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Baxy.Providers.Windows.SystemStatus;
 
 namespace Baxy.App;
 
@@ -12,20 +13,20 @@ internal sealed record MindRuntimeConfiguration(
     string Gguf,
     string LlamaServer,
     int GpuLayers,
-    MindRuntimePieces Pieces);
+    MindRuntimePieces Pieces,
+    string? LlamaBackend = null);
 
 /// <summary>
 /// The pieces beside the model that a registration names on this machine (entrega 1.1.0): BAXY's voice (Supertonic),
-/// the ear (the k4 wake word and Parakeet Ultra), System One's decision model and its CPU threads, and the model's vision
-/// projector. Each is null when it is not registered or is not what was registered: that piece stays off, and the mind
-/// says so (its voice's state; no decision model; no projector on its server).
+/// the ear (the k4 wake word and Parakeet Ultra), and the model's vision projector. Each is null when it is not registered
+/// or is not what was registered: that piece stays off, and the mind says so (its voice's state; no projector on its server). uso-93: the low-latency wake package
+/// (k6r-alto) heard beside the wake word, the first to fire telling «Baxy»; without it the wake word is heard alone.
 /// </summary>
 internal sealed record MindRuntimePieces(
     string? Voice,
     string? Wake,
+    string? WakeFast,
     string? Stt,
-    string? SystemOneGguf,
-    int? SystemOneThreads,
     string? VisionProjector);
 
 internal sealed record MindRuntimeEnvironmentSnapshot(
@@ -40,7 +41,9 @@ internal sealed record MindRuntimeDiscoveryResult(
     MindRuntimeEnvironmentSnapshot Environment,
     MindRuntimeConfiguration? Runtime,
     bool CanConfigure,
-    bool Disabled);
+    bool Disabled,
+    bool NoSupportedGpu = false,
+    string? Problem = null);
 
 /// <summary>
 /// Loads a deliberately registered local mind runtime (scripts/register_mind_runtime.ps1). The registration is
@@ -49,11 +52,18 @@ internal sealed record MindRuntimeDiscoveryResult(
 /// and scripts/run_renew.cmd was the only way its voice, ear, System One and vision reached the mind; the registration
 /// now names them (<see cref="MindRuntimePieces"/>), each verified by its SHA-256 and applied only where no variable
 /// was given, so a bench still sets its own. The old voice entries and the adapters an older registration may carry
-/// are allowed and not read. Any other property refuses the registration.
+/// are allowed and not read. Any other property refuses the registration. uso-101: a store's package cannot rewrite its
+/// registration (the folder is the store's) and has no installer to run gpu.py, so it names one server per backend
+/// (llama_server, CUDA; llama_server_vulkan) and every start picks by the GPU's PCI vendor. The same file is both servers'
+/// llama-server.exe, so its hash does not tell the backend: the mind holds the folder's DLL to the one chosen
+/// (BAXY_MIND_LLAMA_BACKEND). A server given by a variable makes no choice; a registration with one server neither.
 /// </summary>
 internal static class MindRuntimeDiscovery
 {
     private const string RegistrationSchema = "baxy-mind-runtime-v1";
+    private const string RegistrationFileName = "mind-runtime-v1.json";
+    private const string NotInstalled = "sin_instalar";
+    private const string MissingComponent = "componente_ausente";
     private const int MaximumRegistrationBytes = 16 * 1024;
 
     private static readonly string[] RegistrationProperties =
@@ -72,9 +82,19 @@ internal static class MindRuntimeDiscovery
     // The pieces (MindRuntimePieces), each optional: a path and its SHA-256 (of a folder, DirectorySha256).
     private static readonly string[] PieceProperties =
     [
-        "renew_tts_dir", "renew_tts_sha256", "renew_wake_dir", "renew_wake_sha256", "renew_stt_dir", "renew_stt_sha256",
-        "s1_gguf", "s1_gguf_sha256", "s1_threads", "mmproj", "mmproj_sha256",
+        "renew_tts_dir", "renew_tts_sha256", "renew_wake_dir", "renew_wake_sha256", "renew_wake_fast_dir",
+        "renew_wake_fast_sha256", "renew_stt_dir", "renew_stt_sha256", "s1_gguf", "s1_gguf_sha256", "s1_threads", "mmproj",
+        "mmproj_sha256", "llama_server_vulkan", "llama_server_vulkan_sha256",
     ];
+
+    // PCI vendor ids, as src/baxy_mind/gpu.py reads them for an installation (tests/test_mind_gpu.py compares the two):
+    // 10DE NVIDIA, which wins beside another GPU (a laptop's integrated one); 1002 AMD and 8086 Intel.
+    private static readonly Dictionary<uint, string> GpuBackends = new()
+    {
+        [0x10DE] = "cuda",
+        [0x1002] = "vulkan",
+        [0x8086] = "vulkan",
+    };
 
     // The click's vision asks the mind's own llama-server (PLAN_GENERAL A5) on this port unless one is given.
     private const string VisionPort = "8077";
@@ -84,7 +104,10 @@ internal static class MindRuntimeDiscovery
     internal static MindRuntimeDiscoveryResult DiscoverVerified() =>
         DiscoverVerified(DefaultRegistrationPath());
 
-    internal static MindRuntimeDiscoveryResult DiscoverVerified(string registrationPath)
+    internal static MindRuntimeDiscoveryResult DiscoverVerified(string registrationPath) =>
+        DiscoverVerified(registrationPath, WindowsGpuVendors.Read);
+
+    internal static MindRuntimeDiscoveryResult DiscoverVerified(string registrationPath, Func<IReadOnlyList<uint>> gpuVendors)
     {
         MindRuntimeEnvironmentSnapshot environment = CaptureEnvironment();
 
@@ -110,15 +133,58 @@ internal static class MindRuntimeDiscovery
                 environment,
                 Runtime: null,
                 CanConfigure: false,
-                Disabled: false);
+                Disabled: false,
+                Problem: MissingComponent);
         }
 
-        MindRuntimeConfiguration? runtime = LoadRegistered(registrationPath);
+        MindRuntimeConfiguration? runtime = LoadRegistered(
+            registrationPath, environment.LlamaServer, gpuVendors, out bool noSupportedGpu);
         return new(
             environment,
             runtime,
             CanConfigure: runtime is not null || hasExplicitPython,
-            Disabled: false);
+            Disabled: false,
+            NoSupportedGpu: noSupportedGpu && !hasExplicitPython,
+            Problem: runtime is null && !hasExplicitPython && !noSupportedGpu ? RegistrationProblem(registrationPath) : null);
+    }
+
+    /// <summary>
+    /// uso-116 (N23): why no runtime came out of a registration, as a cause the view says (causes.ts): none, its model not
+    /// there, a model that is not the registered one, or any other required piece. Read once, only when it failed.
+    /// </summary>
+    private static string RegistrationProblem(string registrationPath)
+    {
+        try
+        {
+            var info = new FileInfo(Path.GetFullPath(registrationPath));
+            if (!info.Exists)
+            {
+                return NotInstalled;
+            }
+
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(info.FullName));
+            // A store's package names its files relative to the registration (LoadRegistered).
+            string? registered = OptionalString(document.RootElement, "gguf");
+            string? gguf = registered is null ? null : Path.GetFullPath(Path.Combine(info.DirectoryName!, registered));
+            if (gguf is null || !File.Exists(gguf))
+            {
+                return "modelo_ausente";
+            }
+
+            return RuntimeFileHashCache.ForRegistration(info.FullName, FileSha256).Sha256(gguf)
+                == OptionalString(document.RootElement, "gguf_sha256")
+                    ? MissingComponent
+                    : "modelo_danado";
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException
+            or ArgumentException
+            or NotSupportedException
+            or JsonException
+            or InvalidOperationException)
+        {
+            return MissingComponent;
+        }
     }
 
     internal static bool ApplyVerified(MindRuntimeDiscoveryResult discovery) =>
@@ -154,10 +220,11 @@ internal static class MindRuntimeDiscovery
             SetIfMissing(MindSidecarClient.PythonPathEnvironmentVariable, runtime.PythonPath);
             SetIfMissing("BAXY_MIND_LLM_GGUF", runtime.Gguf);
             SetIfMissing("BAXY_MIND_LLAMA_SERVER", runtime.LlamaServer);
+            SetIfMissing("BAXY_MIND_LLAMA_BACKEND", runtime.LlamaBackend);
             SetIfMissing(
                 "BAXY_MIND_NGL",
                 runtime.GpuLayers.ToString(CultureInfo.InvariantCulture));
-            ApplyPieces(runtime.Pieces, localData);
+            ApplyPieces(runtime.Pieces);
             ApplyVision(localData);
             if (string.IsNullOrWhiteSpace(discovery.Environment.Python))
             {
@@ -168,21 +235,17 @@ internal static class MindRuntimeDiscovery
     }
 
     /// <summary>
-    /// The registered pieces, each where no variable names one. System One's decision model and its threads not while
-    /// the owner's switch is off (scripts/system_one.cmd off; the mind reads it too, for its thresholds), and the
-    /// projector not with BAXY_VISION_OFF, as scripts/run_renew.cmd starts a bench.
+    /// The registered pieces, each where no variable names one; the projector not with BAXY_VISION_OFF, as
+    /// scripts/run_renew.cmd starts a bench. uso-116 (N23): System One's decision model is not one of them: it was handed
+    /// to every install while what is measured and what the owner runs have gone without it since 2026-10-31 (it added
+    /// nothing, and takes 446 MiB of the 5 GB). A bench or a launcher still gives it with BAXY_S1_GGUF.
     /// </summary>
-    private static void ApplyPieces(MindRuntimePieces pieces, string localData)
+    private static void ApplyPieces(MindRuntimePieces pieces)
     {
         SetIfMissing("BAXY_RENEW_TTS_DIR", pieces.Voice);
         SetIfMissing("BAXY_RENEW_WAKE_DIR", pieces.Wake);
+        SetIfMissing("BAXY_RENEW_WAKE_FAST_DIR", pieces.WakeFast);
         SetIfMissing("BAXY_RENEW_STT_DIR", pieces.Stt);
-        if (!SystemOneSwitchedOff(localData))
-        {
-            SetIfMissing("BAXY_S1_GGUF", pieces.SystemOneGguf);
-            SetIfMissing("BAXY_S1_THREADS", pieces.SystemOneThreads?.ToString(CultureInfo.InvariantCulture));
-        }
-
         if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BAXY_VISION_OFF")))
         {
             SetIfMissing("BAXY_MIND_MMPROJ", pieces.VisionProjector);
@@ -192,7 +255,7 @@ internal static class MindRuntimeDiscovery
     /// <summary>
     /// With a projector on the mind's server (registered, or given by a bench), the click's vision is pointed at it
     /// before the core starts, which reads these variables (LocalVisionEndpoint): a pinned port (8077 unless one is
-    /// given), its chat endpoint, the server's one slot, and the folder where that slot's state is set aside meanwhile,
+    /// given), its chat endpoint, the mind's slot on that server, and the folder where that slot's state is set aside meanwhile,
     /// the server's own --slot-save-path (llm_server._slot_dir). A port or folder already given is kept.
     /// </summary>
     private static void ApplyVision(string localData)
@@ -207,24 +270,35 @@ internal static class MindRuntimeDiscovery
         string port = Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_PORT")!.Trim();
         SetIfMissing("BAXY_VISION_ENDPOINT", $"http://127.0.0.1:{port}/v1/chat/completions");
         SetIfMissing("BAXY_VISION_MODEL", "baxy");
-        SetIfMissing("BAXY_VISION_SLOT", "0");
+        // Encargo 11: on a server several machines' minds share (measurement), the mind's slot (BAXY_MIND_SLOT).
+        string? mindSlot = Environment.GetEnvironmentVariable("BAXY_MIND_SLOT");
+        SetIfMissing("BAXY_VISION_SLOT", string.IsNullOrWhiteSpace(mindSlot) ? "0" : mindSlot.Trim());
         if (!string.IsNullOrWhiteSpace(localData))
         {
             SetIfMissing("BAXY_VISION_SLOT_DIR", Path.Combine(localData, "BAXY", "renew", "slots"));
         }
     }
 
-    private static bool SystemOneSwitchedOff(string localData) =>
-        !string.IsNullOrWhiteSpace(localData)
-        && File.Exists(Path.Combine(localData, "BAXY", "renew", "system_one.off"));
+    internal static string DefaultRegistrationPath() =>
+        DefaultRegistrationPath(
+            AppContext.BaseDirectory,
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
 
-    internal static string DefaultRegistrationPath()
+    /// <summary>
+    /// The registration the App ships one folder above itself (the Steam build, scripts/build_steam.ps1), which names
+    /// the product's own files; otherwise the one this machine registered (scripts/register_mind_runtime.ps1).
+    /// </summary>
+    internal static string DefaultRegistrationPath(string appFolder, string localData)
     {
-        string localData = Environment.GetFolderPath(
-            Environment.SpecialFolder.LocalApplicationData);
+        string packaged = Path.GetFullPath(Path.Combine(appFolder, "..", RegistrationFileName));
+        if (File.Exists(packaged))
+        {
+            return packaged;
+        }
+
         return string.IsNullOrWhiteSpace(localData)
             ? string.Empty
-            : Path.Combine(localData, "BAXYRuntime", "mind-runtime-v1.json");
+            : Path.Combine(localData, "BAXYRuntime", RegistrationFileName);
     }
 
     /// <summary>
@@ -232,8 +306,10 @@ internal static class MindRuntimeDiscovery
     /// file whose size and timestamps did not change since a verified start is
     /// not read again (see <see cref="RuntimeFileHashCache"/>).
     /// </summary>
-    private static MindRuntimeConfiguration? LoadRegistered(string manifestPath)
+    private static MindRuntimeConfiguration? LoadRegistered(
+        string manifestPath, string? givenServer, Func<IReadOnlyList<uint>> gpuVendors, out bool noSupportedGpu)
     {
+        noSupportedGpu = false;
         if (string.IsNullOrWhiteSpace(manifestPath)
             || !Path.IsPathFullyQualified(manifestPath))
         {
@@ -249,7 +325,7 @@ internal static class MindRuntimeDiscovery
             }
 
             RuntimeFileHashCache hashes = RuntimeFileHashCache.ForRegistration(info.FullName, FileSha256);
-            MindRuntimeConfiguration? runtime = LoadRegistered(info, hashes);
+            MindRuntimeConfiguration? runtime = LoadRegistered(info, hashes, givenServer, gpuVendors, out noSupportedGpu);
             hashes.Save();
             return runtime;
         }
@@ -263,8 +339,14 @@ internal static class MindRuntimeDiscovery
         }
     }
 
-    private static MindRuntimeConfiguration? LoadRegistered(FileInfo info, RuntimeFileHashCache hashes)
+    private static MindRuntimeConfiguration? LoadRegistered(
+        FileInfo info,
+        RuntimeFileHashCache hashes,
+        string? givenServer,
+        Func<IReadOnlyList<uint>> gpuVendors,
+        out bool noSupportedGpu)
     {
+        noSupportedGpu = false;
         try
         {
             using FileStream stream = info.OpenRead();
@@ -277,6 +359,7 @@ internal static class MindRuntimeDiscovery
                     MaxDepth = 4,
                 });
             JsonElement root = document.RootElement;
+            string folder = info.DirectoryName!;
             if (root.ValueKind != JsonValueKind.Object
                 || !HasKnownProperties(root)
                 || !string.Equals(
@@ -287,22 +370,48 @@ internal static class MindRuntimeDiscovery
                 return null;
             }
 
+            string? backend = null;
+            string serverProperty = "llama_server";
+            if (OptionalString(root, "llama_server_vulkan") is not null && string.IsNullOrWhiteSpace(givenServer))
+            {
+                backend = BackendFor(gpuVendors());
+                if (backend is null)
+                {
+                    noSupportedGpu = true;
+                    return null;
+                }
+
+                serverProperty = backend == "vulkan" ? "llama_server_vulkan" : "llama_server";
+                // The GitHub release installs the CUDA folder only where the installer saw an NVIDIA GPU (CUDA EULA 2.1): a
+                // card added later computes with the Vulkan folder that every installation has instead of not starting. A
+                // folder that is there and is not what was registered still starts nothing.
+                if (backend == "cuda" && CanonicalPath(folder, RequiredString(root, serverProperty)) is { } cudaServer
+                    && !File.Exists(cudaServer))
+                {
+                    backend = "vulkan";
+                    serverProperty = "llama_server_vulkan";
+                }
+            }
+
             string? python = ExistingFile(
                 hashes,
+                folder,
                 RequiredString(root, "python"),
                 "python.exe",
                 RequiredString(root, "python_sha256"));
-            string? pythonPath = ExistingDirectory(RequiredString(root, "python_path"));
+            string? pythonPath = ExistingDirectory(folder, RequiredString(root, "python_path"));
             string? gguf = ExistingFile(
                 hashes,
+                folder,
                 RequiredString(root, "gguf"),
                 expectedName: null,
                 RequiredString(root, "gguf_sha256"));
             string? server = ExistingFile(
                 hashes,
-                RequiredString(root, "llama_server"),
+                folder,
+                RequiredString(root, serverProperty),
                 "llama-server.exe",
-                RequiredString(root, "llama_server_sha256"));
+                RequiredString(root, serverProperty + "_sha256"));
             if (python is null
                 || pythonPath is null
                 || gguf is null
@@ -328,15 +437,12 @@ internal static class MindRuntimeDiscovery
                 server,
                 ngl,
                 new MindRuntimePieces(
-                    RegisteredDirectory(hashes, root, "renew_tts_dir", "renew_tts_sha256"),
-                    RegisteredDirectory(hashes, root, "renew_wake_dir", "renew_wake_sha256"),
-                    RegisteredDirectory(hashes, root, "renew_stt_dir", "renew_stt_sha256"),
-                    RegisteredModel(hashes, root, "s1_gguf", "s1_gguf_sha256"),
-                    root.TryGetProperty("s1_threads", out JsonElement threads)
-                        && threads.ValueKind == JsonValueKind.Number
-                        && threads.TryGetInt32(out int count)
-                        && count is >= 1 and <= 64 ? count : null,
-                    RegisteredModel(hashes, root, "mmproj", "mmproj_sha256")));
+                    RegisteredDirectory(hashes, folder, root, "renew_tts_dir", "renew_tts_sha256"),
+                    RegisteredDirectory(hashes, folder, root, "renew_wake_dir", "renew_wake_sha256"),
+                    RegisteredDirectory(hashes, folder, root, "renew_wake_fast_dir", "renew_wake_fast_sha256"),
+                    RegisteredDirectory(hashes, folder, root, "renew_stt_dir", "renew_stt_sha256"),
+                    RegisteredModel(hashes, folder, root, "mmproj", "mmproj_sha256")),
+                backend);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -348,12 +454,20 @@ internal static class MindRuntimeDiscovery
         }
     }
 
+    /// <summary>The backend of this machine's GPUs (their PCI vendors); CUDA beside any other; null with none we serve.</summary>
+    private static string? BackendFor(IReadOnlyList<uint> vendors)
+    {
+        var found = vendors.Select(static vendor => GpuBackends.GetValueOrDefault(vendor)).ToHashSet();
+        return found.Contains("cuda") ? "cuda" : found.Contains("vulkan") ? "vulkan" : null;
+    }
+
     /// <summary>A registered GGUF beside the model (System One's, the projector) that is what was registered.</summary>
-    private static string? RegisteredModel(RuntimeFileHashCache hashes, JsonElement root, string path, string sha256)
+    private static string? RegisteredModel(
+        RuntimeFileHashCache hashes, string folder, JsonElement root, string path, string sha256)
     {
         try
         {
-            string? file = ExistingFile(hashes, OptionalString(root, path), expectedName: null, OptionalString(root, sha256));
+            string? file = ExistingFile(hashes, folder, OptionalString(root, path), expectedName: null, OptionalString(root, sha256));
             return file is not null && file.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase) ? file : null;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -362,12 +476,16 @@ internal static class MindRuntimeDiscovery
         }
     }
 
-    /// <summary>A registered folder (the voice, the wake word, the recognizer) whose files are what was registered.</summary>
-    private static string? RegisteredDirectory(RuntimeFileHashCache hashes, JsonElement root, string path, string sha256)
+    /// <summary>
+    /// A registered folder (the voice, the wake word, the fast wake package, the recognizer) whose files are what was
+    /// registered.
+    /// </summary>
+    private static string? RegisteredDirectory(
+        RuntimeFileHashCache hashes, string folder, JsonElement root, string path, string sha256)
     {
         try
         {
-            string? directory = ExistingDirectory(OptionalString(root, path));
+            string? directory = ExistingDirectory(folder, OptionalString(root, path));
             string? expected = OptionalString(root, sha256);
             return directory is not null
                 && IsSha256(expected)
@@ -420,11 +538,12 @@ internal static class MindRuntimeDiscovery
 
     private static string? ExistingFile(
         RuntimeFileHashCache hashes,
+        string folder,
         string? value,
         string? expectedName,
         string? expectedSha256)
     {
-        string? canonical = CanonicalPath(value);
+        string? canonical = CanonicalPath(folder, value);
         if (canonical is null
             || !File.Exists(canonical)
             || !IsSha256(expectedSha256)
@@ -459,9 +578,9 @@ internal static class MindRuntimeDiscovery
         value is { Length: 64 }
         && value.All(character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
 
-    private static string? ExistingDirectory(string? value)
+    private static string? ExistingDirectory(string folder, string? value)
     {
-        string? canonical = CanonicalPath(value);
+        string? canonical = CanonicalPath(folder, value);
         return canonical is not null && Directory.Exists(canonical) ? canonical : null;
     }
 
@@ -508,15 +627,27 @@ internal static class MindRuntimeDiscovery
         return false;
     }
 
-    private static string? CanonicalPath(string? value)
+    /// <summary>
+    /// A registered path as a full one. A relative path is of a file of the product beside the registration (the Steam
+    /// build), whatever its install folder is called, and never one outside that folder.
+    /// </summary>
+    private static string? CanonicalPath(string folder, string? value)
     {
-        if (string.IsNullOrWhiteSpace(value) || !Path.IsPathFullyQualified(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
 
         try
         {
+            if (!Path.IsPathFullyQualified(value))
+            {
+                string inside = Path.GetFullPath(Path.Combine(folder, value));
+                return inside.StartsWith(
+                    Path.TrimEndingDirectorySeparator(folder) + Path.DirectorySeparatorChar,
+                    StringComparison.OrdinalIgnoreCase) ? inside : null;
+            }
+
             string full = Path.GetFullPath(value);
             return IsForeignBaxyWorktree(full) ? null : full;
         }

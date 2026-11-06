@@ -345,6 +345,7 @@ def test_the_sidecar_answers_the_app_with_the_decision_made_early_unless_the_ear
             self.call_tokens = [248058]
 
     class FakeSpeech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def foresee(self, text, done):
             return True
 

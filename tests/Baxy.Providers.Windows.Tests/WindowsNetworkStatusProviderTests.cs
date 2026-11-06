@@ -89,8 +89,8 @@ public sealed class WindowsNetworkStatusProviderTests
     public async Task IpListReturnsOnlyAStableSortedUnicastProjection()
     {
         var probe = new FakeIpProbe(
-            ["192.168.1.89", "100.64.0.12"],
-            ["100.64.0.12", "192.168.1.89"]);
+            ["192.168.1.89", "100.64.10.27"],
+            ["100.64.10.27", "192.168.1.89"]);
         var provider = new WindowsNetworkIpProvider(probe);
 
         NetworkIpSnapshot? result = await provider.ReadVerifiedAsync(CancellationToken.None);
@@ -99,7 +99,7 @@ public sealed class WindowsNetworkStatusProviderTests
         {
             Assert.That(result, Is.Not.Null);
             Assert.That(result!.Addresses,
-                Is.EqualTo(new[] { "100.64.0.12", "192.168.1.89" }));
+                Is.EqualTo(new[] { "100.64.10.27", "192.168.1.89" }));
             Assert.That(probe.Reads, Is.EqualTo(2));
         });
     }
@@ -231,11 +231,12 @@ public sealed class WindowsNetworkStatusProviderTests
 
     // Renew al máximo (w5): one echo with no reply was answered «google no responde, está caído»; with the aid ping_scope
     // the result says what it does not tell and where internet is read; a reply needs no word; BAXY_AYUDAS=none, facts.
-    [TestCase("all", "timedout", "example.com sent no reply to one echo within 2 s (timedout); many hosts and firewalls "
-        + "never answer ping, so this alone does not say example.com or the internet is down; network_status says whether "
-        + "this PC has internet")]
-    [TestCase("all", "name_resolution_failed", "the name example.com was not resolved to an address, so nothing was sent; "
-        + "network_status says whether this PC has internet")]
+    // Encargo 34: the call that says it comes first, written as the model calls it.
+    [TestCase("all", "timedout", "network_status {} says whether this PC has internet; example.com sent no reply to one "
+        + "echo within 2 s (timedout); many hosts and firewalls never answer ping, so this alone does not say example.com "
+        + "or the internet is down")]
+    [TestCase("all", "name_resolution_failed", "network_status {} says whether this PC has internet; the name "
+        + "example.com was not resolved to an address, so nothing was sent")]
     [TestCase("all", "success", null)]
     [TestCase("none", "timedout", null)]
     public async Task APingWithNoReplySaysWhatItDoesNotTell(string aids, string status, string? next)

@@ -293,8 +293,9 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
         DisplayModeValue? after = _platform.Current(device);
         if (after is { } shown && Same(shown, target))
         {
-            return ExternalJson.Success(operation, Result(
-                previous, shown, refreshChosen, changed: true, SavedIs(device, shown)));
+            DisplayModeValue? savedMode = _platform.Saved(device);
+            return ExternalJson.Success(operation, Result(previous, shown, refreshChosen, changed: true,
+                savedMode is { } stored ? Same(stored, shown) : null, savedMode));
         }
         // Windows did not show it (DISP_CHANGE_RESTART, a refusal, or a success not shown yet): the screen reads as
         // before and, the change being only dynamic, nothing was saved for a restart either.
@@ -397,7 +398,8 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             : null;
 
     private static JsonElement Result(
-        DisplayModeValue previous, DisplayModeValue final, string refreshChosen, bool changed, bool? savedForRestart) =>
+        DisplayModeValue previous, DisplayModeValue final, string refreshChosen, bool changed, bool? savedForRestart,
+        DisplayModeValue? savedMode = null) =>
         ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -411,12 +413,17 @@ internal sealed class WindowsDisplayModeAdapter : IExternalOperationAdapter
             // Whether a restart keeps the final mode; absent when the mode Windows has saved could not be read.
             if (savedForRestart is { } saved)
                 writer.WriteBoolean("savedForRestart", saved);
+            if (savedForRestart == false && savedMode is { } restart)
+                Write(writer, "savedMode", restart);
             // Renew al máximo (w5): «listo, cambié la resolución» read as kept; a restart shows the saved mode again.
-            if (savedForRestart == false && ModelAids.On(ModelAids.DisplayRestart))
+            // Uso real 04-11: «… again keeps it» was told twice as «Windows la guarda para el próximo reinicio»: it says
+            // which mode a restart goes back to, and that the call saves. What is shown stays first («not saved: …» first
+            // was told as the screen still at the saved mode: banco app_contradice F24-3, 2 of 3).
+            if (savedForRestart == false && savedMode is { } back && ModelAids.On(ModelAids.DisplayRestart))
             {
-                writer.WriteString("next", $"{final.Width}x{final.Height} at {final.RefreshHz} Hz is shown now and not saved: "
-                    + "the next restart or sign-in shows the mode Windows has saved; display_mode_set with this same mode "
-                    + "again keeps it");
+                writer.WriteString("next", $"{final.Width}x{final.Height} at {final.RefreshHz} Hz is shown now and is not "
+                    + $"saved: the next restart or sign-in goes back to {back.Width}x{back.Height} at {back.RefreshHz} Hz, the "
+                    + "mode Windows has saved; display_mode_set with this same mode again saves it");
             }
             writer.WriteString("authority", "windows_display_settings_readback");
             writer.WriteEndObject();

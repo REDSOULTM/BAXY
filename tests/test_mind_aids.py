@@ -294,7 +294,7 @@ def test_a_link_on_the_browser_page_is_looked_at_and_clicked_and_a_new_tab_opens
 FILES_AND_GAMES = {"capabilities": [
     {"name": name, "description": f"{name}.", "argumentsSchema": {"type": "object", "properties": {}}}
     for name in ("file.open", "file.read", "file.find", "filesystem.list", "filesystem.search", "game.launch",
-                 "game.installed.named", "app.close", "window.minimize")]}
+                 "game.installed.named", "app.close", "window.minimize", "web.search")]}
 
 
 @pytest.mark.parametrize("setting,on", [
@@ -302,6 +302,8 @@ FILES_AND_GAMES = {"capabilities": [
     ("read_find_split", {"file_read", "file_find"}),
     ("game_epic_look", {"game_launch", "game_installed_named"}),
     ("unsaved_not_read", {"app_close", "window_minimize"}),
+    # G13 (uso real 2026-11-03): «WhatsApp es un mensajero de WhatsApp» and an invented origin of «Meta», with no call.
+    ("entity_lookup", {"web_search"}),
     ("none", set())])
 def test_the_dudas_sentence_aids_end_only_their_tools_descriptions(tmp_path: Path, monkeypatch, setting: str,
                                                                    on: set[str]) -> None:
@@ -443,6 +445,177 @@ APP_VOLUME_FAILED = json.dumps({"status": "failed", "error": "app_audio_session_
                                              "next": "if the person meant the whole PC, call audio_volume with level 15"}})
 
 
+NAVIGATION_UNCONFIRMED = json.dumps({"status": "failed", "error": "user_browser_navigation_unconfirmed",
+                                     "effectUncertain": True, "observed": {"requestedUrl": "https://correo.example.com/",
+                                                                           "linkSent": True, "windowChanged": True,
+                                                                           "addressSeen": "page_from_before"}})
+
+
+@pytest.mark.parametrize("setting,told", [("all", True), ("read_after_navigation", True), ("none", False)])
+def test_a_page_read_after_an_unconfirmed_navigation_says_what_is_open_now(
+        tmp_path: Path, monkeypatch, setting: str, told: bool) -> None:
+    # Uso real 04-11 (F25): the page read after the navigation's wait gave up, and the answer «no pude ver si cargó».
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, server = _mind(tmp_path, [_call("browser_navigate", {"url": "https://correo.example.com/"}),
+                                    _call("browser_page_read", {}), _say("Listo.")])
+    mind.decide(1, "entra al correo")
+    mind.continue_turn(2, NAVIGATION_UNCONFIRMED)
+    mind.continue_turn(3, json.dumps({"status": "completed", "verification": "output_only", "observed": {
+        "url": "https://correo.example.com/bandeja", "title": "Recibidos", "text": "Fila de prueba"}}))
+    assert ("lo que el navegador muestra ahora es https://correo.example.com/bandeja" in _last_result(server)) is told
+
+
+@pytest.mark.parametrize("setting,told", [("all", True), ("vision_estimate", True), ("none", False)])
+def test_what_a_vision_model_says_is_told_as_its_estimate(tmp_path: Path, monkeypatch, setting: str, told: bool) -> None:
+    # uso-106 (F32): «probablemente X» of a capture came out as «estás en X». Which words carry the doubt is not read.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, server = _mind(tmp_path, [_call("vision_describe", {"captureId": "capture_1"}), _say("Listo.")])
+    mind.decide(1, "qué se ve en la pantalla")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "output_only", "observed": {
+        "captureId": "capture_1", "description": "Una ventana con una tabla."}}))
+    assert ("lo que estima un modelo de visión" in _last_result(server)) is told
+
+
+def test_a_failed_vision_call_estimates_nothing(tmp_path: Path) -> None:
+    mind, server = _mind(tmp_path, [_call("vision_describe", {"captureId": "capture_1"}), _say("No pude.")])
+    mind.decide(1, "qué se ve en la pantalla")
+    mind.continue_turn(2, json.dumps({"status": "failed", "error": "capture_not_found"}))
+    assert "lo que estima un modelo de visión" not in _last_result(server)
+
+
+def test_a_page_read_with_no_navigation_left_unconfirmed_adds_nothing(tmp_path: Path) -> None:
+    mind, server = _mind(tmp_path, [_call("browser_page_read", {}), _say("Listo.")])
+    mind.decide(1, "qué dice esta página")
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "output_only", "observed": {
+        "url": "https://correo.example.com/bandeja", "title": "Recibidos", "text": "Fila de prueba"}}))
+    assert "no alcanzó a confirmar" not in _last_result(server)
+
+
+OPENED = json.dumps({"status": "completed", "verification": "readback",
+                     "observed": {"appId": "Steam", "alreadyRunning": False, "processName": "steam"}})
+
+
+def _user_notes(server) -> list[str]:
+    return [str(m.get("content")) for m in server.bodies[-1]["messages"]
+            if m.get("role") == "user" and "se abren directo" in str(m.get("content"))]
+
+
+@pytest.mark.parametrize("setting,told", [("all", True), ("app_places_next", True), ("none", False)])
+def test_the_places_of_what_a_turn_opened_come_with_the_next_turn_not_with_the_opening(
+        tmp_path: Path, monkeypatch, setting: str, told: bool) -> None:
+    # N5 and F26: in the opening's result one of them was told as where it opened; without them the next request looked.
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Steam"}), _say("Abrí Steam."), _say("Listo.")])
+    mind.decide(1, "abre steam")
+    mind.continue_turn(2, OPENED)
+    assert "library" not in _last_result(server)
+    mind.decide(3, "otra cosa")
+    assert any("app_open con appId «Steam» y place" in note and "library" in note for note in _user_notes(server)) is told
+
+
+def test_the_places_are_said_for_one_turn_and_not_after_an_opening_at_a_place_or_a_failed_one(tmp_path: Path) -> None:
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Steam"}), _say("Abrí."), _say("Uno."), _say("Dos.")])
+    mind.decide(1, "abre steam")
+    mind.continue_turn(2, OPENED)
+    mind.decide(3, "uno")
+    assert len(_user_notes(server)) == 1
+    mind.decide(4, "dos")
+    assert len(_user_notes(server)) == 1  # the one note of the turn after, nothing new
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Steam", "place": "library"}), _say("Abrí."), _say("Uno.")])
+    mind.decide(1, "abre la biblioteca")
+    mind.continue_turn(2, OPENED)
+    mind.decide(3, "uno")
+    assert not _user_notes(server)
+    failed = json.dumps({"status": "failed", "error": "app_not_found", "observed": {}})
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Steam"}), _say("No pude."), _say("Uno.")])
+    mind.decide(1, "abre steam")
+    mind.continue_turn(2, failed)
+    mind.decide(3, "uno")
+    assert not _user_notes(server)
+
+
+KNOWS = [{"processes": ["PROCESOPRUEBA"], "names": ["App de prueba"], "hosts": ["sitio.example.com"],
+          "verified": "2026-11-04", "text": "Hecho comprobado de prueba."}]
+LOOK_AT_IT = json.dumps({"status": "completed", "verification": "output_only",
+                         "view": "Ventana «Ventana de prueba» (PROCESOPRUEBA, window 77), al frente\nControles:\n"})
+LOOK_AT_OTHER = json.dumps({"status": "completed", "verification": "output_only",
+                            "view": "Ventana «App de prueba» (otroproceso, window 78), al frente\nControles:\n"})
+
+
+@pytest.mark.parametrize("setting,told", [("all", True), ("app_knows", True), ("none", False)])
+def test_a_look_at_a_window_with_known_facts_tells_them_by_its_process(
+        tmp_path: Path, monkeypatch, setting: str, told: bool) -> None:
+    from baxy_mind import mind as module
+    monkeypatch.setattr(module, "APP_KNOWS", KNOWS)
+    monkeypatch.setenv("BAXY_AYUDAS", setting)
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {}), _say("Listo.")])
+    mind.decide(1, "mira esto")
+    mind.continue_turn(2, LOOK_AT_IT)
+    assert ("[Ayuda: Hecho comprobado de prueba.]" in _last_result(server)) is told
+
+
+def test_known_facts_never_come_from_the_words_nor_from_a_title(tmp_path: Path, monkeypatch) -> None:
+    # The identity is the process the result saw: the person naming the app or a window titled like it says nothing.
+    from baxy_mind import mind as module
+    monkeypatch.setattr(module, "APP_KNOWS", KNOWS)
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {}), _say("Listo.")])
+    mind.decide(1, "cómo se usa App de prueba de PROCESOPRUEBA")
+    mind.continue_turn(2, LOOK_AT_OTHER)
+    assert "Hecho comprobado" not in _last_result(server)
+
+
+def test_known_facts_are_told_once_while_they_are_in_the_conversation(tmp_path: Path, monkeypatch) -> None:
+    from baxy_mind import mind as module
+    monkeypatch.setattr(module, "APP_KNOWS", KNOWS)
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {}), _call("input_visible_controls", {}), _say("Listo.")])
+    mind.decide(1, "mira esto")
+    mind.continue_turn(2, LOOK_AT_IT)
+    mind.continue_turn(3, LOOK_AT_IT)
+    assert "Hecho comprobado" not in _last_result(server)
+    assert sum("Hecho comprobado" in str(m.get("content")) for m in server.bodies[-1]["messages"]) == 1
+
+
+def test_known_facts_come_with_a_navigation_whatever_its_wire_name(tmp_path: Path, monkeypatch) -> None:
+    # browser.navigate goes on the wire as browser_navigate_set beside browser.navigate.named: the operation decides.
+    from baxy_mind import mind as module
+    monkeypatch.setattr(module, "APP_KNOWS", KNOWS)
+    mind, server = _mind(tmp_path, [_call("browser_navigate", {"url": "https://www.sitio.example.com/"}), _say("Listo.")])
+    mind.decide(1, "abre la portada")
+    mind._turn["calling"] = "browser.navigate"
+    mind.continue_turn(2, json.dumps({"status": "completed", "verification": "readback", "observed": {"url": "https://x"}}))
+    assert "Hecho comprobado" in _last_result(server)
+
+
+def test_known_facts_last_checked_too_long_ago_say_nothing(tmp_path: Path, monkeypatch) -> None:
+    from baxy_mind import mind as module
+    monkeypatch.setattr(module, "APP_KNOWS", [{**KNOWS[0], "verified": "2020-01-01"}])
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {}), _say("Listo.")])
+    mind.decide(1, "mira esto")
+    mind.continue_turn(2, LOOK_AT_IT)
+    assert "Hecho comprobado" not in _last_result(server)
+
+
+def test_known_facts_of_a_site_come_by_the_address_the_call_gave_and_of_an_app_by_the_opening(
+        tmp_path: Path, monkeypatch) -> None:
+    from baxy_mind import mind as module
+    monkeypatch.setattr(module, "APP_KNOWS", KNOWS)
+    done = json.dumps({"status": "completed", "verification": "readback", "observed": {"url": "https://x"}})
+    mind, server = _mind(tmp_path, [_call("browser_navigate", {"url": "https://sitio.example.com/"}), _say("Listo.")])
+    mind.decide(1, "abre la portada")
+    mind.continue_turn(2, done)
+    assert "Hecho comprobado" in _last_result(server)
+    opened = json.dumps({"status": "completed", "verification": "readback", "observed": {"appId": "App de prueba"}})
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "App de prueba"}), _say("Listo.")])
+    mind.decide(1, "abre otra cosa")
+    mind.continue_turn(2, opened)
+    assert "Hecho comprobado" in _last_result(server)
+    failed = json.dumps({"status": "failed", "error": "app_not_found", "observed": {}})
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "App de prueba"}), _say("Listo.")])
+    mind.decide(1, "abre otra cosa")
+    mind.continue_turn(2, failed)
+    assert "Hecho comprobado" not in _last_result(server)
+
+
 @pytest.mark.parametrize("setting,told", [("all", True), ("next_not_done", True), ("none", False)])
 def test_a_failed_result_with_a_next_says_this_call_did_not_do_it(
         tmp_path: Path, monkeypatch, setting: str, told: bool) -> None:
@@ -524,6 +697,37 @@ def test_an_act_in_a_window_tells_what_its_after_view_shows() -> None:
     assert told({"changed": [], "omitted": 4}) == "enviado sin verificar: no se volvió a mirar si hizo efecto"
 
 
+def test_a_key_whose_image_changed_is_not_told_the_window_stayed() -> None:
+    # Uso-108 (B2, hondo 15 note 5): the same tree and another image: «sameListed», never «la ventana no cambió».
+    from baxy_mind.mind import _outcome
+    told = _outcome(json.dumps({"status": "completed", "verification": "readback",
+                                "observed": {"surfaceChanged": True, "after": {"sameListed": True}}}))
+    assert "la ventana no cambió" not in told and told.startswith("completado y verificado")
+
+
+def test_a_repeated_capture_or_vision_of_one_image_is_the_same_result() -> None:
+    # Uso-108 (B4): a new id, its moment and how vision worded it are no new result;
+    # other bytes are.
+    from baxy_mind.mind import _result_key
+
+    def capture(ident: str, sha: str, at: str) -> str:
+        return json.dumps({"status": "completed", "observed": {
+            "captureId": "capture_" + ident * 32, "sha256": sha, "createdAtUtc": at,
+            "activeWindow": {"captureStartedAtUtc": at, "captureCompletedAtUtc": at, "isClipped": False}}})
+
+    def vision(ident: str, sha: str, words: str) -> str:
+        return json.dumps({"status": "completed", "observed": {
+            "captureId": "capture_" + ident * 32, "captureSha256": sha, "description": words}})
+
+    assert _result_key(capture("a", "s1", "t1")) == _result_key(capture("b", "s1", "t2"))
+    assert _result_key(capture("a", "s1", "t1")) != _result_key(capture("b", "s2", "t1"))
+    assert _result_key(vision("a", "s1", "una ventana")) == _result_key(vision("b", "s1", "otra forma de decirlo"))
+    assert _result_key(vision("a", "s1", "una ventana")) != _result_key(vision("b", "s2", "una ventana"))
+    # A created time beside no capture is that result's own.
+    assert (_result_key(json.dumps({"note": "x", "createdAtUtc": "t1"}))
+            != _result_key(json.dumps({"note": "x", "createdAtUtc": "t2"})))
+
+
 def test_a_read_says_it_only_looked_and_changed_nothing() -> None:
     # Auditoría de falsedades (F002, 9 of 9 runs of pc-t2): «¿abriste Spotify?» → window_application_status, told
     # «completado: lectura», answered «Sí, Spotify está abierto». A call of a read risk says it only looked; an
@@ -540,7 +744,7 @@ def test_an_application_already_running_is_told_as_not_opened_by_this_call() -> 
     # Auditoría de falsedades (F002): app_open of an application already open is not «lo abrí».
     from baxy_mind.mind import _outcome
     opened = {"status": "completed", "verification": "readback", "observed": {"appId": "Spotify", "alreadyRunning": True}}
-    assert _outcome(json.dumps(opened)) == "completado y verificado; ya estaba abierta antes de esta llamada"
+    assert _outcome(json.dumps(opened)) == "completado y verificado; ya estaba abierta antes de esta llamada, que no la abrió"
     opened["observed"]["alreadyRunning"] = False
     assert _outcome(json.dumps(opened)) == "completado y verificado"
 

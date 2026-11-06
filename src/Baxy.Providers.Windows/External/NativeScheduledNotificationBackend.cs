@@ -467,7 +467,7 @@ internal static class ScheduledNotificationTaskXml
             writer.WriteStartElement("Actions", Namespace);
             writer.WriteAttributeString("Context", "Author");
             writer.WriteStartElement("Exec", Namespace);
-            writer.WriteElementString("Command", Namespace, "powershell.exe");
+            writer.WriteElementString("Command", Namespace, SystemExecutable.PowerShellInTask);
             writer.WriteElementString("Arguments", Namespace,
                 "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File " + quotedScript);
             writer.WriteEndElement();

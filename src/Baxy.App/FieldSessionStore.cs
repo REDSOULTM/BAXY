@@ -103,7 +103,7 @@ internal sealed class FieldSessionStore
                 CryptographicOperations.ZeroMemory(plain);
             }
 
-            File.Move(temporary, path, overwrite: true);
+            global::Baxy.Kernel.AtomicFileReplacement.ReplaceOrCreate(temporary, path);
             return true;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException

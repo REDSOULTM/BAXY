@@ -39,7 +39,7 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
     private const int MaximumBridgeMessageCharacters = 1_048_576;
 
     private readonly Window _window;
-    private readonly WebView2 _webView;
+    private WebView2 _webView;
     private readonly FieldTelemetrySampler _telemetry;
     private readonly FieldProductChannel _channel;
     private readonly CancellationToken _lifetimeCancellation;
@@ -226,6 +226,10 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
             case "close":
                 _window.Close();
                 return JsonValue.Create(true);
+            case "exit" when _window is MainWindow main:
+                // Uso 85: «Salir» on a breakdown leaves BAXY as the tray's Exit does, whatever «Al cerrar la ventana» says.
+                main.Exit("view");
+                return JsonValue.Create(true);
             default:
                 return JsonValue.Create(false);
         }
@@ -331,16 +335,37 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         });
     }
 
+    /// <summary>
+    /// uso-116: the view was created anew (its browser process died). The channel stays, with the conversation it shows;
+    /// what the old view's sockets were is gone with it, and the new view opens its own.
+    /// </summary>
+    internal void Rebind(WebView2 webView)
+    {
+        ArgumentNullException.ThrowIfNull(webView);
+        _webView.WebMessageReceived -= OnWebMessageReceived;
+        _webView.NavigationStarting -= OnNavigationStarting;
+        _sockets.Clear();
+        _webView = webView;
+        _webView.WebMessageReceived += OnWebMessageReceived;
+        _webView.NavigationStarting += OnNavigationStarting;
+    }
+
     private bool PostEnvelope(JsonObject envelope)
     {
-        if (_disposed || _webView.CoreWebView2 is null)
+        if (_disposed)
         {
             return false;
         }
 
         try
         {
-            _webView.CoreWebView2.PostWebMessageAsJson(envelope.ToJsonString());
+            // The getter itself throws once the control closed with its browser process (uso-116: unhandled, twice per kill).
+            if (_webView.CoreWebView2 is not { } core)
+            {
+                return false;
+            }
+
+            core.PostWebMessageAsJson(envelope.ToJsonString());
             return true;
         }
         catch (Exception exception) when (exception is InvalidOperationException

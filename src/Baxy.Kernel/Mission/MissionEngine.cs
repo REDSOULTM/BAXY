@@ -139,6 +139,7 @@ public sealed class MissionEngine : IDisposable
             // lower risk, or the failure it would end in before any effect, which is answered without asking for a yes.
             // One that started before and was not completed is reconciled as it stands: its effect may have happened.
             OperationOutcome? preflightFailure = null;
+            JsonElement? raisedFacts = null;
             if (policy == PolicyDecision.RequireConfirmation && handler is IInvocationPreflight preflight)
             {
                 InvocationPreflightResult found = await Preflight(preflight, request.Arguments, cancellationToken)
@@ -166,6 +167,7 @@ public sealed class MissionEngine : IDisposable
                 if (found.Risk is { } risk && risk > handler.Definition.Risk)
                 {
                     policy = Evaluate(handler, risk, request.Arguments);
+                    raisedFacts = found.Facts;
                 }
             }
 
@@ -186,7 +188,10 @@ public sealed class MissionEngine : IDisposable
             // 2026-10-25 («que Baxy no te moleste todo el tiempo… sino para cosas que realmente son peligrosas»): nor
             // does one that only reads and asks nothing with these arguments; reading again changes nothing. A reversible
             // one still asks: its run may have typed the text or added the amount already, and a second run does it twice.
+            // Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca»): only in normal mode; Bypass runs it
+            // again unasked, and its receipt still says what was observed.
             bool uncertainStart = startedFingerprint is not null
+                && _confirmationMode() == ConfirmationMode.Normal
                 && knownOperation
                 && handler is not null
                 && validArguments
@@ -216,7 +221,8 @@ public sealed class MissionEngine : IDisposable
                         ConfirmationChallengeContract.RequiredErrorCode,
                         BuildConfirmationResult(
                             authorization.Challenge!,
-                            reconciliationRequired: startedFingerprint is not null));
+                            reconciliationRequired: startedFingerprint is not null,
+                            raisedFacts));
                 }
 
                 grantedBinding = binding;
@@ -600,7 +606,8 @@ public sealed class MissionEngine : IDisposable
 
     private static JsonElement BuildConfirmationResult(
         ConfirmationChallenge challenge,
-        bool reconciliationRequired)
+        bool reconciliationRequired,
+        JsonElement? facts)
     {
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
@@ -612,6 +619,13 @@ public sealed class MissionEngine : IDisposable
                 "expiresAtUtc",
                 challenge.ExpiresAtUtc.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture));
             writer.WriteBoolean("reconciliationRequired", reconciliationRequired);
+            // Encargo 83: what the read found of a raised invocation, for whoever words the question.
+            if (facts is { } found)
+            {
+                writer.WritePropertyName("facts");
+                found.WriteTo(writer);
+            }
+
             writer.WriteEndObject();
         }
 

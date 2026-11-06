@@ -18,8 +18,9 @@ namespace Baxy.App;
 /// <item>Its time (FT/proveedores goal, E5): <see cref="Budget"/> from the turn's start. An app.open of a console app
 /// waited 30 s per verification and the model retried it up to the move cap: 7.5 min with no answer.</item>
 /// <item>A call that came back the same three times in the turn, in a row or not: the same operation with the same
-/// arguments and the same result, its content (e2e E022: the same page fetched eight times, until the results overflowed
-/// the context and the turn ended with no answer; feria 2026-10-27: a navigation and a new tab alternated 16 times in
+/// arguments and the same result, its content, or for an effect that did not complete how it ended (e2e E022: the same
+/// page fetched eight times, until the results overflowed the context and the turn ended with no answer; uso real
+/// 2026-11-02: an unconfirmed navigation six times; feria 2026-10-27: a navigation and a new tab alternated 16 times in
 /// 55 s, each breaking the other's run, until the move cap), unless a call not made before in the turn (another operation
 /// or other arguments), or a read that saw a word no read saw before in it, came since its last time: a form
 /// filled field by field, the same key between each typing, goes on, and so does a long page read by scrolling and
@@ -54,11 +55,13 @@ internal sealed class TurnClosing
     /// </summary>
     internal bool AfterCall(int calls, TimeSpan elapsed, string operation, string arguments, string observation)
     {
-        string made = string.Join('\n', operation, arguments);
+        // Uso-108 (B4): vision or OCR of another capture of one image is the same call; the mind compares the same way.
+        string made = string.Join('\n', operation, CaptureId.Replace(arguments, "capture_"));
         _made.Add(made);
-        string content = Content(observation);
+        bool reads = Reads(operation);
+        string content = Content(observation, effect: !reads);
         string call = string.Join('\n', made, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content))));
-        if (Reads(operation))
+        if (reads)
         {
             // A read that saw a word no read of the turn saw before is new too (a look after each scroll of a long page);
             // other numbers or the same words in another order (a clock, a load, a list sorted by it) are not.
@@ -82,13 +85,26 @@ internal sealed class TurnClosing
     // loading, each with another view, are three results, not a repeat). How long the call took («…Ms»: durationMs,
     // elapsedMs, burstMs) is not part of it: the same console output each time in its own time is a repeat. The mind's
     // «same call» aid compares the same way (mind.py, _result_key).
-    private static string Content(string observation)
+    // Uso real 2026-11-02: an effect that did not complete is how it ended (its status, code and uncertainty): what its
+    // result says it checked is the diagnosis of that same failure, another each time (an unconfirmed navigation opened
+    // six times, each with another window change and address kind seen, until the turn's time ran out). The mind's aid
+    // still compares the whole content.
+    private static readonly string[] Ending = ["status", "error", "cause", "effectUncertain"];
+
+    private static string Content(string observation, bool effect)
     {
         string content = observation;
         try
         {
             if (JsonNode.Parse(observation) is { } facts)
             {
+                if (effect && facts is JsonObject ended && ended["status"] is JsonValue value
+                    && value.TryGetValue(out string? status) && status != OperationStatuses.Completed)
+                {
+                    facts = new JsonObject(Ending.Where(ended.ContainsKey)
+                        .Select(key => KeyValuePair.Create(key, ended[key]?.DeepClone())));
+                }
+
                 WithoutTimes(facts);
                 content = facts.ToJsonString(Unescaped);
             }
@@ -114,15 +130,25 @@ internal sealed class TurnClosing
     // (WindowsWindowControlProvider.Issue), new at every read of the same window; the mind compares the same way.
     private static readonly Regex WindowHandle = new(@"\bwin_[0-9a-f]{32}\b", RegexOptions.CultureInvariant);
 
+    // Uso-108 (B4): nor a capture's new id, its moment or how vision worded the same bytes (sha256, captureSha256 stay, and
+    // tell a screen that changed): only the move cap or the time ended a loop of captures; the mind compares the same way.
+    private static readonly Regex CaptureId = new(@"\bcapture_[0-9a-f]{32}\b", RegexOptions.CultureInvariant);
+    private static readonly HashSet<string> CaptureMoment = new(StringComparer.Ordinal)
+    {
+        "createdAtUtc", "description",
+    };
+
     private static void WithoutTimes(JsonNode node)
     {
         if (node is JsonObject facts)
         {
             bool repeat = facts.ContainsKey(RepeatKey);
+            bool captured = facts.ContainsKey("captureId");
             foreach (string key in facts.Select(static pair => pair.Key).ToArray())
             {
                 // A result that holds nothing but the count is the same as the first one, which had none.
                 if (key.EndsWith("Ms", StringComparison.Ordinal) || key == RepeatKey || (repeat && key == "next")
+                    || (captured && CaptureMoment.Contains(key)) || key is "captureStartedAtUtc" or "captureCompletedAtUtc"
                     || (facts[key] is JsonObject inner && inner.ContainsKey(RepeatKey)
                         && inner.All(static pair => pair.Key is RepeatKey or "next")))
                 {
@@ -130,7 +156,7 @@ internal sealed class TurnClosing
                 }
                 else if (facts[key] is JsonValue value && value.TryGetValue(out string? text))
                 {
-                    facts[key] = WindowHandle.Replace(text, "win_");
+                    facts[key] = CaptureId.Replace(WindowHandle.Replace(text, "win_"), "capture_");
                 }
                 else if (facts[key] is { } child)
                 {

@@ -33,6 +33,13 @@ public sealed class M120ClienteCerradoTests
             return ValueTask.FromResult(new DesktopRecipientObservation(true, true, (nint)42, 7, null, recipient));
         }
 
+        public ValueTask<DesktopRecipientObservation> OpenConversationAsync(
+            string channel, string name, string? server, CancellationToken cancellationToken)
+        {
+            Steps.Add("open:" + name);
+            return ValueTask.FromResult(new DesktopRecipientObservation(true, true, (nint)42, 7, null, name));
+        }
+
         public ValueTask<DesktopMessageObservation> SendAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
         {
             Steps.Add("send:" + recipient.Name);
@@ -181,6 +188,63 @@ public sealed class M120ClienteCerradoTests
                 Assert.That(receipt.EffectObserved, Is.False);
                 Assert.That(automation.Steps, Is.Empty);
             });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // Encargo 58 (diagnóstico f11dcfa99, S03 6 de 6): with no test destination the person was asked for a yes to a send
+    // that could only fail. The read before asking says it, with nothing touched, and leads with the call that reaches
+    // the person they named.
+    [TestCase("whatsapp", """message_send_set {"channel":"whatsapp","recipient":"Taller Inventado","text":"hola"}""")]
+    [TestCase("email", """email_send {"to":"Taller Inventado","text":"hola"}""")]
+    public async Task WithoutATestDestinationThePreflightFailsBeforeTheYes(string channel, string route)
+    {
+        var automation = new ClientAutomation(new(true, true, null));
+        string destinations = TestDestinations("""{"discord":"Otro chat"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+            ExternalCapabilityReceipt? receipt = await ((IExternalOperationAdapter)adapter).PreflightAsync(
+                "message.send.test",
+                Json($$"""{"channel":"{{channel}}","requestedRecipient":"Taller Inventado","text":"hola"}"""),
+                CancellationToken.None);
+
+            Assert.That(receipt, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt!.Operation, Is.EqualTo("message.send.test"));
+                Assert.That(receipt.ErrorCode, Is.EqualTo("test_destination_not_configured"));
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.EffectObserved, Is.False);
+                Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+                Assert.That(receipt.Result?.GetProperty("next").GetString(), Does.StartWith(route + " "));
+                Assert.That(automation.Steps, Is.Empty);
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    [Test]
+    public async Task WithATestDestinationThePreflightLeavesTheYes()
+    {
+        var automation = new ClientAutomation(new(true, true, null));
+        string destinations = TestDestinations("""{"whatsapp":"Chat de prueba"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+            ExternalCapabilityReceipt? receipt = await ((IExternalOperationAdapter)adapter).PreflightAsync(
+                "message.send.test",
+                Json("""{"channel":"whatsapp","requestedRecipient":"Taller Inventado","text":"hola"}"""),
+                CancellationToken.None);
+
+            Assert.That(receipt, Is.Null);
+            Assert.That(automation.Steps, Is.Empty);
         }
         finally
         {

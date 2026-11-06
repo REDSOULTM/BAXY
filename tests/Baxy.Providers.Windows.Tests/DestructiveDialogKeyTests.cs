@@ -108,7 +108,8 @@ public sealed class DestructiveDialogKeyTests
         });
     }
 
-    // Enter in a text field of an ordinary window (no dialog): goes, and nothing of the window is read for it.
+    // Enter in a text field of an ordinary window (no dialog) whose fields hold no text: goes, and no look of the window
+    // is taken for it (only its focus and, for an undeclared Enter, whether a field holds text).
     [TestCase("""{"key":"enter"}""")]
     [TestCase("""{"key":"enter","target":"text_field"}""")]
     [TestCase("""{"key":"space","onto":"Aceptar"}""")]
@@ -121,8 +122,27 @@ public sealed class DestructiveDialogKeyTests
         {
             Assert.That(pressed.Response.ErrorCode, Is.Not.EqualTo("confirmation_required"));
             Assert.That(pressed.Keys, Is.EqualTo(1));
-            Assert.That(pressed.Commands.Any(command => !command.Contains("\"cmd\":\"focuskind\"", StringComparison.Ordinal)),
+            Assert.That(pressed.Commands.Any(command => !command.Contains("\"cmd\":\"focuskind\"", StringComparison.Ordinal)
+                    && !command.Contains("\"cmd\":\"heldtext\"", StringComparison.Ordinal)),
                 Is.False, "no look of the window");
+        });
+    }
+
+    // Auditoría de falsedades 2026-11-04 (P6): the same undeclared Enter where the worker reads a field of the window
+    // holding text, or cannot read the fields, asks, through the real visible controls' adapter.
+    [TestCase("""{"ok":true,"held":true}""")]
+    [TestCase("""{"ok":false,"error":"held_text_unreadable"}""")]
+    [TestCase("""{"ok":true}""")]
+    public void AnUndeclaredEnterWhereAFieldHoldsTextAsks(string held)
+    {
+        Pressed pressed = PressInDialog(
+            ReplaceTitle, ReplaceDialog, """{"key":"enter"}""", Focus("Edit", "Nombre de archivo", editable: true),
+            owned: false, held: held);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(pressed.Response.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(pressed.Keys, Is.Zero);
         });
     }
 
@@ -159,7 +179,8 @@ public sealed class DestructiveDialogKeyTests
         string arguments,
         string focus,
         bool confirm = false,
-        bool owned = true)
+        bool owned = true,
+        string held = """{"ok":true,"held":false}""")
     {
         nint owner = CreateWindowEx(0x08000080, "STATIC", "BAXY key dialog fixture owner", 0x90000000u, -31000, -31000, 400, 300, 0, 0, 0, 0);
         nint dialog = CreateWindowEx(0x08000080, "STATIC", title, 0x90000000u, -31000, -31000, 300, 120, owned ? owner : 0, 0, 0, 0);
@@ -172,7 +193,8 @@ public sealed class DestructiveDialogKeyTests
             var worker = new ByCommandWorker(
                 focus,
                 "{\"ok\":true,\"error\":\"\",\"hwnd\":" + (long)dialog + ",\"window\":" + JsonSerializer.Serialize(title)
-                + ",\"controls\":[" + controls + "],\"controlCount\":" + shown.Length + ",\"focused\":null}");
+                + ",\"controls\":[" + controls + "],\"controlCount\":" + shown.Length + ",\"focused\":null}",
+                held);
             var visible = new WindowsVisibleControlAdapter(worker, null, null);
             var adapter = new WindowsDesktopInteractionAdapter(
                 new NoProcessRunner(), "folder.ps1", "file.ps1", "select.ps1", "keys.ps1", new FakeDesktopKeyboard(), visible)
@@ -228,8 +250,10 @@ public sealed class DestructiveDialogKeyTests
         }
     }
 
-    // The worker: «focuskind» answers the focus; any other command (a look) the view of the dialog.
-    private sealed class ByCommandWorker(string focus, string view) : IUiaWorker
+    // The worker: «focuskind» answers the focus; «heldtext» whether a field of the window holds text (auditoría de
+    // falsedades 2026-11-04, P6: an undeclared Enter asks while one does); any other command (a look) the view of the
+    // dialog.
+    private sealed class ByCommandWorker(string focus, string view, string held) : IUiaWorker
     {
         internal List<string> Commands { get; } = [];
 
@@ -239,7 +263,9 @@ public sealed class DestructiveDialogKeyTests
             lock (Commands)
                 Commands.Add(commandJson);
             return ValueTask.FromResult<JsonDocument?>(JsonDocument.Parse(
-                commandJson.Contains("\"cmd\":\"focuskind\"", StringComparison.Ordinal) ? focus : view));
+                commandJson.Contains("\"cmd\":\"focuskind\"", StringComparison.Ordinal) ? focus
+                : commandJson.Contains("\"cmd\":\"heldtext\"", StringComparison.Ordinal) ? held
+                : view));
         }
     }
 

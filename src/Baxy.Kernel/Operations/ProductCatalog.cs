@@ -51,8 +51,10 @@ public static class ProductCatalog
                     Boolean("newDocument"),
                     // Estabilización, encargo C: a place of the application with an address of its own, by its name in
                     // the data (src/baxy_mind/data/app_places.v1.json, ApplicationPlaces), and the value of its one slot
-                    // (what is searched, a game's number). The address is composed by ApplicationPlaces alone.
-                    String("place", NullableString, values: ApplicationPlaces.PlaceNames),
+                    // (what is searched, a game's number). The address is composed by ApplicationPlaces alone. Ajuste c4
+                    // (causa 4): a refusal proposes only the places of the application named.
+                    String("place", NullableString, values: ApplicationPlaces.PlaceNames, valuesWith: ("appId",
+                        static appId => [.. ApplicationPlaces.PlacesOf(appId).Select(static own => own.Place)])),
                     String("placeValue", NullableString, maximumUtf8Bytes: 128, nonWhitespace: true),
                 ],
                 ["appId"]),
@@ -216,18 +218,28 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "backup.verify.sandbox.hash.v1",
             "Reabre una copia privada y compara su SHA-256 con el registrado al crearla; una copia cambiada o sin ese registro no está verificada."),
+        // Encargo 25 (G12, uso real 02-11: «ciérrate» acabó en «No pude cerrar BAXY»): BAXY se cierra como «Salir» de la
+        // bandeja (BaxyExitHandler). work_loss: en Normal pide el sí, porque cerrada ya no oye para volver a abrirse.
+        Descriptor(
+            "baxy.exit",
+            EmptySchema(),
+            OperationRisks.WorkLoss,
+            "baxy.exit.app.event.delivered.v1",
+            "Cierra BAXY como «Salir» del icono de la bandeja: guarda la conversación, quita el icono y para su voz y su modelo hasta que la persona lo vuelva a abrir; sólo se sabe que el pedido llegó a la App, no que ya se cerró."),
         Descriptor(
             "baxy.settings.set",
             Schema(
                 [
                     // pc-f6-ajustes: los ajustes propios de BAXY que la vista cambia (FieldSettingsStore). proposals
                     // toma 30m, 1h o tomorrow (silencio hasta las 08:00) y on lo quita; los demás, on u off.
+                    // Encargo 25 (G2): el modo de confirmación también es suyo; desde el chat sólo se apaga, y
+                    // encenderlo se niega diciendo el modo puesto y dónde lo enciende la ventana (OwnSettingsHandler).
                     String(
                         "setting",
                         values:
                         [
-                            "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos", "proposals", "voice",
-                            "web_search",
+                            "confirmation_bypass", "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos",
+                            "proposals", "voice", "web_search",
                         ]),
                     String("value", values: ["1h", "30m", "off", "on", "tomorrow"]),
                 ],
@@ -247,6 +259,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "bluetooth.device.pair.hardware.postread.v1",
             "Empareja un dispositivo resuelto mediante el diálogo y permisos oficiales del sistema.",
+            requiresObservedEffect: true,
             effects: [SystemChange()]),
         Descriptor(
             "bluetooth.radio.set",
@@ -265,10 +278,14 @@ public static class ProductCatalog
             "browser.control",
             Schema([String("action", values:
                 ["back", "close", "close_all", "exit_fullscreen", "fullscreen_video", "new_tab", "reload", "scroll_down",
-                    "scroll_up"])], ["action"]),
+                    "scroll_up", "switch_tab"]),
+                // Uso real 03-11 (U53): «cierra también la de runpod» cerró la pestaña activa (Outlook), porque la
+                // llamada no tenía cómo nombrar otra. Uso real 03-11 (U64): un pedido de cambiar a una pestaña nombrada llamó
+                // close, porque no había cómo ir a una pestaña: switch_tab con tab.
+                String("tab", maximumUtf8Bytes: 256, nonWhitespace: true)], ["action"]),
             OperationRisks.LowReversible,
             "browser.control.cdp.postread.v1",
-            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas salvo la última, que se deja porque cerrarla cerraría la ventana) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP; cerrar todas para a las 50 pestañas o a los 40 segundos y dice cuántas cerró (closedTabs).",
+            "Actúa sobre la pestaña activa de la ventana de delante del navegador predeterminado de la persona (atrás, recargar, desplazar, pestaña nueva, pantalla completa del vídeo, cerrar una o todas salvo la última, que se deja porque cerrarla cerraría la ventana) por mensajes de ventana o UI Automation, y verifica el efecto releyendo el marco del navegador; con tab, cierra la pestaña cuyo título lleva esas palabras (una sola; ninguna o varias no cierran nada y dan los títulos), sea o no la activa, y el recibo dice qué pestaña se fue (closedTab) y cuáles quedan (remainingTabs), leídas de la tira después; switch_tab con tab cambia a esa pestaña (la selecciona por UI Automation, sin cerrar nada) y el recibo dice la activa (activeTab) y las demás (otherTabs), leídas después; sólo si no hay navegador predeterminado, o con BAXY_BROWSER=product, actúa en el navegador propio del producto por CDP; cerrar todas para a las 50 pestañas o a los 40 segundos y dice cuántas cerró (closedTabs).",
             effects: [WindowInput()]),
         Descriptor(
             "browser.navigate",
@@ -316,7 +333,7 @@ public static class ProductCatalog
             Schema([String("expression", maximumLength: 64, nonWhitespace: true)], ["expression"]),
             OperationRisks.LowReversible,
             "calculator.expression.evaluate.windows.calculator.uia.display.v1",
-            "Pulsa una expresión aritmética simple (números y + - * /; ^ y paréntesis en el modo científico) en los botones de la Calculadora de Windows abierta, sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; empezada por un operador, sigue desde el número que muestra; sin efecto fuera de la Calculadora.",
+            "Pulsa una expresión aritmética simple (números y + - * /; ^ y paréntesis en el modo científico) en los botones de la Calculadora de Windows abierta (con ninguna abierta, la abre app.open antes, y el resultado lo dice), sin traerla al frente ni enviar teclas, y lee el resultado que muestra su pantalla mediante UI Automation; empezada por un operador, sigue desde el número que muestra; sin efecto fuera de la Calculadora.",
             effects: [WindowInput()]),
         Descriptor(
             "calendar.event.create",
@@ -349,13 +366,15 @@ public static class ProductCatalog
             CaptureSchema(),
             OperationRisks.PrivacySensitive,
             "capture.active.window.gdi.foreground.bounds.bmp.hash.v1",
-            "Captura solo los límites visibles de la ventana activa en un BMP privado y devuelve metadatos verificados; con folder guarda además una copia PNG verificada en esa carpeta conocida."),
+            "Captura solo los límites visibles de la ventana activa en un BMP privado y devuelve metadatos verificados; con folder guarda además una copia PNG verificada en esa carpeta conocida.",
+            requiresObservedEffect: true),
         Descriptor(
             "capture.screenshot",
             CaptureSchema(),
             OperationRisks.PrivacySensitive,
             "capture.screenshot.gdi.bmp.hash.v1",
-            "Captura el escritorio virtual en un BMP privado y devuelve solo identidad, dimensiones y hash; con folder guarda además una copia PNG verificada en esa carpeta conocida."),
+            "Captura el escritorio virtual en un BMP privado y devuelve solo identidad, dimensiones y hash; con folder guarda además una copia PNG verificada en esa carpeta conocida.",
+            requiresObservedEffect: true),
         Descriptor(
             "client.channel.locate",
             Schema(
@@ -370,6 +389,39 @@ public static class ProductCatalog
             // The locate is a post-read: it joins and opens nothing, so it verifies by its result
             // (the matches read from the switcher), not by an observed external mutation.
             requiresObservedEffect: false,
+            effects: [WindowInput()]),
+        // Uso real 2026-11-03 (G6): «abre el chat con X en Discord» had no operation (client.channel.locate opens nothing
+        // and a click on a visible row opened another person's chat of a similar name). The same lookup message.draft
+        // makes opens the conversation, verified by its title or header read afterwards, and nothing is typed in it.
+        Descriptor(
+            "client.channel.open",
+            Schema(
+                [
+                    String("client", values: ["discord", "whatsapp"]),
+                    String("name", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("server", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["client", "name"]),
+            OperationRisks.PrivacySensitive,
+            "client.channel.open.client.lookup.title.postread.v1",
+            "Abre en el cliente de escritorio (Discord o WhatsApp) la conversación o el canal con ese nombre, sin escribir nada: en Discord por su buscador rápido (Ctrl+K), nunca un canal de voz, y verifica el título de la ventana (con servidor, también el servidor); en WhatsApp por su búsqueda de chats, sólo un chat con ese nombre exacto, y verifica la cabecera; si no se verifica, dice el título o la cabecera que quedó a la vista.",
+            // A conversation already open is its state already reached (StateAlreadyReached), not an effect.
+            requiresObservedEffect: true,
+            effects: [WindowInput()]),
+        // Uso real 2026-11-03 (G5): what the person hears from the client's calls, by its own deafen button (Discord's
+        // «Ensordecer»; Discord's blog on keybinds: deafening silences every sound of the call and also mutes the
+        // microphone), read back with the microphone's state; Windows' speakers are audio.mute.
+        Descriptor(
+            "client.deafen.set",
+            Schema(
+                [
+                    String("client", values: ["discord"]),
+                    Boolean("deafened"),
+                ],
+                ["client", "deafened"]),
+            OperationRisks.LowReversible,
+            "client.deafen.set.discord.uia.toggle.postread.v1",
+            "Ensordece o quita el ensordecido de la persona dentro del cliente de escritorio (Discord: su botón «Ensordecer», que deja de oír todo el audio de las llamadas y también silencia su micrófono) por UI Automation y relee los dos estados; no toca el sonido ni el micrófono de Windows ni une a ninguna llamada.",
             effects: [WindowInput()]),
         // BAXY Renew cu (C14): the person's own microphone inside the chat client, by its own mute button (Discord's
         // «Silenciar»), read back by UI Automation; Windows' microphone is audio.microphone.mute.
@@ -391,6 +443,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "clipboard.copy.win32.foreground.sendinput.sequence.postread.v1",
             "Copia la selección del control enfocado y verifica foco estable, aceptación completa de Ctrl+C y un cambio real del portapapeles.",
+            requiresObservedEffect: true,
             effects: [WindowInput()]),
         Descriptor(
             "clipboard.paste",
@@ -398,6 +451,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "clipboard.paste.win32.clipboard.foreground.sendinput.accepted.v1",
             "Pega el contenido actual del portapapeles en el control enfocado y verifica que el portapapeles no esté vacío, que el foco no cambie y que Windows acepte todos los eventos Ctrl+V.",
+            requiresObservedEffect: true,
             effects: [WindowInput()]),
         // BAXY Renew cu (C18): the clipboard pasted into a new document of the application named, opened first.
         Descriptor(
@@ -406,19 +460,22 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "clipboard.paste.into.app.open.document.paste.v1",
             "Abre un documento nuevo de la aplicación nombrada (app.open al frente, con documento nuevo) y pega en él el contenido del portapapeles (clipboard.paste); si la aplicación no se abre no pega nada.",
+            requiresObservedEffect: true,
             effects: [WindowInput()]),
         Descriptor(
             "clipboard.read.text",
             Schema([Integer("maxCharacters", 1, 6_000)], []),
             OperationRisks.PrivacySensitive,
             "clipboard.read.text.sequence.secondread.v1",
-            "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos; 6.000 caracteres como mucho; truncated dice si se cortó."),
+            "Lee texto privado acotado del portapapeles y exige dos snapshots idénticos; 6.000 caracteres como mucho; truncated dice si se cortó.",
+            requiresObservedEffect: false),
         Descriptor(
             "clipboard.write.text",
             Schema([String("text", maximumLength: 65_536)], ["text"]),
             OperationRisks.PrivacySensitive,
             "clipboard.write.text.sequence.postread.v1",
-            "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura."),
+            "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura.",
+            requiresObservedEffect: true),
         // pc-f6-sesiones (APLAZADOS f4-accesibilidad, 2026-10-25): las conversaciones con BAXY, que sólo se manejaban en
         // la vista (SessionsPanel, el «+» del chat). Las ejecuta la App, dueña de las sesiones (FieldProductChannel), no
         // el motor; abrir una o empezar otra ocurre al terminar la respuesta del turno, que es de la conversación actual.
@@ -513,7 +570,8 @@ public static class ProductCatalog
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "email.latest.read.outlook.mapi.snapshot.v1",
-            "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 6.000 caracteres se corta (bodyTruncated)."),
+            "Lee el mensaje mas reciente del buzon Outlook autenticado y verifica su identidad MAPI; sólo mira los 100 elementos más nuevos de la Bandeja de entrada predeterminada; un cuerpo de más de 6.000 caracteres se corta (bodyTruncated).",
+            requiresObservedEffect: false),
         Descriptor(
             "email.latest.reply",
             // Renew al máximo (w8): expectedMessageId (the messageId email.latest.read gave) binds the reply, and the
@@ -820,10 +878,19 @@ public static class ProductCatalog
             "Resuelve el título de un juego de Steam (sus manifiestos locales o la búsqueda pública de la tienda; o de Epic Games) a su identidad, abre la instalación por su dirección, confirma el diálogo propio de Steam y verifica la transición del manifiesto local; con Steam sólo resuelve un título idéntico a un único juego (sin contar mayúsculas ni tildes); con Epic toma la primera entrada con ese título."),
         Descriptor(
             "game.install.status",
-            Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
+            // Encargo 52 (sesión real 03-11): preguntado por Crysis Remastered, el modelo leyó el AppID de R.E.P.O. y su
+            // 0 % se contó como de Crysis. Como en game.launch, el título que pidió la persona va con el AppID; el
+            // proveedor lee el manifiesto que lleva ese título y dice si el AppID era de otro juego (appIdGiven), o no lee
+            // nada de otro juego (game_title_required, game_title_mismatch).
+            Schema(
+                [
+                    String("appId", maximumLength: 16, nonWhitespace: true),
+                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["appId", "title"]),
             OperationRisks.ReadOnly,
             "game.install.status.steam.snapshot.v1",
-            "Mide el estado y progreso local de una instalación Steam por AppID exacto."),
+            "Mide el estado y progreso local de una instalación Steam por AppID exacto cuyo nombre es el juego que pidió la persona; de un juego instalado, su actualización pendiente va aparte."),
         Descriptor(
             "game.installed.named",
             Schema(
@@ -1033,7 +1100,8 @@ public static class ProductCatalog
                 ["text"]),
             OperationRisks.PrivacySensitive,
             "input.text.type.win32.sendinput.accepted.v1",
-            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput; como mucho 4.096 caracteres, sin saltos de línea ni tabuladores; si no, se rechaza y no se escribe nada. Con replacing cambia sólo esa parte del texto del campo, hallada una sola vez, por mensajes a su control de edición, y verifica el texto entero releído.",
+            "Escribe texto Unicode literal, sin saltos de línea ni tabuladores, en el control enfocado (o en el campo de la vista que nombra index) y verifica que Windows aceptó cada evento SendInput; como mucho 4.096 caracteres, sin saltos de línea ni tabuladores salvo una tabla entera para la celda activa de una rejilla, que va celda a celda y se relee; si no, se rechaza y no se escribe nada. Con replacing cambia sólo esa parte del texto del campo, hallada una sola vez, por mensajes a su control de edición, y verifica el texto entero releído.",
+            requiresObservedEffect: true,
             effects: [WindowInput()]),
         Descriptor(
             "input.visible.click",
@@ -1216,7 +1284,8 @@ public static class ProductCatalog
                 ["enabled", "version"]),
             OperationRisks.PrivacySensitive,
             "memory.enable.protected.status.v1",
-            "Habilita la memoria privada local."),
+            "Habilita la memoria privada local.",
+            requiresObservedEffect: true),
         Descriptor(
             "memory.export",
             Schema(
@@ -1228,7 +1297,8 @@ public static class ProductCatalog
                 ["destination", "includeSecrets", "version"]),
             OperationRisks.PrivacySensitive,
             "memory.export.protected.receipt.v1",
-            "Prepara una exportación privada local sin secretos."),
+            "Prepara una exportación privada local sin secretos.",
+            requiresObservedEffect: true),
         Descriptor(
             "memory.forget",
             Schema(
@@ -1273,7 +1343,8 @@ public static class ProductCatalog
             MemorySaveSchema(["secret", "sensitive"]),
             OperationRisks.PrivacySensitive,
             "memory.sensitive.save.protected.postread.v1",
-            "Guarda una memoria sensible local; hasta 512 recuerdos; con la memoria llena, falla."),
+            "Guarda una memoria sensible local; hasta 512 recuerdos; con la memoria llena, falla.",
+            requiresObservedEffect: true),
         Descriptor(
             "memory.session.clear",
             Schema(
@@ -1312,6 +1383,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "message.draft.client.composer.visible.postread.v1",
             "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), deja el mensaje escrito en el cuadro de redacción, lo corrobora en pantalla y se detiene sin enviarlo: la persona lo envía; en WhatsApp, hasta 8 candidatos (candidateCount).",
+            requiresObservedEffect: true,
             effects: [WindowInput()]),
         // Uso real 2026-10-21 (decisión del dueño): «mándale un mensaje» se envía. El mismo envío verificado de
         // message.send.test, al destinatario nombrado; pide el sí en modo normal (RiskPolicy), no en Bypass.
@@ -1543,6 +1615,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "peripheral.print.hardware.job.v1",
             "Envía un documento identificado a una impresora resuelta y verifica el job.",
+            requiresObservedEffect: true,
             // The printer may be on the network.
             effects: [Network()]),
         Descriptor(
@@ -1550,7 +1623,8 @@ public static class ProductCatalog
             Schema([String("deviceId", maximumLength: 128, nonWhitespace: true)], ["deviceId"]),
             OperationRisks.PrivacySensitive,
             "peripheral.scan.hardware.capture.v1",
-            "Captura desde un escáner resuelto y devuelve una identidad privada verificable."),
+            "Captura desde un escáner resuelto y devuelve una identidad privada verificable.",
+            requiresObservedEffect: true),
         Descriptor(
             "schedule.alarms",
             Schema(
@@ -1715,6 +1789,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
             "Cambia un ajuste permitido (brillo; no molestar, por la página Notificaciones de Configuración, que queda abierta; o modo avión sobre todas las radios, por la API de radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura.",
+            requiresObservedEffect: true,
             // do_not_disturb opens ms-settings:notifications (it takes the front) and presses its switch by UI
             // Automation's Toggle (DoNotDisturbScript); airplane_mode goes through the radios API and reaches no window.
             effects:
@@ -1724,10 +1799,10 @@ public static class ProductCatalog
             ]),
         Descriptor(
             "system.settings.status",
-            Schema([String("setting", values: ["airplane_mode", "brightness"])], ["setting"]),
+            Schema([String("setting", values: ["airplane_mode", "brightness", "color_mode"])], ["setting"]),
             OperationRisks.ReadOnly,
             "system.settings.status.windows.monitor.brightness.secondread.v1",
-            "Lee el brillo actual de cada monitor compatible mediante WMI y exige dos observaciones coherentes sin modificarlo."),
+            "Lee el brillo actual de cada monitor compatible mediante WMI y exige dos observaciones coherentes, o el modo claro u oscuro de Windows en su clave del registro, sin modificarlo."),
         Descriptor(
             "system.status",
             Schema(
@@ -1858,6 +1933,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "vision.describe.provider.capture.binding.v1",
             "Describe una captura identificada mediante un modelo de visión local configurado en este PC, sin aceptar rutas arbitrarias; sin uno configurado falla con vision_provider_not_configured; sólo se guardan las 16 últimas capturas.",
+            requiresObservedEffect: false,
             // Al máximo, flujos: CaptureVisionAdapter: the local endpoint has 80 s inside these 90 (P2.17).
             budget: TimeSpan.FromSeconds(90)),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
@@ -1899,6 +1975,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "web.download.http.file.size.postread.v1",
             "Descarga un archivo o una imagen de una dirección web pública (nunca este PC ni la red local), de 50 MiB como mucho, a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia; 3 redirecciones como mucho; se abandona si el servidor tarda más de 40 segundos en responder (cada redirección incluida); la descarga entera debe acabar en unos 100 segundos (lo que BAXY espera a una operación) o BAXY dice que falló (una que acabe justo después puede escribirse igual).",
+            requiresObservedEffect: true,
             effects: [Network()]),
         // BAXY Renew, herramientas de agente (2026-10-15): leer una página como texto, como web_fetch de OpenClaw,
         // WebFetch de Claude Code o VisitWebpage de smolagents. Sólo una dirección pública por GET, sin cookies ni
@@ -1956,7 +2033,8 @@ public static class ProductCatalog
             Schema([String("profileId", maximumLength: 128, nonWhitespace: true)], ["profileId"]),
             OperationRisks.PrivacySensitive,
             "wifi.connect.wlan.profile.postread.v1",
-            "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales."),
+            "Conecta un perfil WLAN ya guardado y verifica el estado sin exponer SSID ni credenciales.",
+            requiresObservedEffect: true),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0170/H0376 «conectate al wifi de
         // casa», D24): «casa» no es un SSID. Con `place`, el proveedor conecta la red
         // que la persona asoció antes a ese lugar; si nombra el perfil y el lugar a la
@@ -1971,13 +2049,15 @@ public static class ProductCatalog
                 ["profileName"]),
             OperationRisks.PrivacySensitive,
             "wifi.connect.named.wlan.profile.postread.v1",
-            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado (o por el lugar asociado antes: casa, trabajo, oficina), lo conecta, verifica el estado sin exponer credenciales y recuerda la asociación lugar→red cuando se dan ambos."),
+            "Resuelve de forma única un perfil WLAN guardado por el nombre indicado (o por el lugar asociado antes: casa, trabajo, oficina), lo conecta, verifica el estado sin exponer credenciales y recuerda la asociación lugar→red cuando se dan ambos.",
+            requiresObservedEffect: true),
         Descriptor(
             "wifi.disconnect",
             EmptySchema(),
             OperationRisks.PrivacySensitive,
             "wifi.disconnect.wlan.postread.v1",
             "Desconecta WLAN mediante API oficial y verifica ausencia de conexión.",
+            requiresObservedEffect: true,
             effects: [SystemChange()]),
         Descriptor(
             "wifi.ensure.connected",
@@ -1997,6 +2077,7 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "wifi.radio.set.windows.radio.postread.v1",
             "Enciende o apaga la radio Wi-Fi mediante la API oficial de Windows y verifica su estado final.",
+            requiresObservedEffect: true,
             effects: [SystemChange()]),
         Descriptor(
             "wifi.radio.status",
@@ -2253,9 +2334,10 @@ public static class ProductCatalog
 
     private static OperationArgumentsSchema EmptySchema() => Schema([], []);
 
-    // The known folders a capture can also be saved to, as a PNG the person can find.
+    // The known folders a capture can also be saved to, as a PNG the person can find. Banco de uso 03-11 (U23): or a folder
+    // of theirs by its path, as a file tool's path («facturas», «Documentos/fotos»).
     private static OperationArgumentsSchema CaptureSchema() =>
-        Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], []);
+        Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"]), PersonPath()], []);
 
     private static OperationArgumentsSchema Schema(
         IReadOnlyList<OperationArgumentProperty> properties,
@@ -2356,14 +2438,16 @@ public static class ProductCatalog
         int? maximumLength = null,
         int? maximumUtf8Bytes = null,
         bool nonWhitespace = false,
-        IReadOnlyList<string>? values = null) =>
+        IReadOnlyList<string>? values = null,
+        (string Argument, Func<string, IReadOnlyList<string>> Values)? valuesWith = null) =>
         new(
             name,
             types,
             maximumLength: maximumLength,
             maximumUtf8Bytes: maximumUtf8Bytes,
             allowedValues: values,
-            nonWhitespace: nonWhitespace);
+            nonWhitespace: nonWhitespace,
+            valuesWith: valuesWith);
 
     private static string[] KindValues() => ["context", "fact", "preference", "rule"];
 

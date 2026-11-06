@@ -15,16 +15,27 @@ internal sealed record UserMediaSession(
 
 /// <summary>
 /// What the page step did inside the person's browser: the last step reached, the name it acted on and, when no item
-/// was named as the title, the names the page showed (<paramref name="Seen"/>).
+/// was named as the title, the cards the page showed (<paramref name="Seen"/>).
 /// </summary>
-internal sealed record UserBrowserPageStep(bool PlayInvoked, string Step, string Chosen, IReadOnlyList<string>? Seen = null);
+internal sealed record UserBrowserPageStep(
+    bool PlayInvoked, string Step, string Chosen, IReadOnlyList<StreamingCard>? Seen = null);
+
+/// <summary>
+/// A card a streaming search showed: its title as the service writes it and, when the service marks it beside that
+/// title, its <paramref name="Kind"/> («episode»: one part of a series, never the movie or series asked for) with the
+/// card's whole name as the page reads it (<paramref name="Label"/>).
+/// </summary>
+internal sealed record StreamingCard(string Title, string? Kind = null, string? Label = null);
 
 /// <summary>
 /// A tab of the person's browser. <paramref name="X"/> and <paramref name="Y"/> are its centre as a fraction of the
 /// window (independent of the display scale of whoever reads it); <paramref name="Shown"/> is false when it is off
-/// screen (minimized window, scrolled tab strip) and has no place to be pointed at.
+/// screen (minimized window, scrolled tab strip) and has no place to be pointed at. <paramref name="Id"/> is the tab
+/// element's UI Automation runtime id (empty when not read): the same tab between two reads, whatever its title does
+/// (Edge names its active tab with its memory use, which changes; a page retitles itself).
 /// </summary>
-internal sealed record UserBrowserTab(string Title, bool Selected, bool Shown = false, double X = 0, double Y = 0);
+internal sealed record UserBrowserTab(
+    string Title, bool Selected, bool Shown = false, double X = 0, double Y = 0, string Id = "");
 
 /// <summary>
 /// One read of the browser frame: its tabs, whether the back button is enabled (null when no back button was found),
@@ -46,12 +57,28 @@ internal sealed record UserBrowserFrame(
     bool Complete = true,
     bool PageMatched = true);
 
-/// <summary>What a UI Automation step inside the frame or the page did (see UserBrowserScripts.Act).</summary>
-internal sealed record UserBrowserAct(string Step, double Before, double After);
+/// <summary>
+/// What a UI Automation step inside the frame or the page did (see UserBrowserScripts.Act); <paramref name="Dialogs"/>,
+/// the dialogs on show in the page a play step read (null when it read none).
+/// </summary>
+internal sealed record UserBrowserAct(
+    string Step, double Before, double After, IReadOnlyList<UserBrowserDialog>? Dialogs = null);
+
+/// <summary>
+/// Encargo 58: a dialog of the page (ARIA dialog or alertdialog, which Chromium gives UI Automation as a Window inside
+/// the document), by its name, with the links it holds by name and address.
+/// </summary>
+internal sealed record UserBrowserDialog(string Name, IReadOnlyList<UserBrowserLink> Links);
+
+internal sealed record UserBrowserLink(string Name, string Address);
 
 // PageMatched: the document read is the one the window title names; false, it is the first one on screen (a side panel
-// or the Speed Dial may be it).
-internal sealed record UserBrowserPageText(string Title, string Text, bool Truncated, bool PageMatched = true);
+// or the Speed Dial may be it). FromScreen: a long page was read from what is on screen, not from its start. CanScrollDown:
+// the page itself scrolls and is not at its end.
+internal sealed record UserBrowserPageText(
+    string Title, string Text, bool Truncated, bool PageMatched = true,
+    IReadOnlyList<string>? Links = null, bool LinksCut = false, IReadOnlyList<UserBrowserPageRow>? Rows = null,
+    IReadOnlyList<PageNode>? Nodes = null, bool FromScreen = false, bool CanScrollDown = false);
 
 /// <summary>
 /// Everything the user-browser surface touches on the PC. The production
@@ -117,8 +144,25 @@ internal interface IUserBrowserPlatform
     /// <summary>Runs a UI Automation step in the window: new_tab, scroll_down, scroll_up or fullscreen_video.</summary>
     ValueTask<UserBrowserAct> ActAsync(nint window, string action, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Selects the tab of the window whose UI Automation runtime id is <paramref name="tabId"/> (SelectionItemPattern
+    /// Select on its TabItem): «selected», «tab_not_found» or «select_unavailable» (nothing selected), or a UI
+    /// Automation failure. Whether it became the active tab is read again by the caller.
+    /// </summary>
+    ValueTask<UserBrowserAct> SelectTabAsync(nint window, string tabId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Presses the play control of the page at <paramref name="page"/> in the window (UI Automation Invoke, which the
+    /// browser takes as the person's click): «invoked», «page_not_found» (no tab of the window is at that address) or
+    /// «play_control_not_found».
+    /// </summary>
+    ValueTask<UserBrowserAct> PressVideoPlayAsync(nint window, Uri page, CancellationToken cancellationToken);
+
     /// <summary>Whether the window covers its whole monitor (a video in full screen), taskbar included.</summary>
     bool CoversMonitor(nint window);
+
+    /// <summary>The window in front now; 0 when it is not known.</summary>
+    nint FrontWindow() => 0;
 
     /// <summary>The title and visible text of the page the window shows, or null when it cannot be read.</summary>
     ValueTask<UserBrowserPageText?> ReadPageTextAsync(
@@ -154,7 +198,16 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
     {
         RequireWebAddress(address);
         if (ResolveDefault() is { } browser)
+        {
+            // A Chrome that needs the flag is started as OpenWith starts it: the shell's path could not carry it.
+            if (ChromeUiaFlag.For(browser.Executable) is not null)
+            {
+                OpenWith(browser, address);
+                return;
+            }
+
             AllowForeground(browser);
+        }
 
         // The shell resolves the link exactly as a click would: the person's
         // browser, their profile and session, a new tab in the window they use.
@@ -175,7 +228,8 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
         // CDP browser are (InvokerLaunch, review of M5): a browser started here lives for hours.
         if (Applications.InvokerLaunch.StartOutsideBaxy(new Applications.InvokerLaunch.LaunchPlan(
                 browser.Executable,
-                "\"" + address.AbsoluteUri + "\"",
+                (ChromeUiaFlag.For(browser.Executable) is { } flag ? flag + " " : string.Empty)
+                    + "\"" + address.AbsoluteUri + "\"",
                 Path.GetDirectoryName(browser.Executable) ?? Environment.SystemDirectory)) <= 0)
             throw new InvalidOperationException("The named browser could not be started.");
     }
@@ -201,6 +255,8 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
     }
 
     // Under the gate of the opening guards, and said before it happens, as a lease takes the front (ForegroundLease).
+    public nint FrontWindow() => VisibleControlSurface.FrontWindow();
+
     public async ValueTask<bool> BringToFrontAsync(nint window, CancellationToken cancellationToken)
     {
         // PLAN_GENERAL B2 (uso real 2026-10-20: the text typed after a page was opened went to Spotify): the page just
@@ -302,24 +358,34 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
             Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(title)),
             "30",
             typeSearch ? "1" : "0",
+            UserBrowserScripts.EpisodeMark,
         ];
         JsonElement? result = await RunScriptAsync(
             UserBrowserScripts.PagePlay, arguments, TimeSpan.FromSeconds(45), cancellationToken)
             .ConfigureAwait(false);
-        if (result is not { } value)
-            return new UserBrowserPageStep(false, "script_failed", string.Empty);
-        bool played = value.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True;
-        string step = value.TryGetProperty("step", out JsonElement stepValue)
-            && stepValue.ValueKind == JsonValueKind.String ? stepValue.GetString() ?? string.Empty : string.Empty;
-        string chosen = value.TryGetProperty("chosen", out JsonElement chosenValue)
-            && chosenValue.ValueKind == JsonValueKind.String ? chosenValue.GetString() ?? string.Empty : string.Empty;
-        string[] seen = value.TryGetProperty("seen", out JsonElement seenValue) && seenValue.ValueKind == JsonValueKind.Array
-            ? [.. seenValue.EnumerateArray()
-                .Where(name => name.ValueKind == JsonValueKind.String)
-                .Select(name => name.GetString()!)]
-            : [];
-        return new UserBrowserPageStep(played, step, chosen, seen);
+        return result is { } value ? ParsePageStep(value) : new UserBrowserPageStep(false, "script_failed", string.Empty);
     }
+
+    internal static UserBrowserPageStep ParsePageStep(JsonElement value)
+    {
+        bool played = value.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True;
+        // ConvertTo-Json writes a one-element array as the element itself.
+        IEnumerable<JsonElement> cards = !value.TryGetProperty("seen", out JsonElement seenValue) ? []
+            : seenValue.ValueKind == JsonValueKind.Array ? seenValue.EnumerateArray()
+            : [seenValue];
+        StreamingCard[] seen = [.. cards
+            .Where(card => card.ValueKind == JsonValueKind.Object && TextOf(card, "title").Length > 0)
+            .Select(card => new StreamingCard(
+                TextOf(card, "title"), NullIfEmpty(TextOf(card, "kind")), NullIfEmpty(TextOf(card, "label"))))];
+        return new UserBrowserPageStep(played, TextOf(value, "step"), TextOf(value, "chosen"), seen);
+    }
+
+    private static string TextOf(JsonElement value, string name) =>
+        value.TryGetProperty(name, out JsonElement text) && text.ValueKind == JsonValueKind.String
+            ? text.GetString() ?? string.Empty
+            : string.Empty;
+
+    private static string? NullIfEmpty(string text) => text.Length == 0 ? null : text;
 
     public async ValueTask<UserBrowserFrame?> ReadFrameAsync(nint window, CancellationToken cancellationToken)
     {
@@ -351,7 +417,8 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
                 tab.TryGetProperty("selected", out JsonElement flag) && flag.ValueKind == JsonValueKind.True,
                 tab.TryGetProperty("shown", out JsonElement shown) && shown.ValueKind == JsonValueKind.True,
                 Number(tab, "x"),
-                Number(tab, "y")));
+                Number(tab, "y"),
+                Text(tab, "id")));
         }
         if (read.Count == 0)
             return null;
@@ -410,6 +477,50 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
             : new UserBrowserAct("script_failed", -1, -1);
     }
 
+    public async ValueTask<UserBrowserAct> SelectTabAsync(nint window, string tabId, CancellationToken cancellationToken)
+    {
+        JsonElement? result = await RunScriptAsync(
+            UserBrowserScripts.Act,
+            [window.ToString(System.Globalization.CultureInfo.InvariantCulture), "select_tab", tabId],
+            TimeSpan.FromSeconds(20),
+            cancellationToken).ConfigureAwait(false);
+        return result is { } value
+            ? new UserBrowserAct(Text(value, "step"), -1, -1)
+            : new UserBrowserAct("script_failed", -1, -1);
+    }
+
+    public async ValueTask<UserBrowserAct> PressVideoPlayAsync(nint window, Uri page, CancellationToken cancellationToken)
+    {
+        JsonElement? result = await RunScriptAsync(
+            UserBrowserScripts.Act,
+            [
+                window.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                "play_video",
+                Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(page.AbsoluteUri)),
+            ],
+            TimeSpan.FromSeconds(20),
+            cancellationToken).ConfigureAwait(false);
+        return result is { } value
+            ? new UserBrowserAct(Text(value, "step"), -1, -1, ParseDialogs(value))
+            : new UserBrowserAct("script_failed", -1, -1);
+    }
+
+    // Encargo 58: the page's dialogs the play step read, with their links (null: the step read none).
+    internal static IReadOnlyList<UserBrowserDialog>? ParseDialogs(JsonElement value)
+    {
+        if (!value.TryGetProperty("dialogs", out JsonElement dialogs) || dialogs.ValueKind != JsonValueKind.Array)
+            return null;
+        return [.. dialogs.EnumerateArray()
+            .Where(static dialog => dialog.ValueKind == JsonValueKind.Object)
+            .Select(static dialog => new UserBrowserDialog(
+                Text(dialog, "name"),
+                dialog.TryGetProperty("links", out JsonElement links) && links.ValueKind == JsonValueKind.Array
+                    ? [.. links.EnumerateArray()
+                        .Where(static link => link.ValueKind == JsonValueKind.Object)
+                        .Select(static link => new UserBrowserLink(Text(link, "name"), Text(link, "address")))]
+                    : []))];
+    }
+
     public bool CoversMonitor(nint window)
     {
         if (window == nint.Zero || !GetWindowRect(window, out Rect frame))
@@ -449,7 +560,38 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
             && field.ValueKind == JsonValueKind.String ? field.GetString() ?? string.Empty : string.Empty;
         bool truncated = value.TryGetProperty("truncated", out JsonElement cut) && cut.ValueKind == JsonValueKind.True;
         bool matched = !value.TryGetProperty("matched", out JsonElement match) || match.ValueKind != JsonValueKind.False;
-        return new UserBrowserPageText(Read("title"), Read("text"), truncated, matched);
+        string[] links = value.TryGetProperty("links", out JsonElement named) && named.ValueKind == JsonValueKind.Array
+            ? [.. named.EnumerateArray().Where(static link => link.ValueKind == JsonValueKind.String)
+                .Select(static link => link.GetString() ?? string.Empty)]
+            : [];
+        bool linksCut = value.TryGetProperty("linksCut", out JsonElement cutLinks) && cutLinks.ValueKind == JsonValueKind.True;
+        UserBrowserPageRow[] rows = value.TryGetProperty("rows", out JsonElement listed) && listed.ValueKind == JsonValueKind.Array
+            ? [.. listed.EnumerateArray().Where(static row => row.ValueKind == JsonValueKind.Object).Select(static row =>
+                new UserBrowserPageRow(
+                    Number(row, "top", 0),
+                    Number(row, "bottom", 0),
+                    row.TryGetProperty("cells", out JsonElement cells) && cells.ValueKind == JsonValueKind.Array
+                        ? [.. cells.EnumerateArray().Where(static cell => cell.ValueKind == JsonValueKind.String)
+                            .Select(static cell => cell.GetString() ?? string.Empty)]
+                        : []))]
+            : [];
+        PageNode[] nodes = value.TryGetProperty("nodes", out JsonElement pieces) && pieces.ValueKind == JsonValueKind.Array
+            ? [.. pieces.EnumerateArray().Where(static piece => piece.ValueKind == JsonValueKind.Object).Select(static piece =>
+                new PageNode(
+                    piece.TryGetProperty("link", out JsonElement isLink) && isLink.ValueKind == JsonValueKind.True,
+                    Text(piece, "name"),
+                    Text(piece, "address"),
+                    (int)Number(piece, "depth"),
+                    (int)Number(piece, "under", -1),
+                    (int)Number(piece, "rise"),
+                    piece.TryGetProperty("gap", out JsonElement gap) && gap.ValueKind == JsonValueKind.True,
+                    Number(piece, "top"),
+                    Number(piece, "bottom")))]
+            : [];
+        bool fromScreen = value.TryGetProperty("fromScreen", out JsonElement shown) && shown.ValueKind == JsonValueKind.True;
+        return new UserBrowserPageText(
+            Read("title"), Read("text"), truncated, matched, links, linksCut, rows, nodes, fromScreen,
+            value.TryGetProperty("canScrollDown", out JsonElement down) && down.ValueKind == JsonValueKind.True);
     }
 
     public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>

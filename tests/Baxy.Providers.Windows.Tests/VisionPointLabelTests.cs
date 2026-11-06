@@ -39,6 +39,42 @@ public sealed class VisionPointLabelTests
         });
     }
 
+    // Encargo 16 (suite de Providers en el PC, 2 de 3839 en rojo; en el NB, con otra ventana al frente, 4 de 22): the
+    // window's own motion was read from the desktop's front window, not through the locator's capture; a front window that
+    // could not be captured failed the click as vision_provider_request_failed before anything was pressed. Every look at
+    // the window goes through the locator's capture: the one read, the one before the press and the motion probes.
+    [Test]
+    public async Task TheWindowsOwnMotionIsReadThroughTheLocatorsCapture()
+    {
+        var press = new FakePress(PointPressed.NothingThere);
+        using var http = new HttpClient(new Answering());
+        VisibleControlSurface.CapturedWindow shown = Frame();
+        int looks = 0;
+        var locator = new WindowsVisibleVisionLocator(
+            http,
+            _ =>
+            {
+                looks++;
+                return ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(shown);
+            },
+            (_, _) => ValueTask.FromResult<IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>?>(
+                [Line("Guardar", 80, 40, 40, 12)]));
+        string?[] saved = SetEnvironment();
+        try
+        {
+            ExternalCapabilityReceipt? receipt = await locator.TryClickAsync("input.visible.click", "Editar", press, CancellationToken.None);
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt, Is.Null);
+                Assert.That(looks, Is.EqualTo(2 + VisibleControlSurface.AnimationProbes.Length));
+            });
+        }
+        finally
+        {
+            RestoreEnvironment(saved);
+        }
+    }
+
     // The same answer twice on the same drawing: the second asks no one and presses nothing (VisionAnswerMemory).
     [Test]
     public async Task ThePointNotTheLabelIsRememberedForTheSameDrawing()
@@ -65,6 +101,90 @@ public sealed class VisionPointLabelTests
             RestoreEnvironment(saved);
         }
     }
+
+    // Ajuste c4 (banco ciego c3: C3-051, 053, 054, 067 y 072, «Opciones», «Guardar» o «Awake» on a window without them,
+    // two questions each, 18.8 to 40.6 s): the first point fell on another label and nothing read or last seen is like
+    // the label. A second question could give no point to press (no words there hold the label, and the worker presses
+    // only a control of that name, which the tree did not find): vision is asked once, the receipt and the memory as
+    // with two.
+    [Test]
+    public async Task APointOnAnotherLabelWithNothingLikeTheLabelShownAsksVisionOnce()
+    {
+        var press = new FakePress(PointPressed.NothingThere);
+        var handler = new Answering();
+        using var http = new HttpClient(handler);
+        var locator = Locator(http, [Line("Archivo", 14, 10, 30, 12)]);
+        string?[] saved = SetEnvironment();
+        try
+        {
+            ExternalCapabilityReceipt? first = await locator.TryClickAsync("input.visible.click", "Opciones", press, CancellationToken.None);
+            int asked = handler.Asked;
+            ExternalCapabilityReceipt? again = await locator.TryClickAsync("input.visible.click", "Opciones", press, CancellationToken.None);
+            Assert.Multiple(() =>
+            {
+                Assert.That(asked, Is.EqualTo(1), "one question, not two");
+                Assert.That(first?.ErrorCode, Is.EqualTo("vision_point_on_other_label"));
+                Assert.That(first?.EffectMayHaveOccurred, Is.False);
+                Assert.That(again?.ErrorCode, Is.EqualTo("vision_point_on_other_label"), "remembered for the same drawing");
+                Assert.That(handler.Asked, Is.EqualTo(1), "the retry asks nothing");
+                Assert.That(press.PointAsked + press.PointerPressed, Is.Zero);
+            });
+        }
+        finally
+        {
+            RestoreEnvironment(saved);
+        }
+    }
+
+    // Contracases: the label may be on this drawing, so the second question (told which label the point is not) is still
+    // asked: written in a line read, a short one too; a line read like it; a name the last look of the window showed like it.
+    [TestCase("Opciones", "Opciones", null, TestName = "AsksAgainWhenTheLabelIsWrittenElsewhere")]
+    [TestCase("Opciones avanzadas", "Opciones", null, TestName = "AsksAgainWhenALineReadIsLikeTheLabel")]
+    [TestCase("OK", "OK", null, TestName = "AsksAgainForAShortLabelWrittenElsewhere")]
+    [TestCase("Opciones", null, "Opciones de impresión", TestName = "AsksAgainWhenTheLastLookNamedSomethingLikeIt")]
+    [TestCase("OK", null, "OK", TestName = "AsksAgainWhenTheLastLookNamedAShortLabel")]
+    public async Task APointOnAnotherLabelAsksAgainWhenTheLabelMayBeShown(string label, string? written, string? seen)
+    {
+        var press = new FakePress(PointPressed.NothingThere, seen is null ? [] : [seen]);
+        var handler = new Answering();
+        using var http = new HttpClient(handler);
+        WindowsVisibleOcrLocator.LayoutLine[] layout = written is null
+            ? [Line("Archivo", 14, 10, 30, 12)]
+            : [Line("Archivo", 14, 10, 30, 12), Line(written, 80, 40, 40, 12)];
+        string?[] saved = SetEnvironment();
+        try
+        {
+            ExternalCapabilityReceipt? receipt = await Locator(http, layout)
+                .TryClickAsync("input.visible.click", label, press, CancellationToken.None);
+            Assert.Multiple(() =>
+            {
+                Assert.That(handler.Asked, Is.EqualTo(2));
+                Assert.That(receipt?.ErrorCode, Is.EqualTo("vision_point_on_other_label"));
+                Assert.That(receipt?.EffectMayHaveOccurred, Is.False);
+            });
+        }
+        finally
+        {
+            RestoreEnvironment(saved);
+        }
+    }
+
+    [TestCase("Opciones", new[] { "Archivo" }, new string[0], ExpectedResult = false)]
+    [TestCase("Opciones", new[] { "Archivo", "Más opciones" }, new string[0], ExpectedResult = true)]
+    [TestCase("opciones", new[] { "OPCIONES" }, new string[0], ExpectedResult = true)]
+    [TestCase("OK", new[] { "Archivo", "OK" }, new string[0], ExpectedResult = true)]
+    [TestCase("OK", new[] { "Archivo", "Okupas" }, new string[0], ExpectedResult = true)]
+    [TestCase("OK", new[] { "Archivo" }, new string[0], ExpectedResult = false)]
+    [TestCase("OK", new[] { "Archivo" }, new[] { "OK" }, ExpectedResult = true)]
+    [TestCase("Opciones avanzadas", new[] { "Opciones" }, new string[0], ExpectedResult = true)]
+    [TestCase("Opciones", new[] { "Archivo" }, new[] { "Opciones de impresión" }, ExpectedResult = true)]
+    [TestCase("Configuración", new[] { "Combinar el archivo entero con." }, new string[0], ExpectedResult = true)]
+    public bool TheLabelMayBeShownWhenWrittenOrLikeALineOrANameSeen(string label, string[] lines, string[] seen) =>
+        WindowsVisibleVisionLocator.LabelMayBeShown([.. lines.Select(static text => Line(text, 0, 0, 40, 12))], label, seen);
+
+    [Test]
+    public void NothingReadSaysNothingAgainstTheLabel() =>
+        Assert.That(WindowsVisibleVisionLocator.LabelMayBeShown(null, "Opciones", []), Is.True);
 
     // Contracase: the words read at the point are the label (a control the tree does not name): the pointer may press it.
     [Test]
@@ -196,8 +316,11 @@ public sealed class VisionPointLabelTests
     }
 
     // The press at the point: the worker's answer is given; the pointer is only counted, and reports a press with no burst.
-    private sealed class FakePress(PointPressed atPoint) : IPointPress
+    // The last look of the window showed the names «seen».
+    private sealed class FakePress(PointPressed atPoint, string[]? seen = null) : IPointPress
     {
+        public IReadOnlyList<string> NamesSeen(nint window) => seen ?? [];
+
         internal int PointAsked { get; private set; }
 
         internal int PointerPressed { get; private set; }

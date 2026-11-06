@@ -106,3 +106,50 @@ def test_joining_the_whole_reply_after_a_short_opener_stays_behind_its_switch(
     monkeypatch.setenv("BAXY_RENEW_TTS_JOIN_ALL", "1")
     test_a_first_sentence_of_more_than_a_few_words_is_synthesized_alone(
         tmp_path, monkeypatch, "Listo. Spotify está abierto y sonando. La canción es de Queen.", 1)
+
+
+class _Sherpa:
+    """sherpa-onnx as far as loading the voice goes: it tells whether the engine was built."""
+
+    def __init__(self) -> None:
+        self.built: list[object] = []
+        for name in ("OfflineTtsConfig", "OfflineTtsModelConfig", "OfflineTtsSupertonicModelConfig"):
+            setattr(self, name, lambda **kwargs: SimpleNamespace(**kwargs))
+
+    def OfflineTts(self, config):  # noqa: N802 - sherpa-onnx's own name
+        self.built.append(config)
+        return SimpleNamespace(sample_rate=44100, generate=lambda *args, **kwargs: SimpleNamespace(
+            samples=np.zeros(441, np.float32), sample_rate=44100))
+
+
+# Uso real 2026-11-02: with about 1 GB left to commit on the PC, loading the voice died in the engine («bad allocation»,
+# 0xC0000409, a native abort no handler catches) and took the mind with it. With less memory left to commit than the
+# voice needs it is not loaded: the mind goes on without a voice. Encargo 10 (punto 6): a passing low point does not
+# turn it off for the whole session; it is deferred (the state says why) and retried on the next use, and only after the
+# retries run out is it a failure.
+def test_a_voice_without_the_memory_to_load_it_is_deferred_then_fails_after_the_cap(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    folder = _model_dir(tmp_path)
+    (folder / "baxy-voice.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(folder))
+    sherpa = _Sherpa()
+    monkeypatch.setitem(sys.modules, "sherpa_onnx", sherpa)
+    monkeypatch.setattr(voice_output, "commit_available_mb", lambda: voice_output.VOICE_COMMIT_MB - 1, raising=False)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, notice: None)
+
+    deadline = time.monotonic() + 5
+    while not speech.deferred and time.monotonic() < deadline:
+        time.sleep(0.02)
+    assert "MB" in speech.deferred and "memory" in speech.deferred  # deferred, not a failure, and it says why
+    assert not speech.ready and not speech.failure
+    assert sherpa.built == []
+
+    deadline = time.monotonic() + 5
+    while not speech.failure and time.monotonic() < deadline:
+        speech.speak("Hola.")  # each use retries the load, still with no room to commit
+        time.sleep(0.05)
+    assert "MB" in speech.failure and "memory" in speech.failure
+    assert not speech.ready
+    assert sherpa.built == []
+    assert not speech.speak("Hola.")
+    speech.close()

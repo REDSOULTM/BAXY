@@ -257,6 +257,36 @@ internal static class HeartbeatMoment
         return read ? windows : null;
     }
 
+    /// <summary>Encargo 119 (from encargo 46): the window the person has in front, title and process: the foreground window
+    /// when it is not BAXY's nor the shell's desktop, else the topmost visible window of another process (the one under
+    /// BAXY's when they typed into it); null when there is none.</summary>
+    internal static (string Title, string? Process)? PersonFront()
+    {
+        nint front = GetForegroundWindow();
+        if (front != 0 && front != GetShellWindow() && GetWindowThreadProcessId(front, out uint processId) != 0
+            && processId != (uint)Environment.ProcessId && WindowTitle(front).Length > 0 && !IsCloaked(front))
+        {
+            return (WindowTitle(front), ProcessOf(front));
+        }
+
+        nint shell = GetShellWindow();
+        nint[] others = [.. OtherWindowHandles().Where(window => window != shell)];
+        return others.Length == 0 ? null : (WindowTitle(others[0]), ProcessOf(others[0]));
+    }
+
+    /// <summary>The visible windows of other processes on screen, title and process (NativeTurnLoop.Host.Windows); empty
+    /// when Windows could not enumerate them.</summary>
+    internal static IReadOnlyList<(string Title, string? Process)> OtherWindows() =>
+        [.. OtherWindowHandles().Select(static window => (WindowTitle(window), ProcessOf(window)))];
+
+    /// <summary>The visible top-level windows on screen (not cloaked) of other processes than BAXY's.</summary>
+    internal static IReadOnlyList<nint> OtherWindowHandles()
+    {
+        uint own = (uint)Environment.ProcessId;
+        return [.. (TopLevelWindows() ?? []).Where(window => !IsCloaked(window)
+                && GetWindowThreadProcessId(window, out uint processId) != 0 && processId != own)];
+    }
+
     internal static string WindowTitle(nint window)
     {
         int length = GetWindowTextLength(window);
@@ -476,7 +506,7 @@ internal static class HeartbeatMoment
     {
         try
         {
-            using var smi = Process.Start(new ProcessStartInfo("nvidia-smi",
+            using var smi = Process.Start(new ProcessStartInfo(Path.Combine(Environment.SystemDirectory, "nvidia-smi.exe"),
                 "--query-gpu=utilization.gpu --format=csv,noheader,nounits")
             {
                 RedirectStandardOutput = true,
@@ -572,6 +602,7 @@ internal static class HeartbeatMoment
     }
 
     [DllImport("user32.dll")] private static extern nint GetForegroundWindow();
+    [DllImport("user32.dll")] private static extern nint GetShellWindow();
     [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(nint window, out uint processId);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int GetWindowText(nint window, [Out] char[] text, int count);

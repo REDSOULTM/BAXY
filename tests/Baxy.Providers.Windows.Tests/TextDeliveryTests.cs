@@ -91,6 +91,133 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // Encargo 36 (banco uso-b4c4, R11, R12, R13, S08): a window drawn by WPF or Chromium has one Win32 control, whose class
+    // takes text as far as its messages tell; its focus was its menu bar, a list row (whose letters moved the selection to
+    // another chat) or the page's read-only document, the text went there by the keyboard and was told delivered. By UI
+    // Automation, in front and before the first key, a focus that takes no text gets nothing, and the refusal names it,
+    // the window's text fields by the index the model saw and, first in its next, the call that types into each. An
+    // editable box, a document with no value (a console, a word processor), a pane, or a focus outside the window or not
+    // read still go by the keyboard, as before.
+    [TestCase("""{"ok":true,"kind":"MenuBar","name":"System Menu Bar","editable":false,"readOnly":false,"text":false,"inside":true}""", false)]
+    [TestCase("""{"ok":true,"kind":"ListItem","name":"Sala de prueba","editable":false,"readOnly":false,"text":false,"inside":true}""", false)]
+    [TestCase("""{"ok":true,"kind":"Document","name":"Traductor de prueba","editable":false,"readOnly":true,"text":true,"inside":true}""", false)]
+    [TestCase("""{"ok":true,"kind":"Edit","name":"Mensajes","editable":false,"readOnly":true,"text":true,"inside":true}""", false)]
+    [TestCase("""{"ok":true,"kind":"Edit","name":"Escribe un mensaje","editable":true,"readOnly":false,"text":true,"inside":true}""", true)]
+    [TestCase("""{"ok":true,"kind":"Document","name":"Text Area","editable":false,"readOnly":false,"text":true,"inside":true}""", true)]
+    [TestCase("""{"ok":true,"kind":"Pane","name":"","editable":false,"readOnly":false,"text":false,"inside":true}""", true)]
+    [TestCase("""{"ok":true,"kind":"ListItem","name":"Sala de prueba","editable":false,"readOnly":false,"text":false,"inside":false}""", true)]
+    [TestCase(null, true)]
+    public async Task ATextWithNoFieldNamedIsNotTypedWhereUiAutomationReadsAFocusThatTakesNoText(string? focus, bool typed)
+    {
+        var keyboard = new FakeDesktopKeyboard { Front = new DesktopForeground(4660, 4242, "Chat de prueba") };
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            FocusKindAnswer = focus,
+            TextFields = { new ViewedTextField(4, "Edit", "Buscar chat"), new ViewedTextField(7, "Edit", "Escribe un mensaje") },
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, new FakeFieldMessages(), fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"nos vemos a las cinco","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(keyboard.Texts.Count > 0, Is.EqualTo(typed));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            if (typed)
+                return;
+            JsonElement result = receipt.Result!.Value;
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_focus_not_a_field"));
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(result.GetProperty("focused").GetProperty("kind").GetString(),
+                Is.EqualTo(JsonDocument.Parse(focus!).RootElement.GetProperty("kind").GetString()));
+            Assert.That(result.GetProperty("textFields").EnumerateArray().Select(static field => field.GetProperty("index").GetInt32()),
+                Is.EqualTo(new[] { 4, 7 }));
+            Assert.That(result.GetProperty("next").GetString(), Does.StartWith(
+                """input_text_type {"window":4660,"index":4,"text":"nos vemos a las cinco"} types it into Edit «Buscar chat»; input_text_type {"window":4660,"index":7,"""));
+        });
+    }
+
+    // Encargo 36 (S08): a page's fields were not in the first look at the browser (Chromium listed them only once a UI
+    // Automation client had asked); the refusal reads the window again first and names the fields it holds now.
+    [Test]
+    public async Task TheRefusalReadsTheWindowAgainAndNamesTheFieldsItHoldsNow()
+    {
+        var keyboard = new FakeDesktopKeyboard { Front = new DesktopForeground(4660, 4242, "Traductor de prueba") };
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            FocusKindAnswer = """{"ok":true,"kind":"Document","name":"Traductor de prueba","editable":false,"readOnly":true,"text":true,"inside":true}""",
+            AfterAnswer = """{"appeared":["[15] Edit «Texto de origen»"]}""",
+            TextFields = { new ViewedTextField(6, "Edit", "Barra de direcciones") },
+            TextFieldsAfter = { new ViewedTextField(6, "Edit", "Barra de direcciones"), new ViewedTextField(15, "Edit", "Texto de origen") },
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, new FakeFieldMessages(), fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola","window":4660}"""), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_focus_not_a_field"));
+            Assert.That(keyboard.Texts, Is.Empty);
+            Assert.That(result.GetProperty("after").GetProperty("appeared")[0].GetString(), Is.EqualTo("[15] Edit «Texto de origen»"));
+            Assert.That(result.GetProperty("textFields").EnumerateArray().Select(static field => field.GetProperty("index").GetInt32()),
+                Is.EqualTo(new[] { 6, 15 }));
+            Assert.That(result.GetProperty("next").GetString(), Does.Contain(
+                """input_text_type {"window":4660,"index":15,"text":"hola"} types it into Edit «Texto de origen»"""));
+        });
+    }
+
+    // Encargo 36: a view's text fields are its edit boxes and documents not read-only, each by the index the model saw it
+    // at: the one an «after» told it by, else its own when no other control was told at that index.
+    [Test]
+    public void AViewsTextFieldsAreItsWritableBoxesByTheIndexTheModelSaw()
+    {
+        static WindowsVisibleControlAdapter.ViewControl Control(int index, string kind, string name, string id, string state = "") =>
+            new() { Index = index, Kind = kind, Name = name, Id = id, State = state };
+        WindowsVisibleControlAdapter.ViewControl search = Control(4, "Edit", "Buscar chat", "a"),
+            composer = Control(8, "Edit", "Escribe un mensaje", "b"),
+            history = Control(9, "Edit", "Mensajes", "c", "readonly"),
+            row = Control(5, "ListItem", "Sala de prueba", "d"),
+            page = Control(12, "Document", "Página", "e", "readonly focused");
+        WindowsVisibleControlAdapter.ViewControl[] controls = [search, row, composer, history, page];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsVisibleControlAdapter.TextFields(controls, null), Is.EqualTo(new[]
+            {
+                new ViewedTextField(4, "Edit", "Buscar chat"), new ViewedTextField(8, "Edit", "Escribe un mensaje"),
+            }));
+            // An «after» told the composer at 7 and another control at 4: the search box is not said by an index the
+            // model knows as another control.
+            var told = new Dictionary<int, WindowsVisibleControlAdapter.ViewControl> { [7] = composer, [4] = row };
+            Assert.That(WindowsVisibleControlAdapter.TextFields(controls, told),
+                Is.EqualTo(new[] { new ViewedTextField(7, "Edit", "Escribe un mensaje") }));
+        });
+    }
+
+    // Encargo 36: with no view of that window taken, the refusal's next begins with the look that numbers its fields.
+    [Test]
+    public async Task WithNoViewOfTheWindowTheRefusalBeginsWithTheLookThatNumbersItsFields()
+    {
+        var keyboard = new FakeDesktopKeyboard { Front = new DesktopForeground(4660, 4242, "Chat de prueba"), FrontProcess = "ChatPrueba" };
+        var fields = new FakeViewedFields("""{"ok":true}""")
+        {
+            FocusKindAnswer = """{"ok":true,"kind":"MenuBar","name":"System Menu Bar","editable":false,"text":false,"inside":true}""",
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, new FakeFieldMessages(), fields).InvokeAsync(
+            "input.text.type", Json("""{"text":"hola","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("input_focus_not_a_field"));
+            Assert.That(keyboard.Texts, Is.Empty);
+            Assert.That(receipt.Result!.Value.GetProperty("textFields").GetArrayLength(), Is.Zero);
+            Assert.That(receipt.Result!.Value.GetProperty("next").GetString(),
+                Does.StartWith("""input_visible_controls {"application":"ChatPrueba"} numbers the window's fields"""));
+        });
+    }
+
     // Ajuste c3 (humo del 31-10, en vivo en el NB): «sv1.txt» set by UI Automation's SetValue into the name field of a
     // «Guardar como» read back as set, and the dialog saved under its old name («base.txt ya existe»); the same field
     // written by its edit control's messages, as typing writes it, is the name the dialog saves. A viewed field that is a
@@ -962,6 +1089,49 @@ public sealed class TextDeliveryTests
         });
     }
 
+    // Banco de uso (A/B d4bd-1d3f, U45): «hostname» typed into a terminal came back with readBack true and nothing more,
+    // and the model looked at the window instead of pressing Enter (T2 of the held-out, 0 of 5 in the isolated turn) or
+    // asked the person. A text typed into a console's window (by its window class) says it was not run, and that Enter
+    // is another call, which BAXY confirms itself when its mode asks; any other window, and BAXY_AYUDAS=none, say nothing.
+    [TestCase("CASCADIA_HOSTING_WINDOW_CLASS", "WindowsTerminal", "all", true)]
+    [TestCase("ConsoleWindowClass", "powershell", "all", true)]
+    [TestCase("ApplicationFrameWindow", "CalculatorApp", "all", false)]
+    [TestCase("CASCADIA_HOSTING_WINDOW_CLASS", "WindowsTerminal", "none", false)]
+    public async Task ATextTypedIntoAConsoleSaysItWasNotRunAndThatEnterIsAnotherCall(
+        string windowClass, string process, string aids, bool told)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var keyboard = new FakeDesktopKeyboard
+        {
+            Front = new DesktopForeground(0x5678, 3364, "Windows PowerShell"),
+            FrontProcess = process,
+            FrontClass = windowClass,
+        };
+
+        ExternalCapabilityReceipt receipt = await Adapter(keyboard, Notepad()).InvokeAsync(
+            "input.text.type", Json("""{"text":"hostname"}"""), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        bool hasRun = result.TryGetProperty("commandRun", out JsonElement run);
+        Assert.Multiple(() =>
+        {
+            Assert.That(keyboard.Texts, Is.EqualTo(new[] { "hostname" }));
+            Assert.That(hasRun, Is.EqualTo(told));
+            if (told)
+            {
+                Assert.That(run.GetBoolean(), Is.False);
+                Assert.That(result.GetProperty("next").GetString(),
+                    Does.StartWith(WindowsDesktopInteractionAdapter.ConsoleTyped));
+                Assert.That(WindowsDesktopInteractionAdapter.ConsoleTyped, Does.Contain("input_key_press with key enter"));
+            }
+            else
+            {
+                Assert.That(result.TryGetProperty("next", out JsonElement next) && next.GetString()!.Contains(
+                    "command line", StringComparison.Ordinal), Is.False);
+            }
+        });
+    }
+
     // The sentence for a text read back says no doubt, and one sent to the application just opened says so; only the
     // one sent to the window in front names the look that reaches another application's window.
     [Test]
@@ -1434,15 +1604,27 @@ public sealed class TextDeliveryTests
         Assert.That(at, Is.GreaterThanOrEqualTo(0));
         string body = script[at..script.IndexOf("\nfunction ", at + 1, StringComparison.Ordinal)];
 
+        int fieldAt = script.IndexOf("function Get-FieldText(", StringComparison.Ordinal);
+        Assert.That(fieldAt, Is.GreaterThanOrEqualTo(0));
+        string fieldBody = script[fieldAt..script.IndexOf("\nfunction ", fieldAt + 1, StringComparison.Ordinal)];
+
         Assert.Multiple(() =>
         {
             Assert.That(script, Does.Contain("elseif($cmd -eq 'focusvalue'){ Send-Line (Do-FocusValue $request) }"));
             Assert.That(body, Does.Contain("Get-Root ([long]$request.hwnd)").And.Not.Contain("-Front"));
-            Assert.That(body, Does.Contain("@('Edit','ComboBox') -notcontains $kind"));
+            // Uso real 02-11 (encargo 2, B): a field's own text (Get-FieldText: its value, else its own TextPattern's
+            // text), never a document's (FieldTextReadBackTests).
+            Assert.That(body, Does.Contain("$kind -eq 'Document'").And.Contain("Get-FieldText $node $kind $max"));
             Assert.That(body, Does.Contain("IsPassword"));
             Assert.That(body, Does.Contain("Compare($up,$target.root)"));
             Assert.That(body, Does.Not.Contain("SetValue").And.Not.Contain("SetFocus").And.Not.Contain("TextPattern"));
             Assert.That(body, Does.Contain("bounded=$bounded"));
+            // Encargo 10 (punto 4): the value read is a field's, not any focused control's. Get-FieldText reads the value
+            // of an Edit/ComboBox, else the TextPattern text only of an editable box (Edit/Group); it never falls back to
+            // the TextPattern of an arbitrary kind (a terminal, a control of its own), which is what «only a field's
+            // value» means.
+            Assert.That(fieldBody, Does.Contain("@('Edit','ComboBox') -contains $kind").And.Contain("ValuePattern"));
+            Assert.That(fieldBody, Does.Contain("@('Edit','Group') -contains $kind").And.Contain("TextPattern"));
         });
     }
 
@@ -1463,6 +1645,25 @@ public sealed class TextDeliveryTests
         Assert.That(WindowsTextDelivery.CaretHolds(
             new CaretText(before + "\r", "paragraph", false, 0), new CaretText(after + "\r", "paragraph", false, 0), typed),
             Is.EqualTo(holds));
+
+    // Encargo 18 (banco de uso, U45): a console pads each row with blanks to its width, so the row at the caret has the
+    // same length before and after a text typed into it (measured live: the Windows console ends the row there, Windows
+    // Terminal ends it with its line break). The text is read back there all the same; a row that did not take it is not.
+    [TestCase("\r\nC:\\carpeta>", "ver", "\r\nC:\\carpeta>ver", true)]
+    [TestCase("\r\nC:\\carpeta>\r\n", "ver", "\r\nC:\\carpeta>ver\r\n", true)]
+    [TestCase("\r\nC:\\carpeta>", "dir ", "\r\nC:\\carpeta>dir ", true)]
+    [TestCase("\r\nC:\\carpeta>", "ver", "\r\nC:\\carpeta>", false)]
+    [TestCase("\r\nC:\\carpeta>", "ver", "\r\nC:\\carpeta>ve", false)]
+    public void ARowPaddedToTheConsolesWidthHoldsTheTextTypedIntoIt(
+        string before, string typed, string after, bool holds)
+    {
+        const int Width = 120;
+        string Padded(string rows) => string.Join("\r\n", rows.Split("\r\n").Select(row => row.PadRight(Width)));
+
+        Assert.That(WindowsTextDelivery.CaretHolds(
+            new CaretText(Padded(before), "paragraph", false, 0), new CaretText(Padded(after), "paragraph", false, 0),
+            typed), Is.EqualTo(holds));
+    }
 
     [Test]
     public void TheCaretParagraphIsNotComparedAcrossUnits() =>
@@ -1570,13 +1771,16 @@ internal sealed class FakeViewedFields(string answer) : IViewedFields
         return true;
     }
 
+    // Uso real 02-11 (encargo 2): the worker's answer when it only reads the field (no text); null: the same answer.
+    internal string? ReadAnswer { get; init; }
+
     public ValueTask<JsonDocument?> FieldAsync(
         nint window, string controlId, string? text, bool replace, CancellationToken cancellationToken)
     {
         Requests.Add((controlId, text));
         Replaces.Add(replace);
         OnField?.Invoke();
-        return ValueTask.FromResult<JsonDocument?>(JsonDocument.Parse(answer));
+        return ValueTask.FromResult<JsonDocument?>(JsonDocument.Parse(text is null && ReadAnswer is not null ? ReadAnswer : answer));
     }
 
     // The entries asked for by pattern («entry»), apart from the texts written.
@@ -1625,6 +1829,127 @@ internal sealed class FakeViewedFields(string answer) : IViewedFields
         ValueRequests.Add(window);
         return ValueTask.FromResult(ValueAnswer is null ? null : JsonDocument.Parse(ValueAnswer()));
     }
+
+    // Encargo 75 (R01): the worker's «activecell» answers in order, the last one kept (null: it does not answer), and
+    // the cells asked by row and column.
+    internal Queue<string>? CellAnswers { get; init; }
+
+    internal List<(int Row, int Column)> CellsAsked { get; } = [];
+
+    private string? _lastCell;
+
+    public ValueTask<JsonDocument?> ActiveCellAsync(nint window, (int Row, int Column)? at, CancellationToken cancellationToken)
+    {
+        if (at is { } asked)
+            CellsAsked.Add(asked);
+        if (CellAnswers is null)
+            return ValueTask.FromResult<JsonDocument?>(null);
+        if (CellAnswers.Count > 0)
+            _lastCell = CellAnswers.Dequeue();
+        return ValueTask.FromResult(_lastCell is null ? null : JsonDocument.Parse(_lastCell));
+    }
+
+    // Encargo 115: the worker's «activecell» answers with a range, in order, the last one kept (null: it does not answer).
+    internal Queue<string>? RangeAnswers { get; init; }
+
+    private string? _lastRange;
+
+    public ValueTask<JsonDocument?> CellRangeAsync(
+        nint window, int row, int column, int rows, int columns, CancellationToken cancellationToken)
+    {
+        if (RangeAnswers is null)
+            return ValueTask.FromResult<JsonDocument?>(null);
+        if (RangeAnswers.Count > 0)
+            _lastRange = RangeAnswers.Dequeue();
+        return ValueTask.FromResult(_lastRange is null ? null : JsonDocument.Parse(_lastRange));
+    }
+
+    // Encargo 17 (U27): the worker's «focusvalue» answer with lengthOnly (null: it does not answer), and the windows it
+    // was asked to measure.
+    internal Func<string>? LengthAnswer { get; init; }
+
+    internal List<nint> LengthRequests { get; } = [];
+
+    public ValueTask<JsonDocument?> FocusedTextLengthAsync(nint window, int maximum, CancellationToken cancellationToken)
+    {
+        LengthRequests.Add(window);
+        return ValueTask.FromResult(LengthAnswer is null ? null : JsonDocument.Parse(LengthAnswer()));
+    }
+
+    // Encargo 36: the worker's «focuskind» answer (null: it does not answer), and the text fields of the last view of
+    // ViewWindow.
+    internal string? FocusKindAnswer { get; init; }
+
+    internal List<ViewedTextField> TextFields { get; } = [];
+
+    public ValueTask<JsonDocument?> FocusKindAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(FocusKindAnswer is null ? null : JsonDocument.Parse(FocusKindAnswer));
+
+    // Encargo 98: whether the focused text can be selected by UI Automation, and the windows it was asked of.
+    internal bool SelectsFocusedText { get; init; }
+
+    internal List<nint> FocusSelections { get; } = [];
+
+    // The focus's states in the order they are read; the last one stays. None: not read.
+    internal IReadOnlyList<FocusState> FocusStates { get; init; } = [];
+
+    private int _focusStateReads;
+
+    internal bool ClosesFocusedDialog { get; init; }
+
+    internal int DialogCloses { get; private set; }
+
+    public ValueTask<bool> CloseFocusedDialogAsync(nint window, CancellationToken cancellationToken)
+    {
+        DialogCloses++;
+        return ValueTask.FromResult(ClosesFocusedDialog);
+    }
+
+    // Encargo 100: what «focusfind» reads (null: nothing answers), and how many times it was asked.
+    internal FindReach? Reach { get; init; }
+
+    internal int ReachReads { get; private set; }
+
+    public ValueTask<FindReach?> FindReachAsync(nint window, CancellationToken cancellationToken)
+    {
+        ReachReads++;
+        return ValueTask.FromResult(Reach);
+    }
+
+    // Encargo 100: the tabs a window shows, in the order they are read; the last one stays. None: not read.
+    internal IReadOnlyList<int> TabCounts { get; init; } = [];
+
+    private int _tabCountReads;
+
+    public ValueTask<int?> TabCountAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<int?>(TabCounts.Count == 0 ? null : TabCounts[Math.Min(_tabCountReads++, TabCounts.Count - 1)]);
+
+    public ValueTask<FocusState?> FocusStateAsync(nint window, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<FocusState?>(FocusStates.Count == 0
+            ? null
+            : FocusStates[Math.Min(_focusStateReads++, FocusStates.Count - 1)]);
+
+    public ValueTask<bool> SelectFocusedTextAsync(nint window, CancellationToken cancellationToken)
+    {
+        FocusSelections.Add(window);
+        return ValueTask.FromResult(SelectsFocusedText);
+    }
+
+    public IReadOnlyList<ViewedTextField> TextFieldsOf(nint window) => window == ViewWindow ? TextFields : [];
+
+    // Encargo 36: the view read again after an act (null: not read), and the text fields it holds once read.
+    internal string? AfterAnswer { get; init; }
+
+    internal List<ViewedTextField> TextFieldsAfter { get; } = [];
+
+    public ValueTask<JsonElement?> AfterActAsync(nint window, CancellationToken cancellationToken)
+    {
+        if (AfterAnswer is null || window != ViewWindow)
+            return ValueTask.FromResult<JsonElement?>(null);
+        TextFields.Clear();
+        TextFields.AddRange(TextFieldsAfter);
+        return ValueTask.FromResult<JsonElement?>(JsonDocument.Parse(AfterAnswer).RootElement.Clone());
+    }
 }
 
 /// <summary>Window 4660 of process 4242 with its child controls, their class and text, as window messages see them.</summary>
@@ -1636,6 +1961,11 @@ internal sealed class FakeFieldMessages : IFieldMessages
     internal bool Alive { get; init; } = true;
 
     internal bool TakesReplace { get; init; } = true;
+
+    // Uso-108 (B12): a control that takes no queued character either, and one that reshapes what EM_REPLACESEL gives it.
+    internal bool TakesChars { get; init; } = true;
+
+    internal string? ReshapesTo { get; init; }
 
     // Whether EM_SETSEL selects the whole text (a control that ignores it keeps its caret at the end).
     internal bool TakesSelectAll { get; init; } = true;
@@ -1744,6 +2074,12 @@ internal sealed class FakeFieldMessages : IFieldMessages
 
     public bool ReplaceSelection(nint hwnd, string text)
     {
+        if (ReshapesTo is { } shaped)
+        {
+            Content[hwnd] = shaped;
+            return true;
+        }
+
         if (TakesReplace && Content.TryGetValue(hwnd, out string? content))
         {
             Content[hwnd] = _allSelected.Remove(hwnd) ? text
@@ -1768,6 +2104,8 @@ internal sealed class FakeFieldMessages : IFieldMessages
 
     public bool PostChar(nint hwnd, char character)
     {
+        if (!TakesChars)
+            return true;
         if (_allSelected.Remove(hwnd))
             Content[hwnd] = string.Empty;
         Content[hwnd] += character;

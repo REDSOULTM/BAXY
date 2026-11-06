@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 using NUnit.Framework;
 
@@ -63,6 +64,49 @@ public sealed class ApplicationPlacesTests
     [TestCase("Steam", "results", "a\nb", null)]
     public void OnlyWhatTheDataDeclareHasAnAddress(string application, string place, string? value, string? address) =>
         Assert.That(ApplicationPlaces.Address(application, place, value), Is.EqualTo(address));
+
+    // Banco de uso 2026-11-03 (U33): a place may declare its page on the web («web»), filled with the same value as its
+    // address; one that declares none has none.
+    [TestCase("Steam", "game", "413150", "https://store.steampowered.com/app/413150")]
+    [TestCase("Steam", "results", "granja", "https://store.steampowered.com/search/?term=granja")]
+    [TestCase("Epic Games Launcher", "game", "Rocket League", null)]
+    [TestCase("Steam", "library", null, null)]
+    [TestCase("Steam", "game", "granja", null)]
+    public void APlaceOnTheWebIsItsDeclaredPageFilledLikeItsAddress(
+        string application, string place, string? value, string? web) =>
+        Assert.That(ApplicationPlaces.WebAddress(application, place, value), Is.EqualTo(web));
+
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://x","web":"http://x"}}}}}""")]
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{"p":{"address":"a://{query}","web":"https://x/{game}"}}}}}""")]
+    public void AWebPageThatIsNotHttpsOrTakesAnotherSlotIsRefused(string json)
+    {
+        using JsonDocument document = JsonDocument.Parse(json);
+        Assert.Throws<InvalidDataException>(() => ApplicationPlaces.Read(document));
+    }
+
+    // Encargo 80: a read an application's data offer is told beside its opening, so it may only ever read.
+    [Test]
+    public void TheReadAnApplicationDeclaresIsAnOperationThatOnlyReads()
+    {
+        ApplicationPlaces.ApplicationRead? read = ApplicationPlaces.ReadOf("Settings");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read, Is.Not.Null);
+            Assert.That(ProductCatalog.TryGet(read!.Operation, out ProductOperationDescriptor? descriptor), Is.True);
+            Assert.That(descriptor!.Risk, Is.EqualTo(OperationRisks.ReadOnly));
+            Assert.That(ApplicationPlaces.ReadOf("Configuración"), Is.SameAs(read));
+            Assert.That(ApplicationPlaces.ReadOf("Steam"), Is.Null);
+        });
+    }
+
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{},"read":{"operation":"x.y"}}}}""")]
+    [TestCase("""{"applications":{"A":{"schemes":["a"],"places":{},"read":{"operation":" ","arguments":{},"tells":"t"}}}}""")]
+    public void AReadWithoutItsCallOrWhatItTellsIsRefused(string json)
+    {
+        using JsonDocument document = JsonDocument.Parse(json);
+        Assert.That(() => ApplicationPlaces.Read(document), Throws.Exception);
+    }
 
     [Test]
     public void ASearchedTextIsEscapedIntoItsSlotAndNeverLeavesIt()

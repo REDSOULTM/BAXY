@@ -144,21 +144,25 @@ public static partial class WindowsModelResourceReader
         return read ? total : null;
     }
 
-    /// <summary>The processes the given one started (NtQueryInformationProcess, ProcessBasicInformation).</summary>
-    public static IReadOnlyList<int> ChildrenOf(int parentId, string processName)
+    /// <summary>
+    /// The processes of the given name that any of the given parents started (NtQueryInformationProcess,
+    /// ProcessBasicInformation), with the parent of each. It lists every process of that name once
+    /// (Process.GetProcessesByName reads the whole process table, and each Process it returns holds native state), so the
+    /// rail calls it rarely and asks <see cref="IsChildOf"/> about the ones it already knows.
+    /// </summary>
+    public static IReadOnlyList<(int Id, int Parent)> ChildrenOf(IReadOnlyCollection<int> parentIds, string processName)
     {
-        var children = new List<int>();
+        var children = new List<(int Id, int Parent)>();
         foreach (Process process in Process.GetProcessesByName(processName))
         {
             using (process)
             {
                 try
                 {
-                    var info = new ProcessBasicInformation();
-                    if (NtQueryInformationProcess(process.Handle, 0, ref info, Marshal.SizeOf<ProcessBasicInformation>(), out _) == 0
-                        && (int)info.InheritedFromUniqueProcessId == parentId)
+                    int parent = ParentOf(process.Handle);
+                    if (parentIds.Contains(parent))
                     {
-                        children.Add(process.Id);
+                        children.Add((process.Id, parent));
                     }
                 }
                 catch (Exception exception) when (exception is System.ComponentModel.Win32Exception or InvalidOperationException)
@@ -169,6 +173,32 @@ public static partial class WindowsModelResourceReader
         }
 
         return children;
+    }
+
+    /// <summary>
+    /// Whether the process is alive and was started by the given parent. It opens that one process by id: it does not read
+    /// the process table, so it is cheap enough to ask on every sample. False when it ended or is not ours to read.
+    /// </summary>
+    public static bool IsChildOf(int processId, int parentId)
+    {
+        try
+        {
+            using Process process = Process.GetProcessById(processId);
+            return !process.HasExited && ParentOf(process.Handle) == parentId;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+            or System.ComponentModel.Win32Exception)
+        {
+            return false;
+        }
+    }
+
+    private static int ParentOf(nint handle)
+    {
+        var info = new ProcessBasicInformation();
+        return NtQueryInformationProcess(handle, 0, ref info, Marshal.SizeOf<ProcessBasicInformation>(), out _) == 0
+            ? (int)info.InheritedFromUniqueProcessId
+            : -1;
     }
 
     [StructLayout(LayoutKind.Sequential)]

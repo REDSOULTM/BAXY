@@ -72,6 +72,28 @@ public sealed class PageMainTests
         Assert.That(text, Is.EqualTo("Fundada en 1945.\nSede"));
     }
 
+    // Uso real 04-11 (F40): a store's <body class="… menu_background_overlap …"> matched the boilerplate rule, the whole
+    // page went with it, and web.fetch answered «completed» with no text. What holds most of the page is the page.
+    [TestCase("<body class=\"v6 app menu_background_overlap responsive_page\">", "</body>")]
+    [TestCase("<body><div class=\"has-sidebar page_wrapper\">", "</div></body>")]
+    public void AMarkedElementHoldingMostOfThePageIsThePage(string open, string close)
+    {
+        string html = "<html><head><title>Juego de prueba</title></head>" + open
+            + "<div class=\"store_menu\"><a>Tienda</a></div>"
+            + "<div role=\"main\"><h1>Juego de prueba</h1><p>" + new string('x', 20) + " " + string.Concat(Enumerable.Repeat(
+                "Un juego de prueba con su descripción larga, sus requisitos y su precio. ", 8)) + "</p>"
+            + "<div class=\"share_bar\">Compartir esto</div></div>" + close + "</html>";
+
+        (_, string text, _) = PageText.Prose(html);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(text, Does.Contain("descripción larga"));
+            Assert.That(text, Does.Not.Contain("Tienda"), "what is marked inside it still goes");
+            Assert.That(text, Does.Not.Contain("Compartir"), "what is marked inside it still goes");
+        });
+    }
+
     [Test]
     public void AMarkedElementNeverClosedLeavesNothingOut()
     {

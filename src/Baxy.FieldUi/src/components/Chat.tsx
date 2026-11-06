@@ -1,29 +1,33 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Globe, Icon } from './Icon';
 import type { ChatItem, Confirmation, Fam, Step, StepStatus } from '../types';
+import { useT, type Words } from '../i18n';
 
 /* The conversation (design chat.jsx, BxChat4): the person's words, BAXY's, a chip per call under each reply and the
    Sí / No card of a call waiting for the person, always inside the conversation and never as a modal. */
 
-const ST: Record<StepStatus, { ic: string | null; label: string }> = {
-  run: { ic: null, label: 'en curso' },
-  ok: { ic: '✓', label: 'verificado' },
-  same: { ic: '=', label: 'ya estaba así' },
-  sent: { ic: '↗', label: 'enviado, sin comprobar' },
-  read: { ic: '✓', label: 'leído' },
-  fail: { ic: '✕', label: 'falló' },
-  skip: { ic: '–', label: 'no se ejecutó' },
-  maybe: { ic: '?', label: 'puede haber corrido' },
+const ST: Record<StepStatus, { ic: string | null; label: Words }> = {
+  run: { ic: null, label: { es: 'en curso', en: 'running' } },
+  ok: { ic: '✓', label: { es: 'verificado', en: 'verified' } },
+  same: { ic: '=', label: { es: 'ya estaba así', en: 'already set' } },
+  sent: { ic: '↗', label: { es: 'enviado, sin comprobar', en: 'sent, not checked' } },
+  read: { ic: '✓', label: { es: 'leído', en: 'read' } },
+  fail: { ic: '✕', label: { es: 'falló', en: 'failed' } },
+  skip: { ic: '–', label: { es: 'no se ejecutó', en: 'did not run' } },
+  maybe: { ic: '?', label: { es: 'puede haber corrido', en: 'may have run' } },
 };
 
-const FAM_LABEL: Record<Fam, string> = {
-  apps: 'apps', ventanas: 'ventanas', archivos: 'archivos', web: 'web', musica: 'música', memoria: 'memoria', alarmas: 'alarmas',
+const FAM_LABEL: Record<Fam, Words> = {
+  apps: { es: 'apps', en: 'apps' }, ventanas: { es: 'ventanas', en: 'windows' }, archivos: { es: 'archivos', en: 'files' },
+  web: { es: 'web', en: 'web' }, musica: { es: 'música', en: 'music' }, memoria: { es: 'memoria', en: 'memory' },
+  alarmas: { es: 'alarmas', en: 'alarms' },
 };
 
 function StepChip({ s, open, onClick }: { s: Step; open: boolean; onClick: () => void }) {
+  const t = useT();
   const st = ST[s.status] ?? ST.run;
   return (
-    <button className={'bx-chip st-' + s.status + (open ? ' open' : '')} onClick={onClick} title={st.label} aria-expanded={open}>
+    <button className={'bx-chip st-' + s.status + (open ? ' open' : '')} onClick={onClick} title={t.w(st.label)} aria-expanded={open}>
       <span className="ic">{s.status === 'run' ? <i className="spin"></i> : st.ic}</span>
       <span className="lb">{s.label}</span>
       {s.net ? <span className="nt"><Globe s={10} /></span> : null}
@@ -32,6 +36,7 @@ function StepChip({ s, open, onClick }: { s: Step; open: boolean; onClick: () =>
 }
 
 function Steps({ steps }: { steps: Step[] }) {
+  const t = useT();
   const [open, setOpen] = useState(-1);
   if (!steps.length) return null;
   const o = open >= 0 ? steps[open] : undefined;
@@ -43,9 +48,9 @@ function Steps({ steps }: { steps: Step[] }) {
       {steps.map((s, i) => (s.status === 'fail' && open !== i ? <div key={s.id} className="bx-why"><b>✕ {s.label}:</b> {s.reason}</div> : null))}
       {o ? (
         <div className={'bx-obs st-' + o.status}>
-          <div className="h"><span>{ST[o.status].label}</span><span className="fam">{FAM_LABEL[o.fam]}</span></div>
-          <div className="t">{o.obs || o.reason || 'En curso…'}</div>
-          {o.net ? <div className="net"><Globe s={10} /> salió a internet · {o.net}</div> : null}
+          <div className="h"><span>{t.w(ST[o.status].label)}</span><span className="fam">{FAM_LABEL[o.fam] ? t.w(FAM_LABEL[o.fam]) : null}</span></div>
+          <div className="t">{o.obs || o.reason || t('En curso…', 'Running…')}</div>
+          {o.net ? <div className="net"><Globe s={10} /> {t('salió a internet', 'went online')} · {o.net}</div> : null}
         </div>
       ) : null}
     </div>
@@ -58,6 +63,7 @@ function mmss(ms: number): string {
 }
 
 function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; onNo: () => void }) {
+  const t = useT();
   const [now, setNow] = useState(() => Date.now());
   const live = c.status === 'pending';
   useEffect(() => {
@@ -71,31 +77,31 @@ function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; onNo: ()
   const pend = status === 'pending';
   // nothing was done by this card unless an earlier attempt of the same call may already have run (then it only did
   // not run again)
-  const none = c.effectStarted ? 'no se repitió' : 'no se hizo nada';
+  const none = c.effectStarted ? t('no se repitió', 'not run again') : t('no se hizo nada', 'nothing was done');
   return (
     <div className={'bx-card k-' + c.kind + ' s-' + status}>
       <div className="hd">
-        <span className="tag">{c.kind === 'proposal' ? 'Propuesta' : 'Confirmación'}</span>
+        <span className="tag">{c.kind === 'proposal' ? t('Propuesta', 'Proposal') : t('Confirmación', 'Confirmation')}</span>
         {c.risk ? <span className="risk">{c.risk}</span> : null}
-        {c.effectStarted ? <span className="risk">un intento anterior pudo haber corrido</span> : null}
+        {c.effectStarted ? <span className="risk">{t('un intento anterior pudo haber corrido', 'an earlier attempt may have run')}</span> : null}
         {c.context ? <span className="ctx">{c.context}</span> : null}
       </div>
       <div className="ti">{c.title}</div>
       {c.target ? <div className="tg">{c.target}</div> : null}
       {pend ? (
         <div className="ft">
-          <span className="exp">vence en {mmss(left)}</span>
+          <span className="exp">{t('vence en', 'expires in')} {mmss(left)}</span>
           <div className="btns">
             <button className="bx-btn" onClick={onNo}>No <kbd>esc</kbd></button>
-            <button className="bx-btn yes" onClick={onYes}>Sí <kbd>↵</kbd></button>
+            <button className="bx-btn yes" onClick={onYes}>{t('Sí', 'Yes')} <kbd>↵</kbd></button>
           </div>
         </div>
       ) : (
         <div className="res">
-          {status === 'yes' ? '✓ Aceptado' + (c.via ? ' ' + c.via : '')
-            : status === 'no' ? '✕ Rechazado' + (c.via ? ' ' + c.via : '') + (c.effectStarted ? ' · ' + none : '')
-              : status === 'dropped' ? 'Ya no está pendiente · ' + none
-                : 'Venció sin respuesta · ' + none}
+          {status === 'yes' ? t('✓ Aceptado', '✓ Accepted') + (c.via ? ' ' + c.via : '')
+            : status === 'no' ? t('✕ Rechazado', '✕ Declined') + (c.via ? ' ' + c.via : '') + (c.effectStarted ? ' · ' + none : '')
+              : status === 'dropped' ? t('Ya no está pendiente · ', 'No longer pending · ') + none
+                : t('Venció sin respuesta · ', 'Expired with no answer · ') + none}
         </div>
       )}
     </div>
@@ -114,6 +120,7 @@ interface ChatProps {
 }
 
 function ChatView({ items, title, meta, busy, onAnswer, onCollapse, onNew }: ChatProps) {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
   useEffect(() => {
@@ -144,14 +151,14 @@ function ChatView({ items, title, meta, busy, onAnswer, onCollapse, onNew }: Cha
       <div className="bx-chat-head">
         <div className="bx-c4-tt"><span className="ttl">{title}</span>{meta ? <span className="mt">{meta}</span> : null}</div>
         <div className="acts">
-          <button className="bx-ib plain" title="Nueva conversación" onClick={onNew}><Icon name="plus" size={13} /></button>
-          <button className="bx-ib plain" title="Ocultar conversación" onClick={onCollapse}>
+          <button className="bx-ib plain" title={t('Nueva conversación', 'New conversation')} onClick={onNew}><Icon name="plus" size={13} /></button>
+          <button className="bx-ib plain" title={t('Ocultar conversación', 'Hide conversation')} onClick={onCollapse}>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25"><path d="M4.5 2.5L8 6L4.5 9.5"></path></svg>
           </button>
         </div>
       </div>
       <div className="bx-c4-list" ref={ref}>
-        {items.length === 0 ? <div className="bx-c4-empty">Conversación nueva. Escribe o di «BAXY».</div> : null}
+        {items.length === 0 ? <div className="bx-c4-empty">{t('Conversación nueva. Escribe o di «BAXY».', 'New conversation. Type, or say “BAXY”.')}</div> : null}
         {items.map((h) => {
           if (h.who === 'you') return <div key={h.id} className="bx-c4-you">{h.text}</div>;
           if (h.who === 'sys') return <div key={h.id} className="bx-c4-sys">{h.text}</div>;
@@ -162,8 +169,8 @@ function ChatView({ items, title, meta, busy, onAnswer, onCollapse, onNew }: Cha
               <Steps steps={h.steps} />
               {h.net || h.silent ? (
                 <div className="mt">
-                  {h.net ? <span className="netb"><Globe s={10} /> salió a internet · {h.net}</span> : null}
-                  {h.silent ? <span>sin voz · {h.silent}</span> : null}
+                  {h.net ? <span className="netb"><Globe s={10} /> {t('salió a internet', 'went online')} · {h.net}</span> : null}
+                  {h.silent ? <span>{t('sin voz', 'no voice')} · {h.silent}</span> : null}
                 </div>
               ) : null}
             </div>

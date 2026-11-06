@@ -192,9 +192,10 @@ internal sealed class WindowsAutostartRegistration
             return false;
         }
 
-        return Path.GetFullPath(executable).StartsWith(
-            _installationRoot + Path.DirectorySeparatorChar,
-            StringComparison.OrdinalIgnoreCase);
+        // Beside the setup's folder, the GitHub installer's (src/Baxy.Installer, InstallPaths).
+        string full = Path.GetFullPath(executable);
+        return full.StartsWith(_installationRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+            || full.StartsWith(_installationRoot + "-App" + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
     }
 
     // An entry nothing may keep: one whose binary is gone (or cannot be read from

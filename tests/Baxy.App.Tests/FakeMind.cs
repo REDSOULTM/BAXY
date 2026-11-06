@@ -212,8 +212,14 @@ internal sealed class FakeMind : IDisposable
             UseShellExecute = false,
             CreateNoWindow = true,
         }) ?? throw new InvalidOperationException("The py launcher did not start.");
-        string path = launcher.StandardOutput.ReadToEnd().Trim();
-        launcher.WaitForExit();
+        Task<string> reading = launcher.StandardOutput.ReadToEndAsync();
+        if (!launcher.WaitForExit(60_000) || !reading.Wait(TimeSpan.FromSeconds(10)))
+        {
+            launcher.Kill(entireProcessTree: true);
+            throw new TimeoutException("The py launcher did not answer.");
+        }
+
+        string path = reading.Result.Trim();
         return File.Exists(path) ? path : throw new InvalidOperationException("No Python 3 for the fake mind.");
     }
 }

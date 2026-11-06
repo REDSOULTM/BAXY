@@ -23,28 +23,28 @@ public sealed class DesktopMessagingAdapterTests
 
     // Auditoría final: a shown name (a header line, a chat-list row) names the recipient only when it is the recipient,
     // folded; more words around it make another name.
-    [TestCase("Ron92", "ron", false)]
+    [TestCase("Nube77", "ron", false)]
     [TestCase("Juana", "ana", false)]
-    [TestCase("@Ron92", "ron92", true)]
-    [TestCase("Ron92 Fan", "Ron92", false)]
+    [TestCase("@Nube77", "nube77", true)]
+    [TestCase("Nube77 Fan", "Nube77", false)]
     [TestCase("Ana María", "ana maria", true)]
     [TestCase("María Ana", "ana maria", false)]
     [TestCase("Mario", "Maria", false)]
-    [TestCase("Ron92", "!!!", false)]
+    [TestCase("Nube77", "!!!", false)]
     public void ARecipientIsNamedOnlyByItsWholeName(string shown, string recipient, bool named) =>
         Assert.That(WindowsDesktopMessagingAutomation.NamesRecipient(shown, recipient), Is.EqualTo(named));
 
     // Discord's title: with the client's own part taken away, the one part left is the recipient.
-    [TestCase("Discord | @Ron92", "ron92", true)]
-    [TestCase("Ron92 - Discord", "Ron92", true)]
-    [TestCase("Discord | @Ron92 Fan", "Ron92", false)]
+    [TestCase("Discord | @Nube77", "nube77", true)]
+    [TestCase("Nube77 - Discord", "Nube77", true)]
+    [TestCase("Discord | @Nube77 Fan", "Nube77", false)]
     [TestCase("#general | BAXY - Discord", "BAXY", false)]
     [TestCase("Discord", "Discord", false)]
     public void ADiscordTitleNamesTheRecipientOnlyAsItsConversation(string title, string recipient, bool named) =>
         Assert.That(WindowsDesktopMessagingAutomation.TitleNamesRecipient(title, recipient), Is.EqualTo(named));
 
     // A quick-switcher row writes the account after the name; it is opened on the name's whole words (C1).
-    [TestCase("Ron92 .wolfsoultm.4191", "Ron92", true)]
+    [TestCase("Nube77 .nubecita.0001", "Nube77", true)]
     [TestCase("Ronaldo", "Ron", false)]
     // Ronda final 30: a voice channel's row is never opened (it could join the call); a text channel's is.
     [TestCase("Sala de Pedro, Canal de voz, Amigos", "Pedro", false)]
@@ -75,6 +75,111 @@ public sealed class DesktopMessagingAdapterTests
             Assert.That(hits[0].Y, Is.EqualTo(208).Within(1));
         });
     }
+
+    // Uso real 2026-11-02: the search showed the chat whose name is the recipient plus an emoji, another whose name
+    // starts the same, and a group and messages whose lines begin with the recipient as their author («Nora 😀: …»).
+    // The OCR drops the emoji and its gap set the author apart as if it were a row: three hits, «ambiguous», nothing
+    // written. A name followed by its colon or by the words of a message is a message's author, not a chat's row.
+    [Test]
+    public void AMessagesAuthorIsNotAChatRow()
+    {
+        WindowsVisibleOcrLocator.LayoutLine[] rows =
+        [
+            Line(200, ("Nora", 140), ("23:10", 340)),
+            Line(222, ("Tú:", 140), ("nos", 168), ("vemos", 196)),
+            Line(260, ("Noracita", 140), ("ayer", 340)),
+            Line(320, ("Amigas", 140), ("lunes", 340)),
+            Line(342, ("Nora", 140), (":", 200), ("jajaja", 210)),
+            Line(400, ("Amigas", 140), ("10/10/2026", 300)),
+            Line(422, ("Nora", 140), ("trae", 200), ("pan", 236)),
+        ];
+
+        IReadOnlyList<(double X, double Y)> hits = WindowsDesktopMessagingAutomation.RowsNamingRecipient(rows, "nora");
+
+        Assert.That(hits, Has.Count.EqualTo(1));
+        Assert.That(hits[0].Y, Is.EqualTo(208).Within(1));
+    }
+
+    // Uso real 2026-11-03: the search showed one chat named the recipient and, under a section header further left, groups
+    // whose second line says the recipient is also a member; the client paints the matched name in another colour and
+    // the OCR read it as a line of its own, so each group's second line looked like a row: «varios chats», nothing sent.
+    // A line right under another line of the same column is a row's second line, never a row.
+    [Test]
+    public void ARowsSecondLineIsNotARow()
+    {
+        WindowsVisibleOcrLocator.LayoutLine[] rows =
+        [
+            Line(200, ("Zarvo", 140), ("0:47", 440)),
+            Line(222, ("hola", 140)),
+            Line(270, ("Grupos", 40), ("en", 96), ("común", 116)),
+            Line(310, ("Taller", 140), ("lunes", 440)),
+            Line(332, ("Zarvo", 140)),
+            Line(332, ("también", 200), ("está", 264), ("aquí", 300)),
+            Line(380, ("Asado", 140), ("ayer", 440)),
+            Line(402, ("~Zarvo", 140)),
+        ];
+
+        IReadOnlyList<(double X, double Y)> hits = WindowsDesktopMessagingAutomation.RowsNamingRecipient(rows, "zarvo");
+
+        Assert.That(hits, Has.Count.EqualTo(1));
+        Assert.That(hits[0].Y, Is.EqualTo(208).Within(1));
+    }
+
+    // Uso real 2026-11-03: the same name was also the title of a result in a later section (the messages found), under
+    // its own header: the client ranks its sections, so the one row of the first section that holds the name is the
+    // chat; two rows of the same section are still ambiguous.
+    [Test]
+    public void TheOneRowOfTheFirstSectionThatHoldsTheNameIsTheChat()
+    {
+        WindowsVisibleOcrLocator.LayoutLine[] ranked =
+        [
+            Line(200, ("Zarvo", 140), ("ayer", 440)),
+            Line(222, ("hola", 160)),
+            Line(260, ("Zarvocito", 140), ("ayer", 440)),
+            Line(330, ("Mensajes", 40)),
+            Line(370, ("Zarvo", 140), ("22/10", 420)),
+            Line(392, ("Zarvo", 160)),
+        ];
+        WindowsVisibleOcrLocator.LayoutLine[] same =
+        [
+            Line(200, ("Zarvo", 140), ("ayer", 440)),
+            Line(260, ("Zarvo", 140), ("lunes", 440)),
+        ];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsDesktopMessagingAutomation.RowsNamingRecipient(ranked, "zarvo").Select(static hit => hit.Y),
+                Is.EqualTo(new[] { 208.0 }).Within(1));
+            Assert.That(WindowsDesktopMessagingAutomation.RowsNamingRecipient(same, "zarvo"), Has.Count.EqualTo(2));
+        });
+    }
+
+    // The rows a list really holds under the recipient's name stay ambiguous, and the result names them (their lines),
+    // never the other lines of the list (a name that only starts the same is no candidate): the model asks «¿a cuál?».
+    [Test]
+    public void AnAmbiguousSearchNamesTheRowsThatAreTheRecipient()
+    {
+        WindowsVisibleOcrLocator.LayoutLine[] rows =
+        [
+            Line(200, ("Nora", 140), ("23:10", 340)),
+            Line(260, ("Noracita", 140), ("ayer", 340)),
+            Line(320, ("Nora", 140), ("11:10", 300), ("p.", 344), ("m.", 360)),
+        ];
+
+        DesktopRecipientObservation unresolved = WindowsDesktopMessagingAutomation.UnresolvedChatList(42, 7, rows, "nora");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(unresolved.ErrorCode, Is.EqualTo("recipient_ambiguous"));
+            Assert.That(unresolved.EffectObserved, Is.True);
+            Assert.That(unresolved.Candidates, Is.EqualTo(new[] { "Nora 23:10", "Nora 11:10 p. m." }));
+            Assert.That(unresolved.CandidateCount, Is.EqualTo(2));
+        });
+    }
+
+    private static WindowsVisibleOcrLocator.LayoutLine Line(double y, params (string Text, double X)[] words) => new(
+        string.Join(' ', words.Select(word => word.Text)), words[0].X, y, 300, 16,
+        [.. words.Select(word => new WindowsVisibleOcrLocator.LayoutWord(word.Text, word.X, y, word.Text.Length * 8, 16))]);
 
     // C2: the header line that names the recipient is what is said, with no letter of tolerance.
     [Test]
@@ -493,7 +598,11 @@ public sealed class DesktopMessagingAdapterTests
         var automation = new StubAutomation(
             new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"),
             new DesktopMessageObservation(false, false, string.Empty,
-                WindowsDesktopMessagingAutomation.RecipientChangedBeforeEnter) { EffectMayHaveOccurred = true });
+                WindowsDesktopMessagingAutomation.RecipientChangedBeforeEnter)
+            {
+                EffectMayHaveOccurred = true,
+                StoppedBeforeEnter = "chat_check_before_enter",
+            });
         string destinations = TestDestinations("""{"whatsapp":"Letras"}""");
         try
         {
@@ -565,6 +674,151 @@ public sealed class DesktopMessagingAdapterTests
         {
             Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
         }
+    }
+
+    // Uso real 2026-11-03 (F1, 17:21 «Envíalo.» en Discord): the send failed at the draft check, before Enter, and its
+    // receipt said only effectUncertain; the model told «le mandé el mensaje». A send that stopped before Enter says in
+    // typed fields that Enter was not pressed, nothing was sent and the step where it stopped.
+    [TestCase("draft_check", "message_draft_not_verified", false)]
+    [TestCase("chat_check", "recipient_identity_changed", false)]
+    [TestCase("composer_focus", "message_composer_not_focused", false)]
+    [TestCase("chat_check_before_enter", "message_recipient_changed_before_enter", true)]
+    public async Task ASendThatStoppedBeforeEnterSaysWhereAndThatNothingWasSent(string step, string error, bool written)
+    {
+        DesktopMessageObservation stopped = step switch
+        {
+            "draft_check" => DesktopMessageObservation.DraftNotVerified(),
+            _ => new DesktopMessageObservation(false, false, string.Empty, error)
+            {
+                EffectMayHaveOccurred = step != "chat_check",
+                StoppedBeforeEnter = step,
+            },
+        };
+        var automation = new StubAutomation(new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"), stopped);
+        string destinations = TestDestinations("""{"discord":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "message.send", Json("""{"channel":"discord","recipient":"Letras","text":"ya voy"}"""), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.ErrorCode, Is.EqualTo(error));
+                Assert.That(receipt.Result, Is.Not.Null);
+                Assert.That(receipt.Result!.Value.GetProperty("sent").GetBoolean(), Is.False);
+                Assert.That(receipt.Result.Value.GetProperty("enterPressed").GetBoolean(), Is.False);
+                Assert.That(receipt.Result.Value.GetProperty("stoppedAt").GetString(), Is.EqualTo(step));
+                Assert.That(receipt.Result.Value.GetProperty("messageWritten").GetBoolean(), Is.EqualTo(written));
+                Assert.That(receipt.Result.Value.GetProperty("displayName").GetString(), Is.EqualTo("Letras"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // F1, 17:20: the draft before it was not seen, cleared, and told «le dejé escrito…» over effectUncertain alone.
+    [Test]
+    public async Task ADraftNotSeenSaysItWasNotLeftWritten()
+    {
+        var automation = new StubAutomation(
+            new DesktopRecipientObservation(true, true, (nint)42, 7, null, "Letras"), DesktopMessageObservation.DraftNotVerified());
+        string destinations = TestDestinations("""{"discord":"Letras"}""");
+        try
+        {
+            using var adapter = new DesktopMessagingAdapter(automation, destinations);
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "message.draft", Json("""{"channel":"discord","recipient":"Letras","text":"ya voy"}"""), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("message_draft_not_verified"));
+                Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+                Assert.That(receipt.Result!.Value.GetProperty("messageWritten").GetBoolean(), Is.False);
+                Assert.That(receipt.Result.Value.GetProperty("sent").GetBoolean(), Is.False);
+                Assert.That(receipt.Result.Value.GetProperty("stoppedAt").GetString(), Is.EqualTo("draft_check"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(Path.GetDirectoryName(destinations)!, recursive: true);
+        }
+    }
+
+    // Every way the send flow ends before Enter (its returns ahead of the read-back) names its step; the person's draft
+    // has a receipt of its own (StoppedAtPersonDraft).
+    [Test]
+    public void EveryStopOfTheSendBeforeEnterNamesItsStep()
+    {
+        string source = AdapterSource();
+        int send = source.IndexOf("public async ValueTask<DesktopMessageObservation> SendAsync(", StringComparison.Ordinal);
+        int readBack = source.IndexOf("return await SentReadBackAsync(", Math.Max(send, 0), StringComparison.Ordinal);
+        string beforeEnter = source[send..readBack];
+        string[] stops = beforeEnter.Split("return new(false, false, string.Empty, ", StringSplitOptions.None)[1..]
+            .Where(stop => !stop.StartsWith("ComposerHasPersonDraft", StringComparison.Ordinal))
+            .ToArray();
+        Assert.Multiple(() =>
+        {
+            Assert.That(send, Is.GreaterThan(0));
+            Assert.That(stops, Has.Length.GreaterThanOrEqualTo(4));
+            foreach (string stop in stops)
+            {
+                string statement = stop[..stop.IndexOf(';', StringComparison.Ordinal)];
+                Assert.That(statement, Does.Contain("StoppedBeforeEnter = "), statement);
+            }
+
+            Assert.That(source, Does.Contain("""new(false, false, string.Empty, "message_draft_not_verified") { EffectMayHaveOccurred = true, StoppedBeforeEnter = """));
+        });
+    }
+
+    // Uso real 2026-11-03 (F1, el PC): Discord maximized on a 1920 px screen at 125 % (1936 px, DPI 120). The composer
+    // band started at a third of the window (638 px), past where Discord's typed text starts (about 466 px, its 36 % of
+    // the 1296 px window the third was fitted on: the server column, the list and the attach button do not grow with
+    // the window), so the start of every message was cut off the read and no draft verified, twice in a row. The typed
+    // text is read from the conversation pane's edge; the band that looks for a person's draft by its picture keeps
+    // the third (past the list's foot, whose panel changes).
+    [TestCase(1936, 120)]
+    [TestCase(1296, 120)]
+    [TestCase(1296, 96)]
+    [TestCase(2560, 96)]
+    public void TheTypedTextIsReadFromWhereDiscordsTextStarts(int windowWidth, int dpi)
+    {
+        double scale = dpi / 96.0;
+        const int TextStartsAt = 466;
+
+        int typed = WindowsDesktopMessagingAutomation.ComposerBandLeft("discord", typedText: true, windowWidth, scale);
+        int picture = WindowsDesktopMessagingAutomation.ComposerBandLeft("discord", typedText: false, windowWidth, scale);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(typed, Is.LessThanOrEqualTo(TextStartsAt));
+            Assert.That(picture, Is.GreaterThanOrEqualTo(WindowsDesktopMessagingAutomation.DiscordComposerBandLeft(windowWidth)));
+            Assert.That(WindowsDesktopMessagingAutomation.ComposerBandLeft("whatsapp", typedText: true, windowWidth, scale),
+                Is.EqualTo(WindowsDesktopMessagingAutomation.ComposerBandLeft("whatsapp", typedText: false, windowWidth, scale)));
+        });
+    }
+
+    [TestCase("SendInBurstAsync(")]
+    [TestCase("DraftInBurstAsync(")]
+    public void BothFlowsReadTheTypedDraftFromTheTextBand(string flow)
+    {
+        string source = AdapterSource();
+        int start = source.IndexOf("private static async ValueTask<DesktopMessageObservation> " + flow, StringComparison.Ordinal);
+        int observe = source.IndexOf("private static async ValueTask<MessageVisualObservation> ObserveTypedDraftAsync(", StringComparison.Ordinal);
+        int observeEnd = source.IndexOf("\n    }\n", Math.Max(observe, 0), StringComparison.Ordinal);
+        int typed = source.IndexOf("SendText(text);", Math.Max(start, 0), StringComparison.Ordinal);
+        Assert.Multiple(() =>
+        {
+            Assert.That(start, Is.GreaterThan(0));
+            Assert.That(source[start..typed], Does.Contain("CaptureArea.ComposerText"));
+            Assert.That(source[observe..observeEnd], Does.Contain("CaptureArea.ComposerText"));
+            Assert.That(source[observe..observeEnd], Does.Not.Contain("CaptureArea.Composer,"));
+        });
     }
 
     [TestCase("SendInBurstAsync(")]
@@ -959,6 +1213,13 @@ public sealed class DesktopMessagingAdapterTests
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            Calls++;
+            return ValueTask.FromResult(resolve);
+        }
+
+        public ValueTask<DesktopRecipientObservation> OpenConversationAsync(
+            string channel, string name, string? server, CancellationToken cancellationToken)
+        {
             Calls++;
             return ValueTask.FromResult(resolve);
         }

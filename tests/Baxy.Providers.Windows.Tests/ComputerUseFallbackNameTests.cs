@@ -65,7 +65,7 @@ public sealed class ComputerUseFallbackNameTests
     }
 
     [Test]
-    public void TheFallbackFollowsHelpTextThenLabelThenAutomationIdAndNeverReplacesAName()
+    public void TheFallbackFollowsLabelThenHelpTextThenAutomationIdAndNeverReplacesAName()
     {
         JsonElement answer = RunWorker("""
             $Actionable=@('Button','MenuItem','ListItem','Edit')
@@ -77,8 +77,8 @@ public sealed class ComputerUseFallbackNameTests
             $label=[pscustomobject]@{ Cached=[pscustomobject]@{ Name='Correo electrónico' } }
             $elements=@(
               (Fake 'Guardar' 'Button' 'Guarda el archivo' 'SaveButton' $null),
-              (Fake '' 'Button' '  Ajustes  ' 'SettingsButton' $label),
-              (Fake '' 'Edit' '' 'EmailBox' $label),
+              (Fake '' 'Button' '  Ajustes  ' 'SettingsButton' $null),
+              (Fake '' 'Edit' 'Escribe tu correo' 'EmailBox' $label),
               (Fake '' 'Button' '' 'NotificationsButton' $null),
               (Fake '' 'Button' '   ' '12345' $null),
               (Fake '' 'Pane' 'Panel lateral' 'SidebarPane' $null),
@@ -89,8 +89,8 @@ public sealed class ComputerUseFallbackNameTests
         Assert.That(answer.EnumerateArray().Select(item => item.GetString()), Is.EqualTo(new[]
         {
             "Guardar",              // its own Name rules: the help text never replaces it
-            "Ajustes",              // help text first (before its label), trimmed
-            "Correo electrónico",   // a form field takes its label's name (before its AutomationId)
+            "Ajustes",              // no label: its help text, trimmed
+            "Correo electrónico",   // uso-108 (B13): a form field takes its label's name, before its help and its AutomationId
             "Notifications",        // last, the readable AutomationId
             "",                     // a blank help text and a number name nothing
             "",                     // a pane without a Name stays nameless: it is not actionable
@@ -282,7 +282,7 @@ public sealed class ComputerUseFallbackNameTests
         start.Environment["BAXY_FALLBACK_WORKER"] = WorkerPath();
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the worker functions answer");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return JsonDocument.Parse(output).RootElement.Clone();

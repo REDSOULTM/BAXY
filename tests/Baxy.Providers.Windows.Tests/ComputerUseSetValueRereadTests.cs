@@ -24,7 +24,7 @@ public sealed class ComputerUseSetValueRereadTests
             $late={ $reads.n++; if($reads.n -ge 2){ 'hola' } else { 'viejo' } }.GetNewClosure()
             $answers=@()
             $answers+=(Wait-ValueSet $late 'hola' 300)
-            $answers+=[string]$reads.n
+            $answers+=[string]($reads.n -ge 2)
             $watch=[System.Diagnostics.Stopwatch]::StartNew()
             $answers+=(Wait-ValueSet { 'viejo' } 'hola' 300)
             $elapsed=$watch.ElapsedMilliseconds
@@ -39,10 +39,10 @@ public sealed class ComputerUseSetValueRereadTests
 
         Assert.That(answer.Split(','), Is.EqualTo(new[]
         {
-            "hola", "2",      // the value Chromium publishes late (second read, ~40 ms) is verified at the read that shows it
+            "hola", "True",   // the value Chromium publishes late (second read, ~40 ms) is verified once it holds (uso-108)
             "viejo", "True",  // counter-case: a value that never comes is the old one after about 300 ms
             "viejo", "True",  // the bound is never more than 300 ms whatever is asked
-            "hola",           // a value already there is read at once
+            "hola",           // a value already there, once it holds
             "",               // a field gone answers no value
         }));
     }
@@ -75,7 +75,7 @@ public sealed class ComputerUseSetValueRereadTests
         start.Environment["BAXY_SETVALUE_WORKER"] = worker;
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();

@@ -36,6 +36,7 @@ public sealed class ComputerUseLookupDeadlineTests
             function Test-ItemHolds($el,$aliases){ return $false }
             function Get-ShownName($el){ return [string]$el.Name }
             function Get-Id($el){ return [string]$el.Id }
+            function Get-SystemChange($el,$name,$kind,$root,$changes){ return $null }
             # Past the guard the click reads the control's toggle state: the case says it got that far.
             function Get-Toggle($el){ throw 'pressing' }
             function Click-Result($ok,$verified,$code,$name,$identity,$a,$b,$c,$kind){ return @{ error=[string]$code } }
@@ -162,7 +163,7 @@ public sealed class ComputerUseLookupDeadlineTests
         start.Environment["BAXY_FRAME_WORKER"] = worker;
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the rule answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();

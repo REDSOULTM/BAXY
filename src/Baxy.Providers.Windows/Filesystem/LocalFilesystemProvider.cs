@@ -145,6 +145,12 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     {
         (string folder, string root, string relativePath) = PlaceOf(path, "file.write");
         string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
+        // Encargo 115 (H4): what the name asks the file to be, before anything is read or written.
+        WrittenFormat.Kind format = WrittenFormat.Of(relativePath);
+        if (format == WrittenFormat.Kind.NotText || (format == WrittenFormat.Kind.Word && append))
+            throw WrittenFormat.Refused(relativePath, append);
+        string[] wordLines = format == WrittenFormat.Kind.Word ? WrittenFormat.Lines(normalizedText) : [];
+        if (!wordLines.All(External.OfficePackage.XmlCanHold)) throw Error("office_text_invalid_character");
         lock (_gate)
         {
             string file = ResolveIn(root, relativePath, allowMissingLeaf: true);
@@ -165,9 +171,11 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 // refuses such a file, and so does an append.
                 if (TextFileEncoding.DecodeExactly(previous) is null) throw Error("known_text_encoding_unsupported");
             }
-            byte[] bytes = append
-                ? [.. previous, .. TextFileEncoding.EncodeAppended(previous, normalizedText)]
-                : StrictUtf8.GetBytes(normalizedText);
+            byte[] bytes = format == WrittenFormat.Kind.Word
+                ? External.OfficePackage.Create("docx", wordLines.FirstOrDefault(string.Empty), wordLines.Length > 0 ? wordLines[1..] : [])
+                : append
+                    ? [.. previous, .. TextFileEncoding.EncodeAppended(previous, normalizedText)]
+                    : StrictUtf8.GetBytes(normalizedText);
             string desiredHash = Hex(SHA256.HashData(bytes));
             string? current = !exists ? null : append ? Hex(SHA256.HashData(previous)) : HashFile(file);
             if (current is not null && string.Equals(current, desiredHash, StringComparison.Ordinal))
@@ -209,6 +217,9 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                     stream.Write(bytes);
                     stream.Flush(flushToDisk: true);
                 }
+                if (format == WrittenFormat.Kind.Word
+                    && !External.OfficePackage.Verify(temporary, "docx", string.Join('\n', wordLines)))
+                    throw Error("office_document_create_not_verified");
                 if (exists && append)
                 {
                     if (!string.Equals(HashFile(file), current, StringComparison.Ordinal))
@@ -249,6 +260,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
                 Created = !exists,
                 FolderCreated = folderCreated,
                 Folder = folder,
+                Format = format == WrittenFormat.Kind.Word ? "docx" : null,
             };
         }
     }

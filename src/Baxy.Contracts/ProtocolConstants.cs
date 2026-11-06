@@ -12,6 +12,19 @@ public static class ProtocolLimits
 }
 
 /// <summary>
+/// How a core that ended before its hello says why, for the App to tell a passing failure from a terminal one.
+/// </summary>
+public static class CoreExitCodes
+{
+    /// <summary>
+    /// Uso 85: the local data profile cannot be read or authenticated by this Windows account (a profile of another
+    /// version, keys protected by another account or machine, a store left incomplete). Starting again cannot change
+    /// that: the App stops relaunching and asks the person (sysexits EX_DATAERR).
+    /// </summary>
+    public const int ProfileUnreadable = 65;
+}
+
+/// <summary>
 /// The hello is the core's only startup message, and the App gives up on a
 /// core that does not send it within <see cref="HelloTimeout"/>. Everything the
 /// core waits for before the hello fits inside that budget: the installed

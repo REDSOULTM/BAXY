@@ -213,8 +213,8 @@ public sealed class FileOpenWithApplicationTests
     private static readonly FileActivation.Handler[] TextHandlers =
     [
         new(@"C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2607.14.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe", "Bloc de notas"),
-        new(@"C:\Users\usuario\AppData\Local\Programs\Microsoft VS Code\Code.exe", "Visual Studio Code"),
-        new(@"C:\Users\usuario\AppData\Local\Programs\Opera GX\opera.exe", "Opera GX Internet Browser"),
+        new(@"C:\Users\ana\AppData\Local\Programs\Microsoft VS Code\Code.exe", "Visual Studio Code"),
+        new(@"C:\Users\ana\AppData\Local\Programs\Opera GX\opera.exe", "Opera GX Internet Browser"),
         new(@"C:\Program Files\Microsoft Office\root\Office16\Winword.exe", "Word"),
     ];
 
@@ -231,11 +231,11 @@ public sealed class FileOpenWithApplicationTests
         // Review, finding 1 (abre notas.txt en python): Python and Node.js are Start entries whose executable the shell
         // gives, and «.txt» would run as code; an uninstaller and a launcher that drops its shortcut's arguments too.
         var python = new InstalledApplicationEntry("Python 3.12 (64-bit)", "python-312",
-            TargetPath: @"C:\Users\usuario\AppData\Local\Programs\Python\Python312\python.exe");
+            TargetPath: @"C:\Users\ana\AppData\Local\Programs\Python\Python312\python.exe");
         var node = new InstalledApplicationEntry("Node.js", "node", TargetPath: @"C:\Program Files\nodejs\node.exe");
         var uninstaller = new InstalledApplicationEntry("Desinstalar X", "unins", TargetPath: @"C:\Program Files\X\unins000.exe");
         var launcher = new InstalledApplicationEntry("Discord", "discord",
-            TargetPath: @"C:\Users\usuario\AppData\Local\Discord\Update.exe", TargetArguments: "--processStart Discord.exe");
+            TargetPath: @"C:\Users\ana\AppData\Local\Discord\Update.exe", TargetArguments: "--processStart Discord.exe");
         var word = new InstalledApplicationEntry("Word", "word", TargetPath: @"C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE");
         var notepad = new InstalledApplicationEntry("Bloc de notas", "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App");
         var paint = new InstalledApplicationEntry("Paint", "Microsoft.Paint_8wekyb3d8bbwe!App");
@@ -269,7 +269,7 @@ public sealed class FileOpenWithApplicationTests
         new(@"C:\Program Files\WindowsApps\Microsoft.Paint_11.2605.81.0_x64__8wekyb3d8bbwe\PaintApp\mspaint.exe", "Paint",
             "Microsoft.Paint_8wekyb3d8bbwe!App"),
         new("Fotos", "Fotos", "Microsoft.Windows.Photos_8wekyb3d8bbwe!App"),
-        new(@"C:\Users\usuario\AppData\Local\Programs\Microsoft VS Code\Code.exe", "Visual Studio Code", "Microsoft.VisualStudioCode"),
+        new(@"C:\Users\ana\AppData\Local\Programs\Microsoft VS Code\Code.exe", "Visual Studio Code", "Microsoft.VisualStudioCode"),
     ];
 
     [Test]
@@ -281,7 +281,7 @@ public sealed class FileOpenWithApplicationTests
         var snipping = new InstalledApplicationEntry("Recortes", "Microsoft.ScreenSketch_8wekyb3d8bbwe!App");
         var pythonStore = new InstalledApplicationEntry("Python 3.12", "PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0!Python");
         var code = new InstalledApplicationEntry("Visual Studio Code", "Microsoft.VisualStudioCode",
-            TargetPath: @"C:\Users\usuario\AppData\Local\Programs\Microsoft VS Code\Code.exe");
+            TargetPath: @"C:\Users\ana\AppData\Local\Programs\Microsoft VS Code\Code.exe");
 
         FileActivation.HandOff For(InstalledApplicationEntry entry) =>
             FileActivation.Match(entry, WindowsInstalledApplicationPlatform.StrongExecutablePath(entry), ImageHandlersWithIds).HandOff;

@@ -180,8 +180,16 @@ class _FakeLlama:
                     fake.slot = json.dumps(body["messages"], ensure_ascii=False)
                     said = body["messages"][-1]["content"]
                     if said == "hola":
-                        return self._answer(200, {"choices": [{"message": {"content": "H"}}],
-                                                  "usage": {"prompt_tokens": 37000}})
+                        # The warm-up (LlmServer.read_prefix): its progress through the prompt, then the reply.
+                        self.send_response(200)
+                        self.send_header("Content-Type", "text/event-stream")
+                        self.end_headers()
+                        for chunk in ({"choices": [], "prompt_progress": {"total": 37000, "processed": 37000}},
+                                      {"choices": [{"index": 0, "delta": {"content": "H"}, "finish_reason": "length"}]},
+                                      {"choices": [], "usage": {"prompt_tokens": 37000}}):
+                            self.wfile.write(f"data: {json.dumps(chunk)}\n\n".encode("utf-8"))
+                        self.wfile.write(b"data: [DONE]\n\n")
+                        return None
                     return self._answer(200, {"choices": [{"message": {"content": "Listo."}}]})
                 state = fake.folder / body["filename"]
                 if query == "action=save":
@@ -322,6 +330,7 @@ def test_the_vision_sets_the_slot_aside_in_the_same_folder_and_the_prefix_surviv
 
     monkeypatch.setattr(llm_server.subprocess, "Popen", lambda command, **kw: commands.append(command) or Alive())
     monkeypatch.setattr(llm_server.LlmServer, "_wait_health", lambda self: None)
+    monkeypatch.setattr(llm_server, "_free_vram_mib", lambda server: None)
     llm_server.LlmServer(str(tmp_path / "model.gguf"), "llama-server.exe").start()
     command = commands[0]
     assert command.count("--slot-save-path") == 1 and command[command.index("--slot-save-path") + 1] == str(slots)

@@ -137,6 +137,173 @@ public sealed class ScrollRevealWorkerTests
         Assert.That(output, Is.EqualTo("|False|reveal_not_found|Bloc de notas, 11.2, Microsoft"));
     }
 
+    // Uso-108, the exact rule of agent-desktop's scroll_ladder.rs visibility_verified.
+    [TestCase("10,10,100,20", "0,0,200,100", "True", TestName = "Wholly inside its list is seen")]
+    [TestCase("10,90,100,20", "0,0,200,100", "False", TestName = "A row cut by the bottom of its list is not seen")]
+    [TestCase("10,-5,100,20", "0,0,200,100", "False", TestName = "A row cut by the top of its list is not seen")]
+    [TestCase("10,300,100,20", "0,0,200,100", "False", TestName = "Outside its list is not seen")]
+    [TestCase("10,10,500,20", "0,0,200,100", "True", TestName = "Wider than its list and touching it is seen")]
+    [TestCase("500,10,500,20", "0,0,200,100", "False", TestName = "Wider than its list and away from it is not seen")]
+    [TestCase("10,81,100,20", "0,0,200,100", "True", TestName = "One pixel of rounding is seen")]
+    [TestCase("150,10,100,20", "0,0,200,100", "True", TestName = "Cut sideways only is seen (a deep row of a narrow tree)")]
+    [TestCase("150,90,100,20", "0,0,200,100", "False", TestName = "Cut sideways and by the bottom is not seen")]
+    [TestCase("10,10,100,20", "", "True", TestName = "Counter case a list that publishes no viewport never hides a row (Explorer)")]
+    [TestCase("10,10,0,20", "", "False", TestName = "No area is not seen")]
+    public void WhatCountsAsSeen(string box, string viewport, string seen)
+    {
+        static string Rect(string kind, string text) => text.Length == 0
+            ? "$null"
+            : "(" + kind + " " + text.Replace(',', ' ') + ")";
+        string output = Run(RevealPrelude + $$"""
+            Test-BoxShown {{Rect("Box", box)}} {{Rect("View", viewport)}}
+            """);
+        Assert.That(output, Is.EqualTo(seen));
+    }
+
+    // hondo 14 finding 1: «already», revealed false, for a row with 2 px inside its list; the next press hit the neighbour.
+    [Test]
+    public void ARowCutByItsListIsNotAlreadySeen()
+    {
+        string output = Run(RevealPrelude + """
+            $script:Viewport=View 0 0 200 25
+            $row=Row 'Spotify' 'ControlType.ListItem' $true
+            $row | Add-Member -MemberType ScriptMethod -Name TryGetCurrentPattern -Value { param($p,$r) return $false }
+            function Get-Descendants($root){ return @($row) }
+            function Find-InContainers($root,[string[]]$aliases,$until,[ref]$touched){ throw 'the row in sight in part is not searched for again' }
+            Test-Shown $row
+            Test-PartlyShown $row
+            $answer=Do-Reveal @{ aliases=@('Spotify'); hwnd=1; direction='down'; amount=1 }
+            "$($answer.method)|$($answer.ok)|$($answer.visible)"
+            """);
+        Assert.That(output.Split('\n').Select(static line => line.Trim()), Is.EqualTo(new[] { "False", "True", "already|True|True" }),
+            "no pattern can bring it further: in sight in part, as before, and no turn of pages away from it");
+    }
+
+    // Merge of uso-108: two routes each defined a Get-ScrollViewport, one answering x,y,w,h and one a Rect, and the last one
+    // defined won at run time: the pointer's Get-VisiblePart read no width and took a cut row for whole.
+    [Test]
+    public void NoFunctionIsDefinedTwiceInTheWorker()
+    {
+        string[] twice = [.. File.ReadAllLines(WorkerPath())
+            .Where(static line => line.StartsWith("function ", StringComparison.Ordinal))
+            .Select(static line => line["function ".Length..].Split('(', '{', ' ')[0])
+            .GroupBy(static name => name, StringComparer.OrdinalIgnoreCase)
+            .Where(static group => group.Count() > 1)
+            .Select(static group => group.Key)];
+        Assert.That(twice, Is.Empty);
+    }
+
+    // Both routes read the one viewport: reveal says a cut row is not seen, the press keeps to its part in sight.
+    [Test]
+    public void TheOneViewportServesRevealAndThePress()
+    {
+        string output = Run(RevealPrelude + """
+            Add-Type -AssemblyName UIAutomationClient
+            Invoke-Expression (Take 'function Get-ScrollViewport(' '# Lo que se ve del rectangulo')
+            Invoke-Expression (Take 'function Get-VisiblePart(' '# El centro y los cuatro')
+            Invoke-Expression (Take 'function Get-CurrentRect(' '# Pulsa el control por la primera')
+            $list=[pscustomobject]@{ Current=[pscustomobject]@{ BoundingRectangle=(Box 0 0 200 100) } }
+            $list | Add-Member -MemberType ScriptMethod -Name TryGetCurrentPattern -Value { param($p,$r) return $true }
+            function Get-ParentOf($node){ return $list }
+            $row=[pscustomobject]@{ Current=[pscustomobject]@{ IsOffscreen=$false; BoundingRectangle=(Box 10 90 100 20) } }
+            $part=Get-VisiblePart @{ x=10; y=90; w=100; h=20 } (Get-ScrollViewport $row)
+            "$(Test-Shown $row)|$(Test-PartlyShown $row)|$($part.y)|$($part.h)"
+            """);
+        Assert.That(output, Is.EqualTo("False|True|90|10"));
+    }
+
+    // The trap agent-desktop shipped: with no viewport known, today's answer stays.
+    [Test]
+    public void CounterCaseWithNoViewportAShownRowIsStillAlreadySeen()
+    {
+        string output = Run(RevealPrelude + """
+            function Get-Descendants($root){ return @((Row 'Spotify' 'ControlType.ListItem' $true)) }
+            function Find-InContainers($root,[string[]]$aliases,$until,[ref]$touched){ throw 'searched' }
+            $answer=Do-Reveal @{ aliases=@('Spotify'); hwnd=1; direction='down'; amount=1 }
+            "$($answer.method)|$($answer.visible)"
+            """);
+        Assert.That(output, Is.EqualTo("already|True"));
+    }
+
+    // A row off the list entirely is out of sight: it goes on to the containers as a row with IsOffscreen did.
+    [Test]
+    public void ARowAwayFromItsListGoesOnToTheContainers()
+    {
+        string output = Run(RevealPrelude + """
+            $script:Viewport=View 0 500 200 100
+            $row=Row 'Spotify' 'ControlType.ListItem' $true
+            $row | Add-Member -MemberType ScriptMethod -Name TryGetCurrentPattern -Value { param($p,$r) return $false }
+            function Get-Descendants($root){ return @($row) }
+            function Find-InContainers($root,[string[]]$aliases,$until,[ref]$touched){
+              $touched.Value=$true
+              $script:Viewport=View 0 0 200 100
+              return (Reveal-Result $true '' 'itemcontainer' $row)
+            }
+            $answer=Do-Reveal @{ aliases=@('Spotify'); hwnd=1; direction='down'; amount=1 }
+            "$($answer.method)|$($answer.visible)"
+            """);
+        Assert.That(output, Is.EqualTo("itemcontainer|True"));
+    }
+
+    // hondo 14 finding 2: a scroller that answers late, read once, was told «nothing moved» or «end of the list».
+    [Test]
+    public void AScrollerThatMovesLateIsNotToldStill()
+    {
+        string output = Run(RevealPrelude + """
+            $late=[System.Diagnostics.Stopwatch]::StartNew()
+            $current=[pscustomobject]@{}
+            $current | Add-Member -MemberType ScriptProperty -Name VerticalScrollPercent -Value { if($late.ElapsedMilliseconds -ge 300){ 40.0 } else { 10.0 } }
+            $scroll=[pscustomobject]@{ Current=$current }
+            Get-SettledPercent $scroll 10.0
+            """);
+        Assert.That(output, Is.EqualTo("40"));
+    }
+
+    [Test]
+    public void CounterCaseAScrollerThatStaysPaysOnlyTheSettleAndIsToldStill()
+    {
+        string output = Run(RevealPrelude + """
+            $scroll=[pscustomobject]@{ Current=[pscustomobject]@{ VerticalScrollPercent=100.0 } }
+            $watch=[System.Diagnostics.Stopwatch]::StartNew()
+            $still=Get-SettledPercent $scroll 100.0
+            $took=$watch.ElapsedMilliseconds
+            $moved=[pscustomobject]@{ Current=[pscustomobject]@{ VerticalScrollPercent=50.0 } }
+            $watch.Restart()
+            $at=Get-SettledPercent $moved 0.0
+            "$still|$($took -ge $script:SettleMs)|$at|$($watch.ElapsedMilliseconds -lt 100)"
+            """);
+        Assert.That(output, Is.EqualTo("100|True|50|True"), "a scroll that moved waits for nothing");
+    }
+
+    // Review of batch 2 (I5): the system-wide focus is another process's, read before Get-Root's check and any wait limit;
+    // a window in front that stopped pumping would hold a write to a healthy window behind.
+    [Test]
+    public void TheSystemWideFocusIsNotReadAroundAField()
+    {
+        string output = Run("""
+            Invoke-Expression (Take 'function Add-FrontReport(' '# Las clases de ventana de la superficie de render')
+            Add-Type -TypeDefinition 'public static class BaxyFrontKeeper { public static int WatchTaken=0; public static int WatchFailed=0; public static long WatchLongestMs=0; public static void Begin(System.IntPtr t){} public static void End(bool a){} }'
+            function Test-ActedByPattern($result){ return $true }
+            function Get-FocusKey(){ throw 'the focus of the whole desktop was read' }
+            $answer=Invoke-Kept ([pscustomobject]@{ cmd='field'; hwnd=1 }) { param($r) @{ ok=$true; method='setvalue' } }
+            [bool]$answer.ok
+            """);
+        Assert.That(output, Is.EqualTo("True"));
+    }
+
+    // Review of batch 2 (M7): PowerShell turns a raising property read into null (measured on 5.1: a getter that throws reads
+    // $null, and [double]$null is 0), so a list rebuilt by its own scroll read as «moved to 0».
+    [Test]
+    public void AScrollerThatDiedIsNotReadAsPercentZero()
+    {
+        string output = Run(RevealPrelude + """
+            $current=[pscustomobject]@{ VerticalScrollPercent=$null }
+            $scroll=[pscustomobject]@{ Current=$current }
+            try { $value=Get-SettledPercent $scroll 30.0; "read $value" } catch { 'unread' }
+            """);
+        Assert.That(output, Is.EqualTo("unread"));
+    }
+
     [Test]
     public void ARevealPastItsDeadlineAnswersAnIncompleteSearchWithoutTurningPages()
     {
@@ -198,10 +365,14 @@ public sealed class ScrollRevealWorkerTests
     // Do-Reveal, Reveal-Listed and the reveal's deadline, from the worker's text, on stand-in rows.
     private const string RevealPrelude = """
         Invoke-Expression (Take 'function Test-Shown(' '# Los guiones del navegador')
+        function Box([double]$x,[double]$y,[double]$w,[double]$h){ [pscustomobject]@{ X=$x; Y=$y; Width=$w; Height=$h; IsEmpty=$false } }
+        function View([double]$x,[double]$y,[double]$w,[double]$h){ return @{ x=$x; y=$y; w=$w; h=$h } }
         function Row([string]$name,[string]$kind='ControlType.ListItem',[bool]$shown=$false){
-          [pscustomobject]@{ Name=$name; Current=[pscustomobject]@{ IsOffscreen=(-not $shown); ControlType=[pscustomobject]@{ ProgrammaticName=$kind } } }
+          [pscustomobject]@{ Name=$name; Current=[pscustomobject]@{ IsOffscreen=(-not $shown); BoundingRectangle=(Box 10 10 100 20); ControlType=[pscustomobject]@{ ProgrammaticName=$kind } } }
         }
         function Get-Root($hwnd){ return @{ root=[pscustomobject]@{ Name='ventana' } } }
+        function Get-ScrollViewport($el){ return $script:Viewport }
+        $script:Viewport=$null
 
         """;
 
@@ -237,7 +408,7 @@ public sealed class ScrollRevealWorkerTests
         start.Environment["BAXY_REVEAL_WORKER"] = WorkerPath();
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();

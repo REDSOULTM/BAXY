@@ -46,6 +46,59 @@ public sealed class SaidFoldersTests
         Directory.Delete(_root, recursive: true);
     }
 
+    // Encargo 115 (U43, H5): office.document.create writes only in Documents\\BAXY.
+    [Test]
+    public void AWordDocumentForAFolderSaidIsRefusedWithTheCallThatMakesItThere()
+    {
+        SaidFolders said = Heard("necesito un Word que diga revisar el inventario y que quede en banco-local con el nombre pendientes");
+        var call = new JsonObject
+        {
+            ["format"] = "docx",
+            ["title"] = "Inventario",
+            ["paragraphs"] = new JsonArray(JsonValue.Create("revisar el inventario")),
+        };
+
+        SaidFolders.Ruling? first = said.Rule("office.document.create", Descriptor("office.document.create"), call);
+        SaidFolders.Ruling? again = said.Rule("office.document.create", Descriptor("office.document.create"), call);
+
+        Assert.Multiple(() =>
+        {
+            string next = (string?)first?.Refusal?["next"] ?? string.Empty;
+            Assert.That((string?)first?.Refusal?["error"], Is.EqualTo(SaidFolders.LeftOut));
+            Assert.That(next, Does.StartWith("file_write {"));
+            Assert.That(next, Does.Contain("<the name the person gave it>.docx"));
+            // banco-local is in the home folder and on the Desktop: the model says which.
+            Assert.That(next, Does.Contain("<one of those folders>"));
+            Assert.That(first!.Refusal!["saidFolders"]!.AsArray(), Has.Count.EqualTo(2));
+            Assert.That(next, Does.Contain("Inventario\\nrevisar el inventario"));
+            // The model may know better: the same call runs as written.
+            Assert.That(again?.Refusal, Is.Null);
+        });
+    }
+
+    [Test]
+    public void AWordDocumentForTheOneFolderSaidNamesItsWholePath()
+    {
+        Directory.CreateDirectory(Path.Combine(_home, "archivo-unico"));
+        SaidFolders said = Heard("guarda un Word que diga hola en archivo-unico como saludo");
+        var call = new JsonObject { ["format"] = "docx", ["title"] = "hola" };
+
+        string next = (string?)said.Rule("office.document.create", Descriptor("office.document.create"), call)?.Refusal?["next"] ?? string.Empty;
+
+        Assert.That(next, Does.Contain("archivo-unico\\\\<the name the person gave it>.docx"));
+    }
+
+    [TestCase("crea un Word que diga hola", "docx")]
+    [TestCase("crea una planilla en banco-local", "xlsx")]
+    [TestCase("crea un Word en Documentos que diga hola", "docx")]
+    public void ADocumentWithNoOtherFolderSaidRunsAsWritten(string words, string format)
+    {
+        SaidFolders said = Heard(words);
+        var call = new JsonObject { ["format"] = format, ["title"] = "Acta" };
+
+        Assert.That(said.Rule("office.document.create", Descriptor("office.document.create"), call)?.Refusal, Is.Null);
+    }
+
     // E006 / E017 shape: a full path said, and a write that kept only the file's name in the home folder.
     [Test]
     public void AWriteThatLeavesOutAFullPathSaidIsRefusedWithTheCallThatNamesIt()
@@ -468,6 +521,35 @@ public sealed class SaidFoldersTests
 
         Assert.That((string?)refusal?["next"], Does.Contain("document_presentation_create reaches only the folders"));
         Assert.That((bool?)refusal?["reachable"], Is.False);
+    }
+
+    // Banco de uso 03-11 (U23, «hazme un pantallazo y déjalo guardado en la carpeta …»): the capture went to a known
+    // folder and was refused, told it reaches only those. It takes the folder named by its path now: the refusal says
+    // the call with that path (and no folder), and the call with it runs.
+    [TestCase("capture.screenshot")]
+    [TestCase("capture.active.window")]
+    public void ACaptureSavedInAFolderNamedIsToldThePathThatNamesIt(string operation)
+    {
+        SaidFolders said = Heard("hazme un pantallazo y déjalo guardado en la carpeta banco-local");
+
+        JsonObject? refusal = said.Rule(operation, Descriptor(operation), new JsonObject { ["folder"] = "desktop" })?.Refusal;
+        SaidFolders.Ruling? there = said.Rule(operation, Descriptor(operation), new JsonObject { ["path"] = "banco-local" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((bool?)refusal?["reachable"], Is.True);
+            Assert.That((string?)refusal?["next"], Does.Contain("path \"home/banco-local\" and no folder"));
+            Assert.That(there, Is.Null);
+        });
+    }
+
+    // A capture kept private (no folder, no path) is no file call.
+    [Test]
+    public void APrivateCaptureIsNotRuled()
+    {
+        SaidFolders said = Heard("hazme un pantallazo de lo que hay en banco-local");
+
+        Assert.That(said.Rule("capture.screenshot", Descriptor("capture.screenshot"), new JsonObject()), Is.Null);
     }
 
     [Test]
@@ -1017,7 +1099,11 @@ public sealed class SaidFoldersTests
         Assert.Multiple(() =>
         {
             Assert.That((string?)ruling?.Refusal?["error"], Is.EqualTo(SaidFolders.NameChanged));
-            Assert.That((string?)ruling?.Refusal?["next"], Does.Contain("path \"documents/viaje chiloé 2027\""));
+            // Encargo 34: the call as they said it comes first, with its arguments written.
+            Assert.That((string?)ruling?.Refusal?["next"], Does.StartWith(
+                "filesystem_create_directory {\"path\":\"documents/viaje chiloé 2027\"} writes the name the person said"));
+            Assert.That((string?)ruling?.Refusal?["next"], Does.Contain(
+                "this call ran nothing: it writes «viaje_chiloe_2027»"));
             Assert.That(again?.Refusal, Is.Null);
             Assert.That(said.Rule("filesystem.create.directory", create,
                 new JsonObject { ["path"] = "documents/Viaje Chiloé 2027" }), Is.Null);
@@ -1188,6 +1274,108 @@ public sealed class SaidFoldersTests
             call["text"] = "pan";
 
         Assert.That(said.Rule(operation, Descriptor(operation), call)?.Refusal, Is.Null);
+    }
+
+    // Cosecha 03-11 F15: asked for Descargas, the name alone was typed in «Guardar como», open in the application's own
+    // folder, and the file went there. Typed into the name field of a dialog a look showed outside the folder named, a
+    // name alone is refused before it is typed with the call that types the whole path; the same call again runs, and
+    // a whole path, the dialog already in that folder, another field or no folder named run as written.
+    [Test]
+    public void ANameAloneTypedInAFileDialogOutsideTheFolderNamedIsRefusedWithTheWholePath()
+    {
+        const string Program = @"C:\Program Files\Editor Libre";
+        string downloads = Path.Combine(_home, "Downloads");
+        static System.Text.Json.JsonElement Look(string folder) => System.Text.Json.JsonDocument.Parse(
+            new JsonObject
+            {
+                ["version"] = 2,
+                ["window"] = new JsonObject
+                {
+                    ["title"] = "Guardar como", ["hwnd"] = 7001,
+                    ["fileDialog"] = new JsonObject { ["folder"] = folder, ["name"] = "", ["nameIndex"] = 12, ["accept"] = "Guardar" },
+                },
+            }.ToJsonString()).RootElement.Clone();
+        static JsonObject Typing(string text, int index = 12) =>
+            new() { ["window"] = 7001, ["index"] = index, ["text"] = text };
+        ProductOperationDescriptor type = Descriptor("input.text.type");
+
+        SaidFolders said = Heard("déjalo en Descargas, por favor");
+        said.Saw(Look(Program));
+        SaidFolders.Ruling? first = said.Rule("input.text.type", type, Typing("notas.py"));
+        SaidFolders.Ruling? again = said.Rule("input.text.type", type, Typing("notas.py"));
+        SaidFolders.Ruling? whole = said.Rule("input.text.type", type, Typing(Path.Combine(downloads, "otro.py")));
+        SaidFolders.Ruling? other = said.Rule("input.text.type", type, Typing("nuevo.py", index: 3));
+        SaidFolders there = Heard("guárdalo en descargas");
+        there.Saw(Look(downloads));
+        SaidFolders nowhere = Heard("guárdalo como notas.py");
+        nowhere.Saw(Look(Program));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first?.Refusal, Is.Not.Null);
+            Assert.That((string?)first!.Refusal!["error"], Is.EqualTo(SaidFolders.LeftOut));
+            Assert.That((string?)first.Refusal["next"], Does.StartWith("input_text_type {\"window\":7001,\"index\":12,"
+                + "\"text\":" + System.Text.Json.JsonSerializer.Serialize(Path.Combine(downloads, "notas.py"),
+                    SaidFolders.AsWritten) + "} writes the whole path in the dialog's name field"));
+            Assert.That((string?)first.Refusal["next"], Does.Contain($"would save or open it in {Program}, the folder"));
+            Assert.That(again, Is.Null);
+            Assert.That(whole, Is.Null);
+            Assert.That(other, Is.Null);
+            Assert.That(there.Rule("input.text.type", type, Typing("notas.py")), Is.Null);
+            Assert.That(nowhere.Rule("input.text.type", type, Typing("notas.py")), Is.Null);
+        });
+    }
+
+    // Encargo 82 (vivo del 81, «Guardar como» 1/4): the name typed without an index goes into the dialog's name field too
+    // (the receipt said intoField:"file_name"), and the guard, which read only a call with the field's index, let it through.
+    [Test]
+    public void A_name_typed_without_an_index_into_the_dialog_a_look_showed_is_refused_like_one_with_it()
+    {
+        string downloads = Path.Combine(_home, "Downloads");
+        Directory.CreateDirectory(downloads);
+        string program = Path.Combine(_home, "Programa");
+        static System.Text.Json.JsonElement Look(string folder) => System.Text.Json.JsonDocument.Parse(
+            new JsonObject
+            {
+                ["version"] = 2,
+                ["window"] = new JsonObject
+                {
+                    ["title"] = "Guardar como", ["hwnd"] = 7001,
+                    ["fileDialog"] = new JsonObject { ["folder"] = folder, ["name"] = "", ["nameIndex"] = 12, ["accept"] = "Guardar" },
+                },
+            }.ToJsonString()).RootElement.Clone();
+        static System.Text.Json.JsonElement Result(string json) => System.Text.Json.JsonDocument.Parse(json).RootElement.Clone();
+        ProductOperationDescriptor type = Descriptor("input.text.type");
+        string typed = System.Text.Json.JsonSerializer.Serialize(Path.Combine(downloads, "notas.py"), SaidFolders.AsWritten);
+
+        SaidFolders windowOnly = Heard("déjalo en Descargas");
+        windowOnly.Saw(Look(program));
+        SaidFolders.Ruling? byWindow = windowOnly.Rule("input.text.type", type, new JsonObject { ["window"] = 7001, ["text"] = "notas.py" });
+        SaidFolders.Ruling? again = windowOnly.Rule("input.text.type", type, new JsonObject { ["window"] = 7001, ["text"] = "notas.py" });
+        SaidFolders.Ruling? otherWindow = windowOnly.Rule("input.text.type", type, new JsonObject { ["window"] = 7002, ["text"] = "otro.py" });
+
+        SaidFolders textOnly = Heard("déjalo en Descargas");
+        textOnly.Saw(Look(program));
+        SaidFolders.Ruling? lastLook = textOnly.Rule("input.text.type", type, new JsonObject { ["text"] = "notas.py" });
+
+        // A dialog that closed, or a later look at a window that is no dialog, is not where a text without a window goes.
+        SaidFolders closed = Heard("déjalo en Descargas");
+        closed.Saw(Look(program));
+        closed.Saw(Result("""{"name":"Guardar","fileDialog":{"closed":true,"path":"C:/otra/notas.py","exists":true}}"""));
+        SaidFolders lookedAway = Heard("déjalo en Descargas");
+        lookedAway.Saw(Look(program));
+        lookedAway.Saw(Result("""{"version":2,"window":{"title":"notas.py: Bloc de notas","hwnd":7003}}"""));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)byWindow?.Refusal?["error"], Is.EqualTo(SaidFolders.LeftOut));
+            Assert.That((string?)byWindow?.Refusal?["next"], Does.StartWith("input_text_type {\"window\":7001,\"text\":" + typed + "} writes the whole path"));
+            Assert.That(again, Is.Null, "the same call written again runs as written");
+            Assert.That(otherWindow, Is.Null, "a window no look showed as a dialog");
+            Assert.That((string?)lastLook?.Refusal?["next"], Does.StartWith("input_text_type {\"text\":" + typed + "} writes the whole path"));
+            Assert.That(closed.Rule("input.text.type", type, new JsonObject { ["text"] = "hola" }), Is.Null);
+            Assert.That(lookedAway.Rule("input.text.type", type, new JsonObject { ["text"] = "hola" }), Is.Null);
+        });
     }
 
     private SaidFolders Heard(string words)

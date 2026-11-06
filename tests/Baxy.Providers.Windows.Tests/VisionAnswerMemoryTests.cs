@@ -86,6 +86,8 @@ public sealed class VisionAnswerMemoryTests
 
     // The two questions of one click (the second told which label it is not) set the slot aside once and put it back
     // once; asked again on the same drawing, nothing is sent and the answer is the same; on another drawing, it asks.
+    // A «Guardar» read away from the point keeps the second question (ajuste c4: with nothing like the label read or
+    // seen, one question is asked).
     [Test]
     public async Task OneClickHoldsTheSlotOnceAndARetryOnTheSameDrawingAsksNothing()
     {
@@ -107,6 +109,7 @@ public sealed class VisionAnswerMemoryTests
                     new WindowsVisibleOcrLocator.LayoutLine[]
                     {
                         new("Archivo", 10, 10, 40, 12, [new WindowsVisibleOcrLocator.LayoutWord("Archivo", 10, 10, 40, 12)]),
+                        new("Guardar", 80, 40, 40, 12, [new WindowsVisibleOcrLocator.LayoutWord("Guardar", 80, 40, 40, 12)]),
                     }));
 
             ExternalCapabilityReceipt? first = await locator.TryClickAsync(
@@ -180,12 +183,53 @@ public sealed class VisionAnswerMemoryTests
         }
     }
 
-    private static readonly string[] Names = ["BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL", "BAXY_VISION_SLOT_DIR"];
+    // Encargo 11: minds of several machines share one server, each on its slot (BAXY_VISION_SLOT, the mind's), and the
+    // server one folder: each sets its own slot aside in a file of its own, never in another machine's.
+    [Test]
+    public async Task TheSlotIsSetAsideOnItsOwnSlotInAFileOfItsOwn()
+    {
+        string slots = Path.Combine(Path.GetTempPath(), "baxy-vision-slots-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(slots);
+        string?[] saved = [.. Names.Select(Environment.GetEnvironmentVariable)];
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "http://127.0.0.1:8090/v1/chat/completions");
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", "vision-test");
+            Environment.SetEnvironmentVariable("BAXY_VISION_SLOT_DIR", slots);
+            Environment.SetEnvironmentVariable("BAXY_VISION_SLOT", "3");
+            var handler = new Recording();
+            using var http = new HttpClient(handler);
+            var locator = new WindowsVisibleVisionLocator(
+                http,
+                _ => ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(Frame("s")),
+                (_, _) => ValueTask.FromResult<IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>?>([]));
+
+            await locator.TryClickAsync("input.visible.click", "Guardar como", null, CancellationToken.None);
+
+            Assert.That(handler.Held, Is.EqualTo(new[]
+            {
+                "/slots/3?action=save {\"filename\":\"baxy_vision_hold_3.bin\"}",
+                "/slots/3?action=restore {\"filename\":\"baxy_vision_hold_3.bin\"}",
+            }));
+        }
+        finally
+        {
+            for (int index = 0; index < Names.Length; index++)
+                Environment.SetEnvironmentVariable(Names[index], saved[index]);
+            Directory.Delete(slots, recursive: true);
+        }
+    }
+
+    private static readonly string[] Names =
+        ["BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL", "BAXY_VISION_SLOT_DIR", "BAXY_VISION_SLOT"];
 
     // The server: a slot saved and restored, and every question answered with a place on «Archivo» (or, stalled, never).
     private sealed class Recording : HttpMessageHandler
     {
         internal List<string> Calls { get; } = [];
+
+        // Each save and restore: its path and query, and its body.
+        internal List<string> Held { get; } = [];
 
         internal bool Stalls { get; init; }
 
@@ -196,6 +240,8 @@ public sealed class VisionAnswerMemoryTests
                 : query.Contains("action=restore", StringComparison.Ordinal) ? "restore"
                 : "ask";
             Calls.Add(call);
+            if (call != "ask")
+                Held.Add(request.RequestUri!.PathAndQuery + " " + await request.Content!.ReadAsStringAsync(cancellationToken));
             if (Stalls && call == "ask")
                 await Task.Delay(Timeout.Infinite, cancellationToken);
             string body = call == "ask"

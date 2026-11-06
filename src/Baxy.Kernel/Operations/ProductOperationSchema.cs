@@ -36,7 +36,8 @@ public sealed class OperationArgumentProperty
         int? minimumItems = null,
         int? maximumItems = null,
         int? itemMaximumUtf8Bytes = null,
-        bool itemNonWhitespace = false)
+        bool itemNonWhitespace = false,
+        (string Argument, Func<string, IReadOnlyList<string>> Values)? valuesWith = null)
     {
         if (!IsCanonicalPropertyName(name))
         {
@@ -115,6 +116,14 @@ public sealed class OperationArgumentProperty
             }
         }
 
+        if (valuesWith is { } with && (values.Length == 0 || !IsCanonicalPropertyName(with.Argument)
+            || with.Argument == name || with.Values is null))
+        {
+            throw new ArgumentException(
+                "Values with another argument narrow the allowed values of this one by that other argument.",
+                nameof(valuesWith));
+        }
+
         if (constantBoolean.HasValue && !types.HasFlag(OperationJsonType.Boolean))
         {
             throw new ArgumentException("A Boolean constant requires the Boolean type.", nameof(types));
@@ -135,6 +144,7 @@ public sealed class OperationArgumentProperty
         MaximumItems = maximumItems;
         ItemMaximumUtf8Bytes = itemMaximumUtf8Bytes;
         ItemNonWhitespace = itemNonWhitespace;
+        ValuesWith = valuesWith;
     }
 
     public string Name { get; }
@@ -166,6 +176,13 @@ public sealed class OperationArgumentProperty
     public int? ItemMaximumUtf8Bytes { get; }
 
     public bool ItemNonWhitespace { get; }
+
+    /// <summary>
+    /// Ajuste c4 (banco ciego c3, causa 4): the values of <see cref="AllowedValues"/> this argument takes with a text
+    /// given for another argument (a place with the application it is of). Only what a refusal lists and proposes
+    /// (<see cref="OperationArgumentValidator.Problems"/>) is narrowed by it, never what is valid.
+    /// </summary>
+    public (string Argument, Func<string, IReadOnlyList<string>> Values)? ValuesWith { get; }
 
     private static void ValidateTypes(OperationJsonType types, string parameterName)
     {
@@ -226,6 +243,14 @@ public sealed class OperationArgumentsSchema
             throw new ArgumentException(
                 "Required properties must be unique, ordinally sorted schema properties.",
                 nameof(required));
+        }
+
+        if (propertyCopy.Any(property => property.ValuesWith is { } with
+            && !propertyCopy.Any(other => string.Equals(other.Name, with.Argument, StringComparison.Ordinal))))
+        {
+            throw new ArgumentException(
+                "Values with another argument name a property of the same schema.",
+                nameof(properties));
         }
 
         Properties = Array.AsReadOnly(propertyCopy);
@@ -429,6 +454,17 @@ public sealed class ProductOperationDescriptor
             throw new ArgumentOutOfRangeException(nameof(budget), "An operation's budget is a positive time.");
         }
 
+        // Banco ciego c3 C3-148: email.latest.read, a verified read, failed external_effect_unobserved because its
+        // privacy_sensitive risk made it require an observed effect. Every other risk says whether the operation changes
+        // something; privacy_sensitive says only that what it reads or touches is private, so such an operation declares
+        // whether it has an effect to observe.
+        if (requiresObservedEffect is null && risk == Baxy.Contracts.OperationRisks.PrivacySensitive)
+        {
+            throw new ArgumentException(
+                "A privacy-sensitive operation declares whether it requires an observed effect.",
+                nameof(requiresObservedEffect));
+        }
+
         RequiresObservedEffect = requiresObservedEffect ?? (risk != Baxy.Contracts.OperationRisks.ReadOnly);
         Effects = effects ?? [];
         Budget = budget;
@@ -607,7 +643,7 @@ public static class OperationArgumentValidator
                         .Where(name => !given.Contains(name))),
                 }
                 : IsValidValue(supplied.Value, contract) ? null
-                : contract.AllowedValues.Count > 0 ? NotAllowed(supplied, contract)
+                : contract.AllowedValues.Count > 0 ? NotAllowed(supplied, contract, arguments)
                 : new ArgumentProblem(supplied.Name, "expected " + Expected(contract));
             if (problem is not null && problems.All(known => known.Name != supplied.Name))
             {
@@ -620,17 +656,27 @@ public static class OperationArgumentValidator
         return problems;
     }
 
-    // A value outside an argument's values: the values when few, and the nearest to a text given.
-    private static ArgumentProblem NotAllowed(JsonProperty supplied, OperationArgumentProperty contract) =>
-        new(supplied.Name, contract.Types.HasFlag(OperationJsonType.Null)
-            ? "expected one of the allowed values or null"
-            : "expected one of the allowed values")
+    // A value outside an argument's values: the values when few, and the nearest to a text given. Ajuste c4 (causa 4):
+    // both among the values it takes with the text given for the argument they go with (ValuesWith), none when that
+    // text takes none («captions», Configuración's, was proposed for LibreOffice Writer's «options»).
+    private static ArgumentProblem NotAllowed(
+        JsonProperty supplied, OperationArgumentProperty contract, JsonElement arguments)
+    {
+        IReadOnlyList<string> values = contract.ValuesWith is { } with
+            && arguments.TryGetProperty(with.Argument, out JsonElement other) && other.ValueKind == JsonValueKind.String
+                ? with.Values(other.GetString()!)
+                : contract.AllowedValues;
+        bool nullable = contract.Types.HasFlag(OperationJsonType.Null);
+        return new(supplied.Name, values.Count == 0 && nullable
+            ? $"expected null: none of its values go with the {contract.ValuesWith!.Value.Argument} given"
+            : nullable ? "expected one of the allowed values or null" : "expected one of the allowed values")
         {
-            Allowed = contract.AllowedValues.Count <= AllowedShown ? contract.AllowedValues : null,
+            Allowed = values.Count <= AllowedShown ? values : null,
             Nearest = supplied.Value.ValueKind == JsonValueKind.String
-                ? Nearest(supplied.Value.GetString()!, contract.AllowedValues)
+                ? Nearest(supplied.Value.GetString()!, values)
                 : null,
         };
+    }
 
     /// <summary>
     /// The candidate meant by <paramref name="given"/>, compared without case and without the separators «_», «-», «.»

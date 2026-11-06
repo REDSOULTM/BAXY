@@ -156,8 +156,9 @@ public sealed class ProductCatalogTests
     // BAXY Renew uso real: + 1, message.send. BAXY Renew cu (C04 variante, C05): + 2, game.store.page y game.store.search;
     // (C14) + 1, client.microphone.set; (C18) + 1, clipboard.paste.into; (C10, C11, notebook) + 1, office.format.apply.
     // pc-f6-ajustes: + 1, baxy.settings.set; f6 estado: + 1, assistant.status; pc-f6-sesiones: + 4, las conversaciones por voz (ConversationAdditions).
-    // noche P1.1: + 1, audio.microphone.status (NocheReadAdditions).
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 4 + 1;
+    // noche P1.1: + 1, audio.microphone.status (NocheReadAdditions). uso-24 (G5): + 1, client.deafen.set (UsoG5Additions).
+    // Encargo 25: + 1, baxy.exit (ExitAdditions). Encargo 22 (G6): + 1, client.channel.open.
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 4 + 1 + 1 + 1 + 1;
 
     // pc-f6-ajustes (f4-accesibilidad): BAXY's own settings by voice, one setting and its value; reversible, so it never
     // asks, and it reaches neither a window nor the network. The proposals take a span (or on to end the silence); the
@@ -167,6 +168,8 @@ public sealed class ProductCatalogTests
     [TestCase("""{"setting":"proposals","value":"on"}""", true)]
     [TestCase("""{"setting":"web_search","value":"on"}""", true)]
     [TestCase("""{"setting":"no_interrupt_games","value":"off"}""", true)]
+    // Encargo 25 (G2): the confirmation mode is one of BAXY's own settings; the handler says what the chat can do with it.
+    [TestCase("""{"setting":"confirmation_bypass","value":"on"}""", true)]
     [TestCase("""{"setting":"voice"}""", false)]
     [TestCase("""{"setting":"voice","value":true}""", false)]
     [TestCase("""{"setting":"proposals","value":"2h"}""", false)]
@@ -190,6 +193,62 @@ public sealed class ProductCatalogTests
     [
         "audio.microphone.status",
     ];
+
+    // Uso real 2026-11-03 (G5, «ensordéceme en Discord»): no había operación para lo que la persona oye de la llamada, y
+    // el modelo silenció el micrófono de Discord y luego el de Windows.
+    internal static readonly string[] UsoG5Additions =
+    [
+        "client.deafen.set",
+    ];
+
+    // G5: el botón «Ensordecer» del cliente, como su «Silenciar»: reversible (no pide el sí), sólo Discord, un sí/no, y
+    // pulsa en una ventana de la persona (WindowInput).
+    [TestCase("""{"client":"discord","deafened":true}""", true)]
+    [TestCase("""{"client":"discord","deafened":false}""", true)]
+    [TestCase("""{"client":"discord"}""", false)]
+    [TestCase("""{"deafened":true}""", false)]
+    [TestCase("""{"client":"teams","deafened":true}""", false)]
+    [TestCase("""{"client":"discord","deafened":"true"}""", false)]
+    public void TheClientsDeafenIsOneReversibleYesOrNoOnItsWindow(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("client.deafen.set");
+        ProductOperationDescriptor microphone = ProductCatalog.GetRequired("client.microphone.set");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.Risk, Is.EqualTo(microphone.Risk).And.EqualTo(OperationRisks.LowReversible));
+            Assert.That(descriptor.Effects.Select(static effect => effect.Kind), Is.EqualTo(new[] { OperationEffects.WindowInput }));
+            Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+        });
+    }
+
+    // Encargo 25 (G12, uso real 02-11: «ciérrate» → app.close de BAXY → app_running_in_background): BAXY se cierra como
+    // «Salir» de la bandeja.
+    internal static readonly string[] ExitAdditions =
+    [
+        "baxy.exit",
+    ];
+
+    // Sin argumentos ni efectos en el PC; en Normal pide el sí (cerrada, ya no oye para volver a abrirse) y en Bypass
+    // nunca, como toda operación.
+    [Test]
+    public void BaxysExitAsksInNormalAndNeverInBypass()
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("baxy.exit");
+        OperationRisk risk = ProductCatalog.ToPolicyRisk(descriptor.Risk);
+        using JsonDocument none = JsonDocument.Parse("{}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(descriptor.ArgumentsSchema.Properties, Is.Empty);
+            Assert.That(descriptor.Effects, Is.Empty);
+            Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, "baxy.exit", none.RootElement),
+                Is.EqualTo(PolicyDecision.RequireConfirmation));
+            Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Bypass, "baxy.exit", none.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
 
     // pc-f6-sesiones (APLAZADOS f4-accesibilidad, 2026-10-25): empezar, listar, abrir y renombrar una conversación
     // estaba sólo en la vista; la App las ejecuta con sus propias sesiones (FieldProductChannel) y ninguna pide el sí.
@@ -230,7 +289,9 @@ public sealed class ProductCatalogTests
     }
 
     // Ronda 22 (uso real r18 t2-c16, t3-c11, t4-c09 «…y guárdala en el escritorio»): a capture takes the known folder
-    // it is also saved to, optional (without it the capture stays private), and nothing outside the enum.
+    // it is also saved to, optional (without it the capture stays private), and nothing outside the enum. Banco de uso
+    // 03-11 (U23): or a folder of the person's by its path, as a file tool's (the provider refuses one outside their
+    // folders).
     [TestCase("capture.screenshot", "{}", true)]
     [TestCase("capture.screenshot", """{"folder":"desktop"}""", true)]
     [TestCase("capture.screenshot", """{"folder":"pictures"}""", true)]
@@ -241,7 +302,10 @@ public sealed class ProductCatalogTests
     [TestCase("capture.screenshot", """{"folder":"all_known"}""", false)]
     [TestCase("capture.screenshot", """{"folder":"C:\\Users"}""", false)]
     [TestCase("capture.screenshot", """{"folder":null}""", false)]
-    [TestCase("capture.screenshot", """{"path":"C:\\Users"}""", false)]
+    [TestCase("capture.screenshot", """{"path":"carpeta-prueba"}""", true)]
+    [TestCase("capture.active.window", """{"path":"Documentos/fotos"}""", true)]
+    [TestCase("capture.screenshot", """{"path":" "}""", false)]
+    [TestCase("capture.screenshot", """{"other":"desktop"}""", false)]
     [TestCase("capture.active.window", """{"folder":"projects"}""", false)]
     public void ACaptureTakesAnOptionalKnownFolderToBeSavedTo(string operation, string json, bool expected)
     {
@@ -370,6 +434,35 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // Banco ciego c3 C3-148: email.latest.read, a verified read, required an observed effect because its risk is
+    // privacy_sensitive. That risk says nothing of an effect: each such operation declares it, and only the reads of
+    // something private go without one.
+    [Test]
+    public void APrivacySensitiveOperationDeclaresWhetherItHasAnEffectToObserve()
+    {
+        var empty = new OperationArgumentsSchema([], []);
+        string[] privateReads = ProductCatalog.ToolDescriptors
+            .Where(static descriptor => descriptor.Risk == OperationRisks.PrivacySensitive
+                && !descriptor.RequiresObservedEffect)
+            .Select(static descriptor => descriptor.Name)
+            .ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => new ProductOperationDescriptor(
+                    "example.private.read", empty, OperationRisks.PrivacySensitive, "example.private.read.v1", "Lee."),
+                Throws.ArgumentException);
+            Assert.That(new ProductOperationDescriptor(
+                    "example.change", empty, OperationRisks.LowReversible, "example.change.v1", "Cambia.")
+                .RequiresObservedEffect, Is.True);
+            Assert.That(privateReads, Is.EqualTo(new[]
+            {
+                "browser.page.read", "browser.tabs.list", "clipboard.read.text", "email.latest.read", "ocr.read",
+                "vision.describe",
+            }));
+        });
+    }
+
     // f6 estado: BAXY's own readings are a read with no effect (no «sí» in any mode), told which one by its scope.
     [Test]
     public void AssistantStatusIsAReadOfTheConfirmationModeTheModelOrTheSessionsInternetExits()
@@ -408,6 +501,44 @@ public sealed class ProductCatalogTests
             Assert.That(problem.Problem, Is.EqualTo("expected one of the allowed values"));
             Assert.That(problem.Allowed, Is.Null);
             Assert.That(problem.Nearest, Is.EqualTo(nearest));
+        });
+    }
+
+    // Ajuste c4 (banco ciego c3, causa 4: C3-051, C3-052, C3-092): app.open of LibreOffice Writer at «options» was refused
+    // with the nearest «captions», a place of Configuración, and the model opened Configuración. The places proposed are
+    // the application's named (appId): its own when it has some, none when it has none; with no application named, all.
+    [TestCase("LibreOffice Writer", "options", null)]
+    [TestCase("Everything", "options", null)]
+    [TestCase("Steam", "librar", "library")]
+    [TestCase("Configuración", "captins", "captions")]
+    [TestCase("Settings", "captins", "captions")]
+    [TestCase(null, "captins", "captions")]
+    public void APlaceIsProposedAmongThePlacesOfTheApplicationNamed(string? appId, string place, string? nearest)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("app.open").ArgumentsSchema;
+        using JsonDocument given = JsonDocument.Parse(JsonSerializer.Serialize(new { appId, place }));
+
+        ArgumentProblem problem = OperationArgumentValidator.Problems(given.RootElement, schema)
+            .Single(static candidate => candidate.Name == "place");
+
+        Assert.That(problem.Nearest, Is.EqualTo(nearest));
+    }
+
+    // Its counter-part: what is listed and said is the named application's too, so an application with no places of its
+    // own is told that place goes with it as null, and none of another application's is listed.
+    [TestCase("LibreOffice Writer", "options", "expected null: none of its values go with the appId given")]
+    [TestCase("Steam", "librar", "expected one of the allowed values or null")]
+    public void ThePlacesListedAreTheApplicationNamedOnes(string appId, string place, string expected)
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("app.open").ArgumentsSchema;
+        using JsonDocument given = JsonDocument.Parse(JsonSerializer.Serialize(new { appId, place }));
+
+        ArgumentProblem problem = OperationArgumentValidator.Problems(given.RootElement, schema).Single();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(problem.Problem, Is.EqualTo(expected));
+            Assert.That(problem.Allowed, Is.EqualTo(ApplicationPlaces.PlacesOf(appId).Select(static own => own.Place)));
         });
     }
 
@@ -482,7 +613,7 @@ public sealed class ProductCatalogTests
     // Ronda 19 (r17 t2-c13): the country the person's speech marks goes with the place as a declared hint.
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"ES"}""", true)]
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":null}""", true)]
-    [TestCase("weather.current", """{"location":"Curicó"}""", true)]
+    [TestCase("weather.current", """{"location":"Valparaíso"}""", true)]
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"España"}""", false)]
     [TestCase("weather.current", """{"location":"Valencia","dialectCountry":"FR"}""", false)]
     // Review of combos-galerias (finding 1): the entry of a list chosen by pattern, as the mind sends it.
@@ -550,7 +681,8 @@ public sealed class ProductCatalogTests
                 Is.SupersetOf(Reopen1993CatalogAdditions).And.SupersetOf(ComputerUseAdditions)
                     .And.SupersetOf(RenewAgentAdditions).And.SupersetOf(RenewRealesAdditions)
                     .And.SupersetOf(UsoRealAdditions).And.SupersetOf(F6EstadoAdditions)
-                    .And.SupersetOf(ConversationAdditions).And.SupersetOf(NocheReadAdditions));
+                    .And.SupersetOf(ConversationAdditions).And.SupersetOf(NocheReadAdditions)
+                    .And.SupersetOf(UsoG5Additions).And.SupersetOf(ExitAdditions));
             Assert.That(descriptors.Select(static descriptor => descriptor.Name),
                 Has.None.AnyOf(RenewRetired));
             Assert.That(

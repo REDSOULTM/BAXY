@@ -295,6 +295,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         CancellationToken cancellationToken) =>
         _applications.ResolveBackgroundProcessesAsync(applicationName, cancellationToken);
 
+    // uso-129: the application these processes belong to, asked to quit.
+    public ValueTask<ApplicationQuitResult> QuitApplicationAsync(
+        IReadOnlyCollection<int> processIds,
+        CancellationToken cancellationToken) =>
+        ApplicationQuit.AskAsync(processIds, cancellationToken);
+
     public async ValueTask<WindowActionResult> ExecuteAsync(
         string windowId,
         WindowControlAction action,
@@ -335,13 +341,19 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 AlreadyReached: true);
         }
 
+        // uso-108 A9: nothing is posted to a window that would take it only when it comes back, if it does.
+        if (_platform.NotResponding(before.Identity, cancellationToken))
+        {
+            return new WindowActionResult(false, false, null, WindowControlErrorCodes.WindowNotResponding);
+        }
+
         if (!_platform.Execute(before.Identity, action))
         {
             // Round A: focusing a minimized window restores it before bringing it to the front, and a refused front
             // may come after that restore.
             bool mayHaveChanged = action == WindowControlAction.Focus && before.State == "minimized";
             return new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.ActionFailed,
+                false, false, null, action == WindowControlAction.Focus ? WindowControlErrorCodes.ActionFailed : Refused(before.Identity),
                 EffectMayHaveOccurred: mayHaveChanged,
                 StateAfter: mayHaveChanged ? ReadStateAfter(before.Identity, action) : null);
         }
@@ -656,7 +668,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         return open;
     }
 
-    public ValueTask<WindowActionResult> SetBoundsAsync(
+    public async ValueTask<WindowActionResult> SetBoundsAsync(
         string windowId,
         int? x,
         int? y,
@@ -669,13 +681,13 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         bool resize = !x.HasValue && !y.HasValue && width.HasValue && height.HasValue;
         if ((!move && !resize) || width is <= 0 || height is <= 0)
         {
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.InvalidSelector));
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InvalidSelector);
         }
         if (!TryConsume(windowId, out WindowIdentity? identity))
         {
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.InvalidOrExpiredWindowId));
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InvalidOrExpiredWindowId);
         }
 
         WindowSnapshot before;
@@ -685,13 +697,13 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         }
         catch (WindowIdentityChangedException)
         {
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.WindowIdentityChanged));
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.WindowIdentityChanged);
         }
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.InventoryFailed));
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InventoryFailed);
         }
 
         var expected = new WindowBounds(
@@ -703,40 +715,63 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         // Ronda final: a window already at those bounds, read before, is the state reached (changed:false); nothing sent.
         if (before.Bounds == expected)
         {
-            return ValueTask.FromResult(new WindowActionResult(
-                true, true, ToCandidate(before, Issue(before.Identity)), null, AlreadyReached: true));
+            return new WindowActionResult(
+                true, true, ToCandidate(before, Issue(before.Identity)), null, AlreadyReached: true);
+        }
+
+        // uso-108 A9: nothing is posted to a window that would take it only when it comes back, if it does.
+        if (_platform.NotResponding(before.Identity, cancellationToken))
+        {
+            return new WindowActionResult(false, false, null, WindowControlErrorCodes.WindowNotResponding);
         }
 
         if (!_platform.SetBounds(before.Identity, expected))
         {
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.ActionFailed));
+            return new WindowActionResult(
+                false, false, null, Refused(before.Identity));
         }
 
+        // uso-108 A13: the one read right after the move, by exact equality, failed a window that had moved: the request is
+        // posted (SetBounds), and a window may adjust its own size (a terminal's character cells). Read until the bounds
+        // asked, or until they hold near them on two reads apart (NearBounds), as agent-desktop does (window_op.rs:14-15,
+        // 112-116, window_op_wait.rs:1-22), and not where it started: a move of a few pixels is near from the first read,
+        // with the window yet to move (review of uso-108). Past the last read it is unconfirmed: the request may still land
+        // (window_op_tests.rs:275-319), and StateAfter says where the window was.
         WindowSnapshot after;
-        try
+        WindowBounds? near = null;
+        for (int attempt = 0; ; attempt++)
         {
-            after = _platform.Observe(before.Identity);
-        }
-        catch (WindowIdentityChangedException changed)
-        {
-            // Renew al máximo (8.3): a window gone (or hidden) by the read is the state after.
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true,
-                StateAfter: GoneAfter(changed, requestedStateReached: false)));
-        }
-        catch (Exception exception) when (exception is Win32Exception
-            or InvalidOperationException)
-        {
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true));
-        }
-        if (after.Bounds != expected)
-        {
-            // Renew al máximo (8.3): the bounds the read found are the state after, never dropped.
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true,
-                StateAfter: PresentAfter(after, requestedStateReached: false)));
+            try
+            {
+                after = _platform.Observe(before.Identity);
+            }
+            catch (WindowIdentityChangedException changed)
+            {
+                // Renew al máximo (8.3): a window gone (or hidden) by the read is the state after.
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true,
+                    StateAfter: GoneAfter(changed, requestedStateReached: false));
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException)
+            {
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
+            }
+
+            bool settling = NearBounds(after.Bounds, expected) && after.Bounds != before.Bounds;
+            if (after.Bounds == expected || (settling && after.Bounds == near))
+                break;
+            near = settling ? after.Bounds : null;
+            if (attempt + 1 >= BoundsVerificationAttempts)
+            {
+                // Renew al máximo (8.3): the bounds the read found are the state after, never dropped.
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true,
+                    StateAfter: PresentAfter(after, requestedStateReached: false));
+            }
+
+            await _platform.DelayAsync(BoundsVerificationDelay, cancellationToken).ConfigureAwait(false);
         }
 
         string refreshedId = Issue(after.Identity);
@@ -744,11 +779,24 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         if (!_verifier.Verify(after.Identity, candidate, expectedAction: null))
         {
             Revoke(refreshedId);
-            return ValueTask.FromResult(new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true));
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.VerificationFailed, EffectMayHaveOccurred: true);
         }
-        return ValueTask.FromResult(new WindowActionResult(true, true, candidate, null));
+        return new WindowActionResult(true, true, candidate, null);
     }
+
+    // uso-108 A13: how near the bounds asked a window may settle by itself and be where it was asked to go: agent-desktop's
+    // 8 px (window_op.rs:15, its «DWM animation headroom», a floor it chose); a window that moved elsewhere is not near.
+    private const int BoundsTolerance = 8;
+    private const int BoundsVerificationAttempts = 40;
+    private static readonly TimeSpan BoundsVerificationDelay = TimeSpan.FromMilliseconds(50);
+    private const int SnapStayedReads = 5;
+
+    internal static bool NearBounds(WindowBounds observed, WindowBounds asked) =>
+        Math.Abs(observed.X - asked.X) <= BoundsTolerance
+        && Math.Abs(observed.Y - asked.Y) <= BoundsTolerance
+        && Math.Abs(observed.Width - asked.Width) <= BoundsTolerance
+        && Math.Abs(observed.Height - asked.Height) <= BoundsTolerance;
 
     // Renew al máximo (auditoría de flujos): a window closed or changed while it is placed (each act reads it first, for
     // seconds when it leaves a full screen) threw out of the provider and stopped the core; the placement ends saying so.
@@ -867,6 +915,12 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 true, true, ToCandidate(before, Issue(before.Identity)), null, AlreadyReached: true);
         }
 
+        // uso-108 A9: nothing is posted to a window that would take it only when it comes back, if it does.
+        if (_platform.NotResponding(before.Identity, cancellationToken))
+        {
+            return new WindowActionResult(false, false, null, WindowControlErrorCodes.WindowNotResponding);
+        }
+
         // A maximized or minimized window keeps no bounds of its own: it is
         // restored first, the way the desktop does before docking it.
         bool restored = false;
@@ -876,7 +930,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             if (!_platform.Execute(before.Identity, WindowControlAction.Restore))
             {
                 return new WindowActionResult(
-                    false, false, null, WindowControlErrorCodes.ActionFailed);
+                    false, false, null, Refused(before.Identity));
             }
             restored = true;
             await _platform.DelayAsync(VerificationDelay, cancellationToken)
@@ -897,15 +951,17 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             workArea.Height);
         target.Expected = expected;
         cancellationToken.ThrowIfCancellationRequested();
+        // Where it starts from: near the half and still here is a window yet to move (ObserveSnapAsync).
+        WindowBounds start = restored ? _platform.Observe(before.Identity).Bounds : before.Bounds;
         if (!_platform.SetBounds(before.Identity, expected))
         {
             // Round A: a window restored for the placement stays restored.
             return new WindowActionResult(
-                false, false, null, WindowControlErrorCodes.ActionFailed, EffectMayHaveOccurred: restored);
+                false, false, null, Refused(before.Identity), EffectMayHaveOccurred: restored);
         }
 
         (WindowSnapshot? placed, bool larger) = await ObserveSnapAsync(
-                before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
+                before.Identity, expected, acceptLarger: true, workArea, start, cancellationToken)
             .ConfigureAwait(false);
         // BAXY Renew cu (C13 en el PC): a window in full screen (a video, a browser's F11) keeps its whole monitor and takes
         // no size. It is asked to leave by its own keys (Esc, then F11), and placed again once it did; one that stays in
@@ -929,7 +985,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             if (_platform.SetBounds(before.Identity, expected))
             {
                 (placed, larger) = await ObserveSnapAsync(
-                        before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
+                        before.Identity, expected, acceptLarger: true, workArea, start, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -954,7 +1010,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             }
 
             (placed, larger) = await ObserveSnapAsync(
-                    before.Identity, expected, acceptLarger: true, workArea, cancellationToken)
+                    before.Identity, expected, acceptLarger: true, workArea, start, cancellationToken)
                 .ConfigureAwait(false);
             if (placed is null)
             {
@@ -990,6 +1046,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 placed.Bounds.Height);
             if (placed.Bounds != flush)
             {
+                WindowBounds heldAt = placed.Bounds;
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!_platform.SetBounds(before.Identity, flush))
                 {
@@ -998,7 +1055,7 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                         false, false, null, WindowControlErrorCodes.ActionFailed, EffectMayHaveOccurred: true);
                 }
                 (placed, _) = await ObserveSnapAsync(
-                        before.Identity, flush, acceptLarger: false, workArea, cancellationToken)
+                        before.Identity, flush, acceptLarger: false, workArea, heldAt, cancellationToken)
                     .ConfigureAwait(false);
                 if (placed is null)
                 {
@@ -1054,9 +1111,11 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         WindowBounds target,
         bool acceptLarger,
         WindowBounds workArea,
+        WindowBounds start,
         CancellationToken cancellationToken)
     {
         WindowBounds? held = null;
+        int stayed = 0;
         for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -1083,6 +1142,24 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 if (after.Bounds == held)
                 {
                     return (after, true);
+                }
+                held = after.Bounds;
+            }
+            else if (normal && NearBounds(after.Bounds, target) && after.Bounds == start)
+            {
+                // Review of uso-108: a window that rounds its size («la terminal a la izquierda», twice) is on the half
+                // already, within the tolerance, and asked again stays: after a few reads, so one on its way gets there.
+                if (++stayed >= SnapStayedReads)
+                {
+                    return (after, false);
+                }
+            }
+            else if (normal && NearBounds(after.Bounds, target))
+            {
+                // uso-108 A13: settled by itself near the half, on two reads apart (a window's own size steps), having moved.
+                if (after.Bounds == held)
+                {
+                    return (after, false);
                 }
                 held = after.Bounds;
             }
@@ -1145,6 +1222,14 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
         {
             return new WindowCloseResult(false, false, null, WindowControlErrorCodes.InventoryFailed);
+        }
+
+        // uso-108 A9 (agent-desktop hondo 05, finding 4): WM_CLOSE to a window that does not respond waits in its queue: 2.5 s
+        // and verification_failed with no reason, and a close that lands whenever it comes back. Said, with nothing sent.
+        if (_platform.NotResponding(identity!, cancellationToken))
+        {
+            return new WindowCloseResult(
+                false, false, identity!.ProcessId, WindowControlErrorCodes.WindowNotResponding, Title: title);
         }
 
         // v3 r22 uso real: the dialogs the window already owned before the close; a new one after it is the
@@ -1233,6 +1318,13 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
                 ? stateAfter with { RequestedStateReached = true }
                 : stateAfter);
     }
+
+    // Uso-108 (hondo 13; measured from a low-integrity process on a window of its own, recibos/uipi_close.txt): SetWindowPos
+    // and ShowWindowAsync answer false with error 5 across the integrity boundary and the window stays, and the model could
+    // not say why. Not for a focus, whose activation crosses it (agent-desktop FINDINGS A24-16), nor a close: WM_CLOSE gives
+    // error 5, but the system-menu close that follows it crosses and closes the window, 2 of 2.
+    private string Refused(WindowIdentity identity) =>
+        _platform.RunsElevatedAboveUs(identity) ? WindowControlErrorCodes.WindowElevated : WindowControlErrorCodes.ActionFailed;
 
     private static WindowCloseResult Ended(WindowIdentity identity, string? title, string outcome) =>
         new(true, true, identity.ProcessId, null, Title: title, Outcome: outcome);
@@ -1351,6 +1443,16 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             identity = found;
             return true;
         }
+    }
+
+    public string? NumberedWindowProcess(string windowId)
+    {
+        string number = (windowId ?? string.Empty).Trim();
+        return number.Length is > 0 and <= 19 && number.All(char.IsAsciiDigit)
+            && long.TryParse(number, System.Globalization.NumberStyles.None,
+                System.Globalization.CultureInfo.InvariantCulture, out long handle) && handle > 0
+                ? _platform.ProcessOfWindow((nint)handle)
+                : null;
     }
 
     /// <summary>
@@ -1662,6 +1764,8 @@ internal interface IWindowControlPlatform
     IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front) => [];
     bool Execute(WindowIdentity identity, WindowControlAction action);
     bool SetBounds(WindowIdentity identity, WindowBounds bounds);
+    // uso-108 A9: whether the window's thread does not answer messages; a write on it would wait as long as it does.
+    bool NotResponding(WindowIdentity identity, CancellationToken cancellationToken) => false;
     // ARRANGE1781: the work area (desktop minus taskbar) of the monitor
     // that shows the window; null when the platform cannot tell.
     WindowBounds? WorkArea(WindowIdentity identity) => null;
@@ -1669,6 +1773,9 @@ internal interface IWindowControlPlatform
     WindowStanding? Standing(WindowIdentity identity) => null;
     bool RequestClose(WindowIdentity identity);
     bool RequestSystemClose(WindowIdentity identity);
+
+    /// <summary>Uso-108: whether the window's process runs as administrator and this one does not, read for sure.</summary>
+    bool RunsElevatedAboveUs(WindowIdentity identity) => false;
     ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken);
     // v3 r22 uso real: the visible top-level windows of the same process that the window owns (its dialogs).
     IReadOnlyList<nint> OwnedDialogs(WindowIdentity identity) => [];
@@ -1687,6 +1794,9 @@ internal interface IWindowControlPlatform
     bool FullScreen(WindowIdentity identity) => false;
     // BAXY Renew cu (C13 en el PC): one key posted to the window itself (never the real keyboard): Esc or F11.
     bool PostKey(WindowIdentity identity, ushort virtualKey, ushort scanCode) => false;
+    // Banco de entorno del NB (U43, R01): the process name of a visible top-level window by its handle (a look's window
+    // number); null when it is no such window or its process cannot be read.
+    string? ProcessOfWindow(nint window) => null;
 }
 
 // Hidden (auditoría D7): the window still exists and is invisible; otherwise it is gone (or its handle is another's).
@@ -2011,6 +2121,10 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         return PostMessage(identity.Handle, SystemCommandMessage, SystemCloseCommand, 0);
     }
 
+    public bool RunsElevatedAboveUs(WindowIdentity identity) =>
+        External.VisibleControlSurface.RunsAboveUs(identity.ProcessId)
+        && External.VisibleControlSurface.Elevated(identity.ProcessId) == true;
+
     public bool CapturesMicrophone(WindowIdentity identity) => MicrophoneInUse.Capturing(identity);
 
     // PC-F8 cierre: a console host's window (conhost), a terminal's (Windows Terminal) or a hosted pseudo-console.
@@ -2023,8 +2137,11 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     {
         _ = Observe(identity);
         string className = ReadClassName(identity.Handle);
-        return className.Length == 0 || ConsoleWindowClasses.Contains(className);
+        return className.Length == 0 || IsConsoleClass(className);
     }
+
+    // Encargo 33 (U45): the same classes tell a text typed into a console (WindowsDesktopInteractionAdapter.ConsoleTyped).
+    internal static bool IsConsoleClass(string className) => ConsoleWindowClasses.Contains(className);
 
     public bool IsWebBrowser(WindowIdentity identity) =>
         identity.ExecutablePath is not { Length: > 0 } executable
@@ -2128,21 +2245,47 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
             && PostMessage(identity.Handle, KeyUpMessage, virtualKey, up);
     }
 
+    public string? ProcessOfWindow(nint window)
+    {
+        if (window == 0 || !IsWindow(window) || !IsWindowVisible(window) || GetAncestor(window, GetRootOwner) != window)
+            return null;
+        _ = GetWindowThreadProcessId(window, out uint owner);
+        if (owner == 0 || owner > int.MaxValue)
+            return null;
+        try
+        {
+            using Process process = Process.GetProcessById(checked((int)owner));
+            return process.ProcessName;
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
     private const uint KeyDownMessage = 0x0100;
     private const uint KeyUpMessage = 0x0101;
     private const int StyleIndex = -16;
 
+    // uso-108 A9 (measured): MoveWindow blocked past 40 s on a window that stopped pumping, freezing the serial Core, where
+    // no cancellation reaches. Posted to the window's thread instead (MS docs, SWP_ASYNCWINDOWPOS; agent-desktop
+    // window_op.rs:17-41,200-226): MoveWindow's own flags plus that one, and its return no longer means the window moved,
+    // so every caller reads the bounds back over time (SetBoundsAsync, ObserveSnapAsync).
     public bool SetBounds(WindowIdentity identity, WindowBounds bounds)
     {
         _ = Observe(identity);
-        return MoveWindow(
+        return SetWindowPos(
             identity.Handle,
+            0,
             bounds.X,
             bounds.Y,
             bounds.Width,
             bounds.Height,
-            repaint: true);
+            NoZOrder | NoActivate | AsyncWindowPos);
     }
+
+    public bool NotResponding(WindowIdentity identity, CancellationToken cancellationToken) =>
+        External.VisibleControlSurface.NotResponding(identity.Handle, cancellationToken);
 
     private static unsafe string ReadWindowTitle(nint handle)
     {
@@ -2198,15 +2341,20 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool GetWindowRect(nint windowHandle, out NativeRect rectangle);
 
+    private const uint NoZOrder = 0x0004;
+    private const uint NoActivate = 0x0010;
+    private const uint AsyncWindowPos = 0x4000;
+
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool MoveWindow(
+    private static partial bool SetWindowPos(
         nint windowHandle,
+        nint insertAfter,
         int x,
         int y,
         int width,
         int height,
-        [MarshalAs(UnmanagedType.Bool)] bool repaint);
+        uint flags);
 
     [LibraryImport("user32.dll")]
     private static partial uint GetWindowThreadProcessId(nint windowHandle, out uint processId);

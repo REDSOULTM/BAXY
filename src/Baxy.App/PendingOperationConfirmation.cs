@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Baxy.Contracts;
 
 namespace Baxy.App;
@@ -24,6 +25,15 @@ internal sealed class PendingOperationConfirmation
     internal DateTimeOffset ExpiresAtUtc { get; }
 
     internal bool ReconciliationRequired { get; }
+
+    /// <summary>Encargo 83: what the kernel's read found of the call it challenged; null when it found nothing to say.</summary>
+    internal JsonElement? Facts { get; private init; }
+
+    internal const string SystemChangeCause = "system_change";
+
+    /// <summary>Encargo 83: the setting of Windows this call would change, when that is why the kernel asks.</summary>
+    internal JsonElement? SystemChange =>
+        Facts is { } facts && facts.TryGetProperty("systemChange", out JsonElement change) ? change : null;
 
     /// <summary>
     /// Whether the person's «sí» to a heartbeat's proposal also answers this challenge: the same invocation, not one that
@@ -56,7 +66,10 @@ internal sealed class PendingOperationConfirmation
             prepared,
             challenge.Token,
             challenge.ExpiresAtUtc,
-            challenge.ReconciliationRequired);
+            challenge.ReconciliationRequired)
+        {
+            Facts = challenge.Facts,
+        };
         return true;
     }
 

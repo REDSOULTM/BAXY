@@ -58,6 +58,32 @@ public sealed class ExternalCapabilityHandlerTests
         });
     }
 
+    // Banco ciego c3 C3-148 (las tres semillas): email.latest.read read and verified the newest mail (sender, subject,
+    // body) and the Core turned it into external_effect_unobserved, because its privacy_sensitive risk made it require an
+    // observed effect. A verified read of something private changes nothing: it is done. A privacy-sensitive call that
+    // changes something still needs its effect seen.
+    [Test]
+    public async Task AVerifiedPrivateReadIsDoneAndAPrivateChangeStillNeedsItsEffectSeen()
+    {
+        JsonElement mail = Json("""{"version":1,"sender":"Ana","subject":"Hola","body":"..."}""");
+        OperationOutcome read = await new ExternalCapabilityHandler(
+                "email.latest.read",
+                new FixedProvider(ExternalJson.Success("email.latest.read", mail, effectObserved: false)))
+            .ExecuteAsync(new OperationInvocation("request", "mission", "invocation", Json("{}")), CancellationToken.None);
+        OperationOutcome connect = await new ExternalCapabilityHandler(
+                "wifi.connect",
+                new FixedProvider(ExternalJson.Success("wifi.connect", Json("""{"connected":true}"""), effectObserved: false)))
+            .ExecuteAsync(new OperationInvocation("request", "mission", "invocation", Json("{}")), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Succeeded && read.Verified, Is.True, read.CauseCode);
+            Assert.That(read.Result?.GetProperty("subject").GetString(), Is.EqualTo("Hola"));
+            Assert.That(connect.Succeeded, Is.False);
+            Assert.That(connect.CauseCode, Is.EqualTo("external_effect_unobserved"));
+        });
+    }
+
     // Auditoría del Core (w8): that failure dropped the provider's verified post-read; it keeps it now, marked
     // effectObserved:false, with the status, code and uncertainty as they were.
     [Test]
@@ -102,9 +128,10 @@ public sealed class ExternalCapabilityHandlerTests
             Assert.That(root.GetProperty("status").GetString(), Is.EqualTo("failed"));
             Assert.That(root.GetProperty("error").GetString(), Is.EqualTo("calculator_window_not_found"));
             Assert.That(root.TryGetProperty("effectUncertain", out _), Is.False);
+            // Encargo 34: the call that starts it comes first, with its argument written.
             Assert.That(root.GetProperty("observed").GetProperty("next").GetString(), Is.EqualTo(
-                "no Calculator window is open and nothing was pressed; app_open can start the Calculator, then this "
-                + "expression can be evaluated again"));
+                "app_open {\"appId\":\"Calculator\"} starts the Calculator, then this expression can be evaluated "
+                + "again; this call pressed nothing: no Calculator window is open"));
         });
     }
 
@@ -220,6 +247,52 @@ public sealed class ExternalCapabilityHandlerTests
         {
             Assert.That(Encoding.UTF8.GetString(Convert.FromBase64String(runner.Arguments[^2])), Is.EqualTo("6*7"));
             Assert.That(outcome.Result?.TryGetProperty("pressedInOrder", out _), Is.False);
+        });
+    }
+
+    // Banco de uso 2026-11-03 (U14/U15): app_open opened the classic Calculator (win32calc) and the evaluation answered
+    // «no Calculator window is open» with it in front. It is pressed there now, and the receipt says on which Calculator
+    // and that its mode was not read.
+    [Test]
+    public async Task TheClassicCalculatorsResultSaysWhichCalculatorItWas()
+    {
+        OperationOutcome outcome = await Calculator(
+            """{"ok":true,"typed":"245+380","mode":"not_read","calculator":"win32calc","before":"0","displayName":"625","expressionName":"","value":"625"}""",
+            "245+380");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Result?.GetProperty("value").GetString(), Is.EqualTo("625"));
+            Assert.That(outcome.Result?.GetProperty("calculator").GetString(), Is.EqualTo("win32calc"));
+            Assert.That(outcome.Result?.GetProperty("mode").GetString(), Is.EqualTo("not_read"));
+        });
+    }
+
+    // Banco de uso 2026-11-03 (U14/U15): an expression whose value depends on the order the classic Calculator's keypad
+    // applies the operators in (its mode is not read) pressed nothing; the failure says which Calculator is open and what
+    // is pressed there, and with the aid off it is the code alone.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task AnOrderDependentExpressionOnTheClassicCalculatorSaysWhatIsPressedThere(bool aid)
+    {
+        using IDisposable? off = aid ? null : ModelAids.Use("none");
+        string message = await CalculatorMessage(
+            """{"ok":false,"error":"calculator_mode_not_read","mode":"not_read","calculator":"win32calc"}""");
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement root = facts.RootElement;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(root.GetProperty("error").GetString(), Is.EqualTo("calculator_mode_not_read"));
+            Assert.That(root.TryGetProperty("effectUncertain", out _), Is.False);
+            Assert.That(root.TryGetProperty("observed", out JsonElement observed), Is.EqualTo(aid));
+            if (aid)
+            {
+                Assert.That(observed.GetProperty("calculator").GetString(), Is.EqualTo("win32calc"));
+                Assert.That(observed.GetProperty("next").GetString(), Does.StartWith(
+                    "nothing was pressed: the open Calculator is the classic one (win32calc), whose mode is not read")
+                    .And.Contain("3*4+2"));
+            }
         });
     }
 
@@ -413,6 +486,84 @@ public sealed class ExternalCapabilityHandlerTests
                 Assert.That(outcome.Result!.Value.GetProperty("muted").GetBoolean(), Is.True);
                 Assert.That(outcome.Result!.Value.GetProperty("mutedBefore").GetBoolean(), Is.False);
             }
+        });
+    }
+
+    // Uso real 2026-11-03 (G5, «ensordéceme en Discord»): with no operation for what the person hears from the call, the
+    // model muted Discord's microphone and then Windows' one. Discord's own «Ensordecer» button (UIA Toggle, read live
+    // on the PC: «Silenciar» and «Ensordecer», both Toggle) is switched by the same script as the microphone, told which
+    // button, and read back; the receipt says both final states, since deafening also mutes the microphone.
+    [TestCase("""{"ok":true,"effectObserved":true,"before":0,"value":1,"micMuted":1,"deafened":1}""", true, null)]
+    [TestCase("""{"ok":false,"effectObserved":true,"before":0,"value":0}""", false, "client_deafen_postread_failed")]
+    [TestCase("""{"ok":false,"effectObserved":false,"error":"client_deafen_button_not_found"}""", false, "client_deafen_button_not_found")]
+    public async Task TheClientsOwnDeafenIsSwitchedAndReadBack(string scriptOutput, bool succeeded, string? code)
+    {
+        const string operation = "client.deafen.set";
+        var runner = new CapturingRunner(scriptOutput);
+        var adapter = new WindowsDeviceControlAdapter(Path.GetTempPath(), Path.GetTempPath(), runner);
+        OperationOutcome outcome = await new ExternalCapabilityHandler(operation, new AdapterProvider(adapter))
+            .ExecuteAsync(
+                new OperationInvocation("request", "mission", "invocation", Json("""{"client":"discord","deafened":true}""")),
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.EqualTo(succeeded));
+            Assert.That(outcome.ErrorCode, Is.EqualTo(code));
+            Assert.That(runner.Arguments.TakeLast(2), Is.EqualTo(new[] { "1", "deafen" }));
+            if (succeeded)
+            {
+                Assert.That(outcome.Result!.Value.GetProperty("deafened").GetBoolean(), Is.True);
+                Assert.That(outcome.Result!.Value.GetProperty("deafenedBefore").GetBoolean(), Is.False);
+                Assert.That(outcome.Result!.Value.GetProperty("micMuted").GetBoolean(), Is.True);
+            }
+        });
+    }
+
+    // The deafen state asked that was already Discord's is said as such (changed:false), and an argument that is not a
+    // yes/no never reaches the window.
+    [TestCase("""{"client":"discord","deafened":"yes"}""", false, "client_deafen_arguments_invalid")]
+    [TestCase("""{"client":"discord","deafened":false}""", true, null)]
+    public async Task TheClientsDeafenTakesOnlyAYesOrNo(string arguments, bool succeeded, string? code)
+    {
+        const string operation = "client.deafen.set";
+        var runner = new CapturingRunner("""{"ok":true,"effectObserved":false,"before":0,"value":0,"micMuted":0,"deafened":0}""");
+        var adapter = new WindowsDeviceControlAdapter(Path.GetTempPath(), Path.GetTempPath(), runner);
+        OperationOutcome outcome = await new ExternalCapabilityHandler(operation, new AdapterProvider(adapter))
+            .ExecuteAsync(new OperationInvocation("request", "mission", "invocation", Json(arguments)), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.EqualTo(succeeded));
+            Assert.That(outcome.ErrorCode, Is.EqualTo(code));
+            Assert.That(runner.Arguments, succeeded ? Is.Not.Empty : Is.Empty);
+            if (succeeded)
+            {
+                Assert.That(outcome.Result!.Value.GetProperty("deafened").GetBoolean(), Is.False);
+                Assert.That(outcome.Result!.Value.GetProperty("deafenedBefore").GetBoolean(), Is.False);
+            }
+        });
+    }
+
+    // G5: the microphone's receipt also says whether Discord stays deafened, read after the switch (unmuting while
+    // deafened undeafens in Discord), so a final never has to guess it from two calls.
+    [Test]
+    public async Task TheClientsMuteReceiptSaysTheDeafenStateReadAfter()
+    {
+        const string operation = "client.microphone.set";
+        var runner = new CapturingRunner("""{"ok":true,"effectObserved":true,"before":1,"value":0,"micMuted":0,"deafened":0}""");
+        var adapter = new WindowsDeviceControlAdapter(Path.GetTempPath(), Path.GetTempPath(), runner);
+        OperationOutcome outcome = await new ExternalCapabilityHandler(operation, new AdapterProvider(adapter))
+            .ExecuteAsync(
+                new OperationInvocation("request", "mission", "invocation", Json("""{"client":"discord","muted":false}""")),
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(runner.Arguments.TakeLast(2), Is.EqualTo(new[] { "0", "mute" }));
+            Assert.That(outcome.Result!.Value.GetProperty("muted").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("deafened").GetBoolean(), Is.False);
         });
     }
 

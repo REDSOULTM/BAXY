@@ -235,6 +235,7 @@ def test_the_model_servers_are_closed_even_when_the_voice_cannot_say_it_stopped(
             closed.append("server")
 
     class Speech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def foresee(self, text, done):
             return True
 

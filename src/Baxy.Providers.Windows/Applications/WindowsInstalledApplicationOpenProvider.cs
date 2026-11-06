@@ -103,7 +103,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     {
         ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
-        if (!ApplicationIds.IsValidRequest(request.ApplicationId))
+        if (!ApplicationIds.IsValidOpening(request.ApplicationId))
         {
             return Failure(request, string.Empty, ApplicationOpenErrorCodes.InvalidApplication);
         }
@@ -140,7 +140,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 resolution.Ambiguous
                     ? ApplicationOpenErrorCodes.ApplicationAmbiguous
                     : ApplicationOpenErrorCodes.ApplicationNotFound,
-                candidates: resolution.Candidates);
+                candidates: resolution.Candidates,
+                nameHolder: resolution.NameHolder);
         }
 
         InstalledApplicationEntry entry = resolution.Entry;
@@ -221,6 +222,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         // shell that ignores how it was asked to show): the window that had the front gets it back at once.
         // Asked in front, it is also read: a person working in it when the opening ends gets it back (OpeningFront).
         long previousFront = _platform.ForegroundWindow();
+        using ILaunchWatch? launch = _platform.WatchLaunch(entry);
         // A file not handed is said by its cause (cu-v3-archivo-empaquetado: never «Windows does not list it» for an
         // application Windows lists).
         string? notIssued;
@@ -288,6 +290,19 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
             if (candidate is null)
             {
+                // uso-108 C12 (agent-desktop launch.rs:44-68, launch_result.rs:7-14): a process of the launch that ended
+                // on a crash code, with nothing of it left, shows no window: the opening ends here, unverified as at 30 s,
+                // and says the code (a missing runtime or library reads there).
+                if (launch?.CrashCode() is { } crash)
+                {
+                    return Failure(
+                        request,
+                        entry.Name,
+                        ApplicationOpenErrorCodes.VerificationFailed,
+                        launchIssued: !reused,
+                        reusedExisting: reused) with { ExitedWithError = $"0x{crash:X8}" };
+                }
+
                 // Renew al máximo (velocidad): the application's frame shown empty past the grace is the frame of a
                 // process that ended (forced to), which nothing fills: the opening ends here, unverified as at 30 s, and
                 // says what it saw (emptyFrame), instead of waiting out the rest of the budget.
@@ -371,7 +386,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // A catalog that cannot be read tells nothing: the opening fails on it.
     public async ValueTask<bool> OpensSystemToolAsync(string applicationId, CancellationToken cancellationToken)
     {
-        if (!ApplicationIds.IsValidRequest(applicationId))
+        if (!ApplicationIds.IsValidOpening(applicationId))
         {
             return false;
         }
@@ -388,6 +403,103 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
         return InstalledApplicationResolver.Resolve(applicationId, catalog, _platform.LocateExecutable).Entry is { } entry
             && OpensSystemTool(entry);
+    }
+
+    // Encargo 94: a browser is told by what Windows has registered as one (UserBrowserIdentityResolver), never by its name;
+    // registry unread counts as one, since opening a person's session is the worse mistake. Windows unread stay unknown.
+    public async ValueTask<InstalledApplicationFacts?> InstalledFactsAsync(string applicationId, CancellationToken cancellationToken)
+    {
+        if (!ApplicationIds.IsValidOpening(applicationId))
+        {
+            return null;
+        }
+
+        InstalledApplicationEntry? entry;
+        try
+        {
+            entry = InstalledApplicationResolver.Resolve(
+                applicationId,
+                await ReadCatalogAsync(cancellationToken, applicationId).ConfigureAwait(false),
+                _platform.LocateExecutable).Entry;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return null;
+        }
+
+        if (entry is null)
+        {
+            return null;
+        }
+
+        IReadOnlyList<long>? windows;
+        try
+        {
+            windows = _platform.IdentifiesWindows(entry)
+                ? [.. _platform.Inventory(entry).Select(static item => item.WindowHandle)]
+                : null;
+        }
+        catch (Exception exception) when (exception is ApplicationInventoryException
+            or InvalidOperationException
+            or System.ComponentModel.Win32Exception)
+        {
+            windows = null;
+        }
+
+        return new InstalledApplicationFacts(entry.Name.Trim(), _platform.IsBrowser(entry), windows);
+    }
+
+    // Encargo 94: Windows' own association for plain text (AssocQueryString) names the program, which may not be listed
+    // by that name: a friendly name, then the file name, as any opening resolves them.
+    public async ValueTask<string?> PlainTextEditorAsync(CancellationToken cancellationToken)
+    {
+        if (_platform.PlainTextHandler() is not { } handler)
+        {
+            return null;
+        }
+
+        IReadOnlyList<InstalledApplicationEntry> catalog;
+        try
+        {
+            catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return null;
+        }
+
+        InstalledApplicationEntry? entry =
+            InstalledApplicationResolver.Resolve(handler.Name, catalog, _platform.LocateExecutable).Entry
+            ?? InstalledApplicationResolver.Resolve(Path.GetFileName(handler.Executable), catalog, _platform.LocateExecutable).Entry;
+        return entry is null || OpensSystemTool(entry) || _platform.IsBrowser(entry) ? null : entry.Name.Trim();
+    }
+
+    // Ajuste c5 (a game with its own launcher, outside Steam): what the catalog holds for a name a game.launch said. A
+    // tool that configures Windows is not a game's: it opens only by app.open, which asks (the guard above).
+    public async ValueTask<ApplicationNameLook?> LookForAsync(string name, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return new(null, [], []);
+        }
+
+        IReadOnlyList<InstalledApplicationEntry> catalog;
+        try
+        {
+            catalog = await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return null;
+        }
+
+        InstalledApplicationResolution found = InstalledApplicationResolver.ResolveBearing(
+            name, catalog, _platform.LocateExecutable, OpensSystemTool);
+        return found.Entry is { } entry
+            ? new(entry.Name.Trim(), [], [])
+            : found.Ambiguous
+                ? new(null, found.Candidates ?? [name.Trim()], [])
+                : new(null, [], InstalledApplicationResolver.WithWordBeginningAs(name, found.Candidates));
     }
 
     // The rule of the guard above for one catalog entry (also what the installed list leaves out, CreateCatalogSnapshot).
@@ -445,7 +557,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             IReadOnlyList<InstalledApplicationEntry> catalog =
                 await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
-            return CreateCatalogSnapshot(catalog);
+            return CreateCatalogSnapshot(catalog, _platform.LocateExecutable);
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
@@ -458,7 +570,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     }
 
     internal static InstalledApplicationCatalogSnapshot CreateCatalogSnapshot(
-        IReadOnlyList<InstalledApplicationEntry> catalog)
+        IReadOnlyList<InstalledApplicationEntry> catalog,
+        Func<string, InstalledExecutable?>? locate = null)
     {
         ArgumentNullException.ThrowIfNull(catalog);
         if (catalog.Any(static entry =>
@@ -476,7 +589,7 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         HashSet<string> systemTools = ModelAids.On(ModelAids.SystemToolsUnlisted)
             ? new(catalog.Where(OpensSystemTool).Select(static entry => entry.AppUserModelId), StringComparer.Ordinal)
             : [];
-        var candidates = new List<(string Name, string AppUserModelId, string Key)>();
+        var candidates = new List<(string Name, string AppUserModelId, string Key, InstalledApplicationEntry Entry)>();
         foreach (InstalledApplicationEntry entry in catalog)
         {
             if (!InstalledApplicationResolver.IsUsable(entry))
@@ -501,17 +614,16 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
             if (key.Length != 0)
             {
-                candidates.Add((name, entry.AppUserModelId, key));
+                candidates.Add((name, entry.AppUserModelId, key, entry));
             }
         }
 
         string[] safelyResolvableNames = candidates
             .GroupBy(static candidate => candidate.Key, StringComparer.Ordinal)
             .Where(group =>
-                group.Select(static candidate => candidate.AppUserModelId)
-                    .Distinct(StringComparer.Ordinal)
-                    .Count() == 1
-                && !systemTools.Contains(group.First().AppUserModelId))
+                InstalledApplicationResolver.Applications(group.Select(static candidate => candidate.Entry), locate)
+                    is { Length: 1 } one
+                && !systemTools.Contains(one[0].AppUserModelId))
             .Select(static group => group
                 .OrderBy(static candidate => candidate.Name, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(static candidate => candidate.Name, StringComparer.Ordinal)
@@ -642,6 +754,20 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             return ([], ApplicationOpenErrorCodes.InventoryFailed, null);
         }
+    }
+
+    /// <summary>
+    /// Uso 86: whether <paramref name="applicationName"/> is an installed application's name as window.resolve resolves
+    /// it (one application, or several that answer to it); false only when it resolves to none or is no valid name. A
+    /// catalog that cannot be read says nothing is known, and counts as installed (nothing is offered in its place).
+    /// </summary>
+    internal async ValueTask<bool> NamesInstalledApplicationAsync(
+        string applicationName,
+        CancellationToken cancellationToken)
+    {
+        var resolution = await ResolveApplicationWindowsAsync(applicationName, cancellationToken).ConfigureAwait(false);
+        return resolution.ErrorCode is not (ApplicationOpenErrorCodes.ApplicationNotFound
+            or ApplicationOpenErrorCodes.InvalidApplication);
     }
 
     /// <summary>
@@ -1110,6 +1236,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
                 shownWithoutFocus: shown);
         }
 
+        // Encargo 94: a tab strip's add button comes first whatever the keys do: Ctrl+N reached a Notepad with no visible
+        // toggle that takes it (a restored note, live: 2 of 3 new_document_not_created) and made nothing. A shortcut depends
+        // on the language (Microsoft, Keyboard accelerators: «in the Spanish version of Windows, Ctrl+N is used for bold»).
         // Renew al máximo (nuevo2): Ctrl+N is not every window's New. Windows 11's Notepad in Spanish bolds with it
         // («Negrita (Ctrl+N)»): the shown tab, maybe restored with text, took the format and «un Bloc de notas nuevo»
         // ended new_document_not_created 10 of 10 after 8 s. A toggle that takes Ctrl+N gets no key: the tab strip's add
@@ -1234,8 +1363,16 @@ public sealed class WindowsInstalledApplicationOpenProvider :
 
             if (dialogs.Count > 0)
             {
-                // Auditoría D6: a dialog the command raised is never answered nor closed; the document was not made.
-                return NotCreated();
+                // Auditoría D6: a dialog is never answered, and the document was not made. Encargo 98: a shortcut is another
+                // command in some languages, so a dialog it raised is said, and closed as its Cancel (WM_CLOSE): it is BAXY's
+                // doing, and was left over the person's window. Where no key went, the dialog is not BAXY's: only said.
+                long dialog = dialogs[0];
+                return NotCreated() with
+                {
+                    DialogOpened = new ApplicationDialogMet(
+                        _platform.WindowTitle(dialog),
+                        strip == TabStripCommand.ShortcutIsNew && _platform.CloseOwnedDialog(dialog)),
+                };
             }
         }
 
@@ -1296,8 +1433,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     /// Renew al máximo (nuevo4): what the window's tab strip says of its New command, in <see cref="TabStripBudget"/> at
     /// most for all of it, the worker's start included (1eb63ed58 read every toggle of any window for up to 10 s, about
     /// 4 s on the first «nuevo»). A window without a tab strip (a Tab with a TabItem) is asked only that, and gets Ctrl+N
-    /// as before; one with a strip is scanned for a toggle that takes Ctrl+N and the strip's add button. Up to there
-    /// nothing is pressed, so any failure (any exception, a step left at its share of the budget) is Ctrl+N as before. The
+    /// as before; one with a strip is scanned for the strip's add button, its New in any language, and a toggle that takes
+    /// Ctrl+N. Up to there nothing is pressed, so any failure (any exception, a step left at its share of the budget) is Ctrl+N as before. The
     /// add button is pressed only with <see cref="TabStripPressReserve"/> left to read the new tab back; once it may have
     /// been pressed, a failure sends no key on top of it (Ctrl+N would bold the new tab): the looks tell what came.
     /// </summary>
@@ -1598,6 +1735,9 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     {
         // M132: a click that follows this opening acts on the application opened (VisibleControlSurface).
         External.VisibleControlSurface.NoteOpened(observation.ProcessId, launched: !reused, observation.WindowHandle);
+        // Banco de uso 03-11 (U45): a protected window this opening showed (Windows Terminal hosting «Command Prompt») is
+        // the application's for both names it was asked by, and named; what is typed there still asks as in any terminal.
+        External.VisibleControlSurface.NoteOpenedProtected((nint)observation.WindowHandle, entry.Name, request.ApplicationId);
         // PLAN_GENERAL B1: the executable this verified opening found is the application's, by both names it was asked
         // by, so a later look by name finds its window whatever its title says (a localized «Iniciador de Epic Games»).
         // A window told by the id it declares runs in another program, whose other windows are not the application.
@@ -1639,7 +1779,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         string errorCode,
         bool launchIssued = false,
         bool reusedExisting = false,
-        IReadOnlyList<string>? candidates = null)
+        IReadOnlyList<string>? candidates = null,
+        string? nameHolder = null)
     {
         var receipt = new ApplicationLaunchReceipt(
             request.InvocationId,
@@ -1662,8 +1803,101 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             WindowHandle: null,
             errorCode,
             receipt,
-            Candidates: candidates);
+            Candidates: candidates,
+            NameHolder: nameHolder);
     }
+}
+
+/// <summary>uso-108 C12: what became of the processes a launch started.</summary>
+internal interface ILaunchWatch : IDisposable
+{
+    /// <summary>The crash code of a process of the launch, once all of them have ended; null otherwise.</summary>
+    uint? CrashCode();
+}
+
+/// <summary>
+/// uso-108 C12. The shell's launch gives no process (<c>explorer shell:AppsFolder</c>), so a process is known by its executable,
+/// new since the watch began, and held by a handle from first sight: its exit code lives as long as a handle does. Each read
+/// is taken at the opening's polls, so one that ends before the first of them is not seen, and the opening waits as before.
+/// Only a code with the high nibble 0xC (NTSTATUS error: <c>STATUS_DLL_NOT_FOUND</c>, an access violation) says it died
+/// (agent-desktop <c>process_state.rs:18-19,40-56</c>, <c>lifecycle-launch-devbox.json</c>): a launcher that ends cleanly, or
+/// with any other code (explorer.exe ends with 1), while another process owns the window is an ordinary start. The wait
+/// decides that it ended, never the code: 259 (STILL_ACTIVE) can be a real one (<c>close.rs:265-273</c>). A process of it still
+/// running says nothing yet, and a crash waits a moment for the window of a child that outlives it.
+/// </summary>
+internal sealed partial class LaunchWatch : ILaunchWatch
+{
+    private const uint QueryLimitedAndSynchronize = 0x1000 | 0x00100000;
+    private const uint HighNibble = 0xF0000000;
+    private const uint NtError = 0xC0000000;
+    private static readonly TimeSpan ChildGrace = TimeSpan.FromSeconds(1);
+    private readonly Func<IReadOnlyList<int>> _running;
+    private readonly HashSet<int> _known;
+    private readonly List<SafeProcessHandle> _launched = [];
+    private long _crashSeen;
+
+    internal LaunchWatch(Func<IReadOnlyList<int>> running)
+    {
+        _running = running;
+        _known = [.. Safely(running)];
+    }
+
+    public uint? CrashCode()
+    {
+        foreach (int process in Safely(_running))
+        {
+            if (_known.Add(process) && OpenProcess(QueryLimitedAndSynchronize, false, process) is { IsInvalid: false } handle)
+                _launched.Add(handle);
+        }
+
+        uint? crash = null;
+        foreach (SafeProcessHandle handle in _launched)
+        {
+            if (WaitForSingleObject(handle, 0) != 0)
+            {
+                _crashSeen = 0;
+                return null;
+            }
+
+            if (GetExitCodeProcess(handle, out uint code) && (code & HighNibble) == NtError)
+                crash ??= code;
+        }
+
+        if (crash is null)
+            return null;
+        if (_crashSeen == 0)
+            _crashSeen = System.Diagnostics.Stopwatch.GetTimestamp();
+        return System.Diagnostics.Stopwatch.GetElapsedTime(_crashSeen) >= ChildGrace ? crash : null;
+    }
+
+    private static IReadOnlyList<int> Safely(Func<IReadOnlyList<int>> running)
+    {
+        try
+        {
+            return running();
+        }
+        catch (Exception exception) when (exception is InvalidOperationException or System.ComponentModel.Win32Exception)
+        {
+            return [];
+        }
+    }
+
+    public void Dispose()
+    {
+        foreach (SafeProcessHandle handle in _launched)
+            handle.Dispose();
+    }
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    private static partial SafeProcessHandle OpenProcess(
+        uint access, [MarshalAs(UnmanagedType.Bool)] bool inherit, int processId);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial uint WaitForSingleObject(SafeProcessHandle process, uint milliseconds);
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetExitCodeProcess(SafeProcessHandle process, out uint exitCode);
 }
 
 internal sealed record InstalledApplicationEntry(
@@ -1725,6 +1959,12 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // Ajuste c3: where Windows finds a program by its bare file name («calc.exe»), never running it; null if nowhere.
     InstalledExecutable? LocateExecutable(string fileName) => null;
 
+    // Encargo 94: whether the program this entry launches is a web browser Windows knows.
+    bool IsBrowser(InstalledApplicationEntry entry) => false;
+
+    // Encargo 94: the program Windows opens plain text with (its friendly name and executable); null if none, or a browser.
+    (string Name, string Executable)? PlainTextHandler() => null;
+
     IReadOnlyList<InstalledApplicationObservation> Inventory(InstalledApplicationEntry entry);
 
     IReadOnlyList<InstalledApplicationObservation> InventoryForWindowResolution(
@@ -1739,6 +1979,10 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // Renew al máximo (velocidad): Windows shows a frame of this packaged application with nothing of it inside
     // (VisibleControlSurface.ShowsEmptyFrame); false for a classic application.
     bool ShowsEmptyFrame(InstalledApplicationEntry entry) => false;
+
+    // uso-108 C12: asked right before the launch, the processes of this classic application's executable it starts from
+    // here on; null for one whose processes cannot be told (a packaged application, the shell).
+    ILaunchWatch? WatchLaunch(InstalledApplicationEntry entry) => null;
 
     bool Activate(InstalledApplicationEntry entry);
 
@@ -1801,6 +2045,9 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
     // Whether another window owns this one (a dialog of the application).
     bool IsOwnedWindow(long windowHandle) => false;
 
+    /// <summary>Encargo 98: asks a dialog the New command raised to close, as its Cancel; whether it is gone.</summary>
+    bool CloseOwnedDialog(long windowHandle) => false;
+
     // Renew al máximo (w6-settle): the window events of these processes and of the helpers and frames they show windows
     // through (WindowEventWatch), from now until disposed; null when none can be watched (the settle then only looks).
     IWindowEventWatch? WatchWindowEvents(IReadOnlyCollection<int> processes) => null;
@@ -1836,18 +2083,168 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
 
 // Candidates: with no entry of that name, the installed names closest to it (auditoría D1), for the model to name one
 // exactly; nothing is opened for them.
+// NameHolder: with no entry of that name, the one installed name that ends with the words asked, or begins with two or
+// more of them (see InstalledApplicationResolver.HolderOf); nothing is opened for it either.
 internal sealed record InstalledApplicationResolution(
     InstalledApplicationEntry? Entry,
     bool Ambiguous,
-    IReadOnlyList<string>? Candidates = null);
+    IReadOnlyList<string>? Candidates = null,
+    string? NameHolder = null);
 
 internal static class InstalledApplicationResolver
 {
     // How many of the closest installed names a name that matches none gets back.
     private const int CandidateCount = 5;
 
+    // Encargo 10 (punto 3): the ambiguous candidates, one per application. A8: «one application» is one destination
+    // (SameDestination), not one id: entries that lead to the same place count once. When more than one bears the same
+    // name, each of those is told apart by a visible origin —its program's path (and arguments), else its application id—
+    // so the list is never one name repeated; a single-named one stays its plain name, as app.open says a name.
+    private static string[] Distinguished(
+        IEnumerable<InstalledApplicationEntry> entries, Func<string, InstalledExecutable?>? locate = null)
+    {
+        InstalledApplicationEntry[] byDestination = Applications(entries, locate);
+        ILookup<string, InstalledApplicationEntry> sharing =
+            byDestination.ToLookup(static item => Normalize(item.Name), StringComparer.Ordinal);
+        return [.. byDestination
+            .Select(item => sharing[Normalize(item.Name)].Count() > 1
+                ? $"{item.Name.Trim()} ({Origin(item)})"
+                : item.Name.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)];
+    }
+
+    // What tells two applications of the same name apart: the program it opens (with the arguments its shortcut gives it,
+    // when it gives any: the same program with other arguments is another thing), else its application-user-model id.
+    // Visible, never a name the person did not install. Encargo 18 (U08/U14/U15): both are identities app.open takes back
+    // (Chosen), so a candidate said is one it opens.
+    private static string Origin(InstalledApplicationEntry entry) =>
+        !string.IsNullOrWhiteSpace(entry.TargetPath)
+            ? string.IsNullOrWhiteSpace(entry.TargetArguments)
+                ? entry.TargetPath!.Trim()
+                : $"{entry.TargetPath!.Trim()} {entry.TargetArguments.Trim()}"
+            : entry.AppUserModelId.Trim();
+
+    /// <summary>
+    /// Encargo A8 (diagnóstico de flota 315702667: «Hay dos calculadoras instaladas, ¿cuál abro?» on Azure VMs where the
+    /// Calculator was listed twice). The entries that lead to one destination are one application; only different
+    /// destinations are ambiguous. By form, never by name. Two entries are the same application when:
+    /// their AppUserModelIDs are equal (the id is the application's identity and Windows compares it without case,
+    /// learn.microsoft.com/windows/win32/shell/appids); or both are shortcuts to the same file with the same arguments
+    /// (the .lnk of the common and of the person's Start menu, or a copy of one: <c>System.Link.TargetParsingPath</c> and
+    /// <c>System.Link.Arguments</c> are all the shell uses to launch it, and the same program with other arguments is
+    /// another thing); or one is a packaged application and the other a shortcut whose program lies in that package's
+    /// folder (<c>WindowsApps\Family_version_arch__publisher</c>) or is the very system program Windows finds by that file
+    /// name and that describes itself as that package (the alias <c>calc.exe</c> of the Calculator package).
+    /// </summary>
+    internal static bool SameDestination(
+        InstalledApplicationEntry first, InstalledApplicationEntry second, Func<string, InstalledExecutable?>? locate = null)
+    {
+        if (string.Equals(first.AppUserModelId.Trim(), second.AppUserModelId.Trim(), StringComparison.OrdinalIgnoreCase))
+            return true;
+        bool firstPackaged = IsPackaged(first);
+        bool secondPackaged = IsPackaged(second);
+        if (firstPackaged && secondPackaged)
+            return false;
+        if (firstPackaged || secondPackaged)
+        {
+            (InstalledApplicationEntry packaged, InstalledApplicationEntry other) =
+                firstPackaged ? (first, second) : (second, first);
+            return ShortcutLeadsToPackage(other, packaged, locate);
+        }
+
+        return !string.IsNullOrWhiteSpace(first.TargetPath) && !string.IsNullOrWhiteSpace(second.TargetPath)
+            && string.Equals(FullPath(first.TargetPath!), FullPath(second.TargetPath!), StringComparison.OrdinalIgnoreCase)
+            && string.Equals(
+                (first.TargetArguments ?? string.Empty).Trim(), (second.TargetArguments ?? string.Empty).Trim(),
+                StringComparison.OrdinalIgnoreCase);
+    }
+
+    // One entry per destination: of the entries that lead to the same place, the packaged one (its id is the identity
+    // Windows gives its windows), else the first by id; the order of first appearance is kept.
+    internal static InstalledApplicationEntry[] Applications(
+        IEnumerable<InstalledApplicationEntry> entries, Func<string, InstalledExecutable?>? locate = null)
+    {
+        var groups = new List<List<InstalledApplicationEntry>>();
+        foreach (InstalledApplicationEntry entry in entries)
+        {
+            List<InstalledApplicationEntry>? group = groups.Find(
+                candidate => candidate.Exists(member => SameDestination(member, entry, locate)));
+            if (group is null)
+                groups.Add([entry]);
+            else
+                group.Add(entry);
+        }
+
+        return [.. groups.Select(static group => group
+            .OrderBy(static item => IsPackaged(item) ? 0 : 1)
+            .ThenBy(static item => item.AppUserModelId, StringComparer.Ordinal)
+            .First())];
+    }
+
+    private static bool IsPackaged(InstalledApplicationEntry entry) =>
+        string.IsNullOrWhiteSpace(entry.TargetPath) && PackageSegment(entry.AppUserModelId) is not null;
+
+    private static string FullPath(string path)
+    {
+        string trimmed = path.Trim().Trim('"');
+        try
+        {
+            return Path.IsPathFullyQualified(trimmed) ? Path.GetFullPath(trimmed) : trimmed;
+        }
+        catch (ArgumentException)
+        {
+            return trimmed;
+        }
+    }
+
+    private static bool ShortcutLeadsToPackage(
+        InstalledApplicationEntry shortcut, InstalledApplicationEntry packaged, Func<string, InstalledExecutable?>? locate)
+    {
+        if (string.IsNullOrWhiteSpace(shortcut.TargetPath))
+            return false;
+        string target = FullPath(shortcut.TargetPath!);
+        string family = packaged.AppUserModelId[..packaged.AppUserModelId.IndexOf('!', StringComparison.Ordinal)].Trim();
+        if (PackageFamily(target) is { } inFolder && string.Equals(inFolder, family, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (locate?.Invoke(Path.GetFileName(target)) is not { } located)
+            return false;
+        if (PackageFamily(located.Path) is { } found && string.Equals(found, family, StringComparison.OrdinalIgnoreCase))
+            return true;
+        // The system program itself (not another file of that name) that describes itself as the package's own name.
+        return string.Equals(FullPath(located.Path), target, StringComparison.OrdinalIgnoreCase)
+            && located.Description is { } description
+            && Joined(Normalize(description)) is { Length: > 0 } described
+            && PackageSegment(packaged.AppUserModelId) is { } segment
+            && described == Joined(Normalize(segment));
+    }
+
+    // Encargo 18: the candidate an ambiguous opening said, asked back: by its whole label as said («Name (origin)») or by
+    // the identity in it (its program's path or its application id), compared as written, case aside. Only identities
+    // the catalog holds; one that several applications share chooses none. A bare id is taken only where no name could be
+    // it (a package's «family!app», or a path): a classic id like a word («Chrome») is never a name asked (auditoría D1).
+    private static InstalledApplicationEntry[] Chosen(string query, InstalledApplicationEntry[] entries)
+    {
+        string asked = query.Trim();
+        return [.. entries.Where(item =>
+            (NoName(item.AppUserModelId) && string.Equals(asked, item.AppUserModelId.Trim(), StringComparison.OrdinalIgnoreCase))
+            || (item.TargetPath is { } target && NoName(target)
+                && string.Equals(asked, target.Trim(), StringComparison.OrdinalIgnoreCase))
+            || string.Equals(asked, $"{item.Name.Trim()} ({Origin(item)})", StringComparison.OrdinalIgnoreCase))];
+    }
+
+    private static bool NoName(string identity) => identity.IndexOfAny(['!', '\\', '/']) >= 0;
+
+    // Entries a step of the resolution found: one application when they all lead to one destination (A8), else ambiguous
+    // with each candidate told by what distinguishes it.
+    private static InstalledApplicationResolution Resolved(
+        InstalledApplicationEntry[] found, Func<string, InstalledExecutable?>? locate) =>
+        Applications(found, locate) is { Length: 1 } one
+            ? new InstalledApplicationResolution(one[0], false)
+            : new InstalledApplicationResolution(null, true, Distinguished(found, locate));
+
     // Auditoría D1: the application is the catalog entry of exactly that name, folded (case, accents, whitespace);
-    // «Motion» is never Notion, and «Notepad» is never Notepad++ (auditoría final V2: punctuation is part of a name). Without one, nothing is resolved and the closest names are only said.
+    // «Motion» is never Notion, and «Notepad» is never Notepad++ (auditoría final V2: punctuation is part of a name). Without one
+    // (nor by package, other name, file name or stem, below), nothing is resolved and the closest names are only said.
     internal static InstalledApplicationResolution Resolve(
         string query,
         IReadOnlyList<InstalledApplicationEntry> catalog,
@@ -1864,6 +2261,12 @@ internal static class InstalledApplicationResolver
             .DistinctBy(static item => (Normalize(item.Name), item.AppUserModelId),
                 EqualityComparer<(string, string)>.Default)
             .ToArray();
+        InstalledApplicationEntry[] chosen = Chosen(query, entries);
+        if (chosen.Length > 0)
+        {
+            return Resolved(chosen, locateExecutable);
+        }
+
         InstalledApplicationEntry[] exact = entries
             .Where(item => Normalize(item.Name) == normalizedQuery)
             .ToArray();
@@ -1874,9 +2277,7 @@ internal static class InstalledApplicationResolver
 
         if (exact.Length > 1)
         {
-            return exact.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1
-                ? new InstalledApplicationResolution(exact[0], false)
-                : new InstalledApplicationResolution(null, true);
+            return Resolved(exact, locateExecutable);
         }
 
         // BAXY Renew cu (C18): a name that is no catalog name may be a packaged application's own identity, which no
@@ -1885,9 +2286,9 @@ internal static class InstalledApplicationResolver
         InstalledApplicationEntry[] byIdentity = entries
             .Where(item => PackageName(item) is { } package && Normalize(package) == normalizedQuery)
             .ToArray();
-        if (byIdentity.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1)
+        if (Applications(byIdentity, locateExecutable) is { Length: 1 } identified)
         {
-            return new InstalledApplicationResolution(byIdentity[0], false);
+            return new InstalledApplicationResolution(identified[0], false);
         }
 
         // Ajuste c3 (humo del NB, 31-10: «Settings» on a Spanish Windows, whose Start catalog says «Configuración»): a name
@@ -1896,9 +2297,9 @@ internal static class InstalledApplicationResolver
         InstalledApplicationEntry[] declared = entries
             .Where(item => ApplicationPlaces.SameApplication(query, item.Name))
             .ToArray();
-        if (declared.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1)
+        if (Applications(declared, locateExecutable) is { Length: 1 } declaredOne)
         {
-            return new InstalledApplicationResolution(declared[0], false);
+            return new InstalledApplicationResolution(declaredOne[0], false);
         }
 
         // Ajuste c3 (e2e del NB: app.open «calc.exe» said the Calculadora was not in the start menu): a program's bare
@@ -1907,10 +2308,19 @@ internal static class InstalledApplicationResolver
         if (ExecutableFileName(query) is { } fileName
             && Launching(fileName, locateExecutable?.Invoke(fileName), entries) is { Length: > 0 } launching)
         {
-            return launching.Select(static item => item.AppUserModelId).Distinct(StringComparer.Ordinal).Count() == 1
-                ? new InstalledApplicationResolution(launching[0], false)
-                : new InstalledApplicationResolution(null, true,
-                    [.. launching.Select(static item => item.Name.Trim()).Distinct(StringComparer.OrdinalIgnoreCase)]);
+            return Resolved(launching, locateExecutable);
+        }
+
+        // Ajuste c4 (banco ciego c3, causa 1: C3-058/059 «IrfanView» and C3-062/084/147 «Sumatra PDF» said app_not_found
+        // and opened nothing): with none of those, the program one of whose stems (CatalogNames.Stems) is what was asked,
+        // both without their spaces («IrfanView» is IrfanView 64 4.76, «Sumatra PDF» is SumatraPDF). An entry that opens
+        // a document (a help file, a manual) is no program. Several are said, none chosen.
+        string joinedQuery = Joined(normalizedQuery);
+        InstalledApplicationEntry[] stemmed = [.. entries.Where(item => !OpensADocument(item)
+            && CatalogNames.Stems(item.Name).Any(stem => Joined(stem) == joinedQuery))];
+        if (stemmed.Length > 0)
+        {
+            return Resolved(stemmed, locateExecutable);
         }
 
         // Closest first: the names that hold every word asked, then those with a word that begins with the start of one
@@ -1926,10 +2336,137 @@ internal static class InstalledApplicationResolver
             .ThenBy(name => Levenshtein(normalizedQuery, Normalize(name)))
             .ThenBy(static name => name, StringComparer.OrdinalIgnoreCase)
             .Take(CandidateCount)];
-        return new InstalledApplicationResolution(null, false, closest);
+        string? holder = HolderOf(query, entries, locateExecutable);
+        return new InstalledApplicationResolution(null, false,
+            holder is null ? closest : [holder, .. closest.Where(name => name != holder).Take(CandidateCount - 1)],
+            holder);
     }
 
+    /// <summary>
+    /// Banco de entorno del NB (2026-11-03, R17 3 of 3: «Opera GX» said, «Navegador Opera GX» installed; two runs of three
+    /// gave up at app_not_found though the name was among the candidates). A Start entry's name is the shortcut's own,
+    /// which an installer writes in the language of the PC (the shell shows a localized name, SHSetLocalizedName), so a
+    /// product comes with words of kind or vendor around its own name: «Navegador Opera GX», «Opera GX Browser»,
+    /// «Microsoft Edge». The one installed name whose words end with the words asked, or begin with them when two or
+    /// more were asked, is said back for the model to name exactly; nothing is opened by it (auditoría D1: app.open asks
+    /// for the name). Whole words only («Notepad» is no word of «Notepad++»), at least three letters asked, never a
+    /// document, an installer or an uninstaller, and only when one application holds it so (two holders: none).
+    /// </summary>
+    internal static string? HolderOf(
+        string query, IReadOnlyList<InstalledApplicationEntry> entries, Func<string, InstalledExecutable?>? locate = null)
+    {
+        string[] asked = Words(query);
+        if (asked.Length == 0 || asked.Sum(static word => word.Length) < MinimumStart)
+        {
+            return null;
+        }
+
+        InstalledApplicationEntry[] holders = Applications(entries
+            .Where(item => IsUsable(item) && !OpensADocument(item) && !SetsUpOrRemoves(item)
+                && Words(item.Name) is { } words && words.Length > asked.Length
+                && (words.AsSpan().EndsWith(asked) || (asked.Length >= 2 && words.AsSpan().StartsWith(asked)))),
+            locate);
+        return holders.Length == 1 ? holders[0].Name.Trim() : null;
+    }
+
+    // Ajuste c5 (un juego fuera de Steam, con su lanzador: «X» es «X Launcher» o «X for Windows» en el menú Inicio): lo que
+    // resuelve Resolve y, si no resuelve nada, la aplicación cuyo nombre lleva enteras y seguidas las palabras pedidas.
+    // Sólo para un título de juego que la biblioteca no tiene: app.open sigue pidiendo el nombre (auditoría D1). Lo que
+    // no es el programa (un documento, un desinstalador o un instalador) no cuenta, ni una herramienta de Windows; varias
+    // se dicen, sin elegir.
+    internal static InstalledApplicationResolution ResolveBearing(
+        string query,
+        IReadOnlyList<InstalledApplicationEntry> catalog,
+        Func<string, InstalledExecutable?>? locateExecutable,
+        Func<InstalledApplicationEntry, bool> systemTool)
+    {
+        InstalledApplicationResolution resolved = Resolve(query, catalog, locateExecutable);
+        if (resolved.Entry is { } entry)
+        {
+            return systemTool(entry) ? new InstalledApplicationResolution(null, false) : resolved;
+        }
+
+        string[] asked = Words(query);
+        if (resolved.Ambiguous || asked.Sum(static word => word.Length) < MinimumStart)
+        {
+            return resolved;
+        }
+
+        InstalledApplicationEntry[] bearing = Applications(catalog
+            .Where(item => IsUsable(item) && !OpensADocument(item) && !SetsUpOrRemoves(item) && !systemTool(item)
+                && HoldsInARow(Words(item.Name), asked)),
+            locateExecutable);
+        // Revisión 02-11 (D1): only a name that begins with the title («X Launcher», «X for Windows»), or does after one
+        // short first word («The X»), is the title's own and opens; one that holds it further in («Vendor X Panel» for
+        // «X») is said as a candidate, never opened unasked.
+        return bearing.Length switch
+        {
+            0 => resolved,
+            1 when BeginsWith(Words(bearing[0].Name), asked) => new InstalledApplicationResolution(bearing[0], false),
+            _ => new InstalledApplicationResolution(null, true, Distinguished(bearing, locateExecutable)),
+        };
+    }
+
+    // Of the closest names a failed resolution says, those with a word that begins as a word asked begins; the others
+    // are only the least far of the catalog (Levenshtein), no near name of a game.
+    internal static IReadOnlyList<string> WithWordBeginningAs(string query, IReadOnlyList<string>? closest)
+    {
+        string[] starts = [.. Words(query).Select(Start).Where(static start => start.Length >= MinimumStart)];
+        return [.. (closest ?? []).Where(name => Words(name)
+            .Any(word => starts.Any(start => word.StartsWith(start, StringComparison.Ordinal))))];
+    }
+
+    // The words of a name, folded, without the signs at their edges («Quest:», «Zarvok®»); «notepad++» stays itself. The
+    // trade mark is taken out first: folded it would become the letters «tm» of its word.
+    private static string[] Words(string name) =>
+    [
+        .. Normalize(name.Replace('\u2122', ' ')).Split(' ')
+            .Select(static word => word.Trim(EdgeSigns))
+            .Where(static word => word.Length > 0),
+    ];
+
+    private static readonly char[] EdgeSigns =
+        [':', ',', ';', '.', '!', '?', '-', '\u2013', '\u2014', '_', '\'', '"', '(', ')', '[', ']', '\u00AE', '\u00A9'];
+
+    private static bool BeginsWith(string[] words, string[] asked) =>
+        words.AsSpan().StartsWith(asked) || (words.Length > asked.Length && words[0].Length <= 3
+            && words.AsSpan(1).StartsWith(asked));
+
+    private static bool HoldsInARow(string[] words, string[] asked)
+    {
+        for (int start = 0; start + asked.Length <= words.Length; start++)
+        {
+            if (words.AsSpan(start, asked.Length).SequenceEqual(asked))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // A Start entry that installs or removes something and is no program to play: by a word of its name, or by the file
+    // its shortcut starts («unins000.exe»). No application's name is in this rule.
+    private static bool SetsUpOrRemoves(InstalledApplicationEntry entry) =>
+        Words(entry.Name).Any(static word => word is "uninstall" or "uninstaller" or "desinstalar" or "desinstalador"
+                or "install" or "installer" or "instalar" or "instalador" or "setup")
+        || Path.GetFileName(string.IsNullOrWhiteSpace(entry.TargetPath) ? entry.AppUserModelId : entry.TargetPath)
+            .StartsWith("unins", StringComparison.OrdinalIgnoreCase);
+
     internal static string Normalize(string value) => CatalogNames.Normalize(value);
+
+    private static string Joined(string folded) => folded.Replace(" ", string.Empty, StringComparison.Ordinal);
+
+    // Ajuste c4: a Start entry that opens a document and not a program: its shortcut's target, or else a classic id that
+    // is a path, is a file of another type than «.exe». A packaged application, or an id Windows registers for a program
+    // («Chrome»), opens a program.
+    private static bool OpensADocument(InstalledApplicationEntry entry)
+    {
+        string target = string.IsNullOrWhiteSpace(entry.TargetPath) ? entry.AppUserModelId : entry.TargetPath;
+        return target.IndexOfAny(['\\', '/']) >= 0
+            && Path.GetExtension(target) is { Length: > 0 } extension
+            && !extension.Equals(".exe", StringComparison.OrdinalIgnoreCase);
+    }
 
     // Ajuste c3 (e2e del PC, E010: «calc.exe» said Access, Calendar, CapCut, Claude and CODEX, not the Calculadora
     // installed): a word's start, its letters and digits up to the first other sign («calc» of «calc.exe»). Only from
@@ -2100,6 +2637,13 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
 
     public bool ShowsEmptyFrame(InstalledApplicationEntry entry) =>
         entry.AppUserModelId.Contains('!') && External.VisibleControlSurface.ShowsEmptyFrame(entry.AppUserModelId);
+
+    public ILaunchWatch? WatchLaunch(InstalledApplicationEntry entry) =>
+        entry.AppUserModelId.Contains('!')
+        || string.Equals(entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal)
+        || ExpectedExecutable(entry) is null
+            ? null
+            : new LaunchWatch(() => RunningProcesses(entry));
 
     private static readonly Encoding StrictUtf8 =
         new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
@@ -2327,6 +2871,16 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
 
     public bool IdentifiesWindows(InstalledApplicationEntry entry) =>
         entry.AppUserModelId.Contains('!') || ExpectedExecutable(entry) is not null;
+
+    public bool IsBrowser(InstalledApplicationEntry entry) =>
+        !entry.AppUserModelId.Contains('!') && ExpectedExecutable(entry) is { } executable
+        && External.UserBrowserIdentityResolver.IsRegisteredBrowser(executable) != false;
+
+    public (string Name, string Executable)? PlainTextHandler() =>
+        PlainTextAssociation.Read() is { } handler
+        && External.UserBrowserIdentityResolver.IsRegisteredBrowser(handler.Executable) == false
+            ? handler
+            : null;
 
     public IReadOnlyList<InstalledApplicationObservation> Inventory(
         InstalledApplicationEntry entry) =>
@@ -2955,6 +3509,17 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             return true;
         }
 
+        // A Chrome that shows UI Automation only its frame (External.ChromeUiaFlag), which the shell's path could not start
+        // with its flag. If it cannot be started this way, the shell's path opens it as ever.
+        if (External.ChromeUiaFlag.For(entry.TargetPath) is { } flag
+            && InvokerLaunch.StartOutsideBaxy(new InvokerLaunch.LaunchPlan(
+                entry.TargetPath!,
+                string.IsNullOrWhiteSpace(entry.TargetArguments) ? flag : flag + " " + entry.TargetArguments.Trim(),
+                Path.GetDirectoryName(entry.TargetPath!) ?? Environment.SystemDirectory)) > 0)
+        {
+            return true;
+        }
+
         string explorer = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
         var startInfo = new ProcessStartInfo(explorer)
         {
@@ -3069,7 +3634,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     // scroll RepeatButton) on the tabs' row, right after the last shown tab (before the first in a right-to-left strip),
     // within three rows of it; a ribbon's «File» before its tabs, or a button far from them, never is. Its last JSON line
     // is the answer; any failure before the press is «shortcut» (Ctrl+N, as before), after it «added».
-    private const string TabStripScript = """
+    internal const string TabStripScript = """
         $ErrorActionPreference='Stop'
         $mode=[string]$args[1]
         $phase='read'
@@ -3087,6 +3652,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
           if($mode -eq 'strip'){ if($strips.Count -gt 0){ '{"strip":true}' } else { '{"strip":false}' }; return }
           if($mode -eq 'count'){ $n=0; foreach($s in $strips){ $c=@($s.FindAll($scope::Descendants,(Kind $CT::TabItem))).Count; if($c -gt $n){ $n=$c } }; '{"tabs":'+$n+'}'; return }
           if($strips.Count -eq 0){ '{"outcome":"shortcut"}'; return }
+          function CommandOutcome([bool]$hasAdd,[bool]$shortcutTaken){
+            if($hasAdd){ '{"outcome":"add"}' } elseif($shortcutTaken){ '{"outcome":"none"}' } else { '{"outcome":"shortcut"}' }
+          }
           function AddButton($strip){
             $items=@($strip.FindAll($scope::Descendants,(Kind $CT::TabItem)) | Where-Object { -not $_.Current.IsOffscreen -and -not $_.Current.BoundingRectangle.IsEmpty })
             if($items.Count -eq 0){ return $null }
@@ -3118,14 +3686,13 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
               $shown=[regex]::Match([string]$current.Name,'\(([^()]*)\)\s*$').Groups[1].Value
               foreach($key in @([string]$current.AcceleratorKey,$shown)){ if($key -match '^\s*(Ctrl|Control|Strg)\s*\+\s*N\s*$'){ $taken=$true } }
             }
-            if(-not $taken){ '{"outcome":"shortcut"}'; return }
           }
           $add=$null; $strip=$null
           foreach($candidate in $strips){
             $found=AddButton $candidate
             if($null -ne $found){ $add=$found; $strip=$candidate; break }
           }
-          if($mode -eq 'command'){ if($null -eq $add){ '{"outcome":"none"}' } else { '{"outcome":"add"}' }; return }
+          if($mode -eq 'command'){ CommandOutcome ($null -ne $add) $taken; return }
           if($mode -ne 'add' -or $null -eq $add){ '{"outcome":"shortcut"}'; return }
           $deadline=[long]$args[2]
           function Items(){ @($strip.FindAll($scope::Descendants,(Kind $CT::TabItem)) | ForEach-Object {
@@ -3322,6 +3889,8 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     }
 
     public bool IsOwnedWindow(long windowHandle) => GetWindow(checked((nint)windowHandle), 4) != 0;
+
+    public bool CloseOwnedDialog(long windowHandle) => External.WindowWitness.Close(checked((nint)windowHandle));
 
     public IWindowEventWatch? WatchWindowEvents(IReadOnlyCollection<int> processes) => WindowEventWatch.Start(processes);
 

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { BaxyState, BootPieces } from '../types';
+import { useT } from '../i18n';
+import { causeText } from '../causes';
 
 /* Under the face (design chat.jsx BxCap4, BxBoot; parts.jsx BxSub): BAXY's words as captions, the live transcription
    while it listens, the call it is running, what it waits for, and the start with each piece marked only once the host
@@ -55,6 +57,7 @@ function lastLoad(): number | null {
 }
 
 export function Boot({ boot }: { boot: BootPieces }) {
+  const t = useT();
   const [now, setNow] = useState(() => Date.now());
   const [previous] = useState(lastLoad);
   useEffect(() => {
@@ -65,21 +68,27 @@ export function Boot({ boot }: { boot: BootPieces }) {
   const secs = Math.max(0, Math.round(((boot.readyAt ?? now) - boot.startedAt) / 1000));
   // a piece the host found missing is said so; one it has not read yet keeps its spinner.
   const parts: [string, boolean | null][] = [
-    ['Reconocimiento de voz', boot.stt], ['Palabra de activación «BAXY»', boot.wake], ['Voz de BAXY', boot.tts], ['Modelo Qwen3.5-4B', boot.model ? true : boot.failed ? false : null],
+    [t('Reconocimiento de voz', 'Speech recognition'), boot.stt], [t('Palabra de activación «BAXY»', 'Wake word “BAXY”'), boot.wake],
+    [t('Voz de BAXY', 'BAXY’s voice'), boot.tts], [t('Modelo Qwen3.5-4B', 'Qwen3.5-4B model'), boot.model ? true : boot.failed ? false : null],
   ];
   return (
     <div className="bx-boot">
       {parts.map(([l, d]) => (
         <div key={l} className={'r' + (d ? ' done' : '')}>
           <span className="ic">{d ? '✓' : d === false ? '–' : <i className="spin"></i>}</span>
-          <span>{d === false ? l + ' · no disponible' : l}</span>
+          <span>{d === false ? l + t(' · no disponible', ' · not available') : l}</span>
         </div>
       ))}
       {!boot.model && !boot.failed ? <div className="bar"><i></i></div> : null}
+      {!boot.model && !boot.failed && boot.lastFailure ? (
+        <div className="el">
+          {t('El intento anterior no arrancó', 'The last attempt did not start') + (causeText(boot.lastFailure, t, boot.failureMemory) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory) : '') + t(' · reintentando', ' · retrying')}
+        </div>
+      ) : null}
       <div className="el">
-        {boot.model ? 'Listo · cargó en ' + secs + ' s'
-          : boot.failed ? 'El modelo no arrancó'
-            : secs + ' s' + (previous ? ' · la última vez tardó ' + previous + ' s' : '')}
+        {boot.model ? t('Listo · cargó en ', 'Ready · loaded in ') + secs + ' s'
+          : boot.failed ? t('El modelo no arrancó', 'The model did not start') + (causeText(boot.lastFailure, t, boot.failureMemory) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory) : '')
+            : secs + ' s' + (previous ? t(' · la última vez tardó ', ' · last time it took ') + previous + ' s' : '')}
       </div>
     </div>
   );

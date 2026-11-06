@@ -78,9 +78,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             if (action == "cancel")
                 return await CancelPendingAsync(operation, namedKind, effectBoundary, cancellationToken)
                     .ConfigureAwait(false);
-            return TryDue(arguments, at, DateTimeOffset.Now, out DateTimeOffset due)
-                ? await ScheduleAsync(operation, kind, arguments, due, effectBoundary, cancellationToken)
-                    .ConfigureAwait(false)
+            return TryDue(arguments, at, DateTimeOffset.Now, out DateTimeOffset due, out bool movedToNextDay)
+                ? await ScheduleAsync(operation, kind, arguments, due, movedToNextDay, effectBoundary,
+                    cancellationToken).ConfigureAwait(false)
                 : ExternalJson.FailureBeforeEffect(operation, "schedule_time_invalid");
         }
         catch (OperationCanceledException) when (
@@ -114,9 +114,15 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
     /// When a new alarm or reminder rings: inMinutes or inSeconds (a timer) from now, or «at» as a local clock time
     /// («18:30», the next time that clock comes) or a local date and time («2026-10-16T08:00»).
     /// </summary>
-    internal static bool TryDue(JsonElement arguments, string? at, DateTimeOffset now, out DateTimeOffset due)
+    internal static bool TryDue(JsonElement arguments, string? at, DateTimeOffset now, out DateTimeOffset due) =>
+        TryDue(arguments, at, now, out due, out _);
+
+    // movedToNextDay: a clock time that had already passed today, set for tomorrow.
+    private static bool TryDue(
+        JsonElement arguments, string? at, DateTimeOffset now, out DateTimeOffset due, out bool movedToNextDay)
     {
         due = default;
+        movedToNextDay = false;
         if (arguments.ValueKind == JsonValueKind.Object
             && arguments.TryGetProperty("inMinutes", out JsonElement minutes)
             && minutes.ValueKind == JsonValueKind.Number)
@@ -138,7 +144,8 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         if (TryLocalClock(at, out int hour, out int minute))
         {
             DateTime today = now.LocalDateTime.Date.AddHours(hour).AddMinutes(minute);
-            local = today > now.LocalDateTime.AddSeconds(5) ? today : today.AddDays(1);
+            movedToNextDay = today <= now.LocalDateTime.AddSeconds(5);
+            local = movedToNextDay ? today.AddDays(1) : today;
         }
         else if (!DateTime.TryParseExact(
                 at, ["yyyy-MM-ddTHH:mm", "yyyy-MM-dd HH:mm", "yyyy-MM-ddTHH:mm:ss"],
@@ -494,6 +501,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string kind,
         JsonElement arguments,
         DateTimeOffset due,
+        bool movedToNextDay,
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
@@ -505,8 +513,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string? recurrence = OptionalString(arguments, "recurrence");
         if ((recurrence is null && Present(arguments, "recurrence")) || recurrence is not (null or "daily" or "hourly"))
             return ExternalJson.FailureBeforeEffect(operation, "notification_recurrence_invalid");
-        if (due <= DateTimeOffset.UtcNow.AddSeconds(5)
-            || due > DateTimeOffset.UtcNow.AddYears(1)
+        if (due <= DateTimeOffset.UtcNow.AddSeconds(5))
+            return DuePassed(operation, kind, title, recurrence, due);
+        if (due > DateTimeOffset.UtcNow.AddYears(1)
             || (title is not null && Encoding.UTF8.GetByteCount(title) > 1_024))
             return ExternalJson.Failure(operation, "notification_schedule_invalid");
 
@@ -535,6 +544,14 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             writer.WriteString("dueUtc", due.ToUniversalTime());
             writer.WriteString("dueLocal", due.ToLocalTime().ToString(
                 "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
+            DateTimeOffset now = DateTimeOffset.Now;
+            writer.WriteString("scheduledFor", DayFromToday(due, now));
+            if (movedToNextDay)
+            {
+                writer.WriteBoolean("movedToNextDay", true);
+                writer.WriteString("nowLocal", now.ToString(
+                    "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
+            }
             if (recurrence is not null) writer.WriteString("recurrence", recurrence);
         });
         // Ronda final (limite 6): a scheduler that took nothing leaves nothing behind, so «before any effect» holds.
@@ -544,6 +561,58 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         }
 
         return scheduled;
+    }
+
+    // Encargo 59 (sonda del 57, 6 of 6): «hoy a las 9» after 9 went as at "09:00", set for tomorrow, and the model said
+    // «quedó para hoy» from a dueLocal it had to compare with today's date itself (Test of Time, arXiv 2406.09170: date
+    // arithmetic is where models slip). As Anthropic's guide asks of a result (meaningful words, not raw values) and
+    // as Android's clock confirms an alarm relative to now, the day it rings is said relative to today (scheduledFor),
+    // and a clock time that had passed today says it moved, with the time here. Measured with the real model (5
+    // phrases of a past time today, 5 seeds): tomorrow's alarm told as today's 20 of 25 before (none said tomorrow), 0
+    // with the three fields; without nowLocal it gave a made-up cause («ya pasó la medianoche») 3 of 25, with it 1.
+    private static string DayFromToday(DateTimeOffset due, DateTimeOffset now) =>
+        (due.LocalDateTime.Date - now.LocalDateTime.Date).Days switch
+        {
+            0 => "today",
+            1 => "tomorrow",
+            _ => due.LocalDateTime.ToString("dddd yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
+        };
+
+    // Encargo 57 (banco de uso U35, three cycles of five): «despiértame mañana a las 7» went as at "<today>T07:00", a date
+    // and time that had passed that afternoon, and the bare notification_schedule_invalid left the model saying the time
+    // «is not valid». As Anthropic's guide to writing tools for agents asks of an error (what to change, in the form the
+    // tool takes), the refusal says it set nothing (scheduled false), the time asked and the time here, both local, and
+    // ends with the same call at that clock time alone, which TryDue sets for the next time that clock comes. Measured
+    // with the real model (15 held-out failures): with the call leading, 4 set it and the rest said «la dejé para
+    // mañana» with nothing set; «nothing is set yet» first and the call last, 15 of 15. Only a date and time can be past:
+    // a clock time alone is always the next one.
+    private static ExternalCapabilityReceipt DuePassed(
+        string operation, string kind, string? title, string? recurrence, DateTimeOffset due)
+    {
+        DateTimeOffset now = DateTimeOffset.Now;
+        string clock = due.ToLocalTime().ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+        _ = TryDue(default, clock, now, out DateTimeOffset next);
+        var call = new System.Text.Json.Nodes.JsonObject { ["action"] = "create", ["kind"] = kind, ["at"] = clock };
+        if (title is not null) call["title"] = title;
+        if (recurrence is not null) call["recurrence"] = recurrence;
+        string dueLocal = Local(due), nowLocal = Local(now);
+        return ExternalJson.FailureBeforeEffect(operation, "notification_schedule_invalid") with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteString("kind", kind);
+                writer.WriteBoolean("scheduled", false);
+                writer.WriteString("dueLocal", dueLocal);
+                writer.WriteString("nowLocal", nowLocal);
+                writer.WriteString("next", $"nothing is set yet: {dueLocal} had already passed (it is {nowLocal} here); "
+                    + $"to set it for {Local(next)}, call {Baxy.Kernel.Operations.WireNames.Call(operation, call)}");
+                writer.WriteEndObject();
+            }),
+        };
+
+        static string Local(DateTimeOffset value) => value.ToLocalTime().ToString(
+            "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     // Renew al máximo (w5): a cancel with no kind and no time looked only among reminders (the default kind), so

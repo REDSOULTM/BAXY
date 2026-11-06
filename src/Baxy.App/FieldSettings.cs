@@ -53,11 +53,33 @@ internal sealed class FieldSettings
 
     internal bool VoiceMuted => Flag("voiceMuted", false);
 
-    internal bool WakeSound => Flag("wakeSound", false);
+    /// <summary>A short sound when the wake word is heard; on until the person switches it off (uso real 03-11: without
+    /// it nothing tells the person BAXY heard «BAXY»).</summary>
+    internal bool WakeSound => Flag("wakeSound", true);
 
     /// <summary>«Un momento» when a turn is silent 2.5 s (SilenceNotice); the owner can switch it off (2026-10-20: «está
     /// poniendo muchas trabas»).</summary>
     internal bool WaitNotice => Flag("waitNotice", true);
+
+    /// <summary>«Quitar lo que suena en el PC»: the mind takes what the PC plays out of the microphone before the wake
+    /// word and the recognizer hear it (voice_echo.py; uso real 03-11: a song's words went into a request). On until
+    /// the owner switches it off; sent with every voice.start.</summary>
+    internal bool EchoCancel => Flag("echoCancel", true);
+
+    /// <summary>The person's choice of the interface's language: «auto» (Windows' display language, the default until
+    /// they choose and for a value the file should not hold), «es» or «en»; <see cref="UiLanguage.Resolve"/> says which
+    /// language it stands for.</summary>
+    internal string Language
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return _values["language"] is JsonValue value && value.TryGetValue(out string? choice)
+                    && UiLanguage.IsChoice(choice) ? choice : UiLanguage.Auto;
+            }
+        }
+    }
 
     internal bool WebAllowed => Flag("web", true);
 
@@ -123,7 +145,7 @@ internal sealed class FieldSettings
         lock (_gate)
         {
             Reload();
-            foreach (string key in (string[])["autostart", "closeToTray", "voiceMuted", "wakeSound", "waitNotice", "web", "weather", "screen"])
+            foreach (string key in (string[])["autostart", "closeToTray", "voiceMuted", "wakeSound", "waitNotice", "echoCancel", "web", "weather", "screen"])
             {
                 if (body[key] is JsonValue value && value.TryGetValue(out bool on))
                 {
@@ -133,6 +155,25 @@ internal sealed class FieldSettings
 
             Write();
         }
+    }
+
+    /// <summary>Writes the choice of the interface's language; false, and nothing written, for any word but «auto», «es»
+    /// or «en».</summary>
+    internal bool ApplyLanguage(string? choice)
+    {
+        if (!UiLanguage.IsChoice(choice))
+        {
+            return false;
+        }
+
+        lock (_gate)
+        {
+            Reload();
+            _values["language"] = choice;
+            Write();
+        }
+
+        return true;
     }
 
     /// <summary>Writes «no me interrumpas» and the silence: 30m, 1h or tomorrow (until 08:00 local), null to end it.</summary>
@@ -172,9 +213,12 @@ internal sealed class FieldSettings
         ["voiceMuted"] = VoiceMuted,
         ["wakeSound"] = WakeSound,
         ["waitNotice"] = WaitNotice,
+        ["echoCancel"] = EchoCancel,
         ["web"] = WebAllowed,
         ["weather"] = WeatherAllowed,
         ["screen"] = ScreenAllowed,
+        ["language"] = Language,
+        ["languageInUse"] = UiLanguage.Resolve(Language),
     };
 
     internal JsonObject ProposalsJson()

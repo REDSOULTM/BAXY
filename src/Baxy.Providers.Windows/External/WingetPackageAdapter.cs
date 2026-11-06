@@ -575,7 +575,7 @@ internal sealed partial class WingetPackageAdapter : IExternalOperationAdapter
     // process (what it printed is not: an outcome carries no last line). The Process is let go when the call ends.
     internal static ProcessStartInfo LaunchStart(IReadOnlyList<string> arguments)
     {
-        var start = new ProcessStartInfo("winget.exe")
+        var start = new ProcessStartInfo(SystemExecutable.Resolve("winget.exe"))
         {
             UseShellExecute = true,
             WindowStyle = ProcessWindowStyle.Hidden,

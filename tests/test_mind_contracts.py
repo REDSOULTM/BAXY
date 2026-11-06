@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from baxy_mind.mind import ANSWERED_NOTE
+
 from test_mind_doubt_policy import FakeSystemOne, _call as _doubted, _correcting, _layer2, _mind as _doubt_mind
 from test_mind_final import _call, _mind, _say
 
@@ -131,6 +133,23 @@ def test_a_confirmation_with_nothing_pending_is_not_sent(tmp_path: Path) -> None
     assert "this call did nothing" in json.loads(told[-1])["reason"]
 
 
+# uso-90 (held-out c90-H5): «logueate … con mi cuenta», the click held for the «sí», and the model approved it itself in
+# the same turn; «nothing pending» made it say «No hay nada pendiente para confirmar». It reads that the person was not
+# asked yet, and nothing is approved.
+def test_a_confirmation_in_the_turn_a_call_was_held_says_the_person_was_not_asked(tmp_path: Path) -> None:
+    held = {"status": "needs_confirmation", "cause": "account_sign_in",
+            "next": "nothing ran: ask the person whether to do it; their answer goes in confirm_pending"}
+    mind, server = _mind(tmp_path, [_call("input_visible_click", {"label": "Log in", "index": 19}),
+                                    _call("confirm_pending", {"answer": "yes"}),
+                                    _say("¿Entro con tu cuenta en la página del gimnasio?")])
+    mind.wire_to_op = {"input_visible_click": "input.visible.click"}
+    mind.decide(1, "Entra con mi cuenta en la página de prueba")
+    result = mind.continue_turn(2, json.dumps(held), final=True)
+    assert result["operation"] is None and result["reply"] == "¿Entro con tu cuenta en la página del gimnasio?"
+    told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert json.loads(told[-1])["error"] == "person_not_asked_yet"
+
+
 # Auditoría de confirmaciones (2026-10-23): the answer to the model's own question reads what waits now, as the App says
 # with those words (mutation: the turn keeps the pending flag it began with).
 def test_an_answer_to_a_question_never_approves_a_confirmation_that_no_longer_waits(tmp_path: Path) -> None:
@@ -141,7 +160,7 @@ def test_an_answer_to_a_question_never_approves_a_confirmation_that_no_longer_wa
     result = mind.decide(2, "el informe", pending=None)
     assert result["operation"] is None and result["reply"] == "No hay nada esperando tu sí."
     told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
-    assert told[0] == "el informe" and json.loads(told[-1])["error"] == "nothing_pending"
+    assert told[0] == "el informe" + ANSWERED_NOTE and json.loads(told[-1])["error"] == "nothing_pending"
 
 
 def test_an_answer_to_a_question_can_answer_a_confirmation_asked_since(tmp_path: Path) -> None:
@@ -324,5 +343,6 @@ def test_the_answer_to_ask_user_is_that_calls_result(tmp_path: Path) -> None:
     mind.decide(2, "a las 7")
     messages = server.bodies[-1]["messages"]
     asked = messages[-2]["tool_calls"][0]["id"]
-    assert messages[-1] == {"role": "tool", "tool_call_id": asked, "content": "a las 7"}
+    # G10 (aid «answer_or_new»): with the note that the words may be a new request.
+    assert messages[-1] == {"role": "tool", "tool_call_id": asked, "content": "a las 7" + ANSWERED_NOTE}
     assert sum(str(m.get("content", "")).startswith("[Reloj:") for m in messages) == 1

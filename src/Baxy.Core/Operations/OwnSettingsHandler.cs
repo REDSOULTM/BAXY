@@ -11,7 +11,10 @@ namespace Baxy.Core.Operations;
 /// panels write (<see cref="FieldSettingsStore"/>): its voice, web search, not interrupting while the person plays, is
 /// in a call or watches a video, and the proposals' silence (30m, 1h or until tomorrow at 08:00; «on» ends it). Every
 /// one is reversible and none asks. The file is read back and the result says the setting, its new value and, for a
-/// silence, until when.
+/// silence, until when. Encargo 25 (G2): the confirmation mode is one of them too. Switching it off is done as
+/// system.settings.set does; switching it on stays a gesture in BAXY's own window, so it is refused with what is true
+/// (<see cref="BaxySettingHandler.BypassInterfaceOnly"/>). A value a setting does not take is refused with the values
+/// it does take.
 /// </summary>
 internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = null) : IOperationHandler
 {
@@ -31,6 +34,10 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
 
     private const string Proposals = "proposals";
 
+    private static readonly string[] SwitchValues = ["on", "off"];
+
+    private static readonly string[] SilenceValues = ["30m", "1h", "tomorrow", "on"];
+
     private readonly TimeProvider _time = time ?? TimeProvider.System;
 
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition(Operation);
@@ -42,17 +49,28 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
     {
         string? setting = Text(arguments, "setting");
         string? value = Text(arguments, "value");
-        bool valid = setting == Proposals
-            ? value is "30m" or "1h" or "tomorrow" or "on"
-            : setting is not null && Switches.ContainsKey(setting) && value is "on" or "off";
-        if (!valid)
+        if (ValuesOf(setting) is not { } taken)
         {
-            return OperationOutcome.Failure("baxy_setting_value_invalid");
+            return OperationOutcome.InvalidArguments(Definition, arguments);
+        }
+
+        if (value is null || !taken.Contains(value))
+        {
+            return OperationOutcome.InvalidArguments(
+                Definition, arguments, new ArgumentProblem("value", "expected one of the values this setting takes")
+                {
+                    Allowed = taken,
+                });
         }
 
         if (string.IsNullOrWhiteSpace(dataRoot))
         {
             return OperationOutcome.Failure("baxy_setting_unavailable");
+        }
+
+        if (setting == BaxySettingHandler.ConfirmationBypass)
+        {
+            return value == "on" ? BaxySettingHandler.BypassInterfaceOnly(dataRoot) : BypassOff(dataRoot);
         }
 
         if (!FieldSettingsStore.TryRead(dataRoot, out JsonObject values))
@@ -93,6 +111,49 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
             return OperationOutcome.Failure("baxy_setting_postread_failed", effectMayHaveOccurred: changed);
         }
 
+        return Receipt(setting!, value!, changed, until);
+    }
+
+    // The values each setting takes; null for one BAXY does not have.
+    private static string[]? ValuesOf(string? setting) =>
+        setting == Proposals ? SilenceValues
+        : setting == BaxySettingHandler.ConfirmationBypass || (setting is not null && Switches.ContainsKey(setting))
+            ? SwitchValues
+            : null;
+
+    // Bypass off, as system.settings.set switches it: a file that cannot be read is not «normal», it is written only
+    // when it said bypass, and then read back.
+    private static OperationOutcome BypassOff(string dataRoot)
+    {
+        if (!ConfirmationModeStore.TryRead(dataRoot, out ConfirmationMode before))
+        {
+            return OperationOutcome.Failure("baxy_setting_unreadable");
+        }
+
+        bool changed = before == ConfirmationMode.Bypass;
+        try
+        {
+            if (changed)
+            {
+                ConfirmationModeStore.Write(dataRoot, ConfirmationMode.Normal);
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return OperationOutcome.Failure(
+                "baxy_setting_write_failed", effectMayHaveOccurred: true, causeCode: "external_effect_ambiguous");
+        }
+
+        if (!ConfirmationModeStore.TryRead(dataRoot, out ConfirmationMode after) || after != ConfirmationMode.Normal)
+        {
+            return OperationOutcome.Failure("baxy_setting_postread_failed", effectMayHaveOccurred: changed);
+        }
+
+        return Receipt(BaxySettingHandler.ConfirmationBypass, "off", changed, until: null);
+    }
+
+    private static OperationOutcome Receipt(string setting, string value, bool changed, DateTimeOffset? until)
+    {
         var receipt = new JsonObject
         {
             ["version"] = 1,

@@ -43,6 +43,14 @@ internal interface IForegroundLease
         AcquireAsync(window, cancellationToken);
 
     /// <summary>
+    /// The burst of an act whose first event is a key: as <see cref="AcquireAsync"/>; a window it brought up is given
+    /// its moment to take the keyboard (<see cref="ILeaseDesktop.TakesKeys"/>), bounded, and the burst says when that
+    /// ran out (<see cref="IInputBurst.KeysNotConfirmed"/>).
+    /// </summary>
+    ValueTask<IInputBurst> AcquireForKeysAsync(nint window, CancellationToken cancellationToken) =>
+        AcquireAsync(window, cancellationToken);
+
+    /// <summary>
     /// An act of a computer-use mission on its own window (the owner's decision of 2026-10-10, «no molestar» in its
     /// simple form: BAXY never types nor clicks in the person's window; for the rest it brings the mission's window to
     /// the front while it acts and gives the front back). After the person's pause, as
@@ -95,6 +103,12 @@ internal interface IInputBurst
 
     /// <summary>Whether the burst may still send: it was granted and the person has not acted since.</summary>
     bool MayAct => Refusal is null && !UserActed;
+
+    /// <summary>
+    /// Whether the window was just brought up and had not taken the keyboard when its wait ran out: the first key may
+    /// be lost (<see cref="ILeaseDesktop.TakesKeys"/>).
+    /// </summary>
+    bool KeysNotConfirmed => false;
 
     /// <summary>
     /// Whether the person's hand is off the mouse: none of their mouse input for <see cref="ForegroundLease.QuietMs"/>.
@@ -169,6 +183,9 @@ internal interface ILeaseDesktop
     bool Holds(nint window);
 
     bool IsAlive(nint window);
+
+    /// <summary>Whether the window's thread does not answer messages (<see cref="VisibleControlSurface.NotResponding"/>).</summary>
+    bool NotResponding(nint window, CancellationToken cancellationToken) => false;
 
     bool IsMinimized(nint window);
 
@@ -281,7 +298,10 @@ internal sealed class ForegroundLease : IForegroundLease
         AcquireAsync(window, typedFlow: false, cancellationToken);
 
     public ValueTask<IInputBurst> AcquireForFlowAsync(nint window, CancellationToken cancellationToken) =>
-        AcquireAsync(window, typedFlow: true, cancellationToken);
+        AcquireAsync(window, typedFlow: true, cancellationToken, keys: true);
+
+    public ValueTask<IInputBurst> AcquireForKeysAsync(nint window, CancellationToken cancellationToken) =>
+        AcquireAsync(window, typedFlow: false, cancellationToken, keys: true);
 
     // Renew al máximo (w8): a window that no longer exists is said so (input_window_not_found, as the text path says
     // it), never «not in front»: that code, for a window gone, left the reply to guess the cause.
@@ -291,6 +311,8 @@ internal sealed class ForegroundLease : IForegroundLease
     {
         if (window == 0 || !_desktop.IsAlive(window))
             return WindowGone;
+        if (_desktop.NotResponding(window, cancellationToken))
+            return VisibleControlSurface.WindowNotResponding;
         if (_desktop.Holds(window))
         {
             lock (_missionGate)
@@ -329,11 +351,28 @@ internal sealed class ForegroundLease : IForegroundLease
         // Encargo K (banco def1: «125+75» arrived as «25+75» and an Enter was lost, each the first key on a window just
         // brought up): the act goes once the window takes the keyboard, bounded. A window already in front waits for
         // nothing; the person's input meanwhile gives their front back (the watcher) and the act's own check refuses.
-        long brought = _clock.NowMs;
-        while (!_desktop.TakesKeys(window) && _desktop.Holds(window) && _clock.NowMs - brought < KeysReadyCapMs)
-            await _clock.DelayAsync(KeysReadyPollMs, CancellationToken.None).ConfigureAwait(false);
+        if (!await TookKeysAsync(window).ConfigureAwait(false))
+            Interlocked.Exchange(ref _keysRanOut, window);
         return null;
     }
+
+    // Row C4 (agent-desktop gates every key on the keyboard's focus inside the target, windows key_dispatch.rs): whether a
+    // window just brought up took the keyboard before KeysReadyCapMs. Not in front any more: the act's own check decides.
+    private async ValueTask<bool> TookKeysAsync(nint window)
+    {
+        long brought = _clock.NowMs;
+        while (!_desktop.TakesKeys(window) && _desktop.Holds(window))
+        {
+            if (_clock.NowMs - brought >= KeysReadyCapMs)
+                return false;
+            await _clock.DelayAsync(KeysReadyPollMs, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        return true;
+    }
+
+    // The mission's take whose wait ran out (TakeForMissionAsync): the burst of its first key says so, if it still holds.
+    private nint _keysRanOut;
 
     public void MissionActEnded(string operation)
     {
@@ -425,8 +464,14 @@ internal sealed class ForegroundLease : IForegroundLease
         internal long TakenAt { get; set; } = takenAt;
     }
 
-    private async ValueTask<IInputBurst> AcquireAsync(nint window, bool typedFlow, CancellationToken cancellationToken)
+    private async ValueTask<IInputBurst> AcquireAsync(
+        nint window, bool typedFlow, CancellationToken cancellationToken, bool keys = false)
     {
+        // uso-108 A9: bringing up a window that does not pump messages blocked past 40 s holding FrontGate, and a key sent to
+        // it in front waited in its queue with a verified receipt (VisibleControlSurface.NotResponding): nothing is sent.
+        // Asked first: it may wait seconds for a busy window, with no gate held, and the person's pause is judged after it.
+        if (window != 0 && _desktop.IsAlive(window) && _desktop.NotResponding(window, cancellationToken))
+            return Burst.Refused(VisibleControlSurface.WindowNotResponding, 0);
         (bool paused, long waited) = await WaitForPauseAsync(cancellationToken).ConfigureAwait(false);
         if (!paused)
             return Burst.Refused("input_user_not_paused", waited);
@@ -441,7 +486,18 @@ internal sealed class ForegroundLease : IForegroundLease
             _desktop.Holds(window));
         var burst = new Burst(this, window, saved, began, waited, typedFlow);
         if (!saved.WindowHeldFront && !await BringAsync(window, began, cancellationToken).ConfigureAwait(false))
+        {
             burst.Refuse("input_window_not_in_front");
+        }
+        else if (keys)
+        {
+            // Encargo K's wait reached only a mission's take; a burst for keys or a typed flow sent the first key on a
+            // window just brought up (hondo\05 finding 3). A window already in front waits for nothing, as there.
+            burst.KeysNotConfirmed = saved.WindowHeldFront
+                ? Interlocked.Exchange(ref _keysRanOut, 0) == window && !_desktop.TakesKeys(window)
+                : !await TookKeysAsync(window).ConfigureAwait(false);
+        }
+
         return burst;
     }
 
@@ -625,6 +681,8 @@ internal sealed class ForegroundLease : IForegroundLease
 
         public long WaitedMs { get; }
 
+        public bool KeysNotConfirmed { get; internal set; }
+
         // Whether and when Restore gave the front back, whether the person had acted by then,
         // and whether an input of theirs since reached the burst's window.
         private bool _handedBack;
@@ -786,6 +844,7 @@ internal sealed partial class WindowsLeaseDesktop : ILeaseDesktop
     private const uint NoMove = 0x0002;
     private const uint NoActivate = 0x0010;
     private const uint NoOwnerZOrder = 0x0200;
+    private const uint AsyncWindowPos = 0x4000;
     private const int ShowMinimizedNoActivate = 7;
     private const uint PreviousWindow = 3;
 
@@ -794,6 +853,9 @@ internal sealed partial class WindowsLeaseDesktop : ILeaseDesktop
     public bool Holds(nint window) => VisibleControlSurface.ForegroundIsOrOwnedBy(window);
 
     public bool IsAlive(nint window) => window != 0 && IsWindow(window);
+
+    public bool NotResponding(nint window, CancellationToken cancellationToken) =>
+        VisibleControlSurface.NotResponding(window, cancellationToken);
 
     public bool IsMinimized(nint window) => IsIconic(window);
 
@@ -852,9 +914,11 @@ internal sealed partial class WindowsLeaseDesktop : ILeaseDesktop
     public void GiveFront(nint window) => _ = ForegroundRight.Give(window);
 
     public void PlaceBelow(nint window, nint above) =>
-        _ = SetWindowPos(window, above, 0, 0, 0, 0, NoSize | NoMove | NoActivate | NoOwnerZOrder);
+        _ = SetWindowPos(window, above, 0, 0, 0, 0, NoSize | NoMove | NoActivate | NoOwnerZOrder | AsyncWindowPos);
 
-    public void Minimize(nint window) => _ = ShowWindow(window, ShowMinimizedNoActivate);
+    // uso-108 A9: a burst's restore never waits for a window that stopped pumping since it was brought up (these two
+    // blocked inside the call, measured on SetWindowPos), and nothing reads their result back.
+    public void Minimize(nint window) => _ = ShowWindowAsync(window, ShowMinimizedNoActivate);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct Point
@@ -926,5 +990,5 @@ internal sealed partial class WindowsLeaseDesktop : ILeaseDesktop
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool ShowWindow(nint window, int command);
+    private static partial bool ShowWindowAsync(nint window, int command);
 }

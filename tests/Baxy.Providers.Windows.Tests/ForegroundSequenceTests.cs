@@ -85,14 +85,15 @@ public sealed class ForegroundSequenceTests
         var desktop = new Desktop();
         var keyboard = new LeaseKeyboard(Lease(new Pause(), clock, desktop), desktop)
         {
-            EachCharacter = _ => clock.NowMs += 35,
+            EachCharacter = _ => clock.NowMs += 100,
         };
         var adapter = new WindowsDesktopInteractionAdapter(
             new NoProcessRunner(), "folder.ps1", "file.ps1", "select.ps1", "keys.ps1", keyboard)
         {
             Ticks = () => clock.NowMs,
         };
-        string text = new('a', 4000);
+        // Row A10: it fits by the count; a window that takes each key late spends the budget all the same.
+        string text = new('a', 1400);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "input.text.type", Json($$"""{"text":"{{text}}","window":18016}"""), CancellationToken.None);

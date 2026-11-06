@@ -1,4 +1,5 @@
 import { seededRng } from '../../utils/seededRng';
+import type { Words } from '../../i18n';
 
 /* The face's shapes and its neural mesh (design face.jsx, ported as is). Coordinates are in units of the face's size S. */
 
@@ -107,7 +108,12 @@ export const HUBS: Record<string, Pt> = {
   web: [0, -1.2], mente: [0, -0.715], apps: [-0.66, -0.6], ventanas: [0.66, -0.6], memoria: [-1.13, 0.03], musica: [1.13, 0.03],
   archivos: [-0.64, 0.63], alarmas: [0.64, 0.63], verificar: [0, 0.75], voz: [0, 1.25],
 };
-export const HUB_NAME: Record<string, string> = { musica: 'música' };
+/** the word drawn by each hub, in the interface's language */
+export const HUB_NAME: Record<string, Words> = {
+  web: { es: 'web', en: 'web' }, mente: { es: 'mente', en: 'mind' }, apps: { es: 'apps', en: 'apps' }, ventanas: { es: 'ventanas', en: 'windows' },
+  memoria: { es: 'memoria', en: 'memory' }, musica: { es: 'música', en: 'music' }, archivos: { es: 'archivos', en: 'files' },
+  alarmas: { es: 'alarmas', en: 'alarms' }, verificar: { es: 'verificar', en: 'verify' }, voz: { es: 'voz', en: 'voice' },
+};
 export const HUB_LABEL: Record<string, [number, number, CanvasTextAlign]> = {
   web: [0.14, 0, 'left'], mente: [0.09, -0.005, 'left'], apps: [-0.05, -0.27, 'center'], ventanas: [0.05, -0.27, 'center'],
   memoria: [0, 0.43, 'center'], musica: [0, 0.43, 'center'], archivos: [-0.08, 0.25, 'center'], alarmas: [0.08, 0.25, 'center'],

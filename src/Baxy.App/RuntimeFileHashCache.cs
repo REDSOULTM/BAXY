@@ -103,7 +103,7 @@ internal sealed class RuntimeFileHashCache
                     .ToArray());
             string temporary = _storePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
             File.WriteAllBytes(temporary, JsonSerializer.SerializeToUtf8Bytes(document));
-            File.Move(temporary, _storePath, overwrite: true);
+            global::Baxy.Kernel.AtomicFileReplacement.ReplaceOrCreate(temporary, _storePath);
             _dirty = false;
         }
         catch (Exception exception) when (exception is IOException

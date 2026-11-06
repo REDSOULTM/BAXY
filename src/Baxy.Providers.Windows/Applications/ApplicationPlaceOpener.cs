@@ -7,7 +7,7 @@ namespace Baxy.Providers.Windows.Applications;
 /// Estabilización, encargo C: hands the address of an application's place (composed by
 /// <see cref="Baxy.Kernel.Operations.ApplicationPlaces"/> from its data, never here) to Windows, which gives it to the
 /// handler the application registered for its protocol (the shell's own launch of a URL, as SteamLocalAdapter and the
-/// harness do; measured 2026-10-11 on redpc: through explorer.exe an address with a query, «…/search/?term=Cuphead», was
+/// harness do; measured 2026-10-11 on the development PC: through explorer.exe an address with a query, «…/search/?term=Cuphead», was
 /// dropped, and the shell's launch opened it). Whether the place arrived is for a look at the window to say, never
 /// assumed from this hand-over. Review H2: the protocol's handler raises the application's window by itself
 /// (measured: Steam and Spotify took the front after every address); unless the front was asked for, it goes back to

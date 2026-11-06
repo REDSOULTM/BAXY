@@ -10,6 +10,7 @@ namespace Baxy.App;
 public partial class App : Application
 {
     private const string InstanceMutexName = @"Local\BAXY.Product.App";
+    private const int StartWindowFailed = 3;
     // FT/proveedores goal (review of the App): BAXY started again while it runs (hidden in the tray) exited without a
     // word; it asks the running one to show its window, as a click on the tray icon does.
     private const string ShowRequestName = @"Local\BAXY.Product.App.Show";
@@ -83,10 +84,16 @@ public partial class App : Application
                 {
                     code = await ProductConductorHost.RunAsync(e.Args, Dispatcher);
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
-                    Console.Error.WriteLine(
-                        "{\"type\":\"terminal\",\"kind\":\"blocked_environment\",\"diagnostic\":\"conductor_failed\"}");
+                    // uso-116: the cause travels with the failure; «conductor_failed» alone left a run with nothing to read.
+                    Console.Error.WriteLine(new System.Text.Json.Nodes.JsonObject
+                    {
+                        ["type"] = "terminal",
+                        ["kind"] = "blocked_environment",
+                        ["diagnostic"] = "conductor_failed",
+                        ["cause"] = $"{exception.GetType().Name}: {exception.Message}",
+                    }.ToJsonString());
                     code = 1;
                 }
 
@@ -95,6 +102,31 @@ public partial class App : Application
             return;
         }
 
+        try
+        {
+            StartWindow(e);
+        }
+        catch (Exception exception)
+        {
+            // 2026-11-05 (a profile the private storage refuses): the dispatcher's handler absorbed this, and BAXY stayed
+            // alive with no window, holding the one instance's mutex: every later start yielded to it and nothing opened.
+            UnhandledFailures.Record("startup", exception);
+            if (!FieldUiProbe.IsRequested(e.Args))
+            {
+                MessageBox.Show(
+                    UiLanguage.Say("BAXY no pudo abrirse. Vuelve a intentarlo; si se repite, reinstálalo: tus datos no se borran.",
+                        "BAXY could not open. Try again; if it happens again, reinstall it: your data is not deleted."),
+                    "BAXY",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+
+            Shutdown(StartWindowFailed);
+        }
+    }
+
+    private void StartWindow(StartupEventArgs e)
+    {
         _presence = PresenceHost.CreateDefault();
         _presence.Start(e.Args);
         _startedAt = DateTimeOffset.UtcNow;

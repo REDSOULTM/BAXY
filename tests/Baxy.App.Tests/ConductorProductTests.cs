@@ -13,6 +13,19 @@ namespace Baxy.App.Tests;
 [TestFixture]
 public sealed class ConductorProductTests
 {
+    // Uso 84 (AMD RX 7600): a mind still preparing 200 s after the start (its model reading its prompt prefix) is waited
+    // for; once it is not preparing, the grace it was left runs out as before.
+    [Test]
+    public void TheConductorWaitsForAMindStillPreparingPastItsGrace()
+    {
+        DateTime start = new(2026, 11, 4, 0, 0, 0, DateTimeKind.Utc);
+        DateTime deadline = start + ProductConductorHost.MindGrace;
+        DateTime late = start.AddSeconds(200);
+
+        Assert.That(ProductConductorHost.MindDeadline(deadline, late, preparing: true), Is.GreaterThan(late));
+        Assert.That(ProductConductorHost.MindDeadline(deadline, late, preparing: false), Is.EqualTo(deadline));
+        Assert.That(ProductConductorHost.MindDeadline(deadline, late, preparing: false), Is.LessThan(late));
+    }
     // Before (the view model alone, as final6's conductor had it): unavailable. Mounted as the conductor mounts it: done.
     [TestCase("assistant.status", """{"scope":"internet"}""", false, "own_readings_unavailable")]
     [TestCase("assistant.status", """{"scope":"internet"}""", true, null)]

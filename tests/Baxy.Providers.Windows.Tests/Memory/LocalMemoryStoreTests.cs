@@ -158,13 +158,13 @@ public sealed class LocalMemoryStoreTests
         using TemporaryDirectory temporary = new();
         TestProtectedPayload protector = new();
         LocalMemoryStore store = EnabledStore(temporary.Path, protector);
-        _ = store.Save(Save("save", "ciudad", "Curicó"));
+        _ = store.Save(Save("save", "ciudad", "Valparaíso"));
 
         MemoryCorrectResult corrected = store.Correct(new(
             "correct",
             "ciudad",
             "Santiago",
-            ExpectedValue: "Curicó"));
+            ExpectedValue: "Valparaíso"));
 
         Assert.Multiple(() =>
         {

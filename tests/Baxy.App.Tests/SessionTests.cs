@@ -126,7 +126,7 @@ public sealed class SessionTests
     private static string WriteLog()
     {
         string folder = Path.Combine(MemoryOperationProtector.ResolveDataRoot(), "conversation");
-        new ConversationLog(folder).Append(new ConversationMessage("BAXY", "Tu ciudad es Ñuñoa.", false,
+        new ConversationLog(folder).Append(new ConversationMessage("BAXY", "Tu ciudad es Viña del Mar.", false,
             DateTimeOffset.Now));
         string log = Path.Combine(folder, "conversation.v1.jsonl");
         Assert.That(File.Exists(log), Is.True);

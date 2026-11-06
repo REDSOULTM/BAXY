@@ -12,8 +12,7 @@
         ShowInTaskbar="False"
         Topmost="True"
         UseLayoutRounding="True"
-        SnapsToDevicePixels="True"
-        AutomationProperties.Name="Menú de BAXY">
+        SnapsToDevicePixels="True">
   <Window.Resources>
     <SolidColorBrush x:Key="Bone" Color="#D8DCE6" />
     <SolidColorBrush x:Key="Muted" Color="#8A95AD" />
@@ -95,11 +94,11 @@
       </Border>
 
       <StackPanel Margin="0,6">
-        <Button x:Name="OpenRow" Style="{StaticResource Row}" Tag="&#xE8A7;" Content="Abrir BAXY" Click="OnOpen" />
-        <Button x:Name="ListenRow" Style="{StaticResource Row}" Tag="&#xE720;" Content="Escuchar" Click="OnListen" />
-        <Button x:Name="PowerRow" Style="{StaticResource Row}" Tag="&#xE7E8;" Content="Poner en reposo" Click="OnPower" />
+        <Button x:Name="OpenRow" Style="{StaticResource Row}" Tag="&#xE8A7;" Click="OnOpen" />
+        <Button x:Name="ListenRow" Style="{StaticResource Row}" Tag="&#xE720;" Click="OnListen" />
+        <Button x:Name="PowerRow" Style="{StaticResource Row}" Tag="&#xE7E8;" Click="OnPower" />
         <Border Height="1" Margin="14,6" Background="{StaticResource Hair}" />
-        <Button x:Name="ExitRow" Style="{StaticResource Row}" Tag="&#xE8BB;" Content="Salir de BAXY" Click="OnExit" />
+        <Button x:Name="ExitRow" Style="{StaticResource Row}" Tag="&#xE8BB;" Click="OnExit" />
       </StackPanel>
     </StackPanel>
   </Border>

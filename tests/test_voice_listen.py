@@ -7,13 +7,14 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from baxy_mind import voice
+from baxy_mind import voice, voice_output
 from baxy_mind.voice import BLOCK, Voice
 
 
 class _Speech:
     speaking = False
     ready = False
+    deferred = ""
 
     def __init__(self, *_args) -> None:
         pass
@@ -74,6 +75,43 @@ def _hearing(monkeypatch: pytest.MonkeyPatch, written: list[dict]) -> tuple[Voic
 
 def _partials(written: list[dict]) -> list[str]:
     return [message["text"] for message in written if message.get("event") == "partial"]
+
+
+# Encargo 10 (punto 6): too little memory to commit when the recognizer is built does not turn the ear off for the
+# session; it is deferred (the status says so, not a failure) and retried on the next start(), until it loads.
+def test_a_low_memory_recognizer_is_deferred_and_retried_on_the_next_start(monkeypatch: pytest.MonkeyPatch) -> None:
+    built: list[int] = []
+
+    def recognize(self: Voice, *_args) -> None:
+        built.append(1)
+        if len(built) < 3:
+            raise MemoryError("recognizer not loaded: 200 MB left to commit, 1200 MB needed")
+        self._recognizer = _Recognizer()
+
+    def load(self: Voice) -> None:
+        self._input, self._vad = True, _Vad()
+        self._load_recognizer(None, None)
+        self._loaded.set()
+
+    monkeypatch.setattr(voice, "Speech", _Speech)
+    monkeypatch.setattr(Voice, "_recognize", recognize)
+    monkeypatch.setattr(Voice, "_load", load)
+    monkeypatch.setattr(Voice, "_open", lambda self: None)
+    listening = Voice(lambda message: None)
+
+    assert listening._loaded.wait(5)
+    assert listening._recognizer is None
+    assert listening.deferred and not listening.failure
+    assert listening.status()["deferred"] is True
+    assert listening.status()["stt"] is False
+
+    assert not listening.start("direct")   # a first retry still finds no room: no recognizer, start refused
+    assert listening.start("direct")       # a later one loads it: the ear works
+    assert listening._recognizer is not None
+    assert listening.deferred == ""
+    assert not listening.failure
+    assert listening.status()["deferred"] is False
+    assert built == [1, 1, 1]
 
 
 def test_letting_go_does_not_wait_for_a_transcription(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -157,6 +195,110 @@ def test_a_repeated_wake_request_gets_its_live_caption_again(monkeypatch: pytest
     _blocks(listening, 0.1, 25)   # «Baxy» at 4.0 s, the same request again
     _wait_for(lambda: len(_partials(written)) >= 2)
     assert _partials(written) == ["abre Steam", "abre Steam"]
+
+
+class _VadOutOfMemory(_Vad):
+    """Silero, short of memory on the block ``fails`` (F17: a block lost with the PC out of memory)."""
+
+    def __init__(self, fails: int) -> None:
+        self.fails, self.seen = fails, 0
+
+    def marks(self, block) -> np.ndarray:
+        self.seen += 1
+        if self.seen == self.fails:
+            raise MemoryError("no room")
+        return super().marks(block)
+
+
+def _request_with_vad(monkeypatch: pytest.MonkeyPatch, written: list[dict], vad: _Vad) -> Voice:
+    def load(self: Voice) -> None:
+        self._recognizer, self._input, self._detector = _InstantRecognizer(), True, _Wake([0.1])
+        self._vad = vad
+        self._loaded.set()
+
+    monkeypatch.setattr(voice, "Speech", _Speech)
+    monkeypatch.setattr(Voice, "_load", load)
+    monkeypatch.setattr(Voice, "_open", lambda self: None)
+    monkeypatch.setattr(voice, "BEHIND_BLOCKS", 100)
+    listening = Voice(written.append)
+    assert listening.start("wake")
+    _blocks(listening, 0.1, 15)
+    _blocks(listening, 0.0, 15)
+    _wait_for(lambda: listening._blocks.empty() and listening._start is None)
+    return listening
+
+
+def _transcripts(written: list[dict]) -> list[str]:
+    return [message["text"] for message in written if message.get("type") == "voice.transcript"]
+
+
+def test_what_is_left_of_a_request_that_lost_audio_does_not_reach_the_mind(monkeypatch: pytest.MonkeyPatch) -> None:
+    """F17: what is left of it is not the request. The failure is told (the App's chime and «Falló la escucha») and nothing
+    is transcribed as said."""
+    written: list[dict] = []
+    _request_with_vad(monkeypatch, written, _VadOutOfMemory(5))
+    time.sleep(0.2)
+    assert _transcripts(written) == []
+    assert any(message.get("event") == "error" for message in written)
+
+
+def test_a_request_that_lost_nothing_is_as_sure_as_the_ear_was(monkeypatch: pytest.MonkeyPatch) -> None:
+    written: list[dict] = []
+    listening = _request_with_vad(monkeypatch, written, _Vad())
+    _wait_for(lambda: bool(_transcripts(written)))
+    assert _transcripts(written) == ["abre Steam"]
+    assert not any(message.get("event") == "error" for message in written)
+    assert listening.unsure("abre Steam") == []
+
+
+def test_a_block_lost_before_the_audio_of_a_request_does_not_touch_it(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Control: a block lost long before the request's audio begins (BEFORE_S) took nothing of it."""
+    written: list[dict] = []
+
+    def load(self: Voice) -> None:
+        self._recognizer, self._input, self._detector = _InstantRecognizer(), True, _Wake([5.0])
+        self._vad = _VadOutOfMemory(3)
+        self._loaded.set()
+
+    monkeypatch.setattr(voice, "Speech", _Speech)
+    monkeypatch.setattr(Voice, "_load", load)
+    monkeypatch.setattr(Voice, "_open", lambda self: None)
+    monkeypatch.setattr(voice, "BEHIND_BLOCKS", 100)
+    listening = Voice(written.append)
+    assert listening.start("wake")
+    _blocks(listening, 0.1, 65)
+    _blocks(listening, 0.0, 15)
+    _wait_for(lambda: bool(_transcripts(written)))
+    assert _transcripts(written) == ["abre Steam"]
+    assert listening.unsure("abre Steam") == []
+
+
+def test_a_transcription_out_of_memory_ends_a_direct_request_and_is_told(monkeypatch: pytest.MonkeyPatch) -> None:
+    """F17: the recognizer short of memory: nothing is told as heard, the failure is, and the ear goes back to what it
+    was doing instead of staying in a dictation nobody is hearing."""
+    written: list[dict] = []
+
+    class _Failing(_InstantRecognizer):
+        def decode_stream(self, stream: _Stream) -> None:
+            raise MemoryError("no room")
+
+    def load(self: Voice) -> None:
+        self._recognizer, self._input, self._vad = _Failing(), True, _Vad()
+        self._loaded.set()
+
+    monkeypatch.setattr(voice, "Speech", _Speech)
+    monkeypatch.setattr(Voice, "_load", load)
+    monkeypatch.setattr(Voice, "_open", lambda self: None)
+    monkeypatch.setattr(Voice, "_close", lambda self: None)
+    monkeypatch.setattr(voice, "BEHIND_BLOCKS", 100)
+    listening = Voice(written.append)
+    assert listening.start("direct")
+    _blocks(listening, 0.1, 5)
+    listening.release()
+    _blocks(listening, 0.1, 1)
+    _wait_for(lambda: listening._mode == "off")
+    assert listening._mode == "off" and _transcripts(written) == []
+    assert any(message.get("event") == "error" for message in written)
 
 
 class _Microphone:
@@ -268,3 +410,46 @@ def test_a_microphone_that_fails_to_start_is_closed_and_opened_again_on_the_next
     assert listening.start("direct")
     assert len(streams) == 2 and streams[1].started and listening._stream is streams[1]
     listening.stop()
+
+
+# uso-116, seen live with the PC out of commit: sherpa raised RuntimeError «... failed:bad allocation» (std::bad_alloc's
+# what() on MSVC), not a MemoryError: the retry thread died on it and the ear never came back, with nothing said.
+def test_a_bad_allocation_inside_a_native_load_is_a_lack_of_memory(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(voice_output, "commit_available_mb", lambda: 2000)
+    with pytest.raises(voice_output.NotEnoughMemory) as caught:
+        with voice_output.native_load(1200, "recognizer"):
+            raise RuntimeError("Load model from encoder.int8.onnx failed:bad allocation")
+    assert (caught.value.need_mb, caught.value.left_mb) == (1200, 2000)
+
+
+def test_any_other_error_inside_a_native_load_stays_what_it_is(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(voice_output, "commit_available_mb", lambda: 2000)
+    with pytest.raises(RuntimeError, match="no such file"):
+        with voice_output.native_load(1200, "recognizer"):
+            raise RuntimeError("no such file")
+
+
+def test_a_retry_that_fails_for_another_reason_says_it_and_stops() -> None:
+    def fails() -> None:
+        raise RuntimeError("the model file is broken")
+
+    owner = SimpleNamespace(_stt_lock=threading.Lock(), _stt_retry=fails, _recognizer=None, failure="", deferred="d",
+                            _stt_memory={"needMb": 1}, _event=lambda _name: None)
+    Voice._retry_recognizer(owner)
+    assert "broken" in owner.failure and owner._stt_retry is None and owner.deferred == "" and owner._stt_memory is None
+
+
+# Uso real 2026-11-02: the recognizer is the voice's largest piece (814 MB more committed on the notebook as it loads);
+# with less memory left to commit than it needs it is not built, and the voice's failure says why.
+def test_the_recognizer_is_not_built_without_the_memory_to_load_it(
+        tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
+    built: list[dict] = []
+    sherpa = SimpleNamespace(OfflineRecognizer=SimpleNamespace(
+        from_transducer=lambda **kwargs: built.append(kwargs) or object()))
+    monkeypatch.setenv("BAXY_RENEW_STT_HOTWORDS", "0")
+    monkeypatch.setattr(voice_output, "commit_available_mb", lambda: voice_output.EAR_COMMIT_MB - 1, raising=False)
+    owner = SimpleNamespace(_named=threading.Event(), _names=None, _recognizer=None, _hotwords="")
+    with pytest.raises(MemoryError, match="MB"):
+        Voice._recognize(owner, sherpa, tmp_path)
+    assert built == []
+    assert owner._recognizer is None

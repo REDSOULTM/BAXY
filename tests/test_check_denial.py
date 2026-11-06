@@ -242,3 +242,13 @@ def test_the_code_of_the_check_names_no_application_of_the_data() -> None:
 def test_each_word_of_the_data_names_a_window_whose_text_a_look_reads(word: str) -> None:
     found = _denials(f"No puedo leer el texto de {word}.")
     assert len(found) == 1 and "input_visible_controls" in found[0]["fact"] and "note_read" not in found[0]["fact"]
+
+
+# #14: a denial of sending a message, with no attempt in the turn, while the catalog has the operation that sends it.
+@pytest.mark.parametrize("answer", ["No puedo mandarle un mensaje por ese chat.", "I cannot send messages."])
+def test_a_message_is_something_the_tools_send(answer: str) -> None:
+    catalog = {"message.send": "Send a message. Use when: envía."}
+    assert [f["rule"] for f in check(answer, "", [], [], catalog=catalog, wire_of=lambda op: op.replace(".", "_"), tries=[])] == ["denial"]
+    assert check(answer, "", [], [], catalog=catalog, wire_of=lambda op: op.replace(".", "_"),
+                 tries=[("message.send", "failed")]) == []
+

@@ -13,11 +13,11 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class ComputerUseWindowIdentityTests
 {
-    [TestCase("SteamLocalAdapter.cs - BAXY Definitivo - Visual Studio Code", "Steam", false)]
+    [TestCase("SteamLocalAdapter.cs - BAXY - Visual Studio Code", "Steam", false)]
     [TestCase("Steam - Bloc de notas", "Steam", false)]
     [TestCase("Steamworks", "Steam", false)]
     [TestCase("Steam", "Steam", true)]
-    [TestCase("Ron92 - Discord", "Discord", true)]
+    [TestCase("Nube77 - Discord", "Discord", true)]
     [TestCase("#general | BAXY - Discord", "Discord", true)]
     [TestCase("Nueva pestaña - Google Chrome", "Google Chrome", true)]
     [TestCase("Inicio - Personal - Microsoft​ Edge", "Microsoft Edge", true)]
@@ -36,6 +36,38 @@ public sealed class ComputerUseWindowIdentityTests
     public void TheTitleOrItsLastSegmentIsTheApplicationsNameExactly(string title, string application, bool names)
     {
         Assert.That(VisibleControlSurface.TitleNamesApplication(title, application), Is.EqualTo(names));
+    }
+
+    // Uso real 03-11 (G8): in a browser's window the page it shows names it, the whole page or one whole segment of it,
+    // exactly; a document of another program titled like an application never does, nor a word of the page.
+    [TestCase("Traductor de Google - Opera", "Traductor de Google", true, true)]
+    [TestCase("Traductor de Google - Opera", "traductor de  GOOGLE", true, true)]
+    [TestCase("Pizarra BAXY 7Q - Perfil 1: Microsoft​ Edge", "Pizarra BAXY 7Q", true, true)]
+    [TestCase("Recetas de pan - YouTube - Opera", "YouTube", true, true)]
+    [TestCase("Valparaíso - Wikipedia, la enciclopedia libre - Google Chrome", "Valparaíso - Wikipedia, la enciclopedia libre", true, true)]
+    [TestCase("Traductor de Google - Opera", "Opera", true, true)]
+    [TestCase("Traductor de Google - Opera", "Google", true, false)]
+    [TestCase("Traductor de Google - Opera", "Google Translate", true, false)]
+    [TestCase("Valparaíso - Wikipedia, la enciclopedia libre - Google Chrome", "Wikipedia", true, false)]
+    [TestCase("Traductor de Google", "Traductor de Google", true, true)]
+    [TestCase("Opera", "Opera", true, true)]
+    [TestCase("Steam - Bloc de notas", "Steam", false, false)]
+    [TestCase("Traductor de Google - Opera", "Traductor de Google", false, false)]
+    public void InABrowsersWindowThePageItShowsNamesIt(string title, string application, bool browser, bool names)
+    {
+        int asked = 0;
+        bool named = VisibleControlSurface.WindowTitleNames(title, application, () =>
+        {
+            asked++;
+            return browser;
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(named, Is.EqualTo(names));
+            Assert.That(asked, Is.LessThanOrEqualTo(1), "whether the window is a browser's is read once at most");
+            if (VisibleControlSurface.TitleNamesApplication(title, application))
+                Assert.That(asked, Is.Zero, "a title that names the application asks nothing of its window");
+        });
     }
 
     [TestCase("Spotify", "Spotify", true)]
@@ -97,7 +129,7 @@ public sealed class ComputerUseWindowIdentityTests
         });
     }
 
-    // PLAN_GENERAL A1, measured on redpc 2026-10-21: the toolkit by the window's own class and its children's classes.
+    // PLAN_GENERAL A1, measured on the development PC 2026-10-21: the toolkit by the window's own class and its children's classes.
     [TestCase("UnrealWindow", "", "unreal")]
     [TestCase("SDL_app", "CefBrowserWindow,Chrome_RenderWidgetHostHWND,Chrome_WidgetWin_1", "cef")]
     [TestCase("Chrome_WidgetWin_1", "Chrome_RenderWidgetHostHWND,Intermediate D3D Window", "chromium")]
@@ -463,6 +495,46 @@ public sealed class ComputerUseWindowIdentityTests
     {
         Func<string>? described = description is null ? null : () => description;
         Assert.That(VisibleControlSurface.ProtectedFrom(process, application, described), Is.EqualTo(protectedFrom));
+    }
+
+    // Banco de uso 03-11 (U45): app.open «Command Prompt» showed a Windows Terminal window and the look by that name
+    // answered application_window_not_found (the terminal's process is not the name: a protected window nobody named).
+    // The window a verified opening showed is the application's for the names it was opened by, while it is still of
+    // that process; not for another name, nor another window.
+    [Test]
+    public void TheProtectedWindowAnOpeningShowedIsThatApplicationsForItsNames()
+    {
+        const nint Terminal = 0x7A0451;
+        const int TerminalProcess = 45045;
+        Assert.That(VisibleControlSurface.ProtectedFrom(Terminal, TerminalProcess, "WindowsTerminal", "Command Prompt"),
+            Is.True, "before the opening");
+
+        VisibleControlSurface.NoteOpenedProtectedRoot(
+            Terminal, TerminalProcess, "WindowsTerminal", "Símbolo del sistema", "Command Prompt");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(VisibleControlSurface.ProtectedFrom(Terminal, TerminalProcess, "WindowsTerminal", "command prompt"),
+                Is.False);
+            Assert.That(VisibleControlSurface.ProtectedFrom(Terminal, TerminalProcess, "WindowsTerminal", "Simbolo del sistema"),
+                Is.False);
+            Assert.That(VisibleControlSurface.ProtectedFrom(Terminal, TerminalProcess, "WindowsTerminal", "Steam"), Is.True);
+            Assert.That(VisibleControlSurface.ProtectedFrom(Terminal, TerminalProcess + 1, "WindowsTerminal", "Command Prompt"),
+                Is.True, "the handle is now another process's");
+            Assert.That(VisibleControlSurface.ProtectedFrom(Terminal + 1, TerminalProcess, "WindowsTerminal", "Command Prompt"),
+                Is.True, "another window of the terminal");
+        });
+    }
+
+    // BAXY's own window and the system's configuration tools stay protected whatever opened them.
+    [TestCase("Baxy", "BAXY")]
+    [TestCase("msconfig", "Configuración del sistema")]
+    public void NoOpeningOpensBaxyOrASystemToolToActs(string process, string application)
+    {
+        const nint Window = 0x7A0461;
+        VisibleControlSurface.NoteOpenedProtectedRoot(Window, 45061, process, application);
+
+        Assert.That(VisibleControlSurface.ProtectedFrom(Window, 45061, process, application), Is.True);
     }
 
     // Renew al máximo (lote 4, c): the Control Panel applets that configure Windows itself run inside processes the

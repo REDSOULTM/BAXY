@@ -417,7 +417,7 @@ public sealed class CloseWithoutAskingProvenanceTests
     [Test]
     public async Task AnAccountBackedApplicationClosesWithoutAskingEvenAfterBaxyWroteIntoIt()
     {
-        // Evidence t4-c03: Discord was opened (t1) and a message typed to Ron92 (t2) before «ya cierra discord» (t4).
+        // Evidence t4-c03: Discord was opened (t1) and a message typed to Nube77 (t2) before «ya cierra discord» (t4).
         var provenance = new LaunchProvenance(static _ => null, Watching());
         provenance.NoteLaunched(900, 15_000, 999);
         provenance.NoteWritten();

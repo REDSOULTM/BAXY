@@ -260,7 +260,7 @@ public sealed class SearchBurstTests
     [Test]
     public void TheEchoOfTheSearchOrOfAFieldsValueIsNoResult()
     {
-        WindowsVisibleControlAdapter.ViewControl box = Control("2.1", "ComboBox", "Buscar .wolfsoultm.4191");
+        WindowsVisibleControlAdapter.ViewControl box = Control("2.1", "ComboBox", "Buscar .nubecita.0001");
         box.Value = "cotele";
         Assert.Multiple(() =>
         {

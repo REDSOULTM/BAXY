@@ -22,13 +22,14 @@ internal static class FieldStepProjection
     private const int MaximumTargetCharacters = 48;
     private const int MaximumFactCharacters = 72;
 
-    private static readonly Lazy<(JsonObject Groups, JsonObject Operations)> Labels = new(() =>
+    private static readonly Lazy<(JsonObject Groups, JsonObject GroupsEn, JsonObject Operations)> Labels = new(() =>
     {
         using Stream stream = typeof(FieldStepProjection).Assembly.GetManifestResourceStream("Baxy.App.OperationLabels.json")
             ?? throw new InvalidOperationException("The operation labels are not embedded.");
         JsonObject root = JsonNode.Parse(stream) as JsonObject
             ?? throw new InvalidDataException("The operation labels are not an object.");
         var groups = (JsonObject)root["groups"]!;
+        var groupsEn = (JsonObject)root["groupsEn"]!;
         var operations = (JsonObject)root["operations"]!;
         // One entry per catalog operation, no more: a missing title would show a raw name, an extra one is dead data.
         string[] catalog = [.. ProductCatalog.ToolDescriptors.Select(static d => d.Name)];
@@ -40,7 +41,18 @@ internal static class FieldStepProjection
                 $"operation-labels.v1.json does not match the catalog (missing: {string.Join(", ", missing)}; extra: {string.Join(", ", extra)}).");
         }
 
-        return (groups, operations);
+        // Steam (2026-11-04): every title and theme in both languages, so an English view never shows a Spanish one.
+        string[] untitled = [.. operations.Where(static p => !Named(p.Value?["t"]) || !Named(p.Value?["en"]))
+            .Select(static p => p.Key)];
+        string[] themes = [.. groups.Select(static p => p.Key).Order(StringComparer.Ordinal)];
+        if (untitled.Length > 0 || !themes.SequenceEqual(groupsEn.Select(static p => p.Key).Order(StringComparer.Ordinal))
+            || groupsEn.Any(static p => !Named(p.Value)))
+        {
+            throw new InvalidDataException(
+                $"operation-labels.v1.json lacks a title or theme in a language (untitled: {string.Join(", ", untitled)}).");
+        }
+
+        return (groups, groupsEn, operations);
     });
 
     // Arguments that name what a call is about, in the order they are read for the chip's and the card's target. A
@@ -63,42 +75,51 @@ internal static class FieldStepProjection
     };
 
     // How a completed call was verified (OperationVisibleFacts' table), as the chip's status and its first words.
-    private static readonly Dictionary<string, (string Status, string Said)> Verifications = new(StringComparer.Ordinal)
+    private static readonly Dictionary<string, (string Status, string Said, string SaidEn)> Verifications = new(StringComparer.Ordinal)
     {
-        [OperationVisibleFacts.VerificationReadback] = ("ok", "Verificado"),
-        [OperationVisibleFacts.VerificationUnchanged] = ("same", "Ya estaba así"),
-        [OperationVisibleFacts.VerificationDeliveredOnly] = ("sent", "Enviado, sin comprobar"),
-        [OperationVisibleFacts.VerificationOutputOnly] = ("read", "Leído"),
+        [OperationVisibleFacts.VerificationReadback] = ("ok", "Verificado", "Verified"),
+        [OperationVisibleFacts.VerificationUnchanged] = ("same", "Ya estaba así", "Already set"),
+        [OperationVisibleFacts.VerificationDeliveredOnly] = ("sent", "Enviado, sin comprobar", "Sent, not verified"),
+        [OperationVisibleFacts.VerificationOutputOnly] = ("read", "Leído", "Read"),
     };
 
     // The codes BAXY itself writes when a call did not reach its provider, said in one line.
-    private static readonly Dictionary<string, string> Reasons = new(StringComparer.Ordinal)
+    private static readonly Dictionary<string, (string Es, string En)> Reasons = new(StringComparer.Ordinal)
     {
-        ["declined_by_person"] = "No se ejecutó: dijiste que no",
-        ["confirmation_expired"] = "No se ejecutó: la confirmación venció",
-        ["engine_unavailable"] = "No se ejecutó: el motor local no estaba listo",
-        ["engine_no_answer"] = "El motor no respondió a tiempo: puede haber corrido",
-        ["operation_unexpected_failure"] = "Falló de forma inesperada: puede haber corrido",
-        ["invalid_arguments"] = "No se ejecutó: los datos de la llamada no eran válidos",
-        ["unknown_operation"] = "No se ejecutó: esa acción no existe",
-        ["web_disabled_by_owner"] = "No se ejecutó: la búsqueda web está apagada en Ajustes",
-        ["weather_disabled_by_owner"] = "No se ejecutó: el clima está apagado en Ajustes",
-        ["screen_disabled_by_owner"] = "No se ejecutó: mirar la pantalla está apagado en Ajustes",
-        ["outbox_unavailable"] = "No se ejecutó: BAXY no estaba listo",
-        ["memory_protection_unavailable"] = "No se ejecutó: la memoria privada no estaba lista",
-        ["memory_value_needs_sensitive_channel"] = "No se guardó: parece un dato secreto",
-        ["query_not_said"] = "No se ejecutó: la búsqueda no llevaba tus palabras",
-        ["channel_not_said"] = "No se ejecutó: no nombraste ese canal",
+        ["declined_by_person"] = ("No se ejecutó: dijiste que no", "Not run: you said no"),
+        ["confirmation_expired"] = ("No se ejecutó: la confirmación venció", "Not run: the confirmation expired"),
+        ["engine_unavailable"] = ("No se ejecutó: el motor local no estaba listo", "Not run: the local engine was not ready"),
+        ["engine_no_answer"] = ("El motor no respondió a tiempo: puede haber corrido", "The engine did not answer in time: it may have run"),
+        ["operation_unexpected_failure"] = ("Falló de forma inesperada: puede haber corrido", "Failed unexpectedly: it may have run"),
+        ["invalid_arguments"] = ("No se ejecutó: los datos de la llamada no eran válidos", "Not run: the call's data was not valid"),
+        ["unknown_operation"] = ("No se ejecutó: esa acción no existe", "Not run: that action does not exist"),
+        ["web_disabled_by_owner"] = ("No se ejecutó: la búsqueda web está apagada en Ajustes", "Not run: web search is off in Settings"),
+        ["weather_disabled_by_owner"] = ("No se ejecutó: el clima está apagado en Ajustes", "Not run: weather is off in Settings"),
+        ["screen_disabled_by_owner"] = ("No se ejecutó: mirar la pantalla está apagado en Ajustes", "Not run: looking at the screen is off in Settings"),
+        ["outbox_unavailable"] = ("No se ejecutó: BAXY no estaba listo", "Not run: BAXY was not ready"),
+        ["memory_protection_unavailable"] = ("No se ejecutó: la memoria privada no estaba lista", "Not run: private memory was not ready"),
+        ["memory_value_needs_sensitive_channel"] = ("No se guardó: parece un dato secreto", "Not saved: it looks like a secret"),
+        ["query_not_said"] = ("No se ejecutó: la búsqueda no llevaba tus palabras", "Not run: the search didn't use your words"),
+        ["channel_not_said"] = ("No se ejecutó: no nombraste ese canal", "Not run: you did not name that channel"),
+        ["application_not_said"] = ("No se ejecutó: no nombraste esa aplicación", "Not run: you did not name that app"),
     };
 
-    internal static string Title(string operation) =>
-        (string?)Labels.Value.Operations[operation]?["t"] ?? operation;
+    /// <summary>The operation's short title in the interface's language (<see cref="UiLanguage"/>).</summary>
+    internal static string Title(string operation) => Title(operation, UiLanguage.IsEnglish);
+
+    private static string Title(string operation, bool english) =>
+        (string?)Labels.Value.Operations[operation]?[english ? "en" : "t"] ?? operation;
 
     internal static string Family(string operation) =>
         (string?)Labels.Value.Operations[operation]?["f"] ?? "apps";
 
-    internal static string Group(string operation) =>
-        (string?)Labels.Value.Groups[(string?)Labels.Value.Operations[operation]?["g"] ?? string.Empty] ?? "Otras";
+    /// <summary>The operation's theme in Spanish: what the model reads of what it can do (catalog.configure), whatever
+    /// the interface's language.</summary>
+    internal static string Group(string operation) => Group(operation, english: false);
+
+    private static string Group(string operation, bool english) =>
+        (string?)(english ? Labels.Value.GroupsEn : Labels.Value.Groups)[(string?)Labels.Value.Operations[operation]?["g"] ?? string.Empty]
+        ?? (english ? "Other" : "Otras");
 
     /// <summary>Checks the labels against the catalog now, so a mismatch stops the start instead of a turn.</summary>
     internal static void Validate() => _ = Labels.Value;
@@ -118,10 +139,12 @@ internal static class FieldStepProjection
     }
 
     /// <summary>The chip's label: the operation's title and, when the arguments name it, what it is about.</summary>
-    internal static string Label(string operation, JsonObject arguments)
+    internal static string Label(string operation, JsonObject arguments) => Label(operation, arguments, UiLanguage.IsEnglish);
+
+    internal static string Label(string operation, JsonObject arguments, bool english)
     {
         string target = Target(arguments);
-        return target.Length == 0 ? Title(operation) : Title(operation) + " · " + target;
+        return target.Length == 0 ? Title(operation, english) : Title(operation, english) + " · " + target;
     }
 
     internal static JsonObject Started(string id, string operation, JsonObject arguments) => new()
@@ -133,8 +156,9 @@ internal static class FieldStepProjection
     };
 
     /// <summary>The step as the view shows it, or null for a call that is not a step of its own: a call held for the
-    /// person's «sí» (the card shows it) and the person's answer itself.</summary>
-    internal static JsonObject? Finished(string id, NativeTurnStep step, string? net)
+    /// person's «sí» (the card shows it) and the person's answer itself. Its words are all in one language,
+    /// <paramref name="english"/> or Spanish, as the caller read it once.</summary>
+    internal static JsonObject? Finished(string id, NativeTurnStep step, string? net, bool english)
     {
         JsonObject? facts = Parse(step.Observation);
         string raw = step.Status;
@@ -150,7 +174,7 @@ internal static class FieldStepProjection
         var view = new JsonObject
         {
             ["id"] = id,
-            ["label"] = Label(step.Operation, step.Arguments),
+            ["label"] = Label(step.Operation, step.Arguments, english),
             ["fam"] = Family(step.Operation),
         };
 
@@ -165,38 +189,40 @@ internal static class FieldStepProjection
             // The journal's recorded result of this same call made earlier (OperationResponseProjection.Replay; a
             // memory call's, inside what it observed): it did not run again now, so nothing is said done now.
             view["status"] = "skip";
-            view["reason"] = "No se repitió: ya había corrido antes";
+            view["reason"] = UiLanguage.Say(english, "No se repitió: ya había corrido antes", "Not repeated: it had already run");
         }
         else if (raw == OperationStatuses.Completed && step.Verified && !uncertain
-            && Verifications.TryGetValue(verification ?? string.Empty, out (string Status, string Said) shown))
+            && Verifications.TryGetValue(verification ?? string.Empty, out (string Status, string Said, string SaidEn) shown))
         {
             view["status"] = shown.Status;
-            string observed = Facts(facts);
-            view["obs"] = observed.Length == 0 ? shown.Said : shown.Said + " · " + observed;
+            string observed = Facts(facts, english);
+            string first = UiLanguage.Say(english, shown.Said, shown.SaidEn);
+            view["obs"] = observed.Length == 0 ? first : first + " · " + observed;
         }
         else if (raw == OperationStatuses.Completed || uncertain || raw == "unknown")
         {
             view["status"] = "maybe";
             view["reason"] = uncertain || raw != OperationStatuses.Completed
-                ? Reason(code, "No se pudo confirmar si se hizo")
-                : "Terminó, pero no se pudo verificar";
+                ? Reason(code, english, UiLanguage.Say(english, "No se pudo confirmar si se hizo", "Could not confirm whether it was done"))
+                : UiLanguage.Say(english, "Terminó, pero no se pudo verificar", "Finished, but could not be verified");
         }
         else if (raw == OperationStatuses.Pending)
         {
             // A retryable outcome whose effect did not happen (the engine says effectUncertain when it may have): it
             // did not complete and can be tried again, never «may have run».
             view["status"] = "fail";
-            view["reason"] = Reason(code, "No se completó, se puede reintentar");
+            view["reason"] = Reason(code, english,
+                UiLanguage.Say(english, "No se completó, se puede reintentar", "Not completed, it can be retried"));
         }
         else if (raw is OperationStatuses.Rejected or "cancelled")
         {
             view["status"] = "skip";
-            view["reason"] = Reason(code, "No se ejecutó");
+            view["reason"] = Reason(code, english, UiLanguage.Say(english, "No se ejecutó", "Not run"));
         }
         else
         {
             view["status"] = "fail";
-            view["reason"] = Reason(code, "Falló");
+            view["reason"] = Reason(code, english, UiLanguage.Say(english, "Falló", "Failed"));
         }
 
         if (net is not null && (string?)view["status"] != "skip")
@@ -209,17 +235,19 @@ internal static class FieldStepProjection
 
     /// <summary>The Sí/No card of a call waiting for the person (design: {risk, title, target, expires}), and whether
     /// an earlier attempt of it may already have happened (the kernel asks again: <paramref name="effectStarted"/>).
-    /// <paramref name="cause"/>: why the person's turn held it (NetworkEgress), said before its risk.</summary>
+    /// <paramref name="cause"/>: why the person's turn held it (NetworkEgress), said before its risk. Its words, and the
+    /// caller's <paramref name="context"/>, are in the one language the caller read (<paramref name="english"/>).</summary>
     internal static JsonObject Card(string id, string kind, string operation, JsonObject arguments, string risk,
-        DateTimeOffset expiresUtc, string? context, bool effectStarted = false, string? cause = null) => new()
+        DateTimeOffset expiresUtc, string? context, bool english, bool effectStarted = false, string? cause = null) => new()
     {
         ["who"] = "card",
         ["id"] = id,
         ["ts"] = DateTimeOffset.Now.ToString("HH:mm", CultureInfo.InvariantCulture),
         ["kind"] = kind,
-        ["risk"] = string.Join(" · ", new[] { CauseLabel(cause), RiskLabel(operation, risk, arguments) }
-            .Where(static label => label is not null)) is { Length: > 0 } said ? said : null,
-        ["title"] = Title(operation),
+        // Uso real 02-11: a page held for a host nobody gave said «llega a otra persona» too, which a page does not; a
+        // held call says why it was held, and only an unheld one its risk.
+        ["risk"] = cause is not null ? CauseLabel(cause, english) : RiskLabel(operation, risk, arguments, english),
+        ["title"] = Title(operation, english),
         ["target"] = Target(arguments),
         ["context"] = context,
         ["expires"] = expiresUtc.ToUnixTimeMilliseconds(),
@@ -227,12 +255,29 @@ internal static class FieldStepProjection
         ["status"] = "pending",
     };
 
-    /// <summary>What leaves the PC with a call that reaches the internet (the catalog's OperationEffects.Network).</summary>
-    internal static string NetWhat(string operation, JsonObject arguments)
+    /// <summary>What leaves the PC with a call that reaches the internet (the catalog's OperationEffects.Network), in
+    /// English or in Spanish: the Spanish one is also what assistant.status reads to the model (OwnReadings.Internet).</summary>
+    internal static string NetWhat(string operation, JsonObject arguments, bool english)
     {
         string Arg(string key) => arguments[key] is JsonValue v && v.TryGetValue(out string? s) && !string.IsNullOrWhiteSpace(s)
             ? Clip(s.Trim(), MaximumTargetCharacters) : string.Empty;
         string Host(string key) => Uri.TryCreate(Arg(key), UriKind.Absolute, out Uri? uri) ? uri.Host : Arg(key);
+        if (english)
+        {
+            return operation switch
+            {
+                "web.search" => "search «" + Arg("query") + "»",
+                "web.fetch" or "browser.navigate" or "browser.navigate.named" => "page on " + Host("url"),
+                "web.download" => "download from " + Host("url"),
+                "weather.current" => "weather · " + (Arg("location") is { Length: > 0 } place ? place : "this place"),
+                "network.ping" => "ping to " + Arg("host"),
+                "shell.command.run" => "console command",
+                "peripheral.print" => "printing",
+                "system.time" => "time in " + Arg("place"),
+                _ => Title(operation, english),
+            };
+        }
+
         return operation switch
         {
             "web.search" => "búsqueda «" + Arg("query") + "»",
@@ -243,17 +288,19 @@ internal static class FieldStepProjection
             "shell.command.run" => "comando de consola",
             "peripheral.print" => "impresión",
             "system.time" => "hora de " + Arg("place"),
-            _ => Title(operation),
+            _ => Title(operation, english),
         };
     }
 
-    /// <summary>«Qué puedo hacer»: every catalog operation by theme, and whether normal mode always confirms it.</summary>
+    /// <summary>«Qué puedo hacer»: every catalog operation by theme, and whether normal mode always confirms it, in the
+    /// interface's language.</summary>
     internal static JsonObject Catalog()
     {
+        bool english = UiLanguage.IsEnglish;
         var groups = new Dictionary<string, JsonArray>(StringComparer.Ordinal);
         foreach (ProductOperationDescriptor descriptor in ProductCatalog.ToolDescriptors)
         {
-            string group = Group(descriptor.Name);
+            string group = Group(descriptor.Name, english);
             if (!groups.TryGetValue(group, out JsonArray? items))
             {
                 groups[group] = items = [];
@@ -262,22 +309,23 @@ internal static class FieldStepProjection
             items.Add(new JsonObject
             {
                 ["name"] = descriptor.Name,
-                ["title"] = Title(descriptor.Name),
+                ["title"] = Title(descriptor.Name, english),
                 ["confirm"] = ConfirmationOf(descriptor),
             });
         }
 
         // The design's order of themes, then each theme's actions alphabetically by their title.
-        string[] order = [.. Labels.Value.Groups.Select(static p => (string)p.Value!)];
+        string[] order = [.. (english ? Labels.Value.GroupsEn : Labels.Value.Groups).Select(static p => (string)p.Value!)];
+        StringComparer byTitle = StringComparer.Create(UiLanguage.CultureOf(english), ignoreCase: false);
         return new JsonObject
         {
             ["total"] = ProductCatalog.ToolDescriptors.Count,
             ["groups"] = new JsonArray([.. groups
                 .OrderBy(g => Array.IndexOf(order, g.Key) is var i && i < 0 ? int.MaxValue : i)
-                .Select(static g => (JsonNode)new JsonObject
+                .Select(g => (JsonNode)new JsonObject
                 {
                     ["name"] = g.Key,
-                    ["items"] = new JsonArray([.. g.Value.OrderBy(static i => (string?)i!["title"], StringComparer.CurrentCulture)
+                    ["items"] = new JsonArray([.. g.Value.OrderBy(static i => (string?)i!["title"], byTitle)
                         .Select(static i => i!.DeepClone())]),
                 })]),
         };
@@ -314,34 +362,38 @@ internal static class FieldStepProjection
             document.RootElement.Clone()) == PolicyDecision.RequireConfirmation;
     }
 
-    private static string? RiskLabel(string operation, string risk, JsonObject arguments) => risk switch
+    private static string? RiskLabel(string operation, string risk, JsonObject arguments, bool english) => risk switch
     {
-        OperationRisks.RecoverableDelete => "borra datos",
-        _ when operation == "system.recyclebin.empty" => "borra datos",
-        OperationRisks.WorkLoss => operation == "system.process.terminate.named" ? "fuerza el cierre" : "puede perder trabajo",
-        OperationRisks.ExternalCommunication => "llega a otra persona",
-        OperationRisks.Installation => "instala o desinstala",
-        OperationRisks.PrivacySensitive => "toca datos privados",
-        _ when operation == "shell.command.run" => "cambia el sistema",
-        _ when operation is "input.visible.click" or "input.key.press" && Target(arguments).Length > 0 => "sale al mundo o no se deshace",
+        OperationRisks.RecoverableDelete => UiLanguage.Say(english, "borra datos", "deletes data"),
+        _ when operation == "system.recyclebin.empty" => UiLanguage.Say(english, "borra datos", "deletes data"),
+        OperationRisks.WorkLoss => operation == "system.process.terminate.named"
+            ? UiLanguage.Say(english, "fuerza el cierre", "forces it to close")
+            : UiLanguage.Say(english, "puede perder trabajo", "may lose work"),
+        OperationRisks.ExternalCommunication => UiLanguage.Say(english, "llega a otra persona", "reaches another person"),
+        OperationRisks.Installation => UiLanguage.Say(english, "instala o desinstala", "installs or uninstalls"),
+        OperationRisks.PrivacySensitive => UiLanguage.Say(english, "toca datos privados", "touches private data"),
+        _ when operation == "shell.command.run" => UiLanguage.Say(english, "cambia el sistema", "changes the system"),
+        _ when operation is "input.visible.click" or "input.key.press" && Target(arguments).Length > 0
+            => UiLanguage.Say(english, "sale al mundo o no se deshace", "acts outside the PC or can't be undone"),
         _ => null,
     };
 
     // Auditoría de la App (2026-10-23): a call the person's turn held (a read of a page, a game) has no risk of its own
     // to show, and its card said nothing of why it asked; the cause NetworkEgress gave the model is said.
-    private static string? CauseLabel(string? cause) => cause switch
+    private static string? CauseLabel(string? cause, bool english) => cause switch
     {
-        "host_not_from_session" => "va a un sitio que nadie dio",
-        "game_title_not_said" => "un juego que no nombraste",
+        "host_not_from_session" => UiLanguage.Say(english, "va a un sitio que nadie dio", "goes to a site no one mentioned"),
+        "game_title_not_said" => UiLanguage.Say(english, "un juego que no nombraste", "a game you did not name"),
+        PendingOperationConfirmation.SystemChangeCause => UiLanguage.Say(english, "cambia un ajuste del sistema", "changes a system setting"),
         _ => null,
     };
 
-    private static string Reason(string code, string fallback) =>
+    private static string Reason(string code, bool english, string fallback) =>
         code.Length == 0 ? fallback
-        : Reasons.TryGetValue(code, out string? said) ? said
+        : Reasons.TryGetValue(code, out (string Es, string En) said) ? UiLanguage.Say(english, said.Es, said.En)
         : fallback + " · " + code;
 
-    private static string Facts(JsonObject? facts)
+    private static string Facts(JsonObject? facts, bool english)
     {
         if (facts is null)
         {
@@ -357,7 +409,7 @@ internal static class FieldStepProjection
             }
 
             string? text = scalar.TryGetValue(out string? s) ? s
-                : scalar.TryGetValue(out bool b) ? (b ? "sí" : "no")
+                : scalar.TryGetValue(out bool b) ? (b ? UiLanguage.Say(english, "sí", "yes") : "no")
                 : scalar.TryGetValue(out double d) ? d.ToString("0.##", CultureInfo.InvariantCulture)
                 : null;
             if (!string.IsNullOrWhiteSpace(text))
@@ -368,6 +420,9 @@ internal static class FieldStepProjection
 
         return string.Join(" · ", shown);
     }
+
+    private static bool Named(JsonNode? title) =>
+        title is JsonValue value && value.TryGetValue(out string? text) && !string.IsNullOrWhiteSpace(text);
 
     private static JsonObject? Parse(string observation)
     {

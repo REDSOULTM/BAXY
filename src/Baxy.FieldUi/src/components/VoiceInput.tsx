@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Icon, type IconName } from './Icon';
 import type { BaxyState, MicMode } from '../types';
+import { useT, type Words } from '../i18n';
+import { micBlockedText } from '../causes';
 
 /* The input bar (design parts.jsx BxInput): the voice button with its three modes, the text field and the send button.
    The design's attach button is not here: attaching files waits for a typed contract on the host (README: «adjuntos sin
@@ -8,15 +10,24 @@ import type { BaxyState, MicMode } from '../types';
 
 // The owner's rule (2026-10-18): only text is ready today; voice input is shown «en pruebas · próximamente disponible»,
 // never as ready, and it stays usable (taking it away is the owner's decision).
-const MIC: { id: MicMode; icon: IconName; label: string; sub: string }[] = [
-  { id: 'off', icon: 'mic-off', label: 'Apagado', sub: 'Solo texto' },
-  { id: 'always', icon: 'mic', label: 'Siempre activo', sub: 'Responde a «BAXY» · en pruebas, próximamente disponible' },
-  { id: 'ptt', icon: 'wave', label: 'Mantener para hablar', sub: 'O la barra espaciadora · en pruebas, próximamente disponible' },
+const MIC: { id: MicMode; icon: IconName; label: Words; sub: Words }[] = [
+  { id: 'off', icon: 'mic-off', label: { es: 'Apagado', en: 'Off' }, sub: { es: 'Solo texto', en: 'Text only' } },
+  {
+    id: 'always', icon: 'mic', label: { es: 'Siempre activo', en: 'Always on' },
+    sub: { es: 'Responde a «BAXY» · en pruebas, próximamente disponible', en: 'Answers to “BAXY” · in testing, coming soon' },
+  },
+  {
+    id: 'ptt', icon: 'wave', label: { es: 'Mantener para hablar', en: 'Push to talk' },
+    sub: { es: 'O la barra espaciadora · en pruebas, próximamente disponible', en: 'Or the space bar · in testing, coming soon' },
+  },
 ];
 
 interface Props {
   mic: MicMode;
   micAvailable: boolean;
+  /** uso 95: the ear waits for memory (the reason the microphone modes are off), or null */
+  micWaiting?: { need_mb: number; left_mb: number } | null;
+  noRecognizer?: boolean;
   onMic: (m: MicMode) => void;
   onPttStart: () => void;
   onPttEnd: () => void;
@@ -26,7 +37,8 @@ interface Props {
   canSend: boolean;
 }
 
-export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onSubmit, state, canSend }: Props) {
+export function VoiceInput({ mic, micAvailable, micWaiting = null, noRecognizer = false, onMic, onPttStart, onPttEnd, onSubmit, state, canSend }: Props) {
+  const t = useT();
   const [draft, setDraft] = useState('');
   const [menu, setMenu] = useState(false);
   const cur = MIC.find((m) => m.id === mic) ?? MIC[1];
@@ -48,11 +60,11 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
     setDraft('');
     if (!(await onSubmit(text))) setDraft((d) => d || text);
   };
-  const ph = state === 'booting' ? 'Cargando el modelo…'
-    : state === 'confirm' ? '↵ sí · esc no'
-      : mic === 'ptt' ? 'Escribe o mantén espacio'
-        : mic === 'off' ? 'Escribe a BAXY'
-          : 'Escribe o di «BAXY»';
+  const ph = state === 'booting' ? t('Cargando el modelo… lo que escribas espera', 'Loading the model… what you type will wait')
+    : state === 'confirm' ? t('↵ sí · esc no', '↵ yes · esc no')
+      : mic === 'ptt' ? t('Escribe o mantén espacio', 'Type, or hold space')
+        : mic === 'off' ? t('Escribe a BAXY', 'Message BAXY')
+          : t('Escribe o di «BAXY»', 'Type, or say “BAXY”');
   return (
     <div className="bx-line">
       <div className="bx-micwrap">
@@ -62,10 +74,10 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
               const blocked = m.id !== 'off' && !micAvailable;
               return (
                 <button key={m.id} className={m.id === mic ? 'on' : ''} disabled={blocked}
-                  title={blocked ? 'No hay micrófono disponible' : undefined}
+                  title={blocked ? micBlockedText(micWaiting, t, noRecognizer) : undefined}
                   onClick={() => { onMic(m.id); setMenu(false); }}>
                   <Icon name={m.icon} size={14} />
-                  <span className="l"><span>{m.label}</span><span className="s">{blocked ? 'No hay micrófono' : m.sub}</span></span>
+                  <span className="l"><span>{t.w(m.label)}</span><span className="s">{blocked ? micBlockedText(micWaiting, t, noRecognizer) : t.w(m.sub)}</span></span>
                   {m.id === mic ? <Icon name="check" size={12} /> : null}
                 </button>
               );
@@ -79,16 +91,16 @@ export function VoiceInput({ mic, micAvailable, onMic, onPttStart, onPttEnd, onS
           onPointerUp={() => { if (mic === 'ptt') onPttEnd(); }}
           /* a press the system takes away (a touch turned into a scroll, the pen leaving) never sends its pointerup */
           onPointerCancel={() => { if (mic === 'ptt') onPttEnd(); }}
-          title={mic === 'ptt' ? 'Mantén para hablar' : cur.label}
+          title={mic === 'ptt' ? t('Mantén para hablar', 'Hold to talk') : t.w(cur.label)}
         ><Icon name={cur.icon} size={15} /></button>
-        <button className={'bx-caret' + (menu ? ' open' : '')} onClick={() => setMenu(!menu)} title="Modo de micrófono" aria-expanded={menu}>
+        <button className={'bx-caret' + (menu ? ' open' : '')} onClick={() => setMenu(!menu)} title={t('Modo de micrófono', 'Microphone mode')} aria-expanded={menu}>
           <svg width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M1.5 5 L4 2.5 L6.5 5"></path></svg>
         </button>
       </div>
       <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={ph} spellCheck={false} autoFocus
-        aria-label="Escribe a BAXY" data-ready={canSend ? 'true' : 'false'}
+        aria-label={t('Escribe a BAXY', 'Message BAXY')} data-ready={canSend ? 'true' : 'false'}
         onKeyDown={(e) => { if (e.key === 'Enter' && armed) { e.preventDefault(); e.stopPropagation(); void send(); } }} />
-      <button className={'bx-send' + (armed ? '' : ' hide')} onClick={() => void send()} title="Enviar"><Icon name="send" size={14} /></button>
+      <button className={'bx-send' + (armed ? '' : ' hide')} onClick={() => void send()} title={t('Enviar', 'Send')}><Icon name="send" size={14} /></button>
     </div>
   );
 }

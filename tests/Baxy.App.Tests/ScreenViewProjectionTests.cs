@@ -35,6 +35,31 @@ public sealed class ScreenViewProjectionTests
             "[2] TabItem «Biblioteca» (selected)\n"));
     }
 
+    // Encargo 18 (banco de uso, U45): what the focused control that is no field shows (a terminal's output), as the
+    // reader read it, is said under the focus line by line; a cut says only its last lines are there; nothing without it.
+    [TestCase(false, "Lo que muestra el foco:\n")]
+    [TestCase(true, "Lo que muestra el foco (cortado: sólo sus últimas líneas):\n")]
+    public void WhatTheFocusedConsoleShowsIsSaidUnderTheFocus(bool cut, string heading)
+    {
+        const string Console =
+            "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+            "\"window\":{\"title\":\"Consola\",\"process\":\"TerminalHost\",\"hwnd\":91,\"foreground\":true," +
+            "\"focused\":{\"kind\":\"Text\",\"name\":\"Consola\",\"value\":null,\"i\":0," +
+            "\"text\":\"C:\\\\carpeta>ver\\nMicrosoft Windows [Version 10.0]\\nC:\\\\carpeta>\"CUT}}," +
+            "\"controls\":[{\"i\":0,\"kind\":\"Text\",\"name\":\"Consola\",\"state\":\"focused\",\"value\":null}]," +
+            "\"controlCount\":1,\"textAuthority\":\"not_read\",\"authority\":\"uia\"}";
+
+        string view = View(Console.Replace("CUT", cut ? ",\"textCut\":true" : string.Empty, StringComparison.Ordinal));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(view, Does.Contain(
+                "Foco: [0] Text «Consola»\n" + heading +
+                "C:\\carpeta>ver\nMicrosoft Windows [Version 10.0]\nC:\\carpeta>\nControles:\n"));
+            Assert.That(View(Steam), Does.Not.Contain("Lo que muestra el foco"));
+        });
+    }
+
     [Test]
     public void NothingChosenSaysNoLine()
     {
@@ -73,6 +98,18 @@ public sealed class ScreenViewProjectionTests
             "[4] Button «Buscar» (arriba der.)\n" +
             "[5] Button «Buscar» (centro izq.)\n" +
             "[6] Button «Buscar»\n"));
+    }
+
+    // Uso-108 (A7): a value the reader cut says it, or a prefix reads as the whole value; a whole value says nothing.
+    [Test]
+    public void ACutValueSaysHowManyCharactersAreMissing()
+    {
+        string view = View(Steam.Replace(
+            "\"name\":\"Menú\",\"state\":\"collapsed\",\"value\":null",
+            "\"name\":\"Menú\",\"state\":\"\",\"value\":\"principio\",\"valueCut\":340"));
+
+        Assert.That(view, Does.Contain("[4] Button «Menú» = principio (valor cortado: faltan 340 caracteres)\n"));
+        Assert.That(view, Does.Contain("[1] TabItem «Tienda»\n"));
     }
 
     // R6-NB-5: a name the reader cut at its end says how many characters it lost; a whole one says nothing.

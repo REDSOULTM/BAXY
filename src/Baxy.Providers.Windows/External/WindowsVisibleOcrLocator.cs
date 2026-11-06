@@ -233,6 +233,42 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         return await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore);
     }
 
+    // Encargo 119: Windows.Media.Ocr documents no smallest text, and on a capture's text of at most 10 px it answered
+    // nonsense as a read (error per character 0.58-1.00, 4 fonts, against the text drawn); read at twice the size the
+    // same text gave 0.03-0.25 from 10 px and 0.01-0.02 from 11 px, with no loss up to 48 px. A whole 1920x1080 screen
+    // with letters of 9 to 200 px went from 0.12 to 0.01 for 210 ms more. A 3840x2160 one read that way took 0.8-1.6 s and
+    // once saw a false angle (0.11), so a capture past ReadingLongest stays at its size, where a screen's letters are
+    // large anyway; OcrEngine.MaxImageDimension is the engine's own limit.
+    private const int ReadingScale = 2;
+    private const uint ReadingLongest = 5120;
+
+    internal static int ReadingScaleOf(uint width, uint height)
+    {
+        uint enlarged = Math.Max(width, height) * ReadingScale;
+        return enlarged <= ReadingLongest && enlarged <= OcrEngine.MaxImageDimension ? ReadingScale : 1;
+    }
+
+    internal static async Task<SoftwareBitmap> DecodeForReadingAsync(BitmapDecoder decoder, int scale) =>
+        scale == 1
+            ? await decoder.GetSoftwareBitmapAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore)
+            : await decoder.GetSoftwareBitmapAsync(
+                BitmapPixelFormat.Bgra8,
+                BitmapAlphaMode.Ignore,
+                new BitmapTransform
+                {
+                    ScaledWidth = decoder.PixelWidth * (uint)scale,
+                    ScaledHeight = decoder.PixelHeight * (uint)scale,
+                    InterpolationMode = BitmapInterpolationMode.Cubic,
+                },
+                ExifOrientationMode.IgnoreExifOrientation,
+                ColorManagementMode.DoNotColorManage);
+
+    /// <summary>Encargo 119: the languages Windows' OCR has on this PC (OcrEngine.AvailableRecognizerLanguages). Text in an
+    /// alphabet of none of them comes back as nonsense told as a read (Russian 0.87, Greek 0.92, Arabic 0.96 with es-MX alone)
+    /// and the engine gives no confidence to tell it by: the read says what it can read.</summary>
+    internal static IReadOnlyList<string> RecognizerLanguages() =>
+        [.. OcrEngine.AvailableRecognizerLanguages.Select(static language => language.LanguageTag)];
+
     private static async ValueTask<(bool observed, string text)> ObserveLabelAsync(
         byte[] bmp,
         OcrEngine engine,
@@ -293,23 +329,30 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
     // Encargo WA-LEER: con «placed» cada línea vale por su sitio (las de un chat que se lee por sus líneas): un texto que se
     // repite en otro sitio es otra línea —trece burbujas «prueba BAXY imp», la hora y la fecha de la última burbuja que
     // la lista de chats repite— y sólo se descarta la segunda lectura del mismo texto en el mismo sitio; una línea larga
-    // de un mensaje se guarda entera. Medido en redpc (chat «Abuela» abierto, 1938×1098): por texto quedaban 45 de 66
+    // de un mensaje se guarda entera. Medido en el PC de desarrollo (un chat abierto, 1938×1098): por texto quedaban 45 de 66
     // líneas, 12 de las 13 burbujas fuera.
     // Ronda final 19 (regla 3): the lines read and left out (longer than a label without «placed», or past the limit)
     // are counted in «omitted», so a view that shows the text says it is cut instead of passing for all of it.
+    // Encargo 119: «reading» is a look that asks what the window says, not where a label is: the capture is read at
+    // twice its size (boxes stay in capture pixels), a long line is the text asked for (a paragraph in an image, left out
+    // whole before), and the darkened pass's other spelling of a line already read is not a second line.
     internal static async ValueTask<IReadOnlyList<LayoutLine>?> ReadLayoutAsync(
         byte[] capture,
         int limit,
         CancellationToken cancellationToken,
         bool placed = false,
-        System.Runtime.CompilerServices.StrongBox<int>? omitted = null)
+        System.Runtime.CompilerServices.StrongBox<int>? omitted = null,
+        bool reading = false)
     {
         try
         {
             OcrEngine? engine = OcrEngine.TryCreateFromUserProfileLanguages();
             if (engine is null)
                 return null;
-            using SoftwareBitmap bitmap = await DecodeAsync(capture);
+            using IRandomAccessStream stream = new MemoryStream(capture, writable: false).AsRandomAccessStream();
+            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+            int scale = reading ? ReadingScaleOf(decoder.PixelWidth, decoder.PixelHeight) : 1;
+            using SoftwareBitmap bitmap = await DecodeForReadingAsync(decoder, scale);
             OcrResult recognized = await engine.RecognizeAsync(bitmap);
             cancellationToken.ThrowIfCancellationRequested();
             OcrResult? enhanced = null;
@@ -333,7 +376,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                     string text = line.Text.Trim();
                     if (text.Length == 0 || !placed && !seen.Add(text))
                         continue;
-                    if (!placed && text.Length > 80)
+                    if (!placed && !reading && text.Length > 80)
                     {
                         leftOut.Add(new LayoutLine(text, 0, 0, 0, 0));
                         continue;
@@ -344,6 +387,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                     foreach (OcrWord word in line.Words)
                     {
                         global::Windows.Foundation.Rect wordBox = word.BoundingRect;
+                        wordBox = new global::Windows.Foundation.Rect(
+                            wordBox.X / scale, wordBox.Y / scale, wordBox.Width / scale, wordBox.Height / scale);
                         words.Add(new LayoutWord(word.Text, wordBox.X, wordBox.Y, wordBox.Width, wordBox.Height));
                         if (!started)
                         {
@@ -358,6 +403,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
 
                     var read = new LayoutLine(text, box.X, box.Y, box.Width, box.Height, words);
                     if (placed && (lines.Any(kept => ReadAgain(kept, read)) || leftOut.Any(other => ReadAgain(other, read))))
+                        continue;
+                    if (reading && lines.Any(kept => SamePlace(kept, read)))
                         continue;
                     if (lines.Count >= limit)
                     {
@@ -395,6 +442,51 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         string.Equals(kept.Text, line.Text, StringComparison.OrdinalIgnoreCase)
         && kept.X < line.X + line.Width && line.X < kept.X + kept.Width
         && kept.Y < line.Y + line.Height && line.Y < kept.Y + kept.Height;
+
+    /// <summary>
+    /// Encargo 119 (F10): a table's cells come as lines of their own, and a look lists a window's text by its zones, so a row
+    /// was split by column («Tornillo | Arandela | 120 | 75») and the model paired them wrong («Tornillo con 120 a 75»). Short
+    /// lines on one row, in the reading order <see cref="ReadLayoutAsync"/> gives, go together as one line. Long lines are
+    /// sentences of side by side columns, read on as they are; a line a control names stays alone, to be left out as such.
+    /// </summary>
+    internal static IReadOnlyList<LayoutLine> CellsAsRows(IReadOnlyList<LayoutLine> read, Func<string, bool> namesAControl)
+    {
+        const int cell = 40;
+        var rows = new List<LayoutLine>();
+        LayoutLine? last = null;
+        foreach (LayoutLine line in read)
+        {
+            bool together = last is not null && rows.Count > 0
+                && Math.Abs(last.Y - line.Y) <= Math.Min(last.Height, line.Height) / 2
+                && last.Text.Length <= cell && line.Text.Length <= cell
+                && !namesAControl(last.Text) && !namesAControl(line.Text);
+            if (together)
+            {
+                LayoutLine row = rows[^1];
+                double right = Math.Max(row.X + row.Width, line.X + line.Width);
+                double bottom = Math.Max(row.Y + row.Height, line.Y + line.Height);
+                double top = Math.Min(row.Y, line.Y);
+                rows[^1] = new LayoutLine(row.Text + " · " + line.Text, row.X, top, right - row.X, bottom - top);
+            }
+            else
+            {
+                rows.Add(line);
+            }
+
+            last = line;
+        }
+
+        return rows;
+    }
+
+    /// <summary>Encargo 119: two readings of one line, however spelled: half of the smaller box lies in the other.</summary>
+    internal static bool SamePlace(LayoutLine kept, LayoutLine line)
+    {
+        double wide = Math.Min(kept.X + kept.Width, line.X + line.Width) - Math.Max(kept.X, line.X);
+        double tall = Math.Min(kept.Y + kept.Height, line.Y + line.Height) - Math.Max(kept.Y, line.Y);
+        return wide > 0 && tall > 0
+            && wide * tall >= Math.Min(kept.Width * kept.Height, line.Width * line.Height) / 2;
+    }
 
     private static WordHit? UniqueHit(
         OcrResult recognized,
@@ -605,7 +697,10 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         var builder = new StringBuilder(form.Length);
         foreach (char character in form)
         {
-            if (CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
+            // Uso-108 (C10): a format character (a direction mark in a name, as Windows writes them) is not of the label;
+            // a ZWJ is: it joins an emoji.
+            if (CharUnicodeInfo.GetUnicodeCategory(character) is not (UnicodeCategory.NonSpacingMark or UnicodeCategory.Format)
+                || character == '\u200D')
                 builder.Append(character);
         }
         return string.Join(' ', builder.ToString().Split(

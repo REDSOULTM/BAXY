@@ -16,18 +16,23 @@ using System;
 using System.Runtime.InteropServices;
 public static class BaxySpotifyNative
 {
-    const uint LeftDown=0x0002, LeftUp=0x0004;
     // BAXY's input mark (BaxyInputMark.cs): the pause detector and the live harness tell BAXY's input by it.
     static readonly UIntPtr Mark=new UIntPtr(0x42415859u);
     [DllImport("user32.dll")] static extern bool SetCursorPos(int x,int y);
     [DllImport("user32.dll")] static extern void mouse_event(uint flags,uint x,uint y,uint data,UIntPtr extra);
+    // Row C3 (FlaUI's Mouse.cs): with the buttons swapped (SM_SWAPBUTTON), LEFTDOWN arrives as a right click.
+    public static uint[] LeftButtonEvents(bool swapped)
+    {
+        return swapped ? new uint[] { 0x0008u, 0x0010u } : new uint[] { 0x0002u, 0x0004u };
+    }
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr handle);
     [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
     [DllImport("user32.dll")] public static extern bool IsIconic(IntPtr handle);
     public static void Click(int x,int y)
     {
         if(!SetCursorPos(x,y))throw new InvalidOperationException("SetCursorPos failed.");
-        mouse_event(LeftDown,0,0,0,Mark);mouse_event(LeftUp,0,0,0,Mark);
+        uint[] left=LeftButtonEvents(GetSystemMetrics(23)!=0);
+        mouse_event(left[0],0,0,0,Mark);mouse_event(left[1],0,0,0,Mark);
     }
     [StructLayout(LayoutKind.Sequential)] public struct Box { public int Left, Top, Right, Bottom; }
     [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr handle,out Box box);
@@ -41,7 +46,7 @@ public static class BaxySpotifyNative
     [DllImport("dwmapi.dll",EntryPoint="DwmGetWindowAttribute")] static extern int DwmGetWindowFrame(IntPtr handle,int attribute,out Box value,int size);
     [DllImport("user32.dll")] static extern int GetSystemMetrics(int index);
     // What a window draws: its frame without the invisible resize borders (a maximized window's rectangle reaches 8 px
-    // past the screen, redpc), cut to the screens.
+    // past the screen, on the PC), cut to the screens.
     static bool Frame(IntPtr handle,out Box box)
     {
         if(DwmGetWindowFrame(handle,9,out box,16)!=0&&!GetWindowRect(handle,out box))return false;
@@ -49,7 +54,7 @@ public static class BaxySpotifyNative
         box=new Box{Left=Math.Max(box.Left,left),Top=Math.Max(box.Top,top),Right=Math.Min(box.Right,left+GetSystemMetrics(78)),Bottom=Math.Min(box.Bottom,top+GetSystemMetrics(79))};
         return box.Right>box.Left&&box.Bottom>box.Top;
     }
-    // TZ-SP (tandas z1/z2 del notebook; redpc): the client draws its page only while some part of its window shows. A
+    // TZ-SP (tandas z1/z2 del notebook; el PC): the client draws its page only while some part of its window shows. A
     // window above it that covers all of it is told apart from one the search did not reach. Pure over rectangles.
     public static bool Covers(Box window,Box[] above)
     {
@@ -110,7 +115,7 @@ $hardEnd=if($DeadlineMs -gt 0){$startedAt.AddMilliseconds($DeadlineMs)}else{[Dat
 $timings=''
 function Add-BaxySpotifyMark([string]$Label=$script:stage){$script:timings+=('{0}={1};' -f $Label,[int]((Get-Date)-$startedAt).TotalMilliseconds)}
 function InvokeElement([Windows.Automation.AutomationElement]$element){
-    # SP (redpc, cold client, «lo-fi para estudiar»: two clicks at the centre of «Reproducir Lo-Fi Focus…» left no
+    # SP (the PC, cold client, «lo-fi para estudiar»: two clicks at the centre of «Reproducir Lo-Fi Focus…» left no
     # trace in 15 s, twice; the control's InvokePattern played it at once, 4 of 4 with cold and warm clients): the
     # control's own action first, which also leaves the person's pointer where it was, and a click at its centre only
     # for a control that has none. SP2: never a press after the deadline.
@@ -161,6 +166,11 @@ function Fold([string]$value){
     $bare=[regex]::Replace($value.Normalize([Text.NormalizationForm]::FormD),'\p{Mn}','')
     return ([regex]::Replace($bare,'[^\p{L}\p{Nd}]+',' ')).Trim().ToLowerInvariant()
 }
+# The label of the client's now-playing control in the languages of the product, from the client's own language files
+# (i18n/*.json in Apps/xpui.spa, playback-control.now-playing-label): es-419, es-AR, es-MX «Estás escuchando: {0} de {1}»,
+# es «Sonando: {0} de {1}», en and en-GB «Now playing: {0} by {1}». With its colon, raw: folded, «Now playing view» (a
+# button of the English client) would read as a line.
+$script:BaxySpotifyPlayingLabel=[regex]('^(?:Est'+[char]0x00E1+'s escuchando|Sonando|Now playing):\s')
 function Get-BaxySpotifyPauseName([string]$PlayName){
     # Spotify relabels a play control while its context plays: «reproducir X»
     # becomes «pausar X» (and «play X» «pause X»).
@@ -174,10 +184,29 @@ function Test-BaxySpotifyNear($Rect,$Anchor){
     return [Math]::Abs(($Rect.Left+$Rect.Width/2)-($Anchor.Left+$Anchor.Width/2)) -le 48 -and [Math]::Abs(($Rect.Top+$Rect.Height/2)-($Anchor.Top+$Anchor.Height/2)) -le 48
 }
 # The client's now-playing line («<title> de <artist>», folded) is the asked title when its title part is the title,
-# whole, and, when a result card named its artist, that artist follows « de ». One rule before the press (already
-# playing) and after it (verified).
+# whole, and, when a result card named its artist, that artist follows « de » («by» in an English client). One rule
+# before the press (already playing) and after it (verified).
 function Test-BaxySpotifyNowPlayingIs([string]$Playing,[string]$Title,[string]$Identity){
-    ($Playing -eq $Title -or $Playing.StartsWith($Title+' de ')) -and (-not $Identity -or $Playing.Contains(' de '+$Identity))
+    ($Playing -eq $Title -or $Playing.StartsWith($Title+' de ') -or $Playing.StartsWith($Title+' by ')) -and (-not $Identity -or $Playing.Contains(' de '+$Identity) -or $Playing.Contains(' by '+$Identity))
+}
+# What plays, folded, from an element's raw name; empty when it is not the now-playing control's (uso-110: read only as
+# «Estás escuchando:», a client in English or in Spain's Spanish never showed a line, so no press could be verified). The
+# loops over a whole snapshot ask the label first: a call per element is most of a poll.
+function Get-BaxySpotifyPlayingLine([string]$Name){
+    $label=$script:BaxySpotifyPlayingLabel.Match($Name)
+    if($label.Success){return Fold($Name.Substring($label.Length))}
+    return ''
+}
+# The client among its processes with a window (uso-110, read live): a client not answering leaves one small process per
+# «spotify:» launched, each with a dialog of its own («not responding»), 34 MB against the client's hundreds; the first
+# with a window was one of them, so the client never came to the front. The one that holds the most memory is the client.
+function Select-BaxySpotifyClientProcess($Processes){
+    return $Processes|Where-Object {$_.MainWindowHandle -ne 0}|Sort-Object WorkingSet64 -Descending|Select-Object -First 1
+}
+# A play control of that title («reproducir <title>», «play <title>», folded), alone or followed by more of its name.
+function Test-BaxySpotifyPlaysTitle([string]$Name,[string]$Title){
+    foreach($word in @('reproducir','play')){if($Name -eq ($word+' '+$Title) -or $Name.StartsWith($word+' '+$Title+' ')){return $true}}
+    return $false
 }
 function Test-BaxySpotifyPlaybackVerified([string]$Mode,[bool]$Pause,[bool]$IdentityMatches,[string]$Observed,[string]$Before,[bool]$PauseBefore,[bool]$SelectedFlipped){
     if($Mode -ne 'query'){return $IdentityMatches -and $Pause}
@@ -268,7 +297,7 @@ function Test-BaxySpotifyResearch([int]$Searches,[double]$SinceSearchMillisecond
 function Get-BaxySpotifyRowKey($Row){
     # X3 (tandas n1/n2 del notebook, t1-c07, t2-c01, t4-c01: 7 of 8 searches «spotify_exact_result_not_found» after
     # the whole 20 s and a re-issued search; the only success, by its timing, read no page before: its box held the query,
-    # so nothing was set aside): Spotify keeps an element across searches and changes it (redpc pr8/pr9: the filter
+    # so nothing was set aside): Spotify keeps an element across searches and changes it (PC pr8/pr9: the filter
     # chips keep their runtime ids on the next search, in another order), so a runtime id alone set aside the
     # results of this search drawn on reused elements. What an element of the page before is: the same element
     # still showing the same name.
@@ -286,7 +315,7 @@ function Get-BaxySpotifyPageBefore([string]$ValueBefore,[string]$Query,[string[]
     if($ValueBefore -ne $Query){foreach($key in $Keys){if($key -and -not $key.StartsWith('|')){[void]$set.Add($key)}}}
     return ,$set
 }
-function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]$Title,[string]$ExpectedPlay,$SearchRect,$WindowRect){
+function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]$Title,$SearchRect,$WindowRect){
     # What one snapshot of the search page offers (rows of Get-BaxySpotifySnapshot, names folded): the play control,
     # the card titled as the query with its identity link, and whether the search answered. Rows of the page shown
     # before the search (Get-BaxySpotifyPageBefore) are never a result.
@@ -300,7 +329,7 @@ function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]
         if($element.Type -ne $button -or $element.Offscreen){continue}
         $rect=$element.Rect
         $name=$element.Fold
-        $matches=if($Mode -eq 'query'){$name.StartsWith('reproducir ') -or $name.StartsWith('play ')}else{$name -eq $ExpectedPlay -or $name.StartsWith($ExpectedPlay+' ')}
+        $matches=if($Mode -eq 'query'){$name.StartsWith('reproducir ') -or $name.StartsWith('play ')}else{Test-BaxySpotifyPlaysTitle $name $Title}
         if(-not ($rect.Width -gt 0 -and $rect.Height -gt 0 -and $matches -and $rect.Top -gt ($SearchRect.Top+20) -and $rect.Top -lt ($SearchRect.Top+600) -and $rect.Left -ge $WindowRect.Left -and $rect.Right -le $WindowRect.Right)){continue}
         $shown++
         # BAXY Renew audit 2026-10-15 (S1): both modes take the first of these controls by position, the leftmost; the
@@ -331,7 +360,7 @@ function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]
 function Get-BaxySpotifyNotFoundDetail($Rows,$PageBefore,[int]$Shown,[int]$Searches,[bool]$ColdStart,[bool]$BoxHoldsQuery,[bool]$Iconic,[bool]$Front,[string]$CoveredBy){
     # SP3 (tandas n9/n10 del notebook, t1-c07 and t2-c01: played in n9, «spotify_exact_result_not_found» after 24 s in
     # n10 with no stage, detail or times): what the last look of the search page showed, private codes for the log.
-    # rows: named elements; before: of them, the page before the search; plays: play controls («reproducir …»);
+    # uiaElementsRead: named elements; before: of them, the page before the search; plays: play controls («reproducir …»);
     # fresh: of them, not of the page before; shown: those Select-BaxySpotifySearchResult kept (on screen, in the
     # result band); box: the search box holds the query; iconic: the window is minimized.
     # TZ-SP (tandas z2 del notebook, t2-c01 and t4-c01: twice every element as before and the box never the query, the
@@ -340,7 +369,7 @@ function Get-BaxySpotifyNotFoundDetail($Rows,$PageBefore,[int]$Shown,[int]$Searc
     $before=@(foreach($row in $Rows){if($PageBefore.Contains((Get-BaxySpotifyRowKey $row))){$row}})
     $plays=@(foreach($row in $Rows){if($row.Type -eq [Windows.Automation.ControlType]::Button -and ($row.Fold.StartsWith('reproducir ') -or $row.Fold.StartsWith('play '))){$row}})
     $fresh=@(foreach($row in $plays){if(-not $PageBefore.Contains((Get-BaxySpotifyRowKey $row))){$row}})
-    return "spotify_exact_result_not_found;searches=$Searches;cold=$([int]$ColdStart);rows=$($Rows.Count);before=$($before.Count);plays=$($plays.Count);fresh=$($fresh.Count);shown=$Shown;box=$([int]$BoxHoldsQuery);iconic=$([int]$Iconic);front=$([int]$Front);covered=$(if($CoveredBy){$CoveredBy}else{0})"
+    return "spotify_exact_result_not_found;searches=$Searches;cold=$([int]$ColdStart);uiaElementsRead=$($Rows.Count);before=$($before.Count);plays=$($plays.Count);fresh=$($fresh.Count);shown=$Shown;box=$([int]$BoxHoldsQuery);iconic=$([int]$Iconic);front=$([int]$Front);covered=$(if($CoveredBy){$CoveredBy}else{0})"
 }
 function Get-BaxySpotifySnapshot([Windows.Automation.AutomationElement]$Root,[Windows.Automation.Condition]$Condition=$null){
     # Ronda 23 (t1-c07 «pon lo-fi para estudiar en spotify plis», 34 s inside the search): every phase walked the
@@ -416,7 +445,7 @@ try {
     $discoveryCombos=[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::ComboBox)
     $discoveryCombosAndButtons=[Windows.Automation.OrCondition]::new($discoveryCombos,[Windows.Automation.PropertyCondition]::new([Windows.Automation.AutomationElement]::ControlTypeProperty,[Windows.Automation.ControlType]::Button))
     do {
-        $process=Get-Process Spotify -ErrorAction SilentlyContinue|Where-Object {$_.MainWindowHandle -ne 0}|Select-Object -First 1
+        $process=Select-BaxySpotifyClientProcess (Get-Process Spotify -ErrorAction SilentlyContinue)
         if($null -ne $process){
             try {
                 $root=[Windows.Automation.AutomationElement]::FromHandle($process.MainWindowHandle)
@@ -448,8 +477,6 @@ try {
     # The desktop client can take several seconds to replace the previous
     # page after resolving a spotify:search URI: the first observation that
     # shows a result of this search ends the wait, never a blind sleep.
-    $expectedPlay=Fold('Reproducir '+$title)
-    $prefix=Fold(('Est'+[char]0x00E1+'s escuchando:'))
     # MUSIC1753: a client launched seconds earlier renders its search page late;
     # the bounded wait is 12 s. M169: a page that shows nothing playable at all
     # is still being built (or its search did not land) and gets 20 s and one
@@ -466,13 +493,13 @@ try {
             $alreadyPausedControl=$false
             foreach($element in $all){try{if($element.Type -eq [Windows.Automation.ControlType]::Button -and $element.Fold -in @('pausar','pause')){$alreadyPausedControl=$true;break}}catch{}}
             $beforeNowPlaying=''
-            foreach($element in $all){try{$name=$element.Fold;if($name.StartsWith($prefix+' ')){$beforeNowPlaying=$name.Substring($prefix.Length+1);break}}catch{}}
+            foreach($element in $all){try{if($script:BaxySpotifyPlayingLabel.IsMatch($element.Name)){$beforeNowPlaying=Get-BaxySpotifyPlayingLine $element.Name;break}}catch{}}
             $resultsGroup=@($all|Where-Object {$_.Type -eq [Windows.Automation.ControlType]::Group -and $_.Fold -in @('spotify buscar','spotify search')})[0]
             # Uso real («los Bunkers» after «búnkers»): with the box already holding the query no page before is set
             # aside, and the leftmost play control in the window was the library sidebar's «Reproducir Tus Me Gusta».
             # Results are bound to the results page's own view when it shows (the sidebar is outside it).
             $resultsRect=if($null -ne $resultsGroup -and $resultsGroup.Rect.Width -gt 0){$resultsGroup.Rect}else{$windowRect}
-            $choice=Select-BaxySpotifySearchResult $all $pageBefore $Mode $foldTitle $expectedPlay $searchRect $resultsRect
+            $choice=Select-BaxySpotifySearchResult $all $pageBefore $Mode $foldTitle $searchRect $resultsRect
             $playCandidate=$choice.Play
             $candidate=$choice.Card
             $candidateIdentity=$choice.Identity
@@ -530,7 +557,7 @@ try {
                         $matches=if($Mode -eq 'query'){
                             $name -in @('reproducir','play') -or $name.StartsWith('reproducir ') -or $name.StartsWith('play ')
                         }else{
-                            $name -eq $expectedPlay -or $name.StartsWith($expectedPlay+' ')
+                            Test-BaxySpotifyPlaysTitle $name $foldTitle
                         }
                         if($element.Type -eq [Windows.Automation.ControlType]::Button -and -not $element.Offscreen -and $rect.Width -gt 0 -and $rect.Height -gt 0 -and $matches -and $rect.Top -gt ($searchRect.Top+20) -and $rect.Left -ge $windowRect.Left -and $rect.Right -le $windowRect.Right){
                             $playCandidate=$element
@@ -547,7 +574,7 @@ try {
         }
     }
     $pauseAlready=$false
-    if($null -eq $playCandidate){foreach($element in $all){try{$rect=$element.Rect;$name=$element.Fold;if($element.Type -eq [Windows.Automation.ControlType]::Button -and -not $element.Offscreen -and $rect.Width -gt 0 -and $rect.Height -gt 0 -and ($name -eq $expectedPlay -or $name.StartsWith($expectedPlay+' '))){$playCandidate=$element;break}}catch{}}}
+    if($null -eq $playCandidate){foreach($element in $all){try{$rect=$element.Rect;$name=$element.Fold;if($element.Type -eq [Windows.Automation.ControlType]::Button -and -not $element.Offscreen -and $rect.Width -gt 0 -and $rect.Height -gt 0 -and (Test-BaxySpotifyPlaysTitle $name $foldTitle)){$playCandidate=$element;break}}catch{}}}
     foreach($element in $all){try{$name=$element.Fold;if($element.Type -eq [Windows.Automation.ControlType]::Button -and $name -in @('pausar','pause')){$pauseAlready=$true;break}}catch{}}
     if($null -eq $playCandidate){
         [pscustomobject]@{ok=$false;effectObserved=$effect;error='spotify_exact_play_control_not_found'}|ConvertTo-Json -Compress;exit 2
@@ -581,8 +608,7 @@ try {
             $pause=$false
             $selectedFlipped=$false
             $replayControl=$null
-            $prefix=Fold(('Est'+[char]0x00E1+'s escuchando:'))
-            foreach($element in $all){try{$name=$element.Fold;if($name.StartsWith($prefix+' ')){$playingIdentity=$name.Substring($prefix.Length+1);if(Test-BaxySpotifyNowPlayingIs $playingIdentity $foldTitle $candidateIdentity){$nowPlaying=$true}};if($element.Type -eq [Windows.Automation.ControlType]::Button -and $name -in @('pausar','pause')){$pause=$true}}catch{}}
+            foreach($element in $all){try{$name=$element.Fold;if($script:BaxySpotifyPlayingLabel.IsMatch($element.Name)){$playingIdentity=Get-BaxySpotifyPlayingLine $element.Name;if(Test-BaxySpotifyNowPlayingIs $playingIdentity $foldTitle $candidateIdentity){$nowPlaying=$true}};if($element.Type -eq [Windows.Automation.ControlType]::Button -and $name -in @('pausar','pause')){$pause=$true}}catch{}}
             foreach($element in $all){try{
                 if($element.Type -eq [Windows.Automation.ControlType]::Button){
                     $name=$element.Fold
@@ -594,7 +620,7 @@ try {
                 }
             }catch{}}
             $observedNowPlaying=''
-            foreach($element in $all){try{$name=$element.Fold;if($name.StartsWith($prefix+' ')){$observedNowPlaying=$name.Substring($prefix.Length+1);break}}catch{}}
+            foreach($element in $all){try{if($script:BaxySpotifyPlayingLabel.IsMatch($element.Name)){$observedNowPlaying=Get-BaxySpotifyPlayingLine $element.Name;break}}catch{}}
             if($Mode -eq 'query'){
                 $windowNow=Fold((Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle)
                 $evidence=Get-BaxySpotifyQueryEvidence $pause $observedNowPlaying $beforeNowPlaying $pauseAlready $selectedFlipped $pressedResult @($observedNowPlaying,$windowNow)
@@ -625,7 +651,7 @@ try {
     if(-not $verified -and $null -ne $playObservationError){throw $playObservationError}
     $failure=if($verified){$null}elseif($resumedOnly){'spotify_query_result_not_confirmed'}else{'spotify_'+$stage+'_not_verified'}
     $observedTitle=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle
-    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;playbackEvidence=$(if($Mode -eq 'query' -and $verified){$evidence}else{$null});processId=$process.Id}|ConvertTo-Json -Compress
+    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;pressedResult=$pressedResult;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;playbackEvidence=$(if($Mode -eq 'query' -and $verified){$evidence}else{$null});processId=$process.Id}|ConvertTo-Json -Compress
 } catch {
     Add-BaxySpotifyMark
     $cause=$_.Exception.Message

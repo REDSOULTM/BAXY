@@ -42,6 +42,12 @@ if (-not (Test-Path $Profile)) {
 }
 $env:BAXY_DATA_DIR = $Profile
 Write-Host "perfil persistente: $Profile"
+# Steam (2026-11-04): BAXY's own words and voice follow the profile's language (Windows' until one is chosen);
+# a check on a Windows in English runs in Spanish, as every bench does (bench_e2e.py, pin_spanish).
+$fieldSettings = Join-Path $Profile 'field-settings.v1.json'
+$settings = if (Test-Path $fieldSettings) { Get-Content -Raw -Encoding UTF8 $fieldSettings | ConvertFrom-Json } else { New-Object PSObject }
+$settings | Add-Member -NotePropertyName language -NotePropertyValue 'es' -Force
+[IO.File]::WriteAllText($fieldSettings, ($settings | ConvertTo-Json -Compress -Depth 5))
 
 $coreTarget = Join-Path (Split-Path $app) "baxy-core.exe"
 if (-not (Test-Path $coreTarget) -or

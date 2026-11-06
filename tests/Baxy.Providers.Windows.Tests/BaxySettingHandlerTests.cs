@@ -106,6 +106,34 @@ public sealed class BaxySettingHandlerTests
         }
     }
 
+    // Encargo 25 (G2): switching bypass on from the chat stays refused, now with what is true instead of a bare code: the
+    // mode it is in, what the chat can do with it and where BAXY's own window turns it on.
+    [Test]
+    public async Task BypassOnSaysTheModeAndWhereTheWindowTurnsItOn()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-bypass-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            using JsonDocument facts = JsonDocument.Parse(
+                await SettingMessage(root, """{"setting":"confirmation_bypass","value":1}"""));
+            JsonElement observed = facts.RootElement.GetProperty("observed");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(facts.RootElement.GetProperty("error").GetString(),
+                    Is.EqualTo("confirmation_bypass_interface_only"));
+                Assert.That(observed.GetProperty("mode").GetString(), Is.EqualTo("normal"));
+                Assert.That(observed.GetProperty("turnOnIn").GetString(), Does.Contain("Ajustes > Confirmación"));
+                Assert.That(File.Exists(Path.Combine(root, "confirmation-mode")), Is.False);
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     // BAXY_AYUDAS: unset or «all» turns every aid on, «none» or «0» none, a list only the ids it names.
     [TestCase("all", true, true)]
     [TestCase("", true, true)]

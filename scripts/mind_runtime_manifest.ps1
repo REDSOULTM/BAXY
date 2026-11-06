@@ -18,6 +18,7 @@ $script:BaxyMindRuntimeProperties = @(
 $script:BaxyMindRuntimePieces = @(
     @('renew_tts_dir', 'renew_tts_sha256', 'Container', 'Voz de BAXY (Supertonic)'),
     @('renew_wake_dir', 'renew_wake_sha256', 'Container', 'Palabra de activacion (k4)'),
+    @('renew_wake_fast_dir', 'renew_wake_fast_sha256', 'Container', 'Palabra de activacion rapida (k6r-alto)'),
     @('renew_stt_dir', 'renew_stt_sha256', 'Container', 'Reconocedor (Parakeet Ultra)'),
     @('s1_gguf', 's1_gguf_sha256', 'Leaf', 'Modelo de decision de System One'),
     @('mmproj', 'mmproj_sha256', 'Leaf', 'Proyector de vision')

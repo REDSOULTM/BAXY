@@ -15,6 +15,86 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class LocalFilesystemProviderTests
 {
+    // Encargo 115 (H4): a text written under a .docx name is a Word document, read back; it was UTF-8 Word could not open.
+    [Test]
+    public void AWriteNamedDocxMakesARealWordDocument()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-word-" + Guid.NewGuid().ToString("N"));
+        var provider = new LocalFilesystemProvider(root) { KnownFolderPath = _ => Path.GetFullPath(root) };
+        try
+        {
+            FilesystemMutationResult written = provider.WriteText("aviso.docx", "La reunión pasa al jueves\n\nA las diez", null);
+            FilesystemMutationResult again = provider.WriteText("aviso.docx", "La reunión pasa al jueves\n\nA las diez", null);
+
+            string file = written.FullPath!;
+            Assert.Multiple(() =>
+            {
+                Assert.That(written.Format, Is.EqualTo("docx"));
+                Assert.That(Baxy.Providers.Windows.External.OfficePackage.ReadText(file, "docx"),
+                    Is.EqualTo("La reunión pasa al jueves\nA las diez"));
+                Assert.That(again.ReachedState, Is.True);
+                Assert.That(Directory.GetFiles(Path.GetDirectoryName(file)!, ".baxy-write-*"), Is.Empty);
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [TestCase("tabla.xlsx", false)]
+    [TestCase("informe.PDF", false)]
+    [TestCase("foto.png", false)]
+    [TestCase("aviso.docx", true)]
+    public void AFormatThatIsNotPlainTextIsSaidAndNothingIsWritten(string name, bool append)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-word-" + Guid.NewGuid().ToString("N"));
+        var provider = new LocalFilesystemProvider(root) { KnownFolderPath = _ => Path.GetFullPath(root) };
+        try
+        {
+            FilesystemProviderException refused = Assert.Throws<FilesystemProviderException>(
+                () => provider.WriteText(name, "algo", null, append))!;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(refused.Code, Is.EqualTo("file_format_not_text"));
+                Assert.That(refused.EffectMayHaveOccurred, Is.False);
+                Assert.That(refused.Result?.GetProperty("next").GetString(), Does.StartWith("nothing was written"));
+                Assert.That(Directory.GetFiles(root, Path.GetFileName(name), SearchOption.AllDirectories), Is.Empty);
+            });
+        }
+        finally
+        {
+            if (Directory.Exists(root))
+                Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [TestCase("nota.txt")]
+    [TestCase("pagina.html")]
+    [TestCase("dibujo.svg")]
+    [TestCase("datos.csv")]
+    [TestCase("sin_extension")]
+    public void ATextFormatIsWrittenAsItWas(string name)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-word-" + Guid.NewGuid().ToString("N"));
+        var provider = new LocalFilesystemProvider(root) { KnownFolderPath = _ => Path.GetFullPath(root) };
+        try
+        {
+            FilesystemMutationResult written = provider.WriteText(name, "uno\tdos", null);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(written.Format, Is.Null);
+                Assert.That(File.ReadAllText(written.FullPath!), Is.EqualTo("uno\tdos"));
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     [Test]
     public void SearchDistinguishesUnsupportedAbsolutePathsFromEmptyNameSearches()
     {
@@ -482,8 +562,10 @@ public sealed class LocalFilesystemProviderTests
             {
                 Assert.That(none.GetString(), Is.EqualTo("BAXY's own working folder holds nothing here; the person's "
                     + "folders (their home and everything under it) were not looked at: file_find looks there"));
-                Assert.That(nothing.GetString(), Is.EqualTo("nothing named informe in BAXY's own working folder; the "
-                    + "person's folders (their home and everything under it) were not looked at: file_find looks there"));
+                // Encargo 34: with a name asked, the call that looks for it comes first, with it written.
+                Assert.That(nothing.GetString(), Is.EqualTo("file_find {\"query\":\"informe\"} looks in the person's "
+                    + "folders (their home and everything under it), which were not looked at; nothing named informe in "
+                    + "BAXY's own working folder"));
             }
             Assert.That(listed.TryGetProperty("next", out _), Is.False);
             Assert.That(found.TryGetProperty("next", out _), Is.False);

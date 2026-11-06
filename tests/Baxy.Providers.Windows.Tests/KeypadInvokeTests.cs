@@ -161,6 +161,82 @@ public sealed class KeypadInvokeTests
         }));
     }
 
+    // Banco de uso 2026-11-03 (U14/U15): app_open opened the classic Calculator (win32calc) and the evaluation knew only
+    // the Store one. Its buttons as its UI Automation tree showed them in the bench's VMs (input.visible.controls, in that
+    // order): digits named by the digit, operators by their English word. «245+380» and «125*8» are planned on them and
+    // «Clear» is the clear button, never «Memory clear» nor «Clear entry».
+    private static readonly string[] Win32Calc =
+    [
+        "Memory clear", "Backspace", "7", "4", "1", "0", "Memory recall", "Clear entry", "8", "5", "2", "Memory store",
+        "Clear", "9", "6", "3", "Decimal separator", "Memory add", "Negate", "Divide", "Multiply", "Subtract", "Add",
+        "Memory subtract", "Square root", "Percentage", "Reciprocal", "Equals", "Minimize", "Close",
+    ];
+
+    [Test]
+    public void TheClassicCalculatorsButtonsAreThoseTheDataNames()
+    {
+        string answer = Run($$"""
+            $classic=[string[]]@({{Quoted(Win32Calc)}})
+            $es=[string[]]@({{Quoted(Spanish)}})
+            function Plan($keys,$names){ $plan=Select-KeypadPresses $keys $names $map; if($null -eq $plan){ 'none' } else { ($plan -join ' ') } }
+            $answers=@(
+              (Plan '245+380=' $classic),
+              (Plan '125*8=' $classic),
+              (Plan '9-1.5/3=' $classic),
+              [string](Find-KeypadButton $classic @($map.clear)),
+              [string](Find-KeypadButton $classic @($map.clearEntry)),
+              (Plan '6*7=' $es)
+            )
+            [Console]::Out.Write(($answers -join ','))
+            """);
+
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "10 3 9 22 15 8 5 27",   // «2» «4» «5» «Add» «3» «8» «0» «Equals»
+            "4 10 9 20 8 27",        // «1» «2» «5» «Multiply» «8» «Equals»
+            "13 21 4 16 9 19 15 27", // «9» «Subtract» «1» «Decimal separator» «5» «Divide» «3» «Equals»
+            "12",                    // «Clear»
+            "7",                     // «Clear entry»
+            "6 12 7 14",             // the Store Calculator's Spanish keypad is planned as before
+        }));
+    }
+
+    // Banco de uso 2026-11-03 (U14/U15): the classic Calculator's mode is not read (its keypad carries none of the Store
+    // one's AutomationIds), so only an expression whose value is the same in the order pressed and with precedence is
+    // pressed there: no ( ) nor ^, and every * and / before the first + or -. The Store Calculator's mode is read as before.
+    [Test]
+    public void TheClassicCalculatorPressesOnlyWhatGivesTheSameInEitherOrder()
+    {
+        string answer = Run("""
+            $answers=@(
+              (Get-CalculatorMode 'win32calc' ([string[]]@('131','93'))),
+              (Get-CalculatorMode 'store' ([string[]]@('num1Button','plusButton'))),
+              (Get-ModeRefusal 'not_read' '245+380'),
+              (Get-ModeRefusal 'not_read' '125*8'),
+              (Get-ModeRefusal 'not_read' '3*4+2'),
+              (Get-ModeRefusal 'not_read' '8/2-1-1'),
+              (Get-ModeRefusal 'not_read' '+53'),
+              (Get-ModeRefusal 'not_read' '2+3*4'),
+              (Get-ModeRefusal 'not_read' '+5*2'),
+              (Get-ModeRefusal 'not_read' '(1+2)*3'),
+              (Get-ModeRefusal 'not_read' '2^10'),
+              (Get-StandardOrder 'calculator_mode_not_read' 'not_read' '3+4*2')
+            )
+            [Console]::Out.Write(($answers -join ','))
+            """);
+
+        Assert.That(answer.Split(','), Is.EqualTo(new[]
+        {
+            "not_read", "standard",
+            "", "", "", "", "",
+            "calculator_mode_not_read", // 20 in the order pressed, 14 with precedence
+            "calculator_mode_not_read", // continues from the display: (d+5)*2 or d+10
+            "calculator_mode_not_read",
+            "calculator_mode_not_read",
+            "",                         // the Standard keypad's order is never pressed where the mode is not read
+        }));
+    }
+
     // Auditoría de fallos de la App (e2e E011): the order BAXY computed for a parenthesised expression is what the
     // Standard keypad presses instead of refusing it; only there, only for that refusal, and only an order of numbers and
     // + - * / (a power is never pressed there).
@@ -349,7 +425,7 @@ public sealed class KeypadInvokeTests
         start.Environment["BAXY_KEYPAD_KEYS"] = Convert.ToBase64String(Encoding.UTF8.GetBytes(keys));
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();

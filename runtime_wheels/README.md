@@ -1,15 +1,14 @@
 # Dependencias nativas de voz
 
-## Cancelación de eco: candidata integrada en C03
+## Cancelación de eco
 
 `pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl` expone la última trama
-lineal de AEC3 además de su salida suprimida. BAXY necesita conservar palabras
-para reconocimiento y confirmar por separado si hay una intervención humana.
-El parche cambia el binding; no ajusta el algoritmo ni añade otro cancelador.
-El producto usa este paquete desde el tramo257. `webrtc_aec.py` alinea ambas
-señales y la pareja cruda a256 muestras de retardo; `voice.py` conserva el inicio
-de la frase y sólo la admite al confirmarse la intervención. Cada señal tiene
-su propio estado VAD. Esta integración sigue pendiente de aceptación completa.
+lineal de AEC3 además de su salida suprimida. El parche cambia el binding; no
+ajusta el algoritmo ni añade otro cancelador. BAXY oye la salida lineal:
+`src/baxy_mind/voice_echo.py` quita del micrófono lo que suena en el PC (la
+referencia llega por loopback WASAPI con PyAudioWPatch, también fijado en el
+lock) antes de la palabra de activación, el VAD y el reconocedor. Por qué la
+lineal y no la suprimida está en el comentario de `EchoCanceller` (`src/baxy_mind/voice_echo.py`).
 
 La receta `scripts/build_webrtc_runtime.py` verifica el tarball oficial 0.2.0,
 el wheel original, pybind11 3.0.1, el parche `webrtc-linear-output.patch` y cada
@@ -43,7 +42,15 @@ acredita equivalencia de señales, no aceptación de voz ni cierre de C03.
 ## Reconocimiento
 
 `sherpa_onnx-1.13.4+baxy.2-cp312-cp312-win_amd64.whl` contiene la extensión
-Python corregida para NeMo. Conserva el wrapper y las licencias de sherpa-onnx
+Python corregida para NeMo. **Esa rueda no está en el repositorio:** sherpa-onnx
+compila dentro eSpeak NG, que es GPL-3.0-or-later, y aquí sólo se versionan
+binarios de terceros con licencia permisiva. Va dentro del paquete de cada release,
+y su código fuente completo está en los activos `*-source.zip` de la
+[release 1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1)
+(`licenses/FUENTES_GPL.md`). Para usar la voz desde el código fuente hay que
+compilarla con la receta de abajo; como la compilación no es idéntica byte a byte,
+después se regenera el lock con `scripts/lock_python_dependencies.ps1` para que
+fije el SHA-256 de la rueda propia. Conserva el wrapper y las licencias de sherpa-onnx
 1.13.4 y depende del `sherpa-onnx-core==1.13.4` oficial. Es una modificación
 identificada de BAXY, no una versión publicada por el proyecto upstream.
 
@@ -86,11 +93,7 @@ Los consumidores instalan el binario fijado, sin necesitar el compilador.
 el verificador rechaza rutas externas y sigue exigiendo hashes completos.
 `scripts/setup_mind_voice.ps1` instala el lock con `--require-hashes`.
 
-La versión baxy.1 se conserva como rollback y evidencia de205–208; el lock decide
-la versión instalada. Los paquetes de observación215/216 no se distribuyen aquí.
-
-Evidencia: `artifacts/comprobaciones/C03/PRUEBAS_NORMALIZACION215_217.md` demuestra
-la causa numérica, la recuperación de tres vacíos y los límites de calidad en126
-lecturas. Hay regresiones de contenido y eco aún abiertas; este paquete no
-certifica fidelidad de toda la voz, activación ni cierre de C03. La integración
-del paquete se registra en `astra-runtime218` y sus pruebas posteriores.
+La versión baxy.1 (sólo el parche del decodificador) se publicó en este
+repositorio hasta el commit `45f98278`; el lock decide la versión instalada.
+Hay regresiones de contenido y eco aún abiertas; este paquete no certifica la
+fidelidad de toda la voz ni de la activación.

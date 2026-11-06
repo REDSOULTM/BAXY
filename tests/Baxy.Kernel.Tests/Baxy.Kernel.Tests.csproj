@@ -24,4 +24,8 @@
     <ProjectReference Include="..\..\src\Baxy.Contracts\Baxy.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Baxy.Kernel\Baxy.Kernel.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Sentences written by an agent that never saw the code they test (ApplicationAliasesTests). -->
+    <None Include="Data\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

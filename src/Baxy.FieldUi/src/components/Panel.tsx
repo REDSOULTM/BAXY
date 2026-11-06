@@ -1,17 +1,19 @@
 import type { ReactNode } from 'react';
 import { Icon } from './Icon';
 import { useDialogFocus } from '../utils/dialogFocus';
+import { useT } from '../i18n';
 
 /* A floating panel over a veil, inside the app: it never opens a window and never takes Windows' focus
    (design components/panels.jsx). */
 export function Panel({ title, onClose, width, children }: { title: string; onClose: () => void; width?: number; children: ReactNode }) {
+  const t = useT();
   const ref = useDialogFocus<HTMLDivElement>();
   return (
     <div className="panel-shroud" onClick={onClose}>
       <div ref={ref} tabIndex={-1} className="panel" style={{ outline: 'none', ...(width ? { width } : null) }} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={title}>
         <div className="panel-head">
           <span className="panel-title">{title}</span>
-          <button className="ibtn" onClick={onClose} data-tip="Cerrar" title="Cerrar" aria-label="Cerrar"><Icon name="x" /></button>
+          <button className="ibtn" onClick={onClose} data-tip={t('Cerrar', 'Close')} title={t('Cerrar', 'Close')} aria-label={t('Cerrar', 'Close')}><Icon name="x" /></button>
         </div>
         <div className="panel-body">{children}</div>
       </div>
@@ -40,9 +42,9 @@ export function Toggle({ on, onChange, locked, label }: { on: boolean; onChange?
   );
 }
 
-export function Seg<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
+export function Seg<T extends string>({ value, options, onChange, label }: { value: T; options: [T, string][]; onChange: (v: T) => void; label?: string }) {
   return (
-    <div className="bxs-seg">
+    <div className="bxs-seg" role={label ? 'group' : undefined} aria-label={label}>
       {options.map(([v, l]) => <button key={v} className={value === v ? 'on' : ''} aria-pressed={value === v} onClick={() => onChange(v)}>{l}</button>)}
     </div>
   );

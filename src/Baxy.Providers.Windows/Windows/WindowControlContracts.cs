@@ -15,6 +15,11 @@ public static class WindowControlErrorCodes
     // BAXY Renew cu (C13 en el PC): the window takes no size nor place it is given (a browser in full screen kept the
     // whole screen); it was put back as it was, maximized.
     public const string WindowSizeNotTaken = "window_size_not_taken";
+    // uso-108 A9: the window's thread does not answer messages (VisibleControlSurface.NotResponding): nothing was sent.
+    public const string WindowNotResponding = External.VisibleControlSurface.WindowNotResponding;
+    // Uso-108: the same code as the keys and the click (WindowsVisibleControlAdapter.WindowElevated), for a placement of a
+    // window Windows refused from a lower process.
+    public const string WindowElevated = "window_elevated";
 }
 
 public enum WindowControlAction
@@ -170,6 +175,24 @@ public sealed record WindowCloseAllResult(
     int ProtectedKept = 0,
     IReadOnlyList<string>? ProtectedProcesses = null);
 
+/// <summary>A process of an application that is still running after it was asked to quit.</summary>
+public sealed record RemainingProcess(int ProcessId, string Name);
+
+/// <summary>What asking an application to quit came to, read from the running processes afterwards.</summary>
+/// <param name="Asked">Whether it was asked: not when BAXY could not tell its processes, or they are Windows' own or BAXY's.</param>
+/// <param name="MainProcessName">Its main process (the top of its family) when that one is still running, or null.</param>
+/// <param name="StillRunning">Every process of the application still running, its main process among them.</param>
+public sealed record ApplicationQuitResult(
+    bool Asked,
+    string? MainProcessName,
+    IReadOnlyList<RemainingProcess> StillRunning)
+{
+    public static ApplicationQuitResult NotTried { get; } = new(false, null, []);
+
+    /// <summary>It was asked and its main process is gone.</summary>
+    public bool Exited => Asked && MainProcessName is null;
+}
+
 public interface IWindowControlProvider
 {
     ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken) =>
@@ -204,6 +227,17 @@ public interface IWindowControlProvider
         string applicationName,
         CancellationToken cancellationToken) =>
         ValueTask.FromResult<IReadOnlyList<int>>([]);
+
+    // uso-129: asks the application these processes belong to to quit, as Windows asks at the end of a session; never
+    // ends a process. What it came to is read back from the running processes, whatever the application answered.
+    ValueTask<ApplicationQuitResult> QuitApplicationAsync(
+        IReadOnlyCollection<int> processIds,
+        CancellationToken cancellationToken) =>
+        ValueTask.FromResult(ApplicationQuitResult.NotTried);
+
+    // Banco de entorno del NB (U43, R01): a windowId that is only digits is a window's number from a look, never an id
+    // this provider issued; the process of that window when it is a visible top-level window now, otherwise null.
+    string? NumberedWindowProcess(string windowId) => null;
 
     ValueTask<WindowActionResult> ExecuteAsync(
         string windowId,

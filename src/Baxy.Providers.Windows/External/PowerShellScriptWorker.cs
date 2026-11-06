@@ -237,7 +237,7 @@ internal sealed class PowerShellScriptWorker : IExternalProcessRunner, IDisposab
         if (_process is { HasExited: false } running)
             return running;
         Terminate();
-        var start = new ProcessStartInfo("powershell.exe")
+        var start = new ProcessStartInfo(SystemExecutable.PowerShell)
         {
             UseShellExecute = false,
             RedirectStandardInput = true,

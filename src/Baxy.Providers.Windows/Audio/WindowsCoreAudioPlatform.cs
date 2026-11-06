@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices.Marshalling;
 using System.Security.Cryptography;
 using System.Text;
+using Baxy.Contracts;
+using Baxy.Kernel.Operations;
 
 namespace Baxy.Providers.Windows.Audio;
 
@@ -566,6 +568,12 @@ internal sealed record ApplicationSessionAdjustment(
     string EndpointId,
     bool Changed);
 
+/// <summary>
+/// Uso 81: an application with an audio session on the default output: its process name (what app takes) and the name
+/// Windows shows for it (the session's display name or its executable's description), null when it has none.
+/// </summary>
+internal sealed record AudioSessionProgram(string Process, string? Name);
+
 internal sealed partial class WindowsCoreAudioPlatform
 {
     private static readonly Guid IidAudioSessionManager2 =
@@ -615,14 +623,15 @@ internal sealed partial class WindowsCoreAudioPlatform
             cancellationToken));
 
     /// <summary>
-    /// Renew al máximo (auditoría de flujos): the process names of the applications with an audio session on the
-    /// default output (the system sounds session left out), in the enumerator's order; a read only.
+    /// Renew al máximo (auditoría de flujos): the applications with an audio session on the default output (the system
+    /// sounds session left out), in the enumerator's order; a read only. Uso 81: each with the name Windows shows for it
+    /// (<see cref="SessionShownName"/>).
     /// </summary>
-    internal static IReadOnlyList<string> ApplicationSessionNames() =>
+    internal static IReadOnlyList<AudioSessionProgram> ApplicationSessionPrograms() =>
         WithDefaultOutputSessions(static (sessions, _) =>
         {
             ThrowForHResult(sessions.GetCount(out int count), AudioControlErrorCodes.EndpointUnavailable);
-            var names = new List<string>();
+            var names = new List<AudioSessionProgram>();
             for (int index = 0; index < count; index++)
             {
                 int result = sessions.GetSession(index, out nint sessionPointer);
@@ -653,13 +662,85 @@ internal sealed partial class WindowsCoreAudioPlatform
                         && control.GetProcessId(out uint processId) >= 0 && processId != 0
                         && ProcessNameOf(processId) is { } processName)
                     {
-                        names.Add(processName);
+                        names.Add(new AudioSessionProgram(processName, SessionShownName(control, processId)));
                     }
                 }
             }
 
-            return (IReadOnlyList<string>)names;
+            return (IReadOnlyList<AudioSessionProgram>)names;
         });
+
+    /// <summary>
+    /// Uso 81: the name Windows shows for a session's application: the session's own display name
+    /// (IAudioSessionControl::GetDisplayName, set by the application; an indirect «@dll,-id» resource string is left
+    /// out), else its executable's description (the product name the volume mixer shows for it); null when neither.
+    /// </summary>
+    private static string? SessionShownName(IAudioSessionControl2 control, uint processId)
+    {
+        string? display = null;
+        int result = control.GetDisplayName(out nint pointer);
+        if (pointer != 0)
+        {
+            try
+            {
+                display = result >= 0 ? Marshal.PtrToStringUni(pointer) : null;
+            }
+            finally
+            {
+                CoTaskMemFree(pointer);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(display) && !display.StartsWith('@'))
+            return ShownName(display);
+        return ShownName(External.VisibleControlSurface.ProcessDescription(processId))
+            ?? AppsFolderName(External.VisibleControlSurface.PackagedApplication(processId));
+    }
+
+    /// <summary>
+    /// Encargo 82 (vivo del 81): the name Windows shows for a packaged application, the one the person says: its item in
+    /// the Apps folder (shell:AppsFolder\&lt;application id&gt;, Microsoft Learn «Find the Application User Model ID»), read
+    /// as the shell reads it. Such an application's executable has no description and its session no name. Null when the
+    /// process is not packaged or the shell does not know it.
+    /// </summary>
+    internal static string? AppsFolderName(string applicationId)
+    {
+        const int NormalDisplay = 0; // SIGDN_NORMALDISPLAY
+        if (string.IsNullOrWhiteSpace(applicationId))
+            return null;
+        Guid item = typeof(IShellItem).GUID;
+        if (SHCreateItemFromParsingName("shell:AppsFolder\\" + applicationId, 0, in item, out nint pointer) < 0 || pointer == 0)
+            return null;
+        IShellItem shell = WrapUnique<IShellItem>(pointer, out IDisposable lease);
+        using (lease)
+        {
+            if (shell.GetDisplayName(NormalDisplay, out nint name) < 0 || name == 0)
+                return null;
+            try
+            {
+                return ShownName(Marshal.PtrToStringUni(name));
+            }
+            finally
+            {
+                CoTaskMemFree(name);
+            }
+        }
+    }
+
+    [LibraryImport("shell32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial int SHCreateItemFromParsingName(string path, nint bindContext, in Guid interfaceId, out nint item);
+
+    /// <summary>
+    /// Uso 81 (privacy review): a name the application itself writes, as the model may read it: no control characters,
+    /// at most 64 characters; null when nothing is left.
+    /// </summary>
+    internal static string? ShownName(string? name)
+    {
+        string clean = new string([.. (name ?? string.Empty).Where(static character => !char.IsControl(character))]).Trim();
+        if (clean.Length > 64)
+            clean = clean[..(char.IsHighSurrogate(clean[63]) ? 63 : 64)].TrimEnd();
+        return clean.Length == 0 ? null : clean;
+    }
 
     private static T WithDefaultOutputSessions<T>(Func<IAudioSessionEnumerator, string, T> use)
     {
@@ -756,7 +837,7 @@ internal sealed partial class WindowsCoreAudioPlatform
     {
         int result = sessions.GetCount(out int count);
         ThrowForHResult(result, AudioControlErrorCodes.EndpointUnavailable);
-        var volumes = new List<(ISimpleAudioVolume Volume, IDisposable Lease, string ProcessName)>();
+        var found = new List<(ISimpleAudioVolume Volume, IDisposable Lease, string ProcessName, uint ProcessId)>();
         try
         {
             for (int index = 0; index < count; index++)
@@ -785,6 +866,7 @@ internal sealed partial class WindowsCoreAudioPlatform
                 }
 
                 string? processName = null;
+                uint processId = 0;
                 IAudioSessionControl2 control = WrapUnique<IAudioSessionControl2>(
                     controlPointer,
                     out IDisposable controlLease);
@@ -797,13 +879,13 @@ internal sealed partial class WindowsCoreAudioPlatform
                         ReleaseIUnknown(volumePointer);
                         continue;
                     }
-                    if (control.GetProcessId(out uint processId) >= 0 && processId != 0)
+                    if (control.GetProcessId(out processId) >= 0 && processId != 0)
                     {
                         processName = ProcessNameOf(processId);
                     }
                 }
 
-                if (processName is null || !ApplicationSessionMatches(processName, applicationName))
+                if (processName is null)
                 {
                     ReleaseIUnknown(volumePointer);
                     continue;
@@ -812,9 +894,24 @@ internal sealed partial class WindowsCoreAudioPlatform
                 ISimpleAudioVolume volume = WrapUnique<ISimpleAudioVolume>(
                     volumePointer,
                     out IDisposable volumeLease);
-                volumes.Add((volume, volumeLease, processName));
+                found.Add((volume, volumeLease, processName, processId));
             }
 
+            (string Name, string Process)? browser = null;
+            bool browserRead = false;
+            IReadOnlyList<int> named = NamedSessions(
+                [.. found.Select(static session => session.ProcessName)],
+                applicationName,
+                index =>
+                {
+                    if (!browserRead)
+                    {
+                        browser = Windows.DesktopWindowNames.PersonBrowser();
+                        browserRead = true;
+                    }
+                    return ProductNamesOf(found[index].ProcessName, found[index].ProcessId, browser);
+                });
+            var volumes = named.Select(index => found[index]).ToList();
             if (volumes.Count == 0)
             {
                 return null;
@@ -825,7 +922,7 @@ internal sealed partial class WindowsCoreAudioPlatform
             // so sessions at different levels end at the same one. Each session is read before and after.
             var before = new List<int>(volumes.Count);
             bool muted = true;
-            foreach ((ISimpleAudioVolume volume, _, _) in volumes)
+            foreach ((ISimpleAudioVolume volume, _, _, _) in volumes)
             {
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
                 ThrowForHResult(volume.GetMute(out int sessionMuted), AudioControlErrorCodes.EndpointUnavailable);
@@ -834,7 +931,7 @@ internal sealed partial class WindowsCoreAudioPlatform
             }
 
             beforeEffect?.Invoke().ThrowIfCancellationRequested();
-            foreach ((ISimpleAudioVolume volume, _, _) in volumes)
+            foreach ((ISimpleAudioVolume volume, _, _, _) in volumes)
             {
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
                 int requested = absoluteLevel ?? Math.Clamp(Percent(scalar) + delta, 0, 100);
@@ -844,7 +941,7 @@ internal sealed partial class WindowsCoreAudioPlatform
 
             var after = new List<int>(volumes.Count);
             bool mutedAfter = true;
-            foreach ((ISimpleAudioVolume volume, _, _) in volumes)
+            foreach ((ISimpleAudioVolume volume, _, _, _) in volumes)
             {
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
                 ThrowForHResult(volume.GetMute(out int sessionMuted), AudioControlErrorCodes.EndpointUnavailable);
@@ -863,11 +960,65 @@ internal sealed partial class WindowsCoreAudioPlatform
         }
         finally
         {
-            foreach ((_, IDisposable lease, _) in volumes)
+            foreach ((_, IDisposable lease, _, _) in found)
             {
                 lease.Dispose();
             }
         }
+    }
+
+    // Encargo 17: the names a session's program has besides its process: its executable's own description (the product
+    // name Windows shows for it) and, for the person's browser, the name Windows gives it.
+    private static IEnumerable<string> ProductNamesOf(string processName, uint processId, (string Name, string Process)? browser)
+    {
+        if (External.VisibleControlSurface.ProcessDescription(processId) is { Length: > 0 } description)
+            yield return description;
+        if (AppsFolderName(External.VisibleControlSurface.PackagedApplication(processId)) is { } packaged)
+            yield return packaged;
+        if (browser is { } known && string.Equals(known.Process, processName, StringComparison.OrdinalIgnoreCase))
+            yield return known.Name;
+    }
+
+    /// <summary>
+    /// Encargo 17 (banco uso-cf8d, R09: «edge» said no session while msedge held one): the sessions of the application
+    /// named, by index. A process named by a word of the name (<see cref="ApplicationSessionMatches"/>) is it; with none,
+    /// the program one of whose own names (<paramref name="productNames"/>: its product name, the browser's Windows name)
+    /// is the name, ends with it as whole words («Microsoft Edge» for «edge», never «Microsoft Edge WebView2») or has it
+    /// among its abbreviations in the data (<see cref="ApplicationAliases"/>), only when that is one program.
+    /// </summary>
+    internal static IReadOnlyList<int> NamedSessions(
+        IReadOnlyList<string> processNames,
+        string applicationName,
+        Func<int, IEnumerable<string>> productNames)
+    {
+        int[] byProcess = [.. Enumerable.Range(0, processNames.Count)
+            .Where(index => ApplicationSessionMatches(processNames[index], applicationName))];
+        if (byProcess.Length > 0)
+            return byProcess;
+
+        string[] said = CatalogNames.Normalize(applicationName).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (said.Sum(static word => word.Length) < 3)
+            return [];
+        var programs = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        int[] byProduct = [.. Enumerable.Range(0, processNames.Count).Where(index =>
+        {
+            if (!programs.TryGetValue(processNames[index], out bool names))
+            {
+                names = productNames(index).Any(name => EndsWithWords(name, said)
+                    || ApplicationAliases.Names(applicationName, name));
+                programs[processNames[index]] = names;
+            }
+            return names;
+        })];
+        return byProduct.Select(index => processNames[index]).Distinct(StringComparer.OrdinalIgnoreCase).Count() == 1
+            ? byProduct
+            : [];
+    }
+
+    private static bool EndsWithWords(string name, string[] said)
+    {
+        string[] words = CatalogNames.Normalize(name).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return words.Length >= said.Length && words.AsSpan(words.Length - said.Length).SequenceEqual(said);
     }
 
     private static string? ProcessNameOf(uint processId)
@@ -889,7 +1040,9 @@ internal sealed partial class WindowsCoreAudioPlatform
     /// «Spotify» ↔ spotify.exe, «Google Chrome» ↔ chrome.exe, «Opera GX» ↔ opera.exe:
     /// a folded word of the application's name (three letters or more) is the process
     /// name, exactly. A prefix is another application («Windows Media Player» is not
-    /// WindowsTerminal; BAXY Renew audit 2026-10-15).
+    /// WindowsTerminal; BAXY Renew audit 2026-10-15). Encargo 82 (vivo del 81): the whole name said is the process too,
+    /// folded: a process named like a package (dots in its name) has no word of its name that is it, so the call that
+    /// named it exactly failed.
     /// </summary>
     internal static bool ApplicationSessionMatches(string processName, string applicationName)
     {
@@ -897,6 +1050,10 @@ internal sealed partial class WindowsCoreAudioPlatform
         if (process.Length == 0)
         {
             return false;
+        }
+        if (process.Length >= 3 && FoldToken(applicationName) == process)
+        {
+            return true;
         }
         foreach (string raw in applicationName.Split(
             [' ', '-', '_', '.', ',', '(', ')'],
@@ -915,7 +1072,7 @@ internal sealed partial class WindowsCoreAudioPlatform
         return false;
     }
 
-    private static string FoldToken(string value)
+    internal static string FoldToken(string value)
     {
         string decomposed = value.Normalize(NormalizationForm.FormD);
         var builder = new StringBuilder(decomposed.Length);
@@ -935,6 +1092,20 @@ internal sealed partial class WindowsCoreAudioPlatform
 
     private static int Percent(float scalar) =>
         Math.Clamp((int)Math.Round(scalar * 100f, MidpointRounding.AwayFromZero), 0, 100);
+}
+
+[GeneratedComInterface(Options = ComInterfaceOptions.ComObjectWrapper)]
+[Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe")]
+internal partial interface IShellItem
+{
+    [PreserveSig]
+    int BindToHandler(nint bindContext, in Guid handler, in Guid interfaceId, out nint result);
+
+    [PreserveSig]
+    int GetParent(out nint parent);
+
+    [PreserveSig]
+    int GetDisplayName(int form, out nint name);
 }
 
 [GeneratedComInterface(Options = ComInterfaceOptions.ComObjectWrapper)]

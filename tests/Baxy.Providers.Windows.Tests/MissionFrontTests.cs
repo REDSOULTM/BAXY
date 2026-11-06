@@ -342,6 +342,28 @@ public sealed class MissionFrontTests
             ExternalJson.FailureBeforeEffect("input.visible.click", "input_window_changed")).Result, Is.Null);
     }
 
+    // Uso real 2026-11-05 (hallazgo de uso-112): a chat flow stopped by the person's input is not sent to a click in the window.
+    [TestCase("client.channel.open", "client_channel_open")]
+    [TestCase("message.send", "message_send_set")]
+    [TestCase("message.draft", "message_draft")]
+    public void AChatFlowStoppedByInputSaysItsOwnCallIsTheWay(string operation, string call)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+
+        ExternalCapabilityReceipt told = WindowsExternalCapabilityProvider.Interrupted(
+            ExternalJson.FailureAfterEffect(operation, "input_user_interrupted", effectObserved: true));
+
+        string next = told.Result!.Value.GetProperty("next").GetString()!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.Contain(call));
+            Assert.That(next, Does.Not.Contain("input_visible_controls"));
+            // What was typed before the stop is what the receipt's own fields say; the next never adds to it.
+            Assert.That(next, Does.Not.Contain("neither written").And.Not.Contain("not written"));
+            Assert.That(told.Result!.Value.GetProperty("reason").GetString(), Does.Contain("the person's mouse or keys"));
+        });
+    }
+
     // CU4 (auditoría final 2): an act that would reach a developer's or BAXY's own window no look named is never sent,
     // and no front is taken for it.
     [Test]

@@ -94,6 +94,9 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bx-card .ft{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
 .bx-card .exp{font:10px var(--mono);color:var(--t-muted)}
 .bx-card .btns{display:flex;gap:6px}
+/* Uso 85: a breakdown under the face (Breakdown.tsx), as wide as a sentence can be read */
+.bx-cbot .bx-breakdown{width:min(520px,100%);text-align:left}
+.bx-breakdown .tg{font:12px var(--sans);line-height:1.5}
 .bx-card .res{font:11px var(--mono);color:var(--t-second);margin-top:4px}
 .bx-card.s-yes .res{color:var(--ok)}.bx-card.s-no .res{color:var(--t-muted)}
 .bx-card:not(.s-pending){box-shadow:none;border-color:var(--hair);opacity:.85}

@@ -16,7 +16,7 @@ public sealed class OpenMeteoWeatherAdapterTests
         """{"results":[{"name":"Buenos Aires","latitude":-34.61315,"longitude":-58.37723,"country":"Argentina","admin1":"Ciudad Autónoma de Buenos Aires"}]}""";
 
     private const string Located =
-        """{"success":true,"country":"Chile","region":"Region de Curico","city":"Curico","latitude":-34.9828,"longitude":-71.2394}""";
+        """{"success":true,"country":"Chile","region":"Region de Valparaiso","city":"Valparaiso","latitude":-33.0363,"longitude":-71.6297}""";
 
     private const string Forecast =
         """
@@ -155,8 +155,8 @@ public sealed class OpenMeteoWeatherAdapterTests
         JsonElement result = receipt.Result!.Value;
         Assert.Multiple(() =>
         {
-            Assert.That(result.GetProperty("location").GetString(), Is.EqualTo("Curico"));
-            Assert.That(result.GetProperty("region").GetString(), Is.EqualTo("Region de Curico"));
+            Assert.That(result.GetProperty("location").GetString(), Is.EqualTo("Valparaiso"));
+            Assert.That(result.GetProperty("region").GetString(), Is.EqualTo("Region de Valparaiso"));
             Assert.That(result.GetProperty("locatedBy").GetString(), Is.EqualTo("public_ip_address"));
         });
     }
@@ -332,21 +332,21 @@ public sealed class OpenMeteoWeatherAdapterTests
     public async Task ACapitalThatSharesItsRegionsNameStaysTheCity()
     {
         const string spanish =
-            """{"results":[{"id":3868626,"name":"Curicó","latitude":-34.98279,"longitude":-71.23943,"feature_code":"PPLA","admin1_id":3868621,"population":282448,"country":"Chile","admin1":"Región de Curicó"}]}""";
+            """{"results":[{"id":3868626,"name":"Valparaíso","latitude":-33.03932,"longitude":-71.62725,"feature_code":"PPLA","admin1_id":3868621,"population":282448,"country":"Chile","admin1":"Región de Valparaíso"}]}""";
         const string english =
-            """{"results":[{"id":3868626,"name":"Curico","latitude":-34.98279,"longitude":-71.23943,"feature_code":"PPLA","admin1_id":3868621,"population":282448,"country":"Chile","admin1":"Curico Region"}]}""";
+            """{"results":[{"id":3868626,"name":"Valparaiso","latitude":-33.03932,"longitude":-71.62725,"feature_code":"PPLA","admin1_id":3868621,"population":282448,"country":"Chile","admin1":"Valparaiso Region"}]}""";
         const string region =
-            """{"id":3868621,"name":"Región de Curicó","latitude":-32.9,"longitude":-71.2,"feature_code":"ADM1","population":1790219,"country":"Chile"}""";
+            """{"id":3868621,"name":"Región de Valparaíso","latitude":-32.9,"longitude":-71.2,"feature_code":"ADM1","population":1790219,"country":"Chile"}""";
         var adapter = new OpenMeteoWeatherAdapter(Service(spanish, english, region));
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "weather.current", JsonSerializer.SerializeToElement(new { location = "curico" }), CancellationToken.None);
+            "weather.current", JsonSerializer.SerializeToElement(new { location = "valparaiso" }), CancellationToken.None);
 
         Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
         Assert.Multiple(() =>
         {
-            Assert.That(receipt.Result!.Value.GetProperty("location").GetString(), Is.EqualTo("Curicó"));
-            Assert.That(receipt.Result!.Value.GetProperty("region").GetString(), Is.EqualTo("Región de Curicó"));
+            Assert.That(receipt.Result!.Value.GetProperty("location").GetString(), Is.EqualTo("Valparaíso"));
+            Assert.That(receipt.Result!.Value.GetProperty("region").GetString(), Is.EqualTo("Región de Valparaíso"));
         });
     }
 

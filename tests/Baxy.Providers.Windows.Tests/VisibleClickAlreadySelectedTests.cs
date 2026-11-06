@@ -31,8 +31,8 @@ public sealed class VisibleClickAlreadySelectedTests
         Assert.That(worker, Does.Contain("$pending.stateBefore.selected -eq $true){ $unchanged.alreadySelected=$true }"));
     }
 
-    // BAXY Renew cu (C02): a switch of Windows' own Settings is refused before any press, with its state; the worker
-    // refuses it on both of its ways to press (by name or identity, and at a point).
+    // BAXY Renew cu (C02), encargo 96: in Bypass a switch of Windows' own Settings is refused before any press, with its
+    // state; the worker refuses it on both of its ways to press (by name or identity, and at a point).
     [Test]
     public void ASettingsSwitchIsRefusedWithItsState()
     {
@@ -46,8 +46,8 @@ public sealed class VisibleClickAlreadySelectedTests
             Assert.That(facts.GetProperty("name").GetString(), Is.EqualTo("Wi-Fi"));
             Assert.That(facts.GetProperty("switch").GetString(), Is.EqualTo("on"));
             Assert.That(facts.GetProperty("next").GetString(), Does.StartWith("nothing was pressed"));
-            Assert.That(System.Text.RegularExpressions.Regex.Matches(
-                script, @"\$switchRefused=Get-SettingsSwitchRefusal \$button \$toggleBefore").Count, Is.EqualTo(2));
+            Assert.That(System.Text.RegularExpressions.Regex.Count(
+                script, @"\$switchRefused=Get-SettingsSwitchRefusal \$button \$name \$identity \$kind"), Is.EqualTo(2));
         });
     }
 

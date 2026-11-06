@@ -30,6 +30,16 @@ internal static class ProductConductorHost
     // After the turn ends, how long the conductor waits for the voice to start saying its response (not the notice).
     private static readonly TimeSpan SpeechWait = TimeSpan.FromSeconds(10);
 
+    // Uso 84 (AMD RX 7600, 2026-11-04): the conductor gave the mind a fixed 180 s, and a cold start that read its prompt
+    // prefix in 167.5 s nearly ran it out; a slower GPU would have been a blocked environment. While the App says the
+    // mind is preparing (its own start waits as long as the model advances, MindSidecarClient.TryStartAsync), the
+    // conductor waits; after it, this grace is left for the App's own retry of a start that failed.
+    internal static readonly TimeSpan MindGrace = TimeSpan.FromSeconds(180);
+
+    /// <summary>The conductor's deadline for the mind: <see cref="MindGrace"/> from now while it is preparing.</summary>
+    internal static DateTime MindDeadline(DateTime deadline, DateTime now, bool preparing) =>
+        preparing ? now + MindGrace : deadline;
+
     internal static bool IsRequested(IReadOnlyList<string> arguments)
     {
         ArgumentNullException.ThrowIfNull(arguments);
@@ -53,6 +63,9 @@ internal static class ProductConductorHost
         Directory.CreateDirectory(parsed.ProfileDirectory);
         Environment.SetEnvironmentVariable("BAXY_DATA_DIR", parsed.ProfileDirectory);
         Environment.SetEnvironmentVariable("BAXY_VOICE_WAKE_ON_START", "0");
+        // Steam (2026-11-04): the profile's choice of language, as the window takes it (PresenceHost); a bench writes
+        // «es» there so a Windows in English measures what one in Spanish does (bench_e2e.py, pin_spanish).
+        UiLanguage.Use(FieldSettings.CreateDefault().Language);
         StreamWriter? capture = null;
         if (!string.IsNullOrWhiteSpace(parsed.CaptureDirectory))
         {
@@ -153,11 +166,13 @@ internal static class ProductConductorHost
         {
             Emit(new JsonObject { ["type"] = "meta", ["profile"] = parsed.ProfileDirectory });
             await viewModel.InitializeAsync(lifetime.Token).ConfigureAwait(true);
-            DateTime mindDeadline = DateTime.UtcNow.AddSeconds(180);
+            DateTime mindDeadline = DateTime.UtcNow + MindGrace;
             while ((!viewModel.IsMindReady || viewModel.IsMindPreparing) && !viewModel.HasStartupError
+                && viewModel.Failure != MainWindowViewModel.NoSupportedGpu
                 && DateTime.UtcNow < mindDeadline)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(200), lifetime.Token).ConfigureAwait(true);
+                mindDeadline = MindDeadline(mindDeadline, DateTime.UtcNow, viewModel.IsMindPreparing);
             }
 
             Emit(new JsonObject
@@ -166,6 +181,7 @@ internal static class ProductConductorHost
                 ["ready"] = viewModel.IsReady,
                 ["mindReady"] = viewModel.IsMindReady,
                 ["startupError"] = viewModel.HasStartupError,
+                ["failure"] = viewModel.Failure,
                 ["status"] = viewModel.StatusDescription,
             });
             if (!viewModel.IsReady || !viewModel.IsMindReady)

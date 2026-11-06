@@ -7,6 +7,7 @@
     <Project Path="src/Baxy.Providers.Windows/Baxy.Providers.Windows.csproj" />
     <Project Path="src/Baxy.Security.Windows/Baxy.Security.Windows.csproj" />
     <Project Path="src/Baxy.Setup/Baxy.Setup.csproj" />
+    <Project Path="src/Baxy.Installer/Baxy.Installer.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Baxy.App.Tests/Baxy.App.Tests.csproj" />
@@ -15,5 +16,6 @@
     <Project Path="tests/Baxy.Kernel.Tests/Baxy.Kernel.Tests.csproj" />
     <Project Path="tests/Baxy.Providers.Windows.Tests/Baxy.Providers.Windows.Tests.csproj" />
     <Project Path="tests/Baxy.Setup.Tests/Baxy.Setup.Tests.csproj" />
+    <Project Path="tests/Baxy.Installer.Tests/Baxy.Installer.Tests.csproj" />
   </Folder>
 </Solution>

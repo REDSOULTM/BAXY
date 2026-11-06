@@ -1,3 +1,7 @@
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+
 namespace Baxy.Kernel.Operations;
 
 /// <summary>
@@ -54,6 +58,19 @@ public sealed class WireNames
 
     /// <summary>The wire name of an operation of the product catalog, the one shown to the model.</summary>
     public static string Of(string operation) => Product.Name(operation);
+
+    private static readonly JsonSerializerOptions AsWritten = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
+
+    /// <summary>
+    /// A call of the product catalog as the model writes it: its wire name and its arguments as JSON, the text as written
+    /// («file_find {"query":"Canción"}»). Encargo 28 (U33, U05, U24): a failed result's next that leads with the call,
+    /// its arguments filled in, was followed; the same route described after «nothing ran» was told to the person.
+    /// </summary>
+    public static string Call(string operation, JsonObject arguments)
+    {
+        ArgumentNullException.ThrowIfNull(arguments);
+        return $"{Of(operation)} {arguments.ToJsonString(AsWritten)}";
+    }
 
     /// <summary>The wire name of an operation; one this catalog does not have keeps its plain name.</summary>
     public string Name(string operation)

@@ -181,14 +181,20 @@ public static class BaxyKeyInput {
         return moved && read && Math.Abs(observed.x - x) <= 1 && Math.Abs(observed.y - y) <= 1;
     }
 
+    // Fila C3 (Mouse.cs de FlaUI): con los botones cambiados (SM_SWAPBUTTON), LEFTDOWN llega como clic derecho.
+    public static uint[] LeftButtonEvents(bool swapped) {
+        return swapped ? new uint[] { 0x0008u, 0x0010u } : new uint[] { 0x0002u, 0x0004u };
+    }
+
     public static uint MouseAction(bool click) {
         INPUT[] inputs = click ? new INPUT[2] : new INPUT[1];
+        uint[] left = LeftButtonEvents(GetSystemMetrics(23) != 0);
         inputs[0].type = 0;
-        inputs[0].data.mouse.flags = click ? 0x0002u : 0x0800u;
+        inputs[0].data.mouse.flags = click ? left[0] : 0x0800u;
         if (!click) inputs[0].data.mouse.mouseData = unchecked((uint)-120);
         if (click) {
             inputs[1].type = 0;
-            inputs[1].data.mouse.flags = 0x0004u;
+            inputs[1].data.mouse.flags = left[1];
         }
         return SendInput((uint)inputs.Length, Marked(inputs), InputSize);
     }

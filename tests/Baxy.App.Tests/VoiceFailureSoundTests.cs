@@ -23,6 +23,8 @@ public sealed class VoiceFailureSoundTests
         MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync(sounds.Enqueue);
         await using (viewModel)
         {
+            // The failures' sounds alone: the wake sound (on by default) is the person's own setting.
+            viewModel.Settings.ApplyGeneral(new JsonObject { ["wakeSound"] = false });
             Assert.That(await viewModel.SetWakeVoiceAsync(true, CancellationToken.None), Is.True);
 
             // At rest, waiting for «Baxy»: the microphone failing bothers nobody.
@@ -61,6 +63,8 @@ public sealed class VoiceFailureSoundTests
         MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync(sounds.Enqueue);
         await using (viewModel)
         {
+            // The failures' sounds alone: the wake sound (on by default) is the person's own setting.
+            viewModel.Settings.ApplyGeneral(new JsonObject { ["wakeSound"] = false });
             Assert.That(await viewModel.SetWakeVoiceAsync(true, CancellationToken.None), Is.True);
 
             // The engine is not up, so no turn can start: each request heard is dropped, and each drop sounds once.

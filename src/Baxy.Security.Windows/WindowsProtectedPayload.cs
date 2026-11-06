@@ -47,6 +47,37 @@ public sealed class WindowsProtectedPayload : IProtectedPayload
 
     public string KeyFilePath { get; }
 
+    /// <summary>
+    /// Whether Windows data protection works for the current user in this session: a fresh random secret protected and
+    /// opened again (CryptProtectData, CryptUnprotectData). DPAPI opens only what a user with the same logon credentials
+    /// protected, on the same computer (learn.microsoft.com, CryptUnprotectData): a key store that cannot be opened while
+    /// this works belongs to another account, computer or format; while this fails, the session itself cannot protect
+    /// (the notebook saw it over SSH, uso 85) and the stored data says nothing about the profile.
+    /// </summary>
+    public static bool CurrentUserProtectionWorks()
+    {
+        byte[] secret = RandomNumberGenerator.GetBytes(AesKeyLength);
+        byte[]? opened = null;
+        try
+        {
+            byte[] wrapped = WindowsCurrentUserDpapi.Protect(secret);
+            opened = WindowsCurrentUserDpapi.Unprotect(wrapped);
+            return CryptographicOperations.FixedTimeEquals(secret, opened);
+        }
+        catch (ProtectedPayloadException)
+        {
+            return false;
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(secret);
+            if (opened is not null)
+            {
+                CryptographicOperations.ZeroMemory(opened);
+            }
+        }
+    }
+
     internal string KeySentinelPath { get; }
 
     public byte[] Seal(ReadOnlySpan<byte> plaintext, string purpose)

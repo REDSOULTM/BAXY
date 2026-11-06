@@ -3,8 +3,11 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Controls;
 using Baxy.App.Presentation;
 using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 
 namespace Baxy.App;
 
@@ -17,6 +20,11 @@ public partial class MainWindow : Window
     private readonly MainWindowViewModel _viewModel;
     private readonly CancellationTokenSource _lifetimeCancellation = new();
     private readonly AppSurfaceNavigator _surfaceNavigator;
+    private readonly MainWindowSurfacePresenter _surfacePresenter;
+    // uso-116: the view recreated after its browser process died, with a growing wait; the same death again and again is
+    // said and no longer retried. Counted anew once a view stayed up (StartupRetries.Stable).
+    private readonly StartupRetries _fieldRetries = new();
+    private bool _recreatingField;
     private readonly PresenceHost? _presence;
     private FieldUiBridge? _bridge;
     private AppSurfaceSession? _fieldNavigationLoadingSession;
@@ -32,6 +40,13 @@ public partial class MainWindow : Window
     internal MainWindow(PresenceHost? presence)
     {
         InitializeComponent();
+        // Steam (2026-11-04): what a screen reader says of the window, in the interface's language at the start.
+        bool english = UiLanguage.IsEnglish;
+        AutomationProperties.SetName(this, UiLanguage.Say(english, "BAXY, asistente local", "BAXY, local assistant"));
+        AutomationProperties.SetName(FieldWebView,
+            UiLanguage.Say(english, "BAXY Field, interfaz local", "BAXY Field, local interface"));
+        AutomationProperties.SetName(AppSurfaceLayer,
+            UiLanguage.Say(english, "Superficie nativa de BAXY", "BAXY native surface"));
         Rect initialBounds = FitInitialBounds(
             new Size(Width, Height),
             new Size(MinWidth, MinHeight),
@@ -43,9 +58,8 @@ public partial class MainWindow : Window
         Top = initialBounds.Top;
         _presence = presence;
         _viewModel = new MainWindowViewModel();
-        _surfaceNavigator = new AppSurfaceNavigator(
-            AppSurfaceCatalog.CreateDefault(),
-            new MainWindowSurfacePresenter(FieldWebView, AppSurfaceLayer));
+        _surfacePresenter = new MainWindowSurfacePresenter(FieldWebView, AppSurfaceLayer);
+        _surfaceNavigator = new AppSurfaceNavigator(AppSurfaceCatalog.CreateDefault(), _surfacePresenter);
         StateChanged += OnWindowPresentationChanged;
         IsVisibleChanged += OnWindowVisibilityChanged;
         _presence?.Attach(this, _viewModel);
@@ -77,7 +91,7 @@ public partial class MainWindow : Window
         try
         {
             _fieldNavigationLoadingSession = await ShowFieldLoadingAsync(
-                "Recuperando la interfaz histórica local…",
+                FieldLoadingSurface.Loading,
                 diagnostic: null);
             // El motor local (core, mente y calentamiento del modelo) no
             // depende de WebView2. Arrancarlo en paralelo con la vista quita de
@@ -100,7 +114,8 @@ public partial class MainWindow : Window
                 "boot",
                 ShellTraceStages.StartupFailed);
             _ = await ShowFieldFailureWhileOpenAsync(
-                "BAXY Field failed to open. Check the local WebView2 runtime.",
+                UiLanguage.Say("BAXY Field no se abrió. Revisa el runtime local de WebView2.",
+                    "BAXY Field failed to open. Check the local WebView2 runtime."),
                 exception.Message);
         }
     }
@@ -119,8 +134,23 @@ public partial class MainWindow : Window
                 "La exportación histórica de BAXY Field no está junto a la aplicación.");
         }
 
-        string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        string webViewData = Path.Combine(localData, "BAXY", "webview2-field");
+        if (!WebView2Runtime.IsInstalled())
+        {
+            if (_fieldNavigationLoadingSession is { } loading)
+            {
+                SetFieldLoadingStatus(
+                    loading,
+                    UiLanguage.Say("Instalando WebView2 de Microsoft, que BAXY necesita para su ventana…",
+                        "Installing Microsoft WebView2, which BAXY needs for its window…"),
+                    diagnostic: null);
+            }
+
+            await WebView2Runtime.InstallAsync(cancellationToken);
+        }
+
+        string webViewData = FieldViewDataFolder(
+            Environment.GetEnvironmentVariable("BAXY_DATA_DIR"),
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
         Directory.CreateDirectory(webViewData);
         CoreWebView2Environment environment = await CoreWebView2Environment.CreateAsync(
             browserExecutableFolder: null,
@@ -156,7 +186,7 @@ public partial class MainWindow : Window
             _ = await core.AddScriptToExecuteOnDocumentCreatedAsync(
                 DocumentPaintObserverScript);
         }
-        _bridge = new FieldUiBridge(
+        _bridge ??= new FieldUiBridge(
             this,
             FieldWebView,
             _viewModel,
@@ -199,16 +229,22 @@ public partial class MainWindow : Window
                 // con «Salir» de la bandeja. Application.Shutdown cerraba la ventana
                 // ignorando el Cancel de OnClosing, así que el desmontaje ordenado
                 // (núcleo y mente parados por su canal) no llegaba a correr.
-                if (_presence is not null)
-                {
-                    _presence.RequestExit("probe");
-                }
-                else
-                {
-                    Application.Current.Shutdown();
-                }
+                Exit("probe");
             }
         };
+    }
+
+    /// <summary>Leaves BAXY as the tray's Exit does: the orderly teardown (core and mind stopped through their channel).</summary>
+    internal void Exit(string via)
+    {
+        if (_presence is not null)
+        {
+            _presence.RequestExit(via);
+        }
+        else
+        {
+            Application.Current.Shutdown();
+        }
     }
 
     internal static bool ShouldKeepFieldActive(bool isVisible, WindowState state) =>
@@ -349,6 +385,7 @@ public partial class MainWindow : Window
 
         if (eventArgs.IsSuccess)
         {
+            _fieldRetries.Up(DateTimeOffset.UtcNow);
             AppSurfaceSession? loadingSession = _fieldNavigationLoadingSession;
             if (loadingSession is null)
             {
@@ -376,7 +413,7 @@ public partial class MainWindow : Window
         }
 
         _ = await ShowFieldFailureWhileOpenAsync(
-            $"BAXY Field no cargó ({eventArgs.WebErrorStatus}).",
+            UiLanguage.Say("BAXY Field no cargó", "BAXY Field did not load") + $" ({eventArgs.WebErrorStatus}).",
             diagnostic: null);
     }
 
@@ -396,9 +433,122 @@ public partial class MainWindow : Window
             return;
         }
 
-        _ = await ShowFieldFailureWhileOpenAsync(
-            "La vista local se detuvo. Vuelve a abrir BAXY para restaurarla.",
-            eventArgs.ProcessFailedKind.ToString());
+        CoreWebView2ProcessFailedKind kind = eventArgs.ProcessFailedKind;
+        ShellTraceSink.Record(ShellTraceScopes.Startup, "view", "view.process_failed", kind.ToString().ToLowerInvariant());
+        switch (RecoveryFor(kind))
+        {
+            case FieldViewRecovery.Reload when sender is CoreWebView2 core:
+                core.Reload();
+                return;
+            case FieldViewRecovery.Recreate:
+                await RecreateFieldViewAsync(kind.ToString());
+                return;
+            default:
+                return;
+        }
+    }
+
+    /// <summary>
+    /// uso-116 (N23): with the PC out of memory WebView2's browser process crashed and the window was left saying «Vuelve
+    /// a abrir BAXY» while the mind and the core went on. Microsoft: the controls «need to be recreated» («Handling
+    /// process-related events in WebView2»), and its sample does it in place. The channel stays, so the conversation does.
+    /// </summary>
+    private async Task RecreateFieldViewAsync(string diagnostic)
+    {
+        if (_recreatingField)
+        {
+            return;
+        }
+
+        _recreatingField = true;
+        try
+        {
+            if (_fieldRetries.Failed(diagnostic, DateTimeOffset.UtcNow) is not { } wait)
+            {
+                _ = await ShowFieldFailureWhileOpenAsync(
+                    UiLanguage.Say("La vista local se detuvo varias veces seguidas. Cierra programas para liberar memoria y vuelve a abrir BAXY.",
+                        "The local view stopped several times in a row. Close programs to free up memory and open BAXY again."),
+                    diagnostic);
+                return;
+            }
+
+            _fieldNavigationLoadingSession = await ShowFieldLoadingWhileOpenAsync(
+                UiLanguage.Say("La vista local se detuvo. Recuperándola…", "The local view stopped. Recovering it…"),
+                diagnostic);
+            ReplaceFieldView();
+            await Task.Delay(wait, _lifetimeCancellation.Token);
+            await InitializeFieldUiAsync(_lifetimeCancellation.Token);
+        }
+        catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
+        {
+            // The window closed meanwhile.
+        }
+        catch (Exception exception) when (IsExpectedStartupFailure(exception))
+        {
+            _ = await ShowFieldFailureWhileOpenAsync(
+                UiLanguage.Say("La vista local se detuvo y no se pudo recuperar. Vuelve a abrir BAXY.",
+                    "The local view stopped and could not be recovered. Open BAXY again."),
+                exception.Message);
+        }
+        finally
+        {
+            _recreatingField = false;
+        }
+    }
+
+    private void ReplaceFieldView()
+    {
+        WebView2 old = FieldWebView;
+        var host = (Panel)old.Parent;
+        int at = host.Children.IndexOf(old);
+        var view = new WebView2
+        {
+            DefaultBackgroundColor = old.DefaultBackgroundColor,
+            HorizontalAlignment = old.HorizontalAlignment,
+            VerticalAlignment = old.VerticalAlignment,
+            Visibility = Visibility.Collapsed,
+        };
+        AutomationProperties.SetAutomationId(view, AutomationProperties.GetAutomationId(old));
+        AutomationProperties.SetName(view, AutomationProperties.GetName(old));
+        _bridge?.Rebind(view);
+        host.Children.RemoveAt(at);
+        old.Dispose();
+        FieldWebView = view;
+        host.Children.Insert(at, view);
+        _surfacePresenter.UseField(view);
+    }
+
+    /// <summary>
+    /// Uso 95 (uso real 2026-11-04 12:06 and 2026-11-03 22:57): with the PC out of memory WebView2's GPU process died
+    /// (its crash reports say gpu-process, «oom-mem») and the App replaced the whole interface with «La vista local se
+    /// detuvo. Vuelve a abrir BAXY», for a failure the runtime recovers from by itself. What each kind asks of the app, as
+    /// Microsoft documents it («Handling process-related events in WebView2», CoreWebView2ProcessFailedKind): the browser
+    /// process gone closes the WebView, which has to be created again; the main frame's renderer gone leaves an error
+    /// page that Reload recovers; an unresponsive renderer is raised again every few seconds while the system is busy;
+    /// the GPU, utility, sandbox helper, a subframe's renderer and the rest are recreated by the runtime.
+    /// </summary>
+    internal static FieldViewRecovery RecoveryFor(CoreWebView2ProcessFailedKind kind) => kind switch
+    {
+        CoreWebView2ProcessFailedKind.BrowserProcessExited => FieldViewRecovery.Recreate,
+        CoreWebView2ProcessFailedKind.RenderProcessExited => FieldViewRecovery.Reload,
+        _ => FieldViewRecovery.None,
+    };
+
+    /// <summary>
+    /// The view's WebView2 folder (preferences, its cache). 2026-11-04: it was always the one beside the default profile,
+    /// so a window on another profile (a test's, BAXY_DATA_DIR) shared the view's preferences with the person's BAXY. The
+    /// default profile keeps the folder it has always had; any other profile has its own, inside it.
+    /// </summary>
+    internal static string FieldViewDataFolder(string? configuredDataRoot, string localData)
+    {
+        string baxy = Path.Combine(localData, "BAXY");
+        return string.IsNullOrWhiteSpace(configuredDataRoot)
+            || string.Equals(
+                Path.TrimEndingDirectorySeparator(Path.GetFullPath(configuredDataRoot)),
+                Path.Combine(baxy, "1"),
+                StringComparison.OrdinalIgnoreCase)
+            ? Path.Combine(baxy, "webview2-field")
+            : Path.Combine(configuredDataRoot, "webview2-field");
     }
 
     private static void OnWebResourceRequested(

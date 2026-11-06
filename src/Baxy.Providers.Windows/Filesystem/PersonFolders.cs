@@ -120,10 +120,77 @@ public static class PersonFolders
         "file.write" or "filesystem.create.directory" or "file.read" or "file.edit" or "filesystem.known.trash.named"
             or "filesystem.sandbox.move.named" => ["desktop", "documents", "downloads", "home"],
         "file.find" or "file.open" or "filesystem.folder.open" or "filesystem.explorer.count"
+            or "capture.screenshot" or "capture.active.window"
             => ["desktop", "documents", "downloads", "home", "pictures"],
         "file.compress" or "desktop.wallpaper.set" => ["desktop", "documents", "downloads", "pictures"],
         _ => [],
     };
+
+    // Encargo 17 (U23): where a folder of the person's is looked for by its name, and how deep, as a file to open is
+    // (WindowsFileToolsAdapter.LocateOpenTarget): the four known folders four levels down, then the home folder's own
+    // folders one level down; at most five, within a bound of time.
+    private static readonly (string Label, int Depth)[] FolderSearchPlaces =
+        [("desktop", 4), ("documents", 4), ("downloads", 4), ("pictures", 4), ("home", 1)];
+    private const int FolderSearchCandidates = 5;
+    private static readonly TimeSpan FolderSearchBudget = TimeSpan.FromSeconds(2);
+
+    /// <summary>
+    /// Encargo 17 (banco uso-cf8d, U23): the person's folders named <paramref name="name"/> (folded: case and accents
+    /// aside), under their known folders (<see cref="FolderSearchPlaces"/>; hidden, system, unreadable and linked folders
+    /// left out), each as a file tool's path takes it: the known folder's label, then the folders inside it.
+    /// <paramref name="complete"/> is false when the search was cut (its time, its count, a folder it could not list).
+    /// </summary>
+    public static IReadOnlyList<string> FoldersNamed(string name, Func<string, string?> where, out bool complete)
+    {
+        string wanted = Fold(name);
+        var found = new List<string>();
+        complete = true;
+        if (wanted.Length == 0)
+            return found;
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        bool cut = false;
+        bool OutOfTime() => cut || (cut = clock.Elapsed > FolderSearchBudget);
+        foreach ((string label, int depth) in FolderSearchPlaces)
+        {
+            if (OutOfTime() || found.Count >= FolderSearchCandidates || Root(where, label) is not { } root
+                || !System.IO.Directory.Exists(root))
+                continue;
+            try
+            {
+                var folders = new System.IO.Enumeration.FileSystemEnumerable<string>(
+                    root,
+                    (ref System.IO.Enumeration.FileSystemEntry entry) => entry.ToFullPath(),
+                    new System.IO.EnumerationOptions
+                    {
+                        RecurseSubdirectories = true,
+                        MaxRecursionDepth = depth,
+                        IgnoreInaccessible = true,
+                        AttributesToSkip = System.IO.FileAttributes.Hidden | System.IO.FileAttributes.System
+                            | System.IO.FileAttributes.ReparsePoint,
+                    })
+                {
+                    ShouldIncludePredicate = (ref System.IO.Enumeration.FileSystemEntry entry) =>
+                        !OutOfTime() && entry.IsDirectory && Fold(entry.FileName.ToString()) == wanted,
+                    ShouldRecursePredicate = (ref System.IO.Enumeration.FileSystemEntry _) => !OutOfTime(),
+                };
+                // A folder inside two known folders (the Desktop inside the home folder) is said once, from the first.
+                foreach (string folder in folders.Where(seen.Add))
+                {
+                    found.Add(label + "\\" + System.IO.Path.GetRelativePath(root, folder));
+                    if (found.Count >= FolderSearchCandidates)
+                        break;
+                }
+            }
+            catch (Exception exception) when (exception is System.IO.IOException or UnauthorizedAccessException)
+            {
+                cut = true;
+            }
+        }
+
+        complete = !cut && found.Count < FolderSearchCandidates;
+        return found;
+    }
 
     private static string? Root(Func<string, string?> where, string label) =>
         where(label) is { Length: > 0 } root && System.IO.Path.IsPathFullyQualified(root)

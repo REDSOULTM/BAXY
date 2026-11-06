@@ -1,6 +1,8 @@
 /* The view's contract with Baxy.App (FieldProductChannel, channel baxy.field.v1). Every value here comes from the
    host; a reading the host could not take travels as null and the view shows «—», never a 0. */
 
+import type { FailureMemory } from './causes';
+
 /** what the host says BAXY is doing (FieldProductChannel.CurrentConversationState). */
 export type HostState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
 
@@ -59,6 +61,12 @@ export interface AgentStatus {
   ready: boolean;
   failure?: string | null;
   pendingConfirmation?: boolean;
+  /** uso 95: a message of the person's waits for the model to come up (it starts or is relaunched) */
+  waitingForMind?: boolean;
+  /** uso 95: why the model's last start failed while none is up (ram_insuficiente, vram_insuficiente, …) */
+  failureCause?: string | null;
+  /** uso-116: the figures of that lack of memory, when known */
+  failureMemory?: FailureMemory | null;
   /** active or at rest (the rail's power row and the tray menu change it) */
   powered?: boolean;
 }
@@ -71,6 +79,10 @@ export interface VoiceStatus {
   mode: 'off' | 'wake' | 'direct';
   speaking: boolean;
   last_error?: string | null;
+  /** uso 95: the ear waits for memory to load (not for a microphone): what it needs and found left, in MB */
+  waiting_memory?: { need_mb: number; left_mb: number } | null;
+  /** uso-116: there is a microphone and the voice settled, with no recogniser to hear it */
+  no_recognizer?: boolean;
 }
 
 /** each piece is null while the host has not read it, false when it is not there. */
@@ -84,6 +96,9 @@ export interface BootPieces {
   /** when the model was ready, ms since the epoch; null while it loads. */
   readyAt: number | null;
   failed?: string | null;
+  /** uso 95: why the start before this one failed (a relaunch is under way or waits its turn). */
+  lastFailure?: string | null;
+  failureMemory?: FailureMemory | null;
 }
 
 export interface Metrics {
@@ -123,16 +138,22 @@ export interface GeneralSettings {
   voiceMuted: boolean;
   wakeSound: boolean;
   waitNotice: boolean;
+  /** «Ignorar lo que suena en el PC»: the mind takes what the PC plays out of the microphone (voice_echo.py) */
+  echoCancel: boolean;
   web: boolean;
   weather: boolean;
   screen: boolean;
+  /** the interface's language as the person chose it (Settings); «auto» follows Windows */
+  language?: 'auto' | 'es' | 'en';
+  /** the language in use, resolved by the host (from Windows when the choice is «auto») */
+  languageInUse?: 'es' | 'en';
 }
 
 /** the host keeps the conversation (FieldTranscript): it sends an item whenever one is added or changes, and the whole
  *  list when the view connects or a session is opened. */
 export type ServerEvent =
   | { type: 'state'; value: HostState; quiet?: HostState }
-  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean }
+  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean; waitingForMind?: boolean; failureCause?: string | null; failureMemory?: FailureMemory | null }
   | { type: 'item'; item: ChatItem }
   | { type: 'transcript'; items: ChatItem[] }
   | ({ type: 'step'; phase: 'start' | 'end'; turn: string } & Step)

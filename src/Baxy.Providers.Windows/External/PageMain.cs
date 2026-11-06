@@ -61,14 +61,17 @@ internal static class PageMain
     }
 
     // Rule 1: a marked element goes with its subtree; same-name tags inside it are counted so the right end closes it.
+    // Uso real 04-11 (a store's <body class="… menu_background_overlap …">: no text at all, told as completed): an
+    // element holding more than half of the page's text is the page, whatever its class says, and is read on inside.
     private static string WithoutMarked(string html, Func<string, int> textLength, out int leftOut)
     {
         leftOut = 0;
         var kept = new StringBuilder(html.Length);
-        int copied = 0, depth = 0, skipStart = 0;
+        int copied = 0, depth = 0, skipStart = 0, insideSkipped = 0, from = 0, pageText = textLength(html);
         string? skipping = null;
-        foreach (Match tag in Tag.Matches(html))
+        for (Match tag = Tag.Match(html); tag.Success; tag = Tag.Match(html, from))
         {
+            from = tag.Index + tag.Length;
             string name = tag.Groups[2].Value;
             bool closing = tag.Groups[1].Length > 0;
             bool selfClosing = tag.Groups[3].Value.EndsWith('/') || Void.Contains(name);
@@ -76,10 +79,10 @@ internal static class PageMain
             {
                 if (closing || selfClosing || !Marked.IsMatch(tag.Groups[3].Value))
                     continue;
-                kept.Append(html, copied, tag.Index - copied);
                 skipping = name;
                 depth = 1;
                 skipStart = tag.Index;
+                insideSkipped = from;
                 continue;
             }
             if (!string.Equals(name, skipping, StringComparison.OrdinalIgnoreCase) || selfClosing)
@@ -87,11 +90,17 @@ internal static class PageMain
             depth += closing ? -1 : 1;
             if (depth > 0)
                 continue;
-            int end = tag.Index + tag.Length;
-            leftOut += textLength(html[skipStart..end]);
-            kept.Append(' ');
-            copied = end;
             skipping = null;
+            int held = textLength(html[skipStart..from]);
+            if (held * 2 > pageText)
+            {
+                from = insideSkipped;
+                continue;
+            }
+            kept.Append(html, copied, skipStart - copied);
+            leftOut += held;
+            kept.Append(' ');
+            copied = from;
         }
         if (skipping is not null)
             return html; // an element never closed: the markup is not what it seems, nothing is left out

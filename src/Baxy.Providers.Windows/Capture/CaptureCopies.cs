@@ -26,13 +26,20 @@ internal static partial class CaptureCopies
         string captureId,
         string folder,
         Func<string, string?> knownFolder,
-        DateTimeOffset now)
+        DateTimeOffset now,
+        string inside = "")
     {
         if (!CaptureIdPattern().IsMatch(captureId))
             throw new IOException("Capture identity is invalid.");
-        string? target = TargetDirectory(folder, knownFolder);
+        // Banco de uso 03-11 (U23): or a folder of the person's inside the known folder (PersonFolders.Place's path).
+        string? target = inside.Length == 0 ? TargetDirectory(folder, knownFolder) : InsideDirectory(folder, inside, knownFolder);
         if (target is null)
-            throw new ScreenshotUnavailableException("capture_folder_unavailable", "The known folder is not available.");
+        {
+            throw new ScreenshotUnavailableException("capture_folder_unavailable", "The known folder is not available.")
+            {
+                Result = inside.Length == 0 ? null : MissingFolder(folder, inside, knownFolder),
+            };
+        }
         // P2.44 causa 11 (V11D169): where inside the known folder it went (pictures: its Screenshots folder).
         string subdirectory = knownFolder(folder) is { } root ? Path.GetRelativePath(Path.GetFullPath(root), target) : ".";
         if (subdirectory == ".") subdirectory = string.Empty;
@@ -105,6 +112,65 @@ internal static partial class CaptureCopies
             : Path.Combine(full, "Screenshots");
         Directory.CreateDirectory(screenshots);
         return Path.GetFullPath(screenshots);
+    }
+
+    /// <summary>The folder <paramref name="inside"/> of the known folder, when it is there and inside it (never made);
+    /// null otherwise.</summary>
+    internal static string? InsideDirectory(string folder, string inside, Func<string, string?> knownFolder)
+    {
+        string? root = knownFolder(folder);
+        if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root))
+            return null;
+        string full = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar);
+        string target = Path.GetFullPath(Path.Combine(full, inside)).TrimEnd(Path.DirectorySeparatorChar);
+        return target.StartsWith(full + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+            && Directory.Exists(target)
+                ? target
+                : null;
+    }
+
+    /// <summary>
+    /// Encargo 17 (banco uso-cf8d, U23: a folder of the person's and a file name in «path» failed as
+    /// capture_folder_unavailable alone): the facts of a folder <paramref name="inside"/> the known folder that is not
+    /// there. The part of it that is there and the first part that is not (and whether a file holds that name), that the
+    /// path is the folder the copy goes into (its name is dated, never said), and the person's folders of that name under
+    /// their known folders (<see cref="Filesystem.PersonFolders.FoldersNamed"/>), each as a path the call takes. Null when
+    /// the known folder itself is not there.
+    /// </summary>
+    internal static System.Text.Json.JsonElement? MissingFolder(string folder, string inside, Func<string, string?> knownFolder)
+    {
+        string? root = knownFolder(folder);
+        if (string.IsNullOrWhiteSpace(root) || !Directory.Exists(root))
+            return null;
+        string[] parts = inside.Split(['\\', '/'], StringSplitOptions.RemoveEmptyEntries);
+        int there = 0;
+        string reached = Path.GetFullPath(root);
+        while (there < parts.Length && Directory.Exists(Path.Combine(reached, parts[there])))
+            reached = Path.Combine(reached, parts[there++]);
+        if (there == parts.Length)
+            return null;
+        string missing = parts[there];
+        IReadOnlyList<string> named = Filesystem.PersonFolders.FoldersNamed(missing, knownFolder, out bool complete);
+        return External.ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("folder", folder);
+            writer.WriteString("existingPath", string.Join('\\', [folder, .. parts[..there]]));
+            writer.WriteString("missingPart", missing);
+            if (File.Exists(Path.Combine(reached, missing)))
+                writer.WriteBoolean("missingPartIsAFile", true);
+            writer.WriteBoolean("pathIsAFolder", true);
+            writer.WriteStartArray("foldersNamedLikeIt");
+            foreach (string path in named)
+                writer.WriteStringValue(path);
+            writer.WriteEndArray();
+            writer.WriteBoolean("searchComplete", complete);
+            writer.WriteString("next", "path is the folder the copy goes into, never a file: the copy's name is dated, "
+                + "not said; missingPart is not there inside existingPath (nothing was made or saved). foldersNamedLikeIt "
+                + "are the person's folders of that name: call again with path set to the one meant, or to existingPath");
+            writer.WriteEndObject();
+        });
     }
 
     /// <summary>A 32-bit bottom-up BMP (as <see cref="WindowsScreenshotProvider"/> stores it) as an 8-bit RGB PNG.</summary>

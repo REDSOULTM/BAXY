@@ -1,4 +1,6 @@
 using System.Text.Json;
+using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Filesystem;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -52,29 +54,45 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
         return directory;
     }
 
-    // «cwd» is a known folder as the catalog names it (desktop, documents, downloads, home), or a folder inside one
-    // («documents/proyecto»), or an absolute path; anything else is refused. The names are the catalog's own keys, not
-    // words of the person (BAXY Renew audit 2026-10-15: «escritorio», «descargas» were read here).
-    private static string? KnownFolder(string name) => name switch
-    {
-        "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
-        "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-        "downloads" => Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path(),
-        "home" => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-        _ => null,
-    };
-
+    // «cwd» is an absolute path, or read as a file tool reads its path (PersonFolders.Place): a known folder, a folder
+    // inside one («documents/proyecto»), or any other inside the person's home («BAXY-bench»), and never out of them.
+    // Encargo 61 (banco de uso U45): file.write and filesystem.create.directory read «BAXY-bench» in the home folder and
+    // this call refused it, so the model created a folder that was there or asked the person whether it existed.
     private static string? ResolveWorkingDirectory(string cwd)
     {
         string trimmed = cwd.Trim().Replace('/', Path.DirectorySeparatorChar);
         if (Path.IsPathFullyQualified(trimmed))
             return trimmed;
-        string[] parts = trimmed.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length == 0 || KnownFolder(parts[0]) is not { } root)
-            return null;
-        if (parts.Skip(1).Any(part => part is "." or ".."))
-            return null;
-        return Path.Combine([root, .. parts.Skip(1)]);
+        return PersonFolders.Place(trimmed, PersonFolders.PathLabels("file.write"), PersonFolders.Path) is { } place
+            ? Path.Combine(place.Root, place.Relative)
+            : null;
+    }
+
+    // Encargo 61 (banco de uso U45, held-out): the model wrote the home of the file tools' example, and the code alone left it
+    // telling the person that their folder did not exist (Anthropic, «Writing effective tools for agents»: error responses
+    // that «clearly communicate specific and actionable improvements» rather than «opaque error codes»). Where it looked,
+    // their home and, when the path named another place, the call with the folder's own name, after the fact as encargo 57
+    // measured for a call redone. Measured: 23/35 → 32/35.
+    private static ExternalCapabilityReceipt NoFolder(string operation, string command, string cwd, string? looked)
+    {
+        string said = cwd.Trim().Replace('/', Path.DirectorySeparatorChar).TrimEnd(Path.DirectorySeparatorChar);
+        string where = looked ?? said;
+        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string name = Path.GetFileName(said);
+        string next = $"nothing ran: there is no folder {where}; this person's home is {home}";
+        if (name.Length > 0 && name != said && name is not ("." or ".."))
+        {
+            next += "; to run it in their folder of that name, call "
+                + WireNames.Call(operation, new() { ["command"] = command, ["cwd"] = name });
+        }
+
+        return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteString("cwd", where);
+            writer.WriteString("next", next);
+            writer.WriteEndObject();
+        }), "shell_command_directory_not_found");
     }
 
     internal ShellCommandAdapter(IExternalProcessRunner runner, string defaultWorkingDirectory)
@@ -110,7 +128,7 @@ internal sealed class ShellCommandAdapter : IExternalOperationAdapter
 
         string? workingDirectory = cwd is null ? _defaultWorkingDirectory : ResolveWorkingDirectory(cwd);
         if (workingDirectory is null || !Directory.Exists(workingDirectory))
-            return ExternalJson.FailureBeforeEffect(operation, "shell_command_directory_not_found");
+            return NoFolder(operation, command, cwd!, workingDirectory);
 
         // La consola se coloca en la carpeta antes del comando, dentro de la misma
         // orden, para que el corredor no necesite un directorio de trabajo propio.

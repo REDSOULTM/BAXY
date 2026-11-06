@@ -20,6 +20,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly SynchronizationContext _uiContext;
     private readonly string _memorySessionId;
     private readonly CancellationTokenSource _mindLifetimeCancellation = new();
+    private CancellationTokenSource _mindStartCut = new();
     private readonly NativeTurnLoop _loop;
     // One turn at a time, the person's or the heartbeat's: a person's words that arrive during a heartbeat wait for it.
     private readonly SemaphoreSlim _turnGate = new(1, 1);
@@ -42,8 +43,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // other's mind ready and leaves it.
     private readonly SemaphoreSlim _mindStart = new(1, 1);
     private volatile MindStartupState _mindStartupState;
-    private int _mindStartupFailureCount;
-    private int _coreStartupFailureCount;
+    private readonly StartupRetries _mindRetries = new();
+    private readonly StartupRetries _coreRetries = new();
+    // The mind failed the same way too often (StartupRetries): no relaunch until the person asks for one.
+    private bool _mindGaveUp;
+    private bool _noSupportedGpu;
+    // Uso 95 (F9): a relaunch of the mind waits its turn (StartupRetries' growing wait); until it starts, the mind is
+    // still on its way, never «not available».
+    private volatile bool _mindRetryPending;
+    // Why the last start (or run) of the mind failed (MindStartupFailure.Cause, or the App's own label), until one is up.
+    private string? _mindFailureCause;
+    private (long NeedMb, long? FreeMb)? _mindFailureMemory;
+    // Completed and replaced each time the mind's state changes (MindChanged): a message waiting for the mind wakes on it.
+    private TaskCompletionSource _mindChanged = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private int _awaitingMind;
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
     private bool _coreRecoveryPending;
@@ -55,6 +68,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // The voice the mind turns on by itself at startup yields to the person: once they give a voice command it never
     // applies, and a command that arrives while it is starting waits for it first.
     private int _personVoiceChoice;
+    private int _wakeAwaitsEar;
     private Task _startupVoice = Task.CompletedTask;
     // Done once the mind's voice state is known (its ear loaded or failed to) and the startup voice was applied. It is
     // set before the mind is announced ready, so a wake word asked for from then on (the interface applies the person's
@@ -104,6 +118,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 Core = () => _coreClient,
                 Mind = () => _mindClient,
+                MindForTurn = MindForTurnAsync,
                 Registry = () => _retryableOperations,
                 MemoryProtector = () => _memoryProtector,
                 Publish = (text, route) =>
@@ -164,6 +179,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     ConfirmationResolved?.Invoke(outcome);
                 },
                 Refuse = Settings.Refusal,
+                Front = HeartbeatMoment.PersonFront,
                 OwnReading = (scope, cancellationToken) => OwnReader is { } read
                     ? read(scope, cancellationToken)
                     : Task.FromResult(Baxy.Kernel.Operations.OperationOutcome.Failure(OwnReadings.Unavailable)),
@@ -174,6 +190,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     EverythingForgotten?.Invoke();
                 },
                 Conversation = (operation, arguments) => Conversation?.Invoke(operation, arguments),
+                Windows = HeartbeatMoment.OtherWindows,
+                Rows = VisibleRows.Read,
             });
     }
 
@@ -223,15 +241,29 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal DateTimeOffset? MindReadyAt => _mindReadyAt;
 
-    internal bool MindFailed => _mindStartupState is MindStartupState.Failed or MindStartupState.NotConfigured;
+    /// <summary>The mind did not start and none is on its way (a relaunch that waits is still coming: uso 95).</summary>
+    internal bool MindFailed => _mindStartupState is MindStartupState.Failed or MindStartupState.NotConfigured
+        && !IsMindPreparing;
+
+    /// <summary>Uso 95 (F9): why the last start of the mind failed while none is up: <c>ram_insuficiente</c>,
+    /// <c>vram_insuficiente</c> or <c>memoria_insuficiente</c> when the model server's log said it ran out of memory
+    /// (llm_server.memory_failure), else the start's own label; null once a mind is up.</summary>
+    internal string? MindFailureCause => IsMindReady ? null : _mindFailureCause;
+
+    /// <summary>uso-116 (N23): the figures of that lack of memory, when the mind knows them: the buffer that did not fit
+    /// and the PC's RAM free (<see cref="MindStartupFailure"/>); null otherwise.</summary>
+    internal (long NeedMb, long? FreeMb)? MindFailureMemory => IsMindReady ? null : _mindFailureMemory;
+
+    /// <summary>Uso 95 (F9): a message of the person's waits for the mind to come up (it starts or is relaunched).</summary>
+    internal bool IsAwaitingMind => Volatile.Read(ref _awaitingMind) > 0;
 
     private static string SilentBecause(string activity) => activity switch
     {
-        HeartbeatMoment.Playing => "estás jugando",
-        HeartbeatMoment.InCall => "estás en una llamada",
-        HeartbeatMoment.Watching => "estás viendo algo",
-        HeartbeatMoment.Away => "no estabas",
-        _ => "aviso en pantalla",
+        HeartbeatMoment.Playing => UiLanguage.Say("estás jugando", "gaming"),
+        HeartbeatMoment.InCall => UiLanguage.Say("estás en una llamada", "on a call"),
+        HeartbeatMoment.Watching => UiLanguage.Say("estás viendo algo", "watching something"),
+        HeartbeatMoment.Away => UiLanguage.Say("no estabas", "away"),
+        _ => UiLanguage.Say("aviso en pantalla", "on-screen notice"),
     };
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -299,7 +331,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>How the App plays its <see cref="Chime"/>s; the App's tests record them or keep quiet.</summary>
     internal Action<Chime> Sound { get; init; } = static chime => chime.Play();
 
-    // A failure is heard unless the owner silenced BAXY's voice («Silenciar su voz»).
+    // A chime is heard unless the owner silenced BAXY's voice («Silenciar su voz»).
     private void SoundUnlessMuted(Chime chime)
     {
         if (!Settings.VoiceMuted)
@@ -308,8 +340,56 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    /// <summary>What the interface shows as the failure: the engine's (retry_without_close, core_disconnected), else the last turn's.</summary>
-    internal string? Failure => _startupFailure ?? _lastTurnFailure;
+    /// <summary>
+    /// The ear's two sounds, Amazon's Start and End of Request (Alexa Auto, «Invoking Alexa»: right after the wake word,
+    /// and when the microphone closes, both under one setting): <see cref="Chime.Wake"/> for «Baxy» heard and
+    /// <see cref="Chime.Heard"/> when the request closes (transcribing), under the person's «Sonido al despertar» and
+    /// BAXY's silenced voice. Played on the mind's reader as its event arrives (uso real 03-11: the wake sound came late):
+    /// they used to wait for the interface's thread, behind whatever it ran and the view's own updates of that event.
+    /// </summary>
+    private void SoundTheEar(string eventName)
+    {
+        Chime? chime = eventName switch
+        {
+            "wake_detected" => Chime.Wake,
+            "transcribing" => Chime.Heard,
+            _ => null,
+        };
+        if (chime is not null && !Volatile.Read(ref _isDisposed) && Settings.WakeSound)
+        {
+            SoundUnlessMuted(chime);
+        }
+    }
+
+    /// <summary>What the interface shows as the failure: the engine's (retry_without_close, core_disconnected,
+    /// <see cref="ProfileUnreadable"/>, <see cref="NoSupportedGpu"/>, <see cref="EngineUnavailable"/>), else the last turn's.</summary>
+    internal string? Failure => _startupFailure ?? (_noSupportedGpu ? NoSupportedGpu : null)
+        ?? (_mindGaveUp ? EngineUnavailable : null) ?? _lastTurnFailure;
+
+    /// <summary>Uso 85: the core cannot read or authenticate the data profile (CoreExitCodes.ProfileUnreadable). Nothing
+    /// is relaunched: the interface asks the person to start a new profile (the old one set aside) or to leave.</summary>
+    internal const string ProfileUnreadable = "profile_unreadable";
+
+    /// <summary>Uso 85: the core or the mind failed the same way too often (<see cref="StartupRetries"/>). Nothing is
+    /// relaunched until the person asks for it (<see cref="RetryEngine"/>).</summary>
+    internal const string EngineUnavailable = "engine_unavailable";
+
+    /// <summary>uso-101: a store's package found no GPU it has a server for (MindRuntimeDiscovery). Trying again changes
+    /// nothing until the person installs a driver or a GPU, so nothing is relaunched and the interface says the cause.</summary>
+    internal const string NoSupportedGpu = "no_supported_gpu";
+
+    /// <summary>The runtime found for this start, in the environment the mind inherits; false when there is none.</summary>
+    internal bool ApplyMindRuntime(MindRuntimeDiscoveryResult discovery)
+    {
+        SetField(ref _noSupportedGpu, discovery.NoSupportedGpu, nameof(Failure));
+        if (MindRuntimeDiscovery.ApplyVerified(discovery) && MindSidecarClient.IsConfigured)
+        {
+            return true;
+        }
+
+        _mindStartupState = MindStartupState.NotConfigured;
+        return false;
+    }
 
     /// <summary>
     /// The voice's last trouble, until it hears again: voice_dropped_busy (a transcript that arrived while a turn ran
@@ -383,7 +463,66 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal bool CanSpeak => _mindClient is { IsVoiceAvailable: true };
 
     /// <summary>The shell opened while the mind it started is still reading its model.</summary>
-    public bool IsMindPreparing => _startupMindPending;
+    /// <summary>The mind is on its way: the shell's first start reads its model, a start is under way, or a relaunch
+    /// after a failed start or a lost mind waits its turn (uso 95). Not once it gave up (<see cref="EngineUnavailable"/>)
+    /// or when it is not configured.</summary>
+    public bool IsMindPreparing => !_isDisposed && _mindClient is not { IsReady: true }
+        && (_startupMindPending || _mindStartupState == MindStartupState.Starting
+            || (_mindStartupState == MindStartupState.Failed && _mindRetryPending && !_mindGaveUp));
+
+    /// <summary>
+    /// Uso 95 (F9, uso real 2026-11-04 12:06): the mind a person's turn talks with. While it is on its way
+    /// (<see cref="IsMindPreparing"/>) the turn waits for it, said to the view as a state (<see cref="IsAwaitingMind"/>),
+    /// instead of ending at once as «mind_unavailable» and being lost: a «hola» written between two relaunches got no
+    /// answer when the mind came up a minute later. Null when no mind is coming (it gave up, it is not configured).
+    /// </summary>
+    internal async Task<MindSidecarClient?> MindForTurnAsync(CancellationToken cancellationToken)
+    {
+        bool waiting = false;
+        try
+        {
+            while (true)
+            {
+                // Read before the state: a change after this read completes the task this wait holds.
+                Task changed = Volatile.Read(ref _mindChanged).Task;
+                if (_mindClient is { IsTurnAvailable: true } mind)
+                {
+                    return mind;
+                }
+
+                if (!IsMindPreparing)
+                {
+                    return null;
+                }
+
+                if (!waiting)
+                {
+                    waiting = true;
+                    Interlocked.Increment(ref _awaitingMind);
+                    OnPropertyChanged(nameof(IsAwaitingMind));
+                }
+
+                await changed.WaitAsync(cancellationToken);
+            }
+        }
+        finally
+        {
+            if (waiting)
+            {
+                Interlocked.Decrement(ref _awaitingMind);
+                OnPropertyChanged(nameof(IsAwaitingMind));
+            }
+        }
+    }
+
+    // The mind's state changed (up, failed, a relaunch scheduled or started, gave up): a waiting turn looks again, and
+    // the view is told whether the mind is still on its way.
+    private void MindChanged()
+    {
+        Interlocked.Exchange(ref _mindChanged,
+            new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously)).TrySetResult();
+        OnPropertyChanged(nameof(IsMindPreparing));
+    }
 
     public bool IsListening
     {
@@ -488,7 +627,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             IsReady = true;
-            _coreStartupFailureCount = 0;
+            _coreRetries.Up(DateTimeOffset.UtcNow);
             StatusDescription = _startupMindPending ? "Preparando BAXY" : IdleStatus();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -499,7 +638,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupFailed,
                 $"{exception.GetType().Name}.{exception.TargetSite?.Name ?? "unknown"}".ToLowerInvariant());
-            await HandleStartupFailureAsync(client);
+            await HandleStartupFailureAsync(client, exception);
         }
         finally
         {
@@ -810,6 +949,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private string IdleStatus() =>
         _loop.HasPendingConfirmation ? "awaiting_confirmation"
         : _mindStartupState == MindStartupState.Failed ? "mind_unavailable"
+        : _noSupportedGpu ? NoSupportedGpu
         : IsWakeListening ? "Esperando «Baxy»"
         : "BAXY disponible";
 
@@ -1010,9 +1150,32 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     public async Task ToggleWakeVoiceAsync(CancellationToken cancellationToken) =>
         _ = await SetWakeVoiceAsync(!IsWakeListening, cancellationToken);
 
+    /// <summary>
+    /// The owner switched «Quitar lo que suena en el PC» (<see cref="FieldSettings.EchoCancel"/>): an ear waiting for
+    /// «Baxy» is started again with it, so the mind opens the microphone again with or without the stage; a request
+    /// being heard keeps what it began with and the next start takes the switch.
+    /// </summary>
+    internal async Task ApplyEchoCancelAsync(CancellationToken cancellationToken)
+    {
+        await _voiceCommands.WaitAsync(cancellationToken);
+        try
+        {
+            if (IsWakeListening && !IsListening && _mindClient is { IsReady: true } mind)
+            {
+                IsWakeListening = await mind.VoiceStartAsync(
+                    "wake", MindSidecarClient.VoiceStartTimeout, cancellationToken, Settings.EchoCancel);
+            }
+        }
+        finally
+        {
+            _voiceCommands.Release();
+        }
+    }
+
     internal async Task<bool> SetWakeVoiceAsync(bool enabled, CancellationToken cancellationToken)
     {
         int command = Interlocked.Increment(ref _wakeCommands);
+        Volatile.Write(ref _wakeAwaitsEar, 0);
         if (enabled)
         {
             // A wake word is a mode, not an utterance: asked for while the ear still loads, it starts once it has loaded
@@ -1056,7 +1219,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     return true;
                 }
 
-                bool started = await mind.VoiceStartAsync("wake", MindSidecarClient.VoiceStartTimeout, cancellationToken);
+                bool started = await mind.VoiceStartAsync("wake", MindSidecarClient.VoiceStartTimeout, cancellationToken, Settings.EchoCancel);
                 IsWakeListening = started;
                 if (started)
                 {
@@ -1067,6 +1230,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                 WakeStartTold(started);
                 StatusDescription = started ? "Esperando «Baxy»" : "wake_inactive";
+                // Uso 112, live: the view asks for its wake word at the start; with the ear waiting for memory that fails,
+                // and it is asked again when the ear loads (RereadVoiceAsync), unless a later command changed it.
+                if (!started && VoicePieces?.WaitingMemory is not null && Volatile.Read(ref _wakeCommands) == command)
+                {
+                    Volatile.Write(ref _wakeAwaitsEar, 1);
+                }
+
                 return started;
             }
 
@@ -1106,7 +1276,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // person who presses to talk over it lost their words; pressing to talk silences BAXY first, as typing does.
         if (IsVoiceSpeaking && mind.IsVoiceAvailable)
             _ = await mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), cancellationToken);
-        bool started = await mind.VoiceStartAsync("direct", MindSidecarClient.VoiceStartTimeout, cancellationToken);
+        bool started = await mind.VoiceStartAsync("direct", MindSidecarClient.VoiceStartTimeout, cancellationToken, Settings.EchoCancel);
         IsMicAvailable = started;
         if (started)
         {
@@ -1176,14 +1346,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             // start-up's growing wait (InitializeMindAsync ends the old process, and its VRAM, first).
             if (_mindStartupState == MindStartupState.Ready && !_mindLifetimeCancellation.IsCancellationRequested)
             {
-                ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed,
-                    processEnded ? "mente_salio" : "mente_sin_respuesta");
-                _mindStartupFailureCount++;
+                string cause = processEnded ? "mente_salio" : "mente_sin_respuesta";
+                ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed, cause);
                 _mindStartupState = MindStartupState.Failed;
-                _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
+                _mindFailureCause = cause;
+                _mindFailureMemory = null;
+                RetryMindOrGiveUp(cause);
                 MindRestarts.Record(loss, DateTimeOffset.UtcNow - _mindStartedAt);
             }
             OnPropertyChanged(nameof(IsMindReady));
+            MindChanged();
         },
         null);
 
@@ -1194,6 +1366,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         bool? speaking = (bool?)voiceEvent["speaking"];
         bool notice = (bool?)voiceEvent["notice"] ?? false;
         string? partial = (string?)voiceEvent["text"];
+        SoundTheEar(eventName);
         _uiContext.Post(
             _ =>
             {
@@ -1217,11 +1390,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         _voiceRequestOpen = true;
                         StatusDescription = "Te escucho…";
                         VoiceWake?.Invoke();
-                        if (Settings.WakeSound)
-                        {
-                            Sound(Chime.Wake);
-                        }
-
                         break;
                     case "partial":
                         VoiceFailure = null;
@@ -1247,6 +1415,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         VoiceFailure = null;
                         StatusDescription = "Transcribiendo…";
                         break;
+                    case "voice_ready":
+                        // Uso 95: the ear that waited for memory loaded on its own: its state is read again, so the
+                        // view stops saying it waits and offers the microphone.
+                        _ = RereadVoiceAsync();
+                        break;
                     case "error":
                         VoiceFailure = "voice_error";
                         if (_voiceRequestOpen)
@@ -1266,7 +1439,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         MindVoiceStatus? voice,
         CancellationToken cancellationToken)
     {
-        IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
+        IsMicAvailable = voice?.MicUsable == true;
         SetVoicePieces(voice);
         if (!StartupWakeApplies(
                 voice,
@@ -1277,7 +1450,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return;
         }
 
-        bool wakeStarted = await mind.VoiceStartAsync("wake", MindSidecarClient.VoiceStartTimeout, cancellationToken);
+        bool wakeStarted = await mind.VoiceStartAsync("wake", MindSidecarClient.VoiceStartTimeout, cancellationToken, Settings.EchoCancel);
         IsWakeListening = wakeStarted;
         if (wakeStarted)
         {
@@ -1315,6 +1488,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         bool voiceRunning) =>
         voice is { Pending: false }
         && (voice.Available || voice.InputAvailable || voice.SttAvailable)
+        && voice.WaitingMemory is null
         && wakeOnStartRequested
         && !personChoseVoice
         && !voiceRunning;
@@ -1373,13 +1547,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     // ---- mind start-up -------------------------------------------------------------------------------------
 
+    private ExternalModel? _externalModel;
+
     private async Task InitializeMindAsync(
         Task<MindStartupCatalog> catalog,
         CancellationToken startupAbandoned,
         CancellationToken cancellationToken)
     {
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken, startupAbandoned, _mindLifetimeCancellation.Token);
+            cancellationToken, startupAbandoned, _mindLifetimeCancellation.Token, _mindStartCut.Token);
         MindSidecarClient? mind = null;
         bool starting = false;
         TaskCompletionSource? voiceSettled = null;
@@ -1395,15 +1571,23 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             _mindStartupState = MindStartupState.Starting;
+            _mindRetryPending = false;
             _mindStartedAt = DateTimeOffset.UtcNow;
             _mindReadyAt = null;
             OnPropertyChanged(nameof(MindStartedAt));
             MindRuntimeDiscoveryResult discovery = await Task.Run(
                 static () => MindRuntimeDiscovery.DiscoverVerified(), linked.Token);
-            if (!MindRuntimeDiscovery.ApplyVerified(discovery) || !MindSidecarClient.IsConfigured)
+            if (!ApplyMindRuntime(discovery))
             {
-                _mindStartupState = MindStartupState.NotConfigured;
+                _mindFailureCause = discovery.Problem;
+                _mindFailureMemory = null;
                 return;
+            }
+
+            // After the registered runtime: it uses that interpreter and overrides the vision's address.
+            if (ExternalModel.Available)
+            {
+                await ExternalModelState.StartAsync(linked.Token);
             }
 
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindVerified);
@@ -1417,7 +1601,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             mind = new MindSidecarClient();
             // FT/proveedores goal (review of the App): the mind waits up to 600 s for its model to load (wait_ready in
             // __main__.py) before it says catalog.ready; at 120 s the App ended a slow but healthy load (no GPU, a cold
-            // disk) and relaunched it for ever. A model server that dies is told at once (startup_failure).
+            // disk) and relaunched it for ever. A model server that dies is told at once (startup_failure). Uso 84: the
+            // 600 s are a window the mind's progress through its prompt prefix starts again (a cold read took 167.5 s on
+            // an AMD RX 7600, longer on a slower GPU), within MindSidecarClient.StartupCeiling.
             if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(600), linked.Token))
             {
                 RecordMindStartupFailure(mind.LastStartupFailure);
@@ -1449,10 +1635,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _voiceSettled = voiceSettled.Task;
             _mindClient = mind;
             _mindStartupState = MindStartupState.Ready;
-            _mindStartupFailureCount = 0;
+            _mindRetries.Up(DateTimeOffset.UtcNow);
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindReady);
             _mindReadyAt = DateTimeOffset.UtcNow;
+            _mindFailureCause = null;
             OnPropertyChanged(nameof(IsMindReady));
+            // A message that waited for this mind is its first turn (uso 95).
+            MindChanged();
             // Ajuste c3: a list of installed applications the core read after the mind's catalog was taken.
             if (_coreClient?.ApplicationCatalog is { Verified: true } installed)
             {
@@ -1460,7 +1649,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             MindVoiceStatus? voice = await mind.VoiceStatusAsync(TimeSpan.FromSeconds(10), linked.Token);
-            IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
+            IsMicAvailable = voice?.MicUsable == true;
             SetVoicePieces(voice);
             if (voice is not { Pending: false })
             {
@@ -1502,7 +1691,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             _startupMindPending = false;
-            OnPropertyChanged(nameof(IsMindPreparing));
+            MindChanged();
             if (IsReady && !IsBusy)
             {
                 StatusDescription = IdleStatus();
@@ -1512,20 +1701,33 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>
     /// r22 (2026-10-09): a model that could not come up is traced with its cause, shown as a state, and retried on its
-    /// own with a growing wait (10 s, 20 s, 40 s, then 60 s).
+    /// own with a growing wait (<see cref="StartupRetries"/>), within its limit.
     /// </summary>
     private void RecordMindStartupFailure(MindStartupFailure? failure)
     {
-        _mindStartupFailureCount++;
         _mindStartupState = MindStartupState.Failed;
+        _mindFailureCause = failure?.Cause ?? "desconocida";
+        _mindFailureMemory = failure?.NeedMb is { } need ? (need, failure.FreeMb) : null;
         string cause = failure?.TraceLabel ?? "desconocida";
         ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed, cause);
-        _ = RetryMindAfterAsync(MindRetryDelay(_mindStartupFailureCount));
+        RetryMindOrGiveUp(cause);
         MindRestarts.Record(new MindLoss("startup." + cause), DateTimeOffset.UtcNow - _mindStartedAt);
     }
 
-    internal static TimeSpan MindRetryDelay(int failures) =>
-        TimeSpan.FromSeconds(Math.Min(60, 10 * Math.Pow(2, Math.Clamp(failures, 1, 16) - 1)));
+    // Uso 85: the same failure again and again is a breakdown the interface shows, never one more relaunch.
+    private void RetryMindOrGiveUp(string cause)
+    {
+        if (_mindRetries.Failed(cause, DateTimeOffset.UtcNow) is { } delay)
+        {
+            _mindRetryPending = true;
+            _ = RetryMindAfterAsync(delay);
+            return;
+        }
+
+        _mindRetryPending = false;
+        _mindGaveUp = true;
+        OnPropertyChanged(nameof(Failure));
+    }
 
     private async Task RetryMindAfterAsync(TimeSpan delay)
     {
@@ -1540,6 +1742,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (_isDisposed || _mindStartupState != MindStartupState.Failed || _coreClient is not { IsReady: true } core)
         {
+            // No relaunch after all: a message waiting for the mind stops waiting (uso 95).
+            _mindRetryPending = false;
+            MindChanged();
             return;
         }
 
@@ -1564,6 +1769,101 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     // ---- core ----------------------------------------------------------------------------------------------
 
+    /// <summary>
+    /// A change of the model by API applies at once: nothing more goes to what the person left, so a running turn's next step
+    /// fails; once it ends, the mind stops and a new one starts on what the person chose, and gets its conversation back
+    /// (InitializeMindAsync). The view answers without waiting for it.
+    /// </summary>
+    internal void ExternalModelChanged()
+    {
+        ExternalModel model = ExternalModelState;
+        // Not waiting for the engine: nothing would ask again, and what the person turned off would go on being sent.
+        if (_isDisposed || !model.NeedsSwitch)
+        {
+            return;
+        }
+
+        if (model.Cut())
+        {
+            // A mind starting on that translator would wait out its 600 s on a port with nobody there.
+            CancellationTokenSource cut = _mindStartCut;
+            _mindStartCut = new CancellationTokenSource();
+            cut.Cancel();
+            cut.Dispose();
+        }
+
+        if (model.Switching)
+        {
+            return;
+        }
+
+        model.Switching = true;
+        _ = SwitchMindAsync(model);
+    }
+
+    private async Task SwitchMindAsync(ExternalModel model)
+    {
+        CancellationToken lifetime = _mindLifetimeCancellation.Token;
+        try
+        {
+            do
+            {
+                await _turnGate.WaitAsync(lifetime);
+                try
+                {
+                    await _mindStart.WaitAsync(lifetime);
+                    try
+                    {
+                        model.Stop();
+                        if (_mindClient is { } running)
+                        {
+                            DetachMind(running);
+                            _mindClient = null;
+                            OnPropertyChanged(nameof(IsMindReady));
+                            await running.DisposeAsync();
+                        }
+                    }
+                    finally
+                    {
+                        _mindStart.Release();
+                    }
+                }
+                finally
+                {
+                    _turnGate.Release();
+                }
+
+                // A recovery under way starts a mind only if none was there when it began.
+                await WaitForCoreRecoveryAsync();
+                if (_coreClient is not { IsReady: true } core)
+                {
+                    // The engine's next start brings up the mind, on what is chosen by then.
+                    return;
+                }
+
+                Task initialization = InitializeMindAsync(
+                    Task.FromResult(new MindStartupCatalog(core.Capabilities, core.ApplicationCatalog, core.GameCatalog)),
+                    CancellationToken.None,
+                    lifetime);
+                _mindInitializationTask = initialization;
+                await initialization;
+            }
+            while (!_isDisposed && model.NeedsSwitch);
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
+        {
+            // BAXY is closing.
+        }
+        finally
+        {
+            model.Switching = false;
+        }
+    }
+
+    /// <summary>The model by API (ExternalModel), for the view's Settings and the mind's start.</summary>
+    internal ExternalModel ExternalModelState =>
+        _externalModel ??= new ExternalModel(MemoryOperationProtector.ResolveDataRoot());
+
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)
@@ -1573,7 +1873,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         _isDisposed = true;
         IsReady = false;
+        _externalModel?.Dispose();
         _mindLifetimeCancellation.Cancel();
+        MindChanged();
         if (_mindInitializationTask is not null)
         {
             try
@@ -1600,9 +1902,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         _mindLifetimeCancellation.Dispose();
+        _mindStartCut.Dispose();
     }
 
-    private async Task HandleStartupFailureAsync(CoreProcessClient client)
+    private async Task HandleStartupFailureAsync(CoreProcessClient client, Exception exception)
     {
         _loop.Reset(engineRestarted: true);
         DetachCoreDisconnectedHandler(client);
@@ -1613,11 +1916,82 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         IsReady = false;
-        SetStartupFailure("retry_without_close");
-        // FT/proveedores goal (review of the App): a core that could not start (its hello late at a busy sign-in) was
-        // never tried again, and BAXY sat in the tray saying «Arrancando»; it is retried with the mind's growing wait.
-        _coreStartupFailureCount++;
-        _ = RetryCoreAfterAsync(MindRetryDelay(_coreStartupFailureCount));
+        if (CoreStartFailed(exception, DateTimeOffset.UtcNow) is { } delay)
+        {
+            _ = RetryCoreAfterAsync(delay);
+        }
+    }
+
+    /// <summary>
+    /// What a core start that failed by <paramref name="exception"/> leaves: the failure the interface shows and the wait
+    /// before the next start, or null when there is none to make. FT/proveedores goal (review of the App): a core that
+    /// could not start (its hello late at a busy sign-in) was never tried again; it is retried with a growing wait.
+    /// Uso 85: a profile the core cannot read is terminal (<see cref="ProfileUnreadable"/>), and the same failure again
+    /// and again a breakdown (<see cref="EngineUnavailable"/>): neither relaunches anything.
+    /// </summary>
+    internal TimeSpan? CoreStartFailed(Exception exception, DateTimeOffset at)
+    {
+        if (exception is CoreProfileUnreadableException)
+        {
+            SetStartupFailure(ProfileUnreadable);
+            return null;
+        }
+
+        TimeSpan? delay = _coreRetries.Failed($"{exception.GetType().Name}: {exception.Message}", at);
+        SetStartupFailure(delay is null ? EngineUnavailable : "retry_without_close");
+        return delay;
+    }
+
+    /// <summary>The person asked to try again after a breakdown (<see cref="EngineUnavailable"/>): the count starts anew
+    /// and the piece that is down starts. False when there is no breakdown to retry.</summary>
+    internal bool RetryEngine()
+    {
+        if (_isDisposed || Failure != EngineUnavailable)
+        {
+            return false;
+        }
+
+        _coreRetries.Reset();
+        _mindRetries.Reset();
+        _mindGaveUp = false;
+        OnPropertyChanged(nameof(Failure));
+        if (!IsReady)
+        {
+            // InitializeAsync ends the old client and starts a mind that is not up beside the core.
+            RecoverCoreWhenIdle();
+        }
+        else if (_mindStartupState == MindStartupState.Failed)
+        {
+            _mindRetryPending = true;
+            MindChanged();
+            _ = RetryMindAfterAsync(TimeSpan.Zero);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Uso 85: with the person's Sí on an unreadable profile (<see cref="ProfileUnreadable"/>), the profile's folder is
+    /// set aside with the date (renamed, never deleted: <see cref="ProfileSetAside"/>) and BAXY starts on a new one.
+    /// Returns the folder it was set aside as, or null when there is no unreadable profile to set aside; a folder that
+    /// could not be renamed throws (IOException, UnauthorizedAccessException) and leaves everything as it was.
+    /// </summary>
+    internal async Task<string?> StartFreshProfileAsync(CancellationToken cancellationToken)
+    {
+        if (_isDisposed || _isInitializing || _coreClient is not null || _startupFailure != ProfileUnreadable)
+        {
+            return null;
+        }
+
+        string dataRoot = MemoryOperationProtector.ResolveDataRoot();
+        string setAside = await Task.Run(() => ProfileSetAside.SetAside(dataRoot, DateTimeOffset.Now), cancellationToken);
+        // The protector read the old profile's key: the new profile's is another.
+        _memoryProtector = null;
+        _coreRetries.Reset();
+        ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupProfileSetAside);
+        // A new profile is a new session: nothing of the unreadable one is resumed.
+        _coreRecovery = RecoverCoreAsync(recovering: false);
+        return setAside;
     }
 
     private async Task RetryCoreAfterAsync(TimeSpan delay)
@@ -1676,6 +2050,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                 owner.IsReady = false;
                 owner._loop.Reset(engineRestarted: true);
+                if (owner._isInitializing)
+                {
+                    // A core that ends during its start is that start's failure (HandleStartupFailureAsync), counted once.
+                    return;
+                }
+
+                // Uso 85: a core that comes up and ends again and again is a breakdown, not one more relaunch; one that
+                // ran a while (StartupRetries.Stable) is started again at once, as before.
+                if (owner._coreRetries.Failed("core_disconnected", DateTimeOffset.UtcNow) is null)
+                {
+                    owner.SetStartupFailure(EngineUnavailable);
+                    return;
+                }
+
                 owner.SetStartupFailure("core_disconnected");
                 owner.RecoverCoreWhenIdle();
             },
@@ -1703,11 +2091,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _coreRecovery = RecoverCoreAsync();
     }
 
-    private async Task RecoverCoreAsync()
+    private async Task RecoverCoreAsync(bool recovering = true)
     {
         try
         {
-            await InitializeAsync(recovering: true, _mindLifetimeCancellation.Token);
+            await InitializeAsync(recovering, _mindLifetimeCancellation.Token);
         }
         catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
         {
@@ -1742,6 +2130,38 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // ---- publishing ----------------------------------------------------------------------------------------
 
     // A voice status that is no longer pending names the start's pieces (the view's start list).
+    private async Task RereadVoiceAsync()
+    {
+        if (_mindClient is not { IsReady: true } mind)
+        {
+            return;
+        }
+
+        try
+        {
+            MindVoiceStatus? voice = await mind.VoiceStatusAsync(TimeSpan.FromSeconds(10), _mindLifetimeCancellation.Token);
+            if (voice is not null)
+            {
+                // Uso 112: as at the start, its wake word included: the ear that waited for memory has just loaded.
+                await ApplyStartupVoiceAsync(mind, voice, _mindLifetimeCancellation.Token);
+                if (VoiceFailure == WakeUnavailable && voice.SttAvailable)
+                {
+                    VoiceFailure = null;
+                }
+
+                if (voice.SttAvailable && Interlocked.Exchange(ref _wakeAwaitsEar, 0) != 0)
+                {
+                    _ = await SetWakeVoiceAsync(true, _mindLifetimeCancellation.Token);
+                }
+            }
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException
+            or IOException or InvalidOperationException)
+        {
+            // The mind went away meanwhile: its successor reads its own voice state.
+        }
+    }
+
     private void SetVoicePieces(MindVoiceStatus? voice)
     {
         if (voice is not null && !voice.Pending)

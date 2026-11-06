@@ -78,6 +78,9 @@ class SlotServer:
         self.slot += written  # what the model wrote, as it wrote it, after the generation prompt
         return reply
 
+    def read_prefix(self, body: dict, on_progress=None) -> dict:
+        return self.chat(body)  # the warm-up's chat: the same reply, streamed with its progress by the real server
+
     def template(self, body: dict, timeout: float = 10.0) -> str:
         self.templates += 1
         return self.render(body)
@@ -235,6 +238,32 @@ def test_a_read_ahead_that_gives_way_says_so_and_not_as_a_failure(tmp_path: Path
     assert "yielded" not in rows[1] and "failure" not in rows[1]
 
 
+def test_a_read_ahead_past_its_budget_goes_on_from_what_the_slot_read_and_not_for_ever(tmp_path: Path,
+                                                                                        monkeypatch: pytest.MonkeyPatch) -> None:
+    # uso-124 (RX 7600, 2026-11-05): ~100 tokens/s and a history of 5,000 tokens more after a web.fetch. The read ahead
+    # ended at its 24 s and nothing went on with it, so 45 s later the next decision read it, ended at its own 24 s, and
+    # the person heard nothing. The server keeps what a cancelled prompt read, so another round goes on from there.
+    from baxy_mind.mind import PREFILL_ROUNDS
+
+    mind, server = _mind(tmp_path, [_say("Hola.")], monkeypatch)
+    mind.decide(1, "hola")
+    server.fail_prefill = TimeoutError("the request's time ran out")
+    for _ in range(PREFILL_ROUNDS - 1):
+        assert mind.prefill(mind.gave_way or False) is False and mind.gave_way is False
+    assert mind.prefill(False) is False and mind.gave_way is None  # as a person's next turn would read it itself
+    server.fail_prefill = None
+    assert mind.prefill() is True and mind.gave_way is None
+    server.fail_prefill = TimeoutError("the request's time ran out")
+    assert mind.prefill() is False and mind.gave_way is False  # a new history has its rounds again
+
+
+def test_a_read_ahead_that_fails_otherwise_is_not_read_again(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    mind, server = _mind(tmp_path, [_say("Hola.")], monkeypatch)
+    mind.decide(1, "hola")
+    server.fail_prefill = OSError("the server fell")
+    assert mind.prefill() is False and mind.gave_way is None
+
+
 def _sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, incoming: list, events: list[str]):
     """The sidecar's loop on a fake server, mind and voice, reading ``incoming`` and writing into ``events``."""
     from baxy_mind import __main__ as sidecar
@@ -260,7 +289,7 @@ def _sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, incoming: list, ev
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending, unsure=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
             return {"type": "turn.result", "id": request_id}
 
         def continue_turn(self, request_id, observation, final, beat):
@@ -283,6 +312,7 @@ def _sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, incoming: list, ev
             return True
 
     class FakeSpeech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def foresee(self, text, done):
             return True
 
@@ -339,7 +369,7 @@ def test_a_request_that_fails_leaves_its_reason_in_the_trace(tmp_path: Path, mon
     sidecar, fake_mind = _sidecar(tmp_path, monkeypatch, incoming, events)
     rows: list[tuple] = []
 
-    def decide(self, request_id, text, pending, unsure=None):
+    def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
         raise TimeoutError("the request's time budget is spent")
 
     monkeypatch.setattr(fake_mind, "decide", decide)
@@ -409,6 +439,7 @@ def test_the_sidecar_answers_a_turn_s_notice_once_its_audio_is_kept_and_none_wit
             return "Busco vuelos a Lima."
 
     class FakeSpeech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def __init__(self) -> None:
             self.ready = ready
             self.kept = ""
@@ -572,7 +603,7 @@ def test_the_sidecar_s_read_ahead_gives_way_while_a_request_waits(tmp_path: Path
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending, unsure=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
             return {"type": "turn.result", "id": request_id}
 
         def prefill(self) -> bool:
@@ -586,6 +617,7 @@ def test_the_sidecar_s_read_ahead_gives_way_while_a_request_waits(tmp_path: Path
             return False
 
     class FakeSpeech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def foresee(self, text, done):
             return True
 
@@ -672,7 +704,7 @@ def test_the_sidecar_reads_again_once_a_request_it_gave_way_to_is_answered(tmp_p
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending, unsure=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
             return {"type": "turn.result", "id": request_id}
 
         def export_session(self) -> list:
@@ -692,6 +724,7 @@ def test_the_sidecar_reads_again_once_a_request_it_gave_way_to_is_answered(tmp_p
             return True
 
     class FakeSpeech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def foresee(self, text, done):
             return True
 
@@ -803,6 +836,7 @@ def test_the_sidecar_does_not_read_again_while_an_early_decision_is_held(tmp_pat
                 events.append("expired")
 
     class FakeSpeech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def foresee(self, text, done):
             return True
 

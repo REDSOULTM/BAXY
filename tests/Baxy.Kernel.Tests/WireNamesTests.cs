@@ -91,6 +91,15 @@ public sealed class WireNamesTests
             + "a.b.2set, a.b.3set, a.b.4set, a.b.5set, a.b.6set, a.b.7set, a.b.8set, a.b.9set, a.b.set"));
     }
 
+    // Encargo 28: a call a result leads with is written as the model writes it, the wire name and the arguments with
+    // their text as written (accents and quotes kept readable, not \u-escaped).
+    [Test]
+    public void ACallIsWrittenWithItsWireNameAndItsArgumentsAsWritten()
+    {
+        Assert.That(WireNames.Call("audio.volume", new() { ["query"] = "Canción «Inventada»" }),
+            Is.EqualTo("audio_volume_set {\"query\":\"Canción «Inventada»\"}"));
+    }
+
     // The names of a catalog with a time limit: a rule that loops fails the test instead of hanging the suite.
     private static InvalidOperationException? Settle(string[] operations, IReadOnlyList<string> fixedNames)
     {

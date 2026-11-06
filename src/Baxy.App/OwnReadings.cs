@@ -84,7 +84,8 @@ internal static class OwnReadings
 
             foreach (JsonNode? step in steps)
             {
-                if ((string?)step?["net"] is { Length: > 0 } what)
+                // An English view's step keeps the Spanish words beside its own (FieldProductChannel.OnStepCompleted).
+                if (((string?)step?["netEs"] ?? (string?)step?["net"]) is { Length: > 0 } what)
                 {
                     exits.Add(new JsonObject { ["destination"] = what, ["at"] = (string?)item["ts"] });
                 }

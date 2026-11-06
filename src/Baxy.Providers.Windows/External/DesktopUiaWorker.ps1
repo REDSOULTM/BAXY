@@ -22,7 +22,14 @@
 #   {"cmd":"field","hwnd":123,"controlId":"42.1837.4","text":"hola","replace":false}   (texto dirigido; sin «text», solo lo lee)
 #   {"cmd":"textcaret","hwnd":123,"processId":4242,"max":8192}   (el parrafo del cursor del foco, por TextPattern; solo lee)
 #   {"cmd":"focusvalue","hwnd":123,"max":8192}   (el valor del campo con el foco dentro de la ventana, por ValuePattern; solo lee)
+#   {"cmd":"activecell","hwnd":123,"row":1,"column":1}   (la celda activa de una rejilla y el valor de la pedida, por GridItemPattern y ValuePattern; solo lee)
+#      (con «lengthOnly»: solo la longitud de su texto, tambien la de un Document por su TextPattern; nada del texto)
 #   {"cmd":"focuskind","hwnd":123}   (lo que tiene el foco del teclado: tipo, nombre, editable, TextPattern, dentro de la ventana; solo lee)
+#   {"cmd":"focusselect","hwnd":123}   (todo el texto del foco seleccionado por TextPattern y releido; ninguna tecla)
+#   {"cmd":"focusstate","hwnd":123}   (el dialogo dibujado dentro de la ventana que tiene el foco y los atributos de la seleccion; solo lee, nada del texto)
+#   {"cmd":"focusdialogclose","hwnd":123}   (pide cerrar ese dialogo por su boton de cierre o WindowPattern; ninguna tecla)
+#   {"cmd":"focusfind","hwnd":123}   (si la ventana tiene barra de menus propia, si el foco es un documento editable y cuantos caracteres hay seleccionados; solo lee, nada del texto)
+#   {"cmd":"tabcount","hwnd":123}   (cuantas pestanas muestra la ventana; solo lee)
 #   {"cmd":"script","script":"...","args":["123"]}   (un guion de UserBrowserScripts, $args como en -Command)
 #   {"cmd":"unnamed","hwnd":123,"limit":24}   (accionables sin nombre ni respaldo: candidatos a leer su tooltip)
 #   {"cmd":"tooltips","hwnd":123,"pids":[4242]}   (los tooltips visibles de esos procesos y de la ventana, con su texto)
@@ -42,18 +49,55 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+public class BaxyWindowNotResponding : Exception {}
 public static class BaxyUiaWorkerNative {
+  [DllImport("user32.dll", SetLastError=true)] private static extern IntPtr SendMessageTimeoutW(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam, uint flags, uint timeoutMs, out IntPtr result);
+  [DllImport("user32.dll")] private static extern bool IsHungAppWindow(IntPtr hwnd);
+  private static bool Answers(IntPtr hwnd) {
+    IntPtr result;
+    if(SendMessageTimeoutW(hwnd, 0, IntPtr.Zero, IntPtr.Zero, 2, 500, out result)!=IntPtr.Zero) return true;
+    int error=Marshal.GetLastWin32Error();
+    return error!=0 && error!=1460;
+  }
+  // uso-108 A9: la misma sonda que VisibleControlSurface.NotResponding, con su porque alli.
+  public static bool NotResponding(IntPtr hwnd, int limitMs) {
+    if(hwnd==IntPtr.Zero || !IsWindow(hwnd)) return false;
+    StringBuilder name=new StringBuilder(16);
+    if(GetClassName(hwnd, name, name.Capacity)>0 && name.ToString()=="Ghost") return true;
+    long began=Environment.TickCount;
+    while(!IsHungAppWindow(hwnd)){
+      if(Answers(hwnd)) return false;
+      if(Environment.TickCount-began>=limitMs) return true;
+      System.Threading.Thread.Sleep(10);
+    }
+    return true;
+  }
   private delegate bool EnumProc(IntPtr hwnd, IntPtr lParam);
   [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
   [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
   [DllImport("user32.dll")] public static extern IntPtr GetWindow(IntPtr hwnd, uint command);
   [DllImport("user32.dll")] private static extern bool EnumWindows(EnumProc callback, IntPtr value);
+  [DllImport("user32.dll", EntryPoint="GetWindowLongPtrW")] private static extern IntPtr GetWindowLongPtr(IntPtr hwnd, int index);
   [DllImport("user32.dll")] private static extern bool EnumChildWindows(IntPtr parent, EnumProc callback, IntPtr lParam);
   [DllImport("user32.dll", CharSet=CharSet.Unicode)] private static extern int GetWindowText(IntPtr hwnd, StringBuilder text, int count);
   [DllImport("user32.dll", CharSet=CharSet.Unicode)] private static extern int GetClassName(IntPtr hwnd, StringBuilder text, int count);
   [DllImport("user32.dll")] public static extern bool IsWindow(IntPtr hwnd);
   [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr hwnd);
   [DllImport("user32.dll")] public static extern bool IsWindowEnabled(IntPtr hwnd);
+  [DllImport("user32.dll")] public static extern bool IsIconic(IntPtr hwnd);
+  [DllImport("user32.dll")] private static extern IntPtr WindowFromPoint(POINT point);
+  [DllImport("user32.dll")] private static extern int GetSystemMetrics(int index);
+  // La ventana de primer nivel que Windows tiene en el punto de la pantalla; cero si ninguna.
+  public static IntPtr RootWindowAt(int x, int y) {
+    POINT point=new POINT(); point.X=x; point.Y=y;
+    IntPtr window=WindowFromPoint(point);
+    return window==IntPtr.Zero ? IntPtr.Zero : GetAncestor(window,2);
+  }
+  // Semiabierto: en el borde lejano de la pantalla virtual ElementFromPoint responde con el escritorio (A18-6 de agent-desktop).
+  public static bool OnVirtualScreen(int x, int y) {
+    int left=GetSystemMetrics(76); int top=GetSystemMetrics(77);
+    return x>=left && y>=top && x<left+GetSystemMetrics(78) && y<top+GetSystemMetrics(79);
+  }
   [DllImport("user32.dll")] private static extern IntPtr SendMessage(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
   [DllImport("user32.dll")] private static extern bool PostMessage(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
   [DllImport("user32.dll")] private static extern IntPtr ChildWindowFromPointEx(IntPtr parent, POINT point, uint flags);
@@ -375,15 +419,93 @@ public static class BaxyUiaWorkerNative {
       return action;
     } catch (Exception failure) { LegacyStep = LegacyStep + ":" + failure.GetType().Name; return ""; }
   }
+  // A second COM client for the pattern calls on a window behind: CUIAutomation8 (the plain CUIAutomation has no
+  // IUIAutomation2) with AutoSetFocus off, so a pattern call no longer asks for the foreground first (agent-desktop #567;
+  // Microsoft's IUIAutomation2::put_AutoSetFocus). The managed client has no such property. The context menu and the default
+  // action stay on the plain client: the measurement did not cover them, and a menu needs its window active. IUnknown (3) and
+  // IUIAutomation (55) come first, so the property is get 58, put 59; the read-back proves the slots.
+  private static IBaxyUia _quiet;
+  private static readonly object ClientGate = new object();
+  private static string _focusSwitch = "";
+  [UnmanagedFunctionPointer(CallingConvention.StdCall)] private delegate int ClientGetBool(IntPtr self, out int value);
+  [UnmanagedFunctionPointer(CallingConvention.StdCall)] private delegate int ClientPutBool(IntPtr self, int value);
+  private static IBaxyUia QuietClient() {
+    lock(ClientGate) {
+      if(_quiet!=null) return _quiet;
+      _quiet=(IBaxyUia)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("e22ad333-b25f-460c-83d0-0581107395c9")));
+      _focusSwitch=SwitchFocusOff(_quiet);
+      return _quiet;
+    }
+  }
+  private static string SwitchFocusOff(IBaxyUia client) {
+    IntPtr unknown=Marshal.GetIUnknownForObject(client); IntPtr second=IntPtr.Zero;
+    try {
+      Guid iid=new Guid("34723aff-0c9d-49d0-9896-7ab52df8cd8a");
+      if(Marshal.QueryInterface(unknown,ref iid,out second)!=0 || second==IntPtr.Zero) return "none";
+      IntPtr table=Marshal.ReadIntPtr(second);
+      ClientPutBool put=(ClientPutBool)Marshal.GetDelegateForFunctionPointer(Marshal.ReadIntPtr(table,59*IntPtr.Size),typeof(ClientPutBool));
+      ClientGetBool get=(ClientGetBool)Marshal.GetDelegateForFunctionPointer(Marshal.ReadIntPtr(table,58*IntPtr.Size),typeof(ClientGetBool));
+      int after=1;
+      if(put(second,0)!=0 || get(second,out after)!=0 || after!=0) return "on";
+      return "off";
+    } finally {
+      if(second!=IntPtr.Zero) Marshal.Release(second);
+      Marshal.Release(unknown);
+    }
+  }
+  // The visible top-level tool windows (WS_EX_TOOLWINDOW) of a process: where a WPF menu opens (Get-ToolMenuRects).
+  public static IntPtr[] ToolWindowsOf(uint process) {
+    List<IntPtr> found=new List<IntPtr>();
+    EnumWindows((window,unused)=>{
+      uint owner;
+      if(IsWindowVisible(window) && GetWindowThreadProcessId(window,out owner)!=0 && owner==process
+        && (GetWindowLongPtr(window,-20).ToInt64() & 0x80)!=0) found.Add(window);
+      return found.Count<32;
+    },IntPtr.Zero);
+    return found.ToArray();
+  }
+  // Whether that client's automatic focus is off (off, on, none: no IUIAutomation2, failed:<exception>).
+  public static string ClientFocusSwitch() {
+    try { QuietClient(); return _focusSwitch; } catch (Exception failure) { return "failed:"+failure.GetType().Name; }
+  }
+  // A pattern call on a window behind, through the client above, so UI Automation does not bring it to the front. Measured
+  // (uso-108-foco, windows of the probe's own, the target taking the front / valid calls, person quiet + typing): switch on
+  // 270/270 with VK 0xB9 in each, off 0/314; in a process with the managed client loaded, as here, WPF 0/80, Chromium 0/79,
+  // WinForms 40/80 (Invoke and Toggle, which the in-process client-side provider presses itself and the switch does not
+  // reach); today's import hook on the managed client WPF 3/72, Chromium 3/70, WinForms 72/72. Answers done, absent (nothing
+  // was sent: no window, no identity, no client with the switch off, no such element or pattern; the managed call follows),
+  // or refused:<HRESULT> (the call failed as the managed one would).
+  public static string QuietPattern(IntPtr holder, int[] runtimeId, string op, string text) {
+    if(holder==IntPtr.Zero || runtimeId==null || runtimeId.Length==0) return "absent";
+    object raw=null;
+    try {
+      if(ClientFocusSwitch()!="off") return "absent";
+      int id=op=="invoke" ? 10000 : op=="select" ? 10010 : op=="toggle" ? 10015 : op=="setvalue" ? 10002 : 0;
+      if(id==0) return "absent";
+      IBaxyUiaElement found=FindByRuntimeId(QuietClient(),holder,runtimeId); if(found==null) return "absent";
+      if(found.GetCurrentPattern(id,out raw)!=0 || raw==null) return "absent";
+    } catch (Exception) { return "absent"; }
+    int answer;
+    try {
+      if(op=="invoke"){ IBaxyUiaInvoke call=raw as IBaxyUiaInvoke; if(call==null) return "absent"; answer=call.Invoke(); }
+      else if(op=="select"){ IBaxyUiaSelect call=raw as IBaxyUiaSelect; if(call==null) return "absent"; answer=call.Select(); }
+      else if(op=="toggle"){ IBaxyUiaToggle call=raw as IBaxyUiaToggle; if(call==null) return "absent"; answer=call.Toggle(); }
+      else { IBaxyUiaValue call=raw as IBaxyUiaValue; if(call==null) return "absent"; answer=call.SetValue(text); }
+    } catch (COMException failure) { answer=failure.ErrorCode; }
+    return answer==0 ? "done" : "refused:"+answer.ToString("X8");
+  }
   // The element under the window found again through the COM client by its RuntimeId, or null; the step it stopped at
   // goes to LegacyStep (create, root, condition, find).
   private static IBaxyUiaElement FindByRuntimeId(IntPtr top, int[] runtimeId) {
     LegacyStep = "create";
     if(_uia==null) _uia=(IBaxyUia)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("ff48dba4-60ef-4201-aa87-54103eef594e")));
+    return FindByRuntimeId(_uia,top,runtimeId);
+  }
+  private static IBaxyUiaElement FindByRuntimeId(IBaxyUia client, IntPtr top, int[] runtimeId) {
     LegacyStep = "root";
-    IBaxyUiaElement root; if(_uia.ElementFromHandle(top,out root)!=0 || root==null) return null;
+    IBaxyUiaElement root; if(client.ElementFromHandle(top,out root)!=0 || root==null) return null;
     LegacyStep = "condition";
-    IBaxyUiaCondition condition; if(_uia.CreatePropertyCondition(30000,runtimeId,out condition)!=0 || condition==null) return null;
+    IBaxyUiaCondition condition; if(client.CreatePropertyCondition(30000,runtimeId,out condition)!=0 || condition==null) return null;
     LegacyStep = "find";
     IBaxyUiaElement found; if(root.FindFirst(7,condition,out found)!=0 || found==null) return null;
     return found;
@@ -462,6 +584,14 @@ public interface IBaxyUiaLegacy {
   void Role(); void State(); void Help(); void KeyboardShortcut(); void GetCurrentSelection();
   [PreserveSig] int GetDefaultAction([MarshalAs(UnmanagedType.BStr)] out string action);
 }
+[ComImport, Guid("fb377fbe-8ea6-46d5-9c73-6499642d3059"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+public interface IBaxyUiaInvoke { [PreserveSig] int Invoke(); }
+[ComImport, Guid("a8efa66a-0fda-421a-9194-38021f3578ea"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+public interface IBaxyUiaSelect { [PreserveSig] int Select(); }
+[ComImport, Guid("94cf8058-9b8d-4ab9-8bfd-4cd0a33c8c70"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+public interface IBaxyUiaToggle { [PreserveSig] int Toggle(); }
+[ComImport, Guid("a94cd8b1-0844-4cd6-9d2d-640537ab39e9"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+public interface IBaxyUiaValue { [PreserveSig] int SetValue([MarshalAs(UnmanagedType.BStr)] string value); }
 '@
 # Recibo del clic por estado (r15b v3-51): Invoke on a button whose application runs a modal loop (a Qt dialog opened by
 # the press) does not return until the dialog closes; the worker then answered nothing for 15 s and the adapter gave
@@ -469,11 +599,43 @@ public interface IBaxyUiaLegacy {
 # has not returned, the press is pending and «blocked», and the worker keeps answering the postreads.
 Add-Type -ReferencedAssemblies UIAutomationClient,UIAutomationTypes,WindowsBase -TypeDefinition @'
 using System;
+using System.Runtime.InteropServices;
 using System.Windows.Automation;
 public static class BaxyUiaTimedPress {
+  [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+  [DllImport("user32.dll")] private static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
+  // BaxyUiaWorkerNative.QuietPattern, handed over when the worker loads (this class cannot name it: another Add-Type).
+  public static Func<IntPtr, int[], string, string, string> Quiet;
+  // The pattern call through the COM client, for a window behind. With the window in front nothing can be taken from
+  // anyone and the managed call keeps moving the focus to the control, as a key sent next expects. A button or check box
+  // that is its own window is pressed by the in-process client-side provider, which asks for the front itself: the switch
+  // does not reach it (measured 40/80 taken) and through this client, with the import hook in place, the press raised with
+  // no effect (uso-108-foco, 10/10): it stays on the managed call and under BaxyFrontKeeper.
+  public static string QuietCall(AutomationElement element, string op, string text) {
+    if (Quiet == null) return "absent";
+    IntPtr holder = IntPtr.Zero;
+    int[] runtimeId;
+    try {
+      if ((op == "invoke" || op == "toggle") && element.Current.NativeWindowHandle != 0) return "absent";
+      runtimeId = element.GetRuntimeId();
+      AutomationElement node = element;
+      for (int up = 0; up < 16 && node != null && holder == IntPtr.Zero; up++) {
+        int own = node.Current.NativeWindowHandle;
+        if (own != 0) holder = new IntPtr(own); else node = TreeWalker.RawViewWalker.GetParent(node);
+      }
+    } catch (Exception) { return "absent"; }
+    if (holder == IntPtr.Zero || GetAncestor(holder, 2) == GetForegroundWindow()) return "absent";
+    return Quiet(holder, runtimeId, op, text);
+  }
   public static bool InvokeWithin(AutomationElement element, int milliseconds) {
     InvokePattern pattern = (InvokePattern)element.GetCurrentPattern(InvokePattern.Pattern);
-    System.Threading.Tasks.Task press = System.Threading.Tasks.Task.Run(() => pattern.Invoke());
+    System.Threading.Tasks.Task press = System.Threading.Tasks.Task.Run(() => {
+      string quiet = QuietCall(element, "invoke", "");
+      if (quiet == "done") return;
+      if (quiet == "refused:80040200") throw new ElementNotEnabledException();
+      if (quiet.StartsWith("refused:", StringComparison.Ordinal)) throw new InvalidOperationException(quiet);
+      pattern.Invoke();
+    });
     try { return press.Wait(milliseconds); }
     catch (AggregateException failed) { throw failed.InnerException; }
   }
@@ -1080,6 +1242,9 @@ try {
 } catch {}
 # El cliente UIA ya esta cargado (RootElement): su SendInput deja de llegar a la pantalla (BaxyUiaQuietInput, r4a M1).
 try { [void][BaxyUiaQuietInput]::Install('UIAutomationCore.dll') } catch {}
+# Los patrones sobre una ventana de detras van por el cliente COM sin foco automatico (BaxyUiaWorkerNative.QuietPattern); lo
+# de arriba y BaxyFrontKeeper quedan de red para lo que sigue por el cliente administrado.
+try { [BaxyUiaTimedPress]::Quiet=[Delegate]::CreateDelegate([Func[IntPtr,[int[]],string,string,string]],[BaxyUiaWorkerNative].GetMethod('QuietPattern')) } catch {}
 # Ronda 21 (v3-64): un encabezado de columna (HeaderItem) se pulsa para ordenar por esa columna: es accionable.
 $Actionable=@('Button','MenuItem','ListItem','TabItem','Hyperlink','CheckBox','RadioButton','Edit','ComboBox','TreeItem','SplitButton','Slider','Document','HeaderItem')
 $script:LastView=@{ hwnd=[IntPtr]::Zero; elements=@{} }
@@ -1092,9 +1257,26 @@ function Send-Line($object){
 # Auditoria C8: la ventana que nombra la peticion. Sin una (hwnd 0), solo una lectura (-Front: view, signature, find,
 # interaction, unnamed) lee la del frente; un comando que actua (click, at, field, focus, scroll, reveal) no tiene
 # raiz y responde active_window_not_found: el adaptador ya resolvio la ventana objetivo antes de pedirlo.
+# Lo que Get-Root espera a una ventana ocupada: 6 s, o lo que deje el plazo del anfitrion (Set-RootWait).
+$script:RootWaitMs=6000
+# Revision de uso-108: la relectura tras un acto se espera 3 s; una ventana que el acto dejo ocupada mas que eso gastaba el
+# plazo aqui, el anfitrion mataba el worker y la orden siguiente pagaba su arranque (medido: 6,5 s, antes 25 ms). La espera
+# cabe en el plazo que trae la orden, descontado lo que su recorrido puede tardar (seconds) y un margen.
+function Set-RootWait($request){
+  $script:RootWaitMs=6000
+  $names=$request.PSObject.Properties.Name
+  if($names -notcontains 'withinMs'){ return }
+  $walk=0.0
+  if($names -contains 'seconds'){ try { $walk=[double]$request.seconds*1000 } catch { $walk=0.0 } }
+  $script:RootWaitMs=[int][Math]::Max(0,[Math]::Min(6000,[double]$request.withinMs-$walk-500))
+}
 function Get-Root([long]$hwnd,[switch]$Front){
   if($hwnd -gt 0){ $handle=[IntPtr]$hwnd } elseif($Front){ $handle=[BaxyUiaWorkerNative]::GetForegroundWindow() } else { return $null }
   if($handle -eq [IntPtr]::Zero){ return $null }
+  # uso-108 A9: FromHandle no vuelve mientras el hilo de la ventana no atienda mensajes (medido: mas de 40 s; el anfitrion
+  # mataba el worker a los 20 y el modelo oia «arbol lento»). Antes, la sonda (VisibleControlSurface.NotResponding, agent-desktop
+  # automation.rs:215-252): una ventana sana paga unos 0 ms, una ocupada se espera, y la congelada da window_not_responding a los 5 s, sin tocar nada.
+  if([BaxyUiaWorkerNative]::NotResponding($handle,$script:RootWaitMs)){ throw (New-Object BaxyWindowNotResponding) }
   return @{ hwnd=$handle; root=$AE::FromHandle($handle) }
 }
 # R6-NB-5: un nombre de hasta 160 caracteres llega entero; uno mas largo se recorta por el final, en el ultimo limite
@@ -1102,10 +1284,12 @@ function Get-Root([long]$hwnd,[switch]$Front){
 # (60, «...» y 16) perdia lo que una fila dice entre su nombre y su final: el estado de un dispositivo de
 # Configuracion (100% de ... tado Emparejado). $script:NameCut queda con
 # los caracteres que faltan del ultimo nombre formateado (0 si llego entero): la vista lo pasa tipado (nameCut).
+# Uso-108 (C10; agent-desktop: su normalizador de busqueda quita U+061C, U+200E/F, U+202A-E y U+2066-9): las marcas de
+# direccion (Windows escribe «\u200eBAXY-bench», CommonFileDialog.cs) no son del nombre. Un ZWJ si lo es: une un emoji.
 function Format-Name([string]$name){
   $script:NameCut=0
   if([string]::IsNullOrWhiteSpace($name)){ return '' }
-  $name=($name -replace '\s+',' ').Trim()
+  $name=(($name -replace '[\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]','') -replace '\s+',' ').Trim()
   if($name.Length -gt 160){
     $kept=Get-Cut $name 0 160
     $space=$kept.LastIndexOf(' ')
@@ -1178,14 +1362,15 @@ function Get-ReadableId([string]$automationId,[string]$kind,[string]$className='
   if($alpha -eq 0 -or $numeric -gt $alpha){ return '' }
   return (Format-Name ($words -join ' '))
 }
-# Un control sin Name no queda mudo si su aplicacion lo nombra de otro modo: su texto de ayuda (el ToolTip de
-# WPF se publica como HelpText), el nombre del rotulo que lo etiqueta (LabeledBy, un campo de formulario) o su
-# AutomationId legible, en ese orden; vacio si no hay nombre.
+# Un control sin Name no queda mudo si su aplicacion lo nombra de otro modo: el nombre del rotulo que lo etiqueta
+# (LabeledBy, un campo de formulario), su texto de ayuda (el ToolTip de WPF se publica como HelpText) o su AutomationId
+# legible, en ese orden; vacio si no hay nombre. Uso-108 (B13; agent-desktop core/src/tree/accname.rs:97-128, como el
+# calculo de nombre accesible de W3C): el rotulo antes que la ayuda, «Correo» y no «Escribe tu correo aca».
 function Get-FallbackName([string]$helpText,[string]$labelName,[string]$automationId,[string]$kind,[string]$className=''){
-  $help=Format-Name $helpText
-  if($help.Length -gt 0){ return $help }
   $label=Format-Name $labelName
   if($label.Length -gt 0){ return $label }
+  $help=Format-Name $helpText
+  if($help.Length -gt 0){ return $help }
   $readable=Get-ReadableId $automationId $kind $className
   if($readable.Length -gt 0){ return $readable }
   return ''
@@ -1240,11 +1425,15 @@ function Get-ChosenEntry($el){
 function Get-State($el){
   $parts=@()
   $value=$null
+  $valueCut=0
   try {
     $pattern=$null
     if($el.TryGetCachedPattern([System.Windows.Automation.TogglePattern]::Pattern,[ref]$pattern)){
       $state=([System.Windows.Automation.TogglePattern]$pattern).Cached.ToggleState
       if($state -eq [System.Windows.Automation.ToggleState]::On){$parts+='on'} elseif($state -eq [System.Windows.Automation.ToggleState]::Off){$parts+='off'}
+      # Uso-108 (B9; agent-desktop windows/src/tree/states.rs:142-147, y A19-2: a medias -> apagada -> encendida): una casilla
+      # a medias no decia nada y parecia una sin estado. Dentro del patron: sin el, ToggleState da Indeterminate a cualquiera.
+      elseif($state -eq [System.Windows.Automation.ToggleState]::Indeterminate){$parts+='indeterminate'}
     }
     if($el.TryGetCachedPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern)){
       if(([System.Windows.Automation.SelectionItemPattern]$pattern).Cached.IsSelected){$parts+='selected'}
@@ -1262,7 +1451,8 @@ function Get-State($el){
       if($vp.Cached.IsReadOnly){$parts+='readonly'}
       $raw=[string]$vp.Cached.Value
       # An exposed empty value is "" (known empty); a field that exposes none stays null (its content is unknown).
-      if(-not [string]::IsNullOrWhiteSpace($raw)){ $raw=($raw -replace '\s+',' ').Trim(); if($raw.Length -gt 120){$raw=Get-Cut $raw 0 120}; $value=$raw } else { $value='' }
+      # Uso-108 (A7; agent-desktop property_outcome.rs:3-8, a prefix is not the value): the cut is said, as a name's is.
+      if(-not [string]::IsNullOrWhiteSpace($raw)){ $raw=($raw -replace '\s+',' ').Trim(); if($raw.Length -gt 120){$shownPart=Get-Cut $raw 0 120; $valueCut=$raw.Length-$shownPart.Length; $raw=$shownPart}; $value=$raw } else { $value='' }
     } elseif($el.TryGetCachedPattern([System.Windows.Automation.RangeValuePattern]::Pattern,[ref]$pattern)){
       $value=[string]([System.Windows.Automation.RangeValuePattern]$pattern).Cached.Value
     } elseif(($el.Cached.ControlType.ProgrammaticName -replace '^ControlType\.','') -eq 'ComboBox'){
@@ -1270,9 +1460,26 @@ function Get-State($el){
       $value=Get-ChosenEntry $el
     }
     if($password){$parts+='password'}
+    # Uso-108 (B13; agent-desktop windows/src/tree/states.rs:102-104): un campo obligatorio lo dice su propia aplicacion.
+    if($el.Cached.IsRequiredForForm){$parts+='required'}
     if($el.Cached.HasKeyboardFocus){$parts+='focused'}
   } catch [System.Windows.Automation.ElementNotAvailableException] {}
-  return @{ state=($parts -join ' '); value=$value }
+  return @{ state=($parts -join ' '); value=$value; valueCut=$valueCut }
+}
+# Uso-108 (B8; agent-desktop ref_alloc.rs:65-97 cuenta solo acciones primarias, roles_tests.rs:233-250 celdas): un Group o
+# un Custom con Invoke, o un Custom con GridItem o TableItem (una celda de DataGrid de WPF), entra al cortar la vista como
+# un accionable: en una app Electron hay 27 Group con nombre e Invoke por 7 Button, y su texto los echaba. ScrollItem,
+# LegacyIAccessible o el foco no cuentan: Chromium los da en casi todo.
+function Test-PrimaryAction($el,[string]$kind){
+  # Revision 16, M6: solo estos dos tipos: Chromium da Invoke a cualquier cosa con un manejador, un Text o un Image incluidos.
+  if(@('Group','Custom') -notcontains $kind){ return $false }
+  try {
+    $pattern=$null
+    if($el.TryGetCachedPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){ return $true }
+    if($kind -ne 'Custom'){ return $false }
+    if($el.TryGetCachedPattern([System.Windows.Automation.GridItemPattern]::Pattern,[ref]$pattern)){ return $true }
+    return $el.TryGetCachedPattern([System.Windows.Automation.TableItemPattern]::Pattern,[ref]$pattern)
+  } catch { return $false }
 }
 function Get-Rect($el){
   try {
@@ -1300,6 +1507,9 @@ function Get-LabelFolded([string]$text){
   if([string]::IsNullOrWhiteSpace($text)){ return '' }
   # Un par sustituto suelto (un emoji cortado) no se normaliza: se compara tal cual.
   $plain=$text; try { $plain=$text.Normalize([Text.NormalizationForm]::FormD) -replace '\p{Mn}','' } catch {}
+  # Uso-108 (C10): un caracter de formato no cambia que nombre es (-ceq compara por cultura y ya ignora las marcas de
+  # direccion, no U+200B); salvo el ZWJ, que une un emoji.
+  $plain=$plain -replace '[\p{Cf}-[\u200D]]',''
   return ([regex]::Replace($plain.ToLowerInvariant(),'\s+',' ')).Trim()
 }
 # Plegado: sin acentos, en minusculas, solo letras y digitos separados por un espacio.
@@ -1518,14 +1728,133 @@ function Test-InFront([IntPtr]$top){
   if($front -eq [IntPtr]::Zero){ return $false }
   return ([BaxyUiaWorkerNative]::GetAncestor($front,2) -eq [BaxyUiaWorkerNative]::GetAncestor($top,2))
 }
-# El punto que pulsaria una persona: el punto clicable que da el control o el centro de su rectangulo.
+# El punto que pulsaria una persona: el punto clicable que da el control o el centro de lo que se ve de su rectangulo.
+# Fila C6: el rectangulo no se recorta con su lista. Medido en ventanas propias (WPF y Chromium, 4 a 8 px visibles): el
+# centro cae en el vecino o en un antecesor, y en Chromium GetClickablePoint a veces lanza con la fila cortada.
 function Get-PressPoint($el){
-  try { $point=$el.GetClickablePoint(); return @{ x=[int]$point.X; y=[int]$point.Y } } catch {}
+  $clickable=Get-ClickablePointOf $el
+  if($null -ne $clickable){ return $clickable }
   try {
     $box=$el.Current.BoundingRectangle
     if($box.IsEmpty -or $box.Width -le 0 -or $box.Height -le 0){ return $null }
-    return @{ x=[int]($box.X+$box.Width/2); y=[int]($box.Y+$box.Height/2) }
+    $part=Get-VisiblePart @{ x=$box.X; y=$box.Y; w=$box.Width; h=$box.Height } (Get-ScrollViewport $el)
+    return @{ x=[int]($part.x+$part.w/2); y=[int]($part.y+$part.h/2) }
   } catch { return $null }
+}
+function Get-ClickablePointOf($el){
+  try { $point=$el.GetClickablePoint(); return @{ x=[int]$point.X; y=[int]$point.Y } } catch { return $null }
+}
+# La caja de su contenedor con ScrollPattern mas cercano; $null si no hay (agent-desktop scroll_into_view_tests.rs: leer la
+# falta de ventana visible como oculto rompio todas las filas del arbol del Explorador). Solo al pulsar, nunca en una vista.
+# Tambien para revelar (Test-Shown). Una caja sin area es un contenedor que no la publica: tampoco oculta nada.
+function Get-ScrollViewport($el){
+  $node=$el
+  for($depth=0;$depth -lt 16;$depth++){
+    try {
+      $node=Get-ParentOf $node
+      if($null -eq $node){ return $null }
+      $pattern=$null
+      if($node.TryGetCurrentPattern([System.Windows.Automation.ScrollPattern]::Pattern,[ref]$pattern)){
+        $view=Get-CurrentRect $node
+        if($null -eq $view -or $view.w -le 0 -or $view.h -le 0){ return $null }
+        return $view
+      }
+    } catch { return $null }
+  }
+  return $null
+}
+# Lo que se ve del rectangulo dentro de su contenedor. Sin contenedor, o uno que no lo toca (no dice donde esta), el rectangulo.
+function Get-VisiblePart($rect,$view){
+  if($null -eq $view){ return $rect }
+  $left=[math]::Max($rect.x,$view.x); $top=[math]::Max($rect.y,$view.y)
+  $right=[math]::Min($rect.x+$rect.w,$view.x+$view.w); $bottom=[math]::Min($rect.y+$rect.h,$view.y+$view.h)
+  if($right -le $left -or $bottom -le $top){ return $rect }
+  return @{ x=$left; y=$top; w=$right-$left; h=$bottom-$top }
+}
+# El centro y los cuatro puntos de cuarto (agent-desktop actionability/receives_events.rs).
+function Get-PressCandidates($part){
+  $points=@()
+  foreach($share in @(@(0.5,0.5),@(0.25,0.25),@(0.75,0.25),@(0.25,0.75),@(0.75,0.75))){
+    $points+=,@{ x=[int]($part.x+$part.w*$share[0]); y=[int]($part.y+$part.h*$share[1]) }
+  }
+  return $points
+}
+function Test-TopIconic([IntPtr]$top){
+  try { return [BaxyUiaWorkerNative]::IsIconic($top) } catch { return $true }
+}
+function Test-PointOnScreen($point){
+  try { return [BaxyUiaWorkerNative]::OnVirtualScreen($point.x,$point.y) } catch { return $false }
+}
+function Get-RootWindowAt($point){
+  try { return [BaxyUiaWorkerNative]::RootWindowAt($point.x,$point.y) } catch { return $null }
+}
+# Un control de WPF, WinUI o Chromium da NativeWindowHandle 0: se sube al primero que tenga. Fallar al subir no es «no tiene
+# ventana» (agent-desktop hit_test_corroborate.rs).
+function Get-RootWindowOf($el){
+  try {
+    $node=$el
+    for($depth=0;$depth -lt 32 -and $null -ne $node;$depth++){
+      $own=[int]$node.Current.NativeWindowHandle
+      if($own -ne 0){ return [BaxyUiaWorkerNative]::GetAncestor([IntPtr]$own,2) }
+      $node=Get-ParentOf $node
+    }
+  } catch {}
+  return $null
+}
+# Fila C5: que hay en el punto antes de una pulsacion del puntero. Tres respuestas (agent-desktop adapter/hit_test.rs):
+# reaches (el control o algo dentro), covered (otra cosa de verdad), unknown (no se sabe). Medido en ventanas propias,
+# 397 controles: el Explorador da un antecesor en 60 de 234 y Chromium en 4 de 38, asi que un antecesor es unknown, nunca
+# covered; otro control de la misma ventana fue siempre otra cosa real (filas fuera de su lista, una capa encima) o un
+# contenedor sin nombre con un hijo en el centro: ningun control con nombre visible respondio otro por error. FromPoint
+# costo 2 a 5 ms. Otra ventana solo cuenta con la nuestra al frente: detras, el lease la trae y mira de nuevo (Shows).
+function Get-PointVerdict($el,$point,$rect,[IntPtr]$top){
+  if($null -eq $rect -or $rect.w -le 0 -or $rect.h -le 0){ return 'unknown' }
+  if($point.x -lt $rect.x -or $point.y -lt $rect.y -or $point.x -ge $rect.x+$rect.w -or $point.y -ge $rect.y+$rect.h){ return 'unknown' }
+  if((Test-TopIconic $top) -or -not (Test-PointOnScreen $point)){ return 'unknown' }
+  $hit=Get-ElementAt $point
+  if($null -eq $hit){ return 'unknown' }
+  try {
+    $node=$hit
+    for($up=0;$up -lt 16 -and $null -ne $node;$up++){
+      if(Test-SameElement $node $el){ return 'reaches' }
+      $node=Get-ParentOf $node
+    }
+    # Una subida cortada no prueba nada (hit_test_classify.rs): pudo estar dentro.
+    if($null -ne $node){ return 'unknown' }
+    $node=$el
+    for($up=0;$up -lt 32 -and $null -ne $node;$up++){
+      $node=Get-ParentOf $node
+      if($null -ne $node -and (Test-SameElement $node $hit)){ return 'unknown' }
+    }
+    if($null -ne $node){ return 'unknown' }
+  } catch { return 'unknown' }
+  $hitRoot=Get-RootWindowOf $hit
+  $atRoot=Get-RootWindowAt $point
+  if($null -eq $hitRoot -or $null -eq $atRoot -or $hitRoot -eq [IntPtr]::Zero -or $atRoot -eq [IntPtr]::Zero){ return 'unknown' }
+  if($hitRoot -eq $top -and $atRoot -eq $top){ return 'covered' }
+  if($hitRoot -ne $top -and $atRoot -eq $hitRoot -and (Test-InFront $top)){ return 'covered' }
+  return 'unknown'
+}
+# El punto de la pulsacion del puntero: el clicable si cae en lo que se ve, luego los cinco de lo que se ve; el primero que
+# alcanza el control. Sin ninguno: tapado si alguno lo estaba de verdad; si no, el primero, como antes de esta comprobacion.
+function Get-PointerPoint($el,[IntPtr]$top){
+  $rect=Get-CurrentRect $el
+  $clickable=Get-ClickablePointOf $el
+  if($null -eq $rect -or $rect.w -le 0 -or $rect.h -le 0){
+    if($null -eq $clickable){ return $null }
+    return @{ point=$clickable; covered=$false }
+  }
+  $part=Get-VisiblePart $rect (Get-ScrollViewport $el)
+  $points=@()
+  if($null -ne $clickable -and $clickable.x -ge $part.x -and $clickable.y -ge $part.y -and $clickable.x -lt $part.x+$part.w -and $clickable.y -lt $part.y+$part.h){ $points+=,$clickable }
+  $points+=@(Get-PressCandidates $part)
+  $covered=$false
+  foreach($point in $points){
+    $verdict=Get-PointVerdict $el $point $rect $top
+    if($verdict -eq 'reaches'){ return @{ point=$point; covered=$false } }
+    if($verdict -eq 'covered'){ $covered=$true }
+  }
+  return @{ point=$points[0]; covered=$covered }
 }
 function Get-CurrentRect($el){
   try {
@@ -1645,7 +1974,18 @@ function Test-InvokeActedAlone($before,$after){
   if([bool]$before.enabled -and -not [bool]$after.enabled){ return $true }
   return ([string]$before.title -ne [string]$after.title)
 }
+# El patron por el cliente COM sin foco automatico, si la ventana esta detras: verdadero si actuo; falso si nada se envio
+# y sigue el cliente administrado; lo que rehusa lanza como lanzaria el administrado (sus llamadores leen esas excepciones).
+function Invoke-QuietPattern($el,[string]$op,[string]$text){
+  $answer=''
+  try { $answer=[string][BaxyUiaTimedPress]::QuietCall($el,$op,$text) } catch { return $false }
+  if($answer -eq 'done'){ return $true }
+  if($answer -notlike 'refused:*'){ return $false }
+  if($answer -eq 'refused:80040200'){ throw (New-Object System.Windows.Automation.ElementNotEnabledException) }
+  throw (New-Object System.InvalidOperationException $answer)
+}
 function Select-Element($el){
+  if(Invoke-QuietPattern $el 'select' ''){ return }
   $pattern=$null
   [void]$el.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$pattern)
   ([System.Windows.Automation.SelectionItemPattern]$pattern).Select()
@@ -1755,12 +2095,13 @@ function Wait-PlaceMoved($before,[IntPtr]$top){
     Start-Sleep -Milliseconds 50
   }
 }
-# Lo que UIA tiene en el punto es el elemento o algo dentro de el (tres niveles hacia arriba como mucho).
+# Lo que UIA tiene en el punto es el elemento o algo dentro de el (hasta 15 niveles hacia arriba: con 4, un toque hondo
+# dentro de un control grande se leia como otra cosa, agent-desktop FINDINGS A18).
 function Test-PointIsElement($el,$point){
   try {
     $hit=[System.Windows.Automation.AutomationElement]::FromPoint((New-Object System.Windows.Point($point.x,$point.y)))
     $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
-    for($up=0;$up -lt 4 -and $null -ne $hit;$up++){
+    for($up=0;$up -lt 16 -and $null -ne $hit;$up++){
       if([System.Windows.Automation.Automation]::Compare($hit,$el)){ return $true }
       $hit=$walker.GetParent($hit)
     }
@@ -1795,7 +2136,7 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
   # movio (placeMoved). Elegido y quieto 600 ms: la via siguiente que pulsa de verdad (la pulsacion enviada a su
   # ventana), una vez, y su postread solo prueba con el lugar movido; sin esa via, el recibo lleva placeMoved=false.
   # Estabilizacion y5 (banco h1): un lugar elegido por Invoke y quieto recibe otra vez su Invoke, ahora sobre el elemento
-  # ya elegido (lo abre), nunca la pulsacion enviada. Medido en el arbol Win32 del Explorador (redpc, 2026-10-11): 2 de
+  # ya elegido (lo abre), nunca la pulsacion enviada. Medido en el arbol Win32 del Explorador (el PC, 2026-10-11): 2 de
   # 10 Invoke eligieron el nodo sin navegar y el segundo Invoke navego las 2 veces (~120 ms); la pulsacion enviada a ese
   # arbol no abrio la carpeta en 3 de 3 usos en vivo (g1, h1) y en uno dejo la ventana en otro lugar («Galeria» por
   # «Documentos»). Un Toggle nunca llega aqui ($choosing).
@@ -1867,6 +2208,7 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
         }
       }
     } elseif($method -eq 'toggle'){
+      if(Invoke-QuietPattern $el 'toggle' ''){ return @{ method='toggle' } }
       [void]$el.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern,[ref]$pattern)
       ([System.Windows.Automation.TogglePattern]$pattern).Toggle(); return @{ method='toggle' }
     } elseif($method -eq 'expand'){
@@ -1961,9 +2303,11 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
       # puntero caeria en esa capa, asi que nada se envia (como la barra de herramientas tapada). Las vias sin puntero
       # (el patron propio del control) ya se probaron antes.
       if($renderStep -eq 'other'){ return @{ method='covered' } }
-      $point=Get-PressPoint $el
-      if($null -eq $point){ return $null }
-      return @{ method='pointer'; point=$point; rect=(Get-CurrentRect $el); legacyStep=$legacyStep; renderStep=$renderStep }
+      # Filas C5 y C6: la ruta miraba la ventana, no el control; una fila cortada o tapada pulsaba a su vecino.
+      $press=Get-PointerPoint $el $top
+      if($null -eq $press){ return $null }
+      if([bool]$press.covered){ return @{ method='covered' } }
+      return @{ method='pointer'; point=$press.point; rect=(Get-CurrentRect $el); legacyStep=$legacyStep; renderStep=$renderStep }
     }
   }
   # Ronda final 9 (regla 3): when every way was tried and the Invoke sent was not seen to act, the press ends here
@@ -1993,20 +2337,38 @@ function Invoke-NamedControl($el,[IntPtr]$top,[switch]$PatternsOnly){
 # se leen abiertos, opened; error si el control no tiene esa via (nada se envio).
 # Un menu de nivel superior del proceso cuenta solo junto al control (revision B3, hallazgo 8: en un proceso que aloja
 # tambien la barra de tareas o Inicio, un menu que la persona abre alli en esa espera no es el del control).
+# Un menu WPF se abre como una ventana de herramientas de nivel superior, de tipo Window, con el Menu dentro: nunca es un
+# hijo de la raiz de tipo Menu (agent-desktop, probes/windows/FINDINGS.md A23 y menu_state.rs, su segunda fuente). Sus
+# rectangulos: las ventanas de herramientas del proceso se enumeran sin UIA (3 ms frente a 115 ms de la raiz, sus medidas) y
+# solo a ellas se les busca el Menu; un aviso, tambien ventana de herramientas, no lo tiene. Un menu clasico es la clase de
+# sistema #32768, tambien ventana de herramientas, y UIA la da como Pane sin Menu dentro (medido, uso-108-foco): cuenta por su clase.
+function Get-ToolMenuRects([int]$process,$menu){
+  $rects=@()
+  foreach($tool in @([BaxyUiaWorkerNative]::ToolWindowsOf([uint32]$process))){
+    try {
+      $popup=$AE::FromHandle($tool)
+      if([string]$popup.Current.ClassName -eq '#32768' -or $null -ne $popup.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$menu)){ $rects+=$popup.Current.BoundingRectangle }
+    } catch {}
+  }
+  return $rects
+}
 function Get-OpenMenus($root,[int]$process,$el){
   $count=0
   $menu=New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::Menu)
   $box=$null
   try { $box=$el.Current.BoundingRectangle } catch { $box=$null }
+  $rects=@()
   try {
     $own=New-Object System.Windows.Automation.PropertyCondition($AE::ProcessIdProperty,$process)
     foreach($top in @($AE::RootElement.FindAll([System.Windows.Automation.TreeScope]::Children,(New-Object System.Windows.Automation.AndCondition($menu,$own))))){
-      $r=$null
-      try { $r=$top.Current.BoundingRectangle } catch { $r=$null }
-      if($null -eq $box -or $box.IsEmpty -or $null -eq $r -or $r.IsEmpty){ continue }
-      if($r.Right+64 -ge $box.Left -and $r.Left-64 -le $box.Right -and $r.Bottom+64 -ge $box.Top -and $r.Top-64 -le $box.Bottom){ $count++ }
+      try { $rects+=$top.Current.BoundingRectangle } catch {}
     }
   } catch {}
+  try { $rects+=@(Get-ToolMenuRects $process $menu) } catch {}
+  foreach($r in $rects){
+    if($null -eq $box -or $box.IsEmpty -or $null -eq $r -or $r.IsEmpty){ continue }
+    if($r.Right+64 -ge $box.Left -and $r.Left-64 -le $box.Right -and $r.Bottom+64 -ge $box.Top -and $r.Top-64 -le $box.Bottom){ $count++ }
+  }
   try { $count+=@($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$menu)).Count } catch {}
   return $count
 }
@@ -2064,9 +2426,19 @@ function Invoke-MannerControl($el,$root,[IntPtr]$top,[string]$manner){
       }
       $step='message'
     }
-    for($look=0;$look -lt 10;$look++){
-      Start-Sleep -Milliseconds 60
-      if((Get-OpenMenus $root $process $el) -gt $before){ return @{ method='contextmenu'; opened=$true; legacyStep=$step } }
+    # ShowContextMenu answers S_OK también cuando el proveedor no lo atiende (medido, uso-108-foco: un Edit clasico y un boton WPF,
+    # sin menu ni evento): un control con ventana propia recibe entonces WM_CONTEXTMENU, una vez y solo sin menu a la vista. WPF
+    # ignora ese mensaje (medido): su menu no se abre de esta manera y el recibo sigue diciendo que nada se vio abierto.
+    foreach($round in 1,2){
+      for($look=0;$look -lt 10;$look++){
+        Start-Sleep -Milliseconds 60
+        if((Get-OpenMenus $root $process $el) -gt $before){ return @{ method='contextmenu'; opened=$true; legacyStep=$step } }
+      }
+      if($round -eq 2 -or -not $shown){ break }
+      $own=0
+      try { $own=[int]$el.Current.NativeWindowHandle } catch { $own=0 }
+      if($own -eq 0 -or $null -eq $point -or -not [BaxyUiaWorkerNative]::PostContextMenu([IntPtr]$own,$point.x,$point.y)){ break }
+      $step='message'
     }
     return @{ method='contextmenu'; legacyStep=$step }
   }
@@ -2106,18 +2478,149 @@ function Test-Selected($el){
   } catch [System.Windows.Automation.ElementNotAvailableException] {}
   return $false
 }
-# BAXY Renew cu (C02): un interruptor (con marca On/Off) de la propia Configuracion de Windows cambia la maquina (su
-# radio Wi-Fi, su Bluetooth, el modo avion): un clic nunca lo pulsa. Se rechaza antes de pulsar nada, con su estado, como
-# las herramientas del sistema (por la identidad de su proceso, nunca por su nombre). Medido: «mira si el wifi esta
-# conectado» pulso el interruptor «Wi-Fi» (on -> off) y la radio quedo apagada.
-function Get-SettingsSwitchRefusal($el,[string]$toggleBefore,[string]$name,[string]$identity,[string]$kind){
-  if(@('On','Off') -notcontains $toggleBefore){ return $null }
-  $process=''
-  try { $process=[System.Diagnostics.Process]::GetProcessById([int]$el.Current.ProcessId).ProcessName } catch { $process='' }
-  if($process -ne 'SystemSettings'){ return $null }
+# Encargo 83: pulsar un control de una superficie de los ajustes de Windows puede cambiar la maquina, y el clic se lee antes
+# de pulsar para pedir el si. Medido: «mira si el wifi esta conectado» pulso el interruptor «Wi-Fi» (C02), y la guarda que
+# leia solo la marca Toggle de un proceso dejo pasar «Activar ahora», un Button con Invoke y sin Toggle (encargo 80).
+# La superficie es el proceso del control por su identidad (su imagen bajo la carpeta de Windows), nunca por su nombre; el
+# Explorador lo es solo en sus dialogos (propiedades, opciones), no en sus ventanas de archivos ni en la barra de tareas.
+function Test-SystemSurface($el,$root){
+  $process=$null
+  try { $process=[System.Diagnostics.Process]::GetProcessById([int]$el.Current.ProcessId) } catch { return $false }
+  $path=''
+  try { $path=[string]$process.Path } catch { $path='' }
+  if(-not $path.StartsWith(([Environment]::GetFolderPath('Windows').TrimEnd('\')+'\'),[StringComparison]::OrdinalIgnoreCase)){ return $false }
+  if($process.ProcessName -ne 'explorer'){ return $true }
+  $class=''
+  try { $class=[string]$root.Current.ClassName } catch { $class='' }
+  return $class -eq '#32770'
+}
+function Get-ParentKind($el){
+  try { return ([System.Windows.Automation.TreeWalker]::ControlViewWalker.GetParent($el).Current.ControlType.ProgrammaticName -replace '^ControlType\.','') } catch { return '' }
+}
+function Get-ParentId($el){
+  try { return [string][System.Windows.Automation.TreeWalker]::ControlViewWalker.GetParent($el).Current.AutomationId } catch { return '' }
+}
+# El ajuste de la pagina: el ultimo paso de su ruta (medido en Configuracion), o el titulo de un panel clasico.
+function Get-SettingName($root){
+  try {
+    $steps=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ClassNameProperty,'Microsoft.UI.Xaml.Controls.BreadcrumbBarItem')))
+    if($steps.Count -gt 0){ return [string]$steps[$steps.Count-1].Current.Name }
+  } catch {}
+  try { return [string]$root.Current.Name } catch { return '' }
+}
+function Get-ElementAt($point){
+  try { return [System.Windows.Automation.AutomationElement]::FromPoint((New-Object System.Windows.Point($point.x,$point.y))) } catch { return $null }
+}
+# Lo que recibe la pulsacion: el propio control si se pulsa por si mismo; si no, el puntero cae en su punto, y es lo que hay
+# ahi, o el primero de su linea que se pulse. Medido: un Group de 1250x324 sin patron, pulsado en su centro, eligio el tema de
+# la galeria que tenia debajo en un turno de solo mirar.
+function Get-PressTaker($el){
+  if(Test-PressesItself $el){ return $el }
+  $node=$el
+  $point=Get-PressPoint $el
+  if($null -ne $point){ $hit=Get-ElementAt $point; if($null -ne $hit){ $node=$hit } }
+  $walker=Get-LineageWalker
+  for($steps=0;$null -ne $node -and $steps -le $script:LineageUp;$steps++){
+    if(Test-PressesItself $node){ return $node }
+    try { $node=$walker.GetParent($node) } catch { $node=$null }
+  }
+  return $el
+}
+# Lo que pulsar este control cambia del sistema, o $null. Docs de UI Automation: Toggle es el patron del control que
+# guarda un estado (un interruptor, una casilla) y un RadioButton o un elemento de un desplegable o de una lista ligada a un
+# ajuste (medido: una galeria de temas, una paleta; la barra lateral no lo esta) eligen un valor; Invoke
+# no dice si hay estado, asi que un Button cuenta por su identidad ligada al ajuste (<proceso>_..., medido: las filas que
+# navegan no la llevan) o, en un panel clasico cuyas identidades son numeros, por sus palabras (RiskPolicy.SystemActs). Una
+# entrada de menu ejecuta una orden (medido: «Agregar como perfil HDR» abrio un dialogo de archivos en un turno de solo mirar);
+# un enlace casi siempre solo informa, y cuenta por sus palabras (medido: «Cambiar a un tema oscuro ahora», pulsado tres veces).
+function Get-SystemChange($el,[string]$name,[string]$kind,$root,$changes){
+  if(-not (Test-SystemSurface $el $root)){ return $null }
+  $taker=Get-PressTaker $el
+  if(-not [object]::ReferenceEquals($taker,$el)){
+    $el=$taker
+    try { $kind=[string]$el.Current.ControlType.ProgrammaticName -replace '^ControlType\.',''; $name=[string]$el.Current.Name } catch {}
+  }
+  $found=$null
+  $bound=''
+  try { $bound=[System.Diagnostics.Process]::GetProcessById([int]$el.Current.ProcessId).ProcessName+'_' } catch { $bound='' }
+  $toggle=Get-Toggle $el
+  if($null -ne $toggle){ $found=@{ change='switch'; state=[string]$toggle } }
+  elseif($kind -eq 'RadioButton' -or ($kind -eq 'ListItem' -and ((Get-ParentKind $el) -eq 'ComboBox' -or ($bound.Length -gt 1 -and (Get-ParentId $el).StartsWith($bound,[StringComparison]::OrdinalIgnoreCase))))){
+    $found=@{ change='choice'; state=$(if(Test-Selected $el){ 'On' } else { 'Off' }) }
+  }
+  elseif($kind -eq 'MenuItem' -and [bool](Get-ClickFacts $el).invoke){ $found=@{ change='action'; state='' } }
+  elseif(@('Button','Hyperlink') -contains $kind -and [bool](Get-ClickFacts $el).invoke){
+    if(($bound.Length -gt 1 -and ([string]$el.Current.AutomationId).StartsWith($bound,[StringComparison]::OrdinalIgnoreCase)) -or
+       ($null -ne $changes -and ([string]$changes.pattern).Length -gt 0 -and (Test-Asks $name $changes))){
+      $found=@{ change='action'; state='' }
+    }
+  }
+  if($null -ne $found){ $found.setting=Get-SettingName $root }
+  return $found
+}
+# Lo que la superficie dice de sus ajustes, antes y despues de pulsar: interruptores, opciones, lo que un desplegable tiene
+# elegido y los botones ligados a un ajuste (uno que se renombra o da paso a otro es el cambio: «Activar» por «Desactivar»).
+function Get-SystemControls($root){
+  $read=New-Object System.Collections.Generic.List[string]
+  foreach($el in @(Get-Descendants $root)){
+    try {
+      $kind=[string]$el.Cached.ControlType.ProgrammaticName -replace '^ControlType\.',''
+      if(@('Button','CheckBox','RadioButton','ComboBox') -notcontains $kind){ continue }
+      $name=[string]$el.Cached.Name
+      $toggle=Get-Toggle $el
+      if($null -ne $toggle){ $read.Add($name+': '+$toggle) }
+      elseif($kind -eq 'RadioButton'){ $read.Add($name+': '+$(if(Test-Selected $el){ 'On' } else { 'Off' })) }
+      elseif($kind -eq 'ComboBox'){
+        $pattern=$null
+        if($el.TryGetCurrentPattern([System.Windows.Automation.SelectionPattern]::Pattern,[ref]$pattern)){
+          $chosen=@(([System.Windows.Automation.SelectionPattern]$pattern).Current.GetSelection())
+          if($chosen.Count -gt 0){ $read.Add($name+': '+[string]$chosen[0].Current.Name) }
+        }
+      }
+      elseif(([string]$el.Cached.AutomationId) -match '^[^_]+_.+_'){ $read.Add($name) }
+    } catch {}
+  }
+  return $read.ToArray()
+}
+# El antes y el despues que el recibo dice: lo que dejo de leerse y lo que se lee ahora, con una espera corta porque un
+# ajuste tarda en aplicarse y un boton que da paso a otro desaparece antes de que el otro aparezca.
+function Get-SystemChangeReading($watch,[int]$wait=1500){
+  $gone=@(); $came=@(); $waited=0
+  while($true){
+    $now=@(Get-SystemControls $watch.root)
+    $gone=@($watch.before | Where-Object { $now -notcontains $_ })
+    $came=@($now | Where-Object { $watch.before -notcontains $_ })
+    if(($gone.Count -gt 0 -and $came.Count -gt 0) -or $waited -ge $wait){ break }
+    Start-Sleep -Milliseconds 200
+    $waited+=200
+  }
+  return @{ control=[string]$watch.name; before=$gone; after=$came; changed=(($gone.Count+$came.Count) -gt 0) }
+}
+function Get-ControlProcessName($el){
+  try { return [System.Diagnostics.Process]::GetProcessById([int]$el.Current.ProcessId).ProcessName } catch { return '' }
+}
+# BAXY Renew cu (C02), encargo 96: en Bypass nadie ve venir un si, y un interruptor (con marca On/Off) de la propia
+# Configuracion de Windows cambia la maquina (su radio Wi-Fi, su Bluetooth, el modo avion): se rechaza antes de pulsar nada,
+# con su estado, por la identidad de su proceso, nunca por su nombre. Solo lo pide el adaptador en Bypass (refuseSwitches); en
+# modo normal el si lo pide el kernel. Medido: «mira si el wifi esta conectado» pulso el interruptor «Wi-Fi» (on -> off) y la
+# radio quedo apagada. Se juzga lo que recibe la pulsacion (Get-PressTaker): las palabras sobre un interruptor caen en el.
+function Get-SettingsSwitchRefusal($el,[string]$name,[string]$identity,[string]$kind){
+  if((Get-ControlProcessName $el) -ne 'SystemSettings'){ return $null }
+  $taker=Get-PressTaker $el
+  $state=Get-Toggle $taker
+  if(@('On','Off') -notcontains $state){ return $null }
+  if(-not [object]::ReferenceEquals($taker,$el)){
+    try { $name=[string]$taker.Current.Name; $identity=Get-Id $taker; $kind=[string]$taker.Current.ControlType.ProgrammaticName -replace '^ControlType\.','' } catch {}
+  }
   $refused=Click-Result $false $false 'visible_settings_switch_refused' $name $identity $false $false $false $kind
-  $refused.switchState=$toggleBefore
+  $refused.switchState=[string]$state
   return $refused
+}
+function Get-ClickRead($change,[string]$name,[string]$identity,[string]$kind){
+  if($null -eq $change){ return (Click-Result $false $false 'visible_no_system_change' $name $identity $false $false $false $kind) }
+  $read=Click-Result $false $false 'visible_system_change' $name $identity $false $false $false $kind
+  $read.change=[string]$change.change; $read.state=[string]$change.state; $read.setting=[string]$change.setting
+  return $read
 }
 function Get-Toggle($el){
   try {
@@ -2135,10 +2638,14 @@ $script:Cache=New-Object System.Windows.Automation.CacheRequest
 foreach($prop in @($AE::NameProperty,$AE::ControlTypeProperty,$AE::IsOffscreenProperty,$AE::BoundingRectangleProperty,
                    $AE::HasKeyboardFocusProperty,$AE::IsPasswordProperty,$AE::IsEnabledProperty,$AE::RuntimeIdProperty,
                    $AE::HelpTextProperty,$AE::AutomationIdProperty,$AE::LabeledByProperty,
-                   $AE::ClassNameProperty,$AE::AcceleratorKeyProperty,$AE::AccessKeyProperty,$AE::ItemTypeProperty)){ $script:Cache.Add($prop) }
+                   $AE::ClassNameProperty,$AE::AcceleratorKeyProperty,$AE::AccessKeyProperty,$AE::ItemTypeProperty,
+                   $AE::IsRequiredForFormProperty)){ $script:Cache.Add($prop) }
 foreach($pat in @([System.Windows.Automation.TogglePattern]::Pattern,[System.Windows.Automation.SelectionItemPattern]::Pattern,
                   [System.Windows.Automation.ExpandCollapsePattern]::Pattern,[System.Windows.Automation.ValuePattern]::Pattern,
-                  [System.Windows.Automation.RangeValuePattern]::Pattern)){ $script:Cache.Add($pat) }
+                  [System.Windows.Automation.RangeValuePattern]::Pattern,
+                  # Uso-108 (B8): lo que dice que un control sin tipo accionable se pulsa (Test-PrimaryAction).
+                  [System.Windows.Automation.InvokePattern]::Pattern,[System.Windows.Automation.GridItemPattern]::Pattern,
+                  [System.Windows.Automation.TableItemPattern]::Pattern)){ $script:Cache.Add($pat) }
 foreach($pp in @([System.Windows.Automation.TogglePattern]::ToggleStateProperty,[System.Windows.Automation.SelectionItemPattern]::IsSelectedProperty,
                  [System.Windows.Automation.ExpandCollapsePattern]::ExpandCollapseStateProperty,[System.Windows.Automation.ValuePattern]::ValueProperty,
                  [System.Windows.Automation.ValuePattern]::IsReadOnlyProperty,[System.Windows.Automation.RangeValuePattern]::ValueProperty)){ $script:Cache.Add($pp) }
@@ -2186,27 +2693,36 @@ function Get-WalkedDescendants($root){
   if($queue.Count -gt 0){ $script:Partial=$true; $script:RevealCut=$true }
   return ,$found
 }
-function Get-Descendants($root){
+function Get-Descendants($root,[switch]$Bounded){
   $enabled=New-Object System.Windows.Automation.PropertyCondition($AE::IsEnabledProperty,$true)
   $activated=$script:Cache.Activate()
   try {
     $all=$null
-    try { $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled) } catch {}
-    if($null -eq $all -or $all.Count -eq 0){
+    $raised=$false
+    try { $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled) } catch { $raised=$true }
+    if(($null -eq $all -or $all.Count -eq 0) -and -not ($Bounded -and [DateTime]::UtcNow -gt $script:Until)){
       Start-Sleep -Milliseconds 400
-      try { $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled) } catch { $all=$null }
+      try { $all=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$enabled) } catch { $all=$null; $raised=$true }
     }
-    if($null -eq $all -or $all.Count -eq 0){ $all=Get-WalkedDescendants $root }
+    if($null -eq $all -or $all.Count -eq 0){
+      if($Bounded -and $raised -and [DateTime]::UtcNow -gt $script:Until){ $script:Partial=$true; return ,(New-Object System.Collections.Generic.List[object]) }
+      $all=Get-WalkedDescendants $root
+    }
+    # Uso-108 (A5; agent-desktop automation_classify.rs:66-82, a transient fault is not a confident negative): a search
+    # that raised and a walk that found nothing did not read an empty window: the view says partial, not «(ninguno)».
+    if($raised -and ($null -eq $all -or $all.Count -eq 0)){ $script:Partial=$true }
   } finally { $activated.Dispose() }
   return $all
 }
 # El rotulo de un campo sin nombre: el Text visible mas cercano que termina a su izquierda en su misma franja o que
 # queda encima solapando su ancho, a no mas de 120 px (un rotulo esta pegado a su campo). Vacio si no hay ninguno.
-function Get-NearLabel($field,$all){
+# Uso-108 (B7): el texto de una casilla o un boton de opcion esta en su fila, primero a su derecha ($rightFirst); el de
+# encima de una casilla es el titulo de su seccion, no su nombre (visto en vivo: nombraba otra casilla).
+function Get-NearLabel($field,$all,[bool]$rightFirst=$false){
   $box=$null
   try { $box=$field.Cached.BoundingRectangle } catch { return '' }
   if($null -eq $box -or $box.IsEmpty){ return '' }
-  $best='';$distance=121.0
+  $best='';$distance=121.0;$right='';$rightDistance=121.0
   foreach($other in $all){
     try {
       if($other.Cached.ControlType.ProgrammaticName -ne 'ControlType.Text' -or $other.Cached.IsOffscreen){ continue }
@@ -2214,13 +2730,16 @@ function Get-NearLabel($field,$all){
       if($text.Length -eq 0 -or $text.Length -gt 40){ continue }
       $r=$other.Cached.BoundingRectangle
       if($r.IsEmpty){ continue }
-      $gap=-1.0
+      # Uso-108 (B7): el centinela no entraba en el margen de abajo (-2): el primer Text sin relacion ganaba siempre.
+      $gap=-1000.0
       $middle=$r.Y+$r.Height/2
+      if($rightFirst -and $r.Left -ge $box.Right-2 -and $middle -ge $box.Top -and $middle -le $box.Bottom -and ($r.Left-$box.Right) -lt $rightDistance){ $rightDistance=$r.Left-$box.Right; $right=$text }
       if($r.Right -le $box.Left+2 -and $middle -ge $box.Top -and $middle -le $box.Bottom){ $gap=$box.Left-$r.Right }
-      elseif($r.Bottom -le $box.Top+2 -and $r.Right -gt $box.Left -and $r.Left -lt $box.Right){ $gap=$box.Top-$r.Bottom }
+      elseif(-not $rightFirst -and $r.Bottom -le $box.Top+2 -and $r.Right -gt $box.Left -and $r.Left -lt $box.Right){ $gap=$box.Top-$r.Bottom }
       if($gap -ge -2 -and $gap -lt $distance){ $distance=$gap; $best=$text }
     } catch {}
   }
+  if($right.Length -gt 0){ $best=$right }
   # The file has no BOM, so PowerShell 5.1 reads it as ANSI: the full-width colon goes as an escape, not as its bytes.
   return ($best -replace '[:\uFF1A]\s*$','').Trim()
 }
@@ -2408,7 +2927,7 @@ function Get-ShownDescendants($root,[long]$hwnd=0,[double]$seconds=0,[bool]$dimm
       if($null -ne $any){ return $shown }
     }
   } finally { $activated.Dispose() }
-  return (Get-Descendants $root)
+  return (Get-Descendants $root -Bounded)
 }
 # Palanca 7 (v3-49): cada entrada del HMENU es un MenuItem de la vista con su ruta («Ver › Detalles») y su atajo; su
 # identidad «hmenu.<id>» la pulsa por WM_COMMAND. Un submenu vacio en la lectura estatica lo llena la aplicacion al
@@ -2416,7 +2935,10 @@ function Get-ShownDescendants($root,[long]$hwnd=0,[double]$seconds=0,[bool]$dimm
 # Revision de la ronda 20b (hallazgo 2): la marca y el deshabilitado leidos sin abrir el menu no se publican. Muchas
 # aplicaciones los ponen solo al abrirlo (WM_INITMENUPOPUP: MFC con ON_UPDATE_COMMAND_UI, un gestor de archivos que marca
 # Ver › Detalles o Lista): leidos en estatico son los de la ultima vez que se abrio, nunca el estado de ahora.
-$script:MenuEntriesMax=80
+# Ajuste c4 (C3-065/066): el tope de lectura era 80 y la entrada pedida de MPC-HC era la 99 de 164. Leer 400 entradas
+# cuesta menos de 1 ms (medido sobre su menu cargado como recurso, sin ventana); lo que pesa es buscar las palabras de
+# la mirada en las que no caben (unos 0,25 ms cada una). El tope acota un menu dinamico sin fin.
+$script:MenuEntriesMax=400
 function ConvertTo-MenuViewEntries($menuEntries){
   $out=@()
   foreach($menu in @($menuEntries)){
@@ -2435,6 +2957,19 @@ function ConvertTo-MenuViewEntries($menuEntries){
 # tramo, igual). Devuelve la entrada, o un error: varias que lo dicen (ambiguo), o ninguna. El deshabilitado estatico no
 # la rechaza (revision de la ronda 20b, hallazgo 2: puede ser el de la ultima apertura); la aplicacion decide al recibir
 # la orden, y su recibo es lo que cambie (la marca, un dialogo, la superficie), nunca la orden enviada.
+# Ajuste c4 (C3-065/066: el modelo pidio «Opciones» y la entrada de MPC-HC es «Ver › Opciones…»): la elipsis final de
+# una entrada (U+2026, o «...» en ingles) es la marca de Windows de que abre un dialogo, no parte de su nombre. Con
+# $bare se compara sin ella, a los dos lados; solo cuando ninguna entrada se llama exactamente asi («Zoom» y «Zoom…»
+# son dos entradas).
+function Test-MenuNameMatch([string]$path,[string[]]$aliases,[bool]$bare){
+  if($bare){
+    $ellipsis='('+[char]0x2026+'|\.\.\.)\s*$'
+    $path=$path -replace $ellipsis,''
+    $aliases=@($aliases | ForEach-Object { ([string]$_) -replace $ellipsis,'' })
+  }
+  $last=$path.Split([string[]]@(' '+[char]0x203A+' '),[StringSplitOptions]::None)[-1]
+  return ((Test-NameMatch $path $aliases) -or (Test-NameMatch $last $aliases))
+}
 function Find-MenuCommand($menuEntries,[string[]]$aliases,[string]$controlId){
   $commands=@($menuEntries | Where-Object { $null -ne $_ -and -not [bool]$_.FillsOnOpen -and [int]$_.Id -gt 0 })
   $found=@()
@@ -2442,11 +2977,11 @@ function Find-MenuCommand($menuEntries,[string[]]$aliases,[string]$controlId){
     $found=@($commands | Where-Object { ('hmenu.'+[int]$_.Id) -eq $controlId })
     if($found.Count -eq 1 -and $aliases.Count -gt 0){
       $path=[string]$found[0].Path
-      $last=$path.Split([string[]]@(' '+[char]0x203A+' '),[StringSplitOptions]::None)[-1]
-      if(-not (Test-NameMatch $path $aliases) -and -not (Test-NameMatch $last $aliases)){ return @{ error='visible_control_label_mismatch' } }
+      if(-not (Test-MenuNameMatch $path $aliases $false) -and -not (Test-MenuNameMatch $path $aliases $true)){ return @{ error='visible_control_label_mismatch' } }
     }
   } else {
-    $found=@($commands | Where-Object { $path=[string]$_.Path; (Test-NameMatch $path $aliases) -or (Test-NameMatch ($path.Split([string[]]@(' '+[char]0x203A+' '),[StringSplitOptions]::None)[-1]) $aliases) })
+    $found=@($commands | Where-Object { Test-MenuNameMatch ([string]$_.Path) $aliases $false })
+    if($found.Count -eq 0){ $found=@($commands | Where-Object { Test-MenuNameMatch ([string]$_.Path) $aliases $true }) }
   }
   if($found.Count -gt 1){ return @{ error='visible_button_ambiguous' } }
   if($found.Count -eq 0){ return @{ error=$(if($controlId.Length -gt 0){ 'visible_control_identity_stale' } else { 'visible_button_not_found' }) } }
@@ -2455,7 +2990,10 @@ function Find-MenuCommand($menuEntries,[string[]]$aliases,[string]$controlId){
 # Revision 2 de la ronda 20b (B1): lo que se ve va antes que el menu cerrado. Primero los accionables del arbol, luego
 # lo demas que se ve (Text, HeaderItem, DataItem, Group) y al final las entradas del HMENU, que no estan en pantalla:
 # solo en el hueco que deja el arbol bajo el tope, sin llegar a el (una vista llena significa que el arbol tenia mas, y
-# las entradas que no caben se pulsan igual por su etiqueta). Cuentan en el total solo las listadas.
+# las entradas que no caben se pulsan igual por su etiqueta).
+# Ajuste c4 (C3-059/065/066, MPC-HC: «Ver › Opciones…» la 99 de 164 entradas, el hueco era de 43): las que no caben
+# cuentan en el total (menuCount), asi que la vista dice que no es la lista completa y «+N mas»; y las que llevan una
+# palabra buscada van al cupo reservado, detras de las del arbol.
 # Ronda 21 (vista ordenada por objetivo y estructura; v3-24, v3-64, v3-65, t-drag-4): cuando lo que se ve no cabe en el
 # tope, el corte ya no es el orden del arbol. (1) El campo de texto de una fila con su mismo nombre (la celda que
 # renombra, dentro de su ListItem) se pliega en la fila: no es otro objetivo y llenaba el cupo. (2) Los accionables que
@@ -2499,6 +3037,33 @@ function Get-FoldedFields($entries){
   }
   return ,$drop
 }
+# Uso-108 (B7): un control sin nombre que vale la pena listar: de un tipo que guarda estado, con estado o valor y con area.
+function Test-NamelessHolds([string]$kind,[string]$state,$value,$rect){
+  if(@('CheckBox','RadioButton','ComboBox','Slider','Spinner') -notcontains $kind -or $null -eq $rect -or [double]$rect.w -le 0 -or [double]$rect.h -le 0){ return $false }
+  # Revision 16, M5: un boton de opcion sin elegir no tiene estado y sigue siendo una opcion que pulsar.
+  if($kind -eq 'RadioButton' -or -not [string]::IsNullOrEmpty([string]$value)){ return $true }
+  return @(([string]$state) -split ' ' | Where-Object { @('on','off','indeterminate','selected') -contains $_ }).Count -gt 0
+}
+# Uso-108 (B6): los Text de la vista que son el rotulo de un accionable: dentro de el, con su nombre plegado, sin estado ni
+# valor propios. Solo eso: el resto de los Text es como el modelo lee la ventana, y uno fuera del boton de su nombre es un
+# dato (revision 16, I2: el «5» del visor de una calculadora junto a su boton «5»).
+function Get-InertRepeats($primary,$secondary){
+  $acting=@{}
+  foreach($entry in @($primary)){
+    if($null -eq $entry -or $null -eq $entry.rect){ continue }
+    $key=Get-LabelFolded ([string]$entry.name)
+    if(-not $acting.ContainsKey($key)){ $acting[$key]=@() }
+    $acting[$key]+=@($entry.rect)
+  }
+  $repeats=New-Object System.Collections.ArrayList
+  foreach($entry in @($secondary)){
+    if($null -eq $entry -or [string]$entry.kind -ne 'Text' -or ([string]$entry.state).Length -gt 0 -or -not [string]::IsNullOrEmpty([string]$entry.value)){ continue }
+    $key=Get-LabelFolded ([string]$entry.name)
+    if(-not $acting.ContainsKey($key)){ continue }
+    foreach($rect in @($acting[$key])){ if(Test-CenterWithin $rect $entry.rect){ [void]$repeats.Add($entry); break } }
+  }
+  return $repeats
+}
 # Encargo IMP3 (imp2 imp-dc-leer: el MD abierto, 169 controles, los mensajes fuera de los 60 primeros): con «tail» el
 # corte guarda las ultimas entradas del arbol (lo que la ventana dibujo al final: los mensajes mas nuevos de una
 # conversacion), en su orden; sin el, el corte de siempre.
@@ -2506,15 +3071,30 @@ function Select-TailControls($primary,$secondary,[int]$limit){
   $all=@(@($primary)+@($secondary) | Where-Object { $null -ne $_ } | Sort-Object { [int]$_.seq })
   $controls=New-Object System.Collections.ArrayList
   foreach($entry in @($all | Select-Object -Last $limit)){ [void]$controls.Add($entry) }
-  return @{ controls=$controls; menuListed=0; reserved=0 }
+  return @{ controls=$controls; reserved=0 }
+}
+# Uso-108 (B15): las palabras de «wanted» que no estan en el nombre de ningun control de los leidos, solo en una vista
+# cortada (con todo listado no hace falta decirlo) y con todo leido (una lectura parcial no sabe de lo que no leyo). Lo
+# fuera de la vista no se recorre: la vista lo dice de lo que esta a la vista. Revision 16, I3: parte de una palabra cuenta,
+# aunque wanted case palabras enteras: «firma» no falta si hay «Firmas de correo».
+function Get-WantedMissing($primary,$secondary,$menu,[string[]]$wanted,[int]$limit,[bool]$whole){
+  $entries=@(@($primary)+@($secondary)+@($menu) | Where-Object { $null -ne $_ })
+  $missing=@()
+  if(-not $whole -or @($wanted).Count -eq 0 -or (@($primary).Count+@($secondary).Count) -le $limit){ return ,$missing }
+  foreach($word in @($wanted)){
+    $needle=Get-Folded ([string]$word)
+    if($needle.Length -gt 0 -and @($entries | Where-Object { (Get-Folded ([string]$_.name)).Contains($needle) }).Count -eq 0){ $missing+=@([string]$word) }
+  }
+  return ,$missing
 }
 function Join-ViewControls($primary,$secondary,$menu,[int]$limit,[string[]]$wanted=@(),[bool]$tail=$false){
-  if($tail -and (@($primary).Count+@($secondary).Count) -gt $limit){ return (Select-TailControls $primary $secondary $limit) }
+  $menu=@($menu)
+  if($tail -and (@($primary).Count+@($secondary).Count) -gt $limit){ $cut=Select-TailControls $primary $secondary $limit; $cut.menuCount=$menu.Count; return $cut }
   $controls=New-Object System.Collections.ArrayList
   $extra=New-Object System.Collections.ArrayList
   $pool=New-Object System.Collections.ArrayList
   foreach($entry in @($primary)){ if($null -ne $entry){ [void]$pool.Add(@{ entry=$entry; tier=$(if($script:ViewRowKinds -contains [string]$entry.kind){ 2 } else { 1 }) }) } }
-  foreach($entry in @($secondary)){ if($null -ne $entry){ [void]$pool.Add(@{ entry=$entry; tier=3 }) } }
+  foreach($entry in @($secondary)){ if($null -ne $entry){ [void]$pool.Add(@{ entry=$entry; tier=$(if([bool]$entry.presses){ 1 } else { 3 }) }) } }
   if($pool.Count -gt $limit){
     $drop=Get-FoldedFields @($pool | ForEach-Object { $_.entry })
     $list=@($pool | Where-Object { -not $drop.Contains($_.entry) })
@@ -2562,10 +3142,12 @@ function Join-ViewControls($primary,$secondary,$menu,[int]$limit,[string[]]$want
     foreach($slot in $pool){ [void]$controls.Add($slot.entry) }
   }
   $room=$limit-1-$controls.Count
-  $menuListed=0
-  foreach($entry in @($menu)){ if($null -ne $entry -and $menuListed -lt $room){ [void]$controls.Add($entry); $menuListed++ } }
+  for($k=0;$k -lt $menu.Count;$k++){
+    if($k -lt $room){ [void]$controls.Add($menu[$k]) }
+    elseif($extra.Count -lt $script:WantedRoom -and @($wanted).Count -gt 0 -and (Test-WantedName ([string]$menu[$k].name) $wanted)){ [void]$extra.Add($menu[$k]) }
+  }
   foreach($entry in $extra){ $entry.reserved=$true; [void]$controls.Add($entry) }
-  return @{ controls=$controls; menuListed=$menuListed; reserved=$extra.Count }
+  return @{ controls=$controls; menuCount=$menu.Count; reserved=$extra.Count }
 }
 # Ronda 21 (t-drag-4): el cuerpo de la ventana es su superficie de contenido: el Pane, Custom, Image o Document de mayor
 # area (al menos $script:BodyShare de la caja de la ventana) que no tiene dentro ningun accionable (el lienzo de un editor
@@ -2639,6 +3221,40 @@ function Get-CaretPlace($el){
     return 'middle'
   } catch { return '' }
 }
+# Encargo 18 (banco de uso, U45: «abre una terminal, ejecuta ver y guarda lo que muestra»): la vista de una terminal daba
+# solo su control (Text «Windows PowerShell») y el OCR de la ventana, mal leido («PS C: verl»): lo que escribio un comando
+# no llegaba al modelo. Con includeText (focusText), lo que muestra el control con el foco que no es un campo (el valor de
+# un campo ya va en la vista): sus rangos visibles por TextPattern (GetVisibleRanges: lo que se ve, nunca DocumentRange),
+# cada linea sin los blancos con que una consola rellena sus filas hasta el ancho, sin lineas vacias, y como mucho los
+# ultimos FocusShownMax caracteres (en una consola lo ultimo es lo mas nuevo), diciendo si se corto. Medido en vivo
+# (02-11, sesion 1): Windows Terminal da un Text (TermControl) y la consola de Windows un Document («Text Area») en su
+# ventana de consola (ConsoleWindowClass, la clase de la consola del sistema); un Document de otra ventana (un procesador
+# de textos, una pagina) no se lee asi. Nunca el de una contrasena. Solo lee.
+$script:FocusShownMax=4000
+function Get-FocusShownText($el,[string]$kind,$root){
+  if($null -eq $el -or @('Edit','ComboBox','Group') -contains $kind){ return $null }
+  if($kind -eq 'Document'){
+    $rootClass=''; try { $rootClass=[string]$root.Current.ClassName } catch { $rootClass='' }
+    if($rootClass -ne 'ConsoleWindowClass'){ return $null }
+  }
+  $read=New-Object System.Text.StringBuilder
+  try {
+    if([bool]$el.Current.IsPassword){ return $null }
+    $found=$null
+    if(-not $el.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found)){ return $null }
+    foreach($range in @($found.GetVisibleRanges())){
+      if($null -eq $range){ continue }
+      [void]$read.Append([string]$range.GetText(65536)).Append("`n")
+      if($read.Length -gt 65536){ break }
+    }
+  } catch { return $null }
+  $lines=@(([string]$read) -split "`r`n|`n|`r" | ForEach-Object { $_.TrimEnd() } | Where-Object { $_.Length -gt 0 })
+  if($lines.Count -eq 0){ return $null }
+  $text=$lines -join "`n"
+  $cut=$text.Length -gt $script:FocusShownMax
+  if($cut){ $text=$text.Substring($text.Length-$script:FocusShownMax) }
+  return @{ text=$text; cut=$cut }
+}
 function Do-View($request){
   $limit=[int]$request.limit; if($limit -lt 1){$limit=1}; if($limit -gt $script:ViewCap){$limit=$script:ViewCap}
   $target=Get-Root ([long]$request.hwnd) -Front
@@ -2707,14 +3323,18 @@ function Do-View($request){
       $stateInfo=Get-State $item
       # Un campo de texto sin nombre (ni de respaldo) sigue siendo accionable: se
       # identifica por su valor o por su clase; el resto sin nombre no informa de nada.
-      if([string]::IsNullOrWhiteSpace($name) -and ($kind -eq 'Edit' -or $kind -eq 'ComboBox' -or $kind -eq 'Spinner')){
+      # Uso-108 (B7; agent-desktop 24-fixture-e2e: las casillas de una lista de tareas de una pagina no tienen nombre ni id,
+      # y tienen Toggle y area): un control sin nombre que guarda un estado o un valor, con area (A30-2: la mitad de las hojas
+      # sin nombre no tienen, y serian fantasmas), se lista: por su rotulo o, sin el, por su tipo entre parentesis.
+      $holds=[string]::IsNullOrWhiteSpace($name) -and (Test-NamelessHolds $kind $stateInfo.state $stateInfo.value (Get-Rect $item))
+      if([string]::IsNullOrWhiteSpace($name) -and ($kind -eq 'Edit' -or $kind -eq 'ComboBox' -or $kind -eq 'Spinner' -or $holds)){
         # Un campo de formulario sin nombre ni LabeledBy lo nombra su rotulo: el texto mas cercano a su izquierda o
         # encima (punto 2 del goal v3: «poner el ancho en 800»).
-        $near=Get-NearLabel $item $all
+        $near=Get-NearLabel $item $all ($kind -eq 'CheckBox' -or $kind -eq 'RadioButton')
         if($near.Length -gt 0){ $name=$near }
       }
       if([string]::IsNullOrWhiteSpace($name)){
-        if($kind -eq 'Edit' -or $kind -eq 'Document'){ $name='(' + $kind.ToLowerInvariant() + ')' } else { continue }
+        if($kind -eq 'Edit' -or $kind -eq 'Document' -or $holds){ $name='(' + $kind.ToLowerInvariant() + ')' } else { continue }
       }
       $rect=Get-Rect $item
       $key=Get-SeenKey $kind $name $stateInfo.state
@@ -2756,13 +3376,23 @@ function Do-View($request){
       $aid=''
       try { $aid=[string](Get-Prop $item 'AutomationId') } catch { $aid='' }
       if($null -eq $aid -or $aid.Length -gt 128){ $aid='' }
-      $entry=@{ kind=$kind; name=$name; nameCut=$nameCut; id=$id; aid=$aid; state=$stateInfo.state; value=$stateInfo.value; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total; itemType=$itemType }
+      $presses=($Actionable -notcontains $kind) -and (Test-PrimaryAction $item $kind)
+      $entry=@{ presses=$presses; kind=$kind; name=$name; nameCut=$nameCut; id=$id; aid=$aid; state=$stateInfo.state; value=$stateInfo.value; valueCut=[int]$stateInfo.valueCut; shortcut=$shortcut; rect=$rect; repeated=0; systemMenu=$systemMenu; seq=$total; itemType=$itemType }
       if(-not $copy){ $seen[$key]=$entry; $copyRects[$key]=@($rect) }
       if($Actionable -contains $kind){ [void]$primary.Add($entry) } else { [void]$secondary.Add($entry) }
       if($stateInfo.state -match '\bfocused\b' -and $null -eq $focused){ $focused=$entry }
       if($id.Length -gt 0){ $elements[$id]=$item }
-    } catch [System.Windows.Automation.ElementNotAvailableException] {}
+    } catch [System.Windows.Automation.ElementNotAvailableException] {
+    } catch {
+      # Uso-108 (A6; agent-desktop properties/mod.rs:149-152, a failed read does not abandon the rest): a node that raises
+      # anything else (two earlier causes here: a split surrogate, @() on a list) costs that node and the view says partial;
+      # it used to reach the main loop and turn the whole tree into visible_controls_uia_failed.
+      $viewPartial=$true
+    }
   }
+  # Uso-108 (B6; agent-desktop scripts/jev/screen.mjs:38-56): un Text sin estado ni valor que repite el nombre de un
+  # accionable no dice nada mas y ocupa una linea y un sitio del tope. Medido en el banco de decisiones sin bajadas.
+  foreach($entry in @(Get-InertRepeats $primary $secondary)){ [void]$secondary.Remove($entry); $total-- }
   # Palanca 7 (v3-49): las entradas del menu clasico (HMENU) de la ventana, leidas sin abrir ninguno.
   $menuEntries=@()
   try { $menuEntries=@([BaxyUiaWorkerNative]::MenuEntries($target.hwnd,$script:MenuEntriesMax)) } catch { $menuEntries=@() }
@@ -2774,9 +3404,10 @@ function Do-View($request){
     [void]$menuView.Add($entry)
   }
   $wanted=@($request.wanted | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -First 24)
+  $wantedMissing=Get-WantedMissing $primary $secondary $menuView $wanted $limit (-not $viewPartial -and [int]$script:ShownUnread -eq 0)
   $joined=Join-ViewControls $primary $secondary $menuView $limit $wanted ([bool]$request.tail)
   $controls=$joined.controls
-  $total+=[int]$joined.menuListed
+  $total+=[int]$joined.menuCount
   # Ronda 21 (t-drag-4): el cuerpo de la ventana va siempre, fuera del tope: ya listado, se queda donde esta.
   $body=Select-BodySurface $surfaces $primary
   Add-ViewBody $controls $body $elements
@@ -2786,7 +3417,7 @@ function Do-View($request){
   $script:LastView=@{ hwnd=$target.hwnd; elements=$elements; client=$clientRoot; unfiltered=$keepOffscreen; chosen=$chosenIds }
   $ordered=@()
   foreach($entry in $controls){
-    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; nameCut=[int]$entry.nameCut; id=$entry.id; state=$entry.state; value=$entry.value; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType })
+    $ordered+=@([pscustomobject]@{ kind=$entry.kind; name=$entry.name; nameCut=[int]$entry.nameCut; id=$entry.id; state=$entry.state; value=$entry.value; valueCut=[int]$entry.valueCut; shortcut=$entry.shortcut; rect=$entry.rect; repeated=$entry.repeated; itemType=[string]$entry.itemType })
   }
   # Revision de la rama (hallazgo 6): una mirada dentro de una rafaga (con el frente prestado) no los pide: solo busca
   # controles que pulsar, y su recorrido ni los trae.
@@ -2806,9 +3437,18 @@ function Do-View($request){
       $caret=$(if(([string]$focused.id).Length -gt 0 -and $elements.ContainsKey([string]$focused.id)){ Get-CaretPlace $elements[[string]$focused.id] } else { '' })
       if($caret.Length -gt 0){ $focusedOut | Add-Member -NotePropertyName caret -NotePropertyValue $caret }
     }
+    # Encargo 18 (U45): lo que muestra el foco que no es un campo (una terminal), solo si la mirada pide el texto.
+    if($request.focusText -eq $true){
+      $holder=$(if(([string]$focused.id).Length -gt 0 -and $elements.ContainsKey([string]$focused.id)){ $elements[[string]$focused.id] } else { $null })
+      $shown=Get-FocusShownText $holder ([string]$focused.kind) $root
+      if($null -ne $shown){
+        $focusedOut | Add-Member -NotePropertyName text -NotePropertyValue ([string]$shown.text)
+        if([bool]$shown.cut){ $focusedOut | Add-Member -NotePropertyName textCut -NotePropertyValue $true }
+      }
+    }
   }
   # Renew al maximo (7.3): la caja de la ventana, en los mismos pixeles que los rect: el adaptador da a cada control su zona.
-  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; disabledCut=($withDimmed -and [bool]$script:DisabledCut); frameOnly=$frameOnly; partial=$viewPartial; box=$box }
+  return @{ ok=$true; error=''; hwnd=[long]$target.hwnd; window=(Get-Name $root); controls=$ordered; controlCount=($total+$script:ShownUnread); focused=$focusedOut; disabled=$disabled; disabledCut=($withDimmed -and [bool]$script:DisabledCut); frameOnly=$frameOnly; partial=$viewPartial; box=$box; wantedMissing=@($wantedMissing) }
 }
 # Los accionables que se ven pero estan deshabilitados (pasada r15b, v3-27 y v3-29: «Copiar» y «Buscar» del Mapa de
 # caracteres esperan texto en su campo y la vista los quitaba, asi que el modelo no sabia que existian). Van aparte de
@@ -2842,7 +3482,23 @@ function Get-DisabledShown($found,[int]$shownCount,$seen){
   }
   return ,$out.ToArray()
 }
+# Uso-108 (A2; agent-desktop actionability/gates.rs:134-140, «exists but not enabled» is its own answer): every lookup asks
+# for enabled controls, so a press on one the view lists under «Desactivados» answered «no control has that name».
+$script:ByIdDimmed=$null
+function Find-DimmedNamed($root,[string[]]$aliases){
+  $dimmed=New-Object System.Windows.Automation.PropertyCondition($AE::IsEnabledProperty,$false)
+  $activated=$script:Cache.Activate()
+  try {
+    $found=$null
+    try { $found=$root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$dimmed) } catch { return $null }
+    foreach($item in $found){
+      try { if(-not $item.Cached.IsOffscreen -and (Test-NameMatch (Get-ShownName $item) $aliases)){ return $item } } catch {}
+    }
+  } finally { $activated.Dispose() }
+  return $null
+}
 function Find-ById($root,[string]$controlId){
+  $script:ByIdDimmed=$null
   if([string]::IsNullOrWhiteSpace($controlId)){ return $null }
   # Revision de la palanca 8 (hallazgo 3): si la ultima vista de esta ventana se leyo sin el filtro IsOffscreen, lo
   # marcado fuera de pantalla que cae dentro de la caja de la ventana sigue valiendo (es lo que se ofrecio).
@@ -2855,6 +3511,9 @@ function Find-ById($root,[string]$controlId){
   $cached=$null
   if($ownView){ $cached=$script:LastView.elements[$controlId] }
   if($null -ne $cached){
+    # Uso-108 (A2): the control of the view dimmed since the look is there and refuses, it did not move. Only a false that
+    # was read: on an element that is gone PowerShell turns the raise into $null, and that is stale, not disabled.
+    try { $enabledNow=$cached.Current.IsEnabled; if($enabledNow -eq $false){ $script:ByIdDimmed=$cached; return $null } } catch {}
     try { if($cached.Current.IsEnabled -and (Test-OffscreenUsable ([bool]$cached.Current.IsOffscreen) (Get-CurrentRect $cached) $offscreenBox)){ return $cached } } catch {}
   }
   foreach($item in (Get-LookupScope $root $offscreenBox)){
@@ -3165,6 +3824,7 @@ $script:NamedCandidates=@()
 function Find-Named($root,[string[]]$aliases,$offscreenBox=$null){
   $script:NamedLineage=@()
   $matches=@()
+  $unread=$false
   $all=@(Get-LookupScope $root $offscreenBox)
   $script:TreeSize=$all.Count
   $askAliases=$(if($null -ne $script:AskSearch){ Get-AskAliases $aliases } else { $null })
@@ -3181,8 +3841,11 @@ function Find-Named($root,[string[]]$aliases,$offscreenBox=$null){
         $raw=[string]$item.Cached.Name
         foreach($alias in $askAliases){ if($compare.IndexOf($raw,$alias,$options) -ge 0){ Note-AskingName $raw $alias; break } }
       }
-    } catch [System.Windows.Automation.ElementNotAvailableException] {}
+    } catch [System.Windows.Automation.ElementNotAvailableException] {
+    } catch { $unread=$true }
   }
+  # Uso-108 (A6): a node that could not be read leaves «absent» undecided (visible_lookup_timeout), not the control found.
+  if($unread -and $matches.Count -eq 0){ $script:LookupPartial=$true }
   if($matches.Count -gt 1){ $matches=@(Merge-SharedViews $matches) }
   if($matches.Count -gt 1){
     $one=Select-LineageOne @($matches | ForEach-Object { Get-LineageEntry $_ })
@@ -3226,6 +3889,13 @@ function Get-NameParts([string]$name){
   if(-not $m.Success){ return @{ template=$text; key='' } }
   $template=($text.Substring(0,$m.Index)+$m.Groups[1].Value+$m.Groups[3].Value+$text.Substring($m.Index+$m.Length)).Trim()
   return @{ template=$template; key=$m.Groups[2].Value.Trim() }
+}
+# Uso-108 (B9; revision 16, M4): el estado en que quedo el control pulsado, si es suyo lo que cambio: vacio si no se lee o si
+# sigue como estaba (lo que cambio fue un vecino de su linea, Test-LineageToggled).
+function Get-NowState($element,$before){
+  $now=[string](Get-Toggle $element)
+  if($now.Length -eq 0 -or $now -eq [string]$before){ return '' }
+  return $now.ToLowerInvariant()
 }
 function Get-ToggleWitness([string]$name,[string]$kind,[string]$before,$entries){
   if(@('On','Off') -notcontains $before){ return $null }
@@ -3310,6 +3980,8 @@ function Click-Result([bool]$ok,[bool]$effect,[string]$error,[string]$name,[stri
 # (antes: 150 ms de espera previa y 20 x 100 ms de sondeo, 2,6-3,1 s por clic
 # en una ventana Electron/CEF que no cambia de estado UIA).
 $script:Pending=$null
+$script:SystemWatch=$null
+$script:ClickOnlyRead=$false
 function Pending-Result($pending){
   $result=Click-Result $false $true 'visible_button_postread_pending' $pending.name $pending.identity $false $false $false $pending.kind
   $result.pending=$true
@@ -3322,12 +3994,29 @@ function Get-LineageToggles($lineage){
   foreach($el in @($lineage)){ if($null -eq $el){ continue }; $before=Get-Toggle $el; if($null -ne $before){ $out+=@(@{ el=$el; before=$before }) } }
   return $out
 }
+# Fila C11 (agent-desktop, crates/windows/src/actions/toggle_state.rs: TOGGLE_STABLE 200 ms dentro de TOGGLE_TIMEOUT
+# 600 ms, cada 25 ms): un interruptor que cambia y vuelve rechazo el cambio. El estado nuevo debe sostenerse 200 ms; el
+# que vuelve al de antes reinicia la cuenta. Solo se llega con un cambio ya leido: cuesta 200 ms a los clics que cambian.
+function Test-ToggleHeld($el,$before){
+  $watch=[System.Diagnostics.Stopwatch]::StartNew()
+  $candidate=$null; $since=[long]0
+  while($true){
+    $state=Get-Toggle $el
+    if($null -ne $state){
+      if($state -eq $before){ $candidate=$null }
+      elseif($state -ne $candidate){ $candidate=$state; $since=$watch.ElapsedMilliseconds }
+      elseif($watch.ElapsedMilliseconds-$since -ge 200){ return $true }
+    }
+    if($watch.ElapsedMilliseconds -ge 600){ return $false }
+    Start-Sleep -Milliseconds 25
+  }
+}
 function Test-LineageToggled($toggles){
   foreach($entry in @($toggles)){
     if($null -eq $entry){ continue }
     $now=$null
     try { $now=Get-Toggle $entry.el } catch { $now=$null }
-    if($null -ne $now -and $now -ne $entry.before){ return $true }
+    if($null -ne $now -and $now -ne $entry.before -and (Test-ToggleHeld $entry.el $entry.before)){ return $true }
   }
   return $false
 }
@@ -3382,6 +4071,16 @@ function Test-ChosenNamed($chosen,[string]$pressed){
   }
   return $null
 }
+# Encargo 83: el recibo de un clic que cambia el sistema dice que se leia antes y que se lee despues.
+function Do-PostreadRead($request){
+  $watch=$null
+  if($null -ne $script:Pending){ $watch=$script:Pending.systemWatch }
+  $result=Do-Postread $request
+  if($null -ne $watch -and $result.ok -eq $true -and $result.pending -ne $true){
+    try { $result.systemChange=Get-SystemChangeReading $watch } catch {}
+  }
+  return $result
+}
 function Do-Postread($request){
   $pending=$script:Pending
   if($null -eq $pending){ return (Click-Result $false $false 'visible_click_no_pending' '' '' $false $false $false '') }
@@ -3427,7 +4126,7 @@ function Do-Postread($request){
       elseif((Test-Selected $button) -and -not ($null -ne $was -and $was.selected -eq $true)){$selected=$true}
       elseif(@($pending.lineage | Where-Object { Test-Selected $_ }).Count -gt 0){$selected=$true}
       elseif(([string]$pending.gridFocusBefore).Length -gt 0 -and (Get-FocusKey) -notin @('',[string]$pending.gridFocusBefore)){$selected=$true}
-      elseif($null -ne $pending.toggleBefore){ $after=Get-Toggle $button; if($null -ne $after -and $after -ne $pending.toggleBefore){$toggled=$true} }
+      elseif($null -ne $pending.toggleBefore){ $after=Get-Toggle $button; if($null -ne $after -and $after -ne $pending.toggleBefore -and (Test-ToggleHeld $button $pending.toggleBefore)){$toggled=$true} }
       # Ronda 21 (t-drag-4): la marca de otro de su linea del mismo nombre (el Button de una galeria cuyo ListItem se
       # pulso, o al reves) tambien prueba el clic. Integracion de la ronda 21 (t-menu-2): no la de un doble clic, un menu
       # contextual ni una apertura por su flecha, a los que la marca del propio elemento tampoco prueba.
@@ -3494,6 +4193,11 @@ function Do-Postread($request){
   $script:Pending=$null
   $held=Click-Result $true $true '' $pending.name $pending.identity $absent $selected $toggled $pending.kind
   $held.method=[string]$pending.method
+  # Uso-108 (B9): en que quedo lo que cambio de estado: pulsar un «marcar todo» a medias lo apaga, no lo marca.
+  if($toggled -and -not $absent -and $null -ne $pending.element){
+    $nowToggle=Get-NowState $pending.element $pending.toggleBefore
+    if($nowToggle.Length -gt 0){ $held.nowState=$nowToggle }
+  }
   # Ronda 24b: si el lugar se movio con la eleccion (nodo de arbol, pestana), para la mente.
   if($null -ne $pending.placeMoved){ $held.placeMoved=[bool]$pending.placeMoved }
   elseif([bool]$pending.placeUnread){ $held.placeUnread=$true }
@@ -3545,6 +4249,7 @@ function Pressed-Result($done,$button,[string]$name,[string]$identity,[string]$k
   # Las marcas de la linea leidas por Do-Click antes de pulsar valen solo para esta pulsacion.
   $lineageToggles=@($script:LineageToggles); $script:LineageToggles=@()
   $script:Pending=@{ native=$null; element=$button; toggleBefore=$toggleBefore; lineage=$lineage; lineageToggles=$lineageToggles; name=$name; identity=$identity; kind=$kind; method=$done.method; blocked=[bool]$done.blocked; placeBefore=$done.placeBefore; placeMoved=$done.placeMoved; placeUnread=[bool]$done.placeUnread; chosenAlready=[bool]$done.chosenAlready; steadyBefore=$done.steadyBefore; steadyTop=$done.steadyTop }
+  $script:Pending.systemWatch=$script:SystemWatch; $script:SystemWatch=$null
   $result=Pending-Result $script:Pending
   if($done.blocked){ $result.blocked=$true }
   if($done.selectable){ $result.selectable=$true }
@@ -3648,6 +4353,14 @@ function Do-Click($request){
   $script:AskingName=''
   try { return (Do-ClickJudged $request) } finally { $script:AskSearch=$null }
 }
+# Encargo 83 (el preflight del clic): el control que el clic pulsaria y lo que cambiaria, sin pulsar nada.
+function Do-ClickRead($request){
+  $script:ClickOnlyRead=$true
+  $script:LookupPartial=$false
+  $script:AskSearch=$request.asks
+  $script:AskingName=''
+  try { return (Do-ClickJudged $request) } finally { $script:AskSearch=$null; $script:ClickOnlyRead=$false }
+}
 function Do-ClickJudged($request){
   $script:RenderHosts=@(Read-RenderHosts $request)
   $aliases=@($request.aliases | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
@@ -3663,15 +4376,23 @@ function Do-ClickJudged($request){
   $script:LineageToggles=@()
   $script:NamedCandidates=@()
   if($controlId.StartsWith('hmenu.')){
+    if($script:ClickOnlyRead){ return (Click-Result $false $false 'visible_no_system_change' '' $controlId $false $false $false 'MenuItem') }
     if($manner.Length -gt 0){ return (Click-Result $false $false 'visible_click_argument_invalid' '' $controlId $false $false $false 'MenuItem') }
     return (Press-MenuCommand $target $aliases $controlId)
   }
   if(-not [string]::IsNullOrWhiteSpace($controlId)){
     $byId=Find-ById $root $controlId
+    if($null -eq $byId -and $null -ne $script:ByIdDimmed){
+      $dimName='';$dimKind=''
+      try { $dimName=[string]$script:ByIdDimmed.Current.Name; $dimKind=([string]$script:ByIdDimmed.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
+      return (Click-Result $false $false 'visible_control_disabled' $dimName $controlId $false $false $false $dimKind)
+    }
     if($null -eq $byId -and $script:LookupPartial){ return (Click-Result $false $false 'visible_lookup_timeout' '' $controlId $false $false $false '') }
     if($null -eq $byId){ return (Click-Result $false $false 'visible_control_identity_stale' '' $controlId $false $false $false '') }
-    if($aliases.Count -gt 0 -and -not (Test-NameMatch (Get-ShownName $byId) $aliases)){
-      return (Click-Result $false $false 'visible_control_label_mismatch' (Get-ShownName $byId) $controlId $false $false $false '')
+    # Uso-108 (B7): un control sin nombre propio se lista por su rotulo o su tipo: su identidad lo dice, no hay nombre que comparar.
+    $ownName=Get-ShownName $byId
+    if($aliases.Count -gt 0 -and $ownName.Length -gt 0 -and -not (Test-NameMatch $ownName $aliases)){
+      return (Click-Result $false $false 'visible_control_label_mismatch' $ownName $controlId $false $false $false '')
     }
     $matches=@($byId)
     # Ronda 21 (t-drag-4): por su identidad tambien se pulsa la linea de descendencia del mismo nombre (el ListItem de
@@ -3703,6 +4424,7 @@ function Do-ClickJudged($request){
   # Revision 1 de la ronda 21 (hallazgo 4): una busqueda por nombre que el plazo corto no prueba que el control falte
   # ni que sea el unico con ese rotulo (otro igual pudo quedar en lo no recorrido): responde antes de pulsar nada.
   if(Test-NamedLookupCut $controlId $script:LookupPartial){ return (Click-Result $false $false 'visible_lookup_timeout' (Get-Name $root) '' $false $false $false '') }
+  if($script:ClickOnlyRead -and $matches.Count -eq 0){ return (Click-Result $false $false 'visible_button_not_found' '' '' $false $false $false '') }
   if($matches.Count -eq 0){
     $native=@([BaxyUiaWorkerNative]::FindVisibleButtons($target.hwnd,[string[]]$aliases))
     if($native.Count -gt 1){ return (Click-Result $false $false 'visible_button_ambiguous' '' '' $false $false $false '') }
@@ -3717,6 +4439,10 @@ function Do-ClickJudged($request){
       $menuPress=Press-MenuCommand $target $aliases ''
       if([string]$menuPress.error -ne 'visible_button_not_found'){ return $menuPress }
     }
+    if($aliases.Count -gt 0 -and $controlId.Length -eq 0){
+      $dim=Find-DimmedNamed $root $aliases
+      if($null -ne $dim){ return (Click-Result $false $false 'visible_control_disabled' (Get-Name $dim) (Get-Id $dim) $false $false $false (([string]$dim.Cached.ControlType.ProgrammaticName) -replace '^ControlType\.','')) }
+    }
     $missing=Click-Result $false $false 'visible_button_not_found' (Get-Name $root) '' $false $false $false ''
     if($controlId.Length -eq 0){ $missing.treeSize=$script:TreeSize }
     # Auditoria C10: los items cuyo titulo lleva la etiqueta, sin pulsar ninguno (Find-Named).
@@ -3729,9 +4455,16 @@ function Do-ClickJudged($request){
   # Encargo V: por su identidad, en su manera o por su etiqueta, lo que pide mas que su etiqueta no se pulsa (Get-AskingName).
   $asking=Get-AskingName $button $name $aliases $request.asks
   if($asking.Length -gt 0){ return (Click-Result $false $false 'visible_control_needs_confirmation' $asking $identity $false $false $false $kind) }
+  # Encargo 83: la lectura del preflight termina aqui, sin pulsar; el clic que sigue guarda lo que la superficie dice.
+  $systemChange=Get-SystemChange $button $name $kind $root $request.changes
+  if($script:ClickOnlyRead){ return (Get-ClickRead $systemChange $name $identity $kind) }
+  if([bool]$request.refuseSwitches){
+    $switchRefused=Get-SettingsSwitchRefusal $button $name $identity $kind
+    if($null -ne $switchRefused){ return $switchRefused }
+  }
+  $script:SystemWatch=$null
+  if($null -ne $systemChange){ $script:SystemWatch=@{ root=$root; name=$name; before=@(Get-SystemControls $root) } }
   $toggleBefore=Get-Toggle $button
-  $switchRefused=Get-SettingsSwitchRefusal $button $toggleBefore $name $identity $kind
-  if($null -ne $switchRefused){ return $switchRefused }
   # El mismo objetivo en su linea de descendencia (el ListItem del Button
   # invocado): su seleccion tras el clic tambien lo prueba, si antes no lo estaba.
   $lineage=@($script:NamedLineage | Where-Object { -not (Test-Selected $_) })
@@ -3787,7 +4520,7 @@ function Do-ClickJudged($request){
   # del teclado que la pulsacion mueve a otro elemento (Excel lleva la celda activa a la fila elegida) si.
   $gridFocusBefore=$(if($kind -eq 'DataItem' -and $stateBefore.selected -eq $true){ Get-FocusKey } else { $null })
   try { $done=Invoke-NamedControl $button $target.hwnd }
-  catch [System.Windows.Automation.ElementNotEnabledException] { return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
+  catch [System.Windows.Automation.ElementNotEnabledException] { return (Click-Result $false $false 'visible_control_disabled' $name $identity $false $false $false $kind) }
   catch { return (Click-Result $false $false 'visible_press_raised' $name $identity $false $false $false $kind) }
   if($null -eq $done){ return (Click-Result $false $false 'visible_button_not_invokable' $name $identity $false $false $false $kind) }
   if([string]$done.method -eq 'container'){ return (Click-Result $false $false 'visible_control_is_container' $name $identity $false $false $false $kind) }
@@ -3942,9 +4675,14 @@ function Do-At($request){
       # Encargo V: ni desde un punto (OCR, tooltip, vision), ni con el puntero despues (PointPressFrom: Refused).
       $asking=Get-AskingName $button $name $aliases $request.asks
       if($asking.Length -gt 0){ return (Click-Result $false $false 'visible_control_needs_confirmation' $asking $identity $false $false $false $kind) }
+      # Encargo 83: desde un punto nada se lee antes: lo que cambia el sistema se nombra, para el clic que el kernel lee.
+      # Encargo 96: en Bypass nadie contesta un si: un interruptor de Configuracion se rechaza, y lo demas se pulsa.
+      if([bool]$request.refuseSwitches){
+        $switchRefused=Get-SettingsSwitchRefusal $button $name $identity $kind
+        if($null -ne $switchRefused){ return $switchRefused }
+      }
+      elseif($null -ne (Get-SystemChange $button $name $kind $target.root $request.changes)){ return (Click-Result $false $false 'visible_control_needs_confirmation' $name $identity $false $false $false $kind) }
       $toggleBefore=Get-Toggle $button
-      $switchRefused=Get-SettingsSwitchRefusal $button $toggleBefore $name $identity $kind
-      if($null -ne $switchRefused){ return $switchRefused }
       $done=Invoke-NamedControl $button $target.hwnd -PatternsOnly
     } catch { return (Click-Result $false $false 'visible_button_not_invokable' '' '' $false $false $false '') }
     # Revision 1 de r24b (B4): un contenedor sin Invoke ni SelectionItem no se pulsa, pero en un punto (OCR, tooltip) no
@@ -4011,14 +4749,14 @@ function Do-Scroll($request){
   $owner=Find-ScrollOwner $element $target.root
   if($null -eq $owner){ return @{ ok=$false; error='scroll_pattern_unavailable' } }
   $scroll=$owner.scroll
-  $before=[double]$scroll.Current.VerticalScrollPercent
+  try { $before=Read-Percent $scroll } catch { return @{ ok=$false; error='scroll_percent_unread' } }
   $step=$(if([string]$request.direction -eq 'up'){[System.Windows.Automation.ScrollAmount]::SmallDecrement}else{[System.Windows.Automation.ScrollAmount]::SmallIncrement})
   $amount=[int]$request.amount; if($amount -lt 1){$amount=1}; if($amount -gt 10){$amount=10}
   # Una muesca de rueda son tres lineas.
   for($i=0;$i -lt $amount*3;$i++){
     try { $scroll.Scroll([System.Windows.Automation.ScrollAmount]::NoAmount,$step) } catch [System.InvalidOperationException] { break }
   }
-  $after=[double]$scroll.Current.VerticalScrollPercent
+  try { $after=Get-SettledPercent $scroll $before } catch { return @{ ok=$false; error='scroll_percent_unread' } }
   return @{ ok=$true; error=''; scrolled=($after -ne $before); percentBefore=$before; percentAfter=$after; name=(Get-ShownName $element); container=(-not $owner.own) }
 }
 # input.scroll con «label» (goal v3 punto 2, revelar): el elemento con ese nombre que esta fuera de vista se trae a la
@@ -4043,13 +4781,72 @@ function Find-AnyNamed($root,[string[]]$aliases,$until=$null){
   }
   return $hits
 }
+# Uso-108 (agent-desktop crates/windows/src/actions/scroll_ladder.rs visibility_verified, probes FINDINGS A18-2): IsOffscreen
+# and the rectangle do not account for what a scroller clips: a row with 2 px inside its list reads as seen, «already» was
+# answered and the press hit the neighbour. Seen: has area and, with a viewport known, wholly inside it (one bigger than it:
+# touching it). A container that publishes no viewport never counts as hidden: agent-desktop first did that and failed every
+# on-screen row of Explorer's tree (scroll_into_view_tests.rs:65-69). One pixel of slack: rectangles at 125 % come rounded.
+function Test-BoxTouches($box,$viewport){
+  return ($box.X -lt $viewport.x+$viewport.w -and $box.X+$box.Width -gt $viewport.x -and $box.Y -lt $viewport.y+$viewport.h -and $box.Y+$box.Height -gt $viewport.y)
+}
+# Revision de la tanda 2: a lo ancho basta con tocarlo. Revelar desplaza en vertical; una fila honda de un arbol estrecho,
+# cortada de lado, nunca quedaba vista y la busqueda la alejaba por paginas hasta «no encontrada». A diferencia de
+# agent-desktop, que exige los dos ejes: su escalera tambien desplaza en horizontal. El punto de la pulsacion ya se queda en
+# lo que se ve (Get-VisiblePart).
+function Test-BoxShown($box,$viewport){
+  if($null -eq $box -or $box.IsEmpty -or $box.Width -le 0 -or $box.Height -le 0){ return $false }
+  if($null -eq $viewport){ return $true }
+  if(-not (Test-BoxTouches $box $viewport)){ return $false }
+  if($box.Height -gt $viewport.h){ return $true }
+  return ($box.Y -ge $viewport.y-1 -and $box.Y+$box.Height -le $viewport.y+$viewport.h+1)
+}
 function Test-Shown($el){
-  try { return (-not $el.Current.IsOffscreen) } catch { return $false }
+  try {
+    if($el.Current.IsOffscreen){ return $false }
+    return (Test-BoxShown $el.Current.BoundingRectangle (Get-ScrollViewport $el))
+  } catch { return $false }
+}
+# Partly in sight: what Test-Shown alone would have called seen before the viewport, when nothing can bring it further.
+function Test-PartlyShown($el){
+  try {
+    if($el.Current.IsOffscreen){ return $false }
+    $box=$el.Current.BoundingRectangle
+    if($null -eq $box -or $box.IsEmpty -or $box.Width -le 0 -or $box.Height -le 0){ return $false }
+    $viewport=Get-ScrollViewport $el
+    return ($null -eq $viewport -or (Test-BoxTouches $box $viewport))
+  } catch { return $false }
+}
+# Uso-108 (agent-desktop crates/windows/src/actions/scroll_into_view.rs VERIFY_WINDOW, 800 ms): a scroller that animates or
+# answers late read right after the call is told «nothing moved» or «end of the list». Only the negative pays the wait.
+$script:SettleMs=800
+$script:RevealUntil=$null
+function Wait-Shown($el){
+  $watch=[System.Diagnostics.Stopwatch]::StartNew()
+  while($true){
+    if(Test-Shown $el){ return $true }
+    if($watch.ElapsedMilliseconds -ge $script:SettleMs -or ($null -ne $script:RevealUntil -and [DateTime]::UtcNow -gt $script:RevealUntil)){ return $false }
+    Start-Sleep -Milliseconds 50
+  }
+}
+# Revision de la tanda 2: PowerShell vuelve $null la lectura de una propiedad que lanza (medido en 5.1), y [double]$null es 0:
+# una lista reconstruida por su propio desplazamiento se leia «movida a 0». Sin lectura, se dice.
+function Read-Percent($scroll){
+  $now=$scroll.Current.VerticalScrollPercent
+  if($null -eq $now){ throw 'scroll_percent_unread' }
+  return [double]$now
+}
+function Get-SettledPercent($scroll,[double]$before){
+  $watch=[System.Diagnostics.Stopwatch]::StartNew()
+  while($true){
+    $now=Read-Percent $scroll
+    if($now -ne $before -or $watch.ElapsedMilliseconds -ge $script:SettleMs){ return $now }
+    Start-Sleep -Milliseconds 50
+  }
 }
 function Reveal-Result([bool]$ok,[string]$error,[string]$method,$el){
   $name=''
   if($null -ne $el){ $name=Get-ShownName $el }
-  $result=@{ ok=$ok; error=$error; method=$method; name=$name; revealed=($ok -and $method -ne 'already'); visible=($null -ne $el -and (Test-Shown $el)) }
+  $result=@{ ok=$ok; error=$error; method=$method; name=$name; revealed=($ok -and $method -ne 'already'); visible=($null -ne $el -and ((Test-Shown $el) -or (Test-PartlyShown $el))) }
   if(-not $ok -and $script:NamedCandidates.Count -gt 0){ $result.candidates=@($script:NamedCandidates | Select-Object -First 10); $result.candidateCount=$script:NamedCandidates.Count }
   return $result
 }
@@ -4058,14 +4855,25 @@ function Reveal-Result([bool]$ok,[string]$error,[string]$method,$el){
 function Reveal-Listed($hits,[ref]$touched){
   foreach($hit in $hits){ if(Test-Shown $hit){ return (Reveal-Result $true '' 'already' $hit) } }
   $pattern=$null
+  $boxes=@{}
   foreach($hit in $hits){
     try {
+      $boxes[$hit]=$hit.Current.BoundingRectangle
       if($hit.TryGetCurrentPattern([System.Windows.Automation.ScrollItemPattern]::Pattern,[ref]$pattern)){
         $touched.Value=$true
         ([System.Windows.Automation.ScrollItemPattern]$pattern).ScrollIntoView()
-        if(Test-Shown $hit){ return (Reveal-Result $true '' 'scrollintoview' $hit) }
+        if(Wait-Shown $hit){ return (Reveal-Result $true '' 'scrollintoview' $hit) }
       }
     } catch {}
+  }
+  # Uso-108: a row still cut that nothing brings further (no pattern, or one that answers without moving it): it is there, in
+  # part, and a turn of pages would take it away and end in «not found». «already» only if it did not move.
+  foreach($hit in $hits){
+    if(Test-PartlyShown $hit){
+      $same=$true
+      try { $same=$boxes.ContainsKey($hit) -and ($hit.Current.BoundingRectangle -eq $boxes[$hit]) } catch {}
+      return (Reveal-Result $true '' $(if($same){'already'}else{'scrollintoview'}) $hit)
+    }
   }
   return $null
 }
@@ -4096,7 +4904,7 @@ function Find-InContainers($root,[string[]]$aliases,$until,[ref]$touched){
       if($found.TryGetCurrentPattern([System.Windows.Automation.ScrollItemPattern]::Pattern,[ref]$pattern)){
         try { ([System.Windows.Automation.ScrollItemPattern]$pattern).ScrollIntoView() } catch {}
       }
-      if(Test-Shown $found){ return (Reveal-Result $true '' 'itemcontainer' $found) }
+      if(Wait-Shown $found){ return (Reveal-Result $true '' 'itemcontainer' $found) }
     }
   }
   return $null
@@ -4108,6 +4916,7 @@ function Find-InContainers($root,[string[]]$aliases,$until,[ref]$touched){
 $script:RevealSeconds=11
 function Do-Reveal($request){
   $deadline=[DateTime]::UtcNow.AddSeconds($script:RevealSeconds)
+  $script:RevealUntil=$deadline
   $aliases=@($request.aliases | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
   if($aliases.Count -eq 0){ return @{ ok=$false; error='visible_click_argument_invalid' } }
   $target=Get-Root ([long]$request.hwnd)
@@ -4150,7 +4959,7 @@ function Do-Reveal($request){
   $moved=$tried
   $ended=$false
   for($page=0;$page -lt $pages -and [DateTime]::UtcNow -lt $deadline;$page++){
-    try { $before=[double]$scroller.Current.VerticalScrollPercent } catch { return (Reveal-Result $false 'reveal_scroll_reread_failed' $moved $null) }
+    try { $before=Read-Percent $scroller } catch { return (Reveal-Result $false 'reveal_scroll_reread_failed' $moved $null) }
     # Only a refused call (no scroll there, an invalid amount) moved nothing; any other failure may have scrolled.
     try { $scroller.Scroll([System.Windows.Automation.ScrollAmount]::NoAmount,$step) }
     catch [System.InvalidOperationException] { break }
@@ -4159,8 +4968,9 @@ function Do-Reveal($request){
     $moved='scroll'
     # Solo lo que contiene el contenedor que se desplaza: el resto de la ventana no cambio con la pagina.
     try {
+      $turned=(Get-SettledPercent $scroller $before) -ne $before
       foreach($hit in @(Find-AnyNamed $holder $aliases $deadline)){ if(Test-Shown $hit){ return (Reveal-Result $true '' 'scroll' $hit) } }
-      if([double]$scroller.Current.VerticalScrollPercent -eq $before){ $ended=$true; break }
+      if(-not $turned){ $ended=$true; break }
     } catch { return (Reveal-Result $false 'reveal_scroll_reread_failed' 'scroll' $null) }
   }
   $code=$(if($ended -and -not $script:RevealCut){ 'reveal_not_found' } else { 'reveal_search_incomplete' })
@@ -4216,14 +5026,17 @@ function Do-Interaction($request){
       try {
         $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
         $topHandle=[int]$root.Current.NativeWindowHandle
-        $node=$walker.GetParent($f)
+        # Uso real 2026-11-05: el foco puede estar en el dialogo mismo (medido: un buscador sin resultados); entonces tambien
+        # esta dentro de el, y el Escape que lo cierra se envia.
+        $node=$f
+        if([int]$f.Current.NativeWindowHandle -ne 0){ $node=$walker.GetParent($f) }
         for($up=0;$up -lt 60 -and $null -ne $node;$up++){
           if([int]$node.Current.NativeWindowHandle -eq $topHandle -or $node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Document){ break }
           if($node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Window){ $inDialog=$true; break }
           $node=$walker.GetParent($node)
         }
       } catch { $inDialog=$false }
-      $focusedOut=@{ kind=$kind; name=[string]$f.Current.Name; editable=$editable; id=((@($f.GetRuntimeId()) | ForEach-Object { [string]$_ }) -join '.'); dialog=$inDialog }
+      $focusedOut=@{ kind=$kind; name=[string]$f.Current.Name; editable=$editable; id=(Get-InteractionId $f); dialog=$inDialog; box=(Get-InteractionBox $f) }
     }
   } catch { $focusedOut=$null }
   $content=$false
@@ -4235,7 +5048,112 @@ function Do-Interaction($request){
       $content=($null -ne $root.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$any))
     } catch { $content=$false }
   }
-  return @{ ok=$true; error=''; content=$content; focused=$focusedOut }
+  # Uso real 2026-11-05: donde estan los campos editables que se ven (su identidad, su rectangulo y si tienen el foco, nunca
+  # su texto), para pulsar el que es y no un punto fijo que el diseno del cliente mueve.
+  $fieldsOut=@()
+  if([bool]$request.fields){
+    try {
+      $edit=New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit)
+      foreach($field in @($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$edit))){
+        if($fieldsOut.Count -ge 8){ break }
+        if($field.Current.IsOffscreen -or -not $field.Current.IsEnabled){ continue }
+        $fieldBox=Get-InteractionBox $field
+        if($null -ne $fieldBox){ $fieldsOut+=@{ id=(Get-InteractionId $field); box=$fieldBox; focused=[bool]$field.Current.HasKeyboardFocus } }
+      }
+    } catch { $fieldsOut=@() }
+  }
+  # Uso real 2026-11-05: donde lleva un elemento exactamente ese nombre (una cuenta que la conversacion muestra), fuera de
+  # los dialogos de la pagina. En la vista cruda: el texto de una pagina no es elemento de control, y FindAll sin mas sólo
+  # busca entre esos.
+  $shownAt=@()
+  if(([string]$request.shows).Length -gt 0){
+    $raw=New-Object System.Windows.Automation.CacheRequest
+    $raw.TreeFilter=[System.Windows.Automation.Automation]::RawViewCondition
+    $rawScope=$raw.Activate()
+    $hits=@()
+    try { $hits=@($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::NameProperty,[string]$request.shows)))) } catch { $hits=@() } finally { $rawScope.Dispose() }
+    foreach($hit in $hits){
+      if($shownAt.Count -ge 64){ break }
+      if(Test-InDialogOrField $hit $root){ continue }
+      $hitBox=Get-InteractionBox $hit
+      if($null -ne $hitBox){ $shownAt+=$hitBox }
+    }
+  }
+  # Uso real 2026-11-05 (uso-128): cuantos dialogos de la pagina hay abiertos (Chromium expone role=dialog como un Window de UIA
+  # sin hwnd), con el foco donde este: un buscador abierto cuyo foco quedo fuera sigue tapando la ventana.
+  $dialogCount=-1
+  if([bool]$request.dialogs){
+    try {
+      $dialogCount=0
+      $topWindow=[int]$root.Current.NativeWindowHandle
+      foreach($open in @($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::Window))))){
+        $openHandle=[int]$open.Current.NativeWindowHandle
+        if(($openHandle -eq 0 -or $openHandle -eq $topWindow) -and -not $open.Current.IsOffscreen){ $dialogCount++ }
+      }
+    } catch { $dialogCount=-1 }
+  }
+  # Uso real 2026-11-05 (uso-128): el panel de voz de un cliente, leido sin tocarlo: el boton de desconectar (nombres que da quien
+  # pregunta) y, en el mismo panel, el enlace «canal / servidor» (medido en el cliente real, sin elegir por posicion).
+  $voiceConnected=$false; $voicePlace=''
+  foreach($disconnect in @($request.voicePanel)){
+    if(([string]$disconnect).Length -eq 0 -or $voiceConnected){ continue }
+    try {
+      $button=$root.FindFirst([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.AndCondition(
+        (New-Object System.Windows.Automation.PropertyCondition($AE::NameProperty,[string]$disconnect)),
+        (New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)))))
+      if($null -eq $button){ continue }
+      $voiceConnected=$true
+      $walker=[System.Windows.Automation.TreeWalker]::ControlViewWalker
+      $holder=$button
+      for($up=0;$up -lt 4 -and $voicePlace.Length -eq 0 -and $null -ne $holder;$up++){
+        $holder=$walker.GetParent($holder)
+        if($null -eq $holder){ break }
+        foreach($link in @($holder.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::Hyperlink))))){
+          if(([string]$link.Current.Name).Contains(' / ')){ $voicePlace=[string]$link.Current.Name; break }
+        }
+      }
+    } catch { }
+  }
+  # Uso real 2026-11-05 (uso-128): las filas con nombre y tipo que la ventana muestra («Ana (mensaje directo)», «General (canal de
+  # voz)»), para decirle al modelo cual se parece a lo que la persona dijo. Solo se leen.
+  $rowsOut=@()
+  if([bool]$request.rows){
+    try {
+      $kinds=@([System.Windows.Automation.ControlType]::Hyperlink,[System.Windows.Automation.ControlType]::Button,[System.Windows.Automation.ControlType]::ListItem)
+      $conditions=[System.Windows.Automation.Condition[]]@($kinds | ForEach-Object { New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,$_) })
+      foreach($shownRow in @($root.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.OrCondition(,$conditions))))){
+        if($rowsOut.Count -ge 200){ break }
+        $rowName=[string]$shownRow.Current.Name
+        if($rowName.Contains(' (') -and $rowName.Length -le 160 -and -not $shownRow.Current.IsOffscreen){ $rowsOut+=$rowName }
+      }
+    } catch { $rowsOut=@() }
+  }
+  return @{ ok=$true; error=''; content=$content; focused=$focusedOut; fields=$fieldsOut; shownAt=$shownAt; dialogs=$dialogCount; voiceConnected=$voiceConnected; voicePlace=$voicePlace; rows=$rowsOut }
+}
+# Si un elemento esta en un dialogo de la pagina (Chromium expone role=dialog como un Window de UIA sin hwnd) o en un campo
+# (lo escrito en un contenteditable son textos hijos de su Edit: no es un mensaje del chat).
+function Test-InDialogOrField($element,$root){
+  try {
+    $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+    $topHandle=[int]$root.Current.NativeWindowHandle
+    if($element.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit){ return $true }
+    $node=$walker.GetParent($element)
+    for($up=0;$up -lt 60 -and $null -ne $node;$up++){
+      if([int]$node.Current.NativeWindowHandle -eq $topHandle -or $node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Document){ return $false }
+      if($node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Window -or $node.Current.ControlType -eq [System.Windows.Automation.ControlType]::Edit){ return $true }
+      $node=$walker.GetParent($node)
+    }
+  } catch {}
+  return $true
+}
+function Get-InteractionId($element){ return (@($element.GetRuntimeId()) | ForEach-Object { [string]$_ }) -join '.' }
+# El rectangulo de un elemento en pixeles de pantalla (el trabajador es consciente de los DPI por monitor); nulo si no tiene.
+function Get-InteractionBox($element){
+  try {
+    $rect=$element.Current.BoundingRectangle
+    if($rect.IsEmpty -or $rect.Width -le 0 -or $rect.Height -le 0){ return $null }
+    return @{ x=[int]$rect.X; y=[int]$rect.Y; w=[int]$rect.Width; h=[int]$rect.Height }
+  } catch { return $null }
 }
 # input.text.type dirigido (CONTRATO_VISTA_ACCION.md §2, arreglo 1 del goal v3): el campo de la ultima vista recibe el
 # texto sin teclado ni primer plano. ValuePattern.SetValue reemplaza todo el contenido, asi que solo se usa donde
@@ -4264,6 +5182,17 @@ function Get-ComboEdit($combo){
   } catch {}
   return $null
 }
+# Medido en Opera GX 138: el Edit de dentro no es hijo directo del de fuera. Solo si el de fuera no tiene valor propio.
+function Get-WrappedEdit($edit){
+  try {
+    $own=Get-WritableValue $edit
+    if($null -ne $own -and -not [string]::IsNullOrEmpty([string]$own.Current.Value)){ return $null }
+    $type=New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit)
+    $inner=$edit.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$type)
+    if($null -ne $inner -and $null -ne (Get-WritableValue $inner)){ return $inner }
+  } catch {}
+  return $null
+}
 # Auditoria C9: la entrada elegida es la que se llama como el texto pedido (igual plegado, Test-NameMatch); «125» no es
 # «125% (recomendado)». Devuelve la entrada elegida (entry, su nombre leido) y si la caja la tomo (delivered); $null si
 # no se eligio nada. Sin una entrada de ese nombre, sus nombres quedan en $script:ComboEntries para el modelo.
@@ -4272,19 +5201,101 @@ function Find-EntryNamed($items,[string]$text){
   foreach($item in @($items)){ if($null -ne $item -and (Test-NameMatch (Get-Name $item) @($text))){ return $item } }
   return $null
 }
+# Uso-108 (A3, medido con un proveedor propio y un ComboBox de WPF): fuera de una CacheRequest, Cached.Name de un elemento da
+# null sin llegar a ningun catch (PowerShell se traga lo que lanza el getter de una propiedad), asi que Get-Name no pasa a
+# Current.Name. Las entradas salian sin nombre: «entry» no elegia nada, en ninguna lista, y la lista se leia vacia. Sus
+# nombres, en la cache de esta lectura (una lista puede tener miles).
+$script:EntryCache=New-Object System.Windows.Automation.CacheRequest
+$script:EntryCache.Add([System.Windows.Automation.AutomationElement]::NameProperty)
+# Las entradas de la lista como las da el arbol ahora.
+function Read-ComboItems($combo){
+  $activated=$script:EntryCache.Activate()
+  try {
+    return @($combo.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem))))
+  } finally { $activated.Dispose() }
+}
+function Add-EntryNames($names,$items){
+  foreach($item in @($items)){ $shown=Get-Name $item; if($shown.Length -gt 0 -and -not $names.Contains($shown)){ [void]$names.Add($shown) } }
+}
+# Uso-108 (A3; hondo 12.2): una lista virtualizada solo tiene en el arbol lo que dibujo. Su entrada de ese nombre por
+# ItemContainerPattern (Find-InContainers hace lo mismo al revelar), realizada.
+function Find-ComboRealized($combo,[string]$text){
+  try {
+    $holder=$null
+    if(-not $combo.TryGetCurrentPattern([System.Windows.Automation.ItemContainerPattern]::Pattern,[ref]$holder)){ return $null }
+    $activated=$script:EntryCache.Activate()
+    try { $found=([System.Windows.Automation.ItemContainerPattern]$holder).FindItemByProperty($null,$AE::NameProperty,$text) } finally { $activated.Dispose() }
+    if($null -eq $found){ return $null }
+    $virtual=$null
+    if($found.TryGetCurrentPattern([System.Windows.Automation.VirtualizedItemPattern]::Pattern,[ref]$virtual)){ ([System.Windows.Automation.VirtualizedItemPattern]$virtual).Realize() }
+    return (Find-EntryNamed @($found) $text)
+  } catch { return $null }
+}
+# Uso-108 (A3; agent-desktop windows/src/actions/select_search.rs:118-153: hasta 16 desplazamientos, hasta que el
+# porcentaje no se mueva): la lista se recorre desde arriba por paginas buscando tras cada una, acotado a 1,5 s. Medido en
+# WPF: el porcentaje se mueve un poco despues de pedirlo; releido al instante, la lista parecia acabada. Sin llegar al
+# 100 %, $script:ComboEntriesPartial: lo leido no es la lista.
+function Find-ComboWalked($combo,[string]$text,$names){
+  $scroller=$null
+  try {
+    $found=$null
+    if($combo.TryGetCurrentPattern([System.Windows.Automation.ScrollPattern]::Pattern,[ref]$found)){ $scroller=[System.Windows.Automation.ScrollPattern]$found }
+    else {
+      $holder=$combo.FindFirst([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::IsScrollPatternAvailableProperty,$true)))
+      if($null -ne $holder){ $scroller=[System.Windows.Automation.ScrollPattern]$holder.GetCurrentPattern([System.Windows.Automation.ScrollPattern]::Pattern) }
+    }
+  } catch { $scroller=$null }
+  if($null -eq $scroller){ return $null }
+  $watch=[System.Diagnostics.Stopwatch]::StartNew()
+  try {
+    if(-not $scroller.Current.VerticallyScrollable){ return $null }
+    if([double]$scroller.Current.VerticalScrollPercent -gt 0){ $scroller.SetScrollPercent([System.Windows.Automation.ScrollPattern]::NoScroll,0) }
+    for($page=0;$page -lt 16 -and $watch.ElapsedMilliseconds -lt 1500;$page++){
+      $was=[double]$scroller.Current.VerticalScrollPercent
+      if($was -ge 100){ return $null }
+      $scroller.ScrollVertical([System.Windows.Automation.ScrollAmount]::LargeIncrement)
+      $now=$was
+      for($wait=0;$wait -lt 5 -and $now -le $was;$wait++){ Start-Sleep -Milliseconds 40; $now=[double]$scroller.Current.VerticalScrollPercent }
+      $items=Read-ComboItems $combo
+      $hit=Find-EntryNamed $items $text
+      if($null -ne $hit){ return $hit }
+      Add-EntryNames $names $items
+      if($now -le $was){ break }
+    }
+  } catch {}
+  $script:ComboEntriesPartial=$true
+  return $null
+}
 function Select-ComboEntry($combo,[string]$text){
   $script:ComboEntries=@()
+  $script:ComboEntriesTotal=0
+  $script:ComboEntriesPartial=$false
   # Ronda final 16 (regla 3): the list opened (and closed) is an effect on the window even when no entry was chosen.
   $script:ComboExpanded=$false
+  # Uso-108 (A3; agent-desktop windows/src/actions/select.rs:161-178, PR #256: un desplegable WinForms sin ExpandCollapse;
+  # su A19-7 midio las 8 entradas de WPF presentes con la lista cerrada): una lista que no abre se busca igual.
+  $expand=$null
   $pattern=$null
-  if(-not $combo.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){ return $null }
-  $expand=[System.Windows.Automation.ExpandCollapsePattern]$pattern
-  try { $expand.Expand(); $script:ComboExpanded=$true } catch { return $null }
+  if($combo.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$pattern)){
+    $expand=[System.Windows.Automation.ExpandCollapsePattern]$pattern
+    try { $expand.Expand(); $script:ComboExpanded=$true } catch {}
+  }
   $chosen=$null
+  $name=''
   try {
-    $items=@($combo.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem))))
+    $items=Read-ComboItems $combo
+    # Uso-108 (hondo 11.6; agent-desktop PR #517): una lista recien abierta puede leerse vacia hasta que se llena.
+    for($look=0;$look -lt 3 -and $items.Count -eq 0 -and $script:ComboExpanded;$look++){ Start-Sleep -Milliseconds 200; $items=Read-ComboItems $combo }
     $chosen=Find-EntryNamed $items $text
-    if($null -eq $chosen){ $script:ComboEntries=@($items | ForEach-Object { Get-Name $_ } | Where-Object { $_.Length -gt 0 } | Select-Object -First 30) }
+    $names=New-Object System.Collections.Generic.List[string]
+    Add-EntryNames $names $items
+    if($null -eq $chosen){ $chosen=Find-ComboRealized $combo $text }
+    if($null -eq $chosen -and $script:ComboExpanded){ $chosen=Find-ComboWalked $combo $text $names }
+    # Sin una entrada de ese nombre, las leidas (30 como mucho) y cuantas eran; sin ninguna, la lista no se leyo.
+    if($null -eq $chosen){
+      $script:ComboEntriesTotal=$names.Count
+      $script:ComboEntries=@($names | Select-Object -First 30)
+    }
     # Ronda final: la entrada ya elegida antes es el estado alcanzado; no se vuelve a elegir. Como en la entrega normal,
     # una caja que publica su valor tiene que mostrar esa entrada (una lista marcada que la caja no tomo no es «ya estaba»).
     if($null -ne $chosen -and [bool](Test-Selected $chosen)){
@@ -4298,38 +5309,170 @@ function Select-ComboEntry($combo,[string]$text){
       }
     }
     if($null -ne $chosen){
+      # El nombre, antes de cerrar: la fila puede no sobrevivir a la lista (hondo 12.1).
+      $name=Get-Name $chosen
       $select=$null
       if($chosen.TryGetCurrentPattern([System.Windows.Automation.ScrollItemPattern]::Pattern,[ref]$select)){ try { ([System.Windows.Automation.ScrollItemPattern]$select).ScrollIntoView() } catch {} }
-      if($chosen.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$select)){ ([System.Windows.Automation.SelectionItemPattern]$select).Select() } else { $chosen=$null }
+      if($chosen.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$select)){ ([System.Windows.Automation.SelectionItemPattern]$select).Select() } else { $chosen=$null; $script:ComboEntriesTotal=$names.Count; $script:ComboEntries=@($names | Select-Object -First 30) }
     }
-  } finally { try { $expand.Collapse() } catch {} }
+  } finally { if($script:ComboExpanded){ try { $expand.Collapse() } catch {} } }
   if($null -eq $chosen){ return $null }
-  $name=Get-Name $chosen
-  if(-not [bool](Test-Selected $chosen)){ return @{ entry=$name; delivered=$false } }
-  # Revision de combos-galerias: una caja que publica su valor lo dice con la entrada elegida (una lista marcada que la
-  # caja no tomo no es entrega).
+  # Uso-108 (hondo 12.1; agent-desktop windows/src/actions/select_tests.rs:190-204): lo que dice la caja manda sobre lo que
+  # dice su fila, que tras cerrarse la lista puede no estar (ElementNotAvailable se leia como no elegida). Primero su
+  # valor (revision de combos-galerias: una lista marcada que la caja no tomo no es entrega); si no lo publica, su
+  # seleccion (WinUI, Get-ChosenEntry); solo sin ninguna, la fila.
   $value=$null
   if($combo.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$value)){
     $vp=[System.Windows.Automation.ValuePattern]$value
     $after=Wait-ValueSet { [string]$vp.Current.Value } $name 300
-    if([string]::IsNullOrWhiteSpace([string]$after)){ return @{ entry=$name; delivered=$true } }
-    return @{ entry=$name; delivered=[string]::Equals(([string]$after).Trim(),([string]$name).Trim(),[StringComparison]::OrdinalIgnoreCase) }
+    if(-not [string]::IsNullOrWhiteSpace([string]$after)){
+      if([string]::Equals(([string]$after).Trim(),([string]$name).Trim(),[StringComparison]::OrdinalIgnoreCase)){ return @{ entry=$name; delivered=$true } }
+      return @{ entry=$name; delivered=$false; now=(Get-ValueNow ([string]$after)) }
+    }
   }
-  return @{ entry=$name; delivered=$true }
+  $held=Get-ChosenEntry $combo
+  if($null -ne $held){
+    $expected=$name; if($expected.Length -gt 120){ $expected=Get-Cut $expected 0 120 }
+    return @{ entry=$name; delivered=[string]::Equals($held,$expected,[StringComparison]::OrdinalIgnoreCase) }
+  }
+  return @{ entry=$name; delivered=[bool](Test-Selected $chosen) }
+}
+# Uso-108 (A3): lo leido de una lista sin esa entrada, para el recibo. Sin ninguna entrada leida, la lista no se leyo.
+function Add-ComboReading($result){
+  if($script:ComboEntries.Count -gt 0){
+    $result.entries=@($script:ComboEntries)
+    if($script:ComboEntriesTotal -gt $script:ComboEntries.Count){ $result.entriesTotal=$script:ComboEntriesTotal }
+    if($script:ComboEntriesPartial){ $result.entriesPartial=$true }
+  } else { $result.listNotRead=$true }
+  if($script:ComboExpanded){ $result.expanded=$true }
+}
+# Uso-108 (A11; agent-desktop windows/src/tree/properties/element_properties.rs:38-44): una lectura que falla no prueba que no
+# sea una contrasena. Medido: un try/catch aqui no sirve, PowerShell se traga lo que lanza el getter y la lectura da null,
+# que [bool] volvia falso.
+function Test-MaybePassword($element){
+  $seen=$null
+  try { $seen=$element.Current.IsPassword } catch {}
+  return ($null -eq $seen) -or [bool]$seen
+}
+# Uso-108 (B12; agent-desktop #190): lo que quedo en un campo que no coincide, para el recibo: un valor, no un documento.
+function Get-ValueNow([string]$value){
+  if($value.Length -gt 120){ return (Get-Cut $value 0 120)+[char]0x2026 }
+  return $value
+}
+# Uso-108 (C7, medido en un RICHEDIT50W real: «\r» vacio, «hola\r» escrito; agent-desktop
+# windows/src/tree/properties/element_properties.rs:215-252): el valor de un RichEdit acaba en una marca de parrafo que no
+# es contenido. Solo esa clase (un Edit que acaba en \r lo tiene de verdad) y solo la ultima.
+function Get-PlainValue([string]$value,[string]$className){
+  if($value.Length -gt 0 -and $value[$value.Length-1] -eq [char]13 -and @(([string]$className -split '\.') | Where-Object { $_ -like 'RichEdit*' }).Count -gt 0){
+    return $value.Substring(0,$value.Length-1)
+  }
+  return $value
+}
+# Uso-108 (C9, medido en Edge con una pagina propia con un oyente de input; agent-desktop #395): SetValue en un
+# contenteditable con role=textbox (un Edit con ValuePattern, sin marca que lo distinga por UIA de un <textarea>) cambia el
+# texto y se relee igual, y la pagina no oye nada: ningun evento input; en un <input> o un <textarea> si lo oye. Lo que los
+# separa es que el texto del primero vive en elementos hijos (uno de texto, o el parrafo de un editor) y los otros
+# no los tienen, con texto o sin el. Solo en el motor de Chromium (en otros un cuadro tiene hijos propios) y solo dentro de
+# una pagina (revision, 4: medido en Opera GX, la barra de direcciones es un Edit de la propia ventana del navegador, sin
+# Document encima, que a veces tiene hijos; su SetValue no va a ninguna pagina y navega).
+function Test-TextInChildren($element){
+  try {
+    if([string]$element.Current.FrameworkId -ne 'Chrome'){ return $false }
+    $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+    if($null -eq $walker.GetFirstChild($element)){ return $false }
+    $up=$walker.GetParent($element)
+    for($depth=0;$depth -lt 64 -and $null -ne $up;$depth++){
+      if($up.Current.ControlType -eq [System.Windows.Automation.ControlType]::Document){ return $true }
+      $up=$walker.GetParent($up)
+    }
+    return $false
+  } catch { return $false }
 }
 # Regresiones r2 M3 (live v8): Chromium publica el valor nuevo de un campo un poco despues de SetValue; releido a los
 # 95 ms todavia mostraba el anterior y el texto se dio por no verificado. Se relee cada 40 ms hasta $limitMs (300 como
-# mucho) y se devuelve el primer valor igual al texto, o el ultimo leido.
+# mucho) y se devuelve el valor igual al texto, o el ultimo leido. Uso-108 (hondo 11.1; agent-desktop PR #565): un valor que
+# se toco una vez no es uno que se quedo (una pagina que toma el valor y pone el suyo): igual tiene que seguir 100 ms; si
+# vuelve, cuenta como no llegado hasta el plazo. Y lo distinto solo se decide al acabar el plazo: #190 midio old ->
+# parcial -> new, una lectura intermedia no dice nada.
+# Uso-108 (revision, 1): sin lectura es $null, nunca «»: el getter de un elemento muerto lanza, PowerShell se lo traga y
+# [string] de ese null parecia un campo vacio, y tras un SetValue que lanzo sobre un campo vacio, un rehusado.
+function Get-ValueRead($vp,[string]$className){
+  $raw=$vp.Current.Value
+  if($null -eq $raw){ return $null }
+  return (Get-PlainValue ([string]$raw) $className)
+}
 function Wait-ValueSet([scriptblock]$read,[string]$text,[int]$limitMs){
   $limit=[Math]::Min([Math]::Max($limitMs,0),300)
   $watch=[System.Diagnostics.Stopwatch]::StartNew()
   $after=$null
+  $since=-1
   while($true){
-    try { $after=[string](& $read) } catch { $after=$null }
+    try { $after=& $read; if($null -ne $after){ $after=[string]$after } } catch { $after=$null }
+    $now=$watch.ElapsedMilliseconds
     # Ronda final: comparado con sus mayusculas (-ceq): «juan perez» no es «Juan Perez».
-    if($after -ceq $text -or $watch.ElapsedMilliseconds -ge $limit){ return $after }
+    if($after -ceq $text){
+      if($since -lt 0){ $since=$now }
+      if($now-$since -ge 100 -or $limit -eq 0){ return $after }
+    } else {
+      $since=-1
+      if($now -ge $limit){ return $after }
+    }
     Start-Sleep -Milliseconds 40
   }
+}
+# Uso real 02-11 (encargo 2, A): un elemento de una cuadricula, una lista o un arbol se edita en un editor de texto
+# puesto dentro de el (medido en una hoja de calculo: la celda en edicion tiene por hijo un Edit con el foco, y su valor
+# se lee vacio). Mientras ese editor tiene el foco del teclado la edicion no esta confirmada: lo escrito aun no es el
+# valor del elemento, y un SetValue releido igual se pierde al confirmarla. Un campo de texto es el propio editor. Solo
+# entre sus hijos: un nodo de arbol abierto puede tener miles de descendientes.
+function Test-EditPending($element,[string]$kind){
+  if(@('DataItem','ListItem','TreeItem') -notcontains $kind){ return $false }
+  $type=[System.Windows.Automation.AutomationElement]::ControlTypeProperty
+  $editor=New-Object System.Windows.Automation.OrCondition(
+    (New-Object System.Windows.Automation.PropertyCondition($type,[System.Windows.Automation.ControlType]::Edit)),
+    (New-Object System.Windows.Automation.PropertyCondition($type,[System.Windows.Automation.ControlType]::Document)))
+  $focused=New-Object System.Windows.Automation.AndCondition(
+    (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::HasKeyboardFocusProperty,$true)),$editor)
+  try { return $null -ne $element.FindFirst([System.Windows.Automation.TreeScope]::Children,$focused) } catch { return $false }
+}
+# Uso real 02-11 (encargo 2, B): el texto propio de un campo: su valor (ValuePattern) si es un Edit o un ComboBox que lo
+# publica; si no, el de su propio TextPattern (DocumentRange: el campo, no el documento). Medido en un cuadro de texto
+# enriquecido de Chromium (un contenteditable con parrafos, como el de un chat): es un Group sin ValuePattern, y el
+# parrafo de su cursor, vacio, se salia del campo y leia el texto de al lado. Un Document nunca (el de un procesador de
+# textos o una pagina no es un campo). Como mucho max+1 caracteres, para que quien lee sepa si se corto; null sin
+# ninguno de los dos o si no se pudo leer.
+function Get-FieldText($node,[string]$kind,[int]$max){
+  $found=$null
+  if(@('Edit','ComboBox') -contains $kind -and $node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$found)){
+    try { return @{ text=(Get-PlainValue ([string]$found.Current.Value) ([string]$node.Current.ClassName)) } } catch { return $null }
+  }
+  # Encargo 10 (punto 4): el respaldo por TextPattern es solo para un cuadro editable que no publica valor (un cuadro de
+  # texto enriquecido contenteditable: Edit o Group). Un Document (procesador de textos, pagina) nunca se lee entero, ni
+  # ningun otro control con TextPattern que no sea un campo (un terminal, una etiqueta, un control propio) es un valor
+  # que esta relectura deba tomar.
+  $found=$null
+  if(@('Edit','Group') -contains $kind -and $node.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found)){
+    $read=$null
+    try { $read=[string]$found.DocumentRange.GetText($max+1) } catch { return $null }
+    # Uso-108 (C8, medido en Edge: un contenteditable vacio con aria-label lee su DocumentRange como ese nombre; agent-desktop
+    # PR #400): su propio nombre no es su texto. Un campo que de verdad guarda su nombre se lee vacio: nada los distingue,
+    # y sin esto cualquier campo vacio con nombre guardaba texto.
+    $own=''; try { $own=[string]$node.Current.Name } catch {}
+    if($own.Length -gt $max+1){ $own=$own.Substring(0,$max+1) }
+    if($own.Length -gt 0 -and $read -ceq $own){ $read='' }
+    return @{ text=$read }
+  }
+  return $null
+}
+# Encargo 17 (banco uso-cf8d, U27): cuanto texto hay para copiar en el elemento con el foco, solo como longitud: el texto
+# propio de un campo (Get-FieldText) o, si no lo da, el de su TextPattern (DocumentRange), sea el elemento lo que sea (el
+# Bloc de notas de Win11 es un Document sin valor). Como mucho max+1 caracteres, para saber si se corto; -1 sin ninguno.
+function Get-TextLength($node,[string]$kind,[int]$max){
+  $read=Get-FieldText $node $kind $max
+  if($null -ne $read){ return ([string]$read.text).Length }
+  $found=$null
+  try { if(-not $node.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found)){ return -1 } } catch { return -1 }
+  try { return ([string]$found.DocumentRange.GetText($max+1)).Length } catch { return -1 }
 }
 function Do-Field($request){
   $target=Get-Root ([long]$request.hwnd)
@@ -4342,7 +5485,7 @@ function Do-Field($request){
   $replace=[bool]$request.replace
   $kind='';$className='';$native=0;$password=$false;$enabled=$true
   try { $kind=([string]$element.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
-  try { $password=[bool]$element.Current.IsPassword } catch {}
+  $password=Test-MaybePassword $element
   try { $enabled=[bool]$element.Current.IsEnabled } catch {}
   # Revision de combos-galerias (hallazgo 1): con «entry» el texto solo se elige como una entrada de la propia lista
   # (por patron, la seleccion y el valor releidos); nunca se escribe en la caja ni en su Edit. Sin una entrada que se
@@ -4352,9 +5495,8 @@ function Do-Field($request){
     if($kind -ne 'ComboBox' -or -not $enabled -or $password -or [string]::IsNullOrWhiteSpace([string]$request.text)){ return $result }
     try { $result.className=[string]$element.Current.ClassName } catch {}
     $picked=Select-ComboEntry $element ([string]$request.text)
-    if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; if([bool]$picked.alreadyReached){ $result.alreadyReached=$true } }
-    elseif($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
-    if($null -eq $picked -and $script:ComboExpanded){ $result.expanded=$true }
+    if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; if([bool]$picked.alreadyReached){ $result.alreadyReached=$true }; if($null -ne $picked.now){ $result.fieldNow=[string]$picked.now } }
+    else { Add-ComboReading $result }
     return $result
   }
   $combo=$null
@@ -4362,14 +5504,28 @@ function Do-Field($request){
     $inner=Get-ComboEdit $element
     if($null -ne $inner){ $combo=$element; $element=$inner }
   }
+  # Medido en Opera GX 138: su barra de direcciones es un Edit vacio que envuelve el Edit que guarda la direccion. Un Edit dentro
+  # de otro es el campo, como el de un ComboBox.
+  if($kind -eq 'Edit'){
+    $inner=Get-WrappedEdit $element
+    if($null -ne $inner){ $element=$inner }
+  }
   try { $className=[string]$element.Current.ClassName } catch {}
   try { $native=[long]$element.Current.NativeWindowHandle } catch {}
   # r25: solo un campo con el foco del teclado puede recibir el texto por teclado si su valor y sus mensajes no llegan.
   $focused=$false; try { $focused=[bool]$element.Current.HasKeyboardFocus } catch {}
-  $pattern=$null;$writable=$false;$readOnly=$false;$value=$null
+  $pattern=$null;$writable=$false;$readOnly=$false;$value=$null;$inChildren=$false
   if($element.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){
     $vp=[System.Windows.Automation.ValuePattern]$pattern
-    try { $readOnly=[bool]$vp.Current.IsReadOnly; $writable=-not $readOnly; $value=[string]$vp.Current.Value } catch { $writable=$false }
+    # Uso-108 (hondo 12.13): el valor de una contrasena no se lee, ni para su longitud.
+    try { $readOnly=[bool]$vp.Current.IsReadOnly; $writable=-not $readOnly; if(-not $password){ $value=Get-PlainValue ([string]$vp.Current.Value) $className } } catch { $writable=$false }
+    # Uso-108 (C9): un campo cuyo texto vive en elementos hijos va por el teclado, como el Group de un contenteditable.
+    # El parrafo vacio de un editor («<p><br></p>») se lee «\n»: no guarda texto.
+    if($writable -and -not $password -and $kind -eq 'Edit' -and (Test-TextInChildren $element)){
+      $writable=$false
+      $inChildren=$true
+      if([string]::IsNullOrWhiteSpace($value)){ $value='' }
+    }
   }
   $wholeSelected=$false
   $textPattern=$null
@@ -4381,32 +5537,64 @@ function Do-Field($request){
     } catch { $wholeSelected=$false }
   }
   $replaceable=$writable -and $enabled -and -not $password -and $kind -ne 'Document' -and ([string]::IsNullOrEmpty($value) -or $wholeSelected -or $replace)
-  $result=@{ ok=$true; error=''; kind=$kind; className=$className; nativeHwnd=$native; focused=$focused; password=$password; readOnly=$readOnly; enabled=$enabled; valueLength=$(if($null -eq $value){-1}else{$value.Length}); method=''; delivered=$false }
+  $pending=Test-EditPending $element $kind
+  $result=@{ ok=$true; error=''; kind=$kind; className=$className; nativeHwnd=$native; focused=$focused; password=$password; readOnly=$readOnly; enabled=$enabled; valueLength=$(if($null -eq $value){-1}else{$value.Length}); selected=$wholeSelected; editPending=$pending; method=''; delivered=$false }
+  # Uso-108 (revision, 2): el adaptador lo escribe por el teclado si esta vacio, con el foco puesto por UIA si hace falta.
+  if($inChildren){ $result.textInChildren=$true }
   $text=$request.text
   if($null -eq $text){ return $result }
+  # Uso real 02-11 (encargo 2, A): con la edicion del elemento abierta nada se escribe, por ningun camino.
+  if($pending){ return $result }
   if(-not $replaceable){
     # Un ComboBox de solo lista (sin texto que escribir): su entrada con ese nombre, elegida por patron.
     if($kind -eq 'ComboBox' -and $enabled -and -not $writable -and $null -eq $combo){
       $picked=Select-ComboEntry $element ([string]$text)
-      if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; if([bool]$picked.alreadyReached){ $result.alreadyReached=$true }; return $result }
-      if($script:ComboEntries.Count -gt 0){ $result.entries=@($script:ComboEntries) }
-      if($script:ComboExpanded){ $result.expanded=$true }
+      if($null -ne $picked){ $result.method='select'; $result.delivered=[bool]$picked.delivered; $result.chosen=[string]$picked.entry; if([bool]$picked.alreadyReached){ $result.alreadyReached=$true }; if($null -ne $picked.now){ $result.fieldNow=[string]$picked.now }; return $result }
+      Add-ComboReading $result
     }
     return $result
   }
   # Ronda final: un campo que ya tenia ese valor (leido antes) es el estado alcanzado: nada se escribe.
   if($null -ne $value -and $value -ceq [string]$text){ $result.method='setvalue'; $result.delivered=$true; $result.alreadyReached=$true; return $result }
-  try { $vp.SetValue([string]$text) } catch { $result.ok=$false; $result.error='field_setvalue_refused'; return $result }
+  # Uso-108 (A4, medido con un proveedor que aplica y luego lanza; agent-desktop windows/src/actions/chain.rs:137-146: solo un
+  # no-entregado limpio avanza): un SetValue que lanza no prueba que nada se escribiera, y seguir por otra via dejaba
+  # «holahola» con recibo verificado. Decide el valor releido: igual al de antes, rehusado (otra via puede); igual al
+  # texto, entregado; cualquier otro, o sin lectura, un efecto que no se sabe, y nada mas se escribe.
+  $threw=$false
+  # Uso-108 (agent-desktop PR #565; medido en WPF propia: SetValue llevo el foco del teclado al segundo campo 3 de 3 con la
+  # ventana en frente, sin que el frente cambie): las teclas siguientes de la persona caen en este campo. Del propio campo,
+  # ya alcanzado por Get-Root, nunca el foco de todo el escritorio, que es de otra ventana y sin plazo (revision de la tanda 2).
+  $hadFocus=$null
+  try { $hadFocus=[bool]$element.Current.HasKeyboardFocus } catch {}
+  try { if(-not (Invoke-QuietPattern $element 'setvalue' ([string]$text))){ $vp.SetValue([string]$text) } } catch { $threw=$true }
+  $after=Wait-ValueSet { Get-ValueRead $vp $className } ([string]$text) 300
+  if($threw -and $null -ne $after -and $after -ceq [string]$value){ $result.ok=$false; $result.error='field_setvalue_refused'; return $result }
+  # Uso-108 (C9): el campo estaba vacio, sin hijos que lo delataran, y al escribirle salio su texto en un hijo: la pagina no
+  # oyo nada. Se deja como estaba (tampoco lo oye) y va por el teclado, como el que ya los tenia.
+  if([string]::IsNullOrEmpty($value) -and $after -ceq [string]$text -and $kind -eq 'Edit' -and (Test-TextInChildren $element)){
+    try { $vp.SetValue('') } catch {}
+    $after=Wait-ValueSet { Get-ValueRead $vp $className } '' 300
+    # Uso-108 (revision, 3): se escribio y se borro: el recibo no puede decir que no paso nada.
+    if($after -ceq ''){ $result.textInChildren=$true; $result.erased=$true; return $result }
+    $result.method='setvalue'; $result.delivered=$false; $result.valueLength=$(if($null -eq $after){-1}else{$after.Length})
+    if($null -ne $after){ $result.fieldNow=Get-ValueNow $after }
+    return $result
+  }
   $result.method='setvalue'
-  $after=Wait-ValueSet { [string]$vp.Current.Value } ([string]$text) 300
   $result.delivered=($after -ceq [string]$text)
   $result.valueLength=$(if($null -eq $after){-1}else{$after.Length})
+  # Uso-108 (B12; agent-desktop #190, cuatro salidas: igual, igual al de antes, otro, sin lectura): tras la espera entera,
+  # que quedo si no coincide. Aqui nunca llega una contrasena (no se escribe).
+  if(-not $result.delivered -and $null -ne $after){
+    if($after -ceq [string]$value){ $result.fieldUnchanged=$true } else { $result.fieldNow=Get-ValueNow $after }
+  }
   # Revision 1 de r24b (v1): SetValue escribe sin mover el foco del teclado; el adaptador lo lee para la tecla
   # siguiente (Enter), que iria al control que la ventana tenia enfocado.
   $focusedField=$element
   if($null -ne $combo){ $focusedField=$combo }
   $result.focused=$false
   try { $result.focused=[bool]$element.Current.HasKeyboardFocus -or [bool]$focusedField.Current.HasKeyboardFocus } catch { $result.focused=$false }
+  if($hadFocus -eq $false -and $result.focused){ $result.focusMoved=$true }
   return $result
 }
 # Revision 1 de r24b (v1): el foco del teclado puesto por UIA en el campo de la ultima vista, antes de una tecla que va
@@ -4428,6 +5616,11 @@ function Do-Focus($request){
     $inner=Get-ComboEdit $element
     if($null -ne $inner){ $element=$inner }
   }
+  # El Edit dentro de otro Edit (Do-Field).
+  if($kind -eq 'Edit'){
+    $inner=Get-WrappedEdit $element
+    if($null -ne $inner){ $element=$inner }
+  }
   $focused=$false
   try { $focused=[bool]$element.Current.HasKeyboardFocus } catch { $focused=$false }
   if(-not $focused){
@@ -4438,6 +5631,23 @@ function Do-Focus($request){
     }
   }
   return @{ ok=$true; error=''; focused=$focused; controlId=[string]$request.controlId }
+}
+# Uso real 03-11 (G8, «en el traductor de Google escribe hola», Opera): Chromium enciende su accesibilidad a demanda
+# (docs/accessibility/overview.md: «off by default and enabled automatically on-demand») y el arbol de la pagina llega
+# despues desde el renderer. Medido en Edge 156 y Opera GX 138 con una pagina propia cuyo textarea tiene el foco: la
+# primera lectura de FocusedElement da el contenedor de la vista web (Pane «View», Group «SplitWebViewContainer») que
+# dice de si mismo HasKeyboardFocus=false; 100 ms despues, el textarea (Edit con valor). Un FocusedElement que no tiene
+# el foco segun su propia propiedad no es el foco aun: se relee, acotado (10 x 50 ms); si no se asienta, el ultimo.
+function Get-SettledFocus(){
+  $node=$null
+  for($look=0;$look -lt 10;$look++){
+    if($look -gt 0){ Start-Sleep -Milliseconds 50 }
+    try { $node=$AE::FocusedElement } catch { $node=$null }
+    if($null -eq $node){ return $null }
+    $has=$true; try { $has=[bool]$node.Current.HasKeyboardFocus } catch { $has=$true }
+    if($has){ return $node }
+  }
+  return $node
 }
 
 # FT/proveedores goal (E2): un texto escrito por teclado sin ventana nombrada en un documento que no es un control Edit
@@ -4452,11 +5662,13 @@ function Do-Focus($request){
 function Do-FocusKind($request){
   $target=Get-Root ([long]$request.hwnd) -Front
   if($null -eq $target){ return @{ ok=$false; error='focus_window_not_found' } }
-  $node=$null; try { $node=$AE::FocusedElement } catch {}
+  $node=Get-SettledFocus
   if($null -eq $node){ return @{ ok=$false; error='focus_not_found' } }
   $kind=''; try { $kind=([string]$node.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
-  $editable=$false; $found=$null
-  try { if($node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$found)){ $editable=-not ([System.Windows.Automation.ValuePattern]$found).Current.IsReadOnly } } catch { $editable=$false }
+  # Encargo 36: readOnly, un valor que dice no admitir edicion (un Edit de solo lectura, el documento de una pagina web),
+  # aparte de no tener ValuePattern (un documento de Word o una consola, que si toman lo tecleado).
+  $editable=$false; $readOnly=$false; $found=$null
+  try { if($node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$found)){ $readOnly=[bool]([System.Windows.Automation.ValuePattern]$found).Current.IsReadOnly; $editable=-not $readOnly } } catch { $editable=$false; $readOnly=$false }
   $text=$false; $found=$null
   try { $text=$node.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found) } catch { $text=$false }
   $inside=$false; $up=$node; $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
@@ -4467,7 +5679,207 @@ function Do-FocusKind($request){
   # Revision de la guarda F013 (teclas): su nombre, como lo dice una mirada (Format-Name), para juzgar Enter o Espacio
   # sobre el boton de un dialogo con la misma lectura que el clic.
   $name=''; try { $name=Format-Name ([string]$node.Current.Name) } catch {}
-  return @{ ok=$true; kind=$kind; name=$name; editable=[bool]$editable; text=[bool]$text; inside=$inside }
+  return @{ ok=$true; kind=$kind; name=$name; editable=[bool]$editable; readOnly=[bool]$readOnly; text=[bool]$text; inside=$inside }
+}
+# Encargo 98: Ctrl+A es de la aplicacion y su idioma lo ata (el Bloc en espanol abre su dialogo Abrir con el; Word tambien).
+# La seleccion se le pide al propio control, como en DesktopSelectAll.ps1 (ITextRangeProvider::Select sobre su DocumentRange)
+# y se relee; sin TextPattern, o con el foco fuera de la ventana, responde selected=false y quien llama decide. Ninguna tecla.
+function Do-FocusSelect($request){
+  $target=Get-Root ([long]$request.hwnd) -Front
+  if($null -eq $target){ return @{ ok=$false; error='focus_window_not_found' } }
+  $node=Get-SettledFocus
+  if($null -eq $node){ return @{ ok=$false; error='focus_not_found' } }
+  $inside=$false; $up=$node; $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+  for($depth=0; $depth -lt 64 -and $null -ne $up; $depth++){
+    if([System.Windows.Automation.Automation]::Compare($up,$target.root)){ $inside=$true; break }
+    try { $up=$walker.GetParent($up) } catch { $up=$null }
+  }
+  if(-not $inside){ return @{ ok=$true; selected=$false; why='outside_window' } }
+  $found=$null; $has=$false
+  try { $has=$node.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found) } catch { $has=$false }
+  if(-not $has){ return @{ ok=$true; selected=$false; why='no_text_pattern' } }
+  $text=[System.Windows.Automation.TextPattern]$found
+  try { $text.DocumentRange.Select() } catch { return @{ ok=$true; selected=$false; why='select_refused' } }
+  $start=[System.Windows.Automation.Text.TextPatternRangeEndpoint]::Start
+  $end=[System.Windows.Automation.Text.TextPatternRangeEndpoint]::End
+  for($look=0;$look -lt 12;$look++){
+    if($look -gt 0){ Start-Sleep -Milliseconds 25 }
+    try {
+      $selection=@($text.GetSelection())
+      if($selection.Count -eq 1 -and $selection[0].CompareEndpoints($start,$text.DocumentRange,$start) -eq 0 -and $selection[0].CompareEndpoints($end,$text.DocumentRange,$end) -eq 0){
+        return @{ ok=$true; selected=$true }
+      }
+    } catch {}
+  }
+  return @{ ok=$true; selected=$false; why='selection_not_read_back' }
+}
+# Encargo 98: el dialogo dibujado dentro de la ventana que tiene el foco (un Window de UIA sin hwnd, medido en el Bloc y en Chromium),
+# y si el foco esta dentro de la ventana.
+function Get-FocusDialog($node,$root){
+  $answer=@{ inside=$false; dialog=$null }
+  $up=$node; $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+  for($depth=0; $depth -lt 64 -and $null -ne $up; $depth++){
+    if([System.Windows.Automation.Automation]::Compare($up,$root)){ $answer.inside=$true; break }
+    if($null -eq $answer.dialog){
+      try { if($up.Current.ControlType -eq [System.Windows.Automation.ControlType]::Window -and $up.Current.NativeWindowHandle -eq 0){ $answer.dialog=$up } } catch {}
+    }
+    try { $up=$walker.GetParent($up) } catch { $up=$null }
+  }
+  return $answer
+}
+# Encargo 98: lo que un atajo cambia sin ventana propia: ese dialogo y el formato (los atributos de TextPattern de la seleccion: Word
+# en espanol subraya con Ctrl+S y centra con Ctrl+T). place dice de que elemento y de que seleccion son esos atributos: en otro foco
+# (medido: el campo de un Guardar como) no son un cambio de formato. Ningun atributo depende del idioma; del texto solo salen longitudes.
+function Do-FocusState($request){
+  $target=Get-Root ([long]$request.hwnd) -Front
+  if($null -eq $target){ return @{ ok=$false; error='focus_window_not_found' } }
+  $node=Get-SettledFocus
+  if($null -eq $node){ return @{ ok=$false; error='focus_not_found' } }
+  $held=Get-FocusDialog $node $target.root
+  $inner=''
+  if($null -ne $held.dialog){
+    try { $inner=Format-Name ([string]$held.dialog.Current.Name) } catch {}
+    if($inner -eq ''){ $inner='dialog' }
+  }
+  $format=''; $place=''; $content=''; $found=$null
+  try {
+    if($node.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found)){
+      $text=[System.Windows.Automation.TextPattern]$found
+      $selection=@($text.GetSelection())
+      if($selection.Count -gt 0){
+        $T=[System.Windows.Automation.TextPattern]
+        $format=(@($T::FontWeightAttribute,$T::IsItalicAttribute,$T::UnderlineStyleAttribute,$T::StrikethroughStyleAttribute,$T::HorizontalTextAlignmentAttribute,$T::IndentationFirstLineAttribute,$T::IndentationLeadingAttribute,$T::FontSizeAttribute,$T::FontNameAttribute,$T::ForegroundColorAttribute) | ForEach-Object { [string]$selection[0].GetAttributeValue($_) }) -join '|'
+        $ahead=$text.DocumentRange.Clone()
+        $ahead.MoveEndpointByRange([System.Windows.Automation.Text.TextPatternRangeEndpoint]::End,$selection[0],[System.Windows.Automation.Text.TextPatternRangeEndpoint]::Start)
+        $place=([string]::Join('.',$node.GetRuntimeId()))+'|'+([string]$ahead.GetText(65536)).Length+'|'+([string]$selection[0].GetText(65536)).Length
+        # Encargo 100: una marca del texto (longitud y hash, nada del texto), para saber si un Ctrl+Z toco algo mas que el formato.
+        $whole=[string]$text.DocumentRange.GetText(65536)
+        $content=[string]$whole.Length+'.'+[string]$whole.GetHashCode()
+      }
+    }
+  } catch { $format=''; $place=''; $content='' }
+  return @{ ok=$true; inside=$held.inside; innerWindow=$inner; format=$format; place=$place; content=$content }
+}
+# Encargo 100: lo que decide si Ctrl+F puede ir a ciegas: en algunos idiomas es otra orden, y una manda lo seleccionado a una busqueda
+# web. Una barra de menus de la ventana lleva su propia entrada de buscar, que se pulsa por su etiqueta; la que esta dentro de un
+# Document es de una pagina, no de la ventana. Del texto solo sale cuantos caracteres hay seleccionados.
+function Do-FocusFind($request){
+  $target=Get-Root ([long]$request.hwnd) -Front
+  if($null -eq $target){ return @{ ok=$false; error='focus_window_not_found' } }
+  $kinds=[System.Windows.Automation.ControlType]
+  $menuBar=$false
+  try {
+    $bar=$target.root.FindFirst([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,$kinds::MenuBar)))
+    if($null -ne $bar){
+      $menuBar=$true
+      $up=$bar; $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+      for($depth=0; $depth -lt 64 -and $null -ne $up; $depth++){
+        if([System.Windows.Automation.Automation]::Compare($up,$target.root)){ break }
+        if($up.Current.ControlType -eq $kinds::Document){ $menuBar=$false; break }
+        $up=$walker.GetParent($up)
+      }
+    }
+  } catch { $menuBar=$false }
+  $editable=$false; $selected=0
+  $node=Get-SettledFocus
+  if($null -ne $node -and (Get-FocusDialog $node $target.root).inside){
+    $found=$null
+    try {
+      if($node.TryGetCurrentPattern([System.Windows.Automation.TextPattern]::Pattern,[ref]$found)){
+        $selection=@(([System.Windows.Automation.TextPattern]$found).GetSelection())
+        if($selection.Count -gt 0){ $selected=([string]$selection[0].GetText(65536)).Length }
+      }
+    } catch { $selected=0 }
+    $found=$null
+    try {
+      if($node.Current.ControlType -eq $kinds::Document){
+        $editable=$true
+        if($node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$found)){ $editable=-not [bool]$found.Current.IsReadOnly }
+      }
+    } catch { $editable=$false }
+  }
+  return @{ ok=$true; menuBar=$menuBar; editableDocument=$editable; selected=$selected }
+}
+# Encargo 100: cuantas pestanas muestra la ventana, para contar que Ctrl+W cerro una y solo una.
+function Do-TabCount($request){
+  $target=Get-Root ([long]$request.hwnd)
+  if($null -eq $target){ return @{ ok=$false; error='tabs_window_not_found' } }
+  try {
+    $tabs=$target.root.FindAll([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::TabItem)))
+    return @{ ok=$true; tabs=[int]$tabs.Count }
+  } catch { return @{ ok=$false; error='tabs_not_read' } }
+}
+# Encargo 98: cierra ese dialogo por UIA, sin tecla. Su boton de cierre es la opcion segura (ContentDialog: «CloseButton»), el mismo
+# en cualquier idioma; medido en el Bloc: Escape y WindowPattern.Close no lo cierran, y Invoke de ese boton si. Solo pide: quien llama
+# lo relee con focusstate.
+function Do-FocusDialogClose($request){
+  $target=Get-Root ([long]$request.hwnd) -Front
+  if($null -eq $target){ return @{ ok=$false; error='focus_window_not_found' } }
+  $node=Get-SettledFocus
+  if($null -eq $node){ return @{ ok=$false; error='focus_not_found' } }
+  $held=Get-FocusDialog $node $target.root
+  if(-not $held.inside -or $null -eq $held.dialog){ return @{ ok=$true; asked=$false; why='no_dialog' } }
+  $button=$null
+  try {
+    $byKind=New-Object System.Windows.Automation.PropertyCondition($AE::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
+    $byId=New-Object System.Windows.Automation.PropertyCondition($AE::AutomationIdProperty,'CloseButton')
+    $button=$held.dialog.FindFirst([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.AndCondition($byKind,$byId)))
+  } catch { $button=$null }
+  $found=$null
+  if($null -ne $button){
+    try {
+      if($button.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$found)){
+        ([System.Windows.Automation.InvokePattern]$found).Invoke()
+        return @{ ok=$true; asked=$true; by='close_button' }
+      }
+    } catch {}
+  }
+  $found=$null
+  try {
+    if($held.dialog.TryGetCurrentPattern([System.Windows.Automation.WindowPattern]::Pattern,[ref]$found)){
+      ([System.Windows.Automation.WindowPattern]$found).Close()
+      return @{ ok=$true; asked=$true; by='window_pattern' }
+    }
+  } catch {}
+  return @{ ok=$true; asked=$false; why='no_way_to_close' }
+}
+# Auditoria de falsedades 2026-11-04 (P6, K-2): un Enter sin destino en una ventana que no es de un cliente de
+# mensajeria conocido ni una consola salia sin preguntar, y envio el mensaje escrito en el campo de un chat. Si algun
+# campo de la ventana que admite texto (no de solo lectura, no una contrasena) guarda texto, el Enter pregunta, este
+# donde este el foco que lea UIA. El texto propio de cada campo como lo lee Get-FieldText; nada del texto sale.
+function Test-HeldText($fields){
+  $held=$false
+  foreach($field in @($fields)){
+    if($null -eq $field){ continue }
+    $kind=''; try { $kind=([string]$field.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch { continue }
+    if(Test-MaybePassword $field){ continue }
+    $found=$null; $valued=$false
+    try { $valued=[bool]$field.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$found) } catch { $valued=$false }
+    if($valued){
+      $readOnly=$true; try { $readOnly=[bool]$found.Current.IsReadOnly } catch {}
+      if($readOnly){ continue }
+    }
+    $read=Get-FieldText $field $kind 64
+    if($null -ne $read -and -not [string]::IsNullOrWhiteSpace([string]$read.text)){ $held=$true; break }
+  }
+  return $held
+}
+# Los campos que admiten texto de la ventana: los Edit y los cuadros de texto enriquecido (un Group con TextPattern,
+# como el de un chat de Chromium), habilitados. Solo lee.
+function Do-HeldText($request){
+  $target=Get-Root ([long]$request.hwnd) -Front
+  if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='held_text_window_not_found' } }
+  $type=[System.Windows.Automation.AutomationElement]::ControlTypeProperty
+  $rich=New-Object System.Windows.Automation.AndCondition(
+    (New-Object System.Windows.Automation.PropertyCondition($type,[System.Windows.Automation.ControlType]::Group)),
+    (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::IsTextPatternAvailableProperty,$true)))
+  $kinds=New-Object System.Windows.Automation.OrCondition(
+    (New-Object System.Windows.Automation.PropertyCondition($type,[System.Windows.Automation.ControlType]::Edit)),$rich)
+  $condition=New-Object System.Windows.Automation.AndCondition(
+    (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::IsEnabledProperty,$true)),$kinds)
+  $fields=$null
+  try { $fields=$target.root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$condition) } catch { return @{ ok=$false; error='held_text_unreadable' } }
+  return @{ ok=$true; held=[bool](Test-HeldText $fields) }
 }
 function Do-TextCaret($request){
   $target=Get-Root ([long]$request.hwnd)
@@ -4477,7 +5889,7 @@ function Do-TextCaret($request){
   if($process -le 0 -or $owner -ne $process){ return @{ ok=$false; error='caret_process_mismatch' } }
   $max=0; try { $max=[int]$request.max } catch {}
   if($max -le 0 -or $max -gt 8192){ $max=8192 }
-  $node=$null; try { $node=$AE::FocusedElement } catch {}
+  $node=Get-SettledFocus
   if($null -eq $node){ return @{ ok=$false; error='caret_focus_not_found' } }
   $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
   $holder=$null; $tp=$null
@@ -4528,16 +5940,20 @@ function Do-TextCaret($request){
 # lo mismo que lee la mirada: el valor (ValuePattern) del campo que tiene el foco del teclado, si es un Edit o un ComboBox
 # DENTRO de la ventana pedida (su arbol, no su proceso: el campo de la Store es de otro proceso que su marco; el de otra
 # ventana nunca se lee), nunca el de una contrasena, como mucho «max» caracteres y diciendo si se corto, con la
-# identidad del campo. Solo lee.
+# identidad del campo. Solo lee. Uso real 02-11 (encargo 2, B): un campo sin valor (un cuadro de texto enriquecido), por
+# su propio texto (Get-FieldText); nunca un Document.
 function Do-FocusValue($request){
   $target=Get-Root ([long]$request.hwnd)
   if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='active_window_not_found' } }
   $max=0; try { $max=[int]$request.max } catch {}
   if($max -le 0 -or $max -gt 8192){ $max=8192 }
-  $node=$null; try { $node=$AE::FocusedElement } catch {}
+  $node=Get-SettledFocus
   if($null -eq $node){ return @{ ok=$false; error='focus_not_found' } }
   $kind=''; try { $kind=([string]$node.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
-  if(@('Edit','ComboBox') -notcontains $kind){ return @{ ok=$false; error='focus_not_a_field' } }
+  # Encargo 17 (U27): con «lengthOnly», lo que habia para copiar: tambien un Document (el area de texto del Bloc de notas
+  # de Win11 es uno, sin valor), y solo su longitud (Get-TextLength); nada del texto sale.
+  $lengthOnly=$false; try { $lengthOnly=[bool]$request.lengthOnly } catch {}
+  if($kind -eq 'Document' -and -not $lengthOnly){ return @{ ok=$false; error='focus_not_a_field' } }
   $password=$true; try { $password=[bool]$node.Current.IsPassword } catch { $password=$true }
   if($password){ return @{ ok=$false; error='focus_field_password' } }
   $inside=$false; $up=$node; $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
@@ -4546,14 +5962,152 @@ function Do-FocusValue($request){
     try { $up=$walker.GetParent($up) } catch { $up=$null }
   }
   if(-not $inside){ return @{ ok=$false; error='focus_window_mismatch' } }
-  $found=$null
-  if(-not $node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$found)){ return @{ ok=$false; error='focus_value_not_found' } }
-  $text=$null; try { $text=[string]([System.Windows.Automation.ValuePattern]$found).Current.Value } catch { $text=$null }
-  if($null -eq $text){ return @{ ok=$false; error='focus_value_unreadable' } }
+  if($lengthOnly){
+    $length=Get-TextLength $node $kind $max
+    if($length -lt 0){ return @{ ok=$false; error='focus_value_not_found' } }
+    return @{ ok=$true; error=''; kind=$kind; length=[Math]::Min($length,$max); bounded=($length -gt $max) }
+  }
+  $read=Get-FieldText $node $kind $max
+  if($null -eq $read){ return @{ ok=$false; error='focus_value_not_found' } }
+  $text=[string]$read.text
   $bounded=$text.Length -gt $max
   if($bounded){ $text=$text.Substring(0,$max) }
   # Su identidad: el valor de despues solo se compara con el del mismo campo (el foco pudo pasar a otro con texto).
   return @{ ok=$true; error=''; kind=$kind; id=(Get-Id $node); unit='value'; text=$text; length=$text.Length; bounded=$bounded }
+}
+
+# Encargo 75 (R01, banco de entorno del NB): seis valores tecleados en una hoja sin tecla entre ellos cayeron en la misma
+# celda sin que nada lo dijera. Medido en vivo (Excel 16, un DataGrid de WPF): antes de teclear, el foco es la celda, con
+# GridItemPattern (fila y columna; un DataItem cuyo Name y AutomationId son su direccion en la hoja) y ValuePattern; al
+# teclear, la hoja pasa el foco a un editor que no es hijo de la rejilla y se dibuja sobre la celda (un Pane o un Edit que no
+# publican su texto), la celda sigue seleccionada y su valor no cambia hasta Tab o Enter; en el DataGrid el
+# editor es un Edit con valor, hijo de la celda. Una aplicacion que no publica rejilla no tiene celda. Una celda es la que
+# tiene el foco, la que lo contiene, o la seleccionada de una rejilla cercana si el foco empieza dentro de su rectangulo;
+# siempre editable (un DataItem de una lista de archivos no toma texto). Solo lee.
+function Test-EditableCell($node){
+  $pattern=$null
+  try {
+    if(-not $node.TryGetCurrentPattern([System.Windows.Automation.GridItemPattern]::Pattern,[ref]$pattern)){ return $false }
+    $pattern=$null
+    if(-not $node.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){ return $false }
+    return (-not [bool]$pattern.Current.IsReadOnly) -and (-not [bool]$node.Current.IsPassword)
+  } catch { return $false }
+}
+function Test-StartsInside($inner,$outer){
+  try {
+    $a=$inner.Current.BoundingRectangle; $b=$outer.Current.BoundingRectangle
+    return ($a.Width -gt 0) -and ($a.X -ge ($b.X-4)) -and ($a.X -le ($b.X+$b.Width)) -and ($a.Y -ge ($b.Y-4)) -and ($a.Y -le ($b.Y+$b.Height))
+  } catch { return $false }
+}
+function Get-CellValue($cell){
+  $pattern=$null
+  try { if($cell.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$pattern)){ $text=[string]$pattern.Current.Value; if($text.Length -gt 256){ $text=$text.Substring(0,256) }; return $text } } catch {}
+  return ''
+}
+# La direccion que la propia hoja da a la celda (Name igual a su AutomationId); si no, su fila y su columna: el Name de la
+# celda de un DataGrid es su contenido o el texto de su enlace de datos, no una direccion.
+function Get-CellAddress($cell,[int]$row,[int]$column){
+  $name=''; $id=''
+  try { $name=[string]$cell.Current.Name; $id=[string]$cell.Current.AutomationId } catch {}
+  if($name.Length -gt 0 -and $name -ceq $id){ return $name }
+  return ('row {0}, column {1}' -f ($row+1),($column+1))
+}
+function Find-EditedCell($node,$walker){
+  $up=$node
+  foreach($level in 1..2){
+    try { $up=$walker.GetParent($up) } catch { $up=$null }
+    if($null -eq $up){ return $null }
+    $grid=$up.FindFirst([System.Windows.Automation.TreeScope]::Subtree,(New-Object System.Windows.Automation.PropertyCondition($AE::IsGridPatternAvailableProperty,$true)))
+    if($null -eq $grid){ continue }
+    $selected=New-Object System.Windows.Automation.AndCondition(
+      (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.SelectionItemPattern]::IsSelectedProperty,$true)),
+      (New-Object System.Windows.Automation.PropertyCondition($AE::IsGridItemPatternAvailableProperty,$true)))
+    $cell=$grid.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$selected)
+    if($null -ne $cell -and (Test-EditableCell $cell) -and (Test-StartsInside $node $cell)){ return $cell }
+    return $null
+  }
+  return $null
+}
+function Do-ActiveCell($request){
+  $target=Get-Root ([long]$request.hwnd)
+  if($null -eq $target -or $null -eq $target.root){ return @{ ok=$false; error='active_window_not_found' } }
+  $node=Get-SettledFocus
+  if($null -eq $node){ return @{ ok=$false; error='focus_not_found' } }
+  $walker=[System.Windows.Automation.TreeWalker]::RawViewWalker
+  $inside=$false; $up=$node
+  for($depth=0; $depth -lt 64 -and $null -ne $up; $depth++){
+    if([System.Windows.Automation.Automation]::Compare($up,$target.root)){ $inside=$true; break }
+    try { $up=$walker.GetParent($up) } catch { $up=$null }
+  }
+  if(-not $inside){ return @{ ok=$false; error='focus_window_mismatch' } }
+  $cell=$null; $editor=$null; $up=$node
+  foreach($depth in 0..3){
+    if($null -eq $up){ break }
+    if(Test-EditableCell $up){ $cell=$up; if($depth -gt 0){ $editor=$node }; break }
+    try { $up=$walker.GetParent($up) } catch { $up=$null }
+  }
+  $editing=$null -ne $editor
+  # Un Document no es el editor de una celda, y buscar una rejilla en su arbol costo 1 s por texto en un procesador de
+  # textos (mediana 2,8 -> 3,8 s, e75a/e75d).
+  $kind=''; try { $kind=([string]$node.Current.ControlType.ProgrammaticName) -replace '^ControlType\.','' } catch {}
+  if($null -eq $cell -and $kind -ne 'Document'){
+    $cell=Find-EditedCell $node $walker
+    $editing=$null -ne $cell
+  }
+  if($null -eq $cell){ return @{ ok=$false; error='no_active_cell' } }
+  $item=$null
+  if(-not $cell.TryGetCurrentPattern([System.Windows.Automation.GridItemPattern]::Pattern,[ref]$item)){ return @{ ok=$false; error='no_active_cell' } }
+  # Encargo 115, medido en vivo en Excel 16: SetFocus de UIA (y un SetValue por indice) deja el foco en una celda que no es la
+  # activa: las teclas van a la seleccionada. La activa es la seleccionada de su rejilla cuando el foco esta en otra.
+  $selection=$null
+  if($null -eq $editor -and $cell.TryGetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern,[ref]$selection) -and -not [bool]$selection.Current.IsSelected){
+    $chosen=New-Object System.Windows.Automation.AndCondition(
+      (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.SelectionItemPattern]::IsSelectedProperty,$true)),
+      (New-Object System.Windows.Automation.PropertyCondition($AE::IsGridItemPatternAvailableProperty,$true)))
+    $other=$null
+    try { $other=$item.Current.ContainingGrid.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$chosen) } catch {}
+    if($null -ne $other -and (Test-EditableCell $other)){
+      $cell=$other
+      [void]$cell.TryGetCurrentPattern([System.Windows.Automation.GridItemPattern]::Pattern,[ref]$item)
+    }
+  }
+  $row=[int]$item.Current.Row; $column=[int]$item.Current.Column
+  $value=Get-CellValue $cell
+  # Un editor que publica su valor dice lo que hay pendiente en la celda.
+  if($null -ne $editor){ $read=Get-CellValue $editor; if($read.Length -gt 0){ $value=$read } }
+  $answer=@{ ok=$true; error=''; address=(Get-CellAddress $cell $row $column); id=(Get-Id $cell); row=$row; column=$column; editing=$editing; value=$value }
+  try {
+    $grid=$item.Current.ContainingGrid.GetCurrentPattern([System.Windows.Automation.GridPattern]::Pattern)
+    if($column+1 -lt [int]$grid.Current.ColumnCount){
+      $beside=$grid.GetItem($row,$column+1)
+      if($null -ne $beside){ $answer.right=(Get-CellAddress $beside $row ($column+1)) }
+    }
+    if($row+1 -lt [int]$grid.Current.RowCount){
+      $under=$grid.GetItem($row+1,$column)
+      if($null -ne $under){ $answer.below=(Get-CellAddress $under ($row+1) $column) }
+      if($column+1 -lt [int]$grid.Current.ColumnCount){
+        $corner=$grid.GetItem($row+1,$column+1)
+        if($null -ne $corner){ $answer.corner=(Get-CellAddress $corner ($row+1) ($column+1)) }
+      }
+    }
+    if($null -ne $request.row -and $null -ne $request.column){
+      $asked=$grid.GetItem([int]$request.row,[int]$request.column)
+      if($null -ne $asked){ $answer.at=@{ value=(Get-CellValue $asked) } }
+    }
+    # Encargo 115: las celdas de una tabla desde esa fila y columna, fila tras fila; si falta una, no hay rango.
+    if($null -ne $request.rows -and $null -ne $request.columns){
+      $range=New-Object System.Collections.ArrayList
+      foreach($r in 0..([int]$request.rows-1)){
+        foreach($c in 0..([int]$request.columns-1)){
+          $at=$grid.GetItem([int]$request.row+$r,[int]$request.column+$c)
+          if($null -eq $at){ throw 'celda_fuera_de_la_rejilla' }
+          [void]$range.Add(@{ a=(Get-CellAddress $at ([int]$request.row+$r) ([int]$request.column+$c)); v=(Get-CellValue $at) })
+        }
+      }
+      $answer.range=@($range)
+    }
+  } catch {}
+  return $answer
 }
 
 # CONTRATO_VISTA_ACCION.md §8.2: un accionable que sigue sin nombre tras el respaldo (§8.1) es candidato a leer su
@@ -4682,13 +6236,15 @@ while($true){
   if([string]::IsNullOrWhiteSpace($line)){ continue }
   try {
     $request=$line | ConvertFrom-Json
+    Set-RootWait $request
     $cmd=[string]$request.cmd
     if($cmd -eq 'exit'){ Send-Line @{ ok=$true; bye=$true }; break }
     elseif($cmd -eq 'ping'){ Set-RenderClasses $request; Send-Line @{ ok=$true } }
     elseif($cmd -eq 'view'){ Send-Line (Do-View $request) }
     elseif($cmd -eq 'click'){ Send-Line (Invoke-Kept $request { param($r) Do-Click $r }) }
     elseif($cmd -eq 'at'){ Send-Line (Invoke-Kept $request { param($r) Do-At $r }) }
-    elseif($cmd -eq 'postread'){ Send-Line (Add-FrontReport (Do-Postread $request)) }
+    elseif($cmd -eq 'clickread'){ Send-Line (Do-ClickRead $request) }
+    elseif($cmd -eq 'postread'){ Send-Line (Add-FrontReport (Do-PostreadRead $request)) }
     elseif($cmd -eq 'scroll'){ Send-Line (Invoke-Kept $request { param($r) Do-Scroll $r }) }
     elseif($cmd -eq 'script'){ Send-Line (Do-Script $request) }
     elseif($cmd -eq 'interaction'){ Send-Line (Do-Interaction $request) }
@@ -4696,11 +6252,20 @@ while($true){
     elseif($cmd -eq 'focus'){ Send-Line (Invoke-Kept $request { param($r) Do-Focus $r }) }
     elseif($cmd -eq 'textcaret'){ Send-Line (Do-TextCaret $request) }
     elseif($cmd -eq 'focusvalue'){ Send-Line (Do-FocusValue $request) }
+    elseif($cmd -eq 'activecell'){ Send-Line (Do-ActiveCell $request) }
     elseif($cmd -eq 'focuskind'){ Send-Line (Do-FocusKind $request) }
+    elseif($cmd -eq 'focusselect'){ Send-Line (Do-FocusSelect $request) }
+    elseif($cmd -eq 'focusstate'){ Send-Line (Do-FocusState $request) }
+    elseif($cmd -eq 'focusdialogclose'){ Send-Line (Do-FocusDialogClose $request) }
+    elseif($cmd -eq 'focusfind'){ Send-Line (Do-FocusFind $request) }
+    elseif($cmd -eq 'tabcount'){ Send-Line (Do-TabCount $request) }
+    elseif($cmd -eq 'heldtext'){ Send-Line (Do-HeldText $request) }
     elseif($cmd -eq 'unnamed'){ Send-Line (Do-Unnamed $request) }
     elseif($cmd -eq 'tooltips'){ Send-Line (Do-Tooltips $request) }
     elseif($cmd -eq 'reveal'){ Send-Line (Invoke-Kept $request { param($r) Do-Reveal $r }) }
     else { Send-Line @{ ok=$false; error='uia_worker_unknown_command' } }
+  } catch [BaxyWindowNotResponding] {
+    Send-Line @{ ok=$false; error='window_not_responding' }
   } catch {
     $reason=[string]$_.Exception.Message
     if($reason.Length -gt 200){ $reason=$reason.Substring(0,200) }

@@ -95,10 +95,13 @@ internal sealed class NetworkPingHandler(INetworkDiagnosticProvider provider) : 
         return OperationOutcome.Success(document.RootElement.Clone());
     }
 
-    internal static string PingNext(NetworkPingSnapshot snapshot) => snapshot.Status == "name_resolution_failed"
-        ? $"the name {snapshot.Host} was not resolved to an address, so nothing was sent; network_status says whether this PC has internet"
-        : $"{snapshot.Host} sent no reply to one echo within 2 s ({snapshot.Status}); many hosts and firewalls never answer ping, "
-            + $"so this alone does not say {snapshot.Host} or the internet is down; network_status says whether this PC has internet";
+    // Encargo 34: the call that says it comes first, written as the model calls it.
+    internal static string PingNext(NetworkPingSnapshot snapshot) =>
+        $"{WireNames.Call("network.status", new())} says whether this PC has internet; "
+        + (snapshot.Status == "name_resolution_failed"
+            ? $"the name {snapshot.Host} was not resolved to an address, so nothing was sent"
+            : $"{snapshot.Host} sent no reply to one echo within 2 s ({snapshot.Status}); many hosts and firewalls never "
+                + $"answer ping, so this alone does not say {snapshot.Host} or the internet is down");
 
     private static bool TryReadHost(JsonElement arguments, out string? host)
     {

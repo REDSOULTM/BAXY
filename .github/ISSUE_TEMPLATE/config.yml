@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/REDSOULTM/BAXY/security/advisories/new
     about: Infórmala en privado, no en un issue público.
   - name: Instalación
-    url: https://github.com/REDSOULTM/BAXY/blob/main/docs/instalacion.md
-    about: Guía paso a paso y problemas comunes.
+    url: https://github.com/REDSOULTM/BAXY#english
+    about: Requisitos, descarga y compilación (README).

@@ -3,7 +3,7 @@ import { spawn } from 'node:child_process';
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { attach, ready, type App } from './app';
+import { attach, ready, spanish, type App } from './app';
 
 /* The avatar's mouth against the sound the speakers really play (owner, 2026-10-21: «que el avatar hable y que se
    sincronice con lo que realmente está hablando; si se corta antes la animación de habla, no está funcionando bien»).
@@ -17,14 +17,16 @@ import { attach, ready, type App } from './app';
 const LOOPCAP = process.env.BAXY_LOOPCAP ?? '';
 let app: App;
 let page: Page;
+let restoreLang: () => Promise<void>;
 test.setTimeout(240_000);
 test.beforeAll(async () => {
   app = await attach();
   page = app.page;
   await ready(page);
+  restoreLang = await spanish(page);
   await page.waitForFunction(async () => (await (await fetch('/agent/status')).json()).ready === true, undefined, { timeout: 180_000, polling: 1000 });
 });
-test.afterAll(async () => { await app.browser.close(); });
+test.afterAll(async () => { await restoreLang?.(); await app.browser.close(); });
 
 interface Ui { t: number; lab: string; g: string; lip: boolean; mouth: number; drawn: number }
 
@@ -79,7 +81,7 @@ async function record(secs: number, drive: () => Promise<number | void>): Promis
 }
 
 async function say(text: string) {
-  const input = page.locator('input[aria-label="Escribe a BAXY"]');
+  const input = page.locator('.bx-line > input');
   await input.fill(text);
   await input.press('Enter');
 }

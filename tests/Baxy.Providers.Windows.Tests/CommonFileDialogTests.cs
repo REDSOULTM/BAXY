@@ -94,7 +94,7 @@ public sealed class CommonFileDialogTests
     // The folder is the path the address shows from its drive or share on, whatever the label before it says; a place
     // that is no folder of the disk gives none.
     [TestCase("Dirección: C:\\Users\\ana\\BAXY-bench", "C:\\Users\\ana\\BAXY-bench")]
-    [TestCase("Address: D:\\BAXYeval\\dlg_prueba", "D:\\BAXYeval\\dlg_prueba")]
+    [TestCase("Address: D:\\Pruebas\\dlg_prueba", "D:\\Pruebas\\dlg_prueba")]
     [TestCase("アドレス: C:\\", "C:\\")]
     [TestCase("Dirección: \\\\servidor\\compartida\\informes", "\\\\servidor\\compartida\\informes")]
     [TestCase("Dirección: \u200eC:\\Users\\ana\u200e", "C:\\Users\\ana")]
@@ -130,7 +130,7 @@ public sealed class CommonFileDialogTests
     }
 
     [TestCase("C:\\Users\\ana\\BAXY-bench", "lista.txt", "C:\\Users\\ana\\BAXY-bench\\lista.txt")]
-    [TestCase("C:\\Users\\ana\\OneDrive", "D:\\BAXYeval\\dlg_prueba\\np\\lista.txt", "D:\\BAXYeval\\dlg_prueba\\np\\lista.txt")]
+    [TestCase("C:\\Users\\ana\\OneDrive", "D:\\Pruebas\\dlg_prueba\\np\\lista.txt", "D:\\Pruebas\\dlg_prueba\\np\\lista.txt")]
     [TestCase(null, "D:\\x\\lista.txt", "D:\\x\\lista.txt")]
     [TestCase("C:\\a", "\"lista.txt\"", "C:\\a\\lista.txt")]
     [TestCase("C:\\a\\b", "..\\lista.txt", "C:\\a\\lista.txt")]

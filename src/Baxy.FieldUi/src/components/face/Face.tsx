@@ -5,6 +5,7 @@ import {
 } from './geometry';
 import type { Journey } from '../../store';
 import { lipAt } from '../../lip';
+import { useT } from '../../i18n';
 
 /* The cartoon robot face made of firework particles, on top of the neural mesh (design face.jsx, ported almost as
    is): static parts painted into three offscreen bitmaps while still, 30 fps at rest and 60 while it thinks or speaks,
@@ -63,6 +64,10 @@ function FaceView(props: FaceProps) {
   const ref = useRef<HTMLCanvasElement>(null);
   const P = useRef(props);
   useEffect(() => { P.current = props; });
+  // the hubs' words follow the interface's language without restarting the drawing
+  const t = useT();
+  const W = useRef(t);
+  useEffect(() => { W.current = t; });
   useEffect(() => {
     const cv = ref.current!, ctx = cv.getContext('2d')!;
     let dpr = 1, refW = 0, dirty = true, w = 0, h = 0, raf = 0, last = performance.now();
@@ -704,14 +709,17 @@ function FaceView(props: FaceProps) {
       NOR();
       // labels appear with their hubs
       ctx.font = '500 ' + Math.max(9, Math.round(S * 0.058)) + 'px Inter, sans-serif'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+      const tw = W.current;
       for (const k in HUB_LABEL) {
         const i = BXM.hub[k], v = heat[i];
         if (v < 0.06) continue;
         ctx.globalAlpha = Math.min(1, v * 1.8);
         const [hx, hy] = NP(i), [ox, oy, al] = HUB_LABEL[k];
-        ctx.textAlign = al; ctx.strokeStyle = light ? 'rgba(244,245,248,0.92)' : 'rgba(8,11,16,0.85)'; ctx.lineWidth = 3; ctx.strokeText(HUB_NAME[k] || k, X(hx + ox), Y(hy + oy));
+        ctx.textAlign = al; ctx.strokeStyle = light ? 'rgba(244,245,248,0.92)' : 'rgba(8,11,16,0.85)'; ctx.lineWidth = 3;
+        const word = HUB_NAME[k] ? tw.w(HUB_NAME[k]) : k;
+        ctx.strokeText(word, X(hx + ox), Y(hy + oy));
         ctx.fillStyle = v > 0.25 ? rgba(col.p, (0.6 + v * 0.4) * vis) : (light ? 'rgba(60,70,92,' : 'rgba(163,173,194,') + (0.6 * vis).toFixed(3) + ')';
-        ctx.fillText(HUB_NAME[k] || k, X(hx + ox), Y(hy + oy));
+        ctx.fillText(word, X(hx + ox), Y(hy + oy));
       }
       ctx.globalAlpha = 1;
       NOC();

@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Notes;
+using Baxy.Providers.Windows.Tasks;
 
 namespace Baxy.Core.Operations;
 
@@ -173,7 +174,12 @@ internal abstract class NoteHandlerBase(INoteStore store) : IOperationHandler
         if (inTrash.Length > 0)
         {
             facts["inTrash"] = new JsonArray([.. inTrash.Select(Summary)]);
-            next = $"a note titled \"{title}\" is in the trash; note.restore brings it back";
+            // Encargo 34: one note in the trash bears it, and the call that brings it back comes first, with its title
+            // written (the store's title match is the restore's own: LocalNoteStore.FindUniqueByTitle).
+            next = inTrash.Length == 1
+                ? $"{WireNames.Call("note.restore", new() { ["title"] = inTrash[0].Title })} brings it back; a note "
+                    + $"titled \"{title}\" is in the trash"
+                : $"a note titled \"{title}\" is in the trash; {WireNames.Of("note.restore")} brings it back";
         }
         else
         {
@@ -455,8 +461,10 @@ internal sealed class ReadNoteHandler(INoteStore store) : NoteHandlerBase(store)
     }
 }
 
-internal sealed class ListNotesHandler(INoteStore store) : NoteHandlerBase(store)
+internal sealed class ListNotesHandler(INoteStore store, ILocalTaskStore tasks) : NoteHandlerBase(store)
 {
+    private readonly ILocalTaskStore _tasks = tasks ?? throw new ArgumentNullException(nameof(tasks));
+
     private const int DefaultLimit = 50;
     private const int MaximumLimit = 100;
 
@@ -503,7 +511,60 @@ internal sealed class ListNotesHandler(INoteStore store) : NoteHandlerBase(store
             offset,
             nextOffset);
         JsonElement json = JsonSerializer.SerializeToElement(result, CoreJsonContext.Default.NoteListResult);
-        return OperationOutcome.Success(json);
+        return OperationOutcome.Success(page.TotalCount == 0 && scope != NoteListScope.Trashed
+            && OpenTasksBeside(json) is { } beside ? beside : json);
+    }
+
+    // Encargo 55 (other_store_next): no note is kept, and open tasks are. The task_list call that reads them comes first,
+    // as the call with its arguments written (encargos 20, 28), then the fact; the latest three ride beside it.
+    private JsonElement? OpenTasksBeside(JsonElement json)
+    {
+        if (!ModelAids.On(ModelAids.OtherStoreNext)) return null;
+        LocalTaskQuery open;
+        try
+        {
+            open = _tasks.List(TaskListStatus.Open, includeDeleted: false, limit: OtherStore.Latest);
+        }
+        catch (Exception exception) when (OtherStore.Unreadable(exception))
+        {
+            return null;
+        }
+
+        if (open.MatchCount == 0) return null;
+        string call = WireNames.Call("task.list", new() { ["status"] = "open" });
+        return OtherStore.Beside(json,
+            $"{call} reads the {OtherStore.Count(open.MatchCount, "open task")}; no note is kept: tasks are kept "
+                + "apart from notes, and this call read only the notes",
+            "openTasks",
+            open.Tasks.Select(task => OtherStore.Item(task.Id, task.Title, task.CreatedAtUtc)));
+    }
+}
+
+// Encargo 55: notes and tasks are two stores, and «anótame…» may have gone to either; an empty list of one says what the
+// other keeps (ListNotesHandler, ListTasksHandler).
+internal static class OtherStore
+{
+    internal const int Latest = 3;
+
+    internal static bool Unreadable(Exception exception) =>
+        exception is LocalTaskStoreException or NoteStoreException or IOException or UnauthorizedAccessException;
+
+    internal static string Count(int count, string what) => $"{count} {what}{(count == 1 ? "" : "s")}";
+
+    internal static JsonObject Item(Guid id, string title, DateTimeOffset createdAtUtc) => new()
+    {
+        ["id"] = id.ToString("D"),
+        ["title"] = title,
+        ["createdAtUtc"] = createdAtUtc.ToString("O", System.Globalization.CultureInfo.InvariantCulture),
+    };
+
+    internal static JsonElement Beside(JsonElement list, string next, string field, IEnumerable<JsonObject> items)
+    {
+        var facts = (JsonObject)JsonNode.Parse(list.GetRawText())!;
+        facts["next"] = next;
+        facts[field] = new JsonArray([.. items]);
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
     }
 }
 

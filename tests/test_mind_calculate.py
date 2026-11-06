@@ -130,3 +130,150 @@ def test_its_examples_carry_no_number_to_copy_and_a_rate_it_was_not_given_goes_t
     assert not any(character.isdecimal() for character in rule_6)
     assert "15%" not in description and "log10()" in description and "ln()" in description
     assert "(web_search)" in description
+
+
+def _told(server, at: int = 1) -> str:
+    return server.bodies[at]["messages"][-1]["content"]
+
+
+def test_a_number_nobody_gave_is_said_beside_the_value(tmp_path: Path, monkeypatch) -> None:
+    # uso real 2026-11-02: a conversion was computed with a rate the model made up and told as fact. The result says
+    # which number of the expression neither the person said nor a result gave; «450 mil» is 450000, said.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("calculate", {"expression": "450000 * 0.0038"}), _say("Unos 1.710."),
+                                    _say("No sé la tasa de hoy.")])
+    mind.decide(1, "¿Cuánto son 450 mil pesos chilenos en pesos colombianos?")
+    value, note = _told(server).split("\n", 1)
+    assert json.loads(value) == {"status": "completed", "value": "1710"}
+    assert note.startswith("[Ayuda: 0.0038 ") and "450000" not in note
+
+
+def test_held_out_a_unit_factor_nobody_gave_is_said_too(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("calculate", {"expression": "(12 + 7) * 0.31"}), _say("Unos 5,9 metros."),
+                                    _say("Son casi seis metros.")])
+    mind.decide(1, "Tengo una tabla de 12 pies y otra de 7, ¿cuántos metros suman?")
+    note = _told(server).split("\n", 1)[1]
+    assert note.startswith("[Ayuda: 0.31 ") and "12" not in note and "7 " not in note
+
+
+def test_numbers_said_in_words_with_points_or_as_a_percentage_are_said(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    for said, expression in (("¿Cuánto es dos más dos?", "2+2"),
+                             ("multiplica cuatrocientos cincuenta mil por tres", "450000*3"),
+                             ("reparte 1.250.000 entre 4,5 personas", "1250000/4.5"),
+                             ("¿cuánto es 1,5 millones menos 300 mil?", "1500000-300000"),
+                             ("¿cuánto es el 15 % de 2380?", "15/100*2380"),
+                             ("súmale el 19% a 1000", "1000*(1+0.19)")):
+        mind, server = _mind(tmp_path, [_call("calculate", {"expression": expression}), _say("Listo.")])
+        mind.decide(1, said)
+        assert "[Ayuda" not in _told(server), said
+
+
+def test_a_number_a_tool_gave_is_said_and_a_note_gives_none(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("memory_recall", {"query": "tasa"}),
+                                    _call("calculate", {"expression": "450000*4.31"}),
+                                    _call("calculate", {"expression": "1939500*0.0038"}), _say("Listo.")])
+    mind.wire_to_op = {"memory_recall": "memory.recall"}
+    mind.decide(1, "¿Cuánto son 450 mil con la tasa que guardé?")
+    mind.continue_turn(2, json.dumps({"status": "completed", "items": [{"text": "tasa 4,31"}]}))
+    assert "[Ayuda" not in _told(server, 2)
+    assert _told(server, 3).split("\n", 1)[1].startswith("[Ayuda: 0.0038 ")
+
+
+def test_with_the_unsourced_number_aid_off_the_value_is_told_alone(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_AYUDAS", "same_call_closes")
+    mind, server = _mind(tmp_path, [_call("calculate", {"expression": "450000 * 0.0038"}), _say("Unos 1.710.")])
+    mind.decide(1, "¿Cuánto son 450 mil pesos chilenos en pesos colombianos?")
+    assert json.loads(_told(server)) == {"status": "completed", "value": "1710"}
+
+
+# Encargo 35 (bancos de uso, R18 «usa la calculadora para pasar 250 mil pesos chilenos a pesos colombianos con la tasa de
+# hoy»): the model opened the Windows Calculator and multiplied by a rate it made up (0.00085; the day's was 3.2264), and
+# told the display's value as the conversion «con la tasa de hoy». The Calculator's result says, as calculate's does,
+# which number of its expression neither the person said nor a result gave.
+CALCULATOR_SHOWN = json.dumps({"status": "completed", "verification": "readback", "observed": {
+    "version": 1, "expression": "250000*0.00085", "mode": "Standard", "value": "212.5"}})
+
+
+def _calculator(tmp_path: Path, expression: str) -> tuple:
+    mind, server = _mind(tmp_path, [_call("calculator_expression_evaluate", {"expression": expression}),
+                                    _say("Listo.")])
+    mind.wire_to_op = {"calculator_expression_evaluate": "calculator.expression.evaluate"}
+    return mind, server
+
+
+def test_the_calculators_value_says_a_number_nobody_gave(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _calculator(tmp_path, "250000*0.00085")
+    mind.decide(1, "Usa la calculadora para pasar 250 mil pesos chilenos a pesos colombianos con la tasa de hoy.")
+    mind.continue_turn(1, CALCULATOR_SHOWN)
+    told = _told(server)
+    assert "[Ayuda: 0.00085 " in told and "250000" not in told.split("[Ayuda:", 1)[1]
+
+
+def test_the_calculators_value_from_numbers_said_has_no_note(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _calculator(tmp_path, "250000*0.00085")
+    mind.decide(1, "Usa la calculadora para multiplicar 250 mil por 0,00085.")
+    mind.continue_turn(1, CALCULATOR_SHOWN)
+    assert "[Ayuda" not in _told(server)
+
+
+def test_a_calculator_that_failed_has_no_note(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _calculator(tmp_path, "250000*0.00085")
+    mind.decide(1, "Usa la calculadora para pasar 250 mil pesos chilenos a pesos colombianos con la tasa de hoy.")
+    mind.continue_turn(1, json.dumps({"status": "failed", "error": "calculator_window_not_found"}))
+    assert "[Ayuda: 0.00085" not in _told(server)
+
+
+def test_a_number_nobody_gave_says_where_the_one_that_changes_is_looked_up(tmp_path: Path, monkeypatch) -> None:
+    # Encargo A2 (HP3): the note of an unsourced number also carries its next, a web_search, and leaves a fixed factor
+    # to the model; it names no digit of the expression and writes no reply.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _calculator(tmp_path, "50000*0.0011")
+    mind.decide(1, "Abre la calculadora y dime cuánto son 50.000 pesos en dólares.")
+    mind.continue_turn(1, CALCULATOR_SHOWN)
+    note = _told(server).split("[Ayuda:", 1)[1]
+    assert "web_search" in note and "factor fijo" in note and "50000" not in note
+    mind, server = _calculator(tmp_path, "250000*0.00085")
+    mind.decide(1, "Usa la calculadora para multiplicar 250 mil por 0,00085.")
+    mind.continue_turn(1, CALCULATOR_SHOWN)
+    assert "[Ayuda" not in _told(server)
+
+
+def test_an_answer_that_tells_the_rate_nobody_gave_is_asked_again_with_its_tools(tmp_path: Path, monkeypatch) -> None:
+    # Encargo A2 (HP3): the answer «50.000 entre 900 es 55,56» tells the made-up rate; the model reads the fact and its
+    # next (web_search), keeps its tools and may search. A figure the person gave is not checked.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    shown = json.dumps({"status": "completed", "verification": "readback", "observed": {
+        "version": 1, "expression": "50000/900", "mode": "Standard", "value": "55,55555556"}})
+    mind, server = _mind(tmp_path, [_call("calculator_expression_evaluate", {"expression": "50000/900"}),
+                                    _say("50.000 pesos son 55,56 dólares con 900 pesos por dólar."),
+                                    _call("web_search", {"query": "dólar hoy en pesos"})])
+    mind.wire_to_op = {"calculator_expression_evaluate": "calculator.expression.evaluate", "web_search": "web.search"}
+    mind.decide(1, "Abre la calculadora y dime cuánto son 50.000 pesos en dólares.")
+    step = mind.continue_turn(1, shown)
+    assert step["kind"] == "action" and step["operation"] == "web.search"
+    asked = server.bodies[2]["messages"][-1]["content"]
+    assert "web_search" in asked and "900" in asked and "tools" in server.bodies[2] and server.bodies[2].get("tool_choice") != "none"
+
+
+def test_a_fixed_factor_told_again_after_the_note_is_spoken(tmp_path: Path, monkeypatch) -> None:
+    # Encargo A2, control «¿cuántos kilos son 150 libras?»: the factor 0.453592 nobody gave is told, the note says once
+    # that a fixed factor of a unit stands, and the model tells it again: that answer is spoken, with no second note
+    # (the bench's controls got it three times and searched for a «tasa» of a unit).
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    shown = json.dumps({"status": "completed", "verification": "readback", "observed": {
+        "version": 1, "expression": "150*0.453592", "mode": "Standard", "value": "68,0388"}})
+    mind, server = _mind(tmp_path, [_call("calculator_expression_evaluate", {"expression": "150*0.453592"}),
+                                    _say("150 libras son 68,04 kilos."),
+                                    _say("150 libras son 68,04 kilos, con el factor fijo de 0,453592."),
+                                    _call("web_search", {"query": "tasa libra a kilo"})])
+    mind.wire_to_op = {"calculator_expression_evaluate": "calculator.expression.evaluate", "web_search": "web.search"}
+    mind.decide(1, "¿Cuántos kilos son 150 libras? Hazlo en la calculadora.")
+    step = mind.continue_turn(1, shown)
+    assert step["kind"] == "conversation" and "68,04" in step["reply"]
+    assert len(server.bodies) == 3 and sum("cuenta como cálculo una cifra" in str(b["messages"]) for b in server.bodies) == 1

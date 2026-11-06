@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Baxy.Contracts;
 using NUnit.Framework;
 
 namespace Baxy.App.Tests;
@@ -213,6 +214,173 @@ public sealed class MemoryRecallProjectionTests
         payload["totalCount"] = 2;
         return payload;
     }
+
+    // Uso 83 (banco diag-946e, F13 6 of 6): memory.save failed with memory_disabled and BAXY said only «la memoria está
+    // apagada», never offering to turn it on; memory.list said «no tengo nada guardado» of a memory it did not read. The
+    // result leads with the call that asks the person to turn it on (memory.enable waits for their «sí», RiskPolicy) and
+    // says the same call goes again after it.
+    [TestCase("memory.save", "memory_save")]
+    [TestCase("memory.sensitive.save", "memory_sensitive_save")]
+    [TestCase("memory.correct", "memory_correct")]
+    [TestCase("memory.recall", "memory_recall")]
+    [TestCase("memory.list", "memory_list")]
+    public void AFailureBecauseMemoryIsOffLeadsWithTheCallThatAsksToTurnItOn(string operation, string wire)
+    {
+        JsonObject facts = JsonNode.Parse(MemoryOperationResponseProjection.Failed(operation, Failure("memory_disabled")))!
+            .AsObject();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)facts["status"], Is.EqualTo("failed"));
+            Assert.That((string?)facts["error"], Is.EqualTo("memory_disabled"));
+            Assert.That((string?)facts["next"], Does.StartWith("memory_enable {} "));
+            Assert.That((string?)facts["next"], Does.Contain(wire + " again with the same arguments"));
+        });
+    }
+
+    [TestCase("memory.save", "memory_not_found")]
+    [TestCase("memory.forget", "memory_disabled")]
+    public void AnotherFailureSaysOnlyWhatTheEngineSaid(string operation, string error)
+    {
+        OperationResponse response = Failure(error);
+        Assert.That(MemoryOperationResponseProjection.Failed(operation, response), Is.EqualTo(response.Message));
+    }
+
+    // Encargo 82 (vivo del 81): a memory.save of a name the store already keeps failed with memory_conflict and nothing
+    // else, and the model asked «¿hay otra regla guardada…?». The result says what is kept and the call that corrects it.
+    [Test]
+    public void ASaveThatConflictsSaysWhatIsKeptAndTheCallThatCorrectsIt()
+    {
+        JsonObject facts = Conflict(value: "lunes", keptValue: "pizza");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)facts["error"], Is.EqualTo("memory_conflict"));
+            Assert.That((string?)facts["kept"]!["selector"], Is.EqualTo("comida favorita"));
+            Assert.That((string?)facts["kept"]!["value"], Is.EqualTo("pizza"));
+            Assert.That((string?)facts["next"], Does.Contain(
+                """memory_correct {"selector":"comida favorita","value":"lunes","retention":"persistent"}"""));
+            Assert.That((string?)facts["next"], Does.StartWith("nothing was saved"));
+        });
+    }
+
+    [Test]
+    public void ASaveOfTheValueAlreadyKeptOffersNoCorrection()
+    {
+        JsonObject facts = Conflict(value: "pizza", keptValue: "pizza");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)facts["kept"]!["value"], Is.EqualTo("pizza"));
+            Assert.That((string?)facts["next"], Does.Not.Contain("memory_correct"));
+            Assert.That((string?)facts["next"], Does.Contain("same value"));
+        });
+    }
+
+    [TestCase("sensitive", "pizza")]
+    [TestCase("secret", "pizza")]
+    [TestCase("normal", "contraseña: Abc123!xyz")]
+    public void AKeptValueThatIsSensitiveIsNeverSaid(string sensitivity, string keptValue)
+    {
+        JsonObject facts = Conflict(value: "lunes", keptValue: keptValue, sensitivity: sensitivity);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(facts["kept"]!["value"], Is.Null);
+            Assert.That((bool?)facts["kept"]!["sensitive"], Is.True);
+            Assert.That(facts.ToJsonString(), Does.Not.Contain(keptValue));
+            Assert.That((string?)facts["next"], Does.Contain("memory_correct"));
+        });
+    }
+
+    // The value of a save is any scalar (memory.save's schema): a number is a value too.
+    [Test]
+    public void ASaveOfANumberThatConflictsIsToldLikeAnyOther()
+    {
+        using JsonDocument saved = JsonDocument.Parse("""{"selector":"comida favorita","value":41,"retention":"persistent"}""");
+        using JsonDocument kept = JsonDocument.Parse(Recall(exactMatch: true).GetRawText());
+
+        JsonObject facts = JsonNode.Parse(MemoryOperationResponseProjection.Conflict(
+            "{\"status\":\"failed\",\"error\":\"memory_conflict\"}", saved.RootElement, kept.RootElement))!.AsObject();
+
+        Assert.That((string?)facts["next"], Does.Contain("\"value\":\"41\""));
+    }
+
+    [Test]
+    public void AConflictWithNothingToSayStaysAsTheEngineSaidIt()
+    {
+        const string Failed = "{\"status\":\"failed\",\"error\":\"memory_conflict\"}";
+        using JsonDocument saved = JsonDocument.Parse("""{"selector":"comida favorita","value":"lunes","retention":"persistent"}""");
+        using JsonDocument none = JsonDocument.Parse("""{"version":1,"records":[],"count":0,"totalCount":0,"offset":0,"limit":20}""");
+
+        Assert.That(MemoryOperationResponseProjection.Conflict(Failed, saved.RootElement, none.RootElement), Is.EqualTo(Failed));
+    }
+
+    // Encargo 92 (banco diag-b1e7, F13 turno 3): «olvídalo» of a datum never saved (memory off) came back as
+    // memory_forget_empty alone, and 2 of 6 answers said «la memoria sigue con ese dato» or «Borré… pero no quedó
+    // nada». The result says what the store said: nothing matched, nothing was deleted, nothing changed.
+    [TestCase("exact", "apodo", "keeps no saved memory that matches it")]
+    [TestCase("all", null, "keeps no saved memories")]
+    public void AForgetThatMatchedNothingSaysNothingWasKeptAndNothingChanged(string scope, string? selector, string kept)
+    {
+        using JsonDocument payload = JsonDocument.Parse("""{"version":1,"deletedCount":0,"replayed":false}""");
+        using JsonDocument arguments = JsonDocument.Parse(new JsonObject
+        {
+            ["version"] = 1,
+            ["scope"] = scope,
+            ["selector"] = selector,
+        }.ToJsonString());
+
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.forget", payload.RootElement,
+            out MemoryOperationResponseProjection? projection, privateArguments: arguments.RootElement), Is.True);
+        JsonObject facts = JsonNode.Parse(projection!.Message)!.AsObject();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)facts["status"], Is.EqualTo("failed"));
+            Assert.That((string?)facts["error"], Is.EqualTo("memory_forget_empty"));
+            Assert.That((int?)facts["deletedCount"], Is.EqualTo(0));
+            Assert.That((bool?)facts["changed"], Is.False);
+            Assert.That((string?)facts["next"], Does.StartWith("nothing was deleted: BAXY " + kept));
+            Assert.That((string?)facts["next"], Does.EndWith("nothing changed"));
+        });
+    }
+
+    [Test]
+    public void AForgetThatDeletedSaysHowManyAsBefore()
+    {
+        using JsonDocument payload = JsonDocument.Parse("""{"version":1,"deletedCount":1,"replayed":false}""");
+
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.forget", payload.RootElement,
+            out MemoryOperationResponseProjection? projection), Is.True);
+        JsonObject facts = JsonNode.Parse(projection!.Message)!.AsObject();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)facts["status"], Is.EqualTo("completed"));
+            Assert.That((string?)facts["cause"], Is.EqualTo("memory_deleted"));
+            Assert.That((int?)facts["observed"]!["deletedCount"], Is.EqualTo(1));
+            Assert.That(facts.ContainsKey("next"), Is.False);
+        });
+    }
+
+    private static JsonObject Conflict(string value, string keptValue, string sensitivity = "normal")
+    {
+        JsonObject recalled = JsonNode.Parse(Recall(exactMatch: true).GetRawText())!.AsObject();
+        recalled["records"]![0]!["value"] = keptValue;
+        recalled["records"]![0]!["sensitivity"] = sensitivity;
+        using JsonDocument saved = JsonDocument.Parse(new JsonObject
+        {
+            ["selector"] = "comida favorita",
+            ["value"] = value,
+            ["retention"] = "persistent",
+        }.ToJsonString());
+        using JsonDocument kept = JsonDocument.Parse(recalled.ToJsonString());
+        return JsonNode.Parse(MemoryOperationResponseProjection.Conflict(
+            "{\"status\":\"failed\",\"error\":\"memory_conflict\"}", saved.RootElement, kept.RootElement))!.AsObject();
+    }
+
+    private static OperationResponse Failure(string error) =>
+        new(ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"), OperationStatuses.Failed, "{\"status\":\"failed\",\"error\":\"" + error + "\"}",
+            Verified: false, Replayed: false, Result: null, ErrorCode: error);
 
     private static JsonElement Recall(bool? exactMatch)
     {

@@ -74,7 +74,7 @@ internal sealed class AppOpenHandler(
             return InvocationPreflightResult.Proceed;
         }
 
-        return appId is not null && ApplicationIds.IsValidRequest(appId)
+        return appId is not null && ApplicationIds.IsValidOpening(appId)
             && await _provider.OpensSystemToolAsync(appId, cancellationToken).ConfigureAwait(false)
                 ? InvocationPreflightResult.Raised(OperationRisk.Irreversible)
                 : InvocationPreflightResult.Proceed;
@@ -97,7 +97,7 @@ internal sealed class AppOpenHandler(
             return OperationOutcome.InvalidArguments(Definition, invocation.Arguments);
         }
 
-        if (!ApplicationIds.IsValidRequest(arguments.AppId))
+        if (!ApplicationIds.IsValidOpening(arguments.AppId))
         {
             return OperationOutcome.Failure("invalid_application");
         }
@@ -145,23 +145,28 @@ internal sealed class AppOpenHandler(
             placeAddress = ApplicationPlaces.Address(arguments.AppId, arguments.Place, placeValue);
             if (placeAddress is null)
             {
-                // Said with what was asked (BAXY Renew, notebook) and the applications that do have that place, so
-                // the next opening can name the right one. BAXY Renew cu (C04 variant): a place the application has,
-                // refused for its value (a game's name given to its library), is told apart, with what each place takes.
-                // Revisión 2026-10-22 (B-APP-3): a value given with no place is a value not taken too, never a place of
-                // another application.
+                // Said with what was asked (BAXY Renew, notebook). BAXY Renew cu (C04 variant): a place the application
+                // has, refused for its value (a game's name given to its library), is told apart, with what each place
+                // takes. Revisión 2026-10-22 (B-APP-3): a value given with no place is a value not taken too, never a
+                // place of another application.
                 bool placeOfApplication = arguments.Place is null || ApplicationPlaces.PlacesOf(arguments.AppId)
                     .Any(declared => declared.Place == arguments.Place);
-                // Renew al máximo (E014): a place of another application says the opening that reaches it (the model
-                // read placeIn as a value of place, then opened msconfig with no place), after the fact that nothing
-                // opened (int3 s1 told «Abrí Configuración» from a hint that began with «opens it»).
-                IReadOnlyList<string> owners = placeOfApplication ? [] : ApplicationPlaces.ApplicationsWith(arguments.Place);
+                // Renew al máximo (E014): after the fact that nothing opened (int3 s1 told «Abrí Configuración» from a
+                // hint that began with «opens it»). Ajuste c4 (banco ciego c3, causa 4: C3-051, C3-052, C3-089,
+                // C3-092): a place of another application says how the one asked for opens, never another one (the
+                // opening that reached the place's application opened it instead, and the one asked for never opened);
+                // the application the person's words name is SaidApplication's, which knows them. Encargo 34 (rule of
+                // encargos 20 and 28): the call that opens it comes first, with its argument written, and what this one
+                // did not open at the end; its places, when it has some, between them.
+                string itself = $"{WireNames.Call("app.open", new() { ["appId"] = arguments.AppId })} opens "
+                    + $"{arguments.AppId} itself";
+                string notOf = $"this call opened nothing: {arguments.Place} is not a place of {arguments.AppId}";
                 string? places = !ModelAids.On(ModelAids.AppPlaces) ? null
-                    : owners.Count > 0
-                        ? $"nothing was opened. app_open with appId \"{owners[0]}\" and place \"{arguments.Place}\" "
-                            + $"opens {arguments.Place}, a place of {string.Join(" or ", owners)}, not of {arguments.AppId}"
-                        : PlacesNext($"nothing was opened. {arguments.AppId} opens straight at a place of its own",
-                            arguments.AppId);
+                    : placeOfApplication
+                        ? PlacesNext($"nothing was opened. {arguments.AppId} opens straight at a place of its own",
+                            arguments.AppId)
+                        : (PlacesNext($"{itself}; it also opens straight at a place of its own", arguments.AppId) ?? itself)
+                            + "; " + notOf;
                 return OperationOutcome.Failure(
                     placeOfApplication ? "place_value_not_taken" : "place_not_of_application",
                     result: Facts(writer =>
@@ -172,9 +177,11 @@ internal sealed class AppOpenHandler(
                             writer.WriteString("placeValue", arguments.PlaceValue);
                         // The places of its application and what each takes, as a fact whether the aids are on or off.
                         if (placeOfApplication)
+                        {
                             WritePlaces(writer, arguments.AppId);
-                        WriteNames(writer, "placeIn",
-                            placeOfApplication ? ApplicationPlaces.ApplicationsWith(arguments.Place) : owners);
+                            WriteNames(writer, "placeIn", ApplicationPlaces.ApplicationsWith(arguments.Place));
+                        }
+
                         if (places is not null) writer.WriteString("next", places);
                     }));
             }
@@ -198,15 +205,45 @@ internal sealed class AppOpenHandler(
         if (!providerResult.Succeeded || !providerResult.Verified)
         {
             string errorCode = NormalizeErrorCode(providerResult.ErrorCode, providerResult.Verified);
+            // Banco de uso 2026-11-03 (U33): a place of an application that is not on the PC whose data declare its
+            // page on the web says that page (with the game found), and what opens it; nothing was opened.
+            if (errorCode == "app_not_found" && placeAddress is not null
+                && ApplicationPlaces.WebAddress(arguments.AppId, arguments.Place, placeValue) is { } web)
+            {
+                return OperationOutcome.Failure(errorCode, result: Facts(writer =>
+                {
+                    writer.WriteString("appId", arguments.AppId);
+                    writer.WriteString("place", arguments.Place);
+                    writer.WriteString("placeWebUrl", web);
+                    if (game is not null)
+                    {
+                        writer.WriteStartObject("placeGame");
+                        writer.WriteString("number", game.Number);
+                        writer.WriteString("name", game.Name);
+                        writer.WriteEndObject();
+                    }
+
+                    WriteNames(writer, "candidates", providerResult.Candidates);
+                    // Encargo 28 (U33): the call first, with the page's address; told after «nothing was opened», the
+                    // model dictated the address 2 and 3 times of 10 (WireNames.Call).
+                    writer.WriteString("next", $"{WireNames.Call("browser.navigate", new() { ["url"] = web })} opens "
+                        + $"this place's page on the web in the person's browser; this call opened nothing: "
+                        + $"{arguments.AppId} is not installed on this PC");
+                }));
+            }
+
             return OperationOutcome.Failure(
                 errorCode,
                 result: ModelAids.On(ModelAids.OpenRecovery)
-                    ? Facts(writer => WriteRecovery(writer, errorCode, arguments.AppId, providerResult))
-                    : providerResult.EmptyFrame
+                    ? Facts(writer => WriteRecovery(writer, errorCode, arguments.AppId, providerResult, invocation.Arguments))
+                    : providerResult.EmptyFrame || providerResult.ExitedWithError is not null
                         ? Facts(writer =>
                         {
                             WriteNames(writer, "candidates", providerResult.Candidates);
-                            writer.WriteBoolean("emptyFrame", true);
+                            if (providerResult.EmptyFrame)
+                                writer.WriteBoolean("emptyFrame", true);
+                            if (providerResult.ExitedWithError is { } exited)
+                                writer.WriteString("exitedWithError", exited);
                         })
                         : Names("candidates", providerResult.Candidates),
                 effectMayHaveOccurred: providerResult.Succeeded);
@@ -302,7 +339,7 @@ internal sealed class AppOpenHandler(
                     + "; whether it shows now "
                     + "was not checked: input_visible_controls can look before saying so"
                 : place is null && ModelAids.On(ModelAids.AppPlaces)
-                    ? PlacesNext($"{providerResult.DisplayName} also opens straight at a place of its own", arguments.AppId)
+                    ? ItsRead(arguments.AppId)
                 : null,
             FrontChanged: place?.FrontChanged == true,
             PlaceGame: game is null ? null : new PlacedGame(game.Number, game.Name),
@@ -318,10 +355,18 @@ internal sealed class AppOpenHandler(
         return OperationOutcome.Success(serialized);
     }
 
-    // BAXY Renew cu (C04): opened with no place, an application that has places of its own says which, and what each
-    // takes (the model clicked through Steam's store for a game's page that app_open opens by the game's name).
-    // P2.15: «lead» starts the sentence, so a refusal says first that nothing opened (an opening's «also opens» read as
-    // one done).
+    // Encargo 80: the read the application's data declare, its call first (the rule of encargos 20 and 28). Without it
+    // «abre Configuración y dime si el modo es claro u oscuro» walked its pages and told a theme's name as the mode, even
+    // with the read in the catalog (live, 2 of 6); with it 6 of 6, in two calls.
+    // Uso real 04-11: the places an opening could have gone to (BAXY Renew cu, C04) were listed in the result of one that
+    // asked for none, and one of them was told as where it opened. The tool's description lists them, the mind says them
+    // with the next turn, and a click that fails after it says them again (the mind's app_places_next).
+    private static string? ItsRead(string appId) =>
+        ApplicationPlaces.ReadOf(appId) is { } read
+            ? $"{WireNames.Call(read.Operation, read.Arguments)} reads {read.Tells}"
+            : null;
+
+    // P2.15: «lead» starts the sentence, so a refusal says first that nothing opened.
     private static string? PlacesNext(string lead, string appId)
     {
         IReadOnlyList<(string Place, string? Takes)> places = ApplicationPlaces.PlacesOf(appId);
@@ -341,7 +386,7 @@ internal sealed class AppOpenHandler(
     // effective tools for agents»; recovery from a tool's error, Fission-GRPO, doi.org/10.48550/arXiv.2601.15625).
     // Facts only: nothing here says the application opened or not.
     private static void WriteRecovery(
-        Utf8JsonWriter writer, string errorCode, string appId, ApplicationOpenResult opening)
+        Utf8JsonWriter writer, string errorCode, string appId, ApplicationOpenResult opening, JsonElement asked)
     {
         WriteNames(writer, "candidates", opening.Candidates);
         ApplicationLaunchReceipt receipt = opening.Receipt;
@@ -351,8 +396,14 @@ internal sealed class AppOpenHandler(
         // Renew al máximo (velocidad): what the opening saw instead of a window of it: its frame, empty.
         if (opening.EmptyFrame)
             writer.WriteBoolean("emptyFrame", true);
+        // uso-108 C12: why no window came, only when a process of the launch died of it.
+        if (opening.ExitedWithError is { } exited)
+            writer.WriteString("exitedWithError", exited);
         string name = string.IsNullOrWhiteSpace(opening.DisplayName) ? appId : opening.DisplayName;
-        const string look = "window_application_status can tell whether one shows now, before saying it opened or not";
+        // Encargo 34 (rule of encargos 20 and 28): the look comes first, as the call with its argument written, and what
+        // this opening saw at the end.
+        string status = WireNames.Call("window.application.status", new() { ["name"] = name });
+        string look = $"{status} tells whether a window of {name} shows now, before saying it opened or not";
         string? next = errorCode switch
         {
             "verification_failed" when opening.EmptyFrame =>
@@ -361,17 +412,50 @@ internal sealed class AppOpenHandler(
             // Auditoría de falsedades: «was started» read as «se abrió»; what the receipt knows is that the launch was
             // issued (LaunchIssued), not that the application started.
             "verification_failed" or "inventory_failed" when receipt.LaunchIssued =>
-                $"a launch of {name} was issued and no window of it was verified; {look}",
+                $"{look}; a launch of {name} was issued and no window of it was verified",
             "verification_failed" or "inventory_failed" when receipt.ReusedExisting =>
-                $"{name} was already running and no window of it was verified; {look}",
-            "verification_failed" => $"no window of {name} was verified; {look}",
+                $"{look}; {name} was already running and no window of it was verified",
+            "verification_failed" => $"{look}; no window of {name} was verified",
+            // Encargo 18 (banco de uso, U08/U14/U15): two installed applications of one name, and the model asked the
+            // same name again until its calls ran out. Each candidate, as said, is an appId the opening takes.
+            "app_ambiguous" when opening.Candidates is { Count: > 1 } =>
+                $"nothing was opened: more than one installed application answers to {appId}; {WireNames.Of("app.open")} "
+                    + "with appId set to one of candidates, written exactly as it is there, opens that one",
+            // Banco de entorno del NB (R17: «Opera GX» said, «Navegador Opera GX» installed, two of three runs gave up
+            // here): the one installed name that holds the name asked leads, as the call with the model's own other
+            // arguments (encargo 28: a next that leads with the call is followed); nothing was opened by it.
+            "app_not_found" when opening.NameHolder is { } holder && ModelAids.On(ModelAids.NameHolderNext) =>
+                $"{WireNames.Call("app.open", WithAppId(asked, holder))} opens {holder}, the one installed application "
+                    + $"whose name holds «{appId}» whole; this call opened nothing: no installed application is named "
+                    + $"exactly {appId}",
             "launch_failed" when !receipt.LaunchIssued =>
-                $"the launch of {name} was not issued (Windows did not take it); window_application_status can tell "
-                    + "whether it is open already",
+                $"{status} tells whether {name} is open already; the launch of {name} was not issued (Windows did not "
+                    + "take it)",
+            // Encargo 98: its New command is another one in some languages: what showed instead of the document.
+            "new_document_not_created" when opening.DialogOpened is { } met =>
+                $"no new document was made: {name} showed «{met.Title}», "
+                    + (met.Closed ? "which was closed again" : "which is still open"),
             _ => null,
         };
+        if (opening.DialogOpened is { } dialog)
+        {
+            writer.WriteStartObject("dialogOpened");
+            writer.WriteString("title", dialog.Title);
+            writer.WriteBoolean("closed", dialog.Closed);
+            writer.WriteEndObject();
+        }
+
         if (next is not null)
             writer.WriteString("next", next);
+    }
+
+    // The call as the model wrote it, with appId set to the installed name (its other arguments as they were).
+    private static System.Text.Json.Nodes.JsonObject WithAppId(JsonElement asked, string appId)
+    {
+        System.Text.Json.Nodes.JsonObject call =
+            System.Text.Json.Nodes.JsonNode.Parse(asked.GetRawText()) as System.Text.Json.Nodes.JsonObject ?? [];
+        call["appId"] = appId;
+        return call;
     }
 
     // Auditoría D1: the installed names closest to one that matched none (or the applications that have a place),

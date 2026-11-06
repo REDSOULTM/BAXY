@@ -83,6 +83,39 @@ public sealed class EmergentesDelDuenoTests
         Assert.That(decided, Is.EqualTo(held));
     }
 
+    // Ajuste c4 (C3-050/051/053/054): with «Herramientas» opened in Writer, the menu (a pop-up the frame owns, of its very
+    // process, above it) counted as a cover, so the frame was captured drawing itself, without the menu: neither the OCR
+    // nor the vision found «Opciones» in it. Windows: 4660 the frame, 5000 a window above it, 5001 one above 5000.
+    [TestCase(5000L, 4660L, 0L, false, false, 7u, false, TestName = "C3 menu: the window's own open menu is no cover of its capture")]
+    [TestCase(5001L, 5000L, 4660L, false, false, 7u, false, TestName = "a submenu its menu owns is no cover either")]
+    [TestCase(5000L, 0L, 0L, true, true, 7u, true, TestName = "another document window of the same process covers")]
+    [TestCase(5000L, 4660L, 0L, false, true, 7u, true, TestName = "a dialog with a title bar the window owns covers")]
+    [TestCase(5000L, 4660L, 0L, true, false, 7u, true, TestName = "an owned window with a taskbar button of its own covers")]
+    [TestCase(5000L, 4660L, 0L, false, false, 8u, true, TestName = "a pop-up owned by the window from another process covers")]
+    [TestCase(5000L, 0L, 0L, false, false, 8u, true, TestName = "a window of another process covers")]
+    [TestCase(5001L, 5000L, 0L, false, false, 7u, true, TestName = "a pop-up of a window that is not the captured one covers")]
+    public void APopupOfTheWindowIsPartOfItsCapture(
+        long window, long owner, long ownerOfOwner, bool appWindow, bool activates, uint process, bool covers)
+    {
+        const long target = 4660L;
+        bool decided = VisibleControlSurface.CoversItsCapture(
+            (nint)window,
+            (nint)target,
+            overlaps: true,
+            hwnd => hwnd == (nint)window ? (nint)owner : hwnd == (nint)owner ? (nint)ownerOfOwner : 0,
+            _ => appWindow,
+            _ => activates,
+            hwnd => hwnd == (nint)target ? 7u : process);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(decided, Is.EqualTo(covers));
+            // A window beside the captured one, never over it, is no cover whatever it is.
+            Assert.That(VisibleControlSurface.CoversItsCapture(
+                (nint)window, (nint)target, overlaps: false, _ => 0, _ => appWindow, _ => activates, _ => process), Is.False);
+        });
+    }
+
     // Review 1 of ronda 24 (finding 1): which styles take the activation. WS_POPUP 0x80000000, WS_CAPTION 0x00C00000,
     // WS_BORDER 0x00800000, WS_SYSMENU 0x00080000, WS_EX_NOACTIVATE 0x08000000, WS_EX_TOOLWINDOW 0x80.
     [TestCase(0x80800000L, 0x80L, false, TestName = "a menu or a drop-down list: a pop-up with a border and no title never activates")]

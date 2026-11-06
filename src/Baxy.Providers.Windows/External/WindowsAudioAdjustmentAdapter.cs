@@ -1,6 +1,8 @@
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Providers.Windows.Audio;
 using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Kernel.Operations;
@@ -167,21 +169,25 @@ internal sealed class WindowsAudioAdjustmentAdapter : IExternalOperationAdapter
 internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
 {
     private readonly Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> _adjust;
-    private readonly Func<IReadOnlyList<string>> _sessionNames;
+    private readonly Func<IReadOnlyList<AudioSessionProgram>> _sessionNames;
+    private readonly Func<(string Name, string Process)?> _browser;
 
     internal WindowsAppVolumeAdapter()
     {
         _adjust = static (application, delta, beforeEffect, cancellationToken) =>
             WindowsCoreAudioPlatform.AdjustApplicationSessions(application, delta, beforeEffect, cancellationToken);
-        _sessionNames = WindowsCoreAudioPlatform.ApplicationSessionNames;
+        _sessionNames = WindowsCoreAudioPlatform.ApplicationSessionPrograms;
+        _browser = Windows.DesktopWindowNames.PersonBrowser;
     }
 
     internal WindowsAppVolumeAdapter(
         Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> adjust,
-        Func<IReadOnlyList<string>>? sessionNames = null)
+        Func<IReadOnlyList<AudioSessionProgram>>? sessionNames = null,
+        Func<(string Name, string Process)?>? browser = null)
     {
         _adjust = adjust ?? throw new ArgumentNullException(nameof(adjust));
         _sessionNames = sessionNames ?? (static () => []);
+        _browser = browser ?? (static () => null);
     }
 
     public bool CanHandle(string operation) => operation == "audio.app.volume.adjust";
@@ -222,8 +228,10 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
                 cancellationToken);
             if (adjusted is null)
             {
-                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, WireNames.Of("audio.volume.adjust"),
-                    $"amount {amount} and direction \"{direction}\""));
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, application,
+                    new JsonObject { ["amount"] = amount, ["direction"] = direction },
+                    $"turns the volume of {{0}} {direction} by {amount}", _sessionNames, _browser,
+                    WireNames.Of("audio.volume.adjust"), $"amount {amount} and direction \"{direction}\""));
             }
             // FT/proveedores goal (review): an application already at the end it is moved towards, with no session
             // changed, says that state, as the system volume does (M54); it was a success with no observed effect,
@@ -294,21 +302,25 @@ internal sealed class WindowsAppVolumeAdapter : IExternalOperationAdapter
 internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
 {
     private readonly Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> _set;
-    private readonly Func<IReadOnlyList<string>> _sessionNames;
+    private readonly Func<IReadOnlyList<AudioSessionProgram>> _sessionNames;
+    private readonly Func<(string Name, string Process)?> _browser;
 
     internal WindowsAppVolumeSetAdapter()
     {
         _set = static (application, level, beforeEffect, cancellationToken) =>
             WindowsCoreAudioPlatform.SetApplicationSessions(application, level, beforeEffect, cancellationToken);
-        _sessionNames = WindowsCoreAudioPlatform.ApplicationSessionNames;
+        _sessionNames = WindowsCoreAudioPlatform.ApplicationSessionPrograms;
+        _browser = Windows.DesktopWindowNames.PersonBrowser;
     }
 
     internal WindowsAppVolumeSetAdapter(
         Func<string, int, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> set,
-        Func<IReadOnlyList<string>>? sessionNames = null)
+        Func<IReadOnlyList<AudioSessionProgram>>? sessionNames = null,
+        Func<(string Name, string Process)?>? browser = null)
     {
         _set = set ?? throw new ArgumentNullException(nameof(set));
         _sessionNames = sessionNames ?? (static () => []);
+        _browser = browser ?? (static () => null);
     }
 
     public bool CanHandle(string operation) => operation == "audio.app.volume.set";
@@ -347,7 +359,9 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
                 cancellationToken);
             if (adjusted is null)
             {
-                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, _sessionNames, WireNames.Of("audio.volume"),
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, application,
+                    new JsonObject { ["level"] = level }, $"sets the volume of {{0}} to {level}", _sessionNames, _browser,
+                    WireNames.Of("audio.volume"),
                     $"level {level}"));
             }
             if (Math.Abs(adjusted.Level - level) > 2)
@@ -401,7 +415,13 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
 /// application with no audio session on the default output fails before any effect, and (model aid) the failure names
 /// the applications that have one, few and by their process names, and the operation of the PC's own volume. Holdout v6
 /// V6E064 («el volumen déjamelo en treinta mientras veo la serie» set Netflix's volume, 4 of 4 runs then answered in
-/// words): that operation is said as the call it would be, with the person's level or amount.
+/// words): that operation is said as the call it would be, with the person's level or amount. Banco de uso 03-11 (R09,
+/// «baja el volumen del navegador a 20»): the model named one browser, the processes with audio held another and it
+/// asked which; the failure says which browser is the person's own (Windows' default), as a window's does
+/// (WindowControlHandlers). Uso 81 (banco de decisiones e35-H-R09a, 16/20 → 9/20 with a new catalog: after this
+/// failure the model answered in words): when one application with audio, and only one, has a name that matches what
+/// was said by form (<see cref="NameHolder"/>), the next leads with the same call naming it (a failure's next that leads
+/// with the exact call is followed: encargos 28 and 48).
 /// </summary>
 internal static class AppSessionNotFound
 {
@@ -409,21 +429,27 @@ internal static class AppSessionNotFound
 
     internal const int NameLimit = 8;
 
+    /// <param name="sameArguments">The call's other arguments (level, or amount and direction), as the model gave them.</param>
+    /// <param name="effect">What the call does to the application named by its one placeholder, «{0}».</param>
     internal static ExternalCapabilityReceipt Receipt(
         string operation,
-        Func<IReadOnlyList<string>> sessionNames,
+        string application,
+        JsonObject sameArguments,
+        string effect,
+        Func<IReadOnlyList<AudioSessionProgram>> sessionNames,
+        Func<(string Name, string Process)?> browser,
         string systemOperation,
         string systemArguments)
     {
         ExternalCapabilityReceipt failure = ExternalJson.FailureBeforeEffect(operation, ErrorCode);
         if (!ModelAids.On(ModelAids.AppVolumeCandidates))
             return failure;
-        string[] names;
+        AudioSessionProgram[] programs;
         try
         {
-            names = sessionNames()
-                .Where(static name => !string.IsNullOrWhiteSpace(name))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+            programs = sessionNames()
+                .Where(static program => !string.IsNullOrWhiteSpace(program.Process))
+                .DistinctBy(static program => program.Process, StringComparer.OrdinalIgnoreCase)
                 .Take(NameLimit)
                 .ToArray();
         }
@@ -434,6 +460,9 @@ internal static class AppSessionNotFound
             return failure;
         }
 
+        (string Name, string Process)? own = browser();
+        AudioSessionProgram? holder = ModelAids.On(ModelAids.AppVolumeNameHolder) ? NameHolder(application, programs) : null;
+
         return failure with
         {
             Result = ExternalJson.Create(writer =>
@@ -441,14 +470,76 @@ internal static class AppSessionNotFound
                 writer.WriteStartObject();
                 writer.WriteNumber("version", 1);
                 writer.WriteStartArray("appsWithAudio");
-                foreach (string name in names)
-                    writer.WriteStringValue(name);
+                foreach (AudioSessionProgram program in programs)
+                    writer.WriteStringValue(program.Process);
                 writer.WriteEndArray();
-                writer.WriteString("next", "only these applications have a volume of their own now (app takes one of "
-                    + $"them); the volume of the whole PC is {systemOperation}, not an application: if the person meant "
-                    + $"the whole PC, call {systemOperation} with {systemArguments}");
+                if (own is { } known)
+                {
+                    writer.WriteStartObject("personBrowser");
+                    writer.WriteString("name", known.Name);
+                    writer.WriteString("process", known.Process);
+                    writer.WriteEndObject();
+                }
+                // Uso 81: the name Windows shows is said beside the process only in the next (a list of shown names
+                // beside appsWithAudio took e35-H-R09a from 5/10 to 2/10 and R09 from 6/10 to 1/10).
+                // Encargo 82 (vivo del 81, 2 of 2): the application said is the one that holds the name: the call that leads
+                // would be this same one, which the model made, failed again and then moved the whole PC's volume.
+                writer.WriteString("next", holder is { } said
+                        && WindowsCoreAudioPlatform.FoldToken(said.Process) == WindowsCoreAudioPlatform.FoldToken(application)
+                    ? $"this call changed nothing and the same call would not do more: {said.Process} has audio, and its "
+                        + "session did not take the change; the person asked for this application's volume, not the "
+                        + "whole PC's"
+                    : holder is { } one
+                    ? $"{WireNames.Call(operation, WithApp(sameArguments, one.Process))} "
+                        + string.Format(CultureInfo.InvariantCulture, effect, one.Process
+                            + (one.Name is { } name && WindowsCoreAudioPlatform.FoldToken(name)
+                                != WindowsCoreAudioPlatform.FoldToken(one.Process) ? $" ({name})" : ""))
+                        + $"; this call changed nothing: no application with audio is named \"{application}\", and "
+                        + $"{one.Process} is the one whose names match it"
+                    : "only these applications have a volume of their own now (app takes one of "
+                        + $"them); the volume of the whole PC is {systemOperation}, not an application: if the person "
+                        + $"meant the whole PC, call {systemOperation} with {systemArguments}");
                 writer.WriteEndObject();
             }),
         };
+    }
+
+    private static JsonObject WithApp(JsonObject sameArguments, string process)
+    {
+        var arguments = new JsonObject { ["app"] = process };
+        foreach ((string name, JsonNode? value) in sameArguments)
+            arguments[name] = value?.DeepClone();
+        return arguments;
+    }
+
+    /// <summary>
+    /// Uso 81: the one application with audio whose names match what was said, by form only: a word said (four letters
+    /// or more) inside one of its names, or one of its names (three or more) inside what was said, folded (lower case,
+    /// no accents, letters and digits). Its names are its process, the name Windows shows for it and that name's forms in
+    /// the name-equivalence data (<see cref="ApplicationAliases.FormsOf"/>). Null when none matches, or more than one.
+    /// </summary>
+    internal static AudioSessionProgram? NameHolder(string said, IReadOnlyList<AudioSessionProgram> programs)
+    {
+        string whole = WindowsCoreAudioPlatform.FoldToken(said);
+        string[] words = [.. said.Split(' ', '-', '_', '.', ',', '(', ')', '\'')
+            .Select(WindowsCoreAudioPlatform.FoldToken)
+            .Where(static word => word.Length >= 4)];
+        if (whole.Length < 3)
+            return null;
+        AudioSessionProgram[] holders = [.. programs.Where(program => NamesOf(program)
+            .Select(WindowsCoreAudioPlatform.FoldToken)
+            .Any(name => name.Length >= 3 && (whole.Contains(name, StringComparison.Ordinal)
+                || words.Any(word => name.Contains(word, StringComparison.Ordinal)))))];
+        return holders.Length == 1 ? holders[0] : null;
+    }
+
+    private static IEnumerable<string> NamesOf(AudioSessionProgram program)
+    {
+        yield return program.Process;
+        if (program.Name is not { } shown)
+            yield break;
+        yield return shown;
+        foreach (string form in ApplicationAliases.FormsOf(shown))
+            yield return form;
     }
 }

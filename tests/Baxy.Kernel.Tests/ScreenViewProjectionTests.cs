@@ -27,6 +27,20 @@ public sealed class ScreenViewProjectionTests
         "\"text\":{\"T\":[\"Abuela\"],\"C\":[\"ok\",\"prueba BAXY\",\"prueba BAXY\"],\"B\":[\"ok\"]}," +
         "\"textAuthority\":\"windows_media_ocr_lines\",\"authority\":\"uia\"}";
 
+    // Encargo 119 (F10): a text in an alphabet the OCR does not have came back as nonsense told as a read («CVIHVIVI yxoav»).
+    [Test]
+    public void TheRecognizedNoteSaysWhichLanguagesTheOcrReads()
+    {
+        string look = Look.Replace(
+            "\"textAuthority\":\"windows_media_ocr_lines\",",
+            "\"textAuthority\":\"windows_media_ocr_lines\",\"textLanguages\":[\"es-MX\",\"en-US\"],", StringComparison.Ordinal);
+
+        JsonObject projected = Project("{\"status\":\"completed\",\"observed\":{\"controlCount\":3}}", look);
+
+        Assert.That((string?)projected["view"], Does.Contain(
+            "(ese OCR sólo reconoce es-MX, en-US: un texto en otro alfabeto sale como letras sin sentido; entonces di que no se pudo leer)\nTexto arriba: "));
+    }
+
     [Test]
     public void AControlFoundSeveralTimesSaysTheTimesAndEveryRepeatedLineStays()
     {
@@ -38,6 +52,8 @@ public sealed class ScreenViewProjectionTests
             "[1] Button «Enviar»\n" +
             "[2] ListItem «prueba» ×2\n" +
             "[3] Button «Responder» ×3\n" +
+            "(el «Texto» se reconoció de la imagen de la ventana (OCR): puede leer mal letras y cifras, como una coma " +
+            "decimal tomada por un dígito; lo que nombran los controles lo da la propia aplicación y manda sobre ese texto)\n" +
             "Texto arriba: Abuela\n" +
             "Texto centro: ok | prueba BAXY | prueba BAXY\n" +
             "Texto abajo: ok"));
@@ -407,6 +423,163 @@ public sealed class ScreenViewProjectionTests
             Assert.That(view, Does.Contain(NotepadFocus + "\n"));
             Assert.That(view, Does.Not.Contain("cursor").And.Not.Contain("seleccionado"));
         });
+    }
+
+    // uso-89 (diag-b5bd, R06, 5 of 6): the look at the ranking page in Edge, its frame's controls (cut to a few) and the
+    // text the provider read by OCR, as it came; the page says «El faro del norte - calificacion 8,9».
+    private const string RankingOcr =
+        "\"text\":{\"T\":[\"Ranking de prueba\",\"C : C) File C:/Users/baxy/BAXY-bench/ranking/ranking.html\"," +
+        "\"1 _ Rio de inviemo - calificacion 724\"," +
+        "\"1 _ Rio de invlemo - calificacion 724\",\"2. El del norte - calificaclon 829\"," +
+        "\"2. El åro del norte - calificacion\",\"3 _ Ciudad de papel - calificacion 8.1\"]}," +
+        "\"textAuthority\":\"windows_media_ocr_lines\",\"authority\":\"uia\"}";
+
+    private const string RankingFrame =
+        "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+        "\"window\":{\"title\":\"Ranking de prueba - Microsoft Edge\",\"process\":\"msedge\",\"hwnd\":131406,\"foreground\":true}," +
+        "\"controls\":[" +
+        "{\"i\":3,\"kind\":\"Button\",\"name\":\"Back\",\"zone\":\"TL\",\"state\":\"\",\"value\":null}," +
+        "{\"i\":16,\"kind\":\"TabItem\",\"name\":\"Ranking de prueba\",\"zone\":\"TL\",\"state\":\"selected\",\"value\":null}," +
+        "{\"i\":19,\"kind\":\"Pane\",\"name\":\"Ranking de prueba - Microsoft Edge\",\"zone\":\"C\",\"state\":\"\",\"value\":null}]," +
+        "\"controlCount\":3," + RankingOcr;
+
+    // The next look, once the page's tree was there: its ListItems say the page's words, and the OCR still came.
+    private const string RankingTree =
+        "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+        "\"window\":{\"title\":\"Ranking de prueba - Microsoft Edge\",\"process\":\"msedge\",\"hwnd\":131406,\"foreground\":true}," +
+        "\"controls\":[" +
+        "{\"i\":14,\"kind\":\"Document\",\"name\":\"Ranking de prueba\",\"zone\":\"C\",\"state\":\"readonly\",\"value\":null}," +
+        "{\"i\":15,\"kind\":\"ListItem\",\"name\":\"Rio de invierno - calificacion 7,4\",\"zone\":\"T\",\"state\":\"\",\"value\":null}," +
+        "{\"i\":17,\"kind\":\"ListItem\",\"name\":\"El faro del norte - calificacion 8,9\",\"zone\":\"T\",\"state\":\"\",\"value\":null}," +
+        "{\"i\":19,\"kind\":\"ListItem\",\"name\":\"Ciudad de papel - calificacion 8,1\",\"zone\":\"T\",\"state\":\"\",\"value\":null}]," +
+        "\"controlCount\":4," + RankingOcr;
+
+    // uso-89: Windows.Media.Ocr gives each line's text and box and no confidence (OcrLine, OcrWord), and in R06 the model
+    // told its «829» as the page's. Where the window gives its controls, the view says its text was recognized from the
+    // image, may misread letters and digits, and that what the controls name comes from the application; every line
+    // stays. A window drawn without controls keeps its own note; with the aid off the view is as before.
+    private const string RecognizedNote = "(el «Texto» se reconoció de la imagen de la ventana (OCR): puede leer mal "
+        + "letras y cifras, como una coma decimal tomada por un dígito; lo que nombran los controles lo da la propia "
+        + "aplicación y manda sobre ese texto)\nTexto arriba: ";
+
+    private static (string On, string Off) Both(string look)
+    {
+        string on;
+        string off;
+        using (ModelAids.Use(ModelAids.ScreenTextRecognized))
+        {
+            on = (string?)Project("{\"status\":\"completed\"}", look)["view"] ?? string.Empty;
+        }
+
+        using (ModelAids.Use("none"))
+        {
+            off = (string?)Project("{\"status\":\"completed\"}", look)["view"] ?? string.Empty;
+        }
+
+        return (on, off);
+    }
+
+    [Test]
+    public void TextRecognizedFromTheImageBesideTheControlsSaysSoBeforeIt()
+    {
+        (string on, string off) = Both(RankingFrame);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(on, Does.Contain(RecognizedNote + "C : C) File"));
+            Assert.That(on, Does.Contain("2. El del norte - calificaclon 829 | 2. El åro del norte - calificacion"));
+            Assert.That(on, Does.Not.Contain("del texto reconocido no se listan"));
+            Assert.That(off, Does.Not.Contain("(OCR)"));
+            Assert.That(off.Replace(RecognizedNote, "Texto arriba: "), Is.EqualTo(on.Replace(RecognizedNote, "Texto arriba: ")));
+        });
+    }
+
+    // uso-89: with the page's ListItems listed, the OCR lines that are their names misread («calificaclon 829» for
+    // «calificacion 8,9», «724» for «7,4») are left out and counted; the line no control names stays, after the note.
+    [Test]
+    public void AnOcrLineThatIsAListedNameMisreadIsLeftOutAndCounted()
+    {
+        (string on, string off) = Both(RankingTree);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(on, Does.Contain(RecognizedNote + "C : C) File C:/Users/baxy/BAXY-bench/ranking/ranking.html\n"));
+            Assert.That(on, Does.Not.Contain("829").And.Not.Contain("724").And.Not.Contain("8.1"));
+            Assert.That(on, Does.Contain("[17] ListItem «El faro del norte - calificacion 8,9»"));
+            Assert.That(on, Does.Contain("(5 líneas del texto reconocido no se listan: repetían el nombre de un "
+                + "control listado con letras o cifras mal leídas)"));
+            Assert.That(on, Does.Contain("(1 líneas de texto no se listan: repiten el nombre de un control listado)"));
+            Assert.That(off, Does.Contain("2. El del norte - calificaclon 829").And.Not.Contain("texto reconocido"));
+        });
+    }
+
+    // Another line with the same words and other figures is another thing on screen, and stays; so does one that adds a
+    // figure to a name that has none (a count beside a check box).
+    [TestCase("3 _ Ciudad de papel - calificacion 5432")]
+    [TestCase("Rio de invierno - calificacion (3)")]
+    public void AnOcrLineWithTheSameWordsAndOtherFiguresStays(string line)
+    {
+        string look = RankingTree.Replace("\"3 _ Ciudad de papel - calificacion 8.1\"", $"\"{line}\"")
+            .Replace("\"Rio de invierno - calificacion 7,4\"", "\"Rio de invierno - calificacion\"");
+        (string on, _) = Both(look);
+
+        Assert.That(on, Does.Contain(line));
+    }
+
+    // Uso-108 (B5): the line of a look cut by its limit names the way to what it left out; only a cut look has that line.
+    [Test]
+    public void TheCutLineNamesWantedAndAWholeLookHasNoSuchLine()
+    {
+        const string Cut = "{\"controls\":[{\"i\":0,\"kind\":\"Button\",\"name\":\"Guardar\",\"state\":\"\",\"value\":null}],\"controlCount\":38}";
+        const string Whole = "{\"controls\":[{\"i\":0,\"kind\":\"Button\",\"name\":\"Guardar\",\"state\":\"\",\"value\":null}],\"controlCount\":1}";
+        string on;
+        string whole;
+        string off;
+        using (ModelAids.Use(ModelAids.CutNamesWanted))
+        {
+            on = (string?)Project("{\"status\":\"completed\"}", Cut)["view"] ?? string.Empty;
+            whole = (string?)Project("{\"status\":\"completed\"}", Whole)["view"] ?? string.Empty;
+        }
+
+        using (ModelAids.Use("none"))
+        {
+            off = (string?)Project("{\"status\":\"completed\"}", Cut)["view"] ?? string.Empty;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(on, Does.Contain("(+37 más, sin listar por el tope: wanted los busca)"));
+            Assert.That(whole, Does.Not.Contain("wanted"));
+            Assert.That(off, Does.Contain("(+37 más, sin listar por el tope)"));
+        });
+    }
+
+    // Uso-108 (B15): what wanted did not find is said, beside the cut; nothing when the receipt has no such words.
+    [Test]
+    public void AWantedThatFoundNothingIsSaid()
+    {
+        const string Cut = "{\"controls\":[{\"i\":0,\"kind\":\"Button\",\"name\":\"Guardar\",\"state\":\"\",\"value\":null}],\"controlCount\":9";
+        string said = (string?)Project("{\"status\":\"completed\"}", Cut + ",\"wantedMissing\":[\"firmas\",\"plantillas\"]}")["view"] ?? string.Empty;
+        string plain = (string?)Project("{\"status\":\"completed\"}", Cut + "}")["view"] ?? string.Empty;
+
+        Assert.Multiple(() =>
+        {
+            // Review 16, I3: a row scrolled out of the list is not walked: only what is in sight can be said not to have it.
+            Assert.That(said, Does.Contain("(ningún control a la vista lleva «firmas», «plantillas» en su nombre)"));
+            Assert.That(plain, Does.Not.Contain("ningún control"));
+        });
+    }
+
+    [Test]
+    public void AWindowDrawnWithoutControlsKeepsItsOwnNoteOnly()
+    {
+        string drawn = RankingFrame.Replace(
+            "{\"i\":3,\"kind\":\"Button\",\"name\":\"Back\",\"zone\":\"TL\",\"state\":\"\",\"value\":null}," +
+            "{\"i\":16,\"kind\":\"TabItem\",\"name\":\"Ranking de prueba\",\"zone\":\"TL\",\"state\":\"selected\",\"value\":null},", "")
+            .Replace("\"controlCount\":3", "\"controlCount\":1");
+        string view = (string?)Project("{\"status\":\"completed\"}", drawn)["view"] ?? string.Empty;
+
+        Assert.That(view, Does.Contain("no da sus controles").And.Not.Contain("(OCR)"));
     }
 
     private static JsonObject Project(string facts, string lookJson = Look)

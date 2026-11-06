@@ -35,6 +35,7 @@ internal static class Program
         // Reading the field sets it by now: the class has no static constructor, so its static fields may be initialized
         // as late as their first read, and the hello's catalog wait counts from the start of Main (auditoría D-K13).
         _ = StartedAt;
+        ChildProcessHandles.KeepOutputFromChildren();
         Console.InputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
         Console.OutputEncoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
@@ -74,15 +75,19 @@ internal static class Program
         {
             return 0;
         }
-        catch (JournalIntegrityException)
+        catch (Exception exception) when (UnreadableProfile.Is(exception))
         {
-            Console.Error.WriteLine("BAXY core stopped because its mission journal failed integrity validation.");
-            return 74;
+            // Uso 85: the profile's state, not a crash; the App stops relaunching and asks the person.
+            int exitCode = UnreadableProfile.ExitCode(WindowsProtectedPayload.CurrentUserProtectionWorks);
+            Console.Error.WriteLine(exitCode == CoreExitCodes.ProfileUnreadable
+                ? $"BAXY core stopped: its local data profile cannot be read or authenticated by this Windows account ({exception.GetType().Name}): {exception.Message}"
+                : $"BAXY core stopped safely: Windows data protection does not work in this session ({exception.GetType().Name}): {exception.Message}");
+            return exitCode;
         }
         catch (Exception exception)
         {
             Console.Error.WriteLine($"BAXY core stopped safely ({exception.GetType().Name}): {exception.Message}");
-            return 70;
+            return UnreadableProfile.StoppedSafely;
         }
         finally
         {
@@ -101,6 +106,7 @@ internal static class Program
         using var externalCapabilityProvider = new WindowsExternalCapabilityProvider(dataRoot);
         // Computer use: the first view of a mission pays neither the UI Automation worker's start nor its first look.
         externalCapabilityProvider.Prewarm();
+        _ = Task.Run(ChildProcessHandles.ReapOrphanedCompilers, CancellationToken.None);
         var installedApplicationProvider = new WindowsInstalledApplicationOpenProvider();
         // A look by an application's installed name finds its window as window.resolve does (ajuste c3).
         externalCapabilityProvider.ResolveApplicationsWith(installedApplicationProvider);
@@ -138,10 +144,19 @@ internal static class Program
             appOpenHandler,
             new AppRestartHandler(windowControlProvider, appOpenHandler.ExecuteAsync),
             new AssistantStatusHandler(),
+            new BaxyExitHandler(),
+            new GameLaunchHandler(
+                new ExternalCapabilityHandler("game.launch", externalCapabilityProvider),
+                installedApplicationProvider,
+                appOpenHandler.ExecuteAsync),
             new GameStoreHandler("game.store.page", "game", "title", appOpenHandler.ExecuteAsync),
+            new CalculatorOpeningHandler(
+                new ExternalCapabilityHandler("calculator.expression.evaluate", externalCapabilityProvider),
+                appOpenHandler.ExecuteAsync),
             new PasteIntoNewDocumentHandler(
                 new ExternalCapabilityHandler("clipboard.paste", externalCapabilityProvider), appOpenHandler.ExecuteAsync,
-                OfficeNewDocumentPaste.TryAsync, appOpenHandler),
+                OfficeNewDocumentPaste.TryAsync, appOpenHandler,
+                new PasteDestinations(installedApplicationProvider).ResolveAsync),
             new GameStoreHandler("game.store.search", "results", "query", appOpenHandler.ExecuteAsync),
             new ExternalCapabilityHandler("audio.app.volume.adjust", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.app.volume.set", externalCapabilityProvider),
@@ -169,7 +184,7 @@ internal static class Program
             new NetworkPortHandler(networkPortProvider),
             new NetworkStatusHandler(networkStatusProvider),
             new CreateNoteHandler(noteStore),
-            new ListNotesHandler(noteStore),
+            new ListNotesHandler(noteStore, taskStore),
             new ReadNoteHandler(noteStore),
             new RestoreNoteHandler(noteStore),
             new SearchNotesHandler(noteStore),
@@ -179,7 +194,7 @@ internal static class Program
             new SystemStatusHandler(systemStatusProvider, gpuStatusProvider),
             new ProcessListHandler(processStatusProvider),
             new TimeStatusHandler(timeStatusProvider, placeTimeZoneResolver),
-            .. TaskHandlers.Create(taskStore),
+            .. TaskHandlers.Create(taskStore, noteStore),
             .. WindowControlHandlers.Create(windowControlProvider),
         ];
         var registry = new OperationRegistry(handlers);
@@ -188,7 +203,7 @@ internal static class Program
         // (seconds on a grown journal under load). It runs beside the catalog read
         // and the hello waits for it only within its budget (HelloJournalWait); no
         // request is read, let alone executed, until the journal is open and valid,
-        // and a journal that fails validation still stops the core (exit 74).
+        // and a journal that fails validation still stops the core (UnreadableProfile).
         Task<FileInvocationJournal> journalOpen = Task.Run(
             async () => await OpenJournalAsync(
                     dataRoot,

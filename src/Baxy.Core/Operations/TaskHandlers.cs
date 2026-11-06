@@ -9,12 +9,12 @@ namespace Baxy.Core.Operations;
 
 internal static class TaskHandlers
 {
-    public static IOperationHandler[] Create(ILocalTaskStore store) =>
+    public static IOperationHandler[] Create(ILocalTaskStore store, INoteStore notes) =>
     [
         new CompleteTaskHandler(store),
         new CreateTaskHandler(store),
         new DeleteTaskHandler(store),
-        new ListTasksHandler(store),
+        new ListTasksHandler(store, notes),
         new ReopenTaskHandler(store),
         new RestoreTaskHandler(store),
         new SearchTasksHandler(store),
@@ -155,8 +155,11 @@ internal abstract class TaskHandlerBase(ILocalTaskStore store) : IOperationHandl
                     ? review.GetString()!.Normalize(System.Text.NormalizationForm.FormC).Trim()
                     : current.Title;
             string state = (current.Completed ? "completed" : "open") + (current.Deleted ? ", deleted" : string.Empty);
+            // Encargo 34: the restore comes first, as the call with its arguments written.
+            string restore = WireNames.Call(
+                "task.restore", new() { ["taskId"] = id.ToString("D"), ["expectedVersion"] = current.Version });
             next = !conflict
-                ? $"nothing was changed: the task is deleted; task.restore with version {current.Version} brings it back first"
+                ? $"{restore} brings it back first; this call changed nothing: the task is deleted"
                 : !string.Equals(label, current.Title, StringComparison.Ordinal)
                     ? $"nothing was changed: reviewLabel must be the task's exact title, \"{current.Title}\""
                     : $"nothing was changed: the task is {state} at version {current.Version} now";
@@ -368,19 +371,45 @@ internal sealed class UpdateTaskHandler(ILocalTaskStore store) : TaskHandlerBase
     }
 }
 
-internal sealed class ListTasksHandler(ILocalTaskStore store) : TaskHandlerBase(store)
+internal sealed class ListTasksHandler(ILocalTaskStore store, INoteStore notes) : TaskHandlerBase(store)
 {
+    private readonly INoteStore _notes = notes ?? throw new ArgumentNullException(nameof(notes));
+
     public override OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("task.list");
 
     protected override OperationOutcome Execute(OperationInvocation invocation)
     {
         TaskListArguments arguments = Parse(invocation.Arguments, CoreJsonContext.Default.TaskListArguments);
         int limit = arguments.Limit ?? 20;
-        LocalTaskQuery found = Store.List(
-            ParseStatus(arguments.Status, TaskListStatus.Open),
-            arguments.IncludeDeleted ?? false,
-            limit);
-        return VerifiedList(found, "tasks", limit);
+        TaskListStatus status = ParseStatus(arguments.Status, TaskListStatus.Open);
+        LocalTaskQuery found = Store.List(status, arguments.IncludeDeleted ?? false, limit);
+        OperationOutcome listed = VerifiedList(found, "tasks", limit);
+        return listed.Succeeded && found.MatchCount == 0 && status != TaskListStatus.Completed
+            && NotesBeside(listed.Result!.Value) is { } beside ? OperationOutcome.Success(beside) : listed;
+    }
+
+    // Encargo 55 (other_store_next): no open task, and notes are kept. The note_list call that reads them comes first,
+    // as the call with its arguments written (encargos 20, 28), then the fact; the latest three ride beside it.
+    private JsonElement? NotesBeside(JsonElement json)
+    {
+        if (!ModelAids.On(ModelAids.OtherStoreNext)) return null;
+        NotePage kept;
+        try
+        {
+            kept = _notes.ListPage(NoteListScope.Active, OtherStore.Latest, 0);
+        }
+        catch (Exception exception) when (OtherStore.Unreadable(exception))
+        {
+            return null;
+        }
+
+        if (kept.TotalCount == 0) return null;
+        string call = WireNames.Call("note.list", new() { ["scope"] = "active" });
+        return OtherStore.Beside(json,
+            $"{call} reads the {OtherStore.Count(kept.TotalCount, "note")}; no task is open: notes are kept apart "
+                + "from tasks, and this call read only the tasks",
+            "notes",
+            kept.Notes.Select(note => OtherStore.Item(note.Id, note.Title, note.CreatedAtUtc)));
     }
 
     private OperationOutcome VerifiedList(LocalTaskQuery found, string mode, int limit)

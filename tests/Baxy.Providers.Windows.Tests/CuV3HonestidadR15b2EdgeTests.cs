@@ -19,7 +19,7 @@ namespace Baxy.Providers.Windows.Tests;
 public sealed class CuV3HonestidadR15b2EdgeTests
 {
     private const string Edge = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
-    private const string Profile = @"C:\Users\usuario\AppData\Local\BAXY\browser-session-v1\edge";
+    private const string Profile = @"C:\Users\ana\AppData\Local\BAXY\browser-session-v1\edge";
 
     [Test]
     public void TwinV357TheBrowserLeavesTheJobAndInheritsNothing()
@@ -187,6 +187,111 @@ public sealed class CuV3HonestidadR15b2EdgeTests
         {
             Directory.Delete(profile, recursive: true);
         }
+    }
+
+    // Ajuste c4, banco ciego c3 (C3-061, 083, 097, 146): the case cleanup closed the Brave BAXY had opened and every
+    // later page in Brave failed with brave_cdp_unavailable after ~2 s (a refused loopback port) until the App
+    // restarted: the session kept the dead browser's endpoint. A browser that ended leaves no session, and the next
+    // page reattaches to the browser now left open for the profile (or launches one) instead of the dead port.
+    [Test]
+    public async Task ABrowserClosedOutsideBaxyLeavesNoSessionAndTheNextPageFindsTheNewOne()
+    {
+        using var first = new FakeCdpEndpoint();
+        using var firstBrowser = BrowserStandIn.Start();
+        string profile = NewProfile(first.Port, CdpBrowserSession.OwnerRecord(firstBrowser.Process.Id, firstBrowser.StartTicks));
+        try
+        {
+            using var session = new CdpBrowserSession(profile, BrowserStandIn.Executable);
+            Assert.That((await session.ListTabsAsync(20, CancellationToken.None)).Verified, Is.True);
+            Assert.That(session.HasEndpoint, Is.True);
+            await EndAsync(firstBrowser, first);
+
+            using var second = new FakeCdpEndpoint();
+            using var secondBrowser = BrowserStandIn.Start();
+            File.WriteAllText(Path.Combine(profile, "DevToolsActivePort"), second.Port + "\n/devtools/browser/y\n");
+            File.WriteAllText(Path.Combine(profile, CdpBrowserSession.OwnerRecordName),
+                CdpBrowserSession.OwnerRecord(secondBrowser.Process.Id, secondBrowser.StartTicks));
+            bool hasEndpoint = session.HasEndpoint;
+            CdpBrowserControlResult opened = await session.ControlAsync("new_tab", CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(hasEndpoint, Is.False, "a browser that ended is no session");
+                Assert.That(opened.Verified, Is.True, opened.ErrorCode);
+                Assert.That(opened.TargetId, Is.EqualTo("BAXY-1"));
+                Assert.That(second.NewTabs, Is.EqualTo(1), "the tab opened in the browser left open now");
+                Assert.That(session.Launches, Is.Zero);
+            });
+        }
+        finally
+        {
+            Directory.Delete(profile, recursive: true);
+        }
+    }
+
+    // Ajuste c4, the other half: a step on a tab of a browser that ended (close it, go back, read it) has no tab to act
+    // on. It says so before sending anything, and never launches a browser to close or read its blank page as if it
+    // were the one the person had.
+    [TestCase("close")]
+    [TestCase("close_all")]
+    [TestCase("back")]
+    [TestCase("reload")]
+    [TestCase("scroll_down")]
+    [TestCase("fullscreen_video")]
+    [TestCase("page.read")]
+    [TestCase("tabs.list")]
+    public async Task AStepOnATabOfABrowserClosedOutsideBaxyFailsWithoutOpeningOne(string step)
+    {
+        using var server = new FakeCdpEndpoint();
+        using var browser = BrowserStandIn.Start();
+        string profile = NewProfile(server.Port, CdpBrowserSession.OwnerRecord(browser.Process.Id, browser.StartTicks));
+        try
+        {
+            using var session = new CdpBrowserSession(profile, BrowserStandIn.Executable);
+            Assert.That((await session.ListTabsAsync(20, CancellationToken.None)).Verified, Is.True);
+            await EndAsync(browser, server);
+
+            bool verified, effect = false;
+            string error;
+            if (step == "page.read")
+            {
+                CdpPageReadResult page = await session.ReadPageAsync(4_096, CancellationToken.None);
+                (verified, error) = (page.Verified, page.ErrorCode);
+            }
+            else if (step == "tabs.list")
+            {
+                CdpBrowserTabsResult tabs = await session.ListTabsAsync(20, CancellationToken.None);
+                (verified, error) = (tabs.Verified, tabs.ErrorCode);
+            }
+            else
+            {
+                CdpBrowserControlResult control = await session.ControlAsync(step, CancellationToken.None);
+                (verified, effect, error) = (control.Verified, control.EffectObserved, control.ErrorCode);
+            }
+            CdpBrowserControlResult again = await session.ControlAsync("back", CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(verified, Is.False);
+                Assert.That(effect, Is.False);
+                Assert.That(error, Is.EqualTo("cdp_session_closed"));
+                Assert.That(again.ErrorCode, Is.EqualTo("cdp_session_closed"), "asked again, still no browser");
+                Assert.That(session.Launches, Is.Zero, "no browser launched for a tab that is gone");
+                Assert.That(session.HasEndpoint, Is.False);
+            });
+        }
+        finally
+        {
+            Directory.Delete(profile, recursive: true);
+        }
+    }
+
+    // The browser closed outside BAXY: its process ends and its debugging port stops answering.
+    private static async Task EndAsync(BrowserStandIn browser, FakeCdpEndpoint endpoint)
+    {
+        browser.Process.Kill();
+        await browser.Process.WaitForExitAsync();
+        endpoint.Dispose();
     }
 
     private static string NewProfile(int port, string ownerRecord)

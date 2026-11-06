@@ -528,7 +528,7 @@ def test_held_out_unsure_power_requests_are_asked(tmp_path, monkeypatch, words, 
     ("reinicia el computador por favor", _call("system_power", {"action": "restart"}, 0.9), "system.power"),
     ("suspende el notebook ahora", _call("system_power", {"action": "sleep"}, 0.9), "system.power"),
     ("abre la calculadora", _call("app_open", {"appId": "calculadora"}, 0.3), "app.open"),
-    ("busca en internet el clima de mañana en curicó", _call("web_search", {"query": "clima"}, 0.3), "web.search")])
+    ("busca en internet el clima de mañana en valparaíso", _call("web_search", {"query": "clima"}, 0.3), "web.search")])
 def test_held_out_clear_requests_run(tmp_path, monkeypatch, words, reply, operation) -> None:
     _unasked(tmp_path, monkeypatch, "")
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.4")
@@ -624,7 +624,7 @@ HELD_OUT_QUEUED_CLEAR = [
     ("Lanza el reproductor y sube el volumen a setenta", ("app_open", {"appId": "spotify"}),
      ("volume_set", {"level": 70})),
     ("Quita la planilla y pásame el editor de texto", ("app_close", {"appId": "excel"}), ("app_open", {"appId": "notepad"})),
-    ("Investiga el clima en Curicó y averigua el dólar de hoy", ("web_search", {"query": "clima en Curicó"}),
+    ("Investiga el clima en Valparaíso y averigua el dólar de hoy", ("web_search", {"query": "clima en Valparaíso"}),
      ("web_search", {"query": "precio del dólar hoy"}))]
 HELD_OUT_RISK = {"system_power": "work_loss", "app_open": "read_only", "app_close": "work_loss",
                  "web_search": "read_only", "volume_set": "low_reversible"}

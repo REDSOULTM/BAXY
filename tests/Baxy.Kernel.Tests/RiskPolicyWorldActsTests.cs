@@ -145,7 +145,7 @@ public sealed class RiskPolicyWorldActsTests
     // The label was judged as asking already (the person answered, or the mode is bypass): nothing more to ask.
     [TestCase("Iniciar Transmisión", "Iniciar Transmisión", false)]
     [TestCase("Cotele (canal de voz)", "Cotele!!!😎, Canal de voz, Choche", false)]
-    [TestCase("Enviar", "Enviar a Ron92", false)]
+    [TestCase("Enviar", "Enviar a Nube77", false)]
     // An ordinary control named by a part of its name is pressed as before.
     [TestCase("Dibujar", "Dibujar", false)]
     [TestCase("Sitio", "Un título largo - Sitio", false)]

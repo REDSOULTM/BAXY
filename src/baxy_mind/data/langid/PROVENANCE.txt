@@ -1,0 +1,17 @@
+langid.py's language identification model, as BAXY's voice uses it (src/baxy_mind/language_id.py).
+
+Origin: py3langid 0.3.0 (https://github.com/adbar/py3langid, PyPI «py3langid»), Adrien Barbaresi's maintained fork of
+langid.py by Marco Lui (Lui & Baldwin 2012, «langid.py: An Off-the-shelf Language Identification Tool», ACL 2012
+System Demonstrations). Licence: BSD-3-Clause, LICENSE beside this file (the package's own).
+
+Copied on 2026-11-04 from the wheel installed on the PC (Python310 site-packages), each file checked against the
+wheel's RECORD:
+
+  model.plzma  py3langid/data/model.plzma           sha256 8c99809ff6de3d129e447306d30ceae4713735230dced7e8d4d46df89e6968ce  (unchanged)
+  LICENSE      py3langid-0.3.0.dist-info/LICENSE    sha256 1694ffed7731df5c6e3d95ad5aa2398bf64f9377636ead34a23f385dd3598a0c  (unchanged)
+
+Not copied: py3langid/langid.py (sha256 0c2a0b0f59bebeee1f28d8cc53be03625f17fb9176c818eb7860b1fd10f09dd7). Its
+classification (instance2fv, nb_classprobs, the log-sum-exp normalization, set_languages) is rewritten in
+language_id.py, restricted to «es» and «en»; its web service, command line and unrestricted pickle.load are left out.
+The model's pickle references only array.array and array._array_reconstructor (inspected with pickletools), and
+language_id.py refuses any other class. Results match py3langid's on 204 replies (same language, |p| within 7e-8).

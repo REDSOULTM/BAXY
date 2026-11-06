@@ -1,6 +1,6 @@
 {
   "schema": "baxy.said-verbs.v1",
-  "note": "The person's verbs that pick what a call does when the model wrote it otherwise (SaidVerbs). Each entry is compared as folded words (lower case, no accents, single spaces: SaidFolders.Spoken). append: a file.write without append over a file of theirs that is there goes as an append when the turn says one of these and none of keepWhole. overwrite: a file.edit of a file of theirs that is there goes as the file.write of its newText over all of it, under the file's hash (the person's yes first), and a file.write without hash nor append over such a file goes under its hash, when the turn says one of these (not «reemplaza X por Y», an edit). operators: a calculator.expression.evaluate of a bare number, or of the number said, that operator and the number again, goes as that operator and the number when the turn says words of exactly one of them. copy: a call of an operation that takes copy, without copy, goes with copy when the turn says one of these and none of move.",
+  "note": "The person's verbs that pick what a call does when the model wrote it otherwise (SaidVerbs). Each entry is compared as folded words (lower case, no accents, single spaces: SaidFolders.Spoken). append: a file.write without append over a file of theirs that is there goes as an append when the turn says one of these and none of keepWhole. overwrite: a file.edit of a file of theirs that is there goes as the file.write of its newText over all of it, under the file's hash (the person's yes first), and a file.write without hash nor append over such a file goes under its hash, when the turn says one of these (not «reemplaza X por Y», an edit). operators: a calculator.expression.evaluate of a bare number they said goes as that operator and the number when the turn says words of exactly one of them. copy: a call of an operation that takes copy, without copy, goes with copy when the turn says one of these and none of move. negations and clauseBreaks (encargo 61b): the person's words are cut into clauses at , ; : . ? ! and at a clauseBreak, and a name after a negation in its clause is not asked for (answer_check's «no / nunca / sin»), as the Calculator named in «no uses la calculadora».",
   "append": [
     "agrega", "agregale", "agregalo", "agregala", "agregar", "agregarle", "agregue", "agreguele", "agregues", "agregame",
     "anade", "anadele", "anadelo", "anadela", "anadir", "anadirle", "anada", "anadale",
@@ -22,9 +22,16 @@
   "move": [
     "mueve", "muevelo", "muevela", "mover", "moverlo", "muevas", "traslada", "trasladalo", "move"
   ],
+  "negations": [
+    "no", "nunca", "tampoco", "ni", "sin", "jamas", "not", "never", "without", "dont", "don t"
+  ],
+  "clauseBreaks": [
+    "pero", "aunque", "y", "o", "porque", "asi que", "mientras", "luego", "despues", "entonces",
+    "but", "and", "or", "because", "so", "then"
+  ],
   "operators": {
-    "+": ["sumale", "sumalo", "suma", "sumar", "sumarle", "agregale", "anadele", "mas", "add", "plus"],
-    "-": ["restale", "restalo", "resta", "restar", "restarle", "quitale", "menos", "subtract", "minus"],
+    "+": ["sumale", "sumalo", "suma", "sumar", "sumarle", "agregale", "anadele", "add"],
+    "-": ["restale", "restalo", "resta", "restar", "restarle", "quitale", "subtract"],
     "*": ["multiplicalo por", "multiplicala por", "multiplica por", "multiplicar por", "multiplicarlo por", "times", "multiply by", "multiplied by", "multiply it by"],
     "/": ["dividelo entre", "dividelo por", "divide entre", "divide por", "dividir entre", "dividir por", "dividirlo entre", "dividirlo por", "divided by", "divide by", "divide it by"]
   }

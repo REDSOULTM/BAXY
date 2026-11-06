@@ -388,9 +388,12 @@ public sealed class KnownFileToolsTests
             RecurseSubdirectories = true, IgnoreInaccessible = true, AttributesToSkip = FileAttributes.ReparsePoint,
             MaxRecursionDepth = 12,
         };
-        (string Folder, string Path)[] walk = [.. new[] { ("desktop", desktop), ("documents", documents) }
-            .SelectMany(root => Directory.EnumerateFiles(root.Item2, "*", options)
-                .Select(file => (root.Item1, Path.GetRelativePath(root.Item2, file))))];
+        // Cosecha 03-11 F14: a walk with a time limit goes through the folders side by side, one file of each in turn.
+        (string Folder, string Path)[][] each = [.. new[] { ("desktop", desktop), ("documents", documents) }
+            .Select(root => Directory.EnumerateFiles(root.Item2, "*", options)
+                .Select(file => (root.Item1, Path.GetRelativePath(root.Item2, file))).ToArray())];
+        (string Folder, string Path)[] walk = [.. Enumerable.Range(0, each.Max(files => files.Length))
+            .SelectMany(index => each.Where(files => index < files.Length).Select(files => files[index]))];
         (string, string)[] named = [.. walk.Where(item => Path.GetFileName(item.Path) == "informe").Take(6)];
         (string, string)[] stems = [.. walk.Where(item => Path.GetFileNameWithoutExtension(item.Path) == "informe").Take(6)];
         (string, string)[] expected = named.Length > 1 ? named : stems;
@@ -1231,6 +1234,96 @@ public sealed class KnownFileToolsTests
         });
     }
 
+    // Cosecha 03-11 F14: a name misheard by one letter (i for y, as «Lumi Tésis» for LUMY-TESIS) found nothing with
+    // that file four folders down the Desktop: the name was matched as a part, accents and one letter off making it
+    // none. With no name holding it, the names alike are given as such; accents alone are no difference; numbers are
+    // never alike.
+    [Test]
+    public async Task AMisheardNameFindsTheNamesAlikeAndSaysTheyAreAlike()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, string documents, _) = Folders(temporary);
+        string deep = Path.Combine(desktop, "ETC", "Programacion", "proyecto-tesis", "_plan");
+        Directory.CreateDirectory(deep);
+        await File.WriteAllTextAsync(Path.Combine(deep, "PLAN-LUMY-TESIS.md"), "x");
+        await File.WriteAllTextAsync(Path.Combine(deep, "PLAN-LUMY-TESIS-sprint2.md"), "x");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "factura luz.pdf"), "x");
+        await File.WriteAllTextAsync(Path.Combine(documents, "informe 2025.docx"), "x");
+        async Task<JsonElement> Find(string query) => (await adapter.InvokeAsync("file.find",
+            Json($$"""{"query":"{{query}}"}"""), CancellationToken.None)).Result!.Value;
+
+        JsonElement misheard = await Find("Lumi Tésis");
+        JsonElement accents = await Find("Tésis");
+        JsonElement absent = await Find("factura agua");
+        JsonElement year = await Find("informe 2024");
+
+        static string[] Names(JsonElement result) => [.. result.GetProperty("files").EnumerateArray()
+            .Select(file => file.GetProperty("name").GetString()!).Order(StringComparer.Ordinal)];
+        Assert.Multiple(() =>
+        {
+            Assert.That(Names(misheard), Is.EqualTo(new[] { "PLAN-LUMY-TESIS-sprint2.md", "PLAN-LUMY-TESIS.md" }));
+            Assert.That(misheard.GetProperty("matchCount").GetInt32(), Is.Zero);
+            Assert.That(misheard.GetProperty("nameMatch").GetString(), Is.EqualTo("alike"));
+            Assert.That(misheard.GetProperty("alike").GetString(), Does.StartWith(
+                "no file name contains \"Lumi Tésis\"; each file listed has its words with one or two letters changed"));
+            Assert.That(Names(accents), Is.EqualTo(new[] { "PLAN-LUMY-TESIS-sprint2.md", "PLAN-LUMY-TESIS.md" }));
+            Assert.That(accents.TryGetProperty("nameMatch", out _), Is.False);
+            Assert.That(Names(absent), Is.Empty);
+            Assert.That(absent.TryGetProperty("nameMatch", out _), Is.False);
+            Assert.That(Names(year), Is.Empty);
+        });
+    }
+
+    // Cosecha 03-11 F14: a search of several folders gave its whole time limit to the first (a Desktop of 1.3 million
+    // files), so the others were never searched, and a stopped search said nothing of where it had not looked. The
+    // folders are walked side by side, and a stopped one says, by folder, what was searched whole.
+    [Test]
+    public async Task AStoppedSearchWalksTheFoldersSideBySideAndSaysWhereItDidNotLook()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        string desktop = Path.Combine(temporary.Path, "desktop");
+        string documents = Path.Combine(temporary.Path, "documents");
+        Directory.CreateDirectory(Path.Combine(desktop, "a", "b"));
+        Directory.CreateDirectory(documents);
+        for (int index = 0; index < 4; index++)
+        {
+            await File.WriteAllTextAsync(Path.Combine(desktop, $"arriba{index}.txt"), "x");
+            await File.WriteAllTextAsync(Path.Combine(desktop, "a", $"medio{index}.txt"), "x");
+            await File.WriteAllTextAsync(Path.Combine(desktop, "a", "b", $"abajo{index}.txt"), "x");
+        }
+        await File.WriteAllTextAsync(Path.Combine(documents, "receta.txt"), "x");
+        WindowsKnownFileAdapter Stopping() => new(new Dictionary<string, string[]>
+        {
+            ["desktop"] = [desktop],
+            ["documents"] = [documents],
+        }, new FolderRecycleBin(Path.Combine(temporary.Path, "bin"), true), utcNow: StopAfter(7));
+
+        JsonElement found = (await Stopping().InvokeAsync("file.find", Json("""{"query":"receta"}"""),
+            CancellationToken.None)).Result!.Value;
+        JsonElement none = (await Stopping().InvokeAsync("file.find", Json("""{"query":"nada"}"""),
+            CancellationToken.None)).Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.GetProperty("files").EnumerateArray().Select(file => file.GetProperty("name").GetString()),
+                Is.EqualTo(new[] { "receta.txt" }));
+            JsonElement scope = none.GetProperty("searchScope");
+            Assert.That(scope.GetProperty("timeLimitReached").GetBoolean(), Is.True);
+            Assert.That(scope.GetProperty("walkedWhole").EnumerateArray().Select(item => item.GetString()),
+                Is.EqualTo(new[] { "documents" }));
+            JsonElement part = scope.GetProperty("walkedInPart")[0];
+            Assert.That(part.GetProperty("folder").GetString(), Is.EqualTo("desktop"));
+            Assert.That(part.GetProperty("depthSearchedWhole").GetInt32(), Is.EqualTo(0));
+            Assert.That(none.GetProperty("next").GetString(), Is.EqualTo(
+                "file_find {\"path\":\"desktop/SUBFOLDER\",\"query\":\"nada\"} searches one subfolder of desktop to its "
+                + "whole depth (SUBFOLDER: the folder the person says it is in); no name in the part walked contains "
+                + "\"nada\": the search stopped at its 8 s limit (documents searched whole); in desktop its own files "
+                + "were all searched, its subfolders in part"));
+        });
+    }
+
     // A name that is nowhere gives its stems from the same walk (it walked twice: once for the name, once for them).
     [Test]
     public async Task TheStemsOfANameThatIsNowhereComeFromTheSameWalk()
@@ -1551,13 +1644,14 @@ public sealed class KnownFileToolsTests
         {
             Assert.That(trash.ErrorCode, Is.EqualTo("known_file_not_found"));
             Assert.That(read.ErrorCode, Is.EqualTo("known_file_not_found"));
+            // Encargo 34: one folder to list, and the call that lists it comes first, with its argument written.
             Assert.That(trash.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(missing
-                ? "documents has no subfolder \"facturas pymes\" (documents/facturas pymes does not exist), so "
-                    + "factura.pdf was not looked for; file_find with path \"documents\" lists its folders"
+                ? "file_find {\"path\":\"documents\"} lists its folders; documents has no subfolder \"facturas pymes\" "
+                    + "(documents/facturas pymes does not exist), so factura.pdf was not looked for"
                 : before));
             Assert.That(read.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(missing
-                ? "documents has no subfolder \"facturas pymes/2026\" (documents/facturas pymes/2026 does not exist), "
-                    + "so factura.pdf was not looked for; file_find with path \"documents\" lists its folders"
+                ? "file_find {\"path\":\"documents\"} lists its folders; documents has no subfolder \"facturas "
+                    + "pymes/2026\" (documents/facturas pymes/2026 does not exist), so factura.pdf was not looked for"
                 : before));
             Assert.That(bin.Recycled, Is.Empty);
         });
@@ -1602,14 +1696,15 @@ public sealed class KnownFileToolsTests
             Assert.That(byName.Verified, Is.True, byName.ErrorCode);
             Assert.That(byName.Result!.Value.GetProperty("matchCount").GetInt32(), Is.Zero);
             Assert.That(Next(byName), Is.EqualTo(aid
-                ? "no file name in documents/Viaje Sur contains \"patente\": this search matched names only, so the "
-                    + "text inside its 3 files was not searched; to search inside them, call file_find with path "
-                    + "\"documents/Viaje Sur\" and content \"patente\""
+                // Encargo 34: the search inside them comes first, as the call with its arguments written.
+                ? "file_find {\"path\":\"documents/Viaje Sur\",\"content\":\"patente\"} searches the text inside "
+                    + "the 3 files this search walked; no file name in documents/Viaje Sur contains \"patente\": this "
+                    + "search matched names only, so the text inside them was not searched"
                 : null));
             Assert.That(Next(whole), Is.EqualTo(aid
-                ? "no file name in documents contains \"hotel\": this search matched names only, so the text inside "
-                    + "its 4 files was not searched; to search inside them, call file_find with path \"documents\" "
-                    + "and content \"hotel\""
+                ? "file_find {\"path\":\"documents\",\"content\":\"hotel\"} searches the text inside the 4 files "
+                    + "this search walked; no file name in documents contains \"hotel\": this search matched names "
+                    + "only, so the text inside them was not searched"
                 : null));
             Assert.That(Next(pattern), Is.Null);
             Assert.That(Next(matched), Is.Null);
@@ -1618,6 +1713,68 @@ public sealed class KnownFileToolsTests
             // The call it names finds the file.
             Assert.That(inside.Result!.Value.GetProperty("files")[0].GetProperty("name").GetString(),
                 Is.EqualTo("datos.txt"));
+        });
+    }
+
+    // Encargo 48 (banco de uso F06, 3 of 4): «¿dónde dejé receta_tarta.txt?» went as file.find with content
+    // "receta_tarta.txt", no text held it, and the answer was «no lo encontré» with that file under the folder. With aid
+    // find_name_next a search by content that found the text in no file, while the names of files of the same walk hold
+    // it, leads with the search by name with the same path and lists those files (namedSo); a content found, a name that
+    // holds nothing of it, a query beside the content or a pattern say nothing more.
+    [TestCase("all", true)]
+    [TestCase("find_content_next", false)]
+    public async Task AContentSearchThatFoundNothingSaysWhenAFileIsNamedSo(string aids, bool aid)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, _, string documents, _) = Folders(temporary);
+        string bench = Path.Combine(documents, "bench");
+        Directory.CreateDirectory(Path.Combine(bench, "casa", "postres"));
+        await File.WriteAllTextAsync(Path.Combine(bench, "casa", "postres", "receta_tarta.txt"), "Tarta de manzana\n");
+        await File.WriteAllTextAsync(Path.Combine(bench, "riego.txt"), "Regar martes\n");
+        await File.WriteAllTextAsync(Path.Combine(bench, "informe.txt"), "Ventas de octubre\n");
+        Task<ExternalCapabilityReceipt> Run(string arguments) =>
+            adapter.InvokeAsync("file.find", Json(arguments), CancellationToken.None).AsTask();
+
+        ExternalCapabilityReceipt byContent = await Run("""{"path":"documents/bench","content":"receta_tarta.txt"}""");
+        ExternalCapabilityReceipt found = await Run("""{"path":"documents/bench","content":"manzana"}""");
+        ExternalCapabilityReceipt nowhere = await Run("""{"path":"documents/bench","content":"pasaporte"}""");
+        ExternalCapabilityReceipt both = await Run(
+            """{"path":"documents/bench","query":"receta","content":"receta_tarta.txt"}""");
+        ExternalCapabilityReceipt pattern = await Run("""{"path":"documents/bench","content":"receta*"}""");
+        ExternalCapabilityReceipt named = await Run(
+            """{"path":"documents/bench","query":"receta_tarta.txt"}""");
+
+        static string? Next(ExternalCapabilityReceipt receipt) =>
+            receipt.Result!.Value.TryGetProperty("next", out JsonElement next) ? next.GetString() : null;
+        Assert.Multiple(() =>
+        {
+            Assert.That(byContent.Verified, Is.True, byContent.ErrorCode);
+            Assert.That(byContent.Result!.Value.GetProperty("count").GetInt32(), Is.Zero);
+            Assert.That(Next(byContent), Is.EqualTo(aid
+                ? "file_find {\"path\":\"documents/bench\",\"query\":\"receta_tarta.txt\"} finds the 1 file whose "
+                    + "name contains \"receta_tarta.txt\"; no text inside the 3 text files this search read contains it: "
+                    + "this search read the text inside the files, not their names"
+                : null));
+            // The files of the walk so named, as a search by name lists them.
+            Assert.That(byContent.Result!.Value.TryGetProperty("namedSo", out JsonElement namedSo), Is.EqualTo(aid));
+            if (aid)
+            {
+                Assert.That(namedSo.GetArrayLength(), Is.EqualTo(1));
+                Assert.That(namedSo[0].GetProperty("name").GetString(), Is.EqualTo("receta_tarta.txt"));
+                Assert.That(namedSo[0].GetProperty("folder").GetString(),
+                    Is.EqualTo(named.Result!.Value.GetProperty("files")[0].GetProperty("folder").GetString()));
+                Assert.That(namedSo[0].GetProperty("relativePath").GetString(),
+                    Is.EqualTo(named.Result!.Value.GetProperty("files")[0].GetProperty("relativePath").GetString()));
+            }
+            Assert.That(found.Result!.Value.TryGetProperty("namedSo", out _), Is.False);
+            Assert.That(Next(found), Is.Null);
+            Assert.That(Next(nowhere), Is.Null);
+            Assert.That(Next(both), Is.Null);
+            Assert.That(Next(pattern), Is.Null);
+            // The call it names finds the file.
+            Assert.That(named.Result!.Value.GetProperty("files")[0].GetProperty("relativePath").GetString(),
+                Does.Contain("postres"));
         });
     }
 
@@ -1650,4 +1807,99 @@ public sealed class KnownFileToolsTests
             Assert.That(bin.Recycled, Is.Empty);
         });
     }
+
+    // Cosecha 04-11 F33: «busca mi presentación del hito 2», with a folder of that name at the top of the Desktop and a
+    // file of another name inside it, found nothing: only files were compared. Files and folders are told apart: a
+    // count of files stays one.
+    [Test]
+    public async Task AFolderNamedSoIsFoundBesideTheFilesAndItsInsideIsOneCallAway()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, _) = Folders(temporary);
+        Directory.CreateDirectory(Path.Combine(desktop, "Presentacion Curso Hito 2"));
+        await File.WriteAllTextAsync(Path.Combine(desktop, "Presentacion Curso Hito 2", "Curso-Hito-2.pptx"), "x");
+        Directory.CreateDirectory(Path.Combine(desktop, "viejo", "facturas"));
+        await File.WriteAllTextAsync(Path.Combine(desktop, "viejo", "notas.txt"), "x");
+
+        JsonElement words = (await adapter.InvokeAsync("file.find", Json("""{"query":"presentación hito 2"}"""),
+            CancellationToken.None)).Result!.Value;
+        JsonElement deep = (await adapter.InvokeAsync("file.find", Json("""{"query":"facturas"}"""),
+            CancellationToken.None)).Result!.Value;
+        JsonElement absent = (await adapter.InvokeAsync("file.find", Json("""{"query":"hipoteca"}"""),
+            CancellationToken.None)).Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(words.GetProperty("count").GetInt32(), Is.Zero);
+            Assert.That(words.GetProperty("foldersFoundCount").GetInt32(), Is.EqualTo(1));
+            Assert.That(words.GetProperty("foldersFound")[0].GetProperty("name").GetString(),
+                Is.EqualTo("Presentacion Curso Hito 2"));
+            Assert.That(words.GetProperty("next").GetString(), Does.StartWith(
+                """file_find {"path":"desktop/Presentacion Curso Hito 2"} lists what is inside"""));
+            Assert.That(deep.GetProperty("foldersFound")[0].GetProperty("relativePath").GetString(),
+                Is.EqualTo(Path.Combine("viejo", "facturas")));
+            Assert.That(absent.TryGetProperty("foldersFound", out _), Is.False);
+        });
+    }
+
+    // Cosecha 03-11 F14 with 04-11 F33: a folder's name misheard by one letter is offered as alike, as a file's is.
+    [Test]
+    public async Task AFolderNameMisheardIsOfferedAsAlike()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, _) = Folders(temporary);
+        Directory.CreateDirectory(Path.Combine(desktop, "proyecto", "LUMY-TESIS"));
+
+        JsonElement misheard = (await adapter.InvokeAsync("file.find", Json("""{"query":"Lumi Tésis"}"""),
+            CancellationToken.None)).Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(misheard.GetProperty("nameMatch").GetString(), Is.EqualTo("alike"));
+            Assert.That(misheard.GetProperty("foldersFound")[0].GetProperty("name").GetString(), Is.EqualTo("LUMY-TESIS"));
+            Assert.That(misheard.GetProperty("next").GetString(), Does.EndWith("one or two letters changed"));
+        });
+    }
+
+    // Cosecha 04-11 F33: a name holds the words said in another order or with others between; and the limit of 20 keeps
+    // what is nearest to the folder searched, not the first by name many folders down.
+    [Test]
+    public async Task ANameHoldsTheWordsSaidInAnyOrderAndTheNearestComeFirst()
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        (WindowsKnownFileAdapter adapter, string desktop, _, _) = Folders(temporary);
+        await File.WriteAllTextAsync(Path.Combine(desktop, "octubre-informe-final.docx"), "x");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "informe sobre gastos de octubre.pdf"), "x");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "informe noviembre.pdf"), "x");
+        string deep = Path.Combine(desktop, "a", "b");
+        Directory.CreateDirectory(deep);
+        await File.WriteAllTextAsync(Path.Combine(deep, "a informe.txt"), "x");
+        await File.WriteAllTextAsync(Path.Combine(desktop, "z informe.txt"), "x");
+
+        JsonElement words = (await adapter.InvokeAsync("file.find", Json("""{"query":"informe de octubre"}"""),
+            CancellationToken.None)).Result!.Value;
+        JsonElement first = (await adapter.InvokeAsync("file.find", Json("""{"query":"informe","limit":1}"""),
+            CancellationToken.None)).Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(words.GetProperty("files").EnumerateArray().Select(file => file.GetProperty("name").GetString()),
+                Is.EquivalentTo(new[] { "octubre-informe-final.docx", "informe sobre gastos de octubre.pdf" }));
+            Assert.That(words.TryGetProperty("nameMatch", out _), Is.False);
+            Assert.That(first.GetProperty("files")[0].GetProperty("name").GetString(), Does.Not.EqualTo("a informe.txt"));
+        });
+    }
+
+    [TestCase("foto vacaciones", "vacaciones_2024_foto.jpg", true)]
+    [TestCase("plan del sprint 3", "sprint-3-plan.md", true)]
+    [TestCase("plan del sprint 3", "plan-sprint.md", false)]
+    [TestCase("informe 2024", "informe 2025.docx", false)]
+    [TestCase("informe", "informe.docx", false)] // one word is already a part of the name
+    [TestCase("de la", "de-la.txt", true)]
+    [TestCase("de la casa", "casa.txt", false)]
+    public void HoldsWordsComparesTheWordsWhateverTheirOrder(string said, string name, bool holds) =>
+        Assert.That(Baxy.Providers.Windows.Filesystem.SpokenFileNames.HoldsWords(name, said), Is.EqualTo(holds));
 }

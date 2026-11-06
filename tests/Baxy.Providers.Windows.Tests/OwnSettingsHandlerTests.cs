@@ -110,20 +110,73 @@ public sealed class OwnSettingsHandlerTests
     }
 
     // A value that is not this setting's (the proposals have no «off» without a span; a switch has no span) changes
-    // nothing.
-    [TestCase("proposals", "off")]
-    [TestCase("voice", "1h")]
-    [TestCase("web_search", "tomorrow")]
-    [TestCase("weather", "off")]
-    public async Task AValueThatIsNotTheSettingsChangesNothing(string setting, string value)
+    // nothing. Encargo 25 (G2, uso real 02-11: proposals «off» answered a bare code and the reply was «BAXY siempre te
+    // las propone»): the refusal names the argument and the values this setting takes; a setting BAXY does not have,
+    // the settings it has.
+    [TestCase("proposals", "off", "value", new[] { "30m", "1h", "tomorrow", "on" })]
+    [TestCase("voice", "1h", "value", new[] { "on", "off" })]
+    [TestCase("web_search", "tomorrow", "value", new[] { "on", "off" })]
+    [TestCase("weather", "off", "setting", new[]
+    {
+        "confirmation_bypass", "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos", "proposals", "voice",
+        "web_search",
+    })]
+    public async Task AValueThatIsNotTheSettingsChangesNothing(string setting, string value, string argument, string[] allowed)
     {
         using JsonDocument facts = JsonDocument.Parse(await Set(setting, value));
+        JsonElement problem = facts.RootElement.GetProperty("argumentProblems")[0];
 
         Assert.Multiple(() =>
         {
             Assert.That(facts.RootElement.GetProperty("status").GetString(), Is.EqualTo("failed"));
-            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("baxy_setting_value_invalid"));
+            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("invalid_arguments"));
+            Assert.That(problem.GetProperty("argument").GetString(), Is.EqualTo(argument));
+            Assert.That(problem.GetProperty("allowed").EnumerateArray().Select(static item => item.GetString()),
+                Is.EqualTo(allowed));
             Assert.That(File.Exists(Path.Combine(_root, FieldSettingsStore.FileName)), Is.False);
+        });
+    }
+
+    // Encargo 25 (G2, uso real 02-11: «activa el modo Bypass» → «eso no es una opción que BAXY tenga»): the confirmation
+    // mode is one of BAXY's own settings. Switching it on stays a gesture in BAXY's own window (identity), so from the
+    // chat it is refused, nothing written, with what is true: the mode it is in and where the person turns it on.
+    [Test]
+    public async Task BypassOnIsRefusedWithTheModeAndWhereTheWindowTurnsItOn()
+    {
+        using JsonDocument facts = JsonDocument.Parse(await Set("confirmation_bypass", "on"));
+        JsonElement observed = facts.RootElement.GetProperty("observed");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(facts.RootElement.GetProperty("status").GetString(), Is.EqualTo("failed"));
+            Assert.That(facts.RootElement.GetProperty("error").GetString(), Is.EqualTo("confirmation_bypass_interface_only"));
+            Assert.That(observed.GetProperty("setting").GetString(), Is.EqualTo("confirmation_bypass"));
+            Assert.That(observed.GetProperty("mode").GetString(), Is.EqualTo("normal"));
+            Assert.That(observed.GetProperty("valuesByChat").EnumerateArray().Select(static item => item.GetString()),
+                Is.EqualTo(new[] { "off" }));
+            Assert.That(observed.GetProperty("turnOnIn").GetString(), Does.Contain("Ajustes > Confirmación"));
+            Assert.That(File.Exists(Path.Combine(_root, ConfirmationModeStore.FileName)), Is.False);
+        });
+    }
+
+    // Switching it off is what the chat may do (as system.settings.set does): written, read back, changed.
+    [Test]
+    public async Task BypassOffByChatTurnsItOffAndReadsItBack()
+    {
+        ConfirmationModeStore.Write(_root, ConfirmationMode.Bypass);
+
+        JsonElement observed = Observed(await Set("confirmation_bypass", "off"), out string status);
+        JsonElement again = Observed(await Set("confirmation_bypass", "off"), out string againStatus);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(status, Is.EqualTo("completed"));
+            Assert.That(observed.GetProperty("setting").GetString(), Is.EqualTo("confirmation_bypass"));
+            Assert.That(observed.GetProperty("value").GetString(), Is.EqualTo("off"));
+            Assert.That(observed.GetProperty("changed").GetBoolean(), Is.True);
+            Assert.That(ConfirmationModeStore.Read(_root), Is.EqualTo(ConfirmationMode.Normal));
+            Assert.That(againStatus, Is.EqualTo("completed"));
+            Assert.That(again.GetProperty("changed").GetBoolean(), Is.False);
         });
     }
 

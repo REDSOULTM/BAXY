@@ -1,41 +1,53 @@
 {
- "_doc": "Cómo se nombra en la interfaz (panel de memoria) un dato guardado con su selector: la etiqueta en español de cada selector y la de un dato sin etiqueta propia. Lo lee Baxy.App/MemoryPanel.cs; no interpreta nada de lo que dice la persona.",
+ "_doc": "Cómo se nombra en la interfaz (panel de memoria) un dato guardado con su selector: la etiqueta en español (es) y en inglés (en, Steam 2026-11-04) de cada selector y la de un dato sin etiqueta propia. Lo lee Baxy.App/MemoryPanel.cs; no interpreta nada de lo que dice la persona.",
  "labels": {
   "favorite_color": {
-   "es": "color favorito"
+   "es": "color favorito",
+   "en": "favorite color"
   },
   "favorite_drink": {
-   "es": "bebida favorita"
+   "es": "bebida favorita",
+   "en": "favorite drink"
   },
   "name": {
-   "es": "nombre"
+   "es": "nombre",
+   "en": "name"
   },
   "birthday": {
-   "es": "cumpleaños"
+   "es": "cumpleaños",
+   "en": "birthday"
   },
   "project_name": {
-   "es": "proyecto"
+   "es": "proyecto",
+   "en": "project"
   },
   "employer": {
-   "es": "trabajo"
+   "es": "trabajo",
+   "en": "work"
   },
   "language": {
-   "es": "idioma"
+   "es": "idioma",
+   "en": "language"
   },
   "display_mode": {
-   "es": "modo de pantalla"
+   "es": "modo de pantalla",
+   "en": "display mode"
   },
   "response_style": {
-   "es": "estilo de respuesta"
+   "es": "estilo de respuesta",
+   "en": "response style"
   },
   "operating_system": {
-   "es": "sistema operativo"
+   "es": "sistema operativo",
+   "en": "operating system"
   },
   "preferred_editor": {
-   "es": "editor preferido"
+   "es": "editor preferido",
+   "en": "preferred editor"
   }
  },
  "factLabel": {
-  "es": "dato"
+  "es": "dato",
+  "en": "detail"
  }
 }

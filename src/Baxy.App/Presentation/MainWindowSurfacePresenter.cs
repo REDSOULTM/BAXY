@@ -7,7 +7,7 @@ namespace Baxy.App.Presentation;
 
 internal sealed class MainWindowSurfacePresenter : IAppSurfacePresenter
 {
-    private readonly WebView2 _field;
+    private WebView2 _field;
     private readonly ContentControl _surfaceHost;
 
     internal MainWindowSurfacePresenter(
@@ -17,6 +17,12 @@ internal sealed class MainWindowSurfacePresenter : IAppSurfacePresenter
         _field = field ?? throw new ArgumentNullException(nameof(field));
         _surfaceHost = surfaceHost
             ?? throw new ArgumentNullException(nameof(surfaceHost));
+    }
+
+    /// <summary>uso-116: the view was created anew in the same window (its browser process died).</summary>
+    internal void UseField(WebView2 field)
+    {
+        _field = field ?? throw new ArgumentNullException(nameof(field));
     }
 
     public void ShowField()

@@ -1,12 +1,12 @@
 # llama-server b11609 parcheado: el prefijo de las herramientas se guarda entre peticiones
 
 `cache_tools_prefix.patch` es un parche sobre llama.cpp **b11609** (commit `fcac19079`, el mismo que
-`F:\BAXYeval\llama\llama-server.exe --version`) que quita casi todo el trabajo que cada petición de la mente a
+`llama-server.exe --version` de la distribución oficial b11609) que quita casi todo el trabajo que cada petición de la mente a
 `/v1/chat/completions` hacía antes de su primer token, con las **mismas** salidas.
 
 ## Qué medía y qué cambia
 
-Medido en CPU (`scripts/renew/medir_preproceso.py --cpu`, 2026-10-23, prompt de ~44,4k tokens y ~180
+Medido en CPU (script de medición interno, no incluido en este repositorio; 2026-10-23, prompt de ~44,4k tokens y ~180
 herramientas): cada petición gastaba ~130-140 ms antes de leer el prompt. Repartido con temporizadores dentro del
 servidor (b11609 compilado aquí): plantilla ~42 ms (tres renderizados: el prompt y otros dos para sacar el
 `generation_prompt`), tokenizar el prompt entero ~50 ms, parser PEG y gramática de las llamadas ~12 ms, JSON ~4 ms,
@@ -26,46 +26,44 @@ La gramática compilada del sampler (~3 ms) no se reutiliza: no vale la pena.
   `BAXY cache check: … identical` (o `differs …, using stock`) y usa el de b11609. Es más lento: sólo para verificar.
 - En el log normal, una línea por prompt: `BAXY prompt cache: N tokens, K kept, M tokenized`.
 
-## Compilar (lo que se hizo el 2026-10-23 en el PC)
+## Compilar (lo que se hizo el 2026-10-23 en el equipo de desarrollo)
 
 Sólo cambian `llama-server.exe`, `llama-server-impl.dll` y `llama-common.dll`. `llama.dll`, `mtmd.dll`, los `ggml*.dll`
 (CPU y `ggml-cuda.dll`), `libomp.dll` y el runtime CUDA 12 (`cudart64_12.dll`, `cublas64_12.dll`, `cublasLt64_12.dll`)
 se quedan los de la distribución b11609: los núcleos que calculan, el muestreo (`llama.dll`) y la visión (`mtmd.dll`)
-son los mismos bytes. Por eso no hace falta CUDA para compilar (en el PC sólo hay CUDA 13) y la carpeta funciona con el
+son los mismos bytes. Por eso no hace falta CUDA para compilar (el equipo de desarrollo sólo tenía CUDA 13) y la carpeta funciona con el
 driver que ya mueve la b11609. Las tres piezas nuevas llaman a las de siempre por su API de C (y las pocas funciones C++
 exportadas tienen el mismo nombre decorado: se comprobó con `dumpbin /exports`).
 
 ```powershell
-git clone --depth 1 --branch b11609 https://github.com/ggml-org/llama.cpp D:\BAXYWork\llama-src
-git -C D:\BAXYWork\llama-src apply <repo>\scripts\llama\cache_tools_prefix.patch
+git clone --depth 1 --branch b11609 https://github.com/ggml-org/llama.cpp <trabajo>\llama-src
+git -C <trabajo>\llama-src apply <repo>\scripts\llama\cache_tools_prefix.patch
 # en un «x64 Native Tools» de Visual Studio 2022 (cl 19.44), con prioridad baja (start /belownormal):
-cmake -S D:\BAXYWork\llama-src -B D:\BAXYWork\llama-build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON `
+cmake -S <trabajo>\llama-src -B <trabajo>\llama-build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON `
   -DGGML_BACKEND_DL=ON -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DGGML_CUDA=OFF -DLLAMA_OPENSSL=OFF `
   -DLLAMA_USE_PREBUILT_UI=OFF -DLLAMA_BUILD_UI=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF `
   -DLLAMA_BUILD_NUMBER=11609 -DLLAMA_BUILD_COMMIT=fcac19079
-cmake --build D:\BAXYWork\llama-build --target llama-server -j 4
-robocopy F:\BAXYeval\llama F:\BAXYeval\llama-patch /E
+cmake --build <trabajo>\llama-build --target llama-server -j 4
+robocopy <llama-b11609> <llama-parcheado> /E
 foreach ($f in 'llama-server.exe','llama-server-impl.dll','llama-common.dll') {
-  Copy-Item "D:\BAXYWork\llama-build\bin\$f" F:\BAXYeval\llama-patch\ -Force }
+  Copy-Item "<trabajo>\llama-build\bin\$f" <llama-parcheado>\ -Force }
 ```
 
-En el PC el build Release entero (CPU, 214 pasos) tardó ~30 min a `-j 4`; tras tocar el parche, sólo se recompilan los
+En el equipo de desarrollo el build Release entero (CPU, 214 pasos) tardó ~30 min a `-j 4`; tras tocar el parche, sólo se recompilan los
 ficheros cambiados.
 
 `LLAMA_USE_PREBUILT_UI=OFF` evita la descarga de la interfaz web desde Hugging Face: el parcheado no trae la web de
 `/` (la mente no la usa), por eso su `llama-server-impl.dll` pesa ~3,5 MB y no ~9,2 MB. `llama-server.exe` es, como en
-la b11609 (9 KB), sólo el lanzador de `llama-server-impl.dll` (~10 KB). `--version` dice `built with MSVC 19.44` en vez de Clang. SHA-256 de la carpeta del PC:
+la b11609 (9 KB), sólo el lanzador de `llama-server-impl.dll` (~10 KB). `--version` dice `built with MSVC 19.44` en vez de Clang. SHA-256 de la carpeta resultante:
 `llama-server.exe` 2de27411…, `llama-server-impl.dll` 8fe19709…, `llama-common.dll` a5f07844…; los otros 52 ficheros
-son byte a byte los de `F:\BAXYeval\llama\`.
+son byte a byte los de la distribución b11609.
 
 ## Usarlo
 
-`src/baxy_mind/__main__.py` ya toma el servidor de `BAXY_MIND_LLAMA_SERVER`, y `scripts/run_renew.cmd` ahora la respeta
-si viene definida (antes la fijaba siempre a la b11609):
+`src/baxy_mind/__main__.py` toma el servidor de `BAXY_MIND_LLAMA_SERVER`:
 
 ```bat
-set "BAXY_MIND_LLAMA_SERVER=F:\BAXYeval\llama-patch\llama-server.exe"
-scripts\run_renew.cmd
+set "BAXY_MIND_LLAMA_SERVER=<llama-parcheado>\llama-server.exe"
 ```
 
 **Declarada (w11-llama, 2026-10-25).** La mente sólo arranca un llama-server declarado en
@@ -74,17 +72,20 @@ scripts\run_renew.cmd
 (`b11609`) y ésta (`b11609-baxy-cache`, con el SHA-256 de este parche); otro binario, o una carpeta que mezcle los dos,
 no arranca y la mente sale con `baxy_mind_renew_failure: llama-server not declared …` nombrando los ficheros. Un
 cambio del parche es otro build: se compila, se mide y se declara con sus hashes en el mismo cambio
-(`tests/test_mind_llama_build.py` se pone rojo si el parche ya no es el declarado). No se comparan los backends
-(`ggml-cpu-*.dll`, `ggml-cuda.dll`) ni el runtime CUDA: son 1,2 GB y los bytes de la b11609 en las dos.
+(`tests/test_mind_llama_build.py` se pone rojo si el parche ya no es el declarado). El backend de GPU se compara
+aparte (`llm_server.declared_backend`, encargo 8): `ggml-cuda.dll` o `ggml-vulkan.dll` de la b11609 con su SHA-256
+(los mismos en las dos), a lo sumo uno por carpeta; sin ninguno calcula la CPU. Así una carpeta parcheada Vulkan es la
+del zip oficial `vulkan-x64` con los tres ficheros de arriba encima. No se comparan los `ggml-cpu-*.dll` ni el runtime
+CUDA (cublas/cudart, 575 MB).
 
 La clave del prefijo guardado (`LlmServer.prefix_key`) incluye el binario: el primer arranque con el parcheado vuelve a
 leer el prefijo una vez (~18 s en GPU) y lo guarda para los siguientes.
 
-## Verificación en CPU (PC, 2026-10-23)
+## Verificación en CPU (2026-10-23)
 
 Todo con `-ngl 0 -dev none -t 4`, prioridad por debajo de lo normal, un servidor cada vez, y las carpetas de prueba
 sin `ggml-cuda.dll` (la b11609 y la parcheada con sus 3 piezas): la GPU no se tocó. `verificar_parche.py` hace las
-tres pasadas; sus ficheros se quedaron en `D:\BAXYWork\verify`.
+tres pasadas.
 
 1. **Mismas respuestas.** Una sesión real de la mente (`capture`: configure, warm-up con su aviso, 8 turnos con los
    resultados de sus llamadas, el prefill entre turnos y un latido) contra la b11609, y sus peticiones repetidas
@@ -97,7 +98,7 @@ tres pasadas; sus ficheros se quedaron en `D:\BAXYWork\verify`.
 2. **Mismos prompts y tokens a tamaño real.** `identity`: las 20 peticiones de chat de esa sesión con las ~180
    herramientas del catálogo entero (44.290-46.077 tokens), renderizadas, tokenizadas y rechazadas por un contexto de
    8192 en cada servidor.
-3. **Tiempo antes del primer token**: `scripts/renew/medir_preproceso.py --cpu` contra cada uno, dos rondas alternas.
+3. **Tiempo antes del primer token**: el script de medición interno en CPU contra cada uno, dos rondas alternas.
 
 | Comprobación | Peticiones | Resultado |
 |---|---|---|
@@ -110,7 +111,7 @@ tres pasadas; sus ficheros se quedaron en `D:\BAXYWork\verify`.
 Tiempo (p50 de 12, ms; el PC en uso por su dueño y por otra sesión, por eso la b11609 sale más lenta que el 2026-10-23
 temprano: 134-148 ms):
 
-| `medir_preproceso.py --cpu` (3 rondas alternas) | b11609 | parcheada | ahorro |
+| medición en CPU (3 rondas alternas) | b11609 | parcheada | ahorro |
 |---|---|---|---|
 | chat (herramientas y gramática) | 186,5 / 187,9 / 172,0 | 55,6 / 55,0 / 51,0 | **~128 ms (−70 %)** |
 | chat_none | 174,8 / 175,5 / 166,2 | 46,9 / 47,4 / 39,3 | ~128 ms |
@@ -125,30 +126,21 @@ plantilla (~2 × 9 ms), el JSON del cuerpo (~4 ms) y el resto del camino HTTP. E
 de 25; incluye el cálculo de logprobs, igual en los dos). Por turno con una herramienta (decidir + continuar) en el
 prompt real: ~260 ms menos en este CPU.
 
-## A/B en la GPU del notebook
+## Comprobarlo en GPU
 
-No hecho: en el PC la GPU es del dueño. En el notebook (REDNOTE), con la GPU libre:
+Con `verificar_parche.py` y un modelo GGUF propio, cada servidor por separado:
 
-1. Copiar la carpeta: `robocopy D:\BAXYeval\llama D:\BAXYeval\llama-patch /E` y encima los tres ficheros de
-   `F:\BAXYeval\llama-patch\` del PC (`llama-server.exe`, `llama-server-impl.dll`, `llama-common.dll`).
-2. Tiempo antes del primer token en GPU, cada servidor por separado (GPU, warm-up restaurado):
-   `py -3.12 -X utf8 scripts\renew\medir_preproceso.py --server D:\BAXYeval\llama\llama-server.exe` y lo mismo con
-   `--server D:\BAXYeval\llama-patch\llama-server.exe` (`--gguf D:\BAXYeval\models\BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf`
-   y el `--catalog` del notebook). Esperado: `chat` ~90-130 ms menos; `prompt_ms` y `predicted_ms` iguales.
-3. Mismas respuestas en GPU con el catálogo entero (minutos, no horas):
-   ```bat
-   set V=scripts\llama\verificar_parche.py
-   py -3.12 -X utf8 %V% capture D:\BAXYeval\llama D:\BAXYWork\cap.json --ngl 99 --work D:\BAXYWork --gguf D:\BAXYeval\models\BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf --catalog <catálogo>
-   py -3.12 -X utf8 %V% replay D:\BAXYeval\llama D:\BAXYWork\cap.json D:\BAXYWork\r_stock.json --ngl 99 --work D:\BAXYWork --gguf ...
-   py -3.12 -X utf8 %V% replay D:\BAXYeval\llama-patch D:\BAXYWork\cap.json D:\BAXYWork\r_patch.json --ngl 99 --work D:\BAXYWork --gguf ...
-   py -3.12 -X utf8 %V% replay D:\BAXYeval\llama-patch D:\BAXYWork\cap.json D:\BAXYWork\r_check.json --ngl 99 --work D:\BAXYWork --gguf ... --env BAXY_LLAMA_CACHE_CHECK=1
-   py -3.12 -X utf8 %V% compare D:\BAXYWork\r_stock.json D:\BAXYWork\r_patch.json
-   py -3.12 -X utf8 %V% compare D:\BAXYWork\r_stock.json D:\BAXYWork\r_check.json
-   findstr /C:"BAXY cache check" D:\BAXYWork\r_check.server.log | findstr /C:"differ"
-   ```
-   Las dos comparaciones deben decir `ALL IDENTICAL` y el último `findstr` no debe imprimir nada. Con `--mmproj` en los
-   `replay` se prueba también el camino de la visión.
-4. En el producto: `set "BAXY_MIND_LLAMA_SERVER=D:\BAXYeval\llama-patch\llama-server.exe"` antes de
-   `scripts\run_renew.cmd`; en la traza, `turn.decide`/`turn.continue` con `ms − prompt_ms − predicted_ms` ~90-130 ms
-   menos que con la b11609, y decision2/falsedades con las mismas decisiones (semilla fija). Volver atrás: abrir una
-   consola nueva sin la variable, o `BAXY_LLAMA_CACHE=0` para el mismo binario con el cálculo de la b11609.
+```bat
+set V=scripts\llama\verificar_parche.py
+py -3.12 -X utf8 %V% capture <llama-b11609> <trabajo>\cap.json --ngl 99 --work <trabajo> --gguf <modelo.gguf> --catalog <catálogo>
+py -3.12 -X utf8 %V% replay <llama-b11609> <trabajo>\cap.json <trabajo>\r_stock.json --ngl 99 --work <trabajo> --gguf <modelo.gguf>
+py -3.12 -X utf8 %V% replay <llama-parcheado> <trabajo>\cap.json <trabajo>\r_patch.json --ngl 99 --work <trabajo> --gguf <modelo.gguf>
+py -3.12 -X utf8 %V% replay <llama-parcheado> <trabajo>\cap.json <trabajo>\r_check.json --ngl 99 --work <trabajo> --gguf <modelo.gguf> --env BAXY_LLAMA_CACHE_CHECK=1
+py -3.12 -X utf8 %V% compare <trabajo>\r_stock.json <trabajo>\r_patch.json
+py -3.12 -X utf8 %V% compare <trabajo>\r_stock.json <trabajo>\r_check.json
+findstr /C:"BAXY cache check" <trabajo>\r_check.server.log | findstr /C:"differ"
+```
+
+Las dos comparaciones deben decir `ALL IDENTICAL` y el último `findstr` no debe imprimir nada. Con `--mmproj` en los
+`replay` se prueba también el camino de la visión. Volver atrás: abrir una consola nueva sin `BAXY_MIND_LLAMA_SERVER`,
+o `BAXY_LLAMA_CACHE=0` para el mismo binario con el cálculo de la b11609.

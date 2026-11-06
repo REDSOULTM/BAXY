@@ -1174,7 +1174,7 @@ public sealed class LocalNoteStore : INoteStore
         string temporaryPath = WriteTemporaryDocumentUnsafe(document);
         try
         {
-            global::Baxy.Providers.Windows.AtomicFileReplacement.Replace(
+            global::Baxy.Kernel.AtomicFileReplacement.Replace(
                 temporaryPath,
                 primaryPath,
                 backupPath,
@@ -1252,7 +1252,7 @@ public sealed class LocalNoteStore : INoteStore
                 TemporaryPrefix + Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture) + TemporarySuffix);
             try
             {
-                global::Baxy.Providers.Windows.AtomicFileReplacement.Replace(
+                global::Baxy.Kernel.AtomicFileReplacement.Replace(
                     backupPath,
                     primaryPath,
                     discardedPath,

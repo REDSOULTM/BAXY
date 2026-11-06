@@ -13,5 +13,8 @@ jellyfish==1.2.1
 RapidFuzz==3.14.5
 psutil==7.2.2
 comtypes==1.4.16
+# El texto de un PDF (WindowsKnownFileAdapter: el core lo extrae con el Python de la mente).
+pypdf==6.18.1
 
 -r src/baxy_mind/requirements-voice.txt
+anthropic==2.6.0

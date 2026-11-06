@@ -25,11 +25,14 @@ internal interface IDesktopKeyboard
     uint PressChord(IReadOnlyList<ushort> virtualKeys, Func<bool> keepGoing);
 
     /// <summary>
-    /// Types each UTF-16 unit as a Unicode key down and up while <paramref name="keepGoing"/> holds before each one
-    /// (the request is not cancelled and the window that takes the keys is still in front); the events Windows
-    /// accepted, fewer than two per unit when it stopped.
+    /// Types each UTF-16 unit as a Unicode key down and up while <paramref name="keepGoing"/> holds before each character
+    /// (the request is not cancelled and the window that takes the keys is still in front; a surrogate pair is asked for
+    /// once, before its first half); the events Windows accepted, fewer than two per unit when it stopped.
     /// </summary>
     uint TypeText(string text, Func<bool> keepGoing);
+
+    /// <summary>The same text at another pace between its keys (ms); 0 is the keyboard's own.</summary>
+    uint TypeText(string text, Func<bool> keepGoing, int pace) => TypeText(text, keepGoing);
 
     /// <summary>Whether this window, a window inside it or a window it owns holds the foreground.</summary>
     bool Holds(nint window);
@@ -62,6 +65,25 @@ internal interface IDesktopKeyboard
     /// <summary>Ajuste c3 (E017): what a shortcut can visibly change of this window (<see cref="WindowWitness"/>); null:
     /// not read.</summary>
     WindowWitness? Witness(nint window) => null;
+
+    /// <summary>Encargo 98: a dialog of this window's process that was not there at <paramref name="before"/>; null: none,
+    /// or not read.</summary>
+    RaisedWindow? RaisedSince(WindowWitness before, nint window) => null;
+
+    /// <summary>Encargo 98: asks that dialog to close, as its Cancel; whether it is gone.</summary>
+    bool CloseRaised(nint raised) => false;
+
+    /// <summary>Encargo 100: the windows of the browsers Windows has registered; null: not read.</summary>
+    BrowserWitness? Browsers() => null;
+
+    /// <summary>Encargo 100: what those browsers show since <paramref name="before"/>, apart from the process the key went to.</summary>
+    BrowserSighting BrowserSince(BrowserWitness before, int sentToProcess) => default;
+
+    /// <summary>Encargo 33 (U45): this window's class (GetClassName), which tells a console's window; empty: not read.</summary>
+    string ClassName(nint window) => string.Empty;
+
+    /// <summary>Why this process's window cannot take BAXY's input because it runs above BAXY (a window code); null: it can.</summary>
+    string? RunsAbove(int processId) => null;
 }
 
 internal readonly record struct DesktopForeground(nint Window, int ProcessId, string Title);
@@ -72,6 +94,15 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
 
     public WindowWitness? Witness(nint window) => WindowWitness.Read(window);
 
+    public RaisedWindow? RaisedSince(WindowWitness before, nint window) => WindowWitness.RaisedSince(before, window);
+
+    public bool CloseRaised(nint raised) => WindowWitness.Close(raised);
+
+    public BrowserWitness? Browsers() => BrowserWitness.Read();
+
+    public BrowserSighting BrowserSince(BrowserWitness before, int sentToProcess) =>
+        BrowserWitness.Since(before, BrowserWitness.Read(), sentToProcess);
+
     [LibraryImport("user32.dll")]
     private static partial uint GetClipboardSequenceNumber();
 
@@ -79,6 +110,13 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
     private const int KeyPace = 35;
+
+    /// <summary>
+    /// Uso-108 (review, item 2c): the pace of a text that does not fit the budget at <see cref="KeyPace"/>, on a Chromium
+    /// surface only, where the input router queues keys and none is lost. What is measured is the receipt's read-back and the
+    /// page's own count of input events (CamposChromiumLiveCheck): 4000 characters in 53 s. A short text keeps KeyPace.
+    /// </summary>
+    internal const int SurfacePace = 12;
 
     // What the PowerShell path waited before reading the foreground again.
     private static readonly TimeSpan Settle = TimeSpan.FromMilliseconds(40);
@@ -103,6 +141,14 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
     }
 
     public string ProcessName(nint window) => VisibleControlSurface.ViewProcess(window).ProcessName;
+
+    public string ClassName(nint window) => VisibleControlSurface.ClassName(window);
+
+    public string? RunsAbove(int processId) => !VisibleControlSurface.RunsAboveUs(processId)
+        ? null
+        : VisibleControlSurface.Elevated(processId) is null
+            ? WindowsVisibleControlAdapter.WindowElevationUnread
+            : WindowsVisibleControlAdapter.WindowElevated;
 
     public uint PressChord(IReadOnlyList<ushort> virtualKeys, Func<bool> keepGoing) =>
         HoldChord(virtualKeys, keepGoing, (key, up) => Send([Key(key, 0, up ? KeyUp : 0)]), () => Thread.Sleep(KeyPace));
@@ -143,7 +189,41 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
         return accepted;
     }
 
-    public uint TypeText(string text, Func<bool> keepGoing)
+    public uint TypeText(string text, Func<bool> keepGoing) => TypeText(text, keepGoing, 0);
+
+    public uint TypeText(string text, Func<bool> keepGoing, int pace)
+    {
+        int wait = pace > 0 ? pace : KeyPace;
+        // Uso-108 (review, item 2d; MS docs of timeBeginPeriod): at the default timer a Sleep ends on a tick of 15.6 ms, and
+        // what a typed character costs would depend on the machine. At 1 ms, Sleep(35) measured 35.6 ms; only while typing.
+        _ = TimeBeginPeriod(1);
+        try
+        {
+            return TypeUnits(
+                text,
+                keepGoing,
+                unit =>
+                {
+                    uint accepted = Send([Key(0, unit, Unicode), Key(0, unit, Unicode | KeyUp)]);
+                    // Raw Input never delivers a Unicode key: the pause detector is told it was BAXY's.
+                    WindowsUserInputPause.NoteOwnUndelivered();
+                    return accepted;
+                },
+                () => Thread.Sleep(wait));
+        }
+        finally
+        {
+            _ = TimeEndPeriod(1);
+        }
+    }
+
+    [LibraryImport("winmm.dll", EntryPoint = "timeBeginPeriod")]
+    private static partial uint TimeBeginPeriod(uint period);
+
+    [LibraryImport("winmm.dll", EntryPoint = "timeEndPeriod")]
+    private static partial uint TimeEndPeriod(uint period);
+
+    internal static uint TypeUnits(string text, Func<bool> keepGoing, Func<char, uint> send, Action pause)
     {
         // One character at a time, at a fast typist's pace. Measured on Windows 11 Notepad (2026-10-07, «Querido Ron:
         // mañana a las 5, llevá pan…»): its editor reads each key when it gets to it, so keys sent faster than it takes
@@ -152,19 +232,29 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
         // Safety review 2026-10-07: 4096 characters at this pace take about 143 s, well past the App's step timeout,
         // and a window that takes the front meanwhile would get the rest. Before each character the request must
         // still stand and the window must still be in front; otherwise typing stops there.
+        // Row C14 (agent-desktop never splits a pair at a chunk boundary, crates/windows/src/input/keyboard/keyboard_text.rs):
+        // the two halves of a surrogate pair are one character, and the question comes before the pair: stopped between
+        // them, the person's text would keep a lone half, a box on screen. Each half keeps the keyboard's pace.
         uint accepted = 0;
         for (int index = 0; index < text.Length; index++)
         {
             if (!keepGoing())
                 break;
-            accepted += Send([Key(0, text[index], Unicode), Key(0, text[index], Unicode | KeyUp)]);
-            // Raw Input never delivers a Unicode key: the pause detector is told it was BAXY's.
-            WindowsUserInputPause.NoteOwnUndelivered();
-            Thread.Sleep(KeyPace);
+            accepted += send(text[index]);
+            pause();
+            if (CharacterUnits(text, index) == 2)
+            {
+                accepted += send(text[++index]);
+                pause();
+            }
         }
 
         return accepted;
     }
+
+    /// <summary>The UTF-16 units of the character at this place: two for a whole surrogate pair.</summary>
+    internal static int CharacterUnits(string text, int index) =>
+        index + 1 < text.Length && char.IsHighSurrogate(text[index]) && char.IsLowSurrogate(text[index + 1]) ? 2 : 1;
 
     // Its own pop-up or dialog (a window it owns) still takes the keys for it; another top-level window of the same
     // process does not (review of fable/cu-v3-pausa: a second folder window, the shell's taskbar or another browser
@@ -172,7 +262,7 @@ internal sealed partial class WindowsDesktopKeyboard : IDesktopKeyboard
     public bool Holds(nint window) => VisibleControlSurface.ForegroundIsOrOwnedBy(window);
 
     public ValueTask<IInputBurst> FrontAsync(nint window, CancellationToken cancellationToken) =>
-        (_lease ?? ForegroundLease.Shared).AcquireAsync(window, cancellationToken);
+        (_lease ?? ForegroundLease.Shared).AcquireForKeysAsync(window, cancellationToken);
 
     public bool GiveFront(nint window)
     {

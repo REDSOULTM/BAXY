@@ -1,8 +1,10 @@
 using System.Text.Json;
+using Baxy.Kernel.Operations;
+using Baxy.Kernel.Policy;
 
 namespace Baxy.Providers.Windows.External;
 
-internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapter
+internal sealed partial class WindowsDesktopInteractionAdapter : IExternalOperationAdapter
 {
     private readonly IExternalProcessRunner _runner;
     private readonly string _folderScript;
@@ -25,6 +27,19 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
     // The field the act now running owes the keyboard's focus to (taken from _unfocusedValue as the act starts).
     private (WindowIdentity Window, string ControlId)? _focusOwed;
+
+    // Uso-108 (review, items 2 and 3), for the act now running. An empty field with no window of its own that the keyboard
+    // writes: a replacement of nothing is that insertion (_replacedByKeyboard), UI Automation first puts the focus there when it
+    // lacks it (_focusFirst), and a field written and erased through its value was touched (_fieldTouched). A text past
+    // the keyboard's pace on a Chromium surface goes at its own (_typingPace; 0 is the keyboard's). A value whose SetValue
+    // refused is replaced with its whole text selected first (_selectWhole), and only the text whole verifies it.
+    private bool _replacedByKeyboard;
+    private bool _selectWhole;
+    private string? _wholeRead;
+    private string? _focusFirst;
+    private bool _fieldTouched;
+    private bool _onRenderSurface;
+    private int _typingPace;
 
     // Revision 3 of r24b: how long a value set without the keyboard's focus waits for the key after it (a step's look
     // and decision); the clock is a seam for the tests.
@@ -49,7 +64,25 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             clipboardText: ClipboardText)
     {
         ChordLease = ForegroundLease.Shared;
+        KeySurface = KeySurfaceWitness.Product;
+        PointerUnder = VisibleControlSurface.UnderPointer;
     }
+
+    /// <summary>
+    /// Uso-108 (hondo 11 finding 8, agent-desktop PR #490 window_at_point): the window under the pointer, as a view names
+    /// it, read before a click where the pointer is; null reads nothing (the test seams that name none).
+    /// </summary>
+    internal Func<string?>? PointerUnder { get; init; }
+
+    /// <summary>
+    /// Uso-108 (B2): reads whether a plain key changed its window's image (<see cref="KeySurfaceWitness"/>); null reads
+    /// nothing (the test seams that name none).
+    /// </summary>
+    internal KeySurfaceWitness? KeySurface { get; init; }
+
+    // Whether the running key's image told nothing (brought up for it, unreadable, or moving by itself): its view after says
+    // only what it lists is the same.
+    private bool _keyImageUnread;
 
     /// <summary>
     /// v3 point 0, fix 3: the chords the helper scripts send by SendInput to the window in front (copy, paste, select
@@ -144,11 +177,24 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
         // Revisión de la guarda F013 (teclas): the key that would say yes to «¿Reemplazar?» asks as the click does,
         // whatever the model declared of it; bound to this press by the engine (NeedsConfirmation raises its risk).
-        return answers && await _fields!.KeyAnswersDestructiveDialogAsync(
-                window, arguments.GetProperty("key").GetString()!, cancellationToken).ConfigureAwait(false)
+        if (answers && await _fields!.KeyAnswersDestructiveDialogAsync(
+                window, arguments.GetProperty("key").GetString()!, cancellationToken).ConfigureAwait(false))
+            return new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true };
+
+        // Auditoría de falsedades 2026-11-04 (P6, S03): an Enter with neither target nor onto, in a chat whose process is
+        // no known messaging client, went unasked (K-2 refinada lowered it as an ordinary window) and sent the message
+        // written in its field. Such an Enter asks while any field of its window that takes text holds text, wherever UI
+        // Automation reads the focus, and when that cannot be read; a window whose fields hold none lets it go.
+        return answers && UndeclaredEnter(operation, arguments)
+            && await _fields!.HoldsTextAsync(window, cancellationToken).ConfigureAwait(false) is not false
             ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
             : null;
     }
+
+    // Pure: K-2's undeclared press (RiskPolicy.PressesUndeclared) of Enter, which sends what a field holds.
+    private static bool UndeclaredEnter(string operation, JsonElement arguments) =>
+        RiskPolicy.PressesUndeclared(operation, arguments)
+        && arguments.GetProperty("key").GetString() == "enter";
 
     // Pure: Enter or space, which press the focused control, with the visible controls' adapter to read it.
     private bool AnswersADialog(string operation, JsonElement arguments) =>
@@ -173,6 +219,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         CancellationToken cancellationToken)
     {
         _focusOwed = TakeUnfocusedValue();
+        _replacedByKeyboard = false;
+        _selectWhole = false;
+        _wholeRead = null;
+        _focusFirst = null;
+        _fieldTouched = false;
+        _onRenderSurface = false;
+        _typingPace = 0;
         try
         {
             // Ajuste c3 (E017): an Enter that confirms a common file dialog is judged on the dialog, as its button's click.
@@ -200,7 +253,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 && receipt is { Verified: true, ErrorCode: null, EffectObserved: true }
                 && NamedWindow(arguments) is nint window and not 0
                 && await _fields.AfterActAsync(window, cancellationToken).ConfigureAwait(false) is { } after)
-                receipt = WindowsVisibleControlAdapter.WithAfter(receipt, after);
+                receipt = WindowsVisibleControlAdapter.WithAfter(receipt, _keyImageUnread
+                    ? WindowsVisibleControlAdapter.ListedSame(after)
+                    : WindowsVisibleControlAdapter.ListedSameWhenSurfaceChanged(receipt.Result, after));
+            // A failure after the field was written and erased (uso-108, review 3) never says nothing happened.
+            if (_fieldTouched && !receipt.Verified && !receipt.EffectMayHaveOccurred)
+                receipt = receipt with { EffectMayHaveOccurred = true };
             return LoneModifier(operation, arguments, receipt);
         }
         finally
@@ -364,6 +422,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return ExternalJson.FailureBeforeEffect(operation, refusal);
         }
 
+        // A click there says nothing of what it hit: the model could not tell the desktop from the application.
+        string? under = operation == "input.pointer.control"
+            && arguments.TryGetProperty("action", out JsonElement act) && act.ValueKind == JsonValueKind.String
+            && act.GetString() == "click"
+                ? PointerUnder?.Invoke()
+                : null;
         var effectBoundary = new ExternalEffectBoundary();
         try
         {
@@ -406,6 +470,70 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 if (!effect && root.TryGetProperty("beforeInput", out JsonElement beforeInput)
                     && beforeInput.ValueKind == JsonValueKind.True)
                     return ExternalJson.FailureBeforeEffect(operation, error);
+                if (operation == "clipboard.copy" && error == "clipboard_not_changed")
+                {
+                    // Read while the window still holds the front (the burst gives it back after). Encargo 27 (banco
+                    // uso-d4bd, U27): the keys go to the window in front, which may not be the one the person named (a
+                    // Notepad started by a process not in front stays behind: SetForegroundWindow's rules), so the
+                    // failure names it (sentTo), and its lengths are said only while that window is still in front.
+                    DesktopForeground front = _keyboard.Foreground();
+                    (string Title, string Process)? tookTheKeys = PastedInto(root);
+                    bool moved = root.TryGetProperty("foregroundProcessIdBefore", out JsonElement before)
+                        && before.TryGetInt32(out int beforeProcess) && beforeProcess > 0
+                        && beforeProcess != front.ProcessId;
+                    CopiedFrom read = moved
+                        ? default
+                        : await CopiedFromAsync(front, cancellationToken).ConfigureAwait(false);
+                    (string Title, string Process)? sentTo = moved
+                        ? tookTheKeys
+                        : front.Window != 0 ? (front.Title, _keyboard.ProcessName(front.Window)) : tookTheKeys;
+                    // Encargo 45 (U27): the clipboard read again unchanged and nothing selected in the window that took
+                    // Ctrl+C, still in front: the copy did nothing there (WM_COPY copies the selection), an effect known,
+                    // not lost. A console's Ctrl+C is an interrupt, an effect of its own: it stays uncertain.
+                    bool knownNothing = !effect && !moved && read.SelectionLength == 0
+                        && !Windows.Win32WindowControlPlatform.IsConsoleClass(_keyboard.ClassName(front.Window));
+                    ExternalCapabilityReceipt failed = effectBoundary.Failure(operation, error, effect);
+                    return failed with
+                    {
+                        EffectMayHaveOccurred = failed.EffectMayHaveOccurred && !knownNothing,
+                        Result = ExternalJson.Create(writer =>
+                        {
+                            writer.WriteStartObject();
+                            WriteCopiedFrom(writer, read);
+                            if (sentTo is { } window)
+                            {
+                                writer.WriteStartObject("sentTo");
+                                writer.WriteString("title", window.Title);
+                                writer.WriteString("process", window.Process);
+                                writer.WriteEndObject();
+                            }
+
+                            WriteSelectAllNext(writer, read, sentTo?.Title, front.Window);
+                            writer.WriteEndObject();
+                        }),
+                    };
+                }
+
+                // Encargo 94: a dialog select all's last resort raised (Ctrl+A is «Abrir» in a language) is said, closed or
+                // not: the person sees it, and this call selected nothing.
+                if (root.TryGetProperty("dialogOpened", out JsonElement dialog) && dialog.ValueKind == JsonValueKind.Object)
+                {
+                    string title = dialog.TryGetProperty("title", out JsonElement titled) ? titled.GetString() ?? string.Empty : string.Empty;
+                    bool closed = dialog.TryGetProperty("closed", out JsonElement shut) && shut.ValueKind == JsonValueKind.True;
+                    return effectBoundary.Failure(operation, error, effect) with
+                    {
+                        Result = ExternalJson.Create(writer =>
+                        {
+                            writer.WriteStartObject();
+                            writer.WritePropertyName("dialogOpened");
+                            dialog.WriteTo(writer);
+                            writer.WriteString("next", $"this call selected nothing: the window took Ctrl+A as another command and "
+                                + $"opened «{title}», {(closed ? "which was closed again" : "which is still open")}");
+                            writer.WriteEndObject();
+                        }),
+                    };
+                }
+
                 return effectBoundary.Failure(operation, error, effect);
             }
             // Ronda final: a layout already Spanish or an on-screen keyboard already shown is the state reached
@@ -429,7 +557,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             bool deliveredOnly = operation == "input.pointer.control"
                 && !(root.TryGetProperty("pointerAction", out JsonElement pointer)
                     && pointer.ValueKind == JsonValueKind.String && pointer.GetString() == "move_center");
-            return ExternalJson.Success(operation, deliveredOnly ? AsDelivered(root) : root.Clone(), effect);
+            return ExternalJson.Success(operation, deliveredOnly ? AsDelivered(root, under: under) : root.Clone(), effect);
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
@@ -504,6 +632,18 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     // went in (input_text_time_exhausted, charactersTyped); a last wait for the person's pause (8 s at most) and the
     // read-back stay under 80 s.
     internal const long TypingBudgetMs = 70_000;
+
+    // Row A10 (agent-desktop refuses before sending when the deadline cannot cover the text, delivered_chunks 0,
+    // crates/windows/src/input/keyboard/keyboard_text.rs): what a typed character costs, to know before the first key
+    // whether the text fits. Thread.Sleep(35) measured 36.1 ms at a timer of 0.5 ms; at Windows' default timer of 15.625 ms
+    // it ends on the third tick, 46.9 ms (MS docs of Sleep: "the system clock ticks at a constant rate").
+    // Uso-108 (review, 2d): WindowsDesktopKeyboard.TypeText now asks a timer of 1 ms while it types, so a character costs what
+    // that timer gives: Sleep(35) measured 35.6 ms here; the one more is the send and the bound's margin. The 47 of the
+    // default timer refused from 1490 characters what fits up to 1891.
+    internal const int TypedCharacterMs = 37;
+
+    // The same at WindowsDesktopKeyboard.SurfacePace (measured 13 ms a character).
+    private const int SurfaceCharacterMs = 14;
 
     // The characters a burst types when the person's input cannot be told apart from BAXY's (no Raw Input).
     internal const int BlindBurstCharacters = 8;
@@ -596,13 +736,15 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
         }
 
+        // Encargo 115: a table given whole; only a grid's active cell takes it (CellBlockAsync).
+        bool block = typing && CellBlock.Holds(text);
         // Práctica V5E061: one part of the field's text changed, never its whole value nor a list's entry; the old text
         // carries no control character either, as a typed one.
-        if (replacing is not null && (replace || entry || replacing.Length > MaximumTypedText
+        if (replacing is not null && (replace || entry || block || replacing.Length > MaximumTypedText
             || replacing.Any(char.IsControl)))
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
         // A replaced value needs the field it replaces: the window's own focus may be a document.
-        if (replace && index is null)
+        if (replace && index is null && !block)
             return ExternalJson.FailureBeforeEffect(operation, "input_field_not_replaceable");
         // Review of combos-galerias (finding 1): an entry of a list is chosen only in that list, by pattern, never typed;
         // without its box (or without the field reader) nothing is sent.
@@ -613,11 +755,51 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // a window (auditoría final 2, fila 11): a line break or a tab is a key of its own, and an Enter that sends what
         // was written goes through input.key.press and its confirmation, never inside a text.
         if ((typing && text.Length > MaximumTypedText) || (!typing && !VirtualKeys.TryGetValue(key!, out chord!))
-            || (typing && text.Any(char.IsControl)) || (index is not null && window == 0))
+            || (typing && !block && text.Any(char.IsControl)) || (index is not null && window == 0)
+            || (block && entry))
             return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_argument_invalid");
         if (replacing is not null)
             return await ReplaceInFieldAsync(operation, replacing, text, window, index, cancellationToken)
                 .ConfigureAwait(false);
+        // uso-108 A9 (measured): a key sent to a window whose thread stopped pumping waited in its queue with a verified
+        // receipt and arrived when it came back; held by the Ghost that stands for it after 5 s, it went nowhere, verified
+        // too. Whatever window takes these keys, named or in front, it is asked first (VisibleControlSurface.NotResponding).
+        nint asked = window != 0 ? window : _keyboard.Foreground().Window;
+        try
+        {
+            if (VisibleControlSurface.NotResponding(asked, cancellationToken))
+                return ExternalJson.FailureBeforeEffect(operation, VisibleControlSurface.WindowNotResponding);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_adapter_failed");
+        }
+
+        // Review of uso-108: the check may have waited seconds for a busy window. Keys with no window named go to the window
+        // in front, and it is the one asked about that takes them: a person who went to another one meanwhile does not get
+        // them there.
+        if (window == 0 && _keyboard.Foreground().Window != asked)
+            return ExternalJson.FailureBeforeEffect(operation, "input_window_changed");
+        if (block)
+            return await CellBlockAsync(operation, text, window, index, replace, typingDeadline, cancellationToken).ConfigureAwait(false);
+        // e75d (H1): after a look the model names cells by index, one value at a time, until a row the view does not list.
+        if (typing && !replace && !entry && replacing is null && index is int cellIndex && window != 0
+            && _fields?.ViewedAt(cellIndex) is { Kind: "DataItem" } && FirstCellTextOwed(window))
+        {
+            ActiveCell? activeNow = (await ActiveCellAsync(window, null, cancellationToken).ConfigureAwait(false)).Cell;
+            return ExternalJson.FailureBeforeEffect(operation, FirstCellText) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteString("next", ActiveCell.TableNext(
+                        window, $"this call wrote nothing: index {cellIndex} is a cell of a sheet",
+                        "For this one value alone, call it again exactly as before", activeNow));
+                    writer.WriteEndObject();
+                }),
+            };
+        }
         // Ajuste c3 (E017, live on the notebook): a text typed into a dialog whose focus was its «Guardar» button went by the
         // keyboard, and its letters were the dialog's access keys («G» pressed &Guardar); in the smoke of 31-10 the focus
         // was the navigation tree after a click on «Escritorio», the letters moved its selection and the text was told
@@ -631,18 +813,8 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             if (!WindowsTextDelivery.IsEditClass(focusedClass) && _delivery.Messages.FileNameFieldOf(window) is var name and not 0)
                 return await IntoFileNameAsync(operation, text, window, name, cancellationToken).ConfigureAwait(false);
             if (WindowsTextDelivery.TakesNoText(focusedClass))
-                return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
-                {
-                    writer.WriteStartObject();
-                    writer.WriteNumber("window", window);
-                    writer.WriteString("focusedClass", focusedClass);
-                    if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.SaveDialogNext))
-                        writer.WriteString("next", "the window's keyboard focus is on a control that takes no text (a button, "
-                            + "whose letters would press the window's access keys, or a tree or list, whose letters move "
-                            + "its selection): nothing was typed; type into the field by its index (input_text_type with "
-                            + "index) or click the field first");
-                    writer.WriteEndObject();
-                }), "input_focus_not_a_field");
+                return await FocusNotAFieldAsync(operation, text, window, $"a control of class {focusedClass}",
+                    writer => writer.WriteString("focusedClass", focusedClass), cancellationToken).ConfigureAwait(false);
         }
         if (window != 0 && _delivery is not null)
         {
@@ -663,10 +835,35 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
         // Replacing a value needs the field itself (its value or its edit control): the keyboard would add the text
         // to what is there, or select a whole document with Ctrl+A. Nothing is sent.
-        if (replace)
+        if (replace && !_replacedByKeyboard)
             return ExternalJson.FailureBeforeEffect(operation, "input_field_not_replaceable");
 
+        // Row A10: from here on the text goes by the keyboard, which has a pace (messages and values have none, and went
+        // above). A text past the budget would stop half typed in the person's window: nothing is sent, and the receipt
+        // says how much fits; a retry cannot type its beginning twice. Uso-108 (review, 2c): a rich field of a Chromium
+        // surface has no other route (SetValue is not heard by the page, C9), so a long text there goes at the surface's
+        // pace; a paste would replace what the person holds on the clipboard (a write of text drops every other format,
+        // ClipboardContracts.cs) and it could not be given back.
+        if (typing && text.Length > Math.Max(0, typingDeadline - Ticks()) / TypedCharacterMs && _onRenderSurface)
+            _typingPace = WindowsDesktopKeyboard.SurfacePace;
+        if (typing && Math.Max(0, typingDeadline - Ticks()) / (_typingPace > 0 ? SurfaceCharacterMs : TypedCharacterMs) is var fits
+            && text.Length > fits)
+        {
+            return ExternalJson.FailureBeforeEffect(operation, "input_text_too_long_to_type") with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("charactersThatFit", fits);
+                    writer.WriteNumber("charactersAsked", text.Length);
+                    writer.WriteEndObject();
+                }),
+            };
+        }
+
         IInputBurst? burst = null;
+        // Uso-108, review of batch 2 (B1): the front is about to be taken for the key and given back after it.
+        bool behind = window != 0 && !_keyboard.Holds(window);
         if (window != 0)
         {
             try
@@ -684,14 +881,66 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 _ = burst.Restore();
                 return ExternalJson.FailureBeforeEffect(operation, refusal);
             }
+
+            // Uso-108 (review, 2b): the empty field the step names, without the keyboard's focus: UI Automation puts it there
+            // now the window is in front, and re-reads it. Not there, nothing goes (r25 review: the keyboard would write
+            // wherever the focus is). The focus was asked of the window: an effect either way.
+            if (typing && _focusFirst is { } focusField && !await FocusedAsync(window, focusField, cancellationToken).ConfigureAwait(false))
+            {
+                _ = burst.Restore();
+                return ExternalJson.FailureAfterEffect(operation, "input_field_not_focused");
+            }
+
+            // The whole text selected and read back (the worker's «focusselect»), or nothing is typed over part of it.
+            if (typing && _selectWhole && !await _fields!.SelectFocusedTextAsync(window, cancellationToken).ConfigureAwait(false))
+            {
+                _ = burst.Restore();
+                return ExternalJson.FailureAfterEffect(operation, "input_field_not_replaceable");
+            }
+
+            // Encargo 36 (banco uso-b4c4, R11, R12, R13, S08): a window drawn by WPF or Chromium has one Win32 control, so
+            // its focus is judged by UI Automation, in front and right before the first key: a text for no field of
+            // it went to its menu bar, to a list row (whose letters moved the selection to another chat) or to a page's
+            // document, and was told delivered. A focus read inside the window that takes no text gets nothing.
+            if (typing && index is null && _fields is not null)
+            {
+                FocusRead? focus;
+                try
+                {
+                    using JsonDocument? answer = await _fields.FocusKindAsync(window, cancellationToken).ConfigureAwait(false);
+                    focus = DeclaredTextFieldPress.Read(answer);
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    _ = burst.Restore();
+                    return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_adapter_failed");
+                }
+
+                if (focus is { Inside: true, TakesNoText: true } held)
+                {
+                    _ = burst.Restore();
+                    return await FocusNotAFieldAsync(operation, text, window,
+                        held.Name.Length > 0 ? $"{held.Kind} «{held.Name}»" : held.Kind, writer =>
+                        {
+                            writer.WriteStartObject("focused");
+                            writer.WriteString("kind", held.Kind);
+                            writer.WriteString("name", held.Name);
+                            writer.WriteBoolean("readOnly", held.ReadOnly);
+                            writer.WriteEndObject();
+                        }, cancellationToken).ConfigureAwait(false);
+                }
+            }
         }
 
         var bursts = new LeasedBursts(burst);
         try
         {
-            return await SendInBurstAsync(operation, typing, key, text, chord, window, bursts, cancellationToken,
-                    openedApplication, typingDeadline)
+            ExternalCapabilityReceipt sent = await SendInBurstAsync(operation, typing, key, text, chord, window, bursts,
+                    cancellationToken, openedApplication, typingDeadline, behind)
                 .ConfigureAwait(false);
+            return typing && index is int named && window != 0
+                ? await ConfirmedOrPendingAsync(operation, sent, window, named, cancellationToken).ConfigureAwait(false)
+                : sent;
         }
         finally
         {
@@ -735,17 +984,26 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         LeasedBursts bursts,
         CancellationToken cancellationToken,
         bool openedApplication = false,
-        long typingDeadline = long.MaxValue)
+        long typingDeadline = long.MaxValue,
+        bool behind = false)
     {
         DesktopForeground before = _keyboard.Foreground();
         if (before.Window == 0 || _keyboard.InputSize != (IntPtr.Size == 8 ? 40 : 28))
             return ExternalJson.FailureBeforeEffect(operation, "key_press_sendinput_failed");
         string sentToProcess = _keyboard.ProcessName(before.Window);
+        // Encargo 33 (U45): a console's window, read before the first key, as the window's class tells it.
+        bool console = typing && Infrastructure.ModelAids.On(Infrastructure.ModelAids.ConsoleTypedNext)
+            && Windows.Win32WindowControlPlatform.IsConsoleClass(_keyboard.ClassName(before.Window));
         // v3 point 0: something may take the front back between fronting the window and the press (the person, or an
         // application opened behind that Windows activated late): the key is checked against the window right before
         // it goes, never sent to whatever holds the front now.
         if (window != 0 && !_keyboard.Holds(window))
             return ExternalJson.FailureBeforeEffect(operation, "input_window_changed");
+        // agent-desktop gates right before sending (windows physical_target.rs); MS docs of SendInput: UIPI blocking shows
+        // neither in its count nor in GetLastError. The provider asked before the wait for the pause: a window above BAXY
+        // that took the front since (measured: a hidden window of GameInputSvc, 80 minutes) would get a key told delivered.
+        if (_keyboard.RunsAbove(before.ProcessId) is string above)
+            return ExternalJson.FailureBeforeEffect(operation, above);
 
         var effectBoundary = new ExternalEffectBoundary();
         // FT/proveedores goal (review of receipts): Ctrl+C or Ctrl+X as a key press was told done by the count of keys
@@ -756,6 +1014,15 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // shortcut changes (ShortcutChangedAsync), so a key the application has not (Ctrl+S in a Spanish Notepad, whose
         // «Guardar» is Ctrl+G) is not told back as a mute completed.
         WindowWitness? witnessBefore = !typing && !copies && Shortcut(chord) ? _keyboard.Witness(before.Window) : null;
+        // Uso-108 (B2): a key that is no shortcut has no such witness: its window's image, right before it. Review of batch
+        // 2 (B1): only of a window that holds the front and keeps it. One brought up for the key is just activated before it
+        // and inactive after it: caption, focus ring and selection colour differ with no key at all, and an image taken
+        // before the person's pause proves nothing either (ronda final 19, WindowsVisibleOcrLocator). Unproved, so unread.
+        bool plainKey = !typing && !copies && !Shortcut(chord) && KeySurface is not null;
+        VisibleControlSurface.CapturedWindow? imageBefore = plainKey && !behind
+            ? await KeySurface!.BeforeAsync(before.Window, cancellationToken).ConfigureAwait(false)
+            : null;
+        long pressedAt = Environment.TickCount64;
         effectBoundary.Cross(cancellationToken);
         uint expected = typing ? (uint)text.Length * 2 : (uint)chord.Length * 2;
         // The person touched the keyboard or the mouse between the pause and the first key: nothing goes.
@@ -787,7 +1054,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 && (window != 0 ? _keyboard.Holds(window) : _keyboard.Foreground().ProcessId == before.ProcessId);
             interrupted |= !stays;
             if (stays)
-                letGo++;
+                letGo += WindowsDesktopKeyboard.CharacterUnits(text, letGo);
             return stays;
         }
 
@@ -800,6 +1067,47 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         // no read-back. Where neither mark nor caret can be read, the receipt still says only what Windows accepted
         // (heldToReadBack, below).
         bool readsBack = typing;
+        // Encargo 75 (R01): the grid's active cell before the first key, and whether it was already being edited.
+        ActiveCell? cellBefore = typing || !Shortcut(chord)
+            ? (await ActiveCellAsync(before.Window, null, cancellationToken).ConfigureAwait(false)).Cell
+            : null;
+        // Only a text of this adapter's still pending in that same cell is refused: what the person left being edited in a
+        // cell is theirs to continue, and a cell no longer being edited has nothing pending.
+        string? pendingBefore = cellBefore is { Editing: true } && _pendingCells.TryGetValue(before.Window, out PendingCell? heldCell)
+            && heldCell.Address == cellBefore.Address ? heldCell.Text : null;
+        if (pendingBefore is null)
+            _pendingCells.TryRemove(before.Window, out _);
+        // Encargo 115: the first text for a cell of this window says what a table is, once; the same call written again runs.
+        if (typing && cellBefore is { Editing: false } first && FirstCellTextOwed(before.Window))
+            return ExternalJson.FailureBeforeEffect(operation, FirstCellText) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    ActiveCell.WriteCell(writer, "cell", first.Address, first.Value);
+                    writer.WriteString("next", first.FirstTextNext(before.Window));
+                    writer.WriteEndObject();
+                }),
+            };
+        // The model may mean it (a name in two parts): the text refused for this pending one, written again, joins it.
+        bool joins = typing && pendingBefore is not null && _pendingRefused.TryGetValue(before.Window, out string? refusedText) && refusedText == text;
+        if (typing && pendingBefore is not null && !joins)
+        {
+            _pendingRefused[before.Window] = text;
+            return ExternalJson.FailureBeforeEffect(operation, CellStillPending) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    ActiveCell.WriteCell(writer, "cell", cellBefore!.Address, cellBefore.Value, pendingBefore);
+                    writer.WriteString("next", cellBefore.RefusedNext(before.Window, pendingBefore));
+                    writer.WriteEndObject();
+                }),
+            };
+        }
+
         TypedMark? mark = readsBack ? _delivery?.Mark(before.Window, text.Length) : null;
         // Ajuste c3 (F09, M1 and M2: «zzqxprueba» typed into WhatsApp's and Discord's search, «editor de fotos» into the
         // Microsoft Store's, each told input_text_not_read_back while the next look read the field holding it): a field
@@ -841,6 +1149,10 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
 
         uint accepted = 0;
         string? focusAt = null;
+        bool selectedByUia = false;
+        FocusState? focusBefore = null;
+        BrowserWitness? browsersBefore = null;
+        Dictionary<long, int>? tabsBefore = null;
         if (!typing)
         {
             // Revision 1 of r24b (v1): after a value set without the keyboard's focus, the key goes to that field or
@@ -855,13 +1167,92 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 focusAt = field;
             }
 
+            // Encargo 98: Ctrl+A is another command in some languages (Abrir, in Windows 11's Notepad and Word in Spanish).
+            // The focused text is asked of UI Automation and read back; only a focus that cannot answer takes the keys.
+            if (key == "ctrl_a" && _fields is not null)
+            {
+                try
+                {
+                    selectedByUia = await _fields.SelectFocusedTextAsync(before.Window, cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    return ExternalJson.FailureAfterEffect(operation, "desktop_interaction_adapter_failed");
+                }
+            }
+
+            // Encargo 100: the find key is another command in some languages, one of which sends the selected text to a web
+            // search; a receipt would come too late for that. Where the window can be asked otherwise, or text is selected, it
+            // does not go.
+            if (key == "ctrl_f" && _fields is not null)
+            {
+                FindReach? reach;
+                try
+                {
+                    reach = await _fields.FindReachAsync(before.Window, cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_adapter_failed");
+                }
+
+                if (reach is { } held && (held.MenuBar || held.EditableDocument || held.Selected > 0))
+                    return ExternalJson.FailureBeforeEffect(operation, FindKeyNotSent) with
+                    {
+                        Result = ExternalJson.Create(writer =>
+                        {
+                            writer.WriteStartObject();
+                            WriteSentTo(writer, before, sentToProcess);
+                            writer.WriteBoolean("keySent", false);
+                            writer.WriteNumber("selectedCharacters", held.Selected);
+                            writer.WriteString("next", FindKeyHeld);
+                            writer.WriteEndObject();
+                        }),
+                    };
+            }
+
+            // Encargo 98: read before the key, what it can change with no window of its own.
+            if (!selectedByUia && witnessBefore is not null && _fields is not null && key is not ("alt_tab" or "ctrl_shift_escape"))
+            {
+                try
+                {
+                    focusBefore = await _fields.FocusStateAsync(before.Window, cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_adapter_failed");
+                }
+            }
+
             // Ajuste c3 (E017): a chord is held key by key now, so each key goes down only while the window still holds
             // the front and the person has not acted, as each typed character.
-            accepted = _keyboard.PressChord(chord, KeepGoing);
+            if (selectedByUia)
+            {
+                expected = 0;
+            }
+            else
+            {
+                // Encargo 100: read last, right before the key: whatever a browser shows after it is this key's.
+                if (witnessBefore is not null && key is not ("alt_tab" or "ctrl_shift_escape"))
+                {
+                    browsersBefore = _keyboard.Browsers();
+                    try
+                    {
+                        if (browsersBefore is not null && _fields is not null)
+                            tabsBefore = await browsersBefore.TabsBehindAsync(before.ProcessId, _fields.TabCountAsync, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                    {
+                        return ExternalJson.FailureBeforeEffect(operation, "desktop_interaction_adapter_failed");
+                    }
+                }
+
+                accepted = _keyboard.PressChord(chord, KeepGoing);
+            }
         }
         else if (window == 0)
         {
-            accepted = _keyboard.TypeText(text, KeepGoing);
+            accepted = _keyboard.TypeText(text, KeepGoing, _typingPace);
         }
         else
         {
@@ -903,11 +1294,11 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     bool stays = !cancellationToken.IsCancellationRequested && _keyboard.Holds(window);
                     interrupted |= !stays;
                     if (stays)
-                        sent++;
+                        sent += WindowsDesktopKeyboard.CharacterUnits(text, start + sent);
                     return stays;
                 }
 
-                uint accepting = _keyboard.TypeText(text[start..], KeepTyping);
+                uint accepting = _keyboard.TypeText(text[start..], KeepTyping, _typingPace);
                 accepted += accepting;
                 start += sent;
                 if (interrupted || accepting != (uint)sent * 2 || start >= text.Length || !(personActed || blindCut))
@@ -953,14 +1344,19 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         }
         bool verified = accepted == expected;
         int lastError = verified ? 0 : _keyboard.LastError();
-        bool effect = accepted > 0;
+        bool effect = accepted > 0 || selectedByUia;
         // A failure once the keys went still names the window they were sent to.
-        ExternalCapabilityReceipt SentFailure(string errorCode) => effectBoundary.Failure(operation, errorCode, effect) with
+        ExternalCapabilityReceipt SentFailure(string errorCode, CopiedFrom? copiedFrom = null) => effectBoundary.Failure(operation, errorCode, effect) with
         {
             Result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
                 WriteSentTo(writer, before, sentToProcess);
+                if (copiedFrom is { } read)
+                {
+                    WriteCopiedFrom(writer, read);
+                    WriteSelectAllNext(writer, read, before.Title, before.Window);
+                }
                 // FT/proveedores goal (review of receipts): how much of the text went in (each character is a key down
                 // and up), so a retry does not type its beginning twice.
                 if (typing)
@@ -981,14 +1377,115 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         }
 
         // Read while the window still holds the front: given back to the person, the front would always differ.
-        bool? windowChanged = witnessBefore is { } witnessed && !interrupted && verified
+        bool? windowChanged = witnessBefore is { } witnessed && !interrupted && verified && !selectedByUia
             ? (bool?)await ShortcutChangedAsync(before.Window, witnessed, cancellationToken).ConfigureAwait(false)
             : null;
+        // Encargo 98: what the key really did, read while the window holds the front: Escape and Ctrl+Z go in this burst.
+        ShortcutAftermath aftermath = windowChanged is bool changedAny && witnessBefore is { } witnessedKey
+            && key is not ("alt_tab" or "ctrl_shift_escape")
+            ? await AfterShortcutAsync(key!, before, witnessedKey, changedAny, focusBefore, browsersBefore, tabsBefore, bursts, KeepGoing, cancellationToken)
+                .ConfigureAwait(false)
+            : default;
+        if (aftermath.DialogTitle is not null)
+            windowChanged = true;
+        // Encargo 75 (R01): read while the window still holds the front, as the worker reads the system's focus.
+        (ActiveCell? cellAfter, string? cellLeftValue) = cellBefore is { } cellWas && !interrupted && verified
+            ? await CellAfterAsync(before.Window, typing, cellWas, cancellationToken).ConfigureAwait(false)
+            : (null, null);
         DesktopForeground after = _keyboard.Foreground();
+        // Uso-111 (G8, live in Edge 156 and Chromium 140: «le escribí pero no pude comprobarlo» with the text there): the field
+        // is read through the window's keyboard focus, and with the front already given back the focus is another window's
+        // (focus_window_mismatch), so every text for a window that was not in front said not read back. Read while it is held.
+        bool readBeforeGivingBack = typing && verified && !interrupted && after.ProcessId == before.ProcessId;
+        if (readBeforeGivingBack)
+            AwaitTaken((int)(accepted / 2));
+        string? landed = null;
+        bool editReadBack = false;
+        (bool ReadBack, bool Bounded) valueRead = default;
+        (bool ReadBack, bool Bounded) caretRead = default;
+        if (readBeforeGivingBack)
+        {
+            editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text, out landed);
+            // Ajuste c3 (F09): the focused field's value read again (the same field: the window's focus), a settle apart.
+            if (_selectWhole)
+            {
+                (bool read, bool bounded, _) = await WholeValueAsync(before.Window, text, cancellationToken).ConfigureAwait(false);
+                valueRead = (read, bounded);
+            }
+            else if (valueBefore is { } value)
+            {
+                (bool read, bool bounded, _) = await ReadsBackAsync(
+                    token => FocusedValueAsync(before.Window, token), value, text, cancellationToken).ConfigureAwait(false);
+                valueRead = (read, bounded);
+            }
+            // FT/proveedores goal (E2): the paragraph at the caret read again by UI Automation; a read that fails leaves
+            // the text not read back, as before.
+            if (caretBefore is { } caret && !valueRead.ReadBack)
+            {
+                (bool read, bool bounded, _) = await CaretReadsBackAsync(before, caret, text, cancellationToken)
+                    .ConfigureAwait(false);
+                caretRead = (read, bounded);
+            }
+        }
         // Given back before the receipt, which says whether it was.
         bool? restored = bursts.Current is null ? null : bursts.Restore();
+        // A screen copy shows what covers the window: only while it still holds the front.
+        KeySurfaceVerdict surface = imageBefore is { } image && !interrupted && verified
+            ? await KeySurface!.ChangedAsync(image, pressedAt, () => _keyboard.Holds(before.Window), cancellationToken)
+                .ConfigureAwait(false)
+            : KeySurfaceVerdict.Unknown;
+        bool surfaceChanged = surface == KeySurfaceVerdict.Changed;
+        // Measured with real keys: an arrow taken by a window that animates read «la ventana no cambió» from its tree.
+        _keyImageUnread = plainKey && surface == KeySurfaceVerdict.Unknown;
         string stopped = refusedLater
             ?? (userActed ? "input_user_interrupted" : outOfTime ? "input_text_time_exhausted" : "input_window_changed");
+        // Encargo 100: first of all: what opened in a browser is the one that can take the person's text out.
+        if (aftermath.BrowserTitle is { } browser)
+        {
+            int selection = focusBefore?.SelectedLength ?? 0;
+            return SentFailure(ShortcutOpenedBrowser) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    WriteSentTo(writer, before, sentToProcess);
+                    writer.WriteStartObject("browserOpened");
+                    writer.WriteString("title", browser);
+                    writer.WriteBoolean("closed", aftermath.BrowserClosed);
+                    writer.WriteEndObject();
+                    writer.WriteNumber("selectedCharacters", selection);
+                    writer.WriteString("next", ShortcutTookAsBrowser(browser, aftermath.BrowserClosed, selection));
+                    writer.WriteEndObject();
+                }),
+            };
+        }
+
+        // Before an interruption's code: a format left on the person's text, or a dialog over it, is what they need told.
+        if (aftermath.FormatChanged)
+            return SentFailure(ShortcutChangedFormat) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    WriteSentTo(writer, before, sentToProcess);
+                    writer.WriteBoolean("formatChanged", true);
+                    writer.WriteBoolean("formatUndone", aftermath.FormatUndone);
+                    writer.WriteString("next", ShortcutTookAsFormat(aftermath.FormatUndone, aftermath.FormatWhat ?? "format"));
+                    writer.WriteEndObject();
+                }),
+            };
+        if (aftermath.DialogTitle is { } opened && OpensNoWindow(key))
+            return SentFailure(ShortcutOpenedDialog) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    WriteSentTo(writer, before, sentToProcess);
+                    WriteDialogOpened(writer, opened, aftermath.DialogClosed);
+                    writer.WriteString("next", ShortcutTookAsAnother(opened, aftermath.DialogClosed));
+                    writer.WriteEndObject();
+                }),
+            };
         if (interrupted)
             return effect
                 ? SentFailure(stopped)
@@ -1009,35 +1506,29 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             }
 
             if (!copied)
-                return SentFailure("clipboard_not_changed");
+                return SentFailure("clipboard_not_changed",
+                    await CopiedFromAsync(before, cancellationToken).ConfigureAwait(false));
         }
         // Rule 3: Windows accepting every event proves the keys went in, not that the text reached the field meant. A text
         // with no window named is verified by its read-back alone.
-        AwaitTaken((int)(accepted / 2));
-        string? landed = null;
-        bool editReadBack = mark is { } typedMark && _delivery!.ReadsBack(typedMark, text, out landed);
-        // Ajuste c3 (F09): the focused field's value read again (the same field: the window's focus), a settle apart.
-        (bool valueReadBack, bool valueBounded, _) = valueBefore is { } value
-            ? await ReadsBackAsync(token => FocusedValueAsync(before.Window, token), value, text, cancellationToken)
-                .ConfigureAwait(false)
-            : (false, false, false);
-        // FT/proveedores goal (E2): the paragraph at the caret read again by UI Automation; a read that fails leaves
-        // the text not read back, as before.
-        (bool caretReadBack, bool caretBounded, _) = caretBefore is { } caret && !valueReadBack
-            ? await CaretReadsBackAsync(before, caret, text, cancellationToken).ConfigureAwait(false)
-            : (false, false, false);
+        if (!readBeforeGivingBack)
+            AwaitTaken((int)(accepted / 2));
+        (bool valueReadBack, bool valueBounded) = valueRead;
+        (bool caretReadBack, bool caretBounded) = caretRead;
         bool readBack = editReadBack || valueReadBack || caretReadBack;
         // A named window's text is held to its read-back only where one could be taken (a mark, a field's value or a
         // caret read before the first key); with no window named (F004) or for the opened application, the read-back is
         // the proof.
         bool heldToReadBack = window == 0 || openedApplication || mark is not null || valueBefore is not null
-            || caretBefore is not null;
+            || caretBefore is not null || _selectWhole;
         string? unread = readsBack && heldToReadBack && !readBack ? "input_text_not_read_back" : null;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteBoolean("ok", unread is null);
+            if (unread is not null && _wholeRead is { } stayed)
+                writer.WriteString("fieldNow", WindowsTextDelivery.ValueNow(stayed));
             // CU12 (auditoría final 2): what Windows accepted (SendInput's count), delivered to the window in front;
             // what the control did with it is read only for a text with no window named («readBack»).
             writer.WriteBoolean("delivered", effect);
@@ -1047,7 +1538,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             else
                 writer.WriteString("key", key);
             writer.WriteNumber("textLength", text.Length);
-            writer.WriteString("method", "keyboard");
+            writer.WriteString("method", selectedByUia ? "ui_automation" : "keyboard");
+            if (selectedByUia)
+                writer.WriteString("selectedBy", "ui_automation");
             writer.WriteNumber("acceptedEvents", accepted);
             writer.WriteNumber("expectedEvents", expected);
             writer.WriteNumber("inputSize", _keyboard.InputSize);
@@ -1062,8 +1555,21 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     writer.WriteString("next", ShortcutUnchanged);
             }
 
+            if (aftermath.DialogTitle is { } left)
+                WriteDialogOpened(writer, left, closed: false);
+            if (surfaceChanged)
+                writer.WriteBoolean("surfaceChanged", true);
+            // Encargo 75 (R01): a key that moved the active cell was read back by the cell it reached.
+            bool cellMoved = !typing && cellAfter is { } reached && cellBefore is { } cellLeftBy && reached.Moved(cellLeftBy);
             if (readsBack)
                 writer.WriteBoolean("readBack", readBack);
+            else if (cellMoved)
+                writer.WriteBoolean("readBack", true);
+            if (cellMoved)
+                ActiveCell.WriteCell(writer, "cellLeft", cellBefore!.Address, cellLeftValue ?? string.Empty);
+            string? pendingNow = typing && cellAfter is { Editing: true } ? (joins ? pendingBefore : null) + text : null;
+            if (cellAfter is not null && (typing || cellMoved))
+                ActiveCell.WriteCell(writer, "cell", cellAfter.Address, cellAfter.Value, pendingNow);
             // FT/proveedores goal (E2): a paragraph read cut at its bound (CaretReadableText) proves nothing, and says so.
             if (caretBefore is not null || valueBefore is not null)
                 writer.WriteBoolean("readBackBounded", caretBounded || valueBounded);
@@ -1079,7 +1585,12 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // Revision 1 of r24b: the field the key went to, its focus put and re-read by UI Automation right before it.
             if (focusAt is not null)
                 writer.WriteString("focusAt", focusAt);
-            writer.WriteString("authority", focusAt is not null ? "uia_focus_reread_and_win32_sendinput"
+            // Row C4: a key has no read-back, and the window just brought up had not taken the keyboard when its wait ran
+            // out; a text's read-back already says what arrived.
+            if (!typing && bursts.Current is { KeysNotConfirmed: true })
+                writer.WriteBoolean("keysNotConfirmed", true);
+            writer.WriteString("authority", selectedByUia ? "uia_textpattern_selection_postread"
+                : focusAt is not null ? "uia_focus_reread_and_win32_sendinput"
                 : editReadBack ? "win32_sendinput_and_edit_text_reread"
                 : valueReadBack ? "win32_sendinput_and_uia_value_reread"
                 : caretReadBack ? "win32_sendinput_and_uia_text_reread"
@@ -1094,11 +1605,30 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             // Noche NB r1, hallazgo 5: whether the edit control read back holds text besides the one typed.
             if (editReadBack && mark is { } marked)
                 writer.WriteBoolean("otherTextInField", marked.Expected > text.Length);
-            if (typing && (window == 0 || openedApplication)
-                && Infrastructure.ModelAids.On(Infrastructure.ModelAids.TypedTargetNext))
-                writer.WriteString("next", TypedInto(before.Title, sentToProcess, window == 0, readBack));
+            string? typedInto = typing && (window == 0 || openedApplication)
+                && Infrastructure.ModelAids.On(Infrastructure.ModelAids.TypedTargetNext)
+                    ? TypedInto(before.Title, sentToProcess, window == 0, readBack)
+                    : null;
+            if (console)
+                writer.WriteBoolean("commandRun", false);
+            // The console's fact first: measured with the real model, Enter right after the text 15 of 15 (9 without).
+            string? next = console ? (typedInto is null ? ConsoleTyped : ConsoleTyped + "; " + typedInto) : typedInto;
+            // The call first: what ends the cell comes before anything else this receipt says.
+            if (typing && cellAfter is { Editing: true } pending)
+            {
+                string ends = pending.PendingNext(before.Window, text);
+                next = next is null ? ends : ends + "; " + next;
+            }
+
+            if (next is not null)
+                writer.WriteString("next", next);
             writer.WriteEndObject();
         });
+        _pendingRefused.TryRemove(before.Window, out _);
+        if (typing && cellAfter is { Editing: true } pendingCell)
+            _pendingCells[before.Window] = new PendingCell(pendingCell.Address, (joins ? pendingBefore : null) + text);
+        else
+            _pendingCells.TryRemove(before.Window, out _);
         // A text with no window named whose read-back did not find it: its keys went in, what they wrote is unknown.
         return unread is null
             ? ExternalJson.Success(operation, result, effect)
@@ -1109,6 +1639,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     internal static bool Shortcut(IReadOnlyList<ushort> chord) =>
         chord.Count > 1 && chord.Any(static key => key is 0x11 or 0x12);
 
+    internal const string ShortcutOpenedDialog = "shortcut_opened_dialog";
+
+    internal const string ShortcutChangedFormat = "shortcut_changed_format";
+
+    internal const string ShortcutOpenedBrowser = "shortcut_opened_browser";
+
+    internal const string FindKeyNotSent = "find_key_not_sent";
+
     internal const int ShortcutWaitMs = 1000;
     private const int ShortcutPollMs = 100;
 
@@ -1116,7 +1654,189 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         + "menu opened, its enabled state, the window in front): a shortcut that only edits the content changes none of "
         + "that, but one meant to open, save or close did not; the application may use another key in its language. Its "
         + "menus show their own shortcuts in a look while open ([atajo …]); a menu entry is pressed by its label "
-        + "(input_visible_click) when its key is not one input_key_press sends";
+        + "(input_visible_click) when its key is not one input_key_press sends; there, this key may have run another "
+        + "command on the content, such as a format, which nothing here reads";
+
+    // Encargo 98: keys whose purpose opens no window of the application: a dialog after one is another command's.
+    private static bool OpensNoWindow(string? key) =>
+        key is "ctrl_a" or "ctrl_end" or "ctrl_home" or "ctrl_l" or "ctrl_t" or "ctrl_v" or "ctrl_z";
+
+    private static string ShortcutTookAsAnother(string title, bool closed) =>
+        $"this key did not do what it is for here: the window took it as another command and opened «{title}», "
+        + $"{(closed ? "which was closed again" : "which is still open")}; its menus show their own shortcuts in a look "
+        + "while open ([atajo …]), and a menu entry is pressed by its label (input_visible_click)";
+
+    private static void WriteDialogOpened(Utf8JsonWriter writer, string title, bool closed)
+    {
+        writer.WriteStartObject("dialogOpened");
+        writer.WriteString("title", title);
+        writer.WriteBoolean("closed", closed);
+        writer.WriteEndObject();
+    }
+
+    // Encargo 98: keys none of whose purposes is a format (Word in Spanish, measured: Ctrl+S underlines, Ctrl+T centers,
+    // Ctrl+K italics, Ctrl+H indents). The ones that edit the text (Ctrl+X, Ctrl+V, Ctrl+Z) or select it stay out.
+    private static bool ChangesNoFormat(string? key) =>
+        key is "ctrl_f" or "ctrl_h" or "ctrl_k" or "ctrl_l" or "ctrl_o" or "ctrl_s" or "ctrl_shift_s" or "ctrl_t" or "ctrl_w";
+
+    // Measured with the real model: naming office_format_apply here took a save asked by its key to that call, 6 of 10 as an order and
+    // 2 of 10 as a condition, and live it left a text underlined with nothing said. With only what changed, 0 of 10, and all 30 replies
+    // said what was not done. A format asked by a key that took it is said not done, not given (0 of 20).
+    private static string ShortcutTookAsFormat(bool undone, string changed) =>
+        $"this key did not do what it is for here: the window took it as another command, which changed the {changed} of the text it "
+        + "acted on, " + (undone ? "and that was undone, so the text is as it was; what the person asked was not done" : "and it is still changed");
+
+    // Measured with the real model on the decisions bench (25 samples per text): a text that sent it to the window's menus had it
+    // press the web search entry 15 of 25, 19 of 25 with a warning that named it, 0 of 25 with no menu and no web in the text.
+    internal const string FindKeyHeld = "this key was not sent, and nothing was searched or changed. No find box opened, so a text typed now "
+        + "goes into the person's own text. To find a word in this window, read its text with a look with includeText "
+        + "(input_visible_controls) and say where the word is";
+
+    private static string ShortcutTookAsBrowser(string title, bool closed, int selected) =>
+        "this key did not do what it is for here: it opened a browser ("
+        + (title.Length > 0 ? $"«{title}», " : "")
+        + (closed ? "which was closed again" : "which is still open") + "). Tell the person that "
+        + (selected > 0 ? $"their {selected} selected characters" : "the word at the caret")
+        + " may have gone out to the web in its address, and that closing it does not take that back";
+
+    private readonly record struct ShortcutAftermath(
+        string? DialogTitle, bool DialogClosed, bool FormatChanged, bool FormatUndone, string? BrowserTitle = null, bool BrowserClosed = false,
+        string? FormatWhat = null);
+
+    /// <summary>
+    /// Encargo 98: what a shortcut really did where the language of the application decides it. A dialog it raised, a window of
+    /// its own (closed as its Cancel) or one drawn inside the window (closed with Escape), is said; a key not meant to open any
+    /// closes it, so it is not left over the person's document. A format it changed on the selection is undone with Ctrl+Z, a
+    /// key every language measured keeps, and read back. Encargo 100: what it opened in a browser goes first, closed and said.
+    /// </summary>
+    private async ValueTask<ShortcutAftermath> AfterShortcutAsync(
+        string key,
+        DesktopForeground sentTo,
+        WindowWitness witness,
+        bool windowChanged,
+        FocusState? focusBefore,
+        BrowserWitness? browsersBefore,
+        Dictionary<long, int>? tabsBefore,
+        LeasedBursts bursts,
+        Func<bool> keepGoing,
+        CancellationToken cancellationToken)
+    {
+        nint window = sentTo.Window;
+        if (browsersBefore is not null
+            && await BrowserWitness.AwaitOpenedAsync(
+                () => _keyboard.BrowserSince(browsersBefore, sentTo.ProcessId), tabsBefore, _fields is null ? null : _fields.TabCountAsync, 0, cancellationToken)
+                .ConfigureAwait(false) is { } opened)
+        {
+            bool shut = await CloseBrowserOpenedAsync(opened, window, () => bursts.Current is { UserActed: true }, cancellationToken)
+                .ConfigureAwait(false);
+            return new ShortcutAftermath(null, false, false, false, opened.Title, shut);
+        }
+
+        if (windowChanged && await RaisedByShortcutAsync(window, witness, cancellationToken).ConfigureAwait(false) is { } raised)
+            return new ShortcutAftermath(raised.Title, OpensNoWindow(key) && _keyboard.CloseRaised(raised.Window), false, false);
+        if (focusBefore is null || _fields is null
+            || await _fields.FocusStateAsync(window, cancellationToken).ConfigureAwait(false) is not { } focus)
+            return default;
+        if (focus.InnerWindow is { } inner && inner != focusBefore.InnerWindow)
+        {
+            if (!OpensNoWindow(key))
+                return new ShortcutAftermath(inner, false, false, false);
+            bool Gone(FocusState now) => now.InnerWindow != inner;
+            bool closed = (await _fields.CloseFocusedDialogAsync(window, cancellationToken).ConfigureAwait(false)
+                    && await FocusReachesAsync(window, Gone, cancellationToken).ConfigureAwait(false))
+                || (_keyboard.PressChord([0x1B], keepGoing) == 2
+                    && await FocusReachesAsync(window, Gone, cancellationToken).ConfigureAwait(false));
+            return new ShortcutAftermath(inner, closed, false, false);
+        }
+
+        // Another element or another selection holds other attributes, and Ctrl+Z could undo something of the person's.
+        if (!ChangesNoFormat(key) || focusBefore.Format is not { } format || focus.Format is null || focus.Format == format
+            || focus.Place != focusBefore.Place)
+            return default;
+        // Encargo 100: Ctrl+Z only for what this key just did. With the text changed too, it was not this key alone (the person
+        // typed, or the command did more), and the top of the undo is not known to be its own.
+        string changed = FocusState.FormatChange(format, focus.Format);
+        if (focus.Content != focusBefore.Content || _keyboard.PressChord([0x11, 0x5A], keepGoing) != 4)
+            return new ShortcutAftermath(null, false, true, false, FormatWhat: changed);
+        // Exactly what was there, or the undo took something else (a format with no undo of its own leaves the person's last
+        // edit on top): the redo gives that back, and the format is said still changed.
+        bool undone = await FocusReachesAsync(window, now => now.Format == format && now.Content == focusBefore.Content, cancellationToken)
+            .ConfigureAwait(false);
+        if (!undone)
+            _ = _keyboard.PressChord([0x11, 0x59], keepGoing);
+        return new ShortcutAftermath(null, false, true, undone, FormatWhat: changed);
+    }
+
+    /// <summary>
+    /// Encargo 100: its own window goes with WM_CLOSE; a tab, with its browser's Ctrl+W, and only while that window holds the front
+    /// (brought up for this, and the front given back) and its tabs can be counted: one less, or it is said still open. Whatever
+    /// opened while the person acted may be theirs.
+    /// </summary>
+    private async ValueTask<bool> CloseBrowserOpenedAsync(BrowserOpened opened, nint window, Func<bool> personActed, CancellationToken cancellationToken)
+    {
+        if (opened.Window == 0 || personActed())
+            return false;
+        bool closed = false;
+        if (opened.OwnWindow)
+        {
+            closed = _keyboard.CloseRaised(opened.Window);
+        }
+        else
+        {
+            _ = _keyboard.GiveFront(opened.Window);
+            if (_keyboard.Holds(opened.Window) && _fields is not null
+                && await _fields.TabCountAsync(opened.Window, cancellationToken).ConfigureAwait(false) is int tabs)
+                closed = _keyboard.PressChord([0x11, 0x57], () => !personActed() && _keyboard.Holds(opened.Window)) == 4
+                    && await TabsReachAsync(opened.Window, tabs - 1, cancellationToken).ConfigureAwait(false);
+        }
+
+        _ = _keyboard.GiveFront(window);
+        return closed;
+    }
+
+    private async ValueTask<bool> TabsReachAsync(nint window, int tabs, CancellationToken cancellationToken)
+    {
+        for (int waited = 0; ; waited += ShortcutPollMs)
+        {
+            if (await _fields!.TabCountAsync(window, cancellationToken).ConfigureAwait(false) == tabs)
+                return true;
+            if (waited >= RaisedWaitMs)
+                return false;
+            await Task.Delay(ShortcutPollMs, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask<bool> FocusReachesAsync(nint window, Func<FocusState, bool> reached, CancellationToken cancellationToken)
+    {
+        for (int waited = 0; ; waited += ShortcutPollMs)
+        {
+            if (await _fields!.FocusStateAsync(window, cancellationToken).ConfigureAwait(false) is { } now && reached(now))
+                return true;
+            if (waited >= FocusReachWaitMs)
+                return false;
+            await Task.Delay(ShortcutPollMs, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private const int FocusReachWaitMs = 500;
+
+    // Measured live: a «Guardar como» cold takes past 500 ms to show after the window turned disabled.
+    private const int RaisedWaitMs = 1500;
+
+    // Encargo 98: the window turns disabled or the front moves a moment before its dialog shows: looked at while something
+    // other than its title changed, for RaisedWaitMs at most.
+    private async ValueTask<RaisedWindow?> RaisedByShortcutAsync(nint window, WindowWitness before, CancellationToken cancellationToken)
+    {
+        for (int waited = 0; ; waited += ShortcutPollMs)
+        {
+            if (_keyboard.RaisedSince(before, window) is { } raised)
+                return raised;
+            if (waited >= RaisedWaitMs || _keyboard.Witness(window) is not { } now
+                || (now.Enabled == before.Enabled && now.Windows == before.Windows && now.Front == before.Front))
+                return null;
+            await Task.Delay(ShortcutPollMs, cancellationToken).ConfigureAwait(false);
+        }
+    }
 
     // Ajuste c3 (E017): whether the window's witness changed within ShortcutWaitMs of the shortcut (a window gone is a
     // change: Ctrl+W closed it).
@@ -1150,6 +1870,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 .Select(entry => entry.GetString()!)]
             : [];
 
+    // Encargo 33 (U45, banco de uso): «hostname» typed into a terminal came back with readBack true and nothing more; the
+    // model then looked at the window instead of pressing Enter, or asked the person whether to press it. A console's
+    // line runs only with Enter, a call of its own that the key press's preflight (KeyWindowReader, K-2 refinada)
+    // confirms with the person in Normal mode.
+    internal const string ConsoleTyped = "the text was typed on the command line of a console and not run: running "
+        + "it is pressing Enter, another call (input_key_press with key enter) that BAXY confirms with the person by "
+        + "itself when its mode asks for that, so it is not asked in words";
+
     // Renew al máximo (w5, F004): with sentTo «Calculadora» the reply still spoke of the Notepad the person named («no
     // pude comprobar que escribiste hola en el Bloc de notas») and of a focus change never tried. The same fact as a
     // sentence: the one window the text went into, and that nothing was opened or brought up for it.
@@ -1171,6 +1899,64 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             : where;
     }
 
+    // Encargo 36: how many of the window's text fields a refusal names.
+    private const int ListedTextFields = 6;
+
+    /// <summary>
+    /// A text with no field named for a window whose keyboard focus takes no text (<paramref name="focused"/>, said as
+    /// the view says a control), refused before any key: what holds the focus, the fields of that window that take text,
+    /// by the index the model knows each by, and a «next» that begins with the call that types it into each (the rule
+    /// measured in encargos 20 and 28: the call first), or with the look that numbers them when no view of that window
+    /// was taken. The last view of the window is read again first, as after an act («after»): a page's fields may not
+    /// have been in it (encargo 36, S08: Chromium listed them only once a UI Automation client had asked).
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> FocusNotAFieldAsync(
+        string operation, string text, nint window, string focused, Action<Utf8JsonWriter> writeFocus,
+        CancellationToken cancellationToken)
+    {
+        JsonElement? after = _fields is null
+            ? null
+            : await _fields.AfterActAsync(window, cancellationToken).ConfigureAwait(false);
+        ViewedTextField[] fields = [.. (_fields?.TextFieldsOf(window) ?? []).Take(ListedTextFields)];
+        string process = _keyboard.ProcessName(window);
+        var refused = new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("window", window);
+            writeFocus(writer);
+            writer.WriteStartArray("textFields");
+            foreach (ViewedTextField field in fields)
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("index", field.Index);
+                writer.WriteString("kind", field.Kind);
+                writer.WriteString("name", field.Name);
+                writer.WriteEndObject();
+            }
+
+            writer.WriteEndArray();
+            if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.FocusNotAFieldNext))
+                writer.WriteString("next", FocusNotAFieldNext(window, process, text, focused, fields));
+            writer.WriteEndObject();
+        }), "input_focus_not_a_field");
+        return after is { } seen ? WindowsVisibleControlAdapter.WithAfter(refused, seen) : refused;
+    }
+
+    internal static string FocusNotAFieldNext(
+        nint window, string process, string text, string focused, IReadOnlyList<ViewedTextField> fields)
+    {
+        string nothing = $"nothing was typed: the window's keyboard focus is on {focused}, which takes no text (its keys "
+            + "would press its access keys or move its selection)";
+        if (fields.Count == 0)
+            return $"{Baxy.Kernel.Operations.WireNames.Call("input.visible.controls", new() { ["application"] = process })} numbers the "
+                + "window's fields, and input_text_type with this window and the index of the field types the text "
+                + "there; " + nothing;
+        IEnumerable<string> calls = fields.Select(field =>
+            $"{Baxy.Kernel.Operations.WireNames.Call("input.text.type", new() { ["window"] = (long)window, ["index"] = field.Index, ["text"] = text })} "
+            + $"types it into {field.Kind} «{field.Name}»");
+        return string.Join("; ", calls) + "; " + nothing;
+    }
+
     // The window in front when the keys were sent, which took them (F004: the Calculator, not the Notepad), by its title
     // and the program a view names it by, read before the first key.
     private static void WriteSentTo(Utf8JsonWriter writer, DesktopForeground before, string process)
@@ -1185,6 +1971,25 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     // creation); null otherwise.
     private string? UnfocusedField(WindowIdentity identity) =>
         _focusOwed is { } owed && identity.Alive && owed.Window == identity ? owed.ControlId : null;
+
+    // A replacement typed over the whole selection: the focused field's value read again, a settle apart, must be the text
+    // whole. What it held last is said when it is not (a field that completes what it takes, an old part left).
+    private async ValueTask<(bool Found, bool Bounded, bool Unanswered)> WholeValueAsync(
+        nint window, string text, CancellationToken cancellationToken)
+    {
+        for (int read = 0; read < CaretRereads; read++)
+        {
+            if (read > 0)
+                await _keyboard.SettleAsync(cancellationToken).ConfigureAwait(false);
+            if (await FocusedValueAsync(window, cancellationToken).ConfigureAwait(false) is not { } now)
+                return (false, false, true);
+            _wholeRead = now.Text;
+            if (!now.Bounded && string.Equals(now.Text.TrimEnd('\r', '\n'), text, StringComparison.Ordinal))
+                return (true, false, false);
+        }
+
+        return (false, false, false);
+    }
 
     // Whether UI Automation put the keyboard's focus on the field (the worker's «focus», re-read).
     private async ValueTask<bool> FocusedAsync(nint window, string controlId, CancellationToken cancellationToken)
@@ -1266,6 +2071,52 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     // Ajuste c3 (F09, M1 and M2): the value of the field with the keyboard's focus inside the window (the worker's
     // «focusvalue»), as a CaretText of unit «value» compared by CaretHolds; null when nothing answers or the read failed.
     // Nothing of the value leaves this side.
+    // Encargo 75 (R01): the worker's «activecell» answer; no cell when nothing answers or no grid's cell is active.
+    private async ValueTask<(ActiveCell? Cell, string? ValueAt)> ActiveCellAsync(
+        nint window, (int Row, int Column)? at, CancellationToken cancellationToken)
+    {
+        if (_fields is null || window == 0 || !Infrastructure.ModelAids.On(Infrastructure.ModelAids.GridCellFacts))
+            return (null, null);
+        try
+        {
+            using JsonDocument? answer = await _fields.ActiveCellAsync(window, at, cancellationToken).ConfigureAwait(false);
+            return answer is null ? (null, null) : (ActiveCell.Read(answer.RootElement), ActiveCell.ValueAt(answer.RootElement));
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return (null, null);
+        }
+    }
+
+    // The grid takes a moment after the key: read again, bounded, until the key's change shows (a text's editor open, a
+    // key's cell moved). A cell that never shows it is said as read.
+    private async ValueTask<(ActiveCell? Cell, string? ValueAt)> CellAfterAsync(
+        nint window, bool typing, ActiveCell before, CancellationToken cancellationToken)
+    {
+        (ActiveCell? Cell, string? ValueAt) read = (null, null);
+        for (int poll = 0; poll < CellPolls; poll++)
+        {
+            if (poll > 0)
+                await Task.Delay(CellPollMs, cancellationToken).ConfigureAwait(false);
+            read = await ActiveCellAsync(window, typing ? null : (before.Row, before.Column), cancellationToken)
+                .ConfigureAwait(false);
+            if (read.Cell is { } cell && (typing ? cell.Editing || cell.Value != before.Value : cell.Moved(before)))
+                break;
+        }
+
+        return read;
+    }
+
+    internal const string CellStillPending = "input_cell_still_pending";
+
+    private sealed record PendingCell(string Address, string Text);
+
+    // Encargo 75 (R01): the text this adapter left pending over a grid's active cell, by window, until a key ends it.
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<nint, PendingCell> _pendingCells = new();
+
+    private const int CellPolls = 5;
+    private const int CellPollMs = 60;
+
     private async ValueTask<CaretText?> FocusedValueAsync(nint window, CancellationToken cancellationToken)
     {
         if (_fields is null || window == 0)
@@ -1301,6 +2152,105 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 ? id.GetString()! : string.Empty;
             return new CaretText(text, "value " + field, cut, 0);
         }
+    }
+
+    // Banco de uso 03-11 (U27, «copia todo lo que dice el bloc de notas»): a copy with nothing selected failed as
+    // clipboard_not_changed alone, and nothing said why. What was there to copy in the window in front: the selection's
+    // length (by UI Automation, at the caret) and the focused field's text length; lengths only, nothing of the text
+    // leaves this side. A length that could not be read is null. Encargo 17 (banco uso-cf8d, U27): Windows 11's Notepad's
+    // text area is a document with no value, so a field's value gave no length; then the length of its text, read by its
+    // TextPattern in the worker (FocusedTextLengthAsync), is the one said.
+    private readonly record struct CopiedFrom(int? SelectionLength, int? TextLength, bool TextBounded);
+
+    private async ValueTask<CopiedFrom> CopiedFromAsync(DesktopForeground front, CancellationToken cancellationToken)
+    {
+        CaretText? caret = await CaretTextAsync(front, cancellationToken).ConfigureAwait(false);
+        int? selection = caret is { SelectionLength: >= 0 } selected ? selected.SelectionLength : null;
+        CaretText? value = await FocusedValueAsync(front.Window, cancellationToken).ConfigureAwait(false);
+        if (value is not null)
+            return new(selection, value.Value.Text.Length, value.Value.Bounded);
+        (int Length, bool Bounded)? measured = await FocusedTextLengthAsync(front.Window, cancellationToken)
+            .ConfigureAwait(false);
+        return new(selection, measured?.Length, measured is { Bounded: true });
+    }
+
+    private async ValueTask<(int Length, bool Bounded)?> FocusedTextLengthAsync(
+        nint window, CancellationToken cancellationToken)
+    {
+        if (_fields is null || window == 0)
+            return null;
+        JsonDocument? answer;
+        try
+        {
+            answer = await _fields.FocusedTextLengthAsync(window, WindowsTextDelivery.CaretReadableText, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
+        if (answer is null)
+            return null;
+        using (answer)
+        {
+            JsonElement root = answer.RootElement;
+            return root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True
+                && root.TryGetProperty("length", out JsonElement length) && length.ValueKind == JsonValueKind.Number
+                && length.TryGetInt32(out int characters)
+                && characters >= 0
+                && root.TryGetProperty("bounded", out JsonElement bounded)
+                && bounded.ValueKind is JsonValueKind.True or JsonValueKind.False
+                    ? (characters, bounded.ValueKind == JsonValueKind.True)
+                    : null;
+        }
+    }
+
+    private static void WriteCopiedFrom(Utf8JsonWriter writer, CopiedFrom read)
+    {
+        if (read.SelectionLength is int selection)
+            writer.WriteNumber("selectionLength", selection);
+        if (read.TextLength is not int length)
+            return;
+        writer.WriteNumber("focusedTextLength", length);
+        // A field longer than a read takes: its length is at least this.
+        if (read.TextBounded)
+            writer.WriteBoolean("focusedTextBounded", true);
+    }
+
+    // Encargo 35 (bancos ab-d4-1d y uso-8ded, U27, 0 of 6): with selectionLength 0 and focusedTextLength 35 the model
+    // answered «no había nada seleccionado» (or «copié, pero no pude comprobarlo») and never selected. Nothing selected in
+    // a field that holds text: the next leads with the two calls that copy all of it, as one route, and ends with what this
+    // call did (encargos 20, 28 and 34). Measured with the real model: «input_select_all selects…, and clipboard_copy then
+    // copies them» was asked about every time; the route said as the copy it makes was followed.
+    // Encargo 45 (banco ab-93-ce, U27): with the effect known (above), that route alone was also followed when the person
+    // had asked for what they selected (20 of 27); said as what copies all of the text if that is what they asked
+    // (OpenAI Model Spec: act on the request, ask when it is ambiguous), the model selected and copied in 12 of 12 asks
+    // for all of it and in none of 27 for the selection.
+    // Encargo 61 (banco de uso U45, diag-f11d c2 and c4): in a console that route fails (select_all_postcondition_not_verified)
+    // and the model gave up with the output already read, so it is told what does keep that text. Windows Terminal: «If no
+    // selection exists, the key chord is sent directly to the terminal». Measured with held-out phrases (7 × 5 seeds, with
+    // the cwd of ShellCommandAdapter read in the home folder): 15/34 with the route, 20/35 with this said as a fact, 25/35
+    // with the call first; the model filled in both values every time.
+    private void WriteSelectAllNext(Utf8JsonWriter writer, CopiedFrom read, string? window, nint from)
+    {
+        if (read.SelectionLength != 0 || read.TextLength is not > 0)
+            return;
+        if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.ConsoleTypedNext)
+            && Windows.Win32WindowControlPlatform.IsConsoleClass(_keyboard.ClassName(from)))
+        {
+            string write = WireNames.Call("file.write", new() { ["path"] = "<the file>", ["text"] = "<what it showed>" });
+            writer.WriteString("next", $"{write} writes what {WireNames.Of("input.visible.controls")} with includeText read "
+                + "from this console; this call copied nothing: a console has no selection here and its Ctrl+C is its interrupt");
+            return;
+        }
+
+        string characters = (read.TextBounded ? "at least " : "all ")
+            + read.TextLength.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) + " characters of the text"
+            + (string.IsNullOrWhiteSpace(window) ? string.Empty : " in " + window);
+        writer.WriteString("next", $"if the person asked for all of its text: {WireNames.Call("input.select.all", new())} and then "
+            + $"{WireNames.Call("clipboard.copy", new())} copy {characters}; this call copied nothing: nothing was selected");
     }
 
     // FT/proveedores goal (E2), ajuste c3 (F09): whether a read taken before the keys, read again (up to CaretRereads
@@ -1433,8 +2383,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         nint field;
         // What the worker's front net saw while it read or wrote the field (r4a M1): part of the receipt.
         UiaFrontReport? keeper = null;
+        bool focusMoved = false;
         // r25: a named field its value and its messages did not reach takes the keyboard only when it has its focus.
         bool fieldFocused = false, insertion = index is not null && !replace;
+        // Uso real 02-11 (encargo 2, A(b)): the field's text as the worker read it before anything was sent (its length,
+        // -1 when not read, and whether it was all selected), said when it is not reached.
+        int fieldLength = -1;
+        bool fieldSelected = false;
         if (index is int position)
         {
             if (_fields is null || !SeenField(position, out nint viewed, out string controlId) || viewed != window)
@@ -1482,6 +2437,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             {
                 JsonElement root = answer.RootElement;
                 keeper = UiaFrontReport.Read(root);
+                focusMoved = Flag(root, "focusMoved", false);
                 fieldFocused = Flag(root, "focused", false);
                 string? error = root.TryGetProperty("error", out JsonElement errorValue)
                     && errorValue.ValueKind == JsonValueKind.String
@@ -1493,9 +2449,21 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 // Ronda final 7: the lookup was cut short before anything was set: not found is not said.
                 if (!ok && error == "visible_lookup_timeout")
                     return ExternalJson.FailureBeforeEffect(operation, "visible_lookup_timeout");
-                // SetValue refused: nothing was set, the field's own window may still take the text by messages.
+                // The worker asks before it touches the window (Get-Root): nothing was written.
+                if (!ok && error == VisibleControlSurface.WindowNotResponding)
+                    return ExternalJson.FailureBeforeEffect(operation, VisibleControlSurface.WindowNotResponding);
+                // SetValue refused, its value read back as it was (uso-108, A4: one that raised after applying is told by
+                // the worker as what it read): the field's own window may still take the text by messages.
                 if (!ok && error != "field_setvalue_refused")
                     return effectBoundary.Failure(operation, error is { Length: > 0 } ? error : "field_no_receipt", true);
+                // Uso real 02-11 (encargo 2, A): the item's own editor was open (a text not confirmed): nothing was written.
+                if (Flag(root, "editPending", false))
+                    return EditPending(operation, null);
+                fieldLength = root.TryGetProperty("valueLength", out JsonElement heldValue)
+                    && heldValue.ValueKind == JsonValueKind.Number && heldValue.TryGetInt32(out int heldLength)
+                        ? heldLength
+                        : -1;
+                fieldSelected = Flag(root, "selected", false);
                 if (ok && root.TryGetProperty("method", out JsonElement method)
                     && method.ValueKind == JsonValueKind.String && method.GetString() is "setvalue" or "select")
                 {
@@ -1518,14 +2486,13 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                     // «select»: a list-only combo box took the entry of that name (its selection re-read), said as read.
                     return FieldReceipt(operation, key, text, identity, frontBefore, new FieldDelivery(
                         method.GetString()!, whole, true, whole ? null : "input_effect_not_verified", fieldClass,
-                        ChosenEntry(root)), keeper);
+                        ChosenEntry(root), FieldNow: FieldNow(root), FieldUnchanged: Flag(root, "fieldUnchanged", false)), keeper, focusMoved);
                 }
 
                 // Ronda final 16 (regla 3): a list-only combo whose list was opened and closed without the entry
                 // changed the window: an effect that may have occurred, never «nothing sent».
                 if (Flag(root, "expanded", false))
-                    return WindowsVisibleControlAdapter.NotNamed(operation, "input_entry_not_found", Entries(root))
-                        with { EffectMayHaveOccurred = true };
+                    return NoSuchEntry(operation, root) with { EffectMayHaveOccurred = true };
 
                 // Nothing was set (the worker sets no read-only, password or disabled field): neither its edit
                 // control's messages nor the keyboard write there.
@@ -1538,10 +2505,41 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 // Review of cierre-de-subobjetivos (finding 2): a field read empty is written as an insertion only into
                 // its own window (its edit control's messages). Without one, the keyboard's focus may be another
                 // control (a subject, a search box): the replacement stays refused and nothing is sent.
-                if (replace && field != 0 && root.TryGetProperty("valueLength", out JsonElement length)
-                    && length.ValueKind == JsonValueKind.Number && length.TryGetInt32(out int held) && held == 0)
+                bool readEmpty = root.TryGetProperty("valueLength", out JsonElement length)
+                    && length.ValueKind == JsonValueKind.Number && length.TryGetInt32(out int held) && held == 0;
+                if (replace && field != 0 && readEmpty)
                 {
                     replace = false;
+                }
+
+                // Uso-108 (review, 2a, 2b, 3): that focus is known here. An empty field that has it (the worker read its
+                // own HasKeyboardFocus) takes the keyboard's insertion, and one whose text lives in child elements (a
+                // role=textbox of Chromium, which hears no SetValue) gets the focus from UI Automation first.
+                bool inChildren = Flag(root, "textInChildren", false);
+                bool notDocument = !(root.TryGetProperty("kind", out JsonElement readKind) && readKind.ValueKind == JsonValueKind.String
+                    && readKind.GetString() == "Document");
+                _fieldTouched |= Flag(root, "erased", false);
+                _onRenderSurface = inChildren;
+                // Opera GX 138, measured on an own instance (base: 0 of 12): its address bar's SetValue raises E_FAIL and
+                // changes nothing, in front or behind, with the focus or without it, and the replacement was refused. Keys
+                // reach it. Value unchanged after the raise (the worker read it), so nothing is doubled.
+                if (replace && !ok && field == 0 && notDocument && !readEmpty && fieldLength > 0 && _fields is not null)
+                {
+                    _replacedByKeyboard = true;
+                    _selectWhole = true;
+                    _onRenderSurface = inChildren;
+                    if (!fieldFocused)
+                        _focusFirst = controlId;
+                    return null;
+                }
+
+                if (field == 0 && readEmpty && notDocument && (fieldFocused || inChildren))
+                {
+                    _replacedByKeyboard = true;
+                    replace = false;
+                    if (!fieldFocused)
+                        _focusFirst = controlId;
+                    return null;
                 }
 
                 // A document is never replaced whole (goal v3 point 2): its text is the person's work.
@@ -1555,17 +2553,94 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             field = delivery.Messages.FocusOf(window);
         }
 
+        if (window != 0 && !_onRenderSurface && RenderSurfaceClasses.All.Contains(delivery.Messages.ClassName(delivery.Messages.FocusOf(window))))
+            _onRenderSurface = true;
+
         // Otherwise the keyboard would write wherever the window's focus is (a password, the page's search) and the
         // next Enter would send it: nothing is sent (r25 review, finding 1). A replacement is refused by the caller.
         ExternalCapabilityReceipt? unreached = insertion && !fieldFocused
-            ? ExternalJson.FailureBeforeEffect(operation, "input_field_not_reachable")
+            ? NotReachable(operation, fieldLength, fieldSelected)
             : null;
         if (field == 0)
             return unreached;
         FieldDelivery? typed = await delivery.TypeAsync(identity, field, text, cancellationToken, replace).ConfigureAwait(false);
         return typed is { } result
-            ? FieldReceipt(operation, key, text, identity, frontBefore, result, keeper)
+            ? FieldReceipt(operation, key, text, identity, frontBefore, result, keeper, focusMoved)
             : unreached;
+    }
+
+    /// <summary>
+    /// Uso real 02-11 (encargo 2, A(b)): a field named by its index that holds text, neither all selected nor with the
+    /// keyboard's focus, is not reached and nothing is sent. The receipt says what the worker read there before: whether
+    /// it held text (<c>fieldHasText</c>, absent when its value was not read), whether that text was selected
+    /// (<c>textSelected</c>), and that it had no focus (<c>fieldFocused</c>).
+    /// </summary>
+    private static ExternalCapabilityReceipt NotReachable(string operation, int length, bool selected) =>
+        ExternalJson.FailureBeforeEffect(operation, "input_field_not_reachable") with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                if (length >= 0)
+                    writer.WriteBoolean("fieldHasText", length > 0);
+                writer.WriteBoolean("textSelected", selected);
+                writer.WriteBoolean("fieldFocused", false);
+                writer.WriteEndObject();
+            }),
+        };
+
+    /// <summary>
+    /// Uso real 02-11 (encargo 2, A): an item of a grid, list or tree whose own editor holds the keyboard's focus is in an
+    /// edit not confirmed: what is written there becomes its value only when the edit is confirmed or the focus leaves
+    /// it, and a value set meanwhile is lost then. Never verified: <c>input_edit_not_confirmed</c> with
+    /// <c>editPending</c>, before any effect (<paramref name="typed"/> null: the edit was already open, nothing written)
+    /// or after the text the keyboard typed (its receipt's facts kept, its «ok» and «error» replaced by the code).
+    /// </summary>
+    private static ExternalCapabilityReceipt EditPending(string operation, ExternalCapabilityReceipt? typed)
+    {
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            if (typed?.Result is { ValueKind: JsonValueKind.Object } sent)
+            {
+                foreach (JsonProperty property in sent.EnumerateObject())
+                {
+                    if (property.Name is not ("ok" or "error" or "editPending"))
+                        property.WriteTo(writer);
+                }
+            }
+
+            writer.WriteBoolean("editPending", true);
+            writer.WriteEndObject();
+        });
+        return typed is null
+            ? ExternalJson.FailureBeforeEffect(operation, "input_edit_not_confirmed") with { Result = result }
+            : new ExternalCapabilityReceipt(operation, typed.EffectObserved, false, result, "input_edit_not_confirmed")
+            {
+                EffectMayHaveOccurred = true,
+            };
+    }
+
+    /// <summary>
+    /// Uso real 02-11 (encargo 2, A): a text the keyboard typed for the field a step names (its value and its messages did
+    /// not reach it) may sit in an editor that field opened for it, not in the field. The field is read again (nothing
+    /// written): its own editor still open makes the receipt an edit pending (<see cref="EditPending"/>). A field not read
+    /// again leaves the receipt as it was.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> ConfirmedOrPendingAsync(
+        string operation, ExternalCapabilityReceipt typed, nint window, int index, CancellationToken cancellationToken)
+    {
+        if (!typed.Verified || _fields is null || _fields.ViewedAt(index) is not { Gone: false } seen
+            || seen.Window != window || seen.ControlId.Length == 0)
+            return typed;
+        // Encargo 10 (punto 5): only a grid, list or tree item is edited in an editor put inside it, so only there can an
+        // edit be still pending (Test-EditPending refuses any other kind). The kind is already known from the view that
+        // handed the index out, so a plain field is confirmed without a second trip to the worker (its Find-ById).
+        if (seen.Kind is { Length: > 0 } kind && kind is not ("DataItem" or "ListItem" or "TreeItem"))
+            return typed;
+        using JsonDocument? read = await _fields.FieldAsync(window, seen.ControlId, null, false, cancellationToken)
+            .ConfigureAwait(false);
+        return read is not null && Flag(read.RootElement, "editPending", false) ? EditPending(operation, typed) : typed;
     }
 
     /// <summary>
@@ -1641,7 +2716,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// Review of combos-galerias (findings 1 and 2): a closed list's entry named by the goal, chosen in the list box the
     /// view named (the worker's «field» with «entry»: its entry of that name selected by pattern, the selection and the
     /// box's value re-read). Never a text written into the box nor sent to its edit control or the keyboard: a list with
-    /// no entry of that name changes nothing (<c>input_entry_not_found</c>).
+    /// no entry of that name changes nothing (<see cref="NoSuchEntry"/>).
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> EntryToWindowAsync(
         string operation, string text, nint window, int index, DesktopForeground frontBefore, CancellationToken cancellationToken)
@@ -1679,13 +2754,14 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 return ExternalJson.FailureBeforeEffect(operation, "visible_control_identity_stale");
             if (!ok && error == "visible_lookup_timeout")
                 return ExternalJson.FailureBeforeEffect(operation, "visible_lookup_timeout");
+            if (!ok && error == VisibleControlSurface.WindowNotResponding)
+                return ExternalJson.FailureBeforeEffect(operation, VisibleControlSurface.WindowNotResponding);
             if (!ok)
                 return effectBoundary.Failure(operation, error is { Length: > 0 } ? error : "field_no_receipt", true);
             // Auditoría C9: no entry is called so (folded); nothing was chosen, and the list's entries go back as they read.
             if (!root.TryGetProperty("method", out JsonElement method) || method.ValueKind != JsonValueKind.String
                 || method.GetString() != "select")
-                return WindowsVisibleControlAdapter.NotNamed(operation, "input_entry_not_found", Entries(root))
-                    with { EffectMayHaveOccurred = Flag(root, "expanded", false) };
+                return NoSuchEntry(operation, root) with { EffectMayHaveOccurred = Flag(root, "expanded", false) };
             bool whole = root.TryGetProperty("delivered", out JsonElement read) && read.ValueKind == JsonValueKind.True;
             // Ronda final: the entry already chosen (read before) is the state reached: nothing was chosen (changed:false).
             if (whole && root.TryGetProperty("alreadyReached", out JsonElement reached) && reached.ValueKind == JsonValueKind.True)
@@ -1694,9 +2770,40 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
                 ? named.GetString() ?? string.Empty
                 : string.Empty;
             return FieldReceipt(operation, null, text, identity, frontBefore, new FieldDelivery(
-                "select", whole, true, whole ? null : "input_effect_not_verified", fieldClass, ChosenEntry(root)), keeper);
+                "select", whole, true, whole ? null : "input_effect_not_verified", fieldClass, ChosenEntry(root),
+                FieldNow: FieldNow(root)), keeper);
         }
     }
+
+    /// <summary>
+    /// Uso-108 (A3; agent-desktop windows/src/actions/select.rs:161-178, PR #256 and #517): the list as the worker read it. No
+    /// entry read at all is no statement about the entries: <c>input_list_not_read</c>. Otherwise none of them is called
+    /// so: <c>input_entry_not_found</c> with the entries it read, and whether they are not all (<c>truncated</c>, with
+    /// <c>candidateCount</c> when it knows how many): the first 30, or a list it did not read to its end.
+    /// </summary>
+    private static ExternalCapabilityReceipt NoSuchEntry(string operation, JsonElement root)
+    {
+        if (Flag(root, "listNotRead", false))
+            return ExternalJson.FailureBeforeEffect(operation, "input_list_not_read");
+        IReadOnlyList<string> entries = Entries(root);
+        int total = root.TryGetProperty("entriesTotal", out JsonElement all) && all.TryGetInt32(out int counted) ? counted : 0;
+        if (entries.Count == 0 || !Flag(root, "entriesPartial", false))
+            return WindowsVisibleControlAdapter.NotNamed(operation, "input_entry_not_found", entries, total > 0 ? total : null);
+        return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteBoolean("truncated", true);
+            writer.WriteStartArray("candidates");
+            foreach (string entry in entries)
+                writer.WriteStringValue(entry);
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }), "input_entry_not_found");
+    }
+
+    // Uso-108 (B12): what the field holds when it does not match, as the worker read it; null when it said nothing.
+    private static string? FieldNow(JsonElement root) =>
+        root.TryGetProperty("fieldNow", out JsonElement now) && now.ValueKind == JsonValueKind.String ? now.GetString() : null;
 
     // The entry a «select» chose, as the worker read its name; null when it said none.
     private static string? ChosenEntry(JsonElement root) =>
@@ -1841,7 +2948,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
     /// </summary>
     private ExternalCapabilityReceipt FieldReceipt(
         string operation, string? key, string text, WindowIdentity identity, DesktopForeground before,
-        FieldDelivery delivery, UiaFrontReport? keeper = null)
+        FieldDelivery delivery, UiaFrontReport? keeper = null, bool focusMoved = false)
     {
         if (!delivery.Delivered && !delivery.EffectMayHaveOccurred)
             return ExternalJson.FailureBeforeEffect(operation, delivery.Error ?? "input_effect_not_verified");
@@ -1868,7 +2975,7 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         }
 
         if (!delivery.Delivered)
-            return ExternalJson.FailureAfterEffect(operation, delivery.Error ?? "input_effect_not_verified", true);
+            return WithWhatStayed(ExternalJson.FailureAfterEffect(operation, delivery.Error ?? "input_effect_not_verified", true), delivery);
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -1898,6 +3005,9 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
             writer.WriteString("foregroundTitleAfter", after.Title);
             writer.WriteBoolean("frontChanged", frontChanged);
             writer.WriteBoolean("frontRestored", frontRestored);
+            // Uso-108: the keyboard's focus went to that field inside the window, where the person's next keys land.
+            if (focusMoved)
+                writer.WriteBoolean("focusMoved", true);
             writer.WriteString("authority", delivery.Method switch
             {
                 "setvalue" => "windows_uia_setvalue_reread",
@@ -1923,12 +3033,36 @@ internal sealed class WindowsDesktopInteractionAdapter : IExternalOperationAdapt
         return ExternalJson.Success(operation, result, true);
     }
 
+    /// <summary>
+    /// Uso-108 (B12; agent-desktop #190: satisfied, provably unwritten, changed but not matching, no evidence): a value that
+    /// does not match says what stayed: <c>fieldUnchanged</c> when the field holds what it held after the whole wait, or
+    /// <c>fieldNow</c> when it holds something else (a field that reshapes what it takes: «3» became «3,00 cm»). Neither
+    /// without a read. A password never gets here: nothing is written there, and its value is not read.
+    /// </summary>
+    private static ExternalCapabilityReceipt WithWhatStayed(ExternalCapabilityReceipt failed, FieldDelivery delivery) =>
+        delivery.FieldNow is null && !delivery.FieldUnchanged
+            ? failed
+            : failed with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    if (delivery.FieldNow is { } now)
+                        writer.WriteString("fieldNow", now);
+                    else
+                        writer.WriteBoolean("fieldUnchanged", true);
+                    writer.WriteEndObject();
+                }),
+            };
+
     internal static JsonElement AsDelivered(
-        JsonElement root, (string Title, string Process)? sentTo = null, PasteRead? read = null) =>
+        JsonElement root, (string Title, string Process)? sentTo = null, PasteRead? read = null, string? under = null) =>
         ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
             bool unread = read is { Found: false };
+            if (under is not null)
+                writer.WriteString("under", under);
             foreach (JsonProperty property in root.EnumerateObject())
             {
                 if (property.NameEquals("effectObserved"))

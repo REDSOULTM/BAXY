@@ -18,9 +18,10 @@ public sealed class MindRuntimeDiscoveryTests
     private static readonly string[] Touched =
     [
         "BAXY_MIND_DISABLED", "BAXY_MIND_PYTHON", "BAXY_MIND_PYTHONPATH", "BAXY_MIND_LLM_GGUF", "BAXY_MIND_LLAMA_SERVER",
-        "BAXY_MIND_NGL", "BAXY_RENEW_TTS_DIR", "BAXY_RENEW_WAKE_DIR", "BAXY_RENEW_STT_DIR", "BAXY_S1_GGUF",
-        "BAXY_S1_THREADS", "BAXY_MIND_MMPROJ", "BAXY_MIND_LLAMA_PORT", "BAXY_VISION_OFF", "BAXY_VISION_ENDPOINT",
-        "BAXY_VISION_MODEL", "BAXY_VISION_SLOT", "BAXY_VISION_SLOT_DIR",
+        "BAXY_MIND_NGL", "BAXY_RENEW_TTS_DIR", "BAXY_RENEW_WAKE_DIR", "BAXY_RENEW_WAKE_FAST_DIR", "BAXY_RENEW_STT_DIR",
+        "BAXY_S1_GGUF", "BAXY_S1_THREADS", "BAXY_MIND_MMPROJ", "BAXY_MIND_LLAMA_PORT", "BAXY_VISION_OFF",
+        "BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL", "BAXY_VISION_SLOT", "BAXY_VISION_SLOT_DIR", "BAXY_MIND_SLOT",
+        "BAXY_MIND_LLAMA_BACKEND",
     ];
 
     private readonly Dictionary<string, string?> _saved = [];
@@ -63,9 +64,10 @@ public sealed class MindRuntimeDiscoveryTests
         {
             ["BAXY_RENEW_TTS_DIR"] = pieces.Voice,
             ["BAXY_RENEW_WAKE_DIR"] = pieces.Wake,
+            ["BAXY_RENEW_WAKE_FAST_DIR"] = pieces.WakeFast,
             ["BAXY_RENEW_STT_DIR"] = pieces.Stt,
-            ["BAXY_S1_GGUF"] = pieces.SystemOne,
-            ["BAXY_S1_THREADS"] = "6",
+            ["BAXY_S1_GGUF"] = null,
+            ["BAXY_S1_THREADS"] = null,
             ["BAXY_MIND_MMPROJ"] = pieces.Projector,
             ["BAXY_MIND_LLAMA_PORT"] = "8077",
             ["BAXY_VISION_ENDPOINT"] = "http://127.0.0.1:8077/v1/chat/completions",
@@ -82,6 +84,7 @@ public sealed class MindRuntimeDiscoveryTests
         string registration = Register(out _);
         Environment.SetEnvironmentVariable("BAXY_RENEW_TTS_DIR", @"D:\otra-voz");
         Environment.SetEnvironmentVariable("BAXY_RENEW_WAKE_DIR", "none");
+        Environment.SetEnvironmentVariable("BAXY_RENEW_WAKE_FAST_DIR", "none");
         Environment.SetEnvironmentVariable("BAXY_MIND_LLAMA_PORT", "8099");
         Environment.SetEnvironmentVariable("BAXY_VISION_SLOT_DIR", @"F:\slots");
 
@@ -89,24 +92,34 @@ public sealed class MindRuntimeDiscoveryTests
 
         Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_TTS_DIR"), Is.EqualTo(@"D:\otra-voz"));
         Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_DIR"), Is.EqualTo("none"));
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_FAST_DIR"), Is.EqualTo("none"));
         Assert.That(Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT"),
             Is.EqualTo("http://127.0.0.1:8099/v1/chat/completions"));
         Assert.That(Environment.GetEnvironmentVariable("BAXY_VISION_SLOT_DIR"), Is.EqualTo(@"F:\slots"));
     }
 
     [Test]
-    public void TheOwnersSwitchKeepsSystemOneOffAndVisionOffKeepsTheProjector()
+    public void TheVisionTakesTheMindsSlotOnASharedServer()
+    {
+        // Encargo 11: several machines' minds share one server, each on its slot (BAXY_MIND_SLOT, measurement only); the
+        // vision sets aside and asks on that same slot, never on slot 0, another machine's.
+        string registration = Register(out _);
+        Environment.SetEnvironmentVariable("BAXY_MIND_SLOT", "5");
+
+        Assert.That(Apply(registration), Is.True);
+
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_VISION_SLOT"), Is.EqualTo("5"));
+    }
+
+    [Test]
+    public void VisionOffKeepsTheProjector()
     {
         string registration = Register(out _);
-        string off = Path.Combine(_local, "BAXY", "renew", "system_one.off");
-        Directory.CreateDirectory(Path.GetDirectoryName(off)!);
-        File.WriteAllText(off, string.Empty);
         Environment.SetEnvironmentVariable("BAXY_VISION_OFF", "1");
 
         Assert.That(Apply(registration), Is.True);
 
-        foreach (string name in (string[])["BAXY_S1_GGUF", "BAXY_S1_THREADS", "BAXY_MIND_MMPROJ", "BAXY_VISION_ENDPOINT",
-                     "BAXY_MIND_LLAMA_PORT"])
+        foreach (string name in (string[])["BAXY_MIND_MMPROJ", "BAXY_VISION_ENDPOINT", "BAXY_MIND_LLAMA_PORT"])
         {
             Assert.That(Environment.GetEnvironmentVariable(name), Is.Null, name);
         }
@@ -121,13 +134,16 @@ public sealed class MindRuntimeDiscoveryTests
         string registration = Register(out Pieces pieces);
         File.WriteAllText(Path.Combine(pieces.Voice, "voice.bin"), "otra voz");
         File.WriteAllText(pieces.Projector, "otro proyector");
+        File.WriteAllText(Path.Combine(pieces.WakeFast, "head.onnx"), "otra cabeza");
 
         Assert.That(Apply(registration), Is.True);
 
         Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_TTS_DIR"), Is.Null);
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_FAST_DIR"), Is.Null);
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_DIR"), Is.EqualTo(pieces.Wake));
         Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_MMPROJ"), Is.Null);
         Assert.That(Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT"), Is.Null);
-        Assert.That(Environment.GetEnvironmentVariable("BAXY_S1_GGUF"), Is.EqualTo(pieces.SystemOne));
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_S1_GGUF"), Is.Null);
         Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"), Does.EndWith("qwen.gguf"));
     }
 
@@ -143,6 +159,24 @@ public sealed class MindRuntimeDiscoveryTests
         Assert.That(Variables().Values, Is.All.Null);
     }
 
+    // uso-93: a registration written before the fast package (or on a machine without it) starts every other piece, and
+    // the mind hears k5 alone.
+    [Test]
+    public void ARegistrationWithoutTheFastPackageStartsTheRestAndK5Alone()
+    {
+        string registration = Register(out Pieces pieces);
+        JsonObject document = JsonNode.Parse(File.ReadAllText(registration))!.AsObject();
+        document.Remove("renew_wake_fast_dir");
+        document.Remove("renew_wake_fast_sha256");
+        File.WriteAllText(registration, document.ToJsonString());
+
+        Assert.That(Apply(registration), Is.True);
+
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_FAST_DIR"), Is.Null);
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_DIR"), Is.EqualTo(pieces.Wake));
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_STT_DIR"), Is.EqualTo(pieces.Stt));
+    }
+
     [Test]
     public void AnUnknownPropertyStillRefusesTheRegistration()
     {
@@ -152,6 +186,331 @@ public sealed class MindRuntimeDiscoveryTests
         File.WriteAllText(registration, document.ToJsonString());
 
         Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration).Runtime, Is.Null);
+    }
+
+    // The Steam build (scripts/build_steam.ps1) ships its registration with the product, its paths relative to it, in a
+    // folder that may be named BAXY (Steam's install folder): the files beside it start the mind.
+    [Test]
+    public void APackagedRegistrationNamesTheProductsFilesBesideIt()
+    {
+        string registration = RegisterPackaged(Path.Combine(_folder, "steamapps", "common", "BAXY"), @"python\python.exe");
+
+        MindRuntimeConfiguration? runtime = MindRuntimeDiscovery.DiscoverVerified(registration).Runtime;
+
+        Assert.That(runtime, Is.Not.Null);
+        Assert.That(runtime!.Python, Is.EqualTo(Path.Combine(Path.GetDirectoryName(registration)!, "python", "python.exe")));
+        Assert.That(runtime.Gguf, Is.EqualTo(Path.Combine(Path.GetDirectoryName(registration)!, "models", "qwen.gguf")));
+        Assert.That(runtime.Pieces.Voice, Is.EqualTo(Path.Combine(Path.GetDirectoryName(registration)!, "voice")));
+    }
+
+    [Test]
+    public void ARelativePathNeverLeavesTheRegistrationsFolder()
+    {
+        string product = Path.Combine(_folder, "product");
+        Write(Path.Combine(_folder, "outside", "python.exe"), "python");
+        string registration = RegisterPackaged(product, @"..\outside\python.exe");
+
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration).Runtime, Is.Null);
+    }
+
+    [Test]
+    public void TheRegistrationTheAppShipsWinsOverTheMachines()
+    {
+        string product = Path.Combine(_folder, "product");
+        string app = Path.Combine(product, "app");
+        Directory.CreateDirectory(app);
+
+        Assert.That(MindRuntimeDiscovery.DefaultRegistrationPath(app, _local),
+            Is.EqualTo(Path.Combine(_local, "BAXYRuntime", "mind-runtime-v1.json")));
+
+        string packaged = Write(Path.Combine(product, "mind-runtime-v1.json"), "{}");
+
+        Assert.That(MindRuntimeDiscovery.DefaultRegistrationPath(app, _local), Is.EqualTo(packaged));
+    }
+
+    // uso-101: a store's package brings one llama-server folder per GPU backend and cannot rewrite its registration (a
+    // store's folder is the store's), so the App picks the folder at every start by the GPU's PCI vendor (10DE NVIDIA, 1002
+    // AMD, 8086 Intel). PCI ids are simulated here; the real reading is WindowsGpuVendors.
+    [TestCase(0x10DEu, "llama", "cuda")]
+    [TestCase(0x1002u, "llama-vulkan", "vulkan")]
+    [TestCase(0x8086u, "llama-vulkan", "vulkan")]
+    public void APackageWithBothServersPicksTheFolderOfThisMachinesGpu(uint vendor, string folder, string backend)
+    {
+        string registration = RegisterPackagedWithBothServers();
+
+        MindRuntimeConfiguration? runtime = MindRuntimeDiscovery.DiscoverVerified(registration, () => [vendor]).Runtime;
+
+        Assert.That(runtime, Is.Not.Null);
+        Assert.That(runtime!.LlamaServer, Is.EqualTo(Path.Combine(Path.GetDirectoryName(registration)!, folder, "llama-server.exe")));
+        Assert.That(runtime.LlamaBackend, Is.EqualTo(backend));
+    }
+
+    [TestCase(new[] { 0x8086u, 0x10DEu }, "llama")]
+    [TestCase(new[] { 0x1002u, 0x10DEu }, "llama")]
+    [TestCase(new[] { 0x8086u, 0x1002u }, "llama-vulkan")]
+    public void NvidiaWinsBesideAnotherGpu(uint[] vendors, string folder)
+    {
+        string registration = RegisterPackagedWithBothServers();
+
+        MindRuntimeConfiguration? runtime = MindRuntimeDiscovery.DiscoverVerified(registration, () => vendors).Runtime;
+
+        Assert.That(runtime?.LlamaServer, Is.EqualTo(Path.Combine(Path.GetDirectoryName(registration)!, folder, "llama-server.exe")));
+    }
+
+    // 1414 is Microsoft's basic display adapter: a GPU without its driver looks like this.
+    [TestCase(new uint[0])]
+    [TestCase(new[] { 0x1414u })]
+    public void AMachineWithNoSupportedGpuIsToldApartAndGetsNoRuntime(uint[] vendors)
+    {
+        string registration = RegisterPackagedWithBothServers();
+
+        MindRuntimeDiscoveryResult found = MindRuntimeDiscovery.DiscoverVerified(registration, () => vendors);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.NoSupportedGpu, Is.True);
+            Assert.That(found.Runtime, Is.Null);
+            Assert.That(found.CanConfigure, Is.False);
+            Assert.That(MindRuntimeDiscovery.ApplyVerified(found, _local), Is.False);
+            Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_SERVER"), Is.Null);
+        });
+    }
+
+    [Test]
+    public void TheChosenServerAndItsBackendReachTheMind()
+    {
+        string registration = RegisterPackagedWithBothServers();
+
+        Assert.That(MindRuntimeDiscovery.ApplyVerified(MindRuntimeDiscovery.DiscoverVerified(registration, () => [0x1002u]), _local), Is.True);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_SERVER"),
+                Is.EqualTo(Path.Combine(Path.GetDirectoryName(registration)!, "llama-vulkan", "llama-server.exe")));
+            Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_BACKEND"), Is.EqualTo("vulkan"));
+        });
+    }
+
+    // A bench names its own server, on any machine: no choice is made and nothing is refused.
+    [Test]
+    public void AGivenServerStillWinsAndNoChoiceIsMade()
+    {
+        string registration = RegisterPackagedWithBothServers();
+        string given = Write(Path.Combine(_folder, "bench", "llama-server.exe"), "server");
+        Environment.SetEnvironmentVariable("BAXY_MIND_LLAMA_SERVER", given);
+
+        MindRuntimeDiscoveryResult found = MindRuntimeDiscovery.DiscoverVerified(
+            registration, () => throw new AssertionException("the GPU is not read"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.NoSupportedGpu, Is.False);
+            Assert.That(found.Runtime, Is.Not.Null);
+            Assert.That(MindRuntimeDiscovery.ApplyVerified(found, _local), Is.True);
+            Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_SERVER"), Is.EqualTo(given));
+            Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_BACKEND"), Is.Null);
+        });
+    }
+
+    [Test]
+    public void AVulkanServerThatIsNotWhatWasRegisteredStartsNothing()
+    {
+        string registration = RegisterPackagedWithBothServers();
+        File.WriteAllText(Path.Combine(Path.GetDirectoryName(registration)!, "llama-vulkan", "llama-server.exe"), "another");
+
+        MindRuntimeDiscoveryResult found = MindRuntimeDiscovery.DiscoverVerified(registration, () => [0x1002u]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.Runtime, Is.Null);
+            Assert.That(found.NoSupportedGpu, Is.False, "the GPU is supported; it is the package that is broken");
+        });
+    }
+
+    // The GitHub release installs the CUDA folder only where the installer saw an NVIDIA GPU: a card added later, or one the
+    // installer could not see, computes with the Vulkan folder that every installation has instead of not starting.
+    [Test]
+    public void ANvidiaMachineWhoseInstallationHasNoCudaFolderComputesWithVulkan()
+    {
+        string registration = RegisterPackagedWithBothServers();
+        string folder = Path.GetDirectoryName(registration)!;
+        Directory.Delete(Path.Combine(folder, "llama"), recursive: true);
+
+        MindRuntimeConfiguration? runtime = MindRuntimeDiscovery.DiscoverVerified(registration, () => [0x10DEu]).Runtime;
+
+        Assert.That(runtime?.LlamaServer, Is.EqualTo(Path.Combine(folder, "llama-vulkan", "llama-server.exe")));
+        Assert.That(runtime?.LlamaBackend, Is.EqualTo("vulkan"));
+    }
+
+    [Test]
+    public void ACudaServerThatIsThereButIsNotWhatWasRegisteredStartsNothing()
+    {
+        string registration = RegisterPackagedWithBothServers();
+        File.WriteAllText(Path.Combine(Path.GetDirectoryName(registration)!, "llama", "llama-server.exe"), "another");
+
+        MindRuntimeDiscoveryResult found = MindRuntimeDiscovery.DiscoverVerified(registration, () => [0x10DEu]);
+
+        Assert.That(found.Runtime, Is.Null, "a damaged folder is a broken package, not a machine without the part");
+    }
+
+    // A registration with one server (this machine's, register_mind_runtime.ps1, or an earlier package) stays as it was.
+    [Test]
+    public void ARegistrationWithOneServerMakesNoChoice()
+    {
+        string registration = RegisterPackaged(Path.Combine(_folder, "one"), @"python\python.exe");
+
+        MindRuntimeDiscoveryResult found = MindRuntimeDiscovery.DiscoverVerified(
+            registration, () => throw new AssertionException("the GPU is not read"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.Runtime?.LlamaServer, Is.EqualTo(Path.Combine(Path.GetDirectoryName(registration)!, "llama", "llama-server.exe")));
+            Assert.That(found.Runtime?.LlamaBackend, Is.Null);
+            Assert.That(found.NoSupportedGpu, Is.False);
+        });
+    }
+
+    // itch.io has no installer: a zip unpacked where this account cannot write starts just the same, each start reading
+    // the files again because the hash store has nowhere to go.
+    [Test]
+    public void APackageInAFolderBaxyCannotWriteToStillStarts()
+    {
+        string registration = RegisterPackagedWithBothServers();
+        var folder = new DirectoryInfo(Path.GetDirectoryName(registration)!);
+        var user = System.Security.Principal.WindowsIdentity.GetCurrent().User!;
+        var deny = new System.Security.AccessControl.FileSystemAccessRule(
+            user,
+            System.Security.AccessControl.FileSystemRights.CreateFiles | System.Security.AccessControl.FileSystemRights.WriteData,
+            System.Security.AccessControl.AccessControlType.Deny);
+        System.Security.AccessControl.DirectorySecurity security = folder.GetAccessControl();
+        security.AddAccessRule(deny);
+        folder.SetAccessControl(security);
+        try
+        {
+            Assert.That(() => File.WriteAllText(Path.Combine(folder.FullName, "probe.txt"), "x"), Throws.TypeOf<UnauthorizedAccessException>());
+            Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration, () => [0x1002u]).Runtime, Is.Not.Null);
+            Assert.That(File.Exists(Path.Combine(folder.FullName, RuntimeFileHashCache.FileName)), Is.False);
+        }
+        finally
+        {
+            security.RemoveAccessRule(deny);
+            folder.SetAccessControl(security);
+        }
+    }
+
+    [Test]
+    public async Task AMachineWithNoSupportedGpuIsABreakdownSaidAsItsCauseAndNothingIsRelaunched()
+    {
+        using var fake = new FakeMind();
+        var viewModel = new MainWindowViewModel();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            string registration = RegisterPackagedWithBothServers();
+            // The fake's interpreter and this machine's server are variables, which would win; a store's package has none.
+            Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, null);
+            Environment.SetEnvironmentVariable("BAXY_MIND_LLAMA_SERVER", null);
+            bool started = viewModel.ApplyMindRuntime(MindRuntimeDiscovery.DiscoverVerified(registration, () => []));
+            (int status, JsonObject agent) = await view.SendAsync("GET", "/agent/status");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(started, Is.False);
+                Assert.That(status, Is.EqualTo(200));
+                Assert.That((string?)agent["failure"], Is.EqualTo(MainWindowViewModel.NoSupportedGpu));
+                Assert.That(viewModel.MindFailed, Is.True);
+            });
+        }
+    }
+
+    // The real reading of this machine's GPUs (DXGI): whatever they are, it answers.
+    [Test]
+    public void TheMachinesGpuVendorsAreRead()
+    {
+        Assert.That(Baxy.Providers.Windows.SystemStatus.WindowsGpuVendors.Read, Throws.Nothing);
+    }
+
+    // uso-116 (N23): an install gets what is measured: without the decision model, registered or not. A bench gives it.
+    [Test]
+    public void ARegisteredDecisionModelIsNotHandedAndAGivenOneIsKept()
+    {
+        string registration = Register(out _);
+        Assert.That(Apply(registration), Is.True);
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_S1_GGUF"), Is.Null);
+
+        Environment.SetEnvironmentVariable("BAXY_S1_GGUF", "dado.gguf");
+        Assert.That(Apply(registration), Is.True);
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_S1_GGUF"), Is.EqualTo("dado.gguf"));
+    }
+
+    // uso-116 (N23): a new user whose install is short of something read «El modelo no está disponible» and nothing else.
+    [Test]
+    public void NoRegistrationSaysBaxyIsNotInstalled()
+    {
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(Path.Combine(_folder, "nada.json")).Problem, Is.EqualTo("sin_instalar"));
+    }
+
+    [Test]
+    public void AModelThatIsNotThereIsNamed()
+    {
+        string registration = Register(out _);
+        File.Delete(Path.Combine(_folder, "runtime", "qwen.gguf"));
+
+        MindRuntimeDiscoveryResult found = MindRuntimeDiscovery.DiscoverVerified(registration);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.Runtime, Is.Null);
+            Assert.That(found.Problem, Is.EqualTo("modelo_ausente"));
+        });
+    }
+
+    [Test]
+    public void AModelThatIsNotTheRegisteredOneIsNamed()
+    {
+        string registration = Register(out _);
+        File.WriteAllText(Path.Combine(_folder, "runtime", "qwen.gguf"), "otro");
+
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration).Problem, Is.EqualTo("modelo_danado"));
+    }
+
+    [TestCase("python", "python.exe")]
+    [TestCase("llama", "llama-server.exe")]
+    public void AnotherPieceThatIsNotThereIsAMissingComponent(string folder, string file)
+    {
+        string registration = Register(out _);
+        File.Delete(Path.Combine(_folder, "runtime", folder, file));
+
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration).Problem, Is.EqualTo("componente_ausente"));
+    }
+
+    [Test]
+    public void AGoodRegistrationHasNoProblem()
+    {
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(Register(out _)).Problem, Is.Null);
+    }
+
+    [Test]
+    public void AnExplicitInterpreterThatIsNotThereIsAMissingComponent()
+    {
+        Environment.SetEnvironmentVariable(MindSidecarClient.PythonEnvironmentVariable, Path.Combine(_folder, "no", "python.exe"));
+
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(Register(out _)).Problem, Is.EqualTo("componente_ausente"));
+    }
+
+    // A store's package names its files relative to the registration: the cause is read in the package, not in the current folder.
+    [Test]
+    public void APackagesMissingModelIsNamedAndAPackagesMissingPieceIsNotTheModel()
+    {
+        string registration = RegisterPackagedWithBothServers();
+        string folder = Path.GetDirectoryName(registration)!;
+        File.Delete(Path.Combine(folder, "python", "python.exe"));
+
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration, () => [0x1002u]).Problem, Is.EqualTo("componente_ausente"));
+
+        File.Delete(Path.Combine(folder, "models", "qwen.gguf"));
+
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration, () => [0x1002u]).Problem, Is.EqualTo("modelo_ausente"));
     }
 
     // The folder's hash is the one scripts/mind_runtime_manifest.ps1 writes (Get-BaxyDirectorySha256).
@@ -168,7 +527,8 @@ public sealed class MindRuntimeDiscoveryTests
         Assert.That(MindRuntimeDiscovery.DirectorySha256(Hashes(), folder), Is.EqualTo(expected));
     }
 
-    private sealed record Pieces(string Voice, string Wake, string Stt, string SystemOne, string Projector);
+    private sealed record Pieces(
+        string Voice, string Wake, string WakeFast, string Stt, string SystemOne, string Projector);
 
     private bool Apply(string registration) =>
         MindRuntimeDiscovery.ApplyVerified(MindRuntimeDiscovery.DiscoverVerified(registration), _local);
@@ -176,9 +536,9 @@ public sealed class MindRuntimeDiscoveryTests
     private static Dictionary<string, string?> Variables() =>
         new[]
         {
-            "BAXY_RENEW_TTS_DIR", "BAXY_RENEW_WAKE_DIR", "BAXY_RENEW_STT_DIR", "BAXY_S1_GGUF", "BAXY_S1_THREADS",
-            "BAXY_MIND_MMPROJ", "BAXY_MIND_LLAMA_PORT", "BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL", "BAXY_VISION_SLOT",
-            "BAXY_VISION_SLOT_DIR",
+            "BAXY_RENEW_TTS_DIR", "BAXY_RENEW_WAKE_DIR", "BAXY_RENEW_WAKE_FAST_DIR", "BAXY_RENEW_STT_DIR", "BAXY_S1_GGUF",
+            "BAXY_S1_THREADS", "BAXY_MIND_MMPROJ", "BAXY_MIND_LLAMA_PORT", "BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL",
+            "BAXY_VISION_SLOT", "BAXY_VISION_SLOT_DIR",
         }.ToDictionary(static name => name, static name => Environment.GetEnvironmentVariable(name));
 
     private string Register(out Pieces pieces, bool legacy = false)
@@ -192,6 +552,7 @@ public sealed class MindRuntimeDiscoveryTests
         pieces = new Pieces(
             Folder(Path.Combine(runtime, "voice"), "baxy-voice.json", "voice.bin"),
             Folder(Path.Combine(runtime, "wake"), "config.json", "baxy_wake_runtime.py"),
+            Folder(Path.Combine(runtime, "wake-fast"), "config.json", "head.onnx", "baxy_wake_runtime.py"),
             Folder(Path.Combine(runtime, "stt"), "tokens.txt", "encoder.int8.onnx"),
             Write(Path.Combine(runtime, "laya.gguf"), "laya"),
             Write(Path.Combine(runtime, "mmproj.gguf"), "mmproj"));
@@ -223,6 +584,8 @@ public sealed class MindRuntimeDiscoveryTests
             document["renew_tts_sha256"] = MindRuntimeDiscovery.DirectorySha256(Hashes(), pieces.Voice);
             document["renew_wake_dir"] = pieces.Wake;
             document["renew_wake_sha256"] = MindRuntimeDiscovery.DirectorySha256(Hashes(), pieces.Wake);
+            document["renew_wake_fast_dir"] = pieces.WakeFast;
+            document["renew_wake_fast_sha256"] = MindRuntimeDiscovery.DirectorySha256(Hashes(), pieces.WakeFast);
             document["renew_stt_dir"] = pieces.Stt;
             document["renew_stt_sha256"] = MindRuntimeDiscovery.DirectorySha256(Hashes(), pieces.Stt);
             document["s1_gguf"] = pieces.SystemOne;
@@ -235,6 +598,41 @@ public sealed class MindRuntimeDiscoveryTests
         string registration = Path.Combine(_folder, "registration", "mind-runtime-v1.json");
         Write(registration, document.ToJsonString());
         return registration;
+    }
+
+    private string RegisterPackagedWithBothServers()
+    {
+        string registration = RegisterPackaged(Path.Combine(_folder, "steamapps", "common", "BAXY"), @"python\python.exe");
+        string vulkan = Write(Path.Combine(Path.GetDirectoryName(registration)!, "llama-vulkan", "llama-server.exe"), "server");
+        JsonObject document = JsonNode.Parse(File.ReadAllText(registration))!.AsObject();
+        document["llama_server_vulkan"] = @"llama-vulkan\llama-server.exe";
+        document["llama_server_vulkan_sha256"] = Sha256File(vulkan);
+        File.WriteAllText(registration, document.ToJsonString());
+        return registration;
+    }
+
+    private static string RegisterPackaged(string product, string python)
+    {
+        string interpreter = Write(Path.GetFullPath(Path.Combine(product, python)), "python");
+        Write(Path.Combine(product, "mind", "baxy_mind", "__main__.py"), "# mind");
+        string gguf = Write(Path.Combine(product, "models", "qwen.gguf"), "qwen");
+        string server = Write(Path.Combine(product, "llama", "llama-server.exe"), "server");
+        string voice = Folder(Path.Combine(product, "voice"), "baxy-voice.json", "voice.bin");
+        var document = new JsonObject
+        {
+            ["schema"] = "baxy-mind-runtime-v1",
+            ["python"] = python,
+            ["python_sha256"] = Sha256File(interpreter),
+            ["python_path"] = "mind",
+            ["gguf"] = @"models\qwen.gguf",
+            ["gguf_sha256"] = Sha256File(gguf),
+            ["llama_server"] = @"llama\llama-server.exe",
+            ["llama_server_sha256"] = Sha256File(server),
+            ["ngl"] = 99,
+            ["renew_tts_dir"] = "voice",
+            ["renew_tts_sha256"] = MindRuntimeDiscovery.DirectorySha256(Hashes(), voice),
+        };
+        return Write(Path.Combine(product, "mind-runtime-v1.json"), document.ToJsonString());
     }
 
     private static string Folder(string folder, params string[] names)

@@ -44,6 +44,17 @@ public sealed class BypassNoticeTests
         Assert.That(lines.Select(static l => (string?)l["text"]), Has.One.StartsWith(said));
     }
 
+    // Uso real 2026-11-02: a send the person said «sí» to failed after reaching its provider, and the line said it ran
+    // «sin preguntar, puede haber corrido». It was asked: no Bypass line, whatever it ended in.
+    [TestCase(OperationStatuses.Completed, true, "{\"status\":\"completed\",\"verification\":\"readback\"}")]
+    [TestCase(OperationStatuses.Completed, false, "{}")]
+    public async Task ACallThePersonSaidYesToIsNeverSaidUnasked(string status, bool verified, string observation)
+    {
+        IReadOnlyList<JsonObject> lines = await LinesAfterAsync(Step(status, verified, observation) with { Asked = true });
+
+        Assert.That(lines.Select(static l => (string?)l["text"]), Has.None.StartsWith("Bypass"));
+    }
+
     private static NativeTurnStep Step(string status, bool verified, string observation) =>
         new(Operation, new JsonObject(), status, verified, status == OperationStatuses.Failed ? "provider_failed" : null,
             12, observation, "c1", Sent: true);

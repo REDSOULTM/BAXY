@@ -39,7 +39,7 @@ internal static class FieldUiProbe
     /// <summary>Escribe el texto en el compositor de React y pulsa su botón de enviar (design v4: sin formulario).</summary>
     private const string SendScript = """
         (function (text) {
-          const input = document.querySelector('input[aria-label="Escribe a BAXY"]');
+          const input = document.querySelector('.bx-line > input');
           if (!input) { return 'no_input'; }
           if (input.dataset.ready !== 'true') { return 'input_disabled'; }
           const setter = Object.getOwnPropertyDescriptor(
@@ -79,7 +79,7 @@ internal static class FieldUiProbe
     /// </summary>
     private const string SurfaceScript = """
         (function () {
-          const input = document.querySelector('input[aria-label="Escribe a BAXY"]');
+          const input = document.querySelector('.bx-line > input');
           const rows = document.querySelectorAll(
             '.bx-c4-list > .bx-c4-you, .bx-c4-list > .bx-c4-baxy, .bx-c4-list > .bx-c4-sys');
           return JSON.stringify({

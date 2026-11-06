@@ -42,11 +42,12 @@ public sealed class UnsureActionTests
         Assert.That(Outcome(NativeTurnLoop.UnsureHeld("input.visible.click", Click("Enviar"),
             ConfirmationMode.Normal)), Is.EqualTo(NativeTurnLoop.Unsure));
 
+    // Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca»): in Bypass a message runs unasked too.
     [Test]
-    public void AMessageTheKernelConfirmsEvenInBypassIsNotOneThatWouldRunUnasked() =>
+    public void InBypassAMessageWouldRunUnasked() =>
         Assert.That(Outcome(NativeTurnLoop.UnsureHeld("message.send",
             new JsonObject { ["channel"] = "whatsapp", ["to"] = "Ana", ["text"] = "hola" },
-            ConfirmationMode.Bypass)), Is.EqualTo(NativeTurnLoop.Unsure));
+            ConfirmationMode.Bypass)), Is.EqualTo("would_run_unasked"));
 
     [Test]
     public void AnOperationNoCatalogHasIsReadAgainAndItsCallSaysSo() =>

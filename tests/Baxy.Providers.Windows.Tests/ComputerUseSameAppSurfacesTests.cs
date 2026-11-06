@@ -242,6 +242,119 @@ public sealed class ComputerUseSameAppSurfacesTests
         });
     }
 
+    // Ajuste c4 (banco ciego c3: 14 clics de 17 s que abrían un diálogo modal, «Preferencias» de calibre en C3-076/077):
+    // the worker invoked the control and then answered no post-read within its budget, the application busy building its
+    // dialog; the click was told visible_click_postread_no_receipt though the dialog was up. A modal dialog born of the
+    // click, which now disables its window, is the click's effect: seen, the click is done without waiting for the
+    // worker, and the read still waiting is given up.
+    [Test]
+    public async Task AModalDialogBornOfTheClickEndsAPostreadTheWorkerDoesNotAnswer()
+    {
+        var worker = new SilentPostreadWorker(PendingClick);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: SameImage)
+        {
+            PopupsOf = window => worker.Clicked ? [(nint)777] : [],
+            ModalOf = window => worker.Clicked ? 777 : window,
+            PointerRestsOn = window => true,
+        };
+
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Preferencias","window":4660}"""), CancellationToken.None);
+        watch.Stop();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.Null);
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("popupBorn").GetBoolean(), Is.True);
+            Assert.That(watch.Elapsed, Is.LessThan(SilentPostreadWorker.Silence), "the dialog is seen, the worker not waited for");
+            Assert.That(worker.ReadGivenUp, Is.True, "the read still waiting is given up");
+            Assert.That(worker.Clicks, Is.EqualTo(1));
+        });
+    }
+
+    // Counter-case: a popup that disables nothing (a hover's bubble, a menu) proves nothing while the worker is silent: the
+    // silence is said as before.
+    [Test]
+    public async Task APopupThatIsNoModalDialogLeavesTheSilentPostreadUnanswered()
+    {
+        var worker = new SilentPostreadWorker(PendingClick);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: SameImage)
+        {
+            PopupsOf = window => worker.Clicked ? [(nint)777] : [],
+            ModalOf = window => window,
+            PointerRestsOn = window => true,
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Preferencias","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_postread_no_receipt"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.True);
+        });
+    }
+
+    // Counter-case: a dialog that already disabled the window before the click is not its effect.
+    [Test]
+    public async Task AModalDialogUpBeforeTheClickIsNotItsEffect()
+    {
+        var worker = new SilentPostreadWorker(PendingClick);
+        var adapter = new WindowsVisibleControlAdapter(worker, null, null, capture: SameImage)
+        {
+            PopupsOf = window => [(nint)777],
+            ModalOf = window => 777,
+            PointerRestsOn = window => false,
+        };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "input.visible.click", Json("""{"label":"Preferencias","window":4660}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("visible_click_postread_no_receipt"));
+        });
+    }
+
+    // Answers the click as pending, then leaves every post-read unanswered for Silence (the worker's budget, shortened),
+    // as a worker stuck in the application's tree does; a read given up before that is noted.
+    private sealed class SilentPostreadWorker(string clickAnswer) : IUiaWorker
+    {
+        internal static readonly TimeSpan Silence = TimeSpan.FromSeconds(3);
+
+        internal bool Clicked { get; private set; }
+
+        internal int Clicks { get; private set; }
+
+        internal bool ReadGivenUp { get; private set; }
+
+        public async ValueTask<JsonDocument?> SendAsync(string commandJson, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            if (commandJson.Contains("\"cmd\":\"click\"", StringComparison.Ordinal))
+            {
+                Clicked = true;
+                Clicks++;
+                return JsonDocument.Parse(clickAnswer);
+            }
+
+            try
+            {
+                await Task.Delay(Silence, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                ReadGivenUp = true;
+                throw;
+            }
+
+            return null;
+        }
+    }
+
     private sealed class AnsweringWorker(Func<string, string> answer) : IUiaWorker
     {
         internal int Postreads { get; private set; }

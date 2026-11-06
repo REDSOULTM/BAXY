@@ -21,6 +21,37 @@ public static class ApplicationIds
 
         return true;
     }
+
+    /// <summary>
+    /// Encargo 18 (banco de uso, U08/U14/U15: two installed applications of one name, and no way to open either): what an
+    /// opening takes is a name, or one of the identities an ambiguous opening tells its candidates by —the program's path
+    /// already resolved, or the application's id— which may hold «\» and «:». It is only compared with the installed
+    /// catalog (InstalledApplicationResolver), never started as a path; what a shell would read stays refused.
+    /// </summary>
+    public static bool IsValidOpening(string id)
+    {
+        if (IsValidRequest(id))
+        {
+            return true;
+        }
+
+        if (string.IsNullOrWhiteSpace(id) || id.Length > 512)
+        {
+            return false;
+        }
+
+        foreach (char character in id)
+        {
+            if (char.IsControl(character)
+                || character == '�'
+                || character is ';' or '|' or '&' or '>' or '<' or '$')
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 public static class ApplicationOpenErrorCodes
@@ -98,7 +129,20 @@ public record ApplicationOpenResult(
     // Auditoría D1: no installed application is called so; the closest installed names, none of them opened.
     IReadOnlyList<string>? Candidates = null,
     // Renew al máximo (velocidad): unverified because Windows shows the application's frame with nothing of it inside.
-    bool EmptyFrame = false);
+    bool EmptyFrame = false,
+    // Banco de entorno del NB (R17): with no application of that name, the one installed name that holds the name asked
+    // (InstalledApplicationResolver.HolderOf), none of them opened.
+    string? NameHolder = null,
+    // uso-108 C12: unverified because a process of the launch ended on this crash code (0xC0000135), with nothing of it left.
+    string? ExitedWithError = null,
+    // Encargo 98: instead of the new document, the opening met this dialog of the application.
+    ApplicationDialogMet? DialogOpened = null);
+
+/// <summary>Encargo 98: a dialog met by a new document's opening, and whether it was closed as its Cancel.</summary>
+public sealed record ApplicationDialogMet(string Title, bool Closed);
+
+/// <summary>Encargo 94: an installed application as a paste judges it (<see cref="IApplicationOpenProvider.InstalledFactsAsync"/>).</summary>
+public sealed record InstalledApplicationFacts(string Name, bool IsBrowser, IReadOnlyList<long>? Windows);
 
 public interface IApplicationOpenProvider
 {
@@ -113,7 +157,32 @@ public interface IApplicationOpenProvider
     /// </summary>
     ValueTask<bool> OpensSystemToolAsync(string applicationId, CancellationToken cancellationToken) =>
         ValueTask.FromResult(false);
+
+    /// <summary>
+    /// Encargo 94: read only, nothing launched. The installed application this name resolves to: whether it is a web
+    /// browser, and the windows it has open (null when they could not be read); null when it resolves to none.
+    /// </summary>
+    ValueTask<InstalledApplicationFacts?> InstalledFactsAsync(string applicationId, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<InstalledApplicationFacts?>(null);
+
+    /// <summary>
+    /// Encargo 94: read only, nothing launched. The installed name of the program Windows opens plain text with; null when
+    /// none is set, it is not an installed application or it is no fit place for text (a web browser, a system tool).
+    /// </summary>
+    ValueTask<string?> PlainTextEditorAsync(CancellationToken cancellationToken) =>
+        ValueTask.FromResult<string?>(null);
+
+    /// <summary>
+    /// Ajuste c5, read only, nothing launched: the installed applications that bear this name, its words whole inside
+    /// theirs (a game's own launcher). Null when the provider cannot tell.
+    /// </summary>
+    ValueTask<ApplicationNameLook?> LookForAsync(string name, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<ApplicationNameLook?>(null);
 }
+
+// Ajuste c5: what a look for a name found. Name: the one application that bears it, to open by that name. Several: more
+// than one does, none chosen. Near: none does, the names with a word that begins as it does.
+public sealed record ApplicationNameLook(string? Name, IReadOnlyList<string> Several, IReadOnlyList<string> Near);
 
 // Candidates: not installed under that name, the installed names closest to it, as app.open says them (auditoría D1).
 public sealed record ApplicationInstalledResult(

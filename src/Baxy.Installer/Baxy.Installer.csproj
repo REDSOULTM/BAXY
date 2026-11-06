@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(BaxyWindowsTargetFramework)</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>BAXY-Instalador</AssemblyName>
+    <RootNamespace>Baxy.Installer</RootNamespace>
+    <StartupObject>Baxy.Installer.Program</StartupObject>
+    <ApplicationIcon>..\Baxy.App\Assets\baxy.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+  <!-- One file with its .NET inside: it runs before anything is installed on the machine. -->
+  <PropertyGroup Condition="'$(_IsPublishing)' == 'true'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Baxy.Installer.Tests" />
+    <Using Include="System.IO" />
+    <Using Include="System.Net.Http" />
+    <Resource Include="Assets\faces\*.jpg" />
+    <Resource Include="Assets\fonts\*.ttf" />
+    <EmbeddedResource Include="Assets\fonts\OFL.txt" LogicalName="Baxy.Installer.fonts.OFL.txt" />
+    <EmbeddedResource Include="Assets\voice\*.wav" LogicalName="Baxy.Installer.voice.%(Filename)" />
+    <EmbeddedResource Include="Assets\license\*.txt" LogicalName="Baxy.Installer.license.%(Filename)" />
+    <!-- The exe is a copy of .NET, WPF and CsWinRT before anything is installed: their licenses go inside it. -->
+    <EmbeddedResource Include="..\..\licenses\dotnet-*.txt;..\..\licenses\CsWinRT-LICENSE.txt" LogicalName="Baxy.Installer.licenses.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(BaxyReleaseManifest)' != ''">
+    <EmbeddedResource Include="$(BaxyReleaseManifest)" LogicalName="Baxy.Installer.release.json" />
+  </ItemGroup>
+</Project>

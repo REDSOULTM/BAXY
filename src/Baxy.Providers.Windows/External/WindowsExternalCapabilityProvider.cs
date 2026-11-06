@@ -23,6 +23,9 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     private Func<IReadOnlyList<OpenWindow>>? _openWindows;
     private readonly IOpenedApplicationKeyboard? _openedKeyboard;
     private readonly Func<OpenedKeyboardWindow?>? _surfaceBelowProduct;
+    // Encargo A9: the person's window a copy, a select-all or (A11) a paste with no window goes to
+    // (SurfaceForFrontKeys). Null in the test seams that give none.
+    private readonly Func<OpenedKeyboardWindow?>? _surfaceForFrontKeys;
     // Feria (writing with no window): the program of the window in front, named apart from the refused one. Null in the
     // test seams.
     private Func<string?>? _frontProcess;
@@ -45,14 +48,14 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
 
     public WindowsExternalCapabilityProvider(string dataRoot)
         : this(CreateDefaultAdapters(dataRoot), ForegroundLease.Shared, ActOnProtectedWindow,
-            OpenedApplicationKeyboard.Product, SurfaceBelowProduct)
+            OpenedApplicationKeyboard.Product, SurfaceBelowProduct, SurfaceForFrontKeys)
     {
         _refusedProcess = RefusedProcess;
         _frontProcess = static () => ProgramOf(VisibleControlSurface.FrontWindow());
         _openWindows = OpenWindows;
         _elevatedAct = static (operation, arguments) => ElevatedActCode(operation, ActTarget(operation, arguments),
             static window => unchecked((int)VisibleControlSurface.ProcessOf(window)), VisibleControlSurface.RunsAboveUs,
-            VisibleControlSurface.Elevated);
+            VisibleControlSurface.Elevated, VisibleControlSurface.FrontWindow());
     }
 
     private static IExternalOperationAdapter[] CreateDefaultAdapters(string dataRoot)
@@ -61,11 +64,14 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         var browserSessionContext = new CdpBrowserSessionContext();
         // input.scroll by «index» scrolls a control of the last computer-use view; input.text.type by «index» writes
         // into a field of it.
-        // TZ-DC2 (z3 t1-c09 «mandale a Ron92 por discord…»): one UI Automation worker for the Core, started by its
+        // TZ-DC2 (z3 t1-c09 «mandale a Nube77 por discord…»): one UI Automation worker for the Core, started by its
         // prewarm. The messaging clients' probe had its own, started by each Core's first search, which read nothing
         // until it was up: that search clicked its first row after fixed waits and the recipient's chat never opened.
         var uia = new UiaWorkerHost();
-        var visibleControls = new WindowsVisibleControlAdapter(uia);
+        var visibleControls = new WindowsVisibleControlAdapter(uia)
+        {
+            RefusesSettingsSwitches = WindowsVisibleControlAdapter.InBypass(root),
+        };
         // Ronda 20 P2 (t-drag-2): the pause detector starts with the provider, off the caller's thread and without
         // waiting for it (its own wait for Raw Input happens there), so the first look of a mission already knows the
         // window the person works in. Started lazily at that look, it knew nothing that came before.
@@ -137,18 +143,23 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// window goes to (<see cref="OpenedApplicationKeyboard"/>); null (the test seams) sends it to the front, as before.</param>
     /// <param name="surfaceBelowProduct">The person's window a text with no window goes to when BAXY's own is in
     /// front (<see cref="SurfaceBelowProduct"/>); null (the test seams) sends it to the front, as before.</param>
+    /// <param name="surfaceForFrontKeys">The person's window a copy, a select-all or a paste with no window goes to
+    /// when the desktop or BAXY's own window is in front (<see cref="SurfaceForFrontKeys"/>); null (the test seams)
+    /// acts on the front, as before.</param>
     internal WindowsExternalCapabilityProvider(
         IExternalOperationAdapter[] adapters,
         IForegroundLease? missionFront = null,
         Func<string, JsonElement, bool>? actRefused = null,
         IOpenedApplicationKeyboard? openedKeyboard = null,
-        Func<OpenedKeyboardWindow?>? surfaceBelowProduct = null)
+        Func<OpenedKeyboardWindow?>? surfaceBelowProduct = null,
+        Func<OpenedKeyboardWindow?>? surfaceForFrontKeys = null)
     {
         _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
         _missionFront = missionFront;
         _actRefused = actRefused;
         _openedKeyboard = openedKeyboard;
         _surfaceBelowProduct = surfaceBelowProduct;
+        _surfaceForFrontKeys = surfaceForFrontKeys;
     }
 
     /// <summary>
@@ -243,6 +254,13 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             ? new OpenedKeyboardWindow(window, VisibleControlSurface.WindowTitle(window))
             : null;
 
+    // Encargo A9: the person's window a copy or a select-all goes to with the desktop or BAXY's own in front
+    // (VisibleControlSurface.SurfaceForFrontKeys), with its title.
+    private static OpenedKeyboardWindow? SurfaceForFrontKeys() =>
+        VisibleControlSurface.SurfaceForFrontKeys(VisibleControlSurface.FrontWindow()) is var window and not 0
+            ? new OpenedKeyboardWindow(window, VisibleControlSurface.WindowTitle(window))
+            : null;
+
     /// <summary>
     /// The mission's window an act names (its «window» argument: the catalog gives it only to the acts of a computer-use
     /// mission, the hwnd of the view the act was decided on), or 0.
@@ -330,17 +348,27 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// «window_elevation_unread» when the process's token could not be read. The click keeps its own refusal.
     /// </summary>
     internal static string? ElevatedActCode(
-        string operation, nint target, Func<nint, int> processOf, Func<int, bool> runsAboveUs, Func<int, bool?> elevated)
+        string operation, nint target, Func<nint, int> processOf, Func<int, bool> runsAboveUs, Func<int, bool?> elevated,
+        nint front = 0)
     {
         if (target == 0 || operation is not ("input.key.press" or "input.text.type" or "input.scroll"
-            or "input.select.all" or "clipboard.copy" or "clipboard.paste" or "input.keyboard.layout"))
+            or "input.select.all" or "clipboard.copy" or "clipboard.paste" or "input.keyboard.layout"
+            or "input.pointer.control"))
             return null;
-        int processId = processOf(target);
-        if (processId <= 0 || !runsAboveUs(processId))
-            return null;
-        return elevated(processId) is null
-            ? WindowsVisibleControlAdapter.WindowElevationUnread
-            : WindowsVisibleControlAdapter.WindowElevated;
+        // The pointer's click lands under the cursor, and was told sent by the count of its events: with the window under
+        // it or the one in front above BAXY that count proves nothing (MS docs of SendInput). Only the pointer has two.
+        foreach (nint window in operation == "input.pointer.control" && front != 0 ? [target, front] : new[] { target })
+        {
+            int processId = processOf(window);
+            if (processId > 0 && runsAboveUs(processId))
+            {
+                return elevated(processId) is null
+                    ? WindowsVisibleControlAdapter.WindowElevationUnread
+                    : WindowsVisibleControlAdapter.WindowElevated;
+            }
+        }
+
+        return null;
     }
 
     private static bool ActOnProtectedWindow(string operation, JsonElement arguments) =>
@@ -469,7 +497,10 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     {
         ArgumentNullException.ThrowIfNull(applications);
         foreach (WindowsVisibleControlAdapter adapter in _adapters.OfType<WindowsVisibleControlAdapter>())
+        {
             adapter.InstalledExecutables = applications.RunningExecutablesAsync;
+            adapter.InstalledName = applications.NamesInstalledApplicationAsync;
+        }
     }
 
     public void Prewarm()
@@ -517,10 +548,14 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
     /// read nothing playing (<c>media_session_not_found</c>), then the YouTube tab adapter found no tab of its own and
     /// its <c>youtube_tab_not_found</c> replaced the system read, so the reply spoke only of a YouTube video. Ronda final
     /// 23 (regla 3): a system read that failed (<c>smtc_session_access_failed</c>) is kept too, never replaced by «no tab».
+    /// Banco ciego c3 (C3-078): with <c>sourceApp</c> naming a desktop player, the tab's
+    /// <c>media_source_app_not_youtube_tab</c> (that source is not its own) replaced the system session's answer, and the
+    /// reply said the player was no YouTube player: an earlier answer is never replaced by «not mine».
     /// </summary>
     private static bool OnlyNarrowsAnEarlierRead(ExternalCapabilityReceipt? earlier, ExternalCapabilityReceipt later) =>
-        earlier?.ErrorCode is "media_session_not_found" or "smtc_session_access_failed"
-        && later.ErrorCode == "youtube_tab_not_found";
+        (earlier is not null && later.ErrorCode == "media_source_app_not_youtube_tab")
+        || (earlier?.ErrorCode is "media_session_not_found" or "smtc_session_access_failed"
+            && later.ErrorCode == "youtube_tab_not_found");
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -553,6 +588,25 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 await InvokeBoundAsync(operation, WithWindow(arguments, surface.Window), cancellationToken)
                     .ConfigureAwait(false),
                 surface);
+        }
+
+        // Encargo A9 (U27): a copy or a select-all with no window acts on the window in front; with the desktop or BAXY's
+        // own there, it goes to the person's window (VisibleControlSurface.SurfaceForFrontKeys), brought up by the mission
+        // lease below (InvokeBoundAsync: after the person's pause, or refused with nothing sent) before its helper runs.
+        // The review of E6 kept these on the front because their helper acts on whatever is in front when it runs: here
+        // the lease has just put that window there. The receipt is the adapter's, which names the window the keys reached
+        // as the helper read it (sentTo when nothing was copied, foregroundTitleBefore when it was). Measured (banco de
+        // decisiones, A9): with windowFrom and surfaceWindowTitle added as for a text, the controls that asked for the
+        // selection only selected all and copied in 5 of 30; without them, in none of 30, and U27 copied in 10 of 10.
+        // Encargo A11: a paste is the same keys' helper (Ctrl+V to the focus of the window in front): with the desktop,
+        // the taskbar or BAXY's own in front it pasted there (or was refused at BAXY's as protected_window, its next
+        // pointing to app_open); it goes to the person's window by the same rule and lease. Its receipt stays the
+        // adapter's (sentTo, readBack), which names the window the text reached.
+        if (_surfaceForFrontKeys is not null && operation is "clipboard.copy" or "input.select.all" or "clipboard.paste"
+            && NamesNoWindow(arguments) && _surfaceForFrontKeys() is { } keysSurface)
+        {
+            return await InvokeBoundAsync(operation, WithWindow(arguments, keysSurface.Window), cancellationToken)
+                .ConfigureAwait(false);
         }
 
         return await InvokeBoundAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
@@ -690,13 +744,28 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 {
                     writer.WriteString("reason", "BAXY stopped because input that was not its own (the person's mouse "
                         + "or keys) came during the act");
-                    writer.WriteString("next", receipt.EffectObserved || receipt.EffectMayHaveOccurred
-                        ? "part of the act may have been sent before the stop; whether it landed was not looked at: "
-                            + "looking at the window again (input_visible_controls) tells"
-                        : "nothing of the act was sent; the window was not looked at after the stop: looking at it "
-                            + "again (input_visible_controls) tells how it is");
+                    writer.WriteString("next", ChatFlowNext(receipt.Operation)
+                        ?? (receipt.EffectObserved || receipt.EffectMayHaveOccurred
+                            ? "part of the act may have been sent before the stop; whether it landed was not looked at: "
+                                + "looking at the window again (input_visible_controls) tells"
+                            : "nothing of the act was sent; the window was not looked at after the stop: looking at it "
+                                + "again (input_visible_controls) tells how it is"));
                 }),
             };
+
+    // Uso real 2026-11-05 (hallazgo de uso-112): client.channel.open stopped by input, and «looking at the window» took the
+    // model to a click on the row (a selection, no chat opened) and to «Listo, entré al canal»; message.send, to a click on
+    // the message box. These flows read their chat back and a click does not: the next says where the act is.
+    private static string? ChatFlowNext(string operation) => operation switch
+    {
+        "client.channel.open" => "the chat was not read back as open and nothing else says it is: client_channel_open "
+            + "again is what opens it and reads it back; a click on a row of the window does not, and tells nothing",
+        "message.send" => "what is known of the message is what this receipt says, no more: message_send_set again asks "
+            + "the person's yes and reads the chat back; a click or a key in the window does not send it",
+        "message.draft" => "what is known of the message is what this receipt says, no more: message_draft again writes "
+            + "it and reads it back; a click or a key in the window does not",
+        _ => null,
+    };
 
     private async ValueTask<ExternalCapabilityReceipt> InvokeWatchedAsync(
         string operation,

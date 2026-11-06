@@ -285,6 +285,23 @@ public sealed class WindowsWindowControlProviderTests
         });
     }
 
+    // Uso-108 (hondo 13, measured across the integrity boundary): a placement Windows refused says why for a window of an
+    // administrator's process; a focus crosses it, so its refusal is another one.
+    [TestCase(WindowControlAction.Maximize, true, WindowControlErrorCodes.WindowElevated)]
+    [TestCase(WindowControlAction.Minimize, true, WindowControlErrorCodes.WindowElevated)]
+    [TestCase(WindowControlAction.Maximize, false, WindowControlErrorCodes.ActionFailed)]
+    [TestCase(WindowControlAction.Focus, true, WindowControlErrorCodes.ActionFailed)]
+    public async Task APlacementRefusedSaysItIsAnElevatedWindowOnlyWhenItIs(WindowControlAction action, bool elevated, string code)
+    {
+        var platform = new FakePlatform { ExecuteAccepted = false, ElevatedProcess = elevated };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.ExecuteAsync(windowId, action, CancellationToken.None);
+
+        Assert.That(result.ErrorCode, Is.EqualTo(code));
+    }
+
     // A state that never converges after the command was sent, and a focus refused after restoring a minimized window,
     // may have changed the window; a maximize Windows refused did not.
     [TestCase(WindowControlAction.Minimize, "normal", true, WindowControlErrorCodes.VerificationFailed, true)]
@@ -330,6 +347,213 @@ public sealed class WindowsWindowControlProviderTests
             Assert.That(result.StateAfter?.State, Is.EqualTo(stateAfter));
             Assert.That(result.StateAfter?.Foreground, Is.False);
             Assert.That(result.StateAfter?.RequestedStateReached, Is.False);
+        });
+    }
+
+    // uso-108 A9: a window whose thread does not answer is told so, with nothing sent to it and no effect in doubt.
+    [Test]
+    public async Task NothingIsSentToAWindowThatDoesNotRespond()
+    {
+        var platform = new FakePlatform { Hung = true, WorkAreaBounds = new WindowBounds(0, 0, 1000, 800) };
+        var provider = new WindowsWindowControlProvider(platform);
+        async Task<string> Id() =>
+            (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult moved = await provider.SetBoundsAsync(await Id(), 20, 30, null, null, CancellationToken.None);
+        WindowActionResult resized = await provider.SetBoundsAsync(await Id(), null, null, 800, 600, CancellationToken.None);
+        WindowActionResult minimized = await provider.ExecuteAsync(await Id(), WindowControlAction.Minimize, CancellationToken.None);
+        WindowActionResult snapped = await provider.SnapAsync(await Id(), "left", CancellationToken.None);
+        WindowCloseResult closed = await provider.CloseAsync(await Id(), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            foreach (WindowActionResult result in new[] { moved, resized, minimized, snapped })
+            {
+                Assert.That(result.ErrorCode, Is.EqualTo("window_not_responding"));
+                Assert.That(result.EffectMayHaveOccurred, Is.False);
+                Assert.That(result.StateAfter, Is.Null);
+            }
+
+            Assert.That(closed.ErrorCode, Is.EqualTo("window_not_responding"));
+            Assert.That(closed.EffectMayHaveOccurred, Is.False);
+            Assert.That(platform.SetBoundsCalls, Is.Zero);
+            Assert.That(platform.ExecuteCalls, Is.Zero);
+            Assert.That(platform.CloseCalls, Is.Zero);
+            Assert.That(platform.SystemCloseCalls, Is.Zero);
+        });
+    }
+
+    // uso-108 A13: the request is posted, so the read right after it may find the window where it was.
+    [Test]
+    public async Task AMoveThatLandsAfterSomeReadsIsConfirmed()
+    {
+        var old = new WindowBounds(0, 0, 640, 480);
+        var platform = new FakePlatform { ReadsAfterMove = new Queue<WindowBounds>([old, old]) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SetBoundsAsync(windowId, 20, 30, null, null, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded && result.Verified, Is.True);
+            Assert.That((result.Window!.X, result.Window.Y), Is.EqualTo((20, 30)));
+            Assert.That(platform.DelayCalls, Is.EqualTo(2));
+        });
+    }
+
+    // uso-108 A13 (agent-desktop window_op.rs:15): a window that adjusts its own size settles near what was asked, and the
+    // result carries where it really is. Its first read alone proves nothing: it may still be on its way.
+    [Test]
+    public async Task AWindowThatSettlesNearTheSizeAskedIsWhereItWasAskedToGo()
+    {
+        var settled = new WindowBounds(0, 0, 797, 594);
+        var platform = new FakePlatform { ReadsAfterMove = new Queue<WindowBounds>(Enumerable.Repeat(settled, 5)) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SetBoundsAsync(windowId, null, null, 800, 600, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded && result.Verified, Is.True);
+            Assert.That((result.Window!.Width, result.Window.Height), Is.EqualTo((797, 594)));
+            Assert.That(platform.DelayCalls, Is.EqualTo(1));
+        });
+    }
+
+    // Review of uso-108: a move of a few pixels, the window read twice where it started: near what was asked and never moved.
+    [Test]
+    public async Task AMoveOfAFewPixelsThatDidNotHappenIsNotConfirmed()
+    {
+        var old = new WindowBounds(0, 0, 640, 480);
+        var platform = new FakePlatform { ReadsAfterMove = new Queue<WindowBounds>(Enumerable.Repeat(old, 100)) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SetBoundsAsync(windowId, 5, 5, null, null, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(result.EffectMayHaveOccurred, Is.True);
+            Assert.That((result.StateAfter?.X, result.StateAfter?.Y), Is.EqualTo(((int?)0, (int?)0)));
+        });
+    }
+
+    // Control: the same few pixels, the window having moved and settled near them.
+    [Test]
+    public async Task AMoveOfAFewPixelsThatSettledNearThemIsConfirmed()
+    {
+        var settled = new WindowBounds(3, 4, 640, 480);
+        var platform = new FakePlatform { ReadsAfterMove = new Queue<WindowBounds>(Enumerable.Repeat(settled, 5)) };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SetBoundsAsync(windowId, 5, 5, null, null, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded && result.Verified, Is.True);
+            Assert.That((result.Window!.X, result.Window.Y), Is.EqualTo((3, 4)));
+        });
+    }
+
+    // Review of uso-108: on a half, what counts is being on it: a window that rounds its size (a terminal) is already there,
+    // under the tolerance, and asked again stays where it is: it is on the half, in a moment, and that is said with its bounds.
+    [Test]
+    public async Task AWindowAlreadyOnTheHalfWithinTheToleranceIsThere()
+    {
+        var old = new WindowBounds(0, 0, 640, 480);
+        var platform = new FakePlatform
+        {
+            WorkAreaBounds = new WindowBounds(0, 0, 1286, 484),
+            ReadsAfterMove = new Queue<WindowBounds>(Enumerable.Repeat(old, 100)),
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SnapAsync(windowId, "left", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded && result.Verified, Is.True);
+            Assert.That((result.Window!.Width, result.Window.Height), Is.EqualTo((640, 480)));
+            Assert.That(platform.DelayCalls, Is.LessThan(8), "not the whole wait");
+        });
+    }
+
+    // Control: near the half at first and on its way: it is the arrival that is said.
+    [Test]
+    public async Task AWindowNearTheHalfThatMovesEndsOnTheHalf()
+    {
+        var old = new WindowBounds(0, 0, 640, 480);
+        var platform = new FakePlatform
+        {
+            WorkAreaBounds = new WindowBounds(0, 0, 1286, 484),
+            ReadsAfterMove = new Queue<WindowBounds>([old, old]),
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SnapAsync(windowId, "left", CancellationToken.None);
+
+        Assert.That((result.Window!.Width, result.Window.Height), Is.EqualTo((643, 484)));
+    }
+
+    // Control: far from the half and not moving is no placement.
+    [Test]
+    public async Task AWindowFarFromTheHalfThatDoesNotMoveIsNotConfirmed()
+    {
+        var old = new WindowBounds(0, 0, 640, 480);
+        var platform = new FakePlatform
+        {
+            WorkAreaBounds = new WindowBounds(0, 0, 1000, 800),
+            ReadsAfterMove = new Queue<WindowBounds>(Enumerable.Repeat(old, 100)),
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SnapAsync(windowId, "left", CancellationToken.None);
+
+        Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+    }
+
+    // Control: a window still moving near the bounds is read until it arrives, and it is the arrival that is said.
+    [Test]
+    public async Task AWindowStillMovingNearTheBoundsIsReadUntilItArrives()
+    {
+        var platform = new FakePlatform
+        {
+            ReadsAfterMove = new Queue<WindowBounds>([new WindowBounds(14, 30, 640, 480), new WindowBounds(17, 30, 640, 480)]),
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SetBoundsAsync(windowId, 20, 30, null, null, CancellationToken.None);
+
+        Assert.That((result.Window!.X, result.Window.Y), Is.EqualTo((20, 30)));
+    }
+
+    // Control: settled farther than the tolerance is not where it was asked to go: the failure stands, with where it is.
+    [Test]
+    public async Task AWindowThatSettlesFarFromTheSizeAskedStaysUnconfirmed()
+    {
+        var settled = new WindowBounds(0, 0, 780, 580);
+        var platform = new FakePlatform
+        {
+            ReadsAfterMove = new Queue<WindowBounds>(Enumerable.Repeat(settled, 100)),
+        };
+        var provider = new WindowsWindowControlProvider(platform);
+        string windowId = (await provider.ResolveAsync("notepad", 10, CancellationToken.None)).Windows.Single().WindowId;
+
+        WindowActionResult result = await provider.SetBoundsAsync(windowId, null, null, 800, 600, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.VerificationFailed));
+            Assert.That(result.EffectMayHaveOccurred, Is.True);
+            Assert.That((result.StateAfter?.Width, result.StateAfter?.Height), Is.EqualTo(((int?)780, (int?)580)));
         });
     }
 
@@ -484,6 +708,43 @@ public sealed class WindowsWindowControlProviderTests
                 else
                     Assert.That(spent.Result, Is.Null);
             }
+        });
+    }
+
+    // Banco de entorno del NB (U43 3 of 3, R01, U44): window.focus {windowId: "264146"}, the number a look gives Word's
+    // window, failed every time with a next that said the id was used up. A number that is a window open now leads with
+    // the window_resolve call by that window's process; a number that is no window, and an id of another shape, keep the
+    // used-up next; with the aid off, the old next.
+    [TestCase("all", "264146", true, "window_resolve {\"process\":\"WINWORD\"} gives the windowId of each window of WINWORD")]
+    [TestCase("all", "999", false, null)]
+    [TestCase("all", "win_nope", false, null)]
+    [TestCase("window_id_spent", "264146", true, null)]
+    public async Task AWindowNumberGivenAsAWindowIdLeadsWithTheCallThatGivesItsWindowId(
+        string aids, string windowId, bool open, string? numbered)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var platform = new FakePlatform();
+        if (open)
+            platform.WindowProcesses[(nint)264146] = "WINWORD";
+        var provider = new WindowsWindowControlProvider(platform);
+
+        OperationOutcome focus = await Run(
+            new WindowActionHandler("window.focus", WindowControlAction.Focus, provider), new { windowId });
+        OperationOutcome snap = await Run(new WindowSnapHandler(provider), new { windowId, side = "left" });
+
+        Assert.Multiple(() =>
+        {
+            foreach (OperationOutcome failed in new[] { focus, snap })
+            {
+                Assert.That(failed.ErrorCode, Is.EqualTo(WindowControlErrorCodes.InvalidOrExpiredWindowId));
+                Assert.That(failed.EffectMayHaveOccurred, Is.False);
+                string next = failed.Result!.Value.GetProperty("next").GetString()!;
+                if (numbered is null)
+                    Assert.That(next, Does.StartWith("nothing was done to the window: this windowId cannot be used"));
+                else
+                    Assert.That(next, Does.StartWith(numbered));
+            }
+            Assert.That(platform.ExecuteCalls, Is.Zero);
         });
     }
 
@@ -741,6 +1002,9 @@ public sealed class WindowsWindowControlProviderTests
 
         public DateTimeOffset UtcNow { get; set; } =
             new(2026, 7, 16, 0, 0, 0, TimeSpan.Zero);
+        // Banco de entorno del NB: the visible top-level windows by handle, with their process (a look's numbers).
+        public Dictionary<nint, string> WindowProcesses { get; } = [];
+        public string? ProcessOfWindow(nint window) => WindowProcesses.GetValueOrDefault(window);
         public bool IdentityChanged { get; set; }
         public int ExecuteCalls { get; private set; }
         public int CloseCalls { get; private set; }
@@ -754,9 +1018,16 @@ public sealed class WindowsWindowControlProviderTests
         public bool SystemCloseAccepted { get; set; }
         public bool SystemCloseCloses { get; set; }
         public bool ExecuteAccepted { get; set; } = true;
+        public bool ElevatedProcess { get; init; }
+        public bool RunsElevatedAboveUs(WindowIdentity identity) => ElevatedProcess;
         public bool SetBoundsAccepted { get; set; } = true;
         // Renew al máximo (8.3): Windows takes the placement and the window keeps its bounds.
         public bool SetBoundsIgnored { get; set; }
+        // uso-108: the window does not answer messages; and what the reads after a move find, each in turn.
+        public bool Hung { get; set; }
+        public bool NotResponding(WindowIdentity identity, CancellationToken cancellationToken) => Hung;
+        public Queue<WindowBounds>? ReadsAfterMove { get; set; }
+        private bool _moved;
         // Renew al máximo (8.3): the read from which the window is gone (-1: never), and the reads so far.
         public int GoneAfterObservations { get; set; } = -1;
         public int ObserveCalls { get; private set; }
@@ -806,6 +1077,8 @@ public sealed class WindowsWindowControlProviderTests
             Assert.That(identity.Handle, Is.EqualTo(_identity.Handle));
             Assert.That(identity.ProcessCreationTimeUtcTicks,
                 Is.EqualTo(_identity.ProcessCreationTimeUtcTicks));
+            if (_moved && ReadsAfterMove is { Count: > 0 } reads)
+                return new WindowSnapshot(identity, _state, _foreground, reads.Dequeue());
             return new WindowSnapshot(identity, _state, _foreground, _bounds);
         }
 
@@ -879,6 +1152,7 @@ public sealed class WindowsWindowControlProviderTests
                 return false;
             if (!SetBoundsIgnored)
                 _bounds = bounds;
+            _moved = true;
             return true;
         }
 

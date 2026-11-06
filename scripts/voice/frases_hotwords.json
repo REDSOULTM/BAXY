@@ -1,5 +1,5 @@
 {
- "nota": "Órdenes sintéticas para medir el oído de BAXY Renew con y sin hotwords. Sólo nombres públicos: aplicaciones y juegos del catálogo de referencia (F:/BAXYeval/renew_v1/catalog.reference.json) y órdenes genéricas. «dicho» es lo que lee la voz cuando la grafía española de la palabra no suena como la dice un chileno; si falta, se lee speech_text.spoken(texto).",
+ "nota": "Órdenes sintéticas para medir el oído de BAXY Renew con y sin hotwords. Sólo nombres públicos: aplicaciones y juegos del catálogo de referencia y órdenes genéricas. «dicho» es lo que lee la voz cuando la grafía española de la palabra no suena como la dice un chileno; si falta, se lee speech_text.spoken(texto).",
  "frases": [
   {"id": "l001", "clase": "lista", "texto": "Abre Spotify.", "nombre": "Spotify"},
   {"id": "l002", "clase": "lista", "texto": "Oye, ponme algo en Spotify po.", "nombre": "Spotify"},
@@ -114,7 +114,7 @@
   {"id": "g001", "clase": "general", "texto": "¿Qué hora es?"},
   {"id": "g002", "clase": "general", "texto": "Sube el volumen al cincuenta por ciento."},
   {"id": "g003", "clase": "general", "texto": "Baja un poco el brillo."},
-  {"id": "g004", "clase": "general", "texto": "¿Cómo va a estar el tiempo mañana en Ñuñoa?"},
+  {"id": "g004", "clase": "general", "texto": "¿Cómo va a estar el tiempo mañana en Viña del Mar?"},
   {"id": "g005", "clase": "general", "texto": "Busca recetas de pan amasado."},
   {"id": "g006", "clase": "general", "texto": "Avísame en quince minutos más."},
   {"id": "g007", "clase": "general", "texto": "Apaga el wifi."},

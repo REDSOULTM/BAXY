@@ -31,6 +31,61 @@ public sealed class MindSidecarClientTests
         Assert.That(status, Is.True, "voice.status waited behind the turn");
     }
 
+    [Test]
+    public void ATurnsRequestSaysHowLongTheWordsWereInTheApp()
+    {
+        JsonObject request = MindSidecarClient.DecideRequest("hola", null, TimeSpan.FromMilliseconds(8123.9));
+
+        Assert.That(request["waitedMs"]!.GetValue<long>(), Is.EqualTo(8123));
+        Assert.That(request.ContainsKey("pendingConfirmation"), Is.False);
+    }
+
+    // uso-82 (AMD e2e 2026-11-04): the App asks the mind to speak, and waits for each answer to sound
+    // (MainWindowViewModel.CanSpeak, ProductConductorHost), only while the mind offers voice.speak. A mind with no voice
+    // does not offer it; one whose voice failed after the hello says so in its voice.speak.result, and from then on the
+    // App neither asks it nor waits for it (each turn on the AMD PC ended 10 s after its answer).
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public async Task TheVoiceIsAvailableOnlyWhileTheMindOffersIt(bool withoutVoice, bool available)
+    {
+        using var fake = new FakeMind();
+        if (withoutVoice)
+        {
+            fake.Script(new JsonObject { ["unoffered"] = new JsonArray("voice.speak") });
+        }
+
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        Assert.That(mind.IsVoiceAvailable, Is.EqualTo(available));
+    }
+
+    [Test]
+    public async Task AVoiceThatFailedAfterTheHelloIsNoLongerAvailable()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["voice.speak"] = new JsonObject
+                {
+                    ["type"] = "voice.speak.result", ["accepted"] = false, ["speaks"] = false,
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        bool before = mind.IsVoiceAvailable;
+
+        bool accepted = await mind.VoiceSpeakAsync("Son las tres.", TimeSpan.FromSeconds(5), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(before, Is.True);
+            Assert.That(accepted, Is.False);
+            Assert.That(mind.IsVoiceAvailable, Is.False);
+            Assert.That(mind.IsReady, Is.True);
+        });
+    }
+
     // Ajuste c3 (humos del 31-10): the mind configured without the installed applications (the core's hello had none)
     // gets them when the core says them, once; the same list again sends nothing.
     [Test]
@@ -90,8 +145,8 @@ public sealed class MindSidecarClientTests
     public void TheCatalogTheMindReadsCarriesTheModesInWhichTheKernelConfirmsEachTool()
     {
         // P2.41: the mind's doubt asks in words only about a call the kernel would run unasked (mind.py, _unasked), by
-        // RiskPolicy.Evaluate itself: a song or a page go direct in both modes, an email asks in normal mode, and a
-        // message to a person asks in Bypass too.
+        // RiskPolicy.Evaluate itself: a song or a page go direct in both modes, and an email or a message to a person
+        // ask in normal mode only (decisión del dueño 2026-11-02: Bypass asks nothing).
         JsonObject request = MindSidecarClient.CreateCatalogConfigureRequest(
             [.. ProductCatalog.ToolDescriptors.Select(static descriptor =>
                 ProductCatalog.CreateToolDescriptor(new OperationDefinition(descriptor)))],
@@ -104,7 +159,7 @@ public sealed class MindSidecarClientTests
             Assert.That(Confirms("media.play.query"), Is.EqualTo("[]"));
             Assert.That(Confirms("browser.navigate"), Is.EqualTo("[]"));
             Assert.That(Confirms("email.send"), Is.EqualTo("[\"normal\"]"));
-            Assert.That(Confirms("message.send"), Is.EqualTo("[\"normal\",\"bypass\"]"));
+            Assert.That(Confirms("message.send"), Is.EqualTo("[\"normal\"]"));
             Assert.That(Confirms("system.power"), Is.EqualTo("[]"));
         });
     }
@@ -394,6 +449,79 @@ public sealed class MindSidecarClientTests
         }
 
         return false;
+    }
+
+    // Uso 84 (AMD RX 7600, 2026-11-04): a cold start read its prompt prefix in 167.5 s, against the App's fixed budget.
+    // Scaled down: a window of 1 s stands for the start's 600 s, and the mind reads its prefix for 3 s, telling each
+    // advance. It is waited for, on the one process it started (no retry, nothing killed).
+    [Test]
+    public async Task AStartWhoseModelKeepsAdvancingIsWaitedForPastItsWindow()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["progress"] = new JsonObject
+            {
+                ["catalog.configure"] = new JsonObject { ["every"] = 0.25, ["count"] = 12 },
+            },
+        });
+        await using var mind = new MindSidecarClient();
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        bool started = await mind.TryStartAsync(
+            Task.FromResult(FakeMind.EmptyCatalog), TimeSpan.FromSeconds(1), CancellationToken.None);
+
+        Assert.That(started, Is.True, "a model still advancing was taken for a failed start");
+        Assert.That(clock.Elapsed, Is.GreaterThan(TimeSpan.FromSeconds(2.5)));
+        Assert.That(mind.IsReady, Is.True);
+        Assert.That(fake.Seen.Count(static seen => seen == "catalog.configure"), Is.EqualTo(1));
+        Assert.That(fake.LiveProcesses, Has.Count.EqualTo(1));
+    }
+
+    // A model that stops advancing still fails at its window, as before.
+    [Test]
+    public async Task AStartWhoseModelStopsAdvancingFailsAtItsWindow()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["delay"] = new JsonObject { ["catalog.configure"] = 4 },
+            ["progress"] = new JsonObject
+            {
+                ["catalog.configure"] = new JsonObject { ["every"] = 0, ["count"] = 1 },
+            },
+        });
+        await using var mind = new MindSidecarClient();
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        bool started = await mind.TryStartAsync(
+            Task.FromResult(FakeMind.EmptyCatalog), TimeSpan.FromSeconds(1), CancellationToken.None);
+
+        Assert.That(started, Is.False);
+        Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(3.5)));
+    }
+
+    // However long it keeps advancing, a start ends at its safety ceiling.
+    [Test]
+    public async Task AStartPastItsCeilingFailsEvenWhileItsModelAdvances()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["progress"] = new JsonObject
+            {
+                ["catalog.configure"] = new JsonObject { ["every"] = 0.2, ["count"] = 100 },
+            },
+        });
+        await using var mind = new MindSidecarClient();
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        bool started = await mind.TryStartAsync(
+            Task.FromResult(FakeMind.EmptyCatalog), TimeSpan.FromSeconds(1), CancellationToken.None,
+            ceiling: TimeSpan.FromSeconds(2.5));
+
+        Assert.That(started, Is.False);
+        Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(5)));
     }
 
     [Test]

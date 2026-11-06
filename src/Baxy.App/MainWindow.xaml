@@ -17,8 +17,7 @@
         Background="#0A0E14"
         Loaded="OnLoaded"
         Closing="OnClosing"
-        AutomationProperties.AutomationId="BaxyMainWindow"
-        AutomationProperties.Name="BAXY, asistente local">
+        AutomationProperties.AutomationId="BaxyMainWindow">
   <WindowChrome.WindowChrome>
     <shell:WindowChrome CaptionHeight="0"
                         ResizeBorderThickness="6"
@@ -32,14 +31,12 @@
                   DefaultBackgroundColor="#FF0A0E14"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
-                  AutomationProperties.AutomationId="HistoricalFieldUi"
-                  AutomationProperties.Name="BAXY Field, interfaz local" />
+                  AutomationProperties.AutomationId="HistoricalFieldUi" />
 
     <ContentControl x:Name="AppSurfaceLayer"
                     Visibility="Collapsed"
                     HorizontalContentAlignment="Stretch"
                     VerticalContentAlignment="Stretch"
-                    AutomationProperties.AutomationId="AppSurfaceLayer"
-                    AutomationProperties.Name="Superficie nativa de BAXY" />
+                    AutomationProperties.AutomationId="AppSurfaceLayer" />
   </Grid>
 </Window>

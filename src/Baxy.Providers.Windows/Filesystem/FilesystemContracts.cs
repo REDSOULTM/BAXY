@@ -43,7 +43,9 @@ public sealed record FilesystemMutationResult(
     string? Folder = null,
     // Renew al máximo (w8): the first folder of the path this write made (relative to the folder written in): a
     // subfolder named wrong was made silently and the file told as written where the person said.
-    string? FolderCreated = null);
+    string? FolderCreated = null,
+    // Encargo 115 (H4): the format a file.write made of the text when its name asks for one (a Word document), read back.
+    string? Format = null);
 
 public sealed record BackupReceipt(
     string BackupId,

@@ -2,19 +2,25 @@
 # verifies every hash, src\Baxy.App\MindRuntimeDiscovery.cs). Entrega 1.1.0: besides the model, the pieces of this
 # machine that scripts\run_renew.cmd gave the benches (each optional; one not given stays off): BAXY's voice
 # (-VoiceDirectory, Supertonic), the ear (-WakeDirectory k4, -SttDirectory Parakeet Ultra), System One's decision model
-# (-SystemOneGguf, -SystemOneThreads) and the vision projector (-VisionProjector).
+# (-SystemOneGguf, -SystemOneThreads) and the vision projector (-VisionProjector). uso-93: the low-latency wake package
+# heard beside the wake word (-WakeFastDirectory, k6r-alto); written only when given, because an App before uso-93
+# refuses a registration with a property it does not know.
+# Encargo 8 (2026-11-02): -LlamaServer takes one llama-server.exe or several (the CUDA and the Vulkan folder of b11609);
+# the one registered is the one whose declared GPU backend is this machine's by its GPU's PCI vendor (CUDA with NVIDIA,
+# Vulkan with AMD or Intel, srcaxy_mind\gpu.py). None of them is: the registration fails and says what each one is.
 [CmdletBinding()]
 param(
     [string]$Python,
     [string]$PythonPath,
     [string]$Gguf,
-    [string]$LlamaServer,
+    [string[]]$LlamaServer,
     [string]$CpuProseAdapter,
     [string]$DeciderAdapter,
     [ValidateRange(0, 999)]
     [int]$GpuLayers = 99,
     [string]$VoiceDirectory,
     [string]$WakeDirectory,
+    [string]$WakeFastDirectory,
     [string]$SttDirectory,
     [string]$SystemOneGguf,
     [ValidateRange(1, 64)]
@@ -46,13 +52,13 @@ if ([string]::IsNullOrWhiteSpace($Gguf)) {
     }
     $Gguf = $resolution.Path
 }
-if ([string]::IsNullOrWhiteSpace($LlamaServer)) {
+if ($null -eq $LlamaServer -or @($LlamaServer | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }).Count -eq 0) {
     $resolution = Resolve-BaxyAsset -Name 'llama_server' -RepositoryRoot $repo
     if (-not $resolution.Found) {
         throw ("llama-server ausente. Rutas comprobadas:`n- " +
             ($resolution.Candidates -join "`n- ") + "`n" + $resolution.Repair)
     }
-    $LlamaServer = $resolution.Path
+    $LlamaServer = @($resolution.Path)
 }
 function Resolve-RequiredFile {
     param(
@@ -88,11 +94,13 @@ $pythonFull = Resolve-BaxyRuntimePython `
     -FailurePrefix 'mind_runtime_registration_failed'
 $pythonPathFull = Resolve-RequiredDirectory -Path $PythonPath -Description 'baxy_mind source root'
 $ggufFull = Resolve-RequiredFile -Path $Gguf -Description 'GGUF conversacional'
-$serverFull = Resolve-RequiredFile -Path $LlamaServer -Description 'llama-server'
+$serverCandidates = @($LlamaServer | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object {
+        Resolve-RequiredFile -Path $_ -Description 'llama-server' })
 # The pieces: property, given path, kind, the file the mind looks for in a folder (or the extension of a file), label.
 $pieces = @(
     @('renew_tts', $VoiceDirectory, 'Container', 'baxy-voice.json', 'Voz de BAXY (Supertonic)'),
     @('renew_wake', $WakeDirectory, 'Container', 'config.json', 'Palabra de activacion (k4)'),
+    @('renew_wake_fast', $WakeFastDirectory, 'Container', 'config.json', 'Palabra de activacion rapida (k6r-alto)'),
     @('renew_stt', $SttDirectory, 'Container', 'tokens.txt', 'Reconocedor (Parakeet Ultra)'),
     @('s1_gguf', $SystemOneGguf, 'Leaf', '.gguf', 'Modelo de decision de System One'),
     @('mmproj', $VisionProjector, 'Leaf', '.gguf', 'Proyector de vision')
@@ -116,7 +124,7 @@ foreach ($piece in $pieces) {
     }
     $pieceFull[$piece[0]] = $full
 }
-foreach ($candidate in @($pythonFull, $ggufFull, $serverFull) + @($pieceFull.Values | Where-Object { $null -ne $_ })) {
+foreach ($candidate in @($pythonFull, $ggufFull) + $serverCandidates + @($pieceFull.Values | Where-Object { $null -ne $_ })) {
     if (Test-BaxyForeignWorktreePath -Path $candidate) {
         throw ("mind_runtime_registration_failed: foreign_baxy_worktree: " +
             $candidate)
@@ -135,17 +143,43 @@ if (-not (Test-Path -LiteralPath (Join-Path $pythonPathFull 'baxy_mind\__main__.
 if (-not $ggufFull.EndsWith('.gguf', [StringComparison]::OrdinalIgnoreCase)) {
     throw 'The conversation model must be a GGUF file.'
 }
-if (-not [string]::Equals(
-        [IO.Path]::GetFileName($serverFull),
-        'llama-server.exe',
-        [StringComparison]::OrdinalIgnoreCase)) {
-    throw 'The llama.cpp runtime must point to llama-server.exe.'
+foreach ($candidate in $serverCandidates) {
+    if (-not [string]::Equals(
+            [IO.Path]::GetFileName($candidate),
+            'llama-server.exe',
+            [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'The llama.cpp runtime must point to llama-server.exe.'
+    }
 }
 $null = Assert-BaxyRuntimeLock `
     -Python $pythonFull `
     -Repository $repo `
     -Profile Runtime `
     -FailurePrefix 'mind_runtime_registration_failed'
+# The display devices Windows has now (Win32_VideoController lists only present ones), by their PNP device ids.
+$displayDevices = @(Get-CimInstance -ClassName Win32_VideoController |
+        ForEach-Object { [string]$_.PNPDeviceID } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+$chooserArguments = @('-X', 'utf8', '-m', 'baxy_mind.gpu') +
+    @($displayDevices | ForEach-Object { '--pci', $_ }) + $serverCandidates
+$previousPythonPath = $env:PYTHONPATH
+try {
+    $env:PYTHONPATH = $pythonPathFull
+    $choiceText = (& $pythonFull @chooserArguments | Out-String).Trim()
+    $choiceExit = $LASTEXITCODE
+} finally {
+    $env:PYTHONPATH = $previousPythonPath
+}
+try {
+    $choice = $choiceText | ConvertFrom-Json -ErrorAction Stop
+} catch {
+    throw "mind_runtime_registration_failed: gpu_choice_unreadable: $choiceText"
+}
+if ($choiceExit -ne 0 -or [string]::IsNullOrWhiteSpace([string]$choice.server)) {
+    throw ("mind_runtime_registration_failed: llama_backend_missing: this machine computes on " +
+        "$($choice.backend); none of the llama-server given is a declared build of it: " +
+        ($choice.servers | ConvertTo-Json -Compress))
+}
+$serverFull = [string]$choice.server
 
 $manifest = [ordered]@{
     schema = 'baxy-mind-runtime-v1'
@@ -160,6 +194,7 @@ $manifest = [ordered]@{
 }
 foreach ($piece in $pieces) {
     $full = $pieceFull[$piece[0]]
+    if ($null -eq $full -and $piece[0] -ceq 'renew_wake_fast') { continue }
     $path = if ($piece[2] -ceq 'Leaf') { $piece[0] } else { "$($piece[0])_dir" }
     $manifest[$path] = $full
     $manifest["$($piece[0])_sha256"] = if ($null -eq $full) {

@@ -87,6 +87,53 @@ public sealed class TurnClosingTests
         });
     }
 
+    // Uso-108 (B4): a capture has a new id and moment each time, so a loop that looks at one still screen was only ended
+    // by the move cap or the time. The same bytes a third time close the turn, as any read; other bytes are work going on.
+    [Test]
+    public void TheSameImageCapturedThreeTimesClosesTheTurn()
+    {
+        var closing = new TurnClosing();
+        string[] results = [Captured('a', "sha1"), Captured('b', "sha1"), Captured('c', "sha1")];
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "capture.active.window", "{}", results[0]), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "capture.active.window", "{}", results[1]), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "capture.active.window", "{}", results[2]), Is.True);
+        });
+    }
+
+    [Test]
+    public void CounterCaseCapturesOfAScreenThatChangesKeepTheTurnOpen()
+    {
+        var closing = new TurnClosing();
+        Assert.Multiple(() =>
+        {
+            for (int call = 1; call < 6; call++)
+                Assert.That(closing.AfterCall(call, Soon, "capture.active.window", "{}", Captured('a', "sha" + call)), Is.False);
+        });
+    }
+
+    // Vision of each new capture of one image: another id in the arguments, the server's other words each time.
+    [Test]
+    public void VisionOfTheSameBytesThreeTimesClosesTheTurnHoweverItIsWorded()
+    {
+        var closing = new TurnClosing();
+        string Asked(char id) => $$"""{"captureId":"capture_{{new string(id, 32)}}"}""";
+        string Told(char id, string words) =>
+            $$$"""{"status":"completed","observed":{"captureId":"capture_{{{new string(id, 32)}}}","captureSha256":"s1","description":"{{{words}}}"}}""";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "vision.describe", Asked('a'), Told('a', "una ventana")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "vision.describe", Asked('b'), Told('b', "la misma ventana")), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "vision.describe", Asked('c'), Told('c', "otra forma de decirlo")), Is.True);
+        });
+    }
+
+    private static string Captured(char id, string sha) =>
+        "{\"status\":\"completed\",\"observed\":{\"captureId\":\"capture_" + new string(id, 32) + "\",\"sha256\":\"" + sha
+        + "\",\"createdAtUtc\":\"2026-11-04T23:0" + id + "\","
+        + "\"activeWindow\":{\"captureStartedAtUtc\":\"" + id + "\",\"captureCompletedAtUtc\":\"" + id + "\",\"isClipped\":false}}}";
+
     // Review of R1: «read me the whole page» scrolls and looks in turn. A scroll that moved says nothing of what it
     // brought (WindowsScrollAdapter: the same result each time) and each look has the same arguments, but each look sees
     // more of the page: a read that sees something not seen before in the turn is work going on, up to the move cap.
@@ -297,6 +344,43 @@ public sealed class TurnClosingTests
         Assert.That(closing.AfterCall(1, Soon, "window.resolve", paint, Read('0')), Is.False);
         Assert.That(closing.AfterCall(2, Soon, "window.resolve", paint, Read('1')), Is.False);
         Assert.That(closing.AfterCall(3, Soon, "window.resolve", paint, Read('a')), Is.True);
+    }
+
+    // Uso real 2026-11-02: the same navigation six times in a row, each unconfirmed, until the turn's time ran out; what
+    // each failure said it checked (whether a window changed, what kind of address it showed) was another diagnosis of
+    // the same failure each time, and no two results were the same. A failed effect is its status and code.
+    [Test]
+    public void TheSameFailedEffectWithAnotherDiagnosisEachTimeClosesTheTurnAtItsThirdTime()
+    {
+        var closing = new TurnClosing();
+        const string page = "{\"url\":\"https://shop.example/market\"}";
+        string Unconfirmed(bool changed, string seen) =>
+            "{\"status\":\"failed\",\"error\":\"user_browser_navigation_unconfirmed\",\"effectUncertain\":true,"
+            + "\"observed\":{\"version\":1,\"requestedUrl\":\"https://shop.example/market\",\"browser\":\"Navegador\","
+            + $"\"linkSent\":true,\"windowChanged\":{(changed ? "true" : "false")},\"addressSeen\":\"{seen}\"}}}}";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "browser.navigate", page, Unconfirmed(true, "page_from_before")),
+                Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "browser.navigate", page, Unconfirmed(false, "not_read")), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "browser.navigate", page, Unconfirmed(true, "unreadable")), Is.True);
+        });
+    }
+
+    // What a completed effect read back is still its result: the same navigation arriving at two pages is two results.
+    [Test]
+    public void TheSameCompletedEffectThatArrivedElsewhereIsNotARepeat()
+    {
+        var closing = new TurnClosing();
+        const string page = "{\"url\":\"https://shop.example/market\"}";
+        string Arrived(string final) =>
+            $"{{\"status\":\"completed\",\"verification\":\"readback\",\"observed\":{{\"finalUrl\":\"{final}\"}}}}";
+        Assert.Multiple(() =>
+        {
+            Assert.That(closing.AfterCall(1, Soon, "browser.navigate", page, Arrived("https://shop.example/a")), Is.False);
+            Assert.That(closing.AfterCall(2, Soon, "browser.navigate", page, Arrived("https://shop.example/b")), Is.False);
+            Assert.That(closing.AfterCall(3, Soon, "browser.navigate", page, Arrived("https://shop.example/c")), Is.False);
+        });
     }
 
     private static string Result(string status, string? error = null) =>

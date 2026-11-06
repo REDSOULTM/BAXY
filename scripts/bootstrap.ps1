@@ -51,11 +51,11 @@ function Resolve-BaxyDotnet {
             continue
         }
         $version = [string](& $candidate --version)
-        if ($LASTEXITCODE -eq 0 -and $version.Trim() -ceq '10.0.100') {
+        if ($LASTEXITCODE -eq 0 -and $version.Trim() -ceq '10.0.114') {
             return [IO.Path]::GetFullPath($candidate)
         }
     }
-    throw ('bootstrap_failed: falta .NET SDK 10.0.100. Se revisaron: ' +
+    throw ('bootstrap_failed: falta .NET SDK 10.0.114. Se revisaron: ' +
         ($candidates -join '; ') + '. Instalalo desde https://dotnet.microsoft.com/download.')
 }
 

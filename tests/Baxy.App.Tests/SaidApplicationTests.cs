@@ -30,6 +30,26 @@ public sealed class SaidApplicationTests
         });
     }
 
+    // Encargo 62 (U41, «Abre Gmail»): the model wrote «Google Chrome» with place about, 6 of 6, and the opening went to
+    // Configuración, which nothing in the words asks for. The place's application opens instead only when the person's
+    // words name it (by any of its names); otherwise the call runs as written, and its refusal says how Chrome opens.
+    [TestCase("Abre Gmail.", "Google Chrome", "about")]
+    [TestCase("quiero ver mis correos", "Microsoft Edge", "about")]
+    [TestCase("abre lo de sonido", "Configuración del sistema", "sound")]
+    public void WordsThatDoNotNameThePlacesApplicationDoNotOpenIt(string words, string appId, string place) =>
+        Assert.That(Heard(words).Rule("app.open", Open(appId, place)), Is.Null);
+
+    // Its other name in the Start catalog names it too: on an English Windows the person says «settings».
+    [Test]
+    public void ThePlacesApplicationIsNamedByAnyOfItsNames()
+    {
+        (JsonObject Arguments, string Note)? ruled = Heard("open the sound settings")
+            .Rule("app.open", Open("System Configuration", "sound"));
+
+        Assert.That(ruled, Is.Not.Null);
+        Assert.That((string?)ruled!.Value.Arguments["appId"], Is.EqualTo("Configuración"));
+    }
+
     // Nothing changes when the person named the application, it has the place, no place was asked, several applications
     // have the place, or no words of the person's hold (a heartbeat).
     [TestCase("abre la configuración del sistema en sonido", "Configuración del sistema", "sound")]
@@ -38,11 +58,23 @@ public sealed class SaidApplicationTests
     // Ajuste c3 (e2e de la VM, Windows en inglés, E014): «Settings» is that Windows' Start name for the same application,
     // and its call was sent to «Configuración», which that Windows does not list.
     [TestCase("abre la configuración de sonido", "Settings", "sound")]
+    // Ajuste c4 (banco ciego c3, causa 16, C3-159 s0): «PowerToys (Preview)» is named by «PowerToys», its qualifier
+    // unsaid (CatalogNames.Stems); its call at «system» was sent to Configuración.
+    [TestCase("open PowerToys and go to the Quantum Telemetry section", "PowerToys (Preview)", "system")]
     [TestCase("abre la configuración de sonido", "Configuración del sistema", null)]
     [TestCase("abre la tienda", "Discord", "store")]
     [TestCase("", "Configuración del sistema", "sound")]
     public void OtherwiseTheCallRunsAsItIs(string words, string appId, string? place) =>
         Assert.That(Heard(words).Rule("app.open", Open(appId, place)), Is.Null);
+
+    // Encargo 12: the opened application is named by one of its non-ambiguous abbreviations too («estim» names Steam), so
+    // a call the person placed by abbreviation is not re-routed to the application that owns the place (Spotify owns
+    // «search»). The owner's one accepted help, a name-equivalence list (ApplicationAliases).
+    [Test]
+    public void AnApplicationNamedByAnAbbreviationIsNotRerouted()
+    {
+        Assert.That(Heard("busca un juego en estim").Rule("app.open", Open("Steam", "search")), Is.Null);
+    }
 
     [Test]
     public void OnlyAnOpening()

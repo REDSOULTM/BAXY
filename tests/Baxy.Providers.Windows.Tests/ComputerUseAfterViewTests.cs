@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
@@ -92,7 +93,7 @@ public sealed class ComputerUseAfterViewTests
                 Assert.That(adapter.TryViewedField(21, out nint viewed, out string id), Is.True);
                 Assert.That(id, Is.EqualTo("42.77"), "[21] is the name field the look listed, not the folder now at [21]");
                 Assert.That(viewed, Is.EqualTo(window));
-                Assert.That(adapter.ViewedAt(21), Is.EqualTo(new ViewedIndex(window, "42.77", 21, 22, false, null, null)));
+                Assert.That(adapter.ViewedAt(21), Is.EqualTo(new ViewedIndex(window, "42.77", 21, 22, false, null, null, "Edit")));
                 Assert.That(adapter.TryViewedField(0, out _, out string told) && told == "1.1", Is.True,
                     "an index the after listed is the control it listed");
             });
@@ -125,16 +126,16 @@ public sealed class ComputerUseAfterViewTests
         Assert.Multiple(() =>
         {
             Assert.That(WindowsVisibleControlAdapter.ResolveSeen(5, 7, [C(0, "7.7", "nameBox", "Edit", "Nombre"), C(5, "1.2", "", "ListItem", "x")], told),
-                Is.EqualTo(new ViewedIndex(7, "7.7", 5, 0, false, null, null)), "its id changed: automation id, kind and name");
+                Is.EqualTo(new ViewedIndex(7, "7.7", 5, 0, false, null, null, "Edit")), "its id changed: automation id, kind and name");
             Assert.That(WindowsVisibleControlAdapter.ResolveSeen(5, 7, [C(0, "7.7", "otro", "Edit", "Nombre"), C(5, "1.2", "", "ListItem", "x")], told),
                 Is.EqualTo(new ViewedIndex(0, string.Empty, 5, null, true, 0, "Edit «Nombre»")), "gone; one equivalent");
             Assert.That(WindowsVisibleControlAdapter.ResolveSeen(5, 7,
                     [C(0, "7.7", "a", "Edit", "Nombre"), C(1, "7.8", "b", "Edit", "Nombre"), C(5, "1.2", "", "ListItem", "x")], told),
                 Is.EqualTo(new ViewedIndex(0, string.Empty, 5, null, true, null, "Edit «Nombre»")), "gone; no single equivalent");
             Assert.That(WindowsVisibleControlAdapter.ResolveSeen(5, 7, [C(5, "1.9", "nameBox", "Edit", "Nombre")], told),
-                Is.EqualTo(new ViewedIndex(7, "1.9", 5, null, false, null, null)), "where it was");
+                Is.EqualTo(new ViewedIndex(7, "1.9", 5, null, false, null, null, "Edit")), "where it was");
             Assert.That(WindowsVisibleControlAdapter.ResolveSeen(3, 7, [C(3, "1.3", "", "Button", "B")], null),
-                Is.EqualTo(new ViewedIndex(7, "1.3", 3, null, false, null, null)), "a view the model saw whole");
+                Is.EqualTo(new ViewedIndex(7, "1.3", 3, null, false, null, null, "Button")), "a view the model saw whole");
         });
     }
 
@@ -477,6 +478,257 @@ public sealed class ComputerUseAfterViewTests
         });
     }
 
+    // Banco de uso 05-11 (U40, S03): with the keyboard on the window's menu bar a look read only the frame, typing failed, and
+    // «Enviar» was pressed on an empty box. The press only took the focus off the menu: the image changed, every control
+    // «appeared», the click came back completed and verified, and the model said the message went, with 0 sent. What the look
+    // before never read cannot have appeared, and a changed image does not say what the press did.
+    private static void RememberFrameOnly(WindowsVisibleControlAdapter adapter, nint window)
+    {
+        RememberView(adapter, window,
+            new(0, "1.1", "MenuItem", "Sistema", "collapsed focused"),
+            new(1, "1.2", "TitleBar", "Chat de prueba", ""));
+        FieldInfo field = typeof(WindowsVisibleControlAdapter).GetField("_lastView", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        field.FieldType.GetProperty("FrameOnly", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .SetValue(field.GetValue(adapter), true);
+    }
+
+    private static CommandWorker ImageProvedWorker(string viewAfter) => new(command => command switch
+    {
+        "click" => "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_pending\",\"pending\":true," +
+            "\"name\":\"Enviar\",\"kind\":\"Button\",\"controlIdentity\":\"1.46\",\"absentOrDisabled\":false,\"selected\":false,\"toggled\":false}",
+        "postread" => "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_unchanged\"," +
+            "\"name\":\"Enviar\",\"controlIdentity\":\"1.46\",\"absentOrDisabled\":false}",
+        "view" => viewAfter,
+        _ => null,
+    });
+
+    private static WindowsVisibleControlAdapter ImageProvedAdapter(IUiaWorker worker)
+    {
+        int captures = 0;
+        ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint hwnd, bool? selfDrawn, CancellationToken token) =>
+            ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
+                new VisibleControlSurface.CapturedWindow(hwnd, [], 0, 0, 10, 10, captures++ < 3 ? "before" : "after"));
+        return new WindowsVisibleControlAdapter(worker, null, null, elevated: _ => false, capture: Capture)
+        {
+            ReadsAfterAct = true,
+            PopupsOf = _ => [],
+        };
+    }
+
+    private const string ChatRead =
+        "{\"ok\":true,\"error\":\"\",\"window\":\"Chat de prueba\",\"controls\":[" +
+        "{\"kind\":\"MenuItem\",\"name\":\"Sistema\",\"id\":\"1.1\",\"state\":\"collapsed\",\"value\":null}," +
+        "{\"kind\":\"TitleBar\",\"name\":\"Chat de prueba\",\"id\":\"1.2\",\"state\":\"\",\"value\":null}," +
+        "{\"kind\":\"Button\",\"name\":\"Enviar\",\"id\":\"1.46\",\"state\":\"\",\"value\":null}," +
+        "{\"kind\":\"Edit\",\"name\":\"Escribe un mensaje\",\"id\":\"1.47\",\"state\":\"\",\"value\":\"\"}," +
+        "{\"kind\":\"Edit\",\"name\":\"Sin patrón\",\"id\":\"1.48\",\"state\":\"\",\"value\":null}," +
+        "{\"kind\":\"Edit\",\"name\":\"Mensajes\",\"id\":\"1.49\",\"state\":\"readonly focused\",\"value\":\"VALOR\"}]," +
+        "\"controlCount\":6,\"partial\":false}";
+
+    [TestCase("", TestName = "frame-only look, the box and the history read empty after the press")]
+    [TestCase("Yo: llego a las siete", TestName = "frame-only look, the history holds the message after the press")]
+    public void APressProvedOnlyByItsImageFromALookAtTheFrameIsNotToldReadBack(string history)
+    {
+        WithWindow(window =>
+        {
+            var adapter = ImageProvedAdapter(ImageProvedWorker(ChatRead.Replace("VALOR", history, StringComparison.Ordinal)));
+            RememberFrameOnly(adapter, window);
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Enviar", "1.46");
+
+            Assert.That(receipt.Result, Is.Not.Null, receipt.ErrorCode);
+            JsonElement result = receipt.Result!.Value;
+            JsonElement after = result.GetProperty("after");
+            string[] readNow = Strings(after, "readNow");
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.True, "the press went, as a key's does");
+                Assert.That(result.GetProperty("delivered").GetBoolean(), Is.True);
+                Assert.That(result.GetProperty("readBack").GetBoolean(), Is.False);
+                Assert.That(result.GetProperty("next").GetString(), Does.Contain("could not confirm").And.Contain("still failed"));
+                Assert.That(OperationVisibleFacts.Verification("input.visible.click", result), Is.EqualTo("delivered_only"));
+                Assert.That(after.TryGetProperty("appeared", out _), Is.False, "nothing is known to have appeared");
+                Assert.That(after.GetProperty("before").GetString(), Does.Contain("frame"));
+                Assert.That(readNow, Does.Contain("[3] Edit «Escribe un mensaje» empty"));
+                // No value exposed is not known empty.
+                Assert.That(readNow, Does.Contain("[4] Edit «Sin patrón»"));
+                Assert.That(readNow, Does.Contain(history.Length == 0
+                    ? "[5] Edit «Mensajes» readonly focused empty"
+                    : "[5] Edit «Mensajes» readonly focused = " + history));
+            });
+        });
+    }
+
+    // Controls: a look that read the window compares as before, and a window that is drawn with no tree (a game, a launcher)
+    // keeps its image as the proof: frame before, frame after, nothing newly read.
+    [Test]
+    public void APressFromALookThatReadTheWindowIsStillReadBack()
+    {
+        WithWindow(window =>
+        {
+            var adapter = ImageProvedAdapter(ImageProvedWorker(ChatRead.Replace("VALOR", "Yo: hola", StringComparison.Ordinal)));
+            RememberView(adapter, window,
+                new(0, "1.46", "Button", "Enviar", ""),
+                new(1, "1.49", "Edit", "Mensajes", "readonly"));
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Enviar", "1.46");
+
+            JsonElement result = receipt.Result!.Value;
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.TryGetProperty("delivered", out _), Is.False);
+                Assert.That(OperationVisibleFacts.Verification("input.visible.click", result), Is.EqualTo("readback"));
+                Assert.That(result.GetProperty("after").TryGetProperty("appeared", out _), Is.True);
+                Assert.That(result.GetProperty("after").TryGetProperty("before", out _), Is.False);
+            });
+        });
+    }
+
+    [Test]
+    public void APressOnAWindowDrawnWithNoTreeKeepsItsImageAsProof()
+    {
+        const string frame =
+            "{\"ok\":true,\"error\":\"\",\"window\":\"Lanzador\",\"frameOnly\":true,\"controls\":[" +
+            "{\"kind\":\"MenuItem\",\"name\":\"Sistema\",\"id\":\"1.1\",\"state\":\"collapsed focused\",\"value\":null}," +
+            "{\"kind\":\"TitleBar\",\"name\":\"Chat de prueba\",\"id\":\"1.2\",\"state\":\"\",\"value\":null}]," +
+            "\"controlCount\":2,\"partial\":false}";
+        WithWindow(window =>
+        {
+            var adapter = ImageProvedAdapter(ImageProvedWorker(frame));
+            RememberFrameOnly(adapter, window);
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Enviar", "1.46");
+
+            JsonElement result = receipt.Result!.Value;
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.TryGetProperty("delivered", out _), Is.False);
+                Assert.That(OperationVisibleFacts.Verification("input.visible.click", result), Is.EqualTo("readback"));
+                Assert.That(result.GetProperty("after").TryGetProperty("sameListed", out _), Is.True);
+            });
+        });
+    }
+
+    // The pointer's stages (OCR, a tooltip, vision) say the same as the tree's: an image that changed with only the focus moved.
+    // Kept completed: unlike the tree's press, a point on a drawn surface may have done what the tree does not list.
+    [TestCase("{\"surfaceChanged\":true,\"cascadeStage\":\"ocr\"}", """{"changed":["[0] Button «Enviar» (none) → focused"],"focusOnly":true}""", true)]
+    [TestCase("{\"surfaceChanged\":true,\"cascadeStage\":\"ocr\"}", """{"changed":["[0] Edit «Mensajes» = hola"]}""", false)]
+    [TestCase("{\"surfaceChanged\":true,\"cascadeStage\":\"ocr\"}", """{"sameListed":true}""", false)]
+    [TestCase("{\"surfaceChanged\":false,\"selected\":true}", """{"changed":["[0] ListItem «A» (none) → selected"]}""", false)]
+    [TestCase("{\"surfaceChanged\":true,\"selected\":true}", """{"changed":["[0] ListItem «A» focused → (none)"],"focusOnly":true}""", false)]
+    [TestCase("{\"surfaceChanged\":true,\"toggled\":true}", """{"before":"x","readNow":["[0] Button «A»"]}""", false)]
+    [TestCase("{\"surfaceChanged\":true,\"cascadeStage\":\"ocr\"}", """{"before":"x","readNow":["[0] Button «A»"]}""", true)]
+    public void AnImageAloneWithNothingElseReadIsNotReadBack(string receipt, string after, bool notReadBack)
+    {
+        using JsonDocument result = JsonDocument.Parse(receipt);
+        using JsonDocument view = JsonDocument.Parse(after);
+
+        JsonElement told = WindowsVisibleControlAdapter.WithImageAloneTold(
+            new ExternalCapabilityReceipt("input.visible.click", true, true, result.RootElement.Clone(), null), view.RootElement).Result!.Value;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(told.TryGetProperty("delivered", out _), Is.EqualTo(notReadBack));
+            Assert.That(told.TryGetProperty("readBack", out _), Is.EqualTo(notReadBack));
+        });
+    }
+
+    // Encargo 100, measured live: the model pressed a menu entry by its label, a web search opened in the person's browser with a
+    // word of the document in its address, and the receipt said completed with nothing of it. Pressing an entry may be what the
+    // person asked (a help page), so it is left open, and said.
+    private static WindowsVisibleControlAdapter MenuAdapter(IUiaWorker worker, Func<BrowserWitness?> browsers)
+    {
+        int captures = 0;
+        ValueTask<VisibleControlSurface.CapturedWindow?> Capture(nint hwnd, bool? selfDrawn, CancellationToken token) =>
+            ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(
+                new VisibleControlSurface.CapturedWindow(hwnd, [], 0, 0, 10, 10, captures++ < 3 ? "before" : "after"));
+        return new WindowsVisibleControlAdapter(worker, null, null, elevated: _ => false, capture: Capture)
+        {
+            ReadsAfterAct = true,
+            PopupsOf = _ => [],
+            BrowsersNow = browsers,
+        };
+    }
+
+    private static CommandWorker MenuWorker(string kind) => new(command => command switch
+    {
+        "click" => "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_pending\",\"pending\":true," +
+            "\"name\":\"Entrada\",\"kind\":\"" + kind + "\",\"controlIdentity\":\"1.46\",\"absentOrDisabled\":false,\"selected\":false,\"toggled\":false}",
+        "postread" => "{\"version\":2,\"ok\":false,\"effectObserved\":true,\"error\":\"visible_button_postread_unchanged\"," +
+            "\"name\":\"Entrada\",\"controlIdentity\":\"1.46\",\"absentOrDisabled\":true}",
+        "view" => "{\"ok\":true,\"error\":\"\",\"window\":\"Editor\",\"controls\":[{\"kind\":\"Edit\",\"name\":\"Texto\",\"id\":\"1.38\",\"state\":\"\",\"value\":null}]," +
+            "\"controlCount\":1,\"partial\":false}",
+        _ => null,
+    });
+
+    [Test]
+    public void AMenuEntryThatOpenedABrowserSaysSoAndLeavesItOpen()
+    {
+        WithWindow(window =>
+        {
+            int reads = 0;
+            var adapter = MenuAdapter(MenuWorker("MenuItem"), () => reads++ == 0
+                ? new BrowserWitness([], new HashSet<string>(), window)
+                : new BrowserWitness([new BrowserWindow(20, 50, "palabra - Buscar")], new HashSet<string> { "navegador" }, window));
+            RememberView(adapter, window, new ViewControlSpec(0, "1.46", "MenuItem", "Entrada", ""));
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Entrada", "1.46");
+
+            Assert.That(receipt.Result, Is.Not.Null, receipt.ErrorCode);
+            JsonElement result = receipt.Result!.Value;
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.TryGetProperty("browserOpened", out JsonElement opened), Is.True);
+                Assert.That(opened.ValueKind == JsonValueKind.Object && opened.GetProperty("title").GetString() == "palabra - Buscar");
+                Assert.That(opened.ValueKind == JsonValueKind.Object && !opened.GetProperty("closed").GetBoolean());
+                Assert.That(result.TryGetProperty("next", out JsonElement next) ? next.GetString() : "",
+                    Does.Contain("«palabra - Buscar»").And.Contain("may have gone out").And.Contain("still open"));
+            });
+        });
+    }
+
+    // Contracases: a menu that only opens its entries, and any other control (a link is what opens a browser on purpose): no
+    // read of the browsers, so no time lost on them.
+    [TestCase("MenuItem", "collapsed")]
+    [TestCase("MenuItem", "expanded")]
+    [TestCase("Button", "")]
+    [TestCase("Hyperlink", "")]
+    public void WhatIsNoMenuCommandIsNotWatched(string kind, string state)
+    {
+        WithWindow(window =>
+        {
+            int reads = 0;
+            var adapter = MenuAdapter(MenuWorker(kind), () =>
+            {
+                reads++;
+                return new BrowserWitness([], new HashSet<string>(), window);
+            });
+            RememberView(adapter, window, new ViewControlSpec(0, "1.46", kind, "Entrada", state));
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Entrada", "1.46");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(reads, Is.Zero);
+                Assert.That(receipt.Result?.TryGetProperty("browserOpened", out _), Is.Not.True);
+            });
+        });
+    }
+
+    [Test]
+    public void AMenuEntryThatOpenedNothingSaysNothingOfBrowsers()
+    {
+        WithWindow(window =>
+        {
+            var adapter = MenuAdapter(MenuWorker("MenuItem"), () => new BrowserWitness([], new HashSet<string>(), window));
+            RememberView(adapter, window, new ViewControlSpec(0, "1.46", "MenuItem", "Entrada", ""));
+
+            ExternalCapabilityReceipt receipt = Click(adapter, window, "Entrada", "1.46");
+
+            Assert.That(receipt.Result?.TryGetProperty("browserOpened", out _), Is.Not.True);
+        });
+    }
+
     // Revisión de nb-w11-revision: a click that brings up a window of another process (a button that opens the browser)
     // leaves its own window inactive: its image changes (the title bar, the focus ring) and the view after it differs
     // only in the focus the window lost. That is the click's effect, never «unchanged» (the model would press it again:
@@ -696,7 +948,7 @@ public sealed class ComputerUseAfterViewTests
         start.Environment["BAXY_VIEW_WORKER"] = worker;
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();
@@ -729,8 +981,7 @@ public sealed class ComputerUseAfterViewTests
     // An off-screen window of this test that takes no activation: alive for the adapter, never the person's.
     private static void WithWindow(Action<nint> test)
     {
-        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY after fixture", 0x90000000u,
-            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        nint window = PumpedWindow.Create("BAXY after fixture");
         Assert.That(window, Is.Not.EqualTo(nint.Zero));
         try
         {
@@ -738,7 +989,7 @@ public sealed class ComputerUseAfterViewTests
         }
         finally
         {
-            _ = DestroyWindow(window);
+            PumpedWindow.Destroy(window);
         }
     }
 
@@ -822,13 +1073,4 @@ public sealed class ComputerUseAfterViewTests
         }
     }
 
-    [DllImport("user32.dll", EntryPoint = "CreateWindowExW",
-        CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-    private static extern nint CreateWindowEx(uint extendedStyle, string className,
-        string title, uint style, int x, int y, int width, int height,
-        nint parent, nint menu, nint instance, nint parameter);
-
-    [DllImport("user32.dll", ExactSpelling = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool DestroyWindow(nint window);
 }

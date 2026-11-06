@@ -251,12 +251,21 @@ public sealed class DisplayModeAdapterTests
             Assert.That(shown.Result!.Value.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
             if (hint)
             {
-                Assert.That(next.GetString(), Is.EqualTo("1920x1080 at 60 Hz is shown now and not saved: the next restart "
-                    + "or sign-in shows the mode Windows has saved; display_mode_set with this same mode again keeps it"));
+                // Uso real 04-11: «… again keeps it» was told twice as «Windows la guarda para el próximo reinicio».
+                Assert.That(next.GetString(), Is.EqualTo("1920x1080 at 60 Hz is shown now and is not saved: the next restart "
+                    + $"or sign-in goes back to {Named(Now)}, the mode Windows has saved; display_mode_set with this same "
+                    + "mode again saves it"));
             }
             Assert.That(kept.Result!.Value.TryGetProperty("next", out _), Is.False, "a saved mode needs no word");
+            // The mode a restart shows, as a fact whether the aids are on or off.
+            JsonElement saved = shown.Result!.Value.GetProperty("savedMode");
+            Assert.That(saved.GetProperty("width").GetUInt32(), Is.EqualTo(Now.Width));
+            Assert.That(saved.GetProperty("refreshHz").GetUInt32(), Is.EqualTo(Now.RefreshHz));
+            Assert.That(kept.Result!.Value.TryGetProperty("savedMode", out _), Is.False, "the mode saved is the one shown");
         });
     }
+
+    private static string Named(DisplayModeValue mode) => $"{mode.Width}x{mode.Height} at {mode.RefreshHz} Hz";
 
     [Test]
     public async Task AModeShownAndAlreadySavedIsNeitherAppliedNorSaved()

@@ -7,11 +7,13 @@ from pathlib import Path
 
 import pytest
 
+from baxy_mind.llm_server import REREAD_TOKENS
 from baxy_mind.mind import COMPACTED, NO_MORE_CALLS, Mind
 
 
 class FakeServer:
     context = 49152
+    reread_tokens = REREAD_TOKENS  # CUDA's (LlmServer.reread_tokens)
 
     def __init__(self, replies: list) -> None:
         self.replies = replies
@@ -65,6 +67,62 @@ def test_a_turn_past_the_context_leaves_out_its_earlier_results_and_goes_on(tmp_
     # 8.2: a result with no typed verification is «sin verificar».
     assert tools[0] == COMPACTED + "\n[En este turno: web_fetch → terminó sin verificar su efecto]"
     assert "b" * 6000 in tools[1]
+
+
+def test_a_turn_near_the_context_makes_room_before_it_asks(tmp_path: Path) -> None:
+    # Pedido del dueño 2026-11-02 («arregla el problema del contexto»): a long turn only made room once llama-server had
+    # refused it (400) or cut its answer («Listo,»). The last reply's usage says how full the context already is: with a
+    # result and the next answer it would not fit, so the earlier results leave out their bodies before the next request.
+    page = {"url": "https://example.org/rfc"}
+    near = _call("web_fetch", page)
+    near["usage"] = {"prompt_tokens": FakeServer.context - 2000, "completion_tokens": 20}
+    mind, server = _mind(tmp_path, [_call("web_fetch", page), near, _say("La página no dice el código.")])
+    mind.decide(1, "lee la página")
+    mind.continue_turn(2, json.dumps({"status": "completed", "text": "a" * 6000}))
+    result = mind.continue_turn(3, json.dumps({"status": "completed", "text": "b" * 6000}))
+    assert result["reply"] == "La página no dice el código."
+    tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert tools[0].startswith(COMPACTED)
+    assert "b" * 6000 in tools[1]
+
+
+def test_a_turn_with_room_to_spare_keeps_its_results(tmp_path: Path) -> None:
+    page = {"url": "https://example.org/rfc"}
+    roomy = _call("web_fetch", page)
+    roomy["usage"] = {"prompt_tokens": 20000, "completion_tokens": 20}
+    mind, server = _mind(tmp_path, [_call("web_fetch", page), roomy, _say("Listo.")])
+    mind.decide(1, "lee la página")
+    mind.continue_turn(2, json.dumps({"status": "completed", "text": "a" * 6000}))
+    mind.continue_turn(3, json.dumps({"status": "completed", "text": "b" * 6000}))
+    tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert "a" * 6000 in tools[0]
+
+
+def _cut(text: str) -> dict:
+    # What llama-server answers when the prompt fits but the context fills while the answer is written: «length» before
+    # the max_tokens asked for (uso real 02-11: 53,245 + 3 = 53,248 tokens, the slot's context; the person heard «Listo,»).
+    return {"choices": [{"finish_reason": "length", "message": {"content": text}}],
+            "usage": {"prompt_tokens": 53245, "completion_tokens": 3}}
+
+
+def test_an_answer_cut_by_a_full_context_makes_room_and_is_written_again(tmp_path: Path) -> None:
+    page = {"url": "https://example.org/rfc"}
+    mind, server = _mind(tmp_path, [_call("web_fetch", page), _call("web_fetch", page), _cut("Listo,"),
+                                    _say("La página no dice el código.")])
+    mind.decide(1, "lee la página")
+    mind.continue_turn(2, json.dumps({"status": "completed", "text": "a" * 6000}))
+    result = mind.continue_turn(3, json.dumps({"status": "completed", "text": "b" * 6000}))
+    assert result["reply"] == "La página no dice el código."
+    tools = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"]
+    assert tools[0].startswith(COMPACTED)
+
+
+def test_an_answer_that_reached_max_tokens_is_not_taken_for_a_full_context(tmp_path: Path) -> None:
+    long = {"choices": [{"finish_reason": "length", "message": {"content": "Una respuesta larga"}}],
+            "usage": {"prompt_tokens": 40000, "completion_tokens": 768}}
+    mind, server = _mind(tmp_path, [long])
+    assert mind.decide(1, "cuéntame algo largo")["reply"] == "Una respuesta larga"
+    assert len(server.bodies) == 1
 
 
 def test_an_overflow_with_nothing_to_cut_is_not_hidden(tmp_path: Path) -> None:
@@ -196,3 +254,41 @@ def test_a_decision_has_room_for_a_document_and_stays_inside_the_apps_budget(tmp
     mind, server = _mind(tmp_path, [_say("Listo.")])
     mind.decide(1, "Escribe un cuento largo en un documento.")
     assert 640 <= server.bodies[0]["max_tokens"] <= 900
+
+
+def _server_error(code: int = 500) -> urllib.error.HTTPError:
+    return urllib.error.HTTPError("http://127.0.0.1/v1/chat/completions", code, "Internal Server Error", {},
+                                  io.BytesIO(b'{"error":{"code":500,"type":"server_error"}}'))
+
+
+def test_a_decision_the_model_server_failed_is_answered_in_words(tmp_path: Path) -> None:
+    # Uso real 2026-11-03 (F4, 14:47): turn.decide got llama-server's HTTP 500 (after LlmServer's retry) and BAXY said
+    # nothing. The model is asked once more for words only, told why; its words are the answer, the note is not kept.
+    from baxy_mind.mind import SERVER_ERROR_NOTE
+    mind, server = _mind(tmp_path, [_server_error(), _say("No pude pensar la respuesta, ¿me lo repites?")])
+    result = mind.decide(1, "qué es un agujero negro")
+    assert result["kind"] == "conversation"
+    assert result["reply"] == "No pude pensar la respuesta, ¿me lo repites?"
+    last = server.bodies[-1]
+    assert last["tool_choice"] == "none" and last["logit_bias"]
+    assert last["messages"][-1] == {"role": "user", "content": SERVER_ERROR_NOTE.format(code=500)}
+    assert SERVER_ERROR_NOTE[:40] not in json.dumps(mind.conversation, ensure_ascii=False)
+    rows = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert any(row.get("kind") == "server_error" and row.get("code") == 500 for row in rows)
+
+
+def test_a_model_server_that_keeps_failing_reaches_the_app(tmp_path: Path) -> None:
+    # Asked once in words: a second 5xx is the App's decision_unavailable, never a loop.
+    mind, server = _mind(tmp_path, [_server_error(), _server_error(503)])
+    with pytest.raises(urllib.error.HTTPError):
+        mind.decide(1, "qué es un agujero negro")
+    assert len(server.bodies) == 2
+
+
+def test_a_client_error_of_the_model_server_is_not_answered_in_words(tmp_path: Path) -> None:
+    # A 4xx is the request's own (a 400 past the context makes room instead): only the server's failure is told.
+    error = urllib.error.HTTPError("http://127.0.0.1/v1/chat/completions", 404, "Not Found", {}, io.BytesIO(b"{}"))
+    mind, server = _mind(tmp_path, [error])
+    with pytest.raises(urllib.error.HTTPError):
+        mind.decide(1, "hola")
+    assert len(server.bodies) == 1

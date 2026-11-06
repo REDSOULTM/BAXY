@@ -1,6 +1,7 @@
 import { memo, type ReactNode } from 'react';
 import { Globe, Icon } from './Icon';
 import type { BaxyState, Metrics } from '../types';
+import { useT, type Words } from '../i18n';
 
 /* The left rail (design chat.jsx, BxRail): privacy, power, confirmation mode, the PC's readings, the panels and the
    presentation profiles. A reading the PC did not give shows «—», never a 0. */
@@ -32,20 +33,20 @@ function Gauge({ k, v, unit, norm, hot, tip }: { k: keyof typeof GLYPH; v: strin
   );
 }
 
-const MODS: [Exclude<PanelId, 'settings'>, string, ReactNode][] = [
-  ['sessions', 'Sesiones', <><rect x="2.5" y="3" width="11" height="10" rx="1"></rect><path d="M2.5 6h11M5 8.6h6M5 10.6h4"></path></>],
-  ['memory', 'Memoria', <><path d="M8 2.5L13.5 5.5L8 8.5L2.5 5.5Z"></path><path d="M2.5 8.3L8 11.3L13.5 8.3"></path><path d="M2.5 11L8 14L13.5 11"></path></>],
-  ['triggers', 'Triggers', <><circle cx="8" cy="8.5" r="5"></circle><path d="M8 5.8V8.5L9.8 10M6.5 2h3"></path></>],
-  ['catalog', 'Capacidades', <><rect x="2.5" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="2.5" y="9" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="9" width="4.5" height="4.5" rx=".8"></rect></>],
-  ['proposals', 'Propuestas', <><path d="M4 11V7a4 4 0 0 1 8 0v4l1.2 1.5H2.8Z"></path><path d="M6.6 14h2.8"></path></>],
+const MODS: [Exclude<PanelId, 'settings'>, Words, ReactNode][] = [
+  ['sessions', { es: 'Sesiones', en: 'Sessions' }, <><rect x="2.5" y="3" width="11" height="10" rx="1"></rect><path d="M2.5 6h11M5 8.6h6M5 10.6h4"></path></>],
+  ['memory', { es: 'Memoria', en: 'Memory' }, <><path d="M8 2.5L13.5 5.5L8 8.5L2.5 5.5Z"></path><path d="M2.5 8.3L8 11.3L13.5 8.3"></path><path d="M2.5 11L8 14L13.5 11"></path></>],
+  ['triggers', { es: 'Triggers', en: 'Triggers' }, <><circle cx="8" cy="8.5" r="5"></circle><path d="M8 5.8V8.5L9.8 10M6.5 2h3"></path></>],
+  ['catalog', { es: 'Capacidades', en: 'Capabilities' }, <><rect x="2.5" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="2.5" y="9" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="9" width="4.5" height="4.5" rx=".8"></rect></>],
+  ['proposals', { es: 'Propuestas', en: 'Proposals' }, <><path d="M4 11V7a4 4 0 0 1 8 0v4l1.2 1.5H2.8Z"></path><path d="M6.6 14h2.8"></path></>],
 ];
 
 // FT/proveedores goal, the owner's decision on the modes (2026-10-18): only the standard mode (text) is ready; the
 // blind and the mobility modes are «próximamente disponible», shown so and never chosen as if they were ready.
-const PROFILES: [Profile, 'person' | 'eye-off' | 'wheelchair', string, boolean][] = [
-  ['normal', 'person', 'Estándar', true],
-  ['novidente', 'eye-off', 'No vidente · próximamente disponible', false],
-  ['movilidad', 'wheelchair', 'Movilidad · próximamente disponible', false],
+const PROFILES: [Profile, 'person' | 'eye-off' | 'wheelchair', Words, boolean][] = [
+  ['normal', 'person', { es: 'Estándar', en: 'Standard' }, true],
+  ['novidente', 'eye-off', { es: 'No vidente · próximamente disponible', en: 'Blind or low vision · coming soon' }, false],
+  ['movilidad', 'wheelchair', { es: 'Movilidad · próximamente disponible', en: 'Mobility · coming soon' }, false],
 ];
 
 interface RailProps {
@@ -56,6 +57,8 @@ interface RailProps {
   onMode: () => void;
   metrics: Metrics | null;
   net: string | null;
+  /** the model behind an API that is answering, null while it is the one on this PC */
+  api: string | null;
   profile: Profile;
   onProfile: (p: Profile) => void;
   counts: Record<'sessions' | 'memory' | 'triggers' | 'catalog', number | null>;
@@ -67,46 +70,48 @@ function fixed(v: number | null | undefined, digits: number): string | null {
   return typeof v === 'number' && Number.isFinite(v) ? v.toFixed(digits) : null;
 }
 
-function RailView({ state, powered, onPower, bypass, onMode, metrics, net, profile, onProfile, counts, quiet, onPanel }: RailProps) {
+function RailView({ state, powered, onPower, bypass, onMode, metrics, net, api, profile, onProfile, counts, quiet, onPanel }: RailProps) {
+  const t = useT();
   const m = metrics;
   const gauges: ['cpu' | 'gpu' | 'tmp', number | null | undefined, string, number, string][] = [
-    ['cpu', m?.cpu, '%', 100, 'Procesador del PC'],
-    ['gpu', m?.gpu, '%', 100, 'Gráfica del PC'],
-    ['tmp', m?.temp, '°', 90, 'Temperatura de la gráfica'],
+    ['cpu', m?.cpu, '%', 100, t('Procesador del PC', 'Processor')],
+    ['gpu', m?.gpu, '%', 100, t('Gráfica del PC', 'Graphics card')],
+    ['tmp', m?.temp, '°', 90, t('Temperatura de la gráfica', 'Graphics card temperature')],
   ];
   const vram = m?.model_vram_gb, ram = m?.model_ram_gb;
   const used = typeof vram === 'number' ? vram : null;
   const modelTip = used !== null || typeof ram === 'number'
-    ? 'Modelo BAXY · vídeo ' + (fixed(vram, 1) ?? '—') + ' GB · RAM ' + (fixed(ram, 1) ?? '—') + ' GB · límite 4 GB'
-    : 'Modelo BAXY · aún no se puede leer';
+    ? t('Modelo BAXY · vídeo ', 'BAXY model · VRAM ') + (fixed(vram, 1) ?? '—') + ' GB · RAM ' + (fixed(ram, 1) ?? '—') + t(' GB · límite 4 GB', ' GB · 4 GB limit')
+    : t('Modelo BAXY · aún no se puede leer', 'BAXY model · can’t be read yet');
   return (
     <div className="bx-left">
       <div className="left-header">
         <div className="row">
           <span className="name">baxy</span>
-          <button className="bx-ib plain bx-gear" onClick={() => onPanel('settings')} title="Ajustes" aria-label="Ajustes"><Icon name="settings" size={15} /></button>
+          <button className="bx-ib plain bx-gear" onClick={() => onPanel('settings')} title={t('Ajustes', 'Settings')} aria-label={t('Ajustes', 'Settings')}><Icon name="settings" size={15} /></button>
         </div>
-        <div className={'bx-priv' + (net ? ' out' : '')} title={net ? 'Salió a internet: ' + net : 'El modelo y tus datos se quedan en este PC'}>
-          {net ? <><Globe s={10} /><span>Salió a internet</span></> : <><i></i><span>Todo local</span></>}
+        <div className={'bx-priv' + (net || api ? ' out' : '')} title={api ? t('Lo que le pases a BAXY sale hacia la API de ', 'What you give BAXY goes out to the API of ') + api : net ? t('Salió a internet: ', 'Went online: ') + net : t('El modelo y tus datos se quedan en este PC', 'The model and your data stay on this PC')}>
+          {api ? <><Globe s={10} /><span>{t('Modelo por API', 'Model by API')}</span></> : net ? <><Globe s={10} /><span>{t('Salió a internet', 'Went online')}</span></> : <><i></i><span>{t('Todo local', 'All local')}</span></>}
         </div>
       </div>
-      <button className={'power-row' + (powered ? ' on' : ' off')} onClick={onPower} title={powered ? 'Poner en reposo' : 'Activar'}
-        aria-label={state === 'booting' ? 'BAXY arrancando' : powered ? 'BAXY activo · poner en reposo' : 'BAXY en reposo · activar'}>
+      <button className={'power-row' + (powered ? ' on' : ' off')} onClick={onPower} title={powered ? t('Poner en reposo', 'Put to sleep') : t('Activar', 'Wake up')}
+        aria-label={state === 'booting' ? t('BAXY arrancando', 'BAXY starting') : powered ? t('BAXY activo · poner en reposo', 'BAXY active · put to sleep') : t('BAXY en reposo · activar', 'BAXY asleep · wake up')}>
         <span className="power-ic"><Icon name="power" size={15} /></span>
-        <span className="power-lbl">{state === 'booting' ? 'Arrancando' : powered ? 'Activo' : 'En reposo'}</span>
+        <span className="power-lbl">{state === 'booting' ? t('Arrancando', 'Starting') : powered ? t('Activo', 'Active') : t('En reposo', 'Asleep')}</span>
         <span className="power-dot"></span>
       </button>
       <div className="min-block">
-        <div className="sec-head"><span>confirmación</span></div>
+        <div className="sec-head"><span>{t('confirmación', 'confirmation')}</span></div>
         <button className={'bx-modebtn ' + (bypass ? 'bypass' : 'normal')} onClick={onMode} role="switch" aria-checked={bypass}
-          aria-label={bypass ? 'Confirmación en Bypass: hace todo sin preguntar' : 'Confirmación Normal: pregunta antes de lo arriesgado · activar Bypass'} title={bypass ? 'Bypass: hace todo sin preguntar · pulsa para volver a Normal' : 'Normal: pregunta antes de lo arriesgado · pulsa para Bypass'}>
+          aria-label={bypass ? t('Confirmación en Bypass: hace todo sin preguntar', 'Confirmation in Bypass: does everything without asking') : t('Confirmación Normal: pregunta antes de lo arriesgado · activar Bypass', 'Normal confirmation: asks before risky things · turn on Bypass')}
+          title={bypass ? t('Bypass: hace todo sin preguntar · pulsa para volver a Normal', 'Bypass: does everything without asking · press to go back to Normal') : t('Normal: pregunta antes de lo arriesgado · pulsa para Bypass', 'Normal: asks before risky things · press for Bypass')}>
           <span className="ic"><Icon name={bypass ? 'bolt' : 'check'} size={14} /></span>
-          <span className="tx"><span className="n">{bypass ? 'Bypass' : 'Normal'}</span><span className="s">{bypass ? 'Sin frenos' : 'Si hay riesgo'}</span></span>
+          <span className="tx"><span className="n">{bypass ? 'Bypass' : 'Normal'}</span><span className="s">{bypass ? t('Sin frenos', 'No brakes') : t('Si hay riesgo', 'When risky')}</span></span>
           <span className="sw"><i></i></span>
         </button>
       </div>
       <div className="min-block">
-        <div className="sec-head"><span>sistema</span></div>
+        <div className="sec-head"><span>{t('sistema', 'system')}</span></div>
         <div className="bx-gauges">
           {gauges.map(([k, v, u, mx, tip]) => {
             const t = fixed(v, 0);
@@ -116,26 +121,27 @@ function RailView({ state, powered, onPower, bypass, onMode, metrics, net, profi
         </div>
       </div>
       <div className="min-block bx-modblock">
-        <div className="sec-head"><span>paneles</span></div>
+        <div className="sec-head"><span>{t('paneles', 'panels')}</span></div>
         <div className="bx-mods">
           {MODS.map(([id, l, g]) => (
             <button key={id} className="bx-mod" onClick={() => onPanel(id)}>
               <span className="ic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">{g}</svg></span>
-              <span className="l">{l}</span>
+              <span className="l">{t.w(l)}</span>
               <span className={'n' + (id === 'proposals' && quiet ? ' q' : '')}>
-                {id === 'proposals' ? (quiet ? 'Silencio' : 'Activas') : counts[id] ?? '—'}
+                {id === 'proposals' ? (quiet ? t('Silencio', 'Muted') : t('Activas', 'Active')) : counts[id] ?? '—'}
               </span>
             </button>
           ))}
         </div>
       </div>
       <div className="bx-foot">
-        <div className="sec-head"><span>accesibilidad</span></div>
+        <div className="sec-head"><span>{t('accesibilidad', 'accessibility')}</span></div>
         <div className="bx-profiles">
-          {PROFILES.map(([id, ic, tip, ready]) => (
-            <button key={id} className={'bx-pchip' + (profile === id ? ' on' : '') + (ready ? '' : ' soon')} data-tip={tip} title={tip}
-              aria-label={tip} aria-pressed={profile === id} aria-disabled={!ready} onClick={() => { if (ready) onProfile(id); }}><Icon name={ic} size={14} /></button>
-          ))}
+          {PROFILES.map(([id, ic, words, ready]) => {
+            const tip = t.w(words);
+            return <button key={id} className={'bx-pchip' + (profile === id ? ' on' : '') + (ready ? '' : ' soon')} data-tip={tip} title={tip}
+              aria-label={tip} aria-pressed={profile === id} aria-disabled={!ready} onClick={() => { if (ready) onProfile(id); }}><Icon name={ic} size={14} /></button>;
+          })}
         </div>
       </div>
     </div>

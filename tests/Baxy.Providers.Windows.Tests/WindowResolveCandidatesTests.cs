@@ -93,6 +93,50 @@ public sealed class WindowResolveCandidatesTests
             new OperationInvocation("r", "m", "i", JsonDocument.Parse("{\"applicationName\":\"Microsoft Word\"}").RootElement),
             CancellationToken.None);
 
+    // Encargo 94 (held-out: «Pégalo en la ventana que se llama Cuaderno Faro»): a name no installed application bears
+    // answered «no window was looked for by it» with a window of that very title in its own list, and the model hunted for
+    // it by process until it gave up, or resolved it and pasted into the one in front. The window of that exact title is
+    // the answer; not in front, it says which paste reaches it (the call written, as the rule of encargos 20, 28 and 34).
+    [Test]
+    public async Task AWindowOfThatExactTitleIsTheAnswerAndSaysWhichPasteReachesIt()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        WindowCandidate window = new("win_7", 7, "cuaderno", "normal", false, 0, 0, 600, 300, "Cuaderno Lumbre");
+        var windows = new FailingWindows("app_not_found") { Titled = [window] };
+
+        OperationOutcome outcome = await new WindowResolveHandler(windows, () => Desktop, () => ("Opera GX", "opera")).ExecuteAsync(
+            new OperationInvocation("r", "m", "i", JsonDocument.Parse("""{"applicationName":"Cuaderno Lumbre"}""").RootElement),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("windows")[0].GetProperty("windowId").GetString(), Is.EqualTo("win_7"));
+            Assert.That(result.GetProperty("next").GetString(), Does.Contain(
+                """clipboard_paste_into {"appId":"Cuaderno Lumbre"} pastes into this window""").And.Contain("the window in front"));
+        });
+    }
+
+    // Contracase: in front, a plain paste reaches it: nothing to say.
+    [Test]
+    public async Task AWindowOfThatTitleInFrontSaysNothingMore()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        WindowCandidate window = new("win_7", 7, "cuaderno", "normal", true, 0, 0, 600, 300, "Cuaderno Lumbre");
+        var windows = new FailingWindows("app_not_found") { Titled = [window] };
+
+        OperationOutcome outcome = await new WindowResolveHandler(windows, () => Desktop, () => ("Opera GX", "opera")).ExecuteAsync(
+            new OperationInvocation("r", "m", "i", JsonDocument.Parse("""{"applicationName":"Cuaderno Lumbre"}""").RootElement),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
     // BAXY Renew cu (C13 en el PC): a browser resolved by name that is not the person's own says which theirs is; the
     // person's own, or a window that is no browser, goes back as it was.
     [Test]
@@ -121,6 +165,8 @@ public sealed class WindowResolveCandidatesTests
 
     private sealed class FailingWindows(string code) : IWindowControlProvider
     {
+        internal IReadOnlyList<WindowCandidate> Titled { get; init; } = [];
+
         public ValueTask<WindowResolveResult> ResolveApplicationAsync(
             string applicationName, int limit, CancellationToken cancellationToken) =>
             ValueTask.FromResult(new WindowResolveResult(false, false, [], code));
@@ -136,7 +182,10 @@ public sealed class WindowResolveCandidatesTests
 
         public ValueTask<WindowResolveResult> ResolveAsync(
             string processName, int limit, CancellationToken cancellationToken, bool byTitle = false, int offset = 0) =>
-            throw new AssertionException("not used");
+            !byTitle ? throw new AssertionException("not used")
+                : ValueTask.FromResult(Titled.Count > 0
+                    ? new WindowResolveResult(true, true, Titled, null)
+                    : new WindowResolveResult(false, false, [], WindowControlErrorCodes.WindowNotFound));
 
         public ValueTask<WindowActionResult> ExecuteAsync(
             string windowId, WindowControlAction action, CancellationToken cancellationToken) =>

@@ -199,6 +199,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return Json(new JsonObject { ["ok"] = now == on, ["on"] = now });
             }
 
+            // Uso 85: the person's answer to a profile the core cannot read, or to a breakdown (App.tsx, Breakdown).
+            case ("POST", "/profile/fresh"):
+                return await StartFreshProfileAsync().ConfigureAwait(true);
+            case ("POST", "/engine/retry"):
+                return _viewModel.RetryEngine() ? Json(new JsonObject { ["ok"] = true }) : Error("nothing_to_retry", 409);
             case ("GET", "/sessions"):
                 return Json(Sessions());
             case ("POST", "/sessions/new"):
@@ -219,6 +224,30 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return Json(_viewModel.Settings.GeneralJson(Autostart()));
             case ("PUT", "/settings/general"):
                 return PutGeneral(ParseBody(body));
+            case ("GET", "/settings/external-model/estimate") when ExternalModel.Available:
+                FieldMetricSnapshot own = await _telemetry.SampleAsync(_lifetimeCancellation).ConfigureAwait(true);
+                return Json(await _viewModel.ExternalModelState.EstimateAsync(own.ModelVramGb, own.ModelRamGb, _lifetimeCancellation).ConfigureAwait(true));
+            case ("GET", "/settings/external-model/models") when ExternalModel.Available:
+                return Json(await _viewModel.ExternalModelState.ModelsAsync(_lifetimeCancellation).ConfigureAwait(true));
+            case ("GET", "/settings/external-model") when ExternalModel.Available:
+                return Json(_viewModel.ExternalModelState.Json());
+            case ("PUT", "/settings/external-model") when ExternalModel.Available:
+            {
+                if (ParseBody(body) is not { } externalModel)
+                {
+                    return Error("invalid_settings", 400);
+                }
+
+                if (_viewModel.ExternalModelState.Apply(externalModel) is { } refused)
+                {
+                    return Error(refused, 409);
+                }
+
+                _viewModel.ExternalModelChanged();
+                return Json(_viewModel.ExternalModelState.Json());
+            }
+            case ("PUT", "/settings/language"):
+                return PutLanguage(ParseBody(body));
             case ("GET", "/proposals"):
                 return Json(_viewModel.Settings.ProposalsJson());
             case ("PUT", "/proposals"):
@@ -328,10 +357,17 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private void OnStepCompleted(NativeTurnStep step)
     {
         // What left the PC: a call that reaches the internet and got to its provider (the kernel let it through).
+        bool english = UiLanguage.IsEnglish;
         string? net = step.Sent && NativeTurnLoop.Has(step.Operation, step.Arguments, OperationEffects.Network)
-            ? FieldStepProjection.NetWhat(step.Operation, step.Arguments)
+            ? FieldStepProjection.NetWhat(step.Operation, step.Arguments, english)
             : null;
-        JsonObject? view = FieldStepProjection.Finished(step.Id, step, net);
+        JsonObject? view = FieldStepProjection.Finished(step.Id, step, net, english);
+        if (english && view?["net"] is not null)
+        {
+            // The internet log the model reads (OwnReadings.Internet) keeps its Spanish words in an English view.
+            view["netEs"] = FieldStepProjection.NetWhat(step.Operation, step.Arguments, english: false);
+        }
+
         if (view is null)
         {
             if (_transcript.Drop(step.Id) is { } reply)
@@ -357,21 +393,22 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         // Bypass ran a call normal mode would have asked about: the conversation says so (design v4), as its step ended
         // (2026-10-22, review of the App: one that reached its provider and failed was said done too). «hecho» only for
-        // an effect read back; a state already there, an input delivered unread or one that may have run say so.
-        string? bypassed = (string?)view["status"] switch
+        // an effect read back; a state already there, an input delivered unread or one that may have run say so. Uso real
+        // 2026-11-02: a call the person said «sí» to was asked, whatever the mode is now, and is never said unasked.
+        string? bypassed = step.Asked ? null : (string?)view["status"] switch
         {
-            "ok" => "hecho sin preguntar",
-            "same" => "sin preguntar, ya estaba así",
-            "sent" => "enviado sin preguntar, sin comprobar",
-            "read" => "leído sin preguntar",
-            "maybe" when step.Sent => "sin preguntar, puede haber corrido",
+            "ok" => UiLanguage.Say(english, "hecho sin preguntar", "done without asking"),
+            "same" => UiLanguage.Say(english, "sin preguntar, ya estaba así", "without asking · already set"),
+            "sent" => UiLanguage.Say(english, "enviado sin preguntar, sin comprobar", "sent without asking, not verified"),
+            "read" => UiLanguage.Say(english, "leído sin preguntar", "read without asking"),
+            "maybe" when step.Sent => UiLanguage.Say(english, "sin preguntar, puede haber corrido", "without asking, may have run"),
             _ => null,
         };
         if (bypassed is not null
             && ConfirmationModeStore.Read(MemoryOperationProtector.ResolveDataRoot()) == ConfirmationMode.Bypass
             && FieldStepProjection.NormalModeAsks(step.Operation, step.Arguments))
         {
-            string title = FieldStepProjection.Label(step.Operation, step.Arguments);
+            string title = FieldStepProjection.Label(step.Operation, step.Arguments, english);
             Publish(ItemEvent(_transcript.System("Bypass · " + bypassed + ": " + char.ToLowerInvariant(title[0]) + title[1..])));
         }
 
@@ -392,16 +429,18 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private void OnConfirmationAsked(NativeTurnConfirmation asked, string? beatActivity)
     {
+        // The card's words and its context in one language, read once.
+        bool english = UiLanguage.IsEnglish;
         string? context = asked.Proposal ? beatActivity switch
         {
-            HeartbeatMoment.Playing => "porque estás jugando",
-            HeartbeatMoment.InCall => "porque estás en una llamada",
-            HeartbeatMoment.Watching => "porque estás viendo algo",
-            _ => "por iniciativa propia",
+            HeartbeatMoment.Playing => UiLanguage.Say(english, "porque estás jugando", "because you're gaming"),
+            HeartbeatMoment.InCall => UiLanguage.Say(english, "porque estás en una llamada", "because you're on a call"),
+            HeartbeatMoment.Watching => UiLanguage.Say(english, "porque estás viendo algo", "because you're watching something"),
+            _ => UiLanguage.Say(english, "por iniciativa propia", "unprompted"),
         } : null;
         string id = _transcript.NextId("k");
         JsonObject card = FieldStepProjection.Card(id, asked.Proposal ? "proposal" : "confirm",
-            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, asked.EffectStarted, asked.Cause);
+            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, english, asked.EffectStarted, asked.Cause);
         _pendingCard = (id, asked);
         Publish(ItemEvent(_transcript.Card(card)));
     }
@@ -503,17 +542,25 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     // ---- sessions -------------------------------------------------------------------------------------------------
 
+    // The conversation's title as the model reads it (conversation.*): an untitled one is «Conversación nueva» whatever
+    // the interface's language; the view says it in that language (ShownTitle).
     private string SessionTitle => _sessionLabel ?? "Conversación nueva";
 
-    private JsonObject SessionEvent() => new() { ["type"] = "session", ["id"] = _sessionId, ["label"] = SessionTitle };
+    private string ShownTitle(bool english) => _sessionLabel ?? UiLanguage.Say(english, "Conversación nueva", "New conversation");
+
+    private JsonObject SessionEvent() => new()
+    {
+        ["type"] = "session", ["id"] = _sessionId, ["label"] = ShownTitle(UiLanguage.IsEnglish),
+    };
 
     private JsonObject Sessions()
     {
+        bool english = UiLanguage.IsEnglish;
         var list = new JsonArray(new JsonObject
         {
             ["id"] = _sessionId,
-            ["label"] = SessionTitle,
-            ["ts"] = "ahora",
+            ["label"] = ShownTitle(english),
+            ["ts"] = UiLanguage.Say(english, "ahora", "now"),
             ["turn_count"] = _transcript.Requests,
             ["current"] = true,
         });
@@ -522,8 +569,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             list.Add(new JsonObject
             {
                 ["id"] = kept.Id,
-                ["label"] = kept.Label.Length > 0 ? kept.Label : "Conversación",
-                ["ts"] = When(kept.Updated),
+                ["label"] = kept.Label.Length > 0 ? kept.Label : UiLanguage.Say(english, "Conversación", "Conversation"),
+                ["ts"] = When(kept.Updated, english),
                 ["turn_count"] = null,
                 ["current"] = false,
             });
@@ -897,16 +944,18 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private static string NewSessionId() => Guid.NewGuid().ToString("N")[..12];
 
-    private static string When(DateTimeOffset utc)
+    // When a kept conversation was last used, as the sessions panel says it in the interface's language.
+    private static string When(DateTimeOffset utc, bool english)
     {
         DateTime local = utc.ToLocalTime().DateTime;
         int days = (DateTime.Today - local.Date).Days;
+        CultureInfo culture = UiLanguage.CultureOf(english);
         return days switch
         {
             0 => local.ToString("HH:mm", CultureInfo.InvariantCulture),
-            1 => "ayer",
-            < 7 => local.ToString("ddd", CultureInfo.GetCultureInfo("es-ES")).TrimEnd('.'),
-            _ => local.ToString("d MMM", CultureInfo.GetCultureInfo("es-ES")).TrimEnd('.'),
+            1 => UiLanguage.Say(english, "ayer", "yesterday"),
+            < 7 => local.ToString("ddd", culture).TrimEnd('.'),
+            _ => local.ToString(UiLanguage.Say(english, "d MMM", "MMM d"), culture).TrimEnd('.'),
         };
     }
 
@@ -1018,10 +1067,29 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             }
         }
 
+        bool echoCancel = _viewModel.Settings.EchoCancel;
         _viewModel.Settings.ApplyGeneral(body);
         if (_viewModel.Settings.VoiceMuted)
             _viewModel.SilenceVoice();
+        if (_viewModel.Settings.EchoCancel != echoCancel)
+            _ = _viewModel.ApplyEchoCancelAsync(CancellationToken.None);
         return Json(_viewModel.Settings.GeneralJson(Autostart()));
+    }
+
+    // Steam (2026-11-04): the person's choice of language («auto», «es» or «en»), which the host keeps and the view reads
+    // back in GET /settings/general («language», and «languageInUse» for what «auto» stands for). BAXY's own words follow
+    // it from now on (UiLanguage), the tray and the start's screen from the file at the next start; what the model
+    // reads does not change.
+    private FieldHttpResponse PutLanguage(JsonObject? body)
+    {
+        string? choice = body?["lang"] is JsonValue value && value.TryGetValue(out string? said) ? said : null;
+        if (!_viewModel.Settings.ApplyLanguage(choice))
+        {
+            return Error("invalid_language", 400);
+        }
+
+        UiLanguage.Use(choice);
+        return Json(new JsonObject { ["ok"] = true, ["language"] = choice, ["languageInUse"] = UiLanguage.Current });
     }
 
     // The bypass switch of BAXY's own view writes the profile's confirmation mode through the same store the engine
@@ -1067,7 +1135,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (name is nameof(MainWindowViewModel.IsReady) or nameof(MainWindowViewModel.IsBusy)
             or nameof(MainWindowViewModel.Failure) or nameof(MainWindowViewModel.IsMindPreparing)
             or nameof(MainWindowViewModel.IsMindReady) or nameof(MainWindowViewModel.HasPendingConfirmation)
-            or nameof(MainWindowViewModel.IsPowered))
+            or nameof(MainWindowViewModel.IsPowered) or nameof(MainWindowViewModel.IsAwaitingMind))
         {
             Publish(AgentEvent());
         }
@@ -1086,7 +1154,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (name is nameof(MainWindowViewModel.IsListening) or nameof(MainWindowViewModel.IsWakeListening)
             or nameof(MainWindowViewModel.IsVoiceSpeaking) or nameof(MainWindowViewModel.IsMicAvailable)
-            or nameof(MainWindowViewModel.VoiceFailure))
+            or nameof(MainWindowViewModel.VoiceFailure) or nameof(MainWindowViewModel.VoicePieces))
         {
             Publish(VoiceEvent());
         }
@@ -1141,6 +1209,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["ready"] = _viewModel.IsReady && _viewModel.IsMindReady && !_viewModel.IsBusy && !_viewModel.IsMindPreparing,
         ["failure"] = _viewModel.Failure ?? (MindUnavailable ? "mind_unavailable" : null),
         ["pendingConfirmation"] = _viewModel.HasPendingConfirmation,
+        // Uso 95 (F9): a message of the person's waits for the mind (it starts or is relaunched), and why the mind's last
+        // start failed (ram_insuficiente, vram_insuficiente, memoria_insuficiente, …) while none is up: the view says
+        // both instead of a turn that ended with nothing.
+        ["waitingForMind"] = _viewModel.IsAwaitingMind,
+        ["failureCause"] = _viewModel.MindFailureCause,
+        ["failureMemory"] = FailureMemory(),
         // At rest or active: the rail's power row and the tray menu change it, the view only shows it.
         ["powered"] = _viewModel.IsPowered,
     };
@@ -1158,7 +1232,14 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["running"] = _viewModel.IsListening || _viewModel.IsWakeListening,
         ["mode"] = _viewModel.IsListening ? "direct" : _viewModel.IsWakeListening ? "wake" : "off",
         ["speaking"] = _viewModel.IsVoiceSpeaking,
-        ["last_error"] = _viewModel.VoiceFailure ?? (_viewModel.IsMicAvailable ? null : "voice_unavailable"),
+        ["last_error"] = _viewModel.VoicePieces?.WaitingMemory is not null ? "voice_waiting_memory"
+            : _viewModel.VoiceFailure ?? (_viewModel.IsMicAvailable ? null : "voice_unavailable"),
+        // Uso 95 (uso real 2026-11-04 13:19): the ear waits for memory, not for a microphone: what it needs and found.
+        ["waiting_memory"] = _viewModel.VoicePieces?.WaitingMemory is { } memory
+            ? new JsonObject { ["need_mb"] = memory.NeedMb, ["left_mb"] = memory.LeftMb }
+            : null,
+        // uso-116: a microphone with no recogniser is not «no hay micrófono».
+        ["no_recognizer"] = _viewModel.VoicePieces is { Pending: false, InputAvailable: true, SttAvailable: false, WaitingMemory: null },
     };
 
     // The start's pieces, each marked only once the mind reports it (null before); no percentage is made up.
@@ -1175,8 +1256,16 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["startedAt"] = _viewModel.MindStartedAt.ToUnixTimeMilliseconds(),
             ["readyAt"] = _viewModel.MindReadyAt?.ToUnixTimeMilliseconds(),
             ["failed"] = !_viewModel.IsMindReady && _viewModel.MindFailed ? "mind_unavailable" : null,
+            // Uso 95: a relaunch after a failed start shows why the start before failed (the lack of memory included).
+            ["lastFailure"] = _viewModel.MindFailureCause,
+            ["failureMemory"] = FailureMemory(),
         };
     }
+
+    // uso-116 (N23): «falta tanta RAM»: the figures of the lack of memory the cause names (need_mb, free_mb, as the ear's).
+    private JsonObject? FailureMemory() => _viewModel.MindFailureMemory is { } memory
+        ? new JsonObject { ["need_mb"] = memory.NeedMb, ["free_mb"] = memory.FreeMb }
+        : null;
 
     private JsonObject ContextEvent() => new()
     {
@@ -1317,11 +1406,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private static int ContextSize()
     {
-        // The same variable and default the mind passes to llama-server (src/baxy_mind/__main__.py).
+        // The same variable the mind passes to llama-server, and its default on NVIDIA with the output matrix in RAM
+        // (llm_server.default_context; 53,248 on Vulkan and the CPU).
         string? raw = Environment.GetEnvironmentVariable("BAXY_RENEW_CTX");
         return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value) && value > 0
             ? value
-            : 53248;
+            : 77824;
     }
 
     // A reading the PC did not give (no GPU counter, no temperature, no model process) travels as null; the view
@@ -1356,6 +1446,23 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     {
         string single = string.Join(' ', text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         return single.Length <= maximum ? single : single[..(maximum - 1)].TrimEnd() + "…";
+    }
+
+    // The person's Sí to a new profile: the unreadable one set aside (renamed with the date, never deleted) and BAXY
+    // started on a new one. A folder that could not be renamed is said (profile_not_set_aside) and nothing moved.
+    private async Task<FieldHttpResponse> StartFreshProfileAsync()
+    {
+        try
+        {
+            string? setAside = await _viewModel.StartFreshProfileAsync(_lifetimeCancellation).ConfigureAwait(true);
+            return setAside is null
+                ? Error("profile_not_unreadable", 409)
+                : Json(new JsonObject { ["ok"] = true, ["setAside"] = Path.GetFileName(setAside) });
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return Error("profile_not_set_aside", 409);
+        }
     }
 
     private static FieldHttpResponse Json(JsonObject body, int status = 200) => FieldHttpResponse.Json(body, status);

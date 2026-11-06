@@ -1,0 +1,26 @@
+// SteamPipe build of BAXY (documentacion/STEAM_PUBLICACION.md, section 3). Replace APP_ID and DEPOT_ID with the ids
+// Steamworks gives the app, and ContentRoot with the folder scripts\build_steam.ps1 wrote. Upload with the SDK's
+// ContentBuilder: steamcmd +login <account> +run_app_build <full path of this file> +quit
+// The build lands on no branch: set it live on a beta branch to test, then on «default» by hand in App Admin.
+"AppBuild"
+{
+	"AppID" "APP_ID"
+	"Desc" "BAXY Early Access"
+	"ContentRoot" "D:\BAXY-SteamBuild\steamapps\common\BAXY"
+	"BuildOutput" "D:\BAXY-SteamBuild\steampipe"
+	"Depots"
+	{
+		"DEPOT_ID"
+		{
+			"FileMapping"
+			{
+				"LocalPath" "*"
+				"DepotPath" "."
+				"recursive" "1"
+			}
+			// Written by the App at run time beside its registration (RuntimeFileHashCache), never shipped.
+			"FileExclusion" "mind-runtime-v1.hash-cache.json"
+			"FileExclusion" "*__pycache__*"
+		}
+	}
+}

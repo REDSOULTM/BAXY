@@ -48,7 +48,7 @@ internal sealed class KeptApplicationCatalog(string path)
             ContractValidator.Validate(snapshot);
             File.WriteAllBytes(temporary, JsonSerializer.SerializeToUtf8Bytes(
                 snapshot, BaxyJsonContext.Default.ApplicationCatalogSnapshot));
-            File.Move(temporary, path, overwrite: true);
+            global::Baxy.Kernel.AtomicFileReplacement.ReplaceOrCreate(temporary, path);
         }
         // Not kept is only a slower next start: the list this start read still goes to the App.
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)

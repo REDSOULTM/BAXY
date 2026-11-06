@@ -32,6 +32,26 @@ public sealed class CaptureOcrLayoutTests
         });
     }
 
+    // Encargo 119 (F10): the engine has no confidence, so the read says what it cannot read: a foreign alphabet came back as
+    // nonsense told as text, and a capture with faint text as a capture with none.
+    [Test]
+    public void AReadSaysItsLanguagesAndThatNothingRecognizedIsNotNoText()
+    {
+        JsonElement empty = CaptureOcrLayout.CreateResult("capture_test", "es-MX", string.Empty, ImageDigest,
+            100, 50, RecognizedAt, null, [], ["es-MX"]);
+        JsonElement read = CaptureOcrLayout.CreateResult("capture_test", "es-MX", "uno", ImageDigest,
+            100, 50, RecognizedAt, null, [new("uno", [new("uno", 0, 0, 10, 5)])], ["es-MX", "en-US"]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(empty.GetProperty("recognizerLanguages")[0].GetString(), Is.EqualTo("es-MX"));
+            Assert.That(empty.GetProperty("nothingRead").GetString(), Does.Contain("not that it has no text"));
+            Assert.That(read.GetProperty("recognizerLanguages").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(read.GetProperty("limits").GetString(), Does.Contain("another alphabet").And.Contain("Windows Settings"));
+            Assert.That(read.TryGetProperty("nothingRead", out _), Is.False);
+        });
+    }
+
     [Test]
     public void RecognitionPreservesEngineOrderOriginalTextAndFractionalImageCoordinates()
     {

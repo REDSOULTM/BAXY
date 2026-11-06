@@ -13,8 +13,8 @@ labels: fallo
 **Entorno**
 - Windows (versión y build):
 - GPU y VRAM (o CPU):
-- Commit de BAXY (`git rev-parse --short HEAD`):
-- Modelo (`BAXY-Qwen3.5-4B-c3-Q4_K_M.gguf` u otro):
+- Versión de BAXY (o commit, `git rev-parse --short HEAD`):
+- Modelo (el de BAXY u otro, Ajustes → Modelo):
 
 **Registros** (de `%LOCALAPPDATA%\BAXY\renew\`, sólo las líneas relevantes; revisa que no lleven datos tuyos):
 

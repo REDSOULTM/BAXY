@@ -25,10 +25,11 @@ internal static class ExternalCapabilityHandlers
         "browser.navigate.named",
         "browser.page.read",
         "browser.tabs.list",
-        "calculator.expression.evaluate",
         "calendar.event.create",
         "calendar.event.list",
         "client.channel.locate",
+        "client.channel.open",
+        "client.deafen.set",
         "client.microphone.set",
         "clipboard.copy",
         "clipboard.paste",
@@ -54,7 +55,6 @@ internal static class ExternalCapabilityHandlers
         "game.install.cancel.active",
         "game.install.named",
         "game.install.status",
-        "game.launch",
         "game.uninstall.named",
         "input.key.press",
         "input.keyboard.layout",
@@ -143,7 +143,8 @@ internal static class ExternalCapabilityHandlers
 /// address bar. Before the person is asked, this preflight reads the window the key would reach (the window argument,
 /// or the one the provider sends a key with no window to): neither a messaging client nor a console lowers the press
 /// to a reversible act and it goes without asking; one that is, or one that cannot be read, keeps the question. The
-/// windows are told by the providers' data (<see cref="IKeyWindowReader"/>).
+/// windows are told by the providers' data (<see cref="IKeyWindowReader"/>). An Enter the provider's own preflight raised
+/// (a field of its window holds text, auditoría de falsedades 2026-11-04 P6) is never lowered here.
 /// </summary>
 internal sealed class KeyPressHandler(ExternalCapabilityHandler keys, IKeyWindowReader windows)
     : IOperationHandler, IInvocationPreflight
@@ -250,7 +251,7 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
         bool on = value == 1;
         if (setting == ConfirmationBypass && on)
         {
-            return ValueTask.FromResult(OperationOutcome.Failure("confirmation_bypass_interface_only"));
+            return ValueTask.FromResult(BypassInterfaceOnly(dataRoot));
         }
 
         // Revisión 2026-10-22 (C-3): a file that cannot be read (another program holds it locked) is not «off»: taking it
@@ -303,6 +304,40 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
 
         using JsonDocument result = JsonDocument.Parse(buffer.ToArray());
         return ValueTask.FromResult(OperationOutcome.Success(result.RootElement.Clone()));
+    }
+
+    /// <summary>
+    /// Encargo 25 (G2, uso real 02-11: refused with a bare code, the reply was «eso no es una opción que BAXY tenga»):
+    /// bypass switched on from the chat is refused with what is true, for system.settings.set and baxy.settings.set
+    /// alike: the mode it is in (when its file reads), what the chat can do with it and where the window turns it on
+    /// (SettingsPanel's «Confirmación» tab and the Rail's switch).
+    /// </summary>
+    internal static OperationOutcome BypassInterfaceOnly(string dataRoot)
+    {
+        using var buffer = new MemoryStream();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("setting", ConfirmationBypass);
+            if (ConfirmationModeStore.TryRead(dataRoot, out ConfirmationMode mode))
+            {
+                writer.WriteString("mode", mode == ConfirmationMode.Bypass ? "bypass" : "normal");
+            }
+
+            writer.WriteStartArray("valuesByChat");
+            writer.WriteStringValue("off");
+            writer.WriteEndArray();
+            if (ModelAids.On(ModelAids.ConfirmationWhere))
+            {
+                writer.WriteString(
+                    "turnOnIn", "BAXY's own window: Ajustes > Confirmación, or the Normal/Bypass switch on its side panel");
+            }
+
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument result = JsonDocument.Parse(buffer.ToArray());
+        return OperationOutcome.Failure("confirmation_bypass_interface_only", result.RootElement.Clone());
     }
 
     // Whether the setting's file could be read, and whether it says on.
@@ -405,7 +440,7 @@ internal sealed class ExternalCapabilityHandler(
         if (found is { NeedsConfirmation: true, Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }
             && string.Equals(found.Operation, operation, StringComparison.Ordinal))
         {
-            return InvocationPreflightResult.Raised(OperationRisk.Irreversible);
+            return InvocationPreflightResult.Raised(OperationRisk.Irreversible, found.Result);
         }
 
         return found is { Verified: false, EffectObserved: false, EffectMayHaveOccurred: false }

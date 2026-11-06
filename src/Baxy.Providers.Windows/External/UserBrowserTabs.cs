@@ -18,6 +18,15 @@ internal sealed partial class UserBrowserSurface
     internal const string HistoryStart = "user_browser_history_start";
     internal const string ScrollBoundary = "user_browser_scroll_boundary";
     internal const string FrameAuthority = "user_browser_uia_frame_postread";
+    // Uso real 03-11 (U53): a tab named to be closed (browser.control's «tab»): none of the strip's titles bears it,
+    // several do, it is not on screen to be clicked, or the tab that went is not that one.
+    internal const string TabNotFound = "user_browser_tab_not_found";
+    internal const string TabAmbiguous = "user_browser_tab_ambiguous";
+    internal const string TabNotShown = "user_browser_tab_not_shown";
+    internal const string OtherTabClosed = "user_browser_other_tab_closed";
+    internal const string TabNameNeedsClose = "browser_control_tab_needs_close_or_switch";
+    // Uso real 03-11 (U64): a request to go to a named tab had no action that goes to a tab (the model took close).
+    internal const string SwitchNeedsTab = "browser_control_switch_tab_needs_tab";
 
     // WM_APPCOMMAND commands (winuser.h) and Chromium browser command ids (chrome/app/chrome_command_ids.h).
     internal const int AppCommandBack = 1;
@@ -37,16 +46,22 @@ internal sealed partial class UserBrowserSurface
         string operation,
         UserBrowserIdentity browser,
         string action,
+        string? tab,
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
         if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "exit_fullscreen" or "new_tab"
-            or "reload" or "scroll_down" or "scroll_up"))
+            or "reload" or "scroll_down" or "scroll_up" or "switch_tab"))
             return ExternalJson.Failure(operation, "browser_control_action_invalid");
+        // Only a single close and a switch take a tab: any other step acts on the active tab, so a name would be ignored.
+        if (tab is not null && action is not ("close" or "switch_tab"))
+            return ExternalJson.FailureBeforeEffect(operation, TabNameNeedsClose);
+        if (tab is null && action == "switch_tab")
+            return ExternalJson.FailureBeforeEffect(operation, SwitchNeedsTab);
         (UserBrowserWindow? window, _, _) = await TabbedWindowAsync(browser, cancellationToken).ConfigureAwait(false);
         if (window is null)
-            return ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning);
-        var step = new TabStep(operation, browser, action, window.Handle, effectBoundary);
+            return NotRunning(operation, browser);
+        var step = new TabStep(operation, browser, action, window.Handle, effectBoundary, tab);
         return action switch
         {
             "back" => await HistoryStepAsync(step, AppCommandBack, cancellationToken).ConfigureAwait(false),
@@ -54,6 +69,7 @@ internal sealed partial class UserBrowserSurface
             "new_tab" => await NewTabAsync(step, cancellationToken).ConfigureAwait(false),
             "close" => await CloseTabAsync(step, cancellationToken).ConfigureAwait(false),
             "close_all" => await CloseAllTabsAsync(step, cancellationToken).ConfigureAwait(false),
+            "switch_tab" => await SwitchTabAsync(step, cancellationToken).ConfigureAwait(false),
             "fullscreen_video" => await FullscreenAsync(step, cancellationToken).ConfigureAwait(false),
             "exit_fullscreen" => await ExitFullscreenAsync(step, cancellationToken).ConfigureAwait(false),
             _ =>await ScrollAsync(step, cancellationToken).ConfigureAwait(false),
@@ -65,7 +81,8 @@ internal sealed partial class UserBrowserSurface
         UserBrowserIdentity Browser,
         string Action,
         nint Window,
-        ExternalEffectBoundary Boundary);
+        ExternalEffectBoundary Boundary,
+        string? Tab = null);
 
     /// <summary>
     /// Back and reload: WM_APPCOMMAND, which Chromium (Opera GX included, measured 2026-10-06) runs on the active tab.
@@ -81,7 +98,7 @@ internal sealed partial class UserBrowserSurface
         // window title begins (the active tab's page, not one a partial read put in its place); its address, never.
         UserBrowserFrame? before = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
         if (before is null || before.PageId.Length == 0 || !PageKnown(before))
-            return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+            return PageNotShown(step.Operation, step.Browser);
         bool back = command == AppCommandBack;
         if (back && before.BackEnabled == false)
             return ExternalJson.FailureBeforeEffect(step.Operation, HistoryStart);
@@ -107,7 +124,7 @@ internal sealed partial class UserBrowserSurface
     {
         UserBrowserFrame? before = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
         if (before is null)
-            return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+            return PageNotShown(step.Operation, step.Browser);
         int count = before.Tabs.Count;
         bool OneMore(UserBrowserFrame frame) => frame.TabsComplete && frame.Tabs.Count > count;
         if (PostTabCommand(step, BrowserCommandNewTab, AppCommandNew))
@@ -133,25 +150,221 @@ internal sealed partial class UserBrowserSurface
     }
 
     /// <summary>
-    /// The active tab: Chromium's IDC_CLOSE_TAB by message, else a middle click posted on that tab (what closes a tab
-    /// in every Chromium browser, Opera GX measured). The last tab is kept: closing it closes the person's window.
-    /// Seen as one tab less.
+    /// The active tab, or the one named (<see cref="TabStep.Tab"/>): the active one by Chromium's IDC_CLOSE_TAB by
+    /// message, else a middle click posted on that tab (what closes a tab in every Chromium browser, Opera GX measured;
+    /// Chromium's Tab::OnMouseReleased closes the tab a middle button is released over); another tab, by that middle
+    /// click on it, without selecting it. The last tab is kept: closing it closes the person's window. Seen as one tab
+    /// less with that very tab gone from the strip read after (<see cref="TabGone"/>), which also gives the tabs left.
     /// </summary>
     private async ValueTask<ExternalCapabilityReceipt> CloseTabAsync(TabStep step, CancellationToken cancellationToken)
     {
         UserBrowserFrame? before = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
         UserBrowserTab? active = before?.Tabs.FirstOrDefault(tab => tab.Selected);
         if (before is null || active is null)
-            return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+            return PageNotShown(step.Operation, step.Browser);
+        UserBrowserTab target = active;
+        if (step.Tab is { } named)
+        {
+            // Uso real 03-11 (U53): the tab is the one whose title bears the name said, compared by form only (whole
+            // words, case and accents aside); none or several close nothing and give the titles read.
+            UserBrowserTab[] bearing = [.. before.Tabs.Where(tab => TitleBears(tab.Title, named))];
+            if (bearing.Length != 1)
+                return NamedTabRefused(step, bearing.Length == 0 ? TabNotFound : TabAmbiguous, before, bearing);
+            target = bearing[0];
+            if (!target.Selected && !target.Shown)
+                return NamedTabRefused(step, TabNotShown, before, bearing);
+        }
+
         if (before.Tabs.Count <= 1)
             return ExternalJson.FailureBeforeEffect(step.Operation, LastTabKept);
-        (UserBrowserFrame? after, _) = await CloseActiveTabAsync(step, before, active, cancellationToken)
-            .ConfigureAwait(false);
+        UserBrowserFrame? after = target.Selected
+            ? (await CloseActiveTabAsync(step, before, active, cancellationToken).ConfigureAwait(false)).After
+            : await CloseShownTabAsync(step, before, target, cancellationToken).ConfigureAwait(false);
         if (after is null)
             return step.Boundary.WasCrossed
                 ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
                 : ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
-        return Done(step, "tab_closed", after, closed: active.Title);
+        // One tab less is not yet the tab asked for: that tab must be the one gone. Another gone is said as it is.
+        string[] gone = Gone(before, after);
+        if (TabGone(before, after, target))
+            return Done(step, "tab_closed", after, closed: target.Title, remaining: true);
+        return ExternalJson.FailureAfterEffect(step.Operation, OtherTabClosed, effectObserved: true) with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("action", step.Action);
+                writer.WriteString("browser", step.Browser.DisplayName);
+                if (step.Tab is not null) writer.WriteString("requestedTab", step.Tab);
+                writer.WriteString("targetTab", target.Title);
+                if (gone.Length == 1) writer.WriteString("closedTab", gone[0]);
+                WriteTitles(writer, "remainingTabs", after.Tabs);
+                if (after.Tabs.FirstOrDefault(tab => tab.Selected) is { } now)
+                    writer.WriteString("activeTab", now.Title);
+                writer.WriteString("authority", FrameAuthority);
+                writer.WriteEndObject();
+            }),
+        };
+    }
+
+    /// <summary>A tab on screen other than the active one, closed by a middle click on it: one tab less, or null.</summary>
+    private async ValueTask<UserBrowserFrame?> CloseShownTabAsync(
+        TabStep step, UserBrowserFrame before, UserBrowserTab target, CancellationToken cancellationToken)
+    {
+        int count = before.Tabs.Count;
+        if (!_platform.PostMiddleClick(step.Window, target.X, target.Y))
+            return null;
+        step.Boundary.Cross(CancellationToken.None);
+        // Ronda final 43 (regla: doble pulsación): a click not seen may still close the tab late: never clicked again.
+        return await AwaitFrameAsync(
+            step.Window, frame => frame.TabsComplete && frame.Tabs.Count == count - 1, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Whether the title bears the name as whole words, case, accents and punctuation aside («runpod» in «Runpod
+    /// Billing»; «run» is not in it). Uso real 03-11 (U64): the ear splits and joins words («Run pod» for «Runpod», «git
+    /// hub» for «GitHub»), so the spaces between the words said do not count: the letters said, run together, must be
+    /// the letters of whole words of the title run together, from the start of one word to the end of another («run
+    /// pod» and «runpod billing» are in «Runpod Billing»; «run», «pod» and «pod billing» are not).
+    /// </summary>
+    internal static bool TitleBears(string title, string name)
+    {
+        string said = Fold(name).Replace(" ", string.Empty, StringComparison.Ordinal);
+        if (said.Length == 0)
+            return false;
+        string[] words = Fold(title).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        for (int first = 0; first < words.Length; first++)
+        {
+            int at = 0;
+            for (int word = first; word < words.Length; word++)
+            {
+                if (at + words[word].Length > said.Length
+                    || string.CompareOrdinal(said, at, words[word], 0, words[word].Length) != 0)
+                    break;
+                at += words[word].Length;
+                if (at == said.Length)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Uso real 03-11 (U64): the tab named made the active one. It is found as a named close finds it (one tab whose
+    /// title bears the name; none or several send nothing and give the titles read) and selected through its TabItem's
+    /// UI Automation SelectionItemPattern.Select, which deselects the tab selected and selects that one (Microsoft
+    /// Learn), without keys or a click (it may bring the browser window to the front: measured so on a WebView2 tab,
+    /// CONTRATO_VISTA_ACCION.md). Seen as that very tab, by its runtime id, selected in the strip
+    /// read after; the receipt gives the active tab and every other tab as read then. A tab already active is said so,
+    /// with nothing sent.
+    /// </summary>
+    private async ValueTask<ExternalCapabilityReceipt> SwitchTabAsync(TabStep step, CancellationToken cancellationToken)
+    {
+        UserBrowserFrame? before = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
+        if (before is null || !before.Tabs.Any(tab => tab.Selected))
+            return PageNotShown(step.Operation, step.Browser);
+        UserBrowserTab[] bearing = [.. before.Tabs.Where(tab => TitleBears(tab.Title, step.Tab!))];
+        if (bearing.Length != 1)
+            return NamedTabRefused(step, bearing.Length == 0 ? TabNotFound : TabAmbiguous, before, bearing);
+        UserBrowserTab target = bearing[0];
+        if (target.Selected)
+            return Switched(step, "already_active", before);
+        // The tab is selected by the runtime id read now: a tab without one is not looked for again by title.
+        if (target.Id.Length == 0)
+            return ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
+        step.Boundary.Cross(CancellationToken.None);
+        UserBrowserAct selected = await _platform.SelectTabAsync(step.Window, target.Id, cancellationToken)
+            .ConfigureAwait(false);
+        // The tab was not found again, or does not take a selection: nothing was selected.
+        if (selected.Step is "tab_not_found" or "select_unavailable")
+            return ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
+        UserBrowserFrame? after = selected.Step == "selected"
+            ? await AwaitFrameAsync(
+                step.Window,
+                frame => frame.TabsComplete && frame.Tabs.FirstOrDefault(tab => tab.Selected) is { } now
+                    && (now.Id.Length > 0
+                        ? string.Equals(now.Id, target.Id, StringComparison.Ordinal)
+                        : string.Equals(now.Title, target.Title, StringComparison.Ordinal)),
+                cancellationToken).ConfigureAwait(false)
+            : null;
+        return after is null
+            ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
+            : Switched(step, "tab_selected", after);
+    }
+
+    private static ExternalCapabilityReceipt Switched(TabStep step, string observedState, UserBrowserFrame frame) =>
+        ExternalJson.Success(step.Operation, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("action", step.Action);
+            writer.WriteString("observedState", observedState);
+            writer.WriteString("browser", step.Browser.DisplayName);
+            writer.WriteString("requestedTab", step.Tab);
+            writer.WriteNumber("tabCount", frame.Tabs.Count);
+            writer.WriteString("activeTab", frame.Tabs.First(tab => tab.Selected).Title);
+            WriteTitles(writer, "otherTabs", frame.Tabs.Where(tab => !tab.Selected));
+            writer.WriteString("authority", FrameAuthority);
+            writer.WriteEndObject();
+        }));
+
+    /// <summary>
+    /// Whether the two reads tell tabs apart by their UI Automation runtime id (every tab of both carries one), which
+    /// stays the same while a title changes (Edge's memory use in its active tab's name, a page retitling itself);
+    /// otherwise by title.
+    /// </summary>
+    private static bool ByIdentity(UserBrowserFrame before, UserBrowserFrame after) =>
+        before.Tabs.All(tab => tab.Id.Length > 0) && after.Tabs.All(tab => tab.Id.Length > 0);
+
+    private static bool TabGone(UserBrowserFrame before, UserBrowserFrame after, UserBrowserTab target) =>
+        ByIdentity(before, after)
+            ? after.Tabs.All(tab => !string.Equals(tab.Id, target.Id, StringComparison.Ordinal))
+            : TitleCount(before, target.Title) - TitleCount(after, target.Title) == 1;
+
+    private static int TitleCount(UserBrowserFrame frame, string title) =>
+        frame.Tabs.Count(tab => string.Equals(tab.Title, title, StringComparison.Ordinal));
+
+    /// <summary>The titles (as read before) of the tabs of the strip before that are not in the strip after.</summary>
+    private static string[] Gone(UserBrowserFrame before, UserBrowserFrame after)
+    {
+        bool byId = ByIdentity(before, after);
+        var left = after.Tabs.Select(tab => byId ? tab.Id : tab.Title).ToList();
+        var gone = new List<string>();
+        foreach (UserBrowserTab tab in before.Tabs)
+        {
+            if (!left.Remove(byId ? tab.Id : tab.Title))
+                gone.Add(tab.Title);
+        }
+        return [.. gone];
+    }
+
+    private static ExternalCapabilityReceipt NamedTabRefused(
+        TabStep step, string errorCode, UserBrowserFrame before, UserBrowserTab[] bearing) =>
+        ExternalJson.FailureBeforeEffect(step.Operation, errorCode) with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("action", step.Action);
+                writer.WriteString("browser", step.Browser.DisplayName);
+                writer.WriteString("requestedTab", step.Tab);
+                if (bearing.Length > 1)
+                    WriteTitles(writer, "candidates", bearing);
+                WriteTitles(writer, "tabs", before.Tabs);
+                writer.WriteString("authority", FrameAuthority);
+                writer.WriteEndObject();
+            }),
+        };
+
+    private static void WriteTitles(System.Text.Json.Utf8JsonWriter writer, string property, IEnumerable<UserBrowserTab> tabs)
+    {
+        writer.WriteStartArray(property);
+        foreach (UserBrowserTab tab in tabs)
+            writer.WriteStringValue(tab.Title);
+        writer.WriteEndArray();
     }
 
     /// <summary>
@@ -165,7 +378,7 @@ internal sealed partial class UserBrowserSurface
     {
         UserBrowserFrame? frame = await ReadTabsAsync(step.Window, cancellationToken).ConfigureAwait(false);
         if (frame is null || !frame.Tabs.Any(tab => tab.Selected))
-            return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+            return PageNotShown(step.Operation, step.Browser);
         if (frame.Tabs.Count <= 1)
             return ExternalJson.FailureBeforeEffect(step.Operation, LastTabKept) with
             {
@@ -288,7 +501,7 @@ internal sealed partial class UserBrowserSurface
             "scrolled" => Done(step, "scrolled", null, position: scrolled.After),
             // Already at that end, or a page that does not scroll: nothing moved, and it is said so.
             "boundary" or "not_scrollable" => ExternalJson.FailureBeforeEffect(step.Operation, ScrollBoundary),
-            "page_not_found" => ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable),
+            "page_not_found" => PageNotShown(step.Operation, step.Browser),
             // Not seen moving, or UI Automation (or the script's deadline) failing, possibly after the scroll was sent.
             _ => ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed),
         };
@@ -308,7 +521,7 @@ internal sealed partial class UserBrowserSurface
         if (pressed.Step == "fullscreen_control_not_found")
             return ExternalJson.FailureBeforeEffect(step.Operation, FullscreenControlMissing);
         if (pressed.Step == "page_not_found")
-            return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+            return PageNotShown(step.Operation, step.Browser);
         // UI Automation (or the script's deadline) failing, possibly after the button was pressed.
         if (pressed.Step != "invoked")
             return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
@@ -337,7 +550,7 @@ internal sealed partial class UserBrowserSurface
         if (pressed.Step == "fullscreen_control_not_found")
             return ExternalJson.FailureBeforeEffect(step.Operation, FullscreenControlMissing);
         if (pressed.Step == "page_not_found")
-            return ExternalJson.FailureBeforeEffect(step.Operation, PageUnreadable);
+            return PageNotShown(step.Operation, step.Browser);
         if (pressed.Step != "invoked")
             return ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed);
         for (int attempt = 0; attempt < FullscreenPolls; attempt++)
@@ -421,7 +634,8 @@ internal sealed partial class UserBrowserSurface
         string observedState,
         UserBrowserFrame? frame,
         string? closed = null,
-        double? position = null) =>
+        double? position = null,
+        bool remaining = false) =>
         ExternalJson.Success(step.Operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -429,6 +643,7 @@ internal sealed partial class UserBrowserSurface
             writer.WriteString("action", step.Action);
             writer.WriteString("observedState", observedState);
             writer.WriteString("browser", step.Browser.DisplayName);
+            if (step.Tab is not null) writer.WriteString("requestedTab", step.Tab);
             if (frame is not null)
             {
                 // Auditoría final (regla 3): the count only from a strip read whole (back and reload read it as it was).
@@ -441,6 +656,9 @@ internal sealed partial class UserBrowserSurface
             }
             if (closed is not null)
                 writer.WriteString("closedTab", closed);
+            // Uso real 03-11 (U53): every tab left, as the strip read after shows them, beside the one that went.
+            if (remaining && frame is { TabsComplete: true })
+                WriteTitles(writer, "remainingTabs", frame.Tabs);
             if (position is { } percent)
                 writer.WriteNumber("scrollPercent", Math.Round(percent, 1));
             writer.WriteString("authority", FrameAuthority);

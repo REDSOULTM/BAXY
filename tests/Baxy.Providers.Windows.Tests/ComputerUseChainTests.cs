@@ -151,7 +151,7 @@ public sealed class ComputerUseChainTests
             var lease = new RecordingLease();
             var worker = new OrderedWorker(HandedBack, HandedBack);
             WindowsVisibleControlAdapter adapter = Adapter(worker, lease);
-            ViewControlSpec[] before = [Control(5, "5.1", "Button", "Buscar", string.Empty), Control(6, "6.1", "Text", "Ron92", string.Empty)];
+            ViewControlSpec[] before = [Control(5, "5.1", "Button", "Buscar", string.Empty), Control(6, "6.1", "Text", "Nube77", string.Empty)];
             RememberView(adapter, window, before);
 
             ExternalCapabilityReceipt first = Click(adapter, window, "Buscar", "5.1");
@@ -206,7 +206,7 @@ public sealed class ComputerUseChainTests
             FieldInfo read = typeof(WindowsVisibleControlAdapter).GetField("_viewsRead", BindingFlags.NonPublic | BindingFlags.Instance)!;
             read.SetValue(adapter, (long)read.GetValue(adapter)! + 1);
             if (where == "dead")
-                _ = DestroyWindow(popup);
+                PumpedWindow.Destroy(popup);
 
             ExternalCapabilityReceipt clicked = Click(adapter, popup, item, "42.7");
 
@@ -600,8 +600,7 @@ public sealed class ComputerUseChainTests
     // An off-screen window of this test that takes no activation: alive for the adapter, never the person's.
     private static void WithWindow(Action<nint> test)
     {
-        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY chain fixture", 0x90000000u,
-            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        nint window = PumpedWindow.Create("BAXY chain fixture");
         Assert.That(window, Is.Not.EqualTo(nint.Zero));
         try
         {
@@ -609,7 +608,7 @@ public sealed class ComputerUseChainTests
         }
         finally
         {
-            _ = DestroyWindow(window);
+            PumpedWindow.Destroy(window);
         }
     }
 
@@ -697,13 +696,7 @@ public sealed class ComputerUseChainTests
         }
     }
 
-    [DllImport("user32.dll", EntryPoint = "CreateWindowExW",
-        CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-    private static extern nint CreateWindowEx(uint extendedStyle, string className,
-        string title, uint style, int x, int y, int width, int height,
-        nint parent, nint menu, nint instance, nint parameter);
-
-    // Menús efímeros (pasada r15b t-form-2): «Reemplazar» was shown in the popup host «Editar» opened (another top-level
+// Menús efímeros (pasada r15b t-form-2): «Reemplazar» was shown in the popup host «Editar» opened (another top-level
     // window of the application) and failed as not found once it died; the burst reopens «Editar». Its contracases: a
     // name the window showed before the opener, the opener itself, an error that is no missing item, and a living window
     // that is none of the opener's popups.
@@ -726,7 +719,4 @@ public sealed class ComputerUseChainTests
         Assert.That(decided, Is.EqualTo(reopens));
     }
 
-    [DllImport("user32.dll", ExactSpelling = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool DestroyWindow(nint window);
 }

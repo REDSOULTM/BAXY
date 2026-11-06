@@ -64,7 +64,6 @@ a{color:var(--carmine)}a:hover{color:var(--t-bone)}
 /* center */
 .bx-center{position:relative;min-width:0;overflow:hidden}
 .bx-graph{position:absolute;inset:0 0 56px 0}
-.bx-graph.wakeable{cursor:pointer}
 .bx-ctop{position:absolute;top:14px;left:16px;right:12px;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none}
 .bx-ctop>*{pointer-events:auto}
 .bx-statel{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t-muted);transition:color .7s}

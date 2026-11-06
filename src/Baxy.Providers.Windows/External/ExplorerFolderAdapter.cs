@@ -60,14 +60,7 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        string extension = ExternalJson.RequiredString(arguments, "extension").Trim().ToLowerInvariant();
-        if (extension.StartsWith('*'))
-            extension = extension[1..];
-        if (!extension.StartsWith('.'))
-            extension = "." + extension;
-        if (extension.Length < 2 || extension.Length > 16 || extension.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
-            return ExternalJson.FailureBeforeEffect(operation, "extension_invalid");
-
+        string extension = ExternalJson.RequiredString(arguments, "extension");
         string? named = arguments.TryGetProperty("path", out JsonElement pathElement)
             && pathElement.ValueKind == JsonValueKind.String ? pathElement.GetString() : null;
         if (named is not null)
@@ -170,10 +163,31 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
         return (null, true, folders.Length == 0 ? "explorer_in_front_shows_no_file_folder" : "explorer_front_tab_not_known");
     }
 
-    private static ExternalCapabilityReceipt Count(string operation, string folder, string source, string extension)
+    /// <summary>
+    /// The extension as «.ext», or «*» for every file (banco ciego c3 C3-044: «*» or «*.*» for «¿cuántos archivos hay?»);
+    /// null when it cannot be one.
+    /// </summary>
+    private static string? Extension(string said)
+    {
+        string extension = said.Trim().ToLowerInvariant();
+        if (extension is "" or "*" or "*.*" or ".*")
+            return "*";
+        if (extension.StartsWith('*'))
+            extension = extension[1..];
+        if (!extension.StartsWith('.'))
+            extension = "." + extension;
+        return extension.Length < 2 || extension.Length > 16 || extension.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+            ? null
+            : extension;
+    }
+
+    // C3-044: the folder is looked at before the extension, so a folder that is not there is said as that.
+    private static ExternalCapabilityReceipt Count(string operation, string folder, string source, string said)
     {
         if (!Directory.Exists(folder))
             return ExternalJson.FailureBeforeEffect(operation, "explorer_folder_unavailable");
+        if (Extension(said) is not { } extension)
+            return ExternalJson.FailureBeforeEffect(operation, "extension_invalid");
         int count;
         int total;
         int subfolders;
@@ -190,7 +204,9 @@ internal sealed class ExplorerFolderAdapter : IExternalOperationAdapter
             };
             string[] files = Directory.EnumerateFiles(folder, "*", options).ToArray();
             total = files.Length;
-            count = files.Count(file => string.Equals(Path.GetExtension(file), extension, StringComparison.OrdinalIgnoreCase));
+            count = extension == "*"
+                ? total
+                : files.Count(file => string.Equals(Path.GetExtension(file), extension, StringComparison.OrdinalIgnoreCase));
             subfolders = Directory.EnumerateDirectories(folder, "*", options).Count();
             hiddenOrSystem = new DirectoryInfo(folder).EnumerateFiles("*", new EnumerationOptions
                 {

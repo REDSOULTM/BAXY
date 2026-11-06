@@ -51,6 +51,9 @@ internal sealed class SilenceNotice
     private bool _running;
     // The notice came due while no call ran (the model decided, or the answer was on its way): asked when one starts.
     private Action? _waiting;
+    // This turn's way to ask (Open), and the question that last went to the mind (AheadAsync waits for it).
+    private Func<Task>? _askNow;
+    private Task _lastQuestion = Task.CompletedTask;
 
     internal SilenceNotice(TimeProvider time)
     {
@@ -81,7 +84,10 @@ internal sealed class SilenceNotice
 
             _open = true;
             SynchronizationContext? context = SynchronizationContext.Current;
-            Action notice = () => Due(() => _ = AskAsync(turn, ask, say, context));
+            // Each turn's timer asks with that turn's own number: an earlier turn's expiry says nothing in the next one.
+            Func<Task> askNow = () => _lastQuestion = AskAsync(turn, ask, say, context);
+            _askNow = askNow;
+            Action notice = () => Due(() => askNow());
             TimeSpan due = After - _time.GetElapsedTime(arrivedAt);
             _timer = _time.CreateTimer(
                 _ =>
@@ -156,6 +162,34 @@ internal sealed class SilenceNotice
         }
 
         waiting?.Invoke();
+    }
+
+    /// <summary>
+    /// Uso-125: the running call needs the model's own server (the description of a capture), so a notice asked once it
+    /// began waits behind it and runs out of its time: asked now, and the call starts when the mind has answered. With a
+    /// question already on its way (it came due before the call), that one is waited for. Nothing when no call runs.
+    /// </summary>
+    internal Task AheadAsync()
+    {
+        Func<Task>? askNow;
+        lock (_gate)
+        {
+            if (!_open || !_running || _published)
+            {
+                return Task.CompletedTask;
+            }
+
+            if (_asking)
+            {
+                return _lastQuestion;
+            }
+
+            _waiting = null;
+            _timer?.Change(Again, Again);
+            askNow = _askNow;
+        }
+
+        return askNow?.Invoke() ?? Task.CompletedTask;
     }
 
     /// <summary>The turn ended: a turn that published nothing says no notice; one whose line is not heard yet still may.</summary>
@@ -270,6 +304,7 @@ internal sealed class SilenceNotice
         _published = false;
         _asking = false;
         _waiting = null;
+        _askNow = null;
         _timer?.Dispose();
         _timer = null;
         Action? stop = _stopAsking;

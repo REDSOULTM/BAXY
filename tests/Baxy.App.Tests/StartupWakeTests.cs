@@ -17,6 +17,138 @@ public sealed class StartupWakeTests
 {
     private const string WakeOnStart = "BAXY_VOICE_WAKE_ON_START";
 
+    private static JsonObject EarWaitingForMemory() => new()
+    {
+        ["reply"] = new JsonObject
+        {
+            ["voice.status"] = new JsonObject
+            {
+                ["type"] = "voice.status.result",
+                ["status"] = new JsonObject
+                {
+                    // As on a PC with its microphone: seen live 2026-11-05, the input is there and only the ear waits.
+                    ["available"] = false, ["input"] = true, ["stt"] = false, ["pending"] = false, ["wake"] = false,
+                    ["deferred"] = true, ["memory"] = new JsonObject { ["needMb"] = 1200, ["leftMb"] = 500 },
+                },
+            },
+        },
+    };
+
+    // Uso 112, live: with a microphone the view offered it and never said the ear was waiting for memory.
+    // uso-116 (N23): with a microphone and no recogniser the mic was offered, and its start failed with nothing said.
+    [TestCase(true, true, false, ExpectedResult = true)]
+    [TestCase(true, false, true, ExpectedResult = true)]
+    [TestCase(true, false, false, ExpectedResult = false)]
+    [TestCase(false, false, false, ExpectedResult = false)]
+    public bool TheMicrophoneIsOfferedOnlyWithSomethingToHearIt(bool input, bool stt, bool pending) =>
+        new MindVoiceStatus(input && stt, input, stt, pending).MicUsable;
+
+    [Test]
+    public async Task AnEarWaitingForMemoryIsNotAMicrophoneToOfferAndItsFiguresAreSaid()
+    {
+        using var fake = new FakeMind();
+        fake.Script(EarWaitingForMemory());
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            (_, JsonObject voice) = await view.SendAsync("GET", "/voice/status");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That((bool?)voice["available"], Is.False);
+                Assert.That((string?)voice["last_error"], Is.EqualTo("voice_waiting_memory"));
+                Assert.That((int?)voice["waiting_memory"]?["left_mb"], Is.EqualTo(500));
+            });
+        }
+    }
+
+    // Uso 112, live: the ear came back 51 s after memory was freed, and nothing listened for the wake word until the
+    // person touched the microphone: the start's wake is started when the ear that was waiting loads.
+    [Test]
+    public async Task TheWakeOfTheStartIsStartedWhenTheEarThatWaitedLoads()
+    {
+        string? before = Environment.GetEnvironmentVariable(WakeOnStart);
+        Environment.SetEnvironmentVariable(WakeOnStart, "1");
+        try
+        {
+            using var fake = new FakeMind();
+            fake.Script(EarWaitingForMemory());
+            MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+            await using (viewModel)
+            {
+                Assert.That(viewModel.IsWakeListening, Is.False);
+                fake.Script(new JsonObject
+                {
+                    ["reply"] = new JsonObject { ["voice.status"] = VoiceStatus(pending: false)["reply"]?["voice.status"]?.DeepClone() },
+                    ["emit"] = new JsonObject
+                    {
+                        ["voice.release"] = new JsonArray(new JsonObject { ["type"] = "voice.event", ["event"] = "voice_ready" }),
+                    },
+                });
+                Assert.That(await viewModel.ReleaseDirectVoiceAsync(CancellationToken.None), Is.True);
+
+                Assert.That(await ViewModelHarness.UntilAsync(() => viewModel.IsWakeListening), Is.True);
+                Assert.That(viewModel.IsMicAvailable, Is.True);
+            }
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(WakeOnStart, before);
+        }
+    }
+
+    // Uso 112, live: the view asks for its wake word at the start and the ear is waiting for memory: asked again when it
+    // loads. A stop given meanwhile stands.
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public async Task TheWakeTheViewAskedWhileTheEarWaitedIsAskedAgainWhenItLoads(bool stoppedMeanwhile, bool listens)
+    {
+        string? before = Environment.GetEnvironmentVariable(WakeOnStart);
+        Environment.SetEnvironmentVariable(WakeOnStart, "0");
+        try
+        {
+            using var fake = new FakeMind();
+            JsonObject waiting = EarWaitingForMemory();
+            waiting["reply"]!["voice.start"] = new JsonObject { ["type"] = "error", ["code"] = "voice_unavailable" };
+            fake.Script(waiting);
+            MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+            await using (viewModel)
+            {
+                Assert.That(await viewModel.SetWakeVoiceAsync(true, CancellationToken.None), Is.False);
+                if (stoppedMeanwhile)
+                {
+                    Assert.That(await viewModel.SetWakeVoiceAsync(false, CancellationToken.None), Is.True);
+                }
+
+                fake.Script(new JsonObject
+                {
+                    ["reply"] = new JsonObject { ["voice.status"] = VoiceStatus(pending: false)["reply"]?["voice.status"]?.DeepClone() },
+                    ["emit"] = new JsonObject
+                    {
+                        ["voice.release"] = new JsonArray(new JsonObject { ["type"] = "voice.event", ["event"] = "voice_ready" }),
+                    },
+                });
+                Assert.That(await viewModel.ReleaseDirectVoiceAsync(CancellationToken.None), Is.True);
+
+                Assert.That(await ViewModelHarness.UntilAsync(() => viewModel.IsMicAvailable), Is.True);
+                if (listens)
+                {
+                    Assert.That(await ViewModelHarness.UntilAsync(() => viewModel.IsWakeListening), Is.True);
+                }
+                else
+                {
+                    await Task.Delay(500);
+                    Assert.That(viewModel.IsWakeListening, Is.False);
+                }
+            }
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(WakeOnStart, before);
+        }
+    }
+
     [Test]
     public async Task TheWakeAskedForWhileTheEarLoadsIsStartedOnceItLoaded()
     {

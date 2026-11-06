@@ -14,4 +14,7 @@
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)tests\hang.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
 </Project>

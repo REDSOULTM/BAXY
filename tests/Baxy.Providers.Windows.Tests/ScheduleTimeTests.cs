@@ -111,6 +111,89 @@ public sealed class ScheduleTimeTests
         });
     }
 
+    // Encargo 57 (banco de uso U35): «despiértame mañana a las 7» went as a date and time that had already passed that
+    // day. Nothing is scheduled; the refusal says so, the time asked and the time here, and its next ends with the same
+    // call at that clock time alone, which sets the next time that clock comes.
+    [Test]
+    public async Task A_date_and_time_already_past_says_nothing_is_set_and_gives_the_call_at_the_clock_time_alone()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-schedule-past-" + Guid.NewGuid().ToString("N"));
+        using var cleanup = new Cleanup(root);
+        ScriptedNotificationBackend backend = ScriptedNotificationBackend.Registering();
+        var adapter = new WindowsScheduledNotificationAdapter(root, backend);
+        DateTime asked = DateTime.Now.AddHours(-2);
+        string at = asked.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture);
+        string clock = asked.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+        using JsonDocument request = JsonDocument.Parse(
+            $$"""{"action":"create","at":"{{at}}","kind":"alarm","title":"Prueba"}""");
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms", request.RootElement.Clone(), CancellationToken.None);
+
+        string next = receipt.Result?.GetProperty("next").GetString() ?? "";
+        string call = Baxy.Kernel.Operations.WireNames.Call("schedule.alarms", new()
+        {
+            ["action"] = "create", ["kind"] = "alarm", ["at"] = clock, ["title"] = "Prueba",
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("notification_schedule_invalid"));
+            Assert.That(receipt.EffectObserved || receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(backend.Requests, Is.Empty);
+            Assert.That(receipt.Result?.GetProperty("dueLocal").GetString(), Is.EqualTo(at.Replace('T', ' ')));
+            Assert.That(receipt.Result?.GetProperty("nowLocal").GetString(), Does.StartWith(
+                DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)));
+            Assert.That(receipt.Result?.GetProperty("scheduled").GetBoolean(), Is.False);
+            Assert.That(next, Does.StartWith("nothing is set yet: " + at.Replace('T', ' ') + " had already passed"));
+            Assert.That(next, Does.EndWith(", call " + call));
+            Assert.That(next, Does.Contain("to set it for " + asked.AddDays(1).ToString("yyyy-MM-dd",
+                System.Globalization.CultureInfo.InvariantCulture) + " " + clock));
+        });
+    }
+
+    // Encargo 59: «ponme una alarma hoy a las 9» after 9 went as at "09:00", which sets the next 9:00, tomorrow, and the
+    // model answered «quedó para hoy a las 9» from a dueLocal it had to compare with today's date itself. The receipt
+    // says the day in calendar words relative to today, and that a clock time already past today moved to tomorrow,
+    // with the time here.
+    [Test]
+    public async Task A_set_alarm_says_its_day_relative_to_today_and_that_a_clock_time_past_today_moved_to_tomorrow()
+    {
+        Assume.That(DateTime.Now.TimeOfDay, Is.InRange(TimeSpan.FromMinutes(1), new TimeSpan(23, 50, 0)));
+        string root = Path.Combine(Path.GetTempPath(), "baxy-schedule-day-" + Guid.NewGuid().ToString("N"));
+        using var cleanup = new Cleanup(root);
+        var adapter = new WindowsScheduledNotificationAdapter(root, ScriptedNotificationBackend.Registering());
+        async Task<JsonElement> Set(string json)
+        {
+            using JsonDocument document = JsonDocument.Parse(json);
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "schedule.alarms", document.RootElement.Clone(), CancellationToken.None);
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            return receipt.Result!.Value;
+        }
+
+        DateTime later = DateTime.Today.AddDays(3).AddHours(8);
+        JsonElement passed = await Set("""{"action":"create","kind":"alarm","at":"00:00"}""");
+        JsonElement tonight = await Set("""{"action":"create","kind":"alarm","at":"23:59"}""");
+        JsonElement timer = await Set("""{"action":"create","kind":"reminder","inMinutes":5}""");
+        JsonElement dated = await Set($$"""{"action":"create","kind":"alarm","at":"{{later:yyyy-MM-ddTHH:mm}}"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(passed.GetProperty("scheduledFor").GetString(), Is.EqualTo("tomorrow"));
+            Assert.That(passed.GetProperty("movedToNextDay").GetBoolean(), Is.True);
+            Assert.That(passed.GetProperty("nowLocal").GetString(), Does.StartWith(
+                DateTime.Today.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)));
+            Assert.That(tonight.GetProperty("scheduledFor").GetString(), Is.EqualTo("today"));
+            Assert.That(tonight.TryGetProperty("movedToNextDay", out _), Is.False);
+            Assert.That(tonight.TryGetProperty("nowLocal", out _), Is.False);
+            Assert.That(timer.GetProperty("scheduledFor").GetString(), Is.EqualTo("today"));
+            Assert.That(timer.TryGetProperty("movedToNextDay", out _), Is.False);
+            Assert.That(dated.GetProperty("scheduledFor").GetString(), Is.EqualTo(
+                later.ToString("dddd yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)));
+            Assert.That(dated.TryGetProperty("movedToNextDay", out _), Is.False);
+        });
+    }
+
     private sealed class Cleanup(string path) : IDisposable
     {
         public void Dispose()

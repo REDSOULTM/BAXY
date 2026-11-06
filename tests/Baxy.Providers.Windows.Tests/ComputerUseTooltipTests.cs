@@ -1215,7 +1215,7 @@ internal static class ComputerUseTooltipWorker
         start.Environment["BAXY_TOOLTIP_WORKER"] = workerPath;
         using System.Diagnostics.Process process = System.Diagnostics.Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the worker functions answer");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return JsonDocument.Parse(output).RootElement.Clone();

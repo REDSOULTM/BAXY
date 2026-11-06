@@ -180,7 +180,7 @@ public sealed class FieldStepProjectionTests
         var step = new NativeTurnStep(Operation, new JsonObject(), OperationStatuses.Completed, false, null, 5,
             new JsonObject { ["status"] = "needs_confirmation" }.ToJsonString(), "c1");
 
-        Assert.That(FieldStepProjection.Finished("c1", step, net: null), Is.Null);
+        Assert.That(FieldStepProjection.Finished("c1", step, net: null, english: false), Is.Null);
     }
 
     [TestCase(true)]
@@ -188,7 +188,7 @@ public sealed class FieldStepProjectionTests
     public void TheCardSaysWhetherAnEarlierAttemptMayHaveRun(bool effectStarted)
     {
         JsonObject card = FieldStepProjection.Card("k1", "confirm", "system.recyclebin.empty", new JsonObject(),
-            "recoverable_delete", DateTimeOffset.UtcNow.AddMinutes(2), context: null, effectStarted);
+            "recoverable_delete", DateTimeOffset.UtcNow.AddMinutes(2), context: null, english: false, effectStarted);
 
         Assert.That((bool?)card["effectStarted"], Is.EqualTo(effectStarted));
     }
@@ -199,7 +199,7 @@ public sealed class FieldStepProjectionTests
     {
         var arguments = new JsonObject { ["appId"] = "252950", ["title"] = "Rocket League" };
         JsonObject card = FieldStepProjection.Card("k1", "confirm", "game.launch", arguments, OperationRisks.LowReversible,
-            DateTimeOffset.UtcNow.AddMinutes(2), context: null);
+            DateTimeOffset.UtcNow.AddMinutes(2), context: null, english: false);
 
         Assert.Multiple(() =>
         {
@@ -210,14 +210,16 @@ public sealed class FieldStepProjectionTests
     }
 
     // Auditoría de la App: a read of a page held by the person's own turn has no risk label; its card says why it asks.
+    // Uso real 02-11: a page opened in the browser, held the same way, said «llega a otra persona» too, which it does not.
     [TestCase("host_not_from_session", "web.fetch", "va a un sitio que nadie dio")]
+    [TestCase("host_not_from_session", "browser.navigate", "va a un sitio que nadie dio")]
     [TestCase("game_title_not_said", "game.launch", "un juego que no nombraste")]
     [TestCase(null, "web.fetch", null)]
     public void TheCardOfACallThePersonsTurnHeldSaysWhy(string? cause, string operation, string? said)
     {
         Assert.That(ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor), Is.True);
         JsonObject card = FieldStepProjection.Card("k1", "confirm", operation, new JsonObject(), descriptor!.Risk,
-            DateTimeOffset.UtcNow.AddMinutes(2), context: null, cause: cause);
+            DateTimeOffset.UtcNow.AddMinutes(2), context: null, english: false, cause: cause);
 
         Assert.That((string?)card["risk"], Is.EqualTo(said));
     }
@@ -243,10 +245,11 @@ public sealed class FieldStepProjectionTests
         });
     }
 
-    internal static JsonObject Finished(string status, bool verified, JsonObject facts, string? errorCode = null)
+    internal static JsonObject Finished(string status, bool verified, JsonObject facts, string? errorCode = null,
+        bool english = false)
     {
         var step = new NativeTurnStep(Operation, new JsonObject(), status, verified, errorCode, 5, facts.ToJsonString(), "c1",
             Sent: true);
-        return FieldStepProjection.Finished("c1", step, net: null)!;
+        return FieldStepProjection.Finished("c1", step, net: null, english)!;
     }
 }

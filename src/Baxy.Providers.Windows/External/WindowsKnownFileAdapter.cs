@@ -193,6 +193,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     // files under it, bounded, and gives the first line where the text appears. Each file comes with its path
     // relative to the known folder, which file.read and file.edit take as its name.
     private const int MaximumContentFiles = 2_000;
+    // The names alike a walk keeps (F14): enough to give the closest 100, bounded in memory on a tree of millions.
+    private const int MaximumAlike = 1_000;
+    private const int MaximumFoldersShown = 10;
     private const long MaximumContentFileBytes = 1_048_576;
     private const int MaximumLineCharacters = 200;
 
@@ -218,14 +221,43 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         var walk = new WalkBudget(_utcNow, WalkTimeLimit);
         // Every file the walk went through, whatever its name (find_content_next).
         int walked = 0;
-        IEnumerable<KnownEntry> named = Enumerate(roots, searched, walk).Select(item =>
+        // Cosecha 04-11 F33: the name a person says is often a folder's («busca mi presentación del hito 2», a folder
+        // of that name on the Desktop with a differently named file inside), and only files were compared. The same walk
+        // gives the folders; they go in a list of their own, so a count of files is still one.
+        List<KnownEntry> foldersNamed = [];
+        List<(KnownEntry Folder, int Edits)> foldersAlike = [];
+        bool lookAlike = query is not null && content is null && !query.Contains('*') && !query.Contains('?')
+            && ModelAids.On(ModelAids.NearNames);
+        Action<KnownEntry>? seeFolder = query is null || content is not null ? null : folder =>
+        {
+            string name = Path.GetFileName(folder.Path);
+            if (NameMatches(name, query)) foldersNamed.Add(folder);
+            else if (lookAlike && foldersAlike.Count < MaximumAlike && SpokenFileNames.Alike(name, query) is int edits)
+                foldersAlike.Add((folder, edits));
+        };
+        IEnumerable<KnownEntry> named = Enumerate(roots, searched, walk, seeFolder).Select(item =>
         {
             walked++;
             return item;
         });
-        if (query is not null) named = named.Where(item => NameMatches(Path.GetFileName(item.Path), query));
+        // Cosecha 03-11 F14: with no name holding the one said, the names alike from the same walk (SpokenFileNames.Alike),
+        // fewest letters off first; never mixed with names that hold it.
+        List<(KnownEntry File, int Edits)> alike = [];
+        if (query is not null)
+            named = named.Where(item =>
+            {
+                string name = Path.GetFileName(item.Path);
+                if (NameMatches(name, query)) return true;
+                if (lookAlike && alike.Count < MaximumAlike && SpokenFileNames.Alike(name, query) is int edits)
+                    alike.Add((item, edits));
+                return false;
+            });
         List<(KnownEntry File, int Line, string LineText)> hits = [];
         int scanned = 0, skippedTooLarge = 0, skippedNotText = 0, skippedUnreadable = 0;
+        // Encargo 48 (find_name_next): the files of the walk whose name holds the text searched inside them, and the
+        // first five of them.
+        int namedAsContent = 0;
+        List<KnownEntry> namedSo = [];
         bool scanLimitReached = false;
         if (content is null)
         {
@@ -242,6 +274,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                     break;
                 }
                 scanned++;
+                if (query is null && NameMatches(Path.GetFileName(item.Path), content) && namedAsContent++ < 5)
+                    namedSo.Add(item);
                 switch (FirstLineContaining(item.Path, content, out int line, out string lineText))
                 {
                     case ContentScan.Found:
@@ -254,6 +288,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 if (hits.Count == limit) break;
             }
         }
+        bool alikeOnly = hits.Count == 0 && foldersNamed.Count == 0 && (alike.Count > 0 || foldersAlike.Count > 0);
+        if (alikeOnly)
+            hits.AddRange(alike.OrderBy(item => item.Edits).ThenBy(item => item.File.Path, StringComparer.OrdinalIgnoreCase)
+                .Take(limit).Select(item => (item.File, 0, "")));
         var files = hits
             .Select(hit => (hit.File, hit.Line, hit.LineText, Info: new FileInfo(hit.File.Path)))
             .ToArray();
@@ -261,10 +299,19 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 {
                     "recent" => files.OrderByDescending(item => item.Info.LastWriteTimeUtc),
                     "size" => files.OrderByDescending(item => item.Info.Length),
-                    _ => files.OrderBy(item => item.File.Label, StringComparer.Ordinal)
+                    // Cosecha 04-11 F33: the limit kept the first by name, copies of a repository many folders down
+                    // before the file at the top of the Desktop; what is nearest to the folder searched goes first.
+                    _ => files.OrderBy(item => Depth(item.File))
+                        .ThenBy(item => item.File.Label, StringComparer.Ordinal)
                         .ThenBy(item => RelativeToFolder(item.File), StringComparer.OrdinalIgnoreCase),
                 })
             .Take(limit)
+            .ToArray();
+        KnownEntry[] foldersShown = (foldersNamed.Count > 0 ? foldersNamed
+                : alikeOnly ? [.. foldersAlike.OrderBy(item => item.Edits).Select(item => item.Folder)] : [])
+            .OrderBy(Depth)
+            .ThenBy(RelativeToFolder, StringComparer.OrdinalIgnoreCase)
+            .Take(MaximumFoldersShown)
             .ToArray();
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -274,7 +321,29 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             if (content is not null) writer.WriteString("content", content);
             writer.WriteNumber("count", shown.Length);
             // By name every match is known; by content the scan stops at the limit, so only what was found is.
-            if (content is null) writer.WriteNumber("matchCount", hits.Count);
+            if (content is null) writer.WriteNumber("matchCount", alikeOnly ? 0 : hits.Count);
+            if (alikeOnly)
+            {
+                writer.WriteString("nameMatch", "alike");
+                writer.WriteNumber("alikeCount", alike.Count + foldersAlike.Count);
+                writer.WriteString("alike", $"no file name contains \"{query}\"; each file listed has its words with one "
+                    + "or two letters changed in a word (as a misheard word is written): say the name found, not the "
+                    + "one asked");
+            }
+            if (foldersShown.Length > 0)
+            {
+                writer.WriteNumber("foldersFoundCount", foldersNamed.Count > 0 ? foldersNamed.Count : foldersAlike.Count);
+                writer.WriteStartArray("foldersFound");
+                foreach (KnownEntry found in foldersShown)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("name", Path.GetFileName(found.Path));
+                    writer.WriteString("folder", found.Label);
+                    writer.WriteString("relativePath", RelativeToFolder(found));
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+            }
             writer.WriteStartArray("files");
             foreach (var file in shown)
             {
@@ -301,6 +370,23 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteNumber("maxRecursionDepth", 12);
             writer.WriteNumber("timeLimitSeconds", WalkTimeLimit.TotalSeconds);
             writer.WriteBoolean("timeLimitReached", walk.Reached);
+            if (walk.Reached)
+            {
+                // Cosecha 03-11 F14: where it did not get to look, by folder.
+                writer.WriteStartArray("walkedWhole");
+                foreach ((string place, _) in walk.Progress.Where(item => item.Value.Whole))
+                    writer.WriteStringValue(place);
+                writer.WriteEndArray();
+                writer.WriteStartArray("walkedInPart");
+                foreach ((string place, (int level, _)) in walk.Progress.Where(item => !item.Value.Whole))
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("folder", place);
+                    writer.WriteNumber("depthSearchedWhole", level - 1);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+            }
             writer.WriteBoolean("ignoreInaccessible", true);
             writer.WriteBoolean("skipReparsePoints", true);
             if (content is not null)
@@ -324,9 +410,31 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             bool skippedFiles = skippedTooLarge + skippedNotText + skippedUnreadable > 0;
             if (walk.Reached || (content is not null && (scanLimitReached || hits.Count >= limit || skippedFiles)))
                 writer.WriteBoolean("readInPart", true);
-            if (content is null && query is not null && hits.Count == 0
+            if (content is null && query is not null && hits.Count == 0 && foldersShown.Length > 0)
+                writer.WriteString("next", FolderFoundNext(foldersShown[0], query, alikeOnly));
+            else if (content is null && query is not null && hits.Count == 0
                 && FindContentNext(arguments, query, searched, walked, walk.Reached) is { } inside)
                 writer.WriteString("next", inside);
+            else if (content is null && query is not null && hits.Count == 0 && StoppedFindNext(query, walk) is { } deeper)
+                writer.WriteString("next", deeper);
+            if (content is not null && hits.Count == 0
+                && FindNameNext(arguments, content, namedAsContent,
+                    scanned - skippedTooLarge - skippedNotText - skippedUnreadable) is { } byName)
+            {
+                // Measured (encargo 48): with the next alone the model said «no lo encontré» 31 of 35 times; with the
+                // files so named beside it, it used the file found 35 of 35.
+                writer.WriteString("next", byName);
+                writer.WriteStartArray("namedSo");
+                foreach (KnownEntry file in namedSo)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("name", Path.GetFileName(file.Path));
+                    writer.WriteString("folder", file.Label);
+                    writer.WriteString("relativePath", RelativeToFolder(file));
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+            }
             writer.WriteString("authority", content is null
                 ? "windows_known_folders_name_search_postread"
                 : "windows_known_folders_text_content_search_postread");
@@ -345,12 +453,63 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (!ModelAids.On(ModelAids.FindContentNext) || stopped || walked == 0
             || query.Contains('*') || query.Contains('?'))
             return null;
-        string call = OptionalText(arguments, "path") is { } path
-            ? $"path \"{path}\" and content \"{query}\""
-            : $"content \"{query}\"";
-        return $"no file name in {string.Join(", ", PlacesLooked(searched))} contains \"{query}\": this search "
-            + $"matched names only, so the text inside its {walked} file{(walked == 1 ? "" : "s")} was not searched; "
-            + $"to search inside {(walked == 1 ? "it" : "them")}, call file_find with {call}";
+        // Encargo 34: the search inside them comes first, as the call with its arguments written.
+        string call = WireNames.Call("file.find", OptionalText(arguments, "path") is { } path
+            ? new() { ["path"] = path, ["content"] = query }
+            : new() { ["content"] = query });
+        return $"{call} searches the text inside the {walked} file{(walked == 1 ? "" : "s")} this search walked; no "
+            + $"file name in {string.Join(", ", PlacesLooked(searched))} contains \"{query}\": this search matched names "
+            + "only, so the text inside them was not searched";
+    }
+
+    // Cosecha 04-11 F33: no file is named so and a folder is: the count of files says 0, and what is inside it is one
+    // call away (the model said «no lo encontré» with the folder at the top of the Desktop).
+    private string FolderFoundNext(KnownEntry folder, string query, bool alike) =>
+        $"{WireNames.Call("file.find", new() { ["path"] = PlaceOf((folder.Label, folder.Root)) + "/" + RelativeToFolder(folder).Replace('\\', '/') })} "
+        + $"lists what is inside the folder named {Path.GetFileName(folder.Path)}; no file name contains \"{query}\", and "
+        + (alike ? "foldersFound are folders whose names have its words with one or two letters changed"
+            : "foldersFound are folders whose names do");
+
+    private static int Depth(KnownEntry entry) =>
+        Path.GetRelativePath(entry.Root, entry.Path).Count(character => character == Path.DirectorySeparatorChar);
+
+    // Cosecha 03-11 F14: a search by name the time limit stopped with nothing found says where it did not look (the
+    // levels of a folder below those searched whole) and the call that searches one subfolder to its whole depth.
+    private static string? StoppedFindNext(string query, WalkBudget walk)
+    {
+        if (!walk.Reached || !ModelAids.On(ModelAids.SearchScope)) return null;
+        var part = walk.Progress.Where(item => !item.Value.Whole).ToArray();
+        if (part.Length == 0) return null;
+        string first = part[0].Key;
+        string whole = string.Join(", ", walk.Progress.Where(item => item.Value.Whole).Select(item => item.Key));
+        string depth = string.Join("; ", part.Select(item => item.Value.Level switch
+        {
+            < 1 => $"{item.Key} was searched in part",
+            1 => $"in {item.Key} its own files were all searched, its subfolders in part",
+            _ => $"in {item.Key} every folder down to {item.Value.Level - 1} level{(item.Value.Level == 2 ? "" : "s")} "
+                + "below it was searched, deeper ones in part",
+        }));
+        return $"{WireNames.Call("file.find", new() { ["path"] = first + "/SUBFOLDER", ["query"] = query })} searches "
+            + $"one subfolder of {first} to its whole depth (SUBFOLDER: the folder the person says it is in); no name in "
+            + $"the part walked contains \"{query}\": the search stopped at its {WalkTimeLimit.TotalSeconds:0} s limit"
+            + (whole.Length > 0 ? $" ({whole} searched whole)" : "") + $"; {depth}";
+    }
+
+    // Banco de uso F06 (3 of 4: «¿dónde dejé receta_tarta.txt?» went as file.find with content "receta_tarta.txt", no
+    // text held it, and the answer was «no lo encontré» with that file under the folder searched). A search of the text
+    // inside the files (no query, not a pattern) that found it in none, while the names of some files of the same walk
+    // hold that text, says so with the search by name first, as the call with its arguments written (encargos 20, 28);
+    // the result lists those files beside it (namedSo).
+    private static string? FindNameNext(JsonElement arguments, string content, int named, int read)
+    {
+        if (!ModelAids.On(ModelAids.FindNameNext) || named == 0 || content.Contains('*') || content.Contains('?'))
+            return null;
+        string call = WireNames.Call("file.find", OptionalText(arguments, "path") is { } path
+            ? new() { ["path"] = path, ["query"] = content }
+            : new() { ["query"] = content });
+        return $"{call} finds the {named} file{(named == 1 ? "" : "s")} whose name contains \"{content}\"; no text "
+            + $"inside the {read} text file{(read == 1 ? "" : "s")} this search read contains it: this search read the "
+            + "text inside the files, not their names";
     }
 
     private ExternalCapabilityReceipt List(
@@ -519,13 +678,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         }
     }
 
-    // Holdout v6 (V6F010): a part of a name is also its words whatever separates them (SpokenFileNames).
+    // Holdout v6 (V6F010): a part of a name is also its words whatever separates them (SpokenFileNames), and (cosecha
+    // 03-11 F14, «Título» said for TITULO) whatever accents they have.
     private static bool NameMatches(string name, string query) =>
         query.Contains('*') || query.Contains('?')
             ? FileSystemName.MatchesSimpleExpression(query, name, ignoreCase: true)
                 || FileSystemName.MatchesSimpleExpression(
                     SpokenFileNames.Words(query), SpokenFileNames.Words(name), ignoreCase: false)
-            : name.Contains(query, StringComparison.OrdinalIgnoreCase) || SpokenFileNames.Contains(name, query);
+            : name.Contains(query, StringComparison.OrdinalIgnoreCase) || SpokenFileNames.Contains(name, query)
+                || SpokenFileNames.ContainsFolded(name, query) || SpokenFileNames.HoldsWords(name, query);
 
     private static string? OptionalText(JsonElement arguments, string name) =>
         arguments.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String
@@ -1328,11 +1489,15 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             .Where(item => item.Place.Length > item.Label.Length)
             .Distinct()];
         if (missing.Length == 0) return null;
-        return string.Join("; ", missing.Select(item =>
+        string absent = string.Join("; ", missing.Select(item =>
                 $"{item.Label} has no subfolder \"{item.Place[(item.Label.Length + 1)..]}\" ({item.Place} does not exist)"))
-            + $", so {fileName} was not looked for; file_find with path "
-            + string.Join(" or ", missing.Select(item => $"\"{item.Label}\"").Distinct(StringComparer.Ordinal))
-            + " lists its folders";
+            + $", so {fileName} was not looked for";
+        string[] labels = [.. missing.Select(item => item.Label).Distinct(StringComparer.Ordinal)];
+        // Encargo 34: one folder to list, and the call that lists it comes first, with its argument written.
+        return labels.Length == 1
+            ? $"{WireNames.Call("file.find", new() { ["path"] = labels[0] })} lists its folders; {absent}"
+            : $"{absent}; file_find with path {string.Join(" or ", labels.Select(label => $"\"{label}\""))} lists its "
+                + "folders";
     }
 
     // A walk the time limit stopped knows only what it walked: the name is not in that part, and the rest is unknown.
@@ -1635,24 +1800,78 @@ if __name__ == "__main__":
         internal bool Reached { get; private set; }
 
         internal bool Expired() => Reached = Reached || utcNow() >= _deadline;
+
+        // Cosecha 03-11 F14: how far the walk of each folder went, so a stopped search says where it did not look.
+        // A walk lists a folder's files before the folders under it, level by level (.NET's FileSystemEnumerator
+        // keeps the folders it meets in a queue), so the level of the last file seen says that every folder above
+        // that level was searched whole. Each folder walked: its place, the level of the last file seen (0 for the
+        // folder itself), and whether its walk ended.
+        internal Dictionary<string, (int Level, bool Whole)> Progress { get; } = new(StringComparer.Ordinal);
     }
 
+    // Cosecha 03-11 F14: a search of several folders with a time limit walked them one after the other, and the whole
+    // limit went on the first: a Desktop of 1.3 million files (91 s to walk) left Documents and Downloads unsearched.
+    // With a limit the folders are walked side by side, one file of each in turn, so a small folder is searched whole
+    // while a large one is still being walked.
     private IEnumerable<KnownEntry> Enumerate(
         IReadOnlyList<(string Label, string Root)> roots,
         List<(string Label, string Root)>? enumerationRoots = null,
-        WalkBudget? budget = null)
+        WalkBudget? budget = null,
+        Action<KnownEntry>? seeFolder = null)
     {
-        foreach ((string label, string root) in roots)
+        List<(string Label, string Place, string Root, IEnumerator<string> Files)> walks = [];
+        try
         {
-            if (!Directory.Exists(root)) continue;
-            // Record the attempted enumeration scope, not exhaustive access.
-            // IgnoreInaccessible may skip descendants without reporting them.
-            enumerationRoots?.Add((label, root));
-            foreach (string file in Directory.EnumerateFiles(root, "*", WalkOptions(label)))
+            foreach ((string label, string root) in roots)
             {
-                if (budget is not null && budget.Expired()) yield break;
-                if (!BaxyPrivateArea.Holds(_privateRoots, file)) yield return new KnownEntry(label, root, file);
+                if (!Directory.Exists(root)) continue;
+                // Record the attempted enumeration scope, not exhaustive access.
+                // IgnoreInaccessible may skip descendants without reporting them.
+                enumerationRoots?.Add((label, root));
+                if (budget is null)
+                {
+                    foreach (string file in Directory.EnumerateFiles(root, "*", WalkOptions(label)))
+                        if (!BaxyPrivateArea.Holds(_privateRoots, file)) yield return new KnownEntry(label, root, file);
+                    continue;
+                }
+                string place = PlaceOf((label, root));
+                // With seeFolder a folder comes in the same walk, its path ending in the separator.
+                walks.Add((label, place, root, (seeFolder is null
+                    ? Directory.EnumerateFiles(root, "*", WalkOptions(label))
+                    : new FileSystemEnumerable<string>(root,
+                        (ref FileSystemEntry entry) => entry.IsDirectory
+                            ? entry.ToFullPath() + Path.DirectorySeparatorChar
+                            : entry.ToFullPath(),
+                        WalkOptions(label))).GetEnumerator()));
+                budget.Progress[place] = (0, false);
             }
+            while (budget is not null && walks.Count > 0)
+            {
+                for (int index = 0; index < walks.Count; index++)
+                {
+                    (string label, string place, string root, IEnumerator<string> files) = walks[index];
+                    if (!files.MoveNext())
+                    {
+                        budget.Progress[place] = (budget.Progress[place].Level, true);
+                        files.Dispose();
+                        walks.RemoveAt(index--);
+                        continue;
+                    }
+                    if (budget.Expired()) yield break;
+                    string file = files.Current;
+                    bool isFolder = file.EndsWith(Path.DirectorySeparatorChar);
+                    if (isFolder) file = file.TrimEnd(Path.DirectorySeparatorChar);
+                    budget.Progress[place] = (Path.GetRelativePath(root, file).Count(
+                        character => character == Path.DirectorySeparatorChar), false);
+                    if (BaxyPrivateArea.Holds(_privateRoots, file)) continue;
+                    if (isFolder) seeFolder?.Invoke(new KnownEntry(label, root, file));
+                    else yield return new KnownEntry(label, root, file);
+                }
+            }
+        }
+        finally
+        {
+            foreach ((_, _, _, IEnumerator<string> files) in walks) files.Dispose();
         }
     }
 

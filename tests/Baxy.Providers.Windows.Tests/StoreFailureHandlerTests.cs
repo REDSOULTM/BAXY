@@ -60,7 +60,8 @@ public sealed class StoreFailureHandlerTests
     [Test]
     public async Task AFailedTaskReadChangedNothing()
     {
-        OperationOutcome outcome = await new ListTasksHandler(Throwing<ILocalTaskStore>(new IOException("disk")))
+        OperationOutcome outcome = await new ListTasksHandler(
+                Throwing<ILocalTaskStore>(new IOException("disk")), Throwing<INoteStore>(new IOException("disk")))
             .ExecuteAsync(Invocation("{}"), CancellationToken.None);
 
         Assert.Multiple(() =>
@@ -119,7 +120,8 @@ public sealed class StoreFailureHandlerTests
     [Test]
     public async Task AnUnsafeTaskStoreMetByAListChangedNothing()
     {
-        OperationOutcome outcome = await new ListTasksHandler(Throwing<ILocalTaskStore>(new UnsafeNoteStorePathException("link")))
+        OperationOutcome outcome = await new ListTasksHandler(
+                Throwing<ILocalTaskStore>(new UnsafeNoteStorePathException("link")), Throwing<INoteStore>(new IOException("disk")))
             .ExecuteAsync(Invocation("{}"), CancellationToken.None);
 
         Assert.Multiple(() =>

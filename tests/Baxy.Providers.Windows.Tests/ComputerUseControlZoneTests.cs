@@ -58,6 +58,21 @@ public sealed class ComputerUseControlZoneTests
             "no rectangle, or a centre outside the window: no zone");
     }
 
+    // Uso-108 (B15): the worker's words no control has reach the receipt the projection reads.
+    [Test]
+    public async Task TheWordsWantedDidNotFindReachTheLook()
+    {
+        string answer = Answer(string.Empty, Control("Guardar", "4.1", "null"))
+            .Replace("\"focused\":null", "\"focused\":null,\"wantedMissing\":[\"firmas\"]");
+        var adapter = new WindowsVisibleControlAdapter(new ComputerUsePerceptionTests.ScriptedUiaWorker(answer), null, null,
+            requestedWindow: (_, _) => ValueTask.FromResult((nint)Front),
+            capture: (_, _, _) => ValueTask.FromResult<VisibleControlSurface.CapturedWindow?>(null));
+        ExternalCapabilityReceipt view = await adapter.InvokeAsync(
+            "input.visible.controls", Json("""{"application":"el navegador","wanted":["firmas"]}"""), CancellationToken.None);
+
+        Assert.That(view.Result!.Value.GetProperty("wantedMissing")[0].GetString(), Is.EqualTo("firmas"));
+    }
+
     [Test]
     public async Task WithoutTheWindowsBoxNoControlHasAZone()
     {

@@ -472,7 +472,7 @@ public sealed class ComputerUseChromiumClickTests
         $tokens=$null;$errors=$null
         $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_CLICK_WORKER,[ref]$tokens,[ref]$errors)
         if($errors.Count -gt 0){ throw 'worker does not parse' }
-        foreach($name in @('Select-ClickMethods','Invoke-NamedControl','Select-Element','Test-PlaceMoved','Get-SteadyPlace','Test-PlaceTooDear','Wait-PlaceMoved','Get-PressPoint','Get-CurrentRect','Get-RenderHosts','Send-RenderPress','Test-HitIsElement','Test-HitLeavesElement','Test-HitNamesLabel','Get-Folded','Test-NameHolds')){
+        foreach($name in @('Select-ClickMethods','Invoke-NamedControl','Select-Element','Invoke-QuietPattern','Test-PlaceMoved','Get-SteadyPlace','Test-PlaceTooDear','Wait-PlaceMoved','Get-PressPoint','Get-ClickablePointOf','Get-ScrollViewport','Get-VisiblePart','Get-PressCandidates','Get-PointVerdict','Get-PointerPoint','Test-TopIconic','Test-PointOnScreen','Get-CurrentRect','Get-RenderHosts','Send-RenderPress','Test-HitIsElement','Test-HitLeavesElement','Test-HitNamesLabel','Get-Folded','Test-NameHolds')){
           $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name },$true))
           if($found.Count -ne 1){ throw ('function missing: '+$name) }
           . ([scriptblock]::Create($found[0].Extent.Text))
@@ -507,7 +507,7 @@ public sealed class ComputerUseChromiumClickTests
         start.StandardOutputEncoding = Encoding.UTF8;
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();

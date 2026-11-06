@@ -5,14 +5,60 @@ import hashlib
 import http.client
 import json
 import os
+import re
 import select
 import socket
 import subprocess
 import threading
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any, Callable
+
+from .memory import free_memory_mb
+
+
+# Uso 95 (F9, uso real 2026-11-04 12:06): how ggml says, in the server's log, that a buffer could not be reserved. The
+# shape of the process's error only, never anything the person said. «failed/unable to allocate <buffer type> buffer»
+# names the memory (ggml-alloc.c alloc_tensor_range and ggml_gallocr_reserve_n, ggml-backend.cpp
+# ggml_backend_buft_alloc_buffer, llama-model.cpp «unable to allocate %s buffer»): a host type (CPU, CPU_Mapped,
+# CPU_REPACK, CUDA_Host, Vulkan_Host) is the PC's RAM, any other (CUDA0, Vulkan0, ROCm0) the graphics card's.
+_BUFFER_NAMED = re.compile(r"(?:failed|unable) to allocate (\S+) buffer")
+_RAM_SHAPES = ("ggml_backend_cpu_buffer_type_alloc_buffer: failed to allocate",)
+_VRAM_SHAPES = ("cudaMalloc failed: out of memory", "CUDA error: out of memory",
+                "ggml_vulkan: Device memory allocation of size", "ErrorOutOfDeviceMemory")
+# The assert that follows a buffer ggml could not reserve (ggml-backend.cpp, GGML_ASSERT(buffer) at b11609).
+_ANY_MEMORY_SHAPES = ("GGML_ASSERT(buffer) failed",)
+_BUFFER_SIZE = re.compile(r"(?:failed to allocate (?:\S+ )?buffer of size|Device memory allocation of size) (\d+)")
+_LOG_TAIL_BYTES = 64 * 1024
+
+
+def memory_failure(log: str) -> str | None:
+    """The startup cause a server's log gives when it ran out of memory (MindStartupFailure.Causes): «ram_insuficiente»,
+    «vram_insuficiente», «memoria_insuficiente» when it does not say which (or says both), or None."""
+    kinds = {"ram" if name.startswith("CPU") or name.endswith("_Host") else "vram"
+             for name in _BUFFER_NAMED.findall(log)}
+    kinds |= {"ram"} if any(shape in log for shape in _RAM_SHAPES) else set()
+    kinds |= {"vram"} if any(shape in log for shape in _VRAM_SHAPES) else set()
+    if kinds == {"ram"}:
+        return "ram_insuficiente"
+    if kinds == {"vram"}:
+        return "vram_insuficiente"
+    return "memoria_insuficiente" if kinds or any(shape in log for shape in _ANY_MEMORY_SHAPES) else None
+
+
+def buffer_size_mb(log: str) -> int | None:
+    """uso-116 (N23): how big the buffer that did not fit was, the largest a server's log names as not reserved, or None."""
+    sizes = [int(size) for size in _BUFFER_SIZE.findall(log)]
+    return round(max(sizes) / (1024 * 1024)) if sizes else None
+
+
+def model_file_failure(log: str) -> str | None:
+    """The startup cause a server's log gives when it could not open or read the model's file (gguf.cpp at b11609)."""
+    if "failed to open GGUF file" in log:
+        return "modelo_ausente"
+    return "modelo_danado" if "E gguf_init_from_reader:" in log else None
 
 
 class _StreamBroken(Exception):
@@ -21,6 +67,34 @@ class _StreamBroken(Exception):
 
 class Yielded(Exception):
     """A read ahead (prefill) ended because a request was waiting (LlmServer.yields)."""
+
+
+class _Advance:
+    """Whether the server still advances through a prompt it streams (LlmServer.read_prefix): each larger ``processed``
+    of its prompt progress, and any chunk after the prompt (what it writes), is an advance. ``stall`` seconds with none,
+    or ``ceiling`` seconds in all, end the read (TimeoutError)."""
+
+    def __init__(self, stall: float, ceiling: float, on_progress: Callable[[int, int], None] | None) -> None:
+        now = time.monotonic()
+        self.started = self.moved = now
+        self.stall, self.ceiling, self.on_progress = stall, ceiling, on_progress
+        self.processed = -1
+
+    def __call__(self, chunk: dict[str, Any] | None) -> None:
+        now = time.monotonic()
+        progress = chunk.get("prompt_progress") if chunk is not None else None
+        if isinstance(progress, dict):
+            processed = int(progress.get("processed") or 0)
+            if processed > self.processed:
+                self.processed, self.moved = processed, now
+                if self.on_progress is not None:
+                    self.on_progress(processed, int(progress.get("total") or 0))
+        elif chunk is not None:
+            self.moved = now
+        if now - self.moved > self.stall:
+            raise TimeoutError(f"the server read nothing more of the prompt in {self.stall:.0f} s")
+        if now - self.started > self.ceiling:
+            raise TimeoutError(f"the prompt was not read in {self.ceiling:.0f} s")
 
 
 def _tell(on_text: Callable[[str | None, bool], bool], text: str | None, done: bool) -> bool:
@@ -34,28 +108,64 @@ def _tell(on_text: Callable[[str | None, bool], bool], text: str | None, done: b
 class LlmServer:
     # One slot (slot 0): every request (the person's turns and the heartbeat, which keeps the same tools and a system
     # text of its own) starts from the same cached tools. A second slot only served the composition and the forced arguments,
-    # which the native loop no longer makes; it cost 950 MiB of VRAM (measured on the notebook, 2026-10-15).
+    # which the native loop no longer makes; it cost 950 MiB of VRAM (measured on the notebook, 2026-10-15). On a shared
+    # remote server of several slots (measurement), the mind's one slot is BAXY_MIND_SLOT's (``slot``).
 
     # Review 2026-10-22: the App ends a turn's request at 30 s (MindSidecarClient.TurnRequestTimeout), and the mind waited
     # up to 120 s for a chat, 30 s for a fill and 10 s for a name, answering after the App had given up. Every call of
     # one request shares this budget (``deadline``, set per request by __main__; None for the warm-up and
     # session.load); spent, the request ends with an error, and the closed connection frees the slot.
-    REQUEST_SECONDS = 24.0
+    # A model behind an API takes longer than one second (ExternalModel); the App waits 6 s more (TurnRequestTimeout).
+    REQUEST_SECONDS = float(os.environ.get("BAXY_MIND_TURN_SECONDS") or 30.0) - 6.0
+    # Uso real 2026-11-03 (F4): a turn's decision got an HTTP 500 from llama-server after 2.6 s and the turn ended with
+    # nothing said; the same request 10 s later was answered. A 5xx is the server's own failure, not the request's (RFC
+    # 9110 §15.6), and asking the model again has no effect on the PC, so it is asked again once, after a pause that
+    # doubles per try (exponential backoff: Google Cloud «Retry strategy»; AWS Builders' Library «Timeouts, retries, and
+    # backoff with jitter»), within the request's budget. Only at this one layer (the same sources: retries stacked at
+    # several layers multiply); the mind's answer after it (Mind._next) is a different request, words only. One client
+    # and one slot: no jitter, which spreads many clients.
+    SERVER_ERROR_RETRIES = 1
+    SERVER_ERROR_PAUSE_S = 0.5
+    # Uso 84 (AMD RX 7600 on Vulkan, 2026-11-04): a cold start read its 45,240-token prefix at 298 tok/s in 167.5 s,
+    # against a fixed 600 s here and 180 s in the App's conductor; a slower GPU (an integrated one) or a longer prefix
+    # would have been taken for a failed start. The warm-up is waited for while the server advances through the prompt
+    # (read_prefix), as it says itself: llama-server streams its progress per batch of the prompt it decodes
+    # (return_progress, tools/server/README.md and server-context.cpp:3823 and 4313 at b11609; 2,048 tokens per batch
+    # by default). It fails when no progress comes for PREFIX_STALL_S (one batch at ~17 tok/s, a sixth of what the AMD
+    # GPU reads), or past PREFIX_CEILING_S in all (the prefix at ~25 tok/s), the safety ceiling.
+    PREFIX_STALL_S = 120.0
+    PREFIX_CEILING_S = 1800.0
 
-    def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int = 32768,
+    def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int | None = None,
                  extra_args: list[str] | None = None, log_name: str = "llama-server.log",
-                 kv: tuple[str, str] | None = None) -> None:
+                 kv: tuple[str, str] | None = None, backend: str = "cuda") -> None:
         self.gguf = gguf
-        # The KV cache's types (K, V): BAXY_RENEW_KV when not given (kv_types), q8_0 and q8_0 by default.
+        # The KV cache's types (K, V): BAXY_RENEW_KV when not given (kv_types), by default q8_0 and q8_0, and the flash
+        # attention that goes with them (flash_attention). ``backend`` is the folder's (declared_backend). On CUDA the
+        # output matrix is kept in RAM (OUTPUT_ON_CPU) unless BAXY_RENEW_OUTPUT_CPU=0; on Vulkan it stays on the GPU.
         self.kv = kv or kv_types(os.environ.get("BAXY_RENEW_KV", ""))
+        self.flash = flash_attention(backend, self.kv)
+        self.backend = backend
+        self.output_cpu = os.environ.get("BAXY_RENEW_OUTPUT_CPU", "").strip() != "0" if backend == "cuda" else False
         self.extra_args = list(extra_args or [])
         self.log_name = log_name
         self.server = server
         self.gpu_layers = gpu_layers
-        self.context = context
+        # The cells that fit the backend's budget with this cache (default_context) when not given.
+        self.context = context or default_context(backend, self.kv, self.output_cpu)
+        # The most history a cut may leave for the model to read again in one decision (Mind._fits): what this cache
+        # reads in time on this backend (reread_tokens).
+        self.reread_tokens = reread_tokens(backend, self.kv)
         # PLAN_GENERAL A5: a pinned port lets the click's vision stage (BAXY_VISION_ENDPOINT) reach this same server.
-        self.port = _pinned_port() or _free_port()
+        # Measurement only (ft-c3, 2026-10-29): BAXY_MIND_LLAMA_REMOTE=<port> uses a llama-server another machine runs,
+        # reached on this loopback port (an ssh -L tunnel), started with this class's same arguments; nothing is launched.
+        self.remote = _remote_port()
+        # Encargo 11 (measurement only): BAXY_MIND_SLOT=<n> is the slot this mind takes on that shared remote server,
+        # so several minds share one server of several slots (-np); 0 when unset, the one slot of the mind's own server.
+        self.slot = _mind_slot(self.remote)
+        self.port = self.remote or _pinned_port() or _free_port()
         self._process: subprocess.Popen | None = None
+        self._placement: list[str] = []  # where this run's server keeps the projector (projector_placement)
         self._ready = threading.Event()
         self._failure: str | None = None
         self.deadline: float | None = None
@@ -77,7 +187,7 @@ class LlmServer:
     def start(self) -> None:
         vision = _vision_args()
         self._settings = [
-            "-ngl", self.gpu_layers, "-c", str(self.context), "-np", "1", "-fa", "on",
+            "-ngl", self.gpu_layers, "-c", str(self.context), *slots(self.backend), "-fa", self.flash,
             "-ctk", self.kv[0], "-ctv", self.kv[1], "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
             # they reach the GPU (measured on the PC 2026-10-15: RAM 3237 → 1132 MiB, same VRAM 3905 MiB and speed).
@@ -93,34 +203,72 @@ class LlmServer:
             # (every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM, decision2 d6 vs d6b, 2026-10-15). Watch
             # «erasing old context checkpoint» with n_tokens ≈ the prefix in llama-server.log: it should stay at 0.
             "-cram", "0", "-ctxcp", "10",
-        ] + vision + ["--slot-save-path", str(self.slot_dir)] + self.extra_args
-        command = [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), *self._settings]
+        ] + (["-ot", OUTPUT_ON_CPU] if self.output_cpu else []) + vision +["--slot-save-path", str(self.slot_dir)] + self.extra_args
+        if self.remote:
+            # Only the kept prefix's facts are written here (restore_prefix): its state is on the server's disk.
+            self.slot_dir.mkdir(parents=True, exist_ok=True)
+            threading.Thread(target=self._wait_health, daemon=True).start()
+            return
         # A state a vision question set aside and never put back holds the person's conversation: none is kept. The
         # kept prefix (PREFIX) is not one of them: it is saved before any turn (Mind.warm).
         self.slot_dir.mkdir(parents=True, exist_ok=True)
         self.forget_set_aside()
-        log_dir = Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
-        log_dir.mkdir(parents=True, exist_ok=True)
-        flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-        # The server writes its log through its own inherited handle: the mind's copy is closed once it started.
-        with open(log_dir / self.log_name, "w", encoding="utf-8") as log:
-            self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
+        self._launch(projector_placement(self.server, self.backend))
         threading.Thread(target=self._wait_health, daemon=True).start()
+
+    def _launch(self, placement: list[str]) -> None:
+        self._placement = placement
+        command = [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), *self._settings,
+                   *placement]
+        log_path = self._log_path()
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+        # Uso real 2026-11-03 (F4): each start wrote over the last run's log, and the cause of a 500 went with the
+        # relaunch after it; the last run's log is kept beside it (.1), as the App keeps the mind's stderr.
+        try:
+            os.replace(log_path, log_path.with_name(log_path.name + ".1"))
+        except FileNotFoundError:
+            pass  # a first run
+        except OSError:
+            pass  # held by a server still closing: this run writes over it, as before
+        # The server writes its log through its own inherited handle: the mind's copy is closed once it started.
+        with open(log_path, "w", encoding="utf-8") as log:
+            self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
+
+    def _log_path(self) -> Path:
+        return Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / self.log_name
 
     def _wait_health(self) -> None:
         deadline = time.monotonic() + 600
         while time.monotonic() < deadline:
             if self._process is not None and self._process.poll() is not None:
+                # Uso-125: the VRAM counted free went to something else, or the driver cannot run the projector: a
+                # slower vision, not a BAXY that does not start.
+                if self._placement == ["--mmproj-offload"]:
+                    self._launch(["--no-mmproj-offload"])
+                    continue
                 self._failure = f"llama-server exited with {self._process.returncode}"
                 return
             try:
                 with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/health", timeout=2) as reply:
                     if reply.status == 200:
-                        self._ready.set()
+                        self._failure = self._slot_missing()
+                        if self._failure is None:
+                            self._ready.set()
                         return
             except Exception:  # noqa: BLE001 - still loading
                 time.sleep(0.3)
         self._failure = "llama-server did not become healthy"
+
+    def _slot_missing(self) -> str | None:
+        """Why a shared server cannot give this mind its slot (BAXY_MIND_SLOT), or None. llama-server takes a slot
+        number modulo its slots (get_slot_by_id, server-context.cpp:1663 at b11609): one past them would be another
+        mind's slot, in silence."""
+        if not self.slot:
+            return None
+        with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/props", timeout=10) as reply:
+            total = int(json.loads(reply.read()).get("total_slots") or 1)
+        return None if self.slot < total else f"BAXY_MIND_SLOT {self.slot}: the server has {total} slots (-np)"
 
     def wait_ready(self, timeout: float) -> None:
         deadline = time.monotonic() + timeout
@@ -128,12 +276,40 @@ class LlmServer:
             if self._failure is not None or time.monotonic() > deadline:
                 raise RuntimeError(self._failure or "llama-server is not ready")
 
-    def startup_failure(self) -> dict[str, Any]:
-        """The App's startup-failure shape (MindStartupFailure): why the model did not come up."""
+    def startup_failure(self, error: BaseException | None = None) -> dict[str, Any]:
+        """The App's startup-failure shape (MindStartupFailure): why the model did not come up. A server that exited is
+        «proceso_salio» unless its log says it ran out of memory (memory_failure); ``error``, what the start raised in
+        the mind, is the PC's memory when it is a MemoryError (uso 95). A lack of memory goes with its figures where they
+        are known (uso-116): needMb, the buffer that did not fit; freeMb, the PC's RAM free. The graphics card's free
+        memory is not said: llama-server does not log it with the layers set by hand (b11609)."""
         code = self._process.poll() if self._process is not None else None
-        if code is not None:
-            return {"cause": "proceso_salio", "exitCode": code}
+        log = self._log_tail()
+        cause = memory_failure(log)
+        # A server that said it ran out of memory may not have ended yet when the mind asks (uso-116: «tiempo»).
+        if code is not None or cause:
+            failure: dict[str, Any] = {"cause": cause or model_file_failure(log) or "proceso_salio"}
+            if code is not None:
+                failure["exitCode"] = code
+            need = buffer_size_mb(log) if cause else None
+            if need is not None:
+                failure["needMb"] = need
+                free = free_memory_mb() if cause == "ram_insuficiente" else None
+                if free is not None:
+                    failure["freeMb"] = free
+            return failure
+        if isinstance(error, MemoryError):
+            return {"cause": "ram_insuficiente"}
         return {"cause": "tiempo"}
+
+    def _log_tail(self) -> str:
+        """The end of this run's server log, where an exit's cause is written last; empty when it cannot be read."""
+        try:
+            with open(self._log_path(), "rb") as log:
+                log.seek(0, os.SEEK_END)
+                log.seek(max(0, log.tell() - _LOG_TAIL_BYTES))
+                return log.read().decode("utf-8", errors="replace")
+        except OSError:
+            return ""
 
     def _alive(self) -> None:
         """The model server died: the sidecar exits, so the App sees the mind close and relaunches it. Before every call
@@ -152,7 +328,7 @@ class LlmServer:
             raise TimeoutError("the request's time budget is spent")
         return min(timeout, left)
 
-    def chat(self, body: dict[str, Any], *, timeout: float = 120.0,
+    def chat(self, body: dict[str, Any], *, timeout: float = max(120.0, REQUEST_SECONDS),
              on_text: Callable[[str | None, bool], bool] | None = None) -> dict[str, Any]:
         """One chat completion on the one slot, whose prefix stays cached between turns. With ``on_text`` it streams
         (_stream) and returns the same reply, unless it asks for token probabilities (below)."""
@@ -172,14 +348,40 @@ class LlmServer:
                 _tell(on_text, None, True)
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
-            data=json.dumps({**body, "id_slot": 0, "cache_prompt": True}).encode("utf-8"),
+            data=json.dumps({**body, "id_slot": self.slot, "cache_prompt": True}).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
+        with self._open(request, timeout) as reply:
             return json.loads(reply.read())
 
+    def read_prefix(self, body: dict[str, Any],
+                    on_progress: Callable[[int, int], None] | None = None) -> dict[str, Any]:
+        """The warm-up's chat (Mind.warm), its reply as chat's: streamed with the server's progress through the prompt,
+        each advance told to ``on_progress`` (tokens read so far, the prompt's tokens), and waited for while it advances
+        (_Advance, PREFIX_STALL_S and PREFIX_CEILING_S). A server that stops advancing ends it with a TimeoutError: a
+        silent one at the socket's own timeout, one that only sends its SSE pings (every 30 s by default,
+        sse_ping_interval, server-task.h:58 at b11609) at the stall."""
+        self.wait_ready(self._within(self.PREFIX_STALL_S))
+        self.resident = None
+        return self._stream(body, self.PREFIX_STALL_S, lambda _text, _done: True,
+                            _Advance(self.PREFIX_STALL_S, self.PREFIX_CEILING_S, on_progress))
+
+    def _open(self, request: urllib.request.Request, timeout: float) -> Any:
+        """``urlopen`` of one request to the server, asked again after a 5xx (SERVER_ERROR_RETRIES), each try and each
+        pause within the request's budget (_within). Any other failure, or a 5xx past the retries, is raised."""
+        for attempt in range(self.SERVER_ERROR_RETRIES):
+            try:
+                return urllib.request.urlopen(request, timeout=self._within(timeout))
+            except urllib.error.HTTPError as error:
+                if not 500 <= error.code < 600:
+                    raise
+                error.close()
+                time.sleep(self._within(self.SERVER_ERROR_PAUSE_S * 2 ** attempt))
+        return urllib.request.urlopen(request, timeout=self._within(timeout))
+
     def _stream(self, body: dict[str, Any], timeout: float,
-                on_text: Callable[[str | None, bool], bool]) -> dict[str, Any]:
+                on_text: Callable[[str | None, bool], bool],
+                watch: Callable[[dict[str, Any] | None], None] | None = None) -> dict[str, Any]:
         """Al máximo 9.4 (2026-10-22): the chat streamed (SSE) and its reply built as the non-streamed one is
         (common_chat_msg::to_json_oaicompat, common/chat.cpp:156-235; to_json_oaicompat_chat, server-task.cpp:410-452):
         choices[0] with finish_reason, index and the message (role, content, reasoning_content, tool_calls), usage and
@@ -194,11 +396,15 @@ class LlmServer:
         server-chat.cpp:621-649): content and arguments as suffixes (string_diff, chat.cpp:58-71), a call's id and name
         whole whenever they change (a name that grows comes whole again). The last chunk carries the timings and, with
         include_usage, the usage (server-task.cpp:454-509). An error before the first token still comes as an HTTP
-        error (a context overflow's 400, server-context.cpp:4902-4914); one later is _StreamBroken."""
+        error (a context overflow's 400, server-context.cpp:4902-4914); one later is _StreamBroken.
+
+        With ``watch`` the server also streams its progress through the prompt (return_progress, read_prefix), and
+        ``watch`` sees every line: each data chunk, and None for any other line (the SSE pings it sends while silent)."""
+        progress = {"return_progress": True} if watch is not None else {}
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
-            data=json.dumps({**body, "stream": True, "stream_options": {"include_usage": True}, "id_slot": 0,
-                             "cache_prompt": True}).encode("utf-8"),
+            data=json.dumps({**body, "stream": True, "stream_options": {"include_usage": True}, **progress,
+                             "id_slot": self.slot, "cache_prompt": True}).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
         content, reasoning = "", ""
@@ -207,11 +413,13 @@ class LlmServer:
         finish: Any = None
         index = 0
         telling = True
-        with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
+        with self._open(request, timeout) as reply:
             try:
                 for raw in reply:
                     line = raw.decode("utf-8").strip()
                     if not line.startswith("data:"):
+                        if watch is not None:
+                            watch(None)
                         continue
                     data = line[5:].strip()
                     if data == "[DONE]":
@@ -219,6 +427,8 @@ class LlmServer:
                     chunk = json.loads(data)
                     if "error" in chunk:
                         raise _StreamBroken(str(chunk["error"]))
+                    if watch is not None:
+                        watch(chunk)
                     head.update({key: chunk[key] for key in ("created", "id", "model", "system_fingerprint", "usage",
                                                              "timings") if key in chunk})
                     for choice in chunk.get("choices") or []:
@@ -272,7 +482,7 @@ class LlmServer:
         the chat's own prompt (template) plus that text, stopped at the name's end."""
         self.resident = None
         reply = self._post("/completion", {"prompt": prompt + written, "n_predict": 24, "temperature": 0.0,
-                                           "stop": [">", "\n"], "cache_prompt": True, "id_slot": 0}, timeout)
+                                           "stop": [">", "\n"], "cache_prompt": True, "id_slot": self.slot}, timeout)
         return str(reply.get("content", ""))
 
     def prefill(self, prompt: str, timeout: float = 60.0) -> dict[str, Any]:
@@ -294,8 +504,8 @@ class LlmServer:
         connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=self._within(timeout))
         try:
             connection.request("POST", "/completion", json.dumps(
-                {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True, "id_slot": 0}).encode(
-                "utf-8"), {"Content-Type": "application/json"})
+                {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True,
+                 "id_slot": self.slot}).encode("utf-8"), {"Content-Type": "application/json"})
             until = time.monotonic() + self._within(timeout)
             while not select.select([connection.sock], [], [], 0.05)[0]:
                 if self.yields():
@@ -324,7 +534,7 @@ class LlmServer:
                       if k not in ("logit_bias", "tool_choice", "max_tokens", "logprobs", "top_logprobs")},
                    "messages": messages, "tool_choice": "required", "parallel_tool_calls": False,
                    "continue_final_message": True, "add_generation_prompt": False, "max_tokens": 300,
-                   "temperature": 0.0, "id_slot": 0, "cache_prompt": True}
+                   "temperature": 0.0, "id_slot": self.slot, "cache_prompt": True}
         self.resident = None
         reply = self._post("/v1/chat/completions", request, timeout)
         calls = (reply.get("choices") or [{}])[0].get("message", {}).get("tool_calls") or []
@@ -341,7 +551,7 @@ class LlmServer:
     def _post(self, path: str, body: dict[str, Any], timeout: float) -> dict[str, Any]:
         request = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", data=json.dumps(body).encode("utf-8"),
                                          headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(request, timeout=self._within(timeout)) as reply:
+        with self._open(request, timeout) as reply:
             return json.loads(reply.read())
 
     def tokenize(self, text: str) -> list[int]:
@@ -352,7 +562,7 @@ class LlmServer:
             data=json.dumps({"content": text, "parse_special": True}).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        with urllib.request.urlopen(request, timeout=self._within(30)) as reply:
+        with self._open(request, 30) as reply:
             return list(json.loads(reply.read())["tokens"])
 
     # ---- the prompt prefix kept between starts (al máximo V1) -------------------------------------------------------
@@ -364,33 +574,57 @@ class LlmServer:
         """The key of the slot's state after the warm-up: the requests that make it (``warm``: the tools, the installed
         applications among them, and the system prompt), the server's arguments but its address (context, KV cache
         types, projector…), the GGUF and the server binary (size and time: hashing 2.7 GB costs what is saved) and the
-        server's build as it tells it."""
+        server's build as it tells it. With a remote server (BAXY_MIND_LLAMA_REMOTE) the GGUF and the binary here are
+        not the ones it runs: the model it serves and its slot's context, as its /props tells them, are in the key too."""
         self.wait_ready(self._within(600))
         try:
             with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/props", timeout=self._within(10)) as reply:
-                build = str(json.loads(reply.read()).get("build_info") or "")
+                props = json.loads(reply.read())
         except (OSError, ValueError, http.client.HTTPException):
-            build = ""
+            props = {}
+        props = props if isinstance(props, dict) else {}
         identity = {"settings": self._settings, "gguf": _stamp(self.gguf), "server": _stamp(self.server),
-                    "build": build, "warm": warm}
+                    "build": str(props.get("build_info") or ""), "warm": warm}
+        if self.remote:
+            served = props.get("default_generation_settings")
+            identity["served"] = {"model": props.get("model_path"),
+                                  "n_ctx": served.get("n_ctx") if isinstance(served, dict) else None}
         return hashlib.sha256(json.dumps(identity, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()[:32]
 
     def restore_prefix(self, key: str) -> dict[str, Any] | None:
         """The slot back to the state saved under ``key``, and the facts kept beside it; None when there is none or the
-        server could not restore it (the warm-up then runs as always)."""
+        server could not restore it (the warm-up then runs as always).
+
+        Encargo 27 (flota 03-11): a remote server (BAXY_MIND_LLAMA_REMOTE) writes the state in its own --slot-save-path,
+        on the other machine, and only the facts are in this folder: its restore is asked for without the file here
+        (POST /slots/{id}?action=restore takes a name in that folder; a missing one is an error, and the warm-up then
+        saves it there again). llama-server checks the file's shape, not that it holds this prefix
+        (llama_state_seq_load_file, server-context.cpp:2957-3000 at b11609): the name is the key, which with a remote
+        server names the model it serves (prefix_key), and the tokens restored must be the ones saved (SLOT_TOKENS);
+        another count is another state, which is erased from the slot."""
         state = self.slot_dir / f"{PREFIX}{key}.slot"
         try:
             facts = json.loads(state.with_suffix(".json").read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return None
-        if not isinstance(facts, dict) or not state.is_file():
+        if not isinstance(facts, dict):
+            return None
+        saved = facts.pop(SLOT_TOKENS, None)
+        if not (state.is_file() or (self.remote and isinstance(saved, int) and saved > 0)):
             return None
         self.resident = None
         try:
-            reply = self._post("/slots/0?action=restore", {"filename": state.name}, 120)
+            reply = self._post(f"/slots/{self.slot}?action=restore", {"filename": state.name}, 120)
         except (OSError, ValueError, http.client.HTTPException):
             return None
-        if int(reply.get("n_restored") or 0) <= 0:
+        restored = int(reply.get("n_restored") or 0)
+        if self.remote and restored > 0 and restored != saved:
+            try:
+                self._post(f"/slots/{self.slot}?action=erase", {}, 30)
+            except (OSError, ValueError, http.client.HTTPException):
+                pass  # the warm-up's prompt then differs from what the slot holds, and is read where it differs
+            return None
+        if restored <= 0:
             return None
         try:
             os.utime(state.with_suffix(".json"))  # the state used last: save_prefix keeps it (P0.9)
@@ -410,9 +644,11 @@ class LlmServer:
         # not start).
         try:
             kept.unlink(missing_ok=True)  # the facts are written last: a state cut halfway is never restored
-            saved = int(self._post("/slots/0?action=save", {"filename": state.name}, 120).get("n_saved") or 0) > 0
+            reply = self._post(f"/slots/{self.slot}?action=save", {"filename": state.name}, 120)
+            tokens = int(reply.get("n_saved") or 0)
+            saved = tokens > 0
             if saved:
-                kept.write_text(json.dumps(facts, ensure_ascii=False), encoding="utf-8")
+                kept.write_text(json.dumps({**facts, SLOT_TOKENS: tokens}, ensure_ascii=False), encoding="utf-8")
         except (OSError, ValueError, http.client.HTTPException):
             saved = False
         keep = {state.name, kept.name} if saved else set()
@@ -442,6 +678,15 @@ class LlmServer:
                 left = True  # held by the server this moment
         return not left
 
+    def forget_log(self) -> bool:
+        """The last run's log (.1, kept at start), whose errors may quote the model's words, is removed on trace.forget;
+        the running server's own log stays (its handle is open). Whether it is gone."""
+        try:
+            self._log_path().with_name(self.log_name + ".1").unlink(missing_ok=True)
+        except OSError:
+            return False
+        return True
+
     def close(self) -> None:
         if self._process is not None and self._process.poll() is None:
             self._process.terminate()
@@ -453,18 +698,31 @@ class LlmServer:
 
 # The kept prefix's files in the slot folder: its state (.slot, never *.bin: start() removes those) and its facts (.json).
 PREFIX = "baxy_prefix_"
+# Beside the facts: the tokens the server saved in the state (its n_saved), which a restore must give back (n_restored).
+SLOT_TOKENS = "slot_tokens"
 
-# w6-lat (2026-10-23): the KV cache's types, an option for an A/B and never the default (q8_0 for K and V). BAXY_RENEW_KV
-# is one type for both («q4_0») or «K,V» («q8_0,q4_0»). Expected, not measured (no GPU run): Qwen3.5-4B keeps K and V in
-# its 8 full-attention layers of 32 (4 KV heads × 256), 17 KiB per token at q8_0 (llama_kv_cache: 136 MiB for 8,192
-# cells); at q4_0 ~9 KiB. With the ~44k tokens of a turn in the slot, each decoded token reads ~0.73 GiB of KV beside the
-# ~2.55 GiB of Q4_K_M weights: q4_0 for both reads ~0.35 GiB less (−11 % of the bytes; decode up to ~8-10 % faster where
-# it is bound by memory: predicted 487 ms → ~440-450 ms per turn.continue) and frees ~0.4 GiB of VRAM at 53,248 cells;
-# «q8_0,q4_0» half of that. Risk: K at 4 bits is the part that moves attention most (llama.cpp's perplexity reports: q8_0
-# close to f16, q4_0 K clearly worse than q4_0 V), on a 4B whose decisions were tuned at q8_0; the prompt may read no
-# faster (dequantized in the flash-attention kernel); a new type is a new prefix key (Mind.warm reads the prefix once
-# more, ~18 s, then keeps it). Needs decision2, falsedades and e2e A/B on the GPU before any default changes.
+# w6-lat (2026-10-23): the KV cache's types, an option for an A/B over the default (q8_0 for K and V on every backend,
+# see kv_types). BAXY_RENEW_KV is one type for both («q4_0») or «K,V» («q8_0,q4_0»).
+# Qwen3.5-4B keeps K and V only in its 8 full-attention layers of 32 (4 KV heads × 256): 17 KiB per cell at q8_0, 9 at
+# q4_0. uso-51 (2026-11-03, measured on the PC, INFORME_51.md): q4_0 reads and writes as fast as q8_0 and decided the
+# same 30 practice cases with a 22k-token history (28 identical), but the decision gate (encargo 50) lost the close
+# calls of «sin_cliente» with it: 11 of 25 right against 16 of q8_0, the same code, catalog and seeds, at 53,248 cells as
+# at 86,016 (U33 5/5 → 0/5). llama.cpp measures K at 4 bits moving the output most (PR #7412: KL divergence 0.0365 for
+# q4_0 K and V, 0.0010 for q8_0). So q8_0 stays. A mixed «q8_0,q4_0» cache has no fast kernel in this CUDA build
+# (decode 27 → 15 tokens/s, with another load on the GPU).
 KV_TYPES = ("f16", "q8_0", "q5_1", "q5_0", "q4_1", "q4_0")
+
+
+# Encargo 8 (2026-11-02): on Vulkan (AMD and Intel GPUs) with 8 GB the KV cache was f16 with flash attention «auto»,
+# because the q8_0 cache read the prefix 24 times slower than CUDA on an RX 7600. Two causes in ggml-vulkan.cpp at b11609:
+# (1) «-fa on» forces flash attention, and a device that cannot run it (supports_op, FLASH_ATTN_EXT: no coopmat2 nor
+# subgroup shuffle and vote) runs it on the CPU in silence; «auto» lets llama.cpp check it (llama-context.cpp
+# resolve_fused_ops), which it can only do with an unquantized V (a quantized V forces it on, llama-context.cpp:4063);
+# (2) a quantized K and V are dequantized inside the flash-attention shader for every block of queries on the paths AMD
+# gets (scalar or coopmat1). uso-60 (2026-11-03, measured on that RX 7600 with -np 3 -kvu, INFORME_60.md): the f16 cache
+# reads the history past the prefix at 527 tokens/s and q8_0 at 174, both decode at ~27, but the f16 one takes 4,460 MiB
+# of the GPU at 53,248 cells, past the owner's 4 GB, and with the 48.8k-token prefix no f16 cache fits in them. So
+# q8_0 on every backend (VULKAN_CONTEXT); f16 only when BAXY_RENEW_KV asks for it.
 
 
 def kv_types(setting: str) -> tuple[str, str]:
@@ -478,17 +736,118 @@ def kv_types(setting: str) -> tuple[str, str]:
     return parts[0], parts[1]
 
 
+def flash_attention(backend: str, kv: tuple[str, str]) -> str:
+    """llama-server's «-fa»: «auto» on Vulkan with an f16 V, so llama.cpp checks the GPU runs the attention (kv_types);
+    «on» otherwise (a quantized V needs it, and CUDA was measured so)."""
+    return "auto" if backend == "vulkan" and kv[1] == "f16" else "on"
+
+
+# uso-51 (2026-11-03, «aumentar el contexto»; the owner's budget: 4 GB of VRAM for all of BAXY, 4-5 GB of RAM): the
+# prefix grew to 48,541 tokens (catalog of 2026-11-03), so 53,248 cells left the history ~1.1k tokens beside the turn.
+# Measured on the PC (RTX 4060 Ti, b11609, this GGUF, the product's arguments; ft_v1/c5/INFORME_51.md): the server's
+# dedicated memory is 4,000 MiB at 53,248 cells with q8_0; each cell more costs ~22 KiB with q8_0 and ~14 with q4_0
+# (the cache, and ~4 KiB of compute buffer: flash attention reads a quantized cache through an f16 copy of one layer's K
+# and V). The most cells inside 4 GB (4,096 MiB) for all of BAXY, the App's WebView2 included (~34 MiB of the GPU, as
+# another WebView2 measured here), by cache and by where the output matrix is:
+CUDA_CONTEXT = {("q8_0", True): 77824,    # 4,032 MiB: the default
+                ("q8_0", False): 53248,   # 4,000 MiB with BAXY_RENEW_OUTPUT_CPU=0, as before
+                ("q4_0", True): 122880,   # 4,040 MiB with BAXY_RENEW_KV=q4_0 (see KV_TYPES: not the default)
+                ("q4_0", False): 86016}   # 4,032 MiB
+# Qwen3.5-4B ties its output to the token embedding (token_embd.weight, Q6_K, 497 MiB): the input's copy is in RAM
+# already, the output's was on the GPU. Kept on the CPU (llama.cpp's -ot/--override-tensor) it frees 496 MiB for 24k
+# more cells: the RAM did not grow and the prompt reads as fast (prefix ~2,200-2,400 and history ~1,430 tokens/s), but
+# each written token costs ~9 ms more (47 → 33 tokens/s at 70k with the GPU alone; the server had 8 logical processors).
+# The decision gate stayed as with the output on the GPU (INFORME_51.md). The CPU keeps 53,248: not measured.
+CONTEXT = 53248
+OUTPUT_ON_CPU = r"token_embd\.weight=CPU"
+# uso-60 (2026-11-03, measured on an RX 7600 8 GB, b11609 Vulkan, -np 3 -kvu, this GGUF; ft_v1/c5/INFORME_60.md): llama.cpp
+# counts 2,604 MiB of weights, 151 of recurrent state (three slots) and ~140 of compute on the GPU, and 17 KiB per q8_0
+# cell. 61,440 cells take 3,916 MiB (3,830 seen by Windows with 53.7k of them in use), 9.1k tokens of history beside the
+# prefix and the turn. A q8_0 cache past 1 GiB (62,464 cells or more) runs ~4 times slower here (the prompt read 1,054 →
+# 258 tokens/s and the decode 32 → 18, the GPU's dedicated memory falling as the shared one grows): the cause inside
+# ggml-vulkan is not isolated. The output matrix stays on the GPU (output_cpu): in RAM, as on CUDA, it read the prefix at
+# 231 tokens/s against 901 and decoded at 13.5 against 27. An f16 cache keeps the 53,248 cells it had (4,460 MiB).
+VULKAN_CONTEXT = {("q8_0", False): 61440,
+                  ("f16", False): 53248}
+
+
+def default_context(backend: str, kv: tuple[str, str], output_cpu: bool = False) -> int:
+    """The server's context when BAXY_RENEW_CTX does not say it: on CUDA and Vulkan the cells measured to fit 4 GB with
+    this cache (CUDA_CONTEXT, VULKAN_CONTEXT; with another cache, CONTEXT), CONTEXT on the CPU."""
+    measured = {"cuda": CUDA_CONTEXT, "vulkan": VULKAN_CONTEXT}.get(backend, {})
+    return measured.get((kv[0], output_cpu), CONTEXT) if kv[0] == kv[1] else CONTEXT
+
+
+# uso-51: a cut keeps at most this many tokens of history (Mind._fits), which the model re-reads in the decision that cut
+# it (from the prefix's checkpoint on), inside the decision's REQUEST_SECONDS with its own reading and writing. Measured on
+# the PC (b11609, history past the 48.5k-token prefix, INFORME_51.md): ~1,440 tokens/s with the GPU to itself (~4.3 s),
+# 500-660 with another model on it (~10-12 s); the notebook's re-reads ran 1.1-1.6k tokens/s. uso-60 (the RX 7600,
+# INFORME_60.md): 527 tokens/s on Vulkan with f16 and 174 with a quantized K, where 6,144 tokens would take ~35 s: 2,048
+# there (~12 s).
+REREAD_TOKENS = 6144
+REREAD_TOKENS_SLOW = 2048
+
+
+def reread_tokens(backend: str, kv: tuple[str, str]) -> int:
+    """The most history a cut may leave on this backend with this cache (REREAD_TOKENS)."""
+    return REREAD_TOKENS_SLOW if backend == "vulkan" and kv[0] != "f16" else REREAD_TOKENS
+
+
+def slots(backend: str) -> list[str]:
+    """llama-server's slots: one (the mind's, slot 0), but three on one unified cache on Vulkan. Measured on an RX 7600
+    (b11609, 2026-11-03, ft_v1/c5/AMD_TUKIPC_0311.md): with one or two slots the ~45k-token prefix read at 244 tokens/s
+    and the decode ran at 21; with three or more, at 946 and 33, the same 22 decisions, for +76 MiB (each slot keeps
+    its recurrent state); the cause inside ggml-vulkan is not isolated. With «-kvu» every slot sees the whole context
+    (n_ctx_seq = n_ctx, llama-context.cpp), so slot 0 alone keeps all of it; on CUDA it read no faster here (INFORME_51)."""
+    return ["-np", "3", "-kvu"] if backend == "vulkan" else ["-np", "1"]
+
+
 def _vision_args() -> list[str]:
-    """PLAN_GENERAL A5 (measured 2026-10-21): the model's own projector, on the CPU (no VRAM; ~0.7 GB of RAM), so the
-    click's last stage can ask this server where a control is on a window without an accessible tree; the one slot's
-    state is set aside meanwhile in the slot folder (_slot_dir). A question on the slot evicted the conversation,
-    whose state (2 GB) the RAM prompt cache refused, and the next decision re-read it for 25 s; a second slot on a
-    unified KV cache lost it too with this hybrid model (21 s). Saved and restored around the question: 1.35 s and
-    0.74 s for 42,910 tokens, then 17 tokens re-read."""
+    """PLAN_GENERAL A5 (measured 2026-10-21): the model's own projector, so the click's last stage can ask this server
+    where a control is on a window without an accessible tree; the one slot's state is set aside meanwhile in the slot
+    folder (_slot_dir). A question on the slot evicted the conversation, whose state (2 GB) the RAM prompt cache refused,
+    and the next decision re-read it for 25 s; a second slot on a unified KV cache lost it too with this hybrid model
+    (21 s). Saved and restored around the question: 1.35 s and 0.74 s for 42,910 tokens, then 17 tokens re-read. Where
+    it runs is apart (projector_placement): it changes nothing in the slot's state, so it is not in the prefix's key."""
     projector = os.environ.get("BAXY_MIND_MMPROJ", "").strip()
     if not projector or not Path(projector).is_file():
         return []
-    return ["--mmproj", projector, "--no-mmproj-offload"]
+    return ["--mmproj", projector]
+
+
+# Uso-125 (2026-11-05): measured on the PC (RTX 4060 Ti, b11609 CUDA, c4c2 and its
+# projector, 3840x2160 shrunk to 1280: 952 tokens): the image read in 0.5-1.0 s on the GPU against 8.4-16 s on the
+# CPU, the same description quality by a blind judge (ft_v1/c5/tanda100/uso-125-vision.md). The projector takes 920 MiB
+# of VRAM beside the server's 4,032 and leaves ~720 MiB of RAM. llama.cpp keeps it loaded for the server's life (it
+# cannot be held on the GPU only while reading), so it goes there only where the VRAM free when the server starts holds
+# both, with a margin: the most the server's cells take (CUDA_CONTEXT, VULKAN_CONTEXT, 4,096 MiB), the projector and
+# 300 MiB. A 4 GB card keeps it on the CPU; 6 GB and up take it.
+VISION_GPU_NEEDS_MIB = 4096 + 920 + 300
+_DEVICE_MEMORY = re.compile(r"\((\d+) MiB, (\d+) MiB free\)")
+
+
+def _free_vram_mib(server: str) -> int | None:
+    """The VRAM free on the device the server would use, as the server itself counts it: its --list-devices, the same
+    for CUDA and Vulkan, whatever the make; None when it does not say."""
+    flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    try:
+        listed = subprocess.run([server, "--list-devices"], capture_output=True, text=True, encoding="utf-8",
+                                errors="replace", timeout=20, creationflags=flags).stdout
+    except (OSError, subprocess.SubprocessError):
+        return None
+    found = _DEVICE_MEMORY.search(listed)
+    return int(found.group(2)) if found else None
+
+
+def projector_placement(server: str, backend: str) -> list[str]:
+    """Where the projector reads an image: on the GPU when the VRAM really free holds it (see VISION_GPU_NEEDS_MIB), on
+    the CPU otherwise, or with BAXY_VISION_OFFLOAD=0; nothing without a projector."""
+    if not _vision_args():
+        return []
+    if backend == "cpu" or os.environ.get("BAXY_VISION_OFFLOAD", "").strip() == "0":
+        return ["--no-mmproj-offload"]
+    free = _free_vram_mib(server)
+    return ["--mmproj-offload"] if free is not None and free >= VISION_GPU_NEEDS_MIB else ["--no-mmproj-offload"]
 
 
 def _slot_dir() -> Path:
@@ -536,6 +895,30 @@ def declared_build(server: str, builds: Path = BUILDS) -> str:
     raise RuntimeError(f"llama-server not declared in {builds.name}: {server} ({detail})")
 
 
+def declared_backend(server: str, build: str, builds: Path = BUILDS) -> str:
+    """The GPU backend the folder of ``server`` computes on: the one of ``build``'s declared backends (data/
+    llama_server.v1.json, «backends») whose DLL is there, with its SHA-256; «cpu» when none is. Encargo 8 (2026-11-02):
+    the backend's DLL was not compared, and the settings (LlmServer) depend on it. A folder with two of them does not
+    start: llama.cpp loads both and computes on the first that sees the GPU (CUDA's on NVIDIA, Vulkan's elsewhere), so
+    the settings could be the other backend's."""
+    declared = json.loads(builds.read_text(encoding="utf-8"))["builds"][build].get("backends", {})
+    folder = Path(server).parent
+    present: list[str] = []
+    for name, files in declared.items():
+        for file, digest in files.items():
+            path = folder / file
+            if not path.is_file():
+                continue
+            with open(path, "rb") as data:
+                actual = hashlib.file_digest(data, "sha256").hexdigest()
+            if actual != digest:
+                raise RuntimeError(f"llama-server's {file} {actual[:12]} is not {build}'s: {server}")
+            present.append(name)
+    if len(present) > 1:
+        raise RuntimeError(f"llama-server has two GPU backends ({', '.join(present)}), keep one: {server}")
+    return present[0] if present else "cpu"
+
+
 def _pinned_port() -> int | None:
     """BAXY_MIND_LLAMA_PORT when set; None when not (a free port is taken). Review 2026-10-22: a pinned port in use
     fails the start with its cause; another port taken in silence left the core's vision pointing at the pinned one."""
@@ -549,6 +932,30 @@ def _pinned_port() -> int | None:
         except OSError as error:
             raise RuntimeError(f"BAXY_MIND_LLAMA_PORT {port} is in use on the loopback: {error}") from error
     return port
+
+
+def _remote_port() -> int | None:
+    """BAXY_MIND_LLAMA_REMOTE: the loopback port of a remote llama-server's tunnel (measurement only); None when unset."""
+    value = os.environ.get("BAXY_MIND_LLAMA_REMOTE", "").strip()
+    if not value:
+        return None
+    try:
+        return int(value)
+    except ValueError as error:
+        raise RuntimeError(f"BAXY_MIND_LLAMA_REMOTE is not a port: {value}") from error
+
+
+def _mind_slot(remote: int | None) -> int:
+    """BAXY_MIND_SLOT: the mind's slot on a shared remote server (measurement only); 0 when unset. Another slot needs
+    BAXY_MIND_LLAMA_REMOTE: the mind's own server has one (-np 1)."""
+    value = os.environ.get("BAXY_MIND_SLOT", "").strip()
+    if not value:
+        return 0
+    if not value.isdigit():
+        raise RuntimeError(f"BAXY_MIND_SLOT is not a slot number: {value}")
+    if int(value) and remote is None:
+        raise RuntimeError(f"BAXY_MIND_SLOT {value} needs BAXY_MIND_LLAMA_REMOTE: the mind's own server has one slot")
+    return int(value)
 
 
 def _free_port() -> int:

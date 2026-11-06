@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
-/// Encargo TZ-DC2 (tandas z3/z4 en el notebook, fable/estab-fase3 a99fa5bea, t1-c09 t1 «mandale a Ron92 por discord que
+/// Encargo TZ-DC2 (tandas z3/z4 en el notebook, fable/estab-fase3 a99fa5bea, t1-c09 t1 «mandale a Nube77 por discord que
 /// hoy no llego a jugar, que arranquen sin mi», Discord abierto en otra vista). z3: message.recipient.resolve volvió a
 /// los 7,46 s con «recipient_identity_not_verified» y efecto; message.send no corrió. Medido en el registro de procesos
 /// de la tanda: el Core lanzó un PowerShell 25 ms después de empezar el resolve (17:17:29,536 → 17:17:29,561): el
@@ -28,7 +28,7 @@ public sealed class TzDc2WorkerDelCoreTests
     private const string SwitcherInput =
         """{"ok":true,"error":"","content":true,"focused":{"kind":"Edit","name":"Quick switcher","editable":true,"id":"42.9.3","dialog":true}}""";
     private const string RecipientRow =
-        """{"ok":true,"error":"","content":true,"focused":{"kind":"ListItem","name":"Ron92 .wolfsoultm.4191","editable":false,"id":"42.9.8","dialog":true}}""";
+        """{"ok":true,"error":"","content":true,"focused":{"kind":"ListItem","name":"Nube77 .nubecita.0001","editable":false,"id":"42.9.8","dialog":true}}""";
 
     private static readonly TimeSpan Poll = TimeSpan.FromMilliseconds(5);
 
@@ -75,7 +75,7 @@ public sealed class TzDc2WorkerDelCoreTests
         WindowsDesktopMessagingAutomation.InputWait input = await WindowsDesktopMessagingAutomation.AwaitOpenedInputAsync(
             read, before, WindowsDesktopMessagingAutomation.SearchInputBudget, Poll, CancellationToken.None);
         (bool named, _) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
-            read, name => name.Contains("Ron92", StringComparison.Ordinal), Poll, CancellationToken.None);
+            read, name => name.Contains("Nube77", StringComparison.Ordinal), Poll, CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -150,9 +150,11 @@ public sealed class TzDc2WorkerDelCoreTests
             WindowsVisibleControlAdapter visible = adapters.OfType<WindowsVisibleControlAdapter>().Single();
             DesktopMessagingAdapter messaging = adapters.OfType<DesktopMessagingAdapter>().Single();
             object automation = Field<object>(messaging, "_automation");
-            object probe = automation.GetType()
-                .GetProperty("Probe", BindingFlags.Instance | BindingFlags.NonPublic)!
-                .GetValue(automation)!;
+            object probe = Field<object>(
+                automation.GetType()
+                    .GetProperty("Probe", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .GetValue(automation)!,
+                "_reads");
 
             Assert.Multiple(() =>
             {

@@ -21,6 +21,8 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class AppOpenHandlerTests
 {
+    // Ajuste c4 (banco ciego c3, causa 4): what was asked is said, and no other application: placeIn named the ones that
+    // have the place, and the model opened one of them (C3-089: Epic Games Launcher for Luanti's «game»).
     [Test]
     public async Task APlaceOfAnotherApplicationIsRefusedWithWhatWasAsked()
     {
@@ -34,38 +36,40 @@ public sealed class AppOpenHandlerTests
             Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_of_application"));
             Assert.That(outcome.Result!.Value.GetProperty("appId").GetString(), Is.EqualTo("Paint"));
             Assert.That(outcome.Result!.Value.GetProperty("place").GetString(), Is.EqualTo("library"));
-            Assert.That(outcome.Result!.Value.GetProperty("placeIn").EnumerateArray().Select(name => name.GetString()),
-                Does.Contain("Steam"));
+            Assert.That(outcome.Result!.Value.TryGetProperty("placeIn", out _), Is.False);
             Assert.That(provider.Calls, Is.Zero);
         });
     }
 
-    // Renew al máximo (E014, int2 s1): refused «Configuración del sistema» with place sound, the model took placeIn
-    // («Configuración») for a value of place, then opened msconfig with no place. With the aid app_places, the refusal
-    // says which application the place is of and the opening that reaches it; with BAXY_AYUDAS=none, the facts alone.
-    [TestCase("all", true)]
-    [TestCase("none", false)]
-    public async Task APlaceOfAnotherApplicationSaysTheOpeningThatReachesIt(string aids, bool hint)
+    // Ajuste c4 (banco ciego c3, causa 4: C3-051, C3-052, C3-089, C3-092): the refusal sent the model to the application
+    // that has the place («app_open with appId "Configuración" and place "captions"» for LibreOffice Writer, Epic Games
+    // Launcher for Luanti's «game»), and the one asked for never opened. With the aid app_places it says how the
+    // application named opens, and its own places when it has some; never another application. With BAXY_AYUDAS=none,
+    // the facts alone. The application the person's words name instead is SaidApplication's (aid place_owner), which
+    // knows those words.
+    // Encargo 34: the call that opens it comes first, with its argument written, and what this one did not open last.
+    [TestCase("all", "LibreOffice Writer", "captions", "app_open {\"appId\":\"LibreOffice Writer\"} opens LibreOffice "
+        + "Writer itself; this call opened nothing: captions is not a place of LibreOffice Writer")]
+    [TestCase("all", "Luanti", "game", "app_open {\"appId\":\"Luanti\"} opens Luanti itself; this call opened nothing: "
+        + "game is not a place of Luanti")]
+    [TestCase("all", "Spotify", "library", "app_open {\"appId\":\"Spotify\"} opens Spotify itself; it also opens "
+        + "straight at a place of its own, by app_open with place: home, results (placeValue: what to search), search; "
+        + "this call opened nothing: library is not a place of Spotify")]
+    [TestCase("none", "LibreOffice Writer", "captions", null)]
+    public async Task APlaceOfAnotherApplicationSaysHowTheNamedOneOpens(
+        string aids, string appId, string place, string? hint)
     {
         using IDisposable setting = ModelAids.Use(aids);
-        var provider = new VerifiedOpening(@"C:\WINDOWS\system32\msconfig.exe");
+        var provider = new VerifiedOpening(@"C:\Program Files\Applicationpplication.exe");
 
         OperationOutcome outcome = await Handler(provider).ExecuteAsync(
-            Invocation("""{"appId":"Configuración del sistema","place":"sound"}"""), CancellationToken.None);
+            Invocation(JsonSerializer.Serialize(new { appId, place })), CancellationToken.None);
         JsonElement result = outcome.Result!.Value;
 
         Assert.Multiple(() =>
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo("place_not_of_application"));
-            Assert.That(result.GetProperty("placeIn").EnumerateArray().Select(name => name.GetString()),
-                Is.EqualTo(new[] { "Configuración" }));
-            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
-            if (hint)
-            {
-                Assert.That(next.GetString(), Is.EqualTo("nothing was opened. app_open with appId \"Configuración\" "
-                    + "and place \"sound\" opens sound, a place of Configuración, not of Configuración del sistema"));
-            }
-
+            Assert.That(result.TryGetProperty("next", out JsonElement next) ? next.GetString() : null, Is.EqualTo(hint));
             Assert.That(provider.Calls, Is.Zero);
         });
     }
@@ -172,6 +176,26 @@ public sealed class AppOpenHandlerTests
             Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
             Assert.That(outcome.Result!.Value.GetProperty("window").GetInt64(), Is.EqualTo(777));
             Assert.That(outcome.Result!.Value.GetProperty("windowId").GetString(), Is.EqualTo("w-777"));
+        });
+    }
+
+    // Encargo 98: the New command raised a dialog instead of a document: the failure says which, and whether it was closed.
+    [TestCase(true, "which was closed again")]
+    [TestCase(false, "which is still open")]
+    public async Task ADialogMetInsteadOfTheNewDocumentIsSaid(bool closed, string said)
+    {
+        var provider = new DialogMet(new ApplicationDialogMet("Abrir", closed));
+
+        OperationOutcome outcome = await Handler(provider)
+            .ExecuteAsync(Invocation("""{"appId":"Bloc de notas","newDocument":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("new_document_not_created"));
+            JsonElement dialog = outcome.Result!.Value.GetProperty("dialogOpened");
+            Assert.That(dialog.GetProperty("title").GetString(), Is.EqualTo("Abrir"));
+            Assert.That(dialog.GetProperty("closed").GetBoolean(), Is.EqualTo(closed));
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Does.Contain("«Abrir»").And.Contain(said));
         });
     }
 
@@ -346,18 +370,19 @@ public sealed class AppOpenHandlerTests
     // instance it reused), and where the model can look before telling the person: after a launch whose window was not
     // verified, or a launch Windows did not take. Only the facts of the provider's receipt; with BAXY_AYUDAS=none, or
     // another aid alone, it is the result it was.
+    // Encargo 34: the look comes first, as the call with its argument written.
     [TestCase("all", "verification_failed", true, false, true,
-        "a launch of Bloc de notas was issued and no window of it was verified; window_application_status can tell "
-        + "whether one shows now, before saying it opened or not")]
+        "window_application_status {\"name\":\"Bloc de notas\"} tells whether a window of Bloc de notas shows now, "
+        + "before saying it opened or not; a launch of Bloc de notas was issued and no window of it was verified")]
     [TestCase("open_recovery", "verification_failed", false, false, true,
-        "no window of Bloc de notas was verified; window_application_status can tell whether one shows now, before "
-        + "saying it opened or not")]
+        "window_application_status {\"name\":\"Bloc de notas\"} tells whether a window of Bloc de notas shows now, "
+        + "before saying it opened or not; no window of Bloc de notas was verified")]
     [TestCase("all", "inventory_failed", false, true, true,
-        "Bloc de notas was already running and no window of it was verified; window_application_status can tell "
-        + "whether one shows now, before saying it opened or not")]
+        "window_application_status {\"name\":\"Bloc de notas\"} tells whether a window of Bloc de notas shows now, "
+        + "before saying it opened or not; Bloc de notas was already running and no window of it was verified")]
     [TestCase("all", "launch_failed", false, false, true,
-        "the launch of Bloc de notas was not issued (Windows did not take it); window_application_status can tell "
-        + "whether it is open already")]
+        "window_application_status {\"name\":\"Bloc de notas\"} tells whether Bloc de notas is open already; the "
+        + "launch of Bloc de notas was not issued (Windows did not take it)")]
     [TestCase("all", "inventory_failed", false, false, true, null)]
     [TestCase("all", "new_document_not_created", true, false, true, null)]
     [TestCase("none", "verification_failed", true, false, false, null)]
@@ -387,6 +412,23 @@ public sealed class AppOpenHandlerTests
 
     // Renew al máximo (velocidad, E014): an opening that ended on its application's frame shown empty says so, as a fact
     // with the aids on or off, and the hint says what was seen instead of a window, never that it opened.
+    // uso-108 C12: the code a process of the launch died of is said beside the failure, only then.
+    [Test]
+    public async Task AnOpeningWhoseProcessDiedSaysItsCode()
+    {
+        OperationOutcome died = await Handler(new FailedOpening("verification_failed", true, false, exitedWithError: "0xC0000135"))
+            .ExecuteAsync(Invocation("""{"appId":"Programa"}"""), CancellationToken.None);
+        OperationOutcome waited = await Handler(new FailedOpening("verification_failed", true, false))
+            .ExecuteAsync(Invocation("""{"appId":"Programa"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(died.ErrorCode, Is.EqualTo("verification_failed"));
+            Assert.That(died.Result!.Value.GetProperty("exitedWithError").GetString(), Is.EqualTo("0xC0000135"));
+            Assert.That(waited.Result!.Value.TryGetProperty("exitedWithError", out _), Is.False);
+        });
+    }
+
     [TestCase("all", true)]
     [TestCase("none", false)]
     public async Task AnOpeningEndedOnAnEmptyFrameSaysWhatItSaw(string aids, bool hint)
@@ -427,6 +469,60 @@ public sealed class AppOpenHandlerTests
             Assert.That(outcome.Result!.Value.GetProperty("candidates").EnumerateArray().Select(name => name.GetString()),
                 Is.EqualTo(new[] { "Bloc de notas" }));
             Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
+    // Banco de entorno del NB (R17: «Opera GX» → app_not_found with «Navegador Opera GX» among the candidates; two of three
+    // runs gave up there). The one installed name that holds the name asked leads the next as the call, with the model's
+    // other arguments as written; nothing was opened. With the aid off, or no holder, no such next.
+    [TestCase("all", "Navegador Opera GX", true)]
+    [TestCase("none", "Navegador Opera GX", false)]
+    [TestCase("all", null, false)]
+    public async Task ANameOneInstalledNameHoldsLeadsWithTheCallThatNamesIt(string aids, string? holder, bool told)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        var opening = new FailedOpening("app_not_found", false, false, ["Navegador Opera GX", "Opera Mail"])
+        {
+            NameHolder = holder,
+        };
+
+        OperationOutcome outcome = await Handler(opening)
+            .ExecuteAsync(Invocation("""{"appId":"Opera GX","foreground":true,"forControl":true}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_not_found"));
+            bool hasNext = outcome.Result!.Value.TryGetProperty("next", out JsonElement next);
+            Assert.That(hasNext, Is.EqualTo(told));
+            if (told)
+                Assert.That(next.GetString(), Does.StartWith(
+                    """app_open {"appId":"Navegador Opera GX","foreground":true,"forControl":true} opens Navegador Opera GX"""));
+        });
+    }
+
+    // Encargo 18 (banco de uso, U08/U14/U15: «Calculator» ambiguous, asked again the same until the calls ran out): an
+    // ambiguous opening says its candidates and that each, written as it is there, is an appId the opening takes; a
+    // candidate's identity with a path's signs reaches the provider (it was refused as invalid_application before it).
+    [Test]
+    public async Task AnAmbiguousOpeningSaysEachCandidateIsAnAppIdItTakes()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        string[] candidates = [@"Vortex (C:\Herramientas\Vortex\vortex.exe)", "Vortex (Nexus.Vortex_b2c3d4!App)"];
+
+        OperationOutcome ambiguous = await Handler(new FailedOpening("app_ambiguous", false, false, candidates))
+            .ExecuteAsync(Invocation("""{"appId":"Vortex"}"""), CancellationToken.None);
+        OperationOutcome byPath = await Handler(new FailedOpening("app_not_found", false, false))
+            .ExecuteAsync(Invocation("""{"appId":"C:\\Herramientas\\Vortex\\vortex.exe"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ambiguous.ErrorCode, Is.EqualTo("app_ambiguous"));
+            Assert.That(ambiguous.Result!.Value.GetProperty("candidates").EnumerateArray().Select(name => name.GetString()),
+                Is.EqualTo(candidates));
+            Assert.That(ambiguous.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(
+                "nothing was opened: more than one installed application answers to Vortex; app_open with appId set to "
+                + "one of candidates, written exactly as it is there, opens that one"));
+            Assert.That(byPath.ErrorCode, Is.EqualTo("app_not_found"));
         });
     }
 
@@ -510,6 +606,40 @@ public sealed class AppOpenHandlerTests
         });
     }
 
+    // Banco de uso 2026-11-03 (U33): a game's store page asked for on a PC without the store's client failed app_not_found
+    // although the store has the page on the web. A place whose data declare its web page says it, filled with the game
+    // found, and what opens it; nothing is opened.
+    [Test]
+    public async Task AGamePageWithNoClientSaysItsPageOnTheWeb()
+    {
+        var opened = new List<string>();
+        var titles = new FoundTitles(new GameTitle("1234561", "Granja Inventada"));
+        var handler = new AppOpenHandler(
+            new FailedOpening("app_not_found", false, false),
+            new LaunchProvenance(static _ => null, new PersonInputLedger(static () => true, static () => true, static () => 1)),
+            new RecordedPlace(opened),
+            frontOf: static _ => new OpenedWindowFront(true, "steamwebhelper"),
+            games: titles);
+        var page = new GameStoreHandler("game.store.page", "game", "title", handler.ExecuteAsync);
+
+        OperationOutcome outcome = await page.ExecuteAsync(Invocation("""{"title":"granja inventada"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_not_found"));
+            Assert.That(outcome.Result!.Value.GetProperty("placeWebUrl").GetString(),
+                Is.EqualTo("https://store.steampowered.com/app/1234561"));
+            Assert.That(outcome.Result!.Value.GetProperty("placeGame").GetProperty("name").GetString(),
+                Is.EqualTo("Granja Inventada"));
+            // Encargo 28 (U33): the call that opens it comes first, written with its address; nothing opened, after it.
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Does.StartWith(
+                "browser_navigate_set {\"url\":\"https://store.steampowered.com/app/1234561\"} opens this place's page")
+                .And.Contain("this call opened nothing"));
+            Assert.That(opened, Is.Empty);
+        });
+    }
+
     // Renew al máximo (auditoría de flujos): a title search that got no answer (no network) opens nothing and says so,
     // never that no game bears the title.
     [Test]
@@ -527,11 +657,11 @@ public sealed class AppOpenHandlerTests
         });
     }
 
-    // BAXY Renew cu (aid app_places): opened with no place, an application with places of its own names them and what
-    // each takes; with BAXY_AYUDAS=none it is the result it was.
-    [TestCase("all", true)]
-    [TestCase("none", false)]
-    public async Task AnOpeningWithNoPlaceNamesThePlacesItsApplicationOpensAt(string aids, bool hint)
+    // Uso real 04-11 (F26): an opening with no place listed the application's places in its result, and one of them was
+    // told as where it opened. It names none, aids on or off; a place asked for still says it was only asked for.
+    [TestCase("all")]
+    [TestCase("none")]
+    public async Task AnOpeningWithNoPlaceNamesNoPlace(string aids)
     {
         using IDisposable setting = ModelAids.Use(aids);
 
@@ -541,12 +671,39 @@ public sealed class AppOpenHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
-            Assert.That(outcome.Result!.Value.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
-            if (hint)
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+            Assert.That(outcome.Result!.Value.GetRawText(), Does.Not.Contain("community"));
+        });
+    }
+
+    // Encargo 80: asked to open Settings and say whether the mode is light or dark, the model walked its pages and told a
+    // theme's name as the mode. An application whose data declare a read says that call first, opened with no place.
+    [TestCase("all", "{\"appId\":\"Settings\"}", true)]
+    [TestCase("all", "{\"appId\":\"Configuración\"}", true)]
+    [TestCase("all", "{\"appId\":\"Settings\",\"place\":\"sound\"}", false)]
+    [TestCase("none", "{\"appId\":\"Settings\"}", false)]
+    public async Task AnOpeningWithNoPlaceSaysTheReadItsApplicationsDataDeclare(string aids, string call, bool said)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+
+        OperationOutcome outcome = await SteamHandler([], new FoundTitles(null)).ExecuteAsync(
+            Invocation(call), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            string next = outcome.Result!.Value.TryGetProperty("next", out JsonElement written)
+                ? written.GetString()!
+                : string.Empty;
+            if (said)
             {
-                Assert.That(next.GetString(), Is.EqualTo("Steam also opens straight at a place of its own, by app_open "
-                    + "with place: community, game (placeValue: the game's name), library, results (placeValue: what to "
-                    + "search), store"));
+                Assert.That(next, Does.StartWith("system_settings_status {\"setting\":\"color_mode\"} reads Windows' light "
+                    + "or dark mode"));
+                Assert.That(next, Does.Not.Contain("place"));
+            }
+            else
+            {
+                Assert.That(next, Does.Not.Contain("system_settings_status"));
             }
         });
     }
@@ -985,9 +1142,12 @@ public sealed class AppOpenHandlerTests
 
     /// <summary>An opening that failed with a code, as the provider's receipt tells it.</summary>
     private sealed class FailedOpening(
-        string code, bool launchIssued, bool reused, IReadOnlyList<string>? candidates = null, bool emptyFrame = false)
+        string code, bool launchIssued, bool reused, IReadOnlyList<string>? candidates = null, bool emptyFrame = false,
+        string? exitedWithError = null)
         : IApplicationOpenProvider
     {
+        internal string? NameHolder { get; init; }
+
         public ValueTask<ApplicationOpenResult> OpenAsync(
             ApplicationOpenRequest request,
             CancellationToken cancellationToken)
@@ -998,11 +1158,28 @@ public sealed class AppOpenHandlerTests
                 WindowHandle: null, code);
             return ValueTask.FromResult(new ApplicationOpenResult(
                 Succeeded: launchIssued || reused, Verified: false, request.ApplicationId, AlreadyRunning: reused,
-                ProcessId: null, WindowHandle: null, code, receipt, Candidates: candidates, EmptyFrame: emptyFrame));
+                ProcessId: null, WindowHandle: null, code, receipt, Candidates: candidates, EmptyFrame: emptyFrame,
+                NameHolder: NameHolder, ExitedWithError: exitedWithError));
         }
     }
 
     /// <summary>A window of a program already running, verified for the opening asked.</summary>
+    private sealed class DialogMet(ApplicationDialogMet dialog) : IApplicationOpenProvider
+    {
+        public ValueTask<ApplicationOpenResult> OpenAsync(
+            ApplicationOpenRequest request,
+            CancellationToken cancellationToken)
+        {
+            var receipt = new ApplicationLaunchReceipt(
+                request.InvocationId, request.ApplicationId, LaunchIssued: true, ReusedExisting: false,
+                ProcessId: 4242, ProcessCreationTimeUtcTicks: 638900000000000000, @"C:\Programas\editor.exe",
+                PackageFamilyName: null, PackageFullName: null, WindowHandle: 777, ErrorCode: "new_document_not_created");
+            return ValueTask.FromResult(new ApplicationOpenResult(
+                Succeeded: true, Verified: false, request.ApplicationId, AlreadyRunning: false,
+                ProcessId: 4242, WindowHandle: 777, ErrorCode: "new_document_not_created", receipt, DialogOpened: dialog));
+        }
+    }
+
     private sealed class VerifiedOpening(
         string executablePath, bool running = true, long created = 638900000000000000) : IApplicationOpenProvider
     {

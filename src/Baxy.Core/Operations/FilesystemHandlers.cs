@@ -221,9 +221,13 @@ internal static class FilesystemResultJson
             writer.WriteString("folder", "baxy_work");
             if (result.Count == 0)
             {
-                writer.WriteString("next", (query is null ? "BAXY's own working folder holds nothing here"
-                        : $"nothing named {query} in BAXY's own working folder")
-                    + "; the person's folders (their home and everything under it) were not looked at: file_find looks there");
+                // Encargo 34: with a name asked, the call that looks for it there comes first, with it written.
+                writer.WriteString("next", query is null
+                    ? "BAXY's own working folder holds nothing here; the person's folders (their home and everything "
+                        + "under it) were not looked at: file_find looks there"
+                    : $"{WireNames.Call("file.find", new() { ["query"] = query })} looks in the person's folders (their "
+                        + $"home and everything under it), which were not looked at; nothing named {query} in BAXY's own "
+                        + "working folder");
             }
         }
     });
@@ -252,6 +256,7 @@ internal static class FilesystemResultJson
         // Renew al máximo (w8): a folder of the path this write made, so a subfolder named wrong is not told as the
         // person's existing one.
         if (result.FolderCreated is not null) writer.WriteString("folderCreated", result.FolderCreated);
+        if (result.Format is not null) writer.WriteString("format", result.Format);
     });
 
     public static JsonElement Backup(BackupReceipt result) => Write(writer =>

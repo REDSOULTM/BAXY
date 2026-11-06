@@ -34,8 +34,11 @@ internal sealed class PresenceHost : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         StartHidden = WindowsAutostartRegistration.IsStartHidden(arguments);
+        FieldSettings settings = FieldSettings.CreateDefault();
+        // The interface's language the view chose last time, before the tray and the start's screen say anything.
+        UiLanguage.Use(settings.Language);
         // The owner may switch the sign-in start off in Settings; then it is never written back on its own.
-        if (FieldSettings.CreateDefault().AutostartWanted)
+        if (settings.AutostartWanted)
         {
             _autostart.EnsureRegistered(arguments);
         }

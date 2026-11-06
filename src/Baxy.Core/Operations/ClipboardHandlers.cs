@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Clipboard;
 
@@ -34,8 +36,23 @@ internal abstract class ClipboardHandlerBase(IClipboardProvider provider) : IOpe
         }
         catch (ClipboardProviderException exception)
         {
-            return OperationOutcome.Failure(exception.Code, effectMayHaveOccurred: exception.EffectMayHaveOccurred);
+            return OperationOutcome.Failure(
+                exception.Code,
+                result: HoldsFacts(exception.Holds),
+                effectMayHaveOccurred: exception.EffectMayHaveOccurred);
         }
+    }
+
+    // B11: a clipboard with no text is not told as an empty one. An empty one adds nothing to the code it always had.
+    private static JsonElement? HoldsFacts(ClipboardHolds? holds)
+    {
+        if (holds is null)
+            return null;
+        var facts = new JsonObject { ["holds"] = holds.Kind };
+        if (holds.Count is { } count)
+            facts["count"] = count;
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
     }
 
     protected abstract ValueTask<OperationOutcome> ExecuteCoreAsync(
@@ -66,15 +83,28 @@ internal sealed class ClipboardReadTextHandler(IClipboardProvider provider)
         ClipboardTextSnapshot snapshot = await Provider.ReadTextAsync(
             arguments.MaxCharacters ?? 6_000,
             cancellationToken).ConfigureAwait(false);
+        // Banco de uso 05-11 (S07): what the model reads is the clipboard without what its owner marked private or what looks
+        // like a key by its form, and it says so; a paste goes on with the real text, which never passes through the model.
+        int secretParts = 0;
+        string shown = snapshot.MarkedPrivate ? SecretShape.Shown : SecretShape.Mask(snapshot.Text, out secretParts);
         var result = new ClipboardReadResult(
-            snapshot.Text,
+            shown,
             snapshot.CharacterCount,
             snapshot.Truncated,
-            snapshot.SequenceNumber);
+            snapshot.SequenceNumber,
+            secretParts > 0 ? SecretLike(secretParts) : null,
+            snapshot.MarkedPrivate ? MarkedPrivate : null);
         return OperationOutcome.Success(JsonSerializer.SerializeToElement(
             result,
             CoreJsonContext.Default.ClipboardReadResult));
     }
+
+    private const string MarkedPrivate = "the application that copied this marked it to be left out of clipboard monitors, as "
+        + "password managers do: its text is not given here, so it is not read aloud; say that";
+
+    private static string SecretLike(int parts) =>
+        $"«{SecretShape.Shown}» stands for {(parts == 1 ? "1 part that looks" : $"{parts} parts that look")} like a key or a "
+        + "password by the form: the characters are not given here, so they are not read aloud; say that they are there";
 }
 
 internal sealed class ClipboardWriteTextHandler(IClipboardProvider provider)
@@ -133,7 +163,9 @@ internal sealed record ClipboardReadResult(
     string Text,
     int CharacterCount,
     bool Truncated,
-    uint SequenceNumber);
+    uint SequenceNumber,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? SecretLike,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? MarkedPrivate);
 
 internal sealed record ClipboardWriteOutcome(
     uint SequenceNumber,

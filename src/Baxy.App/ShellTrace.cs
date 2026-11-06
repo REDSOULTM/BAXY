@@ -36,6 +36,9 @@ internal static class ShellTraceStages
     /// <summary>r22: the mind did not come up; the detail is its stable cause (never the server's lines).</summary>
     internal const string StartupMindFailed = "startup.mind.failed";
 
+    /// <summary>Uso 85: with the person's Sí, an unreadable profile was set aside and a new one starts.</summary>
+    internal const string StartupProfileSetAside = "startup.profile.set_aside";
+
     internal const string SubmitReceived = "submit.received";
     internal const string BridgeCrossed = "bridge.crossed";
     internal const string QueueWaitEnd = "queue.wait.end";

@@ -29,6 +29,11 @@ public sealed class BluetoothPairingDeadlineTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("bluetooth_pairing_not_confirmed"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.True);
             Assert.That(receipt.Result!.Value.GetProperty("pairingConfirmed").GetBoolean(), Is.False);
+            // Encargo 34: the list that shows it comes first, as the call the model makes.
+            Assert.That(receipt.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(
+                "bluetooth_device_list {} shows whether it is paired; Windows did not confirm the pairing in time (its "
+                + "pairing dialog may be waiting for an answer), and if that dialog is still open the device may still "
+                + "pair"));
             Assert.That(pairing.Canceled, Is.True, "the unanswered pairing is given up");
         });
     }

@@ -399,10 +399,10 @@ public sealed class ComputerUseClickMethodTests
             // The worker takes SendInput out of the UI Automation client's imports (UiaQuietInputTests). Its own only
             // input is the front keeper's bid: one key-only INPUT of its hotkey, with BAXY's mark, which the system takes
             // as the hotkey and never delivers to a window (UiaSinFrenteLiveCheck logs what the person's window gets).
-            Assert.That(Regex.Matches(script, @"extern\s+\S+\s+SendInput\s*\(").Count, Is.EqualTo(1));
+            Assert.That(Regex.Count(script, @"extern\s+\S+\s+SendInput\s*\("), Is.EqualTo(1));
             Assert.That(script, Does.Contain("SendInput(uint count, BidInput[] inputs"));
-            Assert.That(Regex.Matches(script, @"[^.\w]SendInput\(1, keys,").Count, Is.EqualTo(1));
-            Assert.That(Regex.Matches(script, @"[^.\w\x22]SendInput\(").Count, Is.EqualTo(2), "the declaration and the bid");
+            Assert.That(Regex.Count(script, @"[^.\w]SendInput\(1, keys,"), Is.EqualTo(1));
+            Assert.That(Regex.Count(script, @"[^.\w\x22]SendInput\("), Is.EqualTo(2), "the declaration and the bid");
             Assert.That(script, Does.Contain("keys[0].Type = 1;").And.Contain("keys[0].Extra = new IntPtr(0x42415859)"));
             Assert.That(script, Does.Not.Contain("keybd_event"));
             Assert.That(script, Does.Contain("visible_click_needs_pointer"));
@@ -938,8 +938,7 @@ public sealed class ComputerUseClickMethodTests
         // Review of fix 2: the click by identity no longer brings the view's window forward. When the identity went
         // stale, the cascade by label must stay on that window (behind, here: an off-screen window that takes no
         // activation) and never read or press the window the person has in front.
-        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY click fixture", 0x90000000u,
-            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        nint window = PumpedWindow.Create("BAXY click fixture");
         Assert.That(window, Is.Not.EqualTo(nint.Zero));
         try
         {
@@ -974,7 +973,7 @@ public sealed class ComputerUseClickMethodTests
         }
         finally
         {
-            _ = DestroyWindow(window);
+            PumpedWindow.Destroy(window);
         }
     }
 
@@ -986,10 +985,11 @@ public sealed class ComputerUseClickMethodTests
         // BAXY; the click said «nothing on the screen is called that». Every click route now asks first and answers
         // window_elevated without a look, an OCR, a tooltip or a pointer. Counter-case: a window that is not elevated
         // (Calculator) is clicked as before.
-        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY elevated fixture", 0x90000000u,
-            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        // Uso-108: a window of its own process that pumps. This test's thread blocks on the result below, and a STATIC of
+        // that thread answers no message from the adapter's continuation: rightly window_not_responding.
+        using StallingWindow fixture = StallingWindow.Open(visible: false);
+        nint window = fixture.Handle;
         Assert.That(window, Is.Not.EqualTo(nint.Zero));
-        try
         {
             var worker = new ComputerUsePerceptionTests.ScriptedUiaWorker(
                 "{\"version\":2,\"ok\":false,\"effectObserved\":false,\"error\":\"visible_button_not_found\"," +
@@ -1025,10 +1025,6 @@ public sealed class ComputerUseClickMethodTests
                 }
             });
         }
-        finally
-        {
-            _ = DestroyWindow(window);
-        }
     }
 
     [Test]
@@ -1037,8 +1033,7 @@ public sealed class ComputerUseClickMethodTests
         // Ronda B (falta 1): the worker took the press and its answer never came (no receipt): the control may have been
         // pressed and nothing says which. No OCR, vision, tooltip or later look runs after it (each could press it, or
         // its twin, again); the receipt says the effect is uncertain. The window is this test's own, off the screen.
-        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY unanswered fixture", 0x90000000u,
-            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        nint window = PumpedWindow.Create("BAXY unanswered fixture");
         Assert.That(window, Is.Not.EqualTo(nint.Zero));
         try
         {
@@ -1069,7 +1064,7 @@ public sealed class ComputerUseClickMethodTests
         }
         finally
         {
-            _ = DestroyWindow(window);
+            PumpedWindow.Destroy(window);
         }
     }
 
@@ -1078,8 +1073,7 @@ public sealed class ComputerUseClickMethodTests
     {
         // Ronda B (fault 3): the bar at the button's point answered another window or button, and the worker sent nothing
         // («visible_control_covered»): the receipt is before any effect, never «it may have been pressed».
-        nint window = CreateWindowEx(0x08000080, "STATIC", "BAXY covered fixture", 0x90000000u,
-            -31000, -31000, 200, 120, 0, 0, 0, 0);
+        nint window = PumpedWindow.Create("BAXY covered fixture");
         Assert.That(window, Is.Not.EqualTo(nint.Zero));
         try
         {
@@ -1105,7 +1099,7 @@ public sealed class ComputerUseClickMethodTests
         }
         finally
         {
-            _ = DestroyWindow(window);
+            PumpedWindow.Destroy(window);
         }
     }
 
@@ -1150,17 +1144,7 @@ public sealed class ComputerUseClickMethodTests
         }
     }
 
-    [DllImport("user32.dll", EntryPoint = "CreateWindowExW",
-        CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-    private static extern nint CreateWindowEx(uint extendedStyle, string className,
-        string title, uint style, int x, int y, int width, int height,
-        nint parent, nint menu, nint instance, nint parameter);
-
-    [DllImport("user32.dll", ExactSpelling = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool DestroyWindow(nint window);
-
-    [DllImport("user32.dll", ExactSpelling = true)]
+[DllImport("user32.dll", ExactSpelling = true)]
     private static extern nint GetForegroundWindow();
 
     private static string Pending(string name, string method) =>
@@ -1239,7 +1223,7 @@ public sealed class ComputerUseClickMethodTests
             $tokens=$null;$errors=$null
             $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_CLICK_WORKER,[ref]$tokens,[ref]$errors)
             if($errors.Count -gt 0){ throw 'worker does not parse' }
-            foreach($name in @('Select-ClickMethods','Invoke-NamedControl','Select-Element','Test-PlaceMoved','Get-SteadyPlace','Test-PlaceTooDear','Wait-PlaceMoved','Get-PressPoint','Get-CurrentRect','Test-NameMatch','Get-LabelFolded','Get-Folded','Test-NameHolds','Test-NamesLabel','Select-PointHolders','Test-HoldsPressed','Get-RenderHosts','Send-RenderPress','Test-HitIsElement','Test-HitLeavesElement','Test-HitNamesLabel')){
+            foreach($name in @('Select-ClickMethods','Invoke-NamedControl','Select-Element','Invoke-QuietPattern','Test-PlaceMoved','Get-SteadyPlace','Test-PlaceTooDear','Wait-PlaceMoved','Get-PressPoint','Get-ClickablePointOf','Get-ScrollViewport','Get-VisiblePart','Get-PressCandidates','Get-PointVerdict','Get-PointerPoint','Test-TopIconic','Test-PointOnScreen','Get-CurrentRect','Test-NameMatch','Get-LabelFolded','Get-Folded','Test-NameHolds','Test-NamesLabel','Select-PointHolders','Test-HoldsPressed','Get-RenderHosts','Send-RenderPress','Test-HitIsElement','Test-HitLeavesElement','Test-HitNamesLabel')){
               $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq $name },$true))
               if($found.Count -ne 1){ throw ('function missing: '+$name) }
               . ([scriptblock]::Create($found[0].Extent.Text))
@@ -1288,7 +1272,7 @@ public sealed class ComputerUseClickMethodTests
 
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();
@@ -1332,7 +1316,7 @@ public sealed class ComputerUseClickMethodTests
             start.Environment["BAXY_CLICK_CASES"] = casesFile;
             using Process process = Process.Start(start)!;
             Task<string> error = process.StandardError.ReadToEndAsync();
-            string output = process.StandardOutput.ReadToEnd();
+            string output = ChildOutput.Read(process);
             Assert.That(process.WaitForExit(60_000), Is.True, "the rule answers");
             Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
             return output.Trim();

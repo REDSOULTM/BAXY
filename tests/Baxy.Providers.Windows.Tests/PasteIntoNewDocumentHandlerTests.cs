@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -164,6 +165,182 @@ public sealed class PasteIntoNewDocumentHandlerTests
             Assert.That(outcome.CauseCode, Is.EqualTo("paste_window_unknown"));
             Assert.That(outcome.EffectMayHaveOccurred, Is.True);
             Assert.That(paste.Arguments, Is.Empty);
+        });
+    }
+
+    // Encargo 94 (verificación en vivo 84, F3: 0 of 6): a window open under the name given takes the paste as it is:
+    // nothing is opened, and no new document is made.
+    [Test]
+    public async Task AWindowOpenUnderTheNameTakesThePasteAndNothingIsOpened()
+    {
+        var paste = new RecordingPaste();
+        int opened = 0;
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => { opened++; return ValueTask.FromResult(OperationOutcome.Success(Element("""{"windowHandle":1}"""))); },
+            destination: (_, _) => ValueTask.FromResult(PasteDestination.OpenWindow(4242)));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Cuaderno Lumbre"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(opened, Is.Zero);
+            Assert.That(paste.Arguments, Is.EqualTo(new[] { """{"window":4242}""" }));
+        });
+    }
+
+    // A paste that fails in the window named is that failure: no application was opened, so none is told.
+    [Test]
+    public async Task APasteThatFailsInTheWindowNamedSaysNoApplicationWasOpened()
+    {
+        var paste = new RecordingPaste(OperationOutcome.Failure("clipboard_empty"));
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => throw new InvalidOperationException("nothing is opened"),
+            destination: (_, _) => ValueTask.FromResult(PasteDestination.OpenWindow(4242)));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Cuaderno Lumbre"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("clipboard_empty"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(outcome.Result?.ValueKind == JsonValueKind.Object
+                && outcome.Result.Value.TryGetProperty("applicationOpened", out _), Is.False);
+        });
+    }
+
+    // Encargo 94 (verificación en vivo 84, F2): «pega…» with a browser's name opened the real browser of the person, with
+    // their session, and left the text in its address bar. A browser is not opened: the document is the PC's text editor,
+    // and the receipt says which, and what was asked.
+    [Test]
+    public async Task ABrowserIsNotOpenedAndTheReceiptSaysWhichEditorTookThePaste()
+    {
+        var opened = new List<string>();
+        var paste = new RecordingPaste();
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (invocation, _) =>
+            {
+                opened.Add(invocation.Arguments.GetProperty("appId").GetString()!);
+                return ValueTask.FromResult(OperationOutcome.Success(Element("""{"windowHandle":4242}""")));
+            },
+            destination: (_, _) => ValueTask.FromResult(PasteDestination.EditorForBrowser("Editor Lumbre")));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Navegador Nimbo"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(opened, Is.EqualTo(new[] { "Editor Lumbre" }));
+            Assert.That(paste.Arguments, Is.EqualTo(new[] { """{"window":4242}""" }));
+            JsonElement facts = outcome.Result!.Value;
+            Assert.That(facts.GetProperty("pasted").GetBoolean(), Is.True);
+            Assert.That(facts.GetProperty("textEditor").GetString(), Is.EqualTo("Editor Lumbre"));
+            Assert.That(facts.GetProperty("browserNotOpened").GetString(), Is.EqualTo("Navegador Nimbo"));
+            Assert.That(facts.GetProperty("next").GetString(), Does.Contain("Editor Lumbre").And.Contain("Navegador Nimbo"));
+        });
+    }
+
+    // Live: told only new_document_not_created, the model opened the browser itself by app_open. The failure says the
+    // browser was not opened, and why; what failed was the editor's document.
+    [Test]
+    public async Task AnEditorThatFailsSaysTheBrowserWasNotOpenedAndWhy()
+    {
+        var paste = new RecordingPaste();
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => ValueTask.FromResult(OperationOutcome.Failure("new_document_not_created", effectMayHaveOccurred: true)),
+            destination: (_, _) => ValueTask.FromResult(PasteDestination.EditorForBrowser("Editor Lumbre")));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Navegador Nimbo"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("new_document_not_created"));
+            Assert.That(paste.Arguments, Is.Empty);
+            JsonElement facts = outcome.Result!.Value;
+            Assert.That(facts.GetProperty("browserNotOpened").GetString(), Is.EqualTo("Navegador Nimbo"));
+            Assert.That(facts.GetProperty("textEditor").GetString(), Is.EqualTo("Editor Lumbre"));
+            Assert.That(facts.GetProperty("next").GetString(), Does.Contain("nothing was pasted").And.Contain("was not opened"));
+        });
+    }
+
+    // With no fit editor nothing is opened and nothing pasted, and the failure says what else takes it.
+    [Test]
+    public async Task WithNoEditorABrowserNamedFailsHonestlyOpeningNothing()
+    {
+        var paste = new RecordingPaste();
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => throw new InvalidOperationException("nothing is opened"),
+            destination: (_, _) => ValueTask.FromResult(PasteDestination.EditorForBrowser(null)),
+            desktop: () => [("cuaderno", "Cuaderno Lumbre")]);
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Navegador Nimbo"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("paste_no_text_editor"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(paste.Arguments, Is.Empty);
+            JsonElement facts = outcome.Result!.Value;
+            Assert.That(facts.GetProperty("openWindows")[0].GetProperty("title").GetString(), Is.EqualTo("Cuaderno Lumbre"));
+            Assert.That(facts.GetProperty("next").GetString(), Does.Contain("Navegador Nimbo"));
+        });
+    }
+
+    // Live (encargo 94): led by the editor's call, the model pasted into a new document with the window named in view. A
+    // window whose title holds the name leads, with its call written as the title reads (a next that leads with the call
+    // is followed: encargos 20, 28 and 34), its minimized mark left out.
+    [TestCase("Cuaderno Lumbre")]
+    [TestCase("Cuaderno Lumbre (minimizada)")]
+    public async Task AWindowWhoseTitleHoldsTheNameLeadsTheNext(string title)
+    {
+        var handler = new PasteIntoNewDocumentHandler(new RecordingPaste(),
+            (_, _) => ValueTask.FromResult(OperationOutcome.Failure("app_not_found")),
+            destination: (_, _) => ValueTask.FromResult(PasteDestination.NewDocument("cuaderno", "Editor Lumbre")),
+            desktop: () => [("otro", "Otra Ventana"), ("cuaderno", title)]);
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("""{"appId":"cuaderno"}"""), CancellationToken.None);
+
+        string next = outcome.Result!.Value.GetProperty("next").GetString()!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(next, Does.StartWith("""clipboard_paste_into {"appId":"Cuaderno Lumbre"} pastes into that window"""));
+            Assert.That(next, Does.Contain("pasted nothing"));
+        });
+    }
+
+    // F3: «no está abierto» with the window in view came from a failure that listed no window. A name that answers to
+    // nothing says so first and the windows open; the editor only as what makes a new document, if that is what the
+    // person wants (a next that led with its call was followed with a window named: above).
+    [Test]
+    public async Task ANameThatAnswersToNothingSaysTheWindowsOpenAndTheTextEditor()
+    {
+        var paste = new RecordingPaste();
+        var handler = new PasteIntoNewDocumentHandler(paste,
+            (_, _) => ValueTask.FromResult(OperationOutcome.Failure("app_not_found", Element("""{"candidates":["Otra Cosa"]}"""))),
+            destination: (_, _) => ValueTask.FromResult(PasteDestination.NewDocument("Algo Inventado", "Editor Lumbre")),
+            desktop: () => [("cuaderno", "Cuaderno Lumbre")]);
+
+        OperationOutcome outcome = await handler.ExecuteAsync(
+            Invocation("""{"appId":"Algo Inventado"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_not_found"));
+            Assert.That(paste.Arguments, Is.Empty);
+            JsonElement facts = outcome.Result!.Value;
+            Assert.That(facts.GetProperty("candidates")[0].GetString(), Is.EqualTo("Otra Cosa"));
+            Assert.That(facts.GetProperty("openWindows")[0].GetProperty("title").GetString(), Is.EqualTo("Cuaderno Lumbre"));
+            Assert.That(facts.GetProperty("openWindows")[0].GetProperty("process").GetString(), Is.EqualTo("cuaderno"));
+            string next = facts.GetProperty("next").GetString()!;
+            Assert.That(next, Does.StartWith("this call pasted nothing"));
+            Assert.That(next, Does.Contain("Algo Inventado").And.Contain("openWindows"));
+            Assert.That(next, Does.Contain("""if the person wants a new document: clipboard_paste_into {"appId":"Editor Lumbre"}"""));
         });
     }
 

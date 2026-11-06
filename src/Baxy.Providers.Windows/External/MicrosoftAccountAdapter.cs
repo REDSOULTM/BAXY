@@ -1,9 +1,8 @@
-using System.IO.Compression;
 using System.Diagnostics;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Xml;
 using Baxy.Providers.Windows.Infrastructure;
 using Microsoft.Win32;
 
@@ -65,6 +64,8 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
           $outlook=New-Object -ComObject Outlook.Application
           $session=$outlook.GetNamespace('MAPI')
           $inbox=$session.GetDefaultFolder(6)
+          # Encargo 65: whose Inbox this is (its store's name, the account's address in a usual profile).
+          $account='';try{$account=[string]$inbox.Store.DisplayName}catch{}
           $items=$inbox.Items;$items.Sort('[ReceivedTime]',$true)
           $latest=$null;$candidate=$items.GetFirst()
           for($index=0;$index -lt 100 -and $null -ne $candidate;$index++){
@@ -92,7 +93,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             exit 2
           }
           if($input.action -eq 'read') {
-            [pscustomobject]@{ok=$true;effectObserved=$false;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;bodyLength=$bodyLength}|ConvertTo-Json -Depth 4 -Compress
+            [pscustomobject]@{ok=$true;effectObserved=$false;entryId=$entryId;subject=$subject;sender=$sender;receivedUtc=$received.ToString('O');body=$body;bodyLength=$bodyLength;account=$account}|ConvertTo-Json -Depth 4 -Compress
             exit 0
           }
           $text=[string]$input.text
@@ -128,6 +129,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
     private readonly string _documentsRoot;
     private readonly IExternalProcessRunner _runner;
     private readonly bool _requireOutlookProfileProbe;
+    private readonly Func<string, string?> _associatedCommand;
 
     internal MicrosoftAccountAdapter()
         : this(
@@ -137,14 +139,17 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
     {
     }
 
+    // associatedCommand: the open command Windows has for a file extension (AssocQueryString), null with none.
     internal MicrosoftAccountAdapter(
         string documentsRoot,
         IExternalProcessRunner runner,
-        bool requireOutlookProfileProbe = false)
+        bool requireOutlookProfileProbe = false,
+        Func<string, string?>? associatedCommand = null)
     {
         _documentsRoot = Path.GetFullPath(documentsRoot);
         _runner = runner ?? throw new ArgumentNullException(nameof(runner));
         _requireOutlookProfileProbe = requireOutlookProfileProbe;
+        _associatedCommand = associatedCommand ?? Applications.InvokerLaunch.AssociatedCommand;
     }
 
     public bool CanHandle(string operation) => operation is
@@ -237,6 +242,10 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         return ExternalJson.Success(operation, result, effect);
     }
 
+    // What email.latest.read looked at, and what it did not.
+    internal const string ReadCovers = "only the newest mail of the default Inbox of the account set up in Outlook on "
+        + "this PC; it searched no sender, subject nor other mail account";
+
     private const string LatestChanged = "email_latest_changed";
     private const string MessageIdRequired = "email_reply_message_id_required";
 
@@ -310,8 +319,9 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteString("argument", "expectedMessageId");
             if (ModelAids.On(ModelAids.ReplyMessageIdNext))
             {
-                writer.WriteString("next",
-                    "nothing was sent: expectedMessageId is the messageId email.latest.read gave (email_ and 24 hex digits)");
+                // Encargo 34: the read that gives it comes first, as the call the model makes.
+                writer.WriteString("next", $"{Baxy.Kernel.Operations.WireNames.Call("email.latest.read", new())} gives "
+                    + "the messageId that expectedMessageId takes (email_ and 24 hex digits); this call sent nothing");
             }
             writer.WriteEndObject();
         }), "email_message_id_invalid");
@@ -323,6 +333,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteString("messageId", Opaque("email", root.GetProperty("entryId").GetString() ?? string.Empty));
             writer.WriteString("sender", root.GetProperty("sender").GetString());
             writer.WriteString("subject", root.GetProperty("subject").GetString());
+            WriteHourHere(writer, "receivedLocal", root.GetProperty("receivedUtc").GetString());
             writer.WriteString("receivedUtc", root.GetProperty("receivedUtc").GetString());
             writer.WriteEndObject();
         }), expected), LatestChanged);
@@ -346,12 +357,14 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         if (expected is not null) writer.WriteString("expectedMessageId", expected);
         if (ModelAids.On(ModelAids.ReplyMessageIdNext))
         {
-            writer.WriteString("next", "nothing was sent: " + (expected is null
-                ? "a reply names the mail it answers"
-                : "the newest mail is no longer the one named")
-                + (now is null
-                    ? "; email.latest.read gives its messageId"
-                    : "; to answer the mail in latest, call email.latest.reply again with expectedMessageId " + now));
+            // Encargo 34: with no newest mail read, the read that gives its messageId comes first, as the call the model
+            // makes.
+            string why = expected is null ? "a reply names the mail it answers" : "the newest mail is no longer the one named";
+            writer.WriteString("next", now is null
+                ? $"{Baxy.Kernel.Operations.WireNames.Call("email.latest.read", new())} gives its messageId; this call "
+                    + $"sent nothing: {why}"
+                : $"nothing was sent: {why}; to answer the mail in latest, call "
+                    + $"{Baxy.Kernel.Operations.WireNames.Of("email.latest.reply")} again with expectedMessageId {now}");
         }
         writer.WriteEndObject();
     });
@@ -610,10 +623,12 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             : [];
         if (paragraphs.Length > 0 && format != "docx")
         {
-            return ExternalJson.Failure(operation, "office_paragraphs_docx_only");
+            return ModelAids.On(ModelAids.WorkbookCellsNext)
+                ? ExternalJson.Failure(operation, "office_paragraphs_docx_only") with { Result = WorkbookCells() }
+                : ExternalJson.Failure(operation, "office_paragraphs_docx_only");
         }
         // A character XML cannot hold (a control character) would leave a file Office cannot open.
-        if (!((string[])[title, .. paragraphs]).All(XmlCanHold))
+        if (!((string[])[title, .. paragraphs]).All(OfficePackage.XmlCanHold))
         {
             return ExternalJson.Failure(operation, "office_text_invalid_character");
         }
@@ -629,10 +644,10 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
         safeName = DotRuns.Replace(safeName, ".");
         safeName = safeName.Length == 0 ? "Documento" : safeName[..Math.Min(safeName.Length, 80)];
         string path = Path.Combine(_documentsRoot, safeName + "-" + Guid.NewGuid().ToString("N") + "." + format);
-        byte[] package = CreateOfficePackage(format, title, paragraphs);
+        byte[] package = OfficePackage.Create(format, title, paragraphs);
         await File.WriteAllBytesAsync(path, package, cancellationToken).ConfigureAwait(false);
         if (!File.Exists(path) || new FileInfo(path).Length <= 0
-            || !VerifyOfficePackage(path, format, string.Join('\n', [title, .. paragraphs])))
+            || !OfficePackage.Verify(path, format, string.Join('\n', [title, .. paragraphs])))
         {
             return ExternalJson.Failure(operation, "office_document_create_not_verified", true);
         }
@@ -642,6 +657,9 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("documentId", documentId); writer.WriteString("format", format);
             writer.WriteString("title", title); writer.WriteString("name", Path.GetFileName(path));
+            // Encargo 75 (U43): where the file really is, the mind's line says it («en C:\\…», mind.py _outcome).
+            if (ModelAids.On(ModelAids.DocumentFullPath))
+                writer.WriteString("fullPath", path);
             if (paragraphs.Length > 0)
             {
                 writer.WriteNumber("paragraphCount", paragraphs.Length);
@@ -652,6 +670,36 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteString("authority", "iso29500_ooxml_postread"); writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
+    }
+
+    /// <summary>
+    /// Banco de entorno del NB (U44, 2 of 3: a table of products and prices sent as a workbook's paragraphs, refused bare,
+    /// and the reply «Excel no acepta texto en formato de párrafos»). A workbook this call writes holds only its title; a
+    /// table goes into the cells of a workbook open in the program this PC opens .xlsx files with (the open command
+    /// Windows registers for the extension, AssocQueryString), which app.open finds by its program's file name. The
+    /// refusal leads with that app.open call, a new blank workbook in front; with no program registered, it says so.
+    /// </summary>
+    private JsonElement WorkbookCells()
+    {
+        string? program = UserBrowserIdentityResolver.CommandExecutable(_associatedCommand(".xlsx")) is { } executable
+            ? Path.GetFileName(executable)
+            : null;
+        const string Refused = "this call wrote nothing: a workbook it creates holds only its title, and paragraphs are "
+            + "the text of a Word document (docx)";
+        return ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            if (program is not null)
+                writer.WriteString("xlsxProgram", program);
+            writer.WriteString("next", program is null
+                ? Refused + "; no program on this PC opens .xlsx files"
+                : $"{Baxy.Kernel.Operations.WireNames.Call("app.open", new() { ["appId"] = program, ["newDocument"] = true, ["foreground"] = true, ["forControl"] = true })} "
+                    + "opens a new blank workbook in the program this PC opens .xlsx files with, where a table's cells "
+                    + "are typed (input_text_type, with input_key_press Tab between cells and Enter between rows) and "
+                    + "saved with its own Save As; " + Refused);
+            writer.WriteEndObject();
+        });
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ReadDocumentAsync(
@@ -670,7 +718,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             return ExternalJson.Failure(operation, "office_document_not_resolved");
         }
         string format = Path.GetExtension(path).TrimStart('.').ToLowerInvariant();
-        string text = await Task.Run(() => ReadOfficeText(path, format), cancellationToken)
+        string text = await Task.Run(() => OfficePackage.ReadText(path, format), cancellationToken)
             .ConfigureAwait(false);
         // Ronda final 8 (regla 3): a text cut at 256 000 characters says it was cut, and how long it is.
         int textLength = text.Length;
@@ -762,10 +810,31 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("eventId", Opaque("event", entryId));
             writer.WriteString("title", root.GetProperty("title").GetString());
-            writer.WriteString("startUtc", root.GetProperty("startUtc").GetString());
-            writer.WriteString("endUtc", root.GetProperty("endUtc").GetString());
+            WriteHereAndUtc(writer, root);
             writer.WriteString("authority", "outlook_mapi_postread"); writer.WriteEndObject();
         });
+    }
+
+    // Banco de uso 05-11 (F12): «14:20Z» was said as «2:20 PM» with this PC at UTC-3: the script's conversion is right
+    // (Outlook's Start is local time, and it writes the UTC of it) and the model read the UTC out as the hour. The hour here
+    // comes first, at that instant's own offset: a date past a daylight change keeps its own, which the offset of today would
+    // not. With its weekday, a fact the model got wrong by itself (measured: «el sábado 6» for a Friday, 2 of 2; with it, 2 of 2
+    // right).
+    private static void WriteHereAndUtc(Utf8JsonWriter writer, JsonElement item)
+    {
+        string? start = item.GetProperty("startUtc").GetString();
+        string? end = item.GetProperty("endUtc").GetString();
+        WriteHourHere(writer, "startLocal", start);
+        WriteHourHere(writer, "endLocal", end);
+        writer.WriteString("startUtc", start);
+        writer.WriteString("endUtc", end);
+    }
+
+    // An instant that does not read says no hour rather than an empty one.
+    private static void WriteHourHere(Utf8JsonWriter writer, string name, string? utc)
+    {
+        if (DateTimeOffset.TryParse(utc, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTimeOffset instant))
+            writer.WriteString(name, instant.ToLocalTime().ToString("dddd yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture));
     }
 
     private static JsonElement CalendarList(JsonElement root) => ExternalJson.Create(writer =>
@@ -779,8 +848,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
                 writer.WriteStartObject();
                 writer.WriteString("eventId", Opaque("event", item.GetProperty("entryId").GetString() ?? string.Empty));
                 writer.WriteString("title", item.GetProperty("title").GetString());
-                writer.WriteString("startUtc", item.GetProperty("startUtc").GetString());
-                writer.WriteString("endUtc", item.GetProperty("endUtc").GetString());
+                WriteHereAndUtc(writer, item);
                 writer.WriteEndObject();
             }
         }
@@ -790,6 +858,9 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteNumber("unreadAppointments", unread.GetInt32());
         if (root.TryGetProperty("truncated", out JsonElement truncated) && truncated.ValueKind == JsonValueKind.True)
             writer.WriteBoolean("truncatedAt200", true);
+        // Encargo 65: the application whose calendar this is (NativeTurnLoop weighs it against the tabs the person names:
+        // «en el Calendar de Google…» read Outlook's).
+        writer.WriteString("readFrom", "Outlook");
         writer.WriteString("authority", "outlook_mapi_snapshot"); writer.WriteEndObject();
     });
 
@@ -800,6 +871,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteString("messageId", Opaque("email", root.GetProperty("entryId").GetString() ?? string.Empty));
             writer.WriteString("subject", root.GetProperty("subject").GetString());
             writer.WriteString("sender", root.GetProperty("sender").GetString());
+            WriteHourHere(writer, "receivedLocal", root.GetProperty("receivedUtc").GetString());
             writer.WriteString("receivedUtc", root.GetProperty("receivedUtc").GetString());
             string? body = root.GetProperty("body").GetString();
             writer.WriteString("body", body);
@@ -817,6 +889,21 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
                 writer.WriteString("replyTextSha256", Convert.ToHexStringLower(SHA256.HashData(
                     Encoding.UTF8.GetBytes(replyText ?? string.Empty))));
             }
+            // Encargo 65 (cosecha F2): a request for the newest mail of one sender in a webmail read this one mail of
+            // Outlook's, and the answer said there was no mail from that sender. What it read is said where the model reads: the
+            // application (readFrom), the account whose Inbox it is, and that it is that newest mail alone
+            // (NativeTurnLoop weighs readFrom against the windows and tabs the person's words name).
+            if (!replied)
+            {
+                writer.WriteString("readFrom", "Outlook");
+                if (root.TryGetProperty("account", out JsonElement account)
+                    && account.GetString() is { Length: > 0 } store)
+                {
+                    writer.WriteString("account", store);
+                }
+
+                writer.WriteString("covers", ReadCovers);
+            }
             writer.WriteString("authority", replied
                 ? "outlook_mapi_sent_postread" : "outlook_mapi_latest_snapshot");
             writer.WriteEndObject();
@@ -828,142 +915,4 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
 
     private static string Opaque(string prefix, string value) => prefix + "_"
         + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(value)))[..24];
-
-    private static byte[] CreateOfficePackage(string format, string title, string[] paragraphs)
-    {
-        using var output = new MemoryStream();
-        using (var archive = new ZipArchive(output, ZipArchiveMode.Create, leaveOpen: true))
-        {
-            if (format == "docx")
-            {
-                WriteEntry(archive, "[Content_Types].xml", """
-                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>
-                    """);
-                WriteEntry(archive, "_rels/.rels", """
-                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>
-                    """);
-                WriteEntry(archive, "word/document.xml",
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                    + "<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>"
-                    + string.Concat(((string[])[title, .. paragraphs]).Select(paragraph =>
-                        "<w:p><w:r><w:t>" + EscapeXml(paragraph) + "</w:t></w:r></w:p>"))
-                    + "<w:sectPr/></w:body></w:document>");
-            }
-            else
-            {
-                WriteEntry(archive, "[Content_Types].xml", """
-                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>
-                    """);
-                WriteEntry(archive, "_rels/.rels", """
-                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>
-                    """);
-                WriteEntry(archive, "xl/workbook.xml", """
-                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Hoja 1" sheetId="1" r:id="rId1"/></sheets></workbook>
-                    """);
-                WriteEntry(archive, "xl/_rels/workbook.xml.rels", """
-                    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>
-                    """);
-                WriteEntry(archive, "xl/worksheets/sheet1.xml",
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"
-                    + "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\"><sheetData><row r=\"1\"><c r=\"A1\" t=\"inlineStr\"><is><t>"
-                    + EscapeXml(title) + "</t></is></c></row></sheetData></worksheet>");
-            }
-        }
-        return output.ToArray();
-    }
-
-    private static bool VerifyOfficePackage(string path, string format, string expectedText)
-    {
-        try
-        {
-            return string.Equals(ReadOfficeText(path, format), expectedText, StringComparison.Ordinal);
-        }
-        catch (InvalidDataException)
-        {
-            return false;
-        }
-    }
-
-    // Every character is one XML holds (a surrogate pair counts as one).
-    private static bool XmlCanHold(string text)
-    {
-        for (int index = 0; index < text.Length; index++)
-        {
-            if (XmlConvert.IsXmlChar(text[index]))
-            {
-                continue;
-            }
-            if (index + 1 < text.Length && XmlConvert.IsXmlSurrogatePair(text[index + 1], text[index]))
-            {
-                index++;
-                continue;
-            }
-            return false;
-        }
-        return true;
-    }
-
-    private static string ReadOfficeText(string path, string format)
-    {
-        using ZipArchive archive = ZipFile.OpenRead(path);
-        string entryName = format == "docx" ? "word/document.xml" : "xl/worksheets/sheet1.xml";
-        ZipArchiveEntry entry = archive.GetEntry(entryName)
-            ?? throw new InvalidDataException("Office document main part is missing.");
-        if (entry.Length > 8 * 1024 * 1024)
-        {
-            throw new InvalidDataException("Office document main part exceeds its bound.");
-        }
-        var settings = new XmlReaderSettings
-        {
-            DtdProcessing = DtdProcessing.Prohibit,
-            XmlResolver = null,
-            MaxCharactersInDocument = 8 * 1024 * 1024,
-        };
-        using Stream stream = entry.Open();
-        using XmlReader reader = XmlReader.Create(stream, settings);
-        var text = new StringBuilder();
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "t")
-            {
-                if (text.Length > 0) text.Append('\n');
-                text.Append(reader.ReadElementContentAsString());
-            }
-        }
-        return text.ToString();
-    }
-
-    private static void WriteEntry(ZipArchive archive, string name, string content)
-    {
-        ZipArchiveEntry entry = archive.CreateEntry(name, CompressionLevel.Optimal);
-        using Stream stream = entry.Open();
-        using var writer = new StreamWriter(
-            stream,
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true));
-        writer.Write(content.Trim());
-    }
-
-    private static string EscapeXml(string value)
-    {
-        var output = new StringBuilder(value.Length + 32);
-        foreach (char character in value)
-        {
-            output.Append(character switch
-            {
-                '&' => "&amp;",
-                '<' => "&lt;",
-                '>' => "&gt;",
-                '\"' => "&quot;",
-                '\'' => "&apos;",
-                _ => character.ToString(),
-            });
-        }
-        return output.ToString();
-    }
 }

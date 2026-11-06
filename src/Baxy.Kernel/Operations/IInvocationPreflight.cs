@@ -29,10 +29,11 @@ public interface IInvocationPreflight
 /// <summary>What a preflight found: a lower risk for this invocation, the failure it would end in, or neither.</summary>
 public sealed record InvocationPreflightResult
 {
-    private InvocationPreflightResult(OperationRisk? risk, OperationOutcome? failure)
+    private InvocationPreflightResult(OperationRisk? risk, OperationOutcome? failure, JsonElement? facts = null)
     {
         Risk = risk;
         Failure = failure;
+        Facts = facts;
     }
 
     public static InvocationPreflightResult Proceed { get; } = new(null, null);
@@ -41,7 +42,7 @@ public sealed record InvocationPreflightResult
     public static InvocationPreflightResult Lowered(OperationRisk risk) => new(risk, null);
 
     /// <summary>Renew al máximo: this invocation's own risk, above the declared one (read when MayRaise).</summary>
-    public static InvocationPreflightResult Raised(OperationRisk risk) => new(risk, null);
+    public static InvocationPreflightResult Raised(OperationRisk risk, JsonElement? facts = null) => new(risk, null, facts);
 
     /// <summary>
     /// The failure the execution would end in before any effect (a terminal failure with nothing done); anything else
@@ -53,4 +54,9 @@ public sealed record InvocationPreflightResult
     public OperationRisk? Risk { get; }
 
     public OperationOutcome? Failure { get; }
+
+    /// <summary>
+    /// Encargo 83: what the read found of a raised invocation, which the challenge carries for the person's question.
+    /// </summary>
+    public JsonElement? Facts { get; }
 }

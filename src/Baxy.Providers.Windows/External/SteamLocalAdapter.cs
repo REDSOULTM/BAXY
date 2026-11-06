@@ -192,15 +192,37 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .OrderBy(game => game.Name, StringComparer.CurrentCultureIgnoreCase)
             .ToArray();
         SteamLocalGame[] games = matching.Take(limit).ToArray();
+        // Uso real 03-11 (G9): a search nothing installed bears was said «not in your library»; what the account's
+        // library cache says of that title goes beside it.
+        JsonElement? entitlement = matching.Length == 0 && !string.IsNullOrWhiteSpace(query) ? EntitlementOf(query) : null;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("source", "steam_local_appmanifests");
+            writer.WriteString("scope", InstalledScope);
+            if (entitlement is { } owned)
+            {
+                writer.WritePropertyName("entitlement");
+                owned.WriteTo(writer);
+            }
             writer.WriteNumber("count", games.Length);
             // Ronda final 7 (regla 3): the limit leaves some out: how many there are, and that the list is cut.
             writer.WriteNumber("totalCount", matching.Length);
             if (matching.Length > games.Length) writer.WriteBoolean("truncated", true);
             if (unreadLibraries > 0) writer.WriteNumber("librariesUnread", unreadLibraries);
+            // Auditoría de falsedades 2026-11-04 (P2, U34): with a library unread the list is of the libraries read, and
+            // «no encontré ningún juego» was told of Steam whole; readInPart is the contract the mind tells a part by.
+            if (unreadLibraries > 0) writer.WriteBoolean("readInPart", true);
+            // Cosecha 04-11 F34: «¿a qué le di la última vez?» took the first by name (limit 1) and gave up; the
+            // manifests say when each was last played (LastPlayed, Unix seconds), whatever the view leaves out.
+            if (matching.Where(game => game.LastPlayedUtc is not null).MaxBy(game => game.LastPlayedUtc) is { } latest)
+            {
+                writer.WriteStartObject("lastPlayed");
+                writer.WriteString("appId", latest.AppId);
+                writer.WriteString("name", latest.Name);
+                writer.WriteString("lastPlayedUtc", latest.LastPlayedUtc!.Value);
+                writer.WriteEndObject();
+            }
             writer.WriteStartArray("games");
             foreach (SteamLocalGame game in games)
             {
@@ -209,6 +231,19 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteEndArray(); writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // The manifests are this PC's games, never the account's library (Steam's own GetOwnedGames needs a web key).
+    private const string InstalledScope = "games_installed_or_downloading_on_this_pc";
+
+    // What game.entitlement.named says of the title (the account's library cache), or null when it could not be read.
+    private JsonElement? EntitlementOf(string title)
+    {
+        ExternalCapabilityReceipt read = EntitlementNamed("game.entitlement.named", ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteString("title", title); writer.WriteEndObject();
+        }));
+        return read.Verified ? read.Result : null;
     }
 
     // INSTALL1617 «Descarga Worms Rumble en Steam»: before any download the
@@ -228,7 +263,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             && store.ValueKind == JsonValueKind.String
             && string.Equals(store.GetString(), "epic", StringComparison.Ordinal))
         {
-            return EpicEntitlementNamed(operation, title);
+            return EpicEntitlementNamed(operation, title, EpicLauncherDataRoot);
         }
         IReadOnlyList<SteamLocalGame> catalog = _snapshot();
         string folded = FoldTitle(title);
@@ -274,6 +309,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // Ronda final 8: with a library unread, a game not found installed may be installed there.
             if (appId is not null && (installed || !librariesUnread)) writer.WriteBoolean("installed", installed);
             if (librariesUnread) writer.WriteBoolean("librariesUnread", true);
+            if (librariesUnread) writer.WriteBoolean("readInPart", true);
             // A known game close to the title is offered only when the library cache has it: one merely seen in the store
             // is not the person's.
             if (appId is null)
@@ -286,7 +322,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             // Feria (caso 15): an unresolved title was read as a game Steam does not have. Where it was looked up is
             // said: an unresolved one says neither that the game does not exist nor that it is not owned.
             writer.WriteString("titleLookedUpAmong", known is null
-                ? "games_installed_or_downloading_on_this_pc" : "games_on_this_pc_and_games_this_steam_client_knows");
+                ? InstalledScope : "games_on_this_pc_and_games_this_steam_client_knows");
             writer.WriteString("state", appId is null ? "title_not_resolved"
                 : installed ? "installed"
                 : librariesUnread ? "install_not_read"
@@ -370,8 +406,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 writer.WriteString("jobId", JobId(appId)); writer.WriteString("appId", appId);
                 writer.WriteString("name", running.Name);
                 writer.WriteString("state", "downloading");
+                writer.WriteNumber("stateFlags", running.StateFlags);
                 writer.WriteNumber("bytesDownloaded", running.BytesDownloaded);
                 writer.WriteNumber("bytesTotal", running.BytesToDownload);
+                writer.WriteString("next", $"{StatusCall(running)} reads its progress later");
                 writer.WriteString("authority", "steam_manifest_growth_preread"); writer.WriteEndObject();
             });
             return ExternalJson.Switched(operation, downloading, effectObserved: false);
@@ -397,8 +435,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                     writer.WriteString("jobId", JobId(appId)); writer.WriteString("appId", appId);
                     writer.WriteString("name", after.Name);
                     writer.WriteString("state", InstallState(after));
+                    writer.WriteNumber("stateFlags", after.StateFlags);
                     writer.WriteNumber("bytesDownloaded", after.BytesDownloaded);
                     writer.WriteNumber("bytesTotal", after.BytesToDownload);
+                    // Encargo 52: the manifest read is the first one Steam wrote for this request; what it brings
+                    // later is read by the status call, never assumed (a game was told installed at 18 %).
+                    if (!after.Installed) writer.WriteString("next", $"{StatusCall(after)} reads its progress later");
                     writer.WriteString("authority", "steam_manifest_transition"); writer.WriteEndObject();
                 });
                 return ExternalJson.Success(operation, result, effectObserved: true);
@@ -463,11 +505,15 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
         "Epic", "EpicGamesLauncher", "Data");
 
-    private static ExternalCapabilityReceipt EpicEntitlementNamed(string operation, string title)
+    internal static ExternalCapabilityReceipt EpicEntitlementNamed(string operation, string title, string dataRoot)
     {
         string folded = FoldTitle(title);
-        string manifests = Path.Combine(EpicLauncherDataRoot, "Manifests");
-        string catalogCache = Path.Combine(EpicLauncherDataRoot, "Catalog", "catcache.bin");
+        string manifests = Path.Combine(dataRoot, "Manifests");
+        string catalogCache = Path.Combine(dataRoot, "Catalog", "catcache.bin");
+        // Uso real 02-11 («LEGO Batman comprado en Epic»): a title said short of the cache's («LEGO® Batman™ The Videogame»,
+        // and two more) was told «not in the cache» twice. As with Steam, a title no entry bears exactly is unresolved, with
+        // the closest titles of the cache and the manifests.
+        List<string> names = [];
         if (!Directory.Exists(manifests) && !File.Exists(catalogCache))
         {
             return ExternalJson.Failure(operation, "epic_launcher_data_not_found");
@@ -487,8 +533,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                     JsonElement root = document.RootElement;
                     if (root.ValueKind != JsonValueKind.Object
                         || !root.TryGetProperty("DisplayName", out JsonElement displayName)
-                        || displayName.ValueKind != JsonValueKind.String
-                        || FoldTitle(displayName.GetString() ?? string.Empty) != folded
+                        || displayName.ValueKind != JsonValueKind.String)
+                    {
+                        continue;
+                    }
+                    names.Add(displayName.GetString() ?? string.Empty);
+                    if (FoldTitle(displayName.GetString() ?? string.Empty) != folded
                         || (root.TryGetProperty("bIsIncompleteInstall", out JsonElement incomplete)
                             && incomplete.ValueKind == JsonValueKind.True))
                     {
@@ -526,8 +576,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                     {
                         if (item.ValueKind != JsonValueKind.Object
                             || !item.TryGetProperty("title", out JsonElement itemTitle)
-                            || itemTitle.ValueKind != JsonValueKind.String
-                            || FoldTitle(itemTitle.GetString() ?? string.Empty) != folded)
+                            || itemTitle.ValueKind != JsonValueKind.String)
+                        {
+                            continue;
+                        }
+                        names.Add(itemTitle.GetString() ?? string.Empty);
+                        if (FoldTitle(itemTitle.GetString() ?? string.Empty) != folded)
                         {
                             continue;
                         }
@@ -553,6 +607,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         // Ronda final: as with Steam, an installed manifest is not the account's ownership: only the catalog cache says owned.
         bool owned = ownedMatches >= 1;
         string? catalogItemId = installedCatalogId ?? ownedCatalogId;
+        string[] closest = owned || installed ? [] : ClosestTitles(title, names);
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -563,11 +618,13 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteString("title", installedName ?? ownedName ?? title);
             // Ronda final: without the catalog cache read, the library was not looked at.
             if (owned) writer.WriteBoolean("owned", true);
-            else if (cacheRead) writer.WriteBoolean("inLocalLibraryCache", false);
+            else if (cacheRead && closest.Length == 0) writer.WriteBoolean("inLocalLibraryCache", false);
             if (installed) writer.WriteBoolean("installed", true);
             else if (!manifestUnread) writer.WriteBoolean("epicManifestWithThatName", false);
+            WriteClosest(writer, closest);
             writer.WriteString("state", installed ? "installed"
                 : owned ? (manifestUnread ? "owned_install_not_read" : "owned_no_epic_manifest_with_that_name")
+                : closest.Length > 0 ? "title_not_resolved"
                 : cacheRead ? "not_in_local_library_cache" : "library_cache_unavailable");
             writer.WriteString("authority", installed
                 ? "epic_launcher_local_manifest" : "epic_launcher_catalog_cache");
@@ -608,10 +665,95 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             .Select(item => item.AppId)
             .Distinct(StringComparer.Ordinal)
             .ToArray();
-        return matches.Length == 1
-            ? (matches[0], false, [])
-            : (null, false, ClosestTitles(title, found.Select(static item => item.Name)
-                .Concat(catalog.Select(static game => game.Name))));
+        if (matches.Length == 1)
+        {
+            return (matches[0], false, []);
+        }
+
+        IEnumerable<string> names = found.Select(static item => item.Name).Concat(catalog.Select(static game => game.Name));
+        string[] near = TitlesItSoundsLike(title, names);
+        return near.Length > 0 && SoundsAlike(folded, FoldTitle(near[0]))
+            ? (null, false, near)
+            : (null, false, await NearestWithPiecesAsync(title, names, cancellationToken).ConfigureAwait(false));
+    }
+
+    // F39: what is said wrong is BAXY's to fix (the owner's rule of 2026-09-19), most often its own ear's mistake: it wrote
+    // a game's name as words it knows. The store's title search corrects nothing (0 answers for a word off), but it answers
+    // for the title without one of its words, or for one word alone, and those answers hold the game: its closest titles
+    // are read there, in parallel, and among the games this Steam client knows; only the title's words leave, as in the
+    // search itself. A held-out set of 14 misheard titles: the game offered 1 → 5 of 14, invented names nothing close.
+    private async ValueTask<string[]> NearestWithPiecesAsync(
+        string title, IEnumerable<string> names, CancellationToken cancellationToken)
+    {
+        string[] words = title.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string[] pieces = [.. Enumerable.Range(0, words.Length > 1 ? words.Length : 0)
+                .Select(index => string.Join(' ', words.Where((_, at) => at != index)))
+            .Concat(words.Where(static word => word.Length >= PieceMinimumLength))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(PiecesAsked)];
+        IReadOnlyList<SteamStoreTitle>[] answers = await Task.WhenAll(pieces.Select(async piece =>
+        {
+            try
+            {
+                return await _storeTitles!(piece, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is HttpRequestException or JsonException or IOException
+                || (exception is TaskCanceledException && !cancellationToken.IsCancellationRequested))
+            {
+                return (IReadOnlyList<SteamStoreTitle>)[];
+            }
+        })).ConfigureAwait(false);
+        IReadOnlyList<SteamStoreTitle> known = _knownGames() ?? [];
+        return TitlesItSoundsLike(title, names
+            .Concat(answers.SelectMany(static answer => answer.Select(static item => item.Name)))
+            .Concat(known.Select(static game => game.Name)));
+    }
+
+    private const int PiecesAsked = 6;
+    private const int PieceMinimumLength = 4;
+    // How alike two titles are written (1 - edit distance / longer, without spaces) to be said as the same one misheard:
+    // of 14 misheard titles the five retrieved scored 0.60-1, invented names against what the store answers 0.40 at most.
+    private const double SoundsAlikeSimilarity = 0.55;
+
+    private static bool SoundsAlike(string folded, string name) => Similarity(folded, name) >= SoundsAlikeSimilarity;
+
+    private static double Similarity(string folded, string name)
+    {
+        string ours = folded.Replace(" ", string.Empty, StringComparison.Ordinal);
+        string theirs = name.Replace(" ", string.Empty, StringComparison.Ordinal);
+        if (ours.Length == 0 || theirs.Length == 0)
+            return 0;
+        int[] above = [.. Enumerable.Range(0, theirs.Length + 1)];
+        for (int i = 1; i <= ours.Length; i++)
+        {
+            int[] row = new int[theirs.Length + 1];
+            row[0] = i;
+            for (int j = 1; j <= theirs.Length; j++)
+                row[j] = Math.Min(Math.Min(above[j] + 1, row[j - 1] + 1), above[j - 1] + (ours[i - 1] == theirs[j - 1] ? 0 : 1));
+            above = row;
+        }
+
+        return 1 - (double)above[theirs.Length] / Math.Max(ours.Length, theirs.Length);
+    }
+
+    /// <summary>
+    /// F39: the titles a heard one may be: those written alike (<see cref="SoundsAlikeSimilarity"/>) or sharing a word with
+    /// it (<see cref="ClosestTitles"/>), most alike first. Only said, never resolved.
+    /// </summary>
+    internal static string[] TitlesItSoundsLike(string title, IEnumerable<string> names)
+    {
+        string folded = FoldTitle(title);
+        string[] asked = [.. folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(static word => word.Length >= 3)];
+        return [.. names
+            .Where(static name => !string.IsNullOrWhiteSpace(name))
+            .DistinctBy(FoldTitle, StringComparer.Ordinal)
+            .Select(name => (Name: name, Fold: FoldTitle(name)))
+            .Select(item => (item.Name, Alike: Similarity(folded, item.Fold), Shared: Nearness(folded, asked, item.Fold)))
+            .Where(static scored => scored.Alike >= SoundsAlikeSimilarity || scored.Shared > 0)
+            .OrderByDescending(static scored => scored.Alike)
+            .ThenBy(static scored => scored.Name, StringComparer.OrdinalIgnoreCase)
+            .Take(ClosestTitleCount)
+            .Select(static scored => scored.Name)];
     }
 
     // Renew al máximo (auditoría de flujos, decision2): how many of the closest titles an unresolved one names.
@@ -665,6 +807,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("query", title);
             WriteClosest(writer, closest);
+            // F39: the title may be how the ear wrote it, so the person is not asked for what they already said. A store
+            // that did not answer says nothing of the title.
+            if (code != "steam_store_search_failed" && closest.Length > 0)
+                writer.WriteString("next", $"no game is called \"{title}\" and it may have been misheard: this call changed nothing. Ask the person whether they meant one of closestTitles, naming it.");
+            else if (code == "steam_title_not_resolved")
+                writer.WriteString("next", $"no game is called \"{title}\" and it may have been misheard: this call changed nothing. If it sounds like a game you know, call game_install_named with that game's real title; if not, ask the person to say it again.");
             writer.WriteEndObject();
         }), code);
 
@@ -799,9 +947,43 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
 
     private ExternalCapabilityReceipt Status(string operation, JsonElement arguments)
     {
-        string appId = RequireAppId(arguments);
+        string given = RequireAppId(arguments);
+        string? title = arguments.TryGetProperty("title", out JsonElement titleElement)
+            && titleElement.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(titleElement.GetString()) ? titleElement.GetString()!.Trim() : null;
         IReadOnlyList<SteamLocalGame> catalog = _snapshot();
-        SteamLocalGame? game = catalog.SingleOrDefault(candidate => candidate.AppId == appId);
+        SteamLocalGame? named = catalog.SingleOrDefault(candidate => candidate.AppId == given);
+        // Encargo 52 (sesión real 03-11): asked about Crysis Remastered, the model read R.E.P.O.'s appId and its 0 % was
+        // told as Crysis's; replayed with the real model, its status calls carried appIds no receipt gave (6 of 6, with
+        // the install's appId in the conversation). The title the person asked about goes in the call, as with
+        // game.launch, and governs: the one manifest bearing it is the game read, and the receipt says the appId given
+        // was another's (appIdGiven), as game.launch drops an appId no game bears (Encargo 10, punto 2). With no manifest
+        // bearing the title, an appId of another game reads nothing of it: which game that is and the games in progress.
+        SteamLocalGame[] titled = title is null
+            ? []
+            : [.. catalog.Where(candidate => FoldTitle(candidate.Name) == FoldTitle(title))];
+        SteamLocalGame? game = titled is [{ } own] ? own : named;
+        if (title is null || (game is not null && FoldTitle(game.Name) != FoldTitle(title)))
+        {
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteString("appId", given);
+                if (named is not null) writer.WriteString("name", named.Name);
+                if (title is not null) writer.WriteString("title", title);
+                writer.WriteStartArray("gamesInProgress");
+                foreach (SteamLocalGame pending in catalog
+                    .Where(candidate => !candidate.Installed || candidate.BytesToDownload > 0).Take(20))
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("appId", pending.AppId); writer.WriteString("name", pending.Name);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                writer.WriteString("authority", "steam_local_appmanifest"); writer.WriteEndObject();
+            }), title is null ? "game_title_required" : "game_title_mismatch");
+        }
+        string appId = game?.AppId ?? given;
         // Ronda final 9 (regla 3): with a library unread, a game not found may be installed there.
         bool librariesUnread = UnreadLibraries(catalog) > 0;
         IReadOnlySet<string>? cache = _owned();
@@ -817,21 +999,37 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("jobId", JobId(appId)); writer.WriteString("appId", appId);
+            writer.WriteString("title", title);
+            if (game is not null) writer.WriteString("name", game.Name);
+            if (appId != given)
+            {
+                writer.WriteStartObject("appIdGiven");
+                writer.WriteString("appId", given);
+                if (named is not null) writer.WriteString("name", named.Name);
+                writer.WriteEndObject();
+            }
             writer.WriteString("state", game is not null ? InstallState(game)
                 : librariesUnread ? "install_not_read" : "not_installed");
             if (game is null && librariesUnread) writer.WriteBoolean("librariesUnread", true);
-            writer.WriteNumber("bytesDownloaded", game?.BytesDownloaded ?? 0);
-            writer.WriteNumber("bytesTotal", game?.BytesToDownload ?? 0);
-            if (game is not null && game.BytesToDownload > 0)
+            if (game is not null) writer.WriteNumber("stateFlags", game.StateFlags);
+            if (game is { Installed: true })
             {
-                double progress = Math.Clamp(game.BytesDownloaded * 100d / game.BytesToDownload, 0d, 100d);
-                writer.WriteNumber("progressPercent", progress);
-                // Holdout v4 (falsedad, «69 %» for 0.69 %): the readings with their unit (ReadingUnits).
-                writer.WriteString("progress", Infrastructure.ReadingUnits.Percent(progress));
-                writer.WriteString("downloaded", Infrastructure.ReadingUnits.Size(game.BytesDownloaded));
-                writer.WriteString("total", Infrastructure.ReadingUnits.Size(game.BytesToDownload));
+                // Encargo 52: R.E.P.O. (StateFlags 6, 0 of 619 374 528 bytes) was told «0 % de 590 MB» as an install not
+                // done. The bytes of an installed game are its update's, said apart with the update's own state.
+                if (game.BytesToDownload > 0)
+                {
+                    writer.WriteStartObject("update");
+                    writer.WriteString("state", DownloadState(game));
+                    WriteBytes(writer, game);
+                    writer.WriteEndObject();
+                }
             }
-            else writer.WriteNull("progressPercent");
+            else if (game is not null) WriteBytes(writer, game);
+            else
+            {
+                writer.WriteNumber("bytesDownloaded", 0); writer.WriteNumber("bytesTotal", 0);
+                writer.WriteNull("progressPercent");
+            }
             writer.WriteString("authority", game is null
                 ? "steam_authenticated_library_cache" : "steam_local_appmanifest");
             writer.WriteEndObject();
@@ -943,25 +1141,105 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         }), active.Length > 0);
     }
 
+    // Banco ciego c3 C3-049 (also C3-142): «abre Luanti», installed outside Steam, went as game.launch with an invented
+    // appId, and the reply denied it was installed from the Steam games listed. A title no installed game of the library
+    // holds is said as outside that library, not as absent from the PC; null when the library holds it, or with no title.
+    private string? OutsideLibrary(string? title) =>
+        !IsOutsideLibrary(title) || !Infrastructure.ModelAids.On(Infrastructure.ModelAids.GameLibraryOnly)
+            ? null
+            // Encargo 34: not with the call first. Measured with the real model, when the person said not to open it
+            // outside Steam, the call first opened it there anyway 7 times of 14 (2 of 14 with this text), and where
+            // the person did want it opened both texts led to app_open (2 of 2).
+            : $"installedGames is only the Steam games installed on this PC and «{title}» is not among them, which does "
+                + $"not say it is not installed: app_open with appId «{title}» can open a game installed outside Steam";
+
+    // Uso real 03-11 (G9): a title no installed game bears, with what the account's library cache says of it.
+    private void WriteEntitlement(Utf8JsonWriter writer, string? title)
+    {
+        if (title is null || EntitlementOf(title) is not { } entitlement)
+            return;
+        writer.WritePropertyName("entitlement");
+        entitlement.WriteTo(writer);
+    }
+
+    // Ajuste c5: the fact the handler acts on (GameLaunchHandler), aid or not.
+    private bool IsOutsideLibrary(string? title) =>
+        title is not null
+        && !_snapshot().Any(candidate => candidate.Installed && FoldTitle(candidate.Name) == FoldTitle(title));
+
     private async ValueTask<ExternalCapabilityReceipt> LaunchAsync(
         string operation,
         JsonElement arguments,
         ExternalEffectBoundary effectBoundary,
         CancellationToken cancellationToken)
     {
-        string appId = RequireAppId(arguments);
-        SteamLocalGame? game = _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
+        string? title = arguments.TryGetProperty("title", out JsonElement titleElement)
+            && titleElement.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(titleElement.GetString()) ? titleElement.GetString()!.Trim() : null;
+        // Ajuste c5: a game outside the library has no appId for the model to copy; what it writes there, a name or a
+        // number no game has, is no reason to stop looking for the title. A title of the library is that game's, by Steam.
+        // Encargo 10 (punto 2): a well-formed appId no game in the library bears is such a number; it is dropped so the
+        // title still resolves it, as an ill-formed one already did (ValidAppId only checks shape, never that it exists).
+        string? given = ValidAppId(arguments);
+        if (given is not null && !_snapshot().Any(candidate => candidate.AppId == given))
+        {
+            given = null;
+        }
+        string? appId = given ?? _snapshot().FirstOrDefault(
+            candidate => candidate.Installed && title is not null && FoldTitle(candidate.Name) == FoldTitle(title))?.AppId;
+        if (appId is null && !IsOutsideLibrary(title))
+        {
+            throw new InvalidDataException("Steam AppID is invalid.");
+        }
+
+        SteamLocalGame? game = appId is null ? null : _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
         if (game is null || !game.Installed || string.IsNullOrWhiteSpace(game.InstallDirectory))
         {
-            return ExternalJson.Failure(operation, "steam_installed_game_not_verified");
+            // Encargo 10 (punto 1): a title the library holds but has not finished installing (downloading, paused,
+            // queued or installing) is not outside the library: its real state is said and game.install.status reads its
+            // progress. IsOutsideLibrary only looks at Installed, so without this it would be sent to the Start menu.
+            SteamLocalGame? pending = game ?? (title is null
+                ? null
+                : _snapshot().FirstOrDefault(candidate => FoldTitle(candidate.Name) == FoldTitle(title)));
+            if (pending is { Installed: false })
+            {
+                return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                    writer.WriteString("appId", pending.AppId);
+                    writer.WriteString("title", title ?? pending.Name);
+                    writer.WriteString("name", pending.Name);
+                    writer.WriteString("state", InstallState(pending));
+                    if (pending.BytesToDownload > 0)
+                    {
+                        writer.WriteString("progress", Infrastructure.ReadingUnits.Percent(
+                            Math.Clamp(pending.BytesDownloaded * 100d / pending.BytesToDownload, 0d, 100d)));
+                    }
+                    // Encargo 34: the read of its progress comes first, as the call with its argument written.
+                    writer.WriteString("next", $"{StatusCall(pending)} reads its progress; a game is not launched until "
+                        + "it finishes installing");
+                    writer.WriteString("authority", "steam_manifest_preread"); writer.WriteEndObject();
+                }), "steam_game_not_installed");
+            }
+            return IsOutsideLibrary(title)
+                ? new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                    if (appId is not null) writer.WriteString("appId", appId);
+                    writer.WriteString("title", title);
+                    writer.WriteBoolean("outsideLibrary", true);
+                    WriteEntitlement(writer, title);
+                    if (OutsideLibrary(title) is { } next) writer.WriteString("next", next);
+                    writer.WriteString("authority", "steam_manifest_preread"); writer.WriteEndObject();
+                }), "steam_installed_game_not_verified")
+                : ExternalJson.Failure(operation, "steam_installed_game_not_verified");
         }
+
+        appId = game.AppId;
         // Renew al máximo (falsedades F001/F016): the model launched the one installed game's appId (Rocket League) for
         // «Doom Eternal» and «Fortnite», twice in front of the owner, and said it had launched what was asked. The title
         // asked for goes in the call and must be this manifest's own (folded as an entitlement's title is); another,
         // or none, fails before anything is sent, with the games installed.
-        string? title = arguments.TryGetProperty("title", out JsonElement titleElement)
-            && titleElement.ValueKind == JsonValueKind.String
-            && !string.IsNullOrWhiteSpace(titleElement.GetString()) ? titleElement.GetString()!.Trim() : null;
         if (title is null || FoldTitle(title) != FoldTitle(game.Name))
         {
             SteamLocalGame[] installedGames = [.. _snapshot().Where(candidate => candidate.Installed).Take(20)];
@@ -978,6 +1256,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                     writer.WriteEndObject();
                 }
                 writer.WriteEndArray();
+                if (IsOutsideLibrary(title))
+                {
+                    writer.WriteBoolean("outsideLibrary", true);
+                    WriteEntitlement(writer, title);
+                }
+                if (OutsideLibrary(title) is { } next) writer.WriteString("next", next);
                 writer.WriteString("authority", "steam_manifest_preread"); writer.WriteEndObject();
             }), title is null ? "game_title_required" : "game_title_mismatch");
         }
@@ -1117,16 +1401,17 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken) =>
         new(Task.Delay(delay, cancellationToken));
 
-    private static string RequireAppId(JsonElement arguments)
+    private static string RequireAppId(JsonElement arguments) =>
+        ValidAppId(arguments) ?? throw new InvalidDataException("Steam AppID is invalid.");
+
+    private static string? ValidAppId(JsonElement arguments)
     {
         string appId = ExternalJson.RequiredString(arguments, "appId");
-        if (appId.Length is < 1 or > 10
+        return appId.Length is < 1 or > 10
             || appId[0] == '0'
-            || appId.Any(character => !char.IsAsciiDigit(character)))
-        {
-            throw new InvalidDataException("Steam AppID is invalid.");
-        }
-        return appId;
+            || appId.Any(character => !char.IsAsciiDigit(character))
+                ? null
+                : appId;
     }
 
     private static void WriteGame(Utf8JsonWriter writer, SteamLocalGame game)
@@ -1134,23 +1419,52 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         writer.WriteStartObject(); writer.WriteString("appId", game.AppId); writer.WriteString("name", game.Name);
         writer.WriteString("state", InstallState(game)); writer.WriteString("manifestSha256", game.ManifestSha256);
         writer.WriteNumber("bytesDownloaded", game.BytesDownloaded); writer.WriteNumber("bytesTotal", game.BytesToDownload);
+        if (game.LastPlayedUtc is { } played) writer.WriteString("lastPlayedUtc", played);
         writer.WriteEndObject();
     }
 
     // Renew al máximo (B-APP-4): Steam's EAppState flags (Open Steamworks AppsCommon.h): UpdateRunning 256, UpdatePaused
     // 512, Downloading 1048576. Only a running flag says «downloading»; a download in pause (1538: UpdateRequired |
     // UpdatePaused | UpdateStarted), or one with bytes and no running flag, is «paused».
+    // Encargo 52 (sesión real 03-11): the manifest Steam writes when it takes an install reads UpdateRequired |
+    // UpdateStarted 1024 with no bytes counted yet, and it was told «queued» while Steam was already bringing it. A job
+    // Steam started is «started»; a running flag is «downloading» before its first bytes reach the manifest; «queued» is
+    // left for one with neither.
     private const ulong RunningFlags = 256UL | 1048576UL;
     private const ulong PausedFlag = 512UL;
+    private const ulong UpdateStartedFlag = 1024UL;
 
-    private static string InstallState(SteamLocalGame game)
+    private static string InstallState(SteamLocalGame game) => game.Installed ? "installed" : DownloadState(game);
+
+    // The state of the bytes Steam still has to bring: a game's install, or the update of an installed one.
+    private static string DownloadState(SteamLocalGame game)
     {
-        if (game.Installed) return "installed";
         if (game.BytesToDownload > 0 && game.BytesDownloaded >= game.BytesToDownload) return "installing";
         if ((game.StateFlags & PausedFlag) != 0) return "paused";
-        if (game.BytesDownloaded > 0) return (game.StateFlags & RunningFlags) != 0 ? "downloading" : "paused";
-        return "queued";
+        if ((game.StateFlags & RunningFlags) != 0) return "downloading";
+        if (game.BytesDownloaded > 0) return "paused";
+        return (game.StateFlags & UpdateStartedFlag) != 0 ? "started" : "queued";
     }
+
+    // The bytes a manifest holds, with their readings (Holdout v4: «69 %» for 0.69 %, ReadingUnits) when it knows a total.
+    private static void WriteBytes(Utf8JsonWriter writer, SteamLocalGame game)
+    {
+        writer.WriteNumber("bytesDownloaded", game.BytesDownloaded);
+        writer.WriteNumber("bytesTotal", game.BytesToDownload);
+        if (game.BytesToDownload > 0)
+        {
+            double progress = Math.Clamp(game.BytesDownloaded * 100d / game.BytesToDownload, 0d, 100d);
+            writer.WriteNumber("progressPercent", progress);
+            writer.WriteString("progress", Infrastructure.ReadingUnits.Percent(progress));
+            writer.WriteString("downloaded", Infrastructure.ReadingUnits.Size(game.BytesDownloaded));
+            writer.WriteString("total", Infrastructure.ReadingUnits.Size(game.BytesToDownload));
+        }
+        else writer.WriteNull("progressPercent");
+    }
+
+    // Encargo 52: the status of a game is read later by its own appId and the title it bears, as the call written.
+    private static string StatusCall(SteamLocalGame game) =>
+        WireNames.Call("game.install.status", new() { ["appId"] = game.AppId, ["title"] = game.Name });
 
     private static string JobId(string appId) => "steam_job_"
         + Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(appId)))[..24];
@@ -1241,10 +1555,13 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 _ = ulong.TryParse(fields.GetValueOrDefault("StateFlags"), out ulong flags);
                 _ = long.TryParse(fields.GetValueOrDefault("BytesDownloaded"), out long downloaded);
                 _ = long.TryParse(fields.GetValueOrDefault("BytesToDownload"), out long total);
+                // 0 in a manifest of a game never played; a value out of the calendar is no date.
+                _ = long.TryParse(fields.GetValueOrDefault("LastPlayed"), out long played);
                 string installDirectory = fields.TryGetValue("installdir", out string? installDir)
                     ? Path.Combine(steamApps, "common", installDir) : string.Empty;
                 result[appId] = new(appId, name, Convert.ToHexStringLower(SHA256.HashData(bytes)),
-                    flags, Math.Max(0, downloaded), Math.Max(0, total), installDirectory);
+                    flags, Math.Max(0, downloaded), Math.Max(0, total), installDirectory,
+                    played is > 0 and < 253402300800 ? DateTimeOffset.FromUnixTimeSeconds(played) : null);
             }
             if (libraryUnread)
                 unread++;
@@ -1327,7 +1644,8 @@ internal sealed record SteamLocalGame(
     ulong StateFlags = 4,
     long BytesDownloaded = 0,
     long BytesToDownload = 0,
-    string InstallDirectory = "")
+    string InstallDirectory = "",
+    DateTimeOffset? LastPlayedUtc = null)
 {
     internal bool Installed => (StateFlags & 4UL) != 0;
 }
@@ -1378,7 +1696,7 @@ internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomat
     }
 
     // How long the dialog an act's address opens is waited for, and from which look a Steam window in front counts as
-    // the one it is drawn on (measured 2026-10-11 on redpc: the dialog was up within a second; Steam on screen draws it
+    // the one it is drawn on (measured 2026-10-11 on the development PC: the dialog was up within a second; Steam on screen draws it
     // over its main window and takes the front, Steam minimized opens it as a window of its own).
     private const int DialogLooks = 24;
     private const int FrontLook = 4;

@@ -138,6 +138,28 @@ internal static class UserBrowserIdentityResolver
                 && string.Equals(identity.Family, family, StringComparison.Ordinal)
                 && File.Exists(identity.Executable));
 
+    /// <summary>
+    /// Encargo 100: the processes that draw the windows of every browser Windows knows (registered, or the one a web link opens
+    /// with); empty when the registry cannot be read.
+    /// </summary>
+    internal static IReadOnlySet<string> RegisteredProcessNames()
+    {
+        try
+        {
+            HashSet<string> names = new(RegisteredBrowsers(Registry.LocalMachine, Registry.CurrentUser)
+                .Select(static registered => Resolve(registered.Name, registered.OpenCommand)?.ProcessName)
+                .OfType<string>(), StringComparer.OrdinalIgnoreCase);
+            if (ResolveFromRegistry()?.ProcessName is { } chosen)
+                names.Add(chosen);
+            return names;
+        }
+        catch (Exception exception) when (exception is System.Security.SecurityException
+            or UnauthorizedAccessException or IOException or ArgumentException or NotSupportedException)
+        {
+            return new HashSet<string>();
+        }
+    }
+
     private static IEnumerable<(string Name, string? OpenCommand)> RegisteredBrowsers(params RegistryKey[] hives)
     {
         foreach (RegistryKey hive in hives)

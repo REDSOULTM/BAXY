@@ -37,7 +37,7 @@ def test_what_the_facts_line_says_of_a_result_is_not_said_in_it_again(tmp_path: 
     tools = _results(server)
     if setting in ("all", "result_dedup"):
         assert tools[0] == ('{"observed":{"appId":"Spotify","windowId":"win_1"}}\n[En este turno: app_open → '
-                            'completado y verificado; ya estaba abierta antes de esta llamada]')
+                            'completado y verificado; ya estaba abierta antes de esta llamada, que no la abrió]')
         assert tools[1].startswith('{"observed":{"name":"compras.txt","size":19}}\n[En este turno: ')
     else:  # the mind as it was before it: the result as the App wrote it
         assert tools[0].startswith(OPENED_AT + "\n[En este turno: ")

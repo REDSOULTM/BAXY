@@ -80,6 +80,17 @@ def test_an_act_with_no_call_of_its_kind_in_the_session_is_contradicted() -> Non
     assert check("Listo, abrí Spotify.", "abre spotify", [looked], None) == []
 
 
+def test_the_sound_of_a_discord_call_silenced_by_its_deafen_is_an_act_of_its_kind() -> None:
+    # Uso real 2026-11-03 (G5): «silencié el audio de la llamada» after a completed client.deafen.set is that act, not
+    # one with no call of its kind; with only a look at Discord it still is.
+    deafened = _r("client.deafen.set", {"status": "completed", "verification": "readback",
+                                        "observed": {"deafened": True, "deafenedBefore": False, "micMuted": True}},
+                  {"client": "discord", "deafened": True})
+    looked = _r("input.visible.controls", {"status": "completed", "verification": "output_only", "view": "…"})
+    assert _rules("Silencié el audio de la llamada de Discord.", [deafened], "ensordéceme en discord") == []
+    assert _rules("Silencié el audio de la llamada de Discord.", [looked], "ensordéceme en discord") == ["no_call"]
+
+
 def test_what_the_answer_itself_made_is_not_an_act_on_the_pc() -> None:
     # Pasted text read and answered in words (rule 1): nothing was called, and nothing is contradicted.
     for answer in ("Te escribí un resumen corto: el error está en la línea 3.", "Revisé tu código: falta un paréntesis.",
@@ -168,6 +179,20 @@ def test_a_look_that_failed_read_nothing() -> None:
     assert _rules("El Bloc de notas no está abierto.", [gone]) == []
 
 
+def test_a_view_is_cut_only_by_its_cut_mark() -> None:
+    def look(note: str) -> dict:
+        return _r("input.visible.controls", {"status": "completed", "verification": "output_only",
+                                             "view": "Ventana «Sin título - Paint.NET» (paintdotnet, window 7), al frente\n"
+                                                     "Controles:\n[0] Button «Cerrar» (arriba)\n"
+                                                     f"Texto centro: Cerrar | 800 × 600\n{note}\n"},
+                  {"application": "Paint.NET", "includeText": True})
+    answer = "No hay nada escrito en la pizarra, Paint.NET está en blanco."
+    assert _rules(answer, [look("(texto cortado: 3 líneas leídas no se listan, por largas o pasado el tope)")]) \
+        == ["partial"]
+    # C3-155 s1: lines left out because they repeat a listed control's name hide nothing of what the window shows.
+    assert _rules(answer, [look("(8 líneas de texto no se listan: repiten el nombre de un control listado)")]) == []
+
+
 # ---- numbers --------------------------------------------------------------------------------------------------------
 @pytest.mark.parametrize("facts,answer,flagged", [
     ({"observed": {"percent": 69}}, "La batería está al 0,69 %.", True),
@@ -235,6 +260,44 @@ def test_an_absolute_path_that_no_result_shows() -> None:
     assert _rules(r"Está en C:\Users\ana\Proyectos\x.txt.", [home]) == ["folder"]
 
 
+# F16 (cosecha 03-11 22:40): «guardé hola_mundo.py en C:\Program Files\Notepad++» was read «C:\Program», which no result
+# shows: three rounds of turn.check and 21 s more for a true answer. A Windows path has spaces in its parts (Program
+# Files, Archivos de programa, «OneDrive - …», Mis documentos): it is read whole, quoted or not.
+def _saved_by_dialog(path: str) -> dict:
+    return _r("input.visible.click", {**DONE, "observed": {"clicked": "Guardar", "fileDialog": {"path": path,
+                                                                                                 "exists": True}}})
+
+
+@pytest.mark.parametrize("path,answer", [
+    (r"C:\Program Files\Notepad++\hola_mundo.py",
+     r"Guardé hola_mundo.py en C:\Program Files\Notepad++, pero no en tu carpeta de Descargas."),
+    (r"C:\Program Files\Notepad++\hola_mundo.py", r"Quedó en «C:\Program Files\Notepad++\hola_mundo.py»."),
+    (r"C:\Program Files (x86)\Editor Libre\notas.txt", r"Lo guardé en C:\Program Files (x86)\Editor Libre\notas.txt."),
+    (r"C:\Archivos de programa\Editor\nota.txt", r"Quedó en C:\Archivos de programa\Editor y no en Descargas."),
+    (r"C:\Users\ana\OneDrive - Universidad\Mis documentos\informe final.docx",
+     r"Lo guardé en C:\Users\ana\OneDrive - Universidad\Mis documentos."),
+    (r"C:\Users\ana\OneDrive - Universidad\Mis documentos\informe final.docx",
+     r"Está en C:\Users\ana\OneDrive - Universidad\Mis documentos\informe final.docx, listo para abrir."),
+])
+def test_a_path_with_spaces_that_a_result_shows_is_read_whole(path: str, answer: str) -> None:
+    assert _rules(answer, [_saved_by_dialog(path)]) == []
+
+
+def test_a_path_with_spaces_that_no_result_shows_is_still_flagged_whole() -> None:
+    saved = _saved_by_dialog(r"C:\Program Files\Notepad++\hola_mundo.py")
+    found = check(r"Lo guardé en C:\Program Files\Otro Editor\hola_mundo.py.", "", [saved],
+                  [(saved["op"], True, False)])
+    assert [(f["rule"], f["said"]) for f in found] == [("folder", r"C:\Program Files\Otro Editor\hola_mundo.py.")]
+    assert _rules(r"Quedó en «C:\Users\ana\Mis documentos\otro.txt».", [saved]) == ["folder"]
+
+
+def test_a_folder_with_spaces_asked_for_is_read_whole() -> None:
+    written = _written(r"C:\Users\ana\Mis Proyectos\web\notas.txt")
+    assert _rules("Listo, guardé notas.txt.", [written], r"crea notas.txt en C:\Users\ana\Mis Proyectos\web") == []
+    assert _rules("Listo, guardé notas.txt.", [_written(r"C:\Users\ana\notas.txt")],
+                  r"crea notas.txt en C:\Users\ana\Mis Proyectos\web") == ["asked_folder"]
+
+
 def test_a_place_asked_for_and_not_reached_told_as_done_in_no_place() -> None:
     # E024: «añade … en la carpeta BAXY-bench» written in the home folder, told as done.
     home = _written(r"C:\Users\ana\notas.txt")
@@ -247,8 +310,8 @@ def test_a_place_asked_for_and_not_reached_told_as_done_in_no_place() -> None:
 # ---- the name a file was saved with ---------------------------------------------------------------------------------
 # E017 (practice e2e, notebook, every version): «Guardar como» opened, no name nor folder typed, «Guardar» pressed: Windows
 # saved «lista pilas, cables.txt» in the home folder, and the answer said «guardé lista.txt en …\BAXY-bench».
-SAVE_REQUEST = r"abre el bloc de notas, escribe 'lista: pilas, cables' y guárdalo como lista.txt en C:\Users\usuario\BAXY-bench"
-SAVE_ANSWER = r"Listo, guardé lista.txt en C:\Users\usuario\BAXY-bench."
+SAVE_REQUEST = r"abre el bloc de notas, escribe 'lista: pilas, cables' y guárdalo como lista.txt en C:\Users\ana\BAXY-bench"
+SAVE_ANSWER = r"Listo, guardé lista.txt en C:\Users\ana\BAXY-bench."
 
 
 def _view(title: str) -> dict:
@@ -283,7 +346,7 @@ def test_a_name_said_saved_that_the_window_after_the_save_contradicts() -> None:
     titled = _saving()[:-1] + [_click("Guardar", {"changed": ["[29] TitleBar «lista pilas, cables.txt: Bloc de notas»"],
                                                   "gone": ["[30] TitleBar «Sin título: Bloc de notas»"]})]
     assert _rules(SAVE_ANSWER, titled, SAVE_REQUEST) == ["saved_name"]
-    assert _rules(r"Lo guardé en C:\Users\usuario\BAXY-bench\lista.txt.", receipts, SAVE_REQUEST) == ["saved_name"]
+    assert _rules(r"Lo guardé en C:\Users\ana\BAXY-bench\lista.txt.", receipts, SAVE_REQUEST) == ["saved_name"]
 
 
 @pytest.mark.parametrize("answer", [
@@ -354,7 +417,7 @@ def test_already_so_needs_a_result_that_says_it() -> None:
     same = _r("audio.mute", {"status": "completed", "verification": "unchanged", "observed": {"muted": True}})
     assert _rules("El audio ya estaba silenciado.", [same]) == []
     running = _r("app.open", {**DONE, "observed": {"appId": "Bloc de notas", "alreadyRunning": True}})
-    assert _rules("Abrí el Bloc de notas; ya estaba abierto, así que lo traje al frente.", [running]) == []
+    assert _rules("El Bloc de notas ya estaba abierto, así que lo traje al frente.", [running]) == []
 
 
 # Feria 2026-10-27: a volume set changed it at the first call and its repeats in the turn came back «unchanged»; the
@@ -476,6 +539,48 @@ def test_the_session_calls_go_with_a_kept_session(tmp_path: Path, monkeypatch) -
     # A session kept before the aid, with calls in it: what ran is not known whole, and nothing is said of it.
     mind.load_session([m for m in kept if m.get("role") != "baxy.session"])
     assert mind._calls is None
+
+
+# ---- a number only the OCR of a window gives --------------------------------------------------------------------------
+# uso-89 (diag-b5bd, R06, 5 of 6): the look at a fresh Edge read its frame's controls and the page by OCR only
+# («2. El del norte - calificaclon 829» for «El faro del norte - calificacion 8,9»); the answer told «829».
+EDGE_FRAME = ("Ventana «Ranking de prueba - Microsoft Edge» (msedge, window 131406), al frente\nControles:\n"
+              "[3] Button «Back» (arriba izq.)\n[16] TabItem «Ranking de prueba» (arriba izq.) (selected)\n"
+              "[19] Pane «Ranking de prueba - Microsoft Edge» (centro)\n")
+EDGE_OCR = ("Texto arriba: Ranking de prueba | 1 _ Rio de inviemo - calificacion 724 | 2. El del norte - calificaclon 829 | "
+            "3 _ Ciudad de papel - calificacion 8.1")
+EDGE_PAGE = ("[17] ListItem «El faro del norte - calificacion 8,9» (arriba)\n"
+             "[19] ListItem «Ciudad de papel - calificacion 8,1» (arriba)\n")
+
+
+@pytest.mark.parametrize("answer,view,flagged", [
+    ("En la lista que veo, El del norte tiene la mejor calificación, 829.", EDGE_FRAME + EDGE_OCR, True),
+    ("El del norte tiene la mejor calificación, 829.", EDGE_FRAME + EDGE_PAGE + EDGE_OCR, True),
+    ("El faro del norte tiene la mejor calificación, 8,9.", EDGE_FRAME + EDGE_PAGE + EDGE_OCR, False),
+    ("Ciudad de papel tiene 8.1.", EDGE_FRAME + EDGE_PAGE + EDGE_OCR, False),  # the controls say 8,1
+    ("Hay 4 elementos en la lista.", EDGE_FRAME + EDGE_OCR, False),  # a number the OCR does not give
+    ("La línea dice «calificaclon 829», que no se lee bien.", EDGE_FRAME + EDGE_OCR, False),  # quoted
+    ("No pude confirmar si es 829.", EDGE_FRAME + EDGE_OCR, False),  # negated
+    ("Tiene 829.", EDGE_FRAME + "(+40 más, sin listar por el tope)\n" + EDGE_OCR, False),  # the list is not whole
+    ("Tiene 19.", EDGE_FRAME + EDGE_OCR.replace("829", "19"), True),  # [19] is an index, not a number shown
+])
+def test_a_number_only_the_ocr_of_a_window_gives(answer: str, view: str, flagged: bool) -> None:
+    look = _r("input.visible.controls", {"status": "completed", "verification": "output_only", "view": view},
+              {"application": "Microsoft Edge", "includeText": True})
+    assert ("recognized_number" in _rules(answer, [look])) is flagged
+
+
+def test_a_number_of_a_window_drawn_without_controls_or_of_another_result_is_not_read_so() -> None:
+    drawn = ("Ventana «Steam» (steamwebhelper, window 7), al frente\nControles (no es la lista completa de la ventana: "
+             "puede tener más):\n(no se leyó ninguno)\nTexto arriba: FAVORITOS (324)")
+    steam = _r("input.visible.controls", {"status": "completed", "verification": "output_only", "view": drawn})
+    look = _r("input.visible.controls", {"status": "completed", "verification": "output_only",
+                                         "view": EDGE_FRAME + EDGE_OCR})
+    page = _r("browser.page.read", {"status": "completed", "verification": "output_only",
+                                    "observed": {"text": "El faro del norte - calificacion 829"}})
+    assert _rules("Tienes 324 favoritos.", [steam]) == []
+    assert "recognized_number" not in _rules("Tiene 829.", [look, page])
+    assert "recognized_number" not in _rules("Tiene 829.", [look], request="¿tiene 829?")
 
 
 # ---- a control said not to be there while the reading shows its name -----------------------------------------------
@@ -750,3 +855,349 @@ def test_an_odd_observation_or_several_sources_never_break_the_check() -> None:
                      [_searched("DuckDuckGo"), _searched("Wikipedia", source="encyclopedia")], [])
     assert [f["fact"] for f in findings if f["rule"] == "answered_by"] == [
         "web_search: lo respondió DuckDuckGo, Wikipedia (answeredBy); ningún resultado de este turno viene de «Google»"]
+
+
+# ---- a page told opened in a program the turn opened, while its result names another browser (encargo 70, F6) -------
+# Uso real 03-11 21:20: «Abre Gmail.» → app_open «Google Chrome» (already running) → browser_navigate, whose result said
+# browser «Opera GX» (the person's default) → «Listo, abrí Gmail en Chrome». The browser is read from the receipts only:
+# the app the turn opened and the navigation's own «browser», never a list of browsers.
+def _opened_app(name: str) -> dict:
+    return _r("app.open", {**DONE, "observed": {"appId": name, "displayName": name, "alreadyRunning": True}},
+              {"appId": name})
+
+
+def _navigated(browser: str = "Opera GX", url: str = "https://mail.example.com/") -> dict:
+    return _r("browser.navigate", {**DONE, "observed": {
+        "version": 1, "requestedUrl": url, "finalUrl": url, "browser": browser, "browserFamily": "opera_gx",
+        "authority": "user_browser_uia_address_postread"}}, {"url": url})
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("Listo, abrí Gmail en Chrome.", True),
+    ("Listo, abrí tu correo en Google Chrome.", True),
+    ("Te dejé el correo abierto en el navegador Chrome.", True),
+    ("Listo, abrí Gmail en Opera GX.", False),
+    ("Abrí Chrome, pero el correo se abrió en Opera GX, tu navegador predeterminado.", False),
+    ("Listo, abrí Gmail.", False),
+    ("No lo abrí en Chrome.", False),
+    ("Si quieres, te lo abro en Chrome.", False),
+    ("¿Quieres que lo abra en Chrome?", False),
+])
+def test_a_page_told_opened_in_the_app_the_turn_opened_while_its_result_names_another_browser(
+        answer: str, flagged: bool) -> None:
+    findings = [f for f in check(answer, "Abre el correo.", [_opened_app("Google Chrome"), _navigated()], [])
+                if f["rule"] == "browser"]
+    assert bool(findings) is flagged
+    if flagged:
+        assert findings[0]["fact"] == ("browser_navigate: la página se abrió en Opera GX (browser de su resultado), "
+                                       "no en Google Chrome; Google Chrome sólo se abrió con app_open")
+
+
+def test_the_browser_the_page_did_open_in_is_never_flagged() -> None:
+    # The app opened is the browser the page opened in (Opera GX, or Chrome by browser_navigate_named «chrome»).
+    assert "browser" not in _rules("Abrí Gmail en Opera GX.", [_opened_app("Opera GX"), _navigated()])
+    assert "browser" not in _rules("Abrí Gmail en Chrome.", [_opened_app("Google Chrome"), _navigated("chrome")])
+    # No app opened in the turn, or a navigation that did not complete: nothing to set against the answer.
+    assert "browser" not in _rules("Abrí Gmail en Chrome.", [_navigated()])
+    failed = _r("browser.navigate", {"status": "failed", "error": "page_host_not_found",
+                                     "observed": {"browser": "Opera GX"}})
+    assert "browser" not in _rules("Abrí Gmail en Chrome.", [_opened_app("Google Chrome"), failed])
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    # Held-out bench of encargo 70 (base model, AMD): app_open Chrome + browser_navigate (Opera GX) and these finals.
+    ("Listo, abrí Chrome y entré a Facebook.", True),
+    ("Listo, Chrome ya estaba abierto y ahora está en facebook.com.", True),
+    ("Abrí Chrome y Facebook se abrió en Opera GX.", False),
+    ("Abrí Chrome. Facebook quedó listo.", False),
+    ("No abrí Chrome: entré a Facebook en tu navegador.", False),
+])
+def test_the_app_the_turn_opened_and_the_pages_site_told_together(answer: str, flagged: bool) -> None:
+    receipts = [_opened_app("Google Chrome"), _navigated(url="https://www.facebook.com/")]
+    assert ("browser" in _rules(answer, receipts)) is flagged
+
+
+@pytest.mark.parametrize("address,name", [
+    ("https://web.whatsapp.com/", "whatsapp"), ("https://www.tiktok.com", "tiktok"),
+    ("https://ejemplo.com.ar/x", "ejemplo"), ("https://x.io/", ""),
+])
+def test_the_name_of_a_pages_site(address: str, name: str) -> None:
+    from baxy_mind.answer_check import _site_name
+    assert _site_name(address) == name
+
+
+@pytest.mark.parametrize("app,answer", [
+    ("Spotify", "Abrí Spotify y la canción ya suena en Spotify; la letra quedó en el navegador."),
+    ("Bloc de notas", "Abrí la receta y la pegué en el Bloc de notas."),
+    ("Google Chrome", "Lo busqué en Google y te dejé el video."),
+])
+def test_another_act_told_in_the_app_the_turn_opened_is_not_a_page_opened_there(app: str, answer: str) -> None:
+    # Revisión del encargo 70: only an opening told in the clause of «en X» places the page there.
+    assert "browser" not in _rules(answer, [_opened_app(app), _navigated()])
+
+
+def test_the_mind_asks_again_when_the_answer_puts_the_page_in_another_browser(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    first, second = "Listo, abrí Gmail en Chrome.", "Listo, abrí Gmail en Opera GX."
+    mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Google Chrome"}),
+                                    _call("browser_navigate", {"url": "https://mail.example.com/"}),
+                                    _say(first), _say(second)])
+    mind.wire_to_op = {"app_open": "app.open", "browser_navigate": "browser.navigate"}
+    mind.risk = {**mind.risk, "app_open": "low_reversible", "browser_navigate": "low_reversible"}
+    mind.decide(1, "Abre el correo.")
+    mind.continue_turn(2, _opened_app("Google Chrome")["observation"])
+    result = mind.continue_turn(3, _navigated()["observation"])
+    assert result["reply"] == second
+    note = server.bodies[-1]["messages"][-1]["content"]
+    assert "se abrió en Opera GX" in note and "no en Google Chrome" in note
+
+
+# ---- a send that stopped before Enter (uso real 2026-11-03, F1) -------------------------------------------------------
+# 17:21 «Envíalo.» in Discord: message.send failed at the draft check, before Enter, and BAXY said «Le mandé el mensaje a
+# …, pero no pude comprobar que llegó». Its result said only effectUncertain («sin confirmar»), which a sentence with its
+# limit may tell. The App now says in typed fields that Enter was not pressed and nothing was sent (DesktopMessagingAdapter
+# SendNotVerified): that result is a failure, never an unsure one, and the claim is contradicted, limit or not.
+SEND_STOPPED_BEFORE = {"status": "failed", "error": "message_draft_not_verified", "cause": "external_effect_ambiguous",
+                       "effectUncertain": True}
+SEND_STOPPED = {**SEND_STOPPED_BEFORE, "observed": {"version": 1, "messageWritten": False, "enterPressed": False,
+                                                    "sent": False, "stoppedAt": "draft_check", "displayName": "Letras"}}
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("Le mandé el mensaje a Letras, pero no pude comprobar que llegó.", True),
+    ("Listo, le envié el mensaje a Letras.", True),
+    ("El mensaje se envió a Letras.", True),
+    ("No le mandé el mensaje a Letras: no pude ver el texto en la caja de Discord.", False),
+    ("No pude enviar el mensaje a Letras porque no vi el borrador.", False),
+])
+def test_a_send_stopped_before_enter_is_never_told_as_sent(answer: str, flagged: bool) -> None:
+    receipt = _r("message.send", SEND_STOPPED, {"channel": "discord", "recipient": "Letras", "text": "ya voy"})
+    assert receipt["outcome"] == "falló (message_draft_not_verified): el mensaje no se escribió ni se envió"
+    assert ("not_completed" in _rules(answer, [receipt], "Envíalo.")) is flagged
+
+
+def test_the_old_receipt_of_a_send_stopped_before_enter_let_the_claim_through() -> None:
+    # What the turn of 17:21 had: «sin confirmar», and the sentence said its limit.
+    receipt = _r("message.send", SEND_STOPPED_BEFORE)
+    assert receipt["outcome"].startswith("sin confirmar")
+    assert _rules("Le mandé el mensaje a Letras, pero no pude comprobar que llegó.", [receipt], "Envíalo.") == []
+
+
+# Encargo 82 (vivo del 81, «Guardar como» 1/4): the path a file dialog saved to is in the click's receipt
+# (fileDialog.path), and answers that told another folder passed the check (3 of 3 gave no finding).
+def _saved_by_dialog(path: str) -> dict:
+    return _r("input.visible.click", {"status": "completed", "verification": "readback", "observed": {
+        "name": "Guardar", "kind": "Button", "fileDialog": {"closed": True, "path": path, "exists": True}}})
+
+
+_ASKED_FOLDER = "usa Guardar como y guárdalo con el nombre lista_ceiba.txt en la carpeta ceiba_guardados de mis documentos"
+
+
+@pytest.mark.parametrize("answer,path,rule", [
+    # The three answers as the live runs wrote them, with invented names.
+    ("Listo, lo guardé como lista_ceiba.txt en ceiba_guardados.", r"D:\Perfil\Documentos\borrador_ceiba.txt", "folder"),
+    (r"Listo, lo guardé como lista_ceiba.txt en Documentos\CEIBA\lista_ceiba.txt.", r"D:\Perfil\Documentos\lista_ceiba.txt",
+     "folder"),
+    ("Lo guardé en Descargas.", r"D:\Perfil\Documentos\lista_ceiba.txt", "folder"),
+    ("Lo guardé en la carpeta ceiba_guardados.", r"D:\Perfil\Documentos\lista_ceiba.txt", "folder"),
+    # The answer names no place and the file is not in the folder the person named.
+    ("Listo, lo guardé con ese nombre.", r"D:\Perfil\Documentos\lista_ceiba.txt", "asked_folder"),
+])
+def test_an_answer_that_tells_another_folder_than_the_file_dialog_saved_to(answer: str, path: str, rule: str) -> None:
+    found = check(answer, _ASKED_FOLDER, [_saved_by_dialog(path)], None)
+    assert rule in [f["rule"] for f in found]
+    assert any(path in f["fact"] for f in found), "the fact says where the file is"
+
+
+@pytest.mark.parametrize("answer,path", [
+    ("Listo, lo guardé como lista_ceiba.txt en ceiba_guardados.", r"D:\Perfil\Documentos\ceiba_guardados\lista_ceiba.txt"),
+    (r"Lo guardé en Documentos\ceiba_guardados\lista_ceiba.txt.", r"D:\Perfil\Documentos\ceiba_guardados\lista_ceiba.txt"),
+    ("Listo, lo guardé con ese nombre.", r"D:\Perfil\Documentos\ceiba_guardados\lista_ceiba.txt"),
+    # True of where it went, and said so.
+    ("Listo, lo guardé como lista_ceiba.txt en borradores, que es la carpeta que sale en el diálogo.",
+     r"D:\vivo\borradores\lista_ceiba.txt"),
+    ("Lo guardé en Documentos, no en ceiba_guardados.", r"D:\Perfil\Documentos\lista_ceiba.txt"),
+    ("No lo guardé en ceiba_guardados: quedó en Documentos.", r"D:\Perfil\Documentos\lista_ceiba.txt"),
+    # A known folder said in Spanish, on a disk that names it in English.
+    ("Lo guardé en Documentos.", r"C:\Users\ana\Documents\lista_ceiba.txt"),
+    ("Lo guardé en la carpeta que pediste.", r"D:\Perfil\Documentos\ceiba_guardados\lista_ceiba.txt"),
+])
+def test_an_answer_true_of_where_the_file_dialog_saved_has_no_finding(answer: str, path: str) -> None:
+    assert check(answer, _ASKED_FOLDER, [_saved_by_dialog(path)], None) == []
+
+
+def test_a_dialog_that_saved_nothing_is_no_place() -> None:
+    still_open = _r("input.visible.click", {"status": "failed", "error": "file_dialog_still_open", "observed": {
+        "fileDialog": {"closed": False, "path": r"D:\Perfil\Documentos\lista_ceiba.txt"}}})
+    assert "folder" not in _rules("Lo guardé en Descargas.", [still_open])
+
+
+# ---- uso-90: the page the result opened, and BAXY's own words in the voice ----------------------------------------
+# The receipt of diag-9dea c3-g10 (U06) as the App gave it: YouTube opened in Edge and its own dialog asks to sign in.
+_SIGN_IN_WALL = {
+    "status": "failed", "error": "page_requires_sign_in", "cause": "external_effect_ambiguous", "effectUncertain": True,
+    "observed": {"version": 1, "openedUrl": "https://www.youtube.com/watch?v=v8F6yJt1ULo", "browser": "Microsoft Edge",
+                 "pageDialog": "Sign in to confirm you’re not a bot", "signInLink": "Sign in",
+                 "next": "nothing played: the page opened shows its own dialog «Sign in to confirm you’re not a bot» over "
+                         "the video, and its link «Sign in» goes to a sign-in page; signing in is the person's own step, "
+                         "with their account, and until then a click in that dialog or this call again plays nothing"}}
+# diag-9dea c1-g10: the same call, with no dialog read, ended «unconfirmed» and named the page it opened.
+_UNCONFIRMED = {"status": "failed", "error": "user_browser_playback_unconfirmed", "cause": "external_effect_ambiguous",
+                "effectUncertain": True, "observed": {"openedUrl": "https://www.youtube.com/watch?v=v8F6yJt1ULo",
+                                                      "browser": "Microsoft Edge"}}
+_U06 = "Abre YouTube y búscame un video de cómo hacer pan casero."
+
+
+@pytest.mark.parametrize("facts", [_SIGN_IN_WALL, _UNCONFIRMED])
+def test_an_open_the_result_names_its_page_for_is_not_contradicted(facts: dict) -> None:
+    # diag-9dea U06, 6 of 6: «Abrí YouTube en Edge, pero sale la ventana…» was flagged in every run (the call stayed
+    # unsure), asked again twice, and once the second answer copied the note into the voice.
+    played = _r("media.play.youtube", facts, {"query": "cómo hacer pan casero"})
+    assert _rules("Abrí YouTube en Edge, pero sale la ventana de «Sign in to confirm you're not a bot»; tienes que entrar "
+                  "con tu cuenta para que se reproduzca el video.", [played], _U06) == []
+    # An unsure call whose result names no page it opened still contradicts a bare «abrí».
+    bare = _r("media.play.youtube", {**facts, "observed": {"browser": "Microsoft Edge"}}, {"query": "pan casero"})
+    assert _rules("Abrí YouTube en Edge.", [bare], _U06) == ["not_completed"]
+
+
+def test_an_answer_that_carries_a_tool_name_or_a_result_code_is_flagged() -> None:
+    played = _r("media.play.youtube", _SIGN_IN_WALL, {"query": "cómo hacer pan casero"})
+    leaked = ("Abrí YouTube en Edge, pero sale la ventana de «Sign in to confirm you're not…», pero no se completó: "
+              "media_play_youtube → sin confirmar (page_requires_sign_in): pudo o no ocurrir.")
+    found = check(leaked, _U06, [played], [("media.play.youtube", False, False)])
+    internal = [f for f in found if f["rule"] == "internal"]
+    assert internal and "media_play_youtube" in internal[0]["fact"] and "page_requires_sign_in" in internal[0]["fact"]
+    # A file name with an underscore is the person's, not BAXY's.
+    trashed = _r("filesystem.known.trash.named", DONE, {"name": "borrador_viejo.txt"})
+    assert "internal" not in _rules("Listo, borrador_viejo.txt quedó en la Papelera.", [trashed])
+
+
+def test_a_second_answer_that_copies_the_note_is_never_spoken(tmp_path: Path, monkeypatch) -> None:
+    # diag-9dea c3-g10 and diag-6f20 c4-g10: the second answer copied the check's fact, wire name and code included,
+    # and it was spoken. The first answer, the model's own words before any note, is spoken instead.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    first = "Cerré Paint."
+    copied = "Cerré Paint, pero no se completó: app_close → falló (window_not_found)."
+    mind, server, result = _closing(tmp_path, first, copied)
+    assert result["reply"] == first and len(server.bodies) == 3
+    said = [m["content"] for m in mind.conversation if m["role"] == "assistant" and m.get("content")]
+    assert said == [first]
+    checks = [c for c in _trace(mind) if c["stage"] == "turn.check"]
+    assert [c["round"] for c in checks] == [1, 2] and checks[1]["kept"] is False and checks[1].get("echo") is True
+
+
+# ---- a display mode told as kept ----------------------------------------------------------------------------------------
+# Uso real 04-11 (F24): twice «Windows la guarda para el próximo reinicio» with savedForRestart false.
+def _mode(saved: bool) -> dict:
+    observed = {"final": {"width": 1600, "height": 900, "refreshHz": 165}, "savedForRestart": saved}
+    return _r("display.mode.set", {**DONE, "observed": observed if saved else {
+        **observed, "savedMode": {"width": 1920, "height": 1080, "refreshHz": 60}}})
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("Puse la pantalla en 1600x900; Windows la guarda para el próximo reinicio.", True),
+    ("Listo, 1600x900 queda guardada.", True),
+    ("Cambié a 1600x900 y quedó así para siempre.", True),
+    ("Puse la pantalla en 1600x900, pero no quedó guardada: al reiniciar vuelve a 1920x1080.", False),
+    ("Está en 1600x900 sólo por ahora; Windows tiene guardada 1920x1080.", False),
+    ("Está a 165 Hz ahora, pero Windows lo guardó a 60 Hz.", False),
+    ("Puse la pantalla en 1600x900.", False),
+])
+def test_a_mode_only_shown_told_as_kept(answer: str, flagged: bool) -> None:
+    assert ("mode_not_saved" in _rules(answer, [_mode(False)])) is flagged
+
+
+def test_a_mode_saved_by_the_call_after_it_is_kept() -> None:
+    answer = "Listo, 1600x900 queda guardada."
+    assert "mode_not_saved" not in _rules(answer, [_mode(False), _mode(True)])
+    assert "mode_not_saved" not in _rules(answer, [_mode(True)])
+
+
+# ---- what a look read is a reading --------------------------------------------------------------------------------------
+# Uso real 04-11 (F30): the figures in vision.describe's text were «no está en los resultados», because a text past 400
+# characters gave no number and a size written in a text had no unit, and the model's second round took out all it had
+# read. The figures of a text the turn read are readings, however long; a figure nobody read still is not.
+_LONG_LOOK = ("La diapositiva muestra una tabla de memoria. " + "Fila de relleno sin cifras. " * 20
+              + "La primera fila dice 12,5 % de uso con 8 GB; la segunda, 27 % con 2 GB y la tercera 64.2% con 1024 MB.")
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("La tabla dice 12,5 %, 27 % y 64,2 % de uso.", False),
+    ("Las filas tienen 8 GB, 2 GB y 1024 MB.", False),
+    ("La primera fila llega al 61 % de uso.", True),
+    ("La primera fila tiene 32 GB.", True),
+])
+@pytest.mark.parametrize("op,key", [("vision.describe", "description"), ("screen.ocr.read", "text"),
+                                    ("web.fetch", "text")])
+def test_the_figures_of_a_long_text_read_are_readings(op: str, key: str, answer: str, flagged: bool) -> None:
+    shot = _r("screen.capture", {**DONE, "observed": {"version": 1, "width": 3840, "height": 2160}})
+    look = _r(op, {"status": "completed", "verification": "output_only", "observed": {key: _LONG_LOOK}})
+    assert ("number" in _rules(answer, [shot, look])) is flagged
+
+
+# Encargo 75 (R01): the last value of a table typed and never ended, told as put.
+def _cell_receipt(cell: dict) -> dict:
+    return {"op": "input.text.type", "tool": "input_text_type", "completed": True, "read": False, "arguments": {},
+            "outcome": "enviado sin verificar",
+            "observation": json.dumps({"status": "completed", "verification": "delivered_only", "observed": {"cell": cell}})}
+
+
+def test_a_text_still_pending_in_a_cell_is_said_to_the_model():
+    receipts = [_cell_receipt({"address": "F1", "value": "", "pendingText": "150"})]
+    found = [f for f in check("Listo, en la fila 1 puse manzana con 120 y mango con 150.", "pon frutas", receipts, [])
+             if f["rule"] == "pending_cell"]
+    assert len(found) == 1
+    assert "«150» sigue pendiente en la celda F1" in found[0]["fact"]
+
+
+def test_a_cell_a_key_ended_says_nothing():
+    receipts = [_cell_receipt({"address": "F1", "value": "", "pendingText": "150"}),
+                {**_cell_receipt({"address": "G1", "value": ""}), "op": "input.key.press", "tool": "input_key_press"}]
+    assert not [f for f in check("Listo, puse 150 en F1.", "pon frutas", receipts, []) if f["rule"] == "pending_cell"]
+
+
+# ---- «abrí X» of an application that was already open (uso-106, F20) ---------------------------------------------------
+@pytest.mark.parametrize("answer,flagged", [
+    ("Abrí Steam, aunque seguía abierto de antes.", True),
+    ("Listo, abrí Discord.", True),
+    ("Discord ya estaba abierto, lo traje al frente.", False),
+    ("No abrí nada: Steam ya estaba abierto.", False),
+    ("Te dejo Steam al frente.", False),
+])
+def test_opened_is_not_said_of_what_was_already_open(answer: str, flagged: bool) -> None:
+    assert ("already_open" in _rules(answer, [_opened_app("Steam")])) is flagged
+
+
+def test_opened_is_said_of_what_this_call_started_or_of_another_act() -> None:
+    started = _r("app.open", {**DONE, "observed": {"appId": "Steam", "alreadyRunning": False}}, {"appId": "Steam"})
+    assert "already_open" not in _rules("Abrí Steam.", [started])
+    assert "already_open" not in _rules("Abrí Gmail.", [_opened_app("Chrome"), _navigated()])
+    assert "already_open" not in _rules("Abrí Steam.", [])
+
+
+# ---- «no hay correos de X» after a read whose result says what it covered (uso-106, F2) --------------------------------
+_COVERS = ("only the newest mail of the default Inbox of the account set up in Outlook on this PC; it searched no sender, "
+           "subject nor other mail account")
+
+
+def _latest_mail(covers: str | None = _COVERS) -> dict:
+    observed = {"version": 1, "subject": "Aviso del mes", "sender": "Avisos Banco Andino <avisos@example.com>",
+                "receivedUtc": "2026-11-04T11:12:00Z", "body": "Hola.", "readFrom": "Outlook"}
+    if covers is not None:
+        observed["covers"] = covers
+    return _r("email.latest.read", {"status": "completed", "verification": "output_only", "observed": observed})
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("No aparece ningún correo de Marta Ríos en Outlook.", True),
+    ("No tienes correos de Marta Ríos; el último es de Avisos Banco Andino.", True),
+    ("El último correo de tu bandeja es de Avisos Banco Andino, sobre el aviso del mes.", False),
+    ("El último correo es de Avisos Banco Andino; no busqué correos de Marta Ríos.", False),
+])
+def test_an_absence_is_not_told_from_a_read_that_says_it_covered_one_mail(answer: str, flagged: bool) -> None:
+    assert ("partial" in _rules(answer, [_latest_mail()])) is flagged
+
+
+def test_a_read_that_says_no_scope_says_nothing_of_an_absence() -> None:
+    assert "partial" not in _rules("No aparece ningún correo de Marta Ríos en Outlook.", [_latest_mail(None)])
+    assert "partial" not in _rules("No aparece ningún correo de Marta Ríos en Outlook.", [_latest_mail("")])

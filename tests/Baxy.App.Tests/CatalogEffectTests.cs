@@ -22,6 +22,8 @@ public sealed class CatalogEffectTests
         "window.maximize", "window.minimize.all", "window.move", "window.resize", "window.snap", "file.open",
         "filesystem.file.open.latest", "filesystem.folder.open", "browser.page.read", "browser.tabs.list",
         "game.store.page", "game.store.search", "client.microphone.set", "clipboard.paste.into", "office.format.apply",
+        "client.deafen.set",
+        "client.channel.open",
     ];
 
     private static readonly HashSet<string> NetworkAlways =

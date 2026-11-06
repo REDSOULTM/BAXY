@@ -64,7 +64,10 @@ internal static class DeclaredTextFieldPress
             Flag(root, "editable"),
             Flag(root, "text"),
             Flag(root, "inside"),
-            Text(root, "name") ?? string.Empty);
+            Text(root, "name") ?? string.Empty)
+        {
+            ReadOnly = Flag(root, "readOnly"),
+        };
     }
 
     private static string? Text(JsonElement element, string name) =>
@@ -86,4 +89,24 @@ internal readonly record struct FocusRead(string Kind, bool Editable, bool HasTe
     /// <summary>Revisión de la guarda F013 (teclas): a control that Enter and space press themselves (a button, a link,
     /// a menu entry); on any other, space toggles, types or selects, and Enter goes to the dialog's default button.</summary>
     internal bool IsPressedByAKey => Kind is "Button" or "SplitButton" or "Hyperlink" or "MenuItem";
+
+    /// <summary>Encargo 36: its value says it cannot be edited (UI Automation's ValuePattern.IsReadOnly).</summary>
+    internal bool ReadOnly { get; init; }
+
+    /// <summary>
+    /// Encargo 36 (banco uso-b4c4, R11, R12, R13, S08): a focus whose keys turn into something other than text, by UI
+    /// Automation, as <see cref="WindowsTextDelivery.TakesNoText"/> is by a Win32 class: a menu (its letters are access
+    /// keys), a button, a check box or a radio button, a list, a tree, a tab strip or a grid's header (their letters
+    /// move the selection), a scroll bar, a slider or a toolbar, unless its own value can be edited; or an edit box or a
+    /// document whose value says it is read-only (a page's document). A pane, a custom control or a document with no
+    /// value (a console, a word processor) may take typing and is not judged.
+    /// </summary>
+    internal bool TakesNoText =>
+        Kind is "Edit" or "Document" ? ReadOnly : !Editable && NoTextKinds.Contains(Kind);
+
+    private static readonly HashSet<string> NoTextKinds = new(StringComparer.Ordinal)
+    {
+        "MenuBar", "Menu", "MenuItem", "Button", "SplitButton", "CheckBox", "RadioButton", "List", "ListItem", "Tree",
+        "TreeItem", "Tab", "TabItem", "Header", "HeaderItem", "ScrollBar", "Slider", "ToolBar", "TitleBar",
+    };
 }

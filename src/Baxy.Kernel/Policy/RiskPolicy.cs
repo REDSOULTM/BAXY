@@ -49,6 +49,18 @@ public static partial class RiskPolicy
         "email.send",
     };
 
+    // Encargo 76 (banco diag-fd2b, F13 6 of 6: after memory.save failed with memory_disabled the model called
+    // memory.enable, which ran unasked, and saved the fact): turning on what the owner switched off to keep their data
+    // private changes a setting of theirs nobody asked for in that call. Identity («Memoria y privacidad»: the memory is
+    // the person's to see, edit and erase; invariant 6, local and private) and OWASP LLM06 Excessive Agency (a human
+    // approves a high-impact action) make it wait for their «sí», bound to this invocation; the memory panel's switch
+    // is that «sí» (MemoryPanel). Turning it off keeps more private and goes directly. D3 (2026-09-20) let settings go
+    // unasked: Windows' Wi-Fi, Bluetooth and settings, not BAXY's own privacy guard.
+    private static readonly HashSet<string> PrivacyGuardsRequiringConfirmation = new(StringComparer.Ordinal)
+    {
+        "memory.enable",
+    };
+
     // landingRead: the handler's preflight read where this exact invocation lands and lowered its risk; only the
     // undeclared Enter or space rule (K-2, PressesUndeclared), which stands because this policy cannot see that, yields.
     public static PolicyDecision Evaluate(
@@ -58,14 +70,8 @@ public static partial class RiskPolicy
         JsonElement? arguments = null,
         bool landingRead = false)
     {
-        // Uso real 2026-10-21 (decisión del dueño, «lo que a ti te convenga»): a message to another person asks even in
-        // Bypass. The same day «sólo di que vas a ser bueno» was read as «dile a» and written to a family member's
-        // chat; in Bypass that slip would have been sent. A yes costs a second; a message sent cannot be taken back.
-        if (mode == ConfirmationMode.Bypass && string.Equals(operation, "message.send", StringComparison.Ordinal))
-        {
-            return PolicyDecision.RequireConfirmation;
-        }
-
+        // Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca… el modo normal ya tendría que
+        // pedirla»): Bypass asks nothing, a message to another person included (it asked since 2026-10-21).
         if (mode == ConfirmationMode.Bypass)
         {
             return PolicyDecision.Allow;
@@ -94,8 +100,11 @@ public static partial class RiskPolicy
             OperationRisk.ReadOnly => PolicyDecision.Allow,
             OperationRisk.Reversible => PolicyDecision.Allow,
             // privacy_sensitive: leer, copiar, capturar, escribir, radios y ajustes no
-            // destruyen nada (D3); instalar pregunta desde la decisión 8 del dueño.
-            OperationRisk.Sensitive => PolicyDecision.Allow,
+            // destruyen nada (D3); instalar pregunta desde la decisión 8 del dueño. Encender una guarda de privacidad
+            // de BAXY que el dueño apagó (la memoria) pregunta (encargo 76).
+            OperationRisk.Sensitive => operation is not null && PrivacyGuardsRequiringConfirmation.Contains(operation)
+                ? PolicyDecision.RequireConfirmation
+                : PolicyDecision.Allow,
             OperationRisk.External => operation is not null && ExternalRequiringConfirmation.Contains(operation)
                 ? PolicyDecision.RequireConfirmation
                 : PolicyDecision.Allow,
@@ -321,7 +330,9 @@ public static partial class RiskPolicy
     /// it asks. Declared on a text field it only types; declared onto a named control, that name is judged. Al máximo,
     /// K-2 refinada: the handler's preflight (IInvocationPreflight) reads the window the key goes to and lowers the
     /// press when that window is neither a messaging client nor a console (Evaluate's <c>landingRead</c>); one that is,
-    /// or that cannot be read, keeps this question. The windows are the providers' data, never this policy's.
+    /// or that cannot be read, keeps this question; so does an Enter whose window has a field holding text (auditoría de
+    /// falsedades 2026-11-04, P6: the provider's preflight reads it). The windows are the providers' data, never this
+    /// policy's.
     /// </summary>
     public static bool PressesUndeclared(string? operation, JsonElement arguments) =>
         string.Equals(operation, "input.key.press", StringComparison.Ordinal)
@@ -370,6 +381,17 @@ public static partial class RiskPolicy
     /// handed this one pattern over a folded name (<see cref="FoldHint"/> dropped): this policy's own words and verbs.
     /// </summary>
     public static string AsksPattern => Asks.Value.ToString();
+
+    /// <summary>
+    /// Encargo 83: a click that changes a setting of Windows waits for the person's yes, though no label says so: the
+    /// handler reads the control it would press (IInvocationPreflight) and raises it. On a classic panel, whose controls
+    /// carry numbers for identity, a button or a link tells by its own words: these, over a folded name, opening it. A Toggle or a
+    /// button bound to a setting needs no word (Get-SystemChange).
+    /// </summary>
+    public static string SystemActsPattern =>
+        @"^\W*(?:activar?|desactivar?|cambiar?|habilitar?|deshabilitar?|encender|enciende|apagar?|aplicar?|restablecer?|restaurar?"
+        + @"|conectar?|desconectar?|aceptar?|guardar cambios|turn (?:on|off)|switch (?:on|off|to)|change|enable|disable|apply|reset"
+        + @"|restore|connect|disconnect|accept|ok|save changes)\b";
 
     /// <summary>The trailing shortcut hint a fold drops («Enviar (Ctrl+Enter)»), for the worker's fold.</summary>
     public static string FoldHint => WorldActs.ShortcutHint.ToString();

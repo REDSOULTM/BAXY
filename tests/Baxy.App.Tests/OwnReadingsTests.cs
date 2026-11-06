@@ -84,7 +84,7 @@ public sealed class OwnReadingsTests
     {
         var transcript = new FieldTranscript();
         transcript.You("busca el clima");
-        transcript.Step(new JsonObject { ["id"] = "c1", ["net"] = "búsqueda «clima ñuñoa»" });
+        transcript.Step(new JsonObject { ["id"] = "c1", ["net"] = "búsqueda «clima viña»" });
         transcript.Step(new JsonObject { ["id"] = "c2" });
         transcript.Step(new JsonObject { ["id"] = "c3", ["net"] = "página de example.org" });
         transcript.Words("Listo.", null);
@@ -100,7 +100,7 @@ public sealed class OwnReadingsTests
             Assert.That(receipt.GetProperty("total").GetInt32(), Is.EqualTo(2));
             Assert.That(receipt.GetProperty("exits").EnumerateArray()
                     .Select(static exit => (exit.GetProperty("destination").GetString(), exit.GetProperty("at").GetString())),
-                Is.EqualTo(new[] { ("búsqueda «clima ñuñoa»", at), ("página de example.org", at) }));
+                Is.EqualTo(new[] { ("búsqueda «clima viña»", at), ("página de example.org", at) }));
             Assert.That(receipt.TryGetProperty("shown", out _), Is.False);
         });
     }

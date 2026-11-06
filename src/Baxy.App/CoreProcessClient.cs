@@ -16,6 +16,7 @@ internal sealed class CoreProcessClient : IAsyncDisposable
     private const int MaximumDiagnosticLineLength = 2048;
     private const int MaximumDiagnostics = 64;
     private static readonly TimeSpan PumpReapTimeout = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan ExitCodeWait = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan DefaultResponseReconciliationTimeout =
         TimeSpan.FromSeconds(70);
     private static readonly OperationDescriptor[] RequiredInteractiveOperations =
@@ -137,14 +138,48 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                 throw new IOException("El motor local terminó durante el saludo de protocolo.");
             }
         }
-        catch
+        catch (Exception exception)
         {
+            int? exitCode = exception is IOException ? await ExitCodeWithinAsync(_process).ConfigureAwait(false) : null;
             await StopProcessAsync().ConfigureAwait(false);
+            if (StartFailure(exitCode) is { } terminal)
+            {
+                throw terminal;
+            }
+
             throw;
         }
         finally
         {
             _lifecycleLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// Uso 85: a core that ended before its hello saying its data profile cannot be read or authenticated
+    /// (<see cref="CoreExitCodes.ProfileUnreadable"/>) ends the start for good; any other end is a failure to retry.
+    /// </summary>
+    internal static CoreProfileUnreadableException? StartFailure(int? exitCode) =>
+        exitCode == CoreExitCodes.ProfileUnreadable ? new CoreProfileUnreadableException() : null;
+
+    // The channel can close an instant before the process is reaped: its exit code is waited for briefly.
+    private static async Task<int?> ExitCodeWithinAsync(Process? process)
+    {
+        if (process is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            using var wait = new CancellationTokenSource(ExitCodeWait);
+            await process.WaitForExitAsync(wait.Token).ConfigureAwait(false);
+            return process.ExitCode;
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or InvalidOperationException
+            or Win32Exception)
+        {
+            return null;
         }
     }
 
@@ -245,7 +280,7 @@ internal sealed class CoreProcessClient : IAsyncDisposable
                         && operation.Arguments.TryGetProperty("foreground", out JsonElement foreground)
                         && foreground.ValueKind == JsonValueKind.True)
                     // BAXY Renew cu (C18, C04, C05): the operations that are an app.open in front by themselves.
-                    || operation.OperationName is "clipboard.paste.into" or "game.store.page" or "game.store.search")
+                    || operation.OperationName is "clipboard.paste.into" or "game.store.page" or "game.store.search" or "game.launch")
                 {
                     // Grant only the trusted core immediately before its serialized
                     // request can be observed, and only for an opening the person
@@ -788,3 +823,8 @@ internal sealed class CoreProcessClient : IAsyncDisposable
     }
 
 }
+
+/// <summary>The core ended before its hello because the data profile cannot be read or authenticated by this Windows
+/// account (<see cref="CoreExitCodes.ProfileUnreadable"/>): terminal until the person decides.</summary>
+internal sealed class CoreProfileUnreadableException()
+    : IOException("Los datos locales de BAXY no se pueden leer ni autenticar con esta cuenta de Windows.");

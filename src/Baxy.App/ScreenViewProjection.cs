@@ -132,6 +132,15 @@ internal static class ScreenViewProjection
                 }
 
                 text.Append('\n');
+                // Encargo 18 (banco de uso, U45): what the focused control that is no field shows (a console's output),
+                // as the reader read it by accessibility, line by line; its cut keeps the last lines.
+                if ((string?)focused["text"] is { Length: > 0 } shown)
+                {
+                    text.Append((bool?)focused["textCut"] == true
+                            ? "Lo que muestra el foco (cortado: sólo sus últimas líneas):\n"
+                            : "Lo que muestra el foco:\n")
+                        .Append(shown).Append('\n');
+                }
             }
 
             // Ajuste c3 (E017): Windows' common file dialog, as the provider read it by its structure (window.fileDialog).
@@ -235,7 +244,22 @@ internal static class ScreenViewProjection
 
         if (count > controls.Count)
         {
-            text.Append("(+").Append(count - controls.Count).Append(" más, sin listar por el tope)\n");
+            text.Append("(+").Append(count - controls.Count).Append(" más, sin listar por el tope");
+            // Uso-108 (B5): 47 cut views in the fleet's runs, 0 followed by a look with wanted: the line had no way out.
+            if (Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.CutNamesWanted))
+            {
+                text.Append(": wanted los busca");
+            }
+
+            text.Append(")\n");
+            // Uso-108 (B15): a look with wanted that found nothing looked just like one that found it past the cut.
+            if (view["wantedMissing"] is JsonArray missing && missing.Count > 0
+                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WantedNotFound))
+            {
+                // Review 16, I3: a row scrolled out of the list is not walked: the fact is about what is in sight.
+                text.Append("(ningún control a la vista lleva ")
+                    .Append(string.Join(", ", missing.Select(static word => $"«{(string?)word}»"))).Append(" en su nombre)\n");
+            }
         }
 
         // Renew al máximo (w8, falsedades F019): Steam's library read only by OCR, with no control or one, was told «hay
@@ -305,6 +329,25 @@ internal static class ScreenViewProjection
                     .Where(static name => name.Length > 0),
                 StringComparer.OrdinalIgnoreCase);
             int repeatedNames = 0;
+            // uso-89 (diag-b5bd, R06, 5 of 6: «El del norte tiene la mejor calificación, 829» for the page's «El faro del
+            // norte - calificacion 8,9»): text read by OCR beside the controls an application gives says what it is.
+            // Windows.Media.Ocr gives each line's text and box and no confidence (OcrLine, OcrWord: Text, BoundingRect),
+            // while a control's name is what the application itself exposes (UI Automation's Name). A line that is a
+            // listed control's name misread (its letters and its digits a few edits from that name's: «calificaclon 829»
+            // for «calificacion 8,9») is that control's text read worse: left out and counted, as an exact repeat is
+            // (held-out h1, the page's ListItems beside the OCR: the 6 answers of 20 made from the look took the OCR's
+            // «1.750» for the ListItem's «10.750», with the note and without it).
+            // What stays is said once, before it (a window drawn without controls has its own note above).
+            bool recognized = !drawn && (string?)view["textAuthority"] == "windows_media_ocr_lines"
+                && Baxy.Providers.Windows.Infrastructure.ModelAids.On(
+                    Baxy.Providers.Windows.Infrastructure.ModelAids.ScreenTextRecognized);
+            (string Letters, string Digits)[] listedShapes = recognized
+                ? controls.Concat(view["disabled"] as JsonArray ?? [])
+                    .Select(static control => Shape((string?)control?["name"]))
+                    .Where(static shape => shape.Letters.Length >= MisreadMinimumLetters)
+                    .ToArray()
+                : [];
+            int misreadNames = 0;
             foreach ((string label, string[] bandZones) in Bands)
             {
                 var lines = new List<string>();
@@ -326,6 +369,10 @@ internal static class ScreenViewProjection
                         {
                             repeatedNames++;
                         }
+                        else if (listedShapes.Length > 0 && Misreads(Shape(value), listedShapes))
+                        {
+                            misreadNames++;
+                        }
                         else
                         {
                             lines.Add(value);
@@ -335,6 +382,21 @@ internal static class ScreenViewProjection
 
                 if (lines.Count > 0)
                 {
+                    if (recognized)
+                    {
+                        text.Append("(el «Texto» se reconoció de la imagen de la ventana (OCR): puede leer mal letras y "
+                            + "cifras, como una coma decimal tomada por un dígito; lo que nombran los controles lo da la "
+                            + "propia aplicación y manda sobre ese texto)\n");
+                        if (view["textLanguages"] is JsonArray { Count: > 0 } languages)
+                        {
+                            // Encargo 119: nonsense told as a read when the text is in an alphabet the OCR does not have.
+                            text.Append("(ese OCR sólo reconoce ").Append(string.Join(", ", languages.Select(static tag => (string?)tag)))
+                                .Append(": un texto en otro alfabeto sale como letras sin sentido; entonces di que no se pudo leer)\n");
+                        }
+
+                        recognized = false;
+                    }
+
                     text.Append("Texto ").Append(label).Append(": ").Append(string.Join(" | ", lines)).Append('\n');
                 }
             }
@@ -343,6 +405,13 @@ internal static class ScreenViewProjection
             {
                 text.Append('(').Append(repeatedNames)
                     .Append(" líneas de texto no se listan: repiten el nombre de un control listado)\n");
+            }
+
+            if (misreadNames > 0)
+            {
+                text.Append('(').Append(misreadNames)
+                    .Append(" líneas del texto reconocido no se listan: repetían el nombre de un control listado con "
+                        + "letras o cifras mal leídas)\n");
             }
         }
 
@@ -441,6 +510,84 @@ internal static class ScreenViewProjection
         _ => null,
     };
 
+    /// <summary>uso-89: the fewest letters a control's name has for an OCR line to be read as that name misread.</summary>
+    internal const int MisreadMinimumLetters = 8;
+
+    // uso-89: a line's letters (folded: lower case, no accents) and its digits, apart: OCR misreads the one and the other
+    // in their own ways (rn→m, l↔i; a decimal comma read as a digit or lost).
+    private static (string Letters, string Digits) Shape(string? text)
+    {
+        var letters = new StringBuilder();
+        var digits = new StringBuilder();
+        foreach (char c in (text ?? string.Empty).Normalize(NormalizationForm.FormD))
+        {
+            if (char.IsDigit(c))
+            {
+                digits.Append(c);
+            }
+            else if (char.IsLetter(c))
+            {
+                letters.Append(char.ToLowerInvariant(c));
+            }
+        }
+
+        return (letters.ToString(), digits.ToString());
+    }
+
+    // A line is a listed name misread when its letters are within a fifth of that name's (in edits) and its digits within
+    // two, and no more edits than the name has digits: «El del norte - calificaclon 829» is «El faro del norte -
+    // calificacion 8,9»; «Pedido 5678» is not «Pedido 1234», and «Sólo instalados (3)» beside the check box «Sólo
+    // instalados» says a count the name does not, so it stays.
+    private static bool Misreads((string Letters, string Digits) line, (string Letters, string Digits)[] names)
+    {
+        if (line.Letters.Length < MisreadMinimumLetters)
+        {
+            return false;
+        }
+
+        foreach ((string letters, string digits) in names)
+        {
+            int longest = Math.Max(letters.Length, line.Letters.Length);
+            if (Math.Abs(letters.Length - line.Letters.Length) * 5 > longest
+                || Math.Abs(digits.Length - line.Digits.Length) > 2)
+            {
+                continue;
+            }
+
+            if (Edits(letters, line.Letters) * 5 <= longest
+                && Edits(digits, line.Digits) <= Math.Min(2, digits.Length))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static int Edits(string a, string b)
+    {
+        var previous = new int[b.Length + 1];
+        var current = new int[b.Length + 1];
+        for (int j = 0; j <= b.Length; j++)
+        {
+            previous[j] = j;
+        }
+
+        for (int i = 1; i <= a.Length; i++)
+        {
+            current[0] = i;
+            for (int j = 1; j <= b.Length; j++)
+            {
+                current[j] = Math.Min(Math.Min(current[j - 1], previous[j]) + 1,
+                    previous[j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1));
+            }
+
+            (previous, current) = (current, previous);
+        }
+
+        return previous[b.Length];
+    }
+
     private static string Folded(string? text) => string.Join(' ',
         (text ?? string.Empty).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
@@ -464,6 +611,11 @@ internal static class ScreenViewProjection
         if ((string?)control["value"] is { Length: > 0 } value)
         {
             line.Append(" = ").Append(value);
+            // Uso-108 (A7): a long value is cut at 120 by the reader; a prefix that reads whole is a false value.
+            if ((int?)control["valueCut"] is > 0 and int valueCut)
+            {
+                line.Append(" (valor cortado: faltan ").Append(valueCut).Append(" caracteres)");
+            }
         }
 
         if ((string?)control["state"] is { Length: > 0 } state)

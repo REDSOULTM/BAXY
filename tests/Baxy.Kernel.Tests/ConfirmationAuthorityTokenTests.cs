@@ -64,12 +64,17 @@ public sealed class ConfirmationAuthorityTokenTests
         using var authority = new InMemoryConfirmationAuthority(new FixedTimeProvider(InitialTime));
         ConfirmationBinding binding = Binding();
         string issued = authority.AuthorizeOrIssue(binding, null).Challenge!.Token;
-        char last = issued[^1];
+        // A 32-byte token is 43 base64url characters = 258 bits: the last character carries 4 data bits and 2 padding
+        // bits that decode to nothing (RFC 4648 §3.5 lets a decoder ignore them, and .NET's does). So 'any other last
+        // character' is sometimes the same bytes (1 in 16 tokens with 'A' or 'B'). Flipping the character's top bit
+        // (value ^ 32) always changes a data bit, so the altered token always decodes to different bytes.
+        const string Base64UrlAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"; // RFC 4648 §5, table 2
+        char alteredLast = Base64UrlAlphabet[Base64UrlAlphabet.IndexOf(issued[^1]) ^ 0b100000];
         string[] near =
         [
             issued[..^1],
             issued + "A",
-            issued[..^1] + (last == 'A' ? 'B' : 'A'),
+            issued[..^1] + alteredLast,
             issued.Any(char.IsLower) ? issued.ToUpperInvariant() : issued.ToLowerInvariant(),
             Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).TrimEnd('=').Replace('+', '-').Replace('/', '_'),
         ];

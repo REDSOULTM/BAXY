@@ -166,6 +166,7 @@
       win_minimize: () => rpc('window_command', { command: 'minimize' }),
       win_toggle_maximize: () => rpc('window_command', { command: 'toggle_maximize' }),
       win_close: () => rpc('window_command', { command: 'close' }),
+      win_exit: () => rpc('window_command', { command: 'exit' }),
       win_is_maximized: () => rpc('window_command', { command: 'is_maximized' }),
     },
   };

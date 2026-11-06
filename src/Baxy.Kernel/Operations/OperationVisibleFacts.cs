@@ -44,7 +44,13 @@ public static class OperationVisibleFacts
     //                                                     app.open's place, a power transition, a media command, a link
     //                                                     to a page the browser already showed (alreadyShown)
     //   delivered, readBack not true   → delivered_only  keys and text Windows accepted, a queued key, a paste whose
-    //                                                     text could not be read where it went (readBack not_readable)
+    //                                                     text could not be read where it went (readBack not_readable);
+    //                                                     not a key (no readBack of its own) whose window read again
+    //                                                     after it shows a change («after», DeliveredReadBack): that is
+    //                                                     its effect read back (auditoría de falsedades 2026-11-04, P1:
+    //                                                     Enter sent the message, the after showed it in the history, and
+    //                                                     «delivered_only» was told «no se volvió a mirar»), or whose
+    //                                                     window's image changed (surfaceChanged, uso-108 B2)
     //   an operation that requires no observed effect (catalog) → output_only   a read: its output is the result
     //   otherwise                      → readback        the effect was read back (the engine turns an unverified success
     //                                                     into a failure)
@@ -76,7 +82,7 @@ public static class OperationVisibleFacts
         "title", "name", "label", "reviewLabel", "displayName", "subject", "from", "sender",
         "query", "url", "host", "site", "folder", "askedFolder", "relativePath", "path", "fileName",
         "dueUtc", "due", "utc", "date", "time", "localTime", "weekday", "when", "at",
-        "start", "startUtc", "end", "endUtc", "receivedUtc", "createdUtc",
+        "start", "startLocal", "startUtc", "end", "endLocal", "endUtc", "receivedLocal", "receivedUtc", "createdUtc",
         "state", "status", "mode", "kind", "operation", "unit",
         "app", "application", "process", "processName", "window", "windowTitle",
         "ssid", "device", "location", "city", "condition",
@@ -166,6 +172,14 @@ public static class OperationVisibleFacts
         }
 
         string json = payload.ToJsonString(JsonOptions);
+        // Encargo 62: past the budget a page read's links go first, said, as an OCR's word boxes do below: the steps of
+        // the projection would take its text to 2,000 characters to keep them.
+        if (operation == "browser.page.read" && json.Length > messageLimit
+            && sanitized is JsonObject read && read.Remove("links"))
+        {
+            read["linksTruncated"] = true;
+            json = payload.ToJsonString(JsonOptions);
+        }
         if (!ocrObservation && sanitized is not null && json.Length > messageLimit)
         {
             json = WithProjectedObservation(payload, sanitized, messageLimit, paged);
@@ -212,7 +226,7 @@ public static class OperationVisibleFacts
             }
 
             if (Is(receipt, "effectReadBack", JsonValueKind.False)
-                || (receipt.TryGetProperty("delivered", out _) && !Is(receipt, "readBack", JsonValueKind.True)))
+                || (receipt.TryGetProperty("delivered", out _) && !DeliveredReadBack(receipt)))
             {
                 return VerificationDeliveredOnly;
             }
@@ -223,6 +237,28 @@ public static class OperationVisibleFacts
                 ? VerificationOutputOnly
                 : VerificationReadback;
     }
+
+    // A delivered act whose effect was read back: its own readBack says so, or, with no readBack of its own (a key), the
+    // window read again after it (the visible controls' «after») shows a change: a control's name, state or value, one
+    // that appeared or left, or the window's title. A view that saw nothing change (same, sameListed), only the focus
+    // move (focusOnly) or listed none of what changed is no read back. Uso-108 (B2): the window's image that changed after
+    // the key is read back too, and it is what proves a slide that moved with the same tree (after «sameListed»).
+    private static bool DeliveredReadBack(JsonElement receipt)
+    {
+        if (receipt.TryGetProperty("readBack", out JsonElement readBack))
+            return readBack.ValueKind == JsonValueKind.True;
+        if (Is(receipt, "surfaceChanged", JsonValueKind.True))
+            return true;
+        if (!receipt.TryGetProperty("after", out JsonElement after) || after.ValueKind != JsonValueKind.Object
+            || Is(after, "focusOnly", JsonValueKind.True))
+            return false;
+        return (after.TryGetProperty("title", out JsonElement title) && title.ValueKind == JsonValueKind.String)
+            || AfterChanges.Any(name =>
+                after.TryGetProperty(name, out JsonElement listed) && listed.ValueKind == JsonValueKind.Array
+                && listed.GetArrayLength() > 0);
+    }
+
+    private static readonly string[] AfterChanges = ["changed", "appeared", "gone"];
 
     private static bool Is(JsonElement receipt, string name, JsonValueKind kind) =>
         receipt.TryGetProperty(name, out JsonElement value) && value.ValueKind == kind;
@@ -718,7 +754,9 @@ public static class OperationVisibleFacts
                 return clean;
             case JsonValueKind.Array:
                 var cleanArray = new JsonArray();
-                int shown = ocrObservation ? int.MaxValue : processInventory ? 50 : 20;
+                // Uso real 02-11 («juegos instalados en Steam»: 30 in about 5.8k characters, the model got 20 and said the list
+                // was cut): a list that fits the 8 KiB budget is kept whole; past it, ObservedProjectionSteps bound it and say so.
+                int shown = processInventory && !ocrObservation ? 50 : int.MaxValue;
                 foreach (JsonElement item in element.EnumerateArray().Take(shown))
                 {
                     cleanArray.Add(Sanitize(item, ref cut, depth + 1, processInventory, ocrObservation, captureObservation, paged));

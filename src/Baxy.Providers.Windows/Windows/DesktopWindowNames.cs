@@ -11,6 +11,9 @@ namespace Baxy.Providers.Windows.Windows;
 /// </summary>
 public static partial class DesktopWindowNames
 {
+    /// <summary>What <see cref="Visible"/> adds to a minimized window's title.</summary>
+    public const string MinimizedMark = " (minimizada)";
+
     public static IReadOnlyList<(string Process, string Title)> Visible()
     {
         var windows = new List<(string, string)>();
@@ -42,7 +45,7 @@ public static partial class DesktopWindowNames
             // Renew al máximo (B-CU-2): BAXY's chat is Baxy.exe's window, not this process's.
             if (WindowsWindowControlProvider.OwnProcessNames.Contains(process))
                 return true;
-            windows.Add((process, IsIconic(window) ? title + " (minimizada)" : title));
+            windows.Add((process, IsIconic(window) ? title + MinimizedMark : title));
             return true;
         };
         _ = EnumWindows(callback, nint.Zero);

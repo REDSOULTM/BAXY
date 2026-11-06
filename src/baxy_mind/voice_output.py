@@ -5,7 +5,10 @@ scripts/voice/make_baxy_voice.py into BAXY_RENEW_TTS_DIR, beside the model and b
 flow-matching steps, speed, a fixed seed (the same sentence always sounds the same) and «shift», a fraction of a
 semitone that makes the voice a little smaller (pitch and formants together: the engine speaks that much slower and the take is resampled that much shorter, so the tempo stays). The text is first turned into
 what is said (speech_text.py: numbers, dates, English names); every sentence is brought to the same loudness, since the
-engine's level varies with the sentence.
+engine's level varies with the sentence. Each answer, foreseen take and notice is said in the language its own text is
+in, Spanish or English (language_id.py: the model answers in the person's language, whatever the interface's), carried
+by its text (speech_text.Utterance) to the normalization and Supertonic's tag; a text too short to settle it («Listo.»,
+«Done.») is said in the language the App tagged (voice.speak's «lang», or the turn's: the interface's).
 
 An answer sounds sentence by sentence: the first plays as soon as it is synthesized and the next is synthesized while
 it sounds; a loaded voice starts synthesizing an answer the moment it is given, while what is ahead of it still sounds.
@@ -36,8 +39,9 @@ import re
 import sys
 import threading
 import time
-from collections.abc import Iterator
+from collections.abc import Generator, Iterator
 from concurrent.futures import Future, ThreadPoolExecutor, wait
+from contextlib import contextmanager
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -45,7 +49,10 @@ from typing import Callable
 
 import numpy as np
 
-from .speech_text import NUMBER_WORDS, spoken
+from . import language_id
+from .memory import commit_available_mb
+from .resample import resample_poly
+from .speech_text import NUMBER_WORDS, Utterance, lang_of, language, spoken
 
 MAX_CHARS = 8192
 BLOCK_S = 0.03      # playback block: a cancel stops the sound within one block
@@ -82,6 +89,44 @@ _SENTENCE_END = re.compile(r"(?<=[.!?…])\s+")
 _VOWELS = re.compile(r"[aeiouáéíóúü]+", re.IGNORECASE)
 _MODEL_FILES = ("duration_predictor.int8.onnx", "text_encoder.int8.onnx", "vector_estimator.int8.onnx",
                 "vocoder.int8.onnx", "tts.json", "unicode_indexer.bin", "voice.bin", "baxy-voice.json")
+# Uso real 2026-11-02: with about 1 GB left to commit on the PC, loading the voice died inside the engine («bad
+# allocation», 0xC0000409: the C runtime's abort, a fail-fast no handler of the process catches) and the mind with it.
+# A model is loaded only with the memory it needs left to commit. Measured on the notebook (2026-11-02, the peak commit
+# of a process over its own before): the voice and its first synthesis +258 MB, the recognizer (voice.py) and a first
+# decode +814 MB; half as much again is left for what other processes commit meanwhile (the model server starting).
+VOICE_COMMIT_MB = 400
+EAR_COMMIT_MB = 1200
+# Encargo 10 (punto 6): a load that found too little memory to commit is retried on the next use, so a passing low
+# point does not turn the voice or the ear off for the whole session; after this many tries without room it gives up.
+NATIVE_LOAD_RETRIES = 3
+# One native load at a time, so each one's check sees what the one before it took (both start with the mind).
+_NATIVE_LOAD = threading.Lock()
+
+
+class NotEnoughMemory(MemoryError):
+    """Uso 95: a native load that did not fit, with its figures (what was left to commit, what it needs) for the App."""
+
+    def __init__(self, what: str, left_mb: int, need_mb: int) -> None:
+        super().__init__(f"{what} not loaded: {left_mb} MB of memory left to commit, {need_mb} MB needed")
+        self.left_mb, self.need_mb = left_mb, need_mb
+
+
+@contextmanager
+def native_load(need_mb: int, what: str) -> Generator[None, None, None]:
+    """A native model load, alone, and only with ``need_mb`` left to commit; otherwise NotEnoughMemory says how much
+    was."""
+    with _NATIVE_LOAD:
+        left = commit_available_mb()
+        if left is not None and left < need_mb:
+            raise NotEnoughMemory(what, left, need_mb)
+        try:
+            yield
+        except RuntimeError as error:
+            # uso-116: what fills the memory while a model loads is another process's. The engine says it as std::bad_alloc's
+            # what() on MSVC inside a RuntimeError, and a load that failed on it is a lack of memory like the check's.
+            if "bad allocation" not in str(error) and "bad_alloc" not in str(error):
+                raise
+            raise NotEnoughMemory(what, commit_available_mb() or 0, need_mb) from error
 
 
 def _speed(text: str) -> float:
@@ -91,14 +136,14 @@ def _speed(text: str) -> float:
     return 0.94 if syllables <= 8 else 1.0 if syllables <= 20 else 1.06
 
 
-def clause_cut(sentence: str) -> int | None:
+def clause_cut(sentence: str, lang: str = "es") -> int | None:
     """Where a first take that ends at a clause ends: just after the first «,» «;» or «:»
     followed by a space that closes CLAUSE_MIN_CHARS characters and CLAUSE_MIN_WORDS words, outside quotes and
     brackets and not after a number («1,5» has no space; «1, 2, 3» and «uno, dos o tres» are lists); a dash is
     already «, » in what is said (spoken). None when what
     follows that mark has fewer than CLAUSE_MIN_WORDS words: a later mark would leave fewer still. It looks only at the
     text up to the mark and counts the words after it, so a sentence still being written that has a cut has the
-    whole sentence's (foresee)."""
+    whole sentence's (foresee). lang: the take's, whose number words are a list («one, two» in English only)."""
     depth, quoted = 0, False
     for at, char in enumerate(sentence):
         if char in "«“(":
@@ -112,7 +157,7 @@ def clause_cut(sentence: str) -> int | None:
             if at + 1 < CLAUSE_MIN_CHARS or len(words) < CLAUSE_MIN_WORDS:
                 continue
             last = words[-1].strip(",;:¿?¡!«»“”\"()").lower()
-            if last[-1:].isdigit() or last in NUMBER_WORDS:
+            if last[-1:].isdigit() or last in NUMBER_WORDS[lang]:
                 continue
             return at + 1 if len(sentence[at + 1:].split()) >= CLAUSE_MIN_WORDS else None
     return None
@@ -200,11 +245,18 @@ class Speech:
         self._early: _Notice | None = None   # the last notice asked: said while an answer's first sentence is synthesized
         # Al máximo 9.4: first sentences synthesized while the model still wrote their answer (foresee), by the text
         # synthesized, with the generation they were asked in; an answer whose first sentence is one of them uses it.
-        self._foreseen: dict[str, tuple[int, Future]] = {}
+        # By (language, take): the same words are another take in another language.
+        self._foreseen: dict[tuple[str, str], tuple[int, Future]] = {}
+        # The language the App last tagged (voice.speak, speak_in): a text too short to settle its own is said in it.
+        self._lang = "es"
         self._notice_text = ""               # the turn's notice phrase (set_notice), said only as a notice
         self._notice_audio: np.ndarray | None = None  # its audio, synthesized once, with no pause after it
         self._ready = threading.Event()
         self.failure = ""
+        # Encargo 10 (punto 6): why the voice is not loaded yet when it is not a failure (too little memory to commit at
+        # load time); cleared once it loads, turned into a failure once the retries run out. The App's status says it.
+        self.deferred = ""
+        self._load_tries = 0
         self.speaking = False
         self._tts = None
         self._voice: dict = {}
@@ -231,10 +283,13 @@ class Speech:
         return self._ready.is_set() and not self.failure
 
     def speak(self, text: str, notice: bool = False) -> bool:
+        """text: an Utterance tagged with the App's language (a plain str is Spanish); it is said in its own when it
+        settles it (language_id)."""
         # FT/proveedores goal (E001): while the voice still loads (about 26 s after the catalog on the notebook) the
         # answer waits in the queue and sounds once it is loaded; it was dropped, and the first answer after BAXY
         # started was never heard. Only a voice that failed refuses it.
-        text = " ".join(str(text or "").split())[:MAX_CHARS]
+        self._lang = lang_of(text)
+        text = self._said(str(text or ""))
         if not text or self.failure:
             return False
         with self._posting:
@@ -245,7 +300,8 @@ class Speech:
                 # Only the mind's phrase, from its audio: ready at once and nothing to synthesize, it never holds the
                 # synthesis an answer given now needs. With no audio yet (the voice still loads) it is not said, nor
                 # while an answer sounds (it would follow it).
-                if text != self._notice_text or self._notice_audio is None or self._answer_sounding:
+                if (text != self._notice_text or text.lang != lang_of(self._notice_text) or self._notice_audio is None
+                        or self._answer_sounding):
                     return False
                 self._early = _Notice(self._generation, self._answers, self._sounded, self._notice_audio,
                                       time.perf_counter())
@@ -261,6 +317,17 @@ class Speech:
             self._queue.put_nowait((self._generation, text, time.perf_counter(), None, audio))
         return True
 
+    def speak_in(self, lang: object) -> None:
+        """The language the turn's answer will be said in (turn.decide's or turn.notice's «lang»), told before it is
+        written: what is foreseen and the turn's notice are made in it, from a session's first turn (until then only
+        voice.speak told it, and the first English answer lost its foreseen take and its notice)."""
+        self._lang = language(lang)
+
+    def _said(self, text: str) -> Utterance:
+        """text as said: its spaces folded, cut at MAX_CHARS, in its own language or the App's (language_id.said_in)."""
+        text = " ".join(text.split())[:MAX_CHARS]
+        return Utterance(text, language_id.said_in(text, self._lang) if text else self._lang)
+
     def foresee(self, text: str | None, done: bool) -> bool:
         """An answer as the model writes it (al máximo 9.4): once its first sentence is closed (or the answer is done),
         its first take (that sentence, or its first clause once that one is closed) is synthesized now, the same take
@@ -274,7 +341,7 @@ class Speech:
                 self._foreseen.clear()
             return True
         raw = text
-        text = " ".join(raw.split())[:MAX_CHARS]
+        text = self._said(raw)  # the language of what is written so far
         if not self.ready:
             return True
         if not text:
@@ -287,7 +354,7 @@ class Speech:
         if not done and len(pieces) < 2:
             # the first sentence is not closed yet; its first clause may be, and it is the take the whole sentence will
             # start with
-            cut = clause_cut(units[0])
+            cut = clause_cut(units[0], text.lang)
             if cut is None:
                 return False
             first = units[0][:cut]
@@ -299,20 +366,21 @@ class Speech:
             first = f"{units[0]} {units[1]}"
         else:
             first = self._takes(units, text)[0]
+        first = Utterance(first, text.lang)
         with self._posting:
-            if first not in self._foreseen:
+            if (first.lang, first) not in self._foreseen:
                 generation = self._generation
                 future = self._synthesis.submit(
                     lambda: self._synthesize(first) if generation == self._generation else np.zeros(0, np.float32))
-                self._foreseen[first] = (generation, future)
+                self._foreseen[(first.lang, first)] = (generation, future)
                 while len(self._foreseen) > 4:
                     self._foreseen.pop(next(iter(self._foreseen)))
         return True
 
     def set_notice(self, text: str) -> Future | None:
         """The turn's notice phrase (turn.notice), synthesized now: the synthesis, done once its audio is kept. Empty,
-        or with the voice not loaded, no notice is said (None)."""
-        text = " ".join(str(text or "").split())[:MAX_CHARS]
+        or with the voice not loaded, no notice is said (None). It is made in its own language (_said)."""
+        text = self._said(str(text or ""))
         with self._posting:
             self._notice_text, self._notice_audio = text, None
             if text and self.ready:
@@ -324,7 +392,7 @@ class Speech:
         def keep() -> None:
             audio = self._synthesize(text, False)
             with self._posting:
-                if self._notice_text == text:
+                if self._notice_text == text and lang_of(self._notice_text) == text.lang:
                     self._notice_audio = audio
 
         def failed(done) -> None:
@@ -361,14 +429,31 @@ class Speech:
     # --- the speech thread ----------------------------------------------------------------------------------------
 
     def _run(self) -> None:
-        try:
-            self._start()
-        except Exception as error:  # noqa: BLE001 - without a voice BAXY still answers on screen
-            self.failure = repr(error)
-            sys.stderr.write(f"baxy_mind_renew_speech: {self.failure}\n")
-            sys.stderr.flush()
-        finally:
-            self._ready.set()
+        while True:
+            try:
+                self._start()
+                self.deferred = ""
+                break
+            except MemoryError as error:
+                # Encargo 10 (punto 6): a low-memory moment does not turn the voice off for the session. It is deferred
+                # and retried on the next use (the next queued answer, or a close), up to NATIVE_LOAD_RETRIES; only then
+                # is it a failure. «ready» stays false meanwhile (no _ready.set), so the App's status says it is pending.
+                self._load_tries += 1
+                self.deferred = repr(error)
+                sys.stderr.write(f"baxy_mind_renew_speech: deferred ({self._load_tries}): {self.deferred}\n")
+                sys.stderr.flush()
+                if self._load_tries >= NATIVE_LOAD_RETRIES:
+                    self.failure = self.deferred
+                    break
+                if self._queue.get() is None:  # a use, or a close; nothing sounds until the voice loads
+                    self._ready.set()
+                    return
+            except Exception as error:  # noqa: BLE001 - without a voice BAXY still answers on screen
+                self.failure = repr(error)
+                sys.stderr.write(f"baxy_mind_renew_speech: {self.failure}\n")
+                sys.stderr.flush()
+                break
+        self._ready.set()
         while not self.failure:
             try:
                 item = self._queue.get(timeout=1.0)
@@ -441,23 +526,26 @@ class Speech:
 
         folder = Path(os.environ.get("BAXY_RENEW_TTS_DIR", ""))
         self._voice = json.loads((folder / "baxy-voice.json").read_text(encoding="utf-8"))
-        self._tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(
-            supertonic=sherpa_onnx.OfflineTtsSupertonicModelConfig(
-                duration_predictor=str(folder / "duration_predictor.int8.onnx"),
-                text_encoder=str(folder / "text_encoder.int8.onnx"),
-                vector_estimator=str(folder / "vector_estimator.int8.onnx"),
-                vocoder=str(folder / "vocoder.int8.onnx"), tts_json=str(folder / "tts.json"),
-                unicode_indexer=str(folder / "unicode_indexer.bin"), voice_style=str(folder / "voice.bin")),
-            num_threads=THREADS, provider="cpu")))
-        self.rate = int(self._tts.sample_rate)
-        self._shift = Fraction(2 ** (float(self._voice.get("shift", 0)) / 12)).limit_denominator(100)
-        # Loads the voice now, so the first answer does not wait for it.
-        self._synthesize("Hola.", pause=False)
+        with native_load(VOICE_COMMIT_MB, "voice"):
+            self._tts = sherpa_onnx.OfflineTts(sherpa_onnx.OfflineTtsConfig(model=sherpa_onnx.OfflineTtsModelConfig(
+                supertonic=sherpa_onnx.OfflineTtsSupertonicModelConfig(
+                    duration_predictor=str(folder / "duration_predictor.int8.onnx"),
+                    text_encoder=str(folder / "text_encoder.int8.onnx"),
+                    vector_estimator=str(folder / "vector_estimator.int8.onnx"),
+                    vocoder=str(folder / "vocoder.int8.onnx"), tts_json=str(folder / "tts.json"),
+                    unicode_indexer=str(folder / "unicode_indexer.bin"), voice_style=str(folder / "voice.bin")),
+                num_threads=THREADS, provider="cpu")))
+            self.rate = int(self._tts.sample_rate)
+            self._shift = Fraction(2 ** (float(self._voice.get("shift", 0)) / 12)).limit_denominator(100)
+            # Loads the voice now, so the first answer does not wait for it, nor for the language model.
+            self._synthesize("Hola.", pause=False)
+            language_id.load()
 
     def _sentences(self, text: str) -> _Sentences:
         """Each sentence's audio in order: the first is already being synthesized (while the output opens), and each
-        next one is synthesized while the previous one sounds."""
-        sentences = self._takes(self._units(text), text)
+        next one is synthesized while the previous one sounds. text: an Utterance; each take keeps its language."""
+        lang = lang_of(text)
+        sentences = [Utterance(take, lang) for take in self._takes(self._units(text), text)]
         generation = self._generation
 
         def synthesize(sentence: str) -> np.ndarray:
@@ -467,7 +555,7 @@ class Speech:
             return self._synthesize(sentence) if generation == self._generation else np.zeros(0, np.float32)
 
         with self._posting:
-            foreseen = self._foreseen.pop(sentences[0], None)
+            foreseen = self._foreseen.pop((lang, sentences[0]), None)
         if foreseen is not None and foreseen[0] == generation:
             first = foreseen[1]
         else:
@@ -487,7 +575,7 @@ class Speech:
 
     @staticmethod
     def _units(text: str) -> list[str]:
-        """The sentences of what is said."""
+        """The sentences of what is said, in the text's language (spoken)."""
         return [sentence for sentence in _SENTENCE_END.split(spoken(text)) if sentence.strip()]
 
     @staticmethod
@@ -508,14 +596,13 @@ class Speech:
                 return [spoken(text)]
             return [f"{sentences[0]} {sentences[1]}", *sentences[2:]]
         if sentences:
-            cut = clause_cut(sentences[0])
+            cut = clause_cut(sentences[0], lang_of(text))
             if cut is not None:
                 return [sentences[0][:cut], sentences[0][cut:].lstrip(), *sentences[1:]]
         return sentences
 
     def _synthesize(self, text: str, pause: bool = True) -> np.ndarray:
         import sherpa_onnx
-        from scipy.signal import resample_poly
 
         assert self._tts is not None
         config = sherpa_onnx.GenerationConfig()
@@ -523,12 +610,12 @@ class Speech:
         config.num_steps = int(self._voice.get("steps", 8))
         config.speed = float(self._voice.get("speed", 1.0)) * _speed(text) / float(self._shift)
         # The whole map, never config.extra[key] = ...: pybind11 hands Python a copy of it and the keys were lost, so
-        # BAXY spoke with Supertonic's default «en» tag and a new random seed every time (found 2026-10-20).
-        config.extra = {"lang": str(self._voice.get("lang", "es")), "seed": str(self._voice.get("seed", 7))}
+        # BAXY spoke with Supertonic's default «en» tag and a new random seed every time (found 2026-10-20). The tag is
+        # the take's own language (an Utterance's: «es» or «en», two of Supertonic 3's 31); a plain str, the recipe's.
+        lang = getattr(text, "lang", None) or str(self._voice.get("lang", "es"))
+        config.extra = {"lang": lang, "seed": str(self._voice.get("seed", 7))}
         audio = np.asarray(self._tts.generate(text, config).samples, dtype=np.float32)
-        if self._shift != 1:
-            audio = resample_poly(audio, self._shift.denominator, self._shift.numerator).astype(np.float32)
-        audio = _trim(audio, self.rate).copy()
+        audio = _trim(shifted(audio, self._shift), self.rate).copy()
         rms = float(np.sqrt(np.mean(audio ** 2))) if audio.size else 0.0
         if rms > 0:
             audio *= min(LOUDNESS / rms, PEAK / float(np.max(np.abs(audio))))
@@ -592,6 +679,11 @@ class Speech:
             self._answer_sounding = False
             self.speaking = False
             self._on_state(False)
+
+
+def shifted(audio: np.ndarray, shift: Fraction) -> np.ndarray:
+    """A take resampled by baxy-voice.json's «shift»: shorter by that much, so pitch and formants rise together."""
+    return resample_poly(audio, shift.denominator, shift.numerator) if shift != 1 else audio
 
 
 def lip_envelope(audio: np.ndarray, rate: int) -> list[float]:

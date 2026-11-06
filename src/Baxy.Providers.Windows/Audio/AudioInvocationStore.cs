@@ -140,7 +140,7 @@ internal sealed class AudioInvocationStore
                         "The invocation state is a reparse point.");
                 }
 
-                global::Baxy.Providers.Windows.AtomicFileReplacement.Replace(
+                global::Baxy.Kernel.AtomicFileReplacement.Replace(
                     temporaryPath,
                     targetPath);
             }

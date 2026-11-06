@@ -44,10 +44,11 @@ public sealed class SteamLocalAdapterTests
         ];
         var adapter = new SteamLocalAdapter(() => observed);
         var said = new Dictionary<string, string?>(StringComparer.Ordinal);
-        foreach (string appId in new[] { "10", "11", "12" })
+        foreach (SteamLocalGame game in observed)
         {
+            string appId = game.AppId;
             ExternalCapabilityReceipt status = await adapter.InvokeAsync(
-                "game.install.status", Json($$"""{"appId":"{{appId}}"}"""), CancellationToken.None);
+                "game.install.status", Json($$"""{"appId":"{{appId}}","title":"{{game.Name}}"}"""), CancellationToken.None);
             said[appId] = status.Result?.GetProperty("state").GetString();
         }
 
@@ -109,6 +110,87 @@ public sealed class SteamLocalAdapterTests
                 Is.EqualTo("620"));
         });
     }
+
+    // Auditoría de falsedades 2026-11-04 (P2, U34 18 de 18): «¿Tengo algún juego de carreras instalado?» → a list with
+    // count 0 and librariesUnread 1 (Steam's library could not be read) → «No encontré ningún juego de carreras en tu
+    // lista de Steam». The mind says a «no está» covers only what was read when the result says readInPart; a list or
+    // a title looked up with a library unread is read in part, and one with every library read is not.
+    [Test]
+    public async Task AReadWithALibraryUnreadSaysItWasReadInPart()
+    {
+        var unread = new SteamLocalAdapter(() => new SteamLocalAdapter.InstalledCatalog([], 1));
+        var whole = new SteamLocalAdapter(() => new SteamLocalAdapter.InstalledCatalog([.. Catalog], 0));
+
+        ExternalCapabilityReceipt list = await unread.InvokeAsync(
+            "game.catalog.list", Json("""{"query":"carreras"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt named = await unread.InvokeAsync(
+            "game.entitlement.named", Json("""{"title":"carreras"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt listed = await whole.InvokeAsync(
+            "game.catalog.list", Json("""{"query":"carreras"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt known = await whole.InvokeAsync(
+            "game.entitlement.named", Json("""{"title":"Portal 2"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(list.Result!.Value.GetProperty("count").GetInt32(), Is.Zero);
+            Assert.That(list.Result!.Value.GetProperty("librariesUnread").GetInt32(), Is.EqualTo(1));
+            Assert.That(list.Result!.Value.GetProperty("readInPart").GetBoolean(), Is.True);
+            Assert.That(named.Result!.Value.GetProperty("readInPart").GetBoolean(), Is.True);
+            Assert.That(listed.Result!.Value.TryGetProperty("readInPart", out _), Is.False);
+            Assert.That(known.Result!.Value.TryGetProperty("readInPart", out _), Is.False);
+        });
+    }
+
+    // Uso real 03-11 (G9): a game searched among the installed ones, none bearing it, was said «not in your library».
+    // The list says what it covers and, for a search nothing installed bears, what the account's library cache says.
+    [Test]
+    public async Task ASearchNothingInstalledBearsSaysItsScopeAndWhatTheLibraryCacheSays()
+    {
+        SteamLocalAdapter adapter = OwnedElsewhereAdapter();
+
+        ExternalCapabilityReceipt found = await adapter.InvokeAsync(
+            "game.catalog.list", Json("""{"query":"Portal"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt none = await adapter.InvokeAsync(
+            "game.catalog.list", Json("""{"query":"Owned Elsewhere"}"""), CancellationToken.None);
+
+        JsonElement entitlement = none.Result!.Value.GetProperty("entitlement");
+        Assert.Multiple(() =>
+        {
+            Assert.That(none.Verified, Is.True);
+            Assert.That(none.Result!.Value.GetProperty("count").GetInt32(), Is.Zero);
+            Assert.That(none.Result!.Value.GetProperty("scope").GetString(),
+                Is.EqualTo("games_installed_or_downloading_on_this_pc"));
+            Assert.That(entitlement.GetProperty("state").GetString(), Is.EqualTo("owned_not_installed"));
+            Assert.That(entitlement.GetProperty("appId").GetString(), Is.EqualTo("700"));
+            Assert.That(found.Result!.Value.GetProperty("scope").GetString(),
+                Is.EqualTo("games_installed_or_downloading_on_this_pc"));
+            Assert.That(found.Result!.Value.TryGetProperty("entitlement", out _), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task ALaunchOfAnOwnedGameNotInstalledSaysWhatTheLibraryCacheSays()
+    {
+        ExternalCapabilityReceipt receipt = await OwnedElsewhereAdapter().InvokeAsync(
+            "game.launch", Json("""{"appId":"12345","title":"Owned Elsewhere"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result!.Value.GetProperty("outsideLibrary").GetBoolean(), Is.True);
+            Assert.That(receipt.Result!.Value.GetProperty("entitlement").GetProperty("state").GetString(),
+                Is.EqualTo("owned_not_installed"));
+        });
+    }
+
+    private static SteamLocalAdapter OwnedElsewhereAdapter() => new(
+        () => [Catalog[0] with { InstallDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture") }],
+        () => new HashSet<string>(["620", "700"], StringComparer.Ordinal),
+        new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam")),
+        (_, _) => ValueTask.CompletedTask,
+        () => [],
+        knownGames: () => [new("700", "Owned Elsewhere"), new("620", "Portal 2")]);
 
     [TestCase("game.install.status")]
     public async Task SchemaAcceptedInvalidAppIdFailsClosedWithoutEscapingTheAdapter(
@@ -184,7 +266,7 @@ public sealed class SteamLocalAdapterTests
         var adapter = new SteamLocalAdapter(() => downloading);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "game.install.status", Json("""{"appId":"620"}"""), CancellationToken.None);
+            "game.install.status", Json("""{"appId":"620","title":"Portal 2"}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -284,8 +366,14 @@ public sealed class SteamLocalAdapterTests
     // Renew al máximo (auditoría de flujos): the launched game's process was looked for by its main module, which Windows
     // refuses for an elevated game or one its anti-cheat protects: launched, it was said not verified after 35 s. It is
     // read as the game already running is, by the executable's image with the least access.
-    [Test]
-    public async Task ALaunchedGameIsFoundByItsImageEvenWhenItsModulesCannotBeRead()
+    // Ajuste c5: el título de un juego de la biblioteca sigue yendo por Steam aunque el appId no sirva.
+    [TestCase("""{"appId":"620","title":"Portal 2"}""")]
+    [TestCase("""{"appId":"0","title":"portal 2"}""")]
+    [TestCase("""{"appId":"portal2","title":"Portal 2"}""")]
+    // Encargo 10 (punto 2): a well-formed appId no game bears is dropped as an ill-formed one already was, so a library
+    // title still launches its own game.
+    [TestCase("""{"appId":"999","title":"Portal 2"}""")]
+    public async Task ALaunchedGameIsFoundByItsImageEvenWhenItsModulesCannotBeRead(string arguments)
     {
         string installDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture");
         bool launched = false;
@@ -300,7 +388,7 @@ public sealed class SteamLocalAdapterTests
             imagePath: id => id == 2_000_000_001 ? Path.Combine(installDirectory, "portal2.exe") : null);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "game.launch", Json("""{"appId":"620","title":"Portal 2"}"""), CancellationToken.None);
+            "game.launch", Json(arguments), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -334,6 +422,88 @@ public sealed class SteamLocalAdapterTests
             Assert.That(receipt.EffectObserved, Is.False);
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(receipt.Result?.GetProperty("installedGames")[0].GetProperty("name").GetString(), Is.EqualTo("Portal 2"));
+        });
+    }
+
+    // Banco ciego c3 C3-049 (las tres semillas; también C3-142): «abre Luanti», a game installed outside Steam, went as
+    // game.launch with an invented appId; the receipt listed Steam's games and the reply said «no hay Luanti instalado:
+    // sí tienes Cuphead». A title the Steam library does not hold says that list is only that library and that app_open
+    // with the name said opens a game installed outside it; one the library holds under another appId says nothing more.
+    [TestCase("""{"appId":"620","title":"Luanti"}""", "game_title_mismatch", true)]
+    [TestCase("""{"appId":"458830","title":"Luanti"}""", "steam_installed_game_not_verified", true)]
+    // Ajuste c5: un juego fuera de la biblioteca no tiene appId que copiar; lo que el modelo escriba ahí no para la búsqueda.
+    [TestCase("""{"appId":"zarvok","title":"Luanti"}""", "steam_installed_game_not_verified", true)]
+    [TestCase("""{"appId":"0","title":"Luanti"}""", "steam_installed_game_not_verified", true)]
+    [TestCase("""{"appId":"620","title":"Another Game"}""", "game_title_mismatch", false)]
+    // Encargo 10 (punto 2): «999» for an installed library title no longer fails; it launches (ALaunchedGame… covers it).
+    public async Task ATitleOutsideTheSteamLibraryIsNotToldAsNotInstalled(string arguments, string code, bool outside)
+    {
+        var automation = new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam"));
+        SteamLocalGame installed = Catalog[0] with { InstallDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture") };
+        var adapter = new SteamLocalAdapter(
+            () => [installed, Catalog[1] with { InstallDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-other") }],
+            () => new HashSet<string>(["620", "123"], StringComparer.Ordinal),
+            automation,
+            new RecordingDelay().DelayAsync,
+            () => []);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("game.launch", Json(arguments), CancellationToken.None);
+
+        string? next = receipt.Result is { } result && result.TryGetProperty("next", out JsonElement said)
+            ? said.GetString()
+            : null;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            if (outside)
+            {
+                Assert.That(next, Does.Contain("only the Steam games installed on this PC"));
+                Assert.That(next, Does.Contain("app_open with appId «Luanti»"));
+                // Encargo 34: measured, the call first opened the game outside Steam when the person had said not to.
+                Assert.That(next, Does.Not.StartWith("app_open {"));
+                Assert.That(receipt.Result!.Value.GetProperty("outsideLibrary").GetBoolean(), Is.True);
+            }
+            else
+            {
+                Assert.That(next, Is.Null);
+            }
+        });
+    }
+
+    // Encargo 10 (punto 1): a title the library holds but is still downloading (Installed=false) is not said as outside
+    // the library and sent to the Start menu; its real state is said and game.install.status reads its progress.
+    // Its own appId, or an invented one the title still resolves (punto 2); both say the downloading state, not outside.
+    [TestCase("""{"appId":"77","title":"Downloading Game"}""")]
+    [TestCase("""{"appId":"999","title":"Downloading Game"}""")]
+    public async Task ADownloadingLibraryTitleIsSaidWithItsStateNotAsOutsideTheLibrary(string arguments)
+    {
+        var automation = new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam"));
+        SteamLocalGame[] snapshot =
+        [
+            Catalog[0] with { InstallDirectory = Path.Combine(Path.GetTempPath(), "baxy-steam-launch-fixture") },
+            new("77", "Downloading Game", new string('d', 64), Downloading, 250, 1000),
+        ];
+        var adapter = new SteamLocalAdapter(
+            () => snapshot,
+            () => new HashSet<string>(["620", "77"], StringComparer.Ordinal),
+            automation,
+            new RecordingDelay().DelayAsync,
+            () => []);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("game.launch", Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_game_not_installed"));
+            Assert.That(receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(receipt.Result?.GetProperty("state").GetString(), Is.EqualTo("downloading"));
+            // Encargo 34: the read of its progress comes first, as the call with its argument written.
+            Assert.That(receipt.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                "game_install_status {\"appId\":\"77\",\"title\":\"Downloading Game\"} reads its progress; a game is not "
+                + "launched until it finishes installing"));
+            Assert.That(receipt.Result!.Value.TryGetProperty("outsideLibrary", out _), Is.False);
         });
     }
 
@@ -920,6 +1090,74 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // F39: the ear writes a game's name as words it knows. The store's search answers nothing for the whole of it, and
+    // something for its pieces: what sounds like it is said, with what to do next, and nothing is sent to Steam.
+    [Test]
+    public async Task AMisheardTitleNamesTheGamesItSoundsLike()
+    {
+        List<string> asked = [];
+        var automation = new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam"));
+        SteamLocalAdapter Adapter(IReadOnlyList<SteamStoreTitle>? known = null) => new(
+            () => Catalog,
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (term, _) =>
+            {
+                lock (asked)
+                    asked.Add(term);
+                return ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>(term == "hollo"
+                    ? [new("1", "Hollow Fields"), new("367520", "Hollow Knight"), new("2", "Hollo Clicker Deluxe Edition Pack")]
+                    : []);
+            },
+            knownGames: () => known);
+
+        ExternalCapabilityReceipt heard = await Adapter().InvokeAsync(
+            "game.install.named", Json("""{"title":"hollo nite"}"""), CancellationToken.None);
+        string[] Near(ExternalCapabilityReceipt receipt) =>
+            [.. receipt.Result!.Value.GetProperty("closestTitles").EnumerateArray().Select(name => name.GetString()!)];
+        Assert.Multiple(() =>
+        {
+            Assert.That(heard.ErrorCode, Is.EqualTo("steam_title_not_resolved"));
+            Assert.That(Near(heard), Does.Contain("Hollow Knight"));
+            Assert.That(asked, Does.Contain("hollo nite").And.Contain("hollo").And.Contain("nite"));
+            Assert.That(heard.Result!.Value.GetProperty("next").GetString(),
+                Does.Contain("may have been misheard").And.Contain("closestTitles"));
+            Assert.That(automation.DispatchCount, Is.Zero);
+        });
+
+        // A game only this Steam client knows, written close to what was heard.
+        ExternalCapabilityReceipt knownOnly = await Adapter([new("9", "Stardew Valley")]).InvokeAsync(
+            "game.install.named", Json("""{"title":"stardu valey"}"""), CancellationToken.None);
+        Assert.That(Near(knownOnly), Is.EqualTo(new[] { "Stardew Valley" }));
+    }
+
+    // The control: a name like no game offers none, and the model is told so.
+    [Test]
+    public async Task AnInventedTitleOffersNothingAndAStorePieceThatFailsChangesNothing()
+    {
+        var automation = new FakeSteamAutomation(onDispatch: _ => Assert.Fail("nothing is sent to Steam"));
+        var adapter = new SteamLocalAdapter(
+            () => Catalog,
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (term, _) => term == "qwrtz plomb"
+                ? ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>([])
+                : term == "plomb"
+                    ? throw new HttpRequestException("simulated offline store")
+                    : ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>([new("3", "Zebra Fortress")]));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.named", Json("""{"title":"qwrtz plomb"}"""), CancellationToken.None);
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("steam_title_not_resolved"));
+            Assert.That(receipt.Result!.Value.TryGetProperty("closestTitles", out _), Is.False);
+            Assert.That(receipt.Result!.Value.GetProperty("next").GetString(), Does.Contain("game_install_named"));
+        });
+    }
+
     // The dialog left unconfirmed (its button not found, nothing pressed) is said as such and the manifest is not
     // waited on; a press that may have landed is judged by the manifest, which here never comes.
     [TestCase(false, "steam_install_dialog_not_confirmed", 3)]
@@ -964,6 +1202,156 @@ public sealed class SteamLocalAdapterTests
         IReadOnlyList<SteamStoreTitle> titles = SteamLocalAdapter.StoreTitles(answer.RootElement, search);
 
         Assert.That(titles, Is.EqualTo(new[] { new SteamStoreTitle("40800", "Super Meat Boy"), new SteamStoreTitle("581660", "Super Meat Boy Forever") }));
+    }
+
+    // Encargo 52 (sesión real del dueño, 03-11): the two appmanifests as the owner's Steam wrote them. Crysis Remastered
+    // downloading in pause (StateFlags 514: UpdateRequired | UpdatePaused, 13 943 467 264 of 19 167 361 040 bytes) and
+    // R.E.P.O. installed with an update Steam has not started (StateFlags 6: UpdateRequired | FullyInstalled, 0 of
+    // 619 374 528 bytes). Flags per Open Steamworks AppsCommon.h (EAppState).
+    private static readonly SteamLocalGame CrysisPaused =
+        new("1715130", "Crysis Remastered", new string('c', 64), 514, 13_943_467_264, 19_167_361_040);
+    private static readonly SteamLocalGame RepoUpdatePending =
+        new("3241660", "R.E.P.O.", new string('r', 64), 6, 0, 619_374_528);
+
+    // Turn 3: the manifest Steam writes when it takes the install (UpdateRequired | UpdateStarted, no bytes counted yet)
+    // is a job Steam started, not one waiting in its queue; the receipt says the flags it read and the status call that
+    // reads the game later, with the game's own appId and title.
+    [Test]
+    public async Task AnInstallSteamJustStartedIsSaidStartedWithItsFlagsAndItsStatusCall()
+    {
+        SteamLocalGame? observed = null;
+        var automation = new FakeSteamAutomation(
+            uri => Assert.That(uri, Is.EqualTo("steam://install/1715130")),
+            onConfirm: () => observed = new SteamLocalGame("1715130", "Crysis Remastered", new string('c', 64), StateFlags: 1026));
+        var adapter = new SteamLocalAdapter(
+            () => observed is null ? [RepoUpdatePending] : [RepoUpdatePending, observed],
+            () => new HashSet<string>(StringComparer.Ordinal),
+            automation,
+            (_, _) => ValueTask.CompletedTask,
+            storeTitles: (_, _) => ValueTask.FromResult<IReadOnlyList<SteamStoreTitle>>([new("1715130", "Crysis Remastered")]));
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.named", Json("""{"title":"crysis remastered","store":"steam"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("appId").GetString(), Is.EqualTo("1715130"));
+            Assert.That(receipt.Result?.GetProperty("state").GetString(), Is.EqualTo("started"));
+            Assert.That(receipt.Result?.GetProperty("stateFlags").GetUInt64(), Is.EqualTo(1026UL));
+            Assert.That(receipt.Result?.GetProperty("next").GetString(), Does.StartWith(
+                "game_install_status {\"appId\":\"1715130\",\"title\":\"Crysis Remastered\"}"));
+        });
+    }
+
+    // Turn 5: the status of an installed game whose update Steam has not started says it is installed, with the update
+    // apart (its bytes are the update's, not an install at 0 %), and names the game whose manifest was read.
+    [Test]
+    public async Task AnInstalledGameWithAPendingUpdateIsInstalledAndItsUpdateIsSaidApart()
+    {
+        var adapter = new SteamLocalAdapter(() => [CrysisPaused, RepoUpdatePending]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.status", Json("""{"appId":"3241660","title":"R.E.P.O."}"""), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(result.GetProperty("name").GetString(), Is.EqualTo("R.E.P.O."));
+            Assert.That(result.GetProperty("state").GetString(), Is.EqualTo("installed"));
+            Assert.That(result.GetProperty("stateFlags").GetUInt64(), Is.EqualTo(6UL));
+            Assert.That(result.TryGetProperty("progress", out _), Is.False);
+            Assert.That(result.GetProperty("update").GetProperty("state").GetString(), Is.EqualTo("queued"));
+            Assert.That(result.GetProperty("update").GetProperty("bytesTotal").GetInt64(), Is.EqualTo(619_374_528L));
+            Assert.That(result.GetProperty("update").GetProperty("progress").GetString(), Is.EqualTo("0 %"));
+        });
+    }
+
+    // Turn 5: the model asked the status of R.E.P.O.'s appId about Crysis Remastered. The title said goes in the call
+    // and governs: the one manifest bearing it is the game read, and the appId given is said to be another game's.
+    [TestCase("""{"appId":"3241660","title":"Crysis Remastered"}""", "R.E.P.O.")]
+    [TestCase("""{"appId":"1068900","title":"crysis remastered"}""", null)]
+    public async Task AStatusIsTheTitlesGameWhateverAppIdCameWithIt(string arguments, string? givenName)
+    {
+        var adapter = new SteamLocalAdapter(() => [CrysisPaused, RepoUpdatePending]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.status", Json(arguments), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        JsonElement given = result.GetProperty("appIdGiven");
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(result.GetProperty("appId").GetString(), Is.EqualTo("1715130"));
+            Assert.That(result.GetProperty("name").GetString(), Is.EqualTo("Crysis Remastered"));
+            Assert.That(result.GetProperty("state").GetString(), Is.EqualTo("paused"));
+            Assert.That(given.GetProperty("appId").GetString(), Is.EqualTo(JsonDocument.Parse(arguments).RootElement
+                .GetProperty("appId").GetString()));
+            Assert.That(given.TryGetProperty("name", out JsonElement name) ? name.GetString() : null, Is.EqualTo(givenName));
+        });
+    }
+
+    // With no manifest bearing the title, an appId of another game reads nothing of that game: the failure says which
+    // game that appId is and the games in progress, so nothing of another game is told as this one's.
+    [TestCase("""{"appId":"3241660","title":"crysis remasterd"}""", "game_title_mismatch")]
+    [TestCase("""{"appId":"3241660"}""", "game_title_required")]
+    public async Task AStatusOfAnotherGamesAppIdTellsNothingOfIt(string arguments, string code)
+    {
+        var adapter = new SteamLocalAdapter(() => [CrysisPaused, RepoUpdatePending]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.status", Json(arguments), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo(code));
+            Assert.That(result.GetProperty("name").GetString(), Is.EqualTo("R.E.P.O."));
+            Assert.That(result.TryGetProperty("state", out _), Is.False);
+            Assert.That(result.GetProperty("gamesInProgress").EnumerateArray()
+                .Select(game => game.GetProperty("appId").GetString()), Is.EqualTo(new[] { "1715130", "3241660" }));
+        });
+    }
+
+    // The status of the game asked for, by its own appId and title: the bytes the manifest holds and its flags.
+    [Test]
+    public async Task TheStatusOfTheGameAskedForSaysItsManifestBytesAndFlags()
+    {
+        var adapter = new SteamLocalAdapter(() => [CrysisPaused, RepoUpdatePending]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.status", Json("""{"appId":"1715130","title":"crysis remastered"}"""), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(result.GetProperty("name").GetString(), Is.EqualTo("Crysis Remastered"));
+            Assert.That(result.GetProperty("state").GetString(), Is.EqualTo("paused"));
+            Assert.That(result.GetProperty("stateFlags").GetUInt64(), Is.EqualTo(514UL));
+            Assert.That(result.GetProperty("bytesDownloaded").GetInt64(), Is.EqualTo(13_943_467_264L));
+            Assert.That(result.GetProperty("progress").GetString(), Is.EqualTo("72,75 %"));
+        });
+    }
+
+    // A running flag (UpdateRunning 256 or Downloading 1048576) is a download running even before its first bytes are
+    // written to the manifest; UpdateStarted with no running flag is started; neither is queued.
+    [TestCase(2UL | 1024UL | 1048576UL, "downloading")]
+    [TestCase(2UL | 256UL, "downloading")]
+    [TestCase(2UL | 1024UL, "started")]
+    [TestCase(2UL, "queued")]
+    public async Task ADownloadWithNoBytesYetIsSaidByItsFlags(ulong flags, string state)
+    {
+        var adapter = new SteamLocalAdapter(() => [new SteamLocalGame("1715130", "Crysis Remastered", new string('c', 64), flags)]);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "game.install.status", Json("""{"appId":"1715130","title":"Crysis Remastered"}"""), CancellationToken.None);
+
+        Assert.That(receipt.Result?.GetProperty("state").GetString(), Is.EqualTo(state));
     }
 
     private static JsonElement Json(string value) =>
@@ -1107,6 +1495,48 @@ public sealed class SteamLocalAdapterTests
         });
     }
 
+    // Cosecha 04-11 F34: «¿a qué le di la última vez?» took the first by name with limit 1; a manifest's LastPlayed
+    // says it, whatever the view leaves out, and each game says its own.
+    [Test]
+    public async Task TheListSaysWhichGameWasLastPlayedWhateverTheViewLeavesOut()
+    {
+        string library = Path.Combine(Path.GetTempPath(), "baxy-steam-" + Guid.NewGuid().ToString("N"));
+        string steamApps = Path.Combine(library, "steamapps");
+        Directory.CreateDirectory(steamApps);
+        try
+        {
+            static string Manifest(string id, string name, long played) =>
+                $"\"AppState\"\n{{\n\t\"appid\"\t\t\"{id}\"\n\t\"name\"\t\t\"{name}\"\n\t\"StateFlags\"\t\t\"4\"\n"
+                + $"\t\"LastPlayed\"\t\t\"{played}\"\n}}\n";
+            File.WriteAllText(Path.Combine(steamApps, "appmanifest_10.acf"), Manifest("10", "Alfa", 1_700_000_000));
+            File.WriteAllText(Path.Combine(steamApps, "appmanifest_20.acf"), Manifest("20", "Beta", 1_750_000_000));
+            File.WriteAllText(Path.Combine(steamApps, "appmanifest_30.acf"), Manifest("30", "Cero", 0));
+            IReadOnlyList<SteamLocalGame> games = SteamLocalAdapter.ReadInstalledCatalog([library], File.ReadAllBytes);
+            var adapter = new SteamLocalAdapter(() => games);
+
+            JsonElement one = (await adapter.InvokeAsync(
+                "game.catalog.list", Json("""{"limit":1}"""), CancellationToken.None)).Result!.Value;
+            JsonElement filtered = (await adapter.InvokeAsync(
+                "game.catalog.list", Json("""{"query":"Cero"}"""), CancellationToken.None)).Result!.Value;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(one.GetProperty("games")[0].GetProperty("name").GetString(), Is.EqualTo("Alfa"));
+                Assert.That(one.GetProperty("lastPlayed").GetProperty("name").GetString(), Is.EqualTo("Beta"));
+                Assert.That(one.GetProperty("lastPlayed").GetProperty("lastPlayedUtc").GetDateTimeOffset(),
+                    Is.EqualTo(DateTimeOffset.FromUnixTimeSeconds(1_750_000_000)));
+                Assert.That(one.GetProperty("games")[0].GetProperty("lastPlayedUtc").GetDateTimeOffset(),
+                    Is.EqualTo(DateTimeOffset.FromUnixTimeSeconds(1_700_000_000)));
+                Assert.That(filtered.TryGetProperty("lastPlayed", out _), Is.False);
+                Assert.That(filtered.GetProperty("games")[0].TryGetProperty("lastPlayedUtc", out _), Is.False);
+            });
+        }
+        finally
+        {
+            Directory.Delete(library, recursive: true);
+        }
+    }
+
     // Revisión de calidad (nb-q-apps): Steam deletes a manifest at the end of an uninstall and rewrites it while it
     // downloads; one manifest gone or locked between the listing and its read failed the whole catalog (an IOException
     // out of every poll), and InstalledGames() said «no games», so winget's guard against uninstalling a Steam game was
@@ -1182,6 +1612,39 @@ public sealed class SteamLocalAdapterTests
         finally
         {
             Directory.Delete(userdata, recursive: true);
+        }
+    }
+
+    // Uso real 02-11: a title said short of the Epic cache's, which bears several close to it, is unresolved with the
+    // closest titles, never «not in the cache»; one exactly borne is owned; one nothing shares is still not in the cache.
+    [TestCase("Brick Knight", "title_not_resolved", false)]
+    [TestCase("brick knight™ the saga", "owned_no_epic_manifest_with_that_name", true)]
+    [TestCase("Moonlit Harbor", "not_in_local_library_cache", false)]
+    public void AnEpicTitleSaidShortIsUnresolvedWithTheClosest(string title, string state, bool owned)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-epic-cache-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(Path.Combine(root, "Catalog"));
+        File.WriteAllText(Path.Combine(root, "Catalog", "catcache.bin"), Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(
+            new[] { "Brick® Knight™ The Saga", "Brick® Knight™ 2 Night Riders", "Knight Arena", "Puzzle Garden" }
+                .Select((name, index) => new { id = "item" + index, title = name }))));
+        try
+        {
+            JsonElement result = SteamLocalAdapter.EpicEntitlementNamed("game.entitlement.named", title, root).Result
+                ?? throw new AssertionException("the check returned no result");
+            Assert.Multiple(() =>
+            {
+                Assert.That(result.GetProperty("state").GetString(), Is.EqualTo(state));
+                Assert.That(result.TryGetProperty("owned", out _), Is.EqualTo(owned));
+                Assert.That(result.TryGetProperty("inLocalLibraryCache", out _), Is.EqualTo(state == "not_in_local_library_cache"));
+                Assert.That(result.TryGetProperty("closestTitles", out JsonElement closest)
+                    ? closest.EnumerateArray().Select(static name => name.GetString()).Take(2) : [],
+                    Is.EqualTo(state == "title_not_resolved"
+                        ? new[] { "Brick® Knight™ 2 Night Riders", "Brick® Knight™ The Saga" } : Array.Empty<string>()));
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
         }
     }
 }

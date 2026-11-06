@@ -484,3 +484,5 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 *.mp4 binary
 *.png binary
 *.jpg binary
+*.ttf binary
+*.wav binary

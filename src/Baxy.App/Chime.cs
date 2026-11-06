@@ -18,6 +18,11 @@ internal sealed class Chime
     /// <summary>«Sonido al despertar» (design v4, Settings → Voz): «Baxy» was heard. Two notes up, 140 ms.</summary>
     internal static readonly Chime Wake = new([(880, 70), (1320, 70)]);
 
+    /// <summary>The request closed (the mind's transcribing): BAXY stopped listening and has what was said (uso real 03-11:
+    /// nothing told the person when it stopped). Amazon's End of Request beside its Start of Request: the same two
+    /// notes as <see cref="Wake"/>, down, 140 ms; higher and shorter than <see cref="TurnFailed"/>.</summary>
+    internal static readonly Chime Heard = new([(1320, 70), (880, 70)]);
+
     /// <summary>A turn of the person's ended without an answer (final 6, accesibilidad): the view shows the failure as
     /// its state and the screen reader reads it, and this is what someone who does not look hears. A fixed line would
     /// be a fixed reply (invariante 5), so it is a sound. Two notes down, 260 ms.</summary>

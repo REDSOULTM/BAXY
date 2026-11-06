@@ -236,6 +236,7 @@ def test_forgetting_everything_takes_the_trace_and_its_archive(tmp_path, monkeyp
             pass
 
     class Speech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def foresee(self, text, done):
             return True
 

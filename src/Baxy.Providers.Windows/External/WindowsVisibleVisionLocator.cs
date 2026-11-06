@@ -35,7 +35,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
         // Ronda final 19: the capture goes only to the loopback endpoint named, never on through a redirect or a proxy.
         _http = http ?? new HttpClient(new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false })
         {
-            // A projector on the CPU reads a 1280-wide image in about 8 s (PLAN_GENERAL A5).
+            // A projector on the CPU reads a 1280-wide image in about 8 s (PLAN_GENERAL A5); under 1 s on the GPU (uso-125).
             Timeout = TimeSpan.FromSeconds(30),
         };
         _capture = capture ?? VisibleControlSurface.CaptureForegroundAsync;
@@ -108,7 +108,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             // question and put back before anything is pressed. Not set aside, nothing is asked (the next decision would
             // re-read the whole conversation, 25 s measured). Renew al máximo (velocidad): set aside once for both
             // questions, not once for each (a save and a restore of the whole conversation less on the second one).
-            string? held = LocalVisionEndpoint.SlotDirectory() is null ? null : await HoldSlotAsync(uri, cancellationToken)
+            string? held = LocalVisionEndpoint.SlotDirectory() is null ? null : await LocalVisionEndpoint.HoldSlotAsync(_http, uri, cancellationToken)
                 .ConfigureAwait(false);
             if (LocalVisionEndpoint.SlotDirectory() is not null && held is null)
                 return null;
@@ -150,7 +150,11 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                     y = (int)Math.Round(centre.Y / 1000 * before.Height);
                     if (OtherTextAt(layout, label, x, y) is not { } other)
                         break;
-                    if (ask >= 1)
+                    // Ajuste c4 (banco ciego c3, «Opciones» on a window without it: two questions, 21 to 41 s): no line read
+                    // nor name last seen holds the label or is like it. A second answer gives no point to press
+                    // (no words there hold the label, and the worker presses only a control of that name, which the tree
+                    // stage did not find): its answer is this one.
+                    if (ask >= 1 || !LabelMayBeShown(layout, label, press?.NamesSeen(before.Hwnd) ?? []))
                     {
                         _memory.Note(label, before, "vision_point_on_other_label");
                         return ExternalJson.FailureBeforeEffect(operation, "vision_point_on_other_label");
@@ -161,7 +165,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             finally
             {
                 if (held is not null)
-                    await PutSlotBackAsync(uri, held).ConfigureAwait(false);
+                    await LocalVisionEndpoint.PutSlotBackAsync(_http, uri, held).ConfigureAwait(false);
             }
 
             // A point to press: what was answered before about this window no longer holds once anything is pressed.
@@ -182,9 +186,10 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
             if (current is not { } baseline || baseline.Hwnd != before.Hwnd)
                 return ExternalJson.FailureBeforeEffect(operation, "input_window_not_in_front");
             // Auditoría final (regla 3): what a window changes by itself proves nothing. PLAN_GENERAL A4: its own motion is
-            // mapped by cells, so a change outside them still proves the press; an unknown motion proves nothing.
+            // mapped by cells, so a change outside them still proves the press; an unknown motion proves nothing. Encargo 16:
+            // probed through this locator's own capture, the way the window was read.
             VisibleControlSurface.MotionMask? motion =
-                await VisibleControlSurface.ForegroundMotionAsync(baseline, cancellationToken).ConfigureAwait(false);
+                await VisibleControlSurface.ForegroundMotionAsync(baseline, cancellationToken, _capture).ConfigureAwait(false);
             // Auditoría final (regla 3): the person's touch counts from before the press is sent.
             long pressedAt = Environment.TickCount64;
             object? roots = press?.WatchRoots(before.Hwnd);
@@ -223,7 +228,7 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
                     // r4a M3: a pointer's burst was given back right after the press; its look reads the window's own
                     // drawing behind the person's, the way its baseline was taken.
                     VisibleControlSurface.CapturedWindow? after = burst is null
-                        ? await VisibleControlSurface.CaptureForegroundAsync(cancellationToken).ConfigureAwait(false)
+                        ? await _capture(cancellationToken).ConfigureAwait(false)
                         : await VisibleControlSurface.CaptureAsync(before.Hwnd, cancellationToken, selfDrawn: before.SelfDrawn)
                             .ConfigureAwait(false);
                     // Auditoría final (regla 3): only the same window's image counts; another window in front is no proof.
@@ -387,58 +392,21 @@ internal sealed class WindowsVisibleVisionLocator : IVisibleControlLocator
         });
     }
 
-    private const string HeldFile = "baxy_vision_hold.bin";
-
-    // The server's slot endpoint for the vision slot (its own address, never another host).
-    private static Uri SlotUri(Uri endpoint, string action) =>
-        new(endpoint, $"/slots/{LocalVisionEndpoint.Slot() ?? 0}?action={action}");
-
-    // The slot's state written to the server's slot directory; the file's name, or null when the server did not save it.
-    private async Task<string?> HoldSlotAsync(Uri endpoint, CancellationToken cancellationToken)
+    /// <summary>
+    /// Ajuste c4: whether the label may be on this drawing: written in a line read or a name of <paramref name="seen"/>
+    /// (folded, a short label too), or like one of them by the measure of the «not found» hint's closest names
+    /// (<see cref="SteamLocalAdapter.ClosestTitles"/>, which leaves out words under three letters). Nothing read says
+    /// nothing against it.
+    /// </summary>
+    internal static bool LabelMayBeShown(
+        IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? layout, string label, IEnumerable<string> seen)
     {
-        try
-        {
-            using var request = new HttpRequestMessage(HttpMethod.Post, SlotUri(endpoint, "save"))
-            {
-                Content = new StringContent("{\"filename\":\"" + HeldFile + "\"}", Encoding.UTF8, "application/json"),
-            };
-            LocalVisionEndpoint.Authorize(request);
-            using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            return response.IsSuccessStatusCode ? HeldFile : null;
-        }
-        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or IOException)
-        {
-            return null;
-        }
-    }
-
-    // The slot's state read back, and its file removed: it holds the person's conversation and stays on disk no longer.
-    private async Task PutSlotBackAsync(Uri endpoint, string file)
-    {
-        try
-        {
-            using var request = new HttpRequestMessage(HttpMethod.Post, SlotUri(endpoint, "restore"))
-            {
-                Content = new StringContent("{\"filename\":\"" + file + "\"}", Encoding.UTF8, "application/json"),
-            };
-            LocalVisionEndpoint.Authorize(request);
-            using HttpResponseMessage response = await _http.SendAsync(request, CancellationToken.None).ConfigureAwait(false);
-        }
-        catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or IOException)
-        {
-            // Not restored: the next decision re-reads the conversation, slower but whole.
-        }
-        finally
-        {
-            try
-            {
-                if (LocalVisionEndpoint.SlotDirectory() is { } directory)
-                    File.Delete(Path.Combine(directory, file));
-            }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-            {
-            }
-        }
+        string wanted = WindowsVisibleOcrLocator.Fold(label);
+        if (layout is null || wanted.Length == 0)
+            return true;
+        string[] shown = [.. layout.Select(static line => line.Text).Concat(seen)];
+        return shown.Any(text => WindowsVisibleOcrLocator.Fold(text).Contains(wanted, StringComparison.Ordinal))
+            || SteamLocalAdapter.ClosestTitles(label, shown).Length > 0;
     }
 
     // PLAN_GENERAL A5: the model's own box form, in thousandths of the image; an icon is found by what it shows.

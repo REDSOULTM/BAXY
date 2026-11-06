@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -15,12 +16,16 @@ internal sealed partial class TrayMenu : Window
     internal sealed record State(bool Listening, bool MicAvailable, bool Powered, bool Ready, bool Failed = false);
 
     /// <summary>What the menu's first line says BAXY is doing, from the state it was opened with.</summary>
-    internal static string StateLabel(State state) =>
-        !state.Ready ? (state.Failed ? "No disponible" : "Arrancando")
-        : !state.Powered ? "En reposo"
-        : state.Listening ? "Activo · responde a «BAXY»"
-        : state.MicAvailable ? "Activo · micrófono en pausa"
-        : "Activo · sin micrófono";
+    internal static string StateLabel(State state) => StateLabel(state, UiLanguage.IsEnglish);
+
+    private static string StateLabel(State state, bool english) =>
+        !state.Ready ? (state.Failed
+            ? UiLanguage.Say(english, "No disponible", "Unavailable")
+            : UiLanguage.Say(english, "Arrancando", "Starting"))
+        : !state.Powered ? UiLanguage.Say(english, "En reposo", "Asleep")
+        : state.Listening ? UiLanguage.Say(english, "Activo · responde a «BAXY»", "Active · answers to “BAXY”")
+        : state.MicAvailable ? UiLanguage.Say(english, "Activo · micrófono en pausa", "Active · microphone paused")
+        : UiLanguage.Say(english, "Activo · sin micrófono", "Active · no microphone");
 
     private readonly Action _open;
     private readonly Action _listen;
@@ -35,13 +40,23 @@ internal sealed partial class TrayMenu : Window
         _power = power;
         _exit = exit;
         InitializeComponent();
+        // Steam (2026-11-04): the menu is built at each opening, in the interface's language of that moment.
+        bool english = UiLanguage.IsEnglish;
+        AutomationProperties.SetName(this, UiLanguage.Say(english, "Menú de BAXY", "BAXY menu"));
+        OpenRow.Content = UiLanguage.Say(english, "Abrir BAXY", "Open BAXY");
+        ExitRow.Content = UiLanguage.Say(english, "Salir de BAXY", "Quit BAXY");
         // The owner's rule (2026-10-18): voice input is in testing, shown so, never as ready; it stays usable.
-        ListenRow.Content = state.Listening ? "Dejar de escuchar" : "Escuchar «BAXY» (en pruebas)";
-        ListenRow.ToolTip = "Entrada por voz: en pruebas · próximamente disponible";
+        ListenRow.Content = state.Listening
+            ? UiLanguage.Say(english, "Dejar de escuchar", "Stop listening")
+            : UiLanguage.Say(english, "Escuchar «BAXY» (en pruebas)", "Listen for “BAXY” (testing)");
+        ListenRow.ToolTip = UiLanguage.Say(english, "Entrada por voz: en pruebas · próximamente disponible",
+            "Voice input: testing · coming soon");
         ListenRow.Tag = state.Listening ? "" : "";
         ListenRow.IsEnabled = state.MicAvailable && state.Powered;
-        PowerRow.Content = state.Powered ? "Poner en reposo" : "Activar";
-        StateText.Text = StateLabel(state);
+        PowerRow.Content = state.Powered
+            ? UiLanguage.Say(english, "Poner en reposo", "Put to sleep")
+            : UiLanguage.Say(english, "Activar", "Wake up");
+        StateText.Text = StateLabel(state, english);
         StateDot.Fill = new SolidColorBrush(!state.Ready && state.Failed ? Color.FromRgb(0xFF, 0x66, 0x77)
             : !state.Ready ? Color.FromRgb(0xE8, 0xC9, 0x8E)
             : state.Powered ? Color.FromRgb(0x7F, 0xD1, 0xA8) : Color.FromRgb(0x5B, 0x65, 0x80));

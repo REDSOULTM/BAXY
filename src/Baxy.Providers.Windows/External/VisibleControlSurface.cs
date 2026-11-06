@@ -82,16 +82,20 @@ internal static partial class VisibleControlSurface
 
     /// <summary>
     /// The window's own motion: the cells that changed across the animation probes after <paramref name="first"/>, with
-    /// no press; null when a probe could not be taken or compared (the whole window counts as moving then).
+    /// no press; null when a probe could not be taken or compared (the whole window counts as moving then). The probes are
+    /// taken by <paramref name="capture"/> when the caller reads the window its own way (the front window otherwise).
     /// </summary>
-    internal static async ValueTask<MotionMask?> ForegroundMotionAsync(CapturedWindow first, CancellationToken cancellationToken)
+    internal static async ValueTask<MotionMask?> ForegroundMotionAsync(
+        CapturedWindow first,
+        CancellationToken cancellationToken,
+        Func<CancellationToken, ValueTask<CapturedWindow?>>? capture = null)
     {
         bool[]? moving = null;
         int columns = 0, rows = 0;
         foreach (TimeSpan wait in AnimationProbes)
         {
             await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
-            CapturedWindow? again = await CaptureForegroundAsync(cancellationToken).ConfigureAwait(false);
+            CapturedWindow? again = await (capture ?? CaptureForegroundAsync)(cancellationToken).ConfigureAwait(false);
             if (again is not { } next || next.Hwnd != first.Hwnd
                 || DifferingCells(first, next, out columns, out rows) is not { } differing)
                 return null;
@@ -286,6 +290,36 @@ internal static partial class VisibleControlSurface
         return surface == front || shell(surface) ? 0 : surface;
     }
 
+    /// <summary>
+    /// Encargo A9 (U27, 0 of 6 in the fleet): the window a copy or a select-all with no window goes to when nothing of the
+    /// person's holds the front. Their helpers act on the focused control of the window in front, and on the bench's VMs
+    /// that was the shell's desktop («Program Manager»): a Notepad started by a process that is not in front does not take
+    /// the foreground (SetForegroundWindow's rules), so Ctrl+C went to the desktop and the receipt's route selected all
+    /// there. As for a look and a click (<see cref="PersonsSurface"/>), the desktop, the taskbar and BAXY's own window are
+    /// never the surface a person acts on: with one of them in front, the topmost application window of another process
+    /// with a usable surface; 0 when another window holds the front (the act goes to it, as before) or there is none.
+    /// </summary>
+    internal static nint SurfaceForFrontKeys(nint front) =>
+        SurfaceForFrontKeys(front, ProcessOf, HasUsableSurface, IsShellSurface, TopDownRootWindows);
+
+    internal static nint SurfaceForFrontKeys(
+        nint front,
+        Func<nint, uint> processOf,
+        Func<nint, bool> usable,
+        Func<nint, bool> shell,
+        Func<IEnumerable<nint>> topDown,
+        Func<int, string?>? imageOf = null)
+    {
+        if (front == 0)
+            return 0;
+        Func<uint, bool> product = ProductProcesses(imageOf);
+        if (!shell(front) && !product(processOf(front)))
+            return 0;
+        // The desktop («Program Manager») is a titled window as large as the screen at the bottom of the order: never a
+        // candidate, whatever its surface.
+        return FirstForeignWindow(topDown(), processOf, window => !shell(window) && usable(window), product);
+    }
+
     // The first window, top of the Z order first, of a process that is not the product's with a usable surface; 0 when none.
     internal static nint FirstForeignWindow(
         IEnumerable<nint> topDown,
@@ -325,7 +359,8 @@ internal static partial class VisibleControlSurface
     /// shows, goal v3 analysis r3a M5) and that no other application started (<see cref="LaunchedByAnotherApplication"/>:
     /// a runtime carried inside an application describes the runtime), the one its title also names first
     /// (<see cref="ChooseNamedWindow"/>), else the topmost one whose title, or its last « - » segment, is the name
-    /// (<see cref="TitleNamesApplication"/>), or the topmost window of the same packaged application above it
+    /// (<see cref="TitleNamesApplication"/>; in a browser's window, also the page it shows: <see cref="WindowTitleNames"/>),
+    /// or the topmost window of the same packaged application above it
     /// (<see cref="PackagedApplication"/>: the image a photo viewer opened, titled by the file, over the viewer's
     /// gallery titled by the application's name). Never a developer's or BAXY's own window the request did not name
     /// (<see cref="ProtectedFrom"/>). Read where it is; 0 when none is (the caller acts on nothing).
@@ -336,6 +371,14 @@ internal static partial class VisibleControlSurface
     /// </summary>
     internal static ValueTask<nint> ResolveTitledWindowAsync(
         string application,
+        CancellationToken cancellationToken) =>
+        ResolveTitledWindowAsync(application, documents: false, cancellationToken);
+
+    // Encargo 94: documents: the name of a document in any program's title names its window too (TitleNamesDocument), as a
+    // page does a browser's: only for a name no installed application bears (PasteDestinations).
+    internal static ValueTask<nint> ResolveTitledWindowAsync(
+        string application,
+        bool documents,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -354,12 +397,12 @@ internal static partial class VisibleControlSurface
         }
 
         nint Resolve(string name) => PreferReadableCopy(
-            ResolveTitledWindow(name, accept: null),
+            ResolveTitledWindow(name, accept: null, documents),
             window => WindowProcess(window).ProcessId,
             RunsAboveUs,
             Applications.InvokerLaunch.WindowReopensUnraised,
             ExecutableOf,
-            accept => ResolveTitledWindow(name, accept));
+            accept => ResolveTitledWindow(name, accept, documents));
 
         nint chosen = Resolve(application);
         // BAXY Renew cu (C07): the person's browser named as Windows names it («Opera GX») is no process, description
@@ -413,13 +456,13 @@ internal static partial class VisibleControlSurface
 
     // minimized: whether a minimized window a person would restore counts (MinimizedDocumentWindow), only when no usable
     // window is found (estabilización D2).
-    private static nint ResolveTitledWindow(string application, Func<int, bool>? accept)
+    private static nint ResolveTitledWindow(string application, Func<int, bool>? accept, bool documents = false)
     {
-        nint found = ResolveTitledWindow(application, accept, minimized: false);
-        return found != 0 ? found : ResolveTitledWindow(application, accept, minimized: true);
+        nint found = ResolveTitledWindow(application, accept, minimized: false, documents);
+        return found != 0 ? found : ResolveTitledWindow(application, accept, minimized: true, documents);
     }
 
-    private static nint ResolveTitledWindow(string application, Func<int, bool>? accept, bool minimized)
+    private static nint ResolveTitledWindow(string application, Func<int, bool>? accept, bool minimized, bool documents)
     {
         nint byProcess = 0;
         bool byProcessEnabled = true;
@@ -433,6 +476,7 @@ internal static partial class VisibleControlSurface
         var descriptions = new Dictionary<uint, string>();
         var described = new Dictionary<uint, bool>();
         var packages = new Dictionary<uint, string>();
+        var browsers = new Dictionary<uint, bool>();
         var topmostOfPackage = new Dictionary<string, nint>(StringComparer.OrdinalIgnoreCase);
         Dictionary<uint, uint>? parents = null;
         HashSet<uint>? windowed = null;
@@ -478,10 +522,13 @@ internal static partial class VisibleControlSurface
                 return description;
             }
 
-            if (ProtectedFrom(processName, application, DescriptionOfOwner))
+            bool opened = OpenedAs(window, owner, application);
+            if (!opened && ProtectedFrom(processName, application, DescriptionOfOwner))
                 return true;
             // PLAN_GENERAL B1: the executable a verified opening of this application found counts as its own name.
-            if (ProcessIsApplication(processName, application) || (learned && LearnedExecutableOf(application, ImageOf(owner))))
+            // Banco de uso 03-11 (U45): so does the protected window that opening showed (a terminal hosting it).
+            if (opened || ProcessIsApplication(processName, application)
+                || (learned && LearnedExecutableOf(application, ImageOf(owner))))
             {
                 // Ronda 24 (pasada r23 v3-05, v3-06): the first window of the application's process in Z order may be a
                 // secondary one («86 aviso(s)») above the window the person works in. Revision 1 (B2): an owned modal
@@ -535,7 +582,18 @@ internal static partial class VisibleControlSurface
                 described[owner] = descriptionNames;
             }
 
-            bool titleNames = TitleNamesApplication(WindowTitle(window), application);
+            bool titleNames = (documents && TitleNamesDocument(WindowTitle(window), application))
+                || WindowTitleNames(WindowTitle(window), application, () =>
+            {
+                if (!browsers.TryGetValue(owner, out bool browser))
+                {
+                    browser = ImageOf(owner) is { Length: > 0 } image
+                        && UserBrowserIdentityResolver.IsRegisteredBrowser(image) == true;
+                    browsers[owner] = browser;
+                }
+
+                return browser;
+            });
             if (descriptionNames && byDescription == 0)
                 byDescription = window;
             if (descriptionNames && titleNames && byDescriptionAndTitle == 0)
@@ -764,6 +822,27 @@ internal static partial class VisibleControlSurface
         return SystemToolProcesses.Contains(process);
     }
 
+    // Banco ciego c3 C3-130 s0: «termina explorer.exe» reached the yes of a force-kill that would take the taskbar, the
+    // desktop and every folder window. The processes Windows' shell and the person's session run on (the shell and its
+    // hosts, the window manager, logon and the session's own processes, the service hosts) are never ended by BAXY, as
+    // the system tools above are never acted on: ending one takes the whole session, or the machine. Told by their exact
+    // process names (identity, not interpretation).
+    private static readonly HashSet<string> WindowsSessionProcesses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "explorer", "sihost", "ShellExperienceHost", "StartMenuExperienceHost", "SearchHost", "SearchApp",
+        "TextInputHost", "ctfmon", "dwm", "fontdrvhost", "taskhostw", "userinit", "LogonUI", "winlogon", "wininit",
+        "csrss", "smss", "services", "lsass", "LsaIso", "svchost",
+    };
+
+    /// <summary>A process of Windows' shell or of the person's session (explorer, dwm, winlogon…): never ended.</summary>
+    internal static bool WindowsSessionProcess(string? processName)
+    {
+        string process = (processName ?? string.Empty).Trim();
+        if (process.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            process = process[..^4];
+        return WindowsSessionProcesses.Contains(process);
+    }
+
     /// <summary>
     /// K-2 refinada: a window where Enter may run what was typed: a terminal, a console, or an editor or IDE that hosts
     /// one (the protected processes above, by the same exact names).
@@ -809,6 +888,47 @@ internal static partial class VisibleControlSurface
             NamedProtectedRoots[GetAncestor(window, 2)] = 0;
     }
 
+    // Banco de uso 03-11 (U45): app.open «Command Prompt» showed a Windows Terminal window, and the look by that same name
+    // answered application_window_not_found: the terminal's process is not the name, so the window was left out as a
+    // protected one nobody named. The protected roots a verified opening showed, with its process and the names it was
+    // opened by: for those names the window is the application's, and acts may reach it (named, as a look's).
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<nint, (uint Process, string[] Names)>
+        OpenedProtectedRoots = new();
+
+    /// <summary>A verified opening by <paramref name="names"/> showed <paramref name="window"/>: when it is a protected
+    /// window that a name opens to acts (a terminal, a console, an editor; never BAXY's own nor a system tool), it is
+    /// that application's window and counts as named.</summary>
+    internal static void NoteOpenedProtected(nint window, params string?[] names)
+    {
+        nint root = window == 0 ? 0 : GetAncestor(window, 2);
+        (int processId, string processName) = root == 0 ? (0, string.Empty) : WindowProcess(root);
+        NoteOpenedProtectedRoot(root, processId, processName, names);
+    }
+
+    internal static void NoteOpenedProtectedRoot(nint root, int processId, string? processName, params string?[] names)
+    {
+        string[] folded = [.. names.Select(FoldTitle).Where(static name => name.Length > 0).Distinct(StringComparer.Ordinal)];
+        if (root == 0 || processId <= 0 || folded.Length == 0 || !RunsWhatIsTyped(processName))
+            return;
+        OpenedProtectedRoots[root] = (unchecked((uint)processId), folded);
+        NamedProtectedRoots[root] = 0;
+    }
+
+    /// <summary>
+    /// <see cref="ProtectedFrom"/> for the top-level window <paramref name="root"/> of process <paramref name="owner"/>:
+    /// one a verified opening by <paramref name="application"/> showed (<see cref="NoteOpenedProtected"/>) is that
+    /// application's, never protected from it.
+    /// </summary>
+    internal static bool ProtectedFrom(
+        nint root, uint owner, string? processName, string? application, Func<string>? description = null) =>
+        !OpenedAs(root, owner, application) && ProtectedFrom(processName, application, description);
+
+    /// <summary>Whether a verified opening by <paramref name="application"/> showed the protected window
+    /// <paramref name="root"/>, still of process <paramref name="owner"/>.</summary>
+    internal static bool OpenedAs(nint root, uint owner, string? application) =>
+        OpenedProtectedRoots.TryGetValue(root, out (uint Process, string[] Names) opened)
+        && opened.Process == owner && opened.Names.Contains(FoldTitle(application), StringComparer.Ordinal);
+
     /// <summary>
     /// An act on <paramref name="window"/> is refused: its root is a developer's or BAXY's own window (an editor, an IDE,
     /// a terminal, a console, BAXY) that no look named.
@@ -832,6 +952,19 @@ internal static partial class VisibleControlSurface
 
     /// <summary>The window under the pointer, where a click or a wheel turn of the pointer lands.</summary>
     internal static nint PointerWindow() => CursorNow() is { } cursor ? WindowFromPoint(new Point(cursor.X, cursor.Y)) : 0;
+
+    /// <summary>The root window under the pointer as «title (process)», or its process alone (the desktop, the taskbar);
+    /// null when none can be read.</summary>
+    internal static string? UnderPointer()
+    {
+        nint at = PointerWindow();
+        nint root = at == 0 ? 0 : GetAncestor(at, 2);
+        if (root == 0)
+            return null;
+        string process = ViewProcess(root).ProcessName;
+        string title = WindowTitle(root);
+        return title.Length > 0 ? $"{title} ({process})" : process.Length > 0 ? process : null;
+    }
 
     /// <summary>The executable is the application: its name, folded, is the name asked («Spotify», «chrome»).</summary>
     internal static bool ProcessIsApplication(string? processName, string? application)
@@ -885,7 +1018,7 @@ internal static partial class VisibleControlSurface
 
     /// <summary>
     /// The title is the application's name, folded: the whole title («Calculadora») or its last « - » segment, where
-    /// windows put their own name («Ron92 - Discord», «Nueva pestaña - Google Chrome»). «<App>LocalAdapter.cs - BAXY -
+    /// windows put their own name («Nube77 - Discord», «Nueva pestaña - Google Chrome»). «<App>LocalAdapter.cs - BAXY -
     /// Visual Studio Code» names Visual Studio Code, never «<App>».
     /// </summary>
     internal static bool TitleNamesApplication(string? title, string? application)
@@ -894,6 +1027,59 @@ internal static partial class VisibleControlSurface
         string folded = FoldTitle(title);
         return wanted.Length > 0 && (folded == wanted || TitleSeparator().Split(folded)[^1] == wanted);
     }
+
+    /// <summary>
+    /// Uso real 03-11 (G8): a web page open in a browser is named by the person as the page, never as the browser
+    /// («en el traductor de Google» for «Traductor de Google - Opera»): the window's title, or its last « - » segment,
+    /// names the application (<see cref="TitleNamesApplication"/>); else, only when the window is a browser's
+    /// (<paramref name="isBrowser"/>, read only then), the page does: <see cref="PageNamesApplication"/>. A document of any
+    /// other program titled like an application («Steam - Bloc de notas») still names only that program.
+    /// </summary>
+    internal static bool WindowTitleNames(string? title, string? application, Func<bool> isBrowser) =>
+        TitleNamesApplication(title, application) || (PageNamesApplication(title, application) && isBrowser());
+
+    /// <summary>
+    /// Uso real 03-11 (G8): the page a browser's title shows before its own last segment, where the browser puts its
+    /// name («Traductor de Google - Opera», «Pizarra - Perfil 1: Microsoft Edge»): the whole page or one whole « - »
+    /// segment of it («Recetas de pan - YouTube» is YouTube's page), folded and compared exactly, as every name is; never
+    /// a word of it. False for a title with no segment of the browser's own.
+    /// </summary>
+    internal static bool PageNamesApplication(string? title, string? application)
+    {
+        string wanted = FoldTitle(application);
+        string folded = FoldTitle(title);
+        System.Text.RegularExpressions.MatchCollection separators = TitleSeparator().Matches(folded);
+        if (wanted.Length == 0 || separators.Count == 0)
+            return false;
+        string page = folded[..separators[^1].Index];
+        return page == wanted || TitleSeparator().Split(page).Contains(wanted, StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// Encargo 94: a document open in any program named by its whole name, only for a name no installed application bears
+    /// (PasteDestinations): the part before the program's own, after the last \u00ab - \u00bb or \u00ab: \u00bb (Windows 11's Notepad titles
+    /// \u00abnota.txt: Bloc de notas\u00bb), or one whole \u00ab - \u00bb segment of it; with or without its file's extension and a \u00ab*\u00bb of
+    /// unsaved. Folded and compared exactly, as every name is; never a word of it.
+    /// </summary>
+    internal static bool TitleNamesDocument(string? title, string? name)
+    {
+        string wanted = FoldTitle(name);
+        string folded = FoldTitle(title);
+        if (wanted.Length == 0)
+            return false;
+        System.Text.RegularExpressions.MatchCollection separators = DocumentSeparator().Matches(folded);
+        if (separators.Count == 0)
+            return false;
+        string document = folded[..separators[^1].Index].TrimStart('*');
+        return TitleSeparator().Split(document).Prepend(document)
+            .Any(part => part == wanted || FileExtension().Replace(part, string.Empty) == wanted);
+    }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"\s+[-\u2013\u2014|]\s+|:\s+", System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
+    private static partial System.Text.RegularExpressions.Regex DocumentSeparator();
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"\.[\p{L}\p{N}]{1,5}$", System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
+    private static partial System.Text.RegularExpressions.Regex FileExtension();
 
     [System.Text.RegularExpressions.GeneratedRegex(@"\s+[-\u2013\u2014|]\s+", System.Text.RegularExpressions.RegexOptions.CultureInvariant)]
     private static partial System.Text.RegularExpressions.Regex TitleSeparator();
@@ -930,6 +1116,38 @@ internal static partial class VisibleControlSurface
         }
 
         return builder.ToString();
+    }
+
+    /// <summary>
+    /// Encargo 83: whether a window is a surface of Windows' own settings, by the identity of the process a view names as
+    /// its window's: its image under the Windows folder, which holds the Settings and the classic panels and not the
+    /// installed applications. The Explorer is one only in its dialogs (properties, options), not in its file windows or
+    /// its taskbar. The worker reads the control's own process the same way (Test-SystemSurface).
+    /// </summary>
+    internal static bool IsSystemSurface(nint window)
+    {
+        if (window == 0)
+            return false;
+        (int processId, string name) = ViewProcess(window);
+        if (processId <= 0)
+            return false;
+        nint process = OpenProcess(0x1000, false, (uint)processId);
+        if (process == 0)
+            return false;
+        try
+        {
+            char[] buffer = new char[1024];
+            int length = buffer.Length;
+            if (!QueryFullProcessImageNameW(process, 0, buffer, ref length) || length <= 0)
+                return false;
+            string windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows).TrimEnd('\\') + "\\";
+            return new string(buffer, 0, length).StartsWith(windows, StringComparison.OrdinalIgnoreCase)
+                && (!string.Equals(name, "explorer", StringComparison.OrdinalIgnoreCase) || ClassName(window) == "#32770");
+        }
+        finally
+        {
+            _ = CloseHandle(process);
+        }
     }
 
     /// <summary>
@@ -1037,7 +1255,7 @@ internal static partial class VisibleControlSurface
     /// «chromium» (Chromium, Electron, WebView2: a tree built on demand), «cef» (Chromium embedded in another program,
     /// whose tree that program decides: Steam's three nodes), «unreal» (Slate, with any web view painted onto a texture:
     /// no tree at all, Epic's 0 names), «qt», «flutter» (providers built on demand), «java» (Java Access Bridge, not UIA);
-    /// empty for a native window or one not told apart. Measured on redpc: Epic UnrealWindow with no children, Steam
+    /// empty for a native window or one not told apart. Measured on the development PC: Epic UnrealWindow with no children, Steam
     /// SDL_app with CefBrowserWindow, Spotify, Opera, Discord and VS Code Chrome_WidgetWin_1.
     /// </summary>
     internal static string Toolkit(nint window)
@@ -1087,9 +1305,14 @@ internal static partial class VisibleControlSurface
             && AttachThreadInput(currentThread, foregroundThread, true);
         try
         {
+            // uso-108 A9 (measured): BringWindowToTop (a SetWindowPos) blocked past 40 s on a window that stopped pumping
+            // right after the check before it, holding the lease's FrontGate; a cancellation cannot reach inside the call.
+            // The async forms post the request to the window's thread (MS docs, SWP_ASYNCWINDOWPOS, ShowWindowAsync;
+            // agent-desktop window_activate.rs:68,81-98): SetForegroundWindow returned in 0 ms on that window, and the front
+            // is what is read back below.
             if (IsIconic(window))
-                _ = ShowWindow(window, 9);
-            _ = BringWindowToTop(window);
+                ShowAndSettle(window, 9);
+            _ = SetWindowPos(window, 0, 0, 0, 0, 0, NoSizeNoMove | AsyncWindowPos);
             _ = SetForegroundWindow(window);
             if (GetForegroundWindow() == window)
                 return true;
@@ -1284,23 +1507,58 @@ internal static partial class VisibleControlSurface
         nint hwnd,
         CancellationToken cancellationToken,
         bool covered = false,
-        bool? selfDrawn = null)
+        bool? selfDrawn = null,
+        bool justShown = false)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (hwnd == 0)
             return ValueTask.FromResult<CapturedWindow?>(null);
-        _ = ShowBehind(hwnd);
+        bool shown = ShowBehind(hwnd) || justShown;
         if (!TryBounds(hwnd, out int left, out int top, out _, out _))
             return ValueTask.FromResult<CapturedWindow?>(null);
-        bool drawsItself = selfDrawn ?? (covered || CoveredFromAbove(hwnd));
-        WindowImage image = drawsItself
-            ? WindowsScreenshotProvider.CaptureCoveredWindowImage(hwnd)
-            : WindowsScreenshotProvider.CaptureWindowImage(hwnd);
+        // F46 (uso real 05-11: the look at a minimized client gave BAXY's own panel as the client's text): a window just shown
+        // has not been drawn or put under the person's yet, and the product's own window on top shows on a copy of the screen.
+        bool drawsItself = selfDrawn ?? (covered || shown || CoveredFromAbove(hwnd, ProductProcesses()));
+        WindowImage image = !drawsItself
+            ? WindowsScreenshotProvider.CaptureWindowImage(hwnd)
+            : shown
+                ? SettledDrawing(() => WindowsScreenshotProvider.CaptureCoveredWindowImage(hwnd), Thread.Sleep, () => Environment.TickCount64)
+                : WindowsScreenshotProvider.CaptureCoveredWindowImage(hwnd);
         return ValueTask.FromResult<CapturedWindow?>(
             new CapturedWindow(hwnd, image.Bmp, left, top, image.Width, image.Height, image.Sha256)
             {
                 SelfDrawn = drawsItself,
             });
+    }
+
+    // F46: a window just shown hands over its drawing a moment later. Measured on a real Chromium window, a first copy at 30-50 ms
+    // read no text in 10 looks of 12 and the frame was final by 94 ms: the same drawing twice, 100 ms apart, within a bound. A
+    // window that keeps changing (a video) is taken as it is at the bound; one that gives no frame fails as it did.
+    internal static WindowImage SettledDrawing(Func<WindowImage> draw, Action<int> sleep, Func<long> nowMs)
+    {
+        const int FirstFrameMs = 150, NextFrameMs = 100, BoundMs = 600;
+        long began = nowMs();
+        WindowImage? image = null;
+        sleep(FirstFrameMs);
+        while (true)
+        {
+            WindowImage? next = null;
+            bool last = nowMs() - began >= BoundMs;
+            try
+            {
+                next = draw();
+            }
+            catch (IOException) when (!last || image is not null)
+            {
+            }
+
+            if (next is not null && (last || next.Sha256 == image?.Sha256))
+                return next;
+            if (last && image is not null)
+                return image;
+            image = next ?? image;
+            sleep(NextFrameMs);
+        }
     }
 
     /// <summary>
@@ -1315,11 +1573,26 @@ internal static partial class VisibleControlSurface
             return false;
         nint foreground = GetForegroundWindow();
         nint root = foreground == 0 ? 0 : GetAncestor(foreground, 2);
-        // SW_SHOWNOACTIVATE (4); then below the person's window: SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE.
-        _ = ShowWindow(hwnd, 4);
+        // SW_SHOWNOACTIVATE (4); then below the person's window: SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE. uso-108 A9: the
+        // async forms (BringToFront), for a look at a minimized window that does not respond.
+        ShowAndSettle(hwnd, 4);
         if (root != 0 && root != hwnd)
-            _ = SetWindowPos(hwnd, root, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010);
+            _ = SetWindowPos(hwnd, root, 0, 0, 0, 0, NoSizeNoMove | 0x0010 | AsyncWindowPos);
         return !IsIconic(hwnd);
+    }
+
+    private const uint NoSizeNoMove = 0x0001 | 0x0002;
+    private const uint AsyncWindowPos = 0x4000;
+    private const int IconicSettleMs = 300;
+
+    // ShowWindowAsync returns before the window is shown; what follows it (the front, its tree) expects it shown, as
+    // ShowWindow left it: a window that pumps takes it within a few ms; one that does not is left at the bound.
+    private static void ShowAndSettle(nint window, int command)
+    {
+        _ = ShowWindowAsync(window, command);
+        long began = Environment.TickCount64;
+        while (IsIconic(window) && Environment.TickCount64 - began < IconicSettleMs)
+            Thread.Sleep(5);
     }
 
     /// <summary>The refusal of a point located on a surface that changed while the person's pause was waited for.</summary>
@@ -1715,8 +1988,9 @@ internal static partial class VisibleControlSurface
     }
 
     // A visible, uncloaked window that is not always-on-top and sits above the target in the Z order over part
-    // of it (always-on-top windows stay above whatever is brought forward, so they are not counted).
-    private static bool CoveredFromAbove(nint target)
+    // of it (always-on-top windows stay above whatever is brought forward, so they are not counted), and that is not a
+    // pop-up the target shows (CoversItsCapture). An always-on-top window countedOnTop names is counted all the same.
+    private static bool CoveredFromAbove(nint target, Func<uint, bool>? countedOnTop = null)
     {
         if (!TryBounds(target, out int left, out int top, out int right, out int bottom))
             return false;
@@ -1725,13 +1999,16 @@ internal static partial class VisibleControlSurface
         {
             if (window == target)
                 return false;
-            if (!IsWindowVisible(window) || (GetWindowLongPtrW(window, -20).ToInt64() & 0x8) != 0)
+            if (!IsWindowVisible(window)
+                || ((GetWindowLongPtrW(window, -20).ToInt64() & 0x8) != 0 && countedOnTop?.Invoke(ProcessOf(window)) != true))
                 return true;
             if (DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
                 return true;
             if (!TryBounds(window, out int otherLeft, out int otherTop, out int otherRight, out int otherBottom))
                 return true;
-            if (otherLeft < right && otherRight > left && otherTop < bottom && otherBottom > top)
+            if (CoversItsCapture(window, target,
+                    otherLeft < right && otherRight > left && otherTop < bottom && otherBottom > top,
+                    static hwnd => GetWindow(hwnd, 4), AppWindow, TakesActivation, ProcessOf))
             {
                 covered = true;
                 return false;
@@ -1740,6 +2017,40 @@ internal static partial class VisibleControlSurface
         };
         _ = EnumWindows(callback, nint.Zero);
         return covered;
+    }
+
+    /// <summary>
+    /// Ajuste c4 (C3-050/051/053/054): whether a window above the target over part of it covers what a copy of the
+    /// screen there shows of the target. A menu, a list or a drop-down the target itself shows is part of it, never a
+    /// cover: its pop-up, held by the target as <see cref="HeldByItsOwner"/> tells (owned by it, of its very process, no
+    /// taskbar button of its own, never taking the activation), or a submenu held so by such a pop-up. Counted as a
+    /// cover, Writer's open «Herramientas» sent the capture to the frame's own drawing, which has no menu, so neither the
+    /// OCR nor the vision found «Opciones» in it. Any other window covers: another document window of the same process,
+    /// a dialog with its title bar, a window of another process.
+    /// </summary>
+    internal static bool CoversItsCapture(
+        nint window,
+        nint target,
+        bool overlaps,
+        Func<nint, nint> owner,
+        Func<nint, bool> appWindow,
+        Func<nint, bool> takesActivation,
+        Func<nint, uint> process)
+    {
+        if (!overlaps)
+            return false;
+        nint link = window;
+        for (int step = 0; step < 8 && link != 0; step++)
+        {
+            nint up = owner(link);
+            if (!HeldByItsOwner(link, up, owner, appWindow, takesActivation, process))
+                return true;
+            if (up == target)
+                return false;
+            link = up;
+        }
+
+        return true;
     }
 
     // A click bound to the opened application lands only while its window is still the one in front.
@@ -1758,10 +2069,22 @@ internal static partial class VisibleControlSurface
         // kept always on top may have come over it since the check).
         if (window != 0 && !PointShows(window, screenX, screenY))
             return false;
-        mouse_event(0x0002, 0, 0, 0, BaxyInputMark.Value);
-        mouse_event(0x0004, 0, 0, 0, BaxyInputMark.Value);
+        (uint down, uint up) = LeftButtonEvents(GetSystemMetrics(SwapButtonMetric) != 0);
+        mouse_event(down, 0, 0, 0, BaxyInputMark.Value);
+        mouse_event(up, 0, 0, 0, BaxyInputMark.Value);
         return true;
     }
+
+    private const int SwapButtonMetric = 23;
+
+    /// <summary>
+    /// The events of a click that an application reads as its left button. Row C3 (FlaUI's Mouse.cs, SwapButtonIfNeeded;
+    /// MS docs of mouse_event: "the left and right button events refer to the physical buttons"): with the buttons swapped
+    /// in Windows' settings (SM_SWAPBUTTON), MOUSEEVENTF_LEFTDOWN arrives as a right click, and the receipt said delivered
+    /// over an open context menu. The right physical button is the left logical one there.
+    /// </summary>
+    internal static (uint Down, uint Up) LeftButtonEvents(bool swapped) =>
+        swapped ? (0x0008u, 0x0010u) : (0x0002u, 0x0004u);
 
     /// <summary>
     /// The cursor placed on a point of the screen in physical pixels, the unit of every point the views hold (the
@@ -2091,11 +2414,7 @@ internal static partial class VisibleControlSurface
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool BringWindowToTop(nint hwnd);
-
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool ShowWindow(nint hwnd, int command);
+    private static partial bool ShowWindowAsync(nint hwnd, int command);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -2167,6 +2486,9 @@ internal static partial class VisibleControlSurface
 
     [LibraryImport("user32.dll")]
     private static partial nint SetThreadDpiAwarenessContext(nint context);
+
+    [LibraryImport("user32.dll")]
+    private static partial int GetSystemMetrics(int index);
 
     [LibraryImport("user32.dll")]
     private static partial void mouse_event(

@@ -6,19 +6,31 @@ namespace Baxy.Providers.Windows.Clipboard;
 public sealed class WindowsClipboardProvider : IClipboardProvider
 {
     public const int MaximumCharacters = 65_536;
+
+    // One for the process: a call left waiting is the process's, whichever provider started it.
+    private static readonly IClipboardPlatform Win32 = new Win32ClipboardPlatform();
+    private static readonly BoundedClipboardCalls Win32Calls = new(Win32, BoundedClipboardCalls.Deadline);
+
     private readonly IClipboardPlatform _platform;
+    private readonly BoundedClipboardCalls _calls;
 
     public WindowsClipboardProvider()
-        : this(new Win32ClipboardPlatform())
+        : this(Win32, Win32Calls)
     {
     }
 
-    internal WindowsClipboardProvider(IClipboardPlatform platform)
+    internal WindowsClipboardProvider(IClipboardPlatform platform, TimeSpan? deadline = null)
+        : this(platform, new BoundedClipboardCalls(platform, deadline ?? BoundedClipboardCalls.Deadline))
+    {
+    }
+
+    private WindowsClipboardProvider(IClipboardPlatform platform, BoundedClipboardCalls calls)
     {
         _platform = platform ?? throw new ArgumentNullException(nameof(platform));
+        _calls = calls;
     }
 
-    public ValueTask<ClipboardTextSnapshot> ReadTextAsync(
+    public async ValueTask<ClipboardTextSnapshot> ReadTextAsync(
         int maximumCharacters,
         CancellationToken cancellationToken)
     {
@@ -28,14 +40,17 @@ public sealed class WindowsClipboardProvider : IClipboardProvider
             throw new ClipboardProviderException("invalid_limit");
         }
 
-        ClipboardTextSnapshot first = _platform.ReadText(maximumCharacters);
+        ClipboardTextSnapshot first = await ReadAsync(maximumCharacters, cancellationToken).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
-        ClipboardTextSnapshot second = _platform.ReadText(maximumCharacters);
+        ClipboardTextSnapshot second = await ReadAsync(maximumCharacters, cancellationToken).ConfigureAwait(false);
         if (first != second) throw new ClipboardProviderException("clipboard_changed_during_read");
-        return ValueTask.FromResult(second);
+        return second;
     }
 
-    public ValueTask<ClipboardWriteResult> WriteTextAsync(
+    private ValueTask<ClipboardTextSnapshot> ReadAsync(int maximumCharacters, CancellationToken cancellationToken) =>
+        _calls.RunAsync(() => _platform.ReadText(maximumCharacters), mayChangeClipboard: false, cancellationToken);
+
+    public async ValueTask<ClipboardWriteResult> WriteTextAsync(
         string text,
         CancellationToken cancellationToken)
     {
@@ -47,7 +62,7 @@ public sealed class WindowsClipboardProvider : IClipboardProvider
         bool beforeTruncated = false;
         try
         {
-            ClipboardTextSnapshot before = _platform.ReadText(MaximumCharacters);
+            ClipboardTextSnapshot before = await ReadAsync(MaximumCharacters, cancellationToken).ConfigureAwait(false);
             beforeText = before.Text;
             beforeTruncated = before.Truncated;
         }
@@ -56,14 +71,21 @@ public sealed class WindowsClipboardProvider : IClipboardProvider
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        _platform.ReplaceText(text);
+        _ = await _calls.RunAsync(
+            () =>
+            {
+                _platform.ReplaceText(text);
+                return true;
+            },
+            mayChangeClipboard: true,
+            cancellationToken).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
         ClipboardTextSnapshot first;
         ClipboardTextSnapshot second;
         try
         {
-            first = _platform.ReadText(MaximumCharacters);
-            second = _platform.ReadText(MaximumCharacters);
+            first = await ReadAsync(MaximumCharacters, cancellationToken).ConfigureAwait(false);
+            second = await ReadAsync(MaximumCharacters, cancellationToken).ConfigureAwait(false);
         }
         catch (ClipboardProviderException exception) when (!exception.EffectMayHaveOccurred)
         {
@@ -81,10 +103,10 @@ public sealed class WindowsClipboardProvider : IClipboardProvider
         bool changed = beforeSequence != first.SequenceNumber
             && (!string.Equals(beforeText, text, StringComparison.Ordinal) || beforeTruncated
                 || beforeFormats > _platform.FormatCount());
-        return ValueTask.FromResult(new ClipboardWriteResult(
+        return new ClipboardWriteResult(
             first.SequenceNumber,
             text.Length,
-            changed));
+            changed);
     }
 
     private static void ValidateText(string text)
@@ -99,14 +121,163 @@ public sealed class WindowsClipboardProvider : IClipboardProvider
     }
 }
 
+// A8. GetClipboardData on a format the owner renders when asked, and EmptyClipboard for the old owner's
+// WM_DESTROYCLIPBOARD, wait on the owner's thread with no limit (agent-desktop probes/windows/FINDINGS.md A22-3; measured
+// here, 10.0.26300: still inside after 7.4 s and 4 s, until the owner came back), with the clipboard open for everyone and
+// the Core, which awaits each request in turn, stopped. So: an owner that does not answer is refused before the clipboard
+// is opened; a call runs on a thread of its own that its deadline can leave behind (an owner that answers and hangs on the
+// render passes that probe); and while one is left behind inside the OS call the next is refused, not piled up behind it
+// (agent-desktop clipboard_worker_state.rs). Their residual, a clipboard held until the process ends, is closed here: see
+// Win32ClipboardPlatform.ReleaseAbandonedOpen.
+internal sealed class BoundedClipboardCalls(IClipboardPlatform platform, TimeSpan deadline)
+{
+    internal const string OwnerNotResponding = "clipboard_owner_not_responding";
+
+    // Long enough for an owner that really renders a large copy, whose time was not measured; inside the App's 30 s.
+    internal static readonly TimeSpan Deadline = TimeSpan.FromSeconds(10);
+
+    private const int Running = 0;
+    private const int Ended = 1;
+    private const int LeftBehind = 2;
+
+    private int _leftBehind;
+
+    /// <param name="mayChangeClipboard">Left behind, the call may still have emptied the clipboard, so it is told as may have changed.</param>
+    internal async ValueTask<T> RunAsync<T>(Func<T> call, bool mayChangeClipboard, CancellationToken cancellationToken)
+    {
+        if (Volatile.Read(ref _leftBehind) > 0 || !platform.OwnerResponds(cancellationToken))
+            throw new ClipboardProviderException(OwnerNotResponding);
+        // Review of uso-108: the owner's check may have taken seconds; cancelled meanwhile, no thread starts.
+        cancellationToken.ThrowIfCancellationRequested();
+
+        int state = Running;
+        var answer = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var worker = new Thread(() =>
+        {
+            try
+            {
+                answer.TrySetResult(call());
+            }
+            catch (Exception exception)
+            {
+                answer.TrySetException(exception);
+            }
+            finally
+            {
+                if (Interlocked.Exchange(ref state, Ended) == LeftBehind)
+                    Interlocked.Decrement(ref _leftBehind);
+            }
+        })
+        {
+            IsBackground = true,
+            Name = "BAXY clipboard call",
+        };
+        worker.Start();
+        try
+        {
+            return await answer.Task.WaitAsync(deadline, cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            // It ended just as the time ran out: its answer stands.
+            if (Interlocked.CompareExchange(ref state, LeftBehind, Running) != Running)
+                return await answer.Task.ConfigureAwait(false);
+            LeaveBehind();
+            throw new ClipboardProviderException(OwnerNotResponding) { EffectMayHaveOccurred = mayChangeClipboard };
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            if (Interlocked.CompareExchange(ref state, LeftBehind, Running) == Running)
+                LeaveBehind();
+            throw;
+        }
+    }
+
+    private void LeaveBehind()
+    {
+        Interlocked.Increment(ref _leftBehind);
+        platform.ReleaseAbandonedOpen();
+    }
+}
+
 internal sealed partial class Win32ClipboardPlatform : IClipboardPlatform
 {
     private const uint UnicodeText = 13;
+    private const uint Bitmap = 2;
+    private const uint DeviceBitmap = 8;
+    private const uint Files = 15;
+    private const uint DeviceBitmapV5 = 17;
     private const uint MoveableMemory = 0x0002;
-
     public uint GetSequenceNumber() => GetClipboardSequenceNumber();
 
     public int FormatCount() => CountClipboardFormats();
+
+    // The check every act on a window makes (VisibleControlSurface.NotResponding, review of uso-108): an owner busy for a
+    // second or three (a document opening) is waited for, and only one Windows calls hung is told so. A window gone or one of
+    // a higher integrity (access denied) says nothing of a stall, and the deadline still bounds the call. No owner renders
+    // nothing: a clipboard opened with no window, as this class does.
+    public bool OwnerResponds(CancellationToken cancellationToken)
+    {
+        nint owner = GetClipboardOwner();
+        return owner == 0 || !External.VisibleControlSurface.NotResponding(owner, cancellationToken);
+    }
+
+    // Undocumented, measured here (10.0.26300) against an owner hung on the render and one not pumping: with a thread
+    // waiting inside GetClipboardData, an open with no window from another thread succeeds, and its close ends the hold: an
+    // open with a window from another process went from access denied to done, the thread still inside. A write left
+    // inside EmptyClipboard then finds the clipboard closed, so its SetClipboardData fails and no late text appears.
+    public void ReleaseAbandonedOpen()
+    {
+        if (OpenClipboard(0))
+            _ = CloseClipboard();
+    }
+
+    // B11 (agent-desktop crates/windows/src/input/clipboard/mod.rs:148): files, then a picture. Unlike theirs, only when
+    // there is no text: an app that publishes text and a picture would come back as a picture. Empty stays apart from a
+    // read that failed by its error code, as in their empty_clipboard_returns_ok_none_distinct_from_transport_error.
+    internal static ClipboardHolds? WhatItHolds(Func<uint, bool> available, uint imageFile, int formats, Func<int?> fileCount)
+    {
+        if (available(Files))
+            return new ClipboardHolds("files", fileCount());
+        if (available(DeviceBitmap) || available(Bitmap) || available(DeviceBitmapV5) || available(imageFile))
+            return new ClipboardHolds("image");
+        return formats > 0 ? new ClipboardHolds("other") : null;
+    }
+
+    // Asks the owner for the list, on the call's thread like any other read; a list not answered still says «files».
+    private static int? FileCount()
+    {
+        nint list = GetClipboardData(Files);
+        return list == 0 ? null : checked((int)DragQueryFileW(list, uint.MaxValue, 0, 0));
+    }
+
+    // Microsoft, «Clipboard Formats», Cloud Clipboard and Clipboard History Formats: data in ExcludeClipboardContentFromMonitorProcessing,
+    // or a DWORD of zero in CanIncludeInClipboardHistory, keeps a copy out of the history. CopyQ's security page reads these
+    // and the older «Clipboard Viewer Ignore» as what password managers set; each decides for itself (a Bitwarden user reports
+    // that it does not), so a key with no mark is left to its form (SecretShape). The clipboard is open.
+    private static bool OwnerMarkedPrivate()
+    {
+        if (IsClipboardFormatAvailable(RegisterClipboardFormatW("ExcludeClipboardContentFromMonitorProcessing"))
+            || IsClipboardFormatAvailable(RegisterClipboardFormatW("Clipboard Viewer Ignore")))
+            return true;
+        uint history = RegisterClipboardFormatW("CanIncludeInClipboardHistory");
+        if (!IsClipboardFormatAvailable(history))
+            return false;
+        nint data = GetClipboardData(history);
+        if (data == 0 || GlobalSize(data) < sizeof(int))
+            return false;
+        nint value = GlobalLock(data);
+        if (value == 0)
+            return false;
+        try
+        {
+            return Marshal.ReadInt32(value) == 0;
+        }
+        finally
+        {
+            _ = GlobalUnlock(data);
+        }
+    }
 
     public ClipboardTextSnapshot ReadText(int maximumCharacters)
     {
@@ -115,7 +286,10 @@ internal sealed partial class Win32ClipboardPlatform : IClipboardPlatform
         {
             if (!IsClipboardFormatAvailable(UnicodeText))
             {
-                throw new ClipboardProviderException("clipboard_has_no_text");
+                throw new ClipboardProviderException("clipboard_has_no_text")
+                {
+                    Holds = WhatItHolds(IsClipboardFormatAvailable, RegisterClipboardFormatW("PNG"), CountClipboardFormats(), FileCount),
+                };
             }
 
             nint handle = GetClipboardData(UnicodeText);
@@ -135,7 +309,10 @@ internal sealed partial class Win32ClipboardPlatform : IClipboardPlatform
                     text,
                     text.Length,
                     truncated,
-                    GetClipboardSequenceNumber());
+                    GetClipboardSequenceNumber())
+                {
+                    MarkedPrivate = OwnerMarkedPrivate(),
+                };
             }
             finally
             {
@@ -228,6 +405,15 @@ internal sealed partial class Win32ClipboardPlatform : IClipboardPlatform
 
     [LibraryImport("user32.dll", SetLastError = true)]
     private static partial nint SetClipboardData(uint format, nint memory);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetClipboardOwner();
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial uint RegisterClipboardFormatW(string name);
+
+    [LibraryImport("shell32.dll")]
+    private static partial uint DragQueryFileW(nint list, uint index, nint buffer, uint characters);
 
     [LibraryImport("user32.dll")]
     private static partial uint GetClipboardSequenceNumber();

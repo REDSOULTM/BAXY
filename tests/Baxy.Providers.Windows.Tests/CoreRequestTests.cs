@@ -122,7 +122,8 @@ public sealed class CoreRequestTests
         Assert.That(core.Diagnostics.ToString(), Is.Empty);
     }
 
-    // Both are IOExceptions: a journal that cannot be trusted or cannot record stops the core as before (exit 74, 70).
+    // Both are IOExceptions: a journal that cannot be trusted or cannot record stops the core as before (exit
+    // CoreExitCodes.ProfileUnreadable, 70).
     [Test]
     public async Task TheJournalsIntegrityStillLeaves()
     {

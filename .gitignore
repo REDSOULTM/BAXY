@@ -1,40 +1,138 @@
-# ---------------------------------------------------------------------------
-# BAXY: el repositorio guarda fuente, pruebas y documentación. Modelos,
-# ejecutables, corpus pesados y datos personales se regeneran o viven fuera.
-# ---------------------------------------------------------------------------
-
 # Python
 __pycache__/
 *.pyc
 .pytest_cache/
 .ruff_cache/
 /.tmp/
-.runtime-lock-*/
 
-# Editores y configuración local de agentes de código
-/.vscode/
-/.claude/
-/.codex/
-/.grok/
-/ContextoFable.md
+# Capturas de pantalla (se regeneran; pesan MB)
+data/captures/
 
-# Notas de trabajo sueltas en la raíz
-/PROMPT_*.md
+# Estado local de sesiones de la GUI
+data/sessions/
+data/ui_settings.json
+# Preferencias/caches locales de streaming (perfil y URLs de sesión).
+data/prefs.json
+# Memoria personal persistente del usuario.
+data/memory.json
+
+# Node (la GUI compilada dist/ SÍ se versiona)
+gui/ui_field/node_modules/
+
+# Transcripts de sesiones de desarrollo
+ContextoFable.md
+
+# Harness scratch; never part of the product tree
 /scratch/
 
-# .NET: compilación
+# Trazas crudas de corridas que nadie citó. El marcador (.json) de cada corrida
+# SÍ se versiona; la traza (.telemetry.jsonl / .turn-audit.jsonl) pesa ~900 KB
+# por corrida y sólo entra al repositorio cuando un documento la usa para
+# diagnosticar — que es la proporción que el árbol ya tenía (712 .json frente a
+# 44 .turn-audit). Las descartadas se mueven aquí y siguen en disco.
+artifacts/_trazas_locales/
+
+# Comprimido de una carpeta que ya está en el árbol
+documentacion/documentacion.rar
+
+# Estado local del harness. La configuración compartida de Claude Code (agentes, skills,
+# comandos, reglas, hooks y settings.json) sí se versiona; ver .claude/README.md.
+.claude/*
+!.claude/README.md
+!.claude/settings.json
+!.claude/agents/
+!.claude/commands/
+!.claude/hooks/
+!.claude/rules/
+!.claude/skills/
+
+# Encoder experimental 9-tools (reproducible: scripts/train_encoder_9tools.py, determinista)
+data/router_encoder_ft9/
+data/router_encoder_ft9_torch/
+
+# Artefactos internalizados (D35): binarios regenerables con scripts/sync_artifacts.py
+# (el GGUF de 292MB excede el límite de GitHub; el corpus del bench en data/ SÍ se versiona)
+models/artifacts/
+
+# Runtime de JARVIS (default-on D31): se generan solos por usuario, NO versionar.
+# OJO: data/knowledge.sqlite SÍ está versionado (seed del RAG) — por eso son
+# patrones específicos, no *.sqlite en bloque. (.gitignore NO admite comentarios
+# inline: cada patrón en su línea.)
+# behavior_log (<usuario>.db):
+data/*.db
+# memoria semántica de turnos (JARVIS):
+data/experience.sqlite
+# log_recorder por sesión (full.log + chat.log):
+data/logs/
+data/cache/
+# Caches binarios legacy: ahora se regeneran como NPZ seguro bajo data/cache.
+data/fg/fg_family_emb.npy
+data/fg/fg_tool_emb.npy
+
+# Runtime de reminders (mismo patrón D34): el store arranca vacío y el
+# runner PS se regenera desde _RUNNER_PS en tools/reminders.py.
+data/reminders.json
+data/notifications/
+
+# Estado privado de Tool Ecosystem v2. Las bases y claves pertenecen al usuario
+# local; los directorios de acceptance son evidencia reproducible generada por
+# harnesses, no fuentes versionables.
+data/tooling-v2/
+data/privacy/
+data/notes-v2.sqlite3*
+data/tasks-v2.sqlite3*
+data/reminders-v2.sqlite3*
+data/acceptance/
+
+# Runtime de la GUI (D38): preferencia de accesibilidad + imágenes adjuntas
+data/accessibility.json
+data/uploads/
+
+# Audio humano usado para validación local: conservar solo manifests/texto.
+tests/data/*.wav
+
+# Laboratorio local preservado fuera del producto hasta migrar su evidencia.
+/Experimentando/
+
+# Base de conocimiento del RAG (D39): documentos PERSONALES del usuario,
+# runtime puro (el "seed" versionado era un test_doc de la migración; el
+# schema se crea solo en el primer uso). Patrón D34.
+data/knowledge.sqlite
+# candidatos a exemplar propuestos por el miner (se curan a mano y se borran)
+data/exemplar_candidates.json
+
+# Snapshot local completo del BAXY anterior. Su historia permanece disponible
+# en Git hasta ee06786; esta copia se conserva solo como referencia de lectura.
+/legacy/
+
+# Export privado de sesiones Codex/subagentes. Puede contener comandos, salidas
+# y contexto sensible; el manifiesto sanitizado sí se versiona.
+/documentacion/agentes/privado/
+
+# Investigación competitiva extraoficial y sus posibles checkouts de lectura.
+# Puede contener notas de mercado, precios fechados y análisis no destinado a
+# la distribución pública del producto.
+/competidores/
+
+# Salidas regenerables del torneo tecnológico; los JSON crudos publicados sí
+# se versionan bajo artifacts/technology_tournament/raw.
+/experiments/technology_tournament/**/bin/
+/experiments/technology_tournament/**/obj/
+/experiments/technology_tournament/**/target/
+/experiments/technology_tournament/**/.venv/
+/experiments/**/bin/
+/experiments/**/obj/
+/artifacts/technology_tournament/work/
+/artifacts/technology_tournament/build/
+/artifacts/technology_tournament/cache/
+/artifacts/technology_tournament/runtime/
+/experiments/technology_tournament/round_b/tauri_rust/node_modules/
+
+# Producto .NET: compilación y estado privado local.
 /src/**/bin/
 /src/**/obj/
 /tests/Baxy.*/bin/
 /tests/Baxy.*/obj/
-**/build/
-**/TestResults/
-**/packages/
-**/target/
-/scripts/tools/loopcap/bin/
-/scripts/tools/loopcap/obj/
-
-# Salidas de compilación, paquetes y evidencia local regenerable
 /artifacts/product/runtime/
 /artifacts/product/build/
 /artifacts/product/gate-work/
@@ -45,9 +143,28 @@ __pycache__/
 /artifacts/test-results/**/core/
 /artifacts/setup/build/
 /artifacts/setup/runtime/
-/artifacts/validation/
-/artifacts/_trazas_locales/
+
+# Corpus runtime derivado: combina evidencia pública y mensajes históricos
+# privados. Se regenera localmente; el holdout público y su manifiesto sí se
+# versionan.
+/tests/data/turn_evidence_runtime.v1.jsonl
+
+# Goal 10 private projections: full rows with user text. Counts, hashes,
+# schema and the partition index (message_id only) are versioned.
+/tests/data/goal10_n10.v1.jsonl
+/tests/data/goal10_m10.v1.jsonl
+/tests/data/goal10_c10.v1.jsonl
+
+# Goal 10.3 private per-turn payload (entrada, salida visible, user text).
+# Versionable summaries and handoff stay tracked.
 /artifacts/goal10/private/
+
+# Evidencia local regenerable de gates de comportamiento y cobertura.
+/artifacts/validation/
+
+# Ledger local exhaustivo: conserva 710k apariciones y supera 1 GiB. Se
+# regenera con scripts/build_exhaustive_message_ledger.py; solo los manifiestos
+# y reportes compactos se versionan.
 /artifacts/historical_exhaustive/*.jsonl
 /artifacts/historical_exhaustive/*.checkpoint.json
 /artifacts/historical_exhaustive/runtime_fast_gate.json
@@ -56,23 +173,11 @@ __pycache__/
 /artifacts/historical_exhaustive/runtime_model_gate*.jsonl.lock
 /artifacts/historical_exhaustive/runtime_model_gate*.stdout.log
 /artifacts/historical_exhaustive/runtime_model_gate*.stderr.log
-/artifacts/technology_tournament/work/
-/artifacts/technology_tournament/build/
-/artifacts/technology_tournament/cache/
-/artifacts/technology_tournament/runtime/
-/experiments/**/bin/
-/experiments/**/obj/
-/experiments/technology_tournament/**/bin/
-/experiments/technology_tournament/**/obj/
-/experiments/technology_tournament/**/target/
-/experiments/technology_tournament/**/.venv/
-/experiments/technology_tournament/round_b/tauri_rust/node_modules/
-/Experimentando/
-/legacy/
-/competidores/
-models/artifacts/
 
-# Binarios y pesos: nunca en Git (los modelos se descargan, ver docs/instalacion.md)
+# ---------------------------------------------------------------------------
+# BAXY — el repositorio guarda fuente y evidencia viva, no binarios.
+# Modelos, ejecutables y corpus pesados se regeneran desde scripts versionados.
+# ---------------------------------------------------------------------------
 *.gguf
 *.safetensors
 *.onnx
@@ -80,6 +185,10 @@ models/artifacts/
 *.pth
 *.bin
 *.npz
+# Excepción: los pesos del clasificador de familias y del árbitro semántico son
+# datos de runtime del producto, no un modelo descargable. `.gitattributes` fija
+# sus bytes, así que el árbol los versiona.
+!src/baxy_mind/data/*.npz
 *.exe
 *.dll
 *.pdb
@@ -87,59 +196,36 @@ models/artifacts/
 *.exp
 *.zip
 *.7z
-*.rar
 *.msi
 *.nupkg
 *.wav
 *.mp3
 *.flac
 *.mp4
+/legacy/
+**/target/
 **/dist/
-# Excepciones: datos de runtime de la mente (bytes fijados en .gitattributes),
-# la interfaz compilada (sellada por MainWindowShellContractTests) y los clips
-# del avatar.
-!src/baxy_mind/data/*.npz
+# Excepción: el bundle compilado de la GUI histórica está sellado por
+# MainWindowShellContractTests y forma parte del árbol reproducible.
 !src/Baxy.FieldUi/dist/
+# Excepción: los clips del avatar de la vista (diseño v5) van en Git por decisión del dueño (2026-10-21).
 !src/Baxy.FieldUi/public/clips/*.mp4
 !src/Baxy.FieldUi/dist/clips/*.mp4
-gui/ui_field/node_modules/
-
-# Datos personales y estado local: se generan por usuario y nunca se publican
-data/captures/
-data/sessions/
-data/ui_settings.json
-data/prefs.json
-data/memory.json
-data/*.db
-data/experience.sqlite
-data/knowledge.sqlite
-data/exemplar_candidates.json
-data/logs/
-data/cache/
-data/fg/fg_family_emb.npy
-data/fg/fg_tool_emb.npy
-data/reminders.json
-data/notifications/
-data/tooling-v2/
-data/privacy/
-data/notes-v2.sqlite3*
-data/tasks-v2.sqlite3*
-data/reminders-v2.sqlite3*
-data/acceptance/
-data/accessibility.json
-data/uploads/
-data/router_encoder_ft9/
-data/router_encoder_ft9_torch/
-tests/data/*.wav
+/scripts/tools/loopcap/bin/
+/scripts/tools/loopcap/obj/
+**/build/
+**/TestResults/
+**/packages/
 /documentacion/agentes/privado/
 
-# Corpus privados de evaluación: se conservan en local y nunca se publican
+# Evidencia histórica privada: se conserva localmente, nunca se publica.
 historical_messages.jsonl
 historical_missions.jsonl
 historical_message_mapping.jsonl
 turn_evidence_runtime.v1.jsonl
 goal10_[nmc]10.v1.jsonl
-/tests/data/turn_evidence_runtime.v1.jsonl
-/tests/data/goal10_n10.v1.jsonl
-/tests/data/goal10_m10.v1.jsonl
-/tests/data/goal10_c10.v1.jsonl
+
+# temporary dirs of scripts/lock_python_dependencies.ps1
+.runtime-lock-*/
+/.venv-modelo-api/
+!src/Baxy.Installer/Assets/voice/*.wav

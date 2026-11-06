@@ -73,6 +73,14 @@ internal interface IUserInputPause
     string Source { get; }
 }
 
+/// <summary>How the person touched a window since a moment (<see cref="WindowsUserInputPause.TouchOf"/>).</summary>
+internal enum PersonTouch
+{
+    None,
+    PointerPassed,
+    Reached,
+}
+
 /// <summary>
 /// The pause detector of the Core process: a thread of its own with a message-only window registered for Raw Input
 /// of the keyboard and the mouse with <c>RIDEV_INPUTSINK</c> (it gets the input while other windows are in front).
@@ -114,23 +122,38 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     // The cursor at the person's last mouse input (molestia-ayudantes r2): replaced whole, read lock-free.
     private PointerSample? _pointer;
     private volatile bool _rawInput;
+    // Windows' last input of the session (LastInputMs; a test gives its own).
+    private readonly Func<long> _windowsLastInput;
 
     private WindowsUserInputPause()
+        : this(LastInputMs)
     {
-        // What happened before the detector started is not known to be BAXY's: it counts as the person's.
-        _lastForeign = LastInputMs();
-        _lastFrontMoving = _lastForeign;
-        _lastReaching = _lastForeign;
-        // Ronda 20 P2 (t-drag-2): that input went to the window in front (keys go there), the window the person works
-        // in until the detector sees otherwise. Without it the first look of every process came without the person's
-        // window, and a mission with no application read and named the window the person was typing in.
-        _book = PersonWindowBook.Seeded(GetForegroundWindow(), _lastForeign, RootOf, ProcessOf);
+        // Raw Input tells the person apart only once its thread registered it (Pump).
+        _rawInput = false;
         // Not disposed: a thread that starts later than the wait still sets it.
         var ready = new ManualResetEventSlim();
         _watching = this;
         var thread = new Thread(() => Pump(ready)) { IsBackground = true, Name = "BAXY user input pause" };
         thread.Start();
         _ = ready.Wait(TimeSpan.FromSeconds(2));
+    }
+
+    /// <summary>
+    /// A detector with no thread of its own (tests): it tells the person's input apart as Raw Input does, the records it
+    /// is handed (<see cref="Observe(ReadOnlySpan{byte}, int, int)"/>), against <paramref name="windowsLastInput"/>.
+    /// </summary>
+    internal WindowsUserInputPause(Func<long> windowsLastInput)
+    {
+        _windowsLastInput = windowsLastInput;
+        // What happened before the detector started is not known to be BAXY's: it counts as the person's.
+        _lastForeign = windowsLastInput();
+        _lastFrontMoving = _lastForeign;
+        _lastReaching = _lastForeign;
+        // Ronda 20 P2 (t-drag-2): that input went to the window in front (keys go there), the window the person works
+        // in until the detector sees otherwise. Without it the first look of every process came without the person's
+        // window, and a mission with no application read and named the window the person was typing in.
+        _book = PersonWindowBook.Seeded(GetForegroundWindow(), _lastForeign, RootOf, ProcessOf);
+        _rawInput = true;
     }
 
     internal static WindowsUserInputPause Shared => SharedInstance.Value;
@@ -141,18 +164,30 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     /// redraws: a highlight, a fade, a tooltip). Without Raw Input the system's last input stands for theirs, so any
     /// input then counts. False when no detector runs in this process.
     /// </summary>
-    internal static bool PersonTouched(nint window, long sinceMs)
+    internal static bool PersonTouched(nint window, long sinceMs) => TouchOf(window, sinceMs) != PersonTouch.None;
+
+    /// <summary>
+    /// Encargo 54: how the person touched <paramref name="window"/> since <paramref name="sinceMs"/>
+    /// (<see cref="PersonTouched"/>): <see cref="PersonTouch.Reached"/> when an input of theirs that reaches a window's
+    /// content (a key, a mouse button, the wheel; or one the detector missed, of no known kind) went to it or to its
+    /// process; <see cref="PersonTouch.PointerPassed"/> when only their pointer passed over it (bare moves: a hover
+    /// redraws, it presses nothing). Without Raw Input nothing is told apart: any input of theirs then is Reached.
+    /// </summary>
+    internal static PersonTouch TouchOf(nint window, long sinceMs)
     {
         if (!SharedInstance.IsValueCreated)
-            return false;
+            return PersonTouch.None;
         WindowsUserInputPause pause = Shared;
+        if (!pause.TellsOwnInput)
+            return pause.LastForeignInputMs >= sinceMs ? PersonTouch.Reached : PersonTouch.None;
         long elapsed = Environment.TickCount64 - sinceMs;
         // The window's book keeps only the last window typed in; their input to the window's process counts as well, so
         // typing there and then elsewhere still counts.
         int processId = VisibleControlSurface.WindowProcess(window).ProcessId;
-        return (pause.PersonInputAgoMs(window) is long ago && ago <= elapsed)
-            || (processId > 0 && pause.PersonInputToProcessesAgoMs((uint)processId) is long toProcess && toProcess <= elapsed)
-            || pause.LastPointerOverMs(window) >= sinceMs;
+        if ((pause.PersonInputAgoMs(window) is long ago && ago <= elapsed)
+            || (processId > 0 && pause.PersonInputToProcessesAgoMs((uint)processId) is long toProcess && toProcess <= elapsed))
+            return PersonTouch.Reached;
+        return pause.LastPointerOverMs(window) >= sinceMs ? PersonTouch.PointerPassed : PersonTouch.None;
     }
 
     public bool TellsOwnInput => _rawInput;
@@ -163,7 +198,7 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     {
         get
         {
-            long windows = LastInputMs();
+            long windows = _windowsLastInput();
             if (!_rawInput)
                 return windows;
             long foreign = Interlocked.Read(ref _lastForeign);
@@ -192,7 +227,7 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
         get
         {
             if (!_rawInput)
-                return LastInputMs();
+                return _windowsLastInput();
             // Reconciled first: an input the detector missed is of no known kind, and counts as one that moves the front.
             _ = LastForeignInputMs;
             return Math.Max(Interlocked.Read(ref _lastFrontMoving), Interlocked.Read(ref _lastMissedAt));
@@ -204,7 +239,7 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
         get
         {
             if (!_rawInput)
-                return LastInputMs();
+                return _windowsLastInput();
             // Reconciled first: an input the detector missed is of no known kind, and counts as one that reaches.
             _ = LastForeignInputMs;
             return Math.Max(Interlocked.Read(ref _lastReaching), Interlocked.Read(ref _lastMissedAt));
@@ -213,12 +248,12 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
 
     // Raw Input only: an input the detector missed is of no known kind; the lease judges it by where the cursor is
     // (IInputBurst.UserActed after the front was given back).
-    public long LastBeyondFrontInputMs => _rawInput ? Interlocked.Read(ref _lastBeyondFront) : LastInputMs();
+    public long LastBeyondFrontInputMs => _rawInput ? Interlocked.Read(ref _lastBeyondFront) : _windowsLastInput();
 
     public long LastPointerOverMs(nint window)
     {
         if (!_rawInput)
-            return LastInputMs();
+            return _windowsLastInput();
         if (window == 0)
             return 0;
         nint peer = VisibleControlSurface.FamilyPeer(window);
@@ -255,7 +290,7 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
         {
             if (!_rawInput)
                 return 0;
-            long windows = LastInputMs();
+            long windows = _windowsLastInput();
             long seen = Math.Max(Interlocked.Read(ref _lastForeign), OwnSeen);
             return windows > seen + ToleranceMs ? windows : 0;
         }
@@ -676,11 +711,22 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
         uint size = 64;
         if (GetRawInputData(handle, RidInput, buffer, ref size, (uint)header) is 0 or uint.MaxValue)
             return;
-        var record = new ReadOnlySpan<byte>(buffer, (int)Math.Min(size, 64u));
+        Observe(new ReadOnlySpan<byte>(buffer, (int)Math.Min(size, 64u)), header, GetMessageTime());
+    }
+
+    /// <summary>
+    /// One Raw Input record, whose <c>WM_INPUT</c> Windows posted at <paramref name=messageTime/> (its message time,
+    /// on <see cref="Environment.TickCount"/>'s clock). Uso real 2026-11-02 (a confirmed send stopped as
+    /// <c>input_user_interrupted</c>): the input is dated when it happened, not when this thread got to it. Handled late
+    /// (a queue of a fast mouse's records, a busy machine), the person's click on the confirmation was dated inside the
+    /// burst that came after their pause, and stopped it.
+    /// </summary>
+    internal void Observe(ReadOnlySpan<byte> record, int header, int messageTime)
+    {
         bool? own = IsOwn(record, header);
         if (own is null)
             return;
-        long now = Environment.TickCount64;
+        long now = InputAt(messageTime, Environment.TickCount64, Environment.TickCount);
         if (own.Value)
         {
             InterlockedMax(ref _lastOwn, now);
@@ -716,6 +762,20 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
             NoteHover(now, beyond, cursor);
         }
     }
+
+    /// <summary>
+    /// When an input whose message Windows posted at <paramref name=messageTime/> (<c>GetTickCount</c>'s clock, as
+    /// <paramref name=tick/>) happened, on <see cref="Environment.TickCount64"/>'s (<paramref name=now/>); now when
+    /// that time is not a recent one (MessageAgeCapMs).
+    /// </summary>
+    internal static long InputAt(int messageTime, long now, int tick)
+    {
+        uint age = unchecked((uint)tick - (uint)messageTime);
+        return age <= MessageAgeCapMs ? now - age : now;
+    }
+
+    // An input waits in the detector's queue for less than this; an older message time is not the input's.
+    private const uint MessageAgeCapMs = 10_000;
 
     // At most one sample of the window under the cursor every HoverSampleMs while the mouse moves (a pass over a window
     // lasts longer), and always on a button or the wheel. Only the top-level window under the cursor and the time are
@@ -899,6 +959,9 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
 
     [LibraryImport("user32.dll")]
     private static partial nint DispatchMessageW(Message* message);
+
+    [LibraryImport("user32.dll")]
+    private static partial int GetMessageTime();
 
     [LibraryImport("user32.dll")]
     private static partial nint DefWindowProcW(nint window, uint message, nint wParam, nint lParam);

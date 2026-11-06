@@ -252,6 +252,468 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // Banco de entorno del NB (R17, 3 of 3): «Opera GX» said, «Navegador Opera GX» installed (the Start shortcut's name in
+    // the PC's language). Nothing opens (auditoría D1), but the one installed name that ends with the words asked, or
+    // begins with two or more of them, comes back as the holder, first among the candidates.
+    [TestCase("Opera GX", "Navegador Opera GX")]
+    [TestCase("opera gx", "Opera GX Browser")]
+    [TestCase("Edge", "Microsoft Edge")]
+    [TestCase("Zarvok", "The Zarvok")]
+    public void TheOneInstalledNameThatHoldsTheNameAskedComesBackAsItsHolder(string query, string installed)
+    {
+        InstalledApplicationEntry[] catalog = [.. Catalog, new(installed, "Vendor.Product_abc123!App")];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(query, catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null, "app.open asks for the name");
+            Assert.That(resolution.NameHolder, Is.EqualTo(installed));
+            Assert.That(resolution.Candidates![0], Is.EqualTo(installed));
+        });
+    }
+
+    // What it must not hold: a word in the middle («Opera» is not «Navegador Opera GX»), one word at the start («Bloc» of
+    // «Bloc de notas», «Zarvok» of «Zarvok Launcher»), part of a word («Notepad» of «Notepad++»), two letters, a
+    // document or an uninstaller, or a name two applications hold.
+    [TestCase("Opera", new[] { "Navegador Opera GX" })]
+    [TestCase("Bloc", new[] { "Bloc de notas" })]
+    [TestCase("Zarvok", new[] { "Zarvok Launcher" })]
+    [TestCase("Notepad", new[] { "Notepad++" })]
+    [TestCase("GX", new[] { "Navegador Opera GX" })]
+    [TestCase("Player", new[] { "Windows Media Player", "VLC media player" })]
+    [TestCase("Zarvok", new[] { "Uninstall Zarvok" })]
+    public void WhatTheNameAskedIsNotTheEndOfIsHeldByNone(string query, string[] installed)
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Paint", "Microsoft.Paint_8wekyb3d8bbwe!App"),
+            .. installed.Select((name, index) => new InstalledApplicationEntry(name, $"Vendor.App{index}_abc123!App")),
+        ];
+
+        Assert.That(InstalledApplicationResolver.Resolve(query, catalog).NameHolder, Is.Null);
+    }
+
+    // Ajuste c5: un título de juego fuera de Steam lo lleva, con palabras de más, la aplicación del menú Inicio. Palabras
+    // enteras y seguidas, en cualquier sitio del nombre; app.open sigue sin abrir una parte de un nombre (auditoría D1).
+    [TestCase("Zarvok", "Zarvok Launcher")]
+    [TestCase("zarvok", "Zarvok for Windows")]
+    [TestCase("Zarvok", "The Zarvok")]
+    [TestCase("Zarvok", "Zarvok®")]
+    [TestCase("Zarvok", "Zarvok\u2122 Launcher")]
+    [TestCase("Zarvok Quest", "Zarvok Quest Launcher")]
+    [TestCase("Zarvok: Quest", "Zarvok Quest")]
+    public void ATitleResolvesToTheOneApplicationThatBearsItsWordsInARow(string title, string installed)
+    {
+        InstalledApplicationEntry[] catalog = [.. Catalog, new(installed, "Vendor.Game_abc123!App")];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Bearing(title, catalog).Entry?.Name, Is.EqualTo(installed));
+            if (title != "Zarvok: Quest")
+                Assert.That(InstalledApplicationResolver.Resolve(title, catalog).Entry, Is.Null, "app.open asks for the name");
+        });
+    }
+
+    // «Zar» no es palabra de «Zarvok Launcher», «notepad» no es «Notepad++» ni un nombre de dos letras basta.
+    [TestCase("Zar", "Zarvok Launcher")]
+    [TestCase("Launcher Zarvok", "Zarvok Launcher")]
+    [TestCase("Quest Zarvok", "Zarvok The Quest")]
+    [TestCase("Notepad", "Notepad++")]
+    [TestCase("GO", "Go Launcher")]
+    public void WhatIsNotItsWordsInARowIsNotBorne(string title, string installed)
+    {
+        InstalledApplicationEntry[] catalog = [new("Paint", "Microsoft.Paint_8wekyb3d8bbwe!App"), new(installed, "Vendor.Game_abc123!App")];
+
+        Assert.That(Bearing(title, catalog).Entry, Is.Null);
+    }
+
+    // El nombre exacto gana y no pregunta aunque otro lleve las mismas palabras.
+    [Test]
+    public void TheExactNameWinsOverOneThatBearsIt()
+    {
+        InstalledApplicationEntry[] catalog =
+            [new("Zarvok", "Vendor.Game_abc123!App"), new("Zarvok Launcher", "Vendor.Launcher_abc123!App")];
+
+        Assert.That(Bearing("Zarvok", catalog).Entry?.Name, Is.EqualTo("Zarvok"));
+    }
+
+    [Test]
+    public void SeveralApplicationsThatBearATitleAreSaidNoneChosen()
+    {
+        InstalledApplicationEntry[] catalog =
+            [new("Zarvok Launcher", "Vendor.Launcher_abc123!App"), new("Zarvok for Windows", "Vendor.Game_abc123!App")];
+
+        InstalledApplicationResolution found = Bearing("Zarvok", catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.Entry, Is.Null);
+            Assert.That(found.Ambiguous, Is.True);
+            Assert.That(found.Candidates, Is.EquivalentTo(new[] { "Zarvok Launcher", "Zarvok for Windows" }));
+        });
+    }
+
+    // Encargo 10 (punto 3): two applications of the same exact name are ambiguous, and each candidate is told apart by
+    // its visible origin (its program's path, else its package), never one name repeated that would ask again the same.
+    [Test]
+    public void TwoApplicationsOfTheSameExactNameAreToldApartByTheirOrigin()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Vortex", "Black.Tree_a1!App", @"C:\Program Files\BlackTree\vortex.exe"),
+            new("Vortex", "Nexus.Mods_b2!App", @"C:\Program Files\Nexus\vortex.exe"),
+        ];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve("Vortex", catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Ambiguous, Is.True);
+            Assert.That(resolution.Candidates, Is.EquivalentTo(new[]
+            {
+                @"Vortex (C:\Program Files\BlackTree\vortex.exe)",
+                @"Vortex (C:\Program Files\Nexus\vortex.exe)",
+            }));
+        });
+    }
+
+    // Encargo 18 (banco de uso, U08/U14/U15: a packaged application and a classic program of one name, told as «Name
+    // (package name)» and «Name (path)», and app.open took neither back): each candidate is told by an identity the
+    // opening takes —its program's path, else its application id— and the candidate asked back, as said or by that
+    // identity alone, opens exactly that application; the name alone stays ambiguous and nothing is preferred.
+    [TestCase(0, false)]
+    [TestCase(0, true)]
+    [TestCase(1, false)]
+    [TestCase(1, true)]
+    public async Task ACandidateOfAnAmbiguousNameAskedBackOpensExactlyThatOne(int which, bool identityAlone)
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Vortex", "Nexus.Vortex_b2c3d4!App"),
+            new("Vortex", @"{0BA1A0B2-4C1D-4E5F-8A9B-0C1D2E3F4A5B}\vortex.exe", @"C:\Herramientas\Vortex\vortex.exe"),
+        ];
+        string[] identities = ["Nexus.Vortex_b2c3d4!App", @"C:\Herramientas\Vortex\vortex.exe"];
+        ApplicationOpenResult ambiguous = await new WindowsInstalledApplicationOpenProvider(new FakePlatform(catalog))
+            .OpenAsync(Request("Vortex", foreground: true), CancellationToken.None);
+        var platform = new FakePlatform(catalog) { ObservationAfterActivation = Observation(foreground: false) };
+        string asked = identityAlone ? identities[which] : $"Vortex ({identities[which]})";
+
+        ApplicationOpenResult opened = await new WindowsInstalledApplicationOpenProvider(platform)
+            .OpenAsync(Request(asked, foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ambiguous.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.ApplicationAmbiguous));
+            Assert.That(ambiguous.Candidates, Is.EquivalentTo(identities.Select(identity => $"Vortex ({identity})")));
+            Assert.That(opened.Succeeded, Is.True, opened.ErrorCode);
+            Assert.That(platform.ActivatedIds, Is.EqualTo(new[] { catalog[which].AppUserModelId }));
+        });
+    }
+
+    // Encargo A8 (flota 315702667, VMs de Azure en inglés: «Hay dos calculadoras instaladas, ¿cuál abro?» in U14/U15): the
+    // Start catalog held the Calculator package and a second entry of the same name that is the system alias of that very
+    // package (the shortcut to calc.exe, which Windows describes as the package's own name). Two entries that lead to one
+    // destination are one application: it opens, nothing is asked.
+    private const string CalculatorPackage = "Microsoft.WindowsCalculator_8wekyb3d8bbwe!App";
+
+    private static readonly Dictionary<string, InstalledExecutable> CalculatorSystem =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["calc.exe"] = new(@"C:\WINDOWS\System32\calc.exe", "Windows Calculator"),
+        };
+
+    [Test]
+    public async Task ThePackageAndTheShortcutToItsSystemAliasOpenWithoutAsking()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Calculator", CalculatorPackage),
+            new("Calculator", @"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\calc.exe", @"C:\Windows\System32\calc.exe"),
+        ];
+        var platform = new FakePlatform(catalog) { ObservationAfterActivation = Observation(foreground: false) };
+        platform.Executables["calc.exe"] = CalculatorSystem["calc.exe"];
+
+        ApplicationOpenResult opened = await new WindowsInstalledApplicationOpenProvider(platform)
+            .OpenAsync(Request("Calculator", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(opened.Succeeded, Is.True, opened.ErrorCode);
+            Assert.That(platform.ActivatedIds, Is.EqualTo(new[] { CalculatorPackage }));
+        });
+    }
+
+    // The same without the system program being locatable (a VM where App Paths has no calc.exe): the shortcut's program is
+    // told nothing of, so it is another destination and the person is asked, with each one told by what distinguishes it.
+    [Test]
+    public void AShortcutWhoseProgramIsNotKnownToBeThePackageStaysAnotherDestination()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Calculator", CalculatorPackage),
+            new("Calculator", @"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\calc.exe", @"C:\Windows\System32\calc.exe"),
+        ];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve("Calculator", catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Ambiguous, Is.True);
+            Assert.That(resolution.Candidates, Is.EquivalentTo(new[]
+            {
+                $"Calculator ({CalculatorPackage})",
+                @"Calculator (C:\Windows\System32\calc.exe)",
+            }));
+        });
+    }
+
+    [Test]
+    public void AShortcutToAProgramInsideThePackagesFolderIsThePackage()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Paint", "Microsoft.Paint_8wekyb3d8bbwe!App"),
+            new("Paint", "Legacy.Paint.Shortcut",
+                @"C:\Program Files\WindowsApps\Microsoft.Paint_11.2605.81.0_x64__8wekyb3d8bbwe\PaintApp\mspaint.exe"),
+        ];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve("Paint", catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Ambiguous, Is.False);
+            Assert.That(resolution.Entry?.AppUserModelId, Is.EqualTo("Microsoft.Paint_8wekyb3d8bbwe!App"));
+        });
+    }
+
+    // The Start menu of the machine and the person's own: two shortcuts, one file, the same arguments (any case in the
+    // ids and the path), and AppUserModelIDs compared without case. One application, whichever name asks.
+    [TestCase("Vortex")]
+    [TestCase("vortex.exe")]
+    public void TwoShortcutsToTheSameProgramAreOneApplication(string query)
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Vortex", @"{0BA1A0B2-4C1D-4E5F-8A9B-0C1D2E3F4A5B}\Vortex\vortex.exe", @"C:\Program Files\Vortex\vortex.exe"),
+            new("Vortex", @"{A1B2C3D4-0000-4E5F-8A9B-0C1D2E3F4A5B}\Vortex\vortex.exe", @"c:\program files\vortex\VORTEX.EXE"),
+        ];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(query, catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Ambiguous, Is.False);
+            Assert.That(resolution.Entry, Is.Not.Null);
+        });
+    }
+
+    [Test]
+    public void TwoPackageIdsThatDifferOnlyInCaseAreOneApplication()
+    {
+        InstalledApplicationEntry[] catalog =
+            [new("Notas", "Vendor.Notas_abc123!App"), new("Notas", "vendor.notas_ABC123!app")];
+
+        Assert.That(InstalledApplicationResolver.Resolve("Notas", catalog).Ambiguous, Is.False);
+    }
+
+    // Contracasos of A8: the same program with other arguments, two packages, and two programs of one name are different
+    // destinations; the ambiguity stays and says what tells each one apart (nothing is preferred).
+    [Test]
+    public void TheSameProgramWithOtherArgumentsIsAnotherApplicationAndSaysSo()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Consola", @"{1}\host.exe", @"C:\Tools\host.exe", "--modo seguro"),
+            new("Consola", @"{2}\host.exe", @"C:\Tools\host.exe", "--modo admin"),
+        ];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve("Consola", catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Ambiguous, Is.True);
+            Assert.That(resolution.Candidates, Is.EquivalentTo(new[]
+            {
+                @"Consola (C:\Tools\host.exe --modo seguro)",
+                @"Consola (C:\Tools\host.exe --modo admin)",
+            }));
+        });
+    }
+
+    [Test]
+    public void ARealAmbiguityBesideADuplicateSaysOneCandidatePerDestination()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Calculator", CalculatorPackage),
+            new("Calculator", @"{1}\calc.exe", @"C:\Windows\System32\calc.exe"),
+            new("Calculator", @"{2}\calc.exe", @"C:\Tools\OtherCalc\calc.exe"),
+        ];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
+            "Calculator", catalog, CalculatorSystem.GetValueOrDefault);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Ambiguous, Is.True);
+            Assert.That(resolution.Candidates, Is.EquivalentTo(new[]
+            {
+                $"Calculator ({CalculatorPackage})",
+                @"Calculator (C:\Tools\OtherCalc\calc.exe)",
+            }));
+        });
+    }
+
+    [Test]
+    public void ADuplicatedApplicationIsListedOnceToTheModelAndARealAmbiguityNot()
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Vortex", @"{1}\vortex.exe", @"C:\Program Files\Vortex\vortex.exe"),
+            new("Vortex", @"{2}\vortex.exe", @"C:\Program Files\Vortex\vortex.exe"),
+            new("Editor", @"{3}\e.exe", @"C:\A\e.exe"),
+            new("Editor", @"{4}\e.exe", @"C:\B\e.exe"),
+            new("Calculator", CalculatorPackage),
+            new("Calculator", @"{5}\calc.exe", @"C:\Windows\System32\calc.exe"),
+        ];
+
+        InstalledApplicationCatalogSnapshot snapshot = WindowsInstalledApplicationOpenProvider.CreateCatalogSnapshot(
+            catalog, CalculatorSystem.GetValueOrDefault);
+
+        Assert.That(snapshot.Names, Is.EqualTo(new[] { "Calculator", "Vortex" }));
+    }
+
+    // Contracaso (encargo 18): an identity no installed application has opens nothing, and a path never starts a program.
+    [Test]
+    public async Task AnIdentityTheCatalogDoesNotHoldOpensNothing()
+    {
+        var platform = new FakePlatform([new("Vortex", "Nexus.Vortex_b2c3d4!App")]);
+
+        ApplicationOpenResult result = await new WindowsInstalledApplicationOpenProvider(platform)
+            .OpenAsync(Request(@"C:\Herramientas\Otro\otro.exe", foreground: true), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.ApplicationNotFound));
+            Assert.That(platform.ActivatedIds, Is.Empty);
+        });
+    }
+
+    // Encargo 10 (punto 3): a look that finds several of the same exact name hands them apart, so the handler asks with
+    // a list the person can tell apart, not one name that would be ambiguous again.
+    [Test]
+    public async Task ALookForSeveralOfTheSameNameSaysThemToldApart()
+    {
+        var provider = new WindowsInstalledApplicationOpenProvider(new FakePlatform(
+        [
+            new("Zarvok", "Studio.One_a1!App", @"C:\Program Files\StudioOne\zarvok.exe"),
+            new("Zarvok", "Studio.Two_b2!App", @"C:\Program Files\StudioTwo\zarvok.exe"),
+        ]));
+
+        ApplicationNameLook? look = await provider.LookForAsync("Zarvok", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(look?.Name, Is.Null);
+            Assert.That(look?.Several, Is.EquivalentTo(new[]
+            {
+                @"Zarvok (C:\Program Files\StudioOne\zarvok.exe)",
+                @"Zarvok (C:\Program Files\StudioTwo\zarvok.exe)",
+            }));
+        });
+    }
+
+    // Lo que no es el programa no se abre por ser del juego: un desinstalador (por su nombre o por el fichero que lanza), un
+    // instalador, un manual o una web; con eso fuera, el lanzador es el único.
+    [TestCase("Desinstalar Zarvok", "Vendor.Uninstall", null)]
+    [TestCase("Uninstall Zarvok", "Vendor.Uninstall", null)]
+    [TestCase("Zarvok Setup", "Vendor.Setup", null)]
+    [TestCase("Zarvok Remove", "Vendor.Remove", @"C:\Games\Zarvok\unins000.exe")]
+    [TestCase("Zarvok Manual", "Vendor.Manual", @"C:\Games\Zarvok\manual.pdf")]
+    [TestCase("Zarvok Website", @"C:\Games\Zarvok\web.url", null)]
+    public void WhatIsNotTheProgramDoesNotCountAsBearingTheTitle(string name, string id, string? target)
+    {
+        InstalledApplicationEntry[] alone = [new(name, id, target)];
+        InstalledApplicationEntry[] catalog = [.. alone, new("Zarvok Launcher", "Vendor.Launcher_abc123!App")];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Bearing("Zarvok", alone).Entry, Is.Null);
+            Assert.That(Bearing("Zarvok", catalog).Entry?.Name, Is.EqualTo("Zarvok Launcher"));
+        });
+    }
+
+    // Revisión 02-11 (D1): un nombre que empieza por el título es suyo y se abre; uno que lo lleva más adentro («Vendor
+    // Zarvok Panel» para «Zarvok») se dice como candidato y no se abre sin preguntar.
+    [TestCase("Zarvok Launcher", "Zarvok Launcher")]
+    [TestCase("Vendor Zarvok Panel", null)]
+    public void OnlyANameThatBeginsWithTheTitleOpensUnasked(string name, string? opened)
+    {
+        InstalledApplicationResolution found = Bearing("Zarvok", [new(name, "Vendor.App_abc123!App")]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.Entry?.Name, Is.EqualTo(opened));
+            Assert.That(found.Candidates ?? [], opened is null ? Is.EqualTo(new[] { name }) : Is.Empty);
+        });
+    }
+
+    // Una herramienta que configura Windows no se abre como un juego, ni con su nombre exacto: sólo por app.open, que pregunta.
+    [TestCase("Zarvok Tool")]
+    [TestCase("Zarvok")]
+    public void AToolThatConfiguresWindowsIsNeverATitlesApplication(string name)
+    {
+        InstalledApplicationEntry[] catalog = [new(name, "Vendor.Tool_abc123!App")];
+
+        InstalledApplicationResolution found = InstalledApplicationResolver.ResolveBearing(
+            "Zarvok", catalog, null, static _ => true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.Entry, Is.Null);
+            Assert.That(found.Ambiguous, Is.False);
+        });
+    }
+
+    [Test]
+    public async Task ALookForATitleSaysTheOneThatBearsItAndLaunchesNothing()
+    {
+        var platform = new FakePlatform([.. Catalog, new("Zarvok Launcher", "Vendor.Launcher_abc123!App")]);
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationNameLook? look = await provider.LookForAsync("Zarvok", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(look?.Name, Is.EqualTo("Zarvok Launcher"));
+            Assert.That(platform.ActivateCalls, Is.Zero);
+        });
+    }
+
+    // Ninguna la lleva: sólo los nombres cercanos de verdad, no los «menos lejanos» del catálogo.
+    [Test]
+    public async Task ALookThatFindsNoneSaysOnlyNamesThatBeginAlike()
+    {
+        var provider = new WindowsInstalledApplicationOpenProvider(new FakePlatform(
+            [.. Catalog, new("Zarvoke", "Vendor.Near_abc123!App")]));
+
+        ApplicationNameLook? look = await provider.LookForAsync("Zarvok", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(look?.Name, Is.Null);
+            Assert.That(look?.Several, Is.Empty);
+            Assert.That(look?.Near, Is.EqualTo(new[] { "Zarvoke" }));
+        });
+    }
+
+    private static InstalledApplicationResolution Bearing(string title, IReadOnlyList<InstalledApplicationEntry> catalog) =>
+        InstalledApplicationResolver.ResolveBearing(title, catalog, null, static _ => false);
+
     // Ajuste c3 (humo del NB, 31-10: app.open {"appId":"Settings","place":"sound"} on a Spanish Windows said «No encontré
     // Configuración de sonido; sí hay WSL Settings…»): a name the application places' data give the same application
     // (app_places «names») is the installed entry of its other name, either way round; with neither installed, nothing.
@@ -454,6 +916,92 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         InstalledApplicationEntry[] catalog =
             [new("Notepad", "Vendor.Notepad_abc!App"), new("Notepad++", @"C:\Program Files\Notepad++\notepad++.exe")];
         Assert.That(InstalledApplicationResolver.Resolve(query, catalog).Entry?.Name, Is.EqualTo(expected));
+    }
+
+    // Ajuste c4 (banco ciego c3, causa 1: C3-058/059 «IrfanView», C3-062/084/147 «Sumatra PDF», C3-159 «PowerToys»
+    // said app_not_found and opened nothing): a name the catalog writes followed only by its version, its architecture
+    // or a qualifier in parentheses, or written without its space, is that entry when it is the one program with that
+    // name; its help file, its uninstaller and its other shortcuts are not.
+    private static readonly IReadOnlyList<InstalledApplicationEntry> QualifiedCatalog =
+    [
+        new("IrfanView Help", @"{6D809377-6AF0-444B-8957-A3773F02200E}\IrfanView\i_view64.chm",
+            @"C:\Program Files\IrfanView\i_view64.chm"),
+        new("IrfanView 4.76 (Help)", @"{6D809377-6AF0-444B-8957-A3773F02200E}\IrfanView\Help\i_view64.chm",
+            @"C:\Program Files\IrfanView\Help\i_view64.chm"),
+        new("IrfanView 64 4.76", @"{6D809377-6AF0-444B-8957-A3773F02200E}\IrfanView\i_view64.exe",
+            @"C:\Program Files\IrfanView\i_view64.exe"),
+        new("Uninstall IrfanView", @"{6D809377-6AF0-444B-8957-A3773F02200E}\IrfanView\iv_uninstall.exe",
+            @"C:\Program Files\IrfanView\iv_uninstall.exe"),
+        new("IrfanView - Thumbnails", "IrfanView.Thumbnails", @"C:\Program Files\IrfanView\i_view64.exe", "/thumbs"),
+        new("SumatraPDF", @"C:\Users\x\AppData\Local\SumatraPDF\SumatraPDF.exe",
+            @"C:\Users\x\AppData\Local\SumatraPDF\SumatraPDF.exe"),
+        new("PDF24", "PDF24.App"),
+        new("PowerToys (Preview)", @"{6D809377-6AF0-444B-8957-A3773F02200E}\PowerToys\PowerToys.exe",
+            @"C:\Program Files\PowerToys\PowerToys.exe"),
+        new("Python 3.11 (64-bit)", @"C:\Python311\python.exe", @"C:\Python311\python.exe"),
+        new("Python 3.12 (64-bit)", @"C:\Python312\python.exe", @"C:\Python312\python.exe"),
+        new("7-Zip File Manager v23.01 x64", @"C:\Program Files\7-Zip\7zFM.exe", @"C:\Program Files\7-Zip\7zFM.exe"),
+    ];
+
+    [TestCase("IrfanView", "IrfanView 64 4.76")]
+    [TestCase("irfanview", "IrfanView 64 4.76")]
+    [TestCase("IrfanView 64", "IrfanView 64 4.76")]
+    [TestCase("Sumatra PDF", "SumatraPDF")]
+    [TestCase("PowerToys", "PowerToys (Preview)")]
+    [TestCase("Python 3.12", "Python 3.12 (64-bit)")]
+    [TestCase("7-Zip File Manager", "7-Zip File Manager v23.01 x64")]
+    public void ANameFollowedOnlyByVersionOrAQualifierResolvesToThatEntry(string query, string expected) =>
+        Assert.That(InstalledApplicationResolver.Resolve(query, QualifiedCatalog).Entry?.Name, Is.EqualTo(expected));
+
+    // Two programs of that name without their versions: neither is chosen, and both are said.
+    [Test]
+    public void TwoVersionsOfANameAreAmbiguousAndSayThem()
+    {
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve("Python", QualifiedCatalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Ambiguous, Is.True);
+            Assert.That(resolution.Candidates, Is.EquivalentTo(new[] { "Python 3.11 (64-bit)", "Python 3.12 (64-bit)" }));
+        });
+    }
+
+    // Only a version (a number with a point, or «v» and a number), an architecture or a group in parentheses is left off
+    // the end: a number without a point names the product («Microsoft» is not Microsoft 365, «Visual Studio» is not
+    // Visual Studio 2019), and a sign or a word more is another name («Notepad» is not Notepad++).
+    [TestCase("Microsoft", "Microsoft 365 (Office)")]
+    [TestCase("Visual Studio", "Visual Studio 2019")]
+    [TestCase("Notepad", "Notepad++")]
+    [TestCase("IrfanView", "IrfanView - Thumbnails")]
+    public void AWordANumberOrASignMoreIsAnotherName(string query, string installed)
+    {
+        InstalledApplicationEntry[] catalog = [new(installed, @"C:\Program Files\App\app.exe", @"C:\Program Files\App\app.exe")];
+
+        InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(query, catalog);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(resolution.Entry, Is.Null);
+            Assert.That(resolution.Ambiguous, Is.False);
+        });
+    }
+
+    // End to end: app.open «IrfanView» opens the installed IrfanView 64 4.76 and says its installed name.
+    [Test]
+    public async Task AnOpeningOfANameWithoutItsVersionOpensThatProgram()
+    {
+        var platform = new FakePlatform(QualifiedCatalog) { ObservationAfterActivation = Launched() };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult opened = await provider.OpenAsync(Request("IrfanView"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(opened.Succeeded, Is.True);
+            Assert.That(opened.DisplayName, Is.EqualTo("IrfanView 64 4.76"));
+            Assert.That(platform.ActivateCalls, Is.EqualTo(1));
+        });
     }
 
     [Test]
@@ -1409,6 +1957,53 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // uso-108 C12: a process of the launch that died ends the wait at once, saying its code, as a verification failure.
+    [Test]
+    public async Task AProcessOfTheLaunchThatDiedEndsTheWaitAndSaysItsCode()
+    {
+        var platform = new FakePlatform(Catalog) { Launch = new ScriptedWatch(null, null, 0xC0000135) };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Configuración"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.False);
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.VerificationFailed));
+            Assert.That(result.ExitedWithError, Is.EqualTo("0xC0000135"));
+            Assert.That(result.Receipt.LaunchIssued, Is.True);
+            Assert.That(platform.DelayCalls, Is.EqualTo(2));
+            Assert.That(platform.Launch!.Disposed, Is.True);
+        });
+    }
+
+    // uso-108 C12, the control: a launcher ended cleanly (no crash code): its child's window keeps being waited for and verifies.
+    [Test]
+    public async Task ALauncherThatEndedCleanlyKeepsTheWaitAndItsChildsWindowVerifies()
+    {
+        var platform = new FakePlatform(Catalog) { Launch = new ScriptedWatch(), ObservationAfterActivation = Observation(foreground: true) };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Configuración"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.ExitedWithError, Is.Null);
+        });
+    }
+
+    private sealed class ScriptedWatch(params uint?[] codes) : ILaunchWatch
+    {
+        private int _read;
+
+        internal bool Disposed { get; private set; }
+
+        public uint? CrashCode() => _read < codes.Length ? codes[_read++] : null;
+
+        public void Dispose() => Disposed = true;
+    }
+
     // Before the grace an empty frame is a splash still being filled: it is not even asked about; and a window of the
     // application, once it shows, is the opening whatever any frame shows.
     [Test]
@@ -1595,6 +2190,66 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(catalog.Where(WindowsInstalledApplicationOpenProvider.OpensSystemTool).Select(static e => e.Name),
                 Is.EqualTo(new[] { "Configuración del sistema", "Servicios", "Seguridad de Windows" }));
         });
+    }
+
+    // Encargo 94: what a paste judges an application by, nothing launched.
+    [Test]
+    public async Task InstalledFactsSayWhetherItIsABrowserAndWhichWindowsItHas()
+    {
+        InstalledApplicationEntry editor = new("Editor Lumbre", "Lumbre.Editor_abc!App");
+        InstalledApplicationEntry browser = new("Navegador Nimbo", "nimbo", @"C:\Nimbo\nimbo.exe");
+        var platform = new FakePlatform([editor, browser])
+        {
+            BrowserEntries = { "Navegador Nimbo" },
+            Observations =
+            [
+                new InstalledApplicationObservation(7, 1, @"C:\Lumbre\editor.exe", 4242, true, true),
+            ],
+        };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        InstalledApplicationFacts? isEditor = await provider.InstalledFactsAsync("Editor Lumbre", CancellationToken.None);
+        InstalledApplicationFacts? isBrowser = await provider.InstalledFactsAsync("Navegador Nimbo", CancellationToken.None);
+        InstalledApplicationFacts? nothing = await provider.InstalledFactsAsync("Algo Inventado", CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(isEditor!.IsBrowser, Is.False);
+            Assert.That(isEditor.Windows, Is.EqualTo(new[] { 4242L }));
+            Assert.That(isBrowser!.IsBrowser, Is.True);
+            Assert.That(nothing, Is.Null);
+            Assert.That(platform.ActivateCalls, Is.Zero);
+        });
+    }
+
+    // Encargo 94: the program Windows opens plain text with, by its friendly name or its file name; never a browser.
+    [TestCase("Editor Lumbre", @"C:\Lumbre\editor.exe", "Editor Lumbre")]
+    [TestCase("Algo que no se lista", @"C:\Lumbre\editor.exe", "Editor Lumbre")]
+    [TestCase("Navegador Nimbo", @"C:\Nimbo\nimbo.exe", null)]
+    [TestCase("Algo que no se lista", @"C:\Otro\otro.exe", null)]
+    public async Task ThePlainTextEditorIsTheInstalledProgramTheAssociationNames(string name, string executable, string? editor)
+    {
+        InstalledApplicationEntry[] catalog =
+        [
+            new("Editor Lumbre", "editor", @"C:\Lumbre\editor.exe"),
+            new("Navegador Nimbo", "nimbo", @"C:\Nimbo\nimbo.exe"),
+        ];
+        var platform = new FakePlatform(catalog) { BrowserEntries = { "Navegador Nimbo" }, PlainText = (name, executable) };
+        platform.Executables["editor.exe"] = new InstalledExecutable(@"C:\Lumbre\editor.exe", "Editor Lumbre");
+
+        string? found = await new WindowsInstalledApplicationOpenProvider(platform)
+            .PlainTextEditorAsync(CancellationToken.None);
+
+        Assert.That(found, Is.EqualTo(editor));
+    }
+
+    [Test]
+    public async Task WithNoPlainTextAssociationThereIsNoEditor()
+    {
+        string? found = await new WindowsInstalledApplicationOpenProvider(new FakePlatform([new("Editor Lumbre", "Lumbre.Editor_abc!App")]))
+            .PlainTextEditorAsync(CancellationToken.None);
+
+        Assert.That(found, Is.Null);
     }
 
     [Test]
@@ -1885,6 +2540,51 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
                     ? Is.EqualTo(TimeSpan.Zero)
                     : Is.GreaterThanOrEqualTo(WindowsInstalledApplicationOpenProvider.NewDocumentBudget));
         });
+    }
+
+    // Encargo 94: the strip's add button is the New command wherever there is one: Ctrl+N depends on the language (in
+    // Spanish it is bold) and, with no visible toggle that takes it, made nothing in a Notepad that restored a note. With no
+    // button the keys stay as they were: none when a toggle takes them, else the shortcut. The script's own function, taken
+    // by its syntax tree: no window is read.
+    [TestCase("$true", "$false", "add")]
+    [TestCase("$true", "$true", "add")]
+    [TestCase("$false", "$true", "none")]
+    [TestCase("$false", "$false", "shortcut")]
+    public void TheStripsAddButtonComesBeforeTheShortcut(string hasAdd, string taken, string outcome)
+    {
+        string script = """
+            $ErrorActionPreference='Stop'
+            $tokens=$null;$errors=$null
+            $ast=[System.Management.Automation.Language.Parser]::ParseInput($env:BAXY_TAB_STRIP,[ref]$tokens,[ref]$errors)
+            if($errors.Count -gt 0){ throw 'the script does not parse' }
+            $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'CommandOutcome' },$true))
+            if($found.Count -ne 1){ throw 'function missing: CommandOutcome' }
+            . ([scriptblock]::Create($found[0].Extent.Text))
+
+            """ + $"[Console]::Out.Write((CommandOutcome {hasAdd} {taken}))";
+        var start = new System.Diagnostics.ProcessStartInfo("powershell.exe")
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+        foreach (string argument in new[] { "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand" })
+            start.ArgumentList.Add(argument);
+        start.ArgumentList.Add(Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(script)));
+        start.Environment["BAXY_TAB_STRIP"] = WindowsInstalledApplicationPlatform.TabStripScript;
+        using System.Diagnostics.Process process = System.Diagnostics.Process.Start(start)!;
+        Task<string> error = process.StandardError.ReadToEndAsync();
+        string output = ChildOutput.Read(process);
+        Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
+        Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
+        Assert.That(WindowsInstalledApplicationPlatform.ReadTabStripAnswer(output),
+            Is.EqualTo(outcome switch
+            {
+                "add" => TabStripCommand.AddButtonShown,
+                "none" => TabStripCommand.NoNewCommand,
+                _ => TabStripCommand.ShortcutIsNew,
+            }));
     }
 
     // The worker's answer: only its own words choose the route; anything else is Ctrl+N, as before.
@@ -2296,8 +2996,37 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(result.NewDocument, Is.False);
             Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
             Assert.That(result.Succeeded, Is.True, "the application was opened: an effect may have occurred");
-            // Auditoría D6: a dialog the command raised is never answered nor closed (the platform has no way to).
             Assert.That(platform.NewDocumentIssued, Is.EqualTo(new[] { 73L }));
+            Assert.That(result.DialogOpened is not null, Is.EqualTo(onlyADialog));
+        });
+    }
+
+    // Encargo 98: Ctrl+N is another command in some languages. A dialog it raised was left over the person's window, unsaid;
+    // it is said by its title and closed as its Cancel, never answered.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ADialogTheNewCommandRaisedIsSaidAndClosed(bool closes)
+    {
+        var platform = new FakePlatform(Catalog)
+        {
+            Observations = [],
+            ObservationAfterActivation = Observation(foreground: false),
+            FrontFollowsRequest = true,
+            WindowAfterNewDocument = Observation(foreground: true) with { WindowHandle = 76 },
+            Owned = [76],
+            ClosesDialogs = closes,
+        };
+        platform.Titles[73] = "*lista pan - Bloc de notas";
+        platform.Titles[76] = "Abrir";
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(NewDocument("Bloc de notas"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.ErrorCode, Is.EqualTo(ApplicationOpenErrorCodes.NewDocumentNotCreated));
+            Assert.That(platform.ClosedDialogs, Is.EqualTo(new[] { 76L }));
+            Assert.That(result.DialogOpened, Is.EqualTo(new ApplicationDialogMet("Abrir", closes)));
         });
     }
 
@@ -2817,6 +3546,14 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         public InstalledExecutable? LocateExecutable(string fileName) => Executables.GetValueOrDefault(fileName);
 
+        public HashSet<string> BrowserEntries { get; } = [];
+
+        public bool IsBrowser(InstalledApplicationEntry entry) => BrowserEntries.Contains(entry.Name);
+
+        public (string Name, string Executable)? PlainText { get; init; }
+
+        public (string Name, string Executable)? PlainTextHandler() => PlainText;
+
         public InstalledApplicationObservation? ObservationAfterActivation { get; init; }
 
         public bool FocusRequiresDelay { get; init; }
@@ -3093,6 +3830,16 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
 
         public bool IsOwnedWindow(long windowHandle) => Owned.Contains(windowHandle);
 
+        public bool ClosesDialogs { get; init; } = true;
+
+        public List<long> ClosedDialogs { get; } = [];
+
+        public bool CloseOwnedDialog(long windowHandle)
+        {
+            ClosedDialogs.Add(windowHandle);
+            return ClosesDialogs;
+        }
+
         public int WindowProcessId(long windowHandle) => windowHandle switch { 73 => 4242, 74 => 5151, _ => 0 };
 
         public bool SameApplication(int opened, int process) =>
@@ -3112,6 +3859,10 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         // Renew al máximo (velocidad): Windows shows a frame of the application with nothing of it inside, and how many
         // times the opening asked.
         public bool EmptyFrameShown { get; init; }
+
+        public ScriptedWatch? Launch { get; init; }
+
+        public ILaunchWatch? WatchLaunch(InstalledApplicationEntry entry) => Launch;
 
         public int EmptyFrameAsked { get; private set; }
 
@@ -3220,9 +3971,13 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             return Activate(entry);
         }
 
+        // The applications activated, by their id, in order.
+        public List<string> ActivatedIds { get; } = [];
+
         public bool Activate(InstalledApplicationEntry entry)
         {
             ActivateCalls++;
+            ActivatedIds.Add(entry.AppUserModelId);
             if (ObservationAfterActivation is not null)
             {
                 Observations = [ObservationAfterActivation];

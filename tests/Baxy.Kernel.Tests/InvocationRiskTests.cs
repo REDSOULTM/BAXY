@@ -248,6 +248,27 @@ public sealed class InvocationRiskTests
         });
     }
 
+    // Encargo 83: what the read found of a raised invocation reaches whoever asks the person, inside the challenge.
+    [Test]
+    public async Task TheChallengeOfARaisedInvocationCarriesWhatTheReadFound()
+    {
+        using JsonDocument facts = JsonDocument.Parse("""{"systemChange":{"control":"Interruptor"}}""");
+        var handler = new RaisingHandler(InvocationPreflightResult.Raised(OperationRisk.Irreversible, facts.RootElement.Clone()));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse asked = await engine.ExecuteAsync(
+            Request("""{"windowId":"win_panel"}""") with { Operation = "app.open" }, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(asked.Result!.Value.GetProperty("facts").GetProperty("systemChange").GetProperty("control").GetString(),
+                Is.EqualTo("Interruptor"));
+            Assert.That(handler.ExecutionCount, Is.Zero);
+        });
+    }
+
     // Renew al máximo (guarda msconfig, guarda diálogo destructivo): an invocation whose declared risk goes without
     // asking, and whose handler finds it riskier (an opening of msconfig, the «Sí» that replaces a file), waits for the
     // yes bound to it, and runs on that yes.

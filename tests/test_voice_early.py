@@ -156,7 +156,25 @@ def test_the_wake_word_is_told_once(monkeypatch: pytest.MonkeyPatch) -> None:
     listening, _, written, _, woke = _voice(monkeypatch, early_s=0.2, mode="wake")
     _feed(listening, "." * 3)
     _until(lambda: any(m.get("event") == "wake_detected" for m in written))
+    # uso-116: the event is written just before the mind is told (voice.py), and on a busy PC the assert fell in between.
+    _until(lambda: woke)
+    time.sleep(0.1)  # a second telling would come now
     assert woke == [True]
+
+
+@pytest.mark.parametrize("mode", ["wake", "direct"])
+def test_the_close_of_a_request_is_told_once_before_its_transcript(monkeypatch: pytest.MonkeyPatch, mode: str) -> None:
+    # The App's end-of-listening sound (Chime.Heard) is this event: one per request, as the request closes, before what
+    # was said is told (with the early transcript on, whose decoding stands for the request's).
+    listening, _, written, _, _ = _voice(monkeypatch, early_s=0.2, mode=mode)
+    # (in wake mode the fake recognizer gives no word timestamps, so the call's cut leaves nothing to tell)
+    _feed(listening, "v" * 10 + "." * 12)
+    _until(lambda: _transcripts(written) == ["abre Steam"] if mode == "direct"
+           else any(m.get("event") == "transcribing" for m in written))
+    time.sleep(0.3)  # the blocks after the close are heard too
+    closes = [i for i, m in enumerate(written) if m.get("event") == "transcribing"]
+    told = [i for i, m in enumerate(written) if m.get("type") == "voice.transcript"]
+    assert len(closes) == 1 and all(closes[0] < i for i in told)
 
 
 @pytest.mark.parametrize(("early", "wait"), [

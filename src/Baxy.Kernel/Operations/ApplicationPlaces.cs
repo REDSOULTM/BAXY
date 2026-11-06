@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Baxy.Kernel.Operations;
 
@@ -56,6 +57,15 @@ public static class ApplicationPlaces
         place is null ? [] : [.. Named.Value.Where(entry => entry.Places.Contains(place)).Select(entry => entry.Name)];
 
     /// <summary>
+    /// Every name the data give <paramref name="application"/> (folded: its own and its other Start catalog names, as in
+    /// <see cref="ReadNames"/>); empty when the data do not declare it.
+    /// </summary>
+    public static IReadOnlyList<string> NamesOf(string? application) =>
+        application is not null && Loaded.Value.TryGetValue(Fold(application), out Application? declared)
+            ? [.. Loaded.Value.Where(entry => ReferenceEquals(entry.Value, declared)).Select(entry => entry.Key)]
+            : [];
+
+    /// <summary>
     /// The address of <paramref name="place"/> of <paramref name="application"/> (its name in the Start catalog, as
     /// app.open says it) filled with <paramref name="value"/>; null when the data declares no such application or place,
     /// or the value does not fit the place's slot (none given for a slot, one given for none, a game that is not a
@@ -73,15 +83,29 @@ public static class ApplicationPlaces
         application is not null && Loaded.Value.TryGetValue(Fold(application), out Application? found) && found.StartsBehindSignIn;
 
     internal static string? Address(
-        IReadOnlyDictionary<string, Application> applications, string? application, string? place, string? value)
-    {
-        if (application is null || place is null
-            || !applications.TryGetValue(Fold(application), out Application? declared)
-            || !declared.Places.TryGetValue(place, out string? template))
-        {
-            return null;
-        }
+        IReadOnlyDictionary<string, Application> applications, string? application, string? place, string? value) =>
+        application is not null && place is not null
+        && applications.TryGetValue(Fold(application), out Application? declared)
+        && declared.Places.TryGetValue(place, out string? template)
+            ? Filled(template, value)
+            : null;
 
+    /// <summary>
+    /// Banco de uso 2026-11-03 (U33): the page on the web of <paramref name="place"/> of <paramref name="application"/>
+    /// («web» in the data, an https address with the same slot as the place's own), filled with <paramref name="value"/>
+    /// as <see cref="Address(string?, string?, string?)"/> fills it; null when the data declare none or the value does
+    /// not fit. What an opening of the place says when the application is not on the PC.
+    /// </summary>
+    public static string? WebAddress(string? application, string? place, string? value) =>
+        application is not null && place is not null
+        && Loaded.Value.TryGetValue(Fold(application), out Application? declared)
+        && declared.Web.TryGetValue(place, out string? template)
+            ? Filled(template, value)
+            : null;
+
+    // An address with its slot filled by the value it takes (none for no slot); null when the value does not fit.
+    private static string? Filled(string template, string? value)
+    {
         string? slot = SlotOf(template);
         if (slot is null)
         {
@@ -113,6 +137,15 @@ public static class ApplicationPlaces
             ? [.. declared.Places.OrderBy(place => place.Key, StringComparer.Ordinal)
                 .Select(place => (place.Key, SlotOf(place.Value)?.Trim('{', '}')))]
             : [];
+
+    /// <summary>
+    /// Encargo 80: the read the data of <paramref name="application"/> declare, which answers what its pages do not say at a
+    /// glance; null for an application with none.
+    /// </summary>
+    public static ApplicationRead? ReadOf(string? application) =>
+        application is not null && Loaded.Value.TryGetValue(Fold(application), out Application? declared)
+            ? declared.Read
+            : null;
 
     /// <summary>
     /// BAXY Renew cu (C04): the game catalog of <paramref name="application"/> when its <paramref name="place"/> takes a
@@ -254,6 +287,9 @@ public static class ApplicationPlaces
     /// <summary>The place a look shows and the text the data declare for it that the look read.</summary>
     public sealed record ShownPlace(string Place, string Shown);
 
+    /// <summary>A read an application's data declare: its call, and what it tells.</summary>
+    public sealed record ApplicationRead(string Operation, JsonObject Arguments, string Tells);
+
     /// <summary>A title search's address and the fields of its JSON answer: the list, and each item's number and name.</summary>
     public sealed record TitleSearch(string Address, string List, string Id, string Name);
 
@@ -271,6 +307,13 @@ public static class ApplicationPlaces
     {
         internal IReadOnlyDictionary<string, IReadOnlyList<string>> Shows { get; init; } =
             new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
+
+        /// <summary>Each place's page on the web, when the data declare one (<see cref="WebAddress"/>).</summary>
+        internal IReadOnlyDictionary<string, string> Web { get; init; } =
+            new Dictionary<string, string>(StringComparer.Ordinal);
+
+        /// <summary>The read its data declare (<see cref="ReadOf"/>).</summary>
+        internal ApplicationRead? Read { get; init; }
     }
 
     /// <summary>
@@ -285,6 +328,7 @@ public static class ApplicationPlaces
             string[] schemes = [.. entry.Value.GetProperty("schemes").EnumerateArray().Select(scheme => scheme.GetString()!)];
             var places = new Dictionary<string, string>(StringComparer.Ordinal);
             var shows = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
+            var web = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (JsonProperty place in entry.Value.GetProperty("places").EnumerateObject())
             {
                 // What only this place shows: texts, none too short to tell a place by.
@@ -315,6 +359,20 @@ public static class ApplicationPlaces
                 }
 
                 places[place.Name] = address;
+
+                // Its page on the web: https, with the slot the address has and nothing else.
+                if (place.Value.TryGetProperty("web", out JsonElement page))
+                {
+                    string onWeb = page.GetString() ?? string.Empty;
+                    if (!onWeb.StartsWith("https://", StringComparison.Ordinal)
+                        || onWeb.Count(character => character == '{') > 1 || SlotOf(onWeb) != SlotOf(address)
+                        || !Uri.TryCreate(onWeb, UriKind.Absolute, out _))
+                    {
+                        throw new InvalidDataException($"app_places: {entry.Name}/{place.Name}/web");
+                    }
+
+                    web[place.Name] = onWeb;
+                }
             }
 
             string? catalog = entry.Value.TryGetProperty("gameCatalog", out JsonElement named) ? named.GetString() : null;
@@ -324,6 +382,8 @@ public static class ApplicationPlaces
                 schemes, places, catalog, ReadActs(entry, schemes, catalog), ReadTitles(entry, catalog), signIn)
             {
                 Shows = shows,
+                Web = web,
+                Read = entry.Value.TryGetProperty("read", out JsonElement read) ? ReadRead(entry.Name, read) : null,
             };
             foreach (string name in (string[])[entry.Name, .. ReadNames(entry)])
             {
@@ -335,6 +395,17 @@ public static class ApplicationPlaces
         }
 
         return applications;
+    }
+
+    private static ApplicationRead ReadRead(string application, JsonElement read)
+    {
+        string operation = read.TryGetProperty("operation", out JsonElement named) ? named.GetString() ?? string.Empty : string.Empty;
+        string tells = read.TryGetProperty("tells", out JsonElement told) ? told.GetString() ?? string.Empty : string.Empty;
+        return string.IsNullOrWhiteSpace(operation) || string.IsNullOrWhiteSpace(tells)
+            || !read.TryGetProperty("arguments", out JsonElement arguments)
+            || JsonNode.Parse(arguments.GetRawText()) is not JsonObject written
+                ? throw new InvalidDataException($"app_places: {application}/read")
+                : new ApplicationRead(operation, written, tells);
     }
 
     // Ajuste c3 (e2e de la VM, Windows en inglés, E014): the other names the Start catalog gives the same application in

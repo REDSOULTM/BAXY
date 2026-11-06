@@ -6,12 +6,12 @@ using NUnit.Framework;
 namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
-/// Ronda 24 «cliente-en-frio-listo-por-interaccion» (uso real r23: t1-c09#1 «mandale a Ron92 por discord que hoy no
-/// llego a jugar…», t2-c07#1 «… que llego en 10 min…», t3-c07 t1 «mandale a ron92 por discord que ya voy saliendo…»,
+/// Ronda 24 «cliente-en-frio-listo-por-interaccion» (uso real r23: t1-c09#1 «mandale a Nube77 por discord que hoy no
+/// llego a jugar…», t2-c07#1 «… que llego en 10 min…», t3-c07 t1 «mandale a nube77 por discord que ya voy saliendo…»,
 /// client closed). The client was taken as ready at its first title (its loading screen already carries its name),
 /// the chat search was driven with fixed waits over a client that did not answer yet, the title was read once and
 /// the resolve came back «recipient_identity_not_verified» with an effect, so the turn said «No pude confirmar el
-/// resultado con «Ron92»». Now: ready is interactive content, the search is used once a new input holds the focus, the
+/// resultado con «Nube77»». Now: ready is interactive content, the search is used once a new input holds the focus, the
 /// title is polled for 3 s, and a chat not opened without touching a composer is «recipient_not_opened», no effect.
 /// Scripted reads only: nothing here clicks or types.
 /// </summary>
@@ -215,8 +215,8 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             root!.FullName, "src", "Baxy.Providers.Windows", "External", "DesktopMessagingAdapter.cs"));
         Assert.Multiple(() =>
         {
-            Assert.That(source, Does.Contain("byte[]? composerBefore = TryCaptureComposer(handle, channel);"));
-            Assert.That(source, Does.Contain("composerChanged = ComposerChanged(handle, channel, composerBefore);"));
+            Assert.That(source, Does.Contain("byte[]? composerBefore = await TrySettledComposerAsync(handle, channel, cancellationToken)"));
+            Assert.That(source, Does.Contain("_ => ValueTask.FromResult(!ComposerChanged(handle, channel, composerBefore))"));
             Assert.That(source, Does.Contain("UnverifiedChat(handle, processId, ComposerUntouched(input, composerChanged))"));
             Assert.That(source, Does.Not.Contain("composerUntouched: input == InputWait.Opened"));
             Assert.That(source, Does.Not.Contain("Read, before.Focused,"));
@@ -225,7 +225,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
 
     // Revisión 2 de r24, bloqueante 1: a web client's search keeps the keys in its input but UI Automation reports the
     // focus on the active result row (aria-activedescendant). A newly focused row is the search open.
-    private static readonly ClientFocus ActiveRow = new("ListItem", "Ron92", false, "42.9.8", InDialog: true);
+    private static readonly ClientFocus ActiveRow = new("ListItem", "Nube77", false, "42.9.8", InDialog: true);
 
     [Test]
     public async Task AnActiveResultRowThatTakesTheFocusIsTheOpenedSearch()
@@ -248,7 +248,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         Assert.That(wait, Is.EqualTo(WindowsDesktopMessagingAutomation.InputWait.Opened));
     }
 
-    // Bloqueante 1, escenario de la revisión: Discord already running on another person's DM, «mandale a Ron92 por
+    // Bloqueante 1, escenario de la revisión: Discord already running on another person's DM, «mandale a Nube77 por
     // discord que llego en 10 min»; the read after Ctrl+K still shows the composer. Ronda final 27 (regla 3): the name is
     // never typed into a switcher not seen open (with the switcher already open, Ctrl+K closed it and the name went into
     // the person's message box): the shortcut once more, then refused, on any client.
@@ -331,7 +331,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             Assert.That(source, Does.Contain("'client_dialog_after_shortcut'"));
             // Rows count only once the switcher's field holds the name and they changed since before typing; a switcher
             // not closed is said.
-            Assert.That(source, Does.Contain("($now -join \"`n\") -ne $rowsBefore -and (Field-Shows $label)"));
+            Assert.That(source, Does.Contain("$rows -ne $rowsBefore -and $same -ge 2 -and (Field-Shows $label)"));
             Assert.That(source, Does.Contain("leftOpen=$state.leftOpen}"));
             Assert.That(source, Does.Contain("effectObserved: Bool(root, \"leftShown\") || Bool(root, \"leftOpen\")"));
         });
@@ -424,6 +424,13 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
             return ValueTask.FromResult(resolve);
         }
 
+        public ValueTask<DesktopRecipientObservation> OpenConversationAsync(
+            string channel, string name, string? server, CancellationToken cancellationToken)
+        {
+            Steps.Add($"open:{channel}:{name}");
+            return ValueTask.FromResult(resolve);
+        }
+
         public ValueTask<DesktopMessageObservation> SendAsync(ResolvedRecipient recipient, string text, CancellationToken cancellationToken)
         {
             Steps.Add("send:" + recipient.Name);
@@ -437,9 +444,9 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         }
     }
 
-    // t1-c09#1 («Ron92»), t2-c07#1 («Ron92»), t3-c07 t1 («ron92»); a recipient that does not exist ends the same way.
-    [TestCase("Ron92")]
-    [TestCase("ron92")]
+    // t1-c09#1 («Nube77»), t2-c07#1 («Nube77»), t3-c07 t1 («nube77»); a recipient that does not exist ends the same way.
+    [TestCase("Nube77")]
+    [TestCase("nube77")]
     [TestCase("NadieSeLlamaAsi")]
     public async Task TheColdClientCasesAnswerNotOpenedWithoutEffectAndNothingIsTyped(string recipient)
     {
@@ -464,16 +471,16 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
     [Test]
     public async Task AVerifiedChatStillResolves()
     {
-        var automation = new ColdClient(new DesktopRecipientObservation(true, true, 42, 7, null, "Ron92"));
+        var automation = new ColdClient(new DesktopRecipientObservation(true, true, 42, 7, null, "Nube77"));
         using var adapter = new DesktopMessagingAdapter(automation);
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "message.draft",
-            JsonDocument.Parse("""{"channel":"discord","recipient":"Ron92","text":"hola"}""").RootElement.Clone(),
+            JsonDocument.Parse("""{"channel":"discord","recipient":"Nube77","text":"hola"}""").RootElement.Clone(),
             CancellationToken.None);
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(automation.Steps, Is.EqualTo(new[] { "ensure:discord", "resolve:discord:Ron92", "draft:Ron92" }));
+            Assert.That(automation.Steps, Is.EqualTo(new[] { "ensure:discord", "resolve:discord:Nube77", "draft:Nube77" }));
         });
     }
 
@@ -589,7 +596,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         start.Environment["BAXY_LOCATE_SCRIPT"] = script;
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         Assert.That(output.Trim().Split(','), Is.EqualTo(new[]
@@ -669,7 +676,7 @@ public sealed class R24ClienteEnFrioListoPorInteraccionTests
         start.Environment["BAXY_CLIENT"] = client;
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         Assert.That(output.Trim(), Is.EqualTo(expected));

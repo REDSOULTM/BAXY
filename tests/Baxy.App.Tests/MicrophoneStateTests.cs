@@ -48,6 +48,20 @@ public sealed class MicrophoneStateTests
     }
 
     [Test]
+    public async Task AVoiceStartCarriesTheOwnersEchoCancelSwitch()
+    {
+        using var fake = new FakeMind();
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+
+        Assert.That(await mind.VoiceStartAsync("wake", TimeSpan.FromSeconds(5), CancellationToken.None), Is.True);
+        Assert.That(await mind.VoiceStartAsync("wake", TimeSpan.FromSeconds(5), CancellationToken.None, echoCancel: false),
+            Is.True);
+
+        IReadOnlyList<JsonObject> starts = fake.Requests("voice.start");
+        Assert.That(starts.Select(static start => (bool?)start["echoCancel"]), Is.EqualTo(new bool?[] { true, false }));
+    }
+
+    [Test]
     public async Task WordsHeardWhileTheAppIsNotListeningStartNoTurn()
     {
         using var fake = new FakeMind();

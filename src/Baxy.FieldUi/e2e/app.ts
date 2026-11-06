@@ -28,6 +28,18 @@ export async function attach(): Promise<App> {
   return { browser, page, cdp, errors };
 }
 
+/** The specs read the view's Spanish words: the real host's language is set to Spanish (whatever Windows' is) until the
+ *  returned function puts the person's choice back. */
+export async function spanish(page: Page): Promise<() => Promise<void>> {
+  const put = (lang: string) => page.evaluate(async (l) => {
+    await fetch('/settings/language', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lang: l }) });
+  }, lang);
+  const was = await page.evaluate(async () => { const r = await fetch('/settings/general'); return r.ok ? ((await r.json()).language ?? 'auto') : 'auto'; });
+  await put('es');
+  await page.waitForFunction(() => document.documentElement.lang === 'es', undefined, { timeout: 15_000 });
+  return () => put(was);
+}
+
 /** Lays the view out at w×h CSS pixels (device scale 1), as a window of that size would. */
 export async function size(app: App, w: number, h: number): Promise<void> {
   await app.cdp.send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });

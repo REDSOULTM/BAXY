@@ -1,224 +1,169 @@
-<h1 align="center">BAXY</h1>
+# BAXY
 
-<p align="center">
-  <b>Un compañero para Windows: vive en tu PC, habla con voz propia y maneja tu escritorio por voz o por texto.</b>
-</p>
+[English](#english) · [Español](#español)
 
-<p align="center">
-  <a href="LICENSE"><img alt="Licencia MIT" src="https://img.shields.io/badge/licencia-MIT-green"></a>
-  <img alt="Windows 10/11" src="https://img.shields.io/badge/plataforma-Windows%2010%2F11-0078D6?logo=windows">
-  <img alt=".NET 10" src="https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet">
-  <img alt="Python 3.12" src="https://img.shields.io/badge/python-3.12-3776AB?logo=python">
-  <a href="https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF"><img alt="Modelo en Hugging Face" src="https://img.shields.io/badge/modelo-Hugging%20Face-FFD21E?logo=huggingface"></a>
-</p>
+## English
 
-<p align="center">
-  <a href="README.en.md">English</a> ·
-  <a href="docs/instalacion.md">Instalación</a> ·
-  <a href="docs/arquitectura.md">Arquitectura</a> ·
-  <a href="docs/evaluacion.md">Resultados</a> ·
-  <a href="docs/construccion/README.md">Cómo se construyó</a>
-</p>
+**BAXY runs your Windows PC with you, by voice or by text.** You ask in Spanish, English or a mix of both; BAXY
+works out what to do, does it, checks that it really happened and tells you in a sentence. Its language model runs
+on your own graphics card: nothing you say leaves your PC unless you ask for something from the web, or you choose
+to connect a model from another company yourself.
 
-BAXY vive en tu PC con Windows y lo maneja por ti, por voz o por texto: abre programas y archivos, recorre las
-ventanas de cualquier aplicación, busca en la web, pone música y vídeos y cambia los ajustes del sistema. Entiende
-**español e inglés** (y la mezcla de los dos), y piensa con un **modelo propio de 4.000 millones de parámetros**
-ajustado para esta tarea, que cabe en una GPU de 4 GB. Nada de lo que dices sale de tu máquina.
+- **It checks before it claims.** Every action goes through a typed catalog of operations; a Windows provider
+  carries it out and returns a receipt with what it observed. "The command was sent" is not reported as success.
+- **It asks first** before anything destructive, anything that sends something, or anything that closes unsaved
+  work (you can turn that off).
+- **It is still learning** and sometimes gets things wrong. Its voice is synthetic.
 
-Lo que lo distingue:
+### Download
 
-- **Local y privado.** El modelo, la transcripción y la voz corren en tu PC. BAXY puede consultar la web cuando no
-  sabe algo, pero nunca envía tus datos a ningún servicio.
-- **Modelo propio.** [BAXY-Qwen3.5-4B](https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF) es Qwen3.5-4B con un
-  ajuste fino LoRA hecho para elegir y encadenar las herramientas de BAXY. Corre en `llama.cpp`, cuantizado a
-  Q4_K_M (2,7 GB).
-- **Voz propia.** Palabra de activación, transcripción local con Parakeet y una voz sintética propia hecha con
-  Supertonic.
-- **Revisa lo que hace.** Cada acción devuelve un recibo del sistema y BAXY responde a partir de él. Aun así, puede
-  equivocarse (ver [resultados](#resultados-medidos)).
-- **Pregunta antes de hacer algo irreversible.** Borrar, enviar o cerrar algo con trabajo sin guardar pide tu confirmación,
-  ligada a esa acción exacta.
+Get the installer from the [releases page](https://github.com/REDSOULTM/BAXY/releases) (the latest is
+[BAXY 1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1)): download `BAXY-Instalador.exe` and open it.
+It checks your PC, downloads the parts it needs, verifies each one's SHA-256 and leaves BAXY in the Start menu.
+The installer is not code-signed, so SmartScreen may warn you.
 
-> **Estado:** proyecto en desarrollo activo, usable a diario en el PC de su autor. Todavía falla en una parte de las
-> tareas largas de varios pasos (ver [resultados](#resultados-medidos)). La instalación es desde el código fuente.
+### What you need to run it
 
-## Qué puede hacer
+- Windows 10 or 11, 64-bit.
+- **A dedicated NVIDIA or AMD graphics card with 4 GB of memory or more.** NVIDIA cards use CUDA; AMD uses Vulkan.
+- About 13 GB free while installing.
+- Internet to install. BAXY itself works offline, except for what you ask of the web.
 
-Más de 180 herramientas tipadas, agrupadas por área:
+### Not tested or not supported
 
-| Área | Ejemplos |
-|---|---|
-| Aplicaciones y ventanas | Abrir, cerrar, enfocar, minimizar y ordenar ventanas; abrir juegos de Steam o Epic |
-| Interfaces de cualquier programa | Leer los controles visibles (UI Automation), pulsar, escribir, usar atajos; OCR y visión cuando no hay árbol de accesibilidad |
-| Archivos y carpetas | Buscar, crear, mover, copiar, renombrar, comprimir, enviar a la papelera, leer documentos y PDF |
-| Web | Buscar, leer páginas, abrir enlaces y pestañas en tu navegador |
-| Multimedia | Reproducir en Spotify y YouTube, controlar el volumen y el dispositivo de audio |
-| Sistema | Brillo, Wi-Fi, Bluetooth, red, batería, almacenamiento, capturas de pantalla, portapapeles |
-| Organización | Notas, tareas, recordatorios, calendario y correo de Outlook, memoria de lo que le pides recordar |
-| Conversación | Responder preguntas, calcular (con aritmética real, no de memoria) y consultar el tiempo |
+- Integrated graphics (Intel or AMD) and CPU only are not supported.
+- A freshly formatted Windows without the Visual C++ runtime or WebView2 was not tested (the installer installs both
+  from Microsoft).
+- A real AMD or Intel card was not tested for the CUDA/Vulkan split of 1.2.1: it was simulated.
+- "Another model" (Settings → Model) is optional and off by default. With a company's API, what you give BAXY goes to
+  that company. OpenAI and Google were not tested with a real key; other models do worse than BAXY's own.
+- Running BAXY from a fresh clone of this repository (below) was built and unit-tested, not tried end to end with
+  voice.
 
-Un turno típico: dices «BAXY, abre la calculadora y calcula 12 por 37». BAXY decide las llamadas, el sistema las
-ejecuta y verifica, y BAXY contesta con su voz en una frase a partir del recibo.
+### Build from source
 
-## Arquitectura
-
-```mermaid
-flowchart LR
-    subgraph Voz["Voz (CPU)"]
-        W[Palabra de activación] --> STT[Transcripción<br/>Parakeet · sherpa-onnx]
-        TTS[Voz propia<br/>Supertonic]
-    end
-    subgraph App["App · C# / .NET 10"]
-        UI[Interfaz WPF + WebView2<br/>React / TypeScript]
-        K[Kernel<br/>catálogo · riesgo · confirmación · diario]
-    end
-    subgraph Mente["Mente · Python 3.12"]
-        M[Bucle de herramientas<br/>y comprobación de la respuesta]
-        L[llama-server<br/>BAXY-Qwen3.5-4B Q4_K_M · GPU 4 GB]
-    end
-    subgraph Windows["Proveedores de Windows"]
-        P[UI Automation · OCR · visión<br/>archivos · audio · red · apps]
-    end
-    STT -->|texto| M
-    UI <-->|baxy.mind.v1| M
-    M <--> L
-    M -->|propone una operación| K
-    K -->|autoriza| P
-    P -->|recibo verificado| K
-    K -->|resultado| M
-    M -->|respuesta| TTS
-    M -->|respuesta| UI
-```
-
-- **La mente propone, el kernel autoriza, el proveedor ejecuta.** El modelo nunca toca el sistema directamente: sólo
-  puede pedir operaciones del catálogo tipado, y el kernel decide si necesita confirmación.
-- **Recibos verificados.** Cada proveedor comprueba el efecto (la ventana existe, el archivo cambió, el volumen es
-  el pedido) y devuelve un recibo. Antes de hablar, la mente contrasta la respuesta del modelo con esos recibos.
-- **Un diario de invocaciones** con integridad HMAC evita repetir una acción ya hecha si algo se reinicia.
-
-Detalle de cada pieza en [docs/arquitectura.md](docs/arquitectura.md).
-
-## Principios
-
-1. **No dar por hecho lo que no se vio.** «Se envió el comando» no es «se hizo». Un resultado ambiguo se dice como tal.
-2. **Confirmar lo destructivo.** La confirmación se liga a la invocación exacta, no a una intención parecida.
-3. **Privado por diseño.** La línea es de dirección, no de conexión: BAXY lee la web, pero no envía contenido tuyo.
-   Lo que recuerda de ti se puede ver, corregir y borrar.
-4. **Sin frases fijas.** Todo lo que BAXY dice lo formula el modelo a partir de lo que pasó.
-5. **Lo más ligero que cumpla.** 4 GB de VRAM son el techo, no el objetivo.
-
-Más en [docs/identidad.md](docs/identidad.md) y [docs/privacidad-y-seguridad.md](docs/privacidad-y-seguridad.md).
-
-## Resultados medidos
-
-BAXY se mide con **bancos ciegos**: misiones reales sobre un escritorio de Windows, con un oráculo que comprueba el
-estado final y un juez que lee cada conversación sin saber qué modelo la produjo. Cómo se mide, en
-[docs/evaluacion.md](docs/evaluacion.md).
-
-**Banco ciego de 160 misiones × 3 semillas** (modelo actual frente al anterior, misma App):
-
-| Métrica | Modelo anterior | BAXY-Qwen3.5-4B actual |
-|---|---|---|
-| Misiones logradas (mayoría de 3) | 36 / 160 | **44 / 160** |
-| Logradas en las 3 corridas (pass^3) | 24 | **38** |
-| Éxitos falsos (dijo que lo hizo y no) | 11 | 11 |
-| Límites honestos (dijo que no podía) | 51 | 51 |
-| McNemar, logradas pareadas | — | 9 a favor, 1 en contra, p = 0,02 |
-
-**Latencia hasta el primer sonido** tras un arreglo del aviso hablado (3 misiones en vivo, mismo modelo): mediana
-de **31,8 s a 4,4 s**; la primera respuesta completa sigue en torno a 50 s en esas misiones largas de interfaz.
-
-Lectura honesta: una de cada cuatro misiones difíciles sale bien; en otra tercera parte BAXY reconoce que no puede.
-Los éxitos falsos son el problema abierto más importante. Los límites conocidos están en
-[docs/evaluacion.md](docs/evaluacion.md#límites-conocidos).
-
-## Requisitos
-
-| | Mínimo |
-|---|---|
-| Sistema | Windows 10 (2004) o Windows 11, x64 |
-| GPU | NVIDIA de 4 GB de VRAM, con driver compatible con CUDA 12.4 (551.61 o posterior). Sin GPU funciona en CPU, mucho más lento |
-| RAM y disco | 16 GB de RAM y unos 10 GB libres recomendados |
-| Software | .NET SDK 10.0.100, Python 3.12 x64, Visual Studio Build Tools 2022 (C++), WebView2 Runtime |
-| Opcional | Micrófono y altavoces para hablarle |
-
-## Instalación
-
-La guía completa, con cada descarga y su comprobación SHA-256, está en [docs/instalacion.md](docs/instalacion.md).
-En resumen:
+What you need: Windows 10/11 x64, the [.NET SDK 10.0.114](https://dotnet.microsoft.com/download/dotnet/10.0) (pinned
+by `global.json`) and [Python 3.12](https://www.python.org/downloads/) x64. The interface (`src/Baxy.FieldUi`) is
+already built in `src/Baxy.FieldUi/dist`; to change it you also need Node.js and pnpm
+(`pnpm install --frozen-lockfile`, `pnpm build`).
 
 ```powershell
-# 1. Clona en una carpeta que NO se llame exactamente "BAXY" (ver la guía)
-git clone https://github.com/REDSOULTM/BAXY.git BAXY-src
-cd BAXY-src
-
-# 2. Descarga el modelo y llama.cpp b11609 (CUDA 12.4); comprueba sus SHA-256
-#    https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF  ->  BAXY-Qwen3.5-4B-c3-Q4_K_M.gguf
-
-# 3. Prepara el Python de BAXY y registra el modelo
-$env:BAXY_MIND_LLM_GGUF     = "<ruta>\BAXY-Qwen3.5-4B-c3-Q4_K_M.gguf"
-$env:BAXY_MIND_LLAMA_SERVER = "<ruta>\llama-b11609\llama-server.exe"
-$env:BAXY_MIND_STT_DIR      = "<ruta>\sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1
-
-# 4. Arranca
-py -3.12 main.py
+git clone https://github.com/REDSOULTM/BAXY.git
+cd BAXY
+dotnet build Baxy.slnx -c Release -warnaserror        # the App, the core, the kernel, the providers, the installer
+dotnet test tests\Baxy.Kernel.Tests -c Release        # each tests\Baxy.*.Tests project the same way
 ```
 
-## Desarrollo
+The Python side (the "mind", `src/baxy_mind`) needs the pinned runtime: `scripts\bootstrap.ps1` creates it from
+`pylock.runtime-win-x64.toml` with every hash checked, and that lock includes the sherpa-onnx wheel described below,
+so build that wheel first. Then `py -3.12 -m pytest tests` runs its tests. Some tests in
+`tests\Baxy.Providers.Windows.Tests` drive the real desktop: run those in a session with nothing else open.
+
+**What is not in this repository, and how to get it:**
+
+- **Model weights** (BAXY's model, the vision projector, speech recognition, the voice and the wake word) and the
+  `llama-server` build. They come inside the release package: install BAXY, or unpack the release `.zip` parts, and
+  point BAXY at them with `scripts\register_mind_runtime.ps1` (or the `BAXY_MIND_LLM_GGUF` and
+  `BAXY_MIND_LLAMA_SERVER` variables). `py -3.12 main.py` then builds what changed and starts the App. Each model
+  keeps its own license: see `THIRD_PARTY_NOTICES.md`.
+- **The patched sherpa-onnx wheel** used for speech recognition. sherpa-onnx compiles eSpeak NG in, which is
+  GPL-3.0-or-later, so its binary is not kept here. Build it with `scripts\build_sherpa_runtime.py` (the recipe and
+  its two patches are in `runtime_wheels/`; the complete source is in the `*-source.zip` assets of
+  [release 1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1)) and re-lock with
+  `scripts\lock_python_dependencies.ps1`, because a rebuild is not byte-identical. The installed release already
+  carries a complete Python runtime with this wheel installed (its `python` folder). Neither path was tried from
+  this snapshot.
+- **Internal notes, benchmarks and measurement data.** They hold personal data and private paths, so they are not
+  published. Some code comments cite documents or benchmark scripts that are not here; the code does not need them.
+
+### License
+
+BAXY's own code is under the [MIT license](LICENSE). Third-party components, models and data keep their own licenses:
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) (in Spanish) lists them, and [`licenses/`](licenses/README.md)
+holds the full texts. The release packages also carry GPL code (eSpeak NG); its source and the written offer are
+described in [`licenses/FUENTES_GPL.md`](licenses/FUENTES_GPL.md). This is not legal advice.
+
+Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Español
+
+**BAXY maneja tu PC con Windows contigo, por voz o por texto.** Le pides algo en español, en inglés o mezclando los
+dos; BAXY entiende qué hacer, lo hace, comprueba que de verdad pasó y te lo cuenta en una frase. Su modelo de lenguaje
+corre en tu propia tarjeta gráfica: nada de lo que dices sale de tu PC salvo que pidas algo de la web, o que tú
+conectes el modelo de otra empresa.
+
+- **Comprueba antes de afirmar.** Cada acción pasa por un catálogo tipado de operaciones; un proveedor de Windows la
+  ejecuta y devuelve un recibo con lo que observó. «Se envió el comando» no se cuenta como éxito.
+- **Pregunta primero** antes de lo destructivo, de lo que envía algo o de lo que cierra trabajo sin guardar (se puede
+  apagar).
+- **Sigue aprendiendo** y a veces se equivoca. Su voz es sintética.
+
+### Descargar
+
+Baja el instalador de la [página de versiones](https://github.com/REDSOULTM/BAXY/releases) (la última es
+[BAXY 1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1)): descarga `BAXY-Instalador.exe` y ábrelo.
+Revisa tu PC, baja las partes que necesita, comprueba el SHA-256 de cada una y deja a BAXY en el menú Inicio.
+El instalador no va firmado, así que SmartScreen puede avisar.
+
+### Qué necesitas para usarlo
+
+- Windows 10 u 11 de 64 bits.
+- **Una tarjeta gráfica dedicada NVIDIA o AMD con 4 GB de memoria o más.** Con NVIDIA usa CUDA; con AMD, Vulkan.
+- Unos 13 GB libres al instalar.
+- Internet para instalar. BAXY funciona sin conexión, salvo lo que le pidas de la web.
+
+### Sin probar o sin soporte
+
+- Los gráficos integrados (Intel o AMD) y la CPU sola no tienen soporte.
+- Un Windows recién formateado sin el runtime de Visual C++ ni WebView2 no se probó (el instalador pone los dos desde
+  Microsoft).
+- El reparto CUDA/Vulkan de 1.2.1 no se probó en una tarjeta AMD o Intel real: se simuló.
+- «Otro modelo» (Ajustes → Modelo) es opcional y viene apagado. Con la API de una empresa, lo que le pases a BAXY va a
+  esa empresa. OpenAI y Google no se probaron con una clave real; otros modelos rinden peor que el propio de BAXY.
+- Ejecutar BAXY desde un clon de este repositorio (abajo) se compiló y pasó sus pruebas, pero no se probó de punta a
+  punta con voz.
+
+### Compilar desde el código
+
+Hace falta Windows 10/11 x64, el [SDK de .NET 10.0.114](https://dotnet.microsoft.com/download/dotnet/10.0) (fijado
+en `global.json`) y [Python 3.12](https://www.python.org/downloads/) x64. La interfaz (`src/Baxy.FieldUi`) ya va
+compilada en `src/Baxy.FieldUi/dist`; para cambiarla hacen falta además Node.js y pnpm
+(`pnpm install --frozen-lockfile`, `pnpm build`).
 
 ```powershell
-dotnet build Baxy.slnx -c Release -warnaserror      # App, Core, Kernel, proveedores e instalador
-dotnet test tests\Baxy.Kernel.Tests -c Release      # una suite .NET
-py -3.12 -m pytest -q tests                          # pruebas de la mente (Python)
-py -3.12 main.py                                     # compila lo que cambió y lanza BAXY
+git clone https://github.com/REDSOULTM/BAXY.git
+cd BAXY
+dotnet build Baxy.slnx -c Release -warnaserror        # la App, el core, el kernel, los proveedores, el instalador
+dotnet test tests\Baxy.Kernel.Tests -c Release        # cada proyecto tests\Baxy.*.Tests igual
 ```
 
-Estructura del repositorio:
+La parte Python (la «mente», `src/baxy_mind`) necesita el runtime fijado: `scripts\bootstrap.ps1` lo crea desde
+`pylock.runtime-win-x64.toml` comprobando cada hash, y ese lock incluye la rueda de sherpa-onnx de abajo, así que
+primero hay que compilarla. Después `py -3.12 -m pytest tests` corre sus pruebas. Algunas
+pruebas de `tests\Baxy.Providers.Windows.Tests` manejan el escritorio real: córrelas en una sesión sin nada abierto.
 
-| Ruta | Contenido |
-|---|---|
-| `src/Baxy.App` | La aplicación de escritorio (WPF + WebView2), el canal con la mente y la voz |
-| `src/Baxy.FieldUi` | La interfaz (React + TypeScript); `dist/` va compilado en el repositorio |
-| `src/Baxy.Core` | `baxy-core.exe` (NativeAOT): ejecuta las operaciones autorizadas |
-| `src/Baxy.Kernel` | Catálogo de operaciones, política de riesgo, confirmación y diario |
-| `src/Baxy.Contracts` | Tipos del protocolo entre la App, el Core y la mente |
-| `src/Baxy.Providers.Windows` | Efectos y lecturas reales sobre Windows |
-| `src/Baxy.Security.Windows` | Protección de datos locales |
-| `src/Baxy.Setup` | Instalador transaccional por usuario |
-| `src/baxy_mind` | La mente: bucle de herramientas, servidor del modelo, voz |
-| `tests/` | Suites .NET (NUnit) y pruebas de la mente (pytest) |
-| `scripts/` | Arranque, compilación, empaquetado, voz y bancos de evaluación |
-| `runtime_wheels/` | Ruedas nativas parcheadas de sherpa-onnx y WebRTC, con sus licencias |
-| `docs/` | Documentación; la historia del proyecto está en `docs/construccion/` |
+**Qué no está en este repositorio y cómo se obtiene:**
 
-Cómo contribuir: [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Los pesos de los modelos** (el modelo de BAXY, el proyector de visión, el reconocimiento de voz, la voz y la
+  palabra de activación) y el `llama-server`. Vienen dentro del paquete de la release: instala BAXY, o descomprime las
+  partes `.zip` de la release, y apunta BAXY a ellos con `scripts\register_mind_runtime.ps1` (o con las variables
+  `BAXY_MIND_LLM_GGUF` y `BAXY_MIND_LLAMA_SERVER`). Luego `py -3.12 main.py` compila lo que cambió y arranca la App.
+  Cada modelo conserva su licencia: ver `THIRD_PARTY_NOTICES.md`.
+- **La rueda parcheada de sherpa-onnx** del reconocimiento de voz. sherpa-onnx compila dentro eSpeak NG, que es
+  GPL-3.0-or-later, así que su binario no se guarda aquí. Se compila con `scripts\build_sherpa_runtime.py` (la receta y
+  sus dos parches están en `runtime_wheels/`; el código fuente completo, en los activos `*-source.zip` de la
+  [release 1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1)) y se regenera el lock con
+  `scripts\lock_python_dependencies.ps1`, porque recompilar no da los mismos bytes. El BAXY instalado ya trae un
+  runtime de Python completo con esa rueda instalada (su carpeta `python`). Ninguno de los dos caminos se probó
+  desde esta instantánea.
+- **Notas internas, bancos y datos de medición.** Llevan datos personales y rutas privadas, por eso no se publican.
+  Algunos comentarios del código citan documentos o scripts de medición que no están aquí; el código no los necesita.
 
-## Hoja de ruta
+### Licencia
 
-- Bajar los éxitos falsos: el siguiente ajuste fino usa como datos los fallos medidos en el banco ciego.
-- Pulsar más rápido un rótulo que no está en pantalla (hoy tarda de 17 a 41 s en rendirse).
-- Instalador completo que incluya la mente, el modelo y la voz.
-- Publicar la palabra de activación y el reconocedor que usa el producto.
+El código propio de BAXY va bajo la [licencia MIT](LICENSE). Los componentes, modelos y datos de terceros conservan
+sus licencias: [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) los enumera y [`licenses/`](licenses/README.md)
+guarda los textos completos. Los paquetes de las releases llevan además código GPL (eSpeak NG); su código fuente y la
+oferta escrita están en [`licenses/FUENTES_GPL.md`](licenses/FUENTES_GPL.md). Esto no es asesoría legal.
 
-## Cómo se construyó
-
-BAXY pasó por tres etapas: un primer prototipo (mayo–junio de 2026), un producto con catálogo tipado y kernel que
-verifica cada efecto (agosto–octubre) y la versión actual, donde un modelo propio ajustado decide con las
-herramientas de ese catálogo. Las decisiones, mediciones, recetas de ajuste fino e informes técnicos de cada etapa
-están en [docs/construccion/](docs/construccion/README.md), para quien quiera entenderlo o replicarlo.
-
-## Licencia
-
-El código y la documentación propios de BAXY están bajo la [licencia MIT](LICENSE). Las piezas de terceros conservan
-su licencia; el inventario completo, con lo que obliga a algo, está en
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). En particular:
-
-- La **voz** se basa en Supertonic 3, bajo **OpenRAIL-M**: tiene restricciones de uso y obliga a avisar de que la voz
-  es sintética.
-- El **modelo** deriva de Qwen3.5-4B (**Apache-2.0**); el reconocedor Parakeet es **CC-BY-4.0** (atribución).
-- Los clips, fondos e icono del avatar no están bajo MIT: se generaron con Higgsfield y se rigen por sus términos.
-
-## Autor
-
-BAXY es un proyecto de [REDSOULTM](https://github.com/REDSOULTM).
+Las contribuciones son bienvenidas: ver [CONTRIBUTING.md](CONTRIBUTING.md).

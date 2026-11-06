@@ -7,13 +7,15 @@ import queue
 import sys
 import threading
 import time
+import urllib.request
 from concurrent import futures
 from pathlib import Path
 
 from . import protocol
 from .early import Anticipation, early_silence, wake_warm
-from .llm_server import LlmServer, declared_build
+from .llm_server import LlmServer, declared_backend, declared_build
 from .mind import Mind
+from .speech_text import Utterance
 from .system_one import SystemOne
 from .voice import Voice
 
@@ -58,6 +60,9 @@ def bounded_trace(trace: Path, limit: int = TRACE_LIMIT_BYTES) -> Path:
 
 
 def main() -> int:
+    # Every address the mind asks is its server on this PC. A proxy set on this PC would take the conversation away, or if it
+    # refuses, leave BAXY with no model: urllib only passes it by for a name without dots, and 127.0.0.1 has them.
+    urllib.request.install_opener(urllib.request.build_opener(urllib.request.ProxyHandler({})))
     gguf = os.environ.get("BAXY_MIND_LLM_GGUF", "")
     server_path = os.environ.get("BAXY_MIND_LLAMA_SERVER", "")
     if not gguf or not server_path:
@@ -65,13 +70,24 @@ def main() -> int:
         return 2
     try:
         # w11-llama (2026-10-25): only a declared llama-server starts, Qwen's and System One's (the same binary).
-        build = declared_build(server_path)
-        # Renew al máximo 1.5 (2026-10-22): 53,248 and not 49,152. With the ~43k-token prefix the history had ~2.5k
-        # tokens (about three turns); 4,096 more cost ~68 MiB of KV (8 full-attention layers × 4 KV heads × 256, q8_0),
-        # room left once Laya stopped using the GPU (3.1: 3,902 MiB with System One on).
-        server = LlmServer(gguf, server_path, os.environ.get("BAXY_MIND_NGL", "99"),
-                           context=int(os.environ.get("BAXY_RENEW_CTX", "53248")))
-    except RuntimeError as error:  # an undeclared server, or a pinned port in use (llm_server._pinned_port)
+        # A remote server (BAXY_MIND_LLAMA_REMOTE, measurement only) is not this machine's binary: nothing to hash, and
+        # its settings are the declared CUDA ones (the measurement pods are NVIDIA).
+        remote = os.environ.get("BAXY_MIND_LLAMA_REMOTE", "").strip()
+        build = f"remoto:{remote}" if remote else declared_build(server_path)
+        # Encargo 8 (2026-11-02): the folder's GPU backend, by its DLL's SHA-256: the server's settings depend on it
+        # (llm_server.flash_attention, default_context, slots).
+        backend = "cuda" if remote else declared_backend(server_path, build)
+        # uso-101: the App picked this folder for this machine's GPU (MindRuntimeDiscovery). llama-server.exe is the same
+        # file in a package's two folders: the backend's DLL is what tells them apart.
+        chosen = os.environ.get("BAXY_MIND_LLAMA_BACKEND", "").strip()
+        if chosen and not remote and backend != chosen:
+            raise RuntimeError(f"the folder of {server_path} is {backend}, not the {chosen} this machine's GPU needs")
+        # The context is BAXY_RENEW_CTX's, or the one that fits the backend's budget with its cache
+        # (llm_server.default_context; uso-51: 77,824 on CUDA inside 4 GB of VRAM).
+        asked = os.environ.get("BAXY_RENEW_CTX", "").strip()
+        layers = os.environ.get("BAXY_MIND_NGL", "99")
+        server = LlmServer(gguf, server_path, layers, context=int(asked) if asked else None, backend=backend)
+    except RuntimeError as error:  # an undeclared server or backend, or a pinned port in use (llm_server._pinned_port)
         sys.stderr.write(f"baxy_mind_renew_failure: {error}\n")
         return 2
     server.start()
@@ -111,12 +127,16 @@ def main() -> int:
     voice = Voice(protocol.write_message, spoken, on_early=early if early_s else None, early_s=early_s or 0.0,
                   on_wake=(lambda: pending.put(("wake",))) if anticipation.warm else None)  # loads beside the model
     mind.foresee = voice.speech.foresee  # the last answer's first sentence is synthesized while it is written
+    # uso-82 (AMD e2e 2026-11-04): voice.speak is offered only by a voice that can speak, loaded or loading with its
+    # files there (Speech fails at once without them). Offered always, a PC with no voice (BAXY_RENEW_TTS_DIR empty or
+    # unset) had the App wait for every answer to sound, and each turn ended 10 s late (ProductConductorHost).
+    speaks = ["voice.speak"] if not voice.speech.failure else []
     protocol.write_message({
         "type": "hello", "protocol": protocol.PROTOCOL,
         "models": {"llm": server.name, "server": build},
         "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
                      "turn.notice", "session.new", "session.export", "session.load", "trace.forget",
-                     "voice.start", "voice.stop", "voice.release", "voice.status", "voice.speak", "voice.cancel"],
+                     "voice.start", "voice.stop", "voice.release", "voice.status", *speaks, "voice.cancel"],
     })
     def read() -> None:
         try:
@@ -133,14 +153,23 @@ def main() -> int:
                 if not message:
                     continue
                 kind = str(message.get("type"))
+                if kind in ("turn.decide", "turn.notice") and message.get("lang") is not None:
+                    # Steam in English: the turn says the language its answer will be said in, here as it arrives,
+                    # before the answer is foreseen or the notice made. Only the voice reads it, never the model.
+                    voice.speech.speak_in(message.get("lang"))
                 if kind == "voice.speak":
                     # FT/proveedores goal (review of E001's fix): an answer asked while the voice loads waits and
                     # sounds once it is loaded, but the turn's notice says the turn is under way: heard after the
                     # answer is on screen it would say something false, so it is only taken with its audio ready
                     # (Speech.speak). The App marks it: the phrase the model wrote for the turn (turn.notice).
-                    accepted = voice.speech.speak(str(message.get("text") or ""), notice=bool(message.get("notice")))
+                    # Steam in English: «lang» is the language it is said in, «en» with the interface in English; an
+                    # App that sends none (or another tag) is answered in Spanish, as always (speech_text.language).
+                    accepted = voice.speech.speak(Utterance(str(message.get("text") or ""), message.get("lang")),
+                                                  notice=bool(message.get("notice")))
+                    # uso-82: a voice whose load failed after the hello says it no longer speaks, and the App stops
+                    # asking and waiting for it (MindSidecarClient.VoiceSpeakAsync).
                     protocol.write_message({"type": "voice.speak.result", "id": message.get("id"),
-                                            "accepted": accepted})
+                                            "accepted": accepted, "speaks": not voice.speech.failure})
                 elif kind == "voice.cancel":
                     voice.speech.cancel()
                     protocol.write_message({"type": "voice.cancelled", "id": message.get("id")})
@@ -201,27 +230,34 @@ def main() -> int:
             # Al máximo, palanca 2: a decision made early is this request's reply when it is the one it would make;
             # any other request (a voice request aside) finds the mind as it was before it.
             unsure = voice.unsure(str(message.get("text") or "")) if kind == "turn.decide" else []
+            mind.arrived, mind.app_ms = (arrived, message.get("waitedMs")) if kind == "turn.decide" else (None, None)
             held = (anticipation.settle(kind, message, arrived, unsure) if kind not in ("voice.start", "voice.stop")
                     else None)
             try:
                 if kind == "catalog.configure":
                     count = mind.configure(message)
-                    voice.hear_names(mind.names)  # the ear's hotwords: what the model is shown is what it may hear
+                    voice.hear_names(mind.heard)  # the ear's hotwords: the names the model is shown or BAXY knows
                     # Ready means ready: the model is loaded and the catalog prefix is cached before the App is told so
-                    # (a first turn sent earlier waited behind the warm-up and timed out, 2026-10-15).
+                    # (a first turn sent earlier waited behind the warm-up and timed out, 2026-10-15). Each advance of
+                    # the server through the prefix is told to the App (uso 84): it waits while they come, never on a
+                    # fixed budget a slow GPU would run out (LlmServer.read_prefix).
                     try:
                         server.wait_ready(600)
-                        mind.warm()
-                    except Exception:  # noqa: BLE001 - told to the App as a startup failure
+                        mind.warm(lambda done, total, rid=request_id: protocol.write_message(
+                            {"type": "progress", "id": rid, "done": done, "total": total}))
+                    except Exception as error:  # noqa: BLE001 - told to the App as a startup failure
                         reply = protocol.error_reply(request_id, "request_failed", "catalog_runtime_failure")
-                        reply["startup"] = server.startup_failure()
+                        reply["startup"] = server.startup_failure(error)
                         protocol.write_message(reply)
                         continue
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
+                    front = message.get("front") if isinstance(message.get("front"), dict) else None
+                    named = message.get("named") if isinstance(message.get("named"), list) else None
                     protocol.write_message(held or anticipation.decide(request_id, str(message.get("text") or ""),
-                                                                       message.get("pendingConfirmation"), unsure))
+                                                                       message.get("pendingConfirmation"), unsure,
+                                                                       front, named))
                 elif kind == "turn.continue":
                     # After a tool the answer may come long after the output closed (HOLD_S 20 s; file.find 11-14 s,
                     # web.fetch up to 160 s): it opens again (0.38 s on the PC) while the model writes it.
@@ -265,13 +301,14 @@ def main() -> int:
                     protocol.write_message({"type": "session.ready", "id": request_id})
                 elif kind == "trace.forget":
                     # The person had BAXY forget everything or deleted every conversation (the App deletes its own
-                    # conversation log then): the trace and the slot states that hold their words go too.
-                    cleared = mind.forget_trace() & server.forget_set_aside()
+                    # conversation log then): the trace and the slot states that hold their words go too, and the model
+                    # server's last run's log (F4, 2026-11-03: kept at start, its errors may quote the model's words).
+                    cleared = mind.forget_trace() & server.forget_set_aside() & server.forget_log()
                     mind._log("trace.forget", time.perf_counter(), None, cleared=cleared)
                     protocol.write_message({"type": "trace.forgotten", "id": request_id, "cleared": cleared})
                 elif kind == "voice.start":
                     mode = str(message.get("mode") or "direct")
-                    if voice.start(mode):
+                    if voice.start(mode, message.get("echoCancel") is not False):
                         protocol.write_message({"type": "voice.started", "id": request_id, "mode": mode})
                         if mode == "direct":
                             anticipation.wake()  # palanca 5: the button opened a request, as «Baxy» does

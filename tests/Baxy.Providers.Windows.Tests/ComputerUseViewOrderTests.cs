@@ -63,6 +63,142 @@ public sealed class ComputerUseViewOrderTests
         Assert.That(answer.Split(','), Is.EqualTo(new[] { "60", "4", "True", "0", "52", "4" }));
     }
 
+    // Uso-108 (B8; review 16, M6): only a Group or a Custom enters the cut by its pattern; a Text, an Image or a Pane with
+    // Invoke do not (Chromium reports Invoke on whatever has a handler).
+    [Test]
+    public void OnlyAGroupOrACustomEntersTheCutByItsPattern()
+    {
+        string answer = Run(["Test-PrimaryAction"], """
+            Add-Type -AssemblyName UIAutomationClient
+            $el=[pscustomobject]@{}
+            $el | Add-Member -MemberType ScriptMethod -Name TryGetCachedPattern -Value { param($pattern,$out) return ($pattern -eq [System.Windows.Automation.InvokePattern]::Pattern) }
+            [Console]::Out.Write((@((Test-PrimaryAction $el 'Group'),(Test-PrimaryAction $el 'Custom'),(Test-PrimaryAction $el 'Text'),(Test-PrimaryAction $el 'Image'),(Test-PrimaryAction $el 'Pane')) -join ','))
+            """);
+        Assert.That(answer, Is.EqualTo("True,True,False,False,False"));
+    }
+
+    // Uso-108 (B9; review 16, M4): what a press left: the pressed control's own state when that changed; nothing when it
+    // reads empty or stayed as it was (the toggle seen was a sibling's, Test-LineageToggled).
+    [Test]
+    public void NowStateIsThePressedControlsOwnChangeOnly()
+    {
+        string answer = Run(["Get-NowState"], """
+            function Get-Toggle($el){ return $el }
+            [Console]::Out.Write((@((Get-NowState 'Off' 'Indeterminate'),(Get-NowState 'On' 'On'),(Get-NowState '' 'On'),(Get-NowState $null 'On'),(Get-NowState 'On' $null)) -join ','))
+            """);
+        Assert.That(answer, Is.EqualTo("off,,,,on"));
+    }
+
+    // Uso-108 (B7): a nameless control is listed only if it holds a state or a value and has an area; a Group, a bare
+    // ComboBox or a 0×0 CheckBox are not.
+    [Test]
+    public void ANamelessControlIsListedOnlyWhenItHoldsSomethingAndHasAnArea()
+    {
+        string answer = Run(["Test-NamelessHolds"], """
+            $box=@{ x=1; y=1; w=16; h=16 };$flat=@{ x=1; y=1; w=0; h=0 }
+            [Console]::Out.Write((@(
+              (Test-NamelessHolds 'CheckBox' 'off' $null $box),
+              (Test-NamelessHolds 'CheckBox' 'indeterminate focused' $null $box),
+              (Test-NamelessHolds 'ComboBox' '' 'Arial' $box),
+              (Test-NamelessHolds 'CheckBox' 'off' $null $flat),
+              (Test-NamelessHolds 'CheckBox' 'off' $null $null),
+              (Test-NamelessHolds 'ComboBox' 'collapsed' $null $box),
+              (Test-NamelessHolds 'RadioButton' '' $null $box),
+              (Test-NamelessHolds 'RadioButton' '' $null $flat),
+              (Test-NamelessHolds 'Group' 'on' 'x' $box)) -join ','))
+            """);
+        // Review 16, M5: an unselected radio has no state and is still one of the options to press.
+        Assert.That(answer, Is.EqualTo("True,True,True,False,False,False,True,False,False"));
+    }
+
+    // Uso-108 (B7): a check box's text is on its right; a field keeps its label on the left or above.
+    [Test]
+    public void ACheckBoxTakesTheTextOnItsRightAndAFieldTheOneOnItsLeft()
+    {
+        string answer = Run(["Get-NearLabel", "Get-Name"], """
+            function Get-Prop($e,$p){ return $null }
+            function Format-Name([string]$n){ return $n }
+            function New-Box([double]$x,[double]$y,[double]$w,[double]$h){ return [pscustomobject]@{ IsEmpty=$false; Left=$x; Top=$y; Right=$x+$w; Bottom=$y+$h; X=$x; Y=$y; Width=$w; Height=$h } }
+            function New-Node([string]$kind,[string]$name,$box){ return [pscustomobject]@{ Cached=[pscustomobject]@{ Name=$name; IsOffscreen=$false; BoundingRectangle=$box; ControlType=[pscustomobject]@{ ProgrammaticName=('ControlType.'+$kind) } } } }
+            $check=New-Node 'CheckBox' '' (New-Box 100 100 16 16)
+            $all=@((New-Node 'Text' 'Grupo' (New-Box 20 100 70 16)),(New-Node 'Text' 'Comprar pan' (New-Box 120 100 90 16)),(New-Node 'Text' 'Lejos abajo' (New-Box 120 300 90 16)))
+            $above=New-Node 'Text' 'Titulo' (New-Box 100 70 90 16)
+            [Console]::Out.Write((@((Get-NearLabel $check $all $true),(Get-NearLabel $check $all),(Get-NearLabel $check @($all[2]) $true),(Get-NearLabel $check @($above) $true),(Get-NearLabel $check @($above))) -join '|'))
+            """);
+        Assert.That(answer, Is.EqualTo("Comprar pan|Grupo|||Titulo"));
+    }
+
+    // Uso-108 (B15): only a cut view whose walk was whole says the words no control has; a found word, a whole list or a
+    // partial walk say nothing.
+    [Test]
+    public void AWantedWordNoControlHasIsOnlySaidOfACutWholeWalk()
+    {
+        string answer = Run(["Get-WantedMissing", "Test-WantedName", "Get-Folded"], Prelude + """
+            $primary=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 70;$k++){ [void]$primary.Add((New-Entry 'Button' ('Boton '+$k))) }
+            [void]$primary.Add((New-Entry 'Button' 'Plantillas de correo'))
+            $few=@((New-Entry 'Button' 'Uno'))
+            [Console]::Out.Write((@(
+              ((Get-WantedMissing $primary @() @() @('firmas','plantillas') 60 $true) -join '+'),
+              ((Get-WantedMissing $primary @() @() @('firmas') 60 $false) -join '+'),
+              ((Get-WantedMissing $few @() @() @('firmas') 60 $true) -join '+'),
+              ((Get-WantedMissing $primary @() @() @() 60 $true) -join '+'),
+              ((Get-WantedMissing $primary @() @() @('plantilla') 60 $true) -join '+')) -join ','))
+            """);
+        // Review 16, I3: part of a word in a name is no «nothing has it», though wanted matches whole words.
+        Assert.That(answer, Is.EqualTo("firmas,,,,"));
+    }
+
+    // Uso-108 (B8): at the cut a control that says it is pressed (a Group with Invoke) enters with the actionable, before
+    // text, and in the tree's order after them; a Group with no such pattern stays last. A view with room is not reordered.
+    [Test]
+    public void AGroupThatPressesEntersACutViewBeforeText()
+    {
+        string answer = Run(JoinFunctions, Prelude + """
+            function New-Group([string]$name,[bool]$presses){ $e=New-Entry 'Group' $name; $e.presses=$presses; return $e }
+            $primary=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 40;$k++){ [void]$primary.Add((New-Entry 'Button' ('Boton '+$k))) }
+            $secondary=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 30;$k++){ [void]$secondary.Add((New-Entry 'Text' ('Texto '+$k))) }
+            [void]$secondary.Add((New-Group 'Panel mudo' $false))
+            [void]$secondary.Add((New-Group 'Abrir informes' $true))
+            $cut=Join-ViewControls $primary $secondary @() 60
+            $room=Join-ViewControls @((New-Entry 'Button' 'Uno')) @((New-Entry 'Text' 'Dos'),(New-Group 'Tres' $true)) @() 60
+            [Console]::Out.Write((@(
+              [string]((Get-Names $cut 'Group') -contains 'Abrir informes'),
+              [string]((Get-Names $cut 'Group') -contains 'Panel mudo'),
+              [string](Get-Names $cut 'Text').Count,
+              ((@($room.controls | ForEach-Object { $_.name })) -join '+')) -join ','))
+            """);
+        Assert.That(answer.Split(','), Is.EqualTo(new[] { "True", "False", "19", "Uno+Dos+Tres" }));
+    }
+
+    // Uso-108 (B6; review 16, I2): only a Text inside the actionable of its name, with nothing of its own, leaves the view: it
+    // is that control's caption. A Text of another name, one with a value or a state, a Group of that name, and above all a
+    // Text elsewhere (a calculator's display «5» beside its Button «5») stay: that one is data.
+    [Test]
+    public void OnlyATextInsideTheActionableOfItsNameLeavesTheView()
+    {
+        string answer = Run(["Get-InertRepeats", "Get-LabelFolded", "Test-CenterWithin"], Prelude + """
+            function New-Line([string]$kind,[string]$name,$rect,[string]$state='',$value=$null){ return @{ kind=$kind; name=$name; rect=$rect; state=$state; value=$value } }
+            function Box([int]$x,[int]$y){ return @{ x=$x; y=$y; w=80; h=20 } }
+            function In([int]$x,[int]$y){ return @{ x=$x+10; y=$y+2; w=40; h=16 } }
+            $primary=New-Object System.Collections.ArrayList
+            [void]$primary.Add((New-Line 'Button' 'Enviar' (Box 100 100)))
+            [void]$primary.Add((New-Line 'Button' 'Guardar cámbios' (Box 200 100)))
+            [void]$primary.Add((New-Line 'Button' 'Ana' (Box 300 100)))
+            [void]$primary.Add((New-Line 'Button' '5' (Box 400 100)))
+            $secondary=New-Object System.Collections.ArrayList
+            foreach($text in @((New-Line 'Text' 'Enviar' (In 100 100)),(New-Line 'Text' 'guardar  CAMBIOS' (In 200 100)),(New-Line 'Text' 'Enviar mensaje' (In 100 100)),
+                               (New-Line 'Text' 'Ana' (In 300 100) 'focused'),(New-Line 'Text' 'Ana' (In 300 100) '' '3'),(New-Line 'Group' 'Enviar' (In 100 100)),
+                               (New-Line 'Text' '5' (In 400 10)),(New-Line 'Text' 'Ana' $null))){ [void]$secondary.Add($text) }
+            # As Do-View takes them out (the first version removed nothing: the function gave its list as one object).
+            foreach($entry in @(Get-InertRepeats $primary $secondary)){ [void]$secondary.Remove($entry) }
+            [Console]::Out.Write((@($secondary | ForEach-Object { $_.name }) -join '|'))
+            """);
+        Assert.That(answer, Is.EqualTo("Enviar mensaje|Ana|Ana|Enviar|5|Ana"));
+    }
+
     // v3-24: the view cut 60 of 540 in tree order and the row «Aplicación» that led to the place stayed out; with the
     // goal's words it is listed, after the 60 of the cut and marked «reserved» (revision 1). v3-65: long rows pushed
     // the tabs out of the cap; the tab «Estándar» is listed.
@@ -231,7 +367,7 @@ public sealed class ComputerUseViewOrderTests
     private static readonly string[] LineageFunctions =
     [
         "Resolve-ByIdLineage", "Test-ActsByItself", "Get-SameNameLineage", "Test-SameShownName", "Select-LineageOne",
-        "Test-Contains", "Test-LineageToggled",
+        "Test-Contains", "Test-LineageToggled", "Test-ToggleHeld",
     ];
 
     // Described UI Automation elements: a node has a name, a kind, its patterns and its children; the walker, the shown
@@ -428,7 +564,7 @@ public sealed class ComputerUseViewOrderTests
         });
     }
 
-    // Encargo IMP3 (imp2 imp-dc-leer: the DM open, the look cut at 60 of 169 with no message in it; measured on redpc the
+    // Encargo IMP3 (imp2 imp-dc-leer: the DM open, the look cut at 60 of 169 with no message in it; measured on the development PC the
     // last 60 of 177 entries hold the ten newest messages): «tail» keeps the tree's last entries, in their order, whatever
     // their kind; without it, or with no cut, the view is the one it always was.
     [Test]
@@ -470,7 +606,7 @@ public sealed class ComputerUseViewOrderTests
     [Test]
     public void ACopyOfAnActionableControlElsewhereGetsItsOwnEntry()
     {
-        string answer = Run(["Get-SeenKey", "Test-CenterWithin"], """
+        string answer = Run(["Get-SeenKey", "Test-CenterWithin", "Test-PrimaryAction", "Test-NamelessHolds"], """
             # The walk of Do-View itself (the foreach that keys what it saw), the worker's own $Actionable, and its
             # Test-CopyApart when it has one.
             $copyApart=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Test-CopyApart' },$true))
@@ -516,6 +652,51 @@ public sealed class ComputerUseViewOrderTests
         }));
     }
 
+    // Encargo 18 (banco de uso, U45: «ver» run in a terminal, whose look gave only its control and an OCR that misread
+    // it): a look that asks for the text reads what the focused control that is no field shows (a console's output) by
+    // its visible ranges, each line without the console's row padding and blank lines left out, the last characters kept
+    // past the bound and said cut; never a field's (its value is in the view), a password's, nor a Document outside a
+    // console window. Only a look that asks for the text asks the worker for it.
+    [Test]
+    public void TheFocusedConsoleShowsItsVisibleTextOnlyWhenTheLookAsksForText()
+    {
+        string answer = Run(["Get-FocusShownText"], """
+            Add-Type -AssemblyName UIAutomationClient
+            $script:FocusShownMax=60
+            function New-Holder([string]$text,[bool]$password=$false){
+              $range=[pscustomobject]@{ t=$text }
+              $range | Add-Member ScriptMethod GetText { param($most) $this.t }
+              $pattern=[pscustomobject]@{ r=$range }
+              $pattern | Add-Member ScriptMethod GetVisibleRanges { ,@($this.r) }
+              $el=[pscustomobject]@{ Current=[pscustomobject]@{ IsPassword=$password }; p=$pattern }
+              $el | Add-Member ScriptMethod TryGetCurrentPattern { param($which,$out) $out.Value=$this.p; $true }
+              return $el
+            }
+            function New-Root([string]$class){ return [pscustomobject]@{ Current=[pscustomobject]@{ ClassName=$class } } }
+            function Say($shown){ if($null -eq $shown){ return 'none' }; return (([string]$shown.text) -replace "`n",'/') + '#' + [string]$shown.cut }
+            $pad=' ' * 50
+            $screen="C:\carpeta>ver$pad`r`n$pad`r`nMicrosoft Windows [Version 10.0]$pad`r`n$pad`r`nC:\carpeta>$pad`r`n"
+            $long=(@(1..20 | ForEach-Object { 'linea ' + $_ + $pad }) -join "`r`n")
+            $terminal=New-Root 'TerminalHost'
+            [Console]::Out.Write((@(
+              (Say (Get-FocusShownText (New-Holder $screen) 'Text' $terminal)),
+              (Say (Get-FocusShownText (New-Holder $screen) 'Document' (New-Root 'ConsoleWindowClass'))),
+              (Say (Get-FocusShownText (New-Holder $long) 'Text' $terminal)),
+              (Say (Get-FocusShownText (New-Holder $screen) 'Document' (New-Root 'DocumentHost'))),
+              (Say (Get-FocusShownText (New-Holder $screen) 'Edit' $terminal)),
+              (Say (Get-FocusShownText (New-Holder $screen $true) 'Text' $terminal)),
+              (Say (Get-FocusShownText $null 'Text' $terminal))) -join '|'))
+            """);
+        string screen = @"C:\carpeta>ver/Microsoft Windows [Version 10.0]/C:\carpeta>#False";
+        string last = string.Join('/', Enumerable.Range(1, 20).Select(line => "linea " + line))[^60..] + "#True";
+        Assert.Multiple(() =>
+        {
+            Assert.That(answer.Split('|'), Is.EqualTo(new[] { screen, screen, last, "none", "none", "none", "none" }));
+            Assert.That(WindowsVisibleControlAdapter.ViewCommand(7, 60, [], focusText: true),
+                Is.EqualTo("""{"cmd":"view","hwnd":7,"limit":60,"focusText":true}"""));
+        });
+    }
+
     private static string Run(string[] functions, string body)
     {
         string script = """
@@ -548,7 +729,7 @@ public sealed class ComputerUseViewOrderTests
         start.Environment["BAXY_VIEW_FUNCTIONS"] = string.Join(',', functions);
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();

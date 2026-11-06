@@ -9,7 +9,19 @@ namespace Baxy.Providers.Windows.External;
 /// name, whether text typed now would go into it, its runtime id (two reads of the same field share it), and whether
 /// it sits inside a dialog of the window's page (ronda final 28: a web client's quick switcher is one).
 /// </summary>
-internal sealed record ClientFocus(string Kind, string Name, bool Editable, string Id, bool InDialog = false);
+internal sealed record ClientFocus(
+    string Kind, string Name, bool Editable, string Id, bool InDialog = false, ScreenBox? Box = null);
+
+/// <summary>An element's rectangle in screen pixels, as UI Automation reads it.</summary>
+internal readonly record struct ScreenBox(int Left, int Top, int Width, int Height)
+{
+    internal int CentreX => Left + Width / 2;
+
+    internal int CentreY => Top + Height / 2;
+}
+
+/// <summary>An editable field a client's window shows: its identity (<see cref="ClientFocus.Id"/>) and where it is, never its text.</summary>
+internal sealed record ClientField(string Id, ScreenBox Box, bool HasFocus = false);
 
 /// <summary>
 /// One read-only look at a client's window (ronda 24, «cliente en frío listo por interacción»): Answered is false
@@ -28,6 +40,81 @@ internal interface IClientInteractionProbe
     void Prewarm();
 
     ValueTask<ClientInteraction> ReadAsync(nint handle, bool content, CancellationToken cancellationToken);
+
+    /// <summary>The editable fields the window shows; none when it could not be read.</summary>
+    ValueTask<IReadOnlyList<ClientField>> EditableFieldsAsync(nint handle, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<IReadOnlyList<ClientField>>([]);
+
+    /// <summary>Where the window shows exactly this name, dialogs of its page left out; nowhere when it could not be read.</summary>
+    ValueTask<IReadOnlyList<ScreenBox>> ShownNameBoxesAsync(nint handle, string name, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<IReadOnlyList<ScreenBox>>([]);
+
+    /// <summary>Encargo 98: the one act of this probe, no key and no click: the whole text of the focused field selected
+    /// by UI Automation and read back; false when it could not be.</summary>
+    ValueTask<bool> SelectFocusedTextAsync(nint handle, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(false);
+
+    /// <summary>Uso-128: how many dialogs of the page are open, wherever the focus is; null when it could not be read.</summary>
+    ValueTask<int?> OpenDialogsAsync(nint handle, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<int?>(null);
+
+    /// <summary>Uso-128: the client's voice panel, read without touching it: whether it shows a button of these names and
+    /// the «channel / server» it says; not connected when it could not be read.</summary>
+    ValueTask<VoicePanel> VoicePanelAsync(nint handle, IReadOnlyList<string> disconnectNames, CancellationToken cancellationToken) =>
+        ValueTask.FromResult(new VoicePanel(false, null));
+
+    /// <summary>Uso-128: the rows with a name and a kind the window shows («Ana (mensaje directo)»); none when not read.</summary>
+    ValueTask<IReadOnlyList<string>> ShownRowsAsync(nint handle, CancellationToken cancellationToken) =>
+        ValueTask.FromResult<IReadOnlyList<string>>([]);
+}
+
+/// <summary>What a client's voice panel says: connected (its disconnect button is there) and where («channel / server»).</summary>
+internal sealed record VoicePanel(bool Connected, string? Place);
+
+/// <summary>
+/// Uso real 2026-11-05 (G6, the PC's WhatsApp: «abre el chat con…» told «whatsapp_client_still_starting» after its whole
+/// clock, with the chat list on the screen): this client's window is a WinUI frame whose own UI Automation tree is its
+/// caption buttons and an empty web view pane (9 elements, no field), and its content is a top-level window of a process
+/// it started (a WebView2 runtime's Chrome_WidgetWin_1, 518 elements: the search field, the chat grid), no child of the
+/// frame. So no read of the frame could see the content. The reads go to the window a person sees
+/// (<see cref="VisibleControlSurface.FamilyContentWindows"/>, which the view already uses for the same clients); a client
+/// that draws in its own window has none and is read as itself.
+/// </summary>
+internal sealed class ContentWindowProbe : IClientInteractionProbe
+{
+    private readonly IClientInteractionProbe _reads;
+    private readonly Func<nint, IReadOnlyList<nint>> _contentWindows;
+
+    internal ContentWindowProbe(IClientInteractionProbe reads, Func<nint, IReadOnlyList<nint>>? contentWindows = null)
+    {
+        _reads = reads ?? throw new ArgumentNullException(nameof(reads));
+        _contentWindows = contentWindows ?? VisibleControlSurface.FamilyContentWindows;
+    }
+
+    private nint Surface(nint handle) => _contentWindows(handle) is { Count: > 0 } windows ? windows[0] : handle;
+
+    public void Prewarm() => _reads.Prewarm();
+
+    public ValueTask<ClientInteraction> ReadAsync(nint handle, bool content, CancellationToken cancellationToken) =>
+        _reads.ReadAsync(Surface(handle), content, cancellationToken);
+
+    public ValueTask<IReadOnlyList<ClientField>> EditableFieldsAsync(nint handle, CancellationToken cancellationToken) =>
+        _reads.EditableFieldsAsync(Surface(handle), cancellationToken);
+
+    public ValueTask<IReadOnlyList<ScreenBox>> ShownNameBoxesAsync(nint handle, string name, CancellationToken cancellationToken) =>
+        _reads.ShownNameBoxesAsync(Surface(handle), name, cancellationToken);
+
+    public ValueTask<bool> SelectFocusedTextAsync(nint handle, CancellationToken cancellationToken) =>
+        _reads.SelectFocusedTextAsync(Surface(handle), cancellationToken);
+
+    public ValueTask<int?> OpenDialogsAsync(nint handle, CancellationToken cancellationToken) =>
+        _reads.OpenDialogsAsync(Surface(handle), cancellationToken);
+
+    public ValueTask<VoicePanel> VoicePanelAsync(nint handle, IReadOnlyList<string> disconnectNames, CancellationToken cancellationToken) =>
+        _reads.VoicePanelAsync(Surface(handle), disconnectNames, cancellationToken);
+
+    public ValueTask<IReadOnlyList<string>> ShownRowsAsync(nint handle, CancellationToken cancellationToken) =>
+        _reads.ShownRowsAsync(Surface(handle), cancellationToken);
 }
 
 /// <summary>
@@ -81,6 +168,102 @@ internal sealed class UiaClientInteractionProbe : IClientInteractionProbe
         return Parse(answer?.RootElement);
     }
 
+    public async ValueTask<IReadOnlyList<ClientField>> EditableFieldsAsync(nint handle, CancellationToken cancellationToken)
+    {
+        Prewarm();
+        if (_warm is not { IsCompleted: true })
+        {
+            return [];
+        }
+
+        string command = new JsonObject
+        {
+            ["cmd"] = "interaction",
+            ["hwnd"] = (long)handle,
+            ["fields"] = true,
+        }.ToJsonString();
+        using JsonDocument? answer = await _worker.SendAsync(command, ReadBudget, cancellationToken)
+            .ConfigureAwait(false);
+        return ParseFields(answer?.RootElement);
+    }
+
+    public async ValueTask<IReadOnlyList<ScreenBox>> ShownNameBoxesAsync(nint handle, string name, CancellationToken cancellationToken)
+    {
+        Prewarm();
+        if (_warm is not { IsCompleted: true })
+        {
+            return [];
+        }
+
+        string command = new JsonObject
+        {
+            ["cmd"] = "interaction",
+            ["hwnd"] = (long)handle,
+            ["shows"] = name,
+        }.ToJsonString();
+        using JsonDocument? answer = await _worker.SendAsync(command, ReadBudget, cancellationToken)
+            .ConfigureAwait(false);
+        return ParseShownBoxes(answer?.RootElement);
+    }
+
+    public async ValueTask<bool> SelectFocusedTextAsync(nint handle, CancellationToken cancellationToken)
+    {
+        Prewarm();
+        if (_warm is not { IsCompleted: true })
+        {
+            return false;
+        }
+
+        using JsonDocument? answer = await _worker.SendAsync(
+            FocusedFieldSelection.Command(handle), ReadBudget, cancellationToken).ConfigureAwait(false);
+        return FocusedFieldSelection.Selected(answer);
+    }
+
+    public async ValueTask<int?> OpenDialogsAsync(nint handle, CancellationToken cancellationToken)
+    {
+        Prewarm();
+        if (_warm is not { IsCompleted: true })
+            return null;
+        string command = new JsonObject { ["cmd"] = "interaction", ["hwnd"] = (long)handle, ["dialogs"] = true }.ToJsonString();
+        using JsonDocument? answer = await _worker.SendAsync(command, ReadBudget, cancellationToken).ConfigureAwait(false);
+        return answer?.RootElement is { ValueKind: JsonValueKind.Object } root
+            && root.TryGetProperty("dialogs", out JsonElement count) && count.TryGetInt32(out int open) && open >= 0
+                ? open
+                : null;
+    }
+
+    public async ValueTask<VoicePanel> VoicePanelAsync(nint handle, IReadOnlyList<string> disconnectNames, CancellationToken cancellationToken)
+    {
+        Prewarm();
+        if (_warm is not { IsCompleted: true })
+            return new(false, null);
+        JsonArray names = [];
+        foreach (string name in disconnectNames)
+            names.Add((JsonNode?)JsonValue.Create(name));
+        string command = new JsonObject { ["cmd"] = "interaction", ["hwnd"] = (long)handle, ["voicePanel"] = names }.ToJsonString();
+        using JsonDocument? answer = await _worker.SendAsync(command, ReadBudget, cancellationToken).ConfigureAwait(false);
+        return ParseVoicePanel(answer?.RootElement);
+    }
+
+    internal static VoicePanel ParseVoicePanel(JsonElement? answer) =>
+        answer is { ValueKind: JsonValueKind.Object } root
+        && root.TryGetProperty("voiceConnected", out JsonElement connected) && connected.ValueKind == JsonValueKind.True
+            ? new(true, Text(root, "voicePlace") is { Length: > 0 } place ? place : null)
+            : new(false, null);
+
+    public async ValueTask<IReadOnlyList<string>> ShownRowsAsync(nint handle, CancellationToken cancellationToken)
+    {
+        Prewarm();
+        if (_warm is not { IsCompleted: true })
+            return [];
+        string command = new JsonObject { ["cmd"] = "interaction", ["hwnd"] = (long)handle, ["rows"] = true }.ToJsonString();
+        using JsonDocument? answer = await _worker.SendAsync(command, ReadBudget, cancellationToken).ConfigureAwait(false);
+        return answer?.RootElement is { ValueKind: JsonValueKind.Object } root
+            && root.TryGetProperty("rows", out JsonElement rows) && rows.ValueKind == JsonValueKind.Array
+                ? [.. rows.EnumerateArray().Where(static row => row.ValueKind == JsonValueKind.String).Select(static row => row.GetString()!)]
+                : [];
+    }
+
     internal static ClientInteraction Parse(JsonElement? answer)
     {
         if (answer is not { ValueKind: JsonValueKind.Object } root
@@ -100,11 +283,49 @@ internal sealed class UiaClientInteractionProbe : IClientInteractionProbe
                 Text(focus, "name"),
                 focus.TryGetProperty("editable", out JsonElement editable) && editable.ValueKind == JsonValueKind.True,
                 Text(focus, "id"),
-                focus.TryGetProperty("dialog", out JsonElement dialog) && dialog.ValueKind == JsonValueKind.True);
+                focus.TryGetProperty("dialog", out JsonElement dialog) && dialog.ValueKind == JsonValueKind.True,
+                Box(focus));
         }
 
         return new ClientInteraction(true, shown, focused);
     }
+
+    internal static IReadOnlyList<ClientField> ParseFields(JsonElement? answer)
+    {
+        if (answer is not { ValueKind: JsonValueKind.Object } root
+            || !root.TryGetProperty("ok", out JsonElement ok)
+            || ok.ValueKind != JsonValueKind.True
+            || !root.TryGetProperty("fields", out JsonElement fields)
+            || fields.ValueKind != JsonValueKind.Array)
+        {
+            return [];
+        }
+
+        return [.. fields.EnumerateArray()
+            .Where(field => Box(field) is not null)
+            .Select(field => new ClientField(
+                Text(field, "id"),
+                Box(field)!.Value,
+                field.TryGetProperty("focused", out JsonElement focused) && focused.ValueKind == JsonValueKind.True))];
+    }
+
+    internal static IReadOnlyList<ScreenBox> ParseShownBoxes(JsonElement? answer) =>
+        answer is { ValueKind: JsonValueKind.Object } root
+        && root.TryGetProperty("shownAt", out JsonElement places) && places.ValueKind == JsonValueKind.Array
+            ? [.. places.EnumerateArray().Select(place => BoxOf(place)).OfType<ScreenBox>()]
+            : [];
+
+    private static ScreenBox? Box(JsonElement element) =>
+        element.TryGetProperty("box", out JsonElement box) ? BoxOf(box) : null;
+
+    private static ScreenBox? BoxOf(JsonElement box) =>
+        box.ValueKind == JsonValueKind.Object
+        && box.TryGetProperty("x", out JsonElement x) && x.TryGetInt32(out int left)
+        && box.TryGetProperty("y", out JsonElement y) && y.TryGetInt32(out int top)
+        && box.TryGetProperty("w", out JsonElement w) && w.TryGetInt32(out int width)
+        && box.TryGetProperty("h", out JsonElement h) && h.TryGetInt32(out int height)
+            ? new ScreenBox(left, top, width, height)
+            : null;
 
     private static string Text(JsonElement element, string name) =>
         element.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String
@@ -115,14 +336,180 @@ internal sealed class UiaClientInteractionProbe : IClientInteractionProbe
 internal sealed partial class WindowsDesktopMessagingAutomation
 {
     /// <summary>
-    /// Ronda 24 (t1-c09, t2-c07, t3-c07 «mandale a Ron92 por …» with the client closed): the chat with the
+    /// Ronda 24 (t1-c09, t2-c07, t3-c07 «mandale a Nube77 por …» with the client closed): the chat with the
     /// recipient was not opened, and nothing was typed into a conversation's composer, so nothing was written or sent.
     /// Not «recipient_identity_not_verified», which stays for a flow that may have typed near a composer.
     /// </summary>
     internal const string RecipientNotOpened = "recipient_not_opened";
 
+    /// <summary>The chat search could not be found or did not take the focus, or the name typed reached something else.</summary>
+    internal const string SearchFocusNotVerified = "search_focus_not_verified";
+
+    /// <summary>
+    /// The chat search among the fields a client's window shows (its conversation's composer is one too, lying beside the
+    /// chat list and under it): the topmost field in the left half of the window; none when no field lies there.
+    /// </summary>
+    internal static ClientField? ChatSearchField(IReadOnlyList<ClientField> fields, ScreenBox window) =>
+        fields.Where(field => field.Box.CentreX >= window.Left && field.Box.CentreX < window.CentreX
+                && field.Box.CentreY >= window.Top && field.Box.CentreY < window.Top + window.Height)
+            .OrderBy(field => field.Box.Top)
+            .FirstOrDefault();
+
+    /// <summary>
+    /// Whether that field, among the fields read now, holds the focus: what is typed now goes there and nowhere else. Read
+    /// on the field and not as UI Automation's focused element: over a web view's window that element is the frame's pane
+    /// (measured, with the field holding the caret).
+    /// </summary>
+    internal static bool HoldsTheFocus(ClientField field, IReadOnlyList<ClientField> now) =>
+        now.Any(read => read.HasFocus && string.Equals(read.Id, field.Id, StringComparison.Ordinal));
+
+    // A click on the search field gets this long to put the focus in it.
+    internal static readonly TimeSpan SearchFocusBudget = TimeSpan.FromMilliseconds(1400);
+
     /// <summary>C3: the chat search showed no result naming the recipient; nothing was opened or written.</summary>
     internal const string RecipientNotFound = "recipient_not_found";
+
+    /// <summary>Uso-128: a voice channel's row was pressed and its voice panel was not read saying so.</summary>
+    internal const string VoiceJoinNotVerified = "voice_join_not_verified";
+
+    /// <summary>Uso-128: a voice channel's row found by a call whose yes was not asked for it: not pressed.</summary>
+    internal const string VoiceChannelNotPressed = "voice_channel_not_pressed";
+
+    // Uso-128 (2026-11-05): Discord's panel, read on the real client in Spanish; its disconnect button in the languages this
+    // adapter already reads that client's voice buttons in (ClientVoiceScript: «Silenciar» / «Mute»). Another language is said
+    // as a join not verified.
+    internal static readonly string[] DisconnectButtonNames = ["Desconectar", "Disconnect"];
+
+    // A press takes a moment to connect (the panel appears once the client has joined).
+    internal static readonly TimeSpan VoiceJoinBudget = TimeSpan.FromSeconds(8);
+
+    // Uso-128: the voice panel's «channel / server» names what was asked: the channel exactly and, when named, the server.
+    internal static bool PlaceNames(string? place, string name, string? server)
+    {
+        if (string.IsNullOrWhiteSpace(place))
+            return false;
+        string[] parts = place.Split(" / ", 2, StringSplitOptions.TrimEntries);
+        return NamesRecipient(parts[0], name) && (server is null || (parts.Length == 2 && NamesRecipient(parts[1], server)));
+    }
+
+    internal static string? PlaceServer(string? place) =>
+        place?.Split(" / ", 2, StringSplitOptions.TrimEntries) is { Length: 2 } parts ? parts[1] : null;
+
+    // A row's own name, its kind and what follows set aside: «Ana (mensaje directo)», «Sala (canal de voz), Gremio»,
+    // «Sala de Pedro, Canal de voz, Gremio», «Sala — canal de voz, Gremio». Review R1: only a mark that is a kind, whole and
+    // closing the part, is set aside: «Sala (vieja)» and «Sala — dos» are other channels than «Sala».
+    internal static string RowOwnName(string row) => ReadRow(row).Name;
+
+    // The server a voice row names after its name and kind; null when it names none.
+    internal static string? VoiceRowServer(string row) => ReadRow(row).Server;
+
+    // The kinds a row writes, in the languages this adapter reads the client in.
+    private static readonly string[] VoiceKinds = ["canal de voz", "voice channel"];
+    private static readonly string[] TextKinds = ["canal de texto", "text channel"];
+    private static readonly string[] DirectKinds = ["mensaje directo", "direct message"];
+    private static readonly string[] KindMarks = [" (", " — ", " – "];
+
+    // A row's name, kind and server. Review R1: the name holds everything before its kind, so a comma of a voice channel's name is
+    // the name's too (Discord allows them). A kind in words the client was not read writing still counts as a voice channel, with
+    // its whole text as the name: its row is pressed only after the yes, and only when that whole text was asked for.
+    private static (string Name, bool Voice, string? Server) ReadRow(string row)
+    {
+        string[] parts = row.Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+            return (string.Empty, false, null);
+        // «Sala (canal de voz), Canal de texto, Club»: the kind in its own place says what the name holds is only the name. With no
+        // third part, that second part may be a server called so.
+        if (parts.Length > 2 && TextKinds.Contains(Fold(parts[1])))
+            return (parts[0], false, parts[2]);
+        if (parts.Length > 1 && IsVoiceKind(parts[1]))
+            return (NameAndKind(parts[0]).Name, true, parts.ElementAtOrDefault(2));
+        for (int part = 0; part < parts.Length; part++)
+        {
+            string text = parts[part];
+            string before = string.Join(", ", parts[..part]);
+            string? after = parts.ElementAtOrDefault(part + 1);
+            (string own, string kind) = NameAndKind(text);
+            if (kind.Length > 0)
+                return (before.Length > 0 ? before + ", " + own : own, VoiceKinds.Contains(kind), after);
+            if (part > 0 && (IsVoiceKind(text) || (part == 1 && BareVoice(text))))
+                return (before, true, after);
+            if (WritesVoiceKind(text) || KindMarks.Any(mark => text.LastIndexOf(mark, StringComparison.Ordinal) is > 0 and var at && BareVoice(text[(at + mark.Length)..])))
+                return (string.Join(", ", parts[..(part + 1)]), true, after);
+        }
+
+        return (parts[0], false, null);
+    }
+
+    // A part of a row split at a kind closing it, whole, in brackets or after a dash; Kind is empty when no kind closes it.
+    private static (string Name, string Kind) NameAndKind(string part)
+    {
+        foreach (string mark in KindMarks)
+        {
+            string close = mark == " (" ? ")" : string.Empty;
+            int at = part.LastIndexOf(mark, StringComparison.Ordinal);
+            if (at <= 0 || !part.EndsWith(close, StringComparison.Ordinal))
+                continue;
+            string kind = Fold(part[(at + mark.Length)..^close.Length]);
+            if (VoiceKinds.Concat(TextKinds).Concat(DirectKinds).Contains(kind))
+                return (part[..at].Trim(), kind);
+        }
+
+        return (part.Trim(), string.Empty);
+    }
+
+    // Whole words, never letters inside a name («invoices», «Vozarrón») or an account («voice.channel», which has no space).
+    private static bool WritesVoiceKind(string text) =>
+        text.Contains(' ', StringComparison.Ordinal) && VoiceKinds.Any(kind => ContainsPhrase(text, kind));
+
+    private static bool IsVoiceKind(string text) =>
+        text.Contains(' ', StringComparison.Ordinal) && VoiceKinds.Contains(Fold(text));
+
+    private static bool BareVoice(string text) => Fold(text) is "voz" or "voice";
+
+    // Uso-128: «the name the person said against the names the window shows»: the owner's ruling (2026-09-19) that what was
+    // misheard BAXY fixes. A form compared, no meaning: at most half the letters apart (Levenshtein over the folded letters,
+    // the bound uso-119 measured), whole or against the name's first word; the closest three. The model asks; nothing opens.
+    internal static IReadOnlyList<string> AlikeNames(string said, IEnumerable<string> rows)
+    {
+        string wanted = Fold(said).Replace(" ", string.Empty, StringComparison.Ordinal);
+        if (wanted.Length < 3)
+            return [];
+        return [.. rows
+            .Select(RowOwnName)
+            .Where(static name => name.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(name => (Name: name, Apart: LettersApartShare(wanted, name)))
+            .Where(static row => row.Apart <= 0.5)
+            .OrderBy(static row => row.Apart)
+            .ThenBy(static row => row.Name, StringComparer.Ordinal)
+            .Take(3)
+            .Select(static row => row.Name)];
+    }
+
+    private static double LettersApartShare(string wanted, string name)
+    {
+        string folded = Fold(name);
+        double whole = ShareOf(wanted, folded.Replace(" ", string.Empty, StringComparison.Ordinal));
+        string first = folded.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty;
+        return Math.Min(whole, ShareOf(wanted, first));
+    }
+
+    private static double ShareOf(string left, string right)
+    {
+        if (right.Length < 3)
+            return 1;
+        int[] previous = [.. Enumerable.Range(0, right.Length + 1)];
+        for (int i = 1; i <= left.Length; i++)
+        {
+            int[] current = new int[right.Length + 1];
+            current[0] = i;
+            for (int j = 1; j <= right.Length; j++)
+                current[j] = Math.Min(Math.Min(previous[j] + 1, current[j - 1] + 1), previous[j - 1] + (left[i - 1] == right[j - 1] ? 0 : 1));
+            previous = current;
+        }
+
+        return previous[right.Length] / (double)Math.Max(left.Length, right.Length);
+    }
 
     // After a cold open, the window has to expose content a person interacts with within this clock.
     internal static readonly TimeSpan ClientContentBudget = TimeSpan.FromSeconds(15);
@@ -280,7 +667,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation
     internal static readonly TimeSpan UnreadResultWait = TimeSpan.FromMilliseconds(1200);
 
     /// <summary>
-    /// X1 (n1 t1-c09 «mandale a Ron92 por discord…» on the notebook, client open on another view): a client that draws
+    /// X1 (n1 t1-c09 «mandale a Nube77 por discord…» on the notebook, client open on another view): a client that draws
     /// its filtered results late (G1 measured typed text 0.6–2.6 s late there) had its first row clicked after a fixed
     /// 1.2 s, while that row was still the one from before the filter: another chat opened and the send never ran.
     /// The search's active result (UI Automation puts the focus on it, <see cref="SearchRowKinds"/>) is read until it

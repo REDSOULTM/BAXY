@@ -238,13 +238,14 @@ internal sealed class MemoryPanel
     internal static string Label(string selector)
     {
         string folded = selector.Trim().ToLowerInvariant();
-        if (Subjects.Value["labels"]?[folded]?["es"] is JsonValue known)
+        string language = UiLanguage.Current;
+        if (Subjects.Value["labels"]?[folded]?[language] is JsonValue known)
         {
             return known.GetValue<string>();
         }
 
         return folded.StartsWith("historical_fact_", StringComparison.Ordinal)
-            ? (string)Subjects.Value["factLabel"]!["es"]!
+            ? (string)Subjects.Value["factLabel"]![language]!
             : folded.Replace('_', ' ');
     }
 

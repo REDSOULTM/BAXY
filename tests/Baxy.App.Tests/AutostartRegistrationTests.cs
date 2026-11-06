@@ -52,6 +52,21 @@ public sealed class AutostartRegistrationTests
         Assert.That(registration.LastFailure, Is.Null);
     }
 
+    [Test]
+    public void TheCopyTheGitHubInstallerLeavesMayOwnTheSignInStart()
+    {
+        var key = new FakeRunKey();
+        string executable = Path.Combine(InstallRoot + "-App", "app", "Baxy.exe");
+        WindowsAutostartRegistration registration = new(
+            key,
+            executablePath: () => executable,
+            installationRoot: InstallRoot,
+            defaultDataRoot: Path.Combine(Path.GetTempPath(), "baxy-autostart-fake", "BAXY", "1"),
+            configuredDataRoot: static () => null);
+
+        Assert.That(registration.MayRegister(executable, []), Is.True);
+    }
+
     private sealed class FakeRunKey : IWindowsRunKey
     {
         internal Dictionary<string, string> Values { get; } = new(StringComparer.OrdinalIgnoreCase);

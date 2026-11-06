@@ -87,6 +87,29 @@ public sealed class R19PlaybackVerificationTests
             [(Client, "Llueve", true), (Opera, "", false)], (Client, "Llueve", "media.play.query"), "media.play.youtube"),
             Is.EqualTo((Client, "Llueve")));
 
+    // Uso real 2026-11-02 («para la canción y pon otra»): a new video opens in a new tab of the same browser, which does
+    // not replace the one BAXY left playing, and the browser shows one media session (the newest), so the old one could
+    // no longer be stopped and a stop reached the new one. A new playback in the browser pauses BAXY's own there too.
+    [Test]
+    public void ANewPlaybackInTheBrowserPausesTheVideoBaxyLeftPlayingThere()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(WindowsMediaSessionAdapter.AssistantSessionToPause(
+                [(Opera, "Video uno de prueba", true)],
+                (Opera, "Video uno de prueba", "media.play.youtube"), "media.play.youtube"),
+                Is.EqualTo((Opera, "Video uno de prueba")));
+            Assert.That(WindowsMediaSessionAdapter.AssistantSessionToPause(
+                [(Opera, "Video uno de prueba", true)],
+                (Opera, "Video uno de prueba", "media.play.youtube"), "streaming.play.named"),
+                Is.EqualTo((Opera, "Video uno de prueba")));
+            // The person's own title in that browser is still theirs.
+            Assert.That(WindowsMediaSessionAdapter.AssistantSessionToPause(
+                [(Opera, "Otro video de la persona", true)],
+                (Opera, "Video uno de prueba", "media.play.youtube"), "media.play.youtube"), Is.Null);
+        });
+    }
+
     [Test]
     public void ThePersonsOwnSessionIsNeverPaused()
     {
@@ -109,7 +132,7 @@ public sealed class R19PlaybackVerificationTests
             // Nothing told BAXY's title from the person's: nothing is paused.
             Assert.That(WindowsMediaSessionAdapter.AssistantSessionToPause(
                 [(Opera, "", true)], (Opera, "", "media.play.youtube"), "media.play.query"), Is.Null);
-            // The same way of playing replaces nothing here.
+            // The desktop client replaces its own track: nothing is paused for it.
             Assert.That(WindowsMediaSessionAdapter.AssistantSessionToPause(
                 [(Client, "Llueve", true)], (Client, "Llueve", "media.play.query"), "media.play.exact"), Is.Null);
         });

@@ -19,7 +19,9 @@ import threading
 import time
 import unicodedata
 import urllib.error
+import urllib.parse
 from collections.abc import Callable
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -31,7 +33,7 @@ from .protocol import whole_code_points
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 from . import web_focus
-from .wire import Wires, plain
+from .wire import Wires, operation_of, plain
 
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
@@ -48,13 +50,20 @@ _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
 # behind it; it is said only while a call runs now, before the next decision even starts. Banco ciego c3 (2026-10-31):
 # at 6 words and 60 characters 143 of 393 notices were thrown away and 75 of 77 turns silent past 8 s had none; what the
 # model writes of what it does takes 7 to 10 words («Abro LibreOffice Writer y entro a Opciones.»).
+# Uso-122 (F45, turns.jsonl since 02-11): of 165 notices 55 ran out NOTICE_SECONDS and 14 were written past the limits.
+# The ask was a user message, and Qwen3.5's template keeps the empty think block only on the replies after the last
+# user message: the request parted from what the slot holds at the turn's first reply, re-read the whole turn, and the
+# decision after it read it again (3,476 tokens and 2.1 s at the median, against 94 and 172 ms with no notice). A tool
+# result is not that message (it renders as a user turn holding a tool_response, which the template skips), so the ask
+# goes in the running call's own result. It says the length, which the model never knew; the limits leave out only what
+# goes well past it, and a phrase cut at max_tokens is not said.
 NOTICE_ASK = ("[Esto no lo dice la persona. Lo que acabas de pedir a la herramienta sigue en curso y tarda unos segundos. "
-              "Escribe sólo una frase muy breve que dirás en voz alta para que la persona sepa qué estás haciendo ahora, "
-              "sin decir que ya lo hiciste ni ningún resultado.{said}]")
+              "Escribe sólo una frase de no más de 10 palabras, en presente, que dirás en voz alta para que la persona "
+              "sepa qué estás haciendo ahora, sin decir que ya lo hiciste ni ningún resultado.{said}]")
 NOTICE_SAID = " Ya dijiste {said}: di otra cosa."
 NOTICE_RUNNING = json.dumps({"status": "running"})
-NOTICE_MAX_CHARS = 64
-NOTICE_MAX_WORDS = 10
+NOTICE_MAX_CHARS = 90
+NOTICE_MAX_WORDS = 14
 # The notice's own budget: the result of the call it speaks of may come meanwhile, and its next decision waits for it.
 NOTICE_SECONDS = 1.5
 
@@ -186,7 +195,7 @@ SET_BY_SAME = "ya había quedado así por la misma llamada hecha antes en este t
 # Every outcome of a completed call (the App runs the queued calls after one of these).
 COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ, SET_BY_SAME)
 # What the facts line adds of a result's own fields (_outcome), and what _deduplicated leaves out of it for that.
-ALREADY_OPEN = "; ya estaba abierta antes de esta llamada"
+ALREADY_OPEN = "; ya estaba abierta antes de esta llamada, que no la abrió"
 SAME_WINDOW = "; la ventana no cambió"
 AFTER_VIEW = "; su after es la ventana de después"
 REREAD = {True: "; releído después: quedó como se pidió", False: "; releído después: no quedó como se pidió"}
@@ -236,6 +245,25 @@ SAID_AGAIN = {OUTPUT_READ: "lectura: sólo miró",
               STALE: "; obsoleto"}
 # The wordings above that come after an outcome's first words (the rest open it).
 _SAID_WITHIN = (PART_TAIL, EMPTY, EMPTY_TEXT, STALE)
+
+
+def _scalars(observation: str) -> str | None:
+    """A result kept for the answer check's rule «stale_state» (Mind._states): its top-level fields and those of its
+    «observed» that are a number, a boolean or a short text (its state, name, bytes, next), not its lists or views."""
+    try:
+        facts = json.loads(observation)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    if not isinstance(facts, dict):
+        return None
+
+    def kept(where: dict[str, Any]) -> dict[str, Any]:
+        return {k: v for k, v in where.items()
+                if isinstance(v, (bool, int, float)) or (isinstance(v, str) and len(v) <= 400)}
+
+    observed = facts.get("observed")
+    return json.dumps({**kept(facts), **({"observed": kept(observed)} if isinstance(observed, dict) else {})},
+                      ensure_ascii=False)
 
 
 def _outcome(observation: str, read: bool = False) -> str:
@@ -509,6 +537,40 @@ def _aid_on(aid: str) -> bool:
     return aid in {part.strip() for part in setting.split(",")}
 
 
+# Aid «query_left_name» (cosecha 04-11 F27, «Si busca BAXY en internet» → web_search «trabajos universitarios», the topic of
+# the turn before): the search dropped the one name the person said. Only the form is compared (as SaidVerbs compares an
+# argument nobody said): names written in the person's words with a capital past the start of a sentence, none of them in the
+# query, and no word of four letters or more of those words in it either, so a query in other words of what was said
+# («capital de Francia» for «the capital of France») is no finding. Told beside the result the model went on with the results
+# (0 of 24 on the bench); held before it runs, with the call that searches the name, as SaidFolders holds a file call, and the
+# same call written again runs as written: the model decides. Voice that comes in lower case has no name written: nothing is
+# said (a limit).
+LEFT_NAME_REFUSED = "no se ejecutó: la búsqueda dejaba fuera el nombre que dijo la persona"
+
+
+def left_name_not_run(wire: str, names: list[str]) -> str:
+    """The result of a web_search held by «query_left_name»: the names it left out and the call that searches them."""
+    call = json.dumps({"query": " ".join(names)}, ensure_ascii=False, separators=(",", ":"))
+    return json.dumps({"status": "not_run", "next": f"{wire} {call} searches what the person said; this query has none of "
+                                                    "the names they said, so it was not searched: the same call again runs "
+                                                    "as written", "namesSaid": names}, ensure_ascii=False)
+
+
+def _names_left_out(text: str, arguments: Any) -> list[str]:
+    """The names the person wrote that a web_search's query left out whole, in their spelling; [] when any is in it or the
+    query holds a word of theirs."""
+    try:
+        query = str((json.loads(arguments) if isinstance(arguments, str) else arguments or {}).get("query") or "")
+    except (json.JSONDecodeError, AttributeError):
+        return []
+    asked = {_fold(word) for word in _WORDS.findall(query)}
+    said = {_fold(word) for word in _WORDS.findall(text)}
+    names = [word for sentence in _SENTENCES.split(text) for word in _WORDS.findall(sentence)[1:] if word[0].isupper()]
+    if not names or {_fold(name) for name in names} & asked or {word for word in said & asked if len(word) >= 4}:
+        return []
+    return list(dict.fromkeys(names))
+
+
 # Aid «person_folder_sentence» (lever 8): one sentence of fact at the end of a tool's description
 # (artifacts/renew/ayudas/DISENO_PALANCAS.md), from what filesystem_list already says (td:63). E027 0/3 → 3/3 in the
 # e2e of both machines. Lever 7 (the modes, in system.settings.set) was measured and left out: scenes −2,25.
@@ -532,6 +594,14 @@ NAMED_FOLDER = (" Any folder of the person's home is theirs, even one whose name
                 f"({WORK_FOLDER}).")
 SANDBOX_ONLY = (" This work folder is filesystem-sandbox, in BAXY's data under AppData: any other folder of the person's "
                 "home is file_find's, whatever its name.")
+# Aid «entity_lookup» (G13, uso real 2026-11-03 03:23: «WhatsApp es un mensajero de WhatsApp», twice, and «Meta viene de
+# la palabra griega que significa cumbre», each with no call and the call's probability under 0.02). The description's
+# «Do not use when: what you know for sure (definitions, … well-known history)» let the model take what it says of a
+# named thing for something it knows. Mallen et al. (ACL 2023, arXiv 2212.10511): models fail on facts about less
+# popular entities and retrieval helps most there; a 4B's memory of a name is not «for sure».
+ENTITY_LOOKUP = (" What something with a name of its own is (an app, brand, company, game, person, work or place), who "
+                 "made or founded it, or where its name comes from, is not a definition you know for sure: look it up "
+                 "and answer from the results (examples: «¿qué es Twitch?», «¿quién creó Pokémon?»).")
 DESCRIPTION_AIDS = {
     "filesystem.known.trash.named": ((
         "person_folder_sentence",
@@ -557,6 +627,7 @@ DESCRIPTION_AIDS = {
                                        "without asking to save, never that nothing was unsaved."),),
     "window.minimize": (("unsaved_not_read", " A minimized window stays open as it was, nothing in it lost; whether it "
                                              "holds unsaved changes is not read (unsavedChanges not_readable)."),),
+    "web.search": (("entity_lookup", ENTITY_LOOKUP),),
 }
 
 def _fold(name: str) -> str:
@@ -567,6 +638,23 @@ def _fold(name: str) -> str:
 def _words(text: str) -> str:
     """The folded words of a text, one space apart and one at each end, to find a name among them as whole words."""
     return " " + " ".join(re.findall(r"[^\W_]+", _fold(text))) + " "
+
+
+def _echoes(question: str, said: str) -> bool:
+    """Aid «ask_once» (ASKED_ECHO): whether a question (its folded words) is the person's last words back, by the share
+    of its letters those words hold in the same order."""
+    if not question:
+        return False
+    matcher = difflib.SequenceMatcher(None, question, _words(said).strip(), autojunk=False)
+    return sum(block.size for block in matcher.get_matching_blocks()) >= ASKED_ECHO * len(question)
+
+
+def _same_twice(question: str) -> bool:
+    """Aid «ask_once» (ASKED_SAME_NOT_RUN): whether a question (its folded words) offers the same words as its two last
+    options: «¿mail plus o mail plus?»."""
+    words = question.split()
+    return any(words[-size:] == words[-2 * size - 1:-size - 1] and words[-size - 1] in _OR
+               for size in range(1, (len(words) - 1) // 2 + 1))
 
 
 def _as_read(observation: Any) -> str:
@@ -614,6 +702,23 @@ def _app_places_text() -> str:
 APP_PLACES_TEXT = _app_places_text()
 
 
+def _known_applications() -> list[str]:
+    """Aid «ear_known_names» (G11, uso real 2026-11-03: «Shbeomac» and «HBO Mac» for HBO Max, a service and not an
+    installed application, so not among the ear's hotwords): the applications and services BAXY knows by name, installed
+    or not (app_aliases.v1.json, the kernel's ApplicationAliases), for the ear's hotwords beside the installed ones.
+    Measured on synthetic speech (OneCore and Supertonic voices, clean and pink noise, Parakeet Ultra at 1.5 per token,
+    2026-11-03): services named 115 → 126 of 150 (HBO Max 21 → 28 of 50), installed names 743 → 744 of 1012, names of
+    neither 53 → 53 of 100, sentences with no name 3.41 → 3.48 % WER, none inserted, decode p50 the same."""
+    try:
+        data = json.loads((_DATA / "app_aliases.v1.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return [str(name) for name in (data.get("applications") or {}) if str(name).strip()]
+
+
+KNOWN_APPLICATIONS = _known_applications()
+
+
 def places_note(application: str) -> str:
     """Aid «app_places_next» (uso real 2026-10-20: seven clicks in Steam's and Epic's web-drawn windows, whose own
     addresses app_open already opens): after a click or a look there fails or is unsure, the places the application
@@ -623,6 +728,70 @@ def places_note(application: str) -> str:
         return ""
     return (f"\n[Ayuda: {application} también se abre directo en sus lugares, sin pulsar: app_open con appId "
             f"«{application}» y place {listed}.]")
+
+
+def opened_places_note(application: str) -> str:
+    """Aid «app_places_next» (uso-109, N5): the places of the application this turn's app_open opened with no place, said
+    with the next turn and not with the opening's result: in the result one of them was told as where it had opened (F26:
+    «Abrí Steam en la comunidad», 8/15), and without them the next request looked at a window with nothing to press.
+    Held-out (uso-109), 3 seeds: went to the place 3 → 40 of 48; only opening names no place 24 = 24; 36 other second
+    requests 34 = 34. With the opening's result as it was: 10 of 48, and 15 of 24 named one."""
+    listed = _places_listed(application)
+    return f"[{application} quedó abierta en el turno anterior; sus lugares se abren directo, sin mirar: app_open con appId «{application}» y place {listed}.]" if listed else ""
+
+
+def _app_knows() -> list[dict[str, Any]]:
+    """Aid «app_knows» (uso-109): the short facts of an application or a site that a look at its window does not give
+    (app_places.v1.json «knows»: its processes, names or hosts, its text, and the date and version it was checked on
+    live). Data only: this code names no application."""
+    try:
+        data = json.loads((_DATA / "app_places.v1.json").read_bytes())
+    except (OSError, json.JSONDecodeError):
+        return []
+    return [entry for entry in (data.get("knows") or []) if isinstance(entry, dict) and entry.get("text")]
+
+
+APP_KNOWS = _app_knows()
+KNOWS_CALLS = {"app.open", "input.visible.controls", "window.active", "browser.navigate"}
+KNOWS_DAYS = 180  # what was last checked longer ago than this is not said: better nothing than something old
+_VIEW_PROCESS = re.compile(r"\(([\w.\- ]+), window \d+\)")
+
+
+def _result_identity(observation: str, args: Any) -> tuple[str, str, str]:
+    """Who a result is about, never from the person's words nor from the window in front: the process a look or an opening
+    says it saw, the host of the address the call was given, and the name the call gave and the result confirmed."""
+    shown = _VIEW_PROCESS.search(observation)
+    process = shown.group(1) if shown else ""
+    named = args if isinstance(args, dict) else {}
+    try:
+        facts = json.loads(observation)
+    except ValueError:
+        facts = None
+    seen = facts.get("observed") if isinstance(facts, dict) else None
+    if isinstance(seen, dict):
+        process = process or str(seen.get("processName") or seen.get("process") or "")
+    address = str(named.get("url") or "")
+    host = (urllib.parse.urlsplit(address).hostname or "") if "://" in address else ""
+    return _fold(process), host.lower(), _fold(str(named.get("appId") or named.get("application") or ""))
+
+
+def knows_note(observation: str, args: Any, today: _dt.date, conv: list[dict[str, Any]]) -> str:
+    """Aid «app_knows»: the facts of the application or site this result is about, beside the receipt, while they are not
+    still in the conversation (a note stays in the history). Unknown, or last checked too long ago, says nothing."""
+    process, host, name = _result_identity(observation, args)
+    for entry in APP_KNOWS:
+        known = (process and process in {_fold(p) for p in entry.get("processes") or []}) or (
+            host and any(host == h or host.endswith("." + h) for h in entry.get("hosts") or [])) or (
+            not process and name and name in {_fold(n) for n in entry.get("names") or []})
+        if not known:
+            continue
+        try:
+            age = (today - _dt.date.fromisoformat(str(entry.get("verified")))).days
+        except ValueError:
+            return ""
+        told = any(entry["text"] in str(message.get("content") or "") for message in conv)
+        return "" if age > KNOWS_DAYS or told else f"\n[Ayuda: {entry['text']}]"
+    return ""
 
 
 # Renew al máximo (w5): the note said «el campo tiene ahora el cursor» with nothing in the result checking it; the focus
@@ -688,6 +857,62 @@ def written_note(observation: str, receipts: list[dict[str, Any]]) -> str:
 NEXT_NOT_DONE = "\n[Ayuda: esta llamada falló y lo que dice su next no lo hizo ella.]"
 
 
+# Aid «vision_estimate» (uso-106, F32: a vision model wrote that a program was probably open and the answer told it as a
+# fact): what a vision model says of a capture is its estimate of an image, not a reading of the
+# window. What it tells as probable reaches the model marked so; which words say it is not read.
+VISION_ESTIMATE = ("\n[Ayuda: esta descripción es lo que estima un modelo de visión sobre esa captura, no una lectura de "
+                   "la ventana: lo que da por probable o dudoso se cuenta como probable o dudoso, y sus cifras, tal cual.]")
+
+
+# Aid «read_after_navigation» (uso real 04-11: browser_navigate unconfirmed after its wait, then browser_page_read of the
+# inbox it asked for, and the answer was «no pude ver si la página cargó»; banco app_contradice, 5 of 15): the read comes
+# after the wait that gave up, and what it shows is what is open now, whether it is the page asked for or not.
+READ_AFTER_NAVIGATION = ("\n[Ayuda: browser_navigate no alcanzó a confirmar la página en su espera, pero esta lectura es "
+                         "de después: lo que el navegador muestra ahora es {url}, y eso sí lo viste.]")
+
+
+def read_after_navigation_note(observation: str, earlier: list[dict[str, Any]]) -> str:
+    """READ_AFTER_NAVIGATION for a page read with an address, after a navigation of the turn left unconfirmed."""
+    try:
+        observed = json.loads(observation).get("observed")
+        url = observed.get("url") if isinstance(observed, dict) else None
+        if not url or not any("user_browser_navigation_unconfirmed" == json.loads(r.get("observation") or "{}").get("error")
+                              for r in earlier):
+            return ""
+    except (json.JSONDecodeError, AttributeError):
+        return ""
+    return READ_AFTER_NAVIGATION.format(url=url)
+
+
+# Aid «memory_off_next» (uso-83, 3/10; encargo A4): asked «¿qué recuerdas de mí?» with the memory off, a memory call fails
+# with memory_disabled and the model asked in words whether to turn it on instead of calling memory_enable (which is the
+# call that asks the person, RiskPolicy.PrivacyGuardsRequiringConfirmation), and after the person's «sí» it sometimes
+# said it had turned it on without calling it. The failure gets the one next that turns it on, as other failures get
+# theirs: the call, who answers, and that it is not on until its own result says so. The aid turns on nothing: the
+# person's «sí» is still asked by the App. Same shape as the other `next`s (Rasa/ReAct style observation hints).
+MEMORY_OFF_NOTE = ("\n[Ayuda: la memoria está apagada (memory_disabled) y esta llamada no hizo nada. Si la persona quiere "
+                   "que se lea o se guarde algo, lo que la enciende es {enable} {{}}: esa llamada es la que le pregunta su sí "
+                   "(la App), así que no se lo preguntes tú antes en palabras. No digas que está encendida hasta que el "
+                   "resultado de {enable} lo diga; un sí a una pregunta tuya no la enciende por sí solo.]")
+# The person's words right after BAXY's own question in words, in a conversation where a memory call just failed off: the
+# same `next`, for a «sí» that no call waits for (the App has nothing pending, so the mind cannot take it as the answer to
+# a confirmation). Which question BAXY asked is not read from its words: only that it ended in «?» (OFFERED_NOTE's own
+# shape) and that the memory failed as off since. It asks the person nothing and calls nothing: the model decides.
+MEMORY_ON_OFFER_NOTE = ("[Nota interna, no la escribió la persona: la memoria estaba apagada (memory_disabled) y tu última "
+                        "frase fue una pregunta. Si lo que dijo es un sí a encenderla, llama {enable} {{}}: la App le "
+                        "pide su sí, y hasta que su resultado lo diga no está encendida ni la des por encendida. "
+                        "Si dijo otra cosa, atiende eso.]")
+
+
+def _memory_off(observation: str) -> bool:
+    """Whether a result is the failure the memory gives when it is off (its error code, memory_disabled)."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return False
+    return isinstance(facts, dict) and facts.get("error") == "memory_disabled"
+
+
 def _has_next(observation: str) -> bool:
     """Whether a result carries a next of its own (in observed or beside it), whatever it says."""
     try:
@@ -745,6 +970,10 @@ LOOK_CLICK_NOT_RUN = json.dumps({"status": "not_run",
 # same question again at each answer («¿en todo el sistema o en un programa?» six times, «¿qué quieres que recuerde de
 # ti?» three): one question per thing (identity: «una pregunta corta, no un interrogatorio»). A question alike to one
 # already asked in the turn (ASKED_ALIKE of its letters, folded) is not asked: the model decides again, without asking.
+# uso-107i (05-11, G4): the decision bench holds it against this aid (held-out «no sé» 14/20 on, 20/20 off), so it was
+# replayed on turns.jsonl on the PC (82 real answers to a question, 3 seeds, today's model): the question comes back
+# 42 times of 243 off, 4 on (those 4 in words, not ask_user), and the 8 real echoes and «X o X» are never asked on (21 of
+# 24 samples act). A repeat is what the person complained of; a «no sé» asked again is not a wrong answer but a cheap one.
 ASKED_ALIKE = 0.9
 ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
                                   "reason": "this question was already asked in this turn and the person's answer is "
@@ -754,6 +983,90 @@ ASKED_AGAIN_NOT_RUN = json.dumps({"status": "not_run",
 ASKED_CLOSED_NOT_RUN = json.dumps({"status": "not_run",
                                    "reason": "no other question is asked in this turn; it was not asked: answer the "
                                              "person in words with what is above"})
+# Uso real 30-10 → 03-11 (G4): the person's own words came back as BAXY's question («¿qué es WhatsApp?» → «¿Qué es
+# WhatsApp?», «¿cómo me llamo en Discord?» → «¿Cómo te llamas en Discord?»), and the next words had to ask again. The
+# shape that tells it is See et al. 2019's «partner repetition» (arXiv 1902.08654, §6.1 and appendix D: a reply's
+# n-grams found in the partner's last utterance, which their best models block): here the share of the question's
+# letters (folded, as ask_once reads them) that the person's last words hold in the same order (difflib's matching
+# blocks), letters and not word pairs because a question turns «me llamo» into «te llamas». Measured on the 169 questions
+# of turns.jsonl (15-10 → 03-11): at ASKED_ECHO or more, 10, each one the person's words back (4 of them a «¿borro…?»
+# the kernel asks anyway); the first that asked for something the person had not said is at 0.74 («¿Qué juego quiere
+# comprar en Epic Games?»). Not asked, the model decides again with its tools and may still ask for a datum the person
+# did not give (AskBench, arXiv 2602.11199: ask only for what is missing); a second echo in the turn ends it in words.
+ASKED_ECHO = 0.8
+ASKED_ECHO_NOT_RUN = json.dumps({"status": "not_run",
+                                 "reason": "this question repeats back what the person just said: they asked it of you "
+                                           "or left it to you; it was not asked: answer it, do it with a tool or look "
+                                           "it up, and ask only for a datum they did not give"})
+# Encargo 119 (F10): «qué dice esto» with a window open ended in «¿Qué quieres que lea?», nothing looked at. The mind does
+# not know what is in front, and the note of encargo 46, always written beside the clock, moved other decisions at the
+# gate (e28-B2 8/10 → 3/10). Told only here, on a question about to be asked: no other decision reads it, as ReALM (SIGDIAL
+# 2024) gives the model the screen's entities as text for these same references. The App reads the window when the words
+# arrive; a title past FRONT_TITLE_CHARS is cut and says so. Measured on 26 phrases, 2 seeds: with the call and no way back
+# to the question 18/48 of the questions that had to stay; the fact alone 16/22; this text 21/22, and looks 19/20 (base 1/20).
+FRONT_NOT_ASKED = ("this question was not asked: when the person spoke, the window in front was {window}. If their words "
+                   "ask what that window says or shows, input_visible_controls {{\"includeText\":true}} reads it; if they "
+                   "ask for anything else, ask your question again as it was")
+FRONT_TITLE_CHARS = 200
+# Encargo 119 (G7): «cuánto saldo me queda en <app>» with that app open went to a web search, to the person's task list or to
+# «no puedo ver»: a name the model does not know reads as anything but a window on this PC. A note only on a turn whose words
+# name an open window (the App compares the words with the titles, NetworkEgress.Named), so no other decision reads it.
+# Measured on 12 phrases with invented apps, 2 seeds: base 2/24; only the windows named 8/24; with how to read them 14/24, and 18/18 controls.
+NAMED_NOTE = ("[Nota interna, no la escribió la persona: sus palabras nombran estas ventanas abiertas en este PC: {windows}. "
+              "Si preguntan por un dato que esa ventana muestra, puedes verlo: input_visible_controls con su application y "
+              "includeText.]")
+# Uso real 04-11 14:32 (F28): «¿X o X?» about a game, with no entry and no call of that name anywhere in the session, to
+# a request for a joke about it. Whichever the person says, nothing is told apart. A question that ends in the same words
+# twice with «o» between them: 2 of the 179 questions of turns.jsonl (15-10 → 04-11), this one and one with two windows of
+# that name open, where the answer could not tell them apart either: reading them gives what differs. uso-127 (real use
+# 05-11): any word between them was taken for the choice, so a story asked for after «¿en qué te ayudo?» got
+# «¿Sobre qué cuento te cuento?» refused twice, which closes the turn in words with no way to ask, and those words came out
+# as an order («Cuenta un cuento de…», 4/5, base 0/5). «o» is the grammar of offering two things, not a reading of them.
+_OR = frozenset({"o", "u", "or"})
+ASKED_SAME_NOT_RUN = json.dumps({"status": "not_run",
+                                 "reason": "this question offers the same thing twice, so its answer would tell nothing "
+                                           "apart; it was not asked: if there really are two, read them and ask by "
+                                           "what differs (their titles, their accounts); if not, do what the person "
+                                           "asked"})
+# Uso real 02-11 21:15 (G10): BAXY offered «Diarios de Vampiros» in its question and the person said «dime un cuento»; the
+# words reached the model as the question's answer, and it played the offer. Aid «answer_or_new»: the answer says it may
+# be a new request, as a dialogue state tracker reads each person's turn beside the system's last one to decide which
+# intent is active (Schema-Guided Dialogue, arXiv 1909.05855, §5.1). Aid «offer_unanswered»: a form's requested slot is
+# filled only by an answer that holds it, and otherwise its action is rejected and the conversation handles the
+# digression (Rasa, «Writing Stories / Rules for Unhappy Form Paths», ActionExecutionRejection); here, a call with an
+# effect whose value only BAXY's question said, the person's words of the turn never, does not run once, and the model,
+# told so, decides again: whether «sí» or «esa» chose it is its reading (identity: no interrogation, no guessing).
+ANSWERED_NOTE = ("\n[Nota interna, no la escribió la persona: es lo que dijo tras tu pregunta; puede contestarla o ser "
+                 "un pedido nuevo, y si es un pedido nuevo, atiende ese y deja lo que ofrecías.]")
+# Aid «choice_left» (encargos 46 and 46c): offered three things in words («¿qué te tinca?») and told to choose itself, the
+# model asked the same again or said it cannot choose for the person. The words after BAXY's own question in words get a
+# note as those after ask_user's do (ANSWERED_NOTE), which also names the choice left to BAXY: dialogue state tracking
+# writes it as a filled slot, «dontcare» (DSTC2, Henderson et al., SIGDIAL 2014; MultiWOZ, arXiv 1810.00278), read beside
+# the system's last act (Schema-Guided Dialogue, arXiv 1909.05855). Whether they follow a question is told by the shape of
+# BAXY's last message (a question mark), never by the person's words. Held-out pairs, 5 seeds, AMD server: after an offer
+# 30/40 -> 35/40. The same reading as a sentence of rule 3 (encargo 46) also helped after ask_user, but any change of the
+# system prompt moved the decisions at the edge of the decision bench (e28-B2 8/10 -> 1-3/10, or R09 and e35-H-R09a down
+# with a shorter sentence); this note is only in a turn after BAXY's question, so the bench does not move; the clause in
+# ANSWERED_NOTE gained one pair after ask_user and lost another (30/40 both), so ANSWERED_NOTE stays (INFORME_46b).
+# uso-107 (S08): after an open question that offered nothing («Buenas tardes, ¿en qué te ayudo?»), that note had a whole
+# request with its datum read as an answer to weigh, and the model asked for what it said: «en el traductor escríbeme en
+# el cuadro "dónde queda la estación"» → «¿Qué texto quieres que escriba?», 0/5 against 5/5 after the same greeting
+# without «?» (S08-saludo0, -saludo3, D4: 0/15 → 15/15 with the aid off). It says now what to do, not what the words may
+# be: a request is attended as any other, a choice left is made. Cases after a question of BAXY's in words (tras_saludo
+# and the held-out tras_pregunta_abierta, 5 seeds, the same day): 110/140 → 130/140, controls 59/75 → 61/75 (the
+# choices left to BAXY 25/30 → 30/30). «hazlo con lo que dice» alone, without «pregunta sólo un dato que no dé», lost 8
+# of 30 controls that lack a datum. uso-107i: without «si la contesta, sigue con eso», a «sí» that repeats what it agrees to
+# read as a new request and got told done with nothing to do (u92-H5 10/10 → 5/10); with it, and «si pide algo completo,
+# hazlo; si le falta un dato, pregúntalo» for what was in parentheses, u92-H5 9/10, u107-QB1 7/10 → 9/10, u107-QB5 4/10 →
+# 8/10 (10 seeds; the same day's other wordings lost the requests or the controls). What it still costs: u107-QB6
+# («escrivelo en el cuadro de busqueda», no datum) 7/10 → 1/10, typing those words.
+CHOICE_ANSWER = "si te deja la elección a ti, elige tú, hazlo y di qué elegiste"
+OFFERED_NOTE = (f"[Nota interna, no la escribió la persona: tu último mensaje terminó en una pregunta. Si lo que sigue "
+                f"la contesta, sigue con eso; si pide algo completo, hazlo; si le falta un dato, pregúntalo; "
+                f"{CHOICE_ANSWER}.]")
+OFFER_NOTE = ("[Nota interna, no la escribió la persona: {call} no se ejecutó. Usaba {values}, que sólo dijiste tú en "
+              "tu pregunta; la persona no lo repitió. Si lo que dijo elige eso, vuelve a llamarla; si pide otra cosa, "
+              "haz lo que pide ahora.]")
 # Aid «say_once» (uso real 2026-10-26): the same words came back turn after turn (the same greeting three times, the
 # same «¿te refieres a algo más?» to whatever followed; after searches that all failed, the answer of the turn before
 # as if they had found it). An answer that is BAXY's last answer again, letter for letter, in a turn where no call
@@ -801,9 +1114,21 @@ def _asked_about(text: str) -> str:
 
 
 SAME_CALL_REFUSED = "no se ejecutó: la misma llamada otra vez tras el aviso"
-FLIP_NOT_RUN = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
-                                                          "set; it was not made"})
 FLIP_REFUSED = "no se ejecutó: deshacía lo que otra llamada de este turno ya había hecho"
+
+
+def flip_not_run(before: dict[str, Any], now: dict[str, Any]) -> tuple[str, str]:
+    """The result and the facts line of a call «flip_closed» did not make: that it did not run, the values it would have
+    set (notMade) and the ones the earlier call of the turn set, which stay (stays). Uso real 2026-11-03 03:31:34: muted
+    false ran, muted true was not made, and the answer told them the other way round («lo dejé silenciado… luego lo volví
+    a activar»), the result saying only that a call was not made. Anthropic, «Writing effective tools for agents»: a
+    result gives the agent the high-signal context it acts on, not a bare status."""
+    turned = [k for k in now if isinstance(now[k], bool) and now[k] != before.get(k)]
+    stays = {k: before[k] for k in turned}
+    result = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
+                                                        "set; it was not made, and what that call set stays",
+                         "notMade": {k: now[k] for k in turned}, "stays": stays}, ensure_ascii=False)
+    return result, FLIP_REFUSED + "; sigue " + ", ".join(f"{k}={json.dumps(v)}" for k, v in stays.items())
 # Feria 2026-10-27 (the same volume set four times in a row, the last three «unchanged»): a call that acted and came back
 # unchanged in this turn showed that making it again changes nothing; the same call again is not made, and its result
 # is the first one's. One that changed something each time (a key, a digit) runs again.
@@ -903,6 +1228,11 @@ def _places_listed(application: str | None) -> str:
 REPEAT_KEY = "unchangedInARow"
 # A window's single-use handle (WindowsWindowControlProvider.Issue): a new one at every read of the same window.
 _WINDOW_HANDLE = re.compile(r"\bwin_[0-9a-f]{32}\b")
+_CAPTURE_ID = re.compile(r"\bcapture_[0-9a-f]{32}\b")
+# Uso-108 (B4): what differs between two captures of one image: when each was taken, and how a vision server worded it
+# (its bytes, captureSha256, are what the description is of).
+CAPTURE_MOMENT = {"createdAtUtc", "description"}
+CAPTURE_TAKEN = {"captureStartedAtUtc", "captureCompletedAtUtc"}
 
 
 def _result_key(observation: str) -> str:
@@ -910,19 +1240,22 @@ def _result_key(observation: str) -> str:
     were told «el mismo resultado»), without how long the call took («…Ms»), as the App's TurnClosing compares it.
     Holdout v4: nor a click's own count of its repeats (unchangedInARow) and the «next» that count brings, which differ
     on each repeat of the same unchanged click. Holdout v5 (en vivo, «maximiza Paint»: 13 window.resolve): nor a window's
-    single-use handle, new at every read of the same window."""
+    single-use handle, new at every read of the same window. Uso-108 (B4): nor a capture's new id, its moment and how
+    vision worded it: captures and vision never counted as a repeat, so only the 15 calls or the 90 s ended a loop of
+    them; its bytes (sha256, captureSha256) still tell a screen that changed."""
     def only_repeat(node: Any) -> bool:
         return isinstance(node, dict) and REPEAT_KEY in node and set(node) <= {REPEAT_KEY, "next"}
 
     def untimed(node: Any) -> Any:
         if isinstance(node, str):
-            return _WINDOW_HANDLE.sub("win_", node)
+            return _CAPTURE_ID.sub("capture_", _WINDOW_HANDLE.sub("win_", node))
         if isinstance(node, dict):
             repeat = REPEAT_KEY in node
+            captured = "captureId" in node
             # A result that holds nothing but the count is the same as the first one, which had none.
             return {k: untimed(v) for k, v in node.items()
                     if not k.endswith("Ms") and k != REPEAT_KEY and not (repeat and k == "next")
-                    and not only_repeat(v)}
+                    and not only_repeat(v) and k not in CAPTURE_TAKEN and not (captured and k in CAPTURE_MOMENT)}
         return [untimed(v) for v in node] if isinstance(node, list) else node
     try:
         content = json.dumps(untimed(json.loads(observation)), ensure_ascii=False)
@@ -1061,6 +1394,11 @@ CLOCK_MARK = "[Reloj:"
 # reads only its own words. The model's prompt is the same text; only when it is read changes. BAXY_RENEW_PREFILL=0
 # turns it off.
 PREFILL_MARK = "[BAXY: lo que diga la persona después]"
+# uso-124 (RX 7600, 2026-11-05): a read ahead has the 24 s of any request (LlmServer.REQUEST_SECONDS). At ~100 tokens/s the
+# history a web.fetch leaves does not fit them, and with nothing going on with it the next decision read it and ended at
+# its own 24 s: the person heard nothing. A prompt cut short leaves in the slot what the server read («n_tokens» at its
+# release, in llama-server's log), so with nothing waiting it goes on from there, at most this many rounds per history.
+PREFILL_ROUNDS = 5
 # Al máximo 8.1 (F015: «¿ya lo cerraste?» → «Sí» with nothing run, 5 of the 10 falsehoods left, which no aid of the
 # result touched): the clock also says which calls ran in the session and how each ended, the last ones of a count of
 # the session's own (a cut history no longer shows them, and a «none» read from it would be false).
@@ -1079,6 +1417,11 @@ HISTORY_CHARS = 24000
 # a turn failed whole. The history keeps the tokens the prefix leaves, less room for the turn: its reply (DECISION_TOKENS)
 # and one result (RESULT_TOKENS, the rest).
 TURN_ROOM_TOKENS = 3584
+# uso-51 (2026-11-03, «aumentar el contexto para tener una conversación decente»): the count and the characters above
+# were tuned for ~7.9k tokens of history (24,000 characters, noche P0.2), and they did not grow with the context: past
+# them a turn was cut whatever room was left. They grow with the room the context leaves (Mind._bounds), in proportion
+# to this, never below.
+HISTORY_TOKENS = 7900
 # Al máximo 1.4 (2026-10-22): a history past a bound is cut down to this share of every bound, not just under it. A cut
 # moves the conversation's start, and the model (hybrid: its cache is reused from the front) re-reads all the history
 # after it: 28 % of turn.decide re-read over 500 tokens (p50 761 tokens / 701 ms, p90 2.5k / 1.6 s), and a session at
@@ -1170,8 +1513,43 @@ CHECK_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía 
               "{facts} Escribe de nuevo tu respuesta a la persona contando sólo lo que muestran los resultados.]")
 CHECK_FACT = "Dice «{said}», pero {fact}."
 CHECK_FACTS = 3
+# Uso real 2026-11-03 (F4): a decision the model server failed with a 5xx (after its retry) ended the turn mute; the
+# owner asks that BAXY say in one sentence that it could not think the answer (Mind._after_server_error).
+SERVER_ERROR_NOTE = ("[Nota interna, no la escribió la persona: el servidor del modelo falló (HTTP {code}) al pensar tu "
+                     "respuesta, también al reintentarlo, y ese paso no se hizo. Di ahora, sólo con palabras y en una "
+                     "frase, que no pudiste pensar la respuesta; si en este turno ya hay resultados, cuenta sólo lo que "
+                     "muestran.]")
 # The rules of the check that are aids of their own (BAXY_AYUDAS), beside «answer_check» itself.
-CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read", "denial": "check_denial"}
+CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read", "denial": "check_denial",
+                   "already_open": "check_already_open",
+                   "stale_state": "check_stale_state", "future_past": "check_future_past",
+                   "unmatched": "check_grounding", "recognized_number": "check_recognized_number",
+                   "unsourced_number": "check_unsourced", "unopened_page": "check_open_page",
+                   "denial_lookup": "check_denial", "empty_lookup": "check_empty_lookup"}
+# Aid «check_unsourced» (encargo A2; answer_check rule «unsourced_number»): an answer that tells a number of a calculation
+# that nobody gave (the exchange rate the model made up for «cuánto son 50.000 pesos en dólares») or the value it gave.
+# The model is told that and its next, a web_search for the real figure, and keeps its tools: a fixed factor of a unit
+# it may tell again as it was (the fact says it is its call). Nothing is written for it.
+RATE_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo y cuenta como cálculo una cifra "
+             "que nadie dio. {facts} Si es una tasa o un precio que cambia, el next es buscarlo con web_search y volver "
+             "a calcular con lo que diga; si es un factor fijo de una unidad, responde igual.]")
+# Aid «check_open_page» (encargo A10, U31 with the fleet's receipts; answer_check rule «unopened_page»): a page asked to
+# open gave 404, the search for it was refused and done in the person's browser, its results were read, and the model
+# answered «DuckDuckGo found the venv page instead» without opening it (diag-b5bd, 3 of 3). The note says the receipts' fact
+# and the person's own words, and what they said is the model's to read: no list of verbs (A12's negation guard did not
+# generalize: other verbs of «no la abras» fell 33/33→17/32). Measured (family u31_real, 2 seeds): «si pidió abrir… ábrela;
+# si pidió otra cosa, tu respuesta vale» opened 12/12 and kept 13/20 of the controls; the wording here, their words first and
+# «do what they said, no more no less», opened 8/8 and kept 7/8, and with 3 seeds 34/45 against the base's 20/45, with the
+# «no la abras» of other verbs 24/24. Its tools stay so it may open it.
+OPEN_PAGE_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo. La persona dijo: «{request}». "
+                  "{facts} Haz lo que la persona dijo, ni más ni menos: si dijo que la abrieras, {how}; si no lo dijo, "
+                  "responde igual.]")
+# Aid «check_stale_state» (encargo 56; answer_check rule «stale_state»): an answer that tells how something of the PC is
+# now with nothing read in the turn, while the last result of that thing says another state (uso real 03-11: «Ya está
+# instalado, listo para jugar» after a game_install_named that read «queued», with no call). The model is told what that
+# result says and to look, as rule 2 of SYSTEM says, and keeps its tools.
+STATE_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo y cuenta cómo está algo del PC "
+              "ahora sin que nada lo leyera en este turno. {facts} Míralo con su herramienta antes de responder.]")
 # Aid «check_denial» (2026-10-25): an answer of a turn with no call that says BAXY cannot do what a tool of the catalog
 # does (answer_check rule «denial»: V5E046 «No puedo eliminar carpetas de BAXY-bench», E027, V5E040, V6E015). The model
 # is told which tool does it and what its description says, and answers again once; its tools stay, so it may do what
@@ -1182,6 +1560,17 @@ CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read", "denial": "chec
 # Code) (scripts/renew/ayudas/niego_auditoria.py).
 DENIAL_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo y dice que no puedes hacer algo "
                "que una de tus herramientas hace. {facts} Responde de nuevo a la persona según lo que pidió.]")
+# Aid «check_denial» and «check_empty_lookup» (cosecha 04-11 F18, «Indícame cómo publicar en Steam» → «No tengo herramientas
+# para abrir Steam…»; F13, «¿sabes algo de X?» → memory_recall → «no tengo nada guardado»; F35, «¿conoces el juego X?» →
+# game_installed_named → «no lo veo instalado»; answer_check rules «denial_lookup», «empty_lookup»). What the person wanted
+# to know, and whether it was of the world or their own, is theirs to have said and the model's to read: the note says how far
+# the look reached and what web_search reaches, with their words, and keeps the tools. A next in those results moved little
+# or was followed where it should not be (F13 forced 3/24; F35 22/24 with its controls 18/18→14/18); this note, F13 24/24
+# and F35 19/24, with 42/42 in each one's controls (uso-105, family buscar_105).
+LOOKUP_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo. La persona dijo: «{request}». {facts} "
+               "Haz lo que la persona dijo, ni más ni menos: si preguntó algo del mundo (qué es, cómo se hace, qué pide, "
+               "cuánto cuesta), búscalo ahora con {search}; si preguntó por lo suyo o pidió un acto que ninguna de tus "
+               "herramientas hace, responde igual.]")
 # Renew al máximo (confirmaciones, 2026-10-23): a «sí» the model is not sure is one. On the real model (29 answers to a
 # pending trash of notas.txt, 3 seeds, int7) every plain yes («sí», «dale», «ya po», «okey», «go ahead», «zí») confirmed at
 # ≥ 0.998 and «sí pero el otro» at 0.77-0.79, which would have trashed the file the person had just said was not the
@@ -1251,8 +1640,8 @@ DOUBT_OTHER_ASKED = DOUBT_OTHER_NOTE[DOUBT_OTHER_NOTE.index("{call}") + len("{ca
 # installation and recoverable_delete are Irreversible there), because its confirmation names the exact action and
 # replaces the vague question (P215 «desinstala el Worms»: Laya read game_uninstall_named at 0.91 and BAXY asked what to
 # do). Not external_communication: normal mode confirms only four of its operations. Not system.power, which normal mode
-# runs unasked, and none of them in Bypass, which runs them unasked too (only message.send asks there, and it has an
-# effect of the catalog); a mode that cannot be read counts as Bypass. With _founded and the effects rule, as for the rest.
+# runs unasked, and none of them in Bypass, which runs them unasked too (nothing asks there since the owner's decision of
+# 2026-11-02); a mode that cannot be read counts as Bypass. With _founded and the effects rule, as for the rest.
 CONFIRMED_RISKS = ("work_loss", "installation", "recoverable_delete")
 CORRECTABLE_RISKS = ("read_only", "low_reversible", *CONFIRMED_RISKS)
 UNCONFIRMED_OPERATIONS = ("system.power",)
@@ -1276,8 +1665,8 @@ def _bypass() -> bool:
 # under 0.6 (layer 2), and let it correct a harmless call («corrige»). Entrega 1.1.0 (2026-10-25): scripts/run_renew.cmd
 # set them, so BAXY installed and opened from the Start menu decided without System One; now they are the mind's own.
 # A variable still sets its value for a bench's arm (empty or 0 turns that layer off), and the owner's switch
-# %LOCALAPPDATA%\BAXY\renew\system_one.off (scripts\system_one.cmd off) turns all three off; the App does not give the
-# decision model's GGUF then either (MindRuntimeDiscovery).
+# %LOCALAPPDATA%\BAXY\renew\system_one.off (scripts\system_one.cmd off) turns all three off. The App gives no decision
+# model (uso-116, MindRuntimeDiscovery): layer 2 runs only where a launcher or a bench gives BAXY_S1_GGUF.
 SYSTEM_ONE = {"BAXY_S1_DOUBT": "0.4", "BAXY_S1_VETO": "0.6", "BAXY_S1_CORRECT": "1"}
 
 
@@ -1328,6 +1717,14 @@ NOTHING_PENDING = json.dumps({"status": "failed", "error": "nothing_pending",
                               "reason": "no action is waiting for the person's confirmation, and this call did nothing; "
                                         "whether anything was done is only what the earlier results of this "
                                         "conversation say"})
+# uso-90: confirm_pending in the turn where a call was just held for the person's «sí»: the person has not been asked
+# yet, and what they said before the call was held is not their answer to it (invariant 4: the «sí» is the person's,
+# to this exact call). The model asks them; their answer comes with their next words.
+NOT_ASKED_YET = json.dumps({"status": "failed", "error": "person_not_asked_yet",
+                            "reason": "the call that waits for the person's «sí» was held in this turn and they have not "
+                                      "been asked yet; what they said before it was held is not their answer to it, and "
+                                      "this call did nothing: ask them now whether to do it; their answer comes with "
+                                      "their next words"}, ensure_ascii=False)
 # Auditoría de confirmaciones (2026-10-23): a question that ended unanswered (its time ran out, or a later line of
 # BAXY's left it behind) is not «nothing was asked» (audit 2026-10-15, App 3, lost since F005): the App says which call
 # it was with the person's next words, and their «sí» reads how it ended and that asking again is calling it again.
@@ -1416,6 +1813,92 @@ DECISION_TOKENS = 768
 RESULT_TOKENS = TURN_ROOM_TOKENS - DECISION_TOKENS
 CALCULATED_FIRST = json.dumps({"status": "not_run", "reason": "written before the calculation's value; call it again "
                                                               "with that value if it is still needed"})
+# Uso real 2026-11-02: «¿cuánto son 450 mil pesos chilenos en pesos colombianos?» was computed as 450000 * 0.0038, a rate
+# the model made up (the real one was about 4.3), and «unos 1.710» was told as fact. Aid «unsourced_number»: a
+# calculation's value says which numbers of its expression neither the session's messages nor a tool's result gave.
+UNSOURCED_NOTE = ("\n[Ayuda: {numbers} de esta expresión no {said} la persona en esta conversación ni {came} de ningún "
+                  "resultado de herramienta. Si alguno es una tasa, un precio o una cotización que cambia con los días, "
+                  "ese valor no es un cálculo hasta que se tenga la cifra real: web_search la trae (next: web_search "
+                  "con la tasa o el precio de hoy como consulta, y volver a calcular con lo que diga). Si es un factor "
+                  "fijo de una unidad, el valor vale.]")
+# Encargo A2 (HP3 «abre la calculadora y dime cuánto son 50.000 pesos en dólares»): told only which numbers nobody gave,
+# the model still told the value or asked the person for the rate (base: 2 of 5 told it, 3 asked, none searched). The
+# note now also says what such a number may be and where the one that changes is looked up (its next, as a tool receipt
+# gives one: «Tool Receipts», arXiv 2603.10060; a search to ground a figure the model cannot know: ReAct, arXiv
+# 2210.03629, Toolformer, arXiv 2302.04761). Whether this number changes is the model's to say: a fixed factor is not
+# looked up.
+# A number as a text writes it: «450.000» and «1,5» (Chile), «1,234.5» (a result), with its magnitude in words after it.
+_GIVEN_NUMBER = re.compile(r"(?<![\w.,])(\d+(?:[.,]\d+)*)(?:\s*(mil millones|millones|millon|mil|billones|billon|"
+                           r"thousand|million|billion)\b)?")
+_MAGNITUDES = {"mil": 10 ** 3, "thousand": 10 ** 3, "millon": 10 ** 6, "millones": 10 ** 6, "million": 10 ** 6,
+               "mil millones": 10 ** 9, "billion": 10 ** 9, "billon": 10 ** 12, "billones": 10 ** 12}
+
+
+def _given_values(text: str) -> set[Decimal]:
+    """Every value a number in a text can be: its separators all of thousands, or its last one a decimal point, times
+    the magnitude said after it; a percentage is its hundredth too, and 100 is then given."""
+    values: set[Decimal] = set()
+    folded = _fold(text)
+    for match in _GIVEN_NUMBER.finditer(folded):
+        digits, magnitude = match.group(1), _MAGNITUDES.get(match.group(2) or "", 1)
+        head, separator, tail = digits.replace(",", ".").rpartition(".")
+        readings = {digits.replace(".", "").replace(",", "")} | ({head.replace(".", "") + "." + tail} if separator else set())
+        for reading in readings:
+            value = Decimal(reading) * magnitude
+            values.add(value)
+            if re.match(r"\s*(?:%|por ?ciento|percent)", folded[match.end():]):
+                values.update({value / 100, Decimal(100)})
+    return values
+
+
+def _unsourced(expression: str, messages: list[dict[str, Any]]) -> list[str]:
+    """The numbers of a calculation's expression that no message of the session gave: neither the person's words and
+    the mind's notes (as digits, with their thousands, or as words) nor a tool's result (its aid notes left out). 0 and
+    1 carry no magnitude of their own and are never told."""
+    given = [str(m.get("content") or "") for m in messages if m.get("role") in ("user", "tool")]
+    text = "\n".join(line for content in given for line in content.splitlines() if not line.startswith("[Ayuda:"))
+    values, words = _given_values(text), _words(text)
+    told: list[str] = []
+    for token in re.findall(r"\d+(?:[.,]\d+)?", expression):
+        value = Decimal(token.replace(",", "."))
+        if value in (0, 1) or value in values or token in told:
+            continue
+        if value == value.to_integral_value() and value < 10 ** 12:
+            said = _fold(cardinal(int(value)))
+            forms = {said, re.sub(r"uno$", "un", said), re.sub(r"uno$", "una", said), said.replace("ientos", "ientas")}
+            if value < 1000:
+                forms.add(cardinal_en(int(value)))
+            if any(f" {form} " in words for form in forms):
+                continue
+        told.append(token)
+    return told
+
+
+def _display_value(observation: str) -> str:
+    """The value the Calculator's result shows (observed.value), or empty."""
+    try:
+        facts = json.JSONDecoder().raw_decode(str(observation or "").lstrip())[0]
+        return str((facts.get("observed") or {}).get("value") or "")
+    except (json.JSONDecodeError, AttributeError):
+        return ""
+
+
+def _unsourced_entry(expression: str, messages: list[dict[str, Any]], value: str) -> dict[str, Any]:
+    """What the check of the answer needs of a calculation with numbers nobody gave: those numbers and its value as a
+    plain number (the Calculator's display writes «55,55», evaluate's result «≈ 55.55»), or none."""
+    shown = re.search(r"\d+(?:[.,]\d+)?", value.replace(" ", "").replace(" ", ""))
+    return {"numbers": _unsourced(expression, messages), "value": shown.group().replace(",", ".") if shown else None}
+
+
+def unsourced_note(expression: str, messages: list[dict[str, Any]]) -> str:
+    """Aid «unsourced_number»: the numbers of a computed expression nobody gave, as a fact; empty when every one was."""
+    told = _unsourced(expression, messages)
+    if not told:
+        return ""
+    many = len(told) > 1
+    numbers = ", ".join(told[:-1]) + " y " + told[-1] if many else told[0]
+    return UNSOURCED_NOTE.format(numbers=numbers, said="los dijo" if many else "lo dijo",
+                                 came="salieron" if many else "salió")
 
 
 # What the model sees of an argument schema: meaning only. Validation-only keywords stay with the kernel, which
@@ -1522,6 +2005,7 @@ class Mind:
         self.tools: list[dict[str, Any]] = []
         self.system = SYSTEM  # the person's system text: with the last catalog's groups (CAN_DO_AREAS)
         self.names: list[str] = []  # the installed applications and games of the last catalog.configure
+        self.heard: list[str] = []  # the names the ear is biased towards (configure)
         self.wire_to_op: dict[str, str] = {}
         self.wires = Wires([])  # the wire name the model sees for each operation of the last catalog, and back
         self.risk: dict[str, str] = {}  # each tool's risk as the App sent it, by wire name (layer 2 «corrige»)
@@ -1531,6 +2015,7 @@ class Mind:
         self.confirms: dict[str, list[str] | None] = {}
         self._turn: dict[str, Any] | None = None
         self._beat: dict[str, Any] | None = None
+        self._opened_places = ""  # the places of what a turn opened, for the next turn (opened_places_note)
         self.conversation: list[dict[str, Any]] = []
         self.trimmed_turns = 0
         # The tools and the system prompt in tokens, as the server counted them at warm-up (0 before it).
@@ -1557,6 +2042,10 @@ class Mind:
         # Aid «answer_check»: every call of the session as (operation, completed, read_only), for the check of the final
         # answer; None when the session is not known whole (one kept before the aid).
         self._calls: list[tuple[str, bool, bool]] | None = []
+        # Aid «check_stale_state» (encargo 56): the session's last calls as the answer check reads a receipt, with only
+        # the scalar fields of their result (its state, name, bytes, next): the conversation leaves their bodies out
+        # once it is trimmed (uso real 03-11: context_shrunk, then «Ya está instalado» over a result that read «queued»).
+        self._states: list[dict[str, Any]] = []
         # Review 2026-10-22: the voice thread logs here too (voice.speak, __main__.py): one row at a time.
         self._log_lock = threading.Lock()
         # A person's turn or a heartbeat reached the model in this process: the slot holds more than the prefix, and
@@ -1565,6 +2054,12 @@ class Mind:
         # The last read ahead gave way to a request (Yielded): its ``clock``, so the loop reads it again once nothing
         # waits (review of NB-R1-X4: the App's session.export after every turn); None when it did not.
         self.gave_way: bool | None = None
+        self._prefill_rounds = 0  # of this history (PREFILL_ROUNDS)
+        # Uso 104 (F41, a greeting at 9.2 s with its decision at 1.1 s and nothing in the trace for the rest): when the
+        # request being answered reached the mind's reader, set by the loop; its turn.decide row says how long it took to
+        # start deciding (before_ms: the queue, the count of the history), and how long the App had held it (app_ms).
+        self.arrived: float | None = None
+        self.app_ms: int | None = None
         # Al máximo, palanca 2 (early.py): while a decision is made early, its trace rows are held here (the thread that
         # makes it, and its rows) and written only if it is used; the voice thread's rows are written as always.
         self._holding: tuple[int, list[dict[str, Any]]] | None = None
@@ -1632,6 +2127,9 @@ class Mind:
         # The same names, for the ear's hotwords (voice.hear_names): what the model is shown is what it may hear.
         self.names = apps + sorted({str(e.get("name")) for e in ((message.get("gameCatalog") or {}).get("entries") or [])
                                     if isinstance(e, dict) and e.get("name")})
+        # What the ear is biased towards: those, and the applications and services BAXY knows by name (aid
+        # «ear_known_names»); self.names stays the installed ones, as «unopened_app» reads them.
+        self.heard = list(dict.fromkeys(self.names + (KNOWN_APPLICATIONS if _aid_on("ear_known_names") else [])))
         tools, wire_to_op, risk, effects, confirms = [ASK_USER, CONFIRM, CALCULATE], {}, {}, {}, {}
         # PC-C72: no wire name is a proper prefix of another one (audio_volume ⊂ audio_volume_adjust made the 4B go on
         # writing the long one); the descriptions cite the names as they are shown.
@@ -1691,10 +2189,12 @@ class Mind:
             self._log("configure.aid", time.perf_counter(), None, aids=aids)
         return len(capabilities)
 
-    def warm(self) -> None:
+    def warm(self, on_progress: Callable[[int, int], None] | None = None) -> None:
         """Process the tools and the system prompt once, so every turn starts from a cached prefix. Al máximo V1
         (2026-10-22): that state is kept on disk (LlmServer.save_prefix) with the prefix's tokens, and a start whose
-        tools, system prompt, model and server are the same restores it instead (18.3 s → under 1 s)."""
+        tools, system prompt, model and server are the same restores it instead (18.3 s → under 1 s). A prefix read
+        again is waited for while the server advances through it (LlmServer.read_prefix), each advance told to
+        ``on_progress`` (the sidecar tells the App, which waits as long as it comes)."""
         started = time.perf_counter()
         self.call_tokens = self.server.tokenize("<tool_call>")
         if len(self.call_tokens) != 1:
@@ -1707,7 +2207,7 @@ class Mind:
             self.prefix_tokens = held["prefix_tokens"]
             self._log("warm.prefix", started, None, restored=True)
             return
-        reply = self.server.chat(warm, timeout=600)
+        reply = self.server.read_prefix(warm, on_progress)
         self.prefix_tokens = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
         # The file holds the slot: only the prefix (the tools and the system prompt) may be in it, never a person's
         # conversation, so it is saved only before any turn of this process reached the model.
@@ -1726,8 +2226,7 @@ class Mind:
         said = turn.setdefault("notices", [])
         ask = NOTICE_ASK.format(said=NOTICE_SAID.format(said=", ".join(f"«{s}»" for s in said)) if said else "")
         notice = {"messages": [{"role": "system", "content": self._system()}, *self._history(turn["conv"]),
-                               {"role": "tool", "tool_call_id": turn["awaiting"], "content": NOTICE_RUNNING},
-                               {"role": "user", "content": ask}],
+                               {"role": "tool", "tool_call_id": turn["awaiting"], "content": f"{NOTICE_RUNNING}\n{ask}"}],
                   "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
                   "logit_bias": [[token, False] for token in self.call_tokens],
                   "chat_template_kwargs": {"enable_thinking": False}}
@@ -1739,7 +2238,8 @@ class Mind:
             self._log("turn.notice", started, None, operation=turn.get("calling"), content=None, written="")
             return ""
         phrase = " ".join(written.strip().strip("«»\"'“”").split())
-        usable = (bool(phrase) and "\n" not in written.strip() and "<" not in phrase
+        usable = (bool(phrase) and reply["choices"][0].get("finish_reason") != "length"
+                  and "\n" not in written.strip() and "<" not in phrase
                   and len(phrase) <= NOTICE_MAX_CHARS and len(phrase.split()) <= NOTICE_MAX_WORDS
                   and _words(phrase) not in {_words(s) for s in said})
         if usable:
@@ -1820,6 +2320,11 @@ class Mind:
         offset = now.strftime("%z")
         return f"{now.strftime('%A %d/%m/%Y %H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}"
 
+    @staticmethod
+    def _today() -> _dt.date:
+        """The clock's date, the one the clock line tells the model (the rule «future_past» of the answer check)."""
+        return _dt.datetime.now().astimezone().date()
+
     # ---- turn ----------------------------------------------------------------------------------------------
     # One conversation for the whole session (native loop): every tool call the model made, every verified result that
     # came back as a tool message and every answer stay in it, turn after turn. The model reads what was really run in
@@ -1829,10 +2334,13 @@ class Mind:
     def new_session(self, history: list[dict[str, Any]] | None = None) -> None:
         """Start a fresh conversation, optionally from earlier plain exchanges (a bench case's context)."""
         self._turn = self._beat = None
+        self._opened_places = ""
         self.trimmed_turns = 0
         self._refs, self._ref_of, self._ids, self._ref_count = {}, {}, 0, 0
         self._ran, self._ran_ids, self._ran_count = [], [], 0
         self._calls = []
+        self._states = []
+        self._memory_was_off = False
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
 
@@ -1842,7 +2350,7 @@ class Mind:
         2026-10-22: the short references and the ids, or after a relaunch ref:r1 stood for another address; al máximo
         8.1: the session's calls); the App keeps the array as it is."""
         state = {"role": SESSION_STATE, "refs": self._refs, "ids": self._ids, "ran": self._ran,
-                 "ran_ids": self._ran_ids, "ran_count": self._ran_count}
+                 "ran_ids": self._ran_ids, "ran_count": self._ran_count, "states": self._states}
         if self._calls is not None:
             state["calls"] = [list(call) for call in self._calls]
         return json.loads(json.dumps([*self.conversation, state], ensure_ascii=False))
@@ -1871,6 +2379,9 @@ class Mind:
             # Kept before 8.1: how many calls its conversation shows (their results are in it), never «none».
             self._ran_count = sum(1 for m in self.conversation for c in m.get("tool_calls") or []
                                   if c.get("function", {}).get("name") != ASK_USER["function"]["name"])
+        states = state.get("states")
+        self._states = ([s for s in states if isinstance(s, dict) and isinstance(s.get("op"), str)][-SESSION_CALLS:]
+                        if isinstance(states, list) else [])
         calls = state.get("calls")
         # Kept before «answer_check» (or written otherwise): what ran in it is not known whole, and nothing is checked
         # against the session's calls.
@@ -1929,9 +2440,29 @@ class Mind:
                 missing.append({"role": "tool", "tool_call_id": call.get("id"), "content": content})
         return closed, unanswered
 
+    @staticmethod
+    def _front_window(front: dict[str, Any] | None) -> str:
+        """The window in front of the person when they spoke, as the App read it (encargo 119), or nothing."""
+        title = str((front or {}).get("title") or "").strip()
+        if not title:
+            return ""
+        if len(title) > FRONT_TITLE_CHARS:
+            title = title[:FRONT_TITLE_CHARS] + "…"
+        process = str((front or {}).get("process") or "").strip()
+        return f"«{title}»" + (f" ({process})" if process else "")
+
+    @classmethod
+    def _named_note(cls, named: list[dict[str, Any]] | None) -> str:
+        windows = [cls._front_window(window) for window in named or []]
+        windows = [window for window in windows if window]
+        return "\n" + NAMED_NOTE.format(windows=", ".join(windows)) if windows else ""
+
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None,
-               unsure: list[tuple[str, float]] | None = None) -> dict[str, Any]:
-        """``unsure``: the words of a spoken request the ear was not sure of (voice.Voice.unsure)."""
+               unsure: list[tuple[str, float]] | None = None, front: dict[str, Any] | None = None,
+               named: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+        """``unsure``: the words of a spoken request the ear was not sure of (voice.Voice.unsure). ``front``: the window
+        in front of the person when they spoke, as the App read it (title, process), or None. ``named``: the open windows
+        their words name."""
         # Kept even if the decision fails: the App says how a question ended only once.
         self._ran_unanswered(self._ended(pending))
         # Review 2026-10-22: a decision that fails (the model server down, an error) takes back what it added, so the
@@ -1946,11 +2477,18 @@ class Mind:
             # was approved with the answer to the question (the old file, after «sí pero el otro» → «¿cuál?» → «el
             # informe»), and one asked since then got nothing_pending.
             asked, after, said = turn.pop("asked"), turn.pop("after_asked", []), turn["text"]
-            was = {"pending": turn.get("pending"), "ended": turn.get("ended"), "said": turn.get("said", said)}
+            was = {"pending": turn.get("pending"), "ended": turn.get("ended"), "said": turn.get("said", said),
+                   "asked_question": turn.pop("asked_question", ""), "offer": turn.pop("offer", "")}
             # Aid «unopened_app»: the words of the whole turn, the request with the answers to its questions.
             turn["said"] = was["said"] + "\n" + text
+            if _aid_on("offer_unanswered"):
+                turn["offer"] = was["asked_question"]  # G10: a value only this question said (_offered)
+            answered = ANSWERED_NOTE if _aid_on("answer_or_new") else ""
+            if self._memory_was_off and _aid_on("memory_off_next") and "memory.enable" in self.wire_to_op.values():
+                answered += "\n" + MEMORY_ON_OFFER_NOTE.format(enable=self.wires.name("memory.enable"))
+            self._memory_was_off = False
             answer = {"role": "tool", "tool_call_id": asked,
-                      "content": text + self._pending_note(pending) + self._unsure_note(unsure or [])}
+                      "content": text + self._pending_note(pending) + answered + self._unsure_note(unsure or [])}
             turn["conv"].append(answer)
             for later in after:
                 turn["conv"].append({"role": "tool", "tool_call_id": later, "content": NOT_RUN})
@@ -1967,12 +2505,22 @@ class Mind:
         self._age_bodies()
         doubts = [note for note in (str(m.get("content") or "") for m in self.conversation[-2:])
                   if note.startswith(DOUBT_ASKED)]
+        last = self.conversation[-1] if self.conversation else {}
+        offered = (_aid_on("choice_left") and last.get("role") == "assistant" and not last.get("tool_calls")
+                   and "?" in str(last.get("content") or ""))
         clock = {"role": "user", "content": self._clock()}
         self.conversation.append(clock)
         # Noche 2026-10-27 (P0, P0.8): what only this turn knows (the call waiting for the «sí», the words the ear was
         # unsure of) is a note of its own after the clock, so the prompt still begins with the clock the wake read into
         # the slot (prefill) without it; as a note («[») it stays out of what the person said (_said, _gist, _founded).
-        if notes := (self._pending_note(pending) + self._unsure_note(unsure or [])).lstrip("\n"):
+        # Aid «choice_left»: and that they follow BAXY's own question in words (OFFERED_NOTE).
+        opened, self._opened_places = self._opened_places, ""
+        notes = (("\n" + OFFERED_NOTE if offered else "") + ("\n" + opened if opened else "")
+                 + self._pending_note(pending) + self._unsure_note(unsure or []) + self._named_note(named))
+        if offered and self._memory_was_off and _aid_on("memory_off_next") and "memory.enable" in self.wire_to_op.values():
+            notes += "\n" + MEMORY_ON_OFFER_NOTE.format(enable=self.wires.name("memory.enable"))
+        self._memory_was_off = False
+        if notes := notes.lstrip("\n"):
             self.conversation.append({"role": "user", "content": notes})
         request = {"role": "user", "content": text}
         self.conversation.append(request)
@@ -1990,7 +2538,8 @@ class Mind:
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text, "said": text,
                           "pending": self._waits(pending), "ended": self._ended(pending), "answering": bool(doubts),
                           "answering_other": any(DOUBT_OTHER_ASKED in note for note in doubts),
-                          "confirming": self._confirming(pending), "pending_op": self._pending_op(pending)}
+                          "confirming": self._confirming(pending), "pending_op": self._pending_op(pending),
+                          "front": self._front_window(front)}
             return self._next(request_id, "turn.decide", self._turn)
         except Exception:
             self._take_back(self.conversation, clock)
@@ -2089,6 +2638,7 @@ class Mind:
         when they come. The prompt does not change: a clock of another minute is read by the decision itself from where
         they differ (a call waiting for the «sí» and the ear's unsure words are a note of their own after the clock,
         Mind.decide). BAXY_RENEW_PREFILL does not turn it off (BAXY_RENEW_WAKE_WARM does)."""
+        self._prefill_rounds = self._prefill_rounds + 1 if self.gave_way is not None else 1
         turn, self.gave_way = self._turn or {}, None
         if ((not clock and os.environ.get("BAXY_RENEW_PREFILL", "").strip() == "0")
                 or (not self.conversation and not clock) or self._beat is not None
@@ -2117,6 +2667,8 @@ class Mind:
             return False
         except Exception as error:  # noqa: BLE001 - the next decision reads it itself, as it did before
             self._log("warm.history", started, None, failure=type(error).__name__, **told)
+            if isinstance(error, TimeoutError) and self._prefill_rounds < PREFILL_ROUNDS:
+                self.gave_way = clock
             return False
         self._log("warm.history", started, reply, messages=len(self.conversation), **told)
         return True
@@ -2193,6 +2745,8 @@ class Mind:
                                                 "observation": observation, "outcome": outcome,
                                                 "completed": completed, "read": read})
         self._session_call((op, completed, read))
+        self._states = [*self._states, {"op": op, "tool": wire, "observation": _scalars(observation), "outcome": outcome,
+                                        "completed": completed, "read": read}][-SESSION_CALLS:]
 
     def _session_call(self, call: tuple[str, bool, bool]) -> None:
         """One call of the session for the answer check, which only asks whether one of a kind completed or ran at all:
@@ -2230,12 +2784,12 @@ class Mind:
         if len(turns) <= 1 or self._fits(turns):
             return
         dropped = 0
-        while dropped < len(turns) - 1 and len(turns) - dropped > HISTORY_TURNS * TRIM_TURNS_TO:
+        while dropped < len(turns) - 1 and len(turns) - dropped > self._bounds()[0] * TRIM_TURNS_TO:
             dropped += 1
         starts = [t[0] for t in turns[dropped:]]
         if any([self._compact(self.conversation[start:end]) for start, end in zip(starts, starts[1:])]):
             turns = self._turn_sizes()
-        while dropped < len(turns) - 1 and not self._fits(turns[dropped:], TRIM_TO):
+        while dropped < len(turns) - 1 and not self._fits(turns[dropped:], TRIM_TO, cut=True):
             dropped += 1
         if dropped:
             self._drop(turns[dropped][0], dropped)
@@ -2367,11 +2921,23 @@ class Mind:
             self._tokens = {t: self._tokens[t] if t in self._tokens else len(self.server.tokenize(t)) for t in texts}
         return [(a, len(t), self._tokens.get(t, 0)) for a, t in zip(bounds, texts)]
 
-    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0) -> bool:
-        """Whether these turns fit `share` of every bound: turns, characters and the tokens the prefix leaves."""
+    def _bounds(self) -> tuple[int, int, int]:
+        """The history's bounds (uso-51): turns, characters and the tokens the context leaves beside the prefix and the
+        turn. The count and the characters grow with those tokens in proportion to HISTORY_TOKENS, never below
+        HISTORY_TURNS and HISTORY_CHARS; before the warm-up the prefix is not known, and they are only those."""
+        if not self.prefix_tokens:
+            return HISTORY_TURNS, HISTORY_CHARS, 0
         room = self.server.context - self.prefix_tokens - TURN_ROOM_TOKENS
-        return (len(turns) <= HISTORY_TURNS * share and sum(t[1] for t in turns) <= HISTORY_CHARS * share
-                and (not self.prefix_tokens or sum(t[2] for t in turns) <= room * share))
+        scale = max(1.0, room / HISTORY_TOKENS)
+        return int(HISTORY_TURNS * scale), int(HISTORY_CHARS * scale), room
+
+    def _fits(self, turns: list[tuple[int, int, int]], share: float = 1.0, cut: bool = False) -> bool:
+        """Whether these turns fit `share` of every bound (_bounds); what a cut keeps (`cut`), also what the server reads
+        again in time (LlmServer.reread_tokens)."""
+        count, chars, room = self._bounds()
+        tokens = sum(t[2] for t in turns)
+        return (len(turns) <= count * share and sum(t[1] for t in turns) <= chars * share
+                and (not self.prefix_tokens or (tokens <= room * share and (not cut or tokens <= self.server.reread_tokens))))
 
     def _turn_starts(self) -> list[int]:
         return [i for i, m in enumerate(self.conversation)
@@ -2462,12 +3028,21 @@ class Mind:
         if isinstance(application, str) and _fold(application) in APP_PLACES:
             turn["app_named"] = application
         note = ""
+        if (calling == "app_open" and outcome.startswith(COMPLETED_OUTCOMES) and isinstance(application, str)
+                and not named.get("place") and _aid_on("app_places_next")):
+            self._opened_places = opened_places_note(application)
         if (calling in {"input_visible_click", "input_visible_controls"} and not outcome.startswith(COMPLETED_OUTCOMES)
                 and turn.get("app_named") and not turn.get("places_told") and _aid_on("app_places_next")):
             note = places_note(turn["app_named"])
             if note:
                 turn["places_told"] = True
                 aids["app_places_next"] = note.strip()
+        if (outcome.startswith(COMPLETED_OUTCOMES) and operation_of(str(turn.get("calling"))) in KNOWS_CALLS
+                and _aid_on("app_knows")):
+            knows = knows_note(observation, json.loads(turn.get("calling_args") or "{}"), self._today(), conv)
+            if knows:
+                note += knows
+                aids["app_knows"] = knows.strip()
         if calling == "input_visible_click" and not turn.get("field_told") and _aid_on("field_focused_next"):
             field = field_note(observation, turn.get("calling_args"))
             if field:
@@ -2480,6 +3055,34 @@ class Mind:
             if written:
                 note += written
                 aids["written_not_window"] = written.strip()
+        if (calling == self.wires.name("calculator.expression.evaluate") and outcome.startswith(COMPLETED_OUTCOMES)
+                and _aid_on("unsourced_number")):
+            # Encargo 35 (R18): the Windows Calculator's value, computed with a rate the model made up, was told as the
+            # day's conversion; its expression's numbers nobody gave are said, as calculate's are.
+            expression = str(json.loads(turn.get("calling_args") or "{}").get("expression") or "")
+            unsourced = unsourced_note(expression, conv)
+            if unsourced:
+                note += unsourced
+                aids["unsourced_number"] = unsourced.strip()
+                turn.setdefault("unsourced", []).append(_unsourced_entry(expression, conv, _display_value(observation)))
+        if (calling == self.wires.name("vision.describe") and outcome.startswith(COMPLETED_OUTCOMES)
+                and _aid_on("vision_estimate")):
+            note += VISION_ESTIMATE
+            aids["vision_estimate"] = VISION_ESTIMATE.strip()
+        if (calling == self.wires.name("browser.page.read") and outcome.startswith(COMPLETED_OUTCOMES)
+                and _aid_on("read_after_navigation")):
+            after_navigation = read_after_navigation_note(observation, turn.get("receipts", [])[:-1])
+            if after_navigation:
+                note += after_navigation
+                aids["read_after_navigation"] = after_navigation.strip()
+        if (outcome.startswith("falló") and _memory_off(observation) and "memory.enable" in self.wire_to_op.values()
+                and calling != self.wires.name("memory.enable") and _aid_on("memory_off_next")):
+            off = MEMORY_OFF_NOTE.format(enable=self.wires.name("memory.enable"))
+            note += off
+            aids["memory_off_next"] = off.strip()
+            self._memory_was_off = True
+        if calling == self.wires.name("memory.enable"):
+            self._memory_was_off = False
         if outcome.startswith("falló") and _has_next(observation) and _aid_on("next_not_done"):
             note += NEXT_NOT_DONE
             aids["next_not_done"] = NEXT_NOT_DONE.strip()
@@ -2489,7 +3092,9 @@ class Mind:
         # both): a second time when it failed or stayed unsure, a third when it completed (SAME_CALL_FAILED_TOLD).
         seen = turn.setdefault("calls_seen", {})
         turn.pop("same_told_call", None)  # same_call_closes: only the model's next decision after the notice
-        key = json.dumps([calling, turn.get("calling_args"), _result_key(observation)], ensure_ascii=False)
+        # Uso-108 (B4): vision and OCR of two captures of one image are the same call (the capture's id, in its arguments).
+        called = _CAPTURE_ID.sub("capture_", str(turn.get("calling_args")))
+        key = json.dumps([calling, called, _result_key(observation)], ensure_ascii=False)
         seen[key] = seen.get(key, 0) + 1
         told_at = SAME_CALL_TOLD if outcome.startswith(COMPLETED_OUTCOMES) else SAME_CALL_FAILED_TOLD
         if seen[key] == told_at and not turn.get("same_told") and _aid_on("same_call_next"):
@@ -2661,10 +3266,38 @@ class Mind:
         # The last answer always comes: its newest result leaves out its body too (its facts stay, said as omitted).
         return bare or (final and self._compact(results[-1:]))
 
+    def _after_server_error(self, request_id: Any, stage: str, turn: dict[str, Any], code: int,
+                            started: float) -> dict[str, Any]:
+        """Uso real 2026-11-03 (F4): llama-server answered a decision with a 5xx even after its retry (LlmServer._open),
+        and the turn ended with nothing said. The model is asked once for its answer in words only (SERVER_ERROR_NOTE;
+        a call cannot be sampled then, so a reply whose call the server failed to read cannot come back); every word
+        is its own. If that fails as well, the failure reaches the App (decision_unavailable), as before."""
+        turn["server_failed"] = True
+        self._log(stage, started, None, kind="server_error", code=code, operation=None, arguments=None, content=None)
+        note = {"role": "user", "content": SERVER_ERROR_NOTE.format(code=code)}
+        conv = turn["conv"]
+        conv.append(note)
+        try:
+            return self._next(request_id, stage, turn, final=True)
+        finally:
+            # The note was for that one answer, as the check's (_check_answer).
+            for index in range(len(conv) - 1, -1, -1):
+                if conv[index] is note:
+                    del conv[index]
+                    break
+
     def _next(self, request_id: Any, stage: str, turn: dict[str, Any], final: bool = False) -> dict[str, Any]:
         started = time.perf_counter()
         self._turned = True
         conv = turn["conv"]
+        # Pedido del dueño 2026-11-02 («arregla el problema del contexto»): inside a long turn room was made only after
+        # llama-server refused the prompt (400) or cut the answer («Listo,»). The turn's last reply says how full the
+        # context is; with one more result and the answer it would not fit, so room is made before this request. The
+        # refusal and the cut answer below still catch what this estimate misses.
+        used = turn.pop("used", 0)
+        if (used and self.server.context and used + RESULT_TOKENS + DECISION_TOKENS > self.server.context
+                and self._make_room(conv, final)):
+            self._log(stage, started, None, kind="context_shrunk", operation=None, arguments=None, content=None)
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *self._history(conv)]
         body = {"messages": messages, "tools": self.tools, "max_tokens": DECISION_TOKENS, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
@@ -2695,6 +3328,8 @@ class Mind:
             streams = self.foresee is not None and not turn.get("beat") and not self._doubted(stage, turn, final)
             reply = self.server.chat(body, on_text=self.foresee) if streams else self.server.chat(body)
         except urllib.error.HTTPError as error:
+            if 500 <= error.code < 600 and not turn.get("server_failed"):
+                return self._after_server_error(request_id, stage, turn, error.code, started)
             # llama-server refuses a prompt past its context with HTTP 400. Al máximo 1.2 (2026-10-22): its earlier
             # results were cut and the model answered in words at once (15 context_shrunk in the trace, each one ended
             # its mission); now room is made a step at a time (_make_room, said where the model reads) and the turn goes
@@ -2703,6 +3338,21 @@ class Mind:
                 raise
             self._log(stage, started, None, kind="context_shrunk", operation=None, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=final)
+        # Uso real 02-11 (and 13 finals since 31-10): a prompt that fits but leaves the answer no room is not refused;
+        # the context fills while the answer is written and it ends at «length» before the max_tokens asked for
+        # (53,245 + 3 tokens: the person got «Listo,»). Room is made as for the 400 and it is written again; what the
+        # voice foresaw of the cut answer is dropped.
+        usage = reply.get("usage") or {}
+        if (reply["choices"][0].get("finish_reason") == "length"
+                and 0 <= int(usage.get("completion_tokens", DECISION_TOKENS)) < DECISION_TOKENS
+                and self._make_room(conv, final)):
+            if streams:
+                self.foresee(None, True)
+            self._log(stage, started, None, kind="context_shrunk", operation=None, arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=final)
+        # What this reply says the context holds now (the prompt it read and what it wrote): the next request of the
+        # turn weighs it before it is sent (below, at the start of _next).
+        turn["used"] = int(usage.get("prompt_tokens") or 0) + int(usage.get("completion_tokens") or 0)
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
         calls = []
@@ -2717,7 +3367,16 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
-        held, note = (calls[0], self._held(stage, turn, final, calls[0], reply, body)) if calls else (None, None)
+        if calls and not final and (offered := self._offered(turn, calls)):
+            # G10 (aid «offer_unanswered»): nothing of this reply runs; the model decides again, told why (OFFER_NOTE).
+            wire, values = offered
+            conv.append({"role": "user", "content": OFFER_NOTE.format(
+                call=wire, values=", ".join(f"«{value}»" for value in values))})
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                      kind="offer_unanswered", operation=self.wire_to_op.get(wire, wire), arguments=None,
+                      content=None)
+            return self._next(request_id, stage, turn)
+        held, note = (calls[0],self._held(stage, turn, final, calls[0], reply, body)) if calls else (None, None)
         # P2.40 (C16 M11): the calls queued behind the first run without the model deciding again, so one the kernel
         # would run unasked goes by the same rule, with its own doubt ([app_open, system_power] never asked); in Bypass,
         # so does one the App weighs with its arguments (P2.43: a click on «Enviar» or on «Siguiente»), not one that only
@@ -2951,7 +3610,10 @@ class Mind:
                        for t in self.tools if t["function"]["name"] in self.wire_to_op} if denials else None
             findings = [f for f in check_answer(content, str(turn.get("text") or ""), turn.get("receipts") or [],
                                                 self._calls, catalog=catalog, wire_of=self.wires.name,
-                                                tries=self._tries(turn["conv"]) if denials else None)
+                                                tries=self._tries(turn["conv"]) if denials else None,
+                                                earlier=self._states if _aid_on(CHECK_RULE_AIDS["stale_state"])
+                                                else None, today=self._today(),
+                                                unsourced=turn.get("unsourced"))
                         if f["rule"] not in CHECK_RULE_AIDS or _aid_on(CHECK_RULE_AIDS[f["rule"]])]
         except Exception as error:  # noqa: BLE001 - a check that fails finds nothing: the answer stands
             # Revisión de calidad: a heuristic that breaks on some answer never takes the turn with it; the trace says
@@ -2959,6 +3621,13 @@ class Mind:
             self._log("turn.check", started, None, round=2 if turn.get("checked") else 1, findings=[], kept=False,
                       error=type(error).__name__)
             return None
+        if turn.get("checked"):
+            # A2: a number nobody gave is said once. Its note leaves a fixed factor to the model («responde igual»), so
+            # the answer after it is the model's decision: told again, the controls (42 millas, 150 libras) got the note
+            # a second and a third time and searched for a «tasa» of a unit (2 of 20 on the decision bench).
+            # Encargo A10: a page that never opened is said once too; the answer after that note is the model's decision.
+            findings = [f for f in findings if f["rule"] not in ("unsourced_number", "unopened_page", "denial_lookup",
+                                                                    "empty_lookup")]
         private = bool(turn.get("private"))
         shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
         if turn.get("checked"):
@@ -2968,7 +3637,17 @@ class Mind:
             # check quotes was left out: the quote is not always the false one («Busqué su ventana.» of «Busqué su
             # ventana. Listo, cerré Paint.»), and what was left would have been the falsehood.
             third = bool(turn.get("checked_again"))
+            # uso-90 (diag-9dea c3-g10, diag-6f20 c4-g10): an answer written after the note that carries BAXY's own
+            # words (a tool's name, a result's code: rule «internal») took them from the note, and the voice said
+            # «media_play_youtube → sin confirmar (page_requires_sign_in)». It is never spoken: the last answer of the
+            # turn that carried none is, the model's own words (nothing is cut out of an answer or written for it).
+            clean = turn.get("check_clean")
+            if clean and any(f["rule"] == "internal" for f in findings):
+                self._log("turn.check", started, None, round=3 if third else 2, findings=shown, kept=False, echo=True)
+                return self._spoken_instead(request_id, stage, turn, clean, reply, started)
             self._log("turn.check", started, None, round=3 if third else 2, findings=shown, kept=bool(findings))
+            if not any(f["rule"] == "internal" for f in findings):
+                turn["check_clean"] = content
             if not findings or third:
                 return None
             turn["checked_again"] = True
@@ -2976,20 +3655,37 @@ class Mind:
             return None
         else:
             turn["checked"] = True
+            turn["check_clean"] = None if any(f["rule"] == "internal" for f in findings) else content
             self._log("turn.check", started, None, round=1, findings=shown, content=None if private else content)
         if self.foresee is not None:
             try:
                 self.foresee(None, True)  # the first sentence the voice synthesized ahead is not the one spoken
             except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
                 pass
-        denied = any(f["rule"] == "denial" for f in findings)
-        note = {"role": "user", "content": (DENIAL_NOTE if denied else CHECK_NOTE).format(facts=" ".join(
-            CHECK_FACT.format(said=f["said"], fact=f["fact"]) for f in findings[:CHECK_FACTS]))}
+        # A denial with no call behind it keeps the tools: the model may do what it had said it could not; a state
+        # nothing read keeps them so it may look, and a number nobody gave keeps them so it may look it up (A2). Not in a
+        # turn closed to calls (the App's final: a call waiting for the person's «sí», the steps or the time spent, the
+        # engine down; or the mind's own): a call after it does not run (NativeTurnLoop, loop.call_after_final), and
+        # uso-87 (diag-bc8c F13) the turn ended with no words. There the model writes again in words from what the
+        # results show.
+        opens = not turn.get("closed")
+        denied = opens and any(f["rule"] == "denial" for f in findings)
+        stale = opens and not denied and any(f["rule"] == "stale_state" for f in findings)
+        rate = opens and not denied and not stale and any(f["rule"] == "unsourced_number" for f in findings)
+        unopened = opens and not denied and not stale and not rate and any(f["rule"] == "unopened_page" for f in findings)
+        lookup = opens and not denied and not stale and not rate and not unopened and any(
+            f["rule"] in ("denial_lookup", "empty_lookup") for f in findings)
+        note = {"role": "user", "content": (DENIAL_NOTE if denied else STATE_NOTE if stale else RATE_NOTE if rate
+                                            else OPEN_PAGE_NOTE if unopened else LOOKUP_NOTE if lookup
+                                            else CHECK_NOTE).format(
+            facts=" ".join(CHECK_FACT.format(said=f["said"], fact=f["fact"]) for f in findings[:CHECK_FACTS]),
+            how=(f'{self.wires.name("web.search")} busca su dirección real' if any(f.get("unsearched") for f in findings)
+                 else f'{self.wires.name("browser.navigate")} con la dirección que traen los resultados'),
+            search=self.wires.name("web.search"), request=str(turn.get("text") or ""))}
         conv = turn["conv"]
         conv.append(note)
         try:
-            # A denial with no call behind it keeps the tools: the model may do what it had said it could not.
-            result = self._next(request_id, stage, turn, final=not denied)
+            result = self._next(request_id, stage, turn, final=not (denied or stale or rate or unopened or lookup))
         finally:
             # The note was for that one answer: the conversation keeps what was said, not the check.
             for index in range(len(conv) - 1, -1, -1):
@@ -3000,9 +3696,22 @@ class Mind:
             # Nothing written the second time: the first answer is spoken (the trace has it as contradicted).
             conv.append({"role": "assistant", "content": content})
             result["reply"] = content
-        elif denied and result.get("kind") != "conversation":
+        elif (denied or stale or rate or unopened or lookup) and result.get("kind") != "conversation":
             turn.pop("checked", None)  # it acted: its answer after the results is checked as any other
         return result
+
+    def _spoken_instead(self, request_id: Any, stage: str, turn: dict[str, Any], content: str, reply: dict | None,
+                        started: float) -> dict[str, Any]:
+        """An earlier answer of this turn, the model's own words, spoken in place of the one just written (uso-90): the
+        voice drops what it foresaw of the latter and synthesizes this one ahead, as words that came whole."""
+        if self.foresee is not None:
+            try:
+                self.foresee(None, True)
+                self.foresee(content, True)
+            except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
+                pass
+        turn["conv"].append({"role": "assistant", "content": content})
+        return self._result(request_id, turn, None, reply, stage, started, content)
 
     def _tries(self, conv: list[dict[str, Any]]) -> list[tuple[str, str]]:
         """The conversation's calls before this answer as (operation, status of their result): «completed», «failed»,
@@ -3162,6 +3871,26 @@ class Mind:
                         said.append({"role": "assistant", "content": question})
         return said
 
+    def _offered(self, turn: dict[str, Any], calls: list[dict[str, Any]]) -> tuple[str, list[str]] | None:
+        """G10 (OFFER_NOTE): the first call with an effect of the catalog (any risk but read_only) whose text or number
+        values, as whole words, the question the person just answered said and the person's words of the turn never,
+        with those values; once per answer (turn["offer"] is spent)."""
+        question = turn.get("offer")
+        if not question:
+            return None
+        asked, said = _words(question), _words(turn.get("said") or turn["text"])
+        for call in calls:
+            if self.risk.get(call["wire"]) in (None, "read_only"):
+                continue
+            values = [str(value) for value in call["arguments"].values()
+                      if isinstance(value, (str, int, float)) and not isinstance(value, bool)]
+            only = [value for value in values if _words(value).strip() and _words(value) in asked
+                    and _words(value) not in said]
+            if only:
+                turn["offer"] = ""
+                return call["wire"], only
+        return None
+
     def _kernel_confirms(self, wire: str) -> bool:
         """Whether the kernel asks the person before this tool runs, whatever its arguments: a risk it always confirms in
         normal mode (CONFIRMED_RISKS), not one of UNCONFIRMED_OPERATIONS, and the mode is not Bypass."""
@@ -3172,7 +3901,7 @@ class Mind:
         """Whether the kernel would run this tool without the person's «sí» though normal mode counts its risk as one to
         confirm: one of CONFIRMED_RISKS it does not confirm now (system.power; any in Bypass), or, in Bypass, one the
         kernel confirms in normal mode and not in Bypass, by the modes it sent (self.confirms; P2.41: of
-        external_communication, normal mode asks only for those that reach a person, and Bypass still for message.send).
+        external_communication, normal mode asks only for those that reach a person, and Bypass none since 2026-11-02).
         P2.41b: a tool the catalog sent without them keeps the rule from before, external_communication."""
         risk, confirms = self.risk.get(wire), self.confirms.get(wire)
         skipped = risk == "external_communication" if confirms is None \
@@ -3337,24 +4066,44 @@ class Mind:
             later = [c["id"] for c in turn.get("queue") or []]
             turn["queue"], turn["awaiting"] = [], None
             folded = " ".join(re.findall(r"[^\W_]+", _fold(question)))
-            if folded and _aid_on("ask_once") and (closed or any(
-                    difflib.SequenceMatcher(None, folded, asked).ratio() >= ASKED_ALIKE
-                    for asked in turn.get("questions", []))):
-                not_run = ASKED_CLOSED_NOT_RUN if closed else ASKED_AGAIN_NOT_RUN
+            alike = any(difflib.SequenceMatcher(None, folded, asked).ratio() >= ASKED_ALIKE
+                        for asked in turn.get("questions", []))
+            echo = not alike and _echoes(folded, turn["text"])
+            same = not alike and not echo and _same_twice(folded)
+            if folded and _aid_on("ask_once") and (closed or alike or echo or same):
+                closed = closed or ((echo or same) and turn.get("echoed", False))
+                not_run = (ASKED_CLOSED_NOT_RUN if closed else ASKED_AGAIN_NOT_RUN if alike
+                           else ASKED_SAME_NOT_RUN if same else ASKED_ECHO_NOT_RUN)
                 for call_id in [call["id"], *later]:
                     turn["conv"].append({"role": "tool", "tool_call_id": call_id,
                                          "content": not_run if call_id == call["id"] else NOT_RUN})
                 self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
-                          kind="ask_repeat_closed", operation=None, arguments=None, content=None)
+                          kind=("ask_same" if same else "ask_echo") if (same or echo) and not closed
+                          else "ask_repeat_closed", operation=None,
+                          arguments=None, content=None)
                 # Feria 2026-10-27: the decision after it had no tools, though the answer to the question asked for one
                 # (the topic of a presentation to make: it said it could not make it without one). It keeps them; only
-                # asking is closed in it, and asking there again ends the turn in words.
-                turn["ask_closed"] = not closed
+                # asking is closed in it, and asking there again ends the turn in words. After an echo asking stays
+                # open (a datum the person did not give); a second echo in the turn ends it in words.
+                turn["ask_closed"] = alike and not closed
+                turn["echoed"] = turn.get("echoed", False) or echo or same
                 return self._next(request_id, stage, turn, final=closed)
+            # Encargo 119: only the turn's first question, before anything ran and with nothing waiting for a yes; the
+            # model may still ask it, and then it is asked.
+            front = turn.pop("front", "") if stage == "turn.decide" else ""
+            if folded and front and not turn.get("pending") and not turn.get("answering") and _aid_on("front_not_asked"):
+                for call_id in [call["id"], *later]:
+                    content = FRONT_NOT_ASKED.format(window=front)
+                    turn["conv"].append({"role": "tool", "tool_call_id": call_id, "content": json.dumps(
+                        {"status": "not_run", "reason": content}, ensure_ascii=False) if call_id == call["id"] else NOT_RUN})
+                self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                          kind="ask_front", operation=None, arguments=None, content=None)
+                return self._next(request_id, stage, turn)
             if folded:
                 turn.setdefault("questions", []).append(folded)
             if question:
                 turn["asked"], turn["after_asked"] = call["id"], later
+                turn["asked_question"] = question
                 result.update(kind="clarify", question=question)
             else:
                 # An empty question asks nothing: it and the calls after it did not run, and what the model wrote
@@ -3372,13 +4121,17 @@ class Mind:
             # A question that ended unanswered just before these words is told once, as what it is, and the model may
             # call that tool again (the kernel asks again for that exact invocation) or answer in words.
             ended = turn.pop("ended", None)
-            told = ended_result(ended, self.wires.name) if ended else NOTHING_PENDING
+            # uso-90 (held-out c90-H4/H5): «entra con mi cuenta…», the click held for the person's «sí», and the model
+            # called confirm_pending yes itself in the same turn; told «nothing pending», it said «No hay nada pendiente
+            # para confirmar» and asked nothing. A call held in this turn waits for a question not asked yet.
+            held = not ended and any(r.get("outcome") == WAITS_FOR_YES for r in turn.get("receipts") or [])
+            told = (ended_result(ended, self.wires.name) if ended else NOT_ASKED_YET if held else NOTHING_PENDING)
             for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
                 turn["conv"].append({"role": "tool", "tool_call_id": call_id,
                                      "content": told if call_id == call["id"] else NOT_RUN})
             turn["queue"], turn["awaiting"] = [], None
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
-                      kind="confirmation_ended" if ended else "nothing_pending",
+                      kind="confirmation_ended" if ended else "not_asked_yet" if held else "nothing_pending",
                       operation=ended["operation"] if ended else None, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=not ended)
         elif call is not None and call["wire"] == CALCULATE["function"]["name"]:
@@ -3391,10 +4144,14 @@ class Mind:
                                           SAME_CALL_NOT_RUN, SAME_CALL_REFUSED)
             computed.append(_call_key(call["arguments"]))
             kind = "calculated"
+            expression = str(call["arguments"].get("expression") or "")
             try:
-                told = json.dumps({"status": "completed",
-                                   "value": evaluate(str(call["arguments"].get("expression") or ""))},
-                                  ensure_ascii=False)
+                told = json.dumps({"status": "completed", "value": evaluate(expression)}, ensure_ascii=False)
+                if _aid_on("unsourced_number"):
+                    told += unsourced_note(expression, turn["conv"])
+                    if "[Ayuda: " in told:
+                        turn.setdefault("unsourced", []).append(_unsourced_entry(
+                            expression, turn["conv"], evaluate(expression)))
             except ValueError as error:
                 told, kind = json.dumps({"status": "failed", "error": str(error)}), "calculation_failed"
             for call_id in [call["id"], *(c["id"] for c in turn.get("queue") or [])]:
@@ -3415,6 +4172,12 @@ class Mind:
             unopened = self._unopened(turn, call)
             if unopened:
                 return self._unopened_back(request_id, turn, call, reply, stage, started, unopened)
+            left_out = self._left_out(turn, name, call)
+            if left_out:
+                return self._left_out_back(request_id, turn, call, reply, stage, started, left_out)
+            cut_address = self._cut_address(turn, call)
+            if cut_address is not None:
+                return self._cut_address_back(request_id, turn, call, reply, stage, started, cut_address)
             turn["awaiting"] = call["id"]
             turn["calling"] = name
             turn["calling_args"] = json.dumps(call["arguments"], sort_keys=True, ensure_ascii=False)
@@ -3491,10 +4254,11 @@ class Mind:
         # Uso real 2026-10-26: «baja el volumen a 30» unmuted the PC, then muted it, then unmuted it… seven times, the
         # person having asked for neither: a call that only turns back a yes/no an earlier call of the same operation
         # set in this turn (it would undo what the turn did) is not made.
-        if _aid_on("same_call_closes") and any(
-                r.get("tool") == call["wire"] and r.get("completed") and not r.get("read")
-                and _flips(r.get("arguments") or {}, call["arguments"]) for r in turn.get("receipts") or []):
-            return "flip_closed", FLIP_NOT_RUN, FLIP_REFUSED
+        earlier = next((r for r in reversed(turn.get("receipts") or []) if r.get("tool") == call["wire"]
+                        and r.get("completed") and not r.get("read")
+                        and _flips(r.get("arguments") or {}, call["arguments"])), None)
+        if earlier is not None and _aid_on("same_call_closes"):
+            return "flip_closed", *flip_not_run(earlier.get("arguments") or {}, call["arguments"])
         return None
 
     def _close_repeat(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
@@ -3549,6 +4313,139 @@ class Mind:
                           and (r.get("tool") in OPENS_WINDOW or not r.get("read")))
         return [] if any(_words(name) in reached for name in named) else named
 
+    # Encargo A11 (R18 en la flota, diag-6f20): the calls whose «url» _cut_address weighs, by operation and by wire
+    # name (a mind with no catalog yet knows only the wire).
+    ADDRESS_OPS = ("web.fetch", "browser.navigate", "browser.navigate.named",
+                   "web_fetch", "browser_navigate_set", "browser_navigate_named")
+
+    def _cut_address(self, turn: dict[str, Any], call: dict[str, Any]) -> dict[str, Any] | None:
+        """A web.fetch whose address ends in «…» or «...» is an address cut where it was copied, not one that exists
+        (A7: every web.fetch of «el último Mundial» answered web_fetch_status_404 with «https://…/argentina-vs-espana-la-...»).
+        Encargo A11 (R18, diag-6f20): an address with «›» is the form a results page writes under a result's
+        title («host › section › section»: the breadcrumb of Google's and DuckDuckGo's pages), copied from the page
+        read; it is no address (with its spaces it is not even a URI: RFC 3986) and the fetch failed or waited for
+        the person's «sí» on a host nobody gave. The same holds for an address opened in the browser. «…» anywhere
+        in it is a cut too.
+        Only its form is compared: with the address expanded (a short reference put back), the call is held back
+        before it goes out, and the model is told which address of this turn's results begins the same way (the first
+        one, in the order the results came), else what the form is. None: it goes."""
+        if self.wire_to_op.get(call["wire"], call["wire"]) not in self.ADDRESS_OPS:
+            return None
+        given = self._expand(call["arguments"].get("url"))
+        if not isinstance(given, str):
+            return None
+        given = given.strip()
+        shown = "›" in given
+        if shown:
+            stem = re.sub(r"\s*›\s*", "/", given).split("…", 1)[0]
+        elif "…" in given:
+            stem = given.split("…", 1)[0]
+        elif given.endswith("..."):
+            stem = given.removesuffix("...")
+        else:
+            return None
+        stem = stem.rstrip("./ ")
+
+        def bare(url: str) -> str:
+            return re.sub(r"^(https?://)?(www\.)?", "", url.strip(), flags=re.IGNORECASE)
+
+        whole: str | None = None
+        for receipt in turn.get("receipts") or []:
+            try:
+                found = json.loads(receipt.get("observation") or "")
+            except (json.JSONDecodeError, TypeError):
+                continue
+            urls: list[str] = []
+
+            def collect(node: Any) -> None:
+                if isinstance(node, dict):
+                    for key, value in node.items():
+                        if key == "url" and isinstance(value, str):
+                            urls.append(value)
+                        else:
+                            collect(value)
+                elif isinstance(node, list):
+                    for value in node:
+                        collect(value)
+
+            collect(found)
+            whole = next((u for u in urls if bare(stem) and bare(u).startswith(bare(stem)) and bare(u) != bare(stem)),
+                         None)
+            if whole:
+                break
+        return {"url": given, "whole": whole, "shown": shown}
+
+    def _cut_address_back(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
+                          stage: str, started: float, cut: dict[str, Any]) -> dict[str, Any]:
+        """The held-back call of _cut_address goes back to the model as a failure before any request, with the
+        whole address as its next when a result of the turn gives it; calls queued behind it do not run."""
+        observed: dict[str, Any] = {"url": cut["url"]}
+        fetch = call["wire"] == "web_fetch"
+        if cut["whole"]:
+            observed["next"] = (f'{call["wire"]} {json.dumps({"url": cut["whole"]}, ensure_ascii=False)} '
+                                f'{"reads" if fetch else "opens"} the page: that is the whole address of the result '
+                                "this one begins like")
+        elif cut["shown"]:
+            observed["next"] = ("an address written with «›» is how a results page shows where a result is (its "
+                                "site › its sections), not an address: the result is opened from the page by its "
+                                "title, or a whole address is copied from a result's url")
+        else:
+            observed["next"] = ("an address ending in «…» or «...» was cut where it was copied; copy a whole address "
+                                "from a result of web_search, or search again for the page")
+        error = ("url_display_form" if cut["shown"] else "web_fetch_url_truncated" if fetch else "url_truncated")
+        told = json.dumps({"status": "failed", "error": error, "observed": observed},
+                          ensure_ascii=False, separators=(",", ":"))
+        done = turn.setdefault("done", [])
+        done.append(f"{call['wire']} → no se ejecutó: "
+                    + ("la dirección era la que muestra una página de resultados con «›»" if cut["shown"]
+                       else "la dirección estaba cortada con «…»"))
+        line = _said_once(done) if _aid_on("facts_once") else done
+        for later in [call, *(turn.get("queue") or [])]:
+            turn["conv"].append({"role": "tool", "tool_call_id": later["id"],
+                                 "content": told + TURN_FACTS + "; ".join(line) + "]" if later is call else NOT_RUN_AFTER})
+            turn.setdefault("receipts", []).append({
+                "op": self.wire_to_op.get(later["wire"], later["wire"]), "tool": later["wire"],
+                "arguments": later["arguments"], "observation": told if later is call else NOT_RUN_AFTER,
+                "outcome": GIST_NOT_RUN, "completed": False,
+                "read": self.risk.get(later["wire"]) == "read_only"})
+        turn["queue"], turn["awaiting"] = [], None
+        private = bool(turn.get("private"))
+        self._log(stage, started, reply, text=None if private else turn["text"], kind="cut_address",
+                  operation=self.wire_to_op.get(call["wire"], call["wire"]),
+                  arguments=None if private else call["arguments"], content=None)
+        return self._next(request_id, "turn.continue", turn)
+
+    @staticmethod
+    def _left_out(turn: dict[str, Any], name: str, call: dict[str, Any]) -> list[str]:
+        """Aid «query_left_name»: the names the person said that this web_search leaves out; said once in a turn."""
+        if name != "web.search" or turn.get("beat") or turn.get("left_told") or not _aid_on("query_left_name"):
+            return []
+        return _names_left_out(str(turn.get("text") or ""), call["arguments"])
+
+    def _left_out_back(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
+                       stage: str, started: float, names: list[str]) -> dict[str, Any]:
+        """A search held by «query_left_name» goes back to the model with the names and the call; nothing queued behind
+        it runs: it decides again, with its tools."""
+        turn["left_told"] = True
+        done = turn.setdefault("done", [])
+        done.append(f"{call['wire']} → {LEFT_NAME_REFUSED}")
+        line = _said_once(done) if _aid_on("facts_once") else done
+        result = left_name_not_run(call["wire"], names)
+        for later in [call, *(turn.get("queue") or [])]:
+            told = result + TURN_FACTS + "; ".join(line) + "]" if later is call else NOT_RUN_AFTER
+            turn["conv"].append({"role": "tool", "tool_call_id": later["id"], "content": told})
+            turn.setdefault("receipts", []).append({
+                "op": self.wire_to_op.get(later["wire"], later["wire"]), "tool": later["wire"],
+                "arguments": later["arguments"], "observation": result if later is call else NOT_RUN_AFTER,
+                "outcome": GIST_NOT_RUN, "completed": False,
+                "read": self.risk.get(later["wire"]) == "read_only"})
+        turn["queue"], turn["awaiting"] = [], None
+        private = bool(turn.get("private"))
+        self._log(stage, started, reply, text=None if private else turn["text"], kind="query_left_name",
+                  operation=self.wire_to_op.get(call["wire"], call["wire"]),
+                  arguments=None if private else call["arguments"], content=None)
+        return self._next(request_id, "turn.continue", turn)
+
     def _unopened_back(self, request_id: Any, turn: dict[str, Any], call: dict[str, Any], reply: dict | None,
                        stage: str, started: float, applications: list[str]) -> dict[str, Any]:
         """A typing or a key held by «unopened_app» goes back to the model with why, and the calls queued behind it
@@ -3600,6 +4497,9 @@ class Mind:
                "ms": round((time.perf_counter() - started) * 1000),
                "cache_n": timings.get("cache_n"), "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
+        if stage == "turn.decide" and self.arrived is not None:
+            row["before_ms"], self.arrived = round((started - self.arrived) * 1000), None
+            row["app_ms"], self.app_ms = self.app_ms, None
         if timings:
             # Noche P0.5: prompt_n is only what was read again. With the whole prompt (usage) and the prefix (tools,
             # system and the warm-up's few words), each prompt splits into prefix, history and what is new (within those

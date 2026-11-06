@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Baxy.Kernel.Operations;
@@ -24,10 +26,12 @@ namespace Baxy.App;
 /// file, refused as a version conflict, and the model asked the person itself): a file.write without hash and without
 /// append over a file of theirs that is there, when their words say to overwrite it, goes under the file's own hash,
 /// which asks the person's «sí» first on that first call. Aid «overwrite_guard».</item>
-/// <item>Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): a calculator.expression.evaluate of a bare number,
-/// when their words name one operation on what it shows, goes as that operator and the number (continuing from the
-/// number shown). Words of several operations change nothing. Final7 e2e («a la calcu súmale 17 a lo que tiene»: «17+17»,
-/// the Calculator cleared what it showed): the number said, that operator and the number again goes the same way. Aid
+/// <item>Holdout v5 V5E021 («a lo que tiene la calculadora súmale 53»): a calculator.expression.evaluate of a bare number
+/// they said, when their words name one operation on what it shows, goes as that operator and the number (continuing from
+/// the number shown). Words of several operations change nothing, and an expression the model wrote whole runs as it is:
+/// uso real 04-11 (a sum of one number with itself pressed as that operator and the number: half its value, and the
+/// person blamed for it) took out the rule that read «N op N» as an echo of one number (final7 e2e): the words cannot
+/// tell it from the sum asked for, and its result says what it cleared (clearedDisplay). Aid
 /// «calculator_next».</item>
 /// <item>Final7 e2e («copia X a Y»: the move ran without copy and the file left where it was): a call of an operation that
 /// takes copy (the catalog's moves), without it, when their words say to copy and nothing of moving, goes with copy,
@@ -44,14 +48,13 @@ internal sealed class SaidVerbs
     // Text past this is no file an append is weighed for: it goes as written.
     private const long MaximumComparedBytes = 1_048_576;
 
+    // The punctuation that ends a clause (answer_check's _clause_start: , ; : and the sentence's own end).
+    private static readonly Regex ClauseMarks = new(@"[,;:.?!¿¡\r\n]+", RegexOptions.CultureInvariant);
+
     private static readonly Regex BareNumber = new(@"^\d+(?:[.,]\d+)?$", RegexOptions.CultureInvariant);
 
-    // A number, an operator and the same number (final7 e2e «a la calcu súmale 17 a lo que tiene»: «17+17»).
-    private static readonly Regex Echo = new(@"^(?<number>\d+(?:[.,]\d+)?)\s*(?<sign>[-+*/])\s*\k<number>$",
-        RegexOptions.CultureInvariant);
-
     private static readonly Lazy<(string[] Append, string[] KeepWhole, string[] Overwrite, string[] Copy, string[] Move,
-        (string Operator, string[] Words)[] Operators)> Verbs =
+        (string Operator, string[] Words)[] Operators, string[] Negations, string[] ClauseBreaks)> Verbs =
         new(() =>
         {
             using Stream stream = typeof(SaidVerbs).Assembly.GetManifestResourceStream("Baxy.App.SaidVerbs.json")
@@ -64,23 +67,36 @@ internal sealed class SaidVerbs
             return (Words(data["append"]), Words(data["keepWhole"]), Words(data["overwrite"]), Words(data["copy"]),
                 Words(data["move"]),
                 [.. (data["operators"] as JsonObject ?? throw new InvalidDataException("The said operators are missing."))
-                    .Select(entry => (entry.Key, Words(entry.Value)))]);
+                    .Select(entry => (entry.Key, Words(entry.Value)))],
+                Words(data["negations"]), Words(data["clauseBreaks"]));
         });
 
     private string _spoken = string.Empty;
 
+    // The same words cut into clauses (Clauses): a name is asked for in a clause no negation turns off before it.
+    private string[] _clauses = [];
+
     /// <summary>The person's words open a turn.</summary>
-    internal void Heard(string words) => _spoken = SaidFolders.Spoken(words ?? string.Empty);
+    internal void Heard(string words)
+    {
+        _spoken = SaidFolders.Spoken(words ?? string.Empty);
+        _clauses = Clauses(words ?? string.Empty);
+    }
 
     /// <summary>The person's words answer the call that waits for their «sí»: the turn's words still hold, with these.</summary>
     internal void Answered(string words)
     {
         string spoken = SaidFolders.Spoken(words ?? string.Empty);
         _spoken = _spoken.Length == 0 ? spoken : _spoken + "\n" + spoken;
+        _clauses = [.. _clauses, .. Clauses(words ?? string.Empty)];
     }
 
     /// <summary>A heartbeat or a new session: no words of the person's hold.</summary>
-    internal void Clear() => _spoken = string.Empty;
+    internal void Clear()
+    {
+        _spoken = string.Empty;
+        _clauses = [];
+    }
 
     /// <summary>
     /// The call as the person's verb picks it, and what its result says; null: it runs as it is.
@@ -186,22 +202,93 @@ internal sealed class SaidVerbs
         }
     }
 
+    // What calculator.expression.evaluate takes: at most 12 digits before the point and 6 after (the catalog's description).
+    private const decimal CalculatorLimit = 1_000_000_000_000m;
+    private const int CalculatorDecimals = 6;
+
+    /// <summary>
+    /// Encargo 61 (banco de uso R18, 6 of 6): «usa la calculadora para pasar…» went to the currency search, whose result
+    /// has the figure, and the model said it and never opened the Calculator. Their words name the application the
+    /// operation presses its keypad in: the result keeps its figure and says the call with the expression. Encargo 61b: the
+    /// application is the provider's (OperationApplications) and its names are the names data's (ApplicationAliases: its
+    /// name and abbreviations, «Calculadora», «calculator», «calc»…), compared as whole words, never a list of this aid's
+    /// own; a name after a negation in its clause («no uses la calculadora») is not asked for, and is left to the model.
+    /// </summary>
+    internal string WithCalculatorNamed(string operation, string observation)
+    {
+        const string Evaluate = "calculator.expression.evaluate";
+        if (operation != "web.search" || !ModelAids.On(ModelAids.CalculatorNext)
+            || OperationApplications.Of(Evaluate) is not { } application || !Asks(application))
+            return observation;
+        try
+        {
+            if (JsonNode.Parse(observation) is not JsonObject facts || facts["observed"] is not JsonObject observed
+                || observed["next"] is not null || Text(observed["source"]) != "currency"
+                || observed["results"] is not JsonArray { Count: 1 } results || results[0] is not JsonObject row
+                || row["amount"] is not JsonValue given || row["rate"] is not JsonValue read
+                || !given.TryGetValue(out decimal amount) || !read.TryGetValue(out decimal rate))
+                return observation;
+            decimal shown = decimal.Round(rate, CalculatorDecimals);
+            if (shown <= 0 || amount <= 0 || amount >= CalculatorLimit
+                || decimal.Round(amount, CalculatorDecimals) != amount || shown >= CalculatorLimit)
+                return observation;
+            string expression = string.Create(CultureInfo.InvariantCulture, $"{amount:0.######}*{shown:0.######}");
+            observed["next"] = $"the person asked to compute this in the {application}, and it is not done until it is "
+                + $"there: call {WireNames.Call(Evaluate, new() { ["expression"] = expression })}";
+            return facts.ToJsonString(SaidFolders.AsWritten);
+        }
+        catch (JsonException)
+        {
+            return observation;
+        }
+    }
+
+    // Whether a clause of theirs names the application (any of its forms in the names data, or its own name folded, as
+    // a whole word) with no negation before it in that clause, as answer_check reads «no / nunca / sin» in an answer.
+    private bool Asks(string application)
+    {
+        IReadOnlyList<string> forms = ApplicationAliases.FormsOf(application) is { Count: > 0 } known
+            ? known
+            : [SaidFolders.Spoken(application).Trim()];
+        return _clauses.Any(clause => forms.Any(form =>
+        {
+            string name = " " + form + " ";
+            for (int at = clause.IndexOf(name, StringComparison.Ordinal); at >= 0;
+                 at = clause.IndexOf(name, at + 1, StringComparison.Ordinal))
+            {
+                string before = clause[..(at + 1)];
+                if (!Verbs.Value.Negations.Any(negation => before.Contains(negation, StringComparison.Ordinal)))
+                    return true;
+            }
+
+            return false;
+        }));
+    }
+
+    // The person's words cut into clauses, each as SaidFolders.Spoken writes words (« a b c »): at a punctuation mark
+    // that ends one (, ; : . ? ! and line ends, as answer_check's _clause_start) and at the words that join two
+    // (clauseBreaks: «pero», «y», «porque»…).
+    private static string[] Clauses(string words) =>
+        [.. ClauseMarks.Split(words)
+            .SelectMany(part => Verbs.Value.ClauseBreaks
+                .Aggregate(SaidFolders.Spoken(part), (spoken, joint) => spoken.Replace(joint, " \n ", StringComparison.Ordinal))
+                .Split('\n'))
+            .Select(clause => clause.Trim())
+            .Where(clause => clause.Length > 0)
+            .Select(clause => " " + clause + " ")];
+
     private (JsonObject, string)? Operate(JsonObject arguments)
     {
         if (!ModelAids.On(ModelAids.CalculatorNext) || Text(arguments["expression"]) is not { } written)
             return null;
         string[] said = [.. Verbs.Value.Operators.Where(entry => Says(entry.Words)).Select(entry => entry.Operator)];
-        if (said is not [string sign])
-            return null;
-        Match echo = Echo.Match(written);
-        string number = echo.Success ? echo.Groups["number"].Value : written;
-        if (echo.Success ? echo.Groups["sign"].Value != sign || !Says([SaidFolders.Spoken(number)])
-                : !BareNumber.IsMatch(written))
+        // A number they did not say is the model's own (its answer to the sum they asked for): no operand of theirs.
+        if (said is not [string sign] || !BareNumber.IsMatch(written) || !Says([SaidFolders.Spoken(written)]))
             return null;
         var operated = (JsonObject)arguments.DeepClone();
-        operated["expression"] = sign + number;
-        return (operated, $"the person said to operate on what the Calculator showed: this call pressed {sign}{number}, "
-            + $"from the number it showed, instead of {(echo.Success ? written : number + " alone")}, as it was written");
+        operated["expression"] = sign + written;
+        return (operated, $"the person said to operate on what the Calculator showed: this call pressed {sign}{written}, "
+            + $"from the number it showed, instead of {written} alone, as your call wrote it");
     }
 
     private bool Says(string[] words) => words.Any(word => _spoken.Contains(word, StringComparison.Ordinal));

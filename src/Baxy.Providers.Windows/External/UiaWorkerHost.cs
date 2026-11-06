@@ -92,7 +92,7 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
                 cancellationToken, budget.Token);
             try
             {
-                await process.StandardInput.WriteLineAsync(commandJson.AsMemory(), linked.Token)
+                await process.StandardInput.WriteLineAsync(WithBudget(commandJson, timeout).AsMemory(), linked.Token)
                     .ConfigureAwait(false);
                 await process.StandardInput.FlushAsync(linked.Token).ConfigureAwait(false);
                 string? line = await process.StandardOutput.ReadLineAsync(linked.Token)
@@ -128,6 +128,13 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
         }
     }
 
+    // Review of uso-108: the worker is told how long its answer is waited for, so a wait of its own (a busy window, Get-Root)
+    // ends before this host ends the worker.
+    internal static string WithBudget(string commandJson, TimeSpan timeout) =>
+        commandJson.StartsWith("{\"", StringComparison.Ordinal)
+            ? "{\"withinMs\":" + ((long)timeout.TotalMilliseconds).ToString(System.Globalization.CultureInfo.InvariantCulture) + "," + commandJson[1..]
+            : commandJson;
+
     public async ValueTask PrewarmAsync(CancellationToken cancellationToken)
     {
         if (_disposed)
@@ -158,7 +165,7 @@ internal sealed class UiaWorkerHost : IUiaWorker, IDisposable
         Terminate();
         if (!File.Exists(_script))
             return null;
-        var start = new ProcessStartInfo("powershell.exe")
+        var start = new ProcessStartInfo(SystemExecutable.PowerShell)
         {
             UseShellExecute = false,
             RedirectStandardInput = true,

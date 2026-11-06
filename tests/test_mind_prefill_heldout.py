@@ -119,7 +119,7 @@ def test_any_later_read_forgets_that_one_gave_way(tmp_path: Path, monkeypatch: p
     assert mind.gave_way is None
 
 
-@pytest.mark.parametrize("error", [urllib.error.URLError("refused"), TimeoutError("spent")])
+@pytest.mark.parametrize("error", [urllib.error.URLError("refused")])
 def test_a_read_that_fails_another_way_is_not_kept(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
                                                    error: Exception) -> None:
     mind, server = _mind_after_a_turn(tmp_path, monkeypatch)
@@ -128,6 +128,17 @@ def test_a_read_that_fails_another_way_is_not_kept(tmp_path: Path, monkeypatch: 
     assert mind.gave_way is None
     row = _warm_rows(tmp_path)[-1]
     assert row["failure"] == type(error).__name__ and not row.get("yielded")
+
+
+def test_a_read_past_its_budget_is_kept_and_says_it_failed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # uso-124: what the slot read stays there, so another round goes on from it (mind.PREFILL_ROUNDS); until uso-124 it
+    # was dropped like any failure, and on an RX 7600 the next decision read it and ended with nothing said.
+    mind, server = _mind_after_a_turn(tmp_path, monkeypatch)
+    server.errors.append(TimeoutError("spent"))
+    assert mind.prefill() is False
+    assert mind.gave_way is False
+    row = _warm_rows(tmp_path)[-1]
+    assert row["failure"] == "TimeoutError" and not row.get("yielded")
 
 
 # ---- the sidecar's loop ------------------------------------------------------------------------------------------
@@ -167,7 +178,7 @@ def _sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, outcomes: list[str
         def __init__(self, *args) -> None:
             self.gave_way: bool | None = None
 
-        def decide(self, request_id, text, pending, unsure=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
             return {"type": "turn.result", "id": request_id}
 
         def new_session(self) -> None:
@@ -194,6 +205,7 @@ def _sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, outcomes: list[str
             return False
 
     class FakeSpeech:
+        failure = ""  # a voice that can speak (the hello offers voice.speak)
         def foresee(self, text, done):
             return True
 

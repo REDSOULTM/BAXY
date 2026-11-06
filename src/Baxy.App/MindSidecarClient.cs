@@ -16,12 +16,17 @@ namespace Baxy.App;
 /// reply's <c>startup</c> object. Only stable causes cross; the server's own
 /// startup lines stay in the mind's report (paths scrubbed there).
 /// </summary>
-internal sealed record MindStartupFailure(string Cause, long? ExitCode)
+internal sealed record MindStartupFailure(string Cause, long? ExitCode, long? NeedMb = null, long? FreeMb = null)
 {
     internal static readonly IReadOnlySet<string> Causes = new HashSet<string>(StringComparer.Ordinal)
     {
         "vram_insuficiente",
         "ram_insuficiente",
+        // Uso 95: the server's log says it could not reserve a buffer without saying on which memory.
+        "memoria_insuficiente",
+        // Uso 112: the server's log says it could not open the model's file, or that what it read is no model.
+        "modelo_ausente",
+        "modelo_danado",
         "proceso_salio",
         "tiempo",
     };
@@ -43,11 +48,12 @@ internal sealed record MindStartupFailure(string Cause, long? ExitCode)
             return null;
         }
 
-        long? exitCode = startup["exitCode"] is JsonValue exitValue && exitValue.TryGetValue(out long code)
-            ? code
-            : null;
-        return new MindStartupFailure(cause, exitCode);
+        // uso-116: a lack of memory says how much (the buffer that did not fit, the PC's RAM free), when the mind knows.
+        return new MindStartupFailure(cause, Number(startup["exitCode"]), Number(startup["needMb"]), Number(startup["freeMb"]));
     }
+
+    private static long? Number(JsonNode? node) =>
+        node is JsonValue value && value.TryGetValue(out long number) ? number : null;
 }
 
 /// <summary>
@@ -88,7 +94,18 @@ internal sealed record MindVoiceStatus(
     bool SttAvailable,
     bool Pending,
     bool? WakeAvailable = null,
-    bool? SpeechAvailable = null);
+    bool? SpeechAvailable = null,
+    MindVoiceMemory? WaitingMemory = null)
+{
+    /// <summary>Whether the microphone can be offered. Uso 112: the input being there is not enough while the ear waits
+    /// for memory: seen live, the view offered it and never said why it did not work. uso-116: nor with no recogniser
+    /// once the voice settled: a microphone with nothing to hear it with, which the view called «no hay micrófono».</summary>
+    internal bool MicUsable => (Available || InputAvailable) && WaitingMemory is null && (Pending || SttAvailable);
+}
+
+/// <summary>Uso 95: the ear waits for memory to load (voice.py, NotEnoughMemory): what it needs and found left to commit,
+/// in MB. It tries again on its own and says voice_ready once it loaded.</summary>
+internal sealed record MindVoiceMemory(int NeedMb, int LeftMb);
 
 /// <summary>
 /// Reads the voice state again while the sidecar still reports it as
@@ -142,14 +159,24 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     internal const string TraceDirectoryEnvironmentVariable = "BAXY_RENEW_TRACE_DIR";
     internal const string StandardErrorLogName = "mind-stderr.log";
     // One model decision (prefix cached) takes about a second; the budget covers a cold cache after a restart.
-    internal static readonly TimeSpan TurnRequestTimeout = TimeSpan.FromSeconds(30);
+    // A model behind an API takes longer (ExternalModel); read at each request, since that starts after this class loads.
+    internal const string TurnSecondsVariable = "BAXY_MIND_TURN_SECONDS";
+    internal static TimeSpan TurnRequestTimeout => TimeSpan.FromSeconds(
+        double.TryParse(Environment.GetEnvironmentVariable(TurnSecondsVariable), out double seconds) ? seconds : 30);
     // The mind waits up to 60 s for its ear to load before it answers a voice.start (voice.py Voice.start). With the
     // same 60 s here, a start it made at the end of that wait came after the App gave up, and the App stopped the
     // microphone the start had just opened (2026-10-25, c11b-on1): the App waits longer than the mind.
     internal static readonly TimeSpan VoiceStartTimeout = TimeSpan.FromSeconds(75);
+    // Uso 84 (AMD RX 7600, 2026-11-04): a cold start read its prompt prefix in 167.5 s. A start is waited for while
+    // the mind says its model advances (each «progress» line gives the request its whole window again); this is the
+    // safety ceiling of a whole start: the model's load (600 s, __main__.py) and the prefix's read (PREFIX_CEILING_S,
+    // 1,800 s in llm_server.py), with a margin.
+    internal static readonly TimeSpan StartupCeiling = TimeSpan.FromMinutes(45);
     private const int MaximumLineBytes = 1024 * 1024;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonObject>> _pending = new();
+    // Each pending request's deadline and its window, which a «progress» line of the same id starts again.
+    private readonly ConcurrentDictionary<string, (CancellationTokenSource Deadline, TimeSpan Window)> _windows = new();
     private readonly SemaphoreSlim _writeLock = new(1, 1);
     // Model work is serial in Python. Its execution deadline starts only after
     // the previous request completes, not while waiting behind that request.
@@ -178,7 +205,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>The mind runs the native loop (turn.decide, turn.continue, turn.confirm).</summary>
     public bool IsTurnAvailable => IsReady && _turnAvailable;
 
-    /// <summary>Whether the mind speaks (its hello offers voice.speak): no speech request is sent otherwise.</summary>
+    /// <summary>Whether the mind speaks (its hello offers voice.speak, and no voice.speak.result said it no longer
+    /// speaks): no speech request is sent otherwise.</summary>
     public bool IsVoiceAvailable => IsReady && _voiceAvailable;
 
     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
@@ -207,12 +235,16 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// Ronda 22 (r18: «listo» 9-15 s before <c>startup.mind.ready</c>): the process and its model start while the
     /// core still says hello; <c>catalog.configure</c> goes once <paramref name="catalog"/> carries the core's
     /// authenticated catalog. A catalog that never comes (the core failed, cancelled) ends the start without a mind.
+    /// The hello and the core's catalog come within <paramref name="handshakeTimeout"/>; the mind's answer to its
+    /// catalog (its model loaded and its prompt prefix read) within that window again from each progress it tells
+    /// (uso 84), all of it within <paramref name="ceiling"/> (<see cref="StartupCeiling"/> by default).
     /// Never throws to the caller: returns false and stays disabled on any failure.
     /// </summary>
     internal async Task<bool> TryStartAsync(
         Task<MindStartupCatalog> catalog,
         TimeSpan handshakeTimeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        TimeSpan? ceiling = null)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(catalog);
@@ -227,10 +259,14 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return false;
         }
 
-        using var startupTimeout = new CancellationTokenSource(handshakeTimeout);
+        using var startupCeiling = new CancellationTokenSource(ceiling ?? StartupCeiling);
         using var startupCancellation = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
-            startupTimeout.Token);
+            startupCeiling.Token);
+        using var handshake = new CancellationTokenSource(handshakeTimeout);
+        using var handshakeCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            startupCancellation.Token,
+            handshake.Token);
         try
         {
             var environment = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -265,7 +301,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             _ = ReportEndAsync(_pump, sidecar.Process, _pumpCancellation.Token);
 
             JsonObject hello = await helloCompletion.Task
-                .WaitAsync(startupCancellation.Token)
+                .WaitAsync(handshakeCancellation.Token)
                 .ConfigureAwait(false);
             if (Str(hello["protocol"]) != "baxy.mind.v1")
             {
@@ -280,7 +316,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 && requests?.Any(static request => (string?)request == "turn.confirm") == true;
             _voiceAvailable = requests?.Any(static request => (string?)request == "voice.speak") == true;
             MindStartupCatalog inputs = await catalog
-                .WaitAsync(startupCancellation.Token)
+                .WaitAsync(handshakeCancellation.Token)
                 .ConfigureAwait(false);
             if (!await ConfigureCatalogAsync(
                     inputs.Capabilities,
@@ -460,15 +496,46 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     public Task<MindStep?> DecideAsync(
         string text,
         JsonObject? pendingConfirmation,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        TimeSpan waited = default,
+        JsonObject? front = null,
+        JsonArray? named = null) =>
+        TurnRequestAsync(DecideRequest(text, pendingConfirmation, waited, front, named), cancellationToken);
+
+    /// <summary>
+    /// Uso 104 (F41, a greeting at 9.2 s with 8 s nothing traced): <paramref name="waited"/> is how long the person's
+    /// words had been in the App when it asked the mind; the mind's trace keeps it beside its own wait (app_ms, before_ms).
+    /// Encargo 119: <paramref name="front"/> is the window in front of the person when the words arrived (title, process),
+    /// and <paramref name="named"/> the open windows their words name.
+    /// </summary>
+    internal static JsonObject DecideRequest(
+        string text, JsonObject? pendingConfirmation, TimeSpan waited, JsonObject? front = null, JsonArray? named = null)
     {
-        var request = new JsonObject { ["type"] = "turn.decide", ["text"] = text };
+        // Steam (2026-11-04): the interface's language, so the mind's voice knows it before the reply comes; the mind
+        // keeps it out of the model's prompt.
+        var request = new JsonObject
+        {
+            ["type"] = "turn.decide",
+            ["text"] = text,
+            ["lang"] = UiLanguage.Current,
+            ["waitedMs"] = (long)waited.TotalMilliseconds,
+        };
         if (pendingConfirmation is not null)
         {
             request["pendingConfirmation"] = pendingConfirmation;
         }
 
-        return TurnRequestAsync(request, cancellationToken);
+        if (front is not null)
+        {
+            request["front"] = front;
+        }
+
+        if (named is { Count: > 0 })
+        {
+            request["named"] = named;
+        }
+
+        return request;
     }
 
     /// <summary>
@@ -513,7 +580,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
 
         JsonObject? reply = await RequestAsync(
-            new JsonObject { ["type"] = "turn.notice" },
+            new JsonObject { ["type"] = "turn.notice", ["lang"] = UiLanguage.Current },
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
         return reply is not null && Str(reply["type"]) == "turn.notice.result"
@@ -639,10 +706,13 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
     }
 
+    /// <param name="echoCancel">The owner's «Quitar lo que suena en el PC» (<see cref="FieldSettings.EchoCancel"/>):
+    /// whether the mind takes what the PC plays out of the microphone.</param>
     public async Task<bool> VoiceStartAsync(
         string mode,
         TimeSpan timeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool echoCancel = true)
     {
         if (mode is not ("direct" or "wake"))
         {
@@ -656,7 +726,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         try
         {
             reply = await RequestAsync(
-                new JsonObject { ["type"] = "voice.start", ["mode"] = mode },
+                new JsonObject { ["type"] = "voice.start", ["mode"] = mode, ["echoCancel"] = echoCancel },
                 timeout,
                 cancellationToken,
                 returnProtocolError: true).ConfigureAwait(false);
@@ -707,7 +777,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             Flag(status["stt"]) ?? false,
             Flag(status["pending"]) ?? false,
             Flag(status["wake"]),
-            Flag(status["tts"]));
+            Flag(status["tts"]),
+            status["memory"] is JsonObject memory
+                && memory["needMb"] is JsonValue need && need.TryGetValue(out int needMb)
+                && memory["leftMb"] is JsonValue left && left.TryGetValue(out int leftMb)
+                ? new MindVoiceMemory(needMb, leftMb)
+                : null);
     }
 
     public async Task<bool> VoiceSpeakAsync(
@@ -721,7 +796,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return false;
         }
 
-        var request = new JsonObject { ["type"] = "voice.speak", ["text"] = text };
+        // Steam (2026-11-04): the voice speaks the interface's language (UiLanguage); a mind that does not read «lang»
+        // speaks Spanish, as before.
+        var request = new JsonObject { ["type"] = "voice.speak", ["text"] = text, ["lang"] = UiLanguage.Current };
         if (notice)
         {
             // The voice tells the silence notice (SilenceNotice) by this mark, not by its words.
@@ -732,6 +809,13 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             request,
             timeout,
             cancellationToken).ConfigureAwait(false);
+        if (reply is not null && Str(reply["type"]) == "voice.speak.result" && Flag(reply["speaks"]) == false)
+        {
+            // uso-82: the voice failed after the hello (its files were there, its load was not); nothing is asked of it
+            // or waited for from now on, as with a mind whose hello did not offer it.
+            _voiceAvailable = false;
+        }
+
         return reply is not null
             && Str(reply["type"]) == "voice.speak.result"
             && Flag(reply["accepted"]) == true;
@@ -830,6 +914,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             }
 
             timeoutSource = new CancellationTokenSource(timeout);
+            _windows[requestId] = (timeoutSource, timeout);
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(
                 cancellationToken, timeoutSource.Token);
             JsonObject reply = await completion.Task.WaitAsync(linked.Token).ConfigureAwait(false);
@@ -860,6 +945,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         finally
         {
             _pending.TryRemove(requestId, out _);
+            _windows.TryRemove(requestId, out _);
             timeoutSource?.Dispose();
         }
     }
@@ -961,6 +1047,23 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                         continue;
                     case "voice.event":
                         VoiceEventReceived?.Invoke(message);
+                        continue;
+                    case "progress":
+                        // Uso 84: the mind's model advanced through its prompt prefix (the warm-up of a
+                        // catalog.configure, llm_server.py read_prefix): that request has its whole window again.
+                        if (Str(message["id"]) is { Length: > 0 } advancing
+                            && _windows.TryGetValue(advancing, out var window))
+                        {
+                            try
+                            {
+                                window.Deadline.CancelAfter(window.Window);
+                            }
+                            catch (ObjectDisposedException)
+                            {
+                                // The request ended meanwhile.
+                            }
+                        }
+
                         continue;
                 }
 

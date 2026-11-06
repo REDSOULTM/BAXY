@@ -83,6 +83,68 @@ def test_the_detector_hears_a_soft_call_raised_and_a_loud_one_as_it_is() -> None
     assert np.array_equal(raised, loud * (_voice.WAKE_TARGET / 0.9)) and np.abs(raised).max() <= _voice.WAKE_TARGET + 1e-6
 
 
+_FAKE_RUNTIME = '''
+class _Options:
+    def __init__(self):
+        self.entries = {}
+
+    def add_session_config_entry(self, key, value):
+        self.entries[key] = value
+
+
+class _Ort:
+    SessionOptions = _Options
+    version = "fake"
+
+
+ort = _Ort()
+
+
+class BaxyWakeDetector:
+    shift = 128
+
+    def __init__(self, encoder, head, threshold, debounce_s, threads):
+        self.threads = threads
+        self.options = ort.SessionOptions()
+        self.version = ort.version
+
+    def reset(self):
+        pass
+
+    def accept(self, audio):
+        return []
+'''
+
+
+def _fake_package(folder):
+    folder.mkdir()
+    (folder / "config.json").write_text('{"encoder": {"file": "e.onnx"}, "head": {"file": "h.onnx"}, '
+                                        '"threshold": 0.5, "debounce_s": 2.0}', encoding="utf-8")
+    (folder / "baxy_wake_runtime.py").write_text(_FAKE_RUNTIME, encoding="utf-8")
+    return folder
+
+
+def test_the_wake_encoder_runs_on_two_threads_that_sleep_when_idle(tmp_path, monkeypatch) -> None:
+    from baxy_mind import voice as _voice
+    monkeypatch.delenv("BAXY_RENEW_WAKE_THREADS", raising=False)
+    wake = _voice.load_wake(_fake_package(tmp_path / "wake"))
+    assert len(wake._copies) == _voice.WAKE_COPIES
+    first = wake._copies[0]
+    assert first.threads == 2
+    # an idle ONNX Runtime thread spins by default: two spinning threads tripled the CPU of a copy (0.108 -> 0.334 of a
+    # core) for the same chunk time
+    assert first.options.entries == {"session.intra_op.allow_spinning": "0"}
+    assert first.version == "fake"  # the rest of the package's onnxruntime is the same
+
+
+def test_one_wake_thread_comes_back_with_the_variable(tmp_path, monkeypatch) -> None:
+    from baxy_mind import voice as _voice
+    monkeypatch.setenv("BAXY_RENEW_WAKE_THREADS", "1")
+    assert _voice.load_wake(_fake_package(tmp_path / "wake"))._copies[0].threads == 1
+    monkeypatch.setenv("BAXY_RENEW_WAKE_THREADS", "dos")
+    assert _voice.load_wake(_fake_package(tmp_path / "wake2"))._copies[0].threads == _voice.WAKE_THREADS
+
+
 class _CountingWake:
     """Counts its resets; after the second one, «Baxy» is heard 0.5 s into what it hears."""
 
@@ -136,3 +198,91 @@ def test_while_someone_speaks_the_wake_detector_is_not_reset() -> None:
     for _ in range(int(_voice.WAKE_RESET_S * 10) + 20):
         listening._feed(block)
     assert listening._detector.resets == 1  # only the start's
+
+
+def test_a_package_that_names_its_copies_and_threads_gets_them(tmp_path) -> None:
+    # uso-79: k6r decides every 40 ms from what it already heard; it was measured as one copy on one thread
+    import json
+    from baxy_mind import voice as _voice
+    folder = _fake_package(tmp_path / "k6r")
+    config = json.loads((folder / "config.json").read_text(encoding="utf-8"))
+    (folder / "config.json").write_text(json.dumps({**config, "copies": 1, "threads": 1}), encoding="utf-8")
+    wake = _voice.load_wake(folder)
+    assert len(wake._copies) == 1 and wake._copies[0].threads == 1
+
+
+def test_the_fast_package_is_loaded_only_when_it_is_set(tmp_path, monkeypatch, capsys) -> None:
+    from baxy_mind import voice as _voice
+    monkeypatch.delenv("BAXY_RENEW_WAKE_FAST_DIR", raising=False)
+    assert _voice.load_fast_wake() is None  # a machine without the package: k5 alone, as before
+    assert capsys.readouterr().err == ""
+    monkeypatch.setenv("BAXY_RENEW_WAKE_FAST_DIR", str(_fake_package(tmp_path / "k6r")))
+    assert isinstance(_voice.load_fast_wake(), StaggeredWake)
+    # uso-93: on by default, so the mind's stderr log says it is heard (an installed BAXY has no other trace of it)
+    assert "k6r heard beside the wake word" in capsys.readouterr().err
+
+
+def test_none_turns_the_fast_package_off_without_a_failure(tmp_path, monkeypatch, capsys) -> None:
+    # uso-93: the App gives the registered package by default; a bench (or whoever wants it off) says none
+    from baxy_mind import voice as _voice
+    for off in ("none", "NONE", " none "):
+        monkeypatch.setenv("BAXY_RENEW_WAKE_FAST_DIR", off)
+        assert _voice.load_fast_wake() is None
+    assert capsys.readouterr().err == ""
+
+
+def test_a_fast_package_that_does_not_load_leaves_k5_alone(tmp_path, monkeypatch, capsys) -> None:
+    from baxy_mind import voice as _voice
+    monkeypatch.setenv("BAXY_RENEW_WAKE_FAST_DIR", str(tmp_path / "missing"))
+    assert _voice.load_fast_wake() is None
+    assert "k5 is heard alone" in capsys.readouterr().err
+
+
+def _either(k5_at: float, fast_at: float):
+    from baxy_mind import voice as _voice
+    k5 = StaggeredWake(lambda: FakeDetector(at=k5_at), 1, rearm_s=2.0)
+    fast = StaggeredWake(lambda: FakeDetector(at=fast_at), 1, rearm_s=2.0)
+    return _voice.EitherWake(k5, fast), k5
+
+
+def _heard(wake, seconds: float) -> list[float]:
+    heard = []
+    for _ in range(int(seconds * 10)):
+        heard += [round(h.time_s, 2) for h in wake.accept(np.zeros(1600, np.float32))]
+    return heard
+
+
+def test_either_tells_the_first_firing_and_the_other_one_of_the_same_word_never() -> None:
+    # k6r fires at the word's end (3.0 s); k5 tells the same word a chunk later, with its frame's time (2.9 s)
+    wake, _ = _either(k5_at=2.9, fast_at=3.0)
+    wake._main._copies[0].samples = -int(1.2 * RATE)  # k5's firing reaches it 1.2 s later than its frame time
+    assert _heard(wake, 6) == [3.0]
+
+
+def test_either_still_hears_what_only_k5_hears_and_a_later_word() -> None:
+    wake, _ = _either(k5_at=1.0, fast_at=99.0)  # the fast package never fires: k5 alone, as before
+    assert _heard(wake, 3) == [1.0]
+    wake, _ = _either(k5_at=1.0, fast_at=3.5)    # another word past the re-arm is told again
+    assert _heard(wake, 5) == [1.0, 3.5]
+
+
+def test_either_resets_both_and_scores_are_k5s() -> None:
+    wake, k5 = _either(k5_at=1.0, fast_at=1.0)
+    assert _heard(wake, 2) == [1.0]
+    wake.reset()
+    assert _heard(wake, 2) == [1.0]  # both heard from zero again, the re-arm with them
+    k5._copies[0].trace = [(0.5, 0.2)]
+    assert wake.scores() == [(0.5, 0.2)]
+
+
+def test_a_package_names_how_long_f44_holds_its_firings_and_k5_keeps_the_second(tmp_path) -> None:
+    import json
+    from baxy_mind import voice as _voice, voice_echo
+    assert _voice.load_wake(_fake_package(tmp_path / "k5")).played_hold_s == voice_echo.PLAYED_HOLD_S
+    folder = _fake_package(tmp_path / "k6r")
+    config = json.loads((folder / "config.json").read_text(encoding="utf-8"))
+    (folder / "config.json").write_text(json.dumps({**config, "played_hold_s": 0.2}), encoding="utf-8")
+    fast = _voice.load_wake(folder)
+    assert fast.played_hold_s == 0.2
+    # beside k5 the check is k5's (EitherWake.twin), so its second stands
+    assert _voice.EitherWake(_voice.load_wake(_fake_package(tmp_path / "k5b")), fast).played_hold_s == voice_echo.PLAYED_HOLD_S

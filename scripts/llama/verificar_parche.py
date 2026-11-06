@@ -40,7 +40,7 @@ TURNS = [
     "¿cuánto es 37 por 12?",
     "sube un poco el volumen",
     "un diez por ciento",
-    "busca en internet el clima de mañana en Ñuñoa",
+    "busca en internet el clima de mañana en Viña del Mar",
     "cierra la calculadora",
     "hola, ¿cómo estás?",
     "abre el bloc de notas y escribe hola mundo",
@@ -150,11 +150,18 @@ def capture(args: argparse.Namespace) -> int:
     records: list[dict] = []
     server = LlmServer(args.gguf, str(Path(args.server_dir) / "llama-server.exe"), gpu_layers=args.ngl, context=53248,
                        extra_args=_device_args(args.ngl), log_name="verificar-parche.log")
-    chat, post, tokenize = server.chat, server._post, server.tokenize
+    chat, post, tokenize, read_prefix = server.chat, server._post, server.tokenize, server.read_prefix
+    # On the CPU the warm-up alone reads ~44k tokens for over an hour (LlmServer.read_prefix, a batch every few minutes).
+    server.PREFIX_STALL_S, server.PREFIX_CEILING_S = 600.0, 36000.0
 
     def rec_chat(body, **kw):
-        kw["timeout"] = 36000.0  # on the CPU the warm-up alone reads ~44k tokens for over an hour
+        kw["timeout"] = 36000.0
         reply = chat(body, **kw)
+        records.append({"kind": "chat", "body": json.loads(json.dumps(body))})
+        return reply
+
+    def rec_read_prefix(body, on_progress=None):  # the warm-up's chat, replayed as one
+        reply = read_prefix(body, on_progress)
         records.append({"kind": "chat", "body": json.loads(json.dumps(body))})
         return reply
 
@@ -168,6 +175,7 @@ def capture(args: argparse.Namespace) -> int:
         return tokenize(text)
 
     server.chat, server._post, server.tokenize = rec_chat, rec_post, rec_tokenize  # type: ignore[method-assign]
+    server.read_prefix = rec_read_prefix  # type: ignore[method-assign]
     server.start()
     try:
         mind = Mind(server, Path(os.environ["LOCALAPPDATA"]) / "trace.jsonl")
@@ -302,13 +310,13 @@ def main() -> int:
         if name == "replay":
             p.add_argument("--mmproj", default="")
         else:
-            p.add_argument("--catalog", default=r"F:\BAXYeval\renew_v4\catalog-final.json")
+            p.add_argument("--catalog", required=True, help="the mind's catalog JSON")
         if name == "capture":
             p.add_argument("--only", default="", help="only these operations of the catalog (comma-separated)")
-        p.add_argument("--gguf", default=os.environ.get("BAXY_MIND_LLM_GGUF")
-                       or r"F:\BAXYeval\models\BAXY-Qwen3.5-4B-ft-c2e1-Q4_K_M.gguf")
+        gguf = os.environ.get("BAXY_MIND_LLM_GGUF")
+        p.add_argument("--gguf", default=gguf, required=not gguf)
         p.add_argument("--ngl", default="0")
-        p.add_argument("--work", default=r"D:\BAXYWork")
+        p.add_argument("--work", required=True, help="a scratch folder for the server's files")
     p = sub.add_parser("compare")
     p.add_argument("a")
     p.add_argument("b")

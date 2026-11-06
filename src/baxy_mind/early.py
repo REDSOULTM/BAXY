@@ -219,7 +219,11 @@ class Anticipation:
         reason = ("text" if str(message.get("text") or "") != held["text"]
                   else "pending" if not _same(message.get("pendingConfirmation"), None)
                   else "clock" if self.mind._clock_time() != held["clock"]
-                  else "unsure" if unsure else None)
+                  else "unsure" if unsure
+                  # Encargo 119: a question made with no window known is decided again with the one the App told.
+                  else "front" if held["result"].get("kind") == "clarify" and message.get("front")
+                  # And one made without the note of the windows the words name (NAMED_NOTE).
+                  else "named" if message.get("named") else None)
         if reason is not None:
             self._back(held, reason, reread=False)
             return None
@@ -243,17 +247,18 @@ class Anticipation:
         return {**held["result"], "id": message.get("id")}
 
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None,
-               unsure: list[tuple[str, float]] | None = None) -> dict[str, Any]:
+               unsure: list[tuple[str, float]] | None = None, front: dict[str, Any] | None = None,
+               named: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """The App's turn.decide when no early decision was used: as always; after one that was put back, its row says
         why (``early``), so the A/B reads the misses beside the hits."""
         missed, discarded = self._missed, self._discarded
         self._missed, self._discarded = None, 0
         if missed is None:
-            return self.mind.decide(request_id, text, pending, unsure)
+            return self.mind.decide(request_id, text, pending, unsure, front, named)
         rows: list[dict[str, Any]] = []
         self.mind._holding = (threading.get_ident(), rows)
         try:
-            return self.mind.decide(request_id, text, pending, unsure)
+            return self.mind.decide(request_id, text, pending, unsure, front, named)
         finally:
             self.mind._holding = None
             if rows:

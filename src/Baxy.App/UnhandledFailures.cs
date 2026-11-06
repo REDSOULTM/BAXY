@@ -40,6 +40,17 @@ internal static class UnhandledFailures
         eventArgs.Handled = true;
     }
 
+    // A label the trace keeps. 2026-11-05: a long exception type or a compiler's method name («<Main>b__0») passed the
+    // trace's limits, and the line said only «invalid».
+    internal static string TraceDetail(string source, string? type, string site)
+    {
+        string label = string.Concat($"{source}.{type ?? "unknown"}.{site}".ToLowerInvariant()
+            .Select(static character => character is (>= 'a' and <= 'z') or (>= '0' and <= '9') or '.' or '_' or '-'
+                ? character
+                : '_'));
+        return label.Length <= ShellTrace.MaximumLabelLength ? label : label[..ShellTrace.MaximumLabelLength];
+    }
+
     /// <summary>Records one exception nothing caught; <paramref name="directory"/>: where (tests), else the profile's.</summary>
     internal static void Record(string source, Exception? exception, string? directory = null)
     {
@@ -48,8 +59,7 @@ internal static class UnhandledFailures
             : exception;
         string type = inner?.GetType().FullName ?? "unknown";
         string site = inner?.TargetSite?.Name ?? "unknown";
-        ShellTraceSink.Record(ShellTraceScopes.Startup, "process", Stage,
-            $"{source}.{inner?.GetType().Name ?? "unknown"}.{site}".ToLowerInvariant());
+        ShellTraceSink.Record(ShellTraceScopes.Startup, "process", Stage, TraceDetail(source, inner?.GetType().Name, site));
         try
         {
             string folder = directory ?? Path.Combine(MemoryOperationProtector.ResolveDataRoot(), "diagnostics");

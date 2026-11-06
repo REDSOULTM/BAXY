@@ -5,8 +5,8 @@ using NUnit.Framework;
 namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
-/// Encargo X1 (tandas n1/n2 en el notebook, fable/estab-fase3 9b7d8d757, t1-c09 «mandale a Ron92 por discord que hoy no
-/// llego a jugar, que arranquen sin mi»). n2: el cliente ya mostraba el MD de Ron92 (lo dejó n1 t4-c03), el título lo
+/// Encargo X1 (tandas n1/n2 en el notebook, fable/estab-fase3 9b7d8d757, t1-c09 «mandale a Nube77 por discord que hoy no
+/// llego a jugar, que arranquen sin mi»). n2: el cliente ya mostraba el MD de Nube77 (lo dejó n1 t4-c03), el título lo
 /// nombró y message.recipient.resolve volvió en 0,2 s; message.send se verificó. n1: el cliente estaba en otra vista,
 /// la búsqueda tardó 8 s y volvió «recipient_identity_not_verified» con efecto: tras teclear el nombre se pulsaba la
 /// primera fila a los 1,2 s fijos, cuando el cliente aún no había filtrado (G1 midió el texto tecleado 0,6–2,6 s tarde
@@ -16,7 +16,7 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class X1EnvioBusquedaTests
 {
-    private static readonly ClientFocus RecipientRow = new("ListItem", "Ron92 .wolfsoultm.4191", false, "42.9.8", InDialog: true);
+    private static readonly ClientFocus RecipientRow = new("ListItem", "Nube77 .nubecita.0001", false, "42.9.8", InDialog: true);
     private static readonly ClientFocus RecentRow = new("ListItem", "general, Canal de texto, Servidor", false, "42.9.5", InDialog: true);
     private static readonly ClientFocus SearchInput = new("Edit", "Quick switcher", true, "42.9.3", InDialog: true);
     private static readonly TimeSpan Poll = TimeSpan.FromMilliseconds(5);
@@ -30,7 +30,7 @@ public sealed class X1EnvioBusquedaTests
 
     private static ClientInteraction Focused(ClientFocus focus) => new(true, false, focus);
 
-    private static bool NamesRon92(string name) => WindowsDesktopMessagingAutomation.RowNamesRecipient(name, "Ron92");
+    private static bool NamesNube77(string name) => WindowsDesktopMessagingAutomation.RowNamesRecipient(name, "Nube77");
 
     // n1: the active result is still the row from before the filter; it names the recipient later, and only then
     // does the wait end (the old fixed 1.2 s clicked the other chat).
@@ -40,7 +40,7 @@ public sealed class X1EnvioBusquedaTests
         var clock = Stopwatch.StartNew();
         (bool named, string? row) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
             Script(Focused(RecentRow), Focused(RecentRow), Focused(RecentRow), Focused(RecipientRow)),
-            NamesRon92, Poll, CancellationToken.None);
+            NamesNube77, Poll, CancellationToken.None);
         Assert.Multiple(() =>
         {
             Assert.That(named, Is.True);
@@ -55,7 +55,7 @@ public sealed class X1EnvioBusquedaTests
     {
         var clock = Stopwatch.StartNew();
         (bool named, _) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
-            Script(Focused(RecipientRow)), NamesRon92, Poll, CancellationToken.None);
+            Script(Focused(RecipientRow)), NamesNube77, Poll, CancellationToken.None);
         Assert.Multiple(() =>
         {
             Assert.That(named, Is.True);
@@ -69,7 +69,7 @@ public sealed class X1EnvioBusquedaTests
     {
         var clock = Stopwatch.StartNew();
         (bool named, string? row) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
-            Script(Focused(RecentRow)), NamesRon92, Poll, CancellationToken.None);
+            Script(Focused(RecentRow)), NamesNube77, Poll, CancellationToken.None);
         Assert.Multiple(() =>
         {
             Assert.That(named, Is.False);
@@ -88,7 +88,7 @@ public sealed class X1EnvioBusquedaTests
         {
             var clock = Stopwatch.StartNew();
             (bool named, string? row) = await WindowsDesktopMessagingAutomation.AwaitNamedResultAsync(
-                Script(read), NamesRon92, Poll, CancellationToken.None);
+                Script(read), NamesNube77, Poll, CancellationToken.None);
             Assert.Multiple(() =>
             {
                 Assert.That(named, Is.False);
@@ -117,13 +117,15 @@ public sealed class X1EnvioBusquedaTests
         string source = File.ReadAllText(Path.Combine(
             root!.FullName, "src", "Baxy.Providers.Windows", "External", "DesktopMessagingAdapter.cs"));
         int typed = source.IndexOf("(bool named, string? row) = await AwaitNamedResultAsync(", StringComparison.Ordinal);
-        int clicked = source.IndexOf("ClickAtRelative(handle, 0.5, DiscordSwitcherFirstRowHeightFraction);", StringComparison.Ordinal);
+        int clicked = source.IndexOf("ClickAtScreen(rowBox.CentreX, rowBox.CentreY);", StringComparison.Ordinal);
         Assert.Multiple(() =>
         {
             Assert.That(typed, Is.GreaterThan(0));
             Assert.That(clicked, Is.GreaterThan(typed));
-            Assert.That(source, Does.Contain("Read, name => RowNamesRecipient(name, recipient), InteractionPoll"));
-            Assert.That(source[typed..clicked], Does.Contain("if (named)"));
+            // G6: the row is matched by the lookup's target (ChatTarget.RowNames, RowNamesRecipient for a message).
+            Assert.That(source, Does.Contain("Read, target.RowNames, InteractionPoll"));
+            Assert.That(source, Does.Contain("WindowsDesktopMessagingAutomation.RowNamesRecipient(row, Name)"));
+            Assert.That(source[typed..clicked], Does.Contain("target.RowNames(active.Name)"));
             Assert.That(source, Does.Not.Contain("await Task.Delay(1200, cancellationToken)"));
             Assert.That(source[typed..clicked], Does.Not.Contain("VirtualKeyReturn"));
         });

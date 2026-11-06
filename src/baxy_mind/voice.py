@@ -5,16 +5,22 @@ Only the connection: what the person says after «Baxy» reaches the App as voic
 message. The segmentation is WakewordBaxy/probar_baxy.py's, measured there with the owner's voice, with Silero VAD
 telling voice from steady noise (Vad); the recognizer is TranscripcionBaxy's winner with its configuration. While BAXY
 speaks the microphone is not heard, as in Definitivo, so its own voice («Hola, soy BAXY») never wakes it or enters a
-request.
+request. What the PC plays (a song, a video) is taken out of each block before anything hears it (voice_echo.py).
 
-Paths (per PC): BAXY_RENEW_WAKE_DIR (the baxy-wake-k4 package), BAXY_RENEW_STT_DIR (parakeet-ultra-sherpa-int8-oli),
+Paths (per PC): BAXY_RENEW_WAKE_DIR (the baxy-wake-k4 package), BAXY_RENEW_WAKE_FAST_DIR (uso-79, on by default
+since uso-93: k6r-alto, a low-latency package heard beside it, the first to fire telling «Baxy»; the App sets it, as the
+wake's, from the registration's renew_wake_fast_dir; ``none`` turns it off), BAXY_RENEW_STT_DIR (parakeet-ultra-sherpa-int8-oli),
 BAXY_RENEW_MIC (an input device index; otherwise Windows' default microphone of the moment, through the MME
 sound mapper, as the voice's output). Benches: BAXY_RENEW_VOICE_FEED hears WAV files
-in its place, in real time (voice_feed.py, scripts/voice/hablar.py).
+in its place, in real time (voice_feed.py, scripts/voice/hablar.py). Development: BAXY_WAKE_LOG_DIR keeps each «Baxy»
+heard there (WakeLog); without it nothing is written.
 """
 from __future__ import annotations
 
 import copy
+import datetime
+import difflib
+import hashlib
 import importlib.util
 import json
 import math
@@ -24,17 +30,16 @@ import re
 import sys
 import tempfile
 import threading
+import time
 import unicodedata
+import wave
 from pathlib import Path
 from typing import Any, Callable, NamedTuple
 
-from . import stt_hotwords, voice_feed
-from .voice_output import Speech, default_follower
+import numpy as np
 
-for _var in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
-    os.environ.setdefault(_var, "1")
-
-import numpy as np  # noqa: E402
+from . import stt_hotwords, voice_echo, voice_feed, voice_turn
+from .voice_output import EAR_COMMIT_MB, NotEnoughMemory, Speech, default_follower, native_load
 
 RATE = 16000
 BLOCK = 1600            # 100 ms
@@ -51,6 +56,24 @@ END_SILENCE_S = 0.9     # silence that closes the request
 # period after any fragment, and on 57 synthetic requests with a 0.7 s pause inside, 35-47 % were cut there against
 # ~10 % at 0.9 s, for 0.1-0.3 s less wait.
 END_SLOW_S = 2.0
+# Fin de turno (uso-74, scripts/voice/medir_fin_de_turno.py): with the turn model (voice_turn.py, Smart Turn v3.2),
+# TURN_AT_S into a silence it hears the request so far, as Pipecat runs it after its VAD's 0.2 s stop. A turn it hears
+# complete (TURN_P, Pipecat's threshold) closes after END_DONE_S; one it is sure is unfinished (under TURN_OPEN_P) after
+# END_SLOW_S (Pipecat and LiveKit wait up to 3 s); in between, after END_UNSURE_S. It reads how the voice ends; words
+# left hanging (above) still wait END_SLOW_S, the longer of the two. Measured on 440 synthetic requests (5 OneCore
+# voices, pauses of 0.6/1.0/1.5 s inside) and 58 of the owner's requests: END_DONE_S 0.7 cut 30 % of the 0.6 s pauses,
+# 0.8 cuts 7 % as the rule's 4-5 %. Two waits alone (0.8 / 2.0) cut fewer but kept 12 % of the owner's finished
+# requests 2 s: the model heard short greetings and one-word orders unfinished, five of those seven between 0.1 and 0.5.
+# The model alone cut 25.5 % of the pauses after hanging words (the rule, 9.2 %): hence the longer of the two (cut in
+# a pause 27.5 → 21.4 % in a quiet room against the rule, 7.8 % after hanging words; the owner's p50 0.9 → 0.8 s). An
+# unsure wait of 1.5 s cut no fewer than 1.2 s and waited longer. Asking it again later in the silence was left out:
+# silence alone makes it say complete, mid-sentence too. Under steady noise (pink, 10 dB) it hears almost every pause
+# complete: where the floor of the request is loud (loud_floor) the rule without it decides.
+TURN_AT_S = 0.2
+TURN_P = 0.5
+TURN_OPEN_P = 0.1
+END_DONE_S = 0.8
+END_UNSURE_S = 1.2
 HANGING_WORDS = frozenset(
     "el la los las un una unos unas lo al del a de en con por para sin sobre entre hasta desde hacia segun y e o u ni "
     "pero sino que porque si cuando como aunque donde mientras mi mis tu tus su sus nuestro me te se le les eh em mm "
@@ -83,6 +106,10 @@ MIN_VOICE_S = 0.1       # no block of voice after the call: noise or a false wak
 # Not used to drop a transcript: a one-syllable piece cut from a phrase is as sure as a short reply (under 0.3, 11 % of
 # 476 pieces against 3 % of 226 replies heard right), so dropping by it loses replies without stopping the pieces.
 UNSURE_P = 0.5
+# F44: words of a request that are what the PC played over the same time (Heard.without_played). Three in a row is a
+# phrase; two («abre la») a person can share with a video by chance.
+PLAYED_RUN = 3
+PLAYED_SAME_WORD = 0.7
 # Ultra decodes on the thread that hears the blocks (0.4 s for 4 s of audio, 1.4-1.6 s for 14 s on the notebook,
 # 2026-10-26), and a live caption decoded the whole request again every PARTIAL_S: the thread fell behind the microphone,
 # so the end of the request and the next «Baxy» were heard seconds late. A caption waits while more than this many
@@ -97,6 +124,12 @@ KEEP_S = 30.0
 STALL_S = 3.0
 PARTIAL_S = 0.8         # while a request is heard, what was said so far is decoded again this often (live captions)
 WAKE_COPIES = 4         # staggered copies (StaggeredWake): 0.28 s p50 after the word, 0.46 s at most (1 copy: 1.18, 1.36)
+# The copies run one after another on the thread that hears the blocks, so a chunk's encoder run is part of the wait.
+# Two threads per run (uso-68, 2026-11-03): a chunk 142 → 80 ms p50 (216 → 95 p90) on the notebook with the same CPU,
+# 131-179 → 107-136 ms on the PC (+~25 % CPU); the same firings on the owner's real calls and the hard negatives
+# (documentacion/APLAZADOS.md, uso-68). More copies were not taken: each adds a chunk's run to that one thread (6 copies:
+# 69 % of a core on a quiet PC), and with a loaded PC's chunk it fell seconds behind.
+WAKE_THREADS = 2
 # The detector heard the microphone as it came, while Ultra hears it with probar_ultra's gain: in a room, a few metres
 # from the notebook, «Baxi» peaked at 0.07 (real use, 2026-10-26) against ~0.96 in the owner's recordings the detector
 # was trained on, and it never reached 0.1. What it hears is raised the same way (WAKE_TARGET over the peak of the last
@@ -138,6 +171,46 @@ def without_call(text: str) -> str:
     return CALL_WORDS.sub("", text).strip()
 
 
+def _folded(word: str) -> str:
+    return "".join(c for c in unicodedata.normalize("NFKD", word.casefold()) if c.isalnum())
+
+
+def _same_word(ours: str, theirs: str) -> bool:
+    """The same word, or one the recognizer wrote a little differently from the two sides of a canceller («Paxi», «Baxi»)."""
+    if ours == theirs:
+        return True
+    return min(len(ours), len(theirs)) >= 4 and difflib.SequenceMatcher(None, ours, theirs).ratio() >= PLAYED_SAME_WORD
+
+
+def _words_in_order(ours: list[str], theirs: list[str]) -> list[int]:
+    """The indices of ``ours`` in the longest common subsequence with ``theirs``."""
+    best = [[0] * (len(theirs) + 1) for _ in range(len(ours) + 1)]
+    for i in range(len(ours) - 1, -1, -1):
+        for j in range(len(theirs) - 1, -1, -1):
+            best[i][j] = (best[i + 1][j + 1] + 1 if _same_word(ours[i], theirs[j])
+                          else max(best[i + 1][j], best[i][j + 1]))
+    found, i, j = [], 0, 0
+    while i < len(ours) and j < len(theirs):
+        if _same_word(ours[i], theirs[j]):
+            found.append(i)
+            i, j = i + 1, j + 1
+        elif best[i + 1][j] >= best[i][j + 1]:
+            i += 1
+        else:
+            j += 1
+    return found
+
+
+def _runs(indices: list[int]) -> list[list[int]]:
+    runs: list[list[int]] = []
+    for index in indices:
+        if runs and runs[-1][-1] == index - 1:
+            runs[-1].append(index)
+        else:
+            runs.append([index])
+    return runs
+
+
 class Heard(NamedTuple):
     """A transcript and how sure Parakeet was of each of its words: per word of ``text`` (split on spaces), the
     probability of its least sure token with a letter or digit (ys_log_probs; 1.0 for bare punctuation). No words when
@@ -169,6 +242,24 @@ class Heard(NamedTuple):
         text = without_call(self.text)
         words = self.words[len(self.words) - len(text.split()):] if text else ()
         return Heard(text, words if [word for word, _ in words] == text.split() else ())
+
+    def without_played(self, played: str) -> Heard:
+        """F44: this request without what the PC was saying meanwhile: a person called and a video went on «apaga el
+        computador»; the canceller left it all, and the mind would have obeyed the video. ``played``: the recognizer on
+        what was played over the same time. Taken out: the runs of PLAYED_RUN words or more found in it in order, or the
+        whole request if it is all there. Only form: the words are compared, nobody reads what they ask."""
+        ours, theirs = self.text.split(), played.split()
+        if not ours or not theirs:
+            return self
+        found = _words_in_order([_folded(word) for word in ours], [_folded(word) for word in theirs])
+        drop = set(found) if len(found) == len(ours) else {i for run in _runs(found) if len(run) >= PLAYED_RUN for i in run}
+        if not drop:
+            return self
+        sys.stderr.write(f"baxy_mind_renew_voice: {len(drop)} of {len(ours)} words of a request were what the PC played\n")
+        sys.stderr.flush()
+        kept = [i for i in range(len(ours)) if i not in drop]
+        return Heard(" ".join(ours[i] for i in kept),
+                     tuple(self.words[i] for i in kept) if len(self.words) == len(ours) else ())
 
 
 def end_silence(early: str | None) -> float:
@@ -211,6 +302,14 @@ class StaggeredWake:
         self._rearm_s = rearm_s
         self.reset()
 
+    def twin(self) -> StaggeredWake:
+        """The same detector with a state of its own (its ONNX sessions shared, so no memory beyond that state): F44,
+        what the PC played is heard apart from the microphone."""
+        other = copy.copy(self)
+        other._copies = [copy.copy(detector) for detector in self._copies]
+        other.reset()
+        return other
+
     def reset(self) -> None:
         self._last = -1e9
         for detector, lead in zip(self._copies, self._lead):
@@ -227,6 +326,306 @@ class StaggeredWake:
                     self._last = detection.time_s
                     heard.append(detection)
         return heard
+
+    def scores(self) -> list[tuple[float, float]]:
+        """(time, probability) of each frame the first copy scored since the last call, when its detector keeps them
+        (the package's ``trace``, which reset() turns off); from this call on it keeps them. The first copy has no lead,
+        so its times are the audio's own; the others score the same audio."""
+        first = self._copies[0]
+        scored = getattr(first, "trace", None) or []
+        first.trace = []
+        return list(scored)
+
+
+class _IdleThreadsSleep:
+    """The wake package's onnxruntime with one change: its sessions' idle intra-op threads sleep instead of spinning
+    (session.intra_op.allow_spinning, on by default; https://onnxruntime.ai/docs/performance/tune-performance/
+    threading.html). Two spinning threads tripled a copy's CPU (0.108 → 0.334 of a core) for the same chunk time."""
+
+    def __init__(self, ort: Any) -> None:
+        self._ort = ort
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._ort, name)
+
+    def SessionOptions(self) -> Any:  # noqa: N802 - onnxruntime's own name
+        options = self._ort.SessionOptions()
+        options.add_session_config_entry("session.intra_op.allow_spinning", "0")
+        return options
+
+
+def wake_threads() -> int:
+    """The wake encoder's threads (BAXY_RENEW_WAKE_THREADS; 1 is the detector as before uso-68)."""
+    value = os.environ.get("BAXY_RENEW_WAKE_THREADS", "")
+    try:
+        return max(1, int(value)) if value else WAKE_THREADS
+    except ValueError:
+        return WAKE_THREADS
+
+
+def load_wake(wake: Path) -> StaggeredWake:
+    """The wake package of ``wake`` (BAXY_RENEW_WAKE_DIR) as StaggeredWake: WAKE_COPIES copies of its detector, its
+    encoder on wake_threads() threads that sleep when idle. A package whose config.json names its ``copies`` and
+    ``threads`` gets those (uso-79, k6r: one copy on one thread, as it was measured; it decides every 40 ms), and
+    ``played_hold_s`` is how long F44 holds its firings (voice_echo.PLAYED_HOLD_S when it names none)."""
+    spec = importlib.util.spec_from_file_location("baxy_wake_k4", wake / "baxy_wake_runtime.py")
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["baxy_wake_k4"] = module
+    spec.loader.exec_module(module)
+    module.ort = _IdleThreadsSleep(module.ort)
+    config = json.loads((wake / "config.json").read_bytes())  # JSON is UTF-8 (RFC 8259)
+    threads = int(config.get("threads") or wake_threads())
+    loaded = StaggeredWake(lambda: module.BaxyWakeDetector(
+        wake / config["encoder"]["file"], wake / config["head"]["file"], threshold=config["threshold"],
+        debounce_s=config["debounce_s"], threads=threads), int(config.get("copies") or WAKE_COPIES),
+        float(config["debounce_s"]))
+    loaded.played_hold_s = float(config.get("played_hold_s") or voice_echo.PLAYED_HOLD_S)
+    return loaded
+
+
+class _HeldCall(NamedTuple):
+    """F44: a firing with the PC playing: when the word was, its detection and when to check it (seconds heard)."""
+    start: float
+    detection: Any
+    due: float
+
+
+class EitherWake:
+    """uso-79: k5 (StaggeredWake) and the low-latency package of BAXY_RENEW_WAKE_FAST_DIR hear the same blocks, and a
+    «Baxy» is told by whichever fires first, once: a firing within the re-arm of the last one told, before or after it,
+    is the same word. k5 is as without it, and its frames are the ones scored (scores, the wake log's near misses).
+    k6r at its package threshold (logit 9.137) fired first on 58 of the owner's 73 calls that k5 heard, and heard none
+    k5 missed: p50 0.135 s after the word (k5 alone 0.349), p90 0.345 (0.969); no firing of its own in 138 h of dev
+    streams nor in the room (WakewordBaxy/PLAN_K6_RAPIDO.md, informe 79 de c5)."""
+
+    def __init__(self, main: StaggeredWake, fast: StaggeredWake) -> None:
+        self._main = main
+        self._fast = fast
+        self._rearm_s = main._rearm_s
+        self.played_hold_s = getattr(main, "played_hold_s", voice_echo.PLAYED_HOLD_S)  # its twin is k5's: k5's hold
+        self._last = -1e9
+
+    def twin(self) -> StaggeredWake:
+        """F44: k5 alone hears what the PC played: on the same clean words k6r heard 13 of 44, and added none to k5's 37."""
+        return self._main.twin()
+
+    def reset(self) -> None:
+        self._last = -1e9
+        self._main.reset()
+        self._fast.reset()
+
+    def accept(self, block: np.ndarray) -> list[Any]:
+        heard = []
+        for detection in sorted(self._main.accept(block) + self._fast.accept(block), key=lambda d: d.time_s):
+            if abs(detection.time_s - self._last) >= self._rearm_s:
+                self._last = detection.time_s
+                heard.append(detection)
+        return heard
+
+    def scores(self) -> list[tuple[float, float]]:
+        return self._main.scores()
+
+
+def load_fast_wake() -> StaggeredWake | None:
+    """uso-79: the package of BAXY_RENEW_WAKE_FAST_DIR (k6r, a causal detector that fires at the word's end instead of
+    a chunk later), heard beside k5's (EitherWake). uso-93: on by default, the App giving the registered package. None
+    when it is not set (a machine without the package), is ``none`` (a bench, or whoever wants it off), or does not
+    load (told on stderr): k5 is heard alone, as before."""
+    folder = os.environ.get("BAXY_RENEW_WAKE_FAST_DIR", "").strip()
+    if not folder or folder.lower() == "none":
+        return None
+    try:
+        fast = load_wake(Path(folder))
+        sys.stderr.write(f"baxy_mind_renew_voice: BAXY_RENEW_WAKE_FAST_DIR: {Path(folder).name} heard beside the "
+                         "wake word\n")
+        sys.stderr.flush()
+        return fast
+    except Exception as error:  # noqa: BLE001 - k5 is heard alone
+        sys.stderr.write(f"baxy_mind_renew_voice: BAXY_RENEW_WAKE_FAST_DIR: {error!r}; k5 is heard alone\n")
+        sys.stderr.flush()
+        return None
+
+
+# Development only (WakeLog, BAXY_WAKE_LOG_DIR): the clip kept of each «Baxy», this long before the trigger and after
+# it; and the near misses, frames scored from NEAR_MISS_P up to under NEAR_MISS_TOP (the package's threshold), at most one
+# in NEAR_MISS_GAP_S and none that near a firing. A near miss is kept once no firing can still come for it: a copy tells a
+# firing up to a chunk and the lookahead (1.28 + 0.155 s) after its frame.
+WAKE_LOG_S = 4.0
+NEAR_MISS_P = 0.2
+NEAR_MISS_TOP = 0.5
+NEAR_MISS_GAP_S = 2.0
+NEAR_MISS_LATE_S = 1.5
+WAKE_LOG_RECENT_S = 12.0  # the audio kept for a clip's start: WAKE_LOG_S before a near miss told this late
+
+
+def package_sha256(folder: Path) -> str | None:
+    """A folder's SHA-256 as the App's MindRuntimeDiscovery.DirectorySha256 (the registration's renew_wake_sha256): of
+    the UTF-8 lines «name:sha256», one per file directly in it by ordinal name, each ending in a line feed; None for a
+    folder with no file."""
+    lines = []
+    for path in sorted((p for p in folder.iterdir() if p.is_file()), key=lambda p: p.name):
+        digest = hashlib.sha256()
+        with path.open("rb") as file:
+            for chunk in iter(lambda: file.read(1 << 20), b""):
+                digest.update(chunk)
+        lines.append(f"{path.name}:{digest.hexdigest()}\n")
+    return hashlib.sha256("".join(lines).encode("utf-8")).hexdigest() if lines else None
+
+
+class WakeLog:
+    """Encargo 15, development only: with BAXY_WAKE_LOG_DIR naming a folder, each «Baxy» heard leaves in it, under the
+    day (<folder>/<YYYY-MM-DD>/), a WAV (16 kHz mono PCM16) of WAKE_LOG_S before the trigger and WAKE_LOG_S after it, and
+    a JSON beside it: when (local ISO time), the machine, the detector's probability, the wake package's SHA-256
+    (package_sha256), and, once the request ends, its transcript and whether it went on with one. Near misses
+    (NEAR_MISS_P) too, with ``near_miss`` true. Nothing is sent anywhere. The voice's thread only keeps the blocks; a
+    thread of its own writes, and a failure to write is told on stderr and the voice goes on. A clip that the
+    microphone closes before WAKE_LOG_S after the trigger keeps what was heard. Every method is called under the
+    voice's lock."""
+
+    def __init__(self, folder: Path, wake_dir: Path) -> None:
+        self._folder = folder
+        self._recent = np.zeros(0, np.float32)
+        self._clock = 0                       # samples heard since the log began
+        self._clips: list[dict[str, Any]] = []  # open clips: their key, first and last sample, and the blocks so far
+        self._near: tuple[float, float] | None = None  # the near miss that may still be kept: its time and probability
+        self._near_last = self._hot = -1e9    # the last near miss kept and the last firing (or frame at the threshold)
+        self._jobs: queue.Queue[Callable[[], None]] = queue.Queue()
+        self._records: dict[str, tuple[Path, dict[str, Any]]] = {}  # the writer's own
+        self._sha: str | None = None
+        self._put(lambda: self._package(wake_dir))
+        threading.Thread(target=self._write, name="voice-wake-log", daemon=True).start()
+
+    @classmethod
+    def from_env(cls) -> WakeLog | None:
+        folder = os.environ.get("BAXY_WAKE_LOG_DIR", "").strip()
+        return cls(Path(folder), Path(os.environ.get("BAXY_RENEW_WAKE_DIR", ""))) if folder else None
+
+    def hear(self, block: np.ndarray) -> None:
+        """A block from the microphone, BAXY speaking or not: it goes into the open clips, and is kept for the next. A
+        near miss is kept once no firing can still come near it (NEAR_MISS_LATE_S), whether the detector hears or not
+        (it does not while BAXY speaks)."""
+        self._clock += len(block)
+        self._recent = np.concatenate([self._recent, block])[-int(WAKE_LOG_RECENT_S * RATE):]
+        for clip in list(self._clips):
+            clip["blocks"].append(block)
+            if self._clock >= clip["end"]:
+                self._save(clip)
+        if self._near is not None and self._clock / RATE - self._near[0] >= NEAR_MISS_GAP_S + NEAR_MISS_LATE_S:
+            at, p = self._near
+            self._near, self._near_last = None, at
+            self.mark(self._clock / RATE - at, p, near_miss=True)
+
+    def mark(self, lag_s: float, probability: float | None, near_miss: bool = False) -> str | None:
+        """«Baxy» heard ``lag_s`` before the last block (or a near miss): its clip opens and its JSON is written. The key
+        returned is the one turn() takes; None for a trigger older than the audio kept, which leaves nothing."""
+        trigger = self._clock - int(round(lag_s * RATE))
+        first = self._clock - len(self._recent)
+        if trigger < first:
+            return None
+        begin = max(first, trigger - int(WAKE_LOG_S * RATE))
+        when = datetime.datetime.now().astimezone() - datetime.timedelta(seconds=lag_s)
+        key = when.strftime("%H%M%S-%f")[:-3] + ("-near" if near_miss else "")
+        clip = {"key": key, "begin": begin, "trigger": trigger, "end": trigger + int(WAKE_LOG_S * RATE),
+                "blocks": [self._recent[begin - first:]]}
+        record = {"time": when.isoformat(timespec="milliseconds"), "machine": os.environ.get("COMPUTERNAME", ""),
+                  "near_miss": near_miss, "probability": None if probability is None else round(float(probability), 4),
+                  "renew_wake_sha256": None, "wav": f"{key}.wav", "before_s": None, "after_s": None,
+                  "transcript": None, "continued": None, "empty": None}
+        day = self._folder / when.strftime("%Y-%m-%d")
+        self._put(lambda: self._start(key, day, record))
+        self._clips.append(clip)
+        if self._clock >= clip["end"]:
+            self._save(clip)
+        return key
+
+    def turn(self, key: str, text: str, voiced: bool) -> None:
+        """The request that followed ``key``'s «Baxy» ended: what it said, and whether it went on with one (when not,
+        ``empty`` says whether there was no voice or no text in it)."""
+        self._put(lambda: self._update(key, {"transcript": text, "continued": bool(text),
+                                             "empty": None if text else "no_text" if voiced else "no_voice"}))
+
+    def scores(self, scored: list[tuple[float, float]], fired: list[float]) -> None:
+        """The detector's frames (each its lag before the last block and its probability) and its firings (lags) of
+        the last block: the near miss that may be kept (hear keeps it)."""
+        now = self._clock / RATE
+        for lag in fired:
+            self._hot = max(self._hot, now - lag)
+            if self._near is not None and abs(self._near[0] - (now - lag)) < NEAR_MISS_GAP_S:
+                self._near = None
+        for lag, p in scored:
+            at = now - lag
+            if p >= NEAR_MISS_TOP:
+                self._hot = max(self._hot, at)
+                if self._near is not None and abs(self._near[0] - at) < NEAR_MISS_GAP_S:
+                    self._near = None
+            elif (p >= NEAR_MISS_P and at - self._hot >= NEAR_MISS_GAP_S and at - self._near_last >= NEAR_MISS_GAP_S
+                  and (self._near is None or p > self._near[1])):
+                self._near = (at, p)
+
+    def stop(self) -> None:
+        """The microphone closed: the open clips keep what was heard, and the next one starts afresh."""
+        for clip in list(self._clips):
+            self._save(clip)
+        self._recent = np.zeros(0, np.float32)
+        self._near = None
+
+    def _save(self, clip: dict[str, Any]) -> None:
+        self._clips.remove(clip)
+        audio = np.concatenate(clip["blocks"])[:clip["end"] - clip["begin"]]
+        before = (clip["trigger"] - clip["begin"]) / RATE
+        key = clip["key"]
+        self._put(lambda: self._wav(key, audio, before))
+
+    # --- the writer's thread --------------------------------------------------------------------------------------
+
+    def _put(self, job: Callable[[], None]) -> None:
+        self._jobs.put(job)
+
+    def _write(self) -> None:
+        while True:
+            job = self._jobs.get()
+            try:
+                job()
+            except Exception as error:  # noqa: BLE001 - a log that cannot be written never stops the voice
+                sys.stderr.write(f"baxy_mind_renew_voice: wake log: {error!r}\n")
+                sys.stderr.flush()
+
+    def _package(self, wake_dir: Path) -> None:
+        self._sha = package_sha256(wake_dir)
+
+    def _start(self, key: str, day: Path, record: dict[str, Any]) -> None:
+        record["renew_wake_sha256"] = self._sha
+        self._records[key] = (day, record)
+        day.mkdir(parents=True, exist_ok=True)
+        self._json(key)
+
+    def _update(self, key: str, fields: dict[str, Any]) -> None:
+        self._records[key][1].update(fields)
+        self._json(key)
+
+    def _wav(self, key: str, audio: np.ndarray, before_s: float) -> None:
+        day, record = self._records[key]
+        with wave.open(str(day / record["wav"]), "wb") as file:
+            file.setnchannels(1)
+            file.setsampwidth(2)
+            file.setframerate(RATE)
+            file.writeframes(np.round(np.clip(audio, -1.0, 1.0) * 32767).astype("<i2").tobytes())
+        self._update(key, {"before_s": round(before_s, 3), "after_s": round(len(audio) / RATE - before_s, 3)})
+
+    def _json(self, key: str) -> None:
+        day, record = self._records[key]
+        path = day / f"{key}.json"
+        partial = path.with_suffix(".json.tmp")
+        partial.write_text(json.dumps(record, ensure_ascii=False, indent=1), encoding="utf-8")
+        for wait in (0.05, 0.1, 0.2, 0.4, None):
+            try:
+                os.replace(partial, path)   # whole or not at all for whoever reads it
+                return
+            except PermissionError:
+                if wait is None:            # Windows refuses it while the old one is open elsewhere
+                    raise
+                time.sleep(wait)
 
 
 class Vad:
@@ -285,14 +684,70 @@ def voiced(audio: np.ndarray, marks: np.ndarray) -> np.ndarray:
     return loud & marks[:n].reshape(-1, BLOCK).any(axis=1)
 
 
+class Recent:
+    """The last ``keep`` samples heard and their Silero marks, in buffers allocated once (twice ``keep`` and two
+    blocks): each block is copied in, and ``audio``/``speech`` are views of the last ``keep``. Real use, 2026-11-03:
+    joining the 30 s window again for every 100 ms block failed with MemoryError((481600,), float32) when the PC was
+    short of memory, the block was lost, and a request was transcribed from the middle of the sentence."""
+
+    def __init__(self, keep: int) -> None:
+        self._keep = keep
+        self._audio = np.zeros(2 * keep + 2 * BLOCK, np.float32)
+        self._speech = np.zeros(len(self._audio), bool)
+        self._end = 0
+
+    def clear(self) -> None:
+        self._end = 0
+
+    def add(self, block: np.ndarray, marks: np.ndarray) -> None:
+        if self._end + len(block) > len(self._audio):  # the last keep - len(block) samples move to the front
+            kept = self._keep - len(block)              # (never overlapping: they start past keep + 2 blocks)
+            self._audio[:kept] = self._audio[self._end - kept:self._end]
+            self._speech[:kept] = self._speech[self._end - kept:self._end]
+            self._end = kept
+        self._audio[self._end:self._end + len(block)] = block
+        self._speech[self._end:self._end + len(block)] = marks
+        self._end += len(block)
+
+    @property
+    def audio(self) -> np.ndarray:
+        return self._audio[max(0, self._end - self._keep):self._end]
+
+    @property
+    def speech(self) -> np.ndarray:
+        return self._speech[max(0, self._end - self._keep):self._end]
+
+
+def loud_floor(audio: np.ndarray) -> bool:
+    """The room is loud by itself: four in five of the BLOCKs of ``audio`` are above VOICE_RMS (none heard is quiet).
+    Steady noise fills every pause; in the request window it separated pink noise at 10 dB (97.9 % of the turn model's
+    looks) from a quiet room (1.4 % of the synthetic set, 2.4 % of the owner's requests)."""
+    whole = audio[len(audio) % BLOCK:].reshape(-1, BLOCK)
+    return len(whole) > 0 and float(np.percentile(np.sqrt((whole ** 2).mean(axis=1)), 20)) >= VOICE_RMS
+
+
 def _blocks(audio: np.ndarray, marks: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Each whole BLOCK of ``audio``: its RMS and whether Silero heard speech in it (``marks``)."""
     n = len(audio) // BLOCK * BLOCK
     return np.sqrt((audio[:n].reshape(-1, BLOCK) ** 2).mean(axis=1)), marks[:n].reshape(-1, BLOCK).any(axis=1)
 
 
+# Uso 95: the waits between the deferred recognizer's own tries (Voice._retry_until_loaded), as StartupRetries waits.
+STT_RETRY_WAITS_S = (10.0, 20.0, 40.0, 60.0)
+
+
 class Voice:
     """Listens on its own thread; the mind's request loop only starts, stops and reads it."""
+
+    _wake_log: WakeLog | None = None  # development only (BAXY_WAKE_LOG_DIR)
+    _wake_logged: str | None = None   # the wake log's key of the open request's «Baxy»
+    _turn: voice_turn.Turn | None = None  # the turn model (_load_turn); without it the hanging words set the wait
+    _turn_heard: tuple[float, float | None] | None = None  # the end of voice the turn model heard, and its verdict
+    _recent: Recent | None = None     # what is kept of what was heard (built on the first reset)
+    _echo: voice_echo.Stage | None = None  # the echo cancellation with the microphone open (voice_echo.py)
+    _lost_at: float | None = None     # F17: when, of the audio heard, a block was last lost
+    _played_span: np.ndarray | None = None  # F44: what was played over the request just finished, to be decoded
+    _played_said = ""                 # F44: what the recognizer heard in it
 
     def __init__(self, write: Callable[[dict[str, Any]], None],
                  on_spoken: Callable[[float, float, bool], None] = lambda *_spoken: None,
@@ -319,13 +774,28 @@ class Voice:
         self._wav_feed: voice_feed.Feed | None = None  # WAV files heard instead of the microphone (benches)
         self._answered = 0              # answers that began to sound (not notices): the feed waits for them
         self.failure = ""
+        # Encargo 10 (punto 6): why the ear is not loaded yet when it is not a failure (too little memory to commit when
+        # the recognizer was built); retried on the next start() and on its own (uso 95). The App says it.
+        self.deferred = ""
+        self._stt_tries = 0
+        self._stt_retry: Callable[[], None] | None = None
+        # Uso 95: the figures of the last load that did not fit (NotEnoughMemory), for the App; one retry at a time.
+        self._stt_memory: dict[str, int] | None = None
+        self._stt_lock = threading.Lock()
+        self._stt_retrying = False
         self._mode = "off"
         self._resume = "off"            # the mode a direct request returns to
         self._stream: Any = None
+        # The echo cancellation (voice_echo.py): wanted by the owner's switch (voice.start), asked when the open
+        # microphone was opened, and the stage with its closing while it runs.
+        self._echo_wanted = voice_echo.wanted(True)
+        self._echo_asked = self._echo_wanted
+        self._played_twin: Any = None   # F44: the detector that hears what the PC played, built on its first use
         self._blocks: queue.Queue[np.ndarray] = queue.Queue()
         self._heard = 0                 # moved on by every reset and stop
         self._wake_peak = WAKE_TARGET   # the recent peak the detector's gain follows (wake_gain)
         self._told = Heard("")          # the last transcript told to the App, until the mind takes it (unsure)
+        self._wake_log = WakeLog.from_env()
         self._reset()
         self._on_spoken = on_spoken
         self.speech = Speech(self._speaking, self._sounding, self._lip)
@@ -339,7 +809,11 @@ class Voice:
         # What the App reads of it (MindSidecarClient): whether the ear works and whether it is still loading.
         return {"available": stt and self._input, "input": self._input, "stt": stt,
                 "wake": self._detector is not None, "tts": self.speech.ready,
-                "pending": not self._loaded.is_set()}
+                "pending": not self._loaded.is_set(), "echo": self._echo is not None,
+                # Encargo 10 (punto 6): the ear or the voice is not loaded for want of memory, and will be retried.
+                "deferred": bool(self.deferred or self.speech.deferred),
+                # Uso 95: what the ear needs and found left to commit while it waits for memory (the App says it).
+                "memory": self._stt_memory if self.deferred else None}
 
     def unsure(self, text: str) -> list[tuple[str, float]]:
         """The words the ear was not sure of when ``text`` is the transcript it told last (taken once): the App's
@@ -348,12 +822,16 @@ class Voice:
             told, self._told = self._told, Heard("")
         return told.unsure() if told.text and told.text == text.strip() else []
 
-    def start(self, mode: str) -> bool:
+    def start(self, mode: str, echo_cancel: bool = True) -> bool:
+        """``echo_cancel``: the owner's switch for taking out what the PC plays (voice_echo.py); a start with the
+        microphone open and the switch changed opens it again with or without the stage."""
         self._loaded.wait(60)
+        self._retry_recognizer()
         if mode not in ("wake", "direct") or self._recognizer is None or not self._input \
                 or (mode == "wake" and self._detector is None):
             return False
         with self._lock:
+            self._echo_wanted = voice_echo.wanted(echo_cancel)
             if mode == "direct":
                 self._resume = "wake" if self._mode == "wake" else self._resume if self._mode == "direct" else "off"
             self._mode = mode
@@ -394,22 +872,17 @@ class Voice:
             import sherpa_onnx
             self._vad = Vad(sherpa_onnx)
             self._hear_from(lambda: Vad(sherpa_onnx))
+            self._load_turn()
             wake = Path(os.environ.get("BAXY_RENEW_WAKE_DIR", ""))
             if (wake / "config.json").is_file():
-                spec = importlib.util.spec_from_file_location("baxy_wake_k4", wake / "baxy_wake_runtime.py")
-                assert spec is not None and spec.loader is not None
-                module = importlib.util.module_from_spec(spec)
-                sys.modules["baxy_wake_k4"] = module
-                spec.loader.exec_module(module)
-                config = json.loads((wake / "config.json").read_text(encoding="utf-8"))
-                self._detector = StaggeredWake(lambda: module.BaxyWakeDetector(
-                    wake / config["encoder"]["file"], wake / config["head"]["file"], threshold=config["threshold"],
-                    debounce_s=config["debounce_s"], threads=1), WAKE_COPIES, float(config["debounce_s"]))
+                detector = load_wake(wake)
+                fast = load_fast_wake()
+                self._detector = detector if fast is None else EitherWake(detector, fast)
             else:
                 self.failure = self.failure or "BAXY_RENEW_WAKE_DIR has no wake word"
             stt = Path(os.environ.get("BAXY_RENEW_STT_DIR", ""))
             if (stt / "tokens.txt").is_file():
-                self._recognize(sherpa_onnx, stt)
+                self._load_recognizer(sherpa_onnx, stt)
             else:
                 self.failure = "BAXY_RENEW_STT_DIR has no recognizer"
         except Exception as error:  # noqa: BLE001 - voice is optional: the mind serves turns without it
@@ -419,6 +892,69 @@ class Voice:
                 sys.stderr.write(f"baxy_mind_renew_voice: {self.failure}\n")
                 sys.stderr.flush()
             self._loaded.set()
+
+    def _load_turn(self) -> None:
+        """The turn model (voice_turn.model_path; BAXY_RENEW_TURN=0 turns it off). One that does not load is told on
+        stderr and the request closes as without it: by the hanging words."""
+        path = voice_turn.model_path()
+        if path is None:
+            return
+        try:
+            self._turn = voice_turn.Turn(path)
+        except Exception as error:  # noqa: BLE001 - the ear works without it, with the fixed silence
+            sys.stderr.write(f"baxy_mind_renew_voice: turn model: {error!r}\n")
+            sys.stderr.flush()
+
+    def _load_recognizer(self, sherpa_onnx: Any, stt: Path) -> None:
+        """Encargo 10 (punto 6): the recognizer, built now; a low-memory moment does not turn the ear off for the
+        session but defers it, to be retried on the next start() (``_retry_recognizer``) and, uso 95, on its own with a
+        growing wait while the mind runs (``_retry_until_loaded``), until memory is freed."""
+        try:
+            self._recognize(sherpa_onnx, stt)
+            self.deferred = ""
+        except MemoryError as error:
+            self._stt_retry = lambda: self._recognize(sherpa_onnx, stt)
+            self._deferred_for(error)
+            threading.Thread(target=self._retry_until_loaded, name="voice-retry", daemon=True).start()
+
+    def _deferred_for(self, error: MemoryError) -> None:
+        self._stt_tries += 1
+        self.deferred = repr(error)
+        self._stt_memory = ({"needMb": error.need_mb, "leftMb": error.left_mb}
+                            if isinstance(error, NotEnoughMemory) else None)
+        sys.stderr.write(f"baxy_mind_renew_voice: deferred ({self._stt_tries}): {self.deferred}\n")
+        sys.stderr.flush()
+
+    def _retry_recognizer(self) -> None:
+        """Encargo 10 (punto 6): a recognizer the first load could not fit in memory is built again on this use, until
+        it loads (then nothing is deferred). Uso 95 (uso real 2026-11-04 13:19): it is never a failure for want of
+        memory any more: three tries at start found no room, memory was freed later and the ear never came back."""
+        with self._stt_lock:
+            retry = self._stt_retry
+            if retry is None or self._recognizer is not None:
+                return
+            try:
+                retry()
+                self.deferred, self._stt_retry, self._stt_memory = "", None, None
+            except MemoryError as error:
+                self._deferred_for(error)
+            except Exception as error:  # noqa: BLE001 - uso-116: not memory: it will not load by waiting, and it is said
+                self.failure, self.deferred, self._stt_retry, self._stt_memory = repr(error), "", None, None
+                sys.stderr.write(f"baxy_mind_renew_voice: recognizer: {self.failure}\n")
+                sys.stderr.flush()
+
+    def _retry_until_loaded(self) -> None:
+        """Uso 95: the deferred recognizer tried again on its own, waiting longer each time (STT_RETRY_WAITS_S, then its
+        last wait for ever: a sleep, no CPU), until it loads; then the App is told (voice_ready) so it reads the voice
+        state again."""
+        for attempt in range(1_000_000):
+            time.sleep(STT_RETRY_WAITS_S[min(attempt, len(STT_RETRY_WAITS_S) - 1)])
+            self._retry_recognizer()
+            if self._recognizer is not None:
+                self._event("voice_ready")
+                return
+            if self._stt_retry is None:
+                return
 
     def _hear_from(self, vad: Callable[[], Vad]) -> None:
         """The input: the feed BAXY_RENEW_VOICE_FEED names (then the microphone is never opened), or the microphone.
@@ -458,9 +994,11 @@ class Voice:
         if score > 0 and self._named.wait(NAMES_WAIT_S) and self._names:
             forms, vocab = stt_hotwords.compile_hotwords(self._names, (stt / "tokens.txt").read_text(encoding="utf-8"))
         if not forms:
-            self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(**files, decoding_method="greedy_search")
+            with native_load(EAR_COMMIT_MB, "recognizer"):
+                self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(**files,
+                                                                                 decoding_method="greedy_search")
             return
-        with tempfile.TemporaryDirectory(prefix="baxy-stt-") as folder:
+        with tempfile.TemporaryDirectory(prefix="baxy-stt-") as folder, native_load(EAR_COMMIT_MB, "recognizer"):
             path = Path(folder) / "bpe.vocab"  # sherpa reads it by path, once, while it builds the recognizer
             path.write_text(vocab, encoding="utf-8")
             self._recognizer = sherpa_onnx.OfflineRecognizer.from_transducer(
@@ -478,26 +1016,37 @@ class Voice:
     # --- microphone -----------------------------------------------------------------------------------------------
 
     def _open(self) -> None:
-        if self._stream is not None:
+        if self._stream is not None and self._echo_asked == self._echo_wanted:
             return
+        if self._stream is not None:
+            self._close()  # the owner switched the echo cancellation while the microphone was open
+        # What the PC plays is taken out of each block before anything hears it (voice_echo.py); a feed has no echo.
+        echo = voice_echo.open_stage(RATE) if self._echo_wanted and self._wav_feed is None else None
+        cancel = echo.cancel if echo is not None else None
 
         def callback(indata, _frames, _when, _status) -> None:
-            self._blocks.put(np.array(indata[:, 0], dtype=np.float32, copy=True))  # the buffer is only valid here
+            block = np.array(indata[:, 0], dtype=np.float32, copy=True)  # the buffer is only valid here
+            self._blocks.put(cancel(block) if cancel is not None else block)
 
-        if self._wav_feed is not None:
-            stream = self._wav_feed.open(callback)
-        else:
-            import sounddevice as sd
-            stream = sd.InputStream(device=self._device(), samplerate=RATE, channels=1, dtype="float32",
-                                    blocksize=BLOCK, callback=callback)
-        # Built, the stream is already open: one whose start fails is closed, never kept as the open microphone (the
-        # next start found it there and said the ear was on while it heard nothing).
         try:
-            stream.start()
+            if self._wav_feed is not None:
+                stream = self._wav_feed.open(callback)
+            else:
+                import sounddevice as sd
+                stream = sd.InputStream(device=self._device(), samplerate=RATE, channels=1, dtype="float32",
+                                        blocksize=BLOCK, callback=callback)
+            # Built, the stream is already open: one whose start fails is closed, never kept as the open microphone
+            # (the next start found it there and said the ear was on while it heard nothing).
+            try:
+                stream.start()
+            except BaseException:
+                stream.close()
+                raise
         except BaseException:
-            stream.close()
+            if echo is not None:
+                echo.close()
             raise
-        self._stream = stream
+        self._stream, self._echo, self._echo_asked = stream, echo, self._echo_wanted
 
     def _revive(self) -> None:
         """No block for STALL_S from an open microphone: it is opened again (STALL_S)."""
@@ -518,24 +1067,36 @@ class Voice:
         self._state()
 
     def _close(self) -> None:
+        if self._wake_log is not None:
+            self._wake_log.stop()
         if self._stream is not None:
             self._stream.close()
             self._stream = None
+        if self._echo is not None:
+            self._echo.close()          # after the microphone: its callback no longer asks for the reference
+            self._echo = None
         while not self._blocks.empty():
             self._blocks.get_nowait()
 
     def _reset(self) -> None:
         self._heard += 1                # a transcription of what was heard before is not told
         self._early_back()
-        self._audio = np.zeros(0, np.float32)
-        self._speech = np.zeros(0, bool)  # Vad.marks of self._audio
+        if self._recent is None:
+            self._recent = Recent(int(KEEP_S * RATE))
+        self._recent.clear()
+        self._audio, self._speech = self._recent.audio, self._recent.speech  # Vad.marks of self._audio
         self._first = 0                 # absolute index of self._audio[0]
         self._total = 0                 # samples heard since the mode started
         self._start: float | None = 0.0 if self._mode == "direct" else None  # the request window's opening
         self._released = False          # push-to-talk let go (direct mode)
         self._partial_at = 0.0          # when what was said so far was last decoded
         self._partial = ""
-        self._wake_at = 0.0             # when the detector was last reset (its times count from there)
+        self._turn_heard = None
+        self._held_call: _HeldCall | None = None  # F44: a firing waiting to know whether the PC played the word
+        self._lost_at = None
+        self._played_span, self._played_said = None, ""
+        self._wake_at = 0.0            # when the detector was last reset (its times count from there)
+        self._wake_logged = None
         if self._detector is not None:
             self._detector.reset()
         if self._vad is not None:
@@ -552,28 +1113,117 @@ class Voice:
             except queue.Empty:
                 self._revive()
                 continue
+            total = self._total
             try:
                 with self._lock:
                     heard = self._heard
+                    if self._wake_log is not None:
+                        self._wake_log.hear(block)
                     job = self._feed(block) if self._mode != "off" and not self.speech.speaking else None
-                if job is not None:
-                    audio, wake_at, then = job
-                    transcript = self._transcribe(audio, wake_at)
+                    call = self._call_to_check()
+                    span, self._played_span = self._played_span, None
+                if call is not None:
+                    played = self._played_it(*call)  # up to a second or two, once per firing: never under the lock
                     with self._lock:
                         if heard == self._heard:
+                            self._settle_call(played)
+                if job is not None:
+                    audio, wake_at, then = job
+                    played = ""
+                    try:
+                        transcript = self._transcribe(audio, wake_at)
+                        if span is not None:
+                            played = self._transcribe(span * np.float32(0.45 / float(np.max(np.abs(span)))), None).text
+                    except Exception as error:  # noqa: BLE001 - told; a request ends as one nothing was heard of
+                        self._not_heard(len(audio), error)
+                        transcript = Heard("")
+                    with self._lock:
+                        if heard == self._heard:
+                            self._played_said = played
                             then(transcript)
             except Exception as error:  # noqa: BLE001 - one bad block never ends the voice
-                sys.stderr.write(f"baxy_mind_renew_voice: {error!r}\n")
-                sys.stderr.flush()
-                self._event("error")
+                with self._lock:
+                    if self._total == total:  # F17: this block was not kept, so a request around it has a hole
+                        self._lost_at = total / RATE
+                self._not_heard(len(block), error)
+
+    def _not_heard(self, samples: int, error: Exception) -> None:
+        sys.stderr.write(f"baxy_mind_renew_voice: {datetime.datetime.now().isoformat(timespec='milliseconds')}"
+                         f" a block of {samples * 1000 // RATE} ms was not heard: {error!r}\n")
+        sys.stderr.flush()
+        self._event("error")
+
+    def _call_to_check(self) -> tuple[np.ndarray, float] | None:
+        """F44: what the PC played around a firing, and where in it the firing was, once the moment to check it has come
+        (the reference leads the echo, so it holds the word by then; blocks still waiting to be heard are newer)."""
+        held = self._held_call
+        if held is None or self._echo is None or self._total / RATE < held.due:
+            return None
+        waiting_s = self._blocks.qsize() * BLOCK / RATE
+        far = self._echo.played(voice_echo.PLAYED_BACK_S + self._played_hold() + waiting_s)
+        return far, len(far) / RATE - waiting_s - (self._total / RATE - held.start)
+
+    def _played_hold(self) -> float:
+        """How long a firing waits for F44's check: what its package asked for (load_wake). A detector that decides as
+        it hears finds the word on the reference at once; one that decides by chunks needs the second."""
+        return getattr(self._detector, "played_hold_s", voice_echo.PLAYED_HOLD_S)
+
+    def _played_it(self, far: np.ndarray, word_at: float) -> bool:
+        """F44: whether the word is in what the PC played when the microphone heard it (``word_at``, seconds into ``far``,
+        PLAYED_NEAR_S around it: not BAXY's own «soy Baxy» or a video's a moment earlier, with the person answering):
+        the detector on the reference, level brought to the detector's own (the loopback carries Windows' volume), the
+        whole of it at once. A check that fails lets the call through: a call lost is worse than a word answered that
+        the person sees was not theirs."""
+        try:
+            if self._played_twin is None:
+                self._played_twin = self._detector.twin()
+            twin = self._played_twin
+            twin.reset()
+            peak = float(np.max(np.abs(far)))
+            raised = far * np.float32(WAKE_TARGET / max(peak, 1e-9))
+            return any(abs(detection.time_s - word_at) <= voice_echo.PLAYED_NEAR_S
+                       for at in range(0, len(raised) - BLOCK + 1, BLOCK)
+                       for detection in twin.accept(raised[at:at + BLOCK]))
+        except Exception as error:  # noqa: BLE001
+            sys.stderr.write(f"baxy_mind_renew_voice: the wake word could not be looked for in what was played: "
+                             f"{error!r}\n")
+            sys.stderr.flush()
+            return False
+
+    def _settle_call(self, played: bool) -> None:
+        call, self._held_call = self._held_call, None
+        if call is None:
+            return
+        if played:
+            self._told_wake(call.detection, self._total / RATE - call.start, " played by the PC")
+        else:
+            self._open_call(call.start, call.detection)
+
+    def _heard_call(self, start: float, detection: Any) -> None:
+        """A firing while nothing is open. With what the PC plays in the last moments it waits to be checked (F44);
+        with the PC silent, or no stage, it opens the request now."""
+        far = self._echo.played(voice_echo.PLAYED_BACK_S) if self._echo is not None else None
+        if far is None or not far.any():
+            self._open_call(start, detection)
+            return
+        self._held_call = _HeldCall(start, detection, self._total / RATE + self._played_hold())
+
+    def _open_call(self, start: float, detection: Any) -> None:
+        lag = self._total / RATE - start
+        self._start = start
+        self._partial = ""  # a new request's live caption is told even when it repeats the last one
+        if self._wake_log is not None:
+            self._wake_logged = self._wake_log.mark(lag, getattr(detection, "probability", None))
+        self._event("wake_detected")
+        self._told_wake(detection, lag)
+        if self._on_wake is not None:
+            self._on_wake()
 
     def _feed(self, block: np.ndarray) -> tuple[np.ndarray, float | None, Callable[[Heard], None]] | None:
-        self._audio = np.concatenate([self._audio, block])
-        self._speech = np.concatenate([self._speech, self._vad.marks(block)])
+        self._recent.add(block, self._vad.marks(block))
+        self._audio, self._speech = self._recent.audio, self._recent.speech
         self._total += len(block)
-        if len(self._audio) > KEEP_S * RATE:
-            cut = len(self._audio) - int(KEEP_S * RATE)
-            self._audio, self._speech, self._first = self._audio[cut:], self._speech[cut:], self._first + cut
+        self._first = self._total - len(self._audio)
         if self._mode == "wake":
             # The detector keeps hearing during the request too, as in probar_baxy.py.
             now = self._total / RATE
@@ -583,18 +1233,28 @@ class Voice:
                 self._wake_at = (self._total - len(block)) / RATE  # it hears from this block on
             self._wake_peak, raised = wake_gain(self._wake_peak, block)
             detections = self._detector.accept(raised)
-            if self._start is None and detections:
-                self._start = self._wake_at + detections[0].time_s
-                self._partial = ""  # a new request's live caption is told even when it repeats the last one
-                self._event("wake_detected")
-                if self._on_wake is not None:
-                    self._on_wake()
+            if self._wake_log is not None:
+                self._wake_log.scores([(now - self._wake_at - t, p) for t, p in self._detector.scores()],
+                                      [now - self._wake_at - d.time_s for d in detections])
+            if self._start is None and self._held_call is None and detections:
+                self._heard_call(self._wake_at + detections[0].time_s, detections[0])
         start = self._start
         if start is not None and self._over(start):
             return self._finish(start)
         if start is not None:
             return self._early(start) or self._live(start)
         return None
+
+    def _told_wake(self, detection: Any, lag_s: float, how: str = "") -> None:
+        """Each «Baxy» heard, on stderr (the App keeps it in mind-stderr.log): when, the detector's probability, how
+        long after the word it was told, and whether the stage was on; no audio and no words, so a request transcribed
+        from the middle of a sentence can be told from a wake that fired there (uso-74, 2026-11-03: the installed BAXY
+        keeps no wake log), and a word the PC played from a call (F44)."""
+        p = getattr(detection, "probability", None)
+        sys.stderr.write(f"baxy_mind_renew_voice: wake {datetime.datetime.now().isoformat(timespec='milliseconds')}"
+                         f" p={'-' if p is None else f'{float(p):.3f}'} lag={lag_s:.2f}s"
+                         f" echo={'on' if self._echo is not None else 'off'}{how}\n")
+        sys.stderr.flush()
 
     def _live(self, start: float) -> tuple[np.ndarray, float | None, Callable[[Heard], None]] | None:
         """Live captions: the request heard so far, decoded again every PARTIAL_S with the same recognizer and the same
@@ -649,9 +1309,7 @@ class Voice:
     def _noisy(self, a: int) -> bool:
         """Four in five blocks heard before the call (up to 1 s before the request opens at ``a``) are loud: the noise
         alone is above VOICE_RMS."""
-        before = self._audio[:max(0, a - RATE)]
-        before = before[len(before) % BLOCK:].reshape(-1, BLOCK)
-        return len(before) > 0 and float(np.percentile(np.sqrt((before ** 2).mean(axis=1)), 20)) >= VOICE_RMS
+        return loud_floor(self._audio[:max(0, a - RATE)])
 
     def _quiet(self) -> bool:
         """For the feed: BAXY is silent and no request is hearing voice (one waiting for its words is quiet)."""
@@ -668,9 +1326,28 @@ class Voice:
         if end is None:
             return now - start >= (NO_COMMAND_S if self._mode == "wake" else DIRECT_WAIT_S)
         early = self._early_heard if self._early_at == end else None
-        wait = end_silence(early.text) if early is not None else END_SILENCE_S
+        rule = end_silence(early.text) if early is not None else END_SILENCE_S
+        heard = self._turn_wait(start, end, now)
+        # Words left hanging keep their long wait whatever the model heard (it only sets how long to wait).
+        wait = rule if heard is None else max(heard, rule) if rule > END_SILENCE_S else heard
         # 1e-6: in direct mode 2.4 - 1.5 is 0.8999…, and 48 of 120 requests waited one block (100 ms) more
         return now - end >= wait - 1e-6
+
+    def _turn_wait(self, start: float, end: float, now: float) -> float | None:
+        """The silence the turn model sets after the voice that ended at ``end``: once TURN_AT_S of it passed, it hears
+        the request up to now (the audio its transcript is decoded from, at most voice_turn.TURN_S), once per end of
+        voice; END_DONE_S if it heard the turn complete, END_SLOW_S if it is sure it is not, END_UNSURE_S in between.
+        None (the rule without it decides) with no model, before TURN_AT_S, or in a loud room (loud_floor)."""
+        if self._turn is None or now - end < TURN_AT_S - 1e-6:
+            return None
+        if self._turn_heard is None or self._turn_heard[0] != end:
+            audio = self._segment(max(0.0, start - BEFORE_S) if self._mode == "wake" else 0.0, now)
+            heard = None if loud_floor(audio) else self._turn.complete(audio[-voice_turn.TURN_S * RATE:])
+            self._turn_heard = (end, heard)
+        heard = self._turn_heard[1]
+        if heard is None:
+            return None
+        return END_DONE_S if heard >= TURN_P else END_UNSURE_S if heard >= TURN_OPEN_P else END_SLOW_S
 
     def _early(self, start: float) -> tuple[np.ndarray, float | None, Callable[[Heard], None]] | None:
         """Palanca 2 (early.py): ``early_s`` into the silence that may end the request, what was said is decoded with
@@ -722,10 +1399,23 @@ class Voice:
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
         voiced_enough = len(self._request_voice(start)) * BLOCK / RATE >= MIN_VOICE_S
         stop = self._total / RATE if voiced_enough and early is None else begin
+        logged, self._wake_logged = self._wake_logged, None
         self._event("transcribing")
+        # F44: what the PC played over the request is decoded too, only when it played something (_listen).
+        far = self._echo.played(self._total / RATE - begin) if self._echo is not None and voiced_enough else None
+        self._played_span = far if far is not None and far.any() else None
 
         def then(transcript: Heard) -> None:
             heard = (early if early is not None and voiced_enough else transcript).without_call()
+            heard = heard.without_played(self._played_said)
+            if self._lost_at is not None and self._lost_at >= begin:
+                # F17: audio of the request was lost (the PC out of memory, 2026-11-03: a request reached the mind with
+                # its beginning gone), so what is left is not what was said. Told so in a note of its own, the model
+                # still acted on 5 of 30, and asked about the pieces in the rest: nothing goes to it, and the person has
+                # the failure already (_not_heard: the App's chime and «Falló la escucha»).
+                heard = Heard("")
+            if logged is not None and self._wake_log is not None:
+                self._wake_log.turn(logged, heard.text, voiced_enough)
             if heard.text:
                 self._told = heard
                 self._write({"type": "voice.transcript", "text": heard.text})

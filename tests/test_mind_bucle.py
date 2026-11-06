@@ -313,6 +313,22 @@ def test_a_call_that_turns_back_what_the_turn_set_is_not_made(tmp_path: Path, mo
     assert [r["kind"] for r in _trace(mind) if r.get("kind") == "flip_closed"] == ["flip_closed"]
 
 
+def test_the_call_not_made_tells_the_model_it_did_not_run_and_what_stays(tmp_path: Path, monkeypatch) -> None:
+    # Uso real 2026-11-03 03:31:34: muted false ran, muted true was not made, and the answer told it the other way round
+    # («lo dejé silenciado… luego lo volví a activar»): the result of the call not made says what stays set.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("client_microphone_set", {"muted": False}),
+                                    _call("client_microphone_set", {"muted": True}),
+                                    _say("Activé tu micrófono en Discord.")])
+    mind.decide(1, "quítame el audio de la llamada de Discord")
+    mind.continue_turn(2, json.dumps({"status": "completed", "observed": {"muted": False}}))
+    told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    result = json.loads(told.split("\n", 1)[0])
+    assert result["status"] == "not_run"
+    assert result["notMade"] == {"muted": True} and result["stays"] == {"muted": False}
+    assert "muted=false" in told.split("\n", 1)[1]  # the turn's facts line says what stayed, too
+
+
 def test_the_same_operation_with_other_values_still_runs(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
     mind, _ = _mind(tmp_path, [_call("app_open", {"appId": "Calculadora"}), _call("app_open", {"appId": "Paint"})])

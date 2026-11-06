@@ -48,12 +48,13 @@ public sealed class OperationRegistryTests
         Assert.That(RiskPolicy.Evaluate(risk), Is.EqualTo(expected));
     }
 
-    // Uso real 2026-10-21 (decisión del dueño): a message to another person asks even in Bypass; nothing else does.
-    [TestCase("message.send", PolicyDecision.RequireConfirmation)]
+    // Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca»): Bypass asks nothing, a message to another
+    // person included (it asked from 2026-10-21); normal mode still asks for it.
+    [TestCase("message.send", PolicyDecision.Allow)]
     [TestCase("message.send.test", PolicyDecision.Allow)]
     [TestCase("app.close", PolicyDecision.Allow)]
     [TestCase("email.send", PolicyDecision.Allow)]
-    public void MessageSendAsksEvenInBypass(string operation, PolicyDecision expected)
+    public void BypassAsksNothingAndNormalModeAsksForAMessage(string operation, PolicyDecision expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
         Assert.Multiple(() =>
@@ -78,7 +79,7 @@ public sealed class OperationRegistryTests
     // ask.
     [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
     [TestCase("email.send", PolicyDecision.RequireConfirmation)]
-    // Uso real 2026-10-21: message.send asks in normal mode and in Bypass (MessageSendAsksEvenInBypass).
+    // message.send asks in normal mode (BypassAsksNothingAndNormalModeAsksForAMessage).
     [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
     [TestCase("media.play.query", PolicyDecision.Allow)]
     [TestCase("streaming.play.named", PolicyDecision.Allow)]
@@ -91,7 +92,10 @@ public sealed class OperationRegistryTests
     [TestCase("wifi.radio.set", PolicyDecision.Allow)]
     [TestCase("bluetooth.device.pair", PolicyDecision.Allow)]
     [TestCase("system.settings.set", PolicyDecision.Allow)]
-    [TestCase("memory.enable", PolicyDecision.Allow)]
+    // Encargo 76 (banco diag-fd2b, F13 6 of 6): the model turned the owner's memory on unasked after a save failed with
+    // memory_disabled. Turning on what the owner switched off for their privacy waits for their «sí»; off goes directly.
+    [TestCase("memory.enable", PolicyDecision.RequireConfirmation)]
+    [TestCase("memory.disable", PolicyDecision.Allow)]
     [TestCase("game.install.named", PolicyDecision.RequireConfirmation)]
     [TestCase("package.install", PolicyDecision.RequireConfirmation)]
     [TestCase("game.uninstall.named", PolicyDecision.RequireConfirmation)]
@@ -168,7 +172,7 @@ public sealed class OperationRegistryTests
     // Safety review 2026-10-07: the send verb opens the label whatever follows it, a shortcut hint or a format
     // character does not hide it, and space on a composer's send control sends like Enter.
     [TestCase("input.key.press", """{"key":"space","target":"message_composer"}""", PolicyDecision.RequireConfirmation)]
-    [TestCase("input.visible.click", """{"label":"Enviar a Ron92"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase("input.visible.click", """{"label":"Enviar a Nube77"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Send Friend Request"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Reenviar"}""", PolicyDecision.RequireConfirmation)]
     [TestCase("input.visible.click", """{"label":"Forward"}""", PolicyDecision.RequireConfirmation)]
@@ -478,6 +482,23 @@ public sealed class OperationRegistryTests
                 Is.EqualTo(PolicyDecision.Allow),
                 "the rule is the operation and its argument together");
         });
+    }
+
+    // Uso real 03-11 (U53): «cierra también la de runpod» could only close the active tab (Outlook): the call had no way
+    // to name another. The tab is named by an optional argument; without it the active one is closed, as before.
+    [TestCase("{\"action\":\"close\",\"tab\":\"runpod\"}", true)]
+    [TestCase("{\"action\":\"close\"}", true)]
+    [TestCase("{\"action\":\"close\",\"tab\":\" \"}", false)]
+    [TestCase("{\"action\":\"close\",\"tab\":3}", false)]
+    // Uso real 03-11 (U64): a request to go to a named tab had no action that goes to a tab.
+    [TestCase("{\"action\":\"switch_tab\",\"tab\":\"Run pod\"}", true)]
+    [TestCase("{\"action\":\"switch\",\"tab\":\"Run pod\"}", false)]
+    public void A_tab_to_close_is_named_by_an_optional_argument(string arguments, bool valid)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("browser.control");
+        using JsonDocument document = JsonDocument.Parse(arguments);
+
+        Assert.That(OperationArgumentValidator.IsValid(document.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(valid));
     }
 
     [TestCase(OperationRisk.Irreversible, ConfirmationMode.Bypass, PolicyDecision.Allow)]

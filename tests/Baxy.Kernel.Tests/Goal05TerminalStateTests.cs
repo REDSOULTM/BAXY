@@ -181,7 +181,7 @@ public sealed class Goal05TerminalStateTests
 internal static class Goal05KernelScratch
 {
     private const string DirectoryPath =
-        @"C:\Users\usuario\AppData\Local\Temp\grok-goal-317c6834ac48\implementer";
+        @"C:\Users\ana\AppData\Local\Temp\grok-goal-317c6834ac48\implementer";
 
     internal static void Write(string name, string content)
     {

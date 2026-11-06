@@ -15,6 +15,28 @@ url = "https://files.pythonhosted.org/packages/1e/d3/26bf1008eb3d2daa8ef4cacc7f3
 sha256 = "571ac1dc6991c450b25a9c2d84a3705e2ae7a53467b5d111c24fa8baabbed320"
 
 [[packages]]
+name = "annotated-types"
+version = "0.8.0"
+
+[[packages.wheels]]
+name = "annotated_types-0.8.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0"
+
+[[packages]]
+name = "anthropic"
+version = "2.6.0"
+
+[[packages.wheels]]
+name = "anthropic-2.6.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/38/0b/705a05ab68558914e725cf1143d7e409fa3bb596c35bca1eceab42402abe/anthropic-2.6.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "4325cdf9346fa29183674b6ee6289ebad5b2b0a935758f7350fa504032da1d9b"
+
+[[packages]]
 name = "anyio"
 version = "4.14.2"
 
@@ -79,6 +101,17 @@ url = "https://files.pythonhosted.org/packages/5f/7c/0eb685107290b6221c03c46d392
 
 [packages.wheels.hashes]
 sha256 = "e18d85179ff12955524c5a8c3bc09cb3c0d890f1da4d7123d14244c7b78f84c8"
+
+[[packages]]
+name = "docstring-parser"
+version = "0.18.0"
+
+[[packages.wheels]]
+name = "docstring_parser-0.18.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/a7/5f/ed01f9a3cdffbd5a008556fc7b2a08ddb1cc6ace7effa7340604b1d16699/docstring_parser-0.18.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "b3fcbed555c47d8479be0796ef7e19c2670d428d72e96da63f3a40122860374b"
 
 [[packages]]
 name = "filelock"
@@ -147,6 +180,17 @@ url = "https://files.pythonhosted.org/packages/7e/f5/f66802a942d491edb555dd61e3a
 sha256 = "2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"
 
 [[packages]]
+name = "httpcore2"
+version = "2.16.0"
+
+[[packages.wheels]]
+name = "httpcore2-2.16.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/af/c2/ce417c397afa5181f0e3c6ff01a4d01639414e1adef08730d97571297151/httpcore2-2.16.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "5c4358319f2602d984ad93182c9fee5160f22e9da7babdda870a5e7c4e2dc34f"
+
+[[packages]]
 name = "httpx"
 version = "0.28.1"
 
@@ -156,6 +200,17 @@ url = "https://files.pythonhosted.org/packages/2a/39/e50c7c3a983047577ee07d2a9e5
 
 [packages.wheels.hashes]
 sha256 = "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"
+
+[[packages]]
+name = "httpx2"
+version = "2.16.0"
+
+[[packages.wheels]]
+name = "httpx2-2.16.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/7b/3d/2e4bc4fd1ef9770871669adb348d612a6e4786b303a23f9935b81c48dd60/httpx2-2.16.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "fd2c5d7909e8d86fe92d53020c310ca0e4e431b838c207c5754b9bbf0308d49a"
 
 [[packages]]
 name = "huggingface-hub"
@@ -202,6 +257,17 @@ url = "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d57187
 sha256 = "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"
 
 [[packages]]
+name = "jiter"
+version = "0.18.0"
+
+[[packages.wheels]]
+name = "jiter-0.18.0-cp312-cp312-win_amd64.whl"
+url = "https://files.pythonhosted.org/packages/c5/c9/b1279eecf68e5f62c918af3f7f856a071ae7db0c90b8fd2235b1b6020c8c/jiter-0.18.0-cp312-cp312-win_amd64.whl"
+
+[packages.wheels.hashes]
+sha256 = "79d1fe529bd7065c6f3f50279a08c2ab82eaa0631a6f5dfafa9c65105eeaaafa"
+
+[[packages]]
 name = "joblib"
 version = "1.5.3"
 
@@ -213,15 +279,15 @@ url = "https://files.pythonhosted.org/packages/7b/91/984aca2ec129e2757d1e4e3c81c
 sha256 = "5fc3c5039fc5ca8c0276333a188bbd59d6b7ab37fe6632daa76bc7f9ec18e713"
 
 [[packages]]
-name = "livekit-wakeword"
-version = "0.2.1"
+name = "kaldi-native-fbank"
+version = "1.22.3"
 
 [[packages.wheels]]
-name = "livekit_wakeword-0.2.1-py3-none-any.whl"
-url = "https://files.pythonhosted.org/packages/76/ee/47127a539b73361e141d578ab0e3afdeae16918048359f378cf1c7116a2e/livekit_wakeword-0.2.1-py3-none-any.whl"
+name = "kaldi_native_fbank-1.22.3-cp312-cp312-win_amd64.whl"
+url = "https://files.pythonhosted.org/packages/cb/8d/c0b0b6280edabad85d7e15093fad612c027e175fe4e0b960ce2f36485143/kaldi_native_fbank-1.22.3-cp312-cp312-win_amd64.whl"
 
 [packages.wheels.hashes]
-sha256 = "9576e103b6777619342ef9cce1d47727c39f1d6b7b564238f3467ace4d10a99a"
+sha256 = "cbbeea19fe6d584c54e93fe6615a7185b10e0d78fdb6471f9e44596018437c38"
 
 [[packages]]
 name = "markdown-it-py"
@@ -312,6 +378,17 @@ url = "https://files.pythonhosted.org/packages/4f/88/8ec9db1a4d126bb8b758992beb4
 sha256 = "20c321cf187ba496e648acf6b4cf90b4d398b0d17c2a77fdaeba365b908cc1c1"
 
 [[packages]]
+name = "opentelemetry-api"
+version = "1.45.2"
+
+[[packages.wheels]]
+name = "opentelemetry_api-1.45.2-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/a9/2d/610db864d7513158cebb8f36cc88e67e73bd6c7aa1905ef18d89e1281c81/opentelemetry_api-1.45.2-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "2cbd737377e710ee740d261c94e93fa0f08e6d037c18f17513cc0a2d94479a34"
+
+[[packages]]
 name = "packaging"
 version = "26.2"
 
@@ -345,28 +422,6 @@ url = "https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba8
 sha256 = "eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988"
 
 [[packages]]
-name = "pyaudiowpatch"
-version = "0.2.12.8"
-
-[[packages.wheels]]
-name = "pyaudiowpatch-0.2.12.8-cp312-cp312-win_amd64.whl"
-url = "https://files.pythonhosted.org/packages/e5/e1/c25c239737386a3fd85354ce35a00fbe83e993a7e51d76791022850ca12c/pyaudiowpatch-0.2.12.8-cp312-cp312-win_amd64.whl"
-
-[packages.wheels.hashes]
-sha256 = "fd163a6531c4e4969925e687ef1bc57fae8ecc1a95de7ba707a436622552d7fa"
-
-[[packages]]
-name = "pycaw"
-version = "20251023"
-
-[[packages.wheels]]
-name = "pycaw-20251023-py3-none-any.whl"
-url = "https://files.pythonhosted.org/packages/ff/bc/f60c1622da5c53770c2d62457b5b6fc9623ab41b9d276269b857cd337e22/pycaw-20251023-py3-none-any.whl"
-
-[packages.wheels.hashes]
-sha256 = "ef06d234a2fe3c175925a2a8c7ed8824e450851014fdb7d900af1b56ce422d4e"
-
-[[packages]]
 name = "pycparser"
 version = "3.0"
 
@@ -376,6 +431,28 @@ url = "https://files.pythonhosted.org/packages/0c/c3/44f3fbbfa403ea2a7c779186dc2
 
 [packages.wheels.hashes]
 sha256 = "b727414169a36b7d524c1c3e31839a521725078d7b2ff038656844266160a992"
+
+[[packages]]
+name = "pydantic"
+version = "2.14.3"
+
+[[packages.wheels]]
+name = "pydantic-2.14.3-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/72/b8/b864503789ef5c58597d2a7b4adbee62c26440ab1e682581fc6838df8947/pydantic-2.14.3-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "3f7b347782ab7e4cf4c798496ae3a82787d9f21ec12676a9c564355eeef8daa8"
+
+[[packages]]
+name = "pydantic-core"
+version = "2.50.4"
+
+[[packages.wheels]]
+name = "pydantic_core-2.50.4-cp312-cp312-win_amd64.whl"
+url = "https://files.pythonhosted.org/packages/82/88/d438a8fcf3738e9ff2670f724047ca3893ec899bcd5cdfc077a2aab133c6/pydantic_core-2.50.4-cp312-cp312-win_amd64.whl"
+
+[packages.wheels.hashes]
+sha256 = "ea2f61b0bc12f3592288503961b764579dea0658852d96a0b3d823614d808821"
 
 [[packages]]
 name = "pygments"
@@ -389,26 +466,15 @@ url = "https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85
 sha256 = "81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176"
 
 [[packages]]
-name = "pywebrtc-audio"
-version = "0.2.0+baxy.1"
+name = "pypdf"
+version = "6.18.1"
 
 [[packages.wheels]]
-name = "pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl"
-path = "runtime_wheels/pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl"
+name = "pypdf-6.18.1-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/58/13/645df3995075112cb3cce15e8797c205f0f88fb50acc11012b84b071bc22/pypdf-6.18.1-py3-none-any.whl"
 
 [packages.wheels.hashes]
-sha256 = "a23633725342f1ca3425c81a0927e3d6ef7d050452415e24b6a4cabe540416eb"
-
-[[packages]]
-name = "pywin32"
-version = "311"
-
-[[packages.wheels]]
-name = "pywin32-311-cp312-cp312-win_amd64.whl"
-url = "https://files.pythonhosted.org/packages/d1/a8/a0e8d07d4d051ec7502cd58b291ec98dcc0c3fff027caad0470b72cfcc2f/pywin32-311-cp312-cp312-win_amd64.whl"
-
-[packages.wheels.hashes]
-sha256 = "b8c095edad5c211ff31c05223658e71bf7116daa0ecf3ad85f3201ea3190d067"
+sha256 = "ee93a2665670ecf57ee81d197a4ca548f3dc15f9cefc56e59b8140866aaa3de5"
 
 [[packages]]
 name = "pyyaml"
@@ -554,6 +620,17 @@ url = "https://files.pythonhosted.org/packages/0b/2b/48566f29a8b53d856ceb1994f20
 sha256 = "09de93c4d874bb19c53e62a47dd38be5f163cedad2b5599583231f2a84ef79cb"
 
 [[packages]]
+name = "sniffio"
+version = "1.3.1"
+
+[[packages.wheels]]
+name = "sniffio-1.3.1-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"
+
+[[packages]]
 name = "sounddevice"
 version = "0.5.5"
 
@@ -642,6 +719,17 @@ url = "https://files.pythonhosted.org/packages/6f/67/8d85ca2323233ae3c0365a659c4
 sha256 = "9db974c4079ede2d1a3ea7ca5a240df33f2cc26fc2b36ba64c5f2a4f43b6e725"
 
 [[packages]]
+name = "truststore"
+version = "0.10.5"
+
+[[packages.wheels]]
+name = "truststore-0.10.5-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/51/e9/3a7820be2bb0fe53b6bc9c3be26d3d1158004e4c3ab953aa6840b955b1e9/truststore-0.10.5-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "9aaaedaefaf06d8b206278cf8b5012bc897f485a874503501e12d776df78951c"
+
+[[packages]]
 name = "typer"
 version = "0.27.0"
 
@@ -662,3 +750,14 @@ url = "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0
 
 [packages.wheels.hashes]
 sha256 = "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8"
+
+[[packages]]
+name = "typing-inspection"
+version = "0.4.5"
+
+[[packages.wheels]]
+name = "typing_inspection-0.4.5-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/de/0c/ea2544850a7c135e15033a5c7a8e7211136184b7ae63e2239d557c2b3019/typing_inspection-0.4.5-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "bc210535442b39e1bf2805e0c7a17dfd6a4ace760c84c7f7d16245d23a6b1c39"

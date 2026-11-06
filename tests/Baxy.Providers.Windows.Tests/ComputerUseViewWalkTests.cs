@@ -127,7 +127,7 @@ public sealed class ComputerUseViewWalkTests
         Assert.Multiple(() =>
         {
             Assert.That(shown, Does.Contain("if($null -ne $any){ return $shown }"));
-            Assert.That(shown, Does.Contain("return (Get-Descendants $root)"));
+            Assert.That(shown, Does.Contain("return (Get-Descendants $root -Bounded)"));
         });
     }
 

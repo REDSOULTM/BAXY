@@ -14,7 +14,7 @@ namespace Baxy.Providers.Windows.Tests;
 [TestFixture]
 public sealed class ComputerUseListenedPressTests
 {
-    private static string Worker()
+    internal static string Worker()
     {
         string worker = Path.Combine(AppContext.BaseDirectory, "DesktopUiaWorker.ps1");
         Assume.That(File.Exists(worker), "the worker script is copied next to the tests");
@@ -73,7 +73,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void ASelectThatLeftThePlaceAsItWasTriesThePostedPressOnlyInANativeFramework()
     {
-        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], Places + """
+        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-ClickablePointOf", "Get-ScrollViewport", "Get-VisiblePart", "Get-PressCandidates", "Get-PointVerdict", "Get-PointerPoint", "Test-TopIconic", "Test-PointOnScreen", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], Places + """
             $script:PatternMethods=@('invoke','select','toggle','expand','target','render')
             $script:RenderHosts=@()
             $script:Native=$true
@@ -129,7 +129,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void ThePlaceMeasureIsBoundedByTimeNotByReads()
     {
-        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], Places + Budgets + """
+        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-ClickablePointOf", "Get-ScrollViewport", "Get-VisiblePart", "Get-PressCandidates", "Get-PointVerdict", "Get-PointerPoint", "Test-TopIconic", "Test-PointOnScreen", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], Places + Budgets + """
             # The worker's own data (the syntax tree the harness parsed), never a copy of it.
             foreach($var in @('$script:PlaceItemKinds','$script:ContainerKinds')){
               $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -eq $var },$true))
@@ -357,7 +357,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void ALineageToggleProvesAPlainClickButNoMenuOrOpening()
     {
-        string answer = Run(Worker(), ["Do-Postread", "Click-Result", "Test-LineageToggled", "Test-Renamed", "Test-ChosenNamed", "Get-CurrentName", "Format-Name", "Get-Cut"], """
+        string answer = Run(Worker(), ["Do-Postread", "Click-Result", "Test-LineageToggled", "Test-ToggleHeld", "Test-Renamed", "Test-ChosenNamed", "Get-CurrentName", "Format-Name", "Get-Cut", "Get-NowState"], """
             function Test-Selected($el){ return $false }
             function Get-Toggle($el){ return [string]$el.Mark }
             function Test-FieldTook($el,$before){ return $false }
@@ -469,7 +469,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void TheClassicMenuBarIsReadAsEntriesAndPressedByItsCommand()
     {
-        string answer = Run(Worker(), ["ConvertTo-MenuViewEntries", "Find-MenuCommand", "Test-NameMatch", "Get-LabelFolded"], """
+        string answer = Run(Worker(), ["ConvertTo-MenuViewEntries", "Find-MenuCommand", "Test-MenuNameMatch", "Test-NameMatch", "Get-LabelFolded"], """
             function New-Entry([string]$path,[int]$id,[string]$shortcut='',[bool]$checked=$false,[bool]$disabled=$false,[bool]$fills=$false){
               return [pscustomobject]@{ Path=$path; Id=$id; Shortcut=$shortcut; Checked=$checked; Disabled=$disabled; FillsOnOpen=$fills }
             }
@@ -507,6 +507,43 @@ public sealed class ComputerUseListenedPressTests
             "28697",                                    // a statically disabled entry is sent: the application decides
             "visible_button_not_found",                 // contracase: a window without an HMENU changes nothing
             "Archivo › Eliminar",                       // its whole path reaches the name guards of the mind
+        }));
+    }
+
+    // Ajuste c4 (C3-065/066): the model asked twice for «Opciones» and MPC-HC's entry is «Ver › Opciones…»: Windows ends a
+    // command that opens a dialog with an ellipsis (U+2026, or «...» in English builds), which is decoration and not part
+    // of the entry's name. An exact name still wins over one that only matches without it.
+    [Test]
+    public void AMenuEntrysTrailingEllipsisIsNotPartOfItsLabel()
+    {
+        string answer = Run(Worker(), ["Find-MenuCommand", "Test-MenuNameMatch", "Test-NameMatch", "Get-LabelFolded"], """
+            function New-Entry([string]$path,[int]$id){ return [pscustomobject]@{ Path=$path; Id=$id; Shortcut=''; Checked=$false; Disabled=$false; FillsOnOpen=$false } }
+            $menu=@(
+              (New-Entry ([string]::Concat('Ver ',[char]0x203A,' Opciones',[char]0x2026)) 815),
+              (New-Entry ([string]::Concat('File ',[char]0x203A,' Save As...')) 57604),
+              (New-Entry ([string]::Concat('Ver ',[char]0x203A,' Zoom')) 900),
+              (New-Entry ([string]::Concat('Ver ',[char]0x203A,' Zoom',[char]0x2026)) 901))
+            $answers=@(
+              [string](Find-MenuCommand $menu @('Opciones') '').entry.Id,
+              [string](Find-MenuCommand $menu @([string]::Concat('Ver ',[char]0x203A,' Opciones')) '').entry.Id,
+              [string](Find-MenuCommand $menu @('Opciones...') '').entry.Id,
+              [string](Find-MenuCommand $menu @('Save As') '').entry.Id,
+              [string](Find-MenuCommand $menu @('Opciones') 'hmenu.815').entry.Id,
+              [string](Find-MenuCommand $menu @('Zoom') '').entry.Id,
+              [string](Find-MenuCommand $menu @([string]::Concat('Zoom',[char]0x2026)) '').entry.Id,
+              [string](Find-MenuCommand $menu @('Opcion') '').error)
+            [Console]::Out.Write(($answers -join ';'))
+            """);
+        Assert.That(answer.Split(';'), Is.EqualTo(new[]
+        {
+            "815",                       // the last part without its ellipsis
+            "815",                       // the whole path without it
+            "815",                       // three dots for the ellipsis character
+            "57604",                     // an English build's «...»
+            "815",                       // the identity the view gave, with the label the model saw without it
+            "900",                       // contracase: «Zoom» and «Zoom…» are two entries; the exact one is pressed
+            "901",                       // and the one asked with its ellipsis
+            "visible_button_not_found",  // contracase: still the whole name, never a prefix
         }));
     }
 
@@ -555,7 +592,7 @@ public sealed class ComputerUseListenedPressTests
     }
 
     // Review 2 of ronda 20b (B1): the entries of a closed menu are not on screen; they go after what the window shows,
-    // only in the room the tree leaves below the cap, and only those listed count in the total.
+    // only in the room the tree leaves below the cap (ajuste c4: those left out still count in the total).
     [Test]
     public void TheClassicMenuNeverPushesOutWhatTheWindowShows()
     {
@@ -577,13 +614,13 @@ public sealed class ComputerUseListenedPressTests
             $small=Join-ViewControls $primary $secondary @() 60
             $answers=@(
               [string]$joined.controls.Count,
-              [string]$joined.menuListed,
+              [string]@($kinds | Where-Object { $_ -eq 'MenuItem' }).Count,
               [string]@($kinds | Where-Object { $_ -eq 'HeaderItem' }).Count,
               [string]@($kinds | Where-Object { $_ -eq 'Text' }).Count,
               [string]$kinds[22],
               [string]$kinds[23],
               [string]$crowded.controls.Count,
-              [string]$crowded.menuListed,
+              [string]@($crowded.controls | Where-Object { $_.kind -eq 'MenuItem' }).Count,
               [string]$small.controls.Count)
             [Console]::Out.Write(($answers -join ','))
             """);
@@ -601,6 +638,52 @@ public sealed class ComputerUseListenedPressTests
         }));
     }
 
+    // Ajuste c4 (C3-059/065/066): MPC-HC's menu (164 entries read as the worker walks it, «Ver › Opciones…» the 99th)
+    // was read only up to its 80th entry, filled the room the tree left and was cut there unsaid: the view said neither
+    // that it was not whole nor «+N más», and the entry the look asked for was neither listed nor kept.
+    [Test]
+    public void TheMenuEntriesPastTheRoomAreCountedAndTheWantedOneIsKept()
+    {
+        string answer = Run(Worker(), ["Join-ViewControls", "Select-TailControls", "Get-FoldedFields", "Test-WantedName", "Get-Folded", "Test-CenterWithin"], """
+            $tokens=$null;$errors=$null
+            $ast=[System.Management.Automation.Language.Parser]::ParseFile($env:BAXY_CLICK_WORKER,[ref]$tokens,[ref]$errors)
+            foreach($assignment in @($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and @('$script:MenuEntriesMax','$script:WantedRoom','$script:ViewRowKinds') -contains $node.Left.Extent.Text },$false))){
+              . ([scriptblock]::Create($assignment.Extent.Text))
+            }
+            $primary=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 16;$k++){ [void]$primary.Add(@{ kind='Button'; name=('Herramienta '+$k) }) }
+            $menu=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 163;$k++){ [void]$menu.Add(@{ kind='MenuItem'; name=([string]::Concat('Ver ',[char]0x203A,' Orden ',$k)) }) }
+            $menu.Insert(98,@{ kind='MenuItem'; name=([string]::Concat('Ver ',[char]0x203A,' Opciones',[char]0x2026)) })
+            $plain=Join-ViewControls $primary @() $menu 60
+            $asked=Join-ViewControls $primary @() $menu 60 @('Opciones')
+            $kept=@($asked.controls | Where-Object { [bool]$_.reserved } | ForEach-Object { $_.name })
+            $long=New-Object System.Collections.ArrayList
+            for($k=0;$k -lt 70;$k++){ [void]$long.Add(@{ kind='Text'; name=('Mensaje '+$k); seq=$k }) }
+            $tailed=Join-ViewControls $long @() $menu 60 @() $true
+            [Console]::Out.Write((@(
+              [string]@($plain.controls | Where-Object { $_.kind -eq 'MenuItem' }).Count,
+              [string]$plain.menuCount,
+              [string]@($plain.controls | Where-Object { [bool]$_.reserved }).Count,
+              [string]$kept.Count,
+              [string]($kept -join '|'),
+              [string]$asked.controls[42+16].name,
+              [string]$tailed.menuCount,
+              [string]($script:MenuEntriesMax -ge 164)) -join ';'))
+            """);
+        Assert.That(answer.Split(';'), Is.EqualTo(new[]
+        {
+            "43",               // the menu still fills only the room the tree leaves below the cap
+            "164",              // every entry read is counted: the view says it is not whole and «+121 más»
+            "0",                // without words nothing is reserved: both looks share the same base
+            "1",                // the entry the look asked for is kept apart
+            "Ver › Opciones…",
+            "Ver › Orden 42",   // after the same base
+            "164",              // a cut that keeps the tree's last entries counts the menu it leaves out too
+            "True",             // the whole menu is read: MPC-HC's 164 entries fit
+        }));
+    }
+
     // Ronda 24b (banco r23 s04): chosen is not arrived. A tree node or a tab chosen by Invoke whose place stays (Explorer's
     // Win32 navigation tree marked «Downloads» without navigating) gets its Invoke once more (estabilización y5: the
     // posted press never opened that tree's folder live), its receipt saying whether the place moved; a place that moved
@@ -609,7 +692,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void AChosenPlaceThatDidNotMoveGetsItsInvokeOnceMoreAndABareContainerIsRefused()
     {
-        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], Places + """
+        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-ClickablePointOf", "Get-ScrollViewport", "Get-VisiblePart", "Get-PressCandidates", "Get-PointVerdict", "Get-PointerPoint", "Test-TopIconic", "Test-PointOnScreen", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], Places + """
             # The worker's own data (the syntax tree the harness parsed), never a copy of it.
             foreach($var in @('$script:PlaceItemKinds','$script:ContainerKinds')){
               $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -eq $var },$true))
@@ -674,14 +757,14 @@ public sealed class ComputerUseListenedPressTests
 
     // Estabilización y5 (banco h1, «andá a Descargas y después a Imágenes»): the real views. «Imágenes» of Explorer's
     // navigation tree (Win32, Invoke + SelectionItem + ExpandCollapse) chosen by Invoke while the window stayed at
-    // «Downloads»; then the posted press, and the folder never opened. Measured on Explorer (redpc 2026-10-11): the
+    // «Downloads»; then the posted press, and the folder never opened. Measured on Explorer (development PC 2026-10-11): the
     // node's second Invoke opened it every time (~120 ms). The node gets its Invoke once more and the receipt says
     // whether the window went to the folder; it never gets the posted press. Contracases: the folder opened at the first
     // Invoke (no second one), a node that stays after both (said as stayed), a content row (one press).
     [Test]
     public void AnExplorerNodeChosenWithoutOpeningGetsItsInvokeOnceMoreNeverThePostedPress()
     {
-        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], """
+        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-ClickablePointOf", "Get-ScrollViewport", "Get-VisiblePart", "Get-PressCandidates", "Get-PointVerdict", "Get-PointerPoint", "Test-TopIconic", "Test-PointOnScreen", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], """
             foreach($var in @('$script:PlaceItemKinds','$script:ContainerKinds')){
               $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -eq $var },$true))
               if($found.Count -ne 1){ throw ('data missing: '+$var) }
@@ -784,7 +867,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void EveryWayThatChoosesAnItemSaysWhetherThePlaceMoved()
     {
-        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], Places + """
+        string answer = Run(Worker(), ["Invoke-NamedControl", "Test-PlaceMoved", "Get-SteadyPlace", "Test-PlaceTooDear", "Wait-PlaceMoved", "Get-PressPoint", "Get-ClickablePointOf", "Get-ScrollViewport", "Get-VisiblePart", "Get-PressCandidates", "Get-PointVerdict", "Get-PointerPoint", "Test-TopIconic", "Test-PointOnScreen", "Get-CurrentRect", "Get-RenderHosts", "Select-ClickMethods"], Places + """
             foreach($var in @('$script:PlaceItemKinds','$script:ContainerKinds')){
               $found=@($ast.FindAll({ param($node) $node -is [System.Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -eq $var },$true))
               if($found.Count -ne 1){ throw ('data missing: '+$var) }
@@ -881,7 +964,7 @@ public sealed class ComputerUseListenedPressTests
     [Test]
     public void AtAPointAContainerIsSkippedNeverTheEnd()
     {
-        string answer = Run(Worker(), ["Do-At", "Click-Result", "Get-AskingName", "Get-SettingsSwitchRefusal"], """
+        string answer = Run(Worker(), ["Do-At", "Click-Result", "Get-AskingName", "Get-SystemChange", "Get-PressTaker", "Test-SystemSurface"], """
             function Read-RenderHosts($request){ return @() }
             function Get-RenderHosts($top){ return @() }
             function Get-Root([long]$hwnd){ return @{ hwnd=[IntPtr]77; root=(New-Object psobject -Property @{ Current=(New-Object psobject -Property @{ BoundingRectangle=[System.Windows.Rect]::Empty }) }) } }
@@ -924,7 +1007,7 @@ public sealed class ComputerUseListenedPressTests
     }
 
     // Runs a body over the worker's named functions with a stand-in for the native calls: posted presses are recorded.
-    private static string Run(string worker, string[] functions, string body)
+    internal static string Run(string worker, string[] functions, string body)
     {
         string script = """
             $ErrorActionPreference='Stop'
@@ -969,7 +1052,7 @@ public sealed class ComputerUseListenedPressTests
         start.Environment["BAXY_CLICK_FUNCTIONS"] = string.Join(',', functions);
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return output.Trim();

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Providers.Windows.Clipboard;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -26,17 +27,18 @@ public static class OfficeNewDocumentPaste
         };
 
     public static ValueTask<OfficePasteResult?> TryAsync(string? application, CancellationToken cancellationToken) =>
-        TryAsync(application, new ExternalProcessRunner(), cancellationToken);
+        TryAsync(application, new ExternalProcessRunner(), new WindowsClipboardProvider(), cancellationToken);
 
     internal static async ValueTask<OfficePasteResult?> TryAsync(
-        string? application, IExternalProcessRunner runner, CancellationToken cancellationToken)
+        string? application, IExternalProcessRunner runner, IClipboardProvider clipboard, CancellationToken cancellationToken)
     {
         if (OfficeOf(application) is not { } office)
             return null;
+        string state = await ClipboardStateAsync(clipboard, cancellationToken).ConfigureAwait(false);
         ExternalProcessResult process;
         try
         {
-            process = await runner.RunPowerShellAsync(Script, [office], TimeSpan.FromSeconds(30), cancellationToken)
+            process = await runner.RunPowerShellAsync(Script, [office, state], TimeSpan.FromSeconds(30), cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is IOException or TimeoutException or InvalidOperationException
@@ -62,15 +64,31 @@ public static class OfficeNewDocumentPaste
         return new OfficePasteResult(ok, effect, ok ? null : error ?? "paste_not_read_back", document, characters);
     }
 
-    private const string Script = """
+    // A8: the script's Get-Clipboard waited with no limit of its own on an owner that does not answer, the 30 s of the
+    // whole script, and any failure of it read as empty. The read here is bounded and says which. The script still answers
+    // with it only when the application is running: a closed one goes the ordinary way, whatever the clipboard holds.
+    private static async ValueTask<string> ClipboardStateAsync(IClipboardProvider clipboard, CancellationToken cancellationToken)
+    {
+        try
+        {
+            ClipboardTextSnapshot text = await clipboard.ReadTextAsync(1, cancellationToken).ConfigureAwait(false);
+            return text.Text.Length > 0 ? "text" : "clipboard_empty";
+        }
+        catch (ClipboardProviderException exception)
+        {
+            return exception.Code == "clipboard_has_no_text" ? "clipboard_empty" : exception.Code;
+        }
+    }
+
+    internal const string Script = """
         $ErrorActionPreference='Stop'
         $app=[string]$args[0]
+        $held=[string]$args[1]
         function Answer($h){ [pscustomobject]$h | ConvertTo-Json -Compress; exit 0 }
         # Only an application already running is used here; a closed one goes the ordinary way.
         try { $office=[Runtime.InteropServices.Marshal]::GetActiveObject($(if($app -eq 'word'){ 'Word.Application' } else { 'Excel.Application' })) }
         catch { Answer @{ ok=$false; running=$false; effectObserved=$false; error='office_app_not_open' } }
-        $text=''; try { $text=[string](Get-Clipboard -Raw) } catch {}
-        if([string]::IsNullOrEmpty($text)){ Answer @{ ok=$false; running=$true; effectObserved=$false; error='clipboard_empty' } }
+        if($held -ne 'text'){ Answer @{ ok=$false; running=$true; effectObserved=$false; error=$held } }
         $sent=$false
         try {
           if($app -eq 'word'){

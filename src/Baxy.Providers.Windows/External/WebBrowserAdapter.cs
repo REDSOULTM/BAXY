@@ -59,7 +59,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
         _sessionContext = sessionContext;
-        _userBrowser = new UserBrowserSurface(new WindowsUserBrowserPlatform());
+        _pages = new SearchPageReader();
+        _userBrowser = new UserBrowserSurface(new WindowsUserBrowserPlatform(), pageStatus: _pages.StatusAsync);
         _capturesDirectory = Path.Combine(dataRoot, "captures");
         _http = new HttpClient(SearchPageReader.StrangerHandler()) { Timeout = TimeSpan.FromSeconds(20) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 structured-search");
@@ -68,7 +69,6 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         _places = new OpenStreetMapPlaceSource(_http);
         _rates = new FrankfurterRateSource(_http);
         _sports = new EspnScheduleSource(_http);
-        _pages = new SearchPageReader();
         _homeRegion = HomeRegion.Read();
     }
 
@@ -171,15 +171,23 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CancellationToken cancellationToken)
     {
         string action = ExternalJson.RequiredString(arguments, "action");
+        // Uso real 03-11 (U53, U64): the tab to close or to switch to, named as the person said it; without it, the
+        // active one is closed.
+        string? tab = arguments.TryGetProperty("tab", out JsonElement named) && named.ValueKind == JsonValueKind.String
+            && !string.IsNullOrWhiteSpace(named.GetString()) ? named.GetString()!.Trim() : null;
         // Owner 2026-10-06: the person's tabs are in their own browser; a browser BAXY keeps aside is never the
         // answer to «cierra la pestaña» or «vuelve atrás». FT/proveedores goal (review of receipts): but the last page
         // BAXY opened in a named browser (Chrome when Opera is the default) is acted on there, as its page read is
         // (E016); before, «léela» read Chrome and «ciérrala» closed the person's Opera tab.
         if (_sessionContext?.Active is null && PersonsBrowser() is { } userBrowser)
-            return await _userBrowser!.ControlAsync(operation, userBrowser, action, effectBoundary, cancellationToken)
+            return await _userBrowser!.ControlAsync(operation, userBrowser, action, tab, effectBoundary, cancellationToken)
                 .ConfigureAwait(false);
         if (UserBrowserHoldsThePage)
             return ExternalJson.FailureBeforeEffect(operation, UserBrowserTabsNotAutomatable);
+        // BAXY's own CDP browser closes its active target only: a tab named there (to close or to switch to, U64) is not
+        // looked for, and nothing is sent.
+        if (tab is not null || action == "switch_tab")
+            return ExternalJson.FailureBeforeEffect(operation, NamedTabNotInProductBrowser);
         CdpBrowserSession browser = _sessionContext?.Active ?? _browser;
         int launches = browser.Launches;
         effectBoundary.Cross(cancellationToken);
@@ -197,6 +205,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         // Ronda final 10 (regla 3): a control that opened BAXY's browser first changed the desktop, so «at the start»
         // or «at the end» of a page it just opened is never the state already reached.
         bool launched = browser.Launches > launches;
+        // Ajuste c4: a step on a tab of a browser that ended sent nothing (CdpBrowserSession.SessionClosed).
+        if (control.ErrorCode == CdpBrowserSession.SessionClosed)
+            return ExternalJson.FailureBeforeEffect(operation, control.ErrorCode);
         if (!control.Verified)
             return effectBoundary.Failure(operation, control.ErrorCode, control.EffectObserved || launched);
         JsonElement result = ExternalJson.Create(writer =>
@@ -312,9 +323,12 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             || !SearchPageReader.IsPublicPageAddress(address))
             return ExternalJson.Failure(operation, "web_fetch_address_not_public");
         SearchPageReader.PageRead read;
+        bool newsLink = GoogleNewsFeed.ArticleId(address) is not null;
         try
         {
-            read = await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+            read = newsLink
+                ? await ReadNewsArticleAsync(address, cancellationToken).ConfigureAwait(false)
+                : await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
@@ -336,6 +350,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         if (read.Html is null || read.Final is null)
             return ExternalJson.Failure(operation, read.Error ?? "web_fetch_page_unreadable");
         (string title, string whole, int skipped) = PageText.Prose(read.Html);
+        // Uso real 04-11: a store's page came back «completed» with text "": nothing read is no reading.
+        if (whole.Length == 0)
+            return NoText(operation, read.Final, title, skipped);
         int start = Math.Min(offset, whole.Length);
         // A part never begins or ends between the two halves of a character (an emoji): each half alone was written
         // as «�», and the character was lost from both parts.
@@ -353,6 +370,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteNumber("version", 1);
             writer.WriteString("requestedUrl", address.AbsoluteUri);
             writer.WriteString("finalUrl", read.Final.AbsoluteUri);
+            // uso-82: a Google News link was followed to the outlet's article, whose page this is.
+            if (newsLink) writer.WriteString("redirectedBy", "Google News");
             writer.WriteString("title", title);
             writer.WriteNumber("totalCharacters", whole.Length);
             // Ronda final 10 (regla 3): text in menus, headers, footers, side panels and buttons is skipped; how much.
@@ -371,6 +390,88 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("text", text);
             writer.WriteEndObject();
         }), effectObserved: false);
+    }
+
+    // A page with no text left: what it drew with scripts or all it skipped is not in this reading; the person's browser
+    // draws it, and browser.page.read reads what it shows.
+    private static ExternalCapabilityReceipt NoText(string operation, Uri final, string title, int skipped) =>
+        ExternalJson.FailureBeforeEffect(operation, "web_fetch_no_text") with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("finalUrl", final.AbsoluteUri);
+                writer.WriteString("title", title);
+                writer.WriteNumber("skippedSectionCharacters", skipped);
+                writer.WriteString("next", "this page has no text to read this way, so nothing of it was read: "
+                    + $"{Baxy.Kernel.Operations.WireNames.Call("browser.navigate", new() { ["url"] = final.AbsoluteUri })} "
+                    + $"opens it, and {Baxy.Kernel.Operations.WireNames.Call("browser.page.read", new())} then reads what it shows");
+                writer.WriteEndObject();
+            }),
+        };
+
+    // uso-82: a Google News link web.fetch was given (a news result Google News did not resolve at search time) is read
+    // as the article it leads to, as any page is (public addresses only, each redirect checked).
+    // web_fetch_news_link_unresolved: Google News did not say where the link leads.
+    private async Task<SearchPageReader.PageRead> ReadNewsArticleAsync(Uri link, CancellationToken cancellationToken)
+    {
+        Dictionary<string, Uri> articles = await NewsArticlesAsync([link.AbsoluteUri], cancellationToken)
+            .ConfigureAwait(false);
+        return articles.TryGetValue(link.AbsoluteUri, out Uri? article)
+            ? await _pages.ReadPageAsync(article, cancellationToken).ConfigureAwait(false)
+            : SearchPageReader.PageRead.Failed("web_fetch_news_link_unresolved");
+    }
+
+    // uso-82: the article each Google News link leads to, by the link. Each link's page (read as any page, all at once)
+    // carries the signature Google News is asked the article's address with, and one request asks them all
+    // (GoogleNewsFeed.ArticleAddressRequest); only the links' own ids leave, to Google News, which gave them. A link whose
+    // page or answer did not say is left out; a failure of the request itself is thrown to the caller.
+    private async Task<Dictionary<string, Uri>> NewsArticlesAsync(
+        IReadOnlyList<string> links,
+        CancellationToken cancellationToken)
+    {
+        var articles = new Dictionary<string, Uri>(StringComparer.Ordinal);
+        var asked = new List<(string Link, string Id, Task<SearchPageReader.PageRead> Page)>();
+        foreach (string link in links.Distinct(StringComparer.Ordinal))
+        {
+            if (Uri.TryCreate(link, UriKind.Absolute, out Uri? address) && GoogleNewsFeed.ArticleId(address) is { } id)
+                asked.Add((link, id, LinkPageAsync(address)));
+        }
+
+        if (asked.Count == 0) return articles;
+        await Task.WhenAll(asked.Select(static article => article.Page)).ConfigureAwait(false);
+        FormUrlEncodedContent? ask = GoogleNewsFeed.ArticleAddressRequest(
+            asked.Select(static article => (article.Id, article.Page.Result.Html ?? string.Empty)).ToList());
+        if (ask is null) return articles;
+        using var request = new HttpRequestMessage(HttpMethod.Post, GoogleNewsFeed.ArticleAddressEndpoint) { Content = ask };
+        request.Headers.TryAddWithoutValidation("User-Agent", WikipediaSearchSource.UserAgent);
+        using HttpResponseMessage response = await _http
+            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+            .ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode) return articles;
+        string answer = await ReadBoundedTextAsync(response, 400_000, cancellationToken).ConfigureAwait(false);
+        foreach ((int number, Uri article) in GoogleNewsFeed.ArticleAddresses(answer))
+        {
+            if (number >= 1 && number <= asked.Count && SearchPageReader.IsPublicPageAddress(article))
+                articles[asked[number - 1].Link] = article;
+        }
+
+        return articles;
+
+        // One link's page that did not come (no answer, no answer in time) leaves only that link out.
+        async Task<SearchPageReader.PageRead> LinkPageAsync(Uri address)
+        {
+            try
+            {
+                return await _pages.ReadPageAsync(address, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is HttpRequestException or IOException
+                || (exception is OperationCanceledException && !cancellationToken.IsCancellationRequested))
+            {
+                return SearchPageReader.PageRead.Failed("web_fetch_unreachable");
+            }
+        }
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ListTabsAsync(
@@ -504,7 +605,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             ? await _browser.PlayDisneyAsync(title, cancellationToken).ConfigureAwait(false)
             : await _browser.PlayNetflixAsync(title, cancellationToken).ConfigureAwait(false);
         if (playback.Candidates is { } candidates)
-            return UserBrowserSurface.StreamingTitleCandidates(operation, service, title, candidates);
+            return UserBrowserSurface.StreamingTitleCandidates(
+                operation, service, title, [.. candidates.Select(name => UserBrowserSurface.CardOf(name, title))]);
         if (!playback.Verified)
         {
             // Un fallo que no dice donde se quedo obliga a adivinar. Se anota la
@@ -791,7 +893,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // With nearby (web, news, encyclopedia, places), this PC's city and country, read from its public address
     // (PublicPlaceLocator, https only), join the query or are the place: that is all of the PC that leaves, and the
     // receipt says the query as it was sent. A source that did not answer is web_search_unavailable (the reply says
-    // it could not look it up); one that answered with nothing, web_search_no_results.
+    // it could not look it up; for web, its next opens the search in the person's browser: WebSearchRefused); one that
+    // answered with nothing, web_search_no_results.
     // Bing's HTML page is not a source: the Microsoft Services Agreement §14.f.i keeps Bing material «for your
     // noncommercial, personal use only»; §3.a.vi forbids «impermissible scraping»; bing.com/robots.txt disallows
     // /search. DuckDuckGo's terms and policy say nothing about automated queries, but the service throttles them.
@@ -880,7 +983,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             ? text.Trim()
             : null;
 
-    // Uso real tanda 4c: with nearby, this PC's city, read from its public address, and its country (M81: «Curico»
+    // Uso real tanda 4c: with nearby, this PC's city, read from its public address, and its country (M81: «Valparaiso»
     // alone is also in Indiana). Only their names leave; no coordinates, nothing of the person. Null without nearby, or
     // when the PC's place could not be read; Unreachable when the place service did not answer at all (no network:
     // the search is not answering either, not a place unknown).
@@ -934,20 +1037,22 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         string authority = GeneralSearchAuthority;
         string? kl = _homeRegion is null ? null : GeneralSearchRegions.GetValueOrDefault(_homeRegion + "-" + language);
-        var reading = await ReadGeneralSearchAsync(
+        GeneralSearchReading read = await ReadGeneralSearchAsync(
             GeneralSearchEndpoint, ParseDuckDuckGoLitePage, query, language, kl, cancellationToken).ConfigureAwait(false);
-        if (reading is not { IsResultsPage: true })
+        GeneralSearchReading? first = null;
+        if (read.Outcome != GeneralSearchOutcome.ResultsPage)
         {
             await Task.Delay(GeneralSearchRetryDelay, cancellationToken).ConfigureAwait(false);
             authority = GeneralSearchFallbackAuthority;
-            reading = await ReadGeneralSearchAsync(
+            first = read;
+            read = await ReadGeneralSearchAsync(
                     GeneralSearchFallbackEndpoint, ParseDuckDuckGoHtmlPage, query, language, kl, cancellationToken)
                 .ConfigureAwait(false);
         }
         // A block, a captcha, an error page or no answer: nothing was searched, and the reply must not pretend the web
         // had no answer.
-        if (reading is not { IsResultsPage: true } read)
-            return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
+        if (read.Outcome != GeneralSearchOutcome.ResultsPage)
+            return WebSearchRefused(operation, query, kl, [first!, read]);
         return SearchReceipt(operation, "web", query, authority, read.Results.Take(limit).ToList(),
             static (writer, result) =>
             {
@@ -957,6 +1062,62 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             },
             region: kl is null ? null : _homeRegion);
     }
+
+    // Encargo 41 (U29, R18): from a cloud address DuckDuckGo lets one or two searches through and then answers 202 with
+    // its check that a person is asking, for more than ten minutes; the model was left with web_search_unavailable and
+    // nothing to do. No second engine is asked: Bing's terms forbid it (above), Mojeek's forbid scraping without consent,
+    // and Marginalia's keyless «public» key is for trying the API out. What D32 left as the way out (owner, 2026-09-28)
+    // is the same search opened in the person's own browser, for them to look at: the next leads with that call and its
+    // address (encargos 20 and 28), the engine's own search page with «q» and the region «kl» this search was asked in
+    // (duckduckgo.com/duckduckgo-help-pages/settings/params).
+    // Uso 80 (diag-a947: 38 of 44 searches refused on the fleet's cloud addresses, both pages answering 202 to 20 of 20
+    // queries from one of them; U29 0/6): the next said the page was «for them to look at» and the model told the
+    // failure. In U31's rescue the same model, on the same machines, opened that page and read it (6 of 6), and Edge got
+    // the results the HTTP pages were refused: the person's browser asks as a person does, with their session. The next
+    // is now that search done there, the results read with the page read (both calls the kernel authorizes on their own:
+    // web.search stays a read that opens nothing), and «asked» says what each page of the engine answered.
+    private static ExternalCapabilityReceipt WebSearchRefused(
+        string operation, string query, string? kl, IReadOnlyList<GeneralSearchReading> asked) =>
+        ExternalJson.FailureBeforeEffect(operation, SearchUnavailable) with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                string page = "https://duckduckgo.com/?q=" + Uri.EscapeDataString(query) + (kl is null ? "" : "&kl=" + kl);
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("source", "web");
+                writer.WriteString("query", query);
+                writer.WriteStartArray("asked");
+                foreach (GeneralSearchReading reading in asked)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("endpoint", reading.Endpoint);
+                    writer.WriteString("outcome", reading.Outcome switch
+                    {
+                        GeneralSearchOutcome.Challenge => "challenge",
+                        GeneralSearchOutcome.Refused => "refused",
+                        GeneralSearchOutcome.Unreadable => "unreadable",
+                        GeneralSearchOutcome.NoAnswer => "no_answer",
+                        _ => "unreachable",
+                    });
+                    if (reading.HttpStatus is { } status)
+                        writer.WriteNumber("httpStatus", status);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                // An address of a result is where the session may go unasked (NetworkEgress, as AppOpen's placeWebUrl).
+                writer.WriteString("searchPageUrl", page);
+                // Measured with the real model (decision bench, family busqueda_rechazada): the cause written after the
+                // calls («this call searched nothing: …») was told to the person instead of followed (7 of 18 followed;
+                // 10 of 18 with «refused it (HTTP 202)»); the route alone, «instead», 16 of 18. The cause stays in
+                // «asked».
+                writer.WriteString("next", $"{Baxy.Kernel.Operations.WireNames.Call("browser.navigate", new() { ["url"] = page })} "
+                    + "does this search in the person's browser instead, and "
+                    + $"{Baxy.Kernel.Operations.WireNames.Call("browser.page.read", new())} then reads its results there, "
+                    + "the same engine's results this call would have given");
+                writer.WriteEndObject();
+            }),
+        };
 
     private async Task<ExternalCapabilityReceipt> NewsAsync(
         string operation,
@@ -968,15 +1129,41 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         List<GoogleNewsFeed.Headline>? items = await ReadNewsAsync(query, language, cancellationToken)
             .ConfigureAwait(false);
         if (items is null) return ExternalJson.FailureBeforeEffect(operation, SearchUnavailable);
-        return SearchReceipt(operation, "news", query, NewsSearchAuthority, items.Take(limit).ToList(),
-            static (writer, item) =>
+        List<GoogleNewsFeed.Headline> shown = items.Take(limit).ToList();
+        // uso-82: each item's link is a Google News link; the article it leads to is asked of Google News now, within a
+        // bound of its own (about half a second for five on 2026-11-04). A link it did not resolve stays as it came.
+        Dictionary<string, Uri> articles = new(StringComparer.Ordinal);
+        using (var bound = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+        {
+            bound.CancelAfter(NewsArticlesBound);
+            try
+            {
+                articles = await NewsArticlesAsync(shown.Select(static item => item.Url).ToList(), bound.Token)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is HttpRequestException or IOException
+                || (exception is OperationCanceledException && !cancellationToken.IsCancellationRequested))
+            {
+                // The results keep their Google News links; web.fetch asks again for the one it reads.
+            }
+        }
+
+        bool linked = shown.Any(item => !articles.ContainsKey(item.Url));
+        return SearchReceipt(operation, "news", query, NewsSearchAuthority, shown,
+            (writer, item) =>
             {
                 writer.WriteString("title", item.Title);
                 writer.WriteString("source", item.Source);
-                writer.WriteString("url", item.Url);
+                writer.WriteString("url", articles.TryGetValue(item.Url, out Uri? article) ? article.AbsoluteUri : item.Url);
                 writer.WriteString("published", item.PublishedAt);
-            });
+            },
+            next: linked
+                ? "a url on news.google.com is a Google News link to the article on its outlet's site: "
+                    + $"{Baxy.Kernel.Operations.WireNames.Of("web.fetch")} of that url reads the article there"
+                : null);
     }
+
+    private static readonly TimeSpan NewsArticlesBound = TimeSpan.FromSeconds(4);
 
     private async Task<ExternalCapabilityReceipt> EncyclopediaAsync(
         string operation,
@@ -1100,8 +1287,9 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // encyclopedia), what a typed source was sent instead («sent»: currency, sports, places), the results as the source
     // gave them and their count, and «authority», the source that answered (duckduckgo_lite_https or
     // duckduckgo_html_https, google_news_rss_search, wikipedia_es_api, wikipedia_en_api, frankfurter_reference_rates, espn_public_schedule,
-    // openstreetmap_nominatim), and «region», the home region a web search was asked in. No result is
-    // web_search_no_results: the source answered with nothing.
+    // openstreetmap_nominatim), «region», the home region a web search was asked in, and «next», how the results'
+    // addresses are read when they are not the pages themselves (news). No result is web_search_no_results: the source
+    // answered with nothing.
     private static ExternalCapabilityReceipt SearchReceipt<T>(
         string operation,
         string source,
@@ -1110,7 +1298,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         List<T> results,
         Action<Utf8JsonWriter, T> writeResult,
         Action<Utf8JsonWriter>? sent = null,
-        string? region = null)
+        string? region = null,
+        string? next = null)
     {
         if (results.Count == 0) return ExternalJson.FailureBeforeEffect(operation, SearchNoResults);
         JsonElement result = ExternalJson.Create(writer =>
@@ -1137,6 +1326,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteNumber("resultCount", results.Count);
             writer.WriteString("authority", authority);
             writer.WriteString("answeredBy", AnsweredBy(authority));
+            if (next is not null) writer.WriteString("next", next);
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
@@ -1195,17 +1385,17 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     // Both endpoints answer a form post (a GET of the lite one returns its search form with no results). Each result is
     // kept as the engine gave it when it is structurally one: an http or https address that is not the engine's own, a
-    // title and bounded lengths. Null when the endpoint did not answer.
+    // title and bounded lengths. The reading says what the endpoint answered (GeneralSearchOutcome) and its HTTP status.
     // «kl», when not null, is the engine's region the search is asked in (GeneralSearchRegions).
-    private async Task<(List<(string Title, string Url, string Snippet)> Results, bool IsResultsPage)?>
-        ReadGeneralSearchAsync(
-            string endpoint,
-            Func<string, IEnumerable<(string Title, string Url, string Snippet)>> parse,
-            string query,
-            string language,
-            string? kl,
-            CancellationToken cancellationToken)
+    private async Task<GeneralSearchReading> ReadGeneralSearchAsync(
+        string endpoint,
+        Func<string, IEnumerable<(string Title, string Url, string Snippet)>> parse,
+        string query,
+        string language,
+        string? kl,
+        CancellationToken cancellationToken)
     {
+        string host = new Uri(endpoint).Host;
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
             Content = new FormUrlEncodedContent(kl is null ? [new("q", query)] : [new("q", query), new("kl", kl)]),
@@ -1213,23 +1403,23 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         request.Headers.TryAddWithoutValidation("User-Agent", GeneralSearchUserAgent);
         request.Headers.TryAddWithoutValidation("Accept-Language", language == "en" ? "en-US,en;q=0.9" : "es-ES,es;q=0.9");
         string page;
-        bool answered;
+        int status;
         try
         {
             using HttpResponseMessage response = await _http
                 .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
                 .ConfigureAwait(false);
-            answered = response.IsSuccessStatusCode;
+            status = (int)response.StatusCode;
             page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (HttpRequestException)
         {
-            return null;
+            return new(host, GeneralSearchOutcome.Unreachable, null, []);
         }
         catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            return null;
+            return new(host, GeneralSearchOutcome.NoAnswer, null, []);
         }
         var results = new List<(string Title, string Url, string Snippet)>();
         foreach ((string title, string url, string snippet) in parse(page))
@@ -1243,8 +1433,34 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 results.Add((title, parsed.AbsoluteUri, snippet));
             }
         }
-        return (results, answered && IsDuckDuckGoResultsPage(page));
+        // Encargo 41 and uso 80: the engine's check that a person is asking comes as 202 with its «anomaly» challenge
+        // form (measured from the fleet's addresses on both pages); a status that is no success otherwise is a refusal
+        // (429, 403, 5xx), and a success that is no results page, a page that cannot be read as one.
+        GeneralSearchOutcome outcome = status is >= 200 and < 300 && IsDuckDuckGoResultsPage(page)
+            ? GeneralSearchOutcome.ResultsPage
+            : status == 202 || page.Contains("challenge-form", StringComparison.Ordinal)
+                || page.Contains("anomaly", StringComparison.OrdinalIgnoreCase)
+                ? GeneralSearchOutcome.Challenge
+                : status is >= 200 and < 300 ? GeneralSearchOutcome.Unreadable : GeneralSearchOutcome.Refused;
+        return new(host, outcome, status, results);
     }
+
+    private enum GeneralSearchOutcome
+    {
+        ResultsPage,
+        Challenge,
+        Refused,
+        Unreadable,
+        NoAnswer,
+        Unreachable,
+    }
+
+    // What one page of the general engine answered: its outcome, its HTTP status when it answered, and its results.
+    private sealed record GeneralSearchReading(
+        string Endpoint,
+        GeneralSearchOutcome Outcome,
+        int? HttpStatus,
+        List<(string Title, string Url, string Snippet)> Results);
 
     internal static async Task<string> ReadBoundedTextAsync(
         HttpResponseMessage response,
@@ -1399,6 +1615,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     }
 
     internal const string UserBrowserTabsNotAutomatable = "user_browser_tabs_not_automatable";
+
+    internal const string NamedTabNotInProductBrowser = "browser_named_tab_product_browser";
 
     // The last page was opened in the person's browser and no CDP session took
     // over since: its tabs are not BAXY's to read or drive (no debug port on the
@@ -1681,6 +1899,10 @@ internal class CdpBrowserSession : IDisposable
         if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "exit_fullscreen" or "new_tab"
             or "reload" or "scroll_down" or "scroll_up"))
             return new(false, false, action, string.Empty, string.Empty, "browser_control_action_invalid");
+        // Ajuste c4: of the controls, only a new tab opens a browser again (as a page does); closing, going back or
+        // scrolling a tab of the browser that ended never launches one to act on its blank page as if it were that tab.
+        if (action != "new_tab" && ForgetEndedBrowser())
+            return new(false, false, action, string.Empty, string.Empty, SessionClosed);
         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
         if (action == "close_all")
         {
@@ -1993,6 +2215,8 @@ internal class CdpBrowserSession : IDisposable
         if (maximumCharacters is < 256 or > 6_000)
             return new(false, string.Empty, string.Empty, string.Empty, string.Empty, false,
                 "browser_page_limit_invalid");
+        if (ForgetEndedBrowser())
+            return new(false, string.Empty, string.Empty, string.Empty, string.Empty, false, SessionClosed);
         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
         (string targetId, Uri webSocket) = await ResolveTargetAsync(
             endpoint, createIfMissing: false, cancellationToken).ConfigureAwait(false);
@@ -2075,6 +2299,8 @@ internal class CdpBrowserSession : IDisposable
     {
         if (limit is < 1 or > 50)
             return new(false, [], 0, false, "browser_tabs_limit_invalid");
+        if (ForgetEndedBrowser())
+            return new(false, [], 0, false, SessionClosed);
         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
         using Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
             .ConfigureAwait(false);
@@ -2106,7 +2332,7 @@ internal class CdpBrowserSession : IDisposable
         return new(true, tabs, webTargetCount, webTargetCount > tabs.Count, string.Empty);
     }
 
-    internal virtual bool HasEndpoint => _endpoint is not null;
+    internal virtual bool HasEndpoint => _endpoint is not null && !BrowserEnded;
 
     /// <summary>
     /// Drives (pause/stop/play/toggle) or, with a null action, reads the first
@@ -2414,8 +2640,10 @@ internal class CdpBrowserSession : IDisposable
                 + "if(cards.length&&still(cards)){"
                 + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,'no_exact','',named.map(x=>x.n).filter(n=>n).join('\\u001e')].join('\\u001f');}}"
                 // Ronda final 16 (regla 3): no generic «play» is pressed outside the card named as asked (it could be
-                // another title's preview); only the chosen card leads to the player.
-                + "const v=document.querySelector('video');if(v&&v.paused){v.play().catch(()=>{});}"
+                // another title's preview); only the chosen card leads to the player. Uso real 02-11: a preview's
+                // <video> on the search page, while its cards settle, is not the player either: only /watch/ is played,
+                // so a title not found has played nothing.
+                + "const v=document.querySelector('video');if(v&&v.paused&&location.pathname.includes('/watch/')){v.play().catch(()=>{});}"
                 + "return [location.href,document.title,auth?'auth':'ok','unmatched',"
                 + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,chosenId,chosenName].join('\\u001f');})()",
                 cancellationToken,
@@ -2563,10 +2791,14 @@ internal class CdpBrowserSession : IDisposable
                 // Sólo se elige la ficha que se llama como el pedido. Sin ninguna así, cuando
                 // el conjunto lleva tres segundos quieto, la elección devuelve los nombres
                 // de las fichas (una lista) para decirlos como candidatos.
-                + "const pick=list=>list.find(x=>x.t===wanted);"
-                + "const choose=cards=>{const named=cards.map(a=>({a,t:fold(clean(a.getAttribute('aria-label')||a.innerText)),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
+                // Uso real 02-11: una ficha marcada como episodio junto a su título (UserBrowserScripts.EpisodeMark)
+                // es parte de una serie, nunca la película o serie pedida; vuelve con su nombre entero.
+                + "const episodeMark=/" + UserBrowserScripts.EpisodeMark + "/;"
+                + "const pick=list=>list.find(x=>x.t===wanted&&!x.e);"
+                + "const choose=cards=>{const named=cards.map(a=>{const l=(a.getAttribute('aria-label')||a.innerText||'').replace(/\\s+/g,' ').trim();"
+                + "const n=clean(l),t=fold(n);const r=fold(l);return {a,t,n,l,e:episodeMark.test(r.replace(t.length<r.length?t:wanted,''))};});"
                 + "const hit=pick(named.filter(x=>isEntity(x.a)))||pick(named);"
-                + "if(hit)return hit;return still(cards)?named.map(x=>x.n).filter(n=>n):null;};"
+                + "if(hit)return hit;return still(cards)?named.map(x=>x.e?x.l:x.n).filter(n=>n):null;};"
                 + "const near=names=>[location.href,document.title,'ok',-1,'missing',0,'no_exact','',names.join('\\u001e'),'cards'].join('\\u001f');"
                 // Ronda final 17: la pantalla de perfil o de PIN la resuelve la persona; se para y se dice.
                 + "if(!auth&&(p.includes('/select-profile')||p.includes('/enter-pin')||p.includes('/profile-pin'))){"
@@ -2775,8 +3007,46 @@ internal class CdpBrowserSession : IDisposable
         }
     }
 
+    /// <summary>A step on a tab of a browser that ended outside BAXY: there is no tab left, and nothing was sent.</summary>
+    internal const string SessionClosed = "cdp_session_closed";
+
+    // Ajuste c4 (banco ciego c3, C3-061/083/097/146): the browser this session drives was closed outside BAXY (by the
+    // person, by a cleanup), and every later step failed on its dead port (~2 s, a refused loopback connection) until
+    // the App restarted. Its process having ended is the cheap sign; a session on BAXY_CDP_ENDPOINT owns no process.
+    private bool BrowserEnded
+    {
+        get
+        {
+            try
+            {
+                return _ownedProcess is { } owned && owned.HasExited;
+            }
+            catch (Exception exception) when (exception is InvalidOperationException
+                or System.ComponentModel.Win32Exception)
+            {
+                return false;
+            }
+        }
+    }
+
+    // The ended browser's endpoint and the tabs this session opened there are gone with it. Its process is kept until
+    // the next page opens a browser, so every tab step until then says the browser was closed.
+    private bool ForgetEndedBrowser()
+    {
+        if (!BrowserEnded)
+            return false;
+        _endpoint = null;
+        _sessionTargets = null;
+        return true;
+    }
+
     private async ValueTask<Uri> EnsureEndpointAsync(CancellationToken cancellationToken)
     {
+        if (ForgetEndedBrowser())
+        {
+            _ownedProcess!.Dispose();
+            _ownedProcess = null;
+        }
         if (_endpoint is not null)
         {
             return _endpoint;

@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { existsSync, unlinkSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { attach, ready, size, unsize, type App } from './app';
+import { attach, ready, size, spanish, unsize, type App } from './app';
 
 /* «Avatar · clips de Higgsfield + red viva» of Baxy pruebas.html (design v5) against the real app: the video avatar
    under the live network, its idle rotation, the clip following the state through real turns, the Sí / No card, sleep
@@ -11,16 +11,18 @@ import { attach, ready, size, unsize, type App } from './app';
 
 let app: App;
 let page: Page;
+let restoreLang: () => Promise<void>;
 test.setTimeout(240_000);
 test.beforeAll(async () => {
   app = await attach();
   page = app.page;
   await ready(page);
+  restoreLang = await spanish(page);
   await page.waitForFunction(async () => (await (await fetch('/agent/status')).json()).ready === true, undefined, { timeout: 180_000, polling: 1000 });
   await size(app, 1280, 720);
   await page.waitForTimeout(2500);
 });
-test.afterAll(async () => { await unsize(app); await app.browser.close(); });
+test.afterAll(async () => { await unsize(app); await restoreLang?.(); await app.browser.close(); });
 
 // the clip groups each status label may show (the bridges «despertar» / «dormirse» are always allowed)
 const EXP: Record<string, string[]> = {
@@ -61,7 +63,7 @@ function mismatch(tr: Sample[]) {
   return { bad, n, ex };
 }
 async function say(text: string) {
-  const input = page.locator('input[aria-label="Escribe a BAXY"]');
+  const input = page.locator('.bx-line > input');
   await input.fill(text);
   await input.press('Enter');
 }

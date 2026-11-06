@@ -1,13 +1,12 @@
 # Contribuir a BAXY
 
 Gracias por el interés. BAXY es un proyecto pequeño con reglas claras; leerlas antes ahorra trabajo a todos.
+*Issues and pull requests in English are welcome too.*
 
 ## Antes de empezar
 
-- Lee [docs/arquitectura.md](docs/arquitectura.md) y [docs/identidad.md](docs/identidad.md). Las decisiones de
-  diseño no son preferencias: un cambio que las contradiga se discute primero en un issue.
-- Para algo más grande que un arreglo pequeño, abre un issue y cuenta qué quieres cambiar y cómo lo vas a medir.
-- Instala el entorno siguiendo [docs/instalacion.md](docs/instalacion.md).
+- Para algo más grande que un arreglo pequeño, abre un issue y cuenta qué quieres cambiar y cómo lo vas a comprobar.
+- Prepara el entorno como dice el [README](README.md#compilar-desde-el-código).
 
 ## Las reglas del código
 
@@ -40,8 +39,8 @@ py -3.12 -m ruff check .                              # análisis estático de P
   una sesión sin trabajo abierto.
 - Si cambias la interfaz (`src/Baxy.FieldUi`), compila con `pnpm install --frozen-lockfile` y `pnpm build`, y
   versiona `dist/`.
-- Si tu cambio afecta a lo que BAXY decide o dice, mide con los bancos (`scripts/renew/`) y pon el antes y el después
-  en el pull request. Ver [docs/evaluacion.md](docs/evaluacion.md).
+- Si tu cambio afecta a lo que BAXY decide o dice, cuenta en el pull request cómo lo mediste, con el antes y el
+  después.
 
 ## Pull requests
 
@@ -49,10 +48,6 @@ py -3.12 -m ruff check .                              # análisis estático de P
 - Commits en español o inglés, en presente y con el área al principio (por ejemplo, `Mente: …`, `App: …`,
   `Proveedores: …`).
 - **Nada de datos personales**: ni rutas de tu usuario, ni peticiones reales, ni capturas de tu escritorio, ni claves.
-
-## Agentes de programación
-
-Si trabajas con un agente (Claude Code, Codex u otro), [AGENTS.md](AGENTS.md) resume lo que necesita saber.
 
 ## Licencia
 

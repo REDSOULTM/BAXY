@@ -8,7 +8,8 @@ namespace Baxy.App;
 internal readonly record struct ValidatedConfirmationChallenge(
     string Token,
     DateTimeOffset ExpiresAtUtc,
-    bool ReconciliationRequired);
+    bool ReconciliationRequired,
+    JsonElement? Facts = null);
 
 internal static class ConfirmationChallengeParser
 {
@@ -37,7 +38,9 @@ internal static class ConfirmationChallengeParser
             || response.Result is not { ValueKind: JsonValueKind.Object } result
             || !HasExactProperties(
                 result,
-                ["version", "token", "expiresAtUtc", "reconciliationRequired"])
+                result.TryGetProperty("facts", out JsonElement facts) && facts.ValueKind == JsonValueKind.Object
+                    ? ["version", "token", "expiresAtUtc", "reconciliationRequired", "facts"]
+                    : ["version", "token", "expiresAtUtc", "reconciliationRequired"])
             || !result.TryGetProperty("version", out JsonElement version)
             || version.ValueKind != JsonValueKind.Number
             || !version.TryGetInt32(out int versionNumber)
@@ -72,7 +75,8 @@ internal static class ConfirmationChallengeParser
         challenge = new ValidatedConfirmationChallenge(
             token!,
             expiry,
-            reconciliationElement.GetBoolean());
+            reconciliationElement.GetBoolean(),
+            result.TryGetProperty("facts", out JsonElement found) ? found.Clone() : null);
         return true;
     }
 

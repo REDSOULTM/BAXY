@@ -68,7 +68,7 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
     // SeShutdownPrivilege and InitiateSystemShutdownEx is still refused, while
     // `shutdown.exe` schedules the same transition. shutdown.exe asks through
     // InitiateShutdownW, so that is the second door: the older call stays first
-    // (it is what REDPC accepted), and only when Windows refuses it does the
+    // (it is what the development PC accepted), and only when Windows refuses it does the
     // adapter ask the newer one. Both leave the thirty-second delay Windows
     // announces, so `shutdown /a` can still abort it.
     private static WindowsPowerTransitionResult Transition(bool reboot)

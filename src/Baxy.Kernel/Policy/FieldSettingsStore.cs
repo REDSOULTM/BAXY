@@ -4,8 +4,9 @@ using System.Text.Json.Nodes;
 namespace Baxy.Kernel.Policy;
 
 /// <summary>
-/// BAXY's own settings (its voice, the privacy switches, the proposals' silence) live in one file of the profile, like
-/// the confirmation and presentation modes: the view's Settings and Proposals panels write it through the App
+/// BAXY's own settings (its voice, the privacy switches, the proposals' silence, the interface's language) live in one
+/// file of the profile, like the confirmation and presentation modes: the view's Settings and Proposals panels write it
+/// through the App
 /// (<c>FieldSettings</c>) and the chat's <c>baxy.settings.set</c> through the engine; the App reads it.
 /// </summary>
 public static class FieldSettingsStore
@@ -52,7 +53,7 @@ public static class FieldSettingsStore
         string path = Path.Combine(dataRoot, FileName);
         string temporary = path + ".tmp";
         File.WriteAllText(temporary, values.ToJsonString());
-        File.Move(temporary, path, overwrite: true);
+        AtomicFileReplacement.ReplaceOrCreate(temporary, path);
     }
 
     /// <summary>Until when the proposals stay silent for a span: 30m, 1h or tomorrow (08:00 local); null for any other.</summary>

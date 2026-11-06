@@ -3,9 +3,10 @@
 As the real mind (src/baxy_mind/__main__.py), the reader answers voice.speak, voice.cancel, voice.status and
 voice.release as they arrive and every other request waits its turn on one loop. What it does is read from script.json
 in its folder at each request: "hold" {type: file} waits until that file exists, "delay" {type: seconds}, "fail" [type]
-answers an error, "time_out" {type: n} answers the first n of that type as past their budget, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
+answers an error, "progress" {type: {"every": seconds, "count": n}} writes n progress lines for the request (as the
+mind does while its model reads the prompt prefix) one every that many seconds before it answers, "time_out" {type: n} answers the first n of that type as past their budget, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
 reply, "stderr" {type: [line]} writes those lines to stderr before the reply; "delay" {"hello": seconds} holds the hello
-at start. Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process
+at start, and "unoffered" [type] leaves those requests out of it (a mind with no voice does not offer voice.speak). Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process
 writes its pid under pids/.
 """
 
@@ -60,6 +61,10 @@ def answer(message: dict) -> None:
         while not os.path.exists(os.path.join(HERE, hold)) and time.monotonic() < deadline:
             time.sleep(0.02)
     time.sleep(float(plan.get("delay", {}).get(kind, 0)))
+    progress = plan.get("progress", {}).get(kind) or {}
+    for done in range(int(progress.get("count", 0))):
+        time.sleep(float(progress.get("every", 0)))
+        write({"type": "progress", "id": request_id, "done": done + 1, "total": int(progress["count"])})
     for line in plan.get("stderr", {}).get(kind, []):
         sys.stderr.write(line + "\n")
     sys.stderr.flush()
@@ -106,7 +111,9 @@ def main() -> None:
     os.makedirs(os.path.join(HERE, "pids"), exist_ok=True)
     open(os.path.join(HERE, "pids", str(os.getpid())), "w", encoding="utf-8").close()
     time.sleep(float(script().get("delay", {}).get("hello", 0)))
-    write({"type": "hello", "protocol": "baxy.mind.v1", "models": {"llm": "fake"}, "requests": REQUESTS})
+    unoffered = script().get("unoffered", [])
+    write({"type": "hello", "protocol": "baxy.mind.v1", "models": {"llm": "fake"},
+           "requests": [kind for kind in REQUESTS if kind not in unoffered]})
     pending: queue.Queue = queue.Queue()
 
     def read() -> None:

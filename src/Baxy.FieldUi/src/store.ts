@@ -108,7 +108,7 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
       return { ...s, hostState: ev.value, hostQuiet: ev.quiet ?? (ev.value === 'speaking' ? 'idle' : ev.value), live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null,
         sub: ev.value === 'listening' ? null : s.sub };
     case 'agent':
-      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, powered: ev.powered !== false } };
+      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, waitingForMind: !!ev.waitingForMind, failureCause: ev.failureCause ?? null, failureMemory: ev.failureMemory ?? null, powered: ev.powered !== false } };
     case 'transcript':
       // a session opened or started: its internet log is its own calls' (Ajustes → Privacidad says «de esta sesión»)
       return { ...s, items: ev.items.slice(-MAX_ITEMS), sub: null, mood: null, journey: null, netLog: netOf(ev.items) };
@@ -143,7 +143,7 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
       const failed = ev.last_error === 'voice_error' && s.voice.last_error !== 'voice_error';
       return {
         ...s,
-        voice: { available: ev.available, mode: ev.mode, speaking: ev.speaking, last_error: ev.last_error ?? null },
+        voice: { available: ev.available, mode: ev.mode, speaking: ev.speaking, last_error: ev.last_error ?? null, waiting_memory: ev.waiting_memory ?? null },
         voiceErrorAt: failed ? Date.now() : s.voiceErrorAt,
         voiceDroppedAt: ev.last_error === 'voice_dropped_busy' && s.voice.last_error !== 'voice_dropped_busy'
           ? Date.now() : s.voiceDroppedAt,
@@ -156,7 +156,7 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
     case 'voice_wake':
       return { ...s, live: '' };
     case 'boot':
-      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null } };
+      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null, lastFailure: ev.lastFailure ?? null, failureMemory: ev.failureMemory ?? null } };
     case 'surfaces':
       return { ...s, surfaces: { sessions: ev.sessions, memory: ev.memory, memory_revision: ev.memory_revision, tools: ev.tools, triggers: ev.triggers } };
     case 'session':

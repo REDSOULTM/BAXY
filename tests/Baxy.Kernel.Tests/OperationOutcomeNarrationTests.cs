@@ -102,6 +102,24 @@ public sealed class OperationOutcomeNarrationTests
     [TestCase("shell.command.run", "{\"exitCode\":0,\"effectReadBack\":false}", "delivered_only")]
     [TestCase("note.read", "{\"title\":\"Compras\"}", "output_only")]
     [TestCase("browser.page.read", "{\"title\":\"Compras\"}", "output_only")]
+    // Auditoría de falsedades 2026-11-04 (P1, 18 turnos): Enter sent a message, its receipt brought the window read again
+    // after it with the message in the history (after.changed), and «delivered_only» was told «no se volvió a mirar si
+    // hizo efecto»: «pero no se envió todavía». A key's window read after it with a change is its effect read back; one
+    // that read no change, or only the focus moving, and a text whose read back did not match, are not.
+    [TestCase("input.key.press",
+        "{\"ok\":true,\"delivered\":true,\"action\":\"key\",\"key\":\"enter\",\"textLength\":0,\"method\":\"keyboard\","
+        + "\"sentTo\":{\"title\":\"Chat de prueba\",\"process\":\"ChatPrueba\"},\"restored\":true,\"after\":{\"changed\":["
+        + "\"[7] Edit «Escribe un mensaje» focused\",\"[8] Edit «Mensajes» readonly = Yo: llego en diez minutos.\"]}}",
+        "readback")]
+    [TestCase("input.key.press", "{\"delivered\":true,\"after\":{\"appeared\":[\"[3] Button «Aceptar»\"]}}", "readback")]
+    [TestCase("input.key.press", "{\"delivered\":true,\"after\":{\"title\":\"Otra\"}}", "readback")]
+    [TestCase("input.key.press", "{\"delivered\":true,\"after\":{\"same\":true}}", "delivered_only")]
+    [TestCase("input.key.press", "{\"delivered\":true,\"after\":{\"sameListed\":true,\"cut\":true}}", "delivered_only")]
+    [TestCase("input.key.press",
+        "{\"delivered\":true,\"after\":{\"changed\":[\"[7] Edit «Escribe» focused\"],\"focusOnly\":true}}", "delivered_only")]
+    [TestCase("input.key.press", "{\"delivered\":true,\"after\":{\"omitted\":3}}", "delivered_only")]
+    [TestCase("input.text.type",
+        "{\"delivered\":true,\"readBack\":false,\"after\":{\"changed\":[\"[2] Edit «Buscar» = hola\"]}}", "delivered_only")]
     public void ACompletedCallSaysHowItWasVerified(string operation, string result, string verification)
     {
         using JsonDocument message = JsonDocument.Parse(OperationVisibleFacts.FromOutcome(
@@ -125,6 +143,20 @@ public sealed class OperationOutcomeNarrationTests
                 Is.EqualTo(OperationVisibleFacts.ObservedOmitted));
             Assert.That(message.RootElement.GetProperty("verification").GetString(), Is.EqualTo("readback"));
         });
+    }
+
+    // Uso-108 (B2): a key whose window's image changed was looked at again, even with the same tree (after «sameListed»);
+    // with no such fact it stays what Windows accepted.
+    [TestCase("""{"delivered":true,"surfaceChanged":true}""", "readback")]
+    [TestCase("""{"delivered":true,"surfaceChanged":true,"after":{"sameListed":true}}""", "readback")]
+    [TestCase("""{"delivered":true}""", "delivered_only")]
+    [TestCase("""{"delivered":true,"after":{"same":true}}""", "delivered_only")]
+    [TestCase("""{"delivered":true,"surfaceChanged":true,"readBack":false}""", "delivered_only")]
+    public void AKeysImageThatChangedIsItsEffectReadBack(string receipt, string told)
+    {
+        using JsonDocument facts = JsonDocument.Parse(receipt);
+
+        Assert.That(OperationVisibleFacts.Verification("input.key.press", facts.RootElement), Is.EqualTo(told));
     }
 
     // A call that did not complete says how it ended by its status and error, and nothing of a verification.
@@ -302,7 +334,7 @@ public sealed class OperationOutcomeNarrationTests
     {
         JsonElement result = JsonSerializer.SerializeToElement(new
         {
-            windows = Enumerable.Range(0, 50).Select(static index => new { title = "w" + index }).ToArray(),
+            windows = Enumerable.Range(0, 50).Select(static index => new { title = "w" + index, detail = new string('d', 300) }).ToArray(),
             count = 50,
             nextOffset = 50,
         });
@@ -369,7 +401,7 @@ public sealed class OperationOutcomeNarrationTests
         });
         JsonElement search = JsonSerializer.SerializeToElement(new
         {
-            notes = Enumerable.Range(0, 30).Select(static index => new { title = "n" + index }).ToArray(),
+            notes = Enumerable.Range(0, 30).Select(static index => new { title = "n" + index, detail = new string('d', 300) }).ToArray(),
             count = 30,
             totalCount = 30,
             scope = "search",
@@ -397,14 +429,14 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
-    // Ronda final 42 (regla 3): a provider's shownCount and hasMore spoke of its list before the kernel's cut to 20; they
-    // say what the model sees after it.
+    // Ronda final 42 (regla 3): a provider's shownCount and hasMore spoke of its list before the kernel's cut; they say
+    // what the model sees after it.
     [Test]
     public void AProvidersShownCountAndHasMoreFollowTheKernelsCut()
     {
         JsonElement listed = JsonSerializer.SerializeToElement(new
         {
-            entries = Enumerable.Range(0, 35).Select(static index => new { name = "e" + index }).ToArray(),
+            entries = Enumerable.Range(0, 35).Select(static index => new { name = "e" + index, detail = new string('d', 300) }).ToArray(),
             shownCount = 35,
             totalCount = 35,
             hasMore = false,
@@ -441,6 +473,58 @@ public sealed class OperationOutcomeNarrationTests
         Assert.That(facts.RootElement.GetProperty("observed").GetProperty("text").GetString(), Has.Length.EqualTo(6_000));
     }
 
+    // Encargo 62: 6,000 characters in short lines at a long address take the page's links past 8 KiB: the links go, said,
+    // and the text stays whole (it was the read's answer before the links came to the receipt).
+    [Test]
+    public void APageReadPastEightKibLeavesItsLinksOutAndKeepsItsText()
+    {
+        string url = "https://ejemplo.test/" + new string('a', 500);
+        string text = string.Concat(Enumerable.Repeat("una linea\n", 600));
+        string[] links = [.. Enumerable.Range(0, 40).Select(static i => $"Enlace de prueba numero {i,2}")];
+        JsonElement read = JsonSerializer.SerializeToElement(new { url, title = "t", text, truncated = false, links });
+
+        using JsonDocument facts = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("browser.page.read", OperationOutcome.Success(read)));
+        JsonElement observed = facts.RootElement.GetProperty("observed");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.GetProperty("text").GetString(), Has.Length.EqualTo(6_000));
+            Assert.That(observed.TryGetProperty("links", out _), Is.False);
+            Assert.That(observed.GetProperty("linksTruncated").GetBoolean(), Is.True);
+        });
+    }
+
+    // Uso-111 (P3): a page read in blocks fits the budget with them whole, as PageBlocks bounds them.
+    [Test]
+    public void APageReadInBlocksFitsTheBudgetWhole()
+    {
+        var blocks = Enumerable.Range(0, 12)
+            .Select(static i => new { title = $"Resultado {i}", url = $"https://sitio{i}.test/pagina", text = new string('b', 380) })
+            .ToArray();
+        string[] links = [.. Enumerable.Range(0, 40).Select(static i => $"Enlace de prueba numero {i,2}")];
+        JsonElement read = JsonSerializer.SerializeToElement(new
+        {
+            url = "https://motor.test/?q=algo",
+            title = "t",
+            blocks,
+            text = new string('t', 1_000),
+            truncated = false,
+            links,
+        });
+
+        string message = OperationVisibleFacts.FromOutcome("browser.page.read", OperationOutcome.Success(read));
+        using JsonDocument facts = JsonDocument.Parse(message);
+        JsonElement observed = facts.RootElement.GetProperty("observed");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message, Has.Length.LessThanOrEqualTo(8_192));
+            Assert.That(observed.GetProperty("blocks").GetArrayLength(), Is.EqualTo(12));
+            Assert.That(observed.GetProperty("blocks")[11].GetProperty("text").GetString(), Has.Length.EqualTo(380));
+        });
+    }
+
     // Ronda final 45 (the model's context): an OCR whose word boxes pass 8 KiB keeps its text and says the boxes are out.
     [Test]
     public void AnOcrPastEightKibLeavesItsWordBoxesOutAndKeepsItsText()
@@ -467,12 +551,36 @@ public sealed class OperationOutcomeNarrationTests
         });
     }
 
+    // Uso real 02-11 («juegos instalados en Steam»): 30 games in about 5.8k characters reached the model as 20 and it said
+    // the list was cut. A list that fits the 8 KiB budget reaches it whole, with nothing said left out.
+    [Test]
+    public void AListThatFitsTheBudgetReachesTheModelWhole()
+    {
+        JsonElement listed = JsonSerializer.SerializeToElement(new
+        {
+            games = Enumerable.Range(0, 30).Select(static index => new { appId = "1" + index, name = "Game " + index, state = "installed" }).ToArray(),
+            count = 30,
+        });
+
+        using JsonDocument facts = JsonDocument.Parse(
+            OperationVisibleFacts.FromOutcome("game.catalog.list", OperationOutcome.Success(listed)));
+        JsonElement observed = facts.RootElement.GetProperty("observed");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed.GetProperty("games").GetArrayLength(), Is.EqualTo(30));
+            Assert.That(observed.TryGetProperty("gamesShown", out _), Is.False);
+            Assert.That(observed.TryGetProperty("truncated", out _), Is.False);
+            Assert.That(facts.RootElement.TryGetProperty(OperationVisibleFacts.ObservedLimitKey, out _), Is.False);
+        });
+    }
+
     [Test]
     public void AListWithoutACountKeepsItsLengthAndADeepValueLeftOutIsSaid()
     {
         JsonElement listed = JsonSerializer.SerializeToElement(new
         {
-            tasks = Enumerable.Range(0, 30).Select(static index => new { title = "t" + index }).ToArray(),
+            tasks = Enumerable.Range(0, 30).Select(static index => new { title = "t" + index, detail = new string('d', 300) }).ToArray(),
         });
         JsonElement deep = JsonSerializer.SerializeToElement(new { a = new { b = new { c = new { d = new { e = 1 } } } } });
         JsonElement whole = JsonSerializer.SerializeToElement(new { tasks = new[] { new { title = "t" } } });

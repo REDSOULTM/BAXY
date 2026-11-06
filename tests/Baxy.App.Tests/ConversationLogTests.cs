@@ -19,7 +19,7 @@ public sealed class ConversationLogTests
             var log = new ConversationLog(folder, maximumBytes: 300);
             for (int line = 0; line < 4; line++)
             {
-                log.Append(new ConversationMessage("Tú", "mi ciudad es Ñuñoa " + line, true, DateTimeOffset.Now));
+                log.Append(new ConversationMessage("Tú", "mi ciudad es Viña del Mar " + line, true, DateTimeOffset.Now));
             }
 
             string live = Path.Combine(folder, "conversation.v1.jsonl");
@@ -29,7 +29,7 @@ public sealed class ConversationLogTests
 
             Assert.That(File.Exists(live) || File.Exists(live + BoundedJsonlFile.ArchiveSuffix), Is.False);
             log.Append(new ConversationMessage("BAXY", "Listo.", false, DateTimeOffset.Now));
-            Assert.That(File.ReadAllText(live), Does.Contain("Listo.").And.Not.Contain("Ñuñoa"));
+            Assert.That(File.ReadAllText(live), Does.Contain("Listo.").And.Not.Contain("Viña"));
         }
         finally
         {

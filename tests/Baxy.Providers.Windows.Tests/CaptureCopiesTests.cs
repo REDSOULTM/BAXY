@@ -97,6 +97,128 @@ public sealed class CaptureCopiesTests
         });
     }
 
+    // Banco de uso 03-11 (U23, «hazme un pantallazo y déjalo guardado en la carpeta …»): a capture was kept only in the
+    // known folders, and the folder the person named was refused. A copy also goes to a folder of theirs given by its
+    // path, read as a file tool's (PersonFolders.Place): a name alone is in their home.
+    [Test]
+    public async Task ACopyGoesToAFolderOfThePersonsGivenByItsPath()
+    {
+        using Folder root = new();
+        string home = Directory.CreateDirectory(Path.Combine(root.Path, "home")).FullName;
+        string named = Directory.CreateDirectory(Path.Combine(home, "carpeta-prueba")).FullName;
+        WindowsScreenshotProvider provider = Provider(root, folder => folder == "home" ? home : null);
+
+        CaptureResult capture = await provider.CaptureAsync(CancellationToken.None);
+        SavedCaptureCopy saved = await provider.SaveCopyAtAsync(
+            capture.CaptureId, "carpeta-prueba", Filesystem.PersonFolders.PathLabels("capture.screenshot"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.Exists(Path.Combine(named, saved.FileName)), Is.True);
+            Assert.That(saved.Folder, Is.EqualTo("home"));
+            Assert.That(saved.Subdirectory, Is.EqualTo("carpeta-prueba"));
+            Assert.That(Directory.GetFiles(home), Is.Empty);
+        });
+    }
+
+    // The capture's call takes that path («path», as a file tool's) and its result says where the copy went.
+    [Test]
+    public async Task ACaptureWithAPathIsSavedThereAndSaysWhere()
+    {
+        using Folder root = new();
+        string home = Directory.CreateDirectory(Path.Combine(root.Path, "home")).FullName;
+        string named = Directory.CreateDirectory(Path.Combine(home, "carpeta-prueba")).FullName;
+        var handler = new Baxy.Core.Operations.ScreenshotCaptureHandler(
+            Provider(root, folder => folder == "home" ? home : null));
+
+        Baxy.Kernel.Operations.OperationOutcome outcome = await handler.ExecuteAsync(
+            new Baxy.Kernel.Operations.OperationInvocation("request", "mission", "invocation",
+                System.Text.Json.JsonDocument.Parse("""{"path":"carpeta-prueba"}""").RootElement.Clone()),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("savedFolder").GetString(), Is.EqualTo("home"));
+            Assert.That(outcome.Result!.Value.GetProperty("savedSubdirectory").GetString(), Is.EqualTo("carpeta-prueba"));
+            Assert.That(Directory.GetFiles(named, "*.png"), Has.Length.EqualTo(1));
+        });
+    }
+
+    // A path outside the person's folders, or a folder that is not there, writes nothing.
+    [TestCase("C:\\Windows", "known_path_outside_folder")]
+    [TestCase("carpeta-que-no-hay", "capture_folder_unavailable")]
+    [TestCase("..\\fuera", "known_path_outside_folder")]
+    public async Task APathOutsideThePersonsFoldersOrNotThereWritesNothing(string path, string code)
+    {
+        using Folder root = new();
+        string home = Directory.CreateDirectory(Path.Combine(root.Path, "home")).FullName;
+        WindowsScreenshotProvider provider = Provider(root, folder => folder == "home" ? home : null);
+        CaptureResult capture = await provider.CaptureAsync(CancellationToken.None);
+
+        ScreenshotUnavailableException? failure = Assert.ThrowsAsync<ScreenshotUnavailableException>(
+            async () => await provider.SaveCopyAtAsync(
+                capture.CaptureId, path, Filesystem.PersonFolders.PathLabels("capture.screenshot"), CancellationToken.None));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(failure!.Code, Is.EqualTo(code));
+            Assert.That(Directory.GetFileSystemEntries(home), Is.Empty);
+            Assert.That(Directory.GetFiles(root.Path, "*.png", SearchOption.AllDirectories), Is.Empty);
+        });
+    }
+
+    // Encargo 17 (banco uso-cf8d, U23: «{folder:"pictures", path:"<carpeta>/pantallazo.png"}» failed as
+    // capture_folder_unavailable alone). The failure says the facts: the known folder the path was read in, the part of
+    // it that is there and the first part that is not (and whether a file holds that name), that the path is a folder, and
+    // the person's folders of that name under their known folders (searched as a file's name is, bounded), each as a path
+    // the call takes. Nothing is written.
+    [Test]
+    public async Task AFolderThatIsNotThereSaysWhatPartIsMissingAndWhereFoldersOfThatNameAre()
+    {
+        using Folder root = new();
+        string home = Directory.CreateDirectory(Path.Combine(root.Path, "home")).FullName;
+        string pictures = Directory.CreateDirectory(Path.Combine(home, "Pictures")).FullName;
+        Directory.CreateDirectory(Path.Combine(home, "carpeta-prueba"));
+        File.WriteAllText(Path.Combine(home, "carpeta-prueba", "nota.txt"), "x");
+        var handler = new Baxy.Core.Operations.ScreenshotCaptureHandler(Provider(root,
+            folder => folder switch { "home" => home, "pictures" => pictures, _ => null }));
+
+        async Task<Baxy.Kernel.Operations.OperationOutcome> Capture(string arguments) => await handler.ExecuteAsync(
+            new Baxy.Kernel.Operations.OperationInvocation("request", "mission", "invocation",
+                System.Text.Json.JsonDocument.Parse(arguments).RootElement.Clone()),
+            CancellationToken.None);
+
+        Baxy.Kernel.Operations.OperationOutcome withName = await Capture(
+            """{"folder":"pictures","path":"carpeta-prueba/captura.png"}""");
+        Baxy.Kernel.Operations.OperationOutcome elsewhere = await Capture("""{"path":"imagenes/carpeta-prueba"}""");
+        Baxy.Kernel.Operations.OperationOutcome aFile = await Capture("""{"path":"carpeta-prueba/nota.txt"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(withName.ErrorCode, Is.EqualTo("capture_folder_unavailable"));
+            System.Text.Json.JsonElement said = withName.Result!.Value;
+            Assert.That(said.GetProperty("folder").GetString(), Is.EqualTo("home"));
+            Assert.That(said.GetProperty("existingPath").GetString(), Is.EqualTo(@"home\carpeta-prueba"));
+            Assert.That(said.GetProperty("missingPart").GetString(), Is.EqualTo("captura.png"));
+            Assert.That(said.GetProperty("pathIsAFolder").GetBoolean(), Is.True);
+            Assert.That(said.GetProperty("foldersNamedLikeIt").GetArrayLength(), Is.Zero);
+            Assert.That(said.GetProperty("searchComplete").GetBoolean(), Is.True);
+
+            Assert.That(elsewhere.ErrorCode, Is.EqualTo("capture_folder_unavailable"));
+            System.Text.Json.JsonElement other = elsewhere.Result!.Value;
+            Assert.That(other.GetProperty("folder").GetString(), Is.EqualTo("pictures"));
+            Assert.That(other.GetProperty("existingPath").GetString(), Is.EqualTo("pictures"));
+            Assert.That(other.GetProperty("missingPart").GetString(), Is.EqualTo("carpeta-prueba"));
+            Assert.That(other.GetProperty("foldersNamedLikeIt").EnumerateArray().Select(item => item.GetString()),
+                Is.EqualTo(new[] { @"home\carpeta-prueba" }));
+
+            Assert.That(aFile.Result!.Value.GetProperty("missingPartIsAFile").GetBoolean(), Is.True);
+            Assert.That(Directory.GetFiles(root.Path, "*.png", SearchOption.AllDirectories), Is.Empty);
+        });
+    }
+
     [Test]
     public void AnIdentityThatIsNotACaptureIsRefused()
     {

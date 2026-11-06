@@ -42,16 +42,25 @@ internal sealed class ScreenshotCaptureHandler(
         // Ronda 22: a capture the person asked to keep is also saved where they said (the catalog's known folder),
         // verified on disk; without «folder» it stays private. A copy that could not be saved is the request's
         // failure, never a capture told as kept.
+        // Banco de uso 03-11 (U23): or in a folder of theirs given by its path, read as a file tool's path.
         SavedCaptureCopy? saved = null;
-        if (RequestedFolder(invocation) is { } folder)
+        string? path = Requested(invocation, "path");
+        string? folder = Requested(invocation, "folder");
+        if (path is not null || folder is not null)
         {
             try
             {
-                saved = await provider.SaveCopyAsync(result.CaptureId, folder, cancellationToken).ConfigureAwait(false);
+                saved = path is { } said
+                    ? await provider.SaveCopyAtAsync(result.CaptureId, said,
+                        Baxy.Providers.Windows.Filesystem.PersonFolders.PathLabels(operation), cancellationToken).ConfigureAwait(false)
+                    : folder is { } known
+                        ? await provider.SaveCopyAsync(result.CaptureId, known, cancellationToken).ConfigureAwait(false)
+                        : null;
             }
             catch (ScreenshotUnavailableException exception)
             {
-                return OperationOutcome.Failure(exception.Code);
+                // Encargo 17 (U23): with the facts it carries (a copy's folder that is not there).
+                return OperationOutcome.Failure(exception.Code, result: exception.Result);
             }
             catch (CaptureCopyUnconfirmedException)
             {
@@ -123,12 +132,12 @@ internal sealed class ScreenshotCaptureHandler(
         return document.RootElement.Clone();
     }
 
-    private static string? RequestedFolder(OperationInvocation? invocation) =>
+    private static string? Requested(OperationInvocation? invocation, string argument) =>
         invocation is { Arguments.ValueKind: JsonValueKind.Object }
-        && invocation.Arguments.TryGetProperty("folder", out JsonElement folder)
-        && folder.ValueKind == JsonValueKind.String
-        && folder.GetString() is { Length: > 0 } name
-            ? name
+        && invocation.Arguments.TryGetProperty(argument, out JsonElement value)
+        && value.ValueKind == JsonValueKind.String
+        && value.GetString() is { Length: > 0 } text
+            ? text
             : null;
 
     private static void WriteBounds(Utf8JsonWriter writer, string name, CaptureBounds bounds)

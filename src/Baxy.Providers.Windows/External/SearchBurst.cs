@@ -93,7 +93,7 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         string? choose,
         CancellationToken cancellationToken)
     {
-        IInputBurst burst = await lease.AcquireAsync(window, cancellationToken).ConfigureAwait(false);
+        IInputBurst burst = await lease.AcquireForKeysAsync(window, cancellationToken).ConfigureAwait(false);
         if (!burst.MayAct)
         {
             _ = burst.Restore();
@@ -315,7 +315,7 @@ internal sealed class SearchBurst(IForegroundLease lease, ILeaseClock clock, ISe
         string? openerManner = null,
         string? itemManner = null)
     {
-        IInputBurst burst = await lease.AcquireAsync(window, cancellationToken).ConfigureAwait(false);
+        IInputBurst burst = await lease.AcquireForKeysAsync(window, cancellationToken).ConfigureAwait(false);
         if (!burst.MayAct)
         {
             _ = burst.Restore();

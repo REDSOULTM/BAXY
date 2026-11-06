@@ -10,13 +10,16 @@ public static class ModelAids
 {
     /// <summary>
     /// E011: a calculator.expression.evaluate with no Calculator window says app_open can start it. Holdout v5 V5E021: a
-    /// bare number, when the person's words name one operation on what it shows, goes as that operator and the number
-    /// (Baxy.App.SaidVerbs). Ajuste c3 (E011): ( ) or ^ on the Standard keypad says how that keypad computes.
+    /// bare number they said, when the person's words name one operation on what it shows, goes as that operator and the
+    /// number (Baxy.App.SaidVerbs). Ajuste c3 (E011): ( ) or ^ on the Standard keypad says how that keypad computes.
     /// </summary>
     public const string CalculatorNext = "calculator_next";
 
     /// <summary>Accessible mode: system.settings.set says what the mode changes and which modes do not exist yet.</summary>
     public const string AccessibleScope = "accessible_scope";
+
+    /// <summary>Encargo 25 (G2): bypass refused from the chat says where BAXY's own window turns it on.</summary>
+    public const string ConfirmationWhere = "confirmation_where";
 
     /// <summary>BAXY Renew cu (C14): audio.microphone.mute and audio.microphone.status say they are Windows' switch, not an
     /// application's own mute.</summary>
@@ -28,7 +31,8 @@ public static class ModelAids
     /// <summary>F019, E015: an app.open with a place says the place was only asked for and how to look.</summary>
     public const string PlaceUnverified = "place_unverified";
 
-    /// <summary>BAXY Renew cu (C04): an app.open with no place names the places its application opens at directly.</summary>
+    /// <summary>BAXY Renew cu (C04): an app.open refused for its place names the places its application opens at directly;
+    /// one with no place says the read its application declares (encargo 80).</summary>
     public const string AppPlaces = "app_places";
 
     /// <summary>BAXY Renew cu (C18): a protected_window refusal says nothing was sent and how another app's window is reached.</summary>
@@ -56,11 +60,59 @@ public static class ModelAids
     /// <summary>Renew al máximo (6.3): a failed app.open says whether its launch was issued and where to look next.</summary>
     public const string OpenRecovery = "open_recovery";
 
+    /// <summary>
+    /// Banco de entorno del NB (R17): an app_not_found whose name one installed name holds (its words at the end, or two
+    /// or more at the start) leads with the app.open call that names it exactly.
+    /// </summary>
+    public const string NameHolderNext = "name_holder_next";
+
+    /// <summary>
+    /// Banco de entorno del NB (U44): an office.document.create of a workbook with paragraphs, refused, leads with the
+    /// app.open call of the application this PC opens .xlsx files with, for a new blank one.
+    /// </summary>
+    public const string WorkbookCellsNext = "workbook_cells_next";
+
+    /// <summary>
+    /// Encargo 75 (R01): a text typed or a key pressed in a grid says which cell it went to and what that cell holds, read
+    /// by UI Automation; a text still pending leads with the call that ends the cell.
+    /// </summary>
+    public const string GridCellFacts = "grid_cell_facts";
+
+    /// <summary>
+    /// Encargo 75 (U43): an office.document.create says the whole path of the file it wrote, which is not a folder the
+    /// person named: it was looked for in that folder by the name alone.
+    /// </summary>
+    public const string DocumentFullPath = "document_full_path";
+
+    /// <summary>
+    /// Banco de entorno del NB (U43, R01): a window action given the number of a window (from a look) as its windowId
+    /// leads with the window_resolve call that gives that window's windowId.
+    /// </summary>
+    public const string WindowNumberNext = "window_number_next";
+
+    /// <summary>
+    /// Uso 86 (banco de uso R06): an input.visible.controls by a name no window and no installed application bears, with a
+    /// window of the person's browser (Windows' default) open, leads with the same look at that browser's process.
+    /// </summary>
+    public const string PersonBrowserNext = "person_browser_next";
+
     /// <summary>Renew al máximo (auditoría de flujos, P257): an app volume with no audio session names the apps that have one.</summary>
     public const string AppVolumeCandidates = "app_volume_candidates";
 
+    /// <summary>
+    /// Uso 81 (banco de decisiones e35-H-R09a): an app volume with no audio session, when one application with audio,
+    /// and only one, has a name that matches what was said by form, leads with the same call naming that application.
+    /// </summary>
+    public const string AppVolumeNameHolder = "app_volume_name_holder";
+
     /// <summary>Renew al máximo (auditoría de flujos, P215): a package.uninstall candidate that is a game names game_uninstall_named.</summary>
     public const string GameUninstall = "game_uninstall";
+
+    /// <summary>
+    /// Banco ciego c3 C3-049 (also C3-142): a game.launch whose title the Steam library does not hold says that library is
+    /// the only list it read and that app_open with the name said opens a game installed outside it.
+    /// </summary>
+    public const string GameLibraryOnly = "game_library_only";
 
     /// <summary>Renew al máximo (E027): a known file found nowhere says nothing beyond the folders walked was searched.</summary>
     public const string SearchScope = "search_scope";
@@ -85,6 +137,10 @@ public static class ModelAids
 
     /// <summary>Renew al máximo (w5, F004): a text typed with no window named says, as a sentence, the one window it went into.</summary>
     public const string TypedTargetNext = "typed_target_next";
+
+    /// <summary>Encargo 33 (U45): a text typed into a console's window says it was not run (commandRun false) and that
+    /// Enter is another call, which BAXY confirms with the person itself when its mode asks.</summary>
+    public const string ConsoleTypedNext = "console_typed_next";
 
     /// <summary>
     /// P1.1(b) F024 (falsedades v11): an app.close that closed a window with no dialog of its own (by appId: with no
@@ -174,6 +230,30 @@ public static class ModelAids
     public const string SaidChannel = "said_channel";
 
     /// <summary>
+    /// Banco de uso 2026-11-03 (S01, S05, S06, S07: the window the person named was open and the call went to a known
+    /// service, a chat client or the clipboard): a call whose closed argument holds an application they did not say,
+    /// while their words name open windows none of which is that application's, is refused once with the call that
+    /// reaches those windows first; the turn's first call, failed, none of whose texts is in them says that call
+    /// (Baxy.App.NetworkEgress).
+    /// </summary>
+    public const string NamedWindowApp = "named_window_app";
+
+    /// <summary>
+    /// Encargo 113 (banco de uso R06: a page was read and its link's title went to the store's page, not found there):
+    /// the failure of a game.store.page whose title is a link of the page read now or just before, with the store not
+    /// said, says so with the look at that page (Baxy.App.NetworkEgress.WithLinkOfPage).
+    /// </summary>
+    public const string LinkOfOpenPage = "link_of_open_page";
+
+    /// <summary>
+    /// Encargo 65 (cosecha F2: a request for the newest mail of one sender in a webmail the person named read Outlook's
+    /// newest mail, with that site open in a browser tab): the turn's first call, completed, whose result names the application it read (readFrom)
+    /// while the person's words name open windows or browser tabs none of which shows it, says the call that reaches
+    /// them first and that the result is of that application alone (Baxy.App.NetworkEgress.Elsewhere).
+    /// </summary>
+    public const string NamedTabSource = "named_tab_source";
+
+    /// <summary>
     /// Holdout v4 (en vivo: «Biblioteca» pressed 7 times in Steam, each visible_button_postread_unchanged, 50 s): the
     /// same click seen unchanged a second time in a row says so, and the places its application opens straight at.
     /// </summary>
@@ -198,6 +278,13 @@ public static class ModelAids
     /// one is «none read», never «(ninguno)».
     /// </summary>
     public const string ControlsNotComplete = "controls_not_complete";
+
+    /// <summary>
+    /// uso-89 (diag-b5bd, R06): a look whose window gives its controls and whose text was read by OCR says, before that
+    /// text, that it was recognized from the image and may misread letters and digits, and that what the controls name
+    /// comes from the application (the model told the OCR's «829» for the page's «8,9»).
+    /// </summary>
+    public const string ScreenTextRecognized = "screen_text_recognized";
 
     /// <summary>Renew al máximo (w8): a keyboard act refused for a window run as administrator says nothing was sent and why.</summary>
     public const string ElevatedNext = "elevated_next";
@@ -271,6 +358,13 @@ public static class ModelAids
     public const string SaveDialogNext = "save_dialog_next";
 
     /// <summary>
+    /// Encargo 36 (banco uso-b4c4, R11, R12, R13, S08): a text with no field named, refused because the window's keyboard
+    /// focus takes no text, says in a «next» the call that types it into each field of the last view of that window by
+    /// its index (or the look that numbers them), first; the refusal itself and its typed fields stay without it.
+    /// </summary>
+    public const string FocusNotAFieldNext = "focus_not_a_field_next";
+
+    /// <summary>
     /// Ajuste c3 (E017: Ctrl+S to a Spanish Notepad, whose «Guardar» is Ctrl+G, told completed 16 of 16 times): a shortcut
     /// after which nothing of its window changed (WindowWitness) says that it may not be that application's key in its
     /// language, that its menus show their own keys while open, and that a menu entry is pressed by its label.
@@ -304,6 +398,12 @@ public static class ModelAids
     /// </summary>
     public const string CaretPlace = "caret_place";
 
+    /// <summary>Uso-108 (B5): the line of a look cut by its limit says that wanted finds what it left out.</summary>
+    public const string CutNamesWanted = "cut_names_wanted";
+
+    /// <summary>Uso-108 (B15): a cut look says the words of its wanted that no control in sight has in its name.</summary>
+    public const string WantedNotFound = "wanted_not_found";
+
     /// <summary>
     /// Práctica e2e V6E035 («¿qué archivo de mi carpeta X tiene anotado el dato Y?», c3-junto-s0: file.find with query Y
     /// three times, no name with Y, and «ningún archivo en X menciona Y» with Y written inside one): a file.find by name
@@ -311,6 +411,30 @@ public static class ModelAids
     /// unread, and the file_find call with the same path and content Y (WindowsKnownFileAdapter).
     /// </summary>
     public const string FindContentNext = "find_content_next";
+
+    /// <summary>
+    /// Encargo 48 (banco de uso F06: «¿dónde dejé receta_tarta.txt?» searched as content, found in no text, told as not
+    /// found): a file.find by content (no query) that found the text inside no file, while the names of files of the
+    /// same walk contain it, says how many and leads with the file_find call by name with the same path, and lists the
+    /// first five of those files (namedSo: name, folder, relativePath) as a search by name lists them
+    /// (WindowsKnownFileAdapter).
+    /// </summary>
+    public const string FindNameNext = "find_name_next";
+
+    /// <summary>
+    /// Encargo 55 (banco de uso F11: «anótame que tengo que renovar…» went to task.create, then «léeme las notas que
+    /// tengo» to note.list, empty, told as «no tienes notas»): notes and tasks are two stores. An empty note.list while
+    /// open tasks are kept leads with the task_list call that reads them and lists the latest three (openTasks); an empty
+    /// task.list of open tasks while notes are kept, the same with note_list (notes) (NoteHandlers, TaskHandlers).
+    /// </summary>
+    public const string OtherStoreNext = "other_store_next";
+
+    /// <summary>
+    /// Uso real 2026-11-02 («el mejor calificado de esos»: a web.fetch of one result came back web_fetch_status_403 and
+    /// the model gave up, the same turn's search holding other results): a failed web.fetch's result lists the addresses
+    /// of this turn's web.search results not yet fetched, as <c>unreadResults</c> (Baxy.App.TurnSearchResults).
+    /// </summary>
+    public const string FetchOtherResults = "fetch_other_results";
 
     private static readonly AsyncLocal<string?> Setting = new();
 

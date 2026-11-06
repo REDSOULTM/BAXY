@@ -92,8 +92,8 @@ public sealed class AppCloseByApplicationTests
             Assert.That(outcome.EffectMayHaveOccurred, Is.False);
             Assert.That(outcome.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(4242));
             Assert.That(windows.Closed, Is.Empty);
-            Assert.That(before.Failure?.ErrorCode, Is.EqualTo("app_running_in_background"));
-            Assert.That(before.Failure?.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(4242));
+            Assert.That(before.Failure, Is.Null, "uso-129: it is asked to quit; nothing is said before trying");
+            Assert.That(before.Risk, Is.EqualTo(OperationRisk.Reversible), "with no window it shows no document");
         });
     }
 
@@ -112,6 +112,131 @@ public sealed class AppCloseByApplicationTests
             Assert.That(outcome.EffectMayHaveOccurred, Is.True, "its window was hidden");
             Assert.That(outcome.Result!.Value.GetProperty("hiddenWindows").GetInt32(), Is.EqualTo(1));
             Assert.That(outcome.Result!.Value.GetProperty("processIds")[0].GetInt32(), Is.EqualTo(100));
+        });
+    }
+
+    // uso-129: «cierra X» with X in the notification area answered «quedó abierto en segundo plano» and stopped; it is
+    // asked to quit as Windows asks at the end of a session, and the receipt says what came of it.
+    [Test]
+    public async Task AnApplicationInTheBackgroundIsAskedToQuitAndTheReceiptSaysItExited()
+    {
+        var windows = new FakeWindows([]) { Background = [4242], Quit = new(true, null, []) };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Bandeja\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded && outcome.Verified, Is.True);
+            Assert.That(windows.AskedToQuit, Is.EqualTo(new[] { 4242 }));
+            Assert.That(outcome.Result!.Value.GetProperty("applicationExited").GetBoolean(), Is.True);
+            Assert.That(outcome.Result!.Value.TryGetProperty("changed", out _), Is.False, "it did change");
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task AWindowThatHidesIsFollowedByTheQuitAndHelpersLeftBehindAreSaid()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "Bandeja")])
+        {
+            Hides = "win_a",
+            Background = [100],
+            Quit = new(true, null, [new RemainingProcess(101, "ayudante")]),
+        };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Bandeja\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, "its main process ended");
+            Assert.That(windows.AskedToQuit, Is.EqualTo(new[] { 100 }));
+            Assert.That(outcome.Result!.Value.GetProperty("stillRunning")[0].GetProperty("name").GetString(), Is.EqualTo("ayudante"));
+        });
+    }
+
+    [Test]
+    public async Task AnApplicationThatStaysAfterBeingAskedSaysItsMainProcessAndTheCallThatForcesIt()
+    {
+        var windows = new FakeWindows([]) { Background = [4242], Quit = new(true, "bandeja", [new RemainingProcess(4242, "bandeja")]) };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Bandeja\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("app_running_in_background"));
+            Assert.That(outcome.Result!.Value.GetProperty("applicationExited").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("mainStillRunning").GetBoolean(), Is.True);
+            Assert.That(outcome.Result!.Value.GetProperty("mainProcessName").GetString(), Is.EqualTo("bandeja"));
+            Assert.That(outcome.Result!.Value.GetProperty("next").GetString(),
+                Does.StartWith("system_process_terminate_named {\"name\":\"bandeja\"}"));
+        });
+    }
+
+    [Test]
+    public async Task AClosedWindowWhoseProcessStaysIsAskedToQuitToo()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "Bandeja")]) { Background = [100], Quit = new(true, null, []) };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Bandeja\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(windows.AskedToQuit, Is.EqualTo(new[] { 100 }));
+            Assert.That(outcome.Result!.Value.GetProperty("closedWindows").GetInt32(), Is.EqualTo(1));
+            Assert.That(outcome.Result!.Value.GetProperty("applicationExited").GetBoolean(), Is.True);
+        });
+    }
+
+    // Controls: a dialog of its own stops everything, and one window asked by its id only ever concerns that window.
+    [Test]
+    public async Task AWindowAskingToSaveIsNeverFollowedByTheQuit()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "doc")]) { Prompts = "win_a", Background = [100] };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Bandeja\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.ClosePrompted));
+            Assert.That(windows.AskedToQuit, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task OneWindowClosedByItsIdNeverAsksTheApplicationToQuit()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "uno"), Frame("win_b", 100, "dos")]) { Hides = "win_a", Background = [100] };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"windowId\":\"win_a\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Result!.Value.GetProperty("hidden").GetBoolean(), Is.True);
+            Assert.That(windows.AskedToQuit, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task AnOrdinaryApplicationClosesWithoutAskingAnythingElse()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "Paint")]);
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Paint\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True);
+            Assert.That(windows.AskedToQuit, Is.Empty);
+            Assert.That(outcome.Result!.Value.TryGetProperty("applicationExited", out _), Is.False);
         });
     }
 
@@ -326,6 +451,17 @@ public sealed class AppCloseByApplicationTests
         internal string? Hides { get; init; }
 
         internal int[] Background { get; init; } = [];
+
+        internal ApplicationQuitResult Quit { get; init; } = ApplicationQuitResult.NotTried;
+
+        internal List<int> AskedToQuit { get; } = [];
+
+        public ValueTask<ApplicationQuitResult> QuitApplicationAsync(
+            IReadOnlyCollection<int> processIds, CancellationToken cancellationToken)
+        {
+            AskedToQuit.AddRange(processIds);
+            return ValueTask.FromResult(Quit);
+        }
 
         public ValueTask<WindowResolveResult> ResolveApplicationAsync(
             string applicationName, int limit, CancellationToken cancellationToken) =>

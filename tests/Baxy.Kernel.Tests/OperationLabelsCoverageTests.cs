@@ -28,6 +28,28 @@ public sealed class OperationLabelsCoverageTests
         });
     }
 
+    // Steam (2026-11-04): an English interface shows each operation's English title and its theme in English; one
+    // missing would show the Spanish word, so the App ends at start without it, and here a suite fails instead.
+    [Test]
+    public void EveryLabelAndThemeHasItsEnglishWords()
+    {
+        string labels = Path.Combine(RepositoryRoot(), "src", "Baxy.App", "Assets", "operation-labels.v1.json");
+        using JsonDocument document = JsonDocument.Parse(File.ReadAllText(labels));
+        JsonElement root = document.RootElement;
+        string[] untitled = [.. root.GetProperty("operations").EnumerateObject()
+            .Where(static p => !p.Value.TryGetProperty("en", out JsonElement en) || string.IsNullOrWhiteSpace(en.GetString()))
+            .Select(static p => p.Name)];
+        string[] themes = [.. root.GetProperty("groups").EnumerateObject().Select(static p => p.Name)];
+        string[] englishThemes = [.. root.GetProperty("groupsEn").EnumerateObject()
+            .Where(static p => !string.IsNullOrWhiteSpace(p.Value.GetString())).Select(static p => p.Name)];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(untitled, Is.Empty, "operations with no English title");
+            Assert.That(englishThemes, Is.EquivalentTo(themes), "themes with no English name");
+        });
+    }
+
     private static string RepositoryRoot()
     {
         for (DirectoryInfo? directory = new(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)

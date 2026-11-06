@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { attach, ready, size, unsize, type App } from './app';
+import { attach, ready, size, spanish, unsize, type App } from './app';
 
 /* «Baxy pruebas.html» against the real app: the 11 sizes from 720p to 8K, small windows, live resizing and the start
    with a 0×0 window. The view is laid out at each size with the DevTools protocol (as a window of that size would). */
@@ -13,8 +13,9 @@ const SIZES: [string, number, number][] = [
 const FACE_MAXPX = 4.5e6, COSMOS_MAXPX = 4e6;
 
 let app: App;
-test.beforeAll(async () => { app = await attach(); await ready(app.page); });
-test.afterAll(async () => { await unsize(app); await app.browser.close(); });
+let restoreLang: () => Promise<void>;
+test.beforeAll(async () => { app = await attach(); await ready(app.page); restoreLang = await spanish(app.page); });
+test.afterAll(async () => { await unsize(app); await restoreLang?.(); await app.browser.close(); });
 
 interface Audit { issues: string[]; cut: string[]; minFont: number; minEl: string; fr: { left: number; top: number; right: number; bottom: number; width: number; height: number }; vw: number; vh: number }
 

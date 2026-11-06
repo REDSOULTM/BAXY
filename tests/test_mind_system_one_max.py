@@ -216,7 +216,7 @@ NETWORK = [WEB_SEARCH, WEATHER, SHELL, FILE_FIND]
 @pytest.mark.parametrize("doubted, choice, filled, text, operation", [
     # P169: Qwen web_search, Laya weather_current at 0.9; both send out of the PC, and 5.1 asked in every seed.
     ("web_search", "weather_current", {}, "forecast this week please", "weather.current"),
-    ("web_search", "weather_current", {"location": "Curicó"}, "el pronóstico de la semana en Curico",
+    ("web_search", "weather_current", {"location": "Valparaíso"}, "el pronóstico de la semana en Valparaiso",
      "weather.current"),
     ("web_search", "weather_current", {"location": "Santiago"}, "forecast this week please",
      None),  # an optional value nobody said is never sent out of the PC

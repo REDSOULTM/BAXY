@@ -23,6 +23,7 @@ PACE = 0.05
 
 class _Speech:
     ready = False
+    deferred = ""
 
     def __init__(self, *_args) -> None:
         self.speaking = False

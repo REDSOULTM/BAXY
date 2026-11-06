@@ -27,7 +27,7 @@ internal sealed class ProposalToast
             Register();
             var xml = new XmlDocument();
             xml.LoadXml("<toast scenario=\"reminder\"><visual><binding template=\"ToastGeneric\"><text/><text/></binding></visual>"
-                + "<actions><action content=\"Sí\" arguments=\"yes\" activationType=\"foreground\"/>"
+                + "<actions><action content=\"" + UiLanguage.Say("Sí", "Yes") + "\" arguments=\"yes\" activationType=\"foreground\"/>"
                 + "<action content=\"No\" arguments=\"no\" activationType=\"foreground\"/></actions></toast>");
             IXmlNode[] texts = [.. xml.GetElementsByTagName("text")];
             texts[0].InnerText = title;

@@ -22,6 +22,8 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
     private readonly WindowsSystemStatusProvider _system = new();
     private readonly WindowsGpuStatusProvider _gpu = new();
     private readonly Func<int?> _mindProcess;
+    private readonly ModelProcessTracker _processes;
+    private readonly Action<string> _report;
     private readonly Func<CancellationToken, Task<FieldMetricSnapshot>> _measure;
     private readonly SemaphoreSlim _sampleLock = new(1, 1);
     private DateTimeOffset _cachedAt;
@@ -30,9 +32,17 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
 
     /// <param name="mindProcess">The mind's process id while it runs (its llama-server is found by its executable).</param>
     /// <param name="measure">Tests measure with a double instead of the PC.</param>
-    internal FieldTelemetrySampler(Func<int?> mindProcess, Func<CancellationToken, Task<FieldMetricSnapshot>>? measure = null)
+    /// <param name="processes">Tests give the tracker a double instead of the PC's process table.</param>
+    /// <param name="report">Where a skipped reading is recorded (the trace listeners by default).</param>
+    internal FieldTelemetrySampler(
+        Func<int?> mindProcess,
+        Func<CancellationToken, Task<FieldMetricSnapshot>>? measure = null,
+        ModelProcessTracker? processes = null,
+        Action<string>? report = null)
     {
         _mindProcess = mindProcess ?? throw new ArgumentNullException(nameof(mindProcess));
+        _processes = processes ?? new ModelProcessTracker();
+        _report = report ?? (static message => System.Diagnostics.Trace.TraceWarning(message));
         _measure = measure ?? MeasureAsync;
     }
 
@@ -81,7 +91,7 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
 
     // The model's processes: the mind (a virtual environment's python.exe starts the real interpreter as its child) and
     // the llama-server it started. Only BAXY's own: a bench's llama-server runs the same executable.
-    private (double? Temperature, double? Vram, double? Ram) ReadModel()
+    internal (double? Temperature, double? Vram, double? Ram) ReadModel()
     {
         double? temperature = WindowsModelResourceReader.GpuTemperatureCelsius();
         if (_mindProcess() is not { } mind)
@@ -89,12 +99,20 @@ internal sealed class FieldTelemetrySampler : IAsyncDisposable
             return (temperature, null, null);
         }
 
-        List<int> processes = [mind, .. WindowsModelResourceReader.ChildrenOf(mind, "python")];
-        processes.AddRange([.. processes.SelectMany(static id => WindowsModelResourceReader.ChildrenOf(id, "llama-server"))]);
-
-        long? vram = WindowsModelResourceReader.DedicatedVideoBytes(processes);
-        long? ram = WindowsModelResourceReader.WorkingSetBytes(processes);
-        return (temperature, vram / Gibibyte, ram / Gibibyte);
+        try
+        {
+            List<int> processes = _processes.ProcessesOf(mind);
+            long? vram = WindowsModelResourceReader.DedicatedVideoBytes(processes);
+            long? ram = WindowsModelResourceReader.WorkingSetBytes(processes);
+            return (temperature, vram / Gibibyte, ram / Gibibyte);
+        }
+        catch (OutOfMemoryException exception)
+        {
+            // A PC short of RAM cannot even list or read the processes (a large model loading, seen 2026-11-05): this sample leaves
+            // out the model's readings (the view shows «—») and the next one tries again. Any other failure still propagates.
+            _report("Telemetry: the model's processes could not be read (out of memory); this sample is skipped. " + exception.Message);
+            return (temperature, null, null);
+        }
     }
 
     private static double? Percent(double? value) =>

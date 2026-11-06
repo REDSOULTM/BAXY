@@ -9,7 +9,8 @@ namespace Baxy.App;
 
 /// <summary>One call the model made and what came of it, for the trace, the benches' audit against the journal and
 /// the view's step chips. <paramref name="Id"/> names the call from its start (<see cref="NativeTurnLoop.Host.StepStarted"/>);
-/// <paramref name="Sent"/>: the call reached its provider (it may have had an effect, or sent something out).</summary>
+/// <paramref name="Sent"/>: the call reached its provider (it may have had an effect, or sent something out).
+/// <paramref name="Asked"/>: it ran after the person said «sí» to this exact invocation (a confirmation or a proposal).</summary>
 internal sealed record NativeTurnStep(
     string Operation,
     JsonObject Arguments,
@@ -19,7 +20,8 @@ internal sealed record NativeTurnStep(
     long ElapsedMs,
     string Observation,
     string Id = "",
-    bool Sent = false);
+    bool Sent = false,
+    bool Asked = false);
 
 /// <summary>A call waiting for the person's Sí or No, as its question is published (the view's card).
 /// <paramref name="EffectStarted"/>: the kernel asks again for a call whose earlier attempt may have happened
@@ -72,6 +74,10 @@ internal sealed class NativeTurnLoop
 
         internal required Func<MindSidecarClient?> Mind { get; init; }
 
+        /// <summary>Uso 95 (F9): the mind a person's turn talks with, waited for while it starts or is relaunched; null
+        /// when none is coming. Without it the turn takes <see cref="Mind"/> as it is.</summary>
+        internal Func<CancellationToken, Task<MindSidecarClient?>>? MindForTurn { get; init; }
+
         internal required Func<RetryableOperationRegistry?> Registry { get; init; }
 
         internal required Func<MemoryOperationProtector?> MemoryProtector { get; init; }
@@ -117,6 +123,19 @@ internal sealed class NativeTurnLoop
         /// <summary>Runs a conversation.* call on the App's own conversations (FieldProductChannel) and returns its
         /// result as the model reads it; null when no view keeps conversations.</summary>
         internal Func<string, JsonObject, string?>? Conversation { get; init; }
+
+        /// <summary>Encargo 119: the window in front of the person (none of BAXY's own), title and process, read when their
+        /// words arrive; null when none is (HeartbeatMoment.PersonFront).</summary>
+        internal Func<(string Title, string? Process)?>? Front { get; init; }
+
+        /// <summary>The open windows of other applications, title and process (a message by a channel the person did not
+        /// say tells the model the ones their words name, NetworkEgress.Named); null: none is read.</summary>
+        internal Func<IReadOnlyList<(string Title, string? Process)>>? Windows { get; init; }
+
+        /// <summary>Banco de uso 2026-11-03 (R11, R12): the visible rows of the lists of other applications' windows that
+        /// the first comparison accepts, and (encargo 65) the tabs of their tab strips that the second accepts
+        /// (VisibleRows), each with its window; the reader keeps no other. Null: none is read.</summary>
+        internal Func<Func<string, bool>, Func<string, bool>, IReadOnlyList<VisibleRow>>? Rows { get; init; }
     }
 
     /// <summary>How long a heartbeat's proposal waits for the person's Sí or No.</summary>
@@ -130,11 +149,14 @@ internal sealed class NativeTurnLoop
     private readonly TimeProvider _time;
     private readonly SilenceNotice _notice;
     private readonly NetworkEgress _egress = new();
+    // uso-90: signing in to an account of the person's waits for their «sí» (AccountFlow).
+    private readonly AccountFlow _accounts = new();
     private readonly SaidFolders _said;
     private readonly SaidApplication _saidApp = new();
     private readonly SaidVerbs _saidVerbs = new();
     // Práctica e2e E014: the place this turn's app.open asked for, told in a look at that application (TurnPlace).
     private readonly TurnPlace _turnPlace = new();
+    private readonly TurnSearchResults _searchResults = new();
     private PendingOperationConfirmation? _pending;
     private PreparedOperation? _proposal;
     private DateTimeOffset _proposalExpiresUtc;
@@ -158,6 +180,9 @@ internal sealed class NativeTurnLoop
     // The call running now (its step id) and whether a published question waits for its end.
     private string _stepId = string.Empty;
     private long _stepSequence;
+
+    // The calls the model made since the person's words opened this turn (WithNamedWindows weighs only the first).
+    private int _turnCalls;
     private bool _asking;
     // Auditoría de confirmaciones (2026-10-23): a line of a later turn was published while the call waited, so its
     // question is no longer the last thing BAXY asked. «Vale, no lo cierro. ¿Guardo algo primero?» left app.close waiting,
@@ -190,7 +215,17 @@ internal sealed class NativeTurnLoop
     /// </summary>
     internal async Task RunAsync(string text, long arrivedAt, CancellationToken cancellationToken)
     {
-        MindSidecarClient? mind = _host.Mind();
+        // Encargo 119: what «esto» points at, read now, before BAXY's own steps change the window in front.
+        JsonObject? front = _host.Front?.Invoke() is { } window
+            ? new JsonObject { ["title"] = window.Title, ["process"] = window.Process }
+            : null;
+        long asked = Stopwatch.GetTimestamp();
+        MindSidecarClient? mind = _host.MindForTurn is { } mindForTurn
+            ? await mindForTurn(cancellationToken)
+            : _host.Mind();
+        // A turn that waited for the mind (uso 95) starts its silence notice when the mind came: the wait was already
+        // shown as a state, and a notice due at once would be asked of the model before the person's words.
+        long turnFrom = Stopwatch.GetElapsedTime(asked) > SilenceNotice.After ? Stopwatch.GetTimestamp() : arrivedAt;
         if (mind is not { IsTurnAvailable: true })
         {
             _host.Fail("mind_unavailable");
@@ -202,6 +237,7 @@ internal sealed class NativeTurnLoop
         // the calls after the approved one were ruled by «sí» alone while the button's were ruled by the turn that asked.
         bool answering = WaitingPrepared() is not null && ConfirmationAsk.Answers(_askedAt, arrivedAt);
         _egress.Heard(text, answering);
+        _turnCalls = 0;
         if (answering)
         {
             _said.Answered(text);
@@ -214,10 +250,14 @@ internal sealed class NativeTurnLoop
             _saidApp.Heard(text);
             _saidVerbs.Heard(text);
             _turnPlace.NewTurn();
+            _searchResults.NewTurn();
         }
 
-        await PersonTurnAsync(mind, arrivedAt,
-            () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken), cancellationToken);
+        await PersonTurnAsync(mind, turnFrom,
+            () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken, Stopwatch.GetElapsedTime(arrivedAt), front,
+                // Encargo 119 (G7): titles only; the rows and tabs of NamedWindows are read when a rule asks, not each turn.
+                _host.Windows is { } windows ? _egress.Named(windows()) : null),
+            cancellationToken);
     }
 
     // A turn the person opened (their words, or their Sí/No: either may start a call that takes long) says the model's
@@ -348,6 +388,7 @@ internal sealed class NativeTurnLoop
         _saidApp.Clear();
         _saidVerbs.Clear();
         _turnPlace.NewTurn();
+        _searchResults.NewTurn();
         _turnStarted = Stopwatch.GetTimestamp();
         try
         {
@@ -372,10 +413,12 @@ internal sealed class NativeTurnLoop
         _droppedOperation = null;
         DropPending();
         _egress.Reset();
+        _accounts.Reset();
         _said.Clear();
         _saidApp.Clear();
         _saidVerbs.Clear();
         _turnPlace.NewTurn();
+        _searchResults.NewTurn();
         if (!engineRestarted)
         {
             ResolveUncertain(endedTurn: null, all: true);
@@ -503,6 +546,11 @@ internal sealed class NativeTurnLoop
             _notice.Running(true);
             try
             {
+                if (SpeaksFirst(step.Operation!))
+                {
+                    await Task.WhenAny(_notice.AheadAsync(), Task.Delay(NoticeAheadAtMost, cancellationToken));
+                }
+
                 observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             }
             finally
@@ -511,6 +559,7 @@ internal sealed class NativeTurnLoop
             }
 
             _egress.Observed(step.Operation!, observation);
+            observation = _searchResults.Observed(step.Operation!, step.Arguments!, observation);
             // With the engine down no call can run until it restarts after this turn (e2e p3: 13 calls on a dead core),
             // and with a call waiting for the person's yes nothing moves until they answer (e2e p4 E021: the same
             // terminal call eight times, then «no puedo ejecutar comandos»), so the model answers from what it has, as
@@ -527,6 +576,14 @@ internal sealed class NativeTurnLoop
             step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
         }
     }
+
+    // Uso-125 (F31; 67 s to the first sound, NB 123): a description of a capture is the model's own server at work, and the
+    // mind's notice waits behind it, so it is said before it starts; the mind's own budget for it is 1.5 s (NOTICE_SECONDS).
+    private static readonly TimeSpan NoticeAheadAtMost = TimeSpan.FromSeconds(2);
+
+    internal static bool SpeaksFirst(string operation) =>
+        operation == "vision.describe"
+        && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT"));
 
     // A line about a call that waits for the person's «sí» is that confirmation (Sí/No buttons), when the model can be
     // asking about it: the turn's own call (ConfirmationAsk; ronda final 30: a call only offered with the person's
@@ -571,7 +628,8 @@ internal sealed class NativeTurnLoop
         bool held = ReferenceEquals(prepared, _proposal);
         return new NativeTurnConfirmation(prepared.OperationName, PrivateArguments(prepared), descriptor.Risk,
             held ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, held && _proposalByBeat,
-            EffectStarted: !held && _pending!.ReconciliationRequired, Cause: held ? _proposalCause : null);
+            EffectStarted: !held && _pending!.ReconciliationRequired, Cause: held ? _proposalCause
+                : _pending!.SystemChange is null ? null : PendingOperationConfirmation.SystemChangeCause);
     }
 
     private void Resolved(string outcome)
@@ -591,6 +649,8 @@ internal sealed class NativeTurnLoop
         {
             return await AnswerPendingAsync(arguments, started, cancellationToken);
         }
+
+        _turnCalls++;
 
         _host.StepStarted?.Invoke(_stepId, operation,
             MemoryOperationProtector.IsMemoryOperation(operation) ? new JsonObject() : (JsonObject)arguments.DeepClone());
@@ -626,10 +686,15 @@ internal sealed class NativeTurnLoop
 
         // Feria 2026-10-27: a search with none of the person's words, or a message by a channel they did not name, goes
         // back to the model before it runs, with what to do next (NetworkEgress). A heartbeat's call has no words to weigh.
-        if (!_beat && _egress.Unsaid(operation, arguments) is { } unsaid)
+        // The open windows are listed only for a message refused, and once: its next and its facts name the same ones.
+        // Banco de uso 2026-11-03 (R11, R12): and the windows a visible row of whose lists their words name (a chat in a
+        // chat application), with those rows alone.
+        JsonArray? named = null;
+        JsonArray Named() => named ??= NamedWindows();
+        if (!_beat && _egress.Unsaid(operation, arguments, Named) is { } unsaid)
         {
             return Record(operation, arguments, started, Observation("rejected", unsaid.Code,
-                new JsonObject { ["next"] = unsaid.Next }));
+                Unsaid(descriptor, unsaid.Code, unsaid.Next, named)));
         }
 
         // Renew al máximo (w6, rutas): a file call that leaves out the folder the person named in this turn is routed
@@ -726,7 +791,7 @@ internal sealed class NativeTurnLoop
                 "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
-        string? egress = _beat ? null : _egress.Holds(operation, arguments);
+        string? egress = HeldForTheYes(operation, arguments);
         if (egress is not null || (_beat && BeatProposes(descriptor, arguments)))
         {
             // Nobody asked (a heartbeat), or what it sends out is not the person's to send unasked (NetworkEgress): the
@@ -744,6 +809,12 @@ internal sealed class NativeTurnLoop
             }
 
             held["next"] = AskThePersonAbout(operation);
+            if (egress == AccountFlow.Cause && _accounts.Holds(operation, arguments) is { } account)
+            {
+                held["signIn"] = account.Facts;
+                held["next"] += "; " + AccountFlow.Next;
+            }
+
             if (egress == "host_not_from_session" && ModelAids.On(ModelAids.ResultHosts)
                 && _egress.ResultHosts is { Count: > 0 } resultHosts)
             {
@@ -764,6 +835,14 @@ internal sealed class NativeTurnLoop
                 cancellationToken, said)
             ;
     }
+
+    // Why the person's turn holds this call for their «sí» (AccountFlow, NetworkEgress), or null. A heartbeat holds by its
+    // own rule. Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca»): in Bypass nothing is held; a
+    // mode that cannot be read is weighed as normal, which asks.
+    internal string? HeldForTheYes(string operation, JsonObject arguments) =>
+        _beat || (Baxy.Kernel.Policy.ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(),
+            out Baxy.Kernel.Policy.ConfirmationMode mode) && mode == Baxy.Kernel.Policy.ConfirmationMode.Bypass)
+            ? null : _accounts.Holds(operation, arguments)?.Cause ?? _egress.Holds(operation, arguments);
 
     // f6 estado: BAXY's own readings (assistant.status, a read with no effect) are the App's: checked against the
     // catalog's schema as the kernel checks every call, read, and told by the kernel's own receipt.
@@ -928,6 +1007,89 @@ internal sealed class NativeTurnLoop
         return observation + "\n(" + said + ")";
     }
 
+    // A result with a next of its own keeps it: NetworkEgress.Unreached is asked only for one without.
+    // Banco de uso 05-11 (U06): a call that acts, failed, sends nobody to a browser of the person they did not name: the next
+    // says what is there and the model asks (NetworkEgress.BrowserUnsaid). A read keeps its way to the tab (encargo 65).
+    private string WithNamedWindows(string observation, JsonObject arguments, string operation)
+    {
+        try
+        {
+            JsonArray? named = null;
+            if (JsonNode.Parse(observation) is JsonObject facts && facts["next"] is null && facts["observed"]?["next"] is null
+                && !SaysWhereItLooked(facts)
+                && NetworkEgress.Unreached(arguments, () => named ??= NamedWindows()) is { } next)
+            {
+                bool acts = ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) && descriptor is not null
+                    && descriptor.Risk is not (OperationRisks.ReadOnly or OperationRisks.PrivacySensitive);
+                facts["next"] = (acts ? _egress.BrowserUnsaid(named!) : null) ?? next;
+                facts["namedWindows"] = named;
+                return facts.ToJsonString(SaidFolders.AsWritten);
+            }
+        }
+        catch (System.Text.Json.JsonException)
+        {
+        }
+
+        return observation;
+    }
+
+    // 2026-11-05 (a missing file «del escritorio» with a window titled Escritorio open): file.open searched the folders
+    // and said so, and this next sent the model to look at that window and press «Escritorio», a click nobody asked for.
+    // A failure that says where it looked (searchedFolders) answers the person; it did not miss the window they named.
+    internal static bool SaysWhereItLooked(JsonObject facts) => facts["observed"]?["searchedFolders"] is JsonArray;
+
+    // Encargo 65 (cosecha F2): a completed result that names the application whose data it read (observed.readFrom, a
+    // key of its own: «source» is a search's kind or a folder in other receipts) and has no next of its own says the
+    // windows and tabs the person's words name, when none shows that application (Elsewhere).
+    private string WithSourceElsewhere(string observation, string operation)
+    {
+        try
+        {
+            JsonArray? named = null;
+            if (JsonNode.Parse(observation) is JsonObject facts && facts["next"] is null
+                && facts["observed"] is JsonObject observed && observed["next"] is null
+                && SourceOf(observed, operation) is { } readFrom
+                && NetworkEgress.Elsewhere(readFrom, () => named ??= NamedWindows()) is { } next)
+            {
+                facts["next"] = next;
+                facts["namedWindows"] = named;
+                WithholdUnaskedText(facts, operation);
+                return facts.ToJsonString(SaidFolders.AsWritten);
+            }
+        }
+        catch (System.Text.Json.JsonException)
+        {
+        }
+
+        return observation;
+    }
+
+    // The application whose data a result read: its own readFrom, or the clipboard's read, whose receipt does not carry it (a
+    // key more in every read flipped a paste: «mete lo copiao en el notepad» 9 of 10 → 2 of 10).
+    internal static string? SourceOf(JsonObject observed, string operation) =>
+        observed["readFrom"] is JsonValue value && value.TryGetValue(out string? readFrom)
+            ? readFrom
+            : operation == "clipboard.read.text" ? "clipboard" : null;
+
+    // Banco de uso 05-11 (S07): «¿qué estado tengo puesto en el chat de prueba?» read the clipboard first, and the model answered
+    // with what it held. The next alone did not stop it (masked, 1 of 3 on that phrase): a read of a privacy-sensitive source the
+    // person's words do not name, on windows they do name, gives no text with this first call; a second call, theirs if they
+    // meant it, gives it (9 of 9 looked at the window; of 4 who did ask for what they copied there, 2 read it and 2 looked).
+    internal static void WithholdUnaskedText(JsonObject facts, string operation)
+    {
+        if (facts["observed"] is not JsonObject observed || observed["text"] is null
+            || !ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor) || descriptor is null
+            || descriptor.Risk != OperationRisks.PrivacySensitive)
+        {
+            return;
+        }
+
+        observed.Remove("text");
+        observed.Remove("secretLike");
+        facts["next"] = (string?)facts["next"]
+            + "; its text is not given with this call, because their words name those windows; if they did ask for it, call it again";
+    }
+
     // The turn ends on a call that waits for the person's «sí»: the last result says that call has not run, so the
     // answer cannot tell what it would have done (e2e E021: «Python 3.11.2» after a console command that never ran).
     private static string Waiting(string observation, string operation)
@@ -979,6 +1141,40 @@ internal sealed class NativeTurnLoop
     private const string ResultHostsNext =
         "the host of this call came from no result of this session, and a page at one of resultHosts is read "
         + "without asking for its host";
+
+    // The open windows the person's words now or just before name (NetworkEgress.Named), read when a rule asks.
+    private JsonArray NamedWindows() =>
+        _egress.Named(_host.Windows?.Invoke() ?? [], _host.Rows?.Invoke(_egress.NamesRow(), _egress.NamesTab()));
+
+    // Banco de uso 2026-11-03 (U40, R11-R13): a message refused for a channel the person did not say carries the facts the
+    // model asked about instead: the channels this call reaches (the catalog's values) and the open windows whose title
+    // their words name, which are written in by the window's own operations (the next says how first, NetworkEgress).
+    private static JsonObject Unsaid(ProductOperationDescriptor descriptor, string code, string next, JsonArray? named)
+    {
+        var facts = new JsonObject { ["next"] = next };
+        if (code == "application_not_said" && named is { Count: > 0 })
+        {
+            facts["namedWindows"] = named;
+        }
+
+        if (code != "channel_not_said")
+        {
+            return facts;
+        }
+
+        facts["channels"] = new JsonArray([.. descriptor.ArgumentsSchema.Properties
+            .Where(static property => property.Name == "channel")
+            .SelectMany(static property => property.AllowedValues)
+            .Select(static channel => (JsonNode?)channel)]);
+        if (named is { Count: > 0 })
+        {
+            facts["namedWindows"] = named;
+            facts["namedWindowsNote"] = "open windows whose title, or a visible row of whose lists (rows), the person's "
+                + "words name; this call reaches only the channels above";
+        }
+
+        return facts;
+    }
 
     // What BAXY says of a call it held or could not prepare carries the call's arguments, except a memory call's: they
     // stay sealed (the observation reaches the model and, with the conductor, its local events). A memory call that ran
@@ -1190,7 +1386,7 @@ internal sealed class NativeTurnLoop
 
             return Record(operation, arguments, started,
                 Observation("failed", "engine_no_answer", about: answered ? operation : null, effectUncertain: true),
-                sent: true);
+                sent: true, asked: answered);
         }
 
         if (PendingOperationConfirmation.TryCreate(response, prepared, _time,
@@ -1207,6 +1403,12 @@ internal sealed class NativeTurnLoop
                 ["next"] = AskThePersonAbout(operation),
             }, "arguments", operation, arguments);
             asked["effectStarted"] = challenge.ReconciliationRequired;
+            if (challenge.SystemChange is { } setting)
+            {
+                asked["cause"] = PendingOperationConfirmation.SystemChangeCause;
+                asked["systemChange"] = JsonNode.Parse(setting.GetRawText());
+            }
+
             if (said is { } told)
             {
                 asked[told.Key] = told.Note;
@@ -1219,8 +1421,10 @@ internal sealed class NativeTurnLoop
         Resolve(prepared, memory);
         _turnPlace.Ran(operation, arguments, response.Status);
         _said.Ran(operation, arguments, response.Status);
+        _said.Saw(response.Result);
+        _accounts.Saw(operation, arguments, response.Status, response.Result);
         string body = memory
-            ? MemoryObservation(prepared, response)
+            ? await KeptOnConflictAsync(core, prepared, response, MemoryObservation(prepared, response), cancellationToken)
             : OperationResponseProjection.Create(response, operation, _turnPlace.Asked).Message;
         if (said is { } fact)
         {
@@ -1237,7 +1441,7 @@ internal sealed class NativeTurnLoop
             }
         }
 
-        return Record(operation, arguments, started, body, response);
+        return Record(operation, arguments, started, body, response, asked: answered);
     }
 
     // A memory result travels sealed: it is opened here and only its safe projection reaches the model.
@@ -1246,7 +1450,7 @@ internal sealed class NativeTurnLoop
         MemoryOperationProtector? protector = _host.MemoryProtector();
         if (protector is null || response.Status != OperationStatuses.Completed)
         {
-            return OperationResponseProjection.Create(response, prepared.OperationName).Message;
+            return MemoryOperationResponseProjection.Failed(prepared.OperationName, response);
         }
 
         try
@@ -1267,6 +1471,54 @@ internal sealed class NativeTurnLoop
             or ProtectedPayloadException)
         {
             return Observation("completed", "result_unreadable");
+        }
+    }
+
+    // Encargo 82: a save refused because the name is already kept reads that record, so its result can say what is kept
+    // (MemoryOperationResponseProjection.Conflict). A read that fails leaves the failure as the engine said it.
+    private async Task<string> KeptOnConflictAsync(
+        CoreProcessClient core,
+        PreparedOperation prepared,
+        OperationResponse response,
+        string failed,
+        CancellationToken cancellationToken)
+    {
+        if (prepared.OperationName != "memory.save" || response.ErrorCode != "memory_conflict"
+            || _host.MemoryProtector() is not { } protector)
+        {
+            return failed;
+        }
+
+        try
+        {
+            using OpenedBoundProtectedJson saved = protector.OpenPrivateArguments(prepared);
+            if (saved.Payload.ValueKind != System.Text.Json.JsonValueKind.Object
+                || !saved.Payload.TryGetProperty("selector", out System.Text.Json.JsonElement selector)
+                || selector.ValueKind != System.Text.Json.JsonValueKind.String)
+            {
+                return failed;
+            }
+
+            PreparedOperation recall = protector.Prepare(new MemoryRoutedOperation("memory.recall", new JsonObject
+            {
+                ["version"] = 1,
+                ["scope"] = "exact",
+                ["selector"] = selector.GetString(),
+            })).Prepared;
+            OperationResponse found = await core.SendOperationAsync(recall, OperationTimeout, cancellationToken);
+            if (found.Status != OperationStatuses.Completed)
+            {
+                return failed;
+            }
+
+            using OpenedBoundProtectedJson opened = protector.OpenResult(found, recall);
+            return MemoryOperationResponseProjection.Conflict(failed, saved.Payload, opened.Payload);
+        }
+        catch (Exception exception) when (exception is TimeoutException or System.IO.IOException
+            or InvalidOperationException or System.IO.InvalidDataException or MemoryRequestRefusedException
+            or ProtectedPayloadException)
+        {
+            return failed;
         }
     }
 
@@ -1372,9 +1624,30 @@ internal sealed class NativeTurnLoop
         long started,
         string observation,
         OperationResponse? response = null,
-        bool? sent = null)
+        bool? sent = null,
+        bool asked = false)
     {
         long elapsed = (long)Stopwatch.GetElapsedTime(started).TotalMilliseconds;
+        // Banco de uso 2026-11-03 (S07): the turn's first call, chosen before anything was looked at, failed off the
+        // window the person named: its result says that window and the call to it. A later call may be on that window
+        // by its handle alone, which no form compared tells.
+        if (!_beat && _turnCalls == 1 && !MemoryOperationProtector.IsMemoryOperation(operation))
+        {
+            string status = response?.Status ?? StatusOf(observation);
+            if (status == OperationStatuses.Failed)
+            {
+                observation = WithNamedWindows(observation, arguments, operation);
+            }
+            // Encargo 65 (cosecha F2): completed, of an application (its result's readFrom) the windows and tabs the person
+            // named do not show.
+            else if (status == OperationStatuses.Completed)
+            {
+                observation = WithSourceElsewhere(observation, operation);
+            }
+        }
+
+        observation = _saidVerbs.WithCalculatorNamed(operation, observation);
+        observation = _egress.WithLinkOfPage(operation, arguments, observation);
         var step = new NativeTurnStep(
             operation,
             MemoryOperationProtector.IsMemoryOperation(operation) ? new JsonObject() : (JsonObject)arguments.DeepClone(),
@@ -1385,7 +1658,8 @@ internal sealed class NativeTurnLoop
             observation,
             _stepId,
             // A call reaches its provider when the kernel let it through, whatever its outcome.
-            sent ?? response?.Status is OperationStatuses.Completed or OperationStatuses.Failed);
+            sent ?? response?.Status is OperationStatuses.Completed or OperationStatuses.Failed,
+            asked);
         ShellTraceSink.Record(ShellTraceScopes.Turn, ShellTraceSink.TurnId, "loop.step",
             $"{operation}.{step.Status}.{(step.Verified ? "verified" : "unverified")}.ms.{elapsed}");
         _host.StepCompleted?.Invoke(step);

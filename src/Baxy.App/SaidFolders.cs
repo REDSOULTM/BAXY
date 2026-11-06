@@ -256,6 +256,10 @@ internal sealed class SaidFolders
             return null;
         if (NameAsSaid(operation, arguments) is { } respelled)
             return respelled;
+        if (DialogName(operation, arguments) is { } whole)
+            return whole;
+        if (DocumentPlace(operation, arguments) is { } written)
+            return written;
         if (!ModelAids.On(ModelAids.SaidFolder) || ReachOf(operation, descriptor, arguments) is not { } reach)
             return null;
         IReadOnlyList<Place> places = Places();
@@ -389,6 +393,136 @@ internal sealed class SaidFolders
         return new(arguments, null, refusal);
     }
 
+    /// <summary>
+    /// A result that shows a common file dialog (a look's window.fileDialog, as WindowsVisibleControlAdapter writes it:
+    /// the folder its address shows and the index of its name field) is remembered by the dialog's window, for the text
+    /// typed into that field (DialogName).
+    /// </summary>
+    internal void Saw(JsonElement? result)
+    {
+        if (result is { ValueKind: JsonValueKind.Object } read)
+            Remember(read, 0);
+    }
+
+    private void Remember(JsonElement node, int depth)
+    {
+        if (depth > 6)
+            return;
+        if (node.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement item in node.EnumerateArray())
+                Remember(item, depth + 1);
+            return;
+        }
+
+        if (node.ValueKind != JsonValueKind.Object)
+            return;
+        bool shows = node.TryGetProperty("fileDialog", out JsonElement dialog) && dialog.ValueKind == JsonValueKind.Object;
+        if (node.TryGetProperty("hwnd", out JsonElement handle) && handle.TryGetInt64(out long window))
+        {
+            // The last look: a text with no window goes where it left the person (DialogName).
+            _lastDialog = null;
+            if (shows && dialog.TryGetProperty("folder", out JsonElement folder) && folder.ValueKind == JsonValueKind.String
+                && dialog.TryGetProperty("nameIndex", out JsonElement index) && index.TryGetInt32(out int nameIndex))
+            {
+                _dialogs[window] = (folder.GetString()!, nameIndex);
+                _lastDialog = window;
+            }
+        }
+        else if (shows && dialog.TryGetProperty("closed", out JsonElement closed) && closed.ValueKind == JsonValueKind.True)
+        {
+            _lastDialog = null;
+        }
+
+        foreach (JsonProperty property in node.EnumerateObject())
+            Remember(property.Value, depth + 1);
+    }
+
+    // The file dialogs a result showed this session: by window, the folder their address showed and their name field.
+    private readonly Dictionary<long, (string Folder, int NameIndex)> _dialogs = [];
+
+    // The dialog the last look showed, while no later look or result says otherwise.
+    private long? _lastDialog;
+
+    // Cosecha 03-11 F15: «guárdalo en mi carpeta de descargas»; in «Guardar como», open in the application's own folder,
+    // the model typed the name alone and pressed «Guardar», and the file went to that folder. Neither the dialog's folder
+    // in the look nor in the typing's result, nor the tool's description, changed that (held-out of 5 requests × 5
+    // seeds, 0/25 each); the refusal with the call that types the whole path did (25/25). A name alone (no folder in it)
+    // typed into the name field of a dialog a look showed, open in a folder outside the one folder the person named this
+    // turn, is refused before it is typed with that call; the same call written again runs as written (the person may
+    // have asked for the dialog's folder itself). A dialog's name field takes a whole path and saves or opens there (E017,
+    // measured live on the notebook in every variant of the dialog: CommonFileDialog). Aid «said_folder».
+    // Encargo 82 (vivo del 81, 1 of 4 saved in the folder named): the same name typed with no index goes into that field
+    // as well (the provider's receipt says intoField, WindowsDesktopInteractionAdapter), and with no window into the
+    // dialog of the last look; only an index of another field is another field's. The call offered keeps the form the
+    // model wrote: after a click in the dialog the look's index no longer names the field.
+    private Ruling? DialogName(string operation, JsonObject arguments)
+    {
+        if (operation != "input.text.type" || !ModelAids.On(ModelAids.SaidFolder)
+            || (Whole(arguments["window"]) ?? _lastDialog) is not long window
+            || !_dialogs.TryGetValue(window, out (string Folder, int NameIndex) dialog)
+            || (Whole(arguments["index"]) is long field && field != dialog.NameIndex)
+            || Text(arguments["text"]) is not { Length: > 0 } text || text.IndexOfAny(['\\', '/', ':']) >= 0
+            || Places() is not [{ Sure: true } place] || Within(dialog.Folder, place.Path)
+            || !_told.Add(operation + "\n" + arguments.ToJsonString()))
+            return null;
+        JsonObject whole = arguments.DeepClone().AsObject();
+        whole["text"] = Path.Combine(place.Path, text);
+        return new(arguments, null, new JsonObject
+        {
+            ["status"] = "rejected",
+            ["error"] = LeftOut,
+            ["saidFolders"] = new JsonArray(JsonValue.Create(place.Path)),
+            ["reachable"] = true,
+            ["next"] = $"{WireNames.Call(operation, whole)} writes the whole path in the dialog's name field, so its button "
+                + $"saves or opens the file in {place.Path}, the folder the person named; nothing ran: this text alone "
+                + $"would save or open it in {dialog.Folder}, the folder the dialog is in. If the person asked for "
+                + $"{dialog.Folder} itself, call it again exactly as before",
+        });
+    }
+
+    // Encargo 115 (U43, H5): «que quede en BAXY-bench con el nombre pendientes cierre»; office.document.create writes only in
+    // Documents\BAXY under its title, and takes no place. A Word document for the one folder the person named this turn is
+    // refused before it is written with the call that makes it there (file.write of a .docx, WrittenFormat); the same call
+    // written again runs as written. The file's name is theirs, not the title's, so the call leaves it for the model to say.
+    // Aid «said_folder».
+    private Ruling? DocumentPlace(string operation, JsonObject arguments)
+    {
+        if (operation != "office.document.create" || !ModelAids.On(ModelAids.SaidFolder)
+            || Text(arguments["format"]) != "docx" || Text(arguments["title"]) is not { Length: > 0 } title
+            || Places() is not { Count: > 0 } places)
+            return null;
+        string written = Path.Combine(Root("documents") ?? "Documents", "BAXY");
+        if (places.Any(place => Within(written, place.Path)) || !_told.Add(operation + "\n" + arguments.ToJsonString()))
+            return null;
+        string[] paragraphs = arguments["paragraphs"] is JsonArray body
+            ? [.. body.Select(static line => Text(line)).OfType<string>()]
+            : [];
+        // A name found in several places: the model says which, as for any other call (Rule).
+        string folder = places.Count == 1 ? places[0].Path : "<one of those folders>";
+        string call = WireNames.Call("file.write", new()
+        {
+            ["path"] = Path.Combine(folder, "<the name the person gave it>.docx"),
+            ["text"] = string.Join('\n', [title, .. paragraphs]),
+        });
+        return new(arguments, null, new JsonObject
+        {
+            ["status"] = "rejected",
+            ["error"] = LeftOut,
+            ["saidFolders"] = new JsonArray([.. places.Select(static place => JsonValue.Create(place.Path))]),
+            ["reachable"] = true,
+            ["next"] = $"{call} makes the Word document in {Said(places)}, which the person named, with each line a paragraph; "
+                + $"nothing ran: this call writes only in {written}. If the person asked for that folder itself, call it again "
+                + "exactly as before",
+        });
+    }
+
+    // A whole number an argument holds, however it was built (parsed or written).
+    private static long? Whole(JsonNode? node) =>
+        node is JsonValue value && value.GetValueKind() == JsonValueKind.Number
+        && long.TryParse(value.ToJsonString(), System.Globalization.NumberStyles.Integer,
+            System.Globalization.CultureInfo.InvariantCulture, out long number) ? number : null;
+
     // Holdout v5 V5E043: a folder made with a name the person said, spelled otherwise (viaje_chiloe_2027 for «viaje
     // chiloé 2027»: accents, separators), is refused once with the call that writes it as they said it; the same call
     // again runs as written. Only a name whose folded words are exactly theirs and that differs beyond case. Aid
@@ -410,9 +544,9 @@ internal sealed class SaidFolders
         {
             ["status"] = "rejected",
             ["error"] = NameChanged,
-            ["next"] = $"nothing ran: the person said the name «{theirs}» and this call writes «{leaf}»; call "
-                + $"{WireNames.Of(operation)} again with {Changes(arguments, respelled)}, as they said it; if they asked "
-                + "for this spelling, call it again exactly as before",
+            // Encargo 34: the call as they said it comes first, with its arguments written.
+            ["next"] = $"{WireNames.Call(operation, respelled)} writes the name the person said, «{theirs}»; this call "
+                + $"ran nothing: it writes «{leaf}»; if they asked for this spelling, call it again exactly as before",
         });
     }
 
@@ -447,7 +581,8 @@ internal sealed class SaidFolders
         bool Takes(string name) => properties.Any(property => property.Name == name);
         try
         {
-            if (Takes("path"))
+            // Banco de uso 03-11 (U23): a capture takes a known folder or a path; the one it gave says where it acts.
+            if (Takes("path") && (!Takes("folder") || Text(arguments["path"]) is not null))
                 return PathReach(operation, arguments);
             OperationArgumentProperty? folderArgument = properties.FirstOrDefault(static property => property.Name == "folder");
             if (folderArgument is null || Text(arguments["folder"]) is not { } folder)
@@ -505,7 +640,7 @@ internal sealed class SaidFolders
         {
             case "file.find":
                 return new([full], false, leafOfQuery);
-            case "filesystem.folder.open" or "filesystem.explorer.count":
+            case "filesystem.folder.open" or "filesystem.explorer.count" or "capture.screenshot" or "capture.active.window":
                 return new([full], false, null);
             case "filesystem.sandbox.move.named":
                 return new([full], false, Text(arguments["sourceFileName"]));
@@ -549,6 +684,7 @@ internal sealed class SaidFolders
             string? inside = operation switch
             {
                 "file.find" or "filesystem.folder.open" or "filesystem.explorer.count" or "filesystem.sandbox.move.named"
+                    or "capture.screenshot" or "capture.active.window"
                     => string.Empty,
                 "file.read" or "file.edit" or "filesystem.known.trash.named"
                     => given is null ? null : Path.GetFileName(given.TrimEnd('/', '\\')),
@@ -557,6 +693,8 @@ internal sealed class SaidFolders
             if (inside is null)
                 return null;
             routed["path"] = inside.Length == 0 ? folder : folder + "/" + inside;
+            // A capture's place is its path alone (U23).
+            routed.Remove("folder");
             // A destination inside the folder, without the folder's own path it repeats (V5E032: «BAXY-bench/…»).
             if (Text(routed["destinationRelativePath"]) is { } destination)
                 routed["destinationRelativePath"] = Inside(destination, place.Path);

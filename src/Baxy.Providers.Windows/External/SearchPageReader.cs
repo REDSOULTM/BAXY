@@ -96,6 +96,62 @@ internal sealed class SearchPageReader : IDisposable
         return PageRead.Failed("web_fetch_too_many_redirects");
     }
 
+    // Encargo 35 (banco de uso, U31): the status a public page answers with, asked as a stranger reads it (HEAD: no body,
+    // no cookie, nothing of the person; each redirect checked as a read's), so a navigation that reached an address can
+    // say its site answered 404 (Playwright's page.goto does not fail on 404 either: its response.status() says it). Null
+    // when it could not be asked: not a public address, no redirect target, too many redirects, no answer in time, or a
+    // connection that failed for another reason than a host name that does not exist.
+    // Encargo 70 (uso real 03-11, F7): a guessed address whose host name does not exist showed the browser's own error
+    // page and was told as a navigation verified. A name the DNS says does not exist (WSAHOST_NOT_FOUND, or WSANO_DATA: a
+    // valid name with no address) is told as such (PageStatus.NoSuchHost). SocketsHttpHandler throws the SocketException
+    // inside an HttpRequestException (ConnectHelper.CreateWrappedException), so its code is read there: its HttpRequestError
+    // does not tell them apart (NameResolutionError covers HostNotFound and TryAgain, NoData is ConnectionError). WSATRY_AGAIN
+    // (no authoritative answer: a DNS server down, no network) says nothing of the site and stays null.
+    internal async Task<PageStatus?> StatusAsync(Uri page, CancellationToken cancellationToken)
+    {
+        Uri current = page;
+        int hop = 0;
+        try
+        {
+            for (; hop <= MaximumRedirects; hop++)
+            {
+                if (!IsPublicPageAddress(current)) return null;
+                using var request = new HttpRequestMessage(HttpMethod.Head, current);
+                request.Headers.UserAgent.ParseAdd(UserAgent);
+                using HttpResponseMessage response = await _http
+                    .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                    .ConfigureAwait(false);
+                int status = (int)response.StatusCode;
+                if (status is < 300 or >= 400) return PageStatus.Answered(status);
+                if (response.Headers.Location is not { } location) return null;
+                current = location.IsAbsoluteUri ? location : new Uri(current, location);
+            }
+        }
+        // Only the page's own host: a redirect to a name that does not exist is another site's fault, not this address's.
+        catch (HttpRequestException exception) when (hop == 0 && IsNoSuchHost(exception))
+        {
+            return PageStatus.NoSuchHost;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or IOException
+            || (exception is OperationCanceledException && !cancellationToken.IsCancellationRequested))
+        {
+            return null;
+        }
+        return null;
+    }
+
+    private static bool IsNoSuchHost(HttpRequestException exception) =>
+        exception.InnerException is SocketException { SocketErrorCode: SocketError.HostNotFound or SocketError.NoData };
+
+    // What asking a page's status found: the HTTP status its site answered (Code), or that no site answers at its host
+    // name because the DNS says that name does not exist (HostNotFound, with no Code).
+    internal sealed record PageStatus(int? Code, bool HostNotFound)
+    {
+        internal static readonly PageStatus NoSuchHost = new(null, true);
+
+        internal static PageStatus Answered(int code) => new(code, false);
+    }
+
     internal static bool IsPublicPageAddress(Uri address)
     {
         if (!address.IsAbsoluteUri || address.Scheme is not ("http" or "https") || address.UserInfo.Length > 0)

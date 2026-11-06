@@ -59,6 +59,12 @@ internal enum PointPressOutcome
     NeedsConfirmation,
 
     /// <summary>
+    /// Encargo 96: in Bypass the control at the point is a switch of Windows' own Settings: nothing was pressed, and the
+    /// receipt says so with its code (visible_settings_switch_refused), never «it may have acted».
+    /// </summary>
+    SwitchRefused,
+
+    /// <summary>
     /// Review of lat-apertura-clic (finding 4): the point lies on the control the accessible tree already pressed in
     /// this click and saw nothing change from: neither its way nor the pointer presses it a second time.
     /// </summary>
@@ -87,6 +93,8 @@ internal sealed record PointPressed(
     internal static PointPressed Refused { get; } = new(PointPressOutcome.Refused);
 
     internal static PointPressed HeldForConfirmation { get; } = new(PointPressOutcome.NeedsConfirmation);
+
+    internal static PointPressed SettingsSwitch { get; } = new(PointPressOutcome.SwitchRefused);
 
     internal static PointPressed InProtectedWindow { get; } = new(PointPressOutcome.Protected);
 
@@ -137,6 +145,12 @@ internal interface IPointPress
 
     /// <summary>A window of another process came since <paramref name="watch"/> (handed to, or of unproved cause).</summary>
     bool AnotherWindowCame(object? watch) => false;
+
+    /// <summary>
+    /// Ajuste c4: the names of the controls the last look of <paramref name="window"/> showed (none when the last look was
+    /// of another window, or nothing looked).
+    /// </summary>
+    IReadOnlyList<string> NamesSeen(nint window) => [];
 
     /// <summary>
     /// The same for a control the caller already identified at the point (the tooltip stage, CONTRATO §8.2: a control
@@ -234,6 +248,12 @@ internal static class LocatedPointPress
         {
             return new Outcome(
                 ExternalJson.FailureBeforeEffect(operation, WindowsVisibleControlAdapter.NeedsConfirmation),
+                string.Empty, false, string.Empty, null);
+        }
+        if (pressed.Outcome == PointPressOutcome.SwitchRefused)
+        {
+            return new Outcome(
+                ExternalJson.FailureBeforeEffect(operation, WindowsVisibleControlAdapter.SettingsSwitchRefused),
                 string.Empty, false, string.Empty, null);
         }
         if (pressed.Outcome == PointPressOutcome.Protected)
@@ -708,19 +728,38 @@ internal sealed class WindowsVisibleControlAdapter
     internal const string WindowElevationUnread = "window_elevation_unread";
 
     // Whether the window changes by itself after the capture `first` (VisibleControlSurface.AnimationProbes).
-    private async ValueTask<bool> AnimatesFromAsync(
+    // Uso-111 (live, Edge and Chromium: a text typed in a page's field, then its button pressed, and the page did change):
+    // the caret left blinking in the field made the whole window «animated», so the press was told
+    // visible_click_postread_unread. So where it moves is kept too, from the same probes; no motion when that cannot be told.
+    private async ValueTask<(bool Animates, VisibleControlSurface.MotionMask? Motion)> AnimationFromAsync(
         nint hwnd, VisibleControlSurface.CapturedWindow first, CancellationToken cancellationToken)
     {
+        bool[]? moving = null;
+        int columns = 0, rows = 0;
         foreach (TimeSpan wait in VisibleControlSurface.AnimationProbes)
         {
             await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
             VisibleControlSurface.CapturedWindow? again = await _capture(hwnd, first.SelfDrawn, cancellationToken)
                 .ConfigureAwait(false);
-            if (again is not { } next || !string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
-                return true;
+            if (again is not { } next)
+                return (true, null);
+            if (string.Equals(next.Sha256, first.Sha256, StringComparison.Ordinal))
+                continue;
+            if (VisibleControlSurface.DifferingCells(first, next, out columns, out rows) is not { } differing)
+                return (true, null);
+            moving ??= new bool[differing.Length];
+            for (int cell = 0; cell < differing.Length; cell++)
+                moving[cell] |= differing[cell];
         }
-        return false;
+        if (moving is null)
+            return (false, null);
+        // A video or a carousel may change anywhere: what did not move in these moments proves nothing. Only a corner of it.
+        return moving.Count(static cell => cell) > moving.Length * MaximumMovingShare
+            ? (true, null)
+            : (true, new VisibleControlSurface.MotionMask(columns, rows, moving));
     }
+
+    private const double MaximumMovingShare = 0.02;
 
     private static string ElevatedCode(nint window)
     {
@@ -750,6 +789,10 @@ internal sealed class WindowsVisibleControlAdapter
         "visible_button_not_found",
         "visible_control_identity_stale",
         "visible_control_label_mismatch",
+        // Uso-108 (A1, A2): two controls with that label, or one that is disabled: returned before any press, and told
+        // «pudo o no ocurrir» because the boundary was crossed before the worker was asked. The fix H0096 gave not_found.
+        "visible_button_ambiguous",
+        "visible_control_disabled",
         "visible_click_argument_invalid",
         // Goal v3 B3: the control has no way to be pressed in the manner asked (no ExpandCollapse to open, no context
         // menu, no message route for a double click): nothing was sent.
@@ -769,12 +812,15 @@ internal sealed class WindowsVisibleControlAdapter
         "visible_control_covered",
         // BAXY Renew cu (C02): a switch of Windows' own Settings, refused before anything was pressed.
         SettingsSwitchRefused,
+        // uso-108 A9: the window's thread does not answer (VisibleControlSurface.NotResponding): nothing was touched.
+        VisibleControlSurface.WindowNotResponding,
     };
 
     /// <summary>
-    /// BAXY Renew cu (C02): the worker found the control a switch (On/Off) of Windows' own Settings, which changes the
-    /// machine (its Wi-Fi radio, its Bluetooth, airplane mode) and no click presses: «mira si el wifi está conectado»
-    /// pressed the «Wi-Fi» switch (on → off) and the radio stayed off. Refused before anything was pressed, with its state.
+    /// BAXY Renew cu (C02), encargo 96: in Bypass the worker found the control a switch (On/Off) of Windows' own Settings,
+    /// which changes the machine (its Wi-Fi radio, its Bluetooth, airplane mode) and no click presses: «mira si el wifi está
+    /// conectado» pressed the «Wi-Fi» switch (on → off) and the radio stayed off, and nobody sees that coming in Bypass.
+    /// Refused before anything was pressed, with its state. In normal mode the kernel asks for the yes instead.
     /// </summary>
     internal const string SettingsSwitchRefused = "visible_settings_switch_refused";
 
@@ -796,7 +842,7 @@ internal sealed class WindowsVisibleControlAdapter
     });
 
     // Encargo IMP4: the lines a look that asks for «lines» reads, each by its place (a chat's whole pane: 79 lines
-    // measured on redpc); encargo WA-LEER: up to OperationVisibleFacts.ChatLines.
+    // measured on the development PC); encargo WA-LEER: up to OperationVisibleFacts.ChatLines.
     private const int PlacedLinesRead = OperationVisibleFacts.ChatLines;
     private static readonly TimeSpan LabelWaitBudget = TimeSpan.FromSeconds(24);
     private static readonly TimeSpan LabelWaitInterval = TimeSpan.FromMilliseconds(1500);
@@ -832,6 +878,8 @@ internal sealed class WindowsVisibleControlAdapter
     // after it keeps the full wait instead of answering «not found» after one still look.
     private static readonly TimeSpan ScreenChangeFreshness = TimeSpan.FromSeconds(30);
     private nint _lookedWindow;
+    // uso-108 C16: the window whose wait for a Document ran out, and its count of controls then.
+    private (nint Window, int Count)? _noDocument;
     private DateTime _screenChangedUtc = DateTime.MinValue;
     // The clock the label's wait runs on: when a click changed the screen, the opening's settling and the label's
     // budget, the pause between looks and the still window's watch (the opened application's NotedUtc is on it too).
@@ -866,6 +914,22 @@ internal sealed class WindowsVisibleControlAdapter
     /// post-read; a test seam names its own.
     /// </summary>
     internal Func<nint, IReadOnlyList<nint>> PopupsOf { get; init; } = VisibleControlSurface.PopupsOf;
+
+    /// <summary>
+    /// How the person touched a window since a moment of the click (<see cref="WindowsUserInputPause.TouchOf"/>),
+    /// read by the post-read before it takes a changed image as the click's; a test seam names its own.
+    /// </summary>
+    internal Func<nint, long, PersonTouch> PersonTouchOf { get; init; } = WindowsUserInputPause.TouchOf;
+
+    /// <summary>
+    /// The modal dialog that disables a window now, or the window itself when none does
+    /// (<see cref="VisibleControlSurface.ModalSurface(nint)"/>); a test seam names its own.
+    /// </summary>
+    internal Func<nint, nint> ModalOf { get; init; } = VisibleControlSurface.ModalSurface;
+
+    /// <summary>Encargo 100: the browsers Windows has registered, read around a press of a menu entry; null (the test seams that
+    /// name none) watches nothing.</summary>
+    internal Func<BrowserWitness?>? BrowsersNow { get; init; }
 
     /// <summary>
     /// Whether the person's pointer rests on the window now (<see cref="VisibleControlSurface.PointerRestsOn"/>): a popup
@@ -951,7 +1015,12 @@ internal sealed class WindowsVisibleControlAdapter
     /// or captured. Null, with the last view left as it was, when the last view is of another window, a modal dialog
     /// now disables the window (the effect is in the dialog), or the read does not answer, fails or is cut.
     /// </summary>
-    public async ValueTask<JsonElement?> AfterActAsync(nint window, CancellationToken cancellationToken)
+    public ValueTask<JsonElement?> AfterActAsync(nint window, CancellationToken cancellationToken) =>
+        AfterActAsync(window, onlyIfLeft: false, cancellationToken);
+
+    // Encargo 54: with onlyIfLeft, the read becomes the last view (and its difference is returned) only when it shows what
+    // a passing pointer cannot do (LeftItsTree); otherwise null, the last view left as it was for a read again.
+    private async ValueTask<JsonElement?> AfterActAsync(nint window, bool onlyIfLeft, CancellationToken cancellationToken)
     {
         if (!ReadsAfterAct || window == 0)
             return null;
@@ -992,9 +1061,12 @@ internal sealed class WindowsVisibleControlAdapter
             string title = ReadString(root, "window");
             bool afterCut = root.TryGetProperty("controlCount", out JsonElement total) && total.ValueKind == JsonValueKind.Number
                 && total.TryGetInt32(out int counted) && counted > controls.Count;
+            if (onlyIfLeft && !LeftItsTree(before.Controls, before.TreeTitle, controls, title, before.Cut || afterCut))
+                return null;
             var listed = new List<int>();
             JsonElement difference = ViewDifference(
-                before.Controls, before.TreeTitle, controls, disabled, title, cut: before.Cut || afterCut, told: listed);
+                before.Controls, before.TreeTitle, controls, disabled, title, cut: before.Cut || afterCut, told: listed,
+                frameBefore: before.FrameOnly);
             // Ajuste c3: what the model knows by index: the view before (as it was told), with the indices this «after»
             // lists now being the controls it lists.
             var told = new Dictionary<int, ViewControl>(
@@ -1012,6 +1084,7 @@ internal sealed class WindowsVisibleControlAdapter
                     return null;
                 _lastView = new LastView(window, controls)
                 {
+                    FrameOnly = root.TryGetProperty("frameOnly", out JsonElement frameAfter) && frameAfter.ValueKind == JsonValueKind.True,
                     Cut = afterCut,
                     TreeTitle = title,
                     Limit = before.Limit,
@@ -1040,6 +1113,10 @@ internal sealed class WindowsVisibleControlAdapter
     /// only difference is the keyboard's focus (controls that took or lost it, nothing else) says «focusOnly».
     /// A cut view never says it (revisión w11): what it did not list may have changed (a message sent, an item deleted
     /// past the cap), and «focusOnly» turns the click unchanged, which would have the model press it again.
+    /// Banco de uso 05-11 (U40, S03): after a look that read only the window's frame (<paramref name="frameBefore"/>), what
+    /// the view lists now did not appear: it is unknown what it held then («before»). It comes as «readNow», with a field whose
+    /// value the application exposes as empty said so (no value exposed stays unknown): an empty history is what tells that
+    /// nothing went. A frame read again with nothing more is compared as ever: a window drawn with no tree has only that.
     /// </summary>
     internal static JsonElement ViewDifference(
         IReadOnlyList<ViewControl> before,
@@ -1049,31 +1126,33 @@ internal sealed class WindowsVisibleControlAdapter
         string afterTitle,
         int cap = AfterViewCap,
         bool cut = false,
-        ICollection<int>? told = null)
+        ICollection<int>? told = null,
+        bool frameBefore = false)
     {
         var matched = new ViewControl?[after.Count];
         var used = new HashSet<ViewControl>(ReferenceEqualityComparer.Instance);
-        for (int i = 0; i < after.Count; i++)
+        // Uso-108 (agent-desktop probes/windows/FINDINGS.md A7-3, identity-mutation.json: 4 of 5 Explorer rows kept their
+        // RuntimeId and named another file after a folder changed): an id alone may be a place in a list, not a control.
+        // Deleting «b» from a b c d e is «gone: b», never «gone: e» with three rows changed: same id and name first, then
+        // kind and name, and a bare id last, so a control that was renamed still ends as «changed».
+        void Pair(Func<ViewControl, ViewControl, bool> same)
         {
-            ViewControl now = after[i];
-            if (now.Id.Length > 0
-                && before.FirstOrDefault(was => was.Id == now.Id && !used.Contains(was)) is { } same)
+            for (int i = 0; i < after.Count; i++)
             {
-                matched[i] = same;
-                used.Add(same);
+                ViewControl now = after[i];
+                if (matched[i] is null
+                    && before.FirstOrDefault(was => !used.Contains(was) && same(was, now)) is { } found)
+                {
+                    matched[i] = found;
+                    used.Add(found);
+                }
             }
         }
 
-        for (int i = 0; i < after.Count; i++)
-        {
-            ViewControl now = after[i];
-            if (matched[i] is null
-                && before.FirstOrDefault(was => !used.Contains(was) && was.Kind == now.Kind && was.Name == now.Name) is { } same)
-            {
-                matched[i] = same;
-                used.Add(same);
-            }
-        }
+        static bool SameName(ViewControl was, ViewControl now) => was.Kind == now.Kind && was.Name == now.Name;
+        Pair(static (was, now) => now.Id.Length > 0 && was.Id == now.Id && SameName(was, now));
+        Pair(SameName);
+        Pair(static (was, now) => now.Id.Length > 0 && was.Id == now.Id);
 
         // Each listed entry with the index it tells (-1: none), so what the model was told by index is known (Told).
         List<(int Index, string Text)> changed = [], appeared = [], moved = [];
@@ -1082,7 +1161,7 @@ internal sealed class WindowsVisibleControlAdapter
         {
             ViewControl now = after[i];
             if (matched[i] is not { } was)
-                appeared.Add((now.Index, Entry(now)));
+                appeared.Add((now.Index, frameBefore && now.Value is { Length: 0 } ? Entry(now) + " empty" : Entry(now)));
             else if (was.Kind != now.Kind || was.Name != now.Name || was.State != now.State
                 || (was.Value ?? string.Empty) != (now.Value ?? string.Empty))
             {
@@ -1116,8 +1195,10 @@ internal sealed class WindowsVisibleControlAdapter
 
             if (titled)
                 writer.WriteString("title", afterTitle);
+            if (frameBefore && appeared.Count > 0)
+                writer.WriteString(BeforeUnread, "only the window's frame was read before this press: what its controls held then is not known");
             WriteList("changed", changed);
-            WriteList("appeared", appeared);
+            WriteList(frameBefore ? "readNow" : "appeared", appeared);
             WriteList("gone", gone);
             WriteList("moved", moved);
             int omitted = changed.Count + appeared.Count + gone.Count + moved.Count - (cap - room);
@@ -1163,6 +1244,26 @@ internal sealed class WindowsVisibleControlAdapter
             string.Join(' ', state.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(word => word != "focused"));
     }
 
+    /// <summary>
+    /// Encargo 54: what a pointer that only passes over a window cannot do to it: give the window another name, or take
+    /// out of its tree a control the view before listed (neither by its identity nor by its kind and name is it there
+    /// now). A hover redraws, shows a tooltip or a card (it adds); it presses nothing. A single text gone is a label that
+    /// updates itself (a clock, a counter: the worker's place trace does not count a text renamed either), so texts
+    /// count from two on. With either view cut at its cap a control not listed after is not known gone, as in
+    /// <see cref="ViewDifference"/>.
+    /// </summary>
+    internal static bool LeftItsTree(
+        IReadOnlyList<ViewControl> before, string beforeTitle, IReadOnlyList<ViewControl> after, string afterTitle, bool cut)
+    {
+        if (beforeTitle.Length > 0 && afterTitle.Length > 0 && beforeTitle != afterTitle)
+            return true;
+        if (cut)
+            return false;
+        List<ViewControl> gone = [.. before.Where(was =>
+            !after.Any(now => (now.Id.Length > 0 && now.Id == was.Id) || (now.Kind == was.Kind && now.Name == was.Name)))];
+        return gone.Any(static was => was.Kind != "Text") || gone.Count >= 2;
+    }
+
     /// <summary>Renew al máximo (7.1): the receipt with the view after its act («after»), its own facts as they were.</summary>
     internal static ExternalCapabilityReceipt WithAfter(ExternalCapabilityReceipt receipt, JsonElement after)
     {
@@ -1173,6 +1274,10 @@ internal sealed class WindowsVisibleControlAdapter
         using JsonDocument merged = JsonDocument.Parse(node.ToJsonString());
         return receipt with { Result = merged.RootElement.Clone() };
     }
+
+    // Encargo 54: a receipt whose post-read already read the window after the press and carries it.
+    private static bool ReadAfter(JsonElement? result) =>
+        result is { ValueKind: JsonValueKind.Object } facts && facts.TryGetProperty("after", out _);
 
     // Renew al máximo (7.1): a click whose effect went to another window (a dialog it opened, a popup born, the list or
     // menu its manner opened, a window of another process) is not read again: the window's own tree does not show it.
@@ -1197,6 +1302,7 @@ internal sealed class WindowsVisibleControlAdapter
             tooltip: new WindowsVisibleTooltipLocator(worker))
     {
         RootWindows = VisibleControlSurface.RootWindowsNow;
+        BrowsersNow = BrowserWitness.Read;
         ActRefused = VisibleControlSurface.ActRefused;
         WindowOfProcess = IsWindowOfOpened;
         BurstLease = ForegroundLease.Shared;
@@ -1255,19 +1361,62 @@ internal sealed class WindowsVisibleControlAdapter
     /// </summary>
     internal Func<string, CancellationToken, ValueTask<IReadOnlyList<string>>>? InstalledExecutables { get; set; }
 
+    /// <summary>
+    /// Uso 86: whether a name is an installed application's, by the same catalog (a look by a name nothing bears may be
+    /// led to the person's open browser: <see cref="NamedWindowNotFoundAsync"/>); null (the test seams) asks nothing and
+    /// leads nowhere.
+    /// </summary>
+    internal Func<string, CancellationToken, ValueTask<bool>>? InstalledName { get; set; }
+
+    /// <summary>Encargo 83: whether a window is a surface of Windows' own settings (test seam).</summary>
+    internal Func<nint, bool> SystemSurface { get; set; } = VisibleControlSurface.IsSystemSurface;
+
+    /// <summary>
+    /// Encargo 96: whether a click refuses a switch of Windows' own Settings before any press (Bypass, where the kernel
+    /// reads nothing and asks nothing); reread at each click, as the engine rereads the mode.
+    /// </summary>
+    internal Func<bool> RefusesSettingsSwitches { get; set; } = static () => false;
+
+    /// <summary>The mode the engine reads (ConfirmationModeStore) in this data root, at each call.</summary>
+    internal static Func<bool> InBypass(string dataRoot) => () => ConfirmationModeStore.Read(dataRoot) == ConfirmationMode.Bypass;
+
     public bool CanHandle(string operation) =>
         operation is "input.visible.click" or "input.visible.controls";
 
     // Renew al máximo (guarda diálogo destructivo): falsedades F013, «Sí» pressed in «Confirmar Guardar como: prueba.txt
     // ya existe. ¿Quieres reemplazarlo?» wrote over the file unasked; the policy reads only the label. A click whose label
     // is a dialog's yes (VisibleControlSurface.AffirmativeAnswer) is read before it goes: a «No» or a «Cancelar» never is.
+    // Encargo 83: and any click on a surface of Windows' own settings (only its window's process is looked at here):
+    // only opening a list (manner open) changes nothing.
     public bool PreflightMayRaise(string operation, JsonElement arguments) =>
         operation == "input.visible.click"
         && arguments.ValueKind == JsonValueKind.Object
         && !(arguments.TryGetProperty("search", out JsonElement search) && search.ValueKind == JsonValueKind.String
             && search.GetString()!.Trim().Length > 0)
         && arguments.TryGetProperty("label", out JsonElement label) && label.ValueKind == JsonValueKind.String
-        && VisibleControlSurface.AffirmativeAnswer(label.GetString());
+        && (VisibleControlSurface.AffirmativeAnswer(label.GetString())
+            || (!OnlyOpens(arguments) && SystemSurface(ClickTarget(arguments, out _))));
+
+    private static bool OnlyOpens(JsonElement arguments) =>
+        arguments.TryGetProperty("manner", out JsonElement manner) && manner.ValueKind == JsonValueKind.String
+        && manner.GetString() == "open";
+
+    // The click's window: the one it names, or the last look's, or the one in front.
+    private nint ClickTarget(JsonElement arguments, out LastView? view)
+    {
+        nint named = arguments.TryGetProperty("window", out JsonElement window) && window.ValueKind == JsonValueKind.Number
+            && window.TryGetInt64(out long handle) && handle > 0
+                ? (nint)handle
+                : 0;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        return named != 0 ? named
+            : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd
+            : VisibleControlSurface.FrontWindow();
+    }
 
     /// <summary>
     /// Renew al máximo (guarda diálogo destructivo): read only. The click's window (the one it names, or the last look's,
@@ -1275,7 +1424,9 @@ internal sealed class WindowsVisibleControlAdapter
     /// replacing, overwriting, deleting, discarding, not saving or losing changes, and the label is that dialog's
     /// affirmative button: the receipt says the call needs the person's yes (NeedsConfirmation). The dialog's words are
     /// those of the last look when it was of that dialog, else of a read of it bounded in time (nothing pressed, brought
-    /// up or captured). Null when it is not so or cannot be read.
+    /// up or captured). Encargo 83: or the control the click would press on a surface of Windows' own settings changes the
+    /// system (the worker's «clickread», which finds it as the click does and presses nothing): the receipt says what it
+    /// is and its state, and one that could not be read asks too. Null when it is not so or cannot be read.
     /// </summary>
     public async ValueTask<ExternalCapabilityReceipt?> PreflightAsync(
         string operation,
@@ -1286,23 +1437,90 @@ internal sealed class WindowsVisibleControlAdapter
         if (!PreflightMayRaise(operation, arguments))
             return null;
         string label = arguments.GetProperty("label").GetString()!.Trim();
-        nint named = arguments.TryGetProperty("window", out JsonElement window) && window.ValueKind == JsonValueKind.Number
-            && window.TryGetInt64(out long handle) && handle > 0
-                ? (nint)handle
-                : 0;
-        LastView? view;
-        lock (_viewLock)
+        nint target = ClickTarget(arguments, out LastView? view);
+        if (VisibleControlSurface.AffirmativeAnswer(label)
+            && await AnswersDestructiveDialogAsync(target, label, view, cancellationToken).ConfigureAwait(false))
         {
-            view = _lastView;
+            return new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true };
         }
 
-        nint target = named != 0 ? named
-            : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd
-            : VisibleControlSurface.FrontWindow();
-        return await AnswersDestructiveDialogAsync(target, label, view, cancellationToken).ConfigureAwait(false)
-            ? new ExternalCapabilityReceipt(operation, false, false, null, null) { NeedsConfirmation = true }
+        return !OnlyOpens(arguments) && SystemSurface(target)
+            ? await ReadSystemChangeAsync(operation, target, label, arguments, view, cancellationToken).ConfigureAwait(false)
             : null;
     }
+
+    private async ValueTask<ExternalCapabilityReceipt?> ReadSystemChangeAsync(
+        string operation,
+        nint target,
+        string label,
+        JsonElement arguments,
+        LastView? view,
+        CancellationToken cancellationToken)
+    {
+        string? controlId = OptionalText(arguments, "controlId");
+        if (controlId is null && arguments.TryGetProperty("index", out JsonElement index)
+            && index.ValueKind == JsonValueKind.Number && index.TryGetInt32(out int position)
+            && view is not null && view.Hwnd == target
+            && SeenControl(view, position) is { } seen && SameLabel(label, seen.Name) && seen.Id.Length > 0)
+        {
+            controlId = seen.Id;
+        }
+
+        var read = new JsonObject
+        {
+            ["cmd"] = "clickread",
+            ["hwnd"] = target,
+            ["aliases"] = new JsonArray(label),
+            ["controlId"] = controlId ?? string.Empty,
+            ["asks"] = AsksRequest(),
+            ["changes"] = ChangesRequest(),
+        };
+        if (OptionalText(arguments, "manner") is { } manner)
+            read["manner"] = manner;
+        JsonDocument? answer;
+        try
+        {
+            answer = await _worker.SendAsync(read.ToJsonString(), WorkerClickBudget, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or JsonException or TimeoutException
+            or InvalidOperationException)
+        {
+            answer = null;
+        }
+
+        using (answer)
+        {
+            string? error = answer is not null && answer.RootElement.TryGetProperty("error", out JsonElement code)
+                && code.ValueKind == JsonValueKind.String
+                    ? code.GetString()
+                    : null;
+            if (answer is not null && error != "visible_lookup_timeout" && error != SystemChangeFound)
+                return null;
+            return new ExternalCapabilityReceipt(operation, false, false,
+                error == SystemChangeFound ? SystemChangeFacts(answer!.RootElement) : null, null) { NeedsConfirmation = true };
+        }
+    }
+
+    private const string SystemChangeFound = "visible_system_change";
+
+    // What the person is asked about, in the card's cause and in what the model reads.
+    internal static JsonElement SystemChangeFacts(JsonElement root) => ExternalJson.Create(writer =>
+    {
+        static string Text(JsonElement facts, string name) =>
+            facts.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String
+                ? value.GetString() ?? string.Empty
+                : string.Empty;
+        writer.WriteStartObject();
+        writer.WriteStartObject("systemChange");
+        writer.WriteString("control", Text(root, "name"));
+        writer.WriteString("change", Text(root, "change"));
+        string state = Text(root, "state");
+        if (state is "On" or "Off")
+            writer.WriteString("state", state == "On" ? "on" : "off");
+        writer.WriteString("setting", Text(root, "setting"));
+        writer.WriteEndObject();
+        writer.WriteEndObject();
+    });
 
     /// <summary>
     /// Revisión de la guarda F013 (teclas): Enter or space on the focused «Reemplazar» of «¿Reemplazar?» wrote over the
@@ -1441,6 +1659,8 @@ internal sealed class WindowsVisibleControlAdapter
         Interlocked.Increment(ref _clicks);
         // Ajuste c3 (E017): a common file dialog the click may confirm, read before it (CommonFileDialog).
         CommonFileDialog.Facts? fileDialog = FileDialogBefore(arguments);
+        // Encargo 100: what a menu's command may open in a browser, read before it.
+        MenuEntryWatch? menuEntry = await MenuEntryWatchAsync(arguments, cancellationToken).ConfigureAwait(false);
         DateTime actedUtc = DateTime.UtcNow;
         try
         {
@@ -1489,12 +1709,7 @@ internal sealed class WindowsVisibleControlAdapter
 
         if (receipt.ErrorCode == "visible_button_not_found" && receipt.Result is null)
         {
-            LastView? seen;
-            lock (_viewLock)
-            {
-                seen = _lastView;
-            }
-
+            LastView? seen = ViewOfLookedWindow();
             string asked = arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("label", out JsonElement named)
                 && named.ValueKind == JsonValueKind.String ? named.GetString()!.Trim() : string.Empty;
             if (seen is not null && NotFoundHint(seen.Controls, asked,
@@ -1503,16 +1718,31 @@ internal sealed class WindowsVisibleControlAdapter
                 receipt = receipt with { Result = hint };
         }
 
+        // Uso-108 (A1; agent-desktop locator/live_locator/cardinality.rs:37-61): the refusal names what the model picks from.
+        if (receipt.ErrorCode == "visible_button_ambiguous" && receipt.Result is null)
+        {
+            LastView? twins = ViewOfLookedWindow();
+            string asked = arguments.ValueKind == JsonValueKind.Object && arguments.TryGetProperty("label", out JsonElement twinLabel)
+                && twinLabel.ValueKind == JsonValueKind.String ? twinLabel.GetString()!.Trim() : string.Empty;
+            string[] entries = twins is null
+                ? []
+                : [.. twins.Controls.Where(control => SameLabel(asked, control.Name)).Take(AmbiguousLimit)
+                    .Select(static control => $"[{control.Index}] {control.Kind} «{control.Name}»")];
+            receipt = NotNamed(operation, "visible_button_ambiguous", entries,
+                next: "nothing was pressed: press one of them with its index");
+        }
+
         // Renew al máximo (7.1): a completed click carries the view of its window after it, which becomes the last view.
         if (receipt.Verified && receipt.ErrorCode is null && receipt.EffectObserved && _actedWindow != 0
-            && !EffectElsewhere(receipt.Result)
+            && !EffectElsewhere(receipt.Result) && !ReadAfter(receipt.Result)
             && await AfterActAsync(_actedWindow, cancellationToken).ConfigureAwait(false) is { } after)
         {
             // A window of another process that came since the click (a browser it opened) left this one inactive: its
             // lost focus is the click's effect elsewhere, never «unchanged» (the model would press again).
-            receipt = FocusOnly(receipt, after) is { } unchanged && !AnotherWindowCame(_clickRoots)
+            bool elsewhere = AnotherWindowCame(_clickRoots);
+            receipt = FocusOnly(receipt, after) is { } unchanged && !elsewhere
                 ? unchanged
-                : WithAfter(receipt, ListedSameWhenSurfaceChanged(receipt.Result, after));
+                : WithAfter(elsewhere ? receipt : WithImageAloneTold(receipt, after), ListedSameWhenSurfaceChanged(receipt.Result, after));
         }
 
         if (receipt.Verified
@@ -1523,7 +1753,60 @@ internal sealed class WindowsVisibleControlAdapter
             _screenChangedUtc = Now;
         }
 
+        if (menuEntry is { } watched && (receipt.Verified || receipt.EffectObserved))
+            receipt = await WithBrowserOpenedAsync(receipt, watched, cancellationToken).ConfigureAwait(false);
         return RepeatedUnchanged(receipt, arguments);
+    }
+
+    private sealed record MenuEntryWatch(BrowserWitness Browsers, IReadOnlyDictionary<long, int> Tabs, int Process);
+
+    // Measured live, a web search opens half a second after its command, with the view after the press already read.
+    private const int MenuEntryQuietMs = 800;
+
+    /// <summary>
+    /// Encargo 100, measured live: the model pressed a menu's web search by its label, the person's browser opened with a word of
+    /// the document in its address, and the receipt said completed with nothing of it. Only a command of a menu is watched: an
+    /// entry with entries of its own opens no browser, and a link or a button does so on purpose. Which one, by the kind and
+    /// state the last look showed; no word of its label decides.
+    /// </summary>
+    private async ValueTask<MenuEntryWatch?> MenuEntryWatchAsync(JsonElement arguments, CancellationToken cancellationToken)
+    {
+        LastView? seen;
+        lock (_viewLock)
+        {
+            seen = _lastView;
+        }
+
+        if (BrowsersNow is null || seen is null || arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("label", out JsonElement named) || named.ValueKind != JsonValueKind.String)
+            return null;
+        string asked = named.GetString()!.Trim();
+        int? index = arguments.TryGetProperty("index", out JsonElement at) && at.ValueKind == JsonValueKind.Number && at.TryGetInt32(out int number)
+            ? number
+            : null;
+        ViewControl? entry = seen.Controls.FirstOrDefault(control => control.Index == index && control.Name == asked)
+            ?? seen.Controls.FirstOrDefault(control => control.Name == asked);
+        if (entry is not { Kind: "MenuItem" } || entry.State.Contains("collapsed", StringComparison.Ordinal)
+            || entry.State.Contains("expanded", StringComparison.Ordinal) || BrowsersNow() is not { } browsers)
+            return null;
+        int process = BrowserWitness.ProcessOf(seen.Hwnd);
+        return new MenuEntryWatch(browsers, await browsers.TabsBehindAsync(process, TabCountAsync, cancellationToken).ConfigureAwait(false), process);
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> WithBrowserOpenedAsync(
+        ExternalCapabilityReceipt receipt, MenuEntryWatch watched, CancellationToken cancellationToken)
+    {
+        BrowserSighting Sight() => BrowsersNow!() is { } now ? BrowserWitness.Since(watched.Browsers, now, watched.Process) : default;
+        if (await BrowserWitness.AwaitOpenedAsync(Sight, watched.Tabs, TabCountAsync, MenuEntryQuietMs, cancellationToken).ConfigureAwait(false) is not { } opened)
+            return receipt;
+        JsonObject node = receipt.Result is { ValueKind: JsonValueKind.Object } result
+            ? JsonNode.Parse(result.GetRawText())!.AsObject()
+            : [];
+        node["browserOpened"] = new JsonObject { ["title"] = opened.Title, ["closed"] = false };
+        node["next"] = "this menu entry opened a browser (" + (opened.Title.Length > 0 ? $"«{opened.Title}», " : "") + "which is still open). "
+            + "Tell the person that the selected text or the word at the caret may have gone out to the web in its address";
+        using JsonDocument told = JsonDocument.Parse(node.ToJsonString());
+        return receipt with { Result = told.RootElement.Clone() };
     }
 
     /// <summary>Ajuste c3 (E017): a look's facts of a common file dialog: the folder its address shows (a path of the disk,
@@ -1606,10 +1889,16 @@ internal sealed class WindowsVisibleControlAdapter
     // C67 (R8-NB-5): a click proved by the window's image (surfaceChanged) on a browser whose tree lists only an old
     // document came back with after «same», read as «the window did not change», and the model pressed it again. The tree
     // did not see what the image did: its view says only that the listed controls are the same («sameListed»).
-    private static JsonElement ListedSameWhenSurfaceChanged(JsonElement? result, JsonElement after) =>
+    // Uso-108 (B2, hondo 15 note 5): a plain key in a named window the same way.
+    internal static JsonElement ListedSameWhenSurfaceChanged(JsonElement? result, JsonElement after) =>
         result is { ValueKind: JsonValueKind.Object } facts
         && facts.TryGetProperty("surfaceChanged", out JsonElement changed) && changed.ValueKind == JsonValueKind.True
-        && after.TryGetProperty("same", out JsonElement same) && same.ValueKind == JsonValueKind.True
+            ? ListedSame(after)
+            : after;
+
+    // The tree said «same», and nothing looked at the image: only what it lists is known the same.
+    internal static JsonElement ListedSame(JsonElement after) =>
+        after.TryGetProperty("same", out JsonElement same) && same.ValueKind == JsonValueKind.True
             ? ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
@@ -1617,6 +1906,42 @@ internal sealed class WindowsVisibleControlAdapter
                 writer.WriteEndObject();
             })
             : after;
+
+    // Banco de uso 05-11 (U40, S03): «Enviar» pressed on an empty box, with a look that read only the frame: the image changed
+    // when the press took the focus off the menu, and the click said completed and verified, with 0 sent. An image alone says
+    // something was drawn, not what the press promised: with nothing else to go by (no selection, toggle, field or dialog of
+    // the worker) and a view after it that compares to nothing (a frame before) or moved only the focus, the press went and
+    // its effect was not read back, as a key's (delivered, readBack:false: delivered_only). A window of another process that
+    // came since is the press's effect elsewhere, and a tree's press with only the focus moved is unchanged (FocusOnly).
+    // Measured with the model, after the person's «sí» (S03, U40 and a held-out): delivered_only alone reads as «enviado» (2 of
+    // 12 without the claim, 1 of 12 as it was), so the next says what the press is worth. «Say that you pressed it» became
+    // «Mandé…, pero no pude comprobar», hence «what failed before still failed».
+    private const string ImageAloneNext = "the press went, but only the window's image changed: nothing read shows that anything "
+        + "was done, and what failed before this press still failed. Tell the person only what after and those results show: never "
+        + "that it was done, only what failed, or that you pressed it and could not confirm any effect";
+
+    internal static ExternalCapabilityReceipt WithImageAloneTold(ExternalCapabilityReceipt receipt, JsonElement after)
+    {
+        if (receipt.Result is not { ValueKind: JsonValueKind.Object } result || !ProvedByImageAlone(result)
+            || !(after.TryGetProperty(BeforeUnread, out _)
+                || (after.TryGetProperty("focusOnly", out JsonElement focus) && focus.ValueKind == JsonValueKind.True)))
+            return receipt;
+        JsonObject node = JsonNode.Parse(result.GetRawText())!.AsObject();
+        node["delivered"] = true;
+        node["readBack"] = false;
+        node["next"] = ImageAloneNext;
+        using JsonDocument told = JsonDocument.Parse(node.ToJsonString());
+        return receipt with { Result = told.RootElement.Clone() };
+    }
+
+    private const string BeforeUnread = "before";
+
+    private static readonly string[] OtherProofs =
+        ["selected", "toggled", "absentOrDisabled", "targeted", "opened", "fieldTook", "dialogOpened", "renamed", "chosenNamed", "popupBorn"];
+
+    private static bool ProvedByImageAlone(JsonElement result) =>
+        result.TryGetProperty("surfaceChanged", out JsonElement image) && image.ValueKind == JsonValueKind.True
+        && !OtherProofs.Any(proof => result.TryGetProperty(proof, out JsonElement held) && held.ValueKind == JsonValueKind.True);
 
     // Holdout v5 V5E029 (s1): «Modo de calculadora Estándar», a Text and not a button, was clicked; the window's image
     // changed only because the display lost the focus ring, and the click came back completed (surfaceChanged), so the
@@ -2107,7 +2432,10 @@ internal sealed class WindowsVisibleControlAdapter
                 if (ShouldKeep(uia))
                     return uia;
                 // An administrator's window refuses every stage alike (UIPI): no OCR, tooltip or vision is tried on it.
-                if (uia.ErrorCode is WindowElevated or WindowElevationUnread or NeedsConfirmation)
+                // Uso-108 (A1, A2): nor does a later stage press one of two twins, or what reads as a disabled control.
+                if (uia.ErrorCode is WindowElevated or WindowElevationUnread or NeedsConfirmation
+                    or VisibleControlSurface.WindowNotResponding
+                    or "visible_button_ambiguous" or "visible_control_disabled")
                     return uia;
                 // Ronda B (falta 1) and ronda final 18 (regla 3): any failure of a press that may have acted (no
                 // receipt, an unreadable one, a raise once sent, a read-back not read, the person's touch, no answer to
@@ -2361,7 +2689,7 @@ internal sealed class WindowsVisibleControlAdapter
         while (true)
         {
             ViewResult view = await BuildViewAsync(
-                    limit, includeText, application, openedWindow, wanted, tail, lines, cancellationToken)
+                    limit, includeText, application, openedWindow, wanted, tail, lines, arguments, cancellationToken)
                 .ConfigureAwait(false);
             if (view.Receipt.ErrorCode is not null)
                 return view.Receipt;
@@ -2448,17 +2776,23 @@ internal sealed class WindowsVisibleControlAdapter
     /// window that is gone (its look fails as before).</summary>
     internal static JsonDocument? WithoutTree(JsonElement answer, nint window, Func<nint, bool> alive)
     {
-        if (!answer.TryGetProperty("error", out JsonElement error) || error.ValueKind != JsonValueKind.String
-            || error.GetString() != "visible_controls_uia_failed"
+        string? code = answer.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
+            ? error.GetString()
+            : null;
+        if (code is not ("visible_controls_uia_failed" or VisibleControlSurface.WindowNotResponding)
             || (answer.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True)
             || !alive(window))
         {
             return null;
         }
 
-        string reason = answer.TryGetProperty("detail", out JsonElement detail) && detail.ValueKind == JsonValueKind.String
-            ? detail.GetString() ?? string.Empty
-            : string.Empty;
+        // uso-108 A9: a look at a window that does not respond is not lost either (agent-desktop hondo 04, finding 5): what it
+        // draws still reads, and the reason is the window, not its tree.
+        string reason = code == VisibleControlSurface.WindowNotResponding
+            ? VisibleControlSurface.NotRespondingReason
+            : answer.TryGetProperty("detail", out JsonElement detail) && detail.ValueKind == JsonValueKind.String
+                ? detail.GetString() ?? string.Empty
+                : string.Empty;
         return JsonDocument.Parse(
             new JsonObject { ["ok"] = true, ["controls"] = new JsonArray(), ["uiaFailed"] = reason }.ToJsonString());
     }
@@ -2476,11 +2810,18 @@ internal sealed class WindowsVisibleControlAdapter
     /// <see cref="WorkerViewBudget"/> (a slow tree; the worker was ended) on a window that is still there
     /// (<paramref name="alive"/>): as <see cref="WithoutTree"/>, read from what it draws, and «partial». Null for a window
     /// that is gone (its look fails as before).</summary>
-    internal static JsonDocument? UnfinishedWalk(nint window, Func<nint, bool> alive) =>
+    internal static JsonDocument? UnfinishedWalk(nint window, Func<nint, bool> alive, Func<nint, bool>? notResponding = null) =>
         alive(window)
             ? JsonDocument.Parse(new JsonObject
             {
-                ["ok"] = true, ["controls"] = new JsonArray(), ["partial"] = true, ["uiaFailed"] = UnfinishedWalkReason,
+                ["ok"] = true,
+                ["controls"] = new JsonArray(),
+                ["partial"] = true,
+                // uso-108 A9: a window that answered the worker's probe and then stopped (fixture_hung_after_probe.rs) is
+                // told as what it is, not as a slow tree.
+                ["uiaFailed"] = notResponding?.Invoke(window) == true
+                    ? VisibleControlSurface.NotRespondingReason
+                    : UnfinishedWalkReason,
             }.ToJsonString())
             : null;
 
@@ -2514,6 +2855,15 @@ internal sealed class WindowsVisibleControlAdapter
         return 0;
     }
 
+    /// <summary>
+    /// uso-108 C16 (agent-desktop hondo 04, finding 7; <c>observe.rs:109-114</c> keeps its settle per owner too): a window
+    /// that never lists a Document paid the whole wait for it on every look (5 reads, about 2.8 s each look). A look at the
+    /// window whose wait ran out, with the same count of controls, reads what the last one read and does not wait again;
+    /// a changed count is a window that changed, and waits.
+    /// </summary>
+    internal static bool SettledWithoutDocument((nint Window, int Count)? noDocument, nint window, int count) =>
+        noDocument is { } seen && seen.Window == window && seen.Count == count;
+
     /// <summary>A tree read with at most this many controls may still be being built (PLAN_GENERAL A2).</summary>
     internal const int SleepingTreeControls = 3;
 
@@ -2525,12 +2875,19 @@ internal sealed class WindowsVisibleControlAdapter
     /// PLAN_GENERAL A2: a tree that read almost empty is read again after a pause; while each read counts more controls
     /// than the last, the newest is kept and read again; the first read that does not grow ends it (a tree that never
     /// comes costs one pause). Whether the tree grew, and the answer kept.
+    /// uso-89 (diag-b5bd, R06, 5 of 6): a Chromium window's own frame (tabs, address bar, buttons) is accessible at once,
+    /// but the page's tree is built only once an assistive client is detected, in the renderer, and reaches the browser
+    /// process later (chromium.org, «Accessibility for Chromium developers»: the browser keeps a cache of the renderer's
+    /// tree, built only when an AT is detected). The first look at a fresh Edge read 23 controls of the frame and no
+    /// Document, the page was told from its OCR («829» for «8,9»), and the next look, seconds later, had the Document and
+    /// its ListItems. With <paramref name="awaitsDocument"/> (a Chromium frame read whole, nothing filtered), a read with
+    /// no Document is also a tree still being built: it is read again while the Document is missing, within the bound.
     /// </summary>
     internal static async Task<(JsonDocument Answer, bool Woken)> SettleTreeAsync(
-        JsonDocument first, Func<Task<JsonDocument?>> read, Func<int, Task> delay)
+        JsonDocument first, Func<Task<JsonDocument?>> read, Func<int, Task> delay, bool awaitsDocument = false)
     {
         int count = ControlCount(first);
-        if (count < 0 || count > SleepingTreeControls)
+        if (count < 0 || (count > SleepingTreeControls && !(awaitsDocument && WithoutDocument(first))))
             return (first, false);
         JsonDocument current = first;
         bool grew = false;
@@ -2541,9 +2898,15 @@ internal sealed class WindowsVisibleControlAdapter
             if (again is null)
                 break;
             int next = ControlCount(again);
-            if (next <= count)
+            bool waiting = awaitsDocument && WithoutDocument(current);
+            // A read that brings the page's Document is the page, though the frame lost a passing control meanwhile.
+            bool pageCame = waiting && HasDocument(again);
+            if (next <= count && !pageCame)
             {
                 again.Dispose();
+                // A read that failed ends it; one that only did not grow is waited past while the page is missing.
+                if (waiting && next >= 0)
+                    continue;
                 break;
             }
 
@@ -2554,6 +2917,35 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         return (current, grew);
+    }
+
+    // A view read whole (every control it counted is listed, the walk ended) with no Document among its controls: a
+    // Chromium frame whose page has no tree yet. A cut or partial view says nothing about the controls it did not list.
+    private static bool WithoutDocument(JsonDocument view)
+    {
+        JsonElement root = view.RootElement;
+        return root.ValueKind == JsonValueKind.Object
+            && root.TryGetProperty("controls", out JsonElement list) && list.ValueKind == JsonValueKind.Array
+            && ControlCount(view) >= 0 && ControlCount(view) <= list.GetArrayLength()
+            && !(root.TryGetProperty("partial", out JsonElement partial) && partial.ValueKind == JsonValueKind.True)
+            && !HasDocument(view);
+    }
+
+    // A successful view that lists a Document among its controls.
+    private static bool HasDocument(JsonDocument view)
+    {
+        JsonElement root = view.RootElement;
+        if (ControlCount(view) < 0 || !root.TryGetProperty("controls", out JsonElement list)
+            || list.ValueKind != JsonValueKind.Array)
+            return false;
+        foreach (JsonElement control in list.EnumerateArray())
+        {
+            if (control.ValueKind == JsonValueKind.Object && control.TryGetProperty("kind", out JsonElement kind)
+                && kind.ValueKind == JsonValueKind.String && kind.GetString() == "Document")
+                return true;
+        }
+
+        return false;
     }
 
     // The controls a worker's view counted; -1 when the view did not succeed.
@@ -2579,7 +2971,10 @@ internal sealed class WindowsVisibleControlAdapter
     /// exactly.
     /// </summary>
     internal static ExternalCapabilityReceipt NamedWindowNotFound(
-        string operation, IReadOnlyList<VisibleControlSurface.DestinationWindow> desktop) =>
+        string operation,
+        IReadOnlyList<VisibleControlSurface.DestinationWindow> desktop,
+        (string Name, string Process)? personBrowser = null,
+        string? next = null) =>
         new(operation, false, false, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -2598,15 +2993,79 @@ internal sealed class WindowsVisibleControlAdapter
             }
 
             writer.WriteEndArray();
+            if (personBrowser is { } browser && next is not null)
+            {
+                writer.WriteStartObject("personBrowser");
+                writer.WriteString("name", browser.Name);
+                writer.WriteString("process", browser.Process);
+                writer.WriteEndObject();
+                writer.WriteString("next", next);
+            }
+
             writer.WriteEndObject();
         }), "application_window_not_found");
+
+    /// <summary>
+    /// Encargo 119 (live, 15 of 60 first looks): the model named a window as its title starts («Visor - aviso.png» as «Visor»),
+    /// found none, then pressed the title or asked which window. A look only reads: the process of the one window whose title
+    /// holds the name whole, when it is no protected one, which a name the person did not say must not open to acts.
+    /// </summary>
+    internal static string? OnlyWindowTitled(string application, IReadOnlyList<VisibleControlSurface.DestinationWindow> desktop)
+    {
+        string wanted = " " + VisibleControlSurface.FoldTitle(application) + " ";
+        if (wanted.Trim().Length == 0)
+            return null;
+        VisibleControlSurface.DestinationWindow[] titled = [.. desktop.Where(window =>
+            (" " + VisibleControlSurface.FoldTitle(window.Title) + " ").Contains(wanted, StringComparison.Ordinal))];
+        return titled.Length == 1 && !VisibleControlSurface.ProtectedFrom(titled[0].Process, null) ? titled[0].Process : null;
+    }
+
+    /// <summary>
+    /// Uso 86 (banco de uso R06, diag-63f3: «ábreme la ficha» on a page open in Edge, the look named «navegador», the one
+    /// window open was the person's Edge and 6 of 6 runs were lost from there): the look by
+    /// <paramref name="application"/> found no window. When no installed application bears that name either
+    /// (<paramref name="installed"/>, the catalog app.open resolves names with) and a window of the person's web browser
+    /// is open (<paramref name="personBrowser"/>, the one Windows opens a link with: its own association, never a list of
+    /// names), the failure leads with the same look (<paramref name="asked"/>, its other arguments as they were) at that
+    /// browser's process, as a call (encargo 28: a next that leads with the exact call is followed; Anthropic, «Writing
+    /// effective tools for agents», error responses that steer toward the right call). The model decides whether the
+    /// name meant it; nothing was read. Otherwise, the candidates alone.
+    /// </summary>
+    internal static async ValueTask<ExternalCapabilityReceipt> NamedWindowNotFoundAsync(
+        string operation,
+        string application,
+        JsonElement asked,
+        IReadOnlyList<VisibleControlSurface.DestinationWindow> desktop,
+        (string Name, string Process)? personBrowser,
+        Func<string, CancellationToken, ValueTask<bool>>? installed,
+        CancellationToken cancellationToken)
+    {
+        if (personBrowser is not { } browser || installed is null || !ModelAids.On(ModelAids.PersonBrowserNext))
+            return NamedWindowNotFound(operation, desktop);
+        VisibleControlSurface.DestinationWindow[] open =
+            [.. desktop.Where(window => string.Equals(window.Process, browser.Process, StringComparison.OrdinalIgnoreCase))];
+        if (open.Length == 0 || await installed(application, cancellationToken).ConfigureAwait(false))
+            return NamedWindowNotFound(operation, desktop);
+        JsonObject call = JsonNode.Parse(asked.ValueKind == JsonValueKind.Object ? asked.GetRawText() : "{}") as JsonObject ?? [];
+        call["application"] = browser.Process;
+        string next = $"{WireNames.Call(operation, call)} looks at the person's web browser, {browser.Name} (Windows' "
+            + $"default), whose window «{open[0].Title}» is open"
+            + (open.Length > 1 ? $" (top of its {open.Length} windows)" : string.Empty)
+            + $"; no window and no installed application is called \"{application}\", and nothing was looked at";
+        return NamedWindowNotFound(operation, desktop, browser, next);
+    }
 
     /// <summary>The worker's «view» request; the words looked for go only when the look carries some (without them the
     /// view is the usual one).</summary>
     internal static string ViewCommand(
-        nint hwnd, int limit, IReadOnlyList<string>? wanted, bool tail = false, double? seconds = null)
+        nint hwnd, int limit, IReadOnlyList<string>? wanted, bool tail = false, double? seconds = null,
+        bool focusText = false)
     {
         var command = new JsonObject { ["cmd"] = "view", ["hwnd"] = hwnd, ["limit"] = limit };
+        // Encargo 18 (U45): a look that asks for the text also reads what the focused control that is no field shows
+        // (a console's output), by accessibility (the worker's Get-FocusShownText).
+        if (focusText)
+            command["focusText"] = true;
         // Renew al máximo (7.1): the read after an act walks the tree within its own deadline.
         if (seconds is double walk)
             command["seconds"] = walk;
@@ -2635,6 +3094,7 @@ internal sealed class WindowsVisibleControlAdapter
         IReadOnlyList<string> wanted,
         bool tail,
         bool lines,
+        JsonElement lookArguments,
         CancellationToken cancellationToken)
     {
         const string operation = "input.visible.controls";
@@ -2657,8 +3117,19 @@ internal sealed class WindowsVisibleControlAdapter
                 hwnd = openedWindow;
             // Auditoría final V3: an application named that no window is, exactly, is never read in another window's
             // place (the person's in front): the visible windows go back as candidates and nothing is looked at.
+            if (hwnd == 0 && application is not null
+                && OnlyWindowTitled(application, VisibleControlSurface.DestinationDesktop()) is { } titledBy)
+            {
+                hwnd = await _requestedWindow(titledBy, cancellationToken).ConfigureAwait(false);
+            }
+
             if (hwnd == 0 && application is not null)
-                return new ViewResult(NamedWindowNotFound(operation, VisibleControlSurface.DestinationDesktop()), []);
+            {
+                return new ViewResult(await NamedWindowNotFoundAsync(
+                    operation, application, lookArguments, VisibleControlSurface.DestinationDesktop(),
+                    Windows.DesktopWindowNames.PersonBrowser(), InstalledName, cancellationToken).ConfigureAwait(false), []);
+            }
+
             if (hwnd == 0)
             {
                 hwnd = await WindowInFront(cancellationToken)
@@ -2698,7 +3169,7 @@ internal sealed class WindowsVisibleControlAdapter
         if (hwnd == 0)
             return new ViewResult(ExternalJson.Failure(operation, "active_window_not_found"), []);
 
-        string command = ViewCommand(hwnd, limit, wanted, tail);
+        string command = ViewCommand(hwnd, limit, wanted, tail, focusText: includeText);
         // The capture serves the written text, asked for or read when the tree shows nothing to act on;
         // a window without an accessible tree (CEF, SDL, canvas) is
         // read from what is drawn, the case measured in a game launcher (UI1731).
@@ -2707,16 +3178,17 @@ internal sealed class WindowsVisibleControlAdapter
         // A window another process draws over is captured as it draws itself, never the screen where the cover is.
         // Encargo IMP4: the written lines a look asks for («lines») are read from the window's own drawing, never from
         // the screen (imp3: the screen copy of a chat client covered by another window read the other window's text).
-        bool covered = cover != 0 || lines;
+        // F46: the window this look just showed from minimized too (VisibleControlSurface.CaptureAsync).
+        bool covered = cover != 0 || lines || shownBehind;
         nint firstLooked = hwnd;
         Task<VisibleControlSurface.CapturedWindow?> captureTask =
-            Task.Run(() => CaptureQuietlyAsync(firstLooked, covered, cancellationToken), CancellationToken.None);
+            Task.Run(() => CaptureQuietlyAsync(firstLooked, covered, cancellationToken, shownBehind), CancellationToken.None);
         Task<WrittenText>? textTask = includeText ? ReadTextAsync(captureTask, lines ? PlacedLinesRead : limit, cancellationToken, placed: lines) : null;
         long asked = Stopwatch.GetTimestamp();
         JsonDocument? answer = await _worker.SendAsync(command, WorkerViewBudget, cancellationToken).ConfigureAwait(false);
         bool unfinished = answer is null && PastWalkBudget(asked);
         if (unfinished)
-            answer = UnfinishedWalk(hwnd, VisibleControlSurface.IsAlive);
+            answer = UnfinishedWalk(hwnd, VisibleControlSurface.IsAlive, VisibleControlSurface.NotResponding);
         if (answer is null)
         {
             return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
@@ -2743,18 +3215,18 @@ internal sealed class WindowsVisibleControlAdapter
                     Discard(captureTask, textTask);
                     hwnd = content;
                     cover = VisibleControlSurface.CoveringWindow(content);
-                    bool contentCovered = cover != 0 || lines;
+                    bool contentCovered = cover != 0 || lines || shownBehind;
                     captureTask = Task.Run(
-                        () => CaptureQuietlyAsync(content, contentCovered, cancellationToken), CancellationToken.None);
+                        () => CaptureQuietlyAsync(content, contentCovered, cancellationToken, shownBehind), CancellationToken.None);
                     textTask = includeText ? ReadTextAsync(captureTask, lines ? PlacedLinesRead : limit, cancellationToken, placed: lines) : null;
                     asked = Stopwatch.GetTimestamp();
                     answer = await _worker.SendAsync(
-                            ViewCommand(content, limit, wanted, tail),
+                            ViewCommand(content, limit, wanted, tail, focusText: includeText),
                             WorkerViewBudget, cancellationToken)
                         .ConfigureAwait(false);
                     unfinished = answer is null && PastWalkBudget(asked);
                     if (unfinished)
-                        answer = UnfinishedWalk(content, VisibleControlSurface.IsAlive);
+                        answer = UnfinishedWalk(content, VisibleControlSurface.IsAlive, VisibleControlSurface.NotResponding);
                     if (answer is null)
                         return new ViewResult(ExternalJson.Failure(operation, "visible_controls_unavailable"), []);
                 }
@@ -2770,11 +3242,19 @@ internal sealed class WindowsVisibleControlAdapter
         if (!unfinished && toolkit is "chromium" or "cef" or "qt" or "flutter")
         {
             nint settling = hwnd;
+            bool awaitsDocument = toolkit == "chromium" && wanted.Count == 0 && !tail
+                && !SettledWithoutDocument(_noDocument, hwnd, ControlCount(answer));
             (answer, treeWoken) = await SettleTreeAsync(
                 answer,
-                () => _worker.SendAsync(ViewCommand(settling, limit, wanted, tail), WorkerViewBudget, cancellationToken)
+                () => _worker.SendAsync(
+                        ViewCommand(settling, limit, wanted, tail, focusText: includeText), WorkerViewBudget, cancellationToken)
                     .AsTask(),
-                ms => Task.Delay(ms, cancellationToken)).ConfigureAwait(false);
+                ms => Task.Delay(ms, cancellationToken),
+                // uso-89: Chromium builds the page's tree itself (a CEF host decides its own: Steam never has one).
+                awaitsDocument: awaitsDocument).ConfigureAwait(false);
+            // uso-108 C16: the bound ran out with no Document (a splash, a popup, a covered page): noted for the next look.
+            if (awaitsDocument)
+                _noDocument = WithoutDocument(answer) ? (hwnd, ControlCount(answer)) : null;
         }
 
         // Encargo WA5 (wab3, 4 de 4): the worker's walk of a window that is still there threw. The look is not lost: the
@@ -2841,7 +3321,9 @@ internal sealed class WindowsVisibleControlAdapter
                     if (read is not null)
                     {
                         textAuthority = "windows_media_ocr_lines";
-                        foreach (WindowsVisibleOcrLocator.LayoutLine line in read)
+                        IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine> shown = lines ? read : WindowsVisibleOcrLocator.CellsAsRows(
+                            read, text => controls.Any(control => string.Equals(control.Name, text, StringComparison.OrdinalIgnoreCase)));
+                        foreach (WindowsVisibleOcrLocator.LayoutLine line in shown)
                         {
                             string zone = Zone(
                                 line.X + line.Width / 2, line.Y + line.Height / 2,
@@ -2882,6 +3364,7 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 _lastView = new LastView(hwnd, controls)
                 {
+                    FrameOnly = root.TryGetProperty("frameOnly", out JsonElement frameSeen) && frameSeen.ValueKind == JsonValueKind.True,
                     Cut = counted > controls.Count,
                     TreeTitle = treeTitle,
                     Limit = limit,
@@ -2923,7 +3406,9 @@ internal sealed class WindowsVisibleControlAdapter
                 // may be acted on.
                 // Renew al máximo (lote 4, c): a Control Panel applet that configures Windows (rundll32, explorer).
                 bool systemApplet = VisibleControlSurface.SystemToolWindow(windowRoot != 0 ? windowRoot : hwnd);
-                if (systemApplet || VisibleControlSurface.ProtectedFrom(processName, application,
+                // Banco de uso 03-11 (U45): the window a verified opening by this name showed is that application's.
+                if (systemApplet || VisibleControlSurface.ProtectedFrom(windowRoot != 0 ? windowRoot : hwnd,
+                        unchecked((uint)ownerProcessId), processName, application,
                         () => VisibleControlSurface.ProcessDescription(unchecked((uint)ownerProcessId))))
                 {
                     writer.WriteBoolean("protected", true);
@@ -2953,7 +3438,9 @@ internal sealed class WindowsVisibleControlAdapter
                 // Read in front or behind the person's window (v3 point 0): behind, «focused» cannot say where the
                 // keyboard will be once the window comes up.
                 writer.WriteBoolean("foreground", inFront);
-                if (VisibleControlSurface.RunsAboveUs(ownerProcessId))
+                // uso-108 A9: the Ghost of a window that does not respond is the desktop manager, not the window run as
+                // administrator (measured: «elevated» on it, with its real window of the person's rights).
+                if (VisibleControlSurface.RunsAboveUs(ownerProcessId) && !VisibleControlSurface.IsGhost(hwnd))
                 {
                     writer.WriteBoolean("elevated", true);
                     // Review of M5: the limit offers to reopen it without administrator rights only when its program
@@ -3000,6 +3487,8 @@ internal sealed class WindowsVisibleControlAdapter
                     // R6-NB-5: the characters a long name lost at its end (DesktopUiaWorker.ps1 Format-Name).
                     if (control.NameCut > 0)
                         writer.WriteNumber("nameCut", control.NameCut);
+                    if (control.ValueCut > 0)
+                        writer.WriteNumber("valueCut", control.ValueCut);
                     writer.WriteString("state", control.State);
                     if (control.Value is null)
                         writer.WriteNull("value");
@@ -3038,6 +3527,14 @@ internal sealed class WindowsVisibleControlAdapter
                 if (root.TryGetProperty("disabledCut", out JsonElement disabledCut) && disabledCut.ValueKind == JsonValueKind.True)
                     writer.WriteBoolean("disabledCut", true);
 
+                // Uso-108 (B15): the words of «wanted» no control the walk read has in its name (the worker's Get-WantedMissing).
+                if (root.TryGetProperty("wantedMissing", out JsonElement wantedMissing) && wantedMissing.ValueKind == JsonValueKind.Array
+                    && wantedMissing.GetArrayLength() > 0)
+                {
+                    writer.WritePropertyName("wantedMissing");
+                    wantedMissing.WriteTo(writer);
+                }
+
                 writer.WriteNumber("controlCount", counted);
                 // Ronda 20b, palanca 8 (v3-51, v3-62): a look that brought only the window's frame, read again by the
                 // worker under the same root without the offscreen filter, then under the owner window, is «frameOnly»
@@ -3075,6 +3572,14 @@ internal sealed class WindowsVisibleControlAdapter
 
                     writer.WriteEndObject();
                     writer.WriteString("textAuthority", textAuthority);
+                    if (textAuthority == "windows_media_ocr_lines")
+                    {
+                        // Encargo 119: what the note beside the text says this read can read (ScreenViewProjection).
+                        writer.WriteStartArray("textLanguages");
+                        foreach (string recognizer in WindowsVisibleOcrLocator.RecognizerLanguages())
+                            writer.WriteStringValue(recognizer);
+                        writer.WriteEndArray();
+                    }
                     // Ronda final 19 (regla 3): lines read and not listed (too long, or past the limit).
                     if (textOmitted > 0)
                         writer.WriteNumber("textOmittedLines", textOmitted);
@@ -3107,11 +3612,12 @@ internal sealed class WindowsVisibleControlAdapter
     private static async Task<VisibleControlSurface.CapturedWindow?> CaptureQuietlyAsync(
         nint hwnd,
         bool covered,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool justShown = false)
     {
         try
         {
-            return await VisibleControlSurface.CaptureAsync(hwnd, cancellationToken, covered).ConfigureAwait(false);
+            return await VisibleControlSurface.CaptureAsync(hwnd, cancellationToken, covered, justShown: justShown).ConfigureAwait(false);
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
         {
@@ -3130,7 +3636,7 @@ internal sealed class WindowsVisibleControlAdapter
         var watch = Stopwatch.StartNew();
         var omitted = new System.Runtime.CompilerServices.StrongBox<int>();
         IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines = await WindowsVisibleOcrLocator.ReadLayoutAsync(
-            capture.Bmp, Math.Max(limit, 40), cancellationToken, placed, omitted).ConfigureAwait(false);
+            capture.Bmp, Math.Max(limit, 40), cancellationToken, placed, omitted, reading: !placed).ConfigureAwait(false);
         return new WrittenText(lines, watch.ElapsedMilliseconds, omitted.Value);
     }
 
@@ -3178,6 +3684,7 @@ internal sealed class WindowsVisibleControlAdapter
                 Kind = ReadString(item, "kind"),
                 Name = name,
                 NameCut = ReadInt(item, "nameCut"),
+                ValueCut = ReadInt(item, "valueCut"),
                 Id = ReadString(item, "id"),
                 Aid = ReadString(item, "aid"),
                 State = ReadString(item, "state"),
@@ -3287,6 +3794,10 @@ internal sealed class WindowsVisibleControlAdapter
 
         if (hwnd == 0)
             return ExternalJson.FailureBeforeEffect(operation, "active_window_not_found");
+        // uso-108 A9: said here, before the images a press compares are taken of a window that may not draw them, and
+        // before the Ghost that stands for it reads as the desktop manager (measured: protected_window).
+        if (VisibleControlSurface.NotResponding(hwnd, cancellationToken))
+            return ExternalJson.FailureBeforeEffect(operation, VisibleControlSurface.WindowNotResponding);
         // v3 limits (M3): a window of a process that runs as administrator (Task Manager) refuses UI Automation and
         // input from BAXY. Every click route says so before acting, never «nothing on the screen is called that»
         // (live v3-21: «add the command line column» answered as a missing label). Only the view marked it before.
@@ -3601,15 +4112,21 @@ internal sealed class WindowsVisibleControlAdapter
         // digit stays enabled and unselected after Invoke, so the surface is
         // the only evidence (UI1273); it is compared before/after the click.
         VisibleControlSurface.CapturedWindow? before = null;
+        (VisibleControlSurface.CapturedWindow Before, VisibleControlSurface.MotionMask Motion)? moving = null;
         long probed = _time.GetTimestamp();
         try
         {
             before = await _capture(hwnd, null, cancellationToken).ConfigureAwait(false);
             // Auditoría final (regla 3): a window that changes by itself (a video, a caret, a spinner) gives no proof of
             // the click by its image: captures before it that differ leave the surface out of the post-read (the
-            // control's own answer, a popup or a window it handed to still prove it).
-            if (before is { } first && await AnimatesFromAsync(hwnd, first, cancellationToken).ConfigureAwait(false))
+            // control's own answer, a popup or a window it handed to still prove it). Uso-111: only where it moves.
+            if (before is { } first
+                && await AnimationFromAsync(hwnd, first, cancellationToken).ConfigureAwait(false) is { Animates: true } animation)
+            {
+                if (animation.Motion is { } motion)
+                    moving = (first, motion);
                 before = null;
+            }
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
         {
@@ -3630,9 +4147,12 @@ internal sealed class WindowsVisibleControlAdapter
             ["aliases"] = new JsonArray(label),
             ["controlId"] = controlId ?? string.Empty,
             ["asks"] = AsksRequest(),
+            ["changes"] = ChangesRequest(),
         };
         if (manner is not null)
             clickRequest["manner"] = manner;
+        if (RefusesSettingsSwitches())
+            clickRequest["refuseSwitches"] = true;
         AddRenderHosts(clickRequest, hwnd);
         string command = clickRequest.ToJsonString();
         try
@@ -3649,7 +4169,7 @@ internal sealed class WindowsVisibleControlAdapter
                 {
                     return await PostreadAsync(
                             operation, answer.RootElement, before, effectBoundary, (hwnd, popupsBefore), cancellationToken,
-                            roots)
+                            roots, moving)
                         .ConfigureAwait(false);
                 }
 
@@ -3791,9 +4311,12 @@ internal sealed class WindowsVisibleControlAdapter
             ["y"] = screenY,
             ["aliases"] = new JsonArray(label),
             ["asks"] = AsksRequest(),
+            ["changes"] = ChangesRequest(),
         };
         if (!string.IsNullOrEmpty(controlId))
             request["controlId"] = controlId;
+        if (RefusesSettingsSwitches())
+            request["refuseSwitches"] = true;
         if (_pressedUnchanged is { Length: > 0 } pressedBefore)
             request["pressed"] = pressedBefore;
         if (remembered is { } size)
@@ -3885,6 +4408,8 @@ internal sealed class WindowsVisibleControlAdapter
         {
             if (!effect && error == NeedsConfirmation)
                 return PointPressed.HeldForConfirmation;
+            if (!effect && error == SettingsSwitchRefused)
+                return PointPressed.SettingsSwitch;
             if (!effect && error == "visible_point_named_other")
                 return PointPressed.Refused;
             if (!effect && error == PointAlreadyPressed)
@@ -3930,13 +4455,14 @@ internal sealed class WindowsVisibleControlAdapter
         ExternalEffectBoundary effectBoundary,
         (nint Window, IReadOnlyList<nint> Before)? popups,
         CancellationToken cancellationToken,
-        HandoffWatch? roots = null)
+        HandoffWatch? roots = null,
+        (VisibleControlSurface.CapturedWindow Before, VisibleControlSurface.MotionMask Motion)? moving = null)
     {
         var watch = Stopwatch.StartNew();
         bool askControl = true;
         // The front net's report: the click's own answer, then each post-read (they also see the tail after it).
         UiaFrontReport? front = UiaFrontReport.Read(clicked);
-        TimeSpan budget = before is null ? _timing.ControlPostread : _timing.SurfacePostread;
+        TimeSpan budget = before is null && moving is null ? _timing.ControlPostread : _timing.SurfacePostread;
         bool surfaceRead = false;
         bool controlWasSelected = false;
         bool arrivedUncaused = false;
@@ -3944,9 +4470,16 @@ internal sealed class WindowsVisibleControlAdapter
         {
             if (askControl && watch.Elapsed < _timing.ControlPostread)
             {
-                using JsonDocument? read = await _worker.SendAsync(
-                        "{\"cmd\":\"postread\"}", WorkerClickBudget, cancellationToken)
+                (JsonDocument? asked, bool modalSeen) = await PostreadSeeingModalAsync(popups, watch, cancellationToken)
                     .ConfigureAwait(false);
+                if (modalSeen)
+                {
+                    return PersonTouchOf(popups!.Value.Window, _pressStartedMs) != PersonTouch.None
+                        ? effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true)
+                        : SurfaceChanged(operation, clicked, front, popupBorn: true);
+                }
+
+                using JsonDocument? read = asked;
                 // The control was invoked already: a silence here is not a «not found» to look for again.
                 if (read is null)
                     return effectBoundary.Failure(operation, "visible_click_postread_no_receipt");
@@ -3989,9 +4522,35 @@ internal sealed class WindowsVisibleControlAdapter
                         return answered;
                     // An image the person may have changed (their input to that window, their pointer over it) proves
                     // nothing of the press.
-                    return WindowsUserInputPause.PersonTouched(captured.Hwnd, _pressStartedMs)
-                        ? effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true)
-                        : SurfaceChanged(operation, clicked, front);
+                    PersonTouch touched = PersonTouchOf(captured.Hwnd, _pressStartedMs);
+                    if (touched == PersonTouch.None)
+                        return SurfaceChanged(operation, clicked, front);
+                    // Encargo 54 (uso real 03-11, a launcher's library in a Chromium window: its entry's page opened and
+                    // the click was said uncertain twice): their pointer only passed over it, which presses nothing; the
+                    // tree read again, once more while it settles, proves the press by what a pass cannot do.
+                    if (touched == PersonTouch.PointerPassed
+                        && await LeftItsTreeAsync(captured.Hwnd, cancellationToken).ConfigureAwait(false) is { } left)
+                        return WithAfter(SurfaceChanged(operation, clicked, front, pointerOver: true), left);
+                    return effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true);
+                }
+            }
+
+            // Uso-111: a window that moves by itself proves the press where it does not move. Nothing changed there is no
+            // proof of the contrary (the press may have changed only what moves), so it never says «unchanged».
+            if (moving is { } watched1 && watch.Elapsed >= _timing.SurfaceFirstSample)
+            {
+                VisibleControlSurface.CapturedWindow? later = await TryCaptureAsync(
+                    watched1.Before.Hwnd, watched1.Before.SelfDrawn, cancellationToken).ConfigureAwait(false);
+                if (later is { } seen && VisibleControlSurface.ChangedOutsideMotion(watched1.Before, seen, watched1.Motion))
+                {
+                    (ExternalCapabilityReceipt? held, front) = await LastAnswerAsync(
+                        operation, askControl && watch.Elapsed < _timing.ControlPostread, front, effectBoundary,
+                        cancellationToken).ConfigureAwait(false);
+                    if (held is { } answered)
+                        return answered;
+                    return PersonTouchOf(watched1.Before.Hwnd, _pressStartedMs) == PersonTouch.None
+                        ? SurfaceChanged(operation, clicked, front)
+                        : effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true);
                 }
             }
 
@@ -4008,7 +4567,7 @@ internal sealed class WindowsVisibleControlAdapter
                     cancellationToken).ConfigureAwait(false);
                 if (held is { } answered)
                     return answered;
-                return WindowsUserInputPause.PersonTouched(watched.Window, _pressStartedMs)
+                return PersonTouchOf(watched.Window, _pressStartedMs) != PersonTouch.None
                     ? effectBoundary.Failure(operation, "input_user_interrupted", effectObserved: true)
                     : SurfaceChanged(operation, clicked, front, popupBorn: true);
             }
@@ -4046,6 +4605,54 @@ internal sealed class WindowsVisibleControlAdapter
             : unchanged;
     }
 
+    /// <summary>
+    /// One question to the control in the post-read. Ajuste c4 (banco ciego c3: 14 clics de 17 s, 243 s, sobre
+    /// «Preferencias», «Configuración…», «Guardar como…»): a click that opens a modal dialog may leave the worker stuck
+    /// in the application's tree while the application builds the dialog, and the click was told
+    /// visible_click_postread_no_receipt after the whole budget though the dialog was up (C3-076, C3-087). Once the
+    /// question has gone unanswered for the control's whole post-read, a modal dialog born of the click that now disables
+    /// the clicked window is its effect: the question is given up (the worker is replaced) and the dialog said. A hover
+    /// never disables a window, so the person's resting pointer does not matter here; a popup that disables nothing is
+    /// no such proof, and the answer is waited for as before.
+    /// </summary>
+    private async ValueTask<(JsonDocument? Read, bool ModalSeen)> PostreadSeeingModalAsync(
+        (nint Window, IReadOnlyList<nint> Before)? popups,
+        Stopwatch watch,
+        CancellationToken cancellationToken)
+    {
+        const string Postread = "{\"cmd\":\"postread\"}";
+        if (popups is not { } watched)
+            return (await _worker.SendAsync(Postread, WorkerClickBudget, cancellationToken).ConfigureAwait(false), false);
+        using var asking = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        Task<JsonDocument?> read = _worker.SendAsync(Postread, WorkerClickBudget, asking.Token).AsTask();
+        while (!read.IsCompleted)
+        {
+            await Task.WhenAny(read, Task.Delay(_timing.PostreadPeriod, cancellationToken)).ConfigureAwait(false);
+            // Cancelled, the question ends as it would have alone (its own cancellation).
+            if (read.IsCompleted || cancellationToken.IsCancellationRequested)
+                break;
+            if (watch.Elapsed < _timing.ControlPostread || !ModalBorn(watched))
+                continue;
+            await asking.CancelAsync().ConfigureAwait(false);
+            try
+            {
+                (await read.ConfigureAwait(false))?.Dispose();
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                // The question given up: its answer will never come.
+            }
+
+            return (null, true);
+        }
+
+        return (await read.ConfigureAwait(false), false);
+    }
+
+    // A modal dialog that disables the window now and was not up before the click.
+    private bool ModalBorn((nint Window, IReadOnlyList<nint> Before) watched) =>
+        ModalOf(watched.Window) is var modal && modal != 0 && modal != watched.Window && !watched.Before.Contains(modal);
+
     // BAXY Renew cu (C02): the control was already the chosen one before the click (a section the window already
     // showed): said, so the window's view is read for what was asked instead of pressing it again (five presses of the
     // section Settings had opened at, its device list unread in the look the model already had).
@@ -4082,6 +4689,15 @@ internal sealed class WindowsVisibleControlAdapter
     /// <inheritdoc/>
     public bool AnotherWindowCame(object? watch) =>
         watch is HandoffWatch roots && (Handed(roots) is not null || ArrivedUncaused(roots));
+
+    /// <inheritdoc/>
+    public IReadOnlyList<string> NamesSeen(nint window)
+    {
+        lock (_viewLock)
+        {
+            return _lastView is { } view && view.Hwnd == window ? [.. view.Controls.Select(static control => control.Name)] : [];
+        }
+    }
 
     // Ronda final 20: a window of another process that came now without proof the click caused it (or no watch: false).
     private bool ArrivedUncaused(HandoffWatch? watch)
@@ -4147,7 +4763,43 @@ internal sealed class WindowsVisibleControlAdapter
         return ExternalJson.Success(operation, verified.RootElement.Clone(), true);
     }
 
+    /// <summary>
+    /// Encargo 54: the window's view read again after a press whose image changed under the person's passing pointer,
+    /// up to <see cref="SettleReads"/> times <see cref="SettleGap"/> apart (Chromium builds its accessibility tree in the
+    /// renderer and sends it to the browser on its own time, so the first read may still be of the old page): the
+    /// difference from the last look once it shows what a pass cannot do (<see cref="LeftItsTree"/>), which becomes the
+    /// last view; null when no read shows it.
+    /// </summary>
+    private async ValueTask<JsonElement?> LeftItsTreeAsync(nint window, CancellationToken cancellationToken)
+    {
+        for (int read = 0; read < SettleReads; read++)
+        {
+            if (read > 0)
+                await Task.Delay(SettleGap, _time, cancellationToken).ConfigureAwait(false);
+            if (await AfterActAsync(window, onlyIfLeft: true, cancellationToken).ConfigureAwait(false) is { } left)
+                return left;
+        }
+
+        return null;
+    }
+
+    private const int SettleReads = 3;
+    private static readonly TimeSpan SettleGap = TimeSpan.FromMilliseconds(250);
+
     // Taken the way the image before the click was (the window's own drawing or the screen), never the other way.
+    private async ValueTask<VisibleControlSurface.CapturedWindow?> TryCaptureAsync(
+        nint window, bool selfDrawn, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _capture(window, selfDrawn, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
     private async ValueTask<string?> SurfaceAsync(nint window, bool selfDrawn, CancellationToken cancellationToken)
     {
         try
@@ -4192,7 +4844,7 @@ internal sealed class WindowsVisibleControlAdapter
             : null;
 
     private static ExternalCapabilityReceipt SurfaceChanged(
-        string operation, JsonElement clicked, UiaFrontReport? front = null, bool popupBorn = false)
+        string operation, JsonElement clicked, UiaFrontReport? front = null, bool popupBorn = false, bool pointerOver = false)
     {
         JsonObject node = JsonNode.Parse(clicked.GetRawText())!.AsObject();
         front?.Write(node);
@@ -4202,6 +4854,9 @@ internal sealed class WindowsVisibleControlAdapter
         node["surfaceChanged"] = true;
         if (popupBorn)
             node["popupBorn"] = true;
+        // Encargo 54: the person's pointer passed over the window meanwhile; the view after it («after») proved the press.
+        if (pointerOver)
+            node["pointerOver"] = true;
         node["cascadeStage"] = "uia_surface";
         using JsonDocument verified = JsonDocument.Parse(node.ToJsonString());
         return ExternalJson.Success(operation, verified.RootElement.Clone(), true);
@@ -4339,7 +4994,19 @@ internal sealed class WindowsVisibleControlAdapter
         });
     }
 
+    // The last look only if it read the window this click looked in. A receipt of a click on one window never carries what a
+    // look read of another: it held the person's browser's controls in `closest` once (uso-111).
+    private LastView? ViewOfLookedWindow()
+    {
+        lock (_viewLock)
+        {
+            return _lastView is { } view && view.Hwnd == _lookedWindow ? view : null;
+        }
+    }
+
     internal const int CollapsedHintLimit = 12;
+
+    internal const int AmbiguousLimit = 6;
 
     // The kinds a look lists that are pressed or opened (an entry, a button, a split button, a list), and of them the
     // collapsed ones: what opens a folded group, menu or list.
@@ -4373,6 +5040,14 @@ internal sealed class WindowsVisibleControlAdapter
     private static JsonObject AsksRequest() => new()
     {
         ["pattern"] = RiskPolicy.AsksPattern,
+        ["hint"] = RiskPolicy.FoldHint,
+        ["confusables"] = RiskPolicy.Confusables,
+    };
+
+    // Encargo 83: the words of a control of a system surface that act on a setting, read as the asking words are.
+    private static JsonObject ChangesRequest() => new()
+    {
+        ["pattern"] = RiskPolicy.SystemActsPattern,
         ["hint"] = RiskPolicy.FoldHint,
         ["confusables"] = RiskPolicy.Confusables,
     };
@@ -4456,6 +5131,41 @@ internal sealed class WindowsVisibleControlAdapter
         return view is null ? null : ResolveSeen(index, view.Hwnd, view.Controls, view.Told);
     }
 
+    public IReadOnlyList<ViewedTextField> TextFieldsOf(nint window)
+    {
+        LastView? view;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        return view is null || window == 0 || view.Hwnd != window ? [] : TextFields(view.Controls, view.Told);
+    }
+
+    /// <summary>
+    /// Encargo 36: the edit boxes and documents of a view that are not read-only, each by the index the model saw it at:
+    /// the one <paramref name="told"/> gave it, else its own when <paramref name="told"/> gave that index to no other
+    /// control (<see cref="ResolveSeen"/> reads an index the same way).
+    /// </summary>
+    internal static IReadOnlyList<ViewedTextField> TextFields(
+        IReadOnlyList<ViewControl> controls, IReadOnlyDictionary<int, ViewControl>? told)
+    {
+        var fields = new List<ViewedTextField>();
+        foreach (ViewControl control in controls)
+        {
+            if (control.Kind is not ("Edit" or "Document") || control.State.Split(' ').Contains("readonly"))
+                continue;
+            int? index = told is null ? control.Index
+                : told.FirstOrDefault(seen => control.Id.Length > 0 && seen.Value.Id == control.Id) is { Value: not null } same
+                    ? same.Key
+                    : told.ContainsKey(control.Index) ? null : control.Index;
+            if (index is int at)
+                fields.Add(new ViewedTextField(at, control.Kind, control.Name));
+        }
+
+        return [.. fields.OrderBy(static field => field.Index)];
+    }
+
     /// <summary>
     /// Ajuste c3 (humos del 31-10, NB): what an index the model gave means. It names the control the model saw there:
     /// the one <paramref name="told"/> holds at it (its last look, with what each «after» since listed anew), or, when
@@ -4470,10 +5180,10 @@ internal sealed class WindowsVisibleControlAdapter
     {
         ViewControl? at = current.FirstOrDefault(control => control.Index == index);
         if (told is null || !told.TryGetValue(index, out ViewControl? seen))
-            return at is null ? null : new ViewedIndex(window, at.Id, index, null, false, null, null);
+            return at is null ? null : new ViewedIndex(window, at.Id, index, null, false, null, null, at.Kind);
         ViewControl? same = SameControl(seen, current);
         if (same is not null)
-            return new ViewedIndex(window, same.Id, index, same.Index == index ? null : same.Index, false, null, null);
+            return new ViewedIndex(window, same.Id, index, same.Index == index ? null : same.Index, false, null, null, same.Kind);
         ViewControl[] equivalents = [.. current.Where(control => control.Kind == seen.Kind && control.Name == seen.Name)];
         return new ViewedIndex(0, string.Empty, index, null, true, equivalents.Length == 1 ? equivalents[0].Index : null,
             $"{seen.Kind} «{seen.Name}»");
@@ -4634,6 +5344,66 @@ internal sealed class WindowsVisibleControlAdapter
             WorkerClickBudget,
             cancellationToken);
 
+    /// <summary>Encargo 75 (R01): the active cell of a grid in <paramref name="window"/> (the worker's «activecell», a read:
+    /// no front kept, no pattern invoked); null when the worker did not answer.</summary>
+    public ValueTask<JsonDocument?> ActiveCellAsync(
+        nint window,
+        (int Row, int Column)? at,
+        CancellationToken cancellationToken)
+    {
+        if (Refuses(window))
+            return ValueTask.FromResult<JsonDocument?>(RefusedAnswer());
+        var request = new JsonObject { ["cmd"] = "activecell", ["hwnd"] = window };
+        if (at is { } cell)
+        {
+            request["row"] = cell.Row;
+            request["column"] = cell.Column;
+        }
+
+        return _worker.SendAsync(request.ToJsonString(), WorkerClickBudget, cancellationToken);
+    }
+
+    /// <summary>Encargo 115: the address and value of the cells of the same grid from <paramref name="row"/> and
+    /// <paramref name="column"/>, row after row (the worker's «activecell» with a range, a read); null when the worker did
+    /// not answer.</summary>
+    public ValueTask<JsonDocument?> CellRangeAsync(
+        nint window,
+        int row,
+        int column,
+        int rows,
+        int columns,
+        CancellationToken cancellationToken) =>
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
+            new JsonObject
+            {
+                ["cmd"] = "activecell",
+                ["hwnd"] = window,
+                ["row"] = row,
+                ["column"] = column,
+                ["rows"] = rows,
+                ["columns"] = columns,
+            }.ToJsonString(),
+            WorkerClickBudget,
+            cancellationToken);
+
+    /// <summary>Encargo 17 (U27): the length of the text of what holds the keyboard's focus inside
+    /// <paramref name="window"/>'s tree, a document's too (the worker's «focusvalue» with lengthOnly: a read, nothing of
+    /// the text answers); null when the worker did not answer.</summary>
+    public ValueTask<JsonDocument?> FocusedTextLengthAsync(
+        nint window,
+        int maximum,
+        CancellationToken cancellationToken) =>
+        Refuses(window) ? ValueTask.FromResult<JsonDocument?>(RefusedAnswer()) : _worker.SendAsync(
+            new JsonObject
+            {
+                ["cmd"] = "focusvalue",
+                ["hwnd"] = window,
+                ["max"] = maximum,
+                ["lengthOnly"] = true,
+            }.ToJsonString(),
+            WorkerClickBudget,
+            cancellationToken);
+
     /// <summary>Auditoría del núcleo 2026-10-23: what holds the keyboard's focus and whether it lies inside
     /// <paramref name="window"/> (0: the one in front), read by UI Automation (the worker's «focuskind»: nothing pressed,
     /// focused or brought up); null when the worker did not answer.</summary>
@@ -4646,6 +5416,67 @@ internal sealed class WindowsVisibleControlAdapter
             }.ToJsonString(),
             WorkerClickBudget,
             cancellationToken);
+
+    /// <summary>Encargo 98: the focused text selected by UI Automation and read back (the worker's «focusselect»).</summary>
+    public async ValueTask<bool> SelectFocusedTextAsync(nint window, CancellationToken cancellationToken)
+    {
+        using JsonDocument? answer = await _worker.SendAsync(
+            FocusedFieldSelection.Command(window), WorkerClickBudget, cancellationToken).ConfigureAwait(false);
+        return FocusedFieldSelection.Selected(answer);
+    }
+
+    /// <summary>Encargo 98: what a shortcut can change without a window of its own (the worker's «focusstate», a read).</summary>
+    public async ValueTask<FocusState?> FocusStateAsync(nint window, CancellationToken cancellationToken)
+    {
+        using JsonDocument? answer = await _worker.SendAsync(
+            FocusState.Command(window), WorkerClickBudget, cancellationToken).ConfigureAwait(false);
+        return FocusState.Read(answer);
+    }
+
+    /// <summary>Encargo 98: the dialog drawn inside the window that holds the focus asked to close (the worker's
+    /// «focusdialogclose»); whether it could be asked. The caller reads whether it closed.</summary>
+    public async ValueTask<bool> CloseFocusedDialogAsync(nint window, CancellationToken cancellationToken)
+    {
+        using JsonDocument? answer = await _worker.SendAsync(
+            FocusState.CloseCommand(window), WorkerClickBudget, cancellationToken).ConfigureAwait(false);
+        return FocusState.CloseAsked(answer);
+    }
+
+    /// <summary>Encargo 100: what tells whether a find key may go blind (the worker's «focusfind», a read).</summary>
+    public async ValueTask<FindReach?> FindReachAsync(nint window, CancellationToken cancellationToken)
+    {
+        using JsonDocument? answer = await _worker.SendAsync(
+            FindReach.Command(window), WorkerClickBudget, cancellationToken).ConfigureAwait(false);
+        return FindReach.Read(answer);
+    }
+
+    /// <summary>Encargo 100: how many tabs the window shows (the worker's «tabcount», a read).</summary>
+    public async ValueTask<int?> TabCountAsync(nint window, CancellationToken cancellationToken)
+    {
+        using JsonDocument? answer = await _worker.SendAsync(
+            FindReach.TabCountCommand(window), WorkerClickBudget, cancellationToken).ConfigureAwait(false);
+        return FindReach.TabCount(answer);
+    }
+
+    /// <summary>Auditoría de falsedades 2026-11-04 (P6, K-2): whether a field of <paramref name="window"/> (0: the one in
+    /// front) that takes text holds text (the worker's «heldtext»); null when the worker did not answer or could not read
+    /// the window.</summary>
+    public async ValueTask<bool?> HoldsTextAsync(nint window, CancellationToken cancellationToken)
+    {
+        using JsonDocument? answer = await _worker.SendAsync(
+            new JsonObject
+            {
+                ["cmd"] = "heldtext",
+                ["hwnd"] = window,
+            }.ToJsonString(),
+            WorkerClickBudget,
+            cancellationToken).ConfigureAwait(false);
+        return answer?.RootElement is { ValueKind: JsonValueKind.Object } root
+            && root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("held", out JsonElement held) && held.ValueKind is JsonValueKind.True or JsonValueKind.False
+                ? held.GetBoolean()
+                : null;
+    }
 
     /// <summary>Brings the element named <paramref name="label"/> into view in <paramref name="window"/> through UI
     /// Automation (the worker's «reveal»); null when the worker did not answer.</summary>
@@ -4702,6 +5533,7 @@ internal sealed class WindowsVisibleControlAdapter
         internal string Kind { get; set; } = string.Empty;
         internal string Name { get; set; } = string.Empty;
         internal int NameCut { get; set; }
+        internal int ValueCut { get; set; }
         internal string Id { get; set; } = string.Empty;
 
         // Ajuste c3: the control's UI Automation AutomationId, which a runtime id that changed keeps.
@@ -4716,6 +5548,9 @@ internal sealed class WindowsVisibleControlAdapter
 
     private sealed record LastView(nint Hwnd, IReadOnlyList<ViewControl> Controls)
     {
+        // Banco de uso 05-11 (U40, S03): the look brought only the window's frame: what the rest held then is not known.
+        internal bool FrameOnly { get; set; }
+
         // Renew al máximo (7.1): how the look read the window (its limit, words and cut), so the read after an act reads
         // it the same way and numbers it alike, and the window's name in its tree, which that read compares.
         internal string TreeTitle { get; init; } = string.Empty;

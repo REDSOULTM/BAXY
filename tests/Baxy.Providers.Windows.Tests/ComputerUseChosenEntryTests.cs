@@ -106,7 +106,7 @@ public sealed class ComputerUseChosenEntryTests
         start.Environment["BAXY_CHOSEN_WORKER"] = WorkerPath();
         using Process process = Process.Start(start)!;
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = process.StandardOutput.ReadToEnd();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the worker functions answer");
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         return JsonDocument.Parse(output).RootElement.Clone();

@@ -269,11 +269,91 @@ public sealed class ShellCommandAdapterTests
             throw stop;
     }
 
+    // Encargo 61 (banco de uso U45, diag-f11d c1, c5, c6): file.write and filesystem.create.directory read «BAXY-bench» in
+    // the home folder and this call refused the same words, so the model created a folder that was there, ran it again
+    // to the same refusal, or asked the person whether the folder existed. One reading for the three.
+    [TestCase("")]
+    [TestCase("home/")]
+    public async Task AFolderNoKnownFolderStartsIsInTheHomeFolderAsAFileToolReadsIt(string before)
+    {
+        string name = "baxy-cwd-" + Guid.NewGuid().ToString("N");
+        string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), name);
+        Directory.CreateDirectory(folder);
+        try
+        {
+            var adapter = new ShellCommandAdapter(new RecordingRunner(0, "ok", ""), Path.GetTempPath());
+
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "shell.command.run",
+                JsonSerializer.SerializeToElement(new { command = "dir", cwd = before + name }),
+                CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+                Assert.That(receipt.Result?.GetProperty("cwd").GetString(), Is.EqualTo(folder));
+            });
+        }
+        finally
+        {
+            Directory.Delete(folder);
+        }
+    }
+
+    // Encargo 61 (banco de uso U45, held-out): the model wrote the home of the file tools' example (C:\Users\<other>\…), and
+    // the code alone left it saying the person's folder did not exist. The failure says where it looked and their home and,
+    // when the path named another place, the call with the folder's own name. Measured: 23/35 → 32/35.
+    [Test]
+    public async Task AFolderThatIsNotThereSaysWhereItLookedAndTheCallWithItsOwnName()
+    {
+        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string name = "baxy-cwd-" + Guid.NewGuid().ToString("N");
+        var runner = new RecordingRunner(0, "ok", "");
+        var adapter = new ShellCommandAdapter(runner, Path.GetTempPath());
+
+        ExternalCapabilityReceipt elsewhere = await adapter.InvokeAsync(
+            "shell.command.run",
+            JsonSerializer.SerializeToElement(new { command = "whoami", cwd = @"C:\Users\otra-persona\" + name }),
+            CancellationToken.None);
+        ExternalCapabilityReceipt inHome = await adapter.InvokeAsync(
+            "shell.command.run", JsonSerializer.SerializeToElement(new { command = "whoami", cwd = name }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(elsewhere.ErrorCode, Is.EqualTo("shell_command_directory_not_found"));
+            Assert.That(elsewhere.Result?.GetProperty("cwd").GetString(), Is.EqualTo(@"C:\Users\otra-persona\" + name));
+            Assert.That(elsewhere.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                $@"nothing ran: there is no folder C:\Users\otra-persona\{name}; this person's home is {home}; "
+                + $$"""to run it in their folder of that name, call shell_command_run {"command":"whoami","cwd":"{{name}}"}"""));
+            // Its own name in their home and not there: there is no other call to offer.
+            Assert.That(inHome.ErrorCode, Is.EqualTo("shell_command_directory_not_found"));
+            Assert.That(inHome.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                $@"nothing ran: there is no folder {Path.Combine(home, name)}; this person's home is {home}"));
+            Assert.That(runner.Executable, Is.Null);
+        });
+    }
+
+    [Test]
+    public async Task AFolderOutOfThePersonsFoldersIsRefusedBeforeRunning()
+    {
+        var runner = new RecordingRunner(0, "ok", "");
+        var adapter = new ShellCommandAdapter(runner, Path.GetTempPath());
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "shell.command.run", JsonSerializer.SerializeToElement(new { command = "dir", cwd = "../.." }), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.ErrorCode, Is.EqualTo("shell_command_directory_not_found"));
+            Assert.That(runner.Executable, Is.Null);
+        });
+    }
+
     [Test]
     public async Task AKnownFolderNamesTheWorkingDirectoryAndAnythingElseIsRefused()
     {
         // Fase 5 (2026-09-21, H0048 «ejecuta pytest»): «cwd» is a known folder name (or a
-        // subfolder of one) or an absolute path; a bare word is refused before running.
+        // subfolder of one) or an absolute path; a folder that is not there is refused before running.
         var runner = new RecordingRunner(0, "ok", "");
         var adapter = new ShellCommandAdapter(runner, Path.GetTempPath());
 

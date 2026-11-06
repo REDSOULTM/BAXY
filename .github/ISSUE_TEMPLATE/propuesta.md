@@ -10,4 +10,4 @@ labels: propuesta
 
 **Cómo se comprobaría que funciona** (qué recibo o qué estado de Windows lo demuestra):
 
-**¿Toca alguna decisión de [docs/identidad.md](../../docs/identidad.md)?**
+**¿Cambia alguna de las reglas de [CONTRIBUTING.md](../../CONTRIBUTING.md)?**

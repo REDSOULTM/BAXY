@@ -68,7 +68,12 @@ export async function openView(opts: { items?: unknown[]; mic?: string } = {}): 
     socket = ws;
     for (const m of history) ws.send(m);
   });
-  await page.addInitScript((mic) => { try { localStorage.setItem('bx-avatar', 'live'); if (mic) localStorage.setItem('baxy.mic', mic); } catch { /* none */ } }, opts.mic ?? 'off');
+  // the specs read the view's Spanish words: the host's language is Spanish (and so is the first paint's cache) whatever
+  // Windows' language is; a spec that answers /settings/general itself keeps the cache's Spanish
+  replies.set('/settings/general', () => ({ body: { language: 'es', languageInUse: 'es' } }));
+  await page.addInitScript((mic) => {
+    try { localStorage.setItem('bx-avatar', 'live'); localStorage.setItem('baxy.lang', 'es'); if (mic) localStorage.setItem('baxy.mic', mic); } catch { /* none */ }
+  }, opts.mic ?? 'off');
 
   emit({ type: 'agent', built: true, ready: true, powered: true });
   emit({ type: 'boot', stt: true, wake: true, tts: true, model: true, startedAt: 1, readyAt: 2 });

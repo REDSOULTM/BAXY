@@ -2,8 +2,19 @@ import { expect, test } from '@playwright/test';
 import { seededRng } from '../src/utils/seededRng';
 import { BXM, HUBS, bxMouth, bxRoute } from '../src/components/face/geometry';
 import { LIB, NEXT, groupFor } from '../src/components/avatarClips';
+import { causeText } from '../src/causes';
 
 /* «Unitarias · lógica del diseño» of Baxy pruebas.html, against the view's own modules. */
+
+test('la falta de memoria dice cuánto cuando se sabe, y nada inventado cuando no', () => {
+  expect(causeText('ram_insuficiente', { need_mb: 641, free_mb: 512 }))
+    .toBe('falta memoria RAM libre en el equipo: no cupo un bloque de 0,6 GB y hay 0,5 GB libres');
+  expect(causeText('vram_insuficiente', { need_mb: 66406 }))
+    .toBe('falta memoria libre en la tarjeta gráfica: no cupo un bloque de 64,8 GB');
+  expect(causeText('ram_insuficiente')).toBe('falta memoria RAM libre en el equipo');
+  expect(causeText('modelo_ausente', { need_mb: 1 })).toBe('no se encuentra el archivo del modelo');
+  expect(causeText('proceso_salio')).toBeNull();
+});
 
 test('el cielo es el mismo en cada redibujado y sus valores están entre 0 y 1', () => {
   const a = seededRng(707), b = seededRng(707);

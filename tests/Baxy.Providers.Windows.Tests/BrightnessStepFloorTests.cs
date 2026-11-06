@@ -57,7 +57,7 @@ public sealed class BrightnessStepFloorTests
         start.ArgumentList.Add(Convert.ToBase64String(Encoding.Unicode.GetBytes(script)));
         using Process process = Process.Start(start) ?? throw new InvalidOperationException("powershell did not start");
         Task<string> error = process.StandardError.ReadToEndAsync();
-        string output = await process.StandardOutput.ReadToEndAsync();
+        string output = ChildOutput.Read(process);
         Assert.That(process.WaitForExit(60_000), Is.True, "the script answers");
         Assert.That(process.ExitCode, Is.EqualTo(0), await error);
         return output.Trim().Split('\n')[^1];

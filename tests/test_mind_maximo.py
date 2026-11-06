@@ -279,7 +279,7 @@ def test_the_bound_per_result_is_an_aid_that_can_be_turned_off(tmp_path: Path, m
 
 def _calling(tmp_path: Path, *notices):
     from test_mind_final import _call, _mind, _say
-    replies = [_call("web_search", {"query": "vuelos a Lima"}), *[n if isinstance(n, Exception) else _say(n)
+    replies = [_call("web_search", {"query": "vuelos a Lima"}), *[n if isinstance(n, (Exception, dict)) else _say(n)
                                                                     for n in notices]]
     mind, server = _mind(tmp_path, replies)
     assert mind.decide(1, "busca vuelos a Lima")["kind"] == "action"
@@ -296,10 +296,37 @@ def test_the_notice_is_written_by_the_model_for_the_call_the_app_runs(tmp_path: 
     # The turn as the model wrote it, the call still running, and words only: the token that opens a call cannot be
     # sampled; the conversation the turn goes on with is not changed.
     assert asked["messages"][:len(decision)] == decision
-    assert asked["messages"][-2] == {"role": "tool", "tool_call_id": "c1", "content": mind_module.NOTICE_RUNNING}
+    last = asked["messages"][-1]
+    assert (last["role"], last["tool_call_id"]) == ("tool", "c1") and last["content"].startswith(mind_module.NOTICE_RUNNING)
     assert asked["tool_choice"] == "none" and asked["logit_bias"] == [[248058, False]]
     assert asked["temperature"] == 0.0 and asked["tools"] == server.bodies[0]["tools"]
-    assert not any(m.get("content") == mind_module.NOTICE_RUNNING for m in mind.conversation)
+    assert not any(mind_module.NOTICE_RUNNING in str(m.get("content")) for m in mind.conversation)
+
+
+# Uso-122 (F45): a user message after the turn's calls moves Qwen3.5's «last query», which drops the empty think block
+# of every reply of the turn: the request parts from the slot at the turn's first reply, runs out its budget re-reading
+# the turn (55 of 165 notices) and the next decision reads it again (2.1 s at the median).
+def test_the_notice_asks_inside_the_running_result_so_the_turn_renders_as_the_slot_holds_it(tmp_path: Path) -> None:
+    mind, server = _calling(tmp_path, "Busco vuelos a Lima.")
+    decision = server.bodies[0]["messages"]
+    mind.notice_of()
+    added = server.bodies[1]["messages"][len(decision):]
+    assert [m["role"] for m in added if m not in mind.conversation] == ["tool"]
+
+
+def test_a_notice_cut_at_its_token_limit_is_not_said(tmp_path: Path) -> None:
+    from test_mind_final import _say
+    cut = _say("Abro el editor y copio los tres párrafos")
+    cut["choices"][0]["finish_reason"] = "length"
+    mind, _ = _calling(tmp_path, cut)
+    assert mind.notice_of() == ""  # eight words of a sentence that goes on: within the limits, and not a phrase
+
+
+@pytest.mark.parametrize("written", ["Estoy comparando los horarios de los buses que salen hacia la costa.",
+                                     "Busco en internet cuál de las dos recetas lleva menos azúcar."])
+def test_a_notice_of_eleven_to_fourteen_words_is_said(tmp_path: Path, written: str) -> None:
+    mind, _ = _calling(tmp_path, written)
+    assert mind.notice_of() == written
 
 
 def test_a_long_call_gets_another_notice_and_none_once_the_turn_answered(tmp_path: Path) -> None:
@@ -326,8 +353,8 @@ def test_a_notice_already_said_in_the_turn_is_not_said_again(tmp_path: Path) -> 
 
 # «Estoy procesando tu solicitud.» (holdout v5) was 1,81 s of audio the reply waited behind (fase 3, H7): a notice is a
 # few words, one line, no markup.
-@pytest.mark.parametrize("written", ["", "   ", "Ya abrí la aplicación que me pediste y todo quedó funcionando perfecto.",
-                                     "Un momento.\nYa está.", "<tool_call>"])
+@pytest.mark.parametrize("written", ["", "   ", "Un momento.\nYa está.", "<tool_call>",
+                                     "Abro el editor, copio los tres párrafos del informe y después los guardo juntos en una carpeta nueva."])
 def test_a_notice_the_model_did_not_write_usably_is_not_said(tmp_path: Path, written: str) -> None:
     mind, _ = _calling(tmp_path, written)
     assert mind.notice_of() == ""

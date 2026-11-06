@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { attach, ready, type App } from './app';
+import { attach, ready, spanish, type App } from './app';
 
 /* Every control of the view does what it says (owner, 2026-10-17: «que todos los botones funcionen y que nada lleve a
    un punto muerto»). Each reversible control is pressed in the real app and the host is read back through its own
@@ -10,13 +10,15 @@ type Json = Record<string, unknown> & { [k: string]: any }; // eslint-disable-li
 
 let app: App;
 let page: Page;
+let restoreLang: () => Promise<void>;
 test.beforeAll(async () => {
   app = await attach();
   page = app.page;
   await ready(page);
+  restoreLang = await spanish(page);
   await page.waitForFunction(async () => (await (await fetch('/agent/status')).json()).ready === true, undefined, { timeout: 180_000, polling: 1000 });
 });
-test.afterAll(async () => { await app.browser.close(); });
+test.afterAll(async () => { await restoreLang?.(); await app.browser.close(); });
 
 const get = (path: string): Promise<Json> => page.evaluate(async (p) => { const r = await fetch(p); return r.ok ? r.json() : { status: r.status }; }, path);
 async function until<T>(fn: () => Promise<T>, ms = 8000): Promise<T> {
@@ -37,7 +39,8 @@ const state = () => page.locator('.bx-statel').innerText();
 test('ajustes: cada interruptor guarda en el host y vuelve', async () => {
   for (const [tab, label, key] of [
     ['General', 'Al cerrar la ventana, seguir en la bandeja', 'closeToTray'], ['Voz', 'Sonido al despertar', 'wakeSound'],
-    ['Voz', 'Decir «Un momento»', 'waitNotice'], ['Voz', 'Silenciar su voz', 'voiceMuted'], ['Privacidad', 'Búsqueda web', 'web'], ['Privacidad', 'Clima', 'weather'],
+    ['Voz', 'Ignorar lo que suena en el PC', 'echoCancel'], ['Voz', 'Decir «Un momento»', 'waitNotice'],
+    ['Voz', 'Silenciar su voz', 'voiceMuted'], ['Privacidad', 'Búsqueda web', 'web'], ['Privacidad', 'Clima', 'weather'],
     ['Privacidad', 'Mirar la pantalla', 'screen'],
   ] as const) {
     await settings(tab);

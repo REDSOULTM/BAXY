@@ -52,7 +52,7 @@ internal sealed class ExternalProcessRunner : IExternalProcessRunner
             throw new ArgumentOutOfRangeException(nameof(timeout));
         }
 
-        var start = new ProcessStartInfo(executable)
+        var start = new ProcessStartInfo(SystemExecutable.Resolve(executable))
         {
             UseShellExecute = false,
             RedirectStandardOutput = true,

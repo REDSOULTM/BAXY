@@ -5,7 +5,7 @@ using Line = Baxy.Providers.Windows.External.WindowsVisibleOcrLocator.LayoutLine
 namespace Baxy.Providers.Windows.Tests;
 
 /// <summary>
-/// Encargo WA-LEER: the lines a chat is read from keep every place a text is read (redpc, chat «Abuela», 1938×1098: by
+/// Encargo WA-LEER: the lines a chat is read from keep every place a text is read (development PC, chat «Abuela», 1938×1098: by
 /// text 45 of 66 lines stayed, 12 of its 13 bubbles «prueba BAXY imp» out, and the last bubble's time «4:51», which the
 /// chat list repeats); only the second reading of the same text in the same place is the same line.
 /// </summary>

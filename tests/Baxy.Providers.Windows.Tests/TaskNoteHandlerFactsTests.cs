@@ -94,6 +94,26 @@ public sealed class TaskNoteHandlerFactsTests
         });
     }
 
+    // Encargo 34: a call on a deleted task says first the restore that brings it back, as the call with its arguments
+    // written (taskId and expectedVersion, the names task.restore takes), and that this call changed nothing last.
+    [Test]
+    public async Task ACallOnADeletedTaskStartsWithTheRestoreThatBringsItBack()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        var store = new LocalTaskStore(Path.Combine(temporary.Path, "tasks"));
+        LocalTaskRecord created = store.Create("Comprar pan", string.Empty, null);
+        LocalTaskRecord deleted = store.Delete(created.Id, created.Version, "Comprar pan");
+
+        OperationOutcome outcome = await new CompleteTaskHandler(store).ExecuteAsync(
+            Invocation($$"""{"taskId":"{{created.Id:D}}","expectedVersion":{{deleted.Version}}}"""),
+            CancellationToken.None);
+
+        Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(
+            $$"""task_restore {"taskId":"{{created.Id:D}}","expectedVersion":{{deleted.Version}}} brings it back first; """
+            + "this call changed nothing: the task is deleted"));
+    }
+
     // A task.delete (it asks the person's yes) whose label is not the task's title failed only after the yes; it fails
     // before asking, saying the exact title, and a matching one goes on to ask.
     [Test]
@@ -148,7 +168,8 @@ public sealed class TaskNoteHandlerFactsTests
             if (hint)
             {
                 Assert.That(next.GetString(), Is.EqualTo(
-                    "a note titled \"lista de compras\" is in the trash; note.restore brings it back"));
+                    "note_restore {\"title\":\"Lista de compras\"} brings it back; a note titled \"lista de compras\" "
+                    + "is in the trash"));
             }
         });
     }
@@ -278,6 +299,86 @@ public sealed class TaskNoteHandlerFactsTests
         {
             Assert.That(first.Succeeded, Is.True);
             Assert.That(again, Is.SameAs(InvocationPreflightResult.Proceed));
+        });
+    }
+
+    // Encargo 55 (banco de uso F11: «anótame que tengo que renovar…» went to task.create, then «léeme las notas que
+    // tengo» to note.list, empty, told as «no tienes notas»): an empty note list, while open tasks are kept, starts with
+    // the task_list call that reads them and lists the latest of them; with the aid off it is the bare list.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task AnEmptyNoteListStartsWithTheCallThatReadsTheOpenTasks(string aids, bool hint)
+    {
+        using IDisposable setting = ModelAids.Use(aids);
+        using TemporaryDirectory temporary = new();
+        var notes = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        var tasks = new LocalTaskStore(Path.Combine(temporary.Path, "tasks"));
+        tasks.Create("Regar las plantas de prueba", string.Empty, null);
+
+        OperationOutcome outcome = await new ListNotesHandler(notes, tasks).ExecuteAsync(
+            Invocation("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("count").GetInt32(), Is.Zero);
+            Assert.That(result.TryGetProperty("next", out JsonElement next), Is.EqualTo(hint));
+            Assert.That(result.TryGetProperty("openTasks", out JsonElement open), Is.EqualTo(hint));
+            if (!hint)
+                return;
+            Assert.That(next.GetString(), Does.StartWith("""task_list {"status":"open"} reads the 1 open task"""));
+            Assert.That(open[0].GetProperty("title").GetString(), Is.EqualTo("Regar las plantas de prueba"));
+        });
+    }
+
+    // The same from the other side: an empty list of open tasks, while notes are kept, starts with the note_list call.
+    [Test]
+    public async Task AnEmptyTaskListStartsWithTheCallThatReadsTheNotes()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        var notes = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        var tasks = new LocalTaskStore(Path.Combine(temporary.Path, "tasks"));
+        notes.Create("Clave de la red de prueba", "red Prueba-Invitados");
+
+        OperationOutcome outcome = await new ListTasksHandler(tasks, notes).ExecuteAsync(
+            Invocation("{}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            JsonElement result = outcome.Result!.Value;
+            Assert.That(result.GetProperty("next").GetString(),
+                Does.StartWith("""note_list {"scope":"active"} reads the 1 note"""));
+            Assert.That(result.GetProperty("notes")[0].GetProperty("title").GetString(),
+                Is.EqualTo("Clave de la red de prueba"));
+        });
+    }
+
+    // Contracase: with nothing in the other store, or a list that found something, the list says nothing more.
+    [Test]
+    public async Task AListWithNothingElseKeptSaysNothingMore()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+        using TemporaryDirectory temporary = new();
+        var notes = new LocalNoteStore(Path.Combine(temporary.Path, "notes"));
+        var tasks = new LocalTaskStore(Path.Combine(temporary.Path, "tasks"));
+
+        OperationOutcome bothEmpty = await new ListNotesHandler(notes, tasks).ExecuteAsync(
+            Invocation("{}"), CancellationToken.None);
+        tasks.Create("Regar las plantas de prueba", string.Empty, null);
+        notes.Create("Clave de la red de prueba", "red Prueba-Invitados");
+        OperationOutcome found = await new ListTasksHandler(tasks, notes).ExecuteAsync(
+            Invocation("{}"), CancellationToken.None);
+        OperationOutcome trashed = await new ListNotesHandler(notes, tasks).ExecuteAsync(
+            Invocation("""{"scope":"trashed"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(bothEmpty.Result!.Value.TryGetProperty("next", out _), Is.False);
+            Assert.That(found.Result!.Value.TryGetProperty("next", out _), Is.False);
+            Assert.That(trashed.Result!.Value.TryGetProperty("next", out _), Is.False);
         });
     }
 

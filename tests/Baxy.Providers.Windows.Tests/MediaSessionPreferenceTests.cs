@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
+using Windows.Media.Control;
 
 namespace Baxy.Providers.Windows.Tests;
 
@@ -140,6 +141,23 @@ public sealed class MediaSessionPreferenceTests
             Assert.That(result.GetProperty("album").GetString(), Is.EqualTo("Disco"));
         });
     }
+
+    // Uso real 2026-11-02 («para la canción y pon otra»): SMTC leaves a Play or a Pause to the app, and an app may take it
+    // as its play/pause key, so a play sent to the song already playing paused it. A session that already reads the
+    // state asked for gets no command; a toggle, a stop and a skip are still sent.
+    [TestCase("play", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, null)]
+    [TestCase("pause", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused, null)]
+    [TestCase("stop", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Stopped, null)]
+    [TestCase("stop", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed, null)]
+    [TestCase("play", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused, "play")]
+    [TestCase("pause", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, "pause")]
+    [TestCase("stop", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, "stop")]
+    [TestCase("toggle", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, "pause")]
+    [TestCase("toggle", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused, "play")]
+    [TestCase("next", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, "next")]
+    public void AControlSendsNothingToASessionAlreadyInTheStateAskedFor(
+        string action, GlobalSystemMediaTransportControlsSessionPlaybackStatus before, string? expected) =>
+        Assert.That(WindowsMediaSessionAdapter.ControlCommand(action, before), Is.EqualTo(expected));
 
     [Test]
     public void WithoutAPlaybackOfItsOwnWindowsDecides()

@@ -1,0 +1,40 @@
+{
+  "es": {
+    "welcome": "Hola, soy BAXY, y mi voz es sintética. Voy a vivir en tu PC para manejarlo contigo, por voz o por texto. Al instalarme aceptas mi licencia: Alt y la letra L la muestra. Presiona Enter para instalarme, o Escape para salir. Presiona Alt y la letra V para apagar mi voz.",
+    "warningIntel": "Puede que aquí no me vaya bien. Tu PC sólo tiene gráficos Intel, y todavía no me han probado con ellos. Presiona Escape para salir, o Alt y G para instalarme igual. Al instalarme aceptas mi licencia.",
+    "warningMemory": "Puede que aquí no me vaya bien. Tu tarjeta gráfica tiene menos de cuatro gigas de memoria, y yo necesito cuatro. Presiona Escape para salir, o Alt y G para instalarme igual. Al instalarme aceptas mi licencia.",
+    "warningNone": "No puedo funcionar aquí. No encontré una tarjeta gráfica NVIDIA, AMD o Intel, y sin ella no puedo arrancar. Presiona Escape para salir.",
+    "working": "Me estoy instalando. Puedes seguir usando tu PC. Si se corta internet, sigo donde quedé.",
+    "half": "Voy en la mitad.",
+    "almost": "Ya casi termino.",
+    "done": "Listo, ya estoy en tu PC. Me encuentras en el menú Inicio. Presiona Enter para abrirme.",
+    "failDisk": "No pude instalarme: falta espacio en el disco. Libera espacio y presiona Enter para reintentar.",
+    "failNetwork": "No pude instalarme: no logré conectarme a internet. Revisa tu conexión y presiona Enter para reintentar.",
+    "failOpen": "No pude instalarme: ya estoy abierto. Ciérrame y presiona Enter para reintentar.",
+    "failDamaged": "No pude instalarme: un archivo llegó dañado. Presiona Enter para bajarlo de nuevo.",
+    "failWindows": "No pude instalarme: Windows no pudo instalar un componente que necesito. Presiona Enter para reintentar.",
+    "failOther": "No pude instalarme. Dejé la causa escrita en pantalla. Presiona Enter para reintentar.",
+    "uninstall": "¿Me desinstalo? Presiona Enter para desinstalarme y conservar tus datos, o Escape para cancelar.",
+    "uninstalled": "Ya me desinstalé.",
+    "license": "Esta es mi licencia. Las flechas la recorren, y Escape vuelve atrás."
+  },
+  "en": {
+    "welcome": "Hi, I'm BAXY, and my voice is synthetic. I'm going to live on your PC and run it with you, by voice or by text. By installing me you accept my license: Alt and the letter S shows it. Press Enter to install me, or Escape to leave. Press Alt and the letter V to turn my voice off.",
+    "warningIntel": "I may not run well here. Your PC only has Intel graphics, and I haven't been tested on them yet. Press Escape to leave, or Alt and Y to install me anyway. By installing me you accept my license.",
+    "warningMemory": "I may not run well here. Your graphics card has less than four gigabytes of memory, and I need four. Press Escape to leave, or Alt and Y to install me anyway. By installing me you accept my license.",
+    "warningNone": "I can't work here. I found no NVIDIA, AMD or Intel graphics card, and I can't start without one. Press Escape to leave.",
+    "working": "I'm installing myself. You can keep using your PC. If the internet drops, I'll continue where I left off.",
+    "half": "I'm halfway there.",
+    "almost": "Almost done.",
+    "done": "Done, I'm on your PC. You'll find me in the Start menu. Press Enter to open me.",
+    "failDisk": "I couldn't install myself: the disk is out of space. Free some space and press Enter to try again.",
+    "failNetwork": "I couldn't install myself: I couldn't connect to the internet. Check your connection and press Enter to try again.",
+    "failOpen": "I couldn't install myself: I'm already open. Close me and press Enter to try again.",
+    "failDamaged": "I couldn't install myself: a file arrived damaged. Press Enter to download it again.",
+    "failWindows": "I couldn't install myself: Windows couldn't install a component I need. Press Enter to try again.",
+    "failOther": "I couldn't install myself. I left the reason on the screen. Press Enter to try again.",
+    "uninstall": "Should I uninstall myself? Press Enter to uninstall me and keep your data, or Escape to cancel.",
+    "uninstalled": "I've been uninstalled.",
+    "license": "This is my license. The arrow keys move through it, and Escape goes back."
+  }
+}

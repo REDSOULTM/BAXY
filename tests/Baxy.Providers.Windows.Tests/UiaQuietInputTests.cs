@@ -182,7 +182,7 @@ public sealed class UiaQuietInputTests
         // input is refused whole: nothing is sent, the call answers 0 (the caller sees the failure, never a press that
         // did not happen), nothing is owed and the wait times out. Ctrl+Alt+Shift keeps a real press of the key on the
         // desktop out of this thread.
-        // Full of 6d554a246 on redpc: a person using the PC moves the last-input tick too, so an unchanged tick alone
+        // Full of 6d554a246 on the development PC: a person using the PC moves the last-input tick too, so an unchanged tick alone
         // failed the test with nothing of it on the screen. Low-level hooks of the session's input (a thread of their
         // own) tell the sources apart: the test's input is a key of the two reserved codes (0xB8, 0xB9) or a mouse
         // event with the test's dwExtraInfo, and none may arrive; a tick that moved passes only when the hooks saw input
@@ -418,7 +418,7 @@ public sealed class UiaQuietInputTests
         {
             foreach (string command in new[] { "Do-Click", "Do-At", "Do-Scroll", "Do-Field", "Do-Focus", "Do-Reveal" })
                 Assert.That(text, Does.Contain("Invoke-Kept $request { param($r) " + command + " $r }"), command);
-            Assert.That(text, Does.Contain("Send-Line (Add-FrontReport (Do-Postread $request))"),
+            Assert.That(text, Does.Contain("Send-Line (Add-FrontReport (Do-PostreadRead $request))"),
                 "the post-read carries the watch's report too: the tail ends after the command's answer");
             Assert.That(text, Does.Not.Contain("Invoke-Kept $request { param($r) Do-View"), "a view never acts");
         });
@@ -478,6 +478,7 @@ public sealed class UiaQuietInputTests
             process.Kill(entireProcessTree: true);
             Assert.Fail("the script answers within 60 s");
         }
+        Assert.That(answer.Wait(TimeSpan.FromSeconds(10)), Is.True, "the script ended and its output is held by a process it started");
         string output = answer.Result;
         Assert.That(process.ExitCode, Is.EqualTo(0), error.Result);
         if (error.Result.Length > 0)

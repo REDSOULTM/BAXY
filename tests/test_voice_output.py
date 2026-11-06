@@ -167,6 +167,66 @@ def test_a_voice_with_no_model_files_refuses_at_once(tmp_path: Path, monkeypatch
     assert not speech.ready
 
 
+def _spin(cond, secs: float = 5.0) -> None:
+    deadline = time.monotonic() + secs
+    while not cond() and time.monotonic() < deadline:
+        time.sleep(0.02)
+
+
+# Encargo 10 (punto 6): too little memory to commit at load time does not turn the voice off for the session; it is
+# deferred (not a failure) and retried on the next use, and then it loads.
+def test_a_low_memory_voice_load_is_deferred_and_retried_on_the_next_use(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
+    tries: list[int] = []
+
+    def start(self: Speech) -> None:
+        tries.append(1)
+        if len(tries) == 1:
+            raise MemoryError("voice not loaded: 100 MB left to commit, 400 MB needed")
+
+    monkeypatch.setattr(Speech, "_start", start)
+    monkeypatch.setattr(Speech, "_sentences", lambda self, text: iter([text]))
+    monkeypatch.setattr(Speech, "_play", lambda self, audio, generation, queued, *rest: None)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
+
+    _spin(lambda: bool(speech.deferred))
+    assert speech.deferred
+    assert not speech.failure
+    assert not speech.ready
+
+    assert speech.speak("Hola.")  # the next use triggers the retry, which loads
+    _spin(lambda: speech.ready)
+    assert speech.ready
+    assert speech.deferred == ""
+    assert not speech.failure
+    assert tries == [1, 1]
+
+
+# Encargo 10 (punto 6): a load that never finds room gives up after the cap, said as a failure, and the voice refuses.
+def test_a_voice_load_that_never_finds_memory_fails_after_the_cap(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("BAXY_RENEW_TTS_DIR", str(_model_dir(tmp_path)))
+    tries: list[int] = []
+
+    def start(self: Speech) -> None:
+        tries.append(1)
+        raise MemoryError("voice not loaded: 10 MB left to commit, 400 MB needed")
+
+    monkeypatch.setattr(Speech, "_start", start)
+    speech = Speech(lambda speaking: None, lambda queued, sounded, *rest: None)
+
+    _spin(lambda: bool(speech.deferred))
+    assert speech.deferred and not speech.failure
+    deadline = time.monotonic() + 5
+    while not speech.failure and time.monotonic() < deadline:
+        speech.speak("Hola.")  # each use triggers another try
+        time.sleep(0.05)
+    assert speech.failure
+    assert not speech.ready
+    assert len(tries) == voice_output.NATIVE_LOAD_RETRIES
+
+
 def test_the_notice_sounds_from_its_audio_kept_at_load_and_never_holds_the_synthesis(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Owner, 2026-10-20: an answer waited 3.6 s behind «Un momento», which was synthesized like any sentence."""

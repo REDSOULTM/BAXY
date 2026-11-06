@@ -14,7 +14,11 @@ internal sealed record ApplicationWindowsClosed(
     IReadOnlyList<string> Titles,
     bool EffectMayHaveOccurred,
     int HiddenWindows,
-    int Frames);
+    int Frames)
+{
+    /// <summary>uso-129: what asking it to quit came to, when its windows left it running; null when it was not asked.</summary>
+    internal ApplicationQuitResult? Quit { get; init; }
+}
 
 /// <summary>An application's windows as resolved by its name (its dialogs among them), or why there are none.</summary>
 /// <param name="ErrorCode">The window provider's code, app_running_in_background or app_not_running when it has no frame;
@@ -84,6 +88,44 @@ internal static class ApplicationWindowCloser
         return hidden > 0
             ? new(AppRunningInBackground, closedWindows, processes, titles, true, hidden, frames.Length)
             : new(null, closedWindows, processes, titles, closedWindows > 0, hidden, frames.Length);
+    }
+
+    /// <summary>
+    /// uso-129: an application its windows leave running (they hid, or it has none: the notification area) is asked to
+    /// quit; closing a window of it is what it answers by staying («cierra X» and X goes on). Only when asked for by its
+    /// name: one window closed by its id concerns that window, and a window's dialog stopped everything before this.
+    /// </summary>
+    internal static async ValueTask<ApplicationWindowsClosed> QuitWhatRemainsAsync(
+        IWindowControlProvider windows,
+        string appId,
+        ApplicationWindowsClosed closing,
+        CancellationToken cancellationToken)
+    {
+        bool closedAndClear = closing.ErrorCode is null && closing.ClosedWindows > 0;
+        if (!closedAndClear && closing.ErrorCode != AppRunningInBackground)
+            return closing;
+        IReadOnlyList<int> background = await windows.BackgroundProcessesAsync(appId, cancellationToken).ConfigureAwait(false);
+        // Closed windows and a process still there: an ordinary application is on its way out, so it gets a moment; one
+        // that destroyed its window and stayed in the notification area does not go.
+        for (int look = 0; closedAndClear && background.Count > 0 && look < 5; look++)
+        {
+            await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+            background = await windows.BackgroundProcessesAsync(appId, cancellationToken).ConfigureAwait(false);
+        }
+
+        if (closedAndClear && background.Count == 0)
+            return closing;
+        int[] processes = [.. closing.ProcessIds.Concat(background).Distinct().Order()];
+        ApplicationQuitResult quit = await windows.QuitApplicationAsync(processes, cancellationToken).ConfigureAwait(false);
+        if (!quit.Asked)
+            return closing;
+        return closing with
+        {
+            ErrorCode = quit.Exited ? null : AppRunningInBackground,
+            ProcessIds = processes,
+            EffectMayHaveOccurred = closing.EffectMayHaveOccurred || quit.Exited,
+            Quit = quit,
+        };
     }
 
     /// <summary>

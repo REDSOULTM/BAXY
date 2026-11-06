@@ -22,7 +22,7 @@ public sealed class UnhandledFailuresTests
         {
             MethodInfo run = typeof(MainWindowViewModel).GetMethod("RunTurnAsync",
                 BindingFlags.Instance | BindingFlags.NonPublic)!;
-            Func<Task> turn = static () => throw new KeyNotFoundException("la clave de Ñuñoa");
+            Func<Task> turn = static () => throw new KeyNotFoundException("la clave de Viña");
 
             await (Task)run.Invoke(viewModel, ["hola", turn, CancellationToken.None, null])!;
 
@@ -38,9 +38,23 @@ public sealed class UnhandledFailuresTests
             {
                 Assert.That((string?)line?["source"], Is.EqualTo("turn"));
                 Assert.That((string?)line?["type"], Is.EqualTo(typeof(KeyNotFoundException).FullName));
-                Assert.That(File.ReadAllText(log), Does.Not.Contain("Ñuñoa"));
+                Assert.That(File.ReadAllText(log), Does.Not.Contain("Viña"));
             });
         }
+    }
+
+    [TestCase("startup", "UnsafePrivateStoragePathException", "PreparePrivateDataRoot")]
+    [TestCase("dispatcher", "InvalidOperationException", "<Main>b__0")]
+    [TestCase("dispatcher", null, "unknown")]
+    public void TheTraceKeepsWhatFailedInsteadOfInvalid(string source, string? type, string site)
+    {
+        string detail = UnhandledFailures.TraceDetail(source, type, site);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ShellTrace.SanitizeLabel(detail), Is.EqualTo(detail));
+            Assert.That(detail, Does.StartWith(source + "."));
+        });
     }
 
     [Test]

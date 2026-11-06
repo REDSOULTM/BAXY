@@ -20,7 +20,7 @@ test('Enter sobre el botón «No» de una tarjeta responde No, no Sí', async ()
 
 test('Enter en la caja de texto vacía responde Sí; Esc sobre un botón responde No', async () => {
   h = await openView({ items: [card('c1'), card('c2')] });
-  await h.page.locator('input[aria-label="Escribe a BAXY"]').focus();
+  await h.page.locator('.bx-line > input').focus();
   await h.page.keyboard.press('Enter');
   await expect.poll(answers).toEqual([{ approve: true, card: 'c2' }]);
   h.emit({ type: 'item', item: card('c2', { status: 'yes' }) });
@@ -71,6 +71,16 @@ test('mantener para hablar: un toque que el sistema cancela suelta el oído', as
   await expect.poll(voice).toEqual(['/voice/trigger', '/voice/release']);
 });
 
+test('siempre activo: un clic en la ventana no abre el oído como mantener para hablar', async () => {
+  // Uso real 03-11: the owner clicked the window to focus it and BAXY took it as the held space, transcribing all he
+  // said. Only the wake word, the held space or the microphone button open the ear.
+  h = await openView({ mic: 'always' });
+  h.emit({ type: 'voice', available: true, mode: 'wake', speaking: false });
+  await h.page.locator('.bx-graph').click();
+  await h.page.waitForTimeout(300);
+  expect(voice()).toEqual([]);
+});
+
 async function renaming() {
   h.reply('/sessions', () => ({ body: { sessions: [{ id: 's1', label: 'Mañana', ts: '10:00', current: true, turn_count: 2 }, { id: 's2', label: 'Ayer', ts: 'ayer', current: false, turn_count: 5 }] } }));
   await h.page.locator('button', { hasText: 'Sesiones' }).first().click();
@@ -108,7 +118,7 @@ test('Esc con el menú del micrófono abierto cierra el menú y no rechaza la ta
   expect(answers()).toEqual([]);
 });
 
-const box = () => h.page.locator('input[aria-label="Escribe a BAXY"]');
+const box = () => h.page.locator('.bx-line > input');
 
 test('un pedido que el host rechazó vuelve a la caja, no se pierde', async () => {
   h = await openView();
@@ -244,6 +254,230 @@ test('ajustes: una lectura de los ajustes empezada antes de un cambio no lo desh
   const seen: (string | null)[] = [];
   for (let i = 0; i < 14; i++) { seen.push(await web.getAttribute('aria-checked')); await h.page.waitForTimeout(100); }
   expect(seen.filter((v) => v !== 'true'), 'el interruptor volvió atrás').toEqual([]);
+});
+
+const EXTERNAL = {
+  provider: 'anthropic', model: 'claude-opus-5-5', url: '', enabled: false, hasKey: false, active: false, activeModel: null, activeLocal: false, switching: false,
+  problem: null, lastError: null, spentUsd: 0, ceilingUsd: null, ceilingHolds: true,
+  providers: [{ id: 'anthropic', label: 'Anthropic', hasKey: false, model: 'claude-opus-5-5' }, { id: 'openai', label: 'OpenAI', hasKey: false, model: '' },
+    { id: 'google', label: 'Google', hasKey: false, model: '' }, { id: 'local', label: 'Local', hasKey: false, model: '' }, { id: 'compatible', label: 'Otra', hasKey: false, model: '' }],
+};
+
+test('otro modelo: elegir de la lista conecta, y lo que no cabe se dice', async () => {
+  h = await openView();
+  let host = { ...EXTERNAL, provider: 'local', model: '', url: 'http://127.0.0.1:11434', ceilingHolds: false };
+  h.reply('/settings/external-model/models', () => ({ body: { models: [
+    { id: 'grande:4b', label: 'grande:4b · 5.2 GB', fits: true }, { id: 'visual', label: 'visual · 5.2 GB', fits: false, why: 'no sabe usar herramientas' }] } }));
+  h.reply('/settings/external-model', (c) => {
+    if (c.method === 'PUT') host = { ...host, ...(c.body as object) };
+    return { body: host };
+  });
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  const list = p.getByLabel('Modelo', { exact: true });
+  await expect(list.locator('option')).toHaveText(['Elige un modelo', 'grande:4b · 5.2 GB', 'visual · 5.2 GB · no sabe usar herramientas']);
+  await expect(list.locator('option', { hasText: 'visual' })).toBeDisabled();
+  await list.selectOption('grande:4b');
+  await expect.poll(() => h.calls.filter((c) => c.method === 'PUT').map((c) => c.body)).toContainEqual({ model: 'grande:4b', enabled: true });
+  await expect(p.locator('button.toggle[aria-label="Usar otro modelo"]')).toHaveAttribute('aria-checked', 'true');
+});
+
+test('otro modelo: cada contexto dice su VRAM antes de hablarle, y elegirlo se aplica', async () => {
+  h = await openView();
+  let host = { ...EXTERNAL, provider: 'local', model: 'grande:4b', url: 'http://127.0.0.1:11434', enabled: true, ceilingHolds: false, context: null as number | null };
+  h.reply('/settings/external-model/models', () => ({ body: { models: [{ id: 'grande:4b', label: 'grande:4b · 5,2 GB', fits: true }] } }));
+  h.reply('/settings/external-model/estimate', () => ({ body: {
+    contextLength: 262144, recommended: 78000,
+    options: [{ context: 64000, bytes: 4_700_000_000 }, { context: 78000, bytes: 5_000_000_000 }, { context: 200000, bytes: 7_500_000_000 }],
+    vramTotalBytes: 2 ** 33, vramFreeBytes: 6_000_000_000 } }));
+  h.reply('/settings/external-model', (c) => {
+    if (c.method === 'PUT') host = { ...host, ...(c.body as object) };
+    return { body: host };
+  });
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  const context = p.getByLabel('Contexto', { exact: true });
+  await expect(context.locator('option')).toHaveText(['64.000 tokens · unos 4,4 GB de VRAM', '78.000 tokens · unos 4,7 GB de VRAM · recomendado', '200.000 tokens · unos 7,0 GB de VRAM']);
+  await expect(context).toHaveValue('78000');
+  await expect(p.getByText('Deja unos 29.000 tokens para la conversación. Tu tarjeta tiene 8,0 GB y hay 5,6 GB libres')).toBeVisible();
+  await context.selectOption('200000');
+  await expect.poll(() => h.calls.filter((c) => c.method === 'PUT').map((c) => c.body)).toContainEqual({ context: 200000 });
+  await expect(p.getByText('No cabe entero: lo demás irá a la RAM')).toBeVisible();
+});
+
+test('otro modelo: sin memoria libre en el PC, la opción lo dice antes de elegirla', async () => {
+  h = await openView();
+  const host = { ...EXTERNAL, provider: 'local', model: 'grande:4b', url: 'http://127.0.0.1:11434', enabled: false, ceilingHolds: false, context: 200000 };
+  h.reply('/settings/external-model/models', () => ({ body: { models: [{ id: 'grande:4b', label: 'grande:4b · 5,2 GB', fits: true }] } }));
+  h.reply('/settings/external-model/estimate', () => ({ body: {
+    contextLength: 262144, recommended: 78000, commitFreeBytes: 2 ** 33,
+    options: [{ context: 78000, bytes: 2 ** 31 }, { context: 200000, bytes: 2 ** 33 }], vramTotalBytes: 2 ** 34, vramFreeBytes: 2 ** 34 } }));
+  h.reply('/settings/external-model', () => ({ body: host }));
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  await expect(p.getByLabel('Contexto', { exact: true }).locator('option')).toHaveText(['78.000 tokens · unos 2,0 GB de VRAM · recomendado', '200.000 tokens · unos 8,0 GB de VRAM · sin memoria']);
+  await expect(p.getByText('Este PC tiene 8,0 GB de memoria libre: no se conectará con este contexto')).toBeVisible();
+});
+
+test('otro modelo: pasar de lo que el modelo declara se dice, y lo que no cabe pide menos contexto', async () => {
+  h = await openView();
+  const host = { ...EXTERNAL, provider: 'local', model: 'qwen3:8b', url: 'http://127.0.0.1:11434', enabled: true, ceilingHolds: false, context: 200000 };
+  h.reply('/settings/external-model/models', () => ({ body: { models: [{ id: 'qwen3:8b', label: 'qwen3:8b · 5,2 GB', fits: true }] } }));
+  h.reply('/settings/external-model/estimate', () => ({ body: {
+    contextLength: 40960, recommended: 78000,
+    options: [{ context: 64000, bytes: 10_000_000_000 }, { context: 78000, bytes: 11_000_000_000 }, { context: 200000, bytes: 20_000_000_000 }],
+    vramTotalBytes: 2 ** 34, vramFreeBytes: 15_000_000_000 } }));
+  h.reply('/settings/external-model', () => ({ body: host }));
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  await expect(p.getByText('No cabe: elige menos contexto. El modelo declara 40.960: BAXY le amplía el límite')).toBeVisible();
+});
+
+test('otro modelo: sin Ollama lo dice, y una API sin clave pide la clave antes de su lista', async () => {
+  h = await openView();
+  let host = { ...EXTERNAL, provider: 'local', model: '', ceilingHolds: false };
+  h.reply('/settings/external-model/models', () => ({ body: host.provider === 'local' ? { ollama: 'missing' } : { needsKey: true } }));
+  h.reply('/settings/external-model', (c) => {
+    if (c.method === 'PUT') host = { ...host, ...(c.body as object) };
+    return { body: host };
+  });
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  await expect(p.getByText('No encontré Ollama en este PC')).toBeVisible();
+  await p.locator('.bxs-seg button', { hasText: 'OpenAI' }).click();
+  await expect(p.getByText('Guarda tu clave y aquí aparecerán los modelos')).toBeVisible();
+});
+
+test('otro modelo local: sin clave ni gasto, dice que nada sale y «todo local» sigue siendo verdad', async () => {
+  h = await openView();
+  const host = { ...EXTERNAL, provider: 'local', model: 'qwen', url: 'http://127.0.0.1:11434', enabled: true, active: true, activeModel: 'qwen', activeLocal: true, ceilingHolds: false };
+  h.reply('/settings/external-model', () => ({ body: host }));
+  h.reply('/settings/external-model/models', () => ({ body: { models: [{ id: 'qwen', label: 'qwen · 5.2 GB', fits: true }] } }));
+  const p = h.page;
+  await expect(p.locator('.bx-priv')).toHaveText('Todo local');
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  await expect(p.locator('.bxs-fixed', { hasText: 'qwen en este PC' }).first()).toBeVisible();
+  await expect(p.getByText('Conectado', { exact: true })).toBeVisible();
+  await expect(p.getByText('Límite de memoria')).toHaveCount(0);
+  await expect(p.getByText('la conversación no sale de este PC')).toBeVisible();
+  await expect(p.getByLabel('Clave de la API')).toHaveCount(0);
+  await expect(p.getByLabel('Tope de gasto en USD')).toHaveCount(0);
+  await expect(p.getByText('también la conversación que ya tuviste')).toHaveCount(0);
+  await p.locator('.settings-tab', { hasText: 'Privacidad' }).click();
+  await expect(p.locator('button.toggle[aria-label="El modelo corre en este PC"]')).toHaveAttribute('aria-checked', 'true');
+});
+
+test('modelo por API: con la variable en 0 la sección no existe y la privacidad sigue igual', async () => {
+  h = await openView();
+  h.reply('/settings/external-model', () => ({ status: 404, body: { error: 'not_found' } }));
+  await h.page.locator('.bx-gear').click();
+  await h.page.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  await expect(h.page.getByText('Otro modelo', { exact: true })).toHaveCount(0);
+  await expect(h.page.getByLabel('Clave de la API')).toHaveCount(0);
+});
+
+test('modelo por API: la clave se envía una vez, no se muestra de vuelta, y un rechazo se dice', async () => {
+  h = await openView();
+  let host = { ...EXTERNAL };
+  h.reply('/settings/external-model', (c) => {
+    if (c.method !== 'PUT') return { body: host };
+    const body = c.body as Record<string, unknown>;
+    if (body.enabled === true && !body.key && !host.hasKey) return { status: 409, body: { ok: false, error: 'external_model_no_key' } };
+    host = { ...host, hasKey: host.hasKey || !!body.key, enabled: body.enabled === undefined ? host.enabled : !!body.enabled };
+    return { body: host };
+  });
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  const toggle = p.locator('button.toggle[aria-label="Usar otro modelo"]');
+  await expect(p.getByText('también la conversación que ya tuviste')).toBeVisible();
+  await toggle.click();
+  await expect(p.getByRole('alert')).toHaveText('Primero guarda la clave');
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
+
+  const key = p.getByLabel('Clave de la API');
+  await expect(key).toHaveAttribute('type', 'password');
+  await key.fill('sk-secreta');
+  await p.getByRole('button', { name: 'Guardar' }).click();
+  await expect(key).toHaveValue('');
+  await expect(p.getByText('Guardada y protegida en este PC')).toBeVisible();
+  expect(h.calls.filter((c) => c.method === 'PUT' && (c.body as { key?: string }).key === 'sk-secreta')).toHaveLength(1);
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+});
+
+test('modelo por API: sin tope salvo que la persona escriba uno, y vaciarlo lo quita', async () => {
+  h = await openView();
+  let host: typeof EXTERNAL | (Omit<typeof EXTERNAL, 'ceilingUsd'> & { ceilingUsd: number | null }) = { ...EXTERNAL };
+  h.reply('/settings/external-model', (c) => {
+    if (c.method === 'PUT') host = { ...host, ...(c.body as object) };
+    return { body: host };
+  });
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  const tope = p.getByLabel('Tope de gasto en USD');
+  await expect(tope).toHaveValue('');
+  await expect(tope).toHaveAttribute('placeholder', 'Sin tope');
+  await tope.fill('7');
+  await tope.blur();
+  await expect.poll(() => h.calls.filter((c) => c.method === 'PUT').map((c) => c.body)).toContainEqual({ ceilingUsd: 7 });
+  await tope.fill('');
+  await tope.blur();
+  await expect.poll(() => h.calls.filter((c) => c.method === 'PUT').map((c) => c.body)).toContainEqual({ ceilingUsd: null });
+});
+
+test('modelo por API: activo, la privacidad deja de decir que el modelo corre aquí', async () => {
+  h = await openView();
+  h.reply('/settings/external-model', () => ({ body: { ...EXTERNAL, enabled: true, hasKey: true, active: true, activeModel: 'claude-opus-5-5' } }));
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Privacidad' }).click();
+  await expect(p.locator('button.toggle[aria-label="El modelo corre en este PC"]')).toHaveAttribute('aria-checked', 'false');
+  await expect(p.getByText('Ahora no: usas claude-opus-5-5 por API')).toBeVisible();
+  await expect(p.getByText('La conversación sale hacia la API en cada turno.')).toBeVisible();
+  await expect(p.getByText('Ninguna. Todo se ha quedado en este PC.')).toHaveCount(0);
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  await expect(p.locator('.bxs-fixed', { hasText: 'claude-opus-5-5 por API' }).first()).toBeVisible();
+  await expect(p.getByText('Conectado a la API')).toBeVisible();
+  await p.locator('.settings-panel .bx-ib.plain').click();
+  await expect(p.locator('.bx-priv')).toHaveText('Modelo por API');
+});
+
+test('modelo por API: apagado después de usarlo, la privacidad no dice que nada salió', async () => {
+  h = await openView();
+  h.reply('/settings/external-model', () => ({ body: { ...EXTERNAL, hasKey: true, apiThisRun: true } }));
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Privacidad' }).click();
+  await expect(p.getByText('Esta sesión usó un modelo por API')).toBeVisible();
+  await expect(p.getByText('Ninguna. Todo se ha quedado en este PC.')).toHaveCount(0);
+});
+
+test('modelo por API: apagar no depende de lo que esté escrito', async () => {
+  h = await openView();
+  let host = { ...EXTERNAL, provider: 'compatible', model: 'm', url: 'https://ejemplo.com/v1', hasKey: true, enabled: true, active: true, activeModel: 'm', ceilingHolds: false };
+  h.reply('/settings/external-model', (c) => {
+    if (c.method !== 'PUT') return { body: host };
+    const body = c.body as { url?: string; enabled?: boolean };
+    if (body.url?.startsWith('http://')) return { status: 409, body: { ok: false, error: 'external_model_invalid_url' } };
+    if (body.enabled !== undefined) host = { ...host, enabled: body.enabled, active: body.enabled };
+    return { body: host };
+  });
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  await p.getByLabel('Dirección de la API').fill('http://no-vale.com/v1');
+  const toggle = p.locator('button.toggle[aria-label="Usar otro modelo"]');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
 });
 
 test('teclado: un panel abierto toma el foco y al cerrarse lo devuelve a lo que lo abrió', async () => {

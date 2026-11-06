@@ -107,11 +107,13 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
 
     /// <summary>
     /// Ronda 19 (t2-c01 T2 «no mejor en youtube…» right after BAXY put music on in the desktop client, which kept
-    /// playing): a new playback that changes the way of playing first pauses the session BAXY itself left playing.
+    /// playing): a new playback that does not replace it first pauses the session BAXY itself left playing.
     /// Only that session (the same source still playing the same title BAXY left playing) and only while it plays.
     /// Revisión 2: a session of the person's is never touched, not even in the app BAXY used (the person's own stream
-    /// in the browser after BAXY's video ended, a song the person put on by hand in the client), and a new playback
-    /// the same way replaces nothing here.
+    /// in the browser after BAXY's video ended, a song the person put on by hand in the client), and a new track in
+    /// the desktop client replaces its own there. Uso real 2026-11-02 («para la canción y pon otra»): a new page in the
+    /// browser replaces nothing (it opens in another tab, and the browser then shows only the newest media session, so
+    /// the old one can no longer be stopped): BAXY's own playback there is paused too.
     /// </summary>
     internal static (string Source, string Title)? AssistantSessionToPause(
         IReadOnlyList<(string Source, string Title, bool Playing)> sessions,
@@ -119,7 +121,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         string newOperation)
     {
         if (assistant is not { } own || string.IsNullOrEmpty(own.Source) || string.IsNullOrWhiteSpace(own.Title)
-            || PlaybackWay(own.Operation) == PlaybackWay(newOperation))
+            || (PlaybackWay(own.Operation) == "client" && PlaybackWay(newOperation) == "client"))
         {
             return null;
         }
@@ -185,7 +187,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             .ToArray();
 
     /// <summary>
-    /// Pauses the session BAXY left playing when <paramref name="newOperation"/> changes the way of playing, and says
+    /// Pauses the session BAXY left playing when <paramref name="newOperation"/> does not replace it, and says
     /// which one it paused (null when none: nothing remembered, the person's, or no longer playing). Revisión 2: the
     /// caller resumes it when the new playback fails before its effect, so a failure never silences the music.
     /// </summary>
@@ -542,6 +544,30 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         }
     }
 
+    /// <summary>
+    /// The command media.control sends to a session that reads <paramref name="before"/>, or null when it already reads
+    /// the state asked for. Uso real 2026-11-02 («para la canción y pon otra»): SMTC hands a Play or a Pause to the app,
+    /// which may take it as its play/pause key, so a play sent to what already plays can pause it; nothing is sent then.
+    /// </summary>
+    internal static string? ControlCommand(string action, GlobalSystemMediaTransportControlsSessionPlaybackStatus before) =>
+        action switch
+        {
+            "toggle" => before == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing ? "pause" : "play",
+            _ when InState(action, before) => null,
+            _ => action,
+        };
+
+    // The state play, pause and stop ask for; a session that closed on «stop» is the stopped playback.
+    private static bool InState(string action, GlobalSystemMediaTransportControlsSessionPlaybackStatus status) =>
+        action switch
+        {
+            "play" => status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing,
+            "pause" => status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused,
+            "stop" => status is GlobalSystemMediaTransportControlsSessionPlaybackStatus.Stopped
+                or GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed,
+            _ => false,
+        };
+
     private async ValueTask<ExternalCapabilityReceipt> ControlAsync(
         string operation,
         JsonElement arguments,
@@ -557,18 +583,23 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 await session.TryGetMediaPropertiesAsync().Bounded(cancellationToken);
             GlobalSystemMediaTransportControlsSessionPlaybackStatus beforeStatus =
                 session.GetPlaybackInfo().PlaybackStatus;
+            // A session already in the state asked for (paused on «pausa») is done with no effect of this call.
+            if (ControlCommand(action, beforeStatus) is not { } command)
+            {
+                return ExternalJson.Switched(operation,
+                    ControlResult(before, StatusName(action, beforeStatus), session.SourceAppUserModelId,
+                        insteadOfCurrent),
+                    effectObserved: false);
+            }
+
             effectBoundaryCrossed = true;
-            bool dispatched = action switch
+            bool dispatched = command switch
             {
                 "play" => await session.TryPlayAsync().Bounded(cancellationToken),
                 "pause" => await session.TryPauseAsync().Bounded(cancellationToken),
                 "stop" => await session.TryStopAsync().Bounded(cancellationToken),
                 "next" => await session.TrySkipNextAsync().Bounded(cancellationToken),
                 "previous" => await session.TrySkipPreviousAsync().Bounded(cancellationToken),
-                "toggle" => beforeStatus
-                    == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing
-                        ? await session.TryPauseAsync().Bounded(cancellationToken)
-                        : await session.TryPlayAsync().Bounded(cancellationToken),
                 _ => false,
             };
             if (!dispatched)
@@ -580,26 +611,9 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             GlobalSystemMediaTransportControlsSessionMediaProperties after = before;
             GlobalSystemMediaTransportControlsSessionPlaybackStatus status =
                 beforeStatus;
-            bool alreadySatisfiedBeforeDispatch = action switch
-            {
-                "play" => beforeStatus
-                    == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing,
-                "pause" => beforeStatus
-                    == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused,
-                "stop" => beforeStatus
-                    is GlobalSystemMediaTransportControlsSessionPlaybackStatus.Stopped
-                    or GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed,
-                _ => false,
-            };
             bool IsVerified() => action switch
             {
-                "play" => status
-                    == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing,
-                "pause" => status
-                    == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused,
-                "stop" => status
-                    is GlobalSystemMediaTransportControlsSessionPlaybackStatus.Stopped
-                    or GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed,
+                "play" or "pause" or "stop" => InState(action, status),
                 "next" or "previous" => !string.Equals(
                     Fold(before.Title + "\n" + before.Artist),
                     Fold(after.Title + "\n" + after.Artist),
@@ -631,7 +645,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 }
 
                 bool terminal = attempt == SmtcControlPostreadPollIntervals;
-                if ((verified && (!alreadySatisfiedBeforeDispatch || terminal)) || terminal)
+                if (verified || terminal)
                 {
                     if (!verified && observationError is not null)
                     {
@@ -646,27 +660,10 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                     .ConfigureAwait(false);
             }
 
-            // Owner's test 2026-09-21 (turn 148): a session that closed on «stop» is
-            // the stopped playback, not «nothing was playing»; the narrator reads
-            // playing/paused/stopped and the observed status said «closed».
-            string observedStatus = verified
-                && action == "stop"
-                && status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed
-                    ? "stopped"
-                    : status.ToString().ToLowerInvariant();
-            JsonElement result = MediaResult(after, observedStatus, session.SourceAppUserModelId);
-            // Renew al máximo (R6.1): the receipt says it acted on the one session playing, not on Windows' current one.
-            if (insteadOfCurrent is not null)
-            {
-                result = ExternalJson.Extended(result, writer =>
-                {
-                    writer.WriteString("sessionFrom", "only_playing_session");
-                    writer.WriteString("currentSourceAppUserModelId", insteadOfCurrent);
-                });
-            }
-            // A session already in the state asked for (paused on «pausa») is done with no effect of this call.
             return verified
-                ? ExternalJson.Switched(operation, result, effectObserved: !alreadySatisfiedBeforeDispatch)
+                ? ExternalJson.Switched(operation,
+                    ControlResult(after, StatusName(action, status), session.SourceAppUserModelId, insteadOfCurrent),
+                    effectObserved: true)
                 : ExternalJson.Failure(operation, "smtc_postcondition_not_verified", effectObserved: true);
         }
         catch when (!cancellationToken.IsCancellationRequested)
@@ -676,6 +673,30 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 "smtc_control_observation_failed",
                 effectBoundaryCrossed);
         }
+    }
+
+    // Owner's test 2026-09-21 (turn 148): a session that closed on «stop» is the stopped playback, not «nothing was
+    // playing»; the narrator reads playing/paused/stopped and the observed status said «closed».
+    private static string StatusName(string action, GlobalSystemMediaTransportControlsSessionPlaybackStatus status) =>
+        action == "stop" && status == GlobalSystemMediaTransportControlsSessionPlaybackStatus.Closed
+            ? "stopped"
+            : status.ToString().ToLowerInvariant();
+
+    // Renew al máximo (R6.1): the receipt says it acted on the one session playing, not on Windows' current one.
+    private static JsonElement ControlResult(
+        GlobalSystemMediaTransportControlsSessionMediaProperties properties,
+        string status,
+        string sourceAppUserModelId,
+        string? insteadOfCurrent)
+    {
+        JsonElement result = MediaResult(properties, status, sourceAppUserModelId);
+        return insteadOfCurrent is null
+            ? result
+            : ExternalJson.Extended(result, writer =>
+            {
+                writer.WriteString("sessionFrom", "only_playing_session");
+                writer.WriteString("currentSourceAppUserModelId", insteadOfCurrent);
+            });
     }
 
     private static async ValueTask<ExternalCapabilityReceipt> StatusAsync(

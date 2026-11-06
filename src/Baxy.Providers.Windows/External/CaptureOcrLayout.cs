@@ -13,7 +13,7 @@ internal static class CaptureOcrLayout
     internal static JsonElement CreateResult(
         string captureId, string language, string text, string imageSha256,
         int imageWidth, int imageHeight, DateTimeOffset recognizedAtUtc,
-        double? textAngleDegrees, IReadOnlyList<CaptureOcrLine> lines)
+        double? textAngleDegrees, IReadOnlyList<CaptureOcrLine> lines, IReadOnlyList<string>? recognizerLanguages = null)
     {
         if (imageWidth <= 0 || imageHeight <= 0
             || imageSha256.Length != 64 || !imageSha256.All(char.IsAsciiHexDigit)
@@ -44,6 +44,25 @@ internal static class CaptureOcrLayout
                 Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(text))));
             writer.WriteNumber("lineCount", lines.Count);
             writer.WriteString("authority", "windows_media_ocr");
+            // Encargo 119: what this read can and cannot say. The engine has no confidence: a foreign alphabet comes back as
+            // nonsense, and faint text as nothing (130 on 160 grey at 16 px, on a capture that plainly shows it).
+            if (recognizerLanguages is not null)
+            {
+                writer.WriteStartArray("recognizerLanguages");
+                foreach (string recognizer in recognizerLanguages)
+                {
+                    writer.WriteStringValue(recognizer);
+                }
+                writer.WriteEndArray();
+                writer.WriteString("limits", "this PC's OCR reads only those languages: text in another alphabet comes out as "
+                    + "letters that make no sense, so say it could not be read, and a language's OCR pack is installed from "
+                    + "Windows Settings");
+                if (lines.Count == 0)
+                {
+                    writer.WriteString("nothingRead", "no text was recognized: it may have none, or text too faint, too small "
+                        + "or turned; say that, not that it has no text");
+                }
+            }
             writer.WriteString("imageSha256", imageSha256);
             writer.WriteNumber("imageWidth", imageWidth);
             writer.WriteNumber("imageHeight", imageHeight);

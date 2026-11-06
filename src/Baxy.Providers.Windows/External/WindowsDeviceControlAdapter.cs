@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Infrastructure;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
@@ -136,7 +137,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         foreach($line in $text){if($line -match '^\s*(?:State|Estado)\s*:\s*(connected|conectado)\s*$'){$connected=$true};if($line -match '^\s*(?:Profile|Perfil)\s*:\s*(.+?)\s*$'){$profile=$Matches[1]}}
         [pscustomobject]@{ok=$true;connected=$connected;profile=$profile}|ConvertTo-Json -Compress
         """;
-    // Encargo H2 (tandas redpc t2-c03, t3-c04, t4-c04: «Intenté poner el brillo…, pero no pude confirmar si se hizo» on
+    // Encargo H2 (tandas t2-c03, t3-c04, t4-c04: «Intenté poner el brillo…, pero no pude confirmar si se hizo» on
     // a monitor that does not expose its brightness): WMI answers its brightness classes there with «not supported»
     // (CimException NotSupported) or with no instance. That is the computer's limit, read before anything is changed
     // (BrightnessNotSupported, said as the absent device of data «computerUse.limits.devices»), never a change tried.
@@ -333,7 +334,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
         or "bluetooth.radio.set" or "bluetooth.radio.status"
-        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "client.channel.locate" or "client.microphone.set" or "calculator.expression.evaluate"
+        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "client.channel.locate" or "client.microphone.set" or "client.deafen.set"
+        or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -359,8 +361,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 "software.python.status" => PythonStatus(operation),
                 "storage.removable.list" => RemovableStorageList(operation),
                 "client.channel.locate" => await ClientChannelLocateAsync(operation, arguments, cancellationToken),
-                "client.microphone.set" => await ClientMicrophoneSetAsync(
-                    operation, arguments, effectBoundary, cancellationToken),
+                "client.microphone.set" => await ClientVoiceSetAsync(
+                    operation, arguments, ClientMicrophone, effectBoundary, cancellationToken),
+                "client.deafen.set" => await ClientVoiceSetAsync(
+                    operation, arguments, ClientDeafen, effectBoundary, cancellationToken),
                 "software.python.package.status" => await PythonPackageStatusAsync(operation, arguments, cancellationToken),
                 "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -458,7 +462,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     {
         string id = ExternalJson.RequiredString(arguments, "deviceId");
         if (!_bluetooth.TryGetValue(id, out string? nativeId))
-            return IdentityUnknown(operation, "bluetooth_identity_expired", "deviceId", "paired", "bluetooth_device_list");
+            return IdentityUnknown(operation, "bluetooth_identity_expired", "deviceId", "paired", "bluetooth.device.list");
         BluetoothPairingState item = await ReadPairingAsync(nativeId, cancellationToken).ConfigureAwait(false);
         if (item.IsPaired)
             return ExternalJson.Switched(operation, BluetoothPairResult(id, item.Name), effectObserved: false);
@@ -522,9 +526,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             {
                 writer.WriteStartObject(); writer.WriteNumber("version", 1); writer.WriteString("deviceId", id);
                 writer.WriteBoolean("pairingConfirmed", false);
-                writer.WriteString("next", "Windows did not confirm the pairing in time (its pairing dialog may be "
-                    + "waiting for an answer); if that dialog is still open the device may still pair, and "
-                    + "bluetooth_device_list shows whether it is paired");
+                // Encargo 34: the list that shows it comes first, as the call the model makes.
+                writer.WriteString("next", $"{WireNames.Call("bluetooth.device.list", new())} shows whether it is "
+                    + "paired; Windows did not confirm the pairing in time (its pairing dialog may be waiting for an "
+                    + "answer), and if that dialog is still open the device may still pair");
                 writer.WriteEndObject();
             }),
         };
@@ -537,8 +542,9 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             ? new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
-                writer.WriteString("next", $"this {argument} is not one {list} gave since BAXY started, and nothing was {done}; "
-                    + $"{list} gives the ids to use");
+                // Encargo 34: the list that gives the ids comes first, as the call the model makes.
+                writer.WriteString("next", $"{WireNames.Call(list, new())} gives the ids to use; this {argument} is not "
+                    + $"one {WireNames.Of(list)} gave since BAXY started, and nothing was {done}");
                 writer.WriteEndObject();
             }), code)
             : ExternalJson.Failure(operation, code);
@@ -980,11 +986,20 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           if($ids -contains 'piButton'){ return 'scientific' }
           return 'other'
         }
+        # Banco de uso 2026-11-03 (U14/U15): the classic Calculator (win32calc) has its own Standard, Scientific and
+        # Programmer keypads, and its buttons carry none of the Store Calculator's AutomationIds the mode is read from: its
+        # mode is not read («not_read»).
+        function Get-CalculatorMode([string]$kind,[string[]]$ids){
+          if($kind -eq 'win32calc'){ return 'not_read' }
+          return (Get-KeypadMode $ids)
+        }
         # Ronda final 27 (regla 3) and holdout v5 V5E029: Standard applies each operator in the order typed, Scientific
         # follows precedence and has ^ and parentheses. Another keypad presses nothing, nor does an expression that needs
-        # the Scientific buttons on the Standard one: the mode is never switched here.
+        # the Scientific buttons on the Standard one: the mode is never switched here. With the mode not read, only an
+        # expression whose value is the same in both orders is pressed: no ( ) nor ^, and no + or - before a * or /.
         function Get-ModeRefusal([string]$mode,[string]$keys){
           if($mode -eq 'other'){ return 'calculator_mode_not_supported' }
+          if($mode -eq 'not_read' -and ($keys -match '[\^()]' -or $keys -match '[-+].*[*/]')){ return 'calculator_mode_not_read' }
           if($mode -ne 'scientific' -and $keys -match '[\^()]'){ return 'calculator_needs_scientific_mode' }
           return ''
         }
@@ -1044,18 +1059,21 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         """ + KeypadFunctions + """
         $root=[System.Windows.Automation.AutomationElement]::RootElement
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'ApplicationFrameWindow')
-        $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){foreach($c in $f.FindAll([System.Windows.Automation.TreeScope]::Children,[System.Windows.Automation.Condition]::TrueCondition)){$p=Get-Process -Id $c.Current.ProcessId -ErrorAction SilentlyContinue;if($p -and [string]$p.Path -like '*\WindowsApps\Microsoft.WindowsCalculator_*'){$calc=$f;break}};if($calc){break}}
+        $calc=$null;$kind='store';foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){foreach($c in $f.FindAll([System.Windows.Automation.TreeScope]::Children,[System.Windows.Automation.Condition]::TrueCondition)){$p=Get-Process -Id $c.Current.ProcessId -ErrorAction SilentlyContinue;if($p -and [string]$p.Path -like '*\WindowsApps\Microsoft.WindowsCalculator_*'){$calc=$f;break}};if($calc){break}}
+        # Banco de uso 2026-11-03 (U14/U15): app_open offers and opens the classic Calculator where Windows has it (win32calc
+        # in System32, Windows Server's own); its main window is read too, after the Store one.
+        if($null -eq $calc){foreach($p in @(Get-Process -Name win32calc -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne [IntPtr]::Zero })){$calc=[System.Windows.Automation.AutomationElement]::FromHandle($p.MainWindowHandle);$kind='win32calc';break}}
         if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $keys=($expr -replace '[^0-9+\-*/.^()]','')
         if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}
         $buttonCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
         function Read-Keypad(){ $found=@($calc.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttonCond)); return @{buttons=$found;names=[string[]]@($found | ForEach-Object { [string]$_.Current.Name });ids=[string[]]@($found | ForEach-Object { [string]$_.Current.AutomationId })} }
         $keypad=Read-Keypad;$buttons=$keypad.buttons;$names=$keypad.names;$ids=$keypad.ids
-        $mode=Get-KeypadMode $ids
+        $mode=Get-CalculatorMode $kind $ids
         $refusal=Get-ModeRefusal $mode $keys
         $inOrder=Get-StandardOrder $refusal $mode $(if($args.Count -gt 2){[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[2]))}else{''})
         if($inOrder){ $keys=$inOrder; $refusal='' }
-        if($refusal){[pscustomobject]@{ok=$false;error=$refusal;mode=$mode}|ConvertTo-Json -Compress;exit 9}
+        if($refusal){[pscustomobject]@{ok=$false;error=$refusal;mode=$mode;calculator=$kind}|ConvertTo-Json -Compress;exit 9}
         $plan=Select-KeypadPresses ($keys+'=') $names $map $ids
         if($null -eq $plan){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
         function Invoke-KeypadButton($element){ $pattern=$null; if($element.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$pattern)){ ([System.Windows.Automation.InvokePattern]$pattern).Invoke(); return $true }; return $false }
@@ -1066,8 +1084,13 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $clear=Find-KeypadButton $names @($map.clear) $ids
         $entry=Find-KeypadButton $names @($map.clearEntry) $ids
         if(-not $continued -and $clear -lt 0 -and $entry -lt 0){[pscustomobject]@{ok=$false;error='calculator_button_not_found'}|ConvertTo-Json -Compress;exit 6}
-        $idCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorResults')
-        $display=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
+        # win32calc's display is its Static control 150 (Ranorex's forum on calc.exe; the bench's oracle looks for it there),
+        # 158 in FlaUI's LegacyCalc tests; the Store Calculator's is CalculatorResults.
+        $display=$null
+        foreach($displayId in $(if($kind -eq 'win32calc'){@('150','158')}else{@('CalculatorResults')})){
+          $display=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,(New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,$displayId)))
+          if($display){ break }
+        }
         if($null -eq $display){[pscustomobject]@{ok=$false;error='calculator_display_not_read'}|ConvertTo-Json -Compress;exit 5}
         function Read-DisplayValue(){ return (([string]$display.Current.Name) -replace '^[^0-9\-]*','').Trim() }
         $exprCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorExpression')
@@ -1097,7 +1120,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         if(-not (Test-ShowsLastOperand $exprName $value $keys $start)){[pscustomobject]@{ok=$false;error='calculator_display_not_verified';displayName=$name;expressionName=$exprName}|ConvertTo-Json -Compress;exit 8}
         # What the display showed before: the number a continued expression started from, or what the clear removed.
         $was=$(if($before.value -match '^-?\d'){$before.value}else{$before.name})
-        [pscustomobject]@{ok=$true;typed=$keys;inOrder=[bool]$inOrder;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value;mode=$mode;continued=[bool]$continued;before=$was}|ConvertTo-Json -Compress
+        [pscustomobject]@{ok=$true;typed=$keys;inOrder=[bool]$inOrder;method='invoke';pressed=$pressed;displayName=$name;expressionName=$exprName;value=$value;mode=$mode;calculator=$kind;continued=[bool]$continued;before=$was}|ConvertTo-Json -Compress
         """;
 
     // The keypad's buttons by the characters they press (src/baxy_mind/data/keypad_keys.v1.json, embedded).
@@ -1110,11 +1133,28 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     });
 
     // What a calculator.expression.evaluate without the Calculator's window saw: a fact and an option, not an order.
+    // Encargo 34 (banco de uso: after this refusal the model opened the Calculator 22 times of 37): the call that starts
+    // it comes first, with its argument written, and what this one did not press at the end.
     private static readonly JsonElement CalculatorNotOpen = ExternalJson.Create(writer =>
     {
         writer.WriteStartObject();
-        writer.WriteString("next", "no Calculator window is open and nothing was pressed; app_open can start the "
-            + "Calculator, then this expression can be evaluated again");
+        writer.WriteString("next", $"{WireNames.Call("app.open", new() { ["appId"] = OperationApplications.Of("calculator.expression.evaluate") })} starts the "
+            + "Calculator, then this expression can be evaluated again; this call pressed nothing: no Calculator window "
+            + "is open");
+        writer.WriteEndObject();
+    });
+
+    // Banco de uso 2026-11-03 (U14/U15): what an expression whose value depends on the keypad's order saw on the classic
+    // Calculator, whose mode is not read: nothing pressed, which calculator is open, and what is pressed there.
+    private static readonly JsonElement CalculatorModeNotRead = ExternalJson.Create(writer =>
+    {
+        writer.WriteStartObject();
+        writer.WriteString("calculator", "win32calc");
+        writer.WriteString("mode", "not_read");
+        writer.WriteString("next", "nothing was pressed: the open Calculator is the classic one (win32calc), whose mode is "
+            + "not read; it presses there numbers joined by + - * / with every * and / before the first + or - (3*4+2, "
+            + "not 2+3*4), whose value is the same whether its keypad applies them in the order pressed or with "
+            + "precedence, and never ( ) nor ^");
         writer.WriteEndObject();
     });
 
@@ -1400,6 +1440,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             {
                 return new ExternalCapabilityReceipt(operation, false, false, CalculatorStandardKeypad, code);
             }
+            if (code == "calculator_mode_not_read" && ModelAids.On(ModelAids.CalculatorNext))
+            {
+                return new ExternalCapabilityReceipt(operation, false, false, CalculatorModeNotRead, code);
+            }
             // A button pressed before the failure (or a display that did not show the expression) may have changed the
             // Calculator; a keypad without the buttons pressed nothing.
             return ExternalJson.Failure(operation, code,
@@ -1428,6 +1472,11 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             if (root.TryGetProperty("mode", out JsonElement mode) && mode.ValueKind == JsonValueKind.String)
             {
                 writer.WriteString("mode", mode.GetString());
+            }
+            // Banco de uso 2026-11-03 (U14/U15): which Calculator it was pressed on, the Store's or the classic win32calc.
+            if (root.TryGetProperty("calculator", out JsonElement calculator) && calculator.ValueKind == JsonValueKind.String)
+            {
+                writer.WriteString("calculator", calculator.GetString());
             }
             if (root.TryGetProperty("before", out JsonElement before) && before.ValueKind == JsonValueKind.String)
             {
@@ -1728,26 +1777,37 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // BAXY Renew cu (C14): Discord's own mute button («Silenciar» / «Mute», a toggle: On is muted), found in its window by
     // UI Automation (Chromium builds its tree on the first query, so it is asked again for a short while), switched only
     // when it is not as asked, and read back. Nothing else is pressed; the window is not raised.
-    private const string ClientMicrophoneScript = """
-        $ErrorActionPreference='Stop';$desired=[int]$args[0];$effect=$false
+    // Uso real 2026-11-03 (G5, «ensordéceme en Discord»): the same for its deafen button («Ensordecer» / «Deafen», On is
+    // deafened; both buttons read live as UIA Toggle on the PC on 2026-11-03). The script is told which button to
+    // switch ($args[1]: mute or deafen) and reads the other one after it, since deafening also mutes the microphone
+    // (Discord's blog on keybinds) and unmuting while deafened undeafens: the receipt says both final states.
+    private const string ClientVoiceScript = """
+        $ErrorActionPreference='Stop';$desired=[int]$args[0];$which=[string]$args[1];$effect=$false
+        $codes=@{mute='client_microphone_failed';deafen='client_deafen_failed'}
         try {
           Add-Type -AssemblyName UIAutomationClient
+          $names=@{mute=@('Silenciar','Mute');deafen=@('Ensordecer','Deafen')}
+          if(-not $names.ContainsKey($which)){throw 'client_voice_button_unknown'}
           $windows=@(Get-Process -Name Discord -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 })
           if($windows.Count -eq 0){[pscustomobject]@{ok=$false;effectObserved=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 0}
           $root=[System.Windows.Automation.AutomationElement]::FromHandle($windows[0].MainWindowHandle)
           $buttons=New-Object System.Windows.Automation.PropertyCondition(
             [System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Button)
-          $mute=$null
-          for($attempt=0;$attempt -lt 12 -and $null -eq $mute;$attempt++){
+          $found=@{}
+          for($attempt=0;$attempt -lt 12 -and -not $found.ContainsKey($which);$attempt++){
             foreach($button in $root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$buttons)){
               $name=[string]$button.Current.Name
-              $pattern=$null
-              if(@('Silenciar','Mute') -contains $name -and $button.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern,[ref]$pattern)){ $mute=$button; break }
+              foreach($key in @('mute','deafen')){
+                $pattern=$null
+                if(-not $found.ContainsKey($key) -and $names[$key] -contains $name -and $button.TryGetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern,[ref]$pattern)){ $found[$key]=$button }
+              }
+              if($found.Count -eq 2){break}
             }
-            if($null -eq $mute){Start-Sleep -Milliseconds 250}
+            if(-not $found.ContainsKey($which)){Start-Sleep -Milliseconds 250}
           }
-          if($null -eq $mute){[pscustomobject]@{ok=$false;effectObserved=$false;error='client_mute_button_not_found'}|ConvertTo-Json -Compress;exit 0}
-          $toggle=$mute.GetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern)
+          if(-not $found.ContainsKey($which)){[pscustomobject]@{ok=$false;effectObserved=$false;error="client_$($which)_button_not_found"}|ConvertTo-Json -Compress;exit 0}
+          $target=$found[$which]
+          $toggle=$target.GetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern)
           $before=[int]$toggle.Current.ToggleState
           $after=$before
           if($before -ne $desired){
@@ -1759,7 +1819,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             }
             # The button's own click, once, when its toggle did not take (the window was behind another).
             $invoke=$null
-            if($after -ne $desired -and $mute.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$invoke)){
+            if($after -ne $desired -and $target.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$invoke)){
               $invoke.Invoke()
               for($read=0;$read -lt 20;$read++){
                 $after=[int]$toggle.Current.ToggleState
@@ -1768,35 +1828,52 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
               }
             }
           }
-          if($after -ne $desired){[pscustomobject]@{ok=$false;effectObserved=$effect;before=$before;value=$after;error='client_mute_postread_unchanged'}|ConvertTo-Json -Compress;exit 0}
-          [pscustomobject]@{ok=$true;effectObserved=$effect;before=$before;value=$after}|ConvertTo-Json -Compress
-        } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error='client_microphone_failed'}|ConvertTo-Json -Compress;exit 2}
+          if($after -ne $desired){[pscustomobject]@{ok=$false;effectObserved=$effect;before=$before;value=$after;error="client_$($which)_postread_unchanged"}|ConvertTo-Json -Compress;exit 0}
+          # Both final states as read now; a button that was not found or is no longer readable stays unsaid (null).
+          $state=@{mute=$null;deafen=$null}
+          foreach($key in @($found.Keys)){
+            try{$state[$key]=[int]$found[$key].GetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern).Current.ToggleState}catch{$state[$key]=$null}
+          }
+          [pscustomobject]@{ok=$true;effectObserved=$effect;before=$before;value=$after;micMuted=$state['mute'];deafened=$state['deafen']}|ConvertTo-Json -Compress
+        } catch {[pscustomobject]@{ok=$false;effectObserved=$effect;error=$codes[$which]}|ConvertTo-Json -Compress;exit 2}
         """;
 
-    private async ValueTask<ExternalCapabilityReceipt> ClientMicrophoneSetAsync(
+    // What one of the client's voice buttons is asked by (its yes/no argument), the script's name for it, the prefix of
+    // its codes, the receipt's name for the other button's final state, and how it was verified.
+    private readonly record struct ClientVoiceSwitch(
+        string Argument, string Button, string Codes, string Other, string Authority);
+
+    private static readonly ClientVoiceSwitch ClientMicrophone =
+        new("muted", "mute", "client_microphone", "deafened", "discord_uia_mute_toggle_postread");
+
+    private static readonly ClientVoiceSwitch ClientDeafen =
+        new("deafened", "deafen", "client_deafen", "micMuted", "discord_uia_deafen_toggle_postread");
+
+    private async ValueTask<ExternalCapabilityReceipt> ClientVoiceSetAsync(
         string operation,
         JsonElement arguments,
+        ClientVoiceSwitch voice,
         ExternalEffectBoundary effectBoundary,
         CancellationToken token)
     {
         if (ExternalJson.RequiredString(arguments, "client") != "discord"
-            || !arguments.TryGetProperty("muted", out JsonElement muted)
-            || muted.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+            || !arguments.TryGetProperty(voice.Argument, out JsonElement asked)
+            || asked.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
         {
-            return ExternalJson.Failure(operation, "client_microphone_arguments_invalid");
+            return ExternalJson.Failure(operation, $"{voice.Codes}_arguments_invalid");
         }
 
-        bool wanted = muted.GetBoolean();
+        bool wanted = asked.GetBoolean();
         effectBoundary.Cross(token);
         ExternalProcessResult process = await RunPowerShellAsync(
-            ClientMicrophoneScript, [wanted ? "1" : "0"], token).ConfigureAwait(false);
+            ClientVoiceScript, [wanted ? "1" : "0", voice.Button], token).ConfigureAwait(false);
         using JsonDocument response = ParseLastJson(process.Output);
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
             string error = String(response.RootElement, "error") is { Length: > 0 } said
                 ? said
-                : "client_microphone_postread_failed";
+                : $"{voice.Codes}_postread_failed";
             return effect
                 ? effectBoundary.Failure(operation, error, effect)
                 : ExternalJson.FailureBeforeEffect(operation, error);
@@ -1807,9 +1884,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteStartObject();
             writer.WriteNumber("version", 1);
             writer.WriteString("client", "discord");
-            writer.WriteBoolean("muted", wanted);
-            writer.WriteBoolean("mutedBefore", response.RootElement.GetProperty("before").GetInt32() == 1);
-            writer.WriteString("authority", "discord_uia_mute_toggle_postread");
+            writer.WriteBoolean(voice.Argument, wanted);
+            writer.WriteBoolean(voice.Argument + "Before", response.RootElement.GetProperty("before").GetInt32() == 1);
+            if (response.RootElement.TryGetProperty(voice.Other, out JsonElement other)
+                && other.ValueKind == JsonValueKind.Number)
+            {
+                writer.WriteBoolean(voice.Other, other.GetInt32() == 1);
+            }
+
+            writer.WriteString("authority", voice.Authority);
             writer.WriteEndObject();
         });
         return ExternalJson.Switched(operation, result, effect);
@@ -1822,8 +1905,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         """ + MarkedKeysType + """
         $sig='using System;using System.Runtime.InteropServices;public static class BaxyClientWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);[DllImport("user32.dll")] public static extern bool IsIconic(IntPtr h);}'
         if(-not ([System.Management.Automation.PSTypeName]'BaxyClientWin').Type){Add-Type -TypeDefinition $sig}
-        # The client's window is the main window of the Discord process, never a window found by its title.
-        $w=$null;foreach($p in @(Get-Process -Name 'Discord' -ErrorAction SilentlyContinue)){if($p.MainWindowHandle -ne [IntPtr]::Zero){$w=[System.Windows.Automation.AutomationElement]::FromHandle($p.MainWindowHandle);break}}
+        # The client's window is the main window of the client's process, never a window found by its title.
+        # Uso-128: a client started moments ago has no window yet: it is waited for, with a bound, and never launched again.
+        $clientProcess=$args[1];$w=$null;$until=[DateTime]::Now.AddSeconds(30)
+        do {
+          $running=@(Get-Process -Name $clientProcess -ErrorAction SilentlyContinue)
+          foreach($p in $running){if($p.MainWindowHandle -ne [IntPtr]::Zero){$w=[System.Windows.Automation.AutomationElement]::FromHandle($p.MainWindowHandle);break}}
+          $starting=@($running | Where-Object { $_.StartTime -gt [DateTime]::Now.AddSeconds(-60) }).Count -gt 0
+          if($null -eq $w -and $starting){Start-Sleep -Milliseconds 250}
+        } while($null -eq $w -and $starting -and [DateTime]::Now -lt $until)
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $h=[IntPtr]$w.Current.NativeWindowHandle;$clientPid=$w.Current.ProcessId;$wasMinimized=[BaxyClientWin]::IsIconic($h);if($wasMinimized){[void][BaxyClientWin]::ShowWindow($h,9)}
         # Ronda final 28 (regla 3): the dialog of the page that holds an element (Chromium exposes role=dialog as a UIA
@@ -1845,11 +1935,15 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # The switcher's rows, as the switcher shows them: the list items inside the dialog that holds the focus (never
         # the conversation's own list items outside it).
         function Read-Items {
-          $r=@();$dialog=Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)
-          if($null -eq $dialog){return ,$r}
-          $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
-          $found=$dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants,$row)
-          foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}
+          $r=@()
+          # A row replaced while it is read: the read is no match for the next one, and the next one tells.
+          try{
+            $dialog=Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)
+            if($null -eq $dialog){return ,$r}
+            $row=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ListItem)
+            $found=$dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants,$row)
+            foreach($e in $found){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}
+          }catch{}
           ,$r
         }
         # Ronda final 29 (regla 3): whether a field of the switcher's dialog holds exactly the typed name (its value read
@@ -1862,18 +1956,42 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           $edit=New-Object System.Windows.Automation.OrCondition(
             (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::Edit)),
             (New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ControlTypeProperty,[System.Windows.Automation.ControlType]::ComboBox)))
-          foreach($e in $dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants,$edit)){
-            $vp=$null
-            if($e.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp)){
-              try{if(([string]([System.Windows.Automation.ValuePattern]$vp).Current.Value).Trim() -eq $text){return $true}}catch{}
+          try{
+            foreach($e in $dialog.FindAll([System.Windows.Automation.TreeScope]::Descendants,$edit)){
+              $vp=$null
+              if($e.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp)){
+                try{if(([string]([System.Windows.Automation.ValuePattern]$vp).Current.Value).Trim() -eq $text){return $true}}catch{}
+              }
             }
-          }
+          }catch{}
           $false
         }
         function Client-InFront { [BaxyClientWin]::GetForegroundWindow() -eq $h }
-        function Focus-Dialog { Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement) }
+        function Focus-Dialog { try{Dialog-Of ([System.Windows.Automation.AutomationElement]::FocusedElement)}catch{$null} }
         function Same-Element($a,$b) { [System.Windows.Automation.Automation]::Compare($a,$b) }
         function Send-Escape { [void][BaxyMarkedKeys]::Press(0x1B,$false) }
+        # Review R1 (A3): a filter narrows. Rows after the name that are as many as before and keep most of those are the same list
+        # still being drawn (a client drawing in batches, a row changed by a new message), whatever the rows say.
+        function Not-Narrowed([string[]]$before,[string[]]$after) {
+          $after.Count -ge $before.Count -and (@($before | Where-Object { $after -contains $_ }).Count*2) -gt $before.Count
+        }
+        # Review R1 (H1): a space typed with the focus on one of these presses it.
+        function Focus-PressedBySpace {
+          try{
+            $kind=[System.Windows.Automation.AutomationElement]::FocusedElement.Current.ControlType
+            $kind -eq [System.Windows.Automation.ControlType]::Button -or $kind -eq [System.Windows.Automation.ControlType]::SplitButton -or $kind -eq [System.Windows.Automation.ControlType]::CheckBox -or $kind -eq [System.Windows.Automation.ControlType]::RadioButton -or $kind -eq [System.Windows.Automation.ControlType]::MenuItem -or $kind -eq [System.Windows.Automation.ControlType]::TabItem
+          }catch{$true}
+        }
+        # F51 (uso real 05-11: 5-7 s each lookup): what can be read is read every 50 ms, with the old fixed wait as its bound.
+        function Wait-For([scriptblock]$ready,[int]$withinMs) {
+          $until=[DateTime]::UtcNow.AddMilliseconds($withinMs)
+          while($true){
+            # An element gone between two reads is a window still changing: not ready yet.
+            try{if(& $ready){return $true}}catch{}
+            if([DateTime]::UtcNow -ge $until){return $false}
+            Start-Sleep -Milliseconds 50
+          }
+        }
         # Closes the switcher this run typed into; says whether it was left open (leftOpen). The switcher is closed only
         # with Discord still in front (an Escape never reaches another window) and only while its dialog holds the name
         # typed (Ronda final 31 and the privacy review of M6: an Escape on Discord's own view or on another dialog of
@@ -1888,8 +2006,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           Send-Escape;Start-Sleep -Milliseconds 300
           $still=Focus-Dialog
           if($null -ne $still -and (Field-Shows '' $still) -and (Same-Element $still $typedIn) -and (Client-InFront)){
-            Send-Escape;Start-Sleep -Milliseconds 300
-            $still=Focus-Dialog
+            Send-Escape
+            # F51: only a switcher already gone ends this wait early. The wait before the second Escape stays whole: that key
+            # must never reach the client's own view.
+            for($gone=0;$gone -lt 6;$gone++){Start-Sleep -Milliseconds 50;$still=Focus-Dialog;if($null -eq $still){break}}
           }
           $null -ne $still
         }
@@ -1897,11 +2017,17 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
         # and confirming it held, until the switcher shows matches; nothing is joined or opened.
         # The script runs as a block (& { }): a function sets the flag through a table both share, never $script:.
-        $items=@();$foreground=$false;$state=@{read=$false;notOpened=$false;dialogFocus=$false;sent=$false;leftOpen=$false}
-        for($round=0;$round -lt 5 -and $items.Count -eq 0;$round++){
-          [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
-          if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
+        $items=@();$foreground=$false;$state=@{read=$false;notOpened=$false;dialogFocus=$false;sent=$false;leftOpen=$false;unfiltered=@()}
+        for($round=0;$round -lt 5 -and -not $state.read;$round++){
+          [void][BaxyClientWin]::SetForegroundWindow($h)
+          if(-not (Wait-For { Client-InFront } 900)){continue}
+          Start-Sleep -Milliseconds 150
+          if(-not (Client-InFront)){continue}
           $foreground=$true
+          # F51: the focus is read once the client holds it. A Ctrl+K of an earlier round may still open the switcher: then the
+          # whole old wait. A stale read costs a round, never a typed name (the check right before the name).
+          if($state.sent){Start-Sleep -Milliseconds 500}
+          [void](Wait-For { $f=[System.Windows.Automation.AutomationElement]::FocusedElement;$null -ne $f -and $f.Current.ProcessId -eq $clientPid } 500)
           # Ronda final 25-26 (regla 3): no Escape before the switcher is seen open: in Discord it marks the open channel
           # read, declines a call or cancels an edit of the person's; nor one when the front left Discord (it would reach
           # another window).
@@ -1915,33 +2041,70 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
           # new focus inside a dialog (the message box and the channel and message lists are in none).
           # Ronda final 29 (regla 3): once a key went out, a dialog may be the switcher this run opened late: the
           # receipt says a key was sent (sent), never a failure before any effect.
-          if($null -ne (Dialog-Of $focusBefore)){$state.dialogFocus=$true;break}
-          $state.sent=$true
-          [void][BaxyMarkedKeys]::Character([char]'k',$true);Start-Sleep -Milliseconds 1400
-          if([BaxyClientWin]::GetForegroundWindow() -ne $h){continue}
-          $focusNow=[System.Windows.Automation.AutomationElement]::FocusedElement
-          $newFocus=$null -ne $focusNow -and $focusNow.Current.ProcessId -eq $clientPid -and [string]::Join('.',$focusNow.GetRuntimeId()) -ne $idBefore
-          $switcherOpen=$newFocus -and $null -ne (Dialog-Of $focusNow)
+          if($null -ne (Dialog-Of $focusBefore)){$state.dialogFocus=$true;$state.leftOpen=$true;break}
+          # The waits above may have let the front go: the key goes only to the client.
+          if(-not (Client-InFront)){continue}
+          # A second Ctrl+K may still be queued behind a switcher its first one opens late, and then closes it: only the first is
+          # polled. Until a round closes it, the switcher counts as left open.
+          $secondKey=$state.sent;$state.sent=$true;$state.leftOpen=$true
+          [void][BaxyMarkedKeys]::Character([char]'k',$true)
+          if($secondKey){Start-Sleep -Milliseconds 1400}
+          $switcherOpen=Wait-For {
+            $focusNow=[System.Windows.Automation.AutomationElement]::FocusedElement
+            (Client-InFront) -and $null -ne $focusNow -and $focusNow.Current.ProcessId -eq $clientPid -and [string]::Join('.',$focusNow.GetRuntimeId()) -ne $idBefore -and $null -ne (Dialog-Of $focusNow)
+          } 1400
+          if(-not (Client-InFront)){continue}
           if(-not $switcherOpen){$state.notOpened=$true;continue}
+          $opened=Focus-Dialog
           # Ronda final 29 (regla 3): Discord draws the filter 0.6-2.6 s after the name (X1, measured on the notebook), so
           # the rows count as read only once the switcher's field holds the name and the rows differ from the ones shown
           # before typing; else the switcher is not read, never «no channel».
           # The rows before typing are taken once two reads agree (a slow client draws its recent rows late).
-          $rowsBefore=(Read-Items) -join "`n"
-          for($settle=0;$settle -lt 5;$settle++){Start-Sleep -Milliseconds 300;$again=(Read-Items) -join "`n";if($again -eq $rowsBefore){break};$rowsBefore=$again}
-          [void][BaxyMarkedKeys]::Text($label);Start-Sleep -Milliseconds 900
-          for($poll=0;$poll -lt 10;$poll++){
-            $now=Read-Items
-            if($now.Count -gt 0 -and ($now -join "`n") -ne $rowsBefore -and (Field-Shows $label)){$items=$now;$state.read=$true;break}
-            Start-Sleep -Milliseconds 500
+          # F48 (uso real 05-11: «not found» out of the recent rows of a client opened 2 s before): rows that never settled, or none
+          # at all, leave nothing to compare with: rows after typing may be the recent ones arriving late. They go back marked
+          # (unfiltered), where only their exact name counts, and another round looks with the rows drawn by then.
+          $seen=Read-Items;$rowsBefore=$seen -join "`n";$settled=$false
+          for($settle=0;$settle -lt 5 -and -not $settled;$settle++){Start-Sleep -Milliseconds 300;$seen=Read-Items;$again=$seen -join "`n";$settled=$again -eq $rowsBefore -and $again -ne '';$rowsBefore=$again}
+          if(-not $settled){$rowsBefore=''}
+          # F51 review: a late Ctrl+K of another round closes the switcher: the name goes only into the one seen open, still with the focus.
+          # Review R1 (H1): another dialog of the client's that took the focus (a call, a confirmation) is no switcher: the switcher's
+          # field is there and empty (as the second Escape reads it), and a space typed into any other could press its button. The
+          # slow read goes first; the focus, the dialog's identity and the front are read last, right before the keys.
+          $fieldEmpty=$null -ne $opened -and (Wait-For { Field-Shows '' $opened } 400)
+          $inDialog=Focus-Dialog
+          if(-not $fieldEmpty -or $null -eq $inDialog -or -not (Same-Element $inDialog $opened) -or (Focus-PressedBySpace) -or -not (Client-InFront)){$state.notOpened=$true;continue}
+          [void][BaxyMarkedKeys]::Text($label)
+          # F51: the rows count once they read the same three times, 400 ms: a filter drawn for part of the name is not its result,
+          # and with the first 500 ms a recent row arriving late has the time it had (900 ms).
+          Start-Sleep -Milliseconds 500
+          $last=$null;$same=0;$now=@();$grown=$false;$until=[DateTime]::UtcNow.AddMilliseconds(5400)
+          while([DateTime]::UtcNow -lt $until){
+            $now=Read-Items;$rows=$now -join "`n"
+            $same=$(if($rows -eq $last){$same+1}else{0});$last=$rows
+            # Review R1 (A3): a list that only grew may still become the filter within the bound, so it is read on.
+            $grown=$false
+            if($now.Count -gt 0 -and $rows -ne $rowsBefore -and $same -ge 2 -and (Field-Shows $label)){
+              if($rowsBefore -eq ''){$state.unfiltered=$now;break}
+              $grown=Not-Narrowed $seen $now
+              if(-not $grown){$items=$now;$state.read=$true;break}
+            }
+            Start-Sleep -Milliseconds 150
           }
+          if($grown){$state.unfiltered=$now}
+          # F51: the rows seen before are gone and the field holds the name, after the whole bound: the filter shows no row, and no
+          # other round will show more. A client just started may still be loading what it filters: it gets one more look.
+          if(-not $state.read -and $state.unfiltered.Count -eq 0 -and $rowsBefore -ne '' -and $now.Count -eq 0 -and $same -ge 2 -and (-not $starting -or $round -ge 1) -and (Field-Shows $label)){$state.read=$true}
           # Ronda final 29 (regla 3): a switcher not closed, or still holding the focus after the Escape, is said (leftOpen).
           $state.leftOpen=Close-Switcher $label
+          if($round -ge 1 -and $state.unfiltered.Count -gt 0){break}
         }
         # Ronda final 26 (regla 3): a window the look restored from minimized goes back to minimized (SW_SHOWMINNOACTIVE),
-        # read back; the receipt says how it was left.
+        # read back; the receipt says how it was left. F47 (uso real 05-11, «abre … y ve a …»): not the client this very turn's
+        # opening asked for ($args[2]): the person wants it up, and it came up minimized by its own memory of how it was left.
         $leftShown=$false
-        if($wasMinimized){[void][BaxyClientWin]::ShowWindow($h,7);Start-Sleep -Milliseconds 150;$leftShown=-not [BaxyClientWin]::IsIconic($h)}
+        if($wasMinimized -and $args[2] -ne '1'){[void][BaxyClientWin]::ShowWindow($h,7);[void](Wait-For { [BaxyClientWin]::IsIconic($h) } 150)}
+        if($wasMinimized){$leftShown=-not [BaxyClientWin]::IsIconic($h)}
+        if(-not $state.read -and $state.unfiltered.Count -gt 0){[pscustomobject]@{ok=$true;unfiltered=$true;window=$w.Current.Name;items=@($state.unfiltered);restoredFromMinimized=$wasMinimized;leftShown=$leftShown;leftOpen=$state.leftOpen}|ConvertTo-Json -Compress;exit 0}
         if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground';restoredFromMinimized=$wasMinimized;leftShown=$leftShown;sent=$state.sent}|ConvertTo-Json -Compress;exit 3}
         if($state.dialogFocus -and -not $state.read){[pscustomobject]@{ok=$false;error=$(if($state.sent){'client_dialog_after_shortcut'}else{'client_focus_in_a_dialog'});restoredFromMinimized=$wasMinimized;leftShown=$leftShown;sent=$state.sent}|ConvertTo-Json -Compress;exit 3}
         if($state.notOpened -and -not $state.read){[pscustomobject]@{ok=$false;error='client_quick_switcher_not_opened';restoredFromMinimized=$wasMinimized;leftShown=$leftShown;sent=$state.sent}|ConvertTo-Json -Compress;exit 3}
@@ -1953,6 +2116,25 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     private static readonly Regex ClientChannelName = new(
         @"^[\p{L}\p{N} ._'!?#&-]{1,120}$",
         RegexOptions.CultureInvariant);
+
+    // F47: an opening this recent is this turn's: a turn with an opening and a lookup took 18 s at most in real use (F51), and the
+    // next request came 30 s later. The provider has no turn of its own to ask.
+    private static readonly TimeSpan SameTurnOpening = TimeSpan.FromSeconds(20);
+
+    internal static bool OpenedThisTurn(VisibleControlSurface.OpenedApplication? opened)
+    {
+        if (opened is not { } noted)
+            return false;
+        try
+        {
+            using var process = System.Diagnostics.Process.GetProcessById(noted.ProcessId);
+            return WindowsDesktopMessagingAutomation.DiscordProcesses.Contains(process.ProcessName, StringComparer.OrdinalIgnoreCase);
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return false;
+        }
+    }
 
     private async ValueTask<ExternalCapabilityReceipt> ClientChannelLocateAsync(
         string operation,
@@ -1981,7 +2163,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         try
         {
             (watched, interrupted) = await LeasedInput.WatchHelperAsync(
-                burst, run => RunPowerShellAsync(ClientChannelLocateScript, [Encode(name)], run), token);
+                burst, run => RunPowerShellAsync(
+                    ClientChannelLocateScript,
+                    [Encode(name), WindowsDesktopMessagingAutomation.DiscordProcesses[0], OpenedThisTurn(VisibleControlSurface.PeekOpened(SameTurnOpening)) ? "1" : "0"],
+                    run), token);
         }
         catch (Exception exception) when (exception is TimeoutException or IOException or InvalidDataException)
         {
@@ -2037,19 +2222,34 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         // A row is the channel asked for only when its name, folded, is the name asked for; the switcher's other
         // rows go back as they were shown, so the model sees what Discord offered.
         string channelName = string.Empty, channelKind = string.Empty, server = string.Empty;
+        // Held-out of F48: a voice row's name is its own, without the kind the client may write inside it («X (canal de voz)», as
+        // uso-128 read on the real client): those rows said «not found» of a name that was there. Other brackets are the name's.
         string? exact = items.FirstOrDefault(item => string.Equals(
-            WindowsDesktopMessagingAutomation.Fold(item.Split(", ", StringSplitOptions.TrimEntries)[0]),
+            WindowsDesktopMessagingAutomation.Fold(WindowsDesktopMessagingAutomation.VoiceChannelRow(item)
+                ? WindowsDesktopMessagingAutomation.RowOwnName(item)
+                : item.Split(", ", StringSplitOptions.TrimEntries)[0]),
             WindowsDesktopMessagingAutomation.Fold(name),
             StringComparison.Ordinal));
+        // F48: rows that may be the recent ones say a name that is there, never one that is not, and they are no list of results.
+        if (Bool(root, "unfiltered"))
+        {
+            if (exact is null)
+            {
+                return ExternalJson.FailureAfterEffect(operation, "client_quick_switcher_not_read");
+            }
+            items.RemoveAll(item => item != exact);
+        }
         if (exact is not null)
         {
             string[] parts = exact.Split(", ", StringSplitOptions.TrimEntries);
-            channelName = parts[0];
+            bool voice = WindowsDesktopMessagingAutomation.VoiceChannelRow(exact);
+            channelName = voice ? WindowsDesktopMessagingAutomation.RowOwnName(exact) : parts[0];
             string kind = parts.Length > 1 ? parts[1].ToLowerInvariant() : string.Empty;
-            channelKind = kind.Contains("voz", StringComparison.Ordinal) || kind.Contains("voice", StringComparison.Ordinal) ? "voice"
-                : kind.Contains("texto", StringComparison.Ordinal) || kind.Contains("text", StringComparison.Ordinal) ? "text"
+            channelKind = voice ? "voice"
+                : WindowsDesktopMessagingAutomation.ContainsPhrase(kind, "texto") || WindowsDesktopMessagingAutomation.ContainsPhrase(kind, "text") ? "text"
                 : kind.Length > 0 ? kind : "unknown";
-            server = parts.Length > 2 ? parts[2] : string.Empty;
+            server = voice ? WindowsDesktopMessagingAutomation.VoiceRowServer(exact) ?? string.Empty
+                : parts.Length > 2 ? parts[2] : string.Empty;
         }
         JsonElement result = ExternalJson.Create(writer =>
         {
@@ -2381,7 +2581,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string id = ExternalJson.RequiredString(arguments, "profileId");
         if (!_wifi.TryGetValue(id, out string? profile))
         {
-            return IdentityUnknown(operation, "wifi_profile_identity_expired", "profileId", "connected", "wifi_profile_list");
+            return IdentityUnknown(operation, "wifi_profile_identity_expired", "profileId", "connected", "wifi.profile.list");
         }
 
         return await ConnectWifiProfileAsync(operation, id, profile, effectBoundary, token);
@@ -2860,7 +3060,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             token);
         using JsonDocument response = ParseLastJson(process.Output);
         if (String(response.RootElement, "error") == BrightnessNotSupported)
-            return ExternalJson.FailureBeforeEffect(operation, BrightnessNotSupported);
+            return NoBrightness(ExternalJson.FailureBeforeEffect(operation, BrightnessNotSupported), "changed");
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
@@ -2924,7 +3124,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             token);
         using JsonDocument response = ParseLastJson(process.Output);
         if (String(response.RootElement, "error") == BrightnessNotSupported)
-            return ExternalJson.FailureBeforeEffect(operation, BrightnessNotSupported);
+            return NoBrightness(ExternalJson.FailureBeforeEffect(operation, BrightnessNotSupported), "changed");
         bool effect = Bool(response.RootElement, "effectObserved");
         if (!Bool(response.RootElement, "ok"))
         {
@@ -2955,6 +3155,30 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effect);
     }
 
+    // Encargo 28 (U24): a screen that does not give Windows its brightness says, first and as its call, the page where
+    // Windows keeps the screen's settings (Microsoft: brightness is adjusted «from Settings > System > Display»,
+    // ms-settings:display), then what this call did. Told after «nothing was read», or in the middle, the model said it
+    // had opened that page without opening it (3 of 5); first, it opened it 9 of 10. The page is named as Microsoft names
+    // it, in the receipt's language: app.open takes «Settings» on a Windows in any language (the places' data give it to
+    // the same entry as «Configuración»), and with it the model opened the page 9 of 10 with a Spanish Start catalog too,
+    // against 1 of 10 with «Configuración». A place the data no longer give that name says no page.
+    private const string DisplayPlace = "display";
+    private const string DisplayPageApplication = "Settings";
+
+    private static ExternalCapabilityReceipt NoBrightness(ExternalCapabilityReceipt failure, string done) =>
+        ApplicationPlaces.Address(DisplayPageApplication, DisplayPlace, null) is null ? failure : failure with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                string call = WireNames.Call(
+                    "app.open", new() { ["appId"] = DisplayPageApplication, ["place"] = DisplayPlace });
+                writer.WriteString("next", $"{call} opens the Display page of {DisplayPageApplication}; this call "
+                    + $"{done} nothing: no screen of this PC gives Windows its brightness");
+                writer.WriteEndObject();
+            }),
+        };
+
     // Renew al máximo (w8): a set or step whose read-back did not show the level within 1.5 s said only «postread
     // failed»; the levels the last read saw (and the ones before) go with it as stateAfter, never as a success.
     private static JsonElement? BrightnessStateAfter(JsonElement response, int? requested)
@@ -2980,19 +3204,50 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         });
     }
 
+    // Encargo 80 (toma del tráiler, 2 de 2): asked whether the mode is light or dark, the model read Settings' Themes page
+    // and told its theme's name («Personalizado») as the mode. Windows keeps the two choices of «Choose your mode» under
+    // this key (PowerToys' LightSwitch reads the same two values: 1 light, 0 dark); a value not there is its default,
+    // light (Microsoft: «Windows uses Light mode by default»). UISettings, Microsoft's API for it, only tells the apps'.
+    internal Func<string, object?> PersonalizeValue { get; init; } = static name => Microsoft.Win32.Registry.GetValue(
+        @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", name, null);
+
+    private ExternalCapabilityReceipt ColorModeStatus(string operation)
+    {
+        object? windows = PersonalizeValue("SystemUsesLightTheme");
+        object? apps = PersonalizeValue("AppsUseLightTheme");
+        string windowsMode = windows is 0 ? "dark" : "light";
+        string appsMode = apps is 0 ? "dark" : "light";
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("setting", "color_mode");
+            writer.WriteString("mode", windowsMode == appsMode ? windowsMode : "custom");
+            writer.WriteString("windowsMode", windowsMode);
+            writer.WriteString("appsMode", appsMode);
+            writer.WriteString("authority", windows is null && apps is null
+                ? "windows_default_light_no_value_set"
+                : "hkcu_themes_personalize");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, false);
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> SettingStatusAsync(
         string operation, JsonElement arguments, CancellationToken token)
     {
         string setting = ExternalJson.RequiredString(arguments, "setting");
         if (setting == "airplane_mode")
             return await AirplaneModeStatusAsync(operation).ConfigureAwait(false);
+        if (setting == "color_mode")
+            return ColorModeStatus(operation);
         if (setting != "brightness")
             return ExternalJson.Failure(operation, "brightness_status_invalid");
         ExternalProcessResult process = await RunQuickScriptAsync(
             BrightnessStatusScript, [], token);
         using JsonDocument response = ParseLastJson(process.Output);
         if (String(response.RootElement, "error") == BrightnessNotSupported)
-            return ExternalJson.Failure(operation, BrightnessNotSupported);
+            return NoBrightness(ExternalJson.Failure(operation, BrightnessNotSupported), "read");
         if (!Bool(response.RootElement, "ok")
             || !response.RootElement.TryGetProperty("monitors", out JsonElement monitors))
             return ExternalJson.Failure(operation, "brightness_status_verification_failed");

@@ -110,6 +110,42 @@ public sealed class SpotifyFrontRetryTests
         });
     }
 
+    // F12 (an artist misheard by the voice was asked as an exact title): the exact selection's «not found» leads to the
+    // search of Spotify itself with the same words; a search (query) that found nothing has no such next, and the
+    // script's private counters do not read as results («rows=782» was told as 782 results).
+    [TestCase("media.play.exact", """{"provider":"spotify","title":"Los Vunkers"}""", true)]
+    [TestCase("media.play.query", """{"provider":"spotify","query":"Los Vunkers"}""", false)]
+    public async Task AnExactTitleNotFoundLeadsToTheSearchOfTheService(string operation, string arguments, bool leads)
+    {
+        // The exact selection retries its discovery once, so the script answers twice.
+        string notFound =
+            "{\"ok\":false,\"effectObserved\":false,\"error\":\"spotify_exact_result_not_found\",\"stage\":\"searched\",\"detail\":\"spotify_exact_result_not_found;searches=2;uiaElementsRead=782;plays=12\"}";
+        var runner = new Runner(notFound, notFound);
+        var adapter = new SpotifyDesktopAdapter(runner, clientWindow: () => Client) { InputLease = new BringingLease(runner) };
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(operation, Json(arguments), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Result?.TryGetProperty("next", out JsonElement next) == true && next.ValueKind == JsonValueKind.String, Is.EqualTo(leads));
+            if (leads)
+            {
+                string text = receipt.Result!.Value.GetProperty("next").GetString()!;
+                Assert.That(text, Does.StartWith("media_play_query"));
+                Assert.That(text, Does.Contain("Los Vunkers"));
+                Assert.That(text, Does.Contain("if the person said they want no other, do not call it"));
+            }
+        });
+    }
+
+    [Test]
+    public void TheScriptsNotFoundDetailDoesNotNameItsCounterAsRows()
+    {
+        string script = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "SpotifyDesktopAutomation.ps1"));
+        Assert.That(script, Does.Not.Contain(";rows=$($Rows.Count)"));
+        Assert.That(script, Does.Contain("uiaElementsRead=$($Rows.Count)"));
+    }
+
     // SP2 (tandas n3 del notebook: three searches killed at the 65 s budget with nothing said): every run, the retry's
     // included, is given a deadline the margin short of its own budget, so the script answers before it is killed.
     [Test]

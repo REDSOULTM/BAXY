@@ -83,6 +83,60 @@ public sealed class ForegroundLeaseTests
         });
     }
 
+    // uso-108 A9 (measured: bringing it up blocked past 40 s holding the front's gate): no bringing, nothing sent.
+    [Test]
+    public async Task AWindowThatDoesNotRespondIsNeverBroughtUp()
+    {
+        var desktop = new FakeDesktop { Hung = true };
+        ForegroundLease lease = Lease(new FakePause(), new FakeClock { NowMs = 10_000 }, desktop);
+
+        IInputBurst burst = await lease.AcquireAsync(Mission, CancellationToken.None);
+        string? mission = await lease.TakeForMissionAsync(Mission, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(burst.Refusal, Is.EqualTo("window_not_responding"));
+            Assert.That(burst.MayAct, Is.False);
+            Assert.That(mission, Is.EqualTo("window_not_responding"));
+            Assert.That(desktop.Fronted, Is.Empty);
+        });
+    }
+
+    // Review of uso-108: the check waits for a busy window for seconds, and the front's gate is not held meanwhile: another
+    // window is brought up, and a person's pause is judged after the wait.
+    [Test]
+    public async Task WaitingForABusyWindowDoesNotHoldTheFrontsGate()
+    {
+        using var probing = new ManualResetEventSlim(false);
+        using var release = new ManualResetEventSlim(false);
+        var desktop = new FakeDesktop
+        {
+            Probing = window =>
+            {
+                if (window != Mission)
+                    return;
+                probing.Set();
+                release.Wait();
+            },
+        };
+        ForegroundLease lease = Lease(new FakePause(), new FakeClock { NowMs = 10_000 }, desktop);
+
+        Task<IInputBurst> waiting = Task.Run(() => lease.AcquireAsync(Mission, CancellationToken.None).AsTask());
+        Assert.That(probing.Wait(5000), Is.True);
+        await Applications.ForegroundHandBack.FrontGate.WaitAsync();
+        _ = Applications.ForegroundHandBack.FrontGate.Release();
+        bool neverFronted = desktop.Fronted.Count == 0;
+        release.Set();
+        IInputBurst burst = await waiting;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(neverFronted, Is.True, "not brought up while it was asked");
+            Assert.That(burst.Refusal, Is.Null);
+        });
+        _ = burst.Restore();
+    }
+
     [Test]
     public async Task TheFrontTheWindowOrderAndTheCursorAreGivenBackExactly()
     {
@@ -1006,6 +1060,49 @@ public sealed class ForegroundLeaseTests
         });
     }
 
+    // Uso real 2026-11-02: the person said «Sí» on BAXY's confirmation and the send stopped as input_user_interrupted.
+    // Their click came before the flow's burst (which waits for their pause), but the pause detector handled its record
+    // late and dated it when it got to it: inside the burst. Dated when it happened, it does not cut the flow; the
+    // person's key made during the burst still does. The real detector, handed the records as its window procedure is.
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    public async Task AnInputMadeBeforeAFlowsBurstCutsItOnlyWhenMadeDuringIt(bool duringBurst, bool mayAct)
+    {
+        long accepted = Environment.TickCount64;
+        int acceptedTick = Environment.TickCount;
+        // Windows recorded the click (its last input); the detector has not handled the click's record yet.
+        var detector = new WindowsUserInputPause(() => accepted);
+        var desktop = new FakeDesktop();
+
+        IInputBurst burst = await new ForegroundLease(detector, new SystemLeaseClock(), desktop)
+            .AcquireForFlowAsync(Mission, CancellationToken.None);
+        Assert.That(burst.Refusal, Is.Null);
+        await Task.Delay(40);
+        detector.Observe(PersonKey(), PersonKeyHeader, duringBurst ? Environment.TickCount : acceptedTick);
+
+        Assert.That(burst.MayAct, Is.EqualTo(mayAct));
+        _ = burst.Restore();
+    }
+
+    // A record's time is its message's (GetTickCount's clock, which wraps), on TickCount64's; a stale one is now.
+    [TestCase(1_000, 1_250, 250)]
+    [TestCase(int.MaxValue - 10, int.MinValue + 30, 41)]
+    [TestCase(1_000, 900_000, 0)]
+    public void AnInputIsDatedByItsMessageTime(int messageTime, int tick, long ago) =>
+        Assert.That(WindowsUserInputPause.InputAt(messageTime, 1_000_000, tick), Is.EqualTo(1_000_000 - ago));
+
+    private static readonly int PersonKeyHeader = 8 + 2 * IntPtr.Size;
+
+    // An unmarked key going down from a keyboard device (the person's, not UIAutomationCore's bid).
+    private static byte[] PersonKey()
+    {
+        var record = new byte[PersonKeyHeader + 16];
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(record, 1);
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(record.AsSpan(8), 0x1234);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(record.AsSpan(PersonKeyHeader + 6), 0x41);
+        return record;
+    }
+
     private static ForegroundLease Lease(FakePause pause, FakeClock clock, FakeDesktop desktop, int maxWaitMs = 8_000) =>
         new(pause, clock, desktop, maxWaitMs);
 
@@ -1082,6 +1179,18 @@ public sealed class ForegroundLeaseTests
     private sealed class FakeDesktop : ILeaseDesktop
     {
         internal nint Front { get; set; } = Person;
+
+        // uso-108 A9: the window's thread does not answer.
+        internal bool Hung { get; init; }
+
+        // What the check of this window does while it waits (a window busy for a while).
+        internal Action<nint>? Probing { get; init; }
+
+        public bool NotResponding(nint window, CancellationToken cancellationToken)
+        {
+            Probing?.Invoke(window);
+            return Hung;
+        }
 
         internal nint Above { get; init; }
 

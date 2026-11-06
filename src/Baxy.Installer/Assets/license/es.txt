@@ -1,0 +1,51 @@
+BAXY: acuerdo de licencia
+
+Última actualización: noviembre de 2026
+
+Este acuerdo es entre tú y Emmanuel Antonio Villacura Arancibia («el desarrollador») y cubre BAXY tal como se distribuye con su instalador («el Software»).
+
+1. Lo que puedes hacer
+
+El código propio de BAXY es libre, bajo la licencia MIT, y puedes usarlo según esa licencia. Este instalador te entrega gratis una versión lista para usar: la aplicación, el modelo de lenguaje, la voz y el reconocedor de voz, para tu uso personal en equipos que controlas. La voz de BAXY es sintética: no es la de una persona.
+
+2. Componentes de terceros
+
+El Software incluye componentes de terceros que conservan su propia licencia, listados en licenses/THIRD_PARTY_NOTICES.md dentro de la carpeta de instalación. Este acuerdo no cambia esas licencias. Entre ellos:
+
+- El modelo de lenguaje de BAXY es un ajuste de Qwen3.5-4B (Apache-2.0).
+- La voz de BAXY se construyó con estilos de voz de Supertonic 3 (BigScience OpenRAIL-M). Las restricciones de uso de la sección 3 se le aplican y forman parte de este acuerdo.
+- El reconocedor de voz deriva de NVIDIA Parakeet (CC-BY-4.0); el encoder de la palabra de activación deriva de Kroko ASR (CC-BY-SA). Sus atribuciones están en el fichero de avisos.
+
+3. Restricciones de uso
+
+Te comprometes a no usar el Software, ni ninguna voz o contenido que genere:
+
+1. de ninguna forma que infrinja una ley o norma nacional, federal, estatal, local o internacional aplicable;
+2. para explotar o dañar a menores, o intentarlo, de cualquier forma;
+3. para generar o difundir información comprobablemente falsa con el fin de dañar a otros;
+4. para generar o difundir datos personales que puedan usarse para dañar a una persona;
+5. para difamar, menospreciar o acosar a otros;
+6. para suplantar a otras personas, o intentarlo, sin su consentimiento;
+7. para tomar decisiones totalmente automatizadas que afecten negativamente los derechos de una persona o que creen o modifiquen una obligación vinculante;
+8. para discriminar o dañar a personas o grupos por su comportamiento social o por características personales conocidas o supuestas;
+9. para aprovechar vulnerabilidades de un grupo de personas por su edad o sus características sociales, físicas o mentales, distorsionando su conducta de una forma que cause o pueda causar daño físico o psicológico;
+10. para discriminar a personas o grupos por características o categorías protegidas por la ley;
+11. para dar consejo médico o interpretar resultados médicos;
+12. para generar o difundir información destinada a la administración de justicia, la acción policial o los procesos de migración o asilo, como predecir que una persona cometerá un fraude o un delito;
+13. para difundir contenido generado por una máquina sin declarar de forma expresa e inteligible que lo generó una máquina. La voz de BAXY es sintética.
+
+4. BAXY actúa sobre tu computador
+
+BAXY abre programas, hace clics, escribe, lee ventanas y cambia ajustes de tu computador cuando se lo pides. En su modo normal pide confirmación antes de lo destructivo (borrar, sobrescribir, cerrar trabajo sin guardar, comprar, enviarle mensajes a otras personas). El modo sin frenos, que activas tú, quita esas confirmaciones. Eres responsable de lo que le pides a BAXY y de activar ese modo.
+
+5. Privacidad
+
+Por defecto, el modelo de lenguaje, el reconocimiento de voz y la voz corren en tu computador, y BAXY no envía lo que le dices ni tus archivos a ningún servicio, aunque puede buscar en la web para responderte. Si decides conectar en Ajustes tu propia clave de una empresa de IA, mientras esa opción esté activa, lo que digas y lo que BAXY lea para ti (incluidos textos e imágenes de tu pantalla, archivos y páginas web) se envía a esa empresa, bajo sus condiciones y a tu costo. Lo que BAXY recuerda se guarda en tu computador, y puedes verlo, editarlo y borrarlo.
+
+6. En desarrollo
+
+El Software está en desarrollo temprano: se puede usar, pero no está terminado, tiene fallos y sus funciones pueden cambiar.
+
+7. Sin garantía
+
+EL SOFTWARE SE ENTREGA «TAL CUAL», SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUIDAS, ENTRE OTRAS, LAS GARANTÍAS DE COMERCIABILIDAD, IDONEIDAD PARA UN FIN DETERMINADO Y NO INFRACCIÓN. EN LA MEDIDA MÁXIMA QUE PERMITA LA LEY, EL DESARROLLADOR NO RESPONDE DE NINGUNA RECLAMACIÓN, DAÑO U OTRA RESPONSABILIDAD DERIVADA DEL SOFTWARE O DE SU USO. Nada de este acuerdo limita los derechos que tengas como consumidor según la ley de tu país.
