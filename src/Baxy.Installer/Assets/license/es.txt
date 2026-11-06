@@ -6,33 +6,38 @@ Este acuerdo es entre tú y Emmanuel Antonio Villacura Arancibia («el desarroll
 
 1. Lo que puedes hacer
 
-El código propio de BAXY es libre, bajo la licencia MIT, y puedes usarlo según esa licencia. Este instalador te entrega gratis una versión lista para usar: la aplicación, el modelo de lenguaje, la voz y el reconocedor de voz, para tu uso personal en equipos que controlas. La voz de BAXY es sintética: no es la de una persona.
+El código propio de BAXY es libre, bajo la licencia MIT (fichero LICENSE). Este instalador te entrega gratis una versión lista para usar: la aplicación, el modelo de lenguaje, la voz y el reconocedor de voz. Puedes usarla para cualquier fin, personal o comercial, copiarla y redistribuirla, respetando la licencia de cada componente (sección 2). El desarrollador no añade ninguna otra restricción de uso: las únicas son las que ponen esas licencias, y la de la voz se repite en la sección 3. La voz de BAXY es sintética: no es la de una persona.
 
 2. Componentes de terceros
 
-El Software incluye componentes de terceros que conservan su propia licencia, listados en licenses/THIRD_PARTY_NOTICES.md dentro de la carpeta de instalación. Este acuerdo no cambia esas licencias. Entre ellos:
+El Software incluye componentes de terceros que conservan su propia licencia, listados con sus avisos en licenses/THIRD_PARTY_NOTICES.md, y con sus textos completos en la carpeta licenses, dentro de la carpeta de instalación. Este acuerdo no cambia esas licencias. Si redistribuyes BAXY, entrega también esa carpeta. Entre ellos:
 
 - El modelo de lenguaje de BAXY es un ajuste de Qwen3.5-4B (Apache-2.0).
-- La voz de BAXY se construyó con estilos de voz de Supertonic 3 (BigScience OpenRAIL-M). Las restricciones de uso de la sección 3 se le aplican y forman parte de este acuerdo.
-- El reconocedor de voz deriva de NVIDIA Parakeet (CC-BY-4.0); el encoder de la palabra de activación deriva de Kroko ASR (CC-BY-SA). Sus atribuciones están en el fichero de avisos.
+- La voz de BAXY es el modelo Supertonic 3 de Supertone Inc., bajo la licencia BigScience OpenRAIL-M (licenses/OpenRAIL-M-Supertonic-3.txt). No es una licencia de código abierto: prohíbe los usos de la sección 3, que se aplican a ese modelo, a lo que derive de él y a lo que genere. Quien redistribuya la voz debe entregar esa licencia e imponer las mismas restricciones a quien la reciba.
+- El reconocedor de voz deriva de NVIDIA Parakeet (CC-BY-4.0). La palabra de activación es una red propia entrenada imitando el encoder de Kroko ASR (CC-BY-SA); no lleva sus pesos y su atribución se da por prudencia. Las atribuciones de los modelos están en licenses/ATRIBUCIONES_MODELOS.md.
+- Eigen, dentro del reconocedor y de ONNX Runtime, está bajo MPL-2.0; licenses/FUENTES.md dice dónde está su código fuente.
+- Las bibliotecas de NVIDIA CUDA sólo vienen en la parte para tarjetas NVIDIA (carpeta llama) y se rigen por el contrato de licencia de NVIDIA: sólo están para que las use BAXY; no puedes usarlas aparte de BAXY ni hacerles ingeniería inversa, descompilarlas o desensamblarlas.
+- El runtime de Visual C++, el Windows SDK, WebView2 y .NET de Microsoft se rigen por sus propios términos, en la carpeta licenses.
+- Los vídeos, fondos e iconos del avatar se generaron con Higgsfield y se rigen por sus términos de uso: no están bajo la licencia MIT.
+- Las secciones 1 y 3 no limitan los derechos que las licencias de terceros te dan sobre sus componentes.
 
-3. Restricciones de uso
+3. Restricciones de uso de la voz
 
-Te comprometes a no usar el Software, ni ninguna voz o contenido que genere:
+Lo exige la licencia OpenRAIL-M de la voz (su párrafo 5 y su Anexo A, cuyo texto en inglés es el que vale). Te comprometes a no usar la voz de BAXY, lo que derive de ella ni el contenido que genere:
 
-1. de ninguna forma que infrinja una ley o norma nacional, federal, estatal, local o internacional aplicable;
-2. para explotar o dañar a menores, o intentarlo, de cualquier forma;
-3. para generar o difundir información comprobablemente falsa con el fin de dañar a otros;
-4. para generar o difundir datos personales que puedan usarse para dañar a una persona;
-5. para difamar, menospreciar o acosar a otros;
-6. para suplantar a otras personas, o intentarlo, sin su consentimiento;
-7. para tomar decisiones totalmente automatizadas que afecten negativamente los derechos de una persona o que creen o modifiquen una obligación vinculante;
-8. para discriminar o dañar a personas o grupos por su comportamiento social o por características personales conocidas o supuestas;
-9. para aprovechar vulnerabilidades de un grupo de personas por su edad o sus características sociales, físicas o mentales, distorsionando su conducta de una forma que cause o pueda causar daño físico o psicológico;
-10. para discriminar a personas o grupos por características o categorías protegidas por la ley;
-11. para dar consejo médico o interpretar resultados médicos;
-12. para generar o difundir información destinada a la administración de justicia, la acción policial o los procesos de migración o asilo, como predecir que una persona cometerá un fraude o un delito;
-13. para difundir contenido generado por una máquina sin declarar de forma expresa e inteligible que lo generó una máquina. La voz de BAXY es sintética.
+(a) De cualquier forma que infrinja una ley o norma nacional, federal, estatal, local o internacional aplicable;
+(b) Con el fin de explotar o dañar a menores, o de intentarlo, de cualquier forma;
+(c) Para generar o difundir información o contenido comprobablemente falsos con el fin de dañar a otros;
+(d) Para generar o difundir información de identificación personal que pueda usarse para dañar a una persona;
+(e) Para generar o difundir información o contenido (por ejemplo imágenes, código, publicaciones, artículos) y colocarlos en cualquier contexto (por ejemplo un bot que genera tuits) sin declarar de forma expresa e inteligible que los generó una máquina;
+(f) Para difamar, menospreciar o acosar a otros;
+(g) Para suplantar a otras personas, o intentarlo (por ejemplo con deepfakes), sin su consentimiento;
+(h) Para tomar decisiones totalmente automatizadas que afecten negativamente los derechos legales de una persona o que creen o modifiquen una obligación vinculante y exigible;
+(i) Para cualquier uso destinado a discriminar o dañar a personas o grupos, o que tenga ese efecto, por su comportamiento social en línea o fuera de ella o por características personales o de personalidad conocidas o predichas;
+(j) Para aprovechar cualquiera de las vulnerabilidades de un grupo específico de personas por su edad o sus características sociales, físicas o mentales, con el fin de distorsionar de forma sustancial la conducta de una persona de ese grupo de una manera que le cause o pueda causar daño físico o psicológico, a ella o a otra;
+(k) Para cualquier uso destinado a discriminar a personas o grupos por características o categorías protegidas por la ley, o que tenga ese efecto;
+(l) Para dar consejo médico o interpretar resultados médicos;
+(m) Para generar o difundir información destinada a la administración de justicia, la acción policial o los procesos de migración o asilo, como predecir que una persona cometerá un fraude o un delito (por ejemplo perfilando textos, trazando relaciones causales entre afirmaciones de documentos o con usos indiscriminados y dirigidos arbitrariamente).
 
 4. BAXY actúa sobre tu computador
 

@@ -229,6 +229,76 @@ public sealed class InvocationRiskTests
         });
     }
 
+    // Revisión R2 (H4): the handler hears of the question when it is asked, never on the run the yes starts, nor on one
+    // that goes without asking.
+    [Test]
+    public async Task TheHandlerHearsOfTheQuestionOnlyWhenItIsAsked()
+    {
+        var handler = new AssessingHandler(OperationRisk.Irreversible, documentless: "win_settings");
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = Request("""{"windowId":"win_word"}""");
+
+        OperationResponse asked = await engine.ExecuteAsync(request, CancellationToken.None);
+        int heardAtTheQuestion = handler.AskedCount;
+        await engine.ExecuteAsync(
+            request with { ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString() },
+            CancellationToken.None);
+        await engine.ExecuteAsync(Request("""{"windowId":"win_settings"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(heardAtTheQuestion, Is.EqualTo(1));
+            Assert.That(handler.AskedCount, Is.EqualTo(1));
+            Assert.That(handler.ExecutionCount, Is.EqualTo(2));
+        });
+    }
+
+    // Revisión de los arreglos de R2: a call with no yes forgets the earlier question before its guard reads anything, so
+    // the guard judges what it reaches now; a run with the person's yes goes by that question, though the guard no longer
+    // finds a reason to ask (the window asked for was closed meanwhile).
+    [Test]
+    public async Task OnlyACallWithNoYesForgetsTheQuestionAndBeforeItsGuard()
+    {
+        var handler = new AssessingHandler(OperationRisk.Irreversible, documentless: "win_settings");
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+        OperationRequest request = Request("""{"windowId":"win_word"}""");
+
+        OperationResponse asked = await engine.ExecuteAsync(request, CancellationToken.None);
+        int forgottenAtTheQuestion = handler.ForgottenCount;
+        int readsBeforeTheFirstForget = handler.PreflightCountAtFirstForget;
+        await engine.ExecuteAsync(
+            request with { ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString() },
+            CancellationToken.None);
+        await engine.ExecuteAsync(
+            Request("""{"windowId":"win_settings"}""") with { ConfirmationToken = "dGhlIHBlcnNvbidzIHllcw" },
+            CancellationToken.None);
+        int forgottenAfterTheYeses = handler.ForgottenCount;
+        await engine.ExecuteAsync(Request("""{"windowId":"win_settings"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(forgottenAtTheQuestion, Is.EqualTo(1));
+            Assert.That(readsBeforeTheFirstForget, Is.Zero);
+            Assert.That(forgottenAfterTheYeses, Is.EqualTo(1));
+            Assert.That(handler.ForgottenCount, Is.EqualTo(2));
+        });
+    }
+
+    // Revisión R2 (H4): a note that fails leaves the question to be asked all the same.
+    [Test]
+    public async Task ANoteThatFailsStillAsks()
+    {
+        var handler = new AssessingHandler(OperationRisk.Irreversible, documentless: "win_settings") { AskedFails = true };
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), journal);
+
+        OperationResponse asked = await engine.ExecuteAsync(Request("""{"windowId":"win_word"}"""), CancellationToken.None);
+
+        Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+    }
+
     [Test]
     public async Task AnInvocationThatNeedsNoYesIsNotReadFirst()
     {
@@ -419,6 +489,28 @@ public sealed class InvocationRiskTests
     private sealed class AssessingHandler(OperationRisk risk, string? documentless, OperationOutcome? missing = null)
         : IOperationHandler, IInvocationPreflight
     {
+        public int AskedCount { get; private set; }
+
+        public int ForgottenCount { get; private set; }
+
+        public int PreflightCountAtFirstForget { get; private set; } = -1;
+
+        public void ForgetAsked(JsonElement arguments)
+        {
+            if (ForgottenCount++ == 0)
+            {
+                PreflightCountAtFirstForget = PreflightCount;
+            }
+        }
+
+        public bool AskedFails { get; init; }
+
+        public ValueTask NoteAskedAsync(JsonElement arguments, CancellationToken cancellationToken)
+        {
+            AskedCount++;
+            return AskedFails ? throw new IOException() : ValueTask.CompletedTask;
+        }
+
         public int ExecutionCount { get; private set; }
 
         public int PreflightCount { get; private set; }

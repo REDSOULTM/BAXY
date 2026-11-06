@@ -4,10 +4,12 @@ from __future__ import annotations
 import hashlib
 import http.client
 import json
+import math
 import os
 import re
 import select
 import socket
+import statistics
 import subprocess
 import threading
 import time
@@ -69,32 +71,104 @@ class Yielded(Exception):
     """A read ahead (prefill) ended because a request was waiting (LlmServer.yields)."""
 
 
-class _Advance:
-    """Whether the server still advances through a prompt it streams (LlmServer.read_prefix): each larger ``processed``
-    of its prompt progress, and any chunk after the prompt (what it writes), is an advance. ``stall`` seconds with none,
-    or ``ceiling`` seconds in all, end the read (TimeoutError)."""
+class ReadTooSlow(TimeoutError):
+    """N9 (L5): the server will not read the prefix in time: at what pace it was reading (tokens per second) and what the
+    whole prefix would take at that pace (seconds)."""
 
-    def __init__(self, stall: float, ceiling: float, on_progress: Callable[[int, int], None] | None) -> None:
+    def __init__(self, tokens_per_s: int, need_s: float) -> None:
+        super().__init__(f"the prompt is being read at {tokens_per_s} tokens/s and would take {need_s} s")
+        self.tokens_per_s, self.need_s = tokens_per_s, need_s
+
+
+class _Advance:
+    """Whether the server still advances through a prompt it streams (LlmServer.read_prefix, LlmServer.chat): each larger
+    ``processed`` of its prompt progress, and any chunk after the prompt (what it writes), is an advance, told to
+    ``on_moved``. ``stall`` seconds with none, or ``ceiling`` seconds in all, end the read (TimeoutError). N9 (L5): a
+    ``paced`` read (the prefix's, LlmServer.read_prefix) whose cost will not fit the ceiling ends once PREFIX_PACE_TOKENS
+    were read, instead of at the ceiling: the same outcome, said as what it is (ReadTooSlow). The cost is the server's own
+    (time_ms and cache, server-context.cpp:2198-2201 at b11609), and not a mean: each token costs more the more were read
+    (_read_cost). A stall whose read fits the ceiling is not slowness (a GPU's driver that hung reads nothing more at any
+    pace): it stays a plain TimeoutError, which is relaunched. A turn's request (LlmServer.chat) is not paced: its cost was
+    measured only for the prefix (INT2), so it ends as it did, at the stall or the ceiling."""
+
+    def __init__(self, stall: float, ceiling: float, on_progress: Callable[[int, int], None] | None,
+                 on_moved: Callable[[], None] | None = None, *, paced: bool = True) -> None:
         now = time.monotonic()
         self.started = self.moved = now
-        self.stall, self.ceiling, self.on_progress = stall, ceiling, on_progress
+        self.stall, self.ceiling, self.on_progress, self.on_moved = stall, ceiling, on_progress, on_moved
+        self.paced = paced
         self.processed = -1
+        self.tokens_per_s: int | None = None
+        self.need_s: float | None = None
+        self.seconds_left: int | None = None
+        self.mark = (0, 0)  # the tokens read and the server's ms at the last stretch's end
+        self.stretches: list[tuple[float, float]] = []  # each stretch's middle (tokens in the slot) and its ms per token
+
+    def _pace(self, progress: dict[str, Any], processed: int, total: int) -> None:
+        cache = int(progress.get("cache") or 0)
+        read, spent_ms = processed - cache, int(progress.get("time_ms") or 0)
+        if read <= 0 or spent_ms <= 0:
+            return
+        self.tokens_per_s = round(read * 1000 / spent_ms)
+        if read - self.mark[0] >= PREFIX_STRETCH_TOKENS and spent_ms > self.mark[1]:
+            self.stretches.append((cache + (read + self.mark[0]) / 2, (spent_ms - self.mark[1]) / (read - self.mark[0])))
+            self.mark = (read, spent_ms)
+        base, growth = _read_cost(self.stretches, spent_ms / read)
+
+        def seconds(start: int) -> float:
+            return (base * (total - start) + growth * (total * total - start * start) / 2) / 1000
+
+        self.need_s = seconds(cache)
+        self.seconds_left = round(seconds(processed))
+        if read >= PREFIX_PACE_TOKENS and self.need_s > self.ceiling:
+            raise ReadTooSlow(self.tokens_per_s, self.need_s)
 
     def __call__(self, chunk: dict[str, Any] | None) -> None:
         now = time.monotonic()
         progress = chunk.get("prompt_progress") if chunk is not None else None
+        moved = chunk is not None and not isinstance(progress, dict)
         if isinstance(progress, dict):
             processed = int(progress.get("processed") or 0)
             if processed > self.processed:
-                self.processed, self.moved = processed, now
+                self.processed, moved = processed, True
+                total = int(progress.get("total") or 0)
+                if self.paced:
+                    self._pace(progress, processed, total)
                 if self.on_progress is not None:
-                    self.on_progress(processed, int(progress.get("total") or 0))
-        elif chunk is not None:
+                    self.on_progress(processed, total)
+        if moved:
             self.moved = now
-        if now - self.moved > self.stall:
-            raise TimeoutError(f"the server read nothing more of the prompt in {self.stall:.0f} s")
-        if now - self.started > self.ceiling:
+            if self.on_moved is not None:
+                self.on_moved()
+        over = now - self.started > self.ceiling
+        if over or now - self.moved > self.stall:
+            if self.tokens_per_s is not None and self.need_s is not None and (over or self.need_s > self.ceiling):
+                raise ReadTooSlow(self.tokens_per_s, self.need_s)
+            if now - self.moved > self.stall:
+                raise TimeoutError(f"the server read nothing more of the prompt in {self.stall:.0f} s")
             raise TimeoutError(f"the prompt was not read in {self.ceiling:.0f} s")
+
+
+# N9 (L5): the tokens read before a read's cost may end it, three of its batches (2,048 tokens by default, _Advance), and the
+# least a stretch of the read needs to tell its cost by: the server's batches can end early (at a checkpoint).
+PREFIX_PACE_TOKENS = 6144
+PREFIX_STRETCH_TOKENS = 512
+
+
+def _read_cost(stretches: list[tuple[float, float]], mean: float) -> tuple[float, float]:
+    """What a token of the prompt costs (ms): ``base`` + ``growth`` × the tokens in the slot, from the read's stretches;
+    ``mean`` alone with fewer than two. Measured with the prefix's 45,261 tokens, this GGUF, the product's arguments
+    (the notebook, 2026-11-06), ms per token by 2,048-token batch: the CPU (Ryzen 7 5800H) 17, 21,
+    27, 35, 55, 66, and 232 at 45,000 tokens, ~105 min in all where its first batches say 13; the integrated Radeon on
+    Vulkan 20, 57, 124; the RTX 3060 0.41 to 0.70, 25 s in all. The attention of each token reads the whole cache
+    (flash attention over its f16 copy: llm_server's KV notes). Theil-Sen (the median of the slopes of every pair, then of
+    the bases: Sen 1968), so that a batch another program held for minutes is one outlier and not the curve."""
+    if len(stretches) < 2:
+        return mean, 0.0
+    slopes = [(cost - earlier) / (middle - before)
+              for index, (before, earlier) in enumerate(stretches) for middle, cost in stretches[index + 1:]]
+    growth = max(0.0, statistics.median(slopes))
+    return statistics.median(cost - growth * middle for middle, cost in stretches), growth
 
 
 def _tell(on_text: Callable[[str | None, bool], bool], text: str | None, done: bool) -> bool:
@@ -115,8 +189,31 @@ class LlmServer:
     # up to 120 s for a chat, 30 s for a fill and 10 s for a name, answering after the App had given up. Every call of
     # one request shares this budget (``deadline``, set per request by __main__; None for the warm-up and
     # session.load); spent, the request ends with an error, and the closed connection frees the slot.
+    # Uso-124 (RX 7600 on Vulkan, ~100 tokens/s, 2026-11-05): a web.fetch's 2,850 tokens take ~29 s to read, and the turn
+    # ended with nothing said while the server was still reading it. The budget is now what a request may go without the
+    # server advancing: each advance gives it these seconds again (_advance), up to a ceiling in all (ceiling_s). A chat
+    # that streams hears the server's own progress (return_progress, _Advance); one that cannot stream, because its token
+    # probabilities are read (chat), looks at /slots (_answer). A hung server advances in neither: it fails as it did.
+    # Revisión PCR1 (A2): the ceiling was 120 s, ~4,900 tokens at 50 tokens/s, and the RX 7600's first decision of a turn
+    # read 7,369 tokens past its cache (147 s at that speed). It is now what this server may have to read, at the slowest
+    # its window lets it go on (ceiling_s); REQUEST_CEILING_S only until the warm-up says what the server keeps (kept).
+    # Both count from when the request arrived (__main__), as the App's own window and ceiling count from when it sent it.
     # A model behind an API takes longer than one second (ExternalModel); the App waits 6 s more (TurnRequestTimeout).
+    # The ceiling is never shorter than that window (int-staging-1): a model on this PC behind the translator keeps its 294 s.
     REQUEST_SECONDS = float(os.environ.get("BAXY_MIND_TURN_SECONDS") or 30.0) - 6.0
+    REQUEST_CEILING_S = max(120.0, REQUEST_SECONDS)
+    # The longest ceiling the App takes from catalog.ready (MindSidecarClient.StartupCeiling, 45 min), less the margin
+    # its own has over this one (TurnCeilingMargin, 6 s): past it the App keeps its own and gives up first.
+    REQUEST_MOST_S = 45 * 60.0 - 6.0
+    # What a request's answer may take past its read: DECISION_TOKENS (768, mind.py) at 13.5 tokens/s, the slowest
+    # decode measured here (the output matrix in RAM on Vulkan, VULKAN_CONTEXT's note).
+    ANSWER_S = 60.0
+    # How often a chat that does not stream looks at /slots, and how long it waits for its answer: a decision that takes
+    # less never asks. b11609 answers it while it decodes (below, _look).
+    SLOTS_EVERY_S = 2.0
+    SLOTS_LOOK_S = 1.0
+    # A written answer advances at every token: the App is told at most this often.
+    ADVANCE_TOLD_EVERY_S = 1.0
     # Uso real 2026-11-03 (F4): a turn's decision got an HTTP 500 from llama-server after 2.6 s and the turn ended with
     # nothing said; the same request 10 s later was answered. A 5xx is the server's own failure, not the request's (RFC
     # 9110 §15.6), and asking the model again has no effect on the PC, so it is asked again once, after a pause that
@@ -168,7 +265,14 @@ class LlmServer:
         self._placement: list[str] = []  # where this run's server keeps the projector (projector_placement)
         self._ready = threading.Event()
         self._failure: str | None = None
-        self.deadline: float | None = None
+        self._deadline: float | None = None
+        self._ceiling: float | None = None
+        # The tokens of the prompt prefix the warm-up left in the server's cache (Mind.warm); 0 until it says.
+        self.kept = 0
+        # Told at each advance of the request under way (set by __main__, the App's window starts again), which lasts
+        # while they come: a person's turn. None otherwise: anything else keeps its fixed budget.
+        self.advanced: Callable[[], None] | None = None
+        self._told = 0.0
         # Where the server writes a slot's state (--slot-save-path): the prompt prefix kept between starts (V1) and the
         # state a vision question sets aside (BAXY_VISION_SLOT_DIR, the same folder).
         self.slot_dir = _slot_dir()
@@ -179,15 +283,55 @@ class LlmServer:
         self.resident: str | None = None
         # Whether a request waits for the mind (set by __main__): a read ahead gives way to it (prefill).
         self.yields: Callable[[], bool] = lambda: False
+        # N9 (L5), told to the App (progress_facts): whether the processor computes, with no GPU the server can use
+        # (computes_on_processor; None until known, and never asked when the prefix is restored: one process more at
+        # every start for a start that takes a second), and the seconds left of the prefix being read (read_prefix).
+        self.on_processor: bool | None = None
+        self.prefix_left: int | None = None
 
     @property
     def name(self) -> str:
         return Path(self.gguf).name
 
+    @property
+    def deadline(self) -> float | None:
+        """When the request under way ends if the server does not advance, None with no budget."""
+        return self._deadline
+
+    @deadline.setter
+    def deadline(self, value: float | None) -> None:
+        # Set once per request (__main__), one window from its start: its ceiling counts from that start too.
+        self._deadline = value
+        self._ceiling = None if value is None else value - self.REQUEST_SECONDS + self.ceiling_s
+
+    @property
+    def ceiling_s(self) -> float:
+        """The most a request may last while the server advances (revisión PCR1, A2): what the context leaves past the
+        prefix the server keeps, read at the slowest the window lets a server go on (one batch, batch_size, every
+        REQUEST_SECONDS: it tells its progress once a batch), one batch more for a read that does not start on a batch's
+        edge, and its answer (ANSWER_S). So the ceiling never ends a read the window would let go on: it only ends one
+        that advances without end. On the RX 7600 (61,440 cells, 45,361 kept, batches of 1,024) it is 468 s.
+        Never past what the App takes from it (REQUEST_MOST_S, int-staging-1): a model behind an API, 84 s a window and
+        a context of 200,000, came to ~8,100 s, the App kept its own 126 s, and the mind went on after it gave up."""
+        if self.kept <= 0:
+            return self.REQUEST_CEILING_S
+        batches = math.ceil(max(self.context - self.kept, 0) / batch_size(self.backend)) + 1
+        return min(self.REQUEST_SECONDS * batches + self.ANSWER_S, self.REQUEST_MOST_S)
+
+    def _advance(self) -> None:
+        """The server advanced: the request has its window again, within its ceiling, and the App is told."""
+        now = time.monotonic()
+        if self._deadline is not None and self._ceiling is not None:
+            self._deadline = max(self._deadline, min(now + self.REQUEST_SECONDS, self._ceiling))
+        if self.advanced is not None and now - self._told >= self.ADVANCE_TOLD_EVERY_S:
+            self._told = now
+            self.advanced()
+
     def start(self) -> None:
         vision = _vision_args()
         self._settings = [
-            "-ngl", self.gpu_layers, "-c", str(self.context), *slots(self.backend), "-fa", self.flash,
+            "-ngl", self.gpu_layers, "-c", str(self.context), *slots(self.backend), *read_batch(self.backend),
+            "-fa", self.flash,
             "-ctk", self.kv[0], "-ctv", self.kv[1], "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
             # Read the GGUF into the GPU without mapping it: a mapped model keeps its pages in the working set after
             # they reach the GPU (measured on the PC 2026-10-15: RAM 3237 → 1132 MiB, same VRAM 3905 MiB and speed).
@@ -281,7 +425,8 @@ class LlmServer:
         «proceso_salio» unless its log says it ran out of memory (memory_failure); ``error``, what the start raised in
         the mind, is the PC's memory when it is a MemoryError (uso 95). A lack of memory goes with its figures where they
         are known (uso-116): needMb, the buffer that did not fit; freeMb, the PC's RAM free. The graphics card's free
-        memory is not said: llama-server does not log it with the layers set by hand (b11609)."""
+        memory is not said: llama-server does not log it with the layers set by hand (b11609). A prefix this machine
+        reads too slowly is «lectura_lenta» (N9): tokensPerS, its pace; needMinutes, what the whole of it would take."""
         code = self._process.poll() if self._process is not None else None
         log = self._log_tail()
         cause = memory_failure(log)
@@ -299,6 +444,9 @@ class LlmServer:
             return failure
         if isinstance(error, MemoryError):
             return {"cause": "ram_insuficiente"}
+        if isinstance(error, ReadTooSlow):
+            return {"cause": "lectura_lenta", "tokensPerS": error.tokens_per_s,
+                    "needMinutes": math.ceil(error.need_s / 60)}
         return {"cause": "tiempo"}
 
     def _log_tail(self) -> str:
@@ -318,6 +466,9 @@ class LlmServer:
         if self._process is not None and self._process.poll() is not None:
             os._exit(70)
 
+    def _read_device(self) -> None:
+        self.on_processor = computes_on_processor(self.server, self.backend, self.gpu_layers)
+
     def _within(self, timeout: float) -> float:
         """A call's timeout within the request's budget (REQUEST_SECONDS); spent, the request ends (TimeoutError)."""
         self._alive()
@@ -334,13 +485,16 @@ class LlmServer:
         (_stream) and returns the same reply, unless it asks for token probabilities (below)."""
         self.wait_ready(self._within(timeout))
         self.resident = None
+        # Only a request someone waits for (``advanced``) lasts while the server advances, and not a call with a time of
+        # its own, shorter than the request's (a notice).
+        patient = self.advanced is not None and timeout > self.REQUEST_SECONDS
         # The doubt (doubt.read) reads every token's logprobs. Streamed, b11609 sends a token's logprobs only on a
         # chunk whose parse adds a difference (server-task.cpp:1136-1145; the first token's always, with the role):
         # the tokens of «<tool_call>», «<function=» and a name being parsed, and text the partial parser holds back,
         # add none, and their probabilities are never sent. A call that asks for them is not streamed.
         if on_text is not None and not body.get("logprobs"):
             try:
-                return self._stream(body, timeout, on_text)
+                return self._stream(body, timeout, on_text, self._waited() if patient else None)
             except _StreamBroken:
                 # A stream can fail where the same request does not: compute_diffs throws when a partial parse saw a
                 # call the final parse does not (common/chat.cpp:255-267; a malformed call the non-streamed reply
@@ -351,8 +505,68 @@ class LlmServer:
             data=json.dumps({**body, "id_slot": self.slot, "cache_prompt": True}).encode("utf-8"),
             headers={"Content-Type": "application/json"},
         )
-        with self._open(request, timeout) as reply:
+        with self._open(request, timeout, self._answer if patient else None) as reply:
             return json.loads(reply.read())
+
+    def _waited(self) -> _Advance:
+        """The watch of a turn's stream: its window (REQUEST_SECONDS) from each advance, within the request's ceiling. Not
+        paced (_Advance): ReadTooSlow is the prefix's alone."""
+        return _Advance(self.REQUEST_SECONDS, self.ceiling_s, None, self._advance, paced=False)
+
+    def _answer(self, request: urllib.request.Request, timeout: float) -> Any:
+        """The reply to a chat that does not stream, which says nothing until it ends: waited for while the server
+        advances (_look), and its connection closed when the request's budget is spent, as a timeout does. It raises
+        what ``urlopen`` raises for an error status, which the mind reads (a context overflow's 400, a 5xx)."""
+        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=self.REQUEST_SECONDS)
+        try:
+            connection.request("POST", request.selector, request.data, {**request.headers, "Connection": "close"})
+            seen = None
+            look = time.monotonic() + self.SLOTS_EVERY_S
+            while not select.select([connection.sock], [], [], 0.05)[0]:
+                self._within(timeout)
+                if time.monotonic() >= look:
+                    seen = self._look(seen)
+                    look = time.monotonic() + self.SLOTS_EVERY_S
+            response = connection.getresponse()
+        except BaseException:
+            connection.close()
+            raise
+        if response.status >= 400:
+            raise urllib.error.HTTPError(request.full_url, response.status, response.reason, response.headers, response)
+        return response
+
+    def _connect(self, request: urllib.request.Request, timeout: float,
+                 connected: list[socket.socket]) -> http.client.HTTPResponse:
+        """``request`` on a connection of its own, its socket kept in ``connected`` so that each read of the reply is given
+        its own time (_stream). It raises what ``urlopen`` raises for an error status, as _answer does."""
+        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=timeout)
+        try:
+            connection.request("POST", request.selector, request.data, {**request.headers, "Connection": "close"})
+            connected[:] = [connection.sock]
+            response = connection.getresponse()
+        except BaseException:
+            connection.close()
+            raise
+        if response.status >= 400:
+            raise urllib.error.HTTPError(request.full_url, response.status, response.reason, response.headers, response)
+        return response
+
+    def _look(self, seen: tuple | None) -> tuple | None:
+        """This slot's count of what it has read and written, from /slots: a change from ``seen`` is an advance. At b11609
+        n_prompt_tokens grows as each batch starts and n_decoded with each token written (server-context.cpp:746-755), and
+        /slots is answered during a decode (server-context.cpp:4183-4189, yield_to_queue; process_single_task,
+        server-context.cpp:2732), so a decode that never ends is told from one that goes on. No answer is no advance."""
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/slots", timeout=self.SLOTS_LOOK_S) as reply:
+                slots = json.loads(reply.read())
+            slot = next(slot for slot in slots if slot.get("id") == self.slot)
+            state = (slot.get("id_task"), slot.get("n_prompt_tokens"), slot["next_token"][0].get("n_decoded"))
+        except (OSError, ValueError, http.client.HTTPException, AttributeError, KeyError, IndexError, StopIteration,
+                TypeError):
+            return seen
+        if seen is not None and state != seen:
+            self._advance()
+        return state
 
     def read_prefix(self, body: dict[str, Any],
                     on_progress: Callable[[int, int], None] | None = None) -> dict[str, Any]:
@@ -363,25 +577,34 @@ class LlmServer:
         sse_ping_interval, server-task.h:58 at b11609) at the stall."""
         self.wait_ready(self._within(self.PREFIX_STALL_S))
         self.resident = None
-        return self._stream(body, self.PREFIX_STALL_S, lambda _text, _done: True,
-                            _Advance(self.PREFIX_STALL_S, self.PREFIX_CEILING_S, on_progress))
+        if not self.remote:
+            threading.Thread(target=self._read_device, daemon=True).start()
 
-    def _open(self, request: urllib.request.Request, timeout: float) -> Any:
-        """``urlopen`` of one request to the server, asked again after a 5xx (SERVER_ERROR_RETRIES), each try and each
-        pause within the request's budget (_within). Any other failure, or a 5xx past the retries, is raised."""
+        def advanced(done: int, total: int) -> None:
+            self.prefix_left = watch.seconds_left
+            if on_progress is not None:
+                on_progress(done, total)
+
+        watch = _Advance(self.PREFIX_STALL_S, self.PREFIX_CEILING_S, advanced)
+        return self._stream(body, self.PREFIX_STALL_S, lambda _text, _done: True, watch)
+
+    def _open(self, request: urllib.request.Request, timeout: float, send: Callable[..., Any] | None = None) -> Any:
+        """``urlopen`` of one request to the server (or ``send``'s), asked again after a 5xx (SERVER_ERROR_RETRIES), each
+        try and each pause within the request's budget (_within). Any other failure, or a 5xx past the retries, is raised."""
+        send = send or urllib.request.urlopen
         for attempt in range(self.SERVER_ERROR_RETRIES):
             try:
-                return urllib.request.urlopen(request, timeout=self._within(timeout))
+                return send(request, timeout=self._within(timeout))
             except urllib.error.HTTPError as error:
                 if not 500 <= error.code < 600:
                     raise
                 error.close()
                 time.sleep(self._within(self.SERVER_ERROR_PAUSE_S * 2 ** attempt))
-        return urllib.request.urlopen(request, timeout=self._within(timeout))
+        return send(request, timeout=self._within(timeout))
 
     def _stream(self, body: dict[str, Any], timeout: float,
                 on_text: Callable[[str | None, bool], bool],
-                watch: Callable[[dict[str, Any] | None], None] | None = None) -> dict[str, Any]:
+                watch: _Advance | None = None) -> dict[str, Any]:
         """Al máximo 9.4 (2026-10-22): the chat streamed (SSE) and its reply built as the non-streamed one is
         (common_chat_msg::to_json_oaicompat, common/chat.cpp:156-235; to_json_oaicompat_chat, server-task.cpp:410-452):
         choices[0] with finish_reason, index and the message (role, content, reasoning_content, tool_calls), usage and
@@ -398,8 +621,11 @@ class LlmServer:
         include_usage, the usage (server-task.cpp:454-509). An error before the first token still comes as an HTTP
         error (a context overflow's 400, server-context.cpp:4902-4914); one later is _StreamBroken.
 
-        With ``watch`` the server also streams its progress through the prompt (return_progress, read_prefix), and
-        ``watch`` sees every line: each data chunk, and None for any other line (the SSE pings it sends while silent)."""
+        With ``watch`` the server also streams its progress through the prompt (return_progress, read_prefix and chat), and
+        ``watch`` sees every line: each data chunk, and None for any other line (the SSE pings it sends while silent).
+        For a turn (``advanced``) each line is waited for only what is left of the request's budget, which each advance
+        gives its window again (revisión PCR1, A3: with a whole window per line the mind could give up 24 s past its
+        ceiling, after the App)."""
         progress = {"return_progress": True} if watch is not None else {}
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
@@ -413,9 +639,17 @@ class LlmServer:
         finish: Any = None
         index = 0
         telling = True
-        with self._open(request, timeout) as reply:
+        window = watch.stall if watch is not None and self.advanced is not None else None
+        connected: list[socket.socket] = []
+        send = None if window is None else lambda asked, timeout: self._connect(asked, window, connected)
+        with self._open(request, timeout, send) as reply:
             try:
-                for raw in reply:
+                while True:
+                    if connected:
+                        connected[0].settimeout(self._within(window))
+                    raw = reply.readline()
+                    if not raw:
+                        break
                     line = raw.decode("utf-8").strip()
                     if not line.startswith("data:"):
                         if watch is not None:
@@ -802,6 +1036,23 @@ def slots(backend: str) -> list[str]:
     return ["-np", "3", "-kvu"] if backend == "vulkan" else ["-np", "1"]
 
 
+def batch_size(backend: str) -> int:
+    """The tokens llama-server reads between two of its progress reports: its batch (-b; 2,048 by default, README.md:52 at
+    b11609), 1,024 on Vulkan (read_batch)."""
+    return 1024 if backend == "vulkan" else 2048
+
+
+def read_batch(backend: str) -> list[str]:
+    """llama-server's batch (-b) where a batch may take as long as a request may go without an advance (REQUEST_SECONDS):
+    the server tells its progress once per batch (server-context.cpp:4313 at b11609), and 2,048 tokens, its default, take
+    24 s at 85 tokens/s, what an RX 7600 on Vulkan reads with BAXY running beside it: a request still reading was given up
+    on. At 1,024 the same run's requests and replies came out byte for byte the same, token probabilities included, in the
+    same time (5 turns on the RX 7600, 2026-11-05): a batch is cut in ubatches of 512 either way (-ub, llama_decode), and
+    context checkpoints depend on the ubatch and the messages, not on it (server-context.cpp:4008-4020). 512 cost time
+    (1,918 tokens: 18 to 24 s against 16 s). On CUDA a batch takes under 2 s; the CPU is not measured."""
+    return ["-b", str(batch_size(backend))] if backend == "vulkan" else []
+
+
 def _vision_args() -> list[str]:
     """PLAN_GENERAL A5 (measured 2026-10-21): the model's own projector, so the click's last stage can ask this server
     where a control is on a window without an accessible tree; the one slot's state is set aside meanwhile in the slot
@@ -826,17 +1077,42 @@ VISION_GPU_NEEDS_MIB = 4096 + 920 + 300
 _DEVICE_MEMORY = re.compile(r"\((\d+) MiB, (\d+) MiB free\)")
 
 
-def _free_vram_mib(server: str) -> int | None:
-    """The VRAM free on the device the server would use, as the server itself counts it: its --list-devices, the same
-    for CUDA and Vulkan, whatever the make; None when it does not say."""
+def _listed_devices(server: str) -> str | None:
+    """What the server says with --list-devices, the same for CUDA and Vulkan, whatever the make; None when it cannot."""
     flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
     try:
-        listed = subprocess.run([server, "--list-devices"], capture_output=True, text=True, encoding="utf-8",
-                                errors="replace", timeout=20, creationflags=flags).stdout
+        return subprocess.run([server, "--list-devices"], capture_output=True, text=True, encoding="utf-8",
+                              errors="replace", timeout=20, creationflags=flags).stdout
     except (OSError, subprocess.SubprocessError):
         return None
-    found = _DEVICE_MEMORY.search(listed)
+
+
+def _free_vram_mib(server: str) -> int | None:
+    """The VRAM free on the device the server would use, as the server itself counts it; None when it does not say."""
+    found = _DEVICE_MEMORY.search(_listed_devices(server) or "")
     return int(found.group(2)) if found else None
+
+
+def computes_on_processor(server: str, backend: str, layers: str) -> bool | None:
+    """N9 (L5): whether the model runs on the processor: a folder with no GPU backend or no layers on the GPU, or a
+    server that lists no device («(none)»: a CUDA folder on a PC with no NVIDIA, which runs on the CPU in silence). None
+    when it does not say."""
+    if backend == "cpu" or layers.strip() == "0":
+        return True
+    listed = _listed_devices(server)
+    if listed is None or "Available devices" not in listed:
+        return None
+    return _DEVICE_MEMORY.search(listed) is None
+
+
+def progress_facts(server: LlmServer) -> dict[str, Any]:
+    """What a progress line says beside its tokens (uso 84), each only when known: the seconds left and the processor."""
+    facts: dict[str, Any] = {}
+    if server.prefix_left is not None:
+        facts["secondsLeft"] = server.prefix_left
+    if server.on_processor is not None:
+        facts["onProcessor"] = server.on_processor
+    return facts
 
 
 def projector_placement(server: str, backend: str) -> list[str]:

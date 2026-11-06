@@ -1140,7 +1140,7 @@ public static class ProductCatalog
                 ["label"]),
             OperationRisks.ExternalCommunication,
             "input.visible.click.windows.uia.invoke.postread.v2",
-            "Invoca un único control visible por etiqueta, o por el índice de la vista o la identidad que dio un clic, en la ventana nombrada o, sin ella, en la de la última mirada (con índice), en la aplicación recién abierta o en la de delante (UIA, luego OCR, luego el globo de ayuda, y visión sólo si está configurada), nunca en una ventana protegida, y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada.",
+            "Invoca un único control visible por etiqueta, o por el índice de la vista o la identidad que dio un clic, en la ventana nombrada o, sin ella, en la de la última mirada (con índice o una etiqueta que mostró), en la aplicación recién abierta o en la de delante (UIA, luego OCR, luego el globo de ayuda, y visión sólo si está configurada), nunca en una ventana protegida, y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada.",
             effects: [WindowInput()]),
         Descriptor(
             "input.visible.controls",

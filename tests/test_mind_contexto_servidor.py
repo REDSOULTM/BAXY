@@ -54,6 +54,17 @@ def test_on_vulkan_the_server_has_three_slots_on_one_unified_cache(tmp_path: pat
         assert command[command.index("-np") + 1] == "1" and "-kvu" not in command
 
 
+def test_only_on_vulkan_the_server_reads_in_batches_of_1024(tmp_path: pathlib.Path, monkeypatch) -> None:
+    # Uso-124: a request lasts while the server advances, and it tells that once per batch: 2,048 tokens take over the
+    # 24 s a request may go without an advance at the RX 7600's slowest. NVIDIA and the CPU keep their command as it was.
+    from test_mind_gpu import _command
+
+    vulkan = _command(monkeypatch, tmp_path, backend="vulkan")
+    assert vulkan[vulkan.index("-b") + 1] == "1024"
+    for backend in ("cuda", "cpu"):
+        assert "-b" not in _command(monkeypatch, tmp_path, backend=backend)
+
+
 def test_on_vulkan_a_q8_0_cache_of_61k_cells_stays_inside_the_4_gb(tmp_path: pathlib.Path, monkeypatch) -> None:
     # uso-60, measured on the RX 7600 (b11609, INFORME_60.md): the f16 cache took 4,460 MiB of the GPU at 53,248 cells
     # (4,548 by llama.cpp's count), past the 4 GB, and those cells leave the history ~1k tokens beside the 48.8k-token

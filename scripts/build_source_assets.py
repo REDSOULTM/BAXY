@@ -1,9 +1,8 @@
-"""The release assets that give the source of what the GPL covers in BAXY's package (licenses/FUENTES_GPL.md): eSpeak NG,
-piper-phonemize and sherpa-onnx at the exact versions in the package, with BAXY's changes, and what sherpa-onnx compiles in
-with them. GPL-3.0 sections 1 and 6 ask for the Corresponding Source, including the scripts that build it; section 6(d) lets
-it be offered from the same place as the object code.
+"""The release assets that give the source of what BAXY builds (licenses/FUENTES.md): sherpa-onnx at the exact version in the
+package, with BAXY's changes, and what it compiles in. Section 3.2(a) of MPL 2.0 asks to say how to get Eigen's source; the rest is
+given for transparency.
 
-    py -3.12 scripts/build_source_assets.py --output <folder> --version 1.2.1 [--cache <folder>]
+    py -3.12 scripts/build_source_assets.py --output <folder> --version 1.3.0 [--cache <folder>]
 
 Each download is held to the SHA-256 that sherpa-onnx v1.13.4 pins in its cmake/ folder (for kissfft and kaldifst, the
 kaldi-native-fbank and kaldi-decoder it pins), under the name its CMake looks for in Downloads. The list is what its CMake
@@ -24,17 +23,7 @@ import build_sherpa_runtime as sherpa
 
 REPOSITORY = Path(__file__).resolve().parent.parent
 GITHUB = "https://github.com"
-ESPEAK = (
-    "espeak-ng-ed530aa-source.zip",
-    f"{GITHUB}/csukuangfj/espeak-ng/archive/ed530aa113046142eb5115cf2fc9157854d0ffe1.zip",
-    "e4e262cbe34f7fe21f91f1ba3397f2728e1f30eafbae7853f2b753a9ed13f0dd",
-)
-PIPER = (
-    "piper-phonemize-f3ff95a-source.zip",
-    f"{GITHUB}/csukuangfj/piper-phonemize/archive/f3ff95afc03640bc1399e113e83361192a2fafb4.zip",
-    "d9cca4e2bdc7d6dd8dffb96a4668283dbd3f77a9c194a3e530c1e8eba9406a5d",
-)
-SHERPA_ASSET = "sherpa-onnx-1.13.4-baxy.2-source.zip"
+SHERPA_ASSET = "sherpa-onnx-1.13.4-baxy.3-source.zip"
 DEPENDENCIES_ASSET = "sherpa-onnx-1.13.4-dependencies-source.zip"
 DEPENDENCIES = (
     ("pybind11-3.0.0.tar.gz", f"{GITHUB}/pybind/pybind11/archive/refs/tags/v3.0.0.tar.gz",
@@ -61,14 +50,14 @@ DEPENDENCIES = (
      "ad7fdba11ea011c1d925b3289cf4af2c66a352e18d4c7264392fead75e919363"),
 )
 FIXED_TIME = (2026, 11, 6, 0, 0, 0)
-SHERPA_README = """BAXY's sherpa-onnx 1.13.4+baxy.2 / el sherpa-onnx 1.13.4+baxy.2 de BAXY
+SHERPA_README = """BAXY's sherpa-onnx 1.13.4+baxy.3 / el sherpa-onnx 1.13.4+baxy.3 de BAXY
 
-The binaries built from this, with eSpeak NG inside, go as a whole under GPL-3.0-or-later (GPL-3.0.txt in BAXY's licenses folder).
-BAXY's changes date from no later than 2026-09-08. / Los binarios compilados de esto, con eSpeak NG dentro, van como obra entera bajo
-GPL-3.0-or-later (GPL-3.0.txt en la carpeta licenses de BAXY). Los cambios de BAXY son de, a más tardar, el 2026-09-08.
+Apache-2.0. Built without eSpeak NG and piper-phonemize (sherpa-no-espeak.patch). / Compilado sin eSpeak NG ni piper-phonemize.
+Files changed by the BAXY project, 2026 / ficheros cambiados: offline-recognizer-transducer-nemo-impl.h, math.cc, math-test.cc, CMakeLists.txt,
+sherpa-onnx/csrc/CMakeLists.txt, sherpa-onnx/csrc/offline-tts-impl.cc.
 
 sherpa-onnx-1.13.4/ is the tree of tag v1.13.4, commit {commit}, unchanged.
-BAXY changes it with the two patches in runtime_wheels/, and builds its extension (_sherpa_onnx.cp312-win_amd64.pyd) with
+BAXY changes it with the three patches in runtime_wheels/, and builds its extension (_sherpa_onnx.cp312-win_amd64.pyd) with
 scripts/build_sherpa_runtime.py. It needs Windows x64, Python 3.12, Git and Visual Studio 2022's CMake:
 
     py -3.12 scripts/build_sherpa_runtime.py --work-dir <folder> --cmake <cmake.exe>
@@ -76,9 +65,7 @@ scripts/build_sherpa_runtime.py. It needs Windows x64, Python 3.12, Git and Visu
 That script clones the tag again, downloads what sherpa-onnx's CMake pins, and takes the rest of the wheel from the official
 sherpa-onnx 1.13.4 wheel. Without those servers, to build the extension from this tree:
 
-1. Put in %USERPROFILE%\\Downloads the archives of {dependencies}, and the eSpeak NG and piper-phonemize assets renamed
-   espeak-ng-ed530aa113046142eb5115cf2fc9157854d0ffe1.zip and piper-phonemize-f3ff95afc03640bc1399e113e83361192a2fafb4.zip:
-   sherpa-onnx's CMake takes them from there. Set HOME to %USERPROFILE% if it is not set.
+1. Put in %USERPROFILE%\\Downloads the archives of {dependencies}: sherpa-onnx's CMake takes them from there. Set HOME to %USERPROFILE% if it is not set.
 2. Apply the patches: cd sherpa-onnx-1.13.4, then patch -p1 < ../runtime_wheels/<each>.patch (or git apply).
 3. Configure and build with the options in scripts/build_sherpa_runtime.py (the "run(str(cmake)" lines).
 
@@ -88,15 +75,14 @@ https://github.com/csukuangfj/onnxruntime-libs/releases/tag/v1.27.0. Its source 
 https://github.com/microsoft/onnxruntime/tree/v1.27.0.
 
 The rebuilt binary is not promised to be identical byte by byte across compilers or folders.
-sherpa-onnx-c-api.dll and the rest of sherpa-onnx-core come unchanged from the project's official wheel of the same version.
+onnxruntime.dll comes unchanged from the project's official sherpa-onnx-core wheel of the same version.
 
-sherpa-onnx-1.13.4/ es el árbol del tag v1.13.4, sin cambios. BAXY lo cambia con los dos parches de runtime_wheels/ y compila su
+sherpa-onnx-1.13.4/ es el árbol del tag v1.13.4, sin cambios. BAXY lo cambia con los tres parches de runtime_wheels/ y compila su
 extensión con scripts/build_sherpa_runtime.py, con la orden de arriba, que necesita Windows x64, Python 3.12, Git, el CMake de Visual
 Studio 2022 y esos servidores; sin ellos, con los tres
 pasos de arriba y además onnxruntime-win-x64-MT-Release-1.27.0.tar.bz2 (MIT) en Downloads, que no va en estos activos: se baja de
 https://github.com/csukuangfj/onnxruntime-libs/releases/tag/v1.27.0, y su fuente está en
-https://github.com/microsoft/onnxruntime/tree/v1.27.0. No se promete que el binario salga idéntico byte a byte con otro compilador u otra carpeta. sherpa-onnx-c-api.dll y lo demás de
-sherpa-onnx-core vienen sin cambios de la rueda oficial de esa versión.
+https://github.com/microsoft/onnxruntime/tree/v1.27.0. No se promete que el binario salga idéntico byte a byte con otro compilador u otra carpeta. onnxruntime.dll viene sin cambios de la rueda oficial sherpa-onnx-core de esa versión.
 """
 
 
@@ -151,6 +137,7 @@ def build_sherpa(target: Path, work: Path) -> None:
     patches = (
         ("sherpa-nemo-stream-decoder.patch", sherpa.PATCH_SHA256),
         ("sherpa-nemo-normalization.patch", sherpa.NORMALIZATION_PATCH_SHA256),
+        ("sherpa-no-espeak.patch", sherpa.NO_ESPEAK_PATCH_SHA256),
     )
     readme = SHERPA_README.format(commit=sherpa.COMMIT, dependencies=DEPENDENCIES_ASSET)
     with zipfile.ZipFile(target, "a", zipfile.ZIP_DEFLATED) as archive:
@@ -164,10 +151,10 @@ def build_sherpa(target: Path, work: Path) -> None:
 
 
 def build_dependencies(target: Path, cache: Path) -> None:
-    """What sherpa-onnx's CMake compiles into the binaries with eSpeak NG, as it downloads them. They do not compress."""
+    """What sherpa-onnx's CMake compiles into its binaries, as it downloads them. They do not compress."""
     lines = [
-        "What sherpa-onnx v1.13.4 compiles into its binaries beside eSpeak NG and piper-phonemize, as its CMake downloads it.",
-        "Lo que sherpa-onnx v1.13.4 compila en sus binarios junto a eSpeak NG y piper-phonemize, tal como lo baja su CMake.",
+        "What sherpa-onnx v1.13.4 compiles into BAXY's extension, as its CMake downloads it.",
+        "Lo que sherpa-onnx v1.13.4 compila en la extensión de BAXY, tal como lo baja su CMake.",
         "",
         "googletest only builds the tests of the build script / googletest sólo compila las pruebas del script.",
         "Not here / no está aquí: ONNX Runtime 1.27.0, which the package carries prebuilt:",
@@ -193,14 +180,12 @@ def build_licenses(target: Path) -> None:
 
 def build_assets(output: Path, version: str, cache: Path) -> dict[str, str]:
     output.mkdir(parents=True, exist_ok=True)
-    for name, url, sha256 in (ESPEAK, PIPER):
-        (output / name).write_bytes(fetch(url, sha256, cache))
     with tempfile.TemporaryDirectory(prefix="baxy-sources-") as work:
         build_sherpa(output / SHERPA_ASSET, Path(work))
     build_dependencies(output / DEPENDENCIES_ASSET, cache)
     licenses = f"baxy-{version}-licenses.zip"
     build_licenses(output / licenses)
-    names = [ESPEAK[0], PIPER[0], SHERPA_ASSET, DEPENDENCIES_ASSET, licenses]
+    names = [SHERPA_ASSET, DEPENDENCIES_ASSET, licenses]
     return {name: _sha256((output / name).read_bytes()) for name in names}
 
 

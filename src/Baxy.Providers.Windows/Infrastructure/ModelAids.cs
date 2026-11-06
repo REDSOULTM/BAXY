@@ -96,6 +96,21 @@ public static class ModelAids
     /// </summary>
     public const string PersonBrowserNext = "person_browser_next";
 
+    /// <summary>
+    /// C2040 (uso real 05-11): going back with no earlier page says the page the tab stays on and how what it shows is opened.
+    /// </summary>
+    public const string HistoryStartNext = "history_start_next";
+
+    /// <summary>
+    /// C2040 (uso real 05-11): a look that found no window of an application opened a moment ago, whose program still
+    /// runs, says so and how to look again: the reply had told it as closed.
+    /// </summary>
+    public const string OpeningWindowNext = "opening_window_next";
+
+    /// <summary>Revisión R2 de C2040 (H4, H5): a click that pressed nothing because of a dialog no look read, or because the
+    /// window its yes was for is gone, says so and how to see what is there.</summary>
+    public const string LabelReachNext = "label_reach_next";
+
     /// <summary>Renew al máximo (auditoría de flujos, P257): an app volume with no audio session names the apps that have one.</summary>
     public const string AppVolumeCandidates = "app_volume_candidates";
 

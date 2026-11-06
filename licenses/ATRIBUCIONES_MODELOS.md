@@ -31,8 +31,8 @@ were not meant to change. It is 470 bytes larger than Olicorne's file at that re
 
 Supertonic 3, Copyright (c) 2026 Supertone Inc.: <https://huggingface.co/Supertone/supertonic-3>. Licensed under the BigScience Open
 RAIL-M License dated August 18, 2022 (`OpenRAIL-M-Supertonic-3.txt`). **The use restrictions in its Attachment A apply
-to this model and to anything derived from it**, and are in section 3 of the agreement you accept when installing BAXY, as a paraphrase; their full wording is in
-`OpenRAIL-M-Supertonic-3.txt`.
+to this model and to anything derived from it**, and are in section 3 of the agreement you accept when installing BAXY: quoted in its English text and translated in its
+Spanish one, where the English wording prevails. The full license is in `OpenRAIL-M-Supertonic-3.txt`.
 
 The int8 conversion for sherpa-onnx comes from
 <https://huggingface.co/csukuangfj2/sherpa-onnx-supertonic-3-tts-int8-2026-05-11>: `duration_predictor.int8.onnx`,
@@ -57,7 +57,8 @@ unchanged except for its file name.
 
 ## Wake word (`wake/`): attribution given as a precaution
 
-`head.onnx` is the BAXY project's own network. According to its training notes it carries no weights from Kroko, but it
+`head.onnx` is the BAXY project's own network. According to its training notes it carries no weights from Kroko (compared on
+2026-11-06 with `encoder_kroko_es.onnx`: none of its 127 tensors of 64 values or more equals one of Kroko's 944), but it
 was trained imitating the Kroko ASR encoder, by Banafo: <https://huggingface.co/Banafo/Kroko-ASR>. Kroko describes its community models as «CC-BY-SA»
 without giving a version, and the `LICENSE` file in that repository is empty. Whether a network trained this way counts
 as an adaptation has not been settled, so this attribution is given as a precaution and `CC-BY-SA-4.0.txt` is included

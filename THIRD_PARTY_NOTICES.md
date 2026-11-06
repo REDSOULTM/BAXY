@@ -3,8 +3,10 @@
 > Inventario hecho leyendo los manifiestos del repositorio, con cada licencia comprobada en su fuente oficial
 > (registro del paquete, repositorio o ficha del modelo) el 2026-10-31. Lo que no se pudo confirmar está marcado
 > **«sin confirmar»**. Este documento no es asesoría legal. El 2026-11-06 se cotejó contra el contenido real del zip de
-> la versión 1.2.0, binarios incluidos: lo hallado así va marcado **«medido en el zip»**. Los textos completos están en
-> [`licenses/`](licenses/README.md).
+> la versión 1.2.0, binarios incluidos: lo hallado así va marcado **«medido en el zip»**. El 2026-11-06 se quitó del paquete 1.3.0
+> lo no permisivo que no hacía falta, buscando las marcas de lo quitado en los binarios del paquete armado, salvo dentro de los bundles comprimidos de
+> `Baxy.exe` y `baxy-core.exe` (`scripts/check_package_licenses.py`). Los textos
+> completos están en [`licenses/`](licenses/README.md).
 
 El código propio de BAXY se publica bajo la [licencia MIT](LICENSE). Las piezas de terceros que BAXY usa,
 instala o distribuye **conservan su propia licencia**, que la licencia MIT de BAXY no sustituye ni amplía.
@@ -26,18 +28,16 @@ Cómo leer la columna «Cómo llega»:
 
 ## ¿Algo impide que el código propio sea MIT?
 
-**No se encontró nada que impida publicar el código propio como MIT, pero el paquete binario sí lleva código GPL**
-(obligación 0).
+**No se encontró nada que impida publicar el código propio como MIT, y el barrido de los binarios de 1.3.0 no halló código GPL ni LGPL** (busca lo que se quitó; una revisión a ciegas barrió además los textos de licencia y los binarios de Python).
 
-- **Ningún paquete declara GPL/LGPL/AGPL como su licencia** en el lock de Python (60 paquetes de runtime y 6 de pruebas), ni
-  en NuGet, ni en el grafo npm de la interfaz (191 paquetes), y la búsqueda de cabeceras GPL/LGPL en `src/`, `scripts/` y
-  `tests/` no devolvió nada. Esa revisión no miraba dentro de los paquetes. Medido en el zip, dentro van: eSpeak NG en
-  sherpa-onnx, que declara Apache-2.0; libquadmath (LGPL-2.1-or-later) en la OpenBLAS de numpy, y autocommand (LGPLv3)
-  vendorizado en setuptools. Dónde está su código: `licenses/FUENTES_GPL.md`.
-- Los tres parches de `runtime_wheels/` modifican código **Apache-2.0** (sherpa-onnx y pywebrtc-audio) y el de
+- **1.2.0 sí lo lleva** (medido en el zip): eSpeak NG (GPL-3.0-or-later) dentro de sherpa-onnx, que declara Apache-2.0;
+  libquadmath (LGPL-2.1-or-later) en la OpenBLAS de numpy, y autocommand (LGPLv3) vendorizado en setuptools. Ver obligación 0.
+- **Ningún paquete distribuido declara GPL/LGPL/AGPL** en el lock de Python (28 paquetes de runtime y 11 de pruebas; scipy, sólo de pruebas y no distribuido, lleva el runtime de GCC, GPL-3.0-or-later con excepción), ni en NuGet, ni en el grafo npm
+  de la interfaz (191 paquetes), y la búsqueda de cabeceras GPL/LGPL en `src/`, `scripts/` y `tests/` no devolvió nada.
+- Los parches de `runtime_wheels/` modifican código **Apache-2.0** (sherpa-onnx y pywebrtc-audio) y el de
   `scripts/llama/` modifica código **MIT** (llama.cpp). Ambas licencias son compatibles con MIT.
-- Las licencias de copyleft débil del grafo (MPL-2.0 en `certifi`, `tqdm` y `lightningcss`) actúan por fichero y
-  sólo sobre esos paquetes, que se usan sin modificar.
+- **Copyleft débil que sigue en el paquete: Eigen (MPL-2.0),** compilado dentro de `_sherpa_onnx…pyd` y de los binarios de ONNX Runtime (obligación 0). Actúa por fichero y
+  sólo sobre Eigen, que va sin modificar. `lightningcss` (MPL-2.0) sólo compila la interfaz: no llega al paquete.
 - Matiz: un parche es una obra derivada del fichero que modifica. Lo prudente es que los `.patch` y las ruedas
   parcheadas sigan bajo la licencia de su proyecto de origen (Apache-2.0 o MIT) y no se presenten como «MIT de
   BAXY». En particular, `sherpa-nemo-normalization.patch` incorpora la corrección de un contribuidor externo de
@@ -49,36 +49,25 @@ Cómo leer la columna «Cómo llega»:
 
 Ordenadas por peso. Lo que es sólo atribución está al final.
 
-### 0. eSpeak NG dentro de sherpa-onnx: GPL-3.0-or-later
+### 0. Lo que se quitó en 1.3.0, y Eigen (MPL-2.0), que queda
 
-- **Medido en el zip:** `_sherpa_onnx.cp312-win_amd64.pyd` (el compilado con los cambios de BAXY) y `sherpa-onnx-c-api.dll`
-  (de la rueda oficial) llevan el código de eSpeak NG: `espeak_ng_Initialize` y el resto de su API, y sus mensajes («Wrong
-  version of espeak-ng-data»). El paquete no lleva sus datos (`espeak-ng-data`).
-- **Por qué está:** sherpa-onnx v1.13.4 lo incluye siempre que su opción de voz está activa
-  ([`CMakeLists.txt`](https://github.com/k2-fsa/sherpa-onnx/blob/v1.13.4/CMakeLists.txt),
-  [`espeak-ng-for-piper.cmake`](https://github.com/k2-fsa/sherpa-onnx/blob/v1.13.4/cmake/espeak-ng-for-piper.cmake)).
-  [eSpeak NG se publica bajo GPL-3.0-or-later](https://github.com/espeak-ng/espeak-ng/blob/master/README.md#license-information),
-  aunque sherpa-onnx y su rueda declaren Apache-2.0. Va con él piper-phonemize (MIT en el commit que fija sherpa-onnx):
-  `licenses/piper-phonemize-LICENSE.txt`. Un proyecto que enlaza la misma biblioteca
-  [trata como GPL todo su programa y publica el código de cada pieza](https://github.com/cjus/audio-chat-box/releases/tag/sources-v1):
-  es una lectura más estricta que la de este documento, que deja abierto ese alcance.
-- **Lo que pide la GPL al distribuir el binario:** copia de la licencia (apartado 4, `licenses/GPL-3.0.txt`), el código fuente
-  correspondiente o el acceso a él (apartado 6) y no añadir restricciones a esa parte (apartado 10). **Los binarios que lo llevan se
-  distribuyen, como obra entera, bajo GPL-3.0-or-later** (5(c)), con la nota de cambios de 5(a): `licenses/FUENTES_GPL.md`.
-- **Dónde está el código fuente:** como activos de la release, en la misma página de donde se baja BAXY:
-  [v1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1), con la **oferta escrita** en `licenses/FUENTES_GPL.md`. Esas
-  indicaciones y la licencia van también al lado de los binarios (`sherpa_onnx/lib` y `Scripts`), como pide el apartado 6(d).
-- **Versión exacta, medida el 2026-11-06:** `_sherpa_onnx…pyd` lleva la cadena de versión `1.52.0.1`, la del proyecto en el commit
-  que fija sherpa-onnx, cuyo CMake exige ese SHA-256 al compilar.
-- **Sin confirmar:** hasta dónde llega la «obra entera» del apartado 5, si sólo a esos binarios de sherpa-onnx o también a lo
-  que los carga. Lo tiene que decidir el dueño, con asesoría. También, si basta enlazar el código de terceros: el apartado 6(d)
-  deja al que distribuye la obligación de que siga disponible.
-- **Lo que sherpa-onnx compila dentro junto a él** (medido el 2026-11-06 con su `cmake` y las opciones de
-  `scripts/build_sherpa_runtime.py`, y por las rutas `_deps` que quedan en los binarios): kaldi-native-fbank, kaldi-decoder,
-  kaldifst, OpenFst y simple-sentencepiece (Apache-2.0), kissfft (BSD-3-Clause), Eigen (sobre todo MPL-2.0), hclust-cpp con
-  fastcluster (BSD-2-Clause), nlohmann/json (MIT) y pybind11 (BSD-3-Clause). Cada texto, en `licenses/`; sus fuentes, en
-  `sherpa-onnx-1.13.4-dependencies-source.zip`. **Sin cotejar cuáles acaban en el binario oficial:** las rutas sólo confirman
-  kaldifst, kaldi-decoder, OpenFst y simple-sentencepiece en los dos, y los demás no dejan esa huella.
+| Pieza | Licencia | Por qué estaba | Qué se hizo |
+|---|---|---|---|
+| eSpeak NG y piper-phonemize, en `_sherpa_onnx…pyd` y `sherpa-onnx-c-api.dll` | [GPL-3.0-or-later](https://github.com/espeak-ng/espeak-ng/blob/master/README.md#license-information); MIT | sherpa-onnx los compila siempre que su voz está activa | `sherpa-no-espeak.patch` los deja fuera: la voz de BAXY, Supertonic, no los usa. Tampoco va `sherpa-onnx-core`, cuyo único fichero necesario, `onnxruntime.dll`, pasa a la rueda |
+| libquadmath, OpenBLAS y runtime de gfortran, en `numpy.libs` | LGPL-2.1-or-later; BSD; GPL-3.0 con excepción de runtime | La rueda oficial de numpy para Windows | numpy 1.26.4 compilado de su fuente sin BLAS (`scripts/build_runtime_wheels.py`) |
+| autocommand, en setuptools | LGPLv3 | setuptools venía con torch | Fuera: la mente no lo importa |
+| Intel oneMKL en `torch_cpu.dll`, `libiomp5md.dll` | Licencias de Intel | Venían con torch | Fuera, con torch, torchaudio, transformers y sentence-transformers: la mente no los importa |
+| `libportaudio64bit-asio.dll` | PortAudio MIT + ASIO de Steinberg, términos sin confirmar | sounddevice lo trae; sólo se carga con `SD_ENABLE_ASIO` | `build_steam.ps1` lo borra |
+| certifi y tqdm | MPL-2.0 | Los pedían httpx y huggingface-hub | Fuera: `anthropic` usa `httpx2`, que valida con `truststore` |
+| `google/_upb/_message.pyd`, de protobuf | BSD-3-Clause, enlazado con GCC: CRT de mingw-w64 y objetos de libgcc | ONNX Runtime lo pide para sus herramientas | `build_steam.ps1` lo borra: cargar y correr un modelo no lo importa |
+
+- **Sólo las versiones nuevas cambian.** 1.2.0 y 1.2.1, ya publicadas, siguen llevando eSpeak NG (GPL-3.0-or-later) y 1.2.0 además libquadmath y autocommand (LGPL). La página de 1.2.0 lo corrige desde el 2026-11-06 y remite a la de 1.2.1, que trae como activos el código fuente de eSpeak NG, piper-phonemize y sherpa-onnx (`espeak-ng-ed530aa-source.zip`, `piper-phonemize-f3ff95a-source.zip`, `sherpa-onnx-1.13.4-baxy.2-source.zip`, `sherpa-onnx-1.13.4-dependencies-source.zip`); los textos `GPL-3.0.txt`, `LGPL-2.1.txt` y `FUENTES_GPL.md` de esas versiones van en su `baxy-1.2.1-licenses.zip`.
+- **Lo que sherpa-onnx compila dentro en 1.3.0** (medido el 2026-11-06 con su `cmake` y las opciones de
+  `scripts/build_sherpa_runtime.py`): kaldi-native-fbank, kaldi-decoder, kaldifst, OpenFst y simple-sentencepiece (Apache-2.0), kissfft
+  (BSD-3-Clause), Eigen (sobre todo MPL-2.0), hclust-cpp con fastcluster (BSD-2-Clause), nlohmann/json (MIT) y pybind11
+  (BSD-3-Clause). Cada texto, en `licenses/`.
+- **Eigen, MPL-2.0:** kaldi-decoder lo necesita para reconocer voz y ONNX Runtime para correr los modelos, así que no se puede quitar. El de sherpa-onnx sólo incluye `Eigen/Dense`. Su `COPYING.README` dice que es «primarily MPL2» con terceros BSD y compatibles. El apartado 3.2(a) de la MPL pide decir dónde está su fuente:
+  `licenses/FUENTES.md`.
 
 ### 1. Voz de Supertonic 3: OpenRAIL-M, con restricciones de uso
 
@@ -95,8 +84,8 @@ Ordenadas por peso. Lo que es sólo atribución está al final.
   (`scripts/voice/make_baxy_voice.py`) y su `baxy-voice.json` ya lo anota: «its use restrictions apply and speech
   must be disclosed as synthetic».
 - **Se redistribuye en los paquetes de Steam y de GitHub** (no está en el repo). El párrafo 4 pide: (a) incluir las
-  restricciones del Anexo A como cláusula exigible en el acuerdo que rija ese uso y avisar a quien lo reciba: están,
-  **parafraseadas**, en la sección 3 del acuerdo del instalador, y el Anexo A literal es una propuesta pendiente del dueño; (b) darle una copia de la licencia, `licenses/OpenRAIL-M-Supertonic-3.txt`; (c) marcar
+  restricciones del Anexo A como cláusula exigible en el acuerdo que rija ese uso y avisar a quien lo reciba: desde 1.3.0 están
+  en la sección 3 del acuerdo del instalador, **literales** en inglés y traducidas en español (vale el inglés), aplicadas a la voz, a sus derivados y a lo que genere; (b) darle una copia de la licencia, `licenses/OpenRAIL-M-Supertonic-3.txt`; (c) marcar
   los ficheros modificados y (d) conservar los avisos, `licenses/ATRIBUCIONES_MODELOS.md`.
 - El párrafo 7 pide además «reasonable efforts to use the latest version of the Model».
 - **Para el producto:** conviene que la documentación y la interfaz digan que la voz es sintética y que el README
@@ -111,8 +100,10 @@ Ordenadas por peso. Lo que es sólo atribución está al final.
   ([ficha](https://huggingface.co/Banafo/Kroko-ASR)); el motor es Apache-2.0 y hay modelos comerciales aparte.
   **Sin confirmar:** la versión exacta de CC-BY-SA (el fichero `LICENSE` del repositorio de la ficha está vacío)
   y si una cabeza entrenada sobre los embeddings cuenta como adaptación.
-- La palabra de activación del paquete, v3_b2, no lleva este encoder: es una red propia entrenada imitándolo. Su atribución
-  va por prudencia en `licenses/ATRIBUCIONES_MODELOS.md`.
+- La palabra de activación del paquete, v3_b2, no lleva este encoder: es una red propia entrenada imitándolo. **Medido el 2026-11-06:**
+  comparada con `encoder_kroko_es.onnx`, de 944 tensores de 64 valores o más, ninguno es igual a uno de los 127 de `head.onnx`, y entre
+  8749 pares de la misma forma la correlación mayor es 0,46. Eso dice que no copia sus pesos, no si imitarlo la hace adaptación.
+  Su atribución va por prudencia en `licenses/ATRIBUCIONES_MODELOS.md`.
 - **Obligación si se redistribuye el paquete wake:** atribuir a Kroko/Banafo, enlazar la licencia, indicar
   cambios y, por ShareAlike, publicar el encoder (y lo que se considere adaptación) bajo la misma CC-BY-SA. No
   afecta al código MIT de BAXY, que sólo carga el modelo.
@@ -139,7 +130,7 @@ Ordenadas por peso. Lo que es sólo atribución está al final.
   ni la antigua «Qwen License»; el repositorio no trae fichero `NOTICE`. El GGUF de producción y el proyector de
   visión (`mmproj-F16.gguf`) vienen de [`unsloth/Qwen3.5-4B-GGUF`](https://huggingface.co/unsloth/Qwen3.5-4B-GGUF),
   también Apache-2.0.
-- El paquete 1.2.0 lleva `BAXY-Qwen3.5-4B-ft-c3-c4c2_1-sA-Q4_K_M.gguf`, un ajuste posterior que no está en la ficha de abajo.
+- Los paquetes desde 1.2.0 llevan `BAXY-Qwen3.5-4B-ft-c3-c4c2_1-sA-Q4_K_M.gguf`, un ajuste posterior que no está en la ficha de abajo.
 - El modelo de BAXY (`BAXY-Qwen3.5-4B-c3-Q4_K_M.gguf`, LoRA fusionado y cuantizado a Q4_K_M) es una **obra
   derivada** de Qwen3.5-4B. Se publica aparte en
   [huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF](https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF), no en este
@@ -158,8 +149,8 @@ Ordenadas por peso. Lo que es sólo atribución está al final.
 - **React y React DOM (MIT)** van compilados dentro de `dist/assets/index-*.js` y Vite quitó sus comentarios de
   licencia; el aviso MIT de React está en [«Avisos de los ficheros incluidos»](#avisos-de-los-ficheros-incluidos).
 - **Ruedas binarias de `runtime_wheels/`** (ver tabla 6): llevan dentro sus licencias, el `NOTICE` de
-  pywebrtc-audio, el aviso de patentes de WebRTC y un `BAXY-NOTICE.txt` que dice qué se cambió. Así se cumplen los
-  apartados 4(a)-(d) de Apache-2.0. **Falta** el aviso BSD-3-Clause de **pybind11** (con el que se compiló la
+  pywebrtc-audio, el aviso de patentes de WebRTC y un `BAXY-NOTICE.txt` que dice qué ficheros se cambiaron. Los `.patch` sueltos siguen sin
+  cabecera (tabla 6). **Falta** el aviso BSD-3-Clause de **pybind11** (con el que se compiló la
   extensión de pywebrtc-audio). La extensión de sherpa-onnx también lo lleva (medido en el zip): su aviso está en
   `licenses/pybind11-LICENSE.txt`.
 - **Modelo de identificación de idioma de py3langid 0.3.0 (BSD-3-Clause)** en `src/baxy_mind/data/langid/`
@@ -210,77 +201,38 @@ licencias dentro del paquete.
 ### 2. Python (runtime de la mente y la voz)
 
 Se instalan desde PyPI con `--require-hashes` (`pylock.runtime-win-x64.toml`, `scripts/setup_mind_voice.ps1`), salvo
-las dos ruedas parcheadas de la tabla 6, que vienen del repo. Licencia leída de los metadatos PyPI de **esa versión
+sherpa-onnx, numpy y silero-vad, de la tabla 6, que vienen del repo. Licencia leída de los metadatos PyPI de **esa versión
 exacta** y, cuando faltaban, del repositorio del proyecto.
 
 | Paquete | Versión | Licencia (SPDX) | Paquete | Versión | Licencia (SPDX) |
 |---|---|---|---|---|---|
-| annotated-doc | 0.0.4 | MIT | pycaw | 20251023 | MIT ([código fuente](https://github.com/AndreMiras/pycaw/blob/main/LICENSE); PyPI no la declara) |
-| anyio | 4.14.2 | MIT | pycparser | 3.0 | BSD-3-Clause |
-| certifi | 2026.6.17 | **MPL-2.0** | pygments | 2.20.0 | BSD-2-Clause |
-| cffi | 2.1.0 | MIT-0 | **pywebrtc-audio** | 0.2.0+baxy.1 | Apache-2.0 (parcheada, ver tabla 6) |
-| click | 8.4.2 | BSD-3-Clause | pywin32 | 311 | PSF-2.0 |
-| colorama | 0.4.6 | BSD-3-Clause | pyyaml | 6.0.3 | MIT |
-| comtypes | 1.4.16 | MIT | rapidfuzz | 3.14.5 | MIT |
-| filelock | 3.31.0 | MIT | regex | 2026.7.19 | Apache-2.0 AND CNRI-Python |
-| flatbuffers | `25.12.19` | Apache-2.0 | rich | 15.0.0 | MIT |
-| fsspec | 2026.6.0 | BSD-3-Clause | safetensors | 0.8.0 | Apache-2.0 |
-| h11 | 0.16.0 | MIT | scikit-learn | 1.9.0 | BSD-3-Clause |
-| hf-xet | 1.5.2 | Apache-2.0 | scipy | 1.17.1 | BSD-3-Clause (ver nota) |
-| httpcore | 1.0.9 | BSD-3-Clause | sentence-transformers | 5.6.0 | Apache-2.0 |
-| httpx | 0.28.1 | BSD-3-Clause | setuptools | 83.0.0 | MIT |
-| huggingface-hub | 1.24.0 | Apache-2.0 | shellingham | 1.5.4 | ISC |
-| idna | 3.18 | BSD-3-Clause | **sherpa-onnx** | 1.13.4+baxy.2 | Apache-2.0 (parcheada, ver tabla 6) |
-| jellyfish | 1.2.1 | MIT | sherpa-onnx-core | 1.13.4 | Apache-2.0 |
-| jinja2 | 3.1.6 | BSD-3-Clause | silero-vad | 6.2.1 | MIT (incluye `silero_vad.onnx`) |
-| joblib | 1.5.3 | BSD-3-Clause | sounddevice | 0.5.5 | MIT (incluye PortAudio, licencia tipo MIT) |
-| livekit-wakeword | 0.2.1 | Apache-2.0 | sympy | 1.14.0 | BSD-3-Clause |
-| markdown-it-py | 4.2.0 | MIT | threadpoolctl | 3.6.0 | BSD-3-Clause |
-| markupsafe | 3.0.3 | BSD-3-Clause | tokenizers | 0.22.2 | Apache-2.0 |
-| mdurl | 0.1.2 | MIT | torch | 2.13.0 | BSD-3-Clause; la rueda declara `Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND MIT` |
-| mpmath | 1.3.0 | BSD-3-Clause | torchaudio | 2.11.0 | BSD (clasificador; **sin confirmar** si es 2 o 3 cláusulas) |
-| narwhals | 2.24.0 | MIT | tqdm | 4.69.0 | **MPL-2.0 AND MIT** |
-| networkx | 3.6.1 | BSD-3-Clause | transformers | 5.14.1 | Apache-2.0 |
-| numpy | 1.26.4 | BSD-3-Clause (ver nota) | typer | 0.27.0 | MIT |
-| onnxruntime | 1.27.0 | MIT | typing-extensions | 4.16.0 | PSF-2.0 |
-| packaging | 26.2 | Apache-2.0 OR BSD-2-Clause | protobuf | 7.35.1 | BSD-3-Clause |
-| psutil | 7.2.2 | BSD-3-Clause | pyaudiowpatch | 0.2.12.8 | Apache-2.0 ([código fuente](https://github.com/s0d3s/PyAudioWPatch/blob/master/LICENSE.txt); incluye PortAudio) |
+| annotated-types | 0.8.0 | MIT | onnxruntime | 1.27.0 | MIT |
+| anthropic | 2.6.0 | Apache-2.0 | opentelemetry-api | 1.45.2 | Apache-2.0 |
+| anyio | 4.14.2 | MIT | packaging | 26.2 | Apache-2.0 OR BSD-2-Clause |
+| cffi | 2.1.0 | MIT-0 | protobuf | 7.35.1 | BSD-3-Clause |
+| docstring-parser | 0.18.0 | MIT | pycparser | 3.0 | BSD-3-Clause |
+| flatbuffers | 25.12.19 | Apache-2.0 | pydantic | 2.14.3 | MIT |
+| h11 | 0.16.0 | MIT | pydantic-core | 2.50.4 | MIT |
+| httpcore2 | 2.16.0 | BSD-3-Clause | pypdf | 6.18.1 | BSD-3-Clause |
+| httpx2 | 2.16.0 | BSD-3-Clause | **sherpa-onnx** | 1.13.4+baxy.3 | Apache-2.0 (tabla 6) |
+| idna | 3.18 | BSD-3-Clause | **silero-vad** | 6.2.1+baxy.1 | MIT (tabla 6; incluye `silero_vad.onnx`) |
+| jiter | 0.18.0 | MIT | sniffio | 1.3.1 | MIT OR Apache-2.0 |
+| kaldi-native-fbank | 1.22.3 | Apache-2.0 | sounddevice | 0.5.5 | MIT (incluye PortAudio, licencia tipo MIT) |
+| **numpy** | 1.26.4+baxy.1 | BSD-3-Clause (tabla 6) | truststore | 0.10.5 | MIT |
+| typing-extensions | 4.16.0 | PSF-2.0 | typing-inspection | 0.4.5 | MIT |
 
 Notas:
 
-- **numpy y scipy** para Windows traen OpenBLAS y el runtime de gfortran. Este último va bajo GPL-3.0 **con la
-  excepción de biblioteca de runtime de GCC**, que no extiende la GPL a quien lo usa. numpy lleva además libquadmath
-  (LGPL-2.1-or-later), según su `LICENSE.txt`. Van dentro de la rueda oficial, con esos textos, y BAXY no los redistribuye
-  aparte.
-- **Lock regenerado el 2026-11-04** (rama `steam-build`, 57 paquetes): entran **`kaldi-native-fbank` 1.22.3**
-  (Apache-2.0, [código fuente](https://github.com/csukuangfj/kaldi-native-fbank/blob/master/LICENSE)), que importa el
-  detector wake, y **`pypdf` 6.18.1** (BSD-3-Clause, [código fuente](https://github.com/py-pdf/pypdf/blob/main/LICENSE)),
-  con el que el core lee el texto de los PDF. Salen **livekit-wakeword, pyaudiowpatch, pywebrtc-audio, pycaw y
-  pywin32**, que ya no importa nada desde la voz de Renew: siguen en la tabla de arriba sólo como historia, y la rueda
-  parcheada de pywebrtc-audio queda en `runtime_wheels/` sin usarse.
-- **En el paquete 1.2.0 y no en la tabla** (medido en el zip, licencia de los metadatos de cada rueda): annotated-types 0.8.0
-  (MIT), anthropic 2.6.0 (Apache-2.0), docstring_parser 0.18.0 (MIT), httpcore2 2.16.0 (BSD-3-Clause), httpx2 2.16.0
-  (BSD-3-Clause), jiter 0.18.0 (MIT), opentelemetry-api 1.45.2 (Apache-2.0), pydantic 2.14.3 (MIT), pydantic_core 2.50.4 (MIT),
-  sniffio 1.3.1 (MIT OR Apache-2.0), truststore 0.10.5 (MIT) y typing-inspection 0.4.5 (MIT). Todas traen su licencia.
-- **Sin el texto de su licencia en la rueda** (medido en el zip): flatbuffers, tokenizers y sherpa-onnx-core, las tres
-  Apache-2.0: va en `licenses/Apache-2.0.txt`. onnxruntime lo trae en su carpeta, no en `dist-info`.
-- **torch para Windows lleva piezas de Intel sin su licencia** (medido en el zip): `torch_cpu.dll` lleva Intel oneMKL
-  compilado dentro («Intel(R) oneAPI Math Kernel Library Version») y no hay ningún `mkl*.dll` ni dependencia `mkl`; al lado va
-  `libiomp5md.dll` y `libiompstubs5md.dll` («Copyright (C) 1997-2025, Intel Corporation»). Las licencias de la rueda de torch no
-  los citan.
-  La [rueda `mkl`](https://pypi.org/project/mkl/2026.2.0/) declara la Intel Simplified Software License, que pide
-  reproducir sus términos y prohíbe la ingeniería inversa: `licenses/Intel-Simplified-Software-License.txt`. La
-  [rueda `intel-openmp`](https://pypi.org/project/intel-openmp/2026.2.0/) declara la Intel EULA for Developer Tools (agosto
-  de 2024), `licenses/Intel-EULA-Developer-Tools.txt`, que sólo deja distribuir los «Redistributables», definidos como los
-  ficheros listados en un `redist.txt` (1.I y 2.1.D), con un acuerdo que prohíba la ingeniería inversa. **Esa cláusula no está en el acuerdo del
-  instalador ni en el EULA de Steam:** es una propuesta pendiente del dueño. **Sin confirmar:** que los ficheros de torch sean de esas versiones
-  y que `libiomp5md.dll` sea redistribuible: esa rueda no trae ningún `redist.txt`. Lo que llevan de terceros (ITT Notify,
-  hwloc…), en `licenses/Intel-OpenMP-third-party-programs.txt` e `Intel-oneMKL-third-party-programs.txt`.
-- **sounddevice lleva una PortAudio con ASIO de Steinberg** que BAXY no carga (`libportaudio64bit-asio.dll`, sólo se usa con la
-  variable `SD_ENABLE_ASIO`). Su [README](https://github.com/spatialaudio/portaudio-binaries#copyright) da PortAudio como MIT y
-  a Steinberg sólo como autor. ASIO era propietario hasta que
-  [en 2025 añadió la opción GPLv3](https://librearts.org/2025/11/steinberg-relicenses-vst3-and-asio/). **Sin confirmar:** bajo
-  qué términos se redistribuye ese fichero.
+- **Lock regenerado el 2026-11-06 con `lock_python_dependencies.ps1`: de 69 a 28 paquetes;** el paquete armado lleva 27, sin protobuf. Son los que
+  necesitan la mente, el texto de los PDF y el modelo por API. El resto sólo lo piden scripts de investigación (`requirements-research-win-x64.txt`) y no va en el paquete.
+- **Sin el texto de su licencia en la rueda** (medido en el zip de 1.2.0): flatbuffers, Apache-2.0: va en `licenses/Apache-2.0.txt`.
+  onnxruntime lo trae en su carpeta, no en `dist-info`.
+- **PortAudio de sounddevice:** el paquete sólo lleva `libportaudio64bit.dll`, sin ASIO. Su
+  [README](https://github.com/spatialaudio/portaudio-binaries#copyright) da PortAudio como MIT; el texto, en `licenses/PortAudio-LICENSE.txt`.
+- **`pydantic_core` y `jiter` llevan crates de Rust** con otras licencias además de MIT y Apache-2.0, sobre todo Unicode-3.0, y `foldhash`
+  con Zlib, según las listas CycloneDX de sus ruedas: `licenses/CRATES_RUST.md`. **Sin copiar:** el aviso de copyright de cada crate.
+- **La cancelación de eco no va en el paquete, y no es de 1.3.0:** `voice_echo.py` importa `pyaudiowpatch` y `pywebrtc_audio`, que salieron del
+  lock en `22b470dd0`. Sin ellos, la voz sigue con el eco apagado. Sus filas de abajo describen la rueda que queda en el repo.
 - **El Python embebido lleva OpenSSL 3.0.16** (`libcrypto-3.dll`, `libssl-3.dll`, Apache-2.0), expat, libmpdec y zlib, que su
   `LICENSE.txt` no cita: `licenses/OpenSSL-LICENSE.txt` y `Python-Licenses-and-Acknowledgements.txt`, la lista oficial de CPython
   para esa versión.
@@ -288,12 +240,13 @@ Notas:
   Apache-2.0, como TTS de entrenamiento). La mente no lo importa en tiempo de ejecución.
 
 **Pruebas y calidad** (sólo desarrollo, no se distribuyen): pytest 9.1.1 (MIT), pluggy 1.6.0 (MIT), iniconfig 2.3.0
-(MIT), colorama, packaging y pygments (como arriba), ruff 0.15.22 (MIT).
+(MIT), colorama 0.4.6, jinja2 3.1.6, markupsafe 3.0.3, psutil 7.2.2 y pygments 2.20.0 (BSD), scipy 1.17.1 (BSD-3-Clause, con OpenBLAS y el runtime de GCC en `scipy.libs`), numpy y packaging (como arriba), ruff 0.15.22 (MIT).
 
 **Scripts de investigación** (los bancos de medición internos, que no se publican en este repositorio; no son runtime): usaban modelos de embeddings
 [`intfloat/multilingual-e5-small`](https://huggingface.co/intfloat/multilingual-e5-small) (MIT) y
 [`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2)
-(Apache-2.0), que descarga la biblioteca al ejecutarlos.
+(Apache-2.0), que descarga la biblioteca al ejecutarlos. Sus paquetes están en `requirements-research-win-x64.txt`: entre ellos, torch
+lleva Intel oneMKL dentro, sin su licencia en la rueda, y setuptools lleva autocommand (LGPLv3). Nada de eso se distribuye.
 
 ### 3. Interfaz FieldUi (npm, resumen)
 
@@ -332,7 +285,7 @@ No hay bibliotecas de iconos. Los iconos y el arte del avatar son medios generad
 
 | Pieza | Versión / fichero | Licencia | Fuente de la licencia | Cómo llega | Obligaciones |
 |---|---|---|---|---|---|
-| llama.cpp (`llama-server`) | build **b11609** (commit `fcac19079`), distribuciones oficiales Windows x64 CUDA 12.4 y Vulkan; hashes en `src/baxy_mind/data/llama_server.v1.json` | MIT | [ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/LICENSE) | Lo aporta la persona (la release oficial); el paquete de tiendas lleva las dos carpetas | Atribución si se redistribuye: el aviso va en `licenses/LICENSE-llama.cpp.txt` del paquete. llama-server lleva compilados [cpp-httplib y BoringSSL](https://github.com/ggml-org/llama.cpp/blob/fcac19079/vendor/cpp-httplib/CMakeLists.txt) y nlohmann/json: `licenses/cpp-httplib-LICENSE.txt`, `BoringSSL-LICENSE.txt` y `nlohmann-json-LICENSE.txt`. `libomp.dll` (LLVM OpenMP, Apache-2.0 WITH LLVM-exception) lleva su licencia al lado: `LICENSE-LLVM-OpenMP`. |
+| llama.cpp (`llama-server`) | build **b11609** (commit `fcac19079`), distribuciones oficiales Windows x64 CUDA 12.4 y Vulkan; hashes en `src/baxy_mind/data/llama_server.v1.json` | MIT | [ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp/blob/master/LICENSE) | Lo aporta la persona (la release oficial); el paquete de tiendas lleva las dos carpetas | Atribución si se redistribuye: el aviso va en `licenses/LICENSE-llama.cpp.txt` del paquete. `stb_image`, en `mtmd.dll`, y `subprocess.h`, en `llama-common.dll`, son de dominio público o Unlicense según sus cabeceras. llama-server lleva compilados [cpp-httplib y BoringSSL](https://github.com/ggml-org/llama.cpp/blob/fcac19079/vendor/cpp-httplib/CMakeLists.txt) y nlohmann/json: `licenses/cpp-httplib-LICENSE.txt`, `BoringSSL-LICENSE.txt` y `nlohmann-json-LICENSE.txt`. `libomp.dll` (LLVM OpenMP, Apache-2.0 WITH LLVM-exception) lleva su licencia al lado: `LICENSE-LLVM-OpenMP`. |
 | llama.cpp parcheado (`b11609-baxy-cache`) | `scripts/llama/cache_tools_prefix.patch` | MIT (obra derivada) | ídem | **El parche, en el repo**; el binario lo compila la persona | Conservar el aviso MIT de llama.cpp. |
 | Runtime CUDA 12 (`cudart64_12`, `cublas64_12`, `cublasLt64_12`) | el de la release b11609 | NVIDIA CUDA EULA (redistribuible con condiciones) | [CUDA EULA](https://docs.nvidia.com/cuda/eula/index.html) | Lo aporta la persona (zip `cudart-llama-bin-win-cuda-12.4-x64` de llama.cpp); **en el paquete** de Steam y de GitHub, carpeta `llama` | Ver [«Runtime CUDA 12»](#runtime-cuda-12-en-el-paquete). |
 | Qwen3.5-4B (modelo base) | `Qwen3.5-4B-Q4_K_M.gguf` de `unsloth/Qwen3.5-4B-GGUF` | Apache-2.0 | [Qwen/Qwen3.5-4B](https://huggingface.co/Qwen/Qwen3.5-4B/blob/main/LICENSE) | Lo aporta la persona | Obligación 4. |
@@ -345,8 +298,8 @@ No hay bibliotecas de iconos. Los iconos y el arte del avatar son medios generad
 | Parakeet TDT 0.6B v3 (alternativa) | `sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8` | CC-BY-4.0 | [nvidia/parakeet-tdt-0.6b-v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3) | Lo aporta la persona | Atribución a NVIDIA. |
 | Nemotron 3.5 ASR streaming (opcional) | `sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11` | OpenMDW-1.1 (permisiva) | [nvidia/nemotron-3.5-asr-streaming-0.6b](https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b), [texto](https://openmdw.ai/license/1-1/) | Lo aporta la persona; opcional | Al redistribuir: copia de la licencia y avisos de origen. El script `install_nemotron_streaming_stt.ps1` que cita el manifiesto no existe en esta rama. |
 | Palabra de activación «k4» | paquete externo `baxy-wake-k4`: `encoder_kroko_es.onnx` + `head.onnx` propio, ejecutado con onnxruntime y kaldi-native-fbank | Encoder: **CC-BY-SA** (Kroko); cabeza: propia | [Banafo/Kroko-ASR](https://huggingface.co/Banafo/Kroko-ASR) | Lo aporta la persona | **Obligación 2.** |
-| Silero VAD v6 | `silero_vad.onnx` dentro de la rueda `silero-vad` 6.2.1 | MIT | [snakers4/silero-vad](https://github.com/snakers4/silero-vad/blob/master/LICENSE) | Se instala | Ninguna extra. |
-| ONNX Runtime | 1.27.0 (rueda Python; también la usa sherpa-onnx) | MIT | [microsoft/onnxruntime](https://github.com/microsoft/onnxruntime/blob/main/LICENSE) | Se instala | Ninguna extra. |
+| Silero VAD v6 | `silero_vad.onnx` dentro de la rueda `silero-vad` 6.2.1+baxy.1 (tabla 6) | MIT | [snakers4/silero-vad](https://github.com/snakers4/silero-vad/blob/master/LICENSE) | **En el repo** | Ninguna extra. |
+| ONNX Runtime | 1.27.0 (rueda Python; también la usa sherpa-onnx) | MIT; lleva Eigen (MPL-2.0) y lo demás de su `ThirdPartyNotices.txt` | [microsoft/onnxruntime](https://github.com/microsoft/onnxruntime/blob/main/LICENSE) | Se instala | Eigen: `licenses/FUENTES.md`. |
 | WebRTC AEC3 (vía pywebrtc-audio) | vendorizado en la rueda | BSD-3-Clause + concesión de patentes de WebRTC | `LICENSE` y `WEBRTC-PATENTS` dentro de la rueda | **En el repo** (rueda parcheada) | Ya incluidos en la rueda (tabla 6). |
 | Windows OCR (`Windows.Media.Ocr`) | API de Windows | Términos de Windows | — | Del sistema | Ninguna. |
 | Tesseract OCR (alternativa si falla Windows OCR) | la que haya instalada | Apache-2.0 | [tesseract-ocr/tesseract](https://github.com/tesseract-ocr/tesseract/blob/main/LICENSE) | Lo aporta la persona | Ninguna mientras no se redistribuya. |
@@ -354,8 +307,8 @@ No hay bibliotecas de iconos. Los iconos y el arte del avatar son medios generad
 | Clips, fondos e icono del avatar | 37 `.mp4`, 2 `.jpg`, `.png`, `.ico` | Términos de Higgsfield (no es licencia abierta) | [Higgsfield](https://higgsfield.ai/creator-hub/help-center/account/who-owns-my-generations-and-can-i-use-them-commercially) | **En el repo** | **Obligación 6.** |
 
 Lo que no aparece en este repositorio: `mpv` y `yt-dlp` no se invocan (sólo aparece «mpv» en un comentario de
-`CoreProcessClient.cs`), no hay voces Piper en el runtime (sólo una ruta antigua en el manifiesto de activos; sherpa-onnx sí compila
-piper-phonemize, obligación 0) y LiveKit
+`CoreProcessClient.cs`), no hay voces Piper en el runtime (sólo una ruta antigua en el manifiesto de activos; desde 1.3.0 el sherpa-onnx
+de BAXY tampoco podría cargarlas: obligación 0) y LiveKit
 sólo aparece como herramienta de entrenamiento y en comentarios.
 
 ### 5. Python, .NET y Edge que la persona instala
@@ -370,7 +323,10 @@ Todas son **obras derivadas** de proyectos permisivos y deben seguir bajo la lic
 
 | Fichero | Origen | Licencia | Qué cambia | Avisos incluidos | Falta |
 |---|---|---|---|---|---|
-| `sherpa_onnx-1.13.4+baxy.2-cp312-cp312-win_amd64.whl` (**no está en el repositorio**: lleva eSpeak NG; se compila con `scripts/build_sherpa_runtime.py`, ver `runtime_wheels/README.md`, y va dentro del paquete de la release) | sherpa-onnx `v1.13.4` (commit `14280725…`) | Apache-2.0 ([LICENSE](https://github.com/k2-fsa/sherpa-onnx/blob/master/LICENSE)); con eSpeak NG dentro, el binario va bajo GPL-3.0-or-later (obligación 0) | Decodificación greedy por stream con el modelo NeMo; normalización estable (PR #3857 de upstream) | `licenses/LICENSE`, `BAXY-NOTICE.txt` (qué cambió), `baxy_native_build.json` (procedencia) | El aviso de pybind11 está en `licenses/pybind11-LICENSE.txt`. |
+| `sherpa_onnx-1.13.4+baxy.3-cp312-cp312-win_amd64.whl` | sherpa-onnx `v1.13.4` (commit `14280725…`) | Apache-2.0 ([LICENSE](https://github.com/k2-fsa/sherpa-onnx/blob/master/LICENSE)) | Decodificación greedy por stream con el modelo NeMo; normalización estable (PR #3857 de upstream); sin eSpeak NG ni piper-phonemize; lleva `onnxruntime.dll` de la rueda oficial `sherpa-onnx-core` | `licenses/LICENSE`, `BAXY-NOTICE.txt` (qué cambió), `baxy_native_build.json` (procedencia) | El aviso de pybind11 está en `licenses/pybind11-LICENSE.txt`. |
+| `numpy-1.26.4+baxy.1-cp312-cp312-win_amd64.whl` | [numpy 1.26.4](https://pypi.org/project/numpy/1.26.4/), su fuente sin cambios | BSD-3-Clause y lo que numpy agrupa | Compilado sin BLAS: sin OpenBLAS, gfortran ni libquadmath | `LICENSE.txt`, `bundled/`, `BAXY-NOTICE.txt` | pocketfft y msun: en `licenses/`. |
+| `silero_vad-6.2.1+baxy.1-py3-none-any.whl` | [silero-vad 6.2.1](https://pypi.org/project/silero-vad/6.2.1/), los mismos ficheros | MIT | Sin sus requisitos de torch y torchaudio | Los de la rueda, `BAXY-NOTICE.txt` | — |
+| `sherpa-no-espeak.patch` | sobre sherpa-onnx | Apache-2.0 | Opción `SHERPA_ONNX_ENABLE_ESPEAK` en sus `CMakeLists.txt` y `offline-tts-impl.cc` | Los ficheros cambiados, en `BAXY-NOTICE.txt` de la rueda y en el README del activo de fuente | Ninguna cabecera en el `.patch`: su SHA-256 está fijado. |
 | `sherpa-nemo-stream-decoder.patch` | sobre sherpa-onnx | Apache-2.0 | Ficheros `offline-recognizer-transducer-nemo-impl.h` y relacionados | — | Una cabecera que diga «modificado por BAXY, Apache-2.0» (apartado 4(b) de Apache). |
 | `sherpa-nemo-normalization.patch` | sobre sherpa-onnx; incorpora el commit upstream `0967a08d` (PR #3857, autor externo) | Apache-2.0 | `math.cc` y `math-test.cc` | — | Ídem, citando el PR de origen. |
 | `pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl` | pywebrtc-audio 0.2.0 | Apache-2.0 ([LICENSE](https://github.com/strands-labs/pywebrtc-audio/blob/main/LICENSE)) + vendorizados: WebRTC (BSD-3-Clause + patentes), Abseil (Apache-2.0), JsonCpp (MIT o dominio público), rnnoise (BSD-3-Clause), PFFFT (tipo BSD), Ooura FFT (permisiva propia) | Expone la señal lineal de AEC3; el DSP no cambia | `licenses/LICENSE` (con la sección de terceros), `licenses/NOTICE`, `licenses/WEBRTC-PATENTS`, `BAXY-NOTICE.txt` | El aviso BSD-3-Clause de **pybind11 3.0.1**, con el que se compiló. |
@@ -387,16 +343,18 @@ Todas son **obras derivadas** de proyectos permisivos y deben seguir bajo la lic
 3. **Laya / System One:** que la base sea `convaiinnovations/laya-multilingual` y de dónde sale el `llama-server`
    con `/v1/systemone`.
 4. ~~Windows SDK projections~~: resuelto el 2026-11-06, la lista REDIST las nombra (ver la tabla de .NET).
-5. torchaudio, BSD de 2 o 3 cláusulas.
-6. **CUDA EULA:** revisada el 2026-11-06 (ver [«Runtime CUDA 12»](#runtime-cuda-12-en-el-paquete)). En GitHub, desde 1.2.1, parte
+5. ~~torchaudio, BSD de 2 o 3 cláusulas~~: fuera del paquete desde 1.3.0.
+6. **CUDA EULA:** revisada el 2026-11-06 (ver [«Runtime CUDA 12»](#runtime-cuda-12-en-el-paquete)). En GitHub, desde 1.3.0, parte
    aparte sólo para NVIDIA. Sigue abierta la duda del apartado 2.1 en el paquete único de Steam.
 7. ~~Coherencia del lock~~: resuelto el 2026-11-04 (ver la nota del lock de Python).
-8. **eSpeak NG (GPL):** hasta dónde llega la obra (obligación 0): fuente y oferta ya están, el alcance no se ha decidido. **libquadmath y autocommand (LGPL):** qué pide la LGPL a
-   quien redistribuye esas ruedas.
-9. **Intel** en torch y **ASIO** en sounddevice: ver las notas de la tabla de Python.
-10. **Acuerdos:** la sección 2 del acuerdo del instalador dice que no cambia las licencias de terceros, pero las secciones 1 y 3 se
-    aplican a «el Software» entero. Ese acuerdo y el EULA de Steam no llevan todavía ni el Anexo A literal de OpenRAIL-M, ni la cláusula
-    expresa de que no limitan la GPL y las licencias de terceros, ni las de CUDA, Intel y Windows SDK. Hay un texto propuesto pendiente del dueño.
+8. **eSpeak NG (GPL), libquadmath y autocommand (LGPL):** fuera del paquete desde 1.3.0 (obligación 0). Siguen en 1.2.0 y 1.2.1, ya publicadas (ver la tabla de arriba), y las ruedas con eSpeak NG siguen en la historia de git.
+9. **Intel** en torch y **ASIO** en sounddevice: fuera del paquete desde 1.3.0.
+10. **Acuerdos:** desde 1.3.0 el acuerdo del instalador da BAXY para **cualquier uso, personal o comercial**, con copia y
+    redistribución, sin restricción propia: las únicas son las de las licencias de terceros. Lleva el Anexo A literal de OpenRAIL-M
+    aplicado sólo a la voz, sus derivados y lo que genere; la cláusula expresa de que no limita las licencias de terceros; CUDA
+    (sólo para BAXY, sin ingeniería inversa, apartado 1.1.2 de su EULA), Microsoft, Eigen (MPL-2.0) y los medios de Higgsfield
+    (fuera de la MIT). **Sin revisión jurídica.** El EULA de Steam (`documentacion/steam/EULA.md`) sigue diciendo «uso personal»:
+    no se cambió (otro canal, con sus propias condiciones).
 
 ## El paquete de Steam (rama `steam-build`)
 
@@ -406,13 +364,13 @@ Todas son **obras derivadas** de proyectos permisivos y deben seguir bajo la lic
 | Pieza | Licencia | Qué exige al redistribuirla |
 |---|---|---|
 | CPython 3.12.10 embebido (python.org) | PSF-2.0 | Su `LICENSE.txt`, copiado a `licenses/Python-LICENSE.txt` |
-| Lock de runtime (69 paquetes en 1.2.0) | Las de la tabla de Python | Las licencias que trae cada paquete dentro de `Lib/site-packages` |
+| Lock de runtime (27 de sus 28 paquetes desde 1.3.0: protobuf no va) | Las de la tabla de Python | Las licencias que trae cada paquete dentro de `Lib/site-packages` |
 | llama.cpp b11609 (oficial, CUDA) | MIT | Su aviso MIT, en `licenses/LICENSE-llama.cpp.txt` |
 | Runtime CUDA 12 | NVIDIA CUDA EULA | Ver [«Runtime CUDA 12»](#runtime-cuda-12-en-el-paquete) |
 | Modelo de BAXY y proyector de visión | Apache-2.0 | Copia de Apache-2.0 y aviso de modificación (obligación 4), en `licenses/` |
 | Parakeet Ultra int8 | CC-BY-4.0 | Atribución a cada eslabón (obligación 3) |
 | Voz de BAXY (Supertonic 3) | OpenRAIL-M | Las restricciones del Anexo A en la EULA de BAXY (la del instalador: `src/Baxy.Installer/Assets/license/`) y avisar que la voz es sintética (obligación 1) |
-| Palabra de activación v3_b2 | Red propia, entrenada imitando al encoder Kroko y a k5; no lleva sus pesos (dicho por quien la entrenó; no hay encoder en el paquete con el que compararla) | Por prudencia, la atribución y la licencia de Kroko (obligación 2), hasta confirmar si cuenta como adaptación (punto 1 de lo pendiente) |
+| Palabra de activación v3_b2 | Red propia, entrenada imitando al encoder Kroko y a k5; no lleva sus pesos (dicho por quien la entrenó y comparado el 2026-11-06 con `encoder_kroko_es.onnx`: obligación 2) | Por prudencia, la atribución y la licencia de Kroko (obligación 2), hasta confirmar si cuenta como adaptación (punto 1 de lo pendiente) |
 | .NET 10 *self-contained* y WebView2 | MIT / BSD-3-Clause | Sus avisos de terceros |
 | Runtime de Visual C++ (`vcruntime140*`, `msvcp140*`) | Licencia de Visual Studio, código redistribuible | Sólo los ficheros de la carpeta redistribuible, junto al ejecutable; Microsoft admite este despliegue y deja sus actualizaciones a cargo de BAXY. [Lo limita a quien tiene licencia de Visual Studio](https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files). |
 
@@ -435,9 +393,9 @@ texto: 12 de enero de 2024) y en la vigente, v13.5 (26 de enero de 2026), con la
   dueño,** y hasta entonces estas condiciones sólo se dicen aquí.
 - **Esa parte aparte es un fichero público de la release,** aunque sólo la use el instalador, y lleva la carpeta entera, con su
   `llama-server`: si eso basta para «no se distribuyen sueltos» no lo dice la EULA. Sólo NVIDIA lo cierra.
-- **Apartado 2.1:** el SDK se licencia para aplicaciones «only for use in systems with NVIDIA GPUs». **Desde 1.2.1, en GitHub, la
+- **Apartado 2.1:** el SDK se licencia para aplicaciones «only for use in systems with NVIDIA GPUs». **Desde 1.3.0, en GitHub, la
   carpeta `llama` va en una parte aparte (`baxy-<versión>-nvidia.zip.*`) que el instalador sólo baja si Windows le da una tarjeta
-  NVIDIA (PCI 10DE):** en un equipo con AMD o Intel estos ficheros no llegan, y BAXY calcula con `llama-vulkan`. Hasta 1.2.0 el paquete
+  NVIDIA (PCI 10DE):** en un equipo con AMD o Intel estos ficheros no llegan, y BAXY calcula con `llama-vulkan`. En 1.2.0 el paquete
   era uno solo y sí llegaban, sin cargarse. **El paquete de Steam sigue siendo uno solo,** con esa duda de lectura abierta. Sólo
   NVIDIA la cierra: su dirección para preguntas sobre esta EULA está en el apartado 2.5. Este documento no es asesoría legal.
 - **Avisos:** el Anexo B (2.7) dice que algunas rutinas de cuBLAS se rigen además por las licencias de abajo, cuya cláusula

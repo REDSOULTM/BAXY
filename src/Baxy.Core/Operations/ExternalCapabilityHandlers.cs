@@ -450,6 +450,12 @@ internal sealed class ExternalCapabilityHandler(
                 : InvocationPreflightResult.Proceed;
     }
 
+    // Revisión R2 (H4): the person is being asked for this call now; the engine leaves a note that fails to the question.
+    public ValueTask NoteAskedAsync(JsonElement arguments, CancellationToken cancellationToken) =>
+        _provider.NoteAskedAsync(operation, arguments, cancellationToken);
+
+    public void ForgetAsked(JsonElement arguments) => _provider.ForgetAsked(operation, arguments);
+
     // Renew al máximo (guarda diálogo destructivo): only a call the provider says may need a yes is read when its
     // declared risk goes without asking; a provider that fails to say keeps it as declared.
     public bool MayRaise(JsonElement arguments)

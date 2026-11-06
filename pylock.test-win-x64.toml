@@ -26,6 +26,39 @@ url = "https://files.pythonhosted.org/packages/cb/b1/3846dd7f199d53cb17f49cba7e6
 sha256 = "f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"
 
 [[packages]]
+name = "jinja2"
+version = "3.1.6"
+
+[[packages.wheels]]
+name = "jinja2-3.1.6-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"
+
+[[packages]]
+name = "markupsafe"
+version = "3.0.3"
+
+[[packages.wheels]]
+name = "markupsafe-3.0.3-cp312-cp312-win_amd64.whl"
+url = "https://files.pythonhosted.org/packages/aa/5b/bec5aa9bbbb2c946ca2733ef9c4ca91c91b6a24580193e891b5f7dbe8e1e/markupsafe-3.0.3-cp312-cp312-win_amd64.whl"
+
+[packages.wheels.hashes]
+sha256 = "26a5784ded40c9e318cfc2bdb30fe164bdb8665ded9cd64d500a34fb42067b1c"
+
+[[packages]]
+name = "numpy"
+version = "1.26.4+baxy.1"
+
+[[packages.wheels]]
+name = "numpy-1.26.4+baxy.1-cp312-cp312-win_amd64.whl"
+path = "runtime_wheels/numpy-1.26.4+baxy.1-cp312-cp312-win_amd64.whl"
+
+[packages.wheels.hashes]
+sha256 = "19b01f21f80b3a23edd28bea53636ceb8230bced3ff6ff586d70f5e9246e3182"
+
+[[packages]]
 name = "packaging"
 version = "26.2"
 
@@ -48,6 +81,17 @@ url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc30694
 sha256 = "e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"
 
 [[packages]]
+name = "psutil"
+version = "7.2.2"
+
+[[packages.wheels]]
+name = "psutil-7.2.2-cp37-abi3-win_amd64.whl"
+url = "https://files.pythonhosted.org/packages/b4/90/e2159492b5426be0c1fef7acba807a03511f97c5f86b3caeda6ad92351a7/psutil-7.2.2-cp37-abi3-win_amd64.whl"
+
+[packages.wheels.hashes]
+sha256 = "eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988"
+
+[[packages]]
 name = "pygments"
 version = "2.20.0"
 
@@ -68,3 +112,14 @@ url = "https://files.pythonhosted.org/packages/24/25/1de2678b631f5a49215c6c96fff
 
 [packages.wheels.hashes]
 sha256 = "37a86b45efb9a47a61a36449063e8e18d0cab3161329fc099eb21783169c4f0c"
+
+[[packages]]
+name = "scipy"
+version = "1.17.1"
+
+[[packages.wheels]]
+name = "scipy-1.17.1-cp312-cp312-win_amd64.whl"
+url = "https://files.pythonhosted.org/packages/a2/84/dc08d77fbf3d87d3ee27f6a0c6dcce1de5829a64f2eae85a0ecc1f0daa73/scipy-1.17.1-cp312-cp312-win_amd64.whl"
+
+[packages.wheels.hashes]
+sha256 = "41b71f4a3a4cab9d366cd9065b288efc4d4f3c0b37a91a8e0947fb5bd7f31d87"

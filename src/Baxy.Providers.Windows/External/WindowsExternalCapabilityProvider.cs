@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
 
 namespace Baxy.Providers.Windows.External;
@@ -634,14 +635,86 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
         return claiming.Length == 1 && claiming[0].PreflightMayRaise(operation, arguments);
     }
 
+    // Revisión R2 (H4): as the read, the one adapter that claims the operation notes it.
+    public ValueTask NoteAskedAsync(string operation, JsonElement arguments, CancellationToken cancellationToken)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        IExternalOperationAdapter[] claiming = _adapters.Where(candidate => candidate.CanHandle(operation)).ToArray();
+        return claiming.Length == 1
+            ? claiming[0].NoteAskedAsync(operation, arguments, cancellationToken)
+            : ValueTask.CompletedTask;
+    }
+
+    public void ForgetAsked(string operation, JsonElement arguments)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        IExternalOperationAdapter[] claiming = _adapters.Where(candidate => candidate.CanHandle(operation)).ToArray();
+        if (claiming.Length == 1)
+            claiming[0].ForgetAsked(operation, arguments);
+    }
+
+    /// <summary>
+    /// C2040: a click by a label the last look showed is a click that names that look's window
+    /// (<see cref="WindowsVisibleControlAdapter.LabelReachAsync"/>): it is judged, brought up and pressed there, as a
+    /// click that gives the window's number is, whatever window is in front.
+    /// </summary>
+    private async ValueTask<(JsonElement Arguments, ExternalCapabilityReceipt? Refused)> BoundToLastLookAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        foreach (WindowsVisibleControlAdapter adapter in _adapters.OfType<WindowsVisibleControlAdapter>())
+        {
+            (nint looked, ExternalCapabilityReceipt? refused) = await adapter.LabelReachAsync(operation, arguments, cancellationToken)
+                .ConfigureAwait(false);
+            if (refused is not null)
+                return (arguments, refused);
+            if (looked == 0)
+                continue;
+            JsonObject bound = JsonNode.Parse(arguments.GetRawText())!.AsObject();
+            bound["window"] = (long)looked;
+            using JsonDocument document = JsonDocument.Parse(bound.ToJsonString());
+            return (document.RootElement.Clone(), null);
+        }
+
+        return (arguments, null);
+    }
+
+    /// <summary>
+    /// Cosecha 05-11 (uso real): with BAXY's own window in front, a click with the index of the look at the browser and no
+    /// window came back protected_window, and the model told «la ventana de Opera está protegida por BAXY». The catalog
+    /// says a click with index acts in the window of the last look, and the adapter presses there, whatever is in front:
+    /// the arguments as the gate must judge them, with that window named. Nothing else reads them: the act still names
+    /// no window, so it does not take the front.
+    /// </summary>
+    private JsonElement WithTheLookedWindow(string operation, JsonElement arguments)
+    {
+        if (operation != "input.visible.click" || MissionWindow(arguments) != 0 || arguments.ValueKind != JsonValueKind.Object
+            || !arguments.TryGetProperty("index", out JsonElement index) || index.ValueKind != JsonValueKind.Number
+            || !index.TryGetInt32(out int position))
+            return arguments;
+        if (_adapters.OfType<IViewedFields>().FirstOrDefault()?.ViewedAt(position) is not { Window: not 0 } seen
+            || !VisibleControlSurface.IsAlive(seen.Window))
+            return arguments;
+        JsonObject named = JsonObject.Create(arguments)!;
+        named["window"] = (long)seen.Window;
+        using JsonDocument written = JsonDocument.Parse(named.ToJsonString());
+        return written.RootElement.Clone();
+    }
+
     private async ValueTask<ExternalCapabilityReceipt> InvokeBoundAsync(
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
-        if (_actRefused?.Invoke(operation, arguments) == true)
+        (arguments, ExternalCapabilityReceipt? notReached) = await BoundToLastLookAsync(operation, arguments, cancellationToken)
+            .ConfigureAwait(false);
+        if (notReached is not null)
+            return notReached;
+        JsonElement reaching = WithTheLookedWindow(operation, arguments);
+        if (_actRefused?.Invoke(operation, reaching) == true)
         {
-            string? program = _refusedProcess?.Invoke(operation, arguments);
+            string? program = _refusedProcess?.Invoke(operation, reaching);
             return program is null
                 ? ExternalJson.FailureBeforeEffect(operation, "protected_window")
                 : new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
@@ -667,7 +740,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                         }
 
                         writer.WriteString("next", ProtectedNext(
-                            operation, program, MissionWindow(arguments) != 0, open.Count > 0,
+                            operation, program, MissionWindow(reaching) != 0, open.Count > 0,
                             open.Count == 1 ? open[0].Number : null, arguments));
                     }
 

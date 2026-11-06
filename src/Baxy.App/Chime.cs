@@ -36,6 +36,11 @@ internal sealed class Chime
     /// it again when BAXY is done. One short soft note, 90 ms.</summary>
     internal static readonly Chime Wait = new([(587, 90)]);
 
+    /// <summary>The model is still reading a long prompt, with no call running and nothing else to hear
+    /// (<see cref="SilenceNotice.Advanced"/>; uso-124). A fixed line would be a fixed reply (invariante 5), and the model
+    /// that would write one is busy reading. One low soft note, 80 ms.</summary>
+    internal static readonly Chime StillReading = new([(440, 80)]);
+
     private readonly Lazy<byte[]> _wave;
 
     private Chime((double Hz, int Ms)[] notes) => _wave = new(() => Build(notes));

@@ -280,6 +280,18 @@ public sealed class DesktopMessagingAdapterTests
         });
     }
 
+    // Uso-128 (cosecha 18:45): the band's picture under Discord's switcher saw its backdrop fading, with the focus in the
+    // switcher's own field: no composer gets those keys, so the read that stops on a person's draft does not run.
+    [Test]
+    public void TheSwitchersFocusSparesTheDraftRead()
+    {
+        string source = AdapterSource();
+        int retried = source.IndexOf("AfterSearchWait(input, retried: true) == SearchStep.Refuse", StringComparison.Ordinal);
+        int read = source.IndexOf("ComposerHoldsTextAsync(", Math.Max(retried, 0), StringComparison.Ordinal);
+        Assert.That(retried, Is.GreaterThan(0));
+        Assert.That(source[retried..read], Does.Contain("Focused is not { InDialog: true }"));
+    }
+
     // C7: every flow that resizes the person's window to the normalized layout runs inside InNormalizedWindowAsync,
     // which gives the window its size back in a finally.
     [Test]

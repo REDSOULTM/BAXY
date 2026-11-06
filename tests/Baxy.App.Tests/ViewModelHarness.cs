@@ -28,6 +28,17 @@ internal static class ViewModelHarness
         (Task)typeof(MainWindowViewModel).GetMethod("InitializeMindAsync", Private)!.Invoke(viewModel,
             [Task.FromResult(FakeMind.EmptyCatalog), CancellationToken.None, CancellationToken.None])!;
 
+    /// <summary>Ends the mind that is up, so that <see cref="StartMindAsync"/> starts another, as a relaunch does.</summary>
+    internal static async Task StopMindForRestartAsync(MainWindowViewModel viewModel)
+    {
+        System.Reflection.FieldInfo client = typeof(MainWindowViewModel).GetField("_mindClient", Private)!;
+        if (client.GetValue(viewModel) is MindSidecarClient mind)
+        {
+            await mind.DisposeAsync();
+            client.SetValue(viewModel, null);
+        }
+    }
+
     /// <summary>Lets the person's turns in: the engine counts as up (it is never sent anything here).</summary>
     internal static void AcceptTurns(MainWindowViewModel viewModel)
     {

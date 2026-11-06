@@ -13,7 +13,7 @@
 #   licenses\  BAXY's license and the third parties' notices
 #   mind-runtime-v1.json   the registration the App reads beside itself (MindRuntimeDiscovery), paths relative to it
 # llama\, llama-vulkan\ and python\ also carry the Visual C++ runtime (-VisualCppRedist): llama-server, ONNX Runtime and
-# torch import it and a clean Windows may not have it. Steam's redistributable installs it centrally, the way Microsoft
+# numpy import it and a clean Windows may not have it. Steam's redistributable installs it centrally, the way Microsoft
 # prefers; these copies are for a store with no such option (itch.io) and for a System32 with an older one.
 # The pieces are the ones this machine registered (%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json), the ones measured,
 # each copied only when it still has its registered SHA-256. -VulkanServer is llama-server.exe unpacked from the official
@@ -188,6 +188,13 @@ try {
 # pip leaves each package's console launcher in bin, with the path of the Python it ran on (this machine's, with its user's
 # name) inside; nothing here starts them, and on another PC that path does not exist.
 Remove-Item -LiteralPath (Join-Path $sitePackages 'bin') -Recurse
+# sounddevice's PortAudio with Steinberg's ASIO: it only loads with SD_ENABLE_ASIO, which BAXY never sets
+# (https://python-sounddevice.readthedocs.io/en/0.5.5/installation.html), and what terms that file goes under is not confirmed.
+Remove-Item -LiteralPath (Join-Path $sitePackages '_sounddevice_data\portaudio-binaries\libportaudio64bit-asio.dll')
+# protobuf: ONNX Runtime's metadata asks for it, for its model tools; loading and running a model does not import it (measured).
+# Its _message.pyd is the one binary here built with GCC, with mingw-w64's runtime inside.
+Remove-Item -LiteralPath (Join-Path $sitePackages 'google') -Recurse
+Get-ChildItem -LiteralPath $sitePackages -Filter 'protobuf-*.dist-info' | Remove-Item -Recurse
 
 # The mind at the build's commit: the files Git tracks, not the worktree's leftovers.
 $mindArchive = Join-Path $Output 'mind.zip'
@@ -231,13 +238,6 @@ Copy-Item -LiteralPath (Join-Path $repo 'THIRD_PARTY_NOTICES.md') -Destination $
 Copy-Item -LiteralPath (Join-Path $python 'LICENSE.txt') -Destination (Join-Path $licenses 'Python-LICENSE.txt')
 Copy-Item -LiteralPath (Join-Path $repo 'scripts\llama\LICENSE-llama.cpp.txt') -Destination $licenses
 Copy-Item -Path (Join-Path $repo 'licenses\*') -Destination $licenses
-# GPL-3.0 section 6(d): «clear directions next to the object code saying where to find the Corresponding Source». These two
-# folders hold the binaries that carry eSpeak NG (licenses\FUENTES_GPL.md).
-foreach ($folder in 'sherpa_onnx\lib', 'Scripts') {
-    foreach ($name in 'FUENTES_GPL.md', 'GPL-3.0.txt') {
-        Copy-Item -LiteralPath (Join-Path $repo "licenses\$name") -Destination (Join-Path $sitePackages $folder)
-    }
-}
 
 # The registration the App reads beside itself, every path relative to this folder.
 $python312 = Join-Path $python 'python.exe'
@@ -270,6 +270,10 @@ $document = [ordered]@{
 # What was copied is what the mind will accept, by the package's own interpreter and mind.
 Assert-ServerBackend -PythonExe $python312 -Vendor '10DE' -Server (Join-Path $Output 'llama\llama-server.exe')
 Assert-ServerBackend -PythonExe $python312 -Vendor '1002' -Server (Join-Path $Output 'llama-vulkan\llama-server.exe')
+# Nothing the licenses of 1.3.0 left out came back with a package of the lock.
+Invoke-Checked -FilePath $python312 -FailureMessage 'the package carries what its notices say it does not' -Arguments @(
+    '-B', '-X', 'utf8', (Join-Path $repo 'scripts\check_package_licenses.py'), '--depot', $Output,
+    '--lock', (Join-Path $repo 'pylock.runtime-win-x64.toml'))
 
 $files = @(Get-ChildItem -LiteralPath $Output -Recurse -File)
 [ordered]@{

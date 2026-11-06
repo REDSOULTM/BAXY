@@ -53,6 +53,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private volatile bool _mindRetryPending;
     // Why the last start (or run) of the mind failed (MindStartupFailure.Cause, or the App's own label), until one is up.
     private string? _mindFailureCause;
+    private (long TokensPerS, long NeedMinutes)? _mindFailureRead;
+    private MindModelReading? _mindReading;
+    private bool _mindOnProcessor;
     private (long NeedMb, long? FreeMb)? _mindFailureMemory;
     // Completed and replaced each time the mind's state changes (MindChanged): a message waiting for the mind wakes on it.
     private TaskCompletionSource _mindChanged = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -157,6 +160,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 },
                 // Nobody would hear it: the mind is not asked to write a notice.
                 NoticeHeard = NoticeWouldBeHeard,
+                StillReading = () => SoundUnlessMuted(Chime.StillReading),
                 StepCompleted = step =>
                 {
                     _personActed |= step.Sent && !_beatActive;
@@ -253,6 +257,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>uso-116 (N23): the figures of that lack of memory, when the mind knows them: the buffer that did not fit
     /// and the PC's RAM free (<see cref="MindStartupFailure"/>); null otherwise.</summary>
     internal (long NeedMb, long? FreeMb)? MindFailureMemory => IsMindReady ? null : _mindFailureMemory;
+
+    /// <summary>N9 (L5): the figures of a read too slow, when the mind has them: its pace and what the whole prefix would
+    /// take (<see cref="MindStartupFailure"/>); null otherwise.</summary>
+    internal (long TokensPerS, long NeedMinutes)? MindFailureRead => IsMindReady ? null : _mindFailureRead;
+
+    /// <summary>N9 (L5): how far the model being started has read its prefix; null when it is not reading one.</summary>
+    internal MindModelReading? MindReading => _mindStartupState == MindStartupState.Starting ? _mindReading : null;
+
+    /// <summary>N9 (L5): the mind said the processor computes its model, with no GPU its server can use.</summary>
+    internal bool MindOnProcessor => _mindOnProcessor;
 
     /// <summary>Uso 95 (F9): a message of the person's waits for the mind to come up (it starts or is relaunched).</summary>
     internal bool IsAwaitingMind => Volatile.Read(ref _awaitingMind) > 0;
@@ -1351,6 +1365,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 _mindStartupState = MindStartupState.Failed;
                 _mindFailureCause = cause;
                 _mindFailureMemory = null;
+                _mindFailureRead = null;
                 RetryMindOrGiveUp(cause);
                 MindRestarts.Record(loss, DateTimeOffset.UtcNow - _mindStartedAt);
             }
@@ -1574,6 +1589,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _mindRetryPending = false;
             _mindStartedAt = DateTimeOffset.UtcNow;
             _mindReadyAt = null;
+            _mindReading = null;
+            _mindOnProcessor = false;
             OnPropertyChanged(nameof(MindStartedAt));
             MindRuntimeDiscoveryResult discovery = await Task.Run(
                 static () => MindRuntimeDiscovery.DiscoverVerified(), linked.Token);
@@ -1581,6 +1598,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
                 _mindFailureCause = discovery.Problem;
                 _mindFailureMemory = null;
+                _mindFailureRead = null;
                 return;
             }
 
@@ -1599,12 +1617,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             mind = new MindSidecarClient();
+            mind.ModelReading += OnMindReading;
             // FT/proveedores goal (review of the App): the mind waits up to 600 s for its model to load (wait_ready in
             // __main__.py) before it says catalog.ready; at 120 s the App ended a slow but healthy load (no GPU, a cold
             // disk) and relaunched it for ever. A model server that dies is told at once (startup_failure). Uso 84: the
             // 600 s are a window the mind's progress through its prompt prefix starts again (a cold read took 167.5 s on
             // an AMD RX 7600, longer on a slower GPU), within MindSidecarClient.StartupCeiling.
-            if (!await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(600), linked.Token))
+            bool started = await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(600), linked.Token);
+            mind.ModelReading -= OnMindReading;
+            _mindOnProcessor = mind.ComputesOnProcessor == true;
+            _mindReading = null;
+            if (!started)
             {
                 RecordMindStartupFailure(mind.LastStartupFailure);
                 await mind.DisposeAsync();
@@ -1639,6 +1662,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindReady);
             _mindReadyAt = DateTimeOffset.UtcNow;
             _mindFailureCause = null;
+            // N9 (L5): a read too slow gives up at the first failure, and a PC that was only busy can bring a mind up
+            // afterwards (a core's recovery starts one): a BAXY that works shows no breakdown.
+            if (_mindGaveUp)
+            {
+                _mindGaveUp = false;
+                OnPropertyChanged(nameof(Failure));
+            }
+
             OnPropertyChanged(nameof(IsMindReady));
             // A message that waited for this mind is its first turn (uso 95).
             MindChanged();
@@ -1708,16 +1739,35 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindStartupState = MindStartupState.Failed;
         _mindFailureCause = failure?.Cause ?? "desconocida";
         _mindFailureMemory = failure?.NeedMb is { } need ? (need, failure.FreeMb) : null;
+        _mindFailureRead = failure is { TokensPerS: { } pace, NeedMinutes: { } minutes } ? (pace, minutes) : null;
         string cause = failure?.TraceLabel ?? "desconocida";
         ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed, cause);
         RetryMindOrGiveUp(cause);
         MindRestarts.Record(new MindLoss("startup." + cause), DateTimeOffset.UtcNow - _mindStartedAt);
     }
 
-    // Uso 85: the same failure again and again is a breakdown the interface shows, never one more relaunch.
+    // On the UI thread, as the mind's other events: the reader's thread cannot publish to the view (WebView2 refuses it, and
+    // the bridge swallows that). A line that arrives once the start ended is old news.
+    private void OnMindReading(MindModelReading reading) => _uiContext.Post(
+        _ =>
+        {
+            if (_mindStartupState != MindStartupState.Starting)
+            {
+                return;
+            }
+
+            _mindReading = reading;
+            _mindOnProcessor = reading.OnProcessor;
+            OnPropertyChanged(nameof(MindReading));
+        },
+        null);
+
+    // Uso 85: the same failure again and again is a breakdown the interface shows, never one more relaunch. N9 (L5): a read
+    // too slow is that from the first time: the next would read at the same pace for as long, and only the person knows
+    // whether the PC was busy (RetryEngine).
     private void RetryMindOrGiveUp(string cause)
     {
-        if (_mindRetries.Failed(cause, DateTimeOffset.UtcNow) is { } delay)
+        if (cause != MindStartupFailure.ReadTooSlow && _mindRetries.Failed(cause, DateTimeOffset.UtcNow) is { } delay)
         {
             _mindRetryPending = true;
             _ = RetryMindAfterAsync(delay);

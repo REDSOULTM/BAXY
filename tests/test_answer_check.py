@@ -1201,3 +1201,144 @@ def test_an_absence_is_not_told_from_a_read_that_says_it_covered_one_mail(answer
 def test_a_read_that_says_no_scope_says_nothing_of_an_absence() -> None:
     assert "partial" not in _rules("No aparece ningún correo de Marta Ríos en Outlook.", [_latest_mail(None)])
     assert "partial" not in _rules("No aparece ningún correo de Marta Ríos en Outlook.", [_latest_mail("")])
+
+
+# ---- what a turn says when its time ran out on the check ----------------------------------------------------------------
+# Cosecha 05-11 (uso real con el modelo local): a turn of two minutes wrote its answer twice, and each time the check asked
+# for it again; the second request ran out of its 24 s rereading a shrunk conversation, the App asks only once more, and
+# the person heard nothing until they asked.
+def _timed_out() -> TimeoutError:
+    return TimeoutError("the request's time budget is spent")
+
+
+def _looking_timed_out(tmp_path: Path, replies: list) -> tuple[Mind, object]:
+    mind, server = _mind(tmp_path, [_call("input_visible_controls", {"application": "Steam"}), *replies])
+    mind.wire_to_op = {"input_visible_controls": "input.visible.controls"}
+    mind.decide(1, "entra a la biblioteca de steam")
+    return mind, server
+
+
+ABSENT = "No hay un botón «Biblioteca» en esa ventana."
+ABSENT_AGAIN = "No veo ningún botón «Biblioteca»."
+
+
+def test_a_check_past_its_time_is_asked_again_before_anything_is_spoken(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _looking_timed_out(tmp_path, [_say(ABSENT), _timed_out()])
+    with pytest.raises(TimeoutError):  # the App asks once more (NativeTurnLoop, request_timed_out)
+        mind.continue_turn(2, json.dumps(STEAM_VIEW))
+
+
+def test_the_answer_in_hand_is_spoken_when_the_check_runs_out_of_the_last_request(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _looking_timed_out(tmp_path, [_say(ABSENT), _timed_out(), _say(ABSENT_AGAIN), _timed_out()])
+    with pytest.raises(TimeoutError):
+        mind.continue_turn(2, json.dumps(STEAM_VIEW))
+    result = mind.continue_turn(3, json.dumps(STEAM_VIEW))
+    assert result["reply"] == ABSENT_AGAIN
+    assert mind.conversation[-1] == {"role": "assistant", "content": ABSENT_AGAIN}
+    assert not any(str(m.get("content")).startswith(CHECK_NOTE[:20]) for m in mind.conversation)
+    assert [r["kept"] for r in _trace(mind) if r["stage"] == "turn.check" and r.get("timed_out")] == [True]
+
+
+def test_the_first_answer_is_spoken_when_the_last_request_writes_none(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _looking_timed_out(tmp_path, [_say(ABSENT), _timed_out(), _timed_out()])
+    with pytest.raises(TimeoutError):
+        mind.continue_turn(2, json.dumps(STEAM_VIEW))
+    assert mind.continue_turn(3, json.dumps(STEAM_VIEW))["reply"] == ABSENT
+
+
+def _found(monkeypatch, rule: str) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    monkeypatch.setattr("baxy_mind.mind.check_answer",
+                        lambda *_, **__: [{"rule": rule, "said": "lo dicho", "fact": "lo que lo contradice"}])
+
+
+def test_a_decision_with_no_call_has_no_second_request(tmp_path: Path, monkeypatch) -> None:
+    # The App asks again only after a call that ran (NativeTurnLoop: calls > 1): a decision past its time is the last one.
+    _found(monkeypatch, "partial")
+    mind, _ = _mind(tmp_path, [_say("No está en lo que leí."), _timed_out()])
+    assert mind.decide(1, "busca el dato")["reply"] == "No está en lo que leí."
+
+
+@pytest.mark.parametrize("rule", ["not_completed", "no_call", "implied_yes", "pending_cell", "saved_name", "browser", "folder",
+                                  "mode_not_saved", "already_open", "output", "internal", "number"])
+def test_an_answer_found_saying_what_did_not_happen_is_not_spoken_for_lack_of_time(tmp_path: Path, monkeypatch, rule) -> None:
+    _found(monkeypatch, rule)
+    mind, _ = _looking_timed_out(tmp_path, [_say("Lo hice."), _timed_out(), _say("Ya lo hice."), _timed_out()])
+    for request in (2, 3):
+        with pytest.raises(TimeoutError):
+            mind.continue_turn(request, json.dumps(STEAM_VIEW))
+    mind, _ = _mind(tmp_path, [_say("Lo hice."), _timed_out()])
+    with pytest.raises(TimeoutError):
+        mind.decide(1, "hazlo")
+
+
+def test_the_later_answer_is_the_one_held_back_when_a_request_wrote_two(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _looking_timed_out(tmp_path, [_say(ABSENT), _say(ABSENT_AGAIN), _timed_out(), _timed_out()])
+    with pytest.raises(TimeoutError):
+        mind.continue_turn(2, json.dumps(STEAM_VIEW))
+    assert mind.continue_turn(3, json.dumps(STEAM_VIEW))["reply"] == ABSENT_AGAIN
+
+
+def test_the_answer_held_back_is_spoken_when_the_last_request_writes_nothing(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _looking_timed_out(tmp_path, [_say(ABSENT), _timed_out(), _say("")])
+    with pytest.raises(TimeoutError):
+        mind.continue_turn(2, json.dumps(STEAM_VIEW))
+    assert mind.continue_turn(3, json.dumps(STEAM_VIEW))["reply"] == ABSENT
+
+
+def test_a_last_request_with_no_answer_written_still_fails_as_it_did(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _looking_timed_out(tmp_path, [_timed_out(), _timed_out()])
+    for request in (2, 3):
+        with pytest.raises(TimeoutError):
+            mind.continue_turn(request, json.dumps(STEAM_VIEW))
+
+
+def test_a_turn_with_no_check_keeps_failing_as_it_did(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("BAXY_AYUDAS", "none")
+    mind, _ = _looking_timed_out(tmp_path, [_timed_out(), _say("No pude entrar.")])
+    with pytest.raises(TimeoutError):
+        mind.continue_turn(2, json.dumps(STEAM_VIEW))
+    assert mind.continue_turn(3, json.dumps(STEAM_VIEW))["reply"] == "No pude entrar."
+
+
+# ---- findings that the reading does not back ------------------------------------------------------------------------------
+# Cosecha 05-11: «no hay un botón con ese nombre» was read as a button called «con», which any page's text holds, and the
+# rewrite it asked for took the turn past its time.
+LONG_VIEW = {"status": "completed", "observed": {"window": "Curso", "controls": [
+    {"index": 1, "kind": "Hyperlink", "name": "Tareas"}, {"index": 2, "kind": "Button", "name": "guardar"},
+    {"index": 3, "kind": "Button", "name": "Iniciar sesión"}],
+    "text": "Presentación 2 con nota sobre la entrega para el curso de este semestre"}}
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("No pude abrirla: no hay un botón con ese nombre en la ventana.", False),
+    ("No veo ninguna opción para la entrega.", False),
+    ("No encuentro un enlace sobre eso.", False),
+    ("No hay un botón Presentación en esa ventana.", True),  # a name, as the person reads it
+    ("No veo ningún botón guardar.", True),  # lower case, and that control's whole name
+    ("No hay un enlace llamado «Presentación 2».", True),
+    ("No veo el botón iniciar sesión.", True),  # lower case, a control's name by its first word
+])
+def test_a_bare_word_after_button_is_a_name_only_when_it_reads_as_one(answer: str, flagged: bool) -> None:
+    assert ("named_control" in _rules(answer, [_r("input.visible.controls", LONG_VIEW)])) is flagged
+
+
+# Cosecha 05-11: assistant_status gives {"value": 4.78, "unit": "GB"}, and «4,78 GB» was told «ese número no está en los
+# resultados» with that value beside it, three rounds of the check for a true answer.
+OWN_STATUS = {"status": "completed", "videoMemory": {"value": 4.78, "unit": "GB"}, "ram": {"value": 2.9, "unit": "GB"}}
+
+
+@pytest.mark.parametrize("answer,flagged", [
+    ("Uso 4,78 GB de memoria de video y 2,9 GB de RAM.", False),
+    ("Uso 4.8 GB de memoria de video y unos 3 GB de RAM.", False),  # rounded
+    ("Uso 12 GB de memoria de video.", True),
+    ("Uso 4,78 MB de memoria de video.", True),  # the value in another unit
+])
+def test_a_size_read_with_its_unit_beside_it(answer: str, flagged: bool) -> None:
+    assert ("number" in _rules(answer, [_r("assistant.status", OWN_STATUS)])) is flagged

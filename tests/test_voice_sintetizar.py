@@ -11,6 +11,7 @@ import wave
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -52,6 +53,7 @@ def _wav(path: Path) -> None:
 
 
 def test_the_set_speaks_with_baxys_live_voice(tmp_path: Path, monkeypatch) -> None:
+    pytest.importorskip("scipy", reason="scripts/voice: requirements-research-win-x64.txt, not the runtime")
     # Calidad PC 2026-10-25: the set's Supertonic took the recipe's speed alone, without the product's «shift» (half a
     # semitone up, by resampling) and its speed by the phrase's length (_speed): another voice than BAXY's.
     voice = tmp_path / "voz"

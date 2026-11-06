@@ -1,0 +1,12 @@
+# Lo que piden scripts/renew y scripts/voice para medir e investigar. Nunca va en el paquete: torch lleva Intel oneMKL dentro y
+# trae setuptools (autocommand, LGPLv3); huggingface-hub trae tqdm y certifi (MPL-2.0). La mente no importa nada de esto.
+# En un entorno aparte, con una copia del runtime: pip install -r requirements-research-win-x64.txt (los transitivos no van fijados).
+torch==2.13.0
+torchaudio==2.11.0
+sentence-transformers==5.6.0
+transformers==5.14.1
+scipy==1.17.1
+psutil==7.2.2
+pycaw==20251023
+pyaudiowpatch==0.2.12.8
+./runtime_wheels/pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl

@@ -1,0 +1,151 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ec8f784..8e9c5b9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -68,6 +68,7 @@ option(SHERPA_ONNX_ENABLE_WASM_NODEJS "Whether to enable WASM for NodeJS" OFF)
+ option(SHERPA_ONNX_ENABLE_WASM_SPEECH_ENHANCEMENT "Whether to enable WASM for speech enhancement" OFF)
+ option(SHERPA_ONNX_ENABLE_BINARY "Whether to build binaries" ${SUGGEST_BUILD_BINARIES})
+ option(SHERPA_ONNX_ENABLE_TTS "Whether to build TTS related code" ON)
++option(SHERPA_ONNX_ENABLE_ESPEAK "Whether to build the TTS models that use eSpeak NG (GPL-3.0-or-later). OFF keeps Supertonic and Pocket" ON)
+ option(SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION "Whether to build speaker diarization related code" ON)
+ option(SHERPA_ONNX_LINK_LIBSTDCPP_STATICALLY "True to link libstdc++ statically. Used only when BUILD_SHARED_LIBS is OFF on Linux" ON)
+ option(SHERPA_ONNX_USE_PRE_INSTALLED_ONNXRUNTIME_IF_AVAILABLE "True to use pre-installed onnxruntime if available" ON)
+@@ -281,6 +282,12 @@ else()
+   add_definitions(-DSHERPA_ONNX_ENABLE_TTS=0)
+ endif()
+ 
++if(SHERPA_ONNX_ENABLE_TTS AND SHERPA_ONNX_ENABLE_ESPEAK)
++  add_definitions(-DSHERPA_ONNX_ENABLE_ESPEAK=1)
++else()
++  add_definitions(-DSHERPA_ONNX_ENABLE_ESPEAK=0)
++endif()
++
+ if(SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION)
+   message(STATUS "speaker diarization is enabled")
+   add_definitions(-DSHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION=1)
+@@ -564,7 +571,7 @@ endif()
+ 
+ include(json)
+ 
+-if(SHERPA_ONNX_ENABLE_TTS)
++if(SHERPA_ONNX_ENABLE_TTS AND SHERPA_ONNX_ENABLE_ESPEAK)
+   include(espeak-ng-for-piper)
+   set(ESPEAK_NG_DIR ${espeak_ng_SOURCE_DIR})
+   message(STATUS "ESPEAK_NG_DIR: ${ESPEAK_NG_DIR}")
+diff --git a/sherpa-onnx/csrc/CMakeLists.txt b/sherpa-onnx/csrc/CMakeLists.txt
+index 8aaf38b..745a217 100755
+--- a/sherpa-onnx/csrc/CMakeLists.txt
++++ b/sherpa-onnx/csrc/CMakeLists.txt
+@@ -286,9 +286,7 @@ if(SHERPA_ONNX_ENABLE_TTS)
+   list(APPEND sources
+     character-lexicon.cc
+     hifigan-vocoder.cc
+-    kokoro-multi-lang-lexicon.cc
+     lexicon.cc
+-    matcha-tts-lexicon.cc
+     melo-tts-lexicon.cc
+     offline-tts-character-frontend.cc
+     offline-tts-frontend.cc
+@@ -311,11 +309,17 @@ if(SHERPA_ONNX_ENABLE_TTS)
+     offline-tts-zipvoice-model-config.cc
+     offline-tts-zipvoice-model.cc
+     offline-tts.cc
+-    piper-phonemize-lexicon.cc
+     sentence-piece-tokenizer.cc
+     vocoder.cc
+     vocos-vocoder.cc
+   )
++  if(SHERPA_ONNX_ENABLE_ESPEAK)
++    list(APPEND sources
++      kokoro-multi-lang-lexicon.cc
++      matcha-tts-lexicon.cc
++      piper-phonemize-lexicon.cc
++    )
++  endif()
+ endif()
+ 
+ list(APPEND sources
+@@ -474,7 +478,7 @@ endif()
+ 
+ target_link_libraries(sherpa-onnx-core fstfar fst)
+ 
+-if(SHERPA_ONNX_ENABLE_TTS)
++if(SHERPA_ONNX_ENABLE_TTS AND SHERPA_ONNX_ENABLE_ESPEAK)
+   target_link_libraries(sherpa-onnx-core
+     piper_phonemize)
+ endif()
+@@ -843,8 +847,12 @@ if(SHERPA_ONNX_ENABLE_TESTS)
+   if(SHERPA_ONNX_ENABLE_TTS)
+     list(APPEND sherpa_onnx_test_srcs
+       sentence-piece-tokenizer-test.cc
+-      piper-phonemize-test.cc
+     )
++    if(SHERPA_ONNX_ENABLE_ESPEAK)
++      list(APPEND sherpa_onnx_test_srcs
++        piper-phonemize-test.cc
++      )
++    endif()
+   endif()
+ 
+   if(SHERPA_ONNX_ENABLE_SPEAKER_DIARIZATION)
+diff --git a/sherpa-onnx/csrc/offline-tts-impl.cc b/sherpa-onnx/csrc/offline-tts-impl.cc
+index 7720a49..21f5925 100644
+--- a/sherpa-onnx/csrc/offline-tts-impl.cc
++++ b/sherpa-onnx/csrc/offline-tts-impl.cc
+@@ -16,13 +16,16 @@
+ #include "rawfile/raw_file_manager.h"
+ #endif
+ 
++#if SHERPA_ONNX_ENABLE_ESPEAK
+ #include "sherpa-onnx/csrc/offline-tts-kitten-impl.h"
+ #include "sherpa-onnx/csrc/offline-tts-kokoro-impl.h"
+ #include "sherpa-onnx/csrc/offline-tts-matcha-impl.h"
+-#include "sherpa-onnx/csrc/offline-tts-pocket-impl.h"
+-#include "sherpa-onnx/csrc/offline-tts-supertonic-impl.h"
+ #include "sherpa-onnx/csrc/offline-tts-vits-impl.h"
+ #include "sherpa-onnx/csrc/offline-tts-zipvoice-impl.h"
++#endif
++#include "sherpa-onnx/csrc/onnx-utils.h"  // offline-tts-pocket-impl.h needs it
++#include "sherpa-onnx/csrc/offline-tts-pocket-impl.h"
++#include "sherpa-onnx/csrc/offline-tts-supertonic-impl.h"
+ 
+ namespace sherpa_onnx {
+ 
+@@ -40,6 +43,7 @@ std::vector<int64_t> OfflineTtsImpl::AddBlank(const std::vector<int64_t> &x,
+ 
+ std::unique_ptr<OfflineTtsImpl> OfflineTtsImpl::Create(
+     const OfflineTtsConfig &config) {
++#if SHERPA_ONNX_ENABLE_ESPEAK
+   if (!config.model.vits.model.empty()) {
+     return std::make_unique<OfflineTtsVitsImpl>(config);
+   } else if (!config.model.matcha.acoustic_model.empty()) {
+@@ -51,7 +55,9 @@ std::unique_ptr<OfflineTtsImpl> OfflineTtsImpl::Create(
+     return std::make_unique<OfflineTtsKokoroImpl>(config);
+   } else if (!config.model.kitten.model.empty()) {
+     return std::make_unique<OfflineTtsKittenImpl>(config);
+-  } else if (!config.model.pocket.lm_flow.empty()) {
++  }
++#endif
++  if (!config.model.pocket.lm_flow.empty()) {
+     return std::make_unique<OfflineTtsPocketImpl>(config);
+   } else if (!config.model.supertonic.tts_json.empty()) {
+     return std::make_unique<OfflineTtsSupertonicImpl>(config);
+@@ -65,6 +71,7 @@ std::unique_ptr<OfflineTtsImpl> OfflineTtsImpl::Create(
+ template <typename Manager>
+ std::unique_ptr<OfflineTtsImpl> OfflineTtsImpl::Create(
+     Manager *mgr, const OfflineTtsConfig &config) {
++#if SHERPA_ONNX_ENABLE_ESPEAK
+   if (!config.model.vits.model.empty()) {
+     return std::make_unique<OfflineTtsVitsImpl>(mgr, config);
+   } else if (!config.model.matcha.acoustic_model.empty()) {
+@@ -76,7 +83,9 @@ std::unique_ptr<OfflineTtsImpl> OfflineTtsImpl::Create(
+     return std::make_unique<OfflineTtsKokoroImpl>(mgr, config);
+   } else if (!config.model.kitten.model.empty()) {
+     return std::make_unique<OfflineTtsKittenImpl>(mgr, config);
+-  } else if (!config.model.pocket.lm_flow.empty()) {
++  }
++#endif
++  if (!config.model.pocket.lm_flow.empty()) {
+     return std::make_unique<OfflineTtsPocketImpl>(mgr, config);
+   } else if (!config.model.supertonic.tts_json.empty()) {
+     return std::make_unique<OfflineTtsSupertonicImpl>(mgr, config);

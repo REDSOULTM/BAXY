@@ -24,6 +24,21 @@ public interface IInvocationPreflight
     /// the higher risk it finds (<see cref="InvocationPreflightResult.Raised"/>). Pure: nothing is read here.
     /// </summary>
     bool MayRaise(JsonElement arguments) => false;
+
+    /// <summary>
+    /// Revisión R2 (H4): the engine is asking the person for this exact invocation now; never on the run their yes starts.
+    /// What the yes is for may be resolved only when it runs (a click by its label alone, its window): the handler notes it
+    /// here, so the run does not resolve it anew against what the person did since. Read only.
+    /// </summary>
+    ValueTask NoteAskedAsync(JsonElement arguments, CancellationToken cancellationToken) => ValueTask.CompletedTask;
+
+    /// <summary>
+    /// Revisión R2 (H4): this invocation comes with no yes (asked anew after a no, or nothing asks, or Bypass): whatever was
+    /// noted when it was last asked for is not what it goes by. Called before its guard reads anything.
+    /// </summary>
+    void ForgetAsked(JsonElement arguments)
+    {
+    }
 }
 
 /// <summary>What a preflight found: a lower risk for this invocation, the failure it would end in, or neither.</summary>

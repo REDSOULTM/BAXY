@@ -64,6 +64,15 @@ public interface IExternalCapabilityProvider
     /// only then is a call that would go without asking read first.
     /// </summary>
     bool PreflightMayRaise(string operation, JsonElement arguments) => false;
+
+    /// <summary>Revisión R2 (H4): the person is being asked for this call now (IInvocationPreflight.NoteAskedAsync).</summary>
+    ValueTask NoteAskedAsync(string operation, JsonElement arguments, CancellationToken cancellationToken) =>
+        ValueTask.CompletedTask;
+
+    /// <summary>Revisión R2 (H4): this call runs with no yes (IInvocationPreflight.ForgetAsked).</summary>
+    void ForgetAsked(string operation, JsonElement arguments)
+    {
+    }
 }
 
 public sealed record InstalledGameCatalogEntry(

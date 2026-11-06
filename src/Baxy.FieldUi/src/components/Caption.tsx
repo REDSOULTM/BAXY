@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { BaxyState, BootPieces } from '../types';
 import { useT } from '../i18n';
-import { causeText } from '../causes';
+import { causeText, ON_PROCESSOR_TEXT, readingText } from '../causes';
 
 /* Under the face (design chat.jsx BxCap4, BxBoot; parts.jsx BxSub): BAXY's words as captions, the live transcription
    while it listens, the call it is running, what it waits for, and the start with each piece marked only once the host
@@ -80,14 +80,16 @@ export function Boot({ boot }: { boot: BootPieces }) {
         </div>
       ))}
       {!boot.model && !boot.failed ? <div className="bar"><i></i></div> : null}
+      {!boot.model && !boot.failed && boot.reading ? <div className="el">{readingText(boot.reading, t)}</div> : null}
+      {!boot.model && boot.onProcessor ? <div className="el">{t.w(ON_PROCESSOR_TEXT)}</div> : null}
       {!boot.model && !boot.failed && boot.lastFailure ? (
         <div className="el">
-          {t('El intento anterior no arrancó', 'The last attempt did not start') + (causeText(boot.lastFailure, t, boot.failureMemory) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory) : '') + t(' · reintentando', ' · retrying')}
+          {t('El intento anterior no arrancó', 'The last attempt did not start') + (causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead) : '') + t(' · reintentando', ' · retrying')}
         </div>
       ) : null}
       <div className="el">
         {boot.model ? t('Listo · cargó en ', 'Ready · loaded in ') + secs + ' s'
-          : boot.failed ? t('El modelo no arrancó', 'The model did not start') + (causeText(boot.lastFailure, t, boot.failureMemory) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory) : '')
+          : boot.failed ? t('El modelo no arrancó', 'The model did not start') + (causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead) : '')
             : secs + ' s' + (previous ? t(' · la última vez tardó ', ' · last time it took ') + previous + ' s' : '')}
       </div>
     </div>

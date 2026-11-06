@@ -71,6 +71,7 @@ public sealed class DiscordVoiceFakeClientLiveCheck : IDisposable
         if (_client is { HasExited: false })
             _client.Kill();
         _client?.Dispose();
+        _client = null;
         if (_realNames is not null)
             WindowsDesktopMessagingAutomation.DiscordProcesses = _realNames;
         TestContext.Out.WriteLine("eventos: " + Read("eventos.txt").Replace('\n', ';'));
@@ -211,6 +212,23 @@ public sealed class DiscordVoiceFakeClientLiveCheck : IDisposable
         {
             Assert.That(said.Verified, Is.False);
             Assert.That(said.Result?.TryGetProperty("alike", out _), Is.False);
+            Assert.That(Read("cambiador.txt"), Is.EqualTo("cerrado"));
+        });
+    }
+
+    // Cosecha 18:45 (764): the switcher's backdrop fading over the band with no draft anywhere was read as the person's draft
+    // (composer_has_person_draft), with the focus in the switcher's own input: what is typed goes there.
+    [Test, Order(8)]
+    public async Task AnAnimatedBandUnderTheSwitcherIsNoDraft()
+    {
+        Mode("banda_anima");
+        await Task.Delay(300);
+        ExternalCapabilityReceipt opened = await Call("Ronaldo Perez");
+        Mode("normal");
+        Assert.Multiple(() =>
+        {
+            Assert.That(opened.ErrorCode, Is.Not.EqualTo(WindowsDesktopMessagingAutomation.ComposerHasPersonDraft));
+            Assert.That(opened.Verified, Is.True, opened.ErrorCode);
             Assert.That(Read("cambiador.txt"), Is.EqualTo("cerrado"));
         });
     }

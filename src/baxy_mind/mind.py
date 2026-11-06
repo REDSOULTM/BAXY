@@ -66,6 +66,16 @@ NOTICE_MAX_CHARS = 90
 NOTICE_MAX_WORDS = 14
 # The notice's own budget: the result of the call it speaks of may come meanwhile, and its next decision waits for it.
 NOTICE_SECONDS = 1.5
+# Uso-124 (RX 7600 on Vulkan, 2026-11-05, driven by hand): a notice took 3.0 to 3.5 s (95 tokens read in 2.2 s, as a turn's
+# first decision reads its ~100; 12 to 20 written at 58 ms each), so all of them ran out those 1.5 s and the person heard
+# nothing for a whole turn. The budget is what the last short decision says a notice costs here (Mind._next, the same
+# read and the 24 tokens a notice may write), with a margin, and never less than those 1.5 s nor more than NOTICE_MOST_S:
+# on an NVIDIA GPU, which reads and writes that in about a second, it stays at 1.5 s. A read past NOTICE_SHORT_READ tokens
+# says nothing of it (its cost per token hides the first read's fixed part).
+NOTICE_WRITTEN = 24
+NOTICE_MOST_S = 6.0
+NOTICE_SHORT_READ = 512
+NOTICE_MARGIN = 1.25
 
 SYSTEM = (
     "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando "
@@ -1520,6 +1530,9 @@ SERVER_ERROR_NOTE = ("[Nota interna, no la escribió la persona: el servidor del
                      "frase, que no pudiste pensar la respuesta; si en este turno ya hay resultados, cuenta sólo lo que "
                      "muestran.]")
 # The rules of the check that are aids of their own (BAXY_AYUDAS), beside «answer_check» itself.
+# What the check finds of how far a reading reached, or of a limit said with a tool at hand, and no act said done: the only
+# findings an answer may go out with when the turn's time ran out on writing it again (Mind._check_answer).
+SPOKEN_OUT_OF_TIME = ("partial", "named_control", "denial_lookup", "empty_lookup")
 CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read", "denial": "check_denial",
                    "already_open": "check_already_open",
                    "stale_state": "check_stale_state", "future_past": "check_future_past",
@@ -2055,10 +2068,12 @@ class Mind:
         # waits (review of NB-R1-X4: the App's session.export after every turn); None when it did not.
         self.gave_way: bool | None = None
         self._prefill_rounds = 0  # of this history (PREFILL_ROUNDS)
+        self._notice_budget = NOTICE_SECONDS  # what a notice may take on this machine (_next)
         # Uso 104 (F41, a greeting at 9.2 s with its decision at 1.1 s and nothing in the trace for the rest): when the
         # request being answered reached the mind's reader, set by the loop; its turn.decide row says how long it took to
         # start deciding (before_ms: the queue, the count of the history), and how long the App had held it (app_ms).
         self.arrived: float | None = None
+        self._ear_unsure: list[float] = []
         self.app_ms: int | None = None
         # Al máximo, palanca 2 (early.py): while a decision is made early, its trace rows are held here (the thread that
         # makes it, and its rows) and written only if it is used; the voice thread's rows are written as always.
@@ -2204,11 +2219,11 @@ class Mind:
         key = self.server.prefix_key([warm])
         held = self.server.restore_prefix(key)
         if held is not None and isinstance(held.get("prefix_tokens"), int):
-            self.prefix_tokens = held["prefix_tokens"]
+            self.prefix_tokens = self.server.kept = held["prefix_tokens"]
             self._log("warm.prefix", started, None, restored=True)
             return
         reply = self.server.read_prefix(warm, on_progress)
-        self.prefix_tokens = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
+        self.prefix_tokens = self.server.kept = int((reply.get("usage") or {}).get("prompt_tokens") or 0)
         # The file holds the slot: only the prefix (the tools and the system prompt) may be in it, never a person's
         # conversation, so it is saved only before any turn of this process reached the model.
         saved = not self._turned and self.server.save_prefix(key, {"prefix_tokens": self.prefix_tokens})
@@ -2227,12 +2242,13 @@ class Mind:
         ask = NOTICE_ASK.format(said=NOTICE_SAID.format(said=", ".join(f"«{s}»" for s in said)) if said else "")
         notice = {"messages": [{"role": "system", "content": self._system()}, *self._history(turn["conv"]),
                                {"role": "tool", "tool_call_id": turn["awaiting"], "content": f"{NOTICE_RUNNING}\n{ask}"}],
-                  "tools": self.tools, "max_tokens": 24, "temperature": 0.0, "seed": self.seed, "tool_choice": "none",
+                  "tools": self.tools, "max_tokens": NOTICE_WRITTEN, "temperature": 0.0, "seed": self.seed,
+                  "tool_choice": "none",
                   "logit_bias": [[token, False] for token in self.call_tokens],
                   "chat_template_kwargs": {"enable_thinking": False}}
         started = time.perf_counter()
         try:
-            reply = self.server.chat(notice, timeout=NOTICE_SECONDS)
+            reply = self.server.chat(notice, timeout=self._notice_budget)
             written = str(reply["choices"][0]["message"].get("content") or "")
         except Exception:  # noqa: BLE001 - a notice that could not be written is not said; the turn goes on as it was
             self._log("turn.notice", started, None, operation=turn.get("calling"), content=None, written="")
@@ -2247,6 +2263,12 @@ class Mind:
         self._log("turn.notice", started, reply, operation=turn.get("calling"), content=phrase if usable else None,
                   written=written)
         return phrase if usable else ""
+
+    @property
+    def notices_are_slow(self) -> bool:
+        """Whether a notice takes longer here than NOTICE_SECONDS: the model then reads for long after a call that ended
+        while it was written (the App still says it, turn.notice.result ``slow``)."""
+        return self._notice_budget > NOTICE_SECONDS
 
     def _system(self, beat: bool = False) -> str:
         # Constant, so the prefix (tools, system, earlier messages) never changes between turns and is never re-read.
@@ -2463,6 +2485,9 @@ class Mind:
         """``unsure``: the words of a spoken request the ear was not sure of (voice.Voice.unsure). ``front``: the window
         in front of the person when they spoke, as the App read it (title, process), or None. ``named``: the open windows
         their words name."""
+        # F50: whether the ear's note was told, in the trace; a row without it had no word under voice.UNSURE_P. Its words
+        # are the person's: only how sure the ear was.
+        self._ear_unsure = [round(p, 3) for _, p in unsure or []]
         # Kept even if the decision fails: the App says how a question ended only once.
         self._ran_unanswered(self._ended(pending))
         # Review 2026-10-22: a decision that fails (the model server down, an error) takes back what it added, so the
@@ -2965,9 +2990,22 @@ class Mind:
             # from the results it has, without reading the same result in twice; in words when the mind had closed the
             # turn's calls itself (a refused repeat, the calculations' cap: _next's ``closed``).
             self._log("turn.continue", time.perf_counter(), None, kind="asked_again", operation=turn.get("calling"))
-            return self._next(request_id, "turn.continue", turn, final=final or bool(turn.get("closed")))
+            turn["asked_again"] = True
+            started, written = time.perf_counter(), turn.get("held_back")
+            try:
+                result = self._next(request_id, "turn.continue", turn, final=final or bool(turn.get("closed")))
+            except TimeoutError:
+                if written is None:
+                    raise
+                result = None
+            if written is not None and (result is None or (result.get("kind") == "conversation" and not result.get("reply"))):
+                # The App asks only once more: an answer the first request wrote, and the check held back, is all there is.
+                self._log("turn.check", started, None, round=2, findings=[], kept=True, timed_out=True)
+                return self._spoken_instead(request_id, "turn.continue", turn, written, None, started)
+            return result
         if not turn or not turn.get("awaiting"):
             raise RuntimeError("no open turn to continue")
+        turn["app_continued"] = True  # the App ran a call of this turn: a request past its time here is asked once more
         conv = turn["conv"]
         if (unsure := turn.get("unsure")) and unsure["id"] == turn["awaiting"]:
             del turn["unsure"]
@@ -3353,6 +3391,11 @@ class Mind:
         # What this reply says the context holds now (the prompt it read and what it wrote): the next request of the
         # turn weighs it before it is sent (below, at the start of _next).
         turn["used"] = int(usage.get("prompt_tokens") or 0) + int(usage.get("completion_tokens") or 0)
+        timings = reply.get("timings") or {}
+        if 0 < int(timings.get("prompt_n") or 0) <= NOTICE_SHORT_READ and int(timings.get("predicted_n") or 0) > 0:
+            cost = (float(timings.get("prompt_ms") or 0.0) + NOTICE_WRITTEN * float(timings.get("predicted_ms") or 0.0)
+                    / int(timings["predicted_n"])) / 1000
+            self._notice_budget = min(NOTICE_MOST_S, max(NOTICE_SECONDS, cost * NOTICE_MARGIN))
         message = reply["choices"][0]["message"]
         content = (message.get("content") or "").strip()
         calls = []
@@ -3686,6 +3729,25 @@ class Mind:
         conv.append(note)
         try:
             result = self._next(request_id, stage, turn, final=not (denied or stale or rate or unopened or lookup))
+        except TimeoutError:
+            # Cosecha 05-11 (uso real con el modelo local): a turn of two minutes wrote its answer twice, the check asked for
+            # it again both times, and the conversation's shrink (17 s to read it again) took each request past its 24 s.
+            # The App asks only once more, and the person heard nothing until they asked. The first time the App still asks;
+            # in the last request (or a turn the App has not continued, which it does not ask again: NativeTurnLoop) the
+            # answer in hand is spoken, as the third answer or an empty one are. Only with findings of a reading's reach: a
+            # falsehood weighs more than the silence, so an answer found telling an act, a name or a number the results do
+            # not show fails as it did. An answer that came later in this request is the one held back. Held-out ciego: a
+            # note that ran out of time was never read, so the answer asked for again has been told nothing yet (a rate
+            # nobody gave, «said once», went out unread).
+            turn.pop("checked_again" if turn.get("checked_again") else "checked", None)
+            if not all(f["rule"] in SPOKEN_OUT_OF_TIME for f in findings):
+                raise
+            if turn.get("app_continued") and not turn.get("asked_again"):
+                turn.setdefault("held_back", content)
+                raise
+            self._log("turn.check", started, None, round=3 if turn.get("checked_again") else 2, findings=shown, kept=True,
+                      timed_out=True)
+            return self._spoken_instead(request_id, stage, turn, content, reply, started)
         finally:
             # The note was for that one answer: the conversation keeps what was said, not the check.
             for index in range(len(conv) - 1, -1, -1):
@@ -4201,13 +4263,26 @@ class Mind:
         return result
 
     @staticmethod
+    def _asked_of(conv: list[dict[str, Any]], text: str, label: str) -> bool:
+        """Whether what BAXY said just before the person's last words was a question that names this label. Cosecha 05-11:
+        «¿Le doy a «SALIR»?», «sí, sale»: the click came back «the person did not ask to close anything», and they had to
+        say it a third time, in the words the rule reads. The answer to it is the model's to read."""
+        wanted = _fold(label).strip()
+        words = next((i for i in range(len(conv) - 1, -1, -1)
+                      if conv[i].get("role") == "user" and str(conv[i].get("content") or "").startswith(text)), 0)
+        before = next((str(m.get("content")) for m in reversed(conv[:words])
+                       if m.get("role") == "assistant" and str(m.get("content") or "").strip()), "")
+        return "?" in before and bool(wanted) and re.search(rf"(?<!\w){re.escape(wanted)}(?!\w)", _fold(before)) is not None
+
+    @staticmethod
     def _repeat_refused(turn: dict[str, Any], name: str, call: dict[str, Any]) -> tuple[str, str, str] | None:
         """Aids «same_call_closes» and «look_click_cap» (LOOK_CLICK_PAIRS): whether this call of the model is one the
         mind does not hand to the App, as (the trace's kind, its result, its facts); None: it runs."""
         arguments = _call_key(call["arguments"])
         if (call["wire"] == "input_visible_click" and _aid_on("close_unsaid")
                 and _CLOSES.match(_fold(str(call["arguments"].get("label") or "")))
-                and not _CLOSE_SAID.search(_fold(str(turn.get("text") or "")))):
+                and not _CLOSE_SAID.search(_fold(str(turn.get("text") or "")))
+                and not Mind._asked_of(turn["conv"], str(turn.get("text") or ""), str(call["arguments"].get("label") or ""))):
             return "close_unsaid", CLOSE_NOT_RUN, CLOSE_REFUSED
         # Since the last other call that acted, whatever it said (a window already gone, an app opened: the same close
         # runs again); its first result since then is the earlier one.
@@ -4497,6 +4572,8 @@ class Mind:
                "ms": round((time.perf_counter() - started) * 1000),
                "cache_n": timings.get("cache_n"), "prompt_n": timings.get("prompt_n"), "prompt_ms": timings.get("prompt_ms"),
                "predicted_n": timings.get("predicted_n"), "predicted_ms": timings.get("predicted_ms"), **fields}
+        if stage == "turn.decide" and self._ear_unsure:
+            row["ear_unsure"], self._ear_unsure = self._ear_unsure, []
         if stage == "turn.decide" and self.arrived is not None:
             row["before_ms"], self.arrived = round((started - self.arrived) * 1000), None
             row["app_ms"], self.app_ms = self.app_ms, None

@@ -231,6 +231,30 @@ def test_words_after_baxys_question_in_words_get_the_answer_note(tmp_path: Path,
     assert CHOICE_ANSWER in OFFERED_NOTE and CHOICE_ANSWER not in ANSWERED_NOTE and CHOICE_ANSWER not in SYSTEM
 
 
+def test_the_answer_note_is_read_once_and_right_before_the_words(tmp_path: Path, monkeypatch) -> None:
+    # Revisión PCR1 (L3): every check of where OFFERED_NOTE goes passed with it twice, once before the words and once
+    # after. In each request of the turn, its calls' included, it is there once, right before them; the next turn, which
+    # follows no question, keeps that one in the history and adds none. ATR1: read after the words (5312ca130) the model
+    # asked instead of doing what it was asked (u107-D4-saludo and u107-QC3 10/10 → 0/10, 10 seeds), so it stays before.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [SEARCH, _say("Es un gas que brilla."), _say("De nada.")])
+    mind.risk = {"web_search": "read_only"}
+    mind.new_session([{"role": "user", "content": "Hola"}, {"role": "assistant", "content": "Buenas, ¿en qué te ayudo?"}])
+    asked = {"role": "user", "content": "busca qué es una nebulosa"}
+    assert mind.decide(1, asked["content"])["kind"] == "action"
+    assert mind.continue_turn(2, json.dumps({"status": "completed", "results": [{"title": "Nebulosa"}]}))["kind"] == "conversation"
+    thanked = {"role": "user", "content": "gracias"}
+    mind.decide(3, thanked["content"])
+    assert len(server.bodies) == 3
+    for body, words, notes in zip(server.bodies, [asked, asked, thanked], [1, 1, 0]):
+        messages = body["messages"]
+        said = max(i for i, m in enumerate(messages) if m == words)
+        noted = [i for i, m in enumerate(messages) if OFFERED_NOTE in str(m.get("content"))]
+        assert not [i for i in noted if i > said]
+        assert (said - 1 in noted) == bool(notes)
+        assert len(noted) == 1
+
+
 def test_words_after_an_open_question_are_attended_as_a_request(tmp_path: Path) -> None:
     # uso-107 (S08): after «Buenas tardes, ¿en qué te ayudo?», a note that read the next words as an answer to weigh
     # («puede contestarla … o ser un pedido nuevo») had a whole request asked back for the datum it gave (0/15 against

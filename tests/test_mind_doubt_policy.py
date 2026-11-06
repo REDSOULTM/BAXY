@@ -1013,3 +1013,13 @@ def test_in_bypass_an_unsure_call_queued_second_that_only_reads_or_is_undone_is_
     assert mind.decide(1, "abre el correo y dale a siguiente")["operation"] == "app.open"
     assert [c["wire"] for c in mind._turn["queue"]] == ["input_visible_click"] and "unsure" not in mind._turn
     assert len(server.bodies) == 1
+
+
+# F50: «Sierra Steam» could not be told apart afterwards: nothing in the trace said whether the ear's note was told.
+def test_the_trace_says_how_sure_the_ear_was_without_its_words(tmp_path, monkeypatch) -> None:
+    mind, _ = _mind(tmp_path, [_say("¿Cuál?"), _say("Listo.")])
+    mind.decide(1, "sierra lumbra", unsure=[("sierra", 0.4167)])
+    mind.decide(2, "gracias")
+    told, after = [json.loads(line) for line in (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert told["ear_unsure"] == [0.417]
+    assert "ear_unsure" not in after

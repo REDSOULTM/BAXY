@@ -1,4 +1,4 @@
-"""The source assets of what the GPL covers: exactly the pinned bytes, BAXY's changes beside them, and said in the notices."""
+"""The source assets of what BAXY builds: exactly the pinned bytes, BAXY's changes beside them, and said in the notices."""
 from __future__ import annotations
 
 import hashlib
@@ -71,7 +71,7 @@ def test_the_sherpa_asset_carries_its_tree_and_baxys_changes_unapplied(tmp_path:
 
     with zipfile.ZipFile(target) as archive:
         assert archive.read("sherpa-onnx-1.13.4/CMakeLists.txt") == b"upstream"
-        for name in "sherpa-nemo-stream-decoder.patch", "sherpa-nemo-normalization.patch":
+        for name in "sherpa-nemo-stream-decoder.patch", "sherpa-nemo-normalization.patch", "sherpa-no-espeak.patch":
             assert archive.read(f"runtime_wheels/{name}") == (REPOSITORY / "runtime_wheels" / name).read_bytes()
         script = archive.read("scripts/build_sherpa_runtime.py")
         assert script == (REPOSITORY / "scripts" / "build_sherpa_runtime.py").read_bytes()
@@ -102,10 +102,7 @@ def test_the_licenses_asset_has_the_notices_and_every_text(tmp_path: Path) -> No
 
 
 def test_the_notice_names_each_source_asset_and_its_pin() -> None:
-    sources = (REPOSITORY / "licenses" / "FUENTES_GPL.md").read_text(encoding="utf-8")
-    for name, _url, sha256 in (assets.ESPEAK, assets.PIPER):
-        assert name in sources
-        assert sha256 in sources
+    sources = (REPOSITORY / "licenses" / "FUENTES.md").read_text(encoding="utf-8")
     assert assets.SHERPA_ASSET in sources
     assert assets.DEPENDENCIES_ASSET in sources
     for name, _url, sha256 in assets.DEPENDENCIES:
@@ -113,23 +110,7 @@ def test_the_notice_names_each_source_asset_and_its_pin() -> None:
         assert sha256 in sources
 
 
-def test_the_notice_carries_the_written_offer_in_both_languages() -> None:
-    sources = (REPOSITORY / "licenses" / "FUENTES_GPL.md").read_text(encoding="utf-8")
-    assert "Written offer" in sources
-    assert "Oferta escrita" in sources
-    assert "three years" in sources
-    assert "tres años" in sources
-    assert "durable physical medium customarily used for software interchange" in sources
-    assert "BAXY 1.2.0 or 1.2.1" in sources
-    assert "`sherpa_onnx` wheels" in sources
-    assert "outside this offer" in sources
-    assert "as a whole, are conveyed under GPL-3.0-or-later" in sources
-    assert "https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1" in sources
-    assert "https://github.com/REDSOULTM/BAXY/issues" in sources
-
-
-def test_the_package_puts_the_directions_next_to_the_binaries_that_carry_espeak() -> None:
-    # GPL-3.0 section 6(d): «maintain clear directions next to the object code saying where to find the Corresponding Source».
-    build = (REPOSITORY / "scripts" / "build_steam.ps1").read_text(encoding="utf-8")
-    assert "'sherpa_onnx\\lib', 'Scripts'" in build
-    assert "'FUENTES_GPL.md', 'GPL-3.0.txt'" in build
+def test_no_gpl_source_asset_is_left() -> None:
+    assert not hasattr(assets, "ESPEAK")
+    assert not hasattr(assets, "PIPER")
+    assert "espeak" not in " ".join(name.lower() for name, _url, _sha in assets.DEPENDENCIES)

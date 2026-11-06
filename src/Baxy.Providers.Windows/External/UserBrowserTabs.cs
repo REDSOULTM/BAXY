@@ -101,7 +101,7 @@ internal sealed partial class UserBrowserSurface
             return PageNotShown(step.Operation, step.Browser);
         bool back = command == AppCommandBack;
         if (back && before.BackEnabled == false)
-            return ExternalJson.FailureBeforeEffect(step.Operation, HistoryStart);
+            return FirstPage(step, before);
         if (!_platform.PostAppCommand(step.Window, command))
             return ExternalJson.FailureBeforeEffect(step.Operation, TabStepUnavailable);
         step.Boundary.Cross(CancellationToken.None);
@@ -114,6 +114,34 @@ internal sealed partial class UserBrowserSurface
             ? ExternalJson.FailureAfterEffect(step.Operation, TabStepUnconfirmed)
             : Done(step, back ? "went_back" : "reloaded", after);
     }
+
+    /// <summary>
+    /// Uso real 05-11 (C2040): «go through my courses» went back until the tab had no earlier page, then back again, also
+    /// after a click on a course that had opened nothing, and the reply was that it could not go on. The code alone said
+    /// nothing of where the tab is: the page it stays on, which also tells whether a click before it opened anything, and
+    /// how what that page shows is opened.
+    /// </summary>
+    private static ExternalCapabilityReceipt FirstPage(TabStep step, UserBrowserFrame frame) =>
+        !Infrastructure.ModelAids.On(Infrastructure.ModelAids.HistoryStartNext)
+            || frame.Tabs.FirstOrDefault(tab => tab.Selected) is not { } active
+            ? ExternalJson.FailureBeforeEffect(step.Operation, HistoryStart)
+            : ExternalJson.FailureBeforeEffect(step.Operation, HistoryStart) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject();
+                    writer.WriteNumber("version", 1);
+                    writer.WriteString("action", step.Action);
+                    writer.WriteString("browser", step.Browser.DisplayName);
+                    writer.WriteString("activeTab", active.Title);
+                    var look = new System.Text.Json.Nodes.JsonObject { ["application"] = step.Browser.ProcessName };
+                    writer.WriteString("next", "this tab has no earlier page: it is on its first page (activeTab), and "
+                        + "going back again gives the same; to open something that page shows, call "
+                        + $"{Baxy.Kernel.Operations.WireNames.Call("input.visible.controls", look)}, then "
+                        + $"{Baxy.Kernel.Operations.WireNames.Of("input.visible.click")} on it");
+                    writer.WriteEndObject();
+                }),
+            };
 
     /// <summary>
     /// A new tab: Chromium's IDC_NEW_TAB by message; a browser that does not run it (Opera GX, or a message read back

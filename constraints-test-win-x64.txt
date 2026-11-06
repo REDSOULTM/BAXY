@@ -1,10 +1,15 @@
-# Clausura exacta de pytest para CPython 3.12 / Windows x64.
+# Clausura exacta de pytest y de lo que las pruebas importan fuera del runtime para CPython 3.12 / Windows x64.
 # Este archivo es un input curado: lock_python_dependencies.ps1 lo consume,
 # pero sólo genera pylock.test-win-x64.toml. Revisar sus pins deliberadamente.
 
 colorama==0.4.6
 iniconfig==2.3.0
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+numpy==1.26.4+baxy.1
 packaging==26.2
 pluggy==1.6.0
+psutil==7.2.2
 Pygments==2.20.0
 pytest==9.1.1
+scipy==1.17.1

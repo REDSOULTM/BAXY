@@ -129,3 +129,31 @@ def test_a_chats_time_is_the_same_for_the_own_model_and_only_a_longer_turn_moves
     read = "import inspect; from baxy_mind.llm_server import LlmServer; print(inspect.signature(LlmServer.chat).parameters['timeout'].default)"
     answer = subprocess.run([sys.executable, "-c", read], env=environment, capture_output=True, text=True, check=True, timeout=120)
     assert float(answer.stdout) == seconds
+
+
+# int-staging-1: hub/i6-l4-arreglos put a ceiling of 120 s on a request until the warm-up says what the server keeps; a
+# model on this PC behind the translator waits 294 s without an advance, and the ceiling must not end that window first.
+@pytest.mark.parametrize(("turn", "window", "ceiling"), [(None, 24.0, 120.0), ("90", 84.0, 120.0), ("300", 294.0, 294.0)])
+def test_a_requests_ceiling_is_never_shorter_than_its_window(turn, window, ceiling):
+    environment = {k: v for k, v in os.environ.items() if k != "BAXY_MIND_TURN_SECONDS"}
+    environment["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "src")
+    if turn:
+        environment["BAXY_MIND_TURN_SECONDS"] = turn
+    read = ("from baxy_mind.llm_server import LlmServer; s = LlmServer('model.gguf', 'llama-server.exe'); "
+            "print(LlmServer.REQUEST_SECONDS, s.ceiling_s)")
+    answer = subprocess.run([sys.executable, "-c", read], env=environment, capture_output=True, text=True, check=True, timeout=120)
+    assert [float(x) for x in answer.stdout.split()] == [window, ceiling]
+
+
+# int-staging-1 (revisión a ciegas de la fusión): behind an API the window is 84 s and the context 200,000, and the ceiling
+# the warm-up gave came to ~8,100 s, past the 45 min the App takes from catalog.ready: the App kept its 126 s and the mind
+# went on after it. The own model's ceilings stay what they were (468 s on the RX 7600).
+@pytest.mark.parametrize(("window", "context", "kept", "backend", "ceiling"), [
+    (84.0, 200_000, 20_000, "cuda", 2694.0), (24.0, 61_440, 45_361, "vulkan", 468.0), (24.0, 53_248, 1, "cpu", 708.0)])
+def test_a_requests_ceiling_is_never_past_what_the_app_takes(monkeypatch, window, context, kept, backend, ceiling):
+    monkeypatch.setattr(llm_server.LlmServer, "REQUEST_SECONDS", window)
+    server = llm_server.LlmServer("model.gguf", "llama-server.exe", context=context)
+    monkeypatch.setattr(server, "backend", backend, raising=False)
+    server.kept = kept
+    assert server.ceiling_s == ceiling
+    assert server.ceiling_s + 6 <= 45 * 60

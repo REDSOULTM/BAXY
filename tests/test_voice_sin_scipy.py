@@ -11,9 +11,14 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from scipy import signal
 
 from baxy_mind import resample, voice_echo
+
+try:
+    from scipy import signal
+except ImportError:  # not in the runtime: pylock.test-win-x64.toml has it
+    signal = None
+needs_scipy = pytest.mark.skipif(signal is None, reason="scipy is only in the test lock")
 
 SRC = str(Path(__file__).resolve().parent.parent / "src")
 
@@ -57,6 +62,7 @@ import {module}
         assert seen.split()[:1] == ["1"], module
 
 
+@needs_scipy
 @pytest.mark.parametrize("up,down", [(34, 35), (35, 34), (1, 3), (3, 1), (147, 160), (100, 99)])
 @pytest.mark.parametrize("size", [1, 7, 4410, 66150])
 def test_resample_poly_is_scipys(up, down, size):
@@ -67,6 +73,7 @@ def test_resample_poly_is_scipys(up, down, size):
     assert np.max(np.abs(ours - theirs)) < 2e-5
 
 
+@needs_scipy
 @pytest.mark.parametrize("up,down", [(1, 3), (2, 3), (147, 160), (5, 1)])
 @pytest.mark.parametrize("size", [1, 480, 3000])
 def test_upfirdn_is_scipys(up, down, size):
@@ -79,6 +86,7 @@ def test_upfirdn_is_scipys(up, down, size):
     assert np.max(np.abs(ours - theirs)) < 2e-5
 
 
+@needs_scipy
 def test_lowpass_is_firwins():
     for taps, cutoff in ((1401, 1 / 35), (97, 0.3)):
         assert np.allclose(resample.lowpass(taps, cutoff, np.hamming(taps)), signal.firwin(taps, cutoff), atol=1e-12)

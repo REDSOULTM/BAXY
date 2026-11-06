@@ -1745,6 +1745,8 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         {
             External.VisibleControlSurface.NoteApplicationExecutable(entry.Name, observation.ExecutablePath);
             External.VisibleControlSurface.NoteApplicationExecutable(request.ApplicationId, observation.ExecutablePath);
+            External.VisibleControlSurface.NoteVerifiedOpening(entry.Name, observation.ExecutablePath);
+            External.VisibleControlSurface.NoteVerifiedOpening(request.ApplicationId, observation.ExecutablePath);
         }
         var receipt = new ApplicationLaunchReceipt(
             request.InvocationId,

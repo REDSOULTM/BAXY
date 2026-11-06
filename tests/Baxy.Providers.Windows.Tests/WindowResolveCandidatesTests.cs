@@ -88,6 +88,49 @@ public sealed class WindowResolveCandidatesTests
         });
     }
 
+    // Encargo L3 («Cierra Nubarra del todo, que se queda pegada ahí al lado del reloj»): an application in the notification
+    // area has no window, so window_not_found and the desktop's windows left the model resolving again 4 times of 5, and
+    // it never reached app_close, the one call that asks it to quit. It says so, and which call closes it, and only if
+    // that is what the person asked: unconditional, «maximiza» closed it in 2 of 21 controls.
+    [Test]
+    public async Task AnApplicationRunningWithoutAWindowSaysSoAndWhichCallClosesIt()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+
+        OperationOutcome outcome = await new WindowResolveHandler(
+                new FailingWindows(WindowControlErrorCodes.WindowNotFound) { Background = [4242, 4243] },
+                () => Desktop, () => null)
+            .ExecuteAsync(
+                new OperationInvocation("r", "m", "i", JsonDocument.Parse("{\"applicationName\":\"Nubarra\"}").RootElement),
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowNotFound));
+            Assert.That(outcome.Result?.GetProperty("runningWithoutWindow").GetBoolean(), Is.True);
+            Assert.That(outcome.Result?.GetProperty("backgroundProcesses").GetInt32(), Is.EqualTo(2));
+            Assert.That(outcome.Result?.GetProperty("candidateCount").GetInt32(), Is.EqualTo(2));
+            Assert.That(outcome.Result?.GetProperty("next").GetString(), Is.EqualTo(
+                "it has no window open but it is running in the background: if the person asked to close it, "
+                + "app_close {\"appId\":\"Nubarra\"}; if they asked for its window, it has none; these are the other "
+                + "windows open on the desktop (top first)"));
+        });
+    }
+
+    [Test]
+    public async Task AnApplicationNotRunningKeepsTheReceiptItHad()
+    {
+        using IDisposable setting = ModelAids.Use("all");
+
+        OperationOutcome outcome = await Resolve(WindowControlErrorCodes.WindowNotFound);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Result?.TryGetProperty("runningWithoutWindow", out _), Is.False);
+            Assert.That(outcome.Result?.GetProperty("next").GetString(), Does.StartWith("no window was found under that name"));
+        });
+    }
+
     private static ValueTask<OperationOutcome> Resolve(string code) =>
         new WindowResolveHandler(new FailingWindows(code), () => Desktop, () => ("Opera GX", "opera")).ExecuteAsync(
             new OperationInvocation("r", "m", "i", JsonDocument.Parse("{\"applicationName\":\"Microsoft Word\"}").RootElement),
@@ -166,6 +209,11 @@ public sealed class WindowResolveCandidatesTests
     private sealed class FailingWindows(string code) : IWindowControlProvider
     {
         internal IReadOnlyList<WindowCandidate> Titled { get; init; } = [];
+
+        internal IReadOnlyList<int> Background { get; init; } = [];
+
+        public ValueTask<IReadOnlyList<int>> BackgroundProcessesAsync(string applicationName, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(Background);
 
         public ValueTask<WindowResolveResult> ResolveApplicationAsync(
             string applicationName, int limit, CancellationToken cancellationToken) =>

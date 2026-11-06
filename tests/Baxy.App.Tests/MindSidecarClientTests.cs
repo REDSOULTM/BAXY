@@ -524,6 +524,126 @@ public sealed class MindSidecarClientTests
         Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(5)));
     }
 
+    // Uso-124 (RX 7600 on Vulkan): a turn's request whose model is still reading a long result ended at its fixed 30 s.
+    // Scaled down: a window of 1 s stands for the 30 s, and the mind reads for 3 s, telling each advance.
+    [Test]
+    public async Task ATurnWhoseModelKeepsAdvancingIsWaitedForPastItsWindow()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["progress"] = new JsonObject { ["turn.decide"] = new JsonObject { ["every"] = 0.25, ["count"] = 12 } },
+        });
+        await using MindSidecarClient mind = await ScaledAsync(TimeSpan.FromSeconds(30));
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        MindStep? step = await mind.DecideAsync("hola", null, CancellationToken.None);
+
+        Assert.That(step?.Kind, Is.EqualTo("reply"), "a model still advancing was taken for a dead mind");
+        Assert.That(clock.Elapsed, Is.GreaterThan(TimeSpan.FromSeconds(2.5)));
+        Assert.That(mind.IsReady, Is.True);
+    }
+
+    // A mind that says nothing, or stops saying it advances, is given up on at its window, as before.
+    [Test]
+    public async Task ATurnWhoseModelStopsAdvancingFailsAtItsWindow()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["progress"] = new JsonObject { ["turn.decide"] = new JsonObject { ["every"] = 0.5, ["count"] = 1 } },
+            ["delay"] = new JsonObject { ["turn.decide"] = 0 },
+            ["hold"] = new JsonObject { ["turn.continue"] = "nunca" },
+        });
+        await using MindSidecarClient mind = await ScaledAsync(TimeSpan.FromSeconds(30));
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        MindStep? step = await mind.ContinueAsync("{}", false, false, CancellationToken.None);
+
+        Assert.That(step, Is.Null);
+        Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(3)));
+        Assert.That(mind.IsReady, Is.False, "a turn past its window takes the mind for lost, as before");
+    }
+
+    // However long the model advances, a turn's request ends at its ceiling, past the mind's own (REQUEST_CEILING_S).
+    [Test]
+    public async Task ATurnPastItsCeilingFailsEvenWhileItsModelAdvances()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["progress"] = new JsonObject { ["turn.decide"] = new JsonObject { ["every"] = 0.2, ["count"] = 100 } },
+        });
+        await using MindSidecarClient mind = await ScaledAsync(TimeSpan.FromSeconds(2.5));
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        MindStep? step = await mind.DecideAsync("hola", null, CancellationToken.None);
+
+        Assert.That(step, Is.Null);
+        Assert.That(clock.Elapsed, Is.GreaterThan(TimeSpan.FromSeconds(2)));
+        Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(5)));
+    }
+
+    [Test]
+    public void TheTurnsCeilingLeavesTheMindItsOwnFirst()
+    {
+        // The mind ends a request at 24 s without an advance and, until its catalog.ready says its own ceiling, 120 s in
+        // all (LlmServer): the App, always after it.
+        Assert.That(MindSidecarClient.TurnRequestTimeout, Is.EqualTo(TimeSpan.FromSeconds(30)));
+        Assert.That(MindSidecarClient.TurnRequestCeiling, Is.GreaterThan(TimeSpan.FromSeconds(120)));
+    }
+
+    // Revisión PCR1 (A2, A3): the mind's ceiling for a turn's request is what its server may have to read (468 s on the
+    // RX 7600, LlmServer.ceiling_s), past the App's fixed 126 s: the App gave up on a request the mind still served. It
+    // comes with catalog.ready, and the App's ceiling is that with the margin its window has over the mind's 24 s; a mind
+    // that does not say it leaves the App's own.
+    [TestCase(468.0, 474.0)]
+    // int-staging-1: the longest the mind says (LlmServer.REQUEST_MOST_S), and one past what a start may take.
+    [TestCase(2694.0, 2700.0)]
+    [TestCase(7536.0, 126.0)]
+    [TestCase(null, 126.0)]
+    public async Task TheTurnsCeilingFollowsTheMindsOwn(double? mindSays, double appWaits)
+    {
+        using var fake = new FakeMind();
+        var ready = new JsonObject { ["type"] = "catalog.ready", ["count"] = 0 };
+        if (mindSays is { } seconds)
+        {
+            ready["ceiling_s"] = seconds;
+        }
+
+        fake.Script(new JsonObject { ["reply"] = new JsonObject { ["catalog.configure"] = ready } });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+
+        Assert.That(mind.TurnCeiling, Is.EqualTo(TimeSpan.FromSeconds(appWaits)));
+    }
+
+    // Uso-124: the mind says whether its notices are slow with each one (Mind.notices_are_slow).
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task TheClientKeepsWhetherNoticesAreSlow(bool slow)
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.notice"] = new JsonObject { ["type"] = "turn.notice.result", ["notice"] = "Busco.", ["slow"] = slow },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+
+        Assert.That(await mind.NoticeAsync(CancellationToken.None), Is.EqualTo("Busco."));
+        Assert.That(mind.NoticesAreSlow, Is.EqualTo(slow));
+    }
+
+    private static async Task<MindSidecarClient> ScaledAsync(TimeSpan ceiling)
+    {
+        var mind = new MindSidecarClient { TurnWindow = TimeSpan.FromSeconds(1), TurnCeiling = ceiling };
+        Assert.That(await mind.TryStartAsync(
+            Task.FromResult(FakeMind.EmptyCatalog), TimeSpan.FromSeconds(30), CancellationToken.None), Is.True);
+        return mind;
+    }
+
     [Test]
     public async Task AStartAbandonedBeforeTheHelloLeavesNoUnobservedFailure()
     {

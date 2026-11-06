@@ -1650,6 +1650,112 @@ public sealed class NativeTurnLoopTests
         ConfirmationResolved = outcomes.Add,
     }, clock);
 
+    // Uso-124: the mind's «progress» lines reach the turn's notice, which sounds for a model still reading. The person's
+    // words arrived 25 s ago, so the first advance is past SilenceNotice.ReadingSign; with them just arrived there is none.
+    [TestCase(25, 1)]
+    [TestCase(0, 0)]
+    public async Task AModelStillReadingIsHeardOnlyPastItsWait(int arrivedSecondsAgo, int sounds)
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["progress"] = new JsonObject { ["turn.decide"] = new JsonObject { ["every"] = 0.05, ["count"] = 4 } },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        int heard = 0;
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => true,
+            StillReading = () => Interlocked.Increment(ref heard),
+        });
+
+        long arrived = System.Diagnostics.Stopwatch.GetTimestamp()
+            - (long)(arrivedSecondsAgo * (double)System.Diagnostics.Stopwatch.Frequency);
+        await loop.RunAsync("hola", arrived, CancellationToken.None);
+
+        Assert.That(heard, Is.EqualTo(sounds));
+    }
+
+    // Revisión PCR1, A1 (Feria 2026-10-27 again): on the RX 7600 the notice comes due while the model still decides, so it
+    // is asked when the call starts, and its phrase comes once the call ended. With slow notices that phrase was said for a
+    // call refused, failed or only waiting for the person's yes («Borrando el archivo…» before «¿Lo borro?»): it is said
+    // after its call only when that call completed.
+    [TestCase("completed", 1)]
+    [TestCase("needs_confirmation", 0)]
+    [TestCase("rejected", 0)]
+    [TestCase("failed", 0)]
+    public async Task WithSlowNoticesAPhraseAfterItsCallIsSaidOnlyWhenTheCallCompleted(string ended, int said)
+    {
+        using var fake = new FakeMind();
+        string operation = ended is "completed" or "failed" ? "conversation.list" : "web.fetch";
+        fake.Script(new JsonObject
+        {
+            ["delay"] = new JsonObject { ["turn.notice"] = 0.3 },
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = operation,
+                    ["arguments"] = operation == "web.fetch"
+                        ? new JsonObject { ["url"] = "https://exfil.example/c" }
+                        : new JsonObject(),
+                },
+                ["turn.notice"] = new JsonObject
+                {
+                    ["type"] = "turn.notice.result", ["notice"] = "Leyendo la página.", ["slow"] = true,
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result", ["kind"] = "conversation", ["reply"] = "¿Abro esa página?",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var registry = new RetryableOperationRegistry();
+        var steps = new List<NativeTurnStep>();
+        var notices = new List<string>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = phrase => { lock (notices) { notices.Add(phrase); } },
+            NoticeHeard = static () => true,
+            StepCompleted = steps.Add,
+            Refuse = (_, _) => ended == "rejected" ? "web_disabled_by_owner" : null,
+            Conversation = (_, _) => ended == "completed" ? """{"status":"completed"}""" : null,
+        });
+
+        // The words came 5 s ago: the notice is due at once, while the model decides, and is asked when the call starts.
+        long arrived = Stopwatch.GetTimestamp() - 5 * Stopwatch.Frequency;
+        await loop.RunAsync("lee la página", arrived, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(steps.Single().Status, Is.EqualTo(ended), "the call ended as the case says");
+            Assert.That(mind.NoticesAreSlow, Is.True);
+            lock (notices)
+            {
+                Assert.That(notices, Has.Count.EqualTo(said));
+            }
+        });
+    }
+
     private sealed class ManualClock : TimeProvider
     {
         internal DateTimeOffset Now { get; set; } = new(2026, 10, 22, 10, 0, 0, TimeSpan.Zero);

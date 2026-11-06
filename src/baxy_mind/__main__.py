@@ -13,7 +13,7 @@ from pathlib import Path
 
 from . import protocol
 from .early import Anticipation, early_silence, wake_warm
-from .llm_server import LlmServer, declared_backend, declared_build
+from .llm_server import LlmServer, declared_backend, declared_build, progress_facts
 from .mind import Mind
 from .speech_text import Utterance
 from .system_one import SystemOne
@@ -29,6 +29,10 @@ TRACE_LIMIT_BYTES = 50 * 1024 * 1024
 # Al máximo W5: the requests after which the conversation may be read ahead for the next one (Mind.prefill decides
 # whether a turn is left open): a turn's last answer, a heartbeat's end and a kept session's load.
 PREFILLED_AFTER = ("turn.decide", "turn.continue", "turn.beat.end", "session.load")
+
+# Uso-124: a person's requests that may read a long prompt, each lasting while the model server advances
+# (LlmServer._advance). Not a heartbeat's: the person's next words wait for it to end (MainWindowViewModel, _turnGate).
+REQUESTS_THAT_READ = ("turn.decide", "turn.continue", "turn.confirm")
 
 # Feria 2026-10-27: how long a turn's notice waits for its audio before it is answered; past it the notice is not said
 # (the call may be over by then).
@@ -210,6 +214,7 @@ def main() -> int:
             if item[0] != "request":
                 # The voice's own items, between requests, on their own budget.
                 server.deadline = time.monotonic() + LlmServer.REQUEST_SECONDS
+                server.advanced = None
                 try:
                     if item[0] == "early":
                         anticipation.speculate(item[1], item[2])
@@ -224,9 +229,15 @@ def main() -> int:
             _, arrived, message = item
             request_id, kind = message.get("id"), str(message.get("type"))
             # Review 2026-10-22: a request's calls to the model share one budget under the App's 30 s, except the
-            # warm-up and a kept session's load (LlmServer.REQUEST_SECONDS).
+            # warm-up and a kept session's load (LlmServer.REQUEST_SECONDS). Revisión PCR1 (A3): from when it arrived,
+            # as the App's window and ceiling count from when it sent it: one that waited here behind the voice's items
+            # has that much less, and the mind still gives up before the App.
             server.deadline = (None if kind in ("catalog.configure", "session.load")
-                               else time.monotonic() + LlmServer.REQUEST_SECONDS)
+                               else time.monotonic() - (time.perf_counter() - arrived) + LlmServer.REQUEST_SECONDS)
+            # Uso-124: while the model server advances this request lasts, and the App's own window for it starts again
+            # (each «progress» line, as for a start; MindSidecarClient).
+            server.advanced = ((lambda rid=request_id: protocol.write_message({"type": "progress", "id": rid}))
+                               if kind in REQUESTS_THAT_READ and not message.get("beat") else None)
             # Al máximo, palanca 2: a decision made early is this request's reply when it is the one it would make;
             # any other request (a voice request aside) finds the mind as it was before it.
             unsure = voice.unsure(str(message.get("text") or "")) if kind == "turn.decide" else []
@@ -244,13 +255,17 @@ def main() -> int:
                     try:
                         server.wait_ready(600)
                         mind.warm(lambda done, total, rid=request_id: protocol.write_message(
-                            {"type": "progress", "id": rid, "done": done, "total": total}))
+                            {"type": "progress", "id": rid, "done": done, "total": total, **progress_facts(server)}))
                     except Exception as error:  # noqa: BLE001 - told to the App as a startup failure
                         reply = protocol.error_reply(request_id, "request_failed", "catalog_runtime_failure")
                         reply["startup"] = server.startup_failure(error)
                         protocol.write_message(reply)
                         continue
-                    protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count})
+                    # With what the server keeps known, the App's ceiling for a turn's request follows the mind's own.
+                    protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count,
+                                            "ceiling_s": server.ceiling_s,
+                                            **{key: value for key, value in progress_facts(server).items()
+                                               if key == "onProcessor"}})
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
                     front = message.get("front") if isinstance(message.get("front"), dict) else None
@@ -288,7 +303,8 @@ def main() -> int:
                         futures.wait([audio], 0.02)
                     if audio is None or not audio.done() or audio.cancelled() or audio.exception():
                         phrase = ""
-                    protocol.write_message({"type": "turn.notice.result", "id": request_id, "notice": phrase})
+                    protocol.write_message({"type": "turn.notice.result", "id": request_id, "notice": phrase,
+                                            "slow": mind.notices_are_slow})
                 elif kind == "session.new":
                     mind.new_session()
                     protocol.write_message({"type": "session.ready", "id": request_id})

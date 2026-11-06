@@ -66,6 +66,15 @@ internal sealed class WindowResolveHandler(
                 return OperationOutcome.Success(WithPasteNext(WindowControlResultJson.Serialize(titled.Windows, titled.Page), titled.Windows));
         }
 
+        // Encargo L3: an application in the notification area has no window; it says so, and which call closes it.
+        if (hasApplication && code == WindowControlErrorCodes.WindowNotFound
+            && Baxy.Providers.Windows.Infrastructure.ModelAids.On(Baxy.Providers.Windows.Infrastructure.ModelAids.WindowCandidates)
+            && await provider.BackgroundProcessesAsync(application.GetString()!, cancellationToken).ConfigureAwait(false)
+                is { Count: > 0 } background)
+        {
+            return OperationOutcome.Failure(code, RunningWithoutWindow(application.GetString()!, background.Count, _desktop(), _browser()));
+        }
+
         // BAXY Renew cu (C13): «Microsoft Word» is no installed name (it is «Word») and the browser open was another
         // than the one guessed; the reply said neither was open. The windows on the desktop go back, as a look's.
         return hasApplication && code is ApplicationOpenErrorCodes.ApplicationNotFound or WindowControlErrorCodes.WindowNotFound
@@ -122,6 +131,26 @@ internal sealed class WindowResolveHandler(
         facts["personBrowser"] = new System.Text.Json.Nodes.JsonObject { ["name"] = own.Name, ["process"] = own.Process };
         facts["next"] = $"these are windows of {windows[0].ProcessName}; the person's own browser (Windows' default) is "
             + $"{own.Name} (process {own.Process})";
+        using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
+        return document.RootElement.Clone();
+    }
+
+    // The same list as Candidates, for an application with processes and no window. «If the person asked» keeps a request
+    // about its window from closing it (encargo 45: the condition is what holds the controls).
+    internal static JsonElement RunningWithoutWindow(
+        string application,
+        int processes,
+        IReadOnlyList<(string Process, string Title)> windows,
+        (string Name, string Process)? browser)
+    {
+        var facts = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(
+            Candidates(windows, browser, nameUnknown: false).GetRawText())!;
+        facts["runningWithoutWindow"] = true;
+        facts["backgroundProcesses"] = processes;
+        string close = WireNames.Call("app.close", new System.Text.Json.Nodes.JsonObject { ["appId"] = application });
+        facts["next"] = "it has no window open but it is running in the background: if the person asked to close it, "
+            + $"{close}; if they asked for its window, it has none; these are the other windows open on the desktop (top first)"
+            + (browser is { } named ? $"; the person's web browser is {named.Name} (process {named.Process})" : string.Empty);
         using JsonDocument document = JsonDocument.Parse(facts.ToJsonString());
         return document.RootElement.Clone();
     }

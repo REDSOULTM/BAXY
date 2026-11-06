@@ -2,12 +2,12 @@
 
 ## Cancelación de eco
 
+Esta rueda y PyAudioWPatch no están en el lock desde `22b470dd0`: el paquete funciona con el eco apagado.
 `pywebrtc_audio-0.2.0+baxy.1-cp312-cp312-win_amd64.whl` expone la última trama
 lineal de AEC3 además de su salida suprimida. El parche cambia el binding; no
 ajusta el algoritmo ni añade otro cancelador. BAXY oye la salida lineal:
 `src/baxy_mind/voice_echo.py` quita del micrófono lo que suena en el PC (la
-referencia llega por loopback WASAPI con PyAudioWPatch, también fijado en el
-lock) antes de la palabra de activación, el VAD y el reconocedor. Por qué la
+referencia llega por loopback WASAPI con PyAudioWPatch) antes de la palabra de activación, el VAD y el reconocedor. Por qué la
 lineal y no la suprimida está en el comentario de `EchoCanceller` (`src/baxy_mind/voice_echo.py`).
 
 La receta `scripts/build_webrtc_runtime.py` verifica el tarball oficial 0.2.0,
@@ -30,9 +30,7 @@ El binario final tiene SHA-256
 `a23633725342f1ca3425c81a0927e3d6ef7d050452415e24b6a4cabe540416eb`.
 La reconstrucción no promete identidad binaria entre compiladores o rutas diferentes;
 el consumidor instala el binario fijado mediante `pylock.runtime-win-x64.toml` y
-`scripts/setup_mind_voice.ps1`, sin compilador. El lock conserva59 dependencias
-anteriores, añade pywebrtc-audio y retira ai-edge-litert, backports.strenum y
-ml_dtypes. El cancelador ya no requiere un modelo externo ni instalador de activos.
+`scripts/setup_mind_voice.ps1`, sin compilador. Fuera del lock desde `22b470dd0`: quien lo use lo instala a mano. El cancelador ya no requiere un modelo externo ni instalador de activos.
 
 Los tramos 255–256 comprobaron igualdad exacta de ambas señales en 13.433 bloques
 de doce grabaciones de desarrollo, incluidas las señales de la prueba física 254.
@@ -41,18 +39,13 @@ acredita equivalencia de señales, no aceptación de voz ni cierre de C03.
 
 ## Reconocimiento
 
-`sherpa_onnx-1.13.4+baxy.2-cp312-cp312-win_amd64.whl` contiene la extensión
-Python corregida para NeMo. **Esa rueda no está en el repositorio:** sherpa-onnx
-compila dentro eSpeak NG, que es GPL-3.0-or-later, y aquí sólo se versionan
-binarios de terceros con licencia permisiva. Va dentro del paquete de cada release,
-y su código fuente completo está en los activos `*-source.zip` de la
-[release 1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1)
-(`licenses/FUENTES_GPL.md`). Para usar la voz desde el código fuente hay que
-compilarla con la receta de abajo; como la compilación no es idéntica byte a byte,
-después se regenera el lock con `scripts/lock_python_dependencies.ps1` para que
-fije el SHA-256 de la rueda propia. Conserva el wrapper y las licencias de sherpa-onnx
-1.13.4 y depende del `sherpa-onnx-core==1.13.4` oficial. Es una modificación
-identificada de BAXY, no una versión publicada por el proyecto upstream.
+`sherpa_onnx-1.13.4+baxy.3-cp312-cp312-win_amd64.whl` contiene la extensión
+Python corregida para NeMo, compilada sin eSpeak NG (GPL-3.0-or-later) ni
+piper-phonemize. Conserva el wrapper y las licencias de sherpa-onnx 1.13.4 y lleva
+el `onnxruntime.dll` de `sherpa-onnx-core==1.13.4`, el único DLL que importa la
+extensión. Es una modificación identificada de BAXY, no una versión publicada por
+el proyecto upstream. Sólo carga Supertonic y Pocket: VITS, Matcha, Kokoro, Kitten
+y ZipVoice necesitaban eSpeak NG y aquí no están.
 
 El parche permite solicitar `decoding_method=greedy_search` por stream usando
 el mismo modelo que el beam contextual. El beam predeterminado conserva su
@@ -70,8 +63,8 @@ desde valores centrados para evitar pérdidas de precisión con bandas casi
 constantes. Conserva el epsilon y los modelos; afecta a ambos decodificadores.
 
 La fuente es el commit `142807252687d81b40d6315f23470a1512a00de3` de sherpa-onnx
-(tag `v1.13.4`) más `sherpa-nemo-stream-decoder.patch` y
-`sherpa-nemo-normalization.patch`. El script comprueba revisión, ambos parches
+(tag `v1.13.4`) más `sherpa-nemo-stream-decoder.patch`,
+`sherpa-nemo-normalization.patch` y `sherpa-no-espeak.patch`. El script comprueba revisión, los parches
 exactos y hash del wheel original; recompila con VS2022 Release, Python3.12
 y ONNX Runtime1.27.0 CPU, y ejecuta la suite nativa `math-test` antes de empaquetar.
 El wheel incluye procedencia y hash de la extensión en
@@ -93,7 +86,22 @@ Los consumidores instalan el binario fijado, sin necesitar el compilador.
 el verificador rechaza rutas externas y sigue exigiendo hashes completos.
 `scripts/setup_mind_voice.ps1` instala el lock con `--require-hashes`.
 
-La versión baxy.1 (sólo el parche del decodificador) se publicó en este
-repositorio hasta el commit `45f98278`; el lock decide la versión instalada.
+Las versiones baxy.1 y baxy.2, con eSpeak NG dentro, salieron del árbol en 1.3.0; siguen en la historia
+de git. El lock decide la versión instalada.
+
 Hay regresiones de contenido y eco aún abiertas; este paquete no certifica la
 fidelidad de toda la voz ni de la activación.
+
+## numpy y silero-vad
+
+`scripts/build_runtime_wheels.py` hace las dos, identificadas con su versión local:
+
+- `numpy-1.26.4+baxy.1-cp312-cp312-win_amd64.whl`: la misma fuente de numpy 1.26.4, compilada sin BLAS
+  (`allow-noblas`, [numpy#24703](https://github.com/numpy/numpy/issues/24703)). Lleva los avisos de la fuente salvo
+  `tools/wheels/LICENSE_*`, que describen las oficiales; svml y x86-simd-sort no se compilan aquí; pocketfft y msun, en `licenses/`. La rueda oficial para Windows lleva OpenBLAS, el
+  runtime de gfortran y libquadmath (LGPL-2.1-or-later). Medido el 2026-11-06 con la voz real: mismos WAV, mismos textos, mismas
+  decisiones de actividad de voz, activación e idioma. Las características de `voice_turn.features` para 8 s pasan de 4,4 a 12,4 ms.
+- `silero_vad-6.2.1+baxy.1-py3-none-any.whl`: la rueda oficial, sin sus requisitos de torch y torchaudio. `voice.Vad` sólo lee su
+  `silero_vad.onnx`, sin importar el paquete.
+
+`scripts/check_package_licenses.py` hace fallar el armado si vuelve algo de lo que se quitó.

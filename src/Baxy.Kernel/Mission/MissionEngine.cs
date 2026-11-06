@@ -140,6 +140,13 @@ public sealed class MissionEngine : IDisposable
             // One that started before and was not completed is reconciled as it stands: its effect may have happened.
             OperationOutcome? preflightFailure = null;
             JsonElement? raisedFacts = null;
+            // Revisión R2 (H4): a call with no yes is not the answer to an earlier question: what was noted for that one goes
+            // before its guard reads anything. A run with a yes keeps it, though its guard finds no reason to ask now.
+            if (string.IsNullOrEmpty(request.ConfirmationToken) && handler is IInvocationPreflight unasked)
+            {
+                ForgetAsked(unasked, request.Arguments);
+            }
+
             if (policy == PolicyDecision.RequireConfirmation && handler is IInvocationPreflight preflight)
             {
                 InvocationPreflightResult found = await Preflight(preflight, request.Arguments, cancellationToken)
@@ -216,6 +223,11 @@ public sealed class MissionEngine : IDisposable
                     request.ConfirmationToken);
                 if (authorization.Status == ConfirmationAuthorizationStatus.ChallengeRequired)
                 {
+                    if (handler is IInvocationPreflight asked)
+                    {
+                        await NoteAsked(asked, request.Arguments, cancellationToken).ConfigureAwait(false);
+                    }
+
                     return Pending(
                         request,
                         ConfirmationChallengeContract.RequiredErrorCode,
@@ -533,6 +545,33 @@ public sealed class MissionEngine : IDisposable
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
             return false;
+        }
+    }
+
+    // Revisión R2 (H4): as a read that fails (Preflight), a note that fails leaves the question to be asked all the same.
+    private static async ValueTask NoteAsked(
+        IInvocationPreflight preflight,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await preflight.NoteAskedAsync(arguments, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException
+            || !cancellationToken.IsCancellationRequested)
+        {
+        }
+    }
+
+    private static void ForgetAsked(IInvocationPreflight preflight, JsonElement arguments)
+    {
+        try
+        {
+            preflight.ForgetAsked(arguments);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
         }
     }
 

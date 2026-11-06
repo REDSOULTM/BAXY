@@ -1160,7 +1160,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         if (name is nameof(MainWindowViewModel.IsMindReady) or nameof(MainWindowViewModel.IsMindPreparing)
-            or nameof(MainWindowViewModel.VoicePieces) or nameof(MainWindowViewModel.MindStartedAt))
+            or nameof(MainWindowViewModel.VoicePieces) or nameof(MainWindowViewModel.MindStartedAt)
+            or nameof(MainWindowViewModel.MindReading))
         {
             Publish(BootEvent());
         }
@@ -1215,6 +1216,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["waitingForMind"] = _viewModel.IsAwaitingMind,
         ["failureCause"] = _viewModel.MindFailureCause,
         ["failureMemory"] = FailureMemory(),
+        ["failureRead"] = FailureRead(),
         // At rest or active: the rail's power row and the tray menu change it, the view only shows it.
         ["powered"] = _viewModel.IsPowered,
     };
@@ -1259,12 +1261,23 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             // Uso 95: a relaunch after a failed start shows why the start before failed (the lack of memory included).
             ["lastFailure"] = _viewModel.MindFailureCause,
             ["failureMemory"] = FailureMemory(),
+            ["failureRead"] = FailureRead(),
+            // N9 (L5): how far a slow start has read, from the server's own count, and why it is slow.
+            ["reading"] = _viewModel.MindReading is { } reading
+                ? new JsonObject { ["done"] = reading.Done, ["total"] = reading.Total, ["seconds_left"] = reading.SecondsLeft }
+                : null,
+            ["onProcessor"] = _viewModel.MindOnProcessor,
         };
     }
 
     // uso-116 (N23): «falta tanta RAM»: the figures of the lack of memory the cause names (need_mb, free_mb, as the ear's).
     private JsonObject? FailureMemory() => _viewModel.MindFailureMemory is { } memory
         ? new JsonObject { ["need_mb"] = memory.NeedMb, ["free_mb"] = memory.FreeMb }
+        : null;
+
+    // N9 (L5): «prepararlo tardaría tanto»: the figures of the read too slow the cause names.
+    private JsonObject? FailureRead() => _viewModel.MindFailureRead is { } read
+        ? new JsonObject { ["tokens_per_s"] = read.TokensPerS, ["minutes"] = read.NeedMinutes }
         : null;
 
     private JsonObject ContextEvent() => new()

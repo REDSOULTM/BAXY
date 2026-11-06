@@ -615,6 +615,9 @@ internal interface IOpenedApplicationFocus
 
     VisibleControlSurface.OpenedApplication? PeekOpened();
 
+    // Revisión R2 (H1): when the last opening was noted, though taken or past its freshness since; null: none was.
+    DateTime? LastOpenedUtc() => PeekOpened()?.NotedUtc;
+
     // The opened application's main window (none yet: Window 0), brought to the front only when bringToFront asks
     // (neither a look nor a click does: both reach it where it is, v3 point 0), and whether it looks drawn (judged
     // only when asked; otherwise drawn).
@@ -638,6 +641,8 @@ internal sealed class OpenedApplicationFocus : IOpenedApplicationFocus
 
     public VisibleControlSurface.OpenedApplication? PeekOpened() =>
         VisibleControlSurface.PeekOpened(Freshness);
+
+    public DateTime? LastOpenedUtc() => VisibleControlSurface.LastOpenedUtc();
 
     public nint MinimizedWindow(VisibleControlSurface.OpenedApplication opened) =>
         VisibleControlSurface.MinimizedOpenedWindow(opened);
@@ -680,6 +685,16 @@ internal sealed record VisibleClickTiming(
     TimeSpan SurfaceFirstSample,
     TimeSpan SurfacePostread)
 {
+    // C2040: how long a look at an application opened a moment ago waits for a window, how long once its program is not
+    // running (a launcher hands over to the main program), and how often it reads the desktop meanwhile. Within the 30 s the
+    // App gives a call (NativeTurnLoop.OperationTimeout), with the catalog's read before it and the view's after it; a window
+    // later than this is for the next look, which the failure names.
+    internal TimeSpan OpeningLook { get; init; } = TimeSpan.FromSeconds(15);
+
+    internal TimeSpan OpeningGoneGrace { get; init; } = TimeSpan.FromSeconds(5);
+
+    internal TimeSpan OpeningLookPoll { get; init; } = TimeSpan.FromMilliseconds(500);
+
     internal static VisibleClickTiming Default { get; } = new(
         LaunchSurface: TimeSpan.FromSeconds(30),
         ReusedSurface: TimeSpan.FromSeconds(5),
@@ -858,6 +873,10 @@ internal sealed class WindowsVisibleControlAdapter
     private readonly VisibleClickTiming _timing;
     // The window of the application a look names (exactly); 0 when none shows.
     private readonly Func<string?, CancellationToken, ValueTask<nint>> _requestedWindow;
+
+    // C2040: the desktop alone, without the catalog a look by name asks when it finds nothing (seconds): what an opening's
+    // wait reads again and again; a verified opening already taught its executable.
+    private readonly Func<string, CancellationToken, ValueTask<nint>> _openingWindow;
     private readonly Func<nint, CancellationToken, ValueTask<string?>>? _surfaceHash;
     private readonly IPointerFallback _pointer;
     // The image of a window a click compares before and after (selfDrawn: taken the way the earlier one was).
@@ -958,8 +977,27 @@ internal sealed class WindowsVisibleControlAdapter
     /// (<see cref="VisibleControlSurface.ResolveForegroundAsync"/>, the product's). A test seam names its own, so the
     /// desktop's real front (an elevated msconfig or Task Manager answered «window_elevated») never decides it.
     /// </summary>
+    /// <summary>Whether a look's window still exists (a test seam's handle is none on the desktop).</summary>
+    internal Func<nint, bool> WindowAlive { get; init; } = VisibleControlSurface.IsAlive;
+
+    /// <summary>Whether the program of an application a verified opening showed a moment ago runs; null: none was opened
+    /// now by that name.</summary>
+    internal Func<string, bool?> OpeningRuns { get; init; } = VisibleControlSurface.OpeningRuns;
+
+    /// <summary>C2040: a look this recent is the one a click by its label alone was decided on.</summary>
+    internal static readonly TimeSpan LabelLookFreshness = TimeSpan.FromMinutes(2);
+
+    /// <summary>Revisión R2 (H5): the window a click's label was seen in holds a dialog no look read; nothing was pressed.</summary>
+    internal const string DialogNotRead = "visible_dialog_not_read";
+
+    /// <summary>Revisión R2 (H4): the window a yes was asked for is not where the click would go now; nothing was pressed.</summary>
+    internal const string AskedWindowGone = "visible_asked_window_gone";
+
     internal Func<CancellationToken, ValueTask<nint>> WindowInFront { get; init; } =
         VisibleControlSurface.ResolveForegroundAsync;
+
+    /// <summary>The foreground as it is, for what must not read anything (<see cref="PreflightMayRaise"/>).</summary>
+    internal Func<nint> RawFront { get; init; } = VisibleControlSurface.FrontWindow;
 
     /// <summary>
     /// Ronda final 22-24: whether a window is the opened application's (drawn or hosted by its process, or, when the
@@ -1084,6 +1122,9 @@ internal sealed class WindowsVisibleControlAdapter
                     return null;
                 _lastView = new LastView(window, controls)
                 {
+                    Shown = [.. before.Shown, .. controls.Select(control => control.Name)],
+                    LookedUtc = Now,
+                    FrontsSeen = before.FrontsSeen,
                     FrameOnly = root.TryGetProperty("frameOnly", out JsonElement frameAfter) && frameAfter.ValueKind == JsonValueKind.True,
                     Cut = afterCut,
                     TreeTitle = title,
@@ -1352,6 +1393,9 @@ internal sealed class WindowsVisibleControlAdapter
         _requestedWindow = requestedWindow ?? ((application, token) => application is null
             ? ValueTask.FromResult<nint>(0)
             : NamedWindowAsync(application, VisibleControlSurface.ResolveTitledWindowAsync, InstalledExecutables, token));
+        _openingWindow = requestedWindow is null
+            ? VisibleControlSurface.ResolveTitledWindowAsync
+            : (application, token) => requestedWindow(application, token);
     }
 
     /// <summary>
@@ -1395,11 +1439,211 @@ internal sealed class WindowsVisibleControlAdapter
             && search.GetString()!.Trim().Length > 0)
         && arguments.TryGetProperty("label", out JsonElement label) && label.ValueKind == JsonValueKind.String
         && (VisibleControlSurface.AffirmativeAnswer(label.GetString())
-            || (!OnlyOpens(arguments) && SystemSurface(ClickTarget(arguments, out _))));
+            || (!OnlyOpens(arguments) && (SystemSurface(ClickTarget(arguments, out _))
+                || (ByLabelAlone(operation, arguments) && SystemSurface(RawFront())))));
 
     private static bool OnlyOpens(JsonElement arguments) =>
         arguments.TryGetProperty("manner", out JsonElement manner) && manner.ValueKind == JsonValueKind.String
         && manner.GetString() == "open";
+
+    // C2040, revisión R2 (H3): what the click itself takes as said: a null or a blank is as absent there (OptionalText).
+    private static bool Says(JsonElement arguments, string name) =>
+        arguments.TryGetProperty(name, out JsonElement value) && value.ValueKind != JsonValueKind.Null
+        && (value.ValueKind != JsonValueKind.String || !string.IsNullOrWhiteSpace(value.GetString()));
+
+    // A click that says where it goes by nothing but its label: no window or control of its own, no manner, no search
+    // (each goes by its own identity).
+    private static bool ByLabelAlone(string operation, JsonElement arguments) =>
+        operation == "input.visible.click" && arguments.ValueKind == JsonValueKind.Object
+        && WindowsExternalCapabilityProvider.MissionWindow(arguments) == 0
+        && !Says(arguments, "index") && !Says(arguments, "controlId") && !Says(arguments, "manner") && !Says(arguments, "search")
+        && arguments.TryGetProperty("label", out JsonElement label) && label.ValueKind == JsonValueKind.String;
+
+    /// <summary>
+    /// Uso real 05-11 (C2040): a look named one application and the click by a label it showed, naming no window, was
+    /// pressed in the window in front: refused as protected with BAXY's own in front, or pressed in another application
+    /// bearing the same words, which then read as the mission. The window of a look at most
+    /// <see cref="LabelLookFreshness"/> old that showed the label whole (by form: its words inside a name or a written
+    /// line); 0 otherwise. Revisión R2: the look is what the click was decided on while nothing came after it: not once
+    /// something was opened after it, however long ago and though a click took that opening (H1), not once a click pressed
+    /// in another window (H1), and not once the person brought up another window than the one in front at the look (H2;
+    /// <see cref="WindowInFront"/> reads through BAXY's own, so going back to it to ask leaves that seen). A label no look
+    /// showed still goes to the application opened or the window in front, as the descriptor says.
+    /// </summary>
+    internal async ValueTask<nint> WindowOfLastLookAsync(string operation, JsonElement arguments, CancellationToken cancellationToken)
+    {
+        if (!ByLabelAlone(operation, arguments))
+            return 0;
+        string said = arguments.GetProperty("label").GetString()!;
+        LastView? view;
+        lock (_viewLock)
+        {
+            view = _lastView;
+        }
+
+        if (view is null || view.PressedElsewhere || Now - view.LookedUtc > LabelLookFreshness || !WindowAlive(view.Hwnd)
+            || !view.Shown.Any(name => UserBrowserSurface.TitleBears(name, said))
+            || (_focus.LastOpenedUtc() is { } opened && opened > view.LookedUtc))
+        {
+            return 0;
+        }
+
+        nint front = await FrontNowAsync(cancellationToken).ConfigureAwait(false);
+        bool sameFront;
+        lock (_viewLock)
+        {
+            sameFront = view.FrontsSeen.Count == 0 || view.FrontsSeen.Contains(front);
+        }
+
+        return front == 0 || sameFront || front == view.Hwnd || front == DialogOf(view.Hwnd) ? view.Hwnd : 0;
+    }
+
+    // What holds the window's input now, as a look reads it: its modal dialog or its common file dialog, else itself.
+    private nint DialogOf(nint window)
+    {
+        nint surface = ModalOf(window);
+        return surface == window && CommonFileDialog.OwnedBy(surface) is var dialog and not 0 ? dialog : surface;
+    }
+
+    // The window in front as a click would take it; 0 when it cannot be read now, which says nothing of who moved it.
+    private async ValueTask<nint> FrontNowAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await WindowInFront(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            return 0;
+        }
+    }
+
+    // Revisión R2 (H5): the label was seen in the window behind; the dialog that came since asks something of its own.
+    private static ExternalCapabilityReceipt DialogNotReadReceipt(string operation) =>
+        !ModelAids.On(ModelAids.LabelReachNext)
+            ? ExternalJson.FailureBeforeEffect(operation, DialogNotRead)
+            : new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("next", "nothing was pressed: that window now holds a dialog your last look did not read, "
+                    + "and this click would go to it; to read what the dialog asks, call "
+                    + $"{WireNames.Of("input.visible.controls")} for that same application");
+                writer.WriteEndObject();
+            }), DialogNotRead);
+
+    // Revisión R2 (H4): the yes was for a window this click would not reach now.
+    private static ExternalCapabilityReceipt AskedWindowGoneReceipt(string operation) =>
+        !ModelAids.On(ModelAids.LabelReachNext)
+            ? ExternalJson.FailureBeforeEffect(operation, AskedWindowGone)
+            : new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("next", "nothing was pressed: the window the person's yes was given for has closed or is no "
+                    + "longer the one in front, and that yes holds for that window only; to see what the window meant shows "
+                    + $"now, call {WireNames.Of("input.visible.controls")}");
+                writer.WriteEndObject();
+            }), AskedWindowGone);
+
+    /// <summary>
+    /// Where a click by its label alone goes, for the provider to judge and press there: the window (0: as ever, the
+    /// application opened or the one in front), or the receipt of a click that presses nothing. A question noted for these
+    /// very arguments (<see cref="NoteAskedAsync"/>) decides, and this run spends it; otherwise the last look.
+    /// </summary>
+    internal async ValueTask<(nint Window, ExternalCapabilityReceipt? Refused)> LabelReachAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        if (!ByLabelAlone(operation, arguments))
+            return (0, null);
+        nint window;
+        if (TakeAsked(arguments) is { } asked)
+        {
+            if (!asked.Looked)
+            {
+                VisibleControlSurface.OpenedApplication? opening = _focus.PeekOpened();
+                bool stays = asked.Opening is { } noted
+                    ? opening?.NotedUtc == noted
+                    : opening is null && await FrontNowAsync(cancellationToken).ConfigureAwait(false) == asked.Window;
+                return stays ? (asked.Window, null) : (0, AskedWindowGoneReceipt(operation));
+            }
+
+            if (!WindowAlive(asked.Window))
+                return (0, AskedWindowGoneReceipt(operation));
+            window = asked.Window;
+        }
+        else
+        {
+            window = await WindowOfLastLookAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+        }
+
+        return window != 0 && DialogOf(window) != window ? (0, DialogNotReadReceipt(operation)) : (window, null);
+    }
+
+    /// <summary>
+    /// Revisión R2 (H4): where a click by its label alone would go was resolved only when it ran, so a yes that came after
+    /// the look's age went to the window in front, or to another window the person had brought meanwhile, with a yes given
+    /// for another («Enviar», by voice, with another application in front that has it too). The question fixes it: the
+    /// look's window, the application just opened, or the window in front. Never read when nothing is asked (Bypass).
+    /// </summary>
+    public async ValueTask NoteAskedAsync(string operation, JsonElement arguments, CancellationToken cancellationToken)
+    {
+        if (!ByLabelAlone(operation, arguments))
+            return;
+        nint looked = await WindowOfLastLookAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+        DateTime? opening = looked == 0 ? _focus.PeekOpened()?.NotedUtc : null;
+        nint window = looked != 0 || opening is not null ? looked : await FrontNowAsync(cancellationToken).ConfigureAwait(false);
+        lock (_viewLock)
+        {
+            _asked = window == 0 && opening is null ? null : new AskedReach(arguments.GetRawText(), window, looked != 0, opening, Now);
+        }
+    }
+
+    // The question noted for these arguments, if a yes can still answer it (the kernel's challenge lives as long).
+    private AskedReach? PeekAsked(JsonElement arguments)
+    {
+        lock (_viewLock)
+        {
+            return _asked is { } asked && asked.Arguments == arguments.GetRawText()
+                && Now - asked.AskedUtc <= Baxy.Kernel.Mission.ConfirmationLifetime.Challenge
+                    ? asked
+                    : null;
+        }
+    }
+
+    // That question, spent by the run that goes by it.
+    private AskedReach? TakeAsked(JsonElement arguments)
+    {
+        AskedReach? asked = PeekAsked(arguments);
+        if (asked is not null)
+        {
+            lock (_viewLock)
+            {
+                _asked = null;
+            }
+        }
+
+        return asked;
+    }
+
+    /// <summary>
+    /// This call comes with no yes (asked anew after a no, or nothing asks, or Bypass): a question asked before for the same
+    /// words does not decide where it goes.
+    /// </summary>
+    public void ForgetAsked(string operation, JsonElement arguments)
+    {
+        if (operation != "input.visible.click")
+            return;
+        lock (_viewLock)
+        {
+            if (_asked is { } asked && asked.Arguments == arguments.GetRawText())
+                _asked = null;
+        }
+    }
+
+    private sealed record AskedReach(string Arguments, nint Window, bool Looked, DateTime? Opening, DateTime AskedUtc);
+
+    private AskedReach? _asked;
 
     // The click's window: the one it names, or the last look's, or the one in front.
     private nint ClickTarget(JsonElement arguments, out LastView? view)
@@ -1414,8 +1658,8 @@ internal sealed class WindowsVisibleControlAdapter
         }
 
         return named != 0 ? named
-            : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd
-            : VisibleControlSurface.FrontWindow();
+            : view is not null && WindowAlive(view.Hwnd) ? view.Hwnd
+            : RawFront();
     }
 
     /// <summary>
@@ -1434,10 +1678,28 @@ internal sealed class WindowsVisibleControlAdapter
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        // Revisión R2 (H5): no yes for a click that will press nothing.
+        nint looked = await WindowOfLastLookAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+        if (looked != 0 && DialogOf(looked) != looked)
+            return DialogNotReadReceipt(operation);
+
         if (!PreflightMayRaise(operation, arguments))
             return null;
         string label = arguments.GetProperty("label").GetString()!.Trim();
         nint target = ClickTarget(arguments, out LastView? view);
+        // Revisión de los arreglos de R2: a click by its label alone goes by the question asked for it, the look, the
+        // application just opened or the window in front: that is what is judged, never a look it left.
+        if (ByLabelAlone(operation, arguments))
+        {
+            target = PeekAsked(arguments) is { Looked: true } asked ? asked.Window
+                : looked != 0 ? looked
+                : _focus.PeekOpened() is { } opening
+                    && (await _focus.FrontAsync(opening, judgeDrawn: false, cancellationToken).ConfigureAwait(false)).Window is var surface and not 0
+                    ? surface
+                : await FrontNowAsync(cancellationToken).ConfigureAwait(false) is var front and not 0 ? front
+                : target;
+        }
+
         if (VisibleControlSurface.AffirmativeAnswer(label)
             && await AnswersDestructiveDialogAsync(target, label, view, cancellationToken).ConfigureAwait(false))
         {
@@ -1677,6 +1939,16 @@ internal sealed class WindowsVisibleControlAdapter
             _pressedUnchanged = null;
         }
 
+        // Revisión R2 (H1): a look whose window this press did not reach is no longer what the next click is decided on.
+        if (_actedWindow != 0 && (receipt.Verified || receipt.EffectObserved || receipt.EffectMayHaveOccurred))
+        {
+            lock (_viewLock)
+            {
+                if (_lastView is { } last && last.Hwnd != _actedWindow)
+                    last.PressedElsewhere = true;
+            }
+        }
+
         if (fileDialog is not null && _actedWindow == fileDialog.Dialog
             && (receipt.Verified || receipt.EffectObserved || receipt.EffectMayHaveOccurred)
             && PressedAccept(fileDialog, receipt.Result, arguments))
@@ -1755,6 +2027,18 @@ internal sealed class WindowsVisibleControlAdapter
 
         if (menuEntry is { } watched && (receipt.Verified || receipt.EffectObserved))
             receipt = await WithBrowserOpenedAsync(receipt, watched, cancellationToken).ConfigureAwait(false);
+        // Revisión de los arreglos de R2: a window this click brought up (a browser it opened) is no window the person
+        // brought: read when the click is over, as late as the receipt looked.
+        if (_actedWindow != 0 && (receipt.Verified || receipt.EffectObserved || receipt.EffectMayHaveOccurred)
+            && await FrontNowAsync(CancellationToken.None).ConfigureAwait(false) is var cameUp and not 0)
+        {
+            lock (_viewLock)
+            {
+                if (_lastView is { } acted && acted.Hwnd == _actedWindow && !acted.FrontsSeen.Contains(cameUp))
+                    acted.FrontsSeen.Add(cameUp);
+            }
+        }
+
         return RepeatedUnchanged(receipt, arguments);
     }
 
@@ -2114,6 +2398,8 @@ internal sealed class WindowsVisibleControlAdapter
         string? search;
         string? choose;
         string? manner;
+        // The name of the control the click's index showed, when the label does not name it exactly.
+        string? indexName = null;
         try
         {
             label = ExternalJson.RequiredString(arguments, "label").Trim();
@@ -2181,7 +2467,9 @@ internal sealed class WindowsVisibleControlAdapter
             // not that window's control (it was pressed in the window looked at before, behind the named one).
             // Ajuste c3 (humos del 31-10): the control the model saw at that index, wherever the view after an act put
             // it; a control gone is never replaced by whatever occupies its index now (the label's cascade looks for it).
-            ViewControl? chosen = view is not null && (namedWindow == 0 || view.Hwnd == namedWindow)
+            // Revisión ciega de C2025: a window closed since its look has no controls: its index, resolved in that look, went
+            // to whatever is in front now, with that look's identity and its label's cascade.
+            ViewControl? chosen = view is not null && (namedWindow == 0 ? VisibleControlSurface.IsAlive(view.Hwnd) : view.Hwnd == namedWindow)
                 ? SeenControl(view, position)
                 : null;
             if (chosen is not null && SameLabel(label, chosen.Name))
@@ -2193,6 +2481,7 @@ internal sealed class WindowsVisibleControlAdapter
             }
             else
             {
+                indexName = chosen?.Name;
                 // Uso real 2026-10-21 (notebook e2e): the model gave an index the view did not have (Epic's view held no
                 // control, only written lines) or one that named another control (Steam's «Chrome Legacy Window» at 0
                 // for «Buscar en la tienda»), and the click ended there five and seven times while the label was on
@@ -2203,6 +2492,18 @@ internal sealed class WindowsVisibleControlAdapter
                     : view is not null && VisibleControlSurface.IsAlive(view.Hwnd) ? view.Hwnd : 0;
                 if (known == 0)
                 {
+                    if (chosen is null && view is not null && namedWindow == 0 && !VisibleControlSurface.IsAlive(view.Hwnd)
+                        && Infrastructure.ModelAids.On(Infrastructure.ModelAids.IndexLabelNext))
+                    {
+                        return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+                        {
+                            writer.WriteStartObject();
+                            writer.WriteString("next", "nothing was pressed: the window of your last look has closed, and its "
+                                + "controls with it; a look at the window meant gives what it shows now");
+                            writer.WriteEndObject();
+                        }), "visible_control_identity_stale");
+                    }
+
                     // BAXY Renew cu (C03): with no window to look in, the refusal says what the last look held at that
                     // index and how a text it read is pressed (Steam's page gave one control and its words only as text).
                     if (chosen is null)
@@ -2381,6 +2682,7 @@ internal sealed class WindowsVisibleControlAdapter
         // The tree the previous look read on the opened application's window (-1: none yet, or not said).
         int previousTree = -1;
         ExternalCapabilityReceipt? uia = null;
+        bool indexListed = false;
         TimeSpan labelBudget = opened is null ? _timing.SettledLabel : _timing.OpenedLabel;
         DateTime settled = opened is { } noted
             ? noted.NotedUtc + (noted.Launched ? _timing.LaunchSurface : _timing.ReusedSurface)
@@ -2452,32 +2754,46 @@ internal sealed class WindowsVisibleControlAdapter
                 // with the tree's own press, without the stage's post-read. The post-read noted the control's identity
                 // (_pressedUnchanged, in PostreadAsync).
 
-                if (_ocr is not null)
+                // Encargo P1 (F55, uso real 05-11): the model named a card by its index and the first words of its name;
+                // the tree answered with the names holding those words, that one among them, and vision went on and pressed
+                // look-alike words in a dialog of the page. The index says which one is meant: no later stage looks for the
+                // words, the wait for a label still being drawn stays, and the candidates go back, so that the next call
+                // names it whole and the kernel's policy judges that name. A label alone keeps its stages: a page's drawn
+                // button may share its words with the title of a tab.
+                indexListed = indexName is not null && ListsCandidate(uia, indexName);
+                if (indexListed)
                 {
-                    ExternalCapabilityReceipt? ocr = PressedAgain(await _ocr.TryClickAsync(
-                        operation, label, this, cancellationToken).ConfigureAwait(false));
-                    if (ocr is not null && ShouldKeep(ocr))
-                        return ocr;
-                    if (ocr is not null && !ShouldCascade(ocr))
-                        return ocr;
+                    hoverWindow = 0;
                 }
-
-                // A label no stage found yet may be an icon's: its tooltip is read once per click, on the window the
-                // click is bound to only (never whatever the person has in front), in pauses of the person, and
-                // only on the last look: a page still drawing (UI1731: the navigation ten seconds after the window)
-                // shows its label to a later look first, and its controls are not hovered half drawn. On a look made
-                // when the label's wait is already over, before vision.
-                hoverWindow = boundWindow;
-                if (Now >= lookingSince.Value + labelBudget
-                    && await HoverOnceAsync().ConfigureAwait(false) is { } tooltip)
-                    return tooltip;
-
-                if (_vision is not null)
+                else
                 {
-                    ExternalCapabilityReceipt? vision = PressedAgain(await _vision.TryClickAsync(
-                        operation, label, this, cancellationToken).ConfigureAwait(false));
-                    if (vision is not null)
-                        return vision;
+                    if (_ocr is not null)
+                    {
+                        ExternalCapabilityReceipt? ocr = PressedAgain(await _ocr.TryClickAsync(
+                            operation, label, this, cancellationToken).ConfigureAwait(false));
+                        if (ocr is not null && ShouldKeep(ocr))
+                            return ocr;
+                        if (ocr is not null && !ShouldCascade(ocr))
+                            return ocr;
+                    }
+
+                    // A label no stage found yet may be an icon's: its tooltip is read once per click, on the window the
+                    // click is bound to only (never whatever the person has in front), in pauses of the person, and
+                    // only on the last look: a page still drawing (UI1731: the navigation ten seconds after the window)
+                    // shows its label to a later look first, and its controls are not hovered half drawn. On a look made
+                    // when the label's wait is already over, before vision.
+                    hoverWindow = boundWindow;
+                    if (Now >= lookingSince.Value + labelBudget
+                        && await HoverOnceAsync().ConfigureAwait(false) is { } tooltip)
+                        return tooltip;
+
+                    if (_vision is not null)
+                    {
+                        ExternalCapabilityReceipt? vision = PressedAgain(await _vision.TryClickAsync(
+                            operation, label, this, cancellationToken).ConfigureAwait(false));
+                        if (vision is not null)
+                            return vision;
+                    }
                 }
             }
 
@@ -2546,6 +2862,8 @@ internal sealed class WindowsVisibleControlAdapter
         // said so, never «no such button», which was never looked for).
         if (uia is null)
             return ExternalJson.FailureBeforeEffect(operation, "visible_opened_window_not_shown");
+        if (indexListed)
+            return IndexNameFirst(uia, indexName!);
         return uia.ErrorCode is null
             ? ExternalJson.Failure(operation, "visible_button_not_found")
             : uia;
@@ -3055,6 +3373,52 @@ internal sealed class WindowsVisibleControlAdapter
         return NamedWindowNotFound(operation, desktop, browser, next);
     }
 
+    /// <summary>
+    /// Uso real 05-11 (C2040): «Aceptar» in the dialog an application just opened showed closed that window, the look that
+    /// followed found none five seconds later, and the reply said the application had closed; its main window came right
+    /// after. A look by the name of an application a verified opening showed a moment ago waits for a window of it, within
+    /// <see cref="VisibleClickTiming.OpeningLook"/>, or <see cref="VisibleClickTiming.OpeningGoneGrace"/> once its program
+    /// does not run (a launcher hands over to the main program). Any other name answers at once. The window, or 0, and
+    /// whether its program ran when the wait ended (null: no such opening).
+    /// </summary>
+    private async ValueTask<(nint Window, bool? Runs)> AwaitOpeningWindowAsync(
+        string application, CancellationToken cancellationToken)
+    {
+        bool? runs = OpeningRuns(application);
+        if (runs is null)
+            return (0, null);
+        DateTime since = Now;
+        while (Now - since < (runs == true ? _timing.OpeningLook : _timing.OpeningGoneGrace))
+        {
+            await Task.Delay(_timing.OpeningLookPoll, _time, cancellationToken).ConfigureAwait(false);
+            _openingWaited = Now - since;
+            nint window = await _openingWindow(application, cancellationToken).ConfigureAwait(false);
+            if (window != 0)
+                return (window, runs);
+            runs = OpeningRuns(application) ?? runs;
+        }
+
+        return (0, runs);
+    }
+
+    // C2040: no window yet of an application whose program runs is no closed application: the fact goes beside the code.
+    private static ExternalCapabilityReceipt StillOpening(ExternalCapabilityReceipt receipt, string application, bool? runs) =>
+        runs != true
+            ? receipt
+            : receipt with
+            {
+                Result = ExternalJson.Extended(receipt.Result, writer =>
+                {
+                    writer.WriteBoolean("applicationRunning", true);
+                    if (ModelAids.On(ModelAids.OpeningWindowNext))
+                    {
+                        writer.WriteString("next", $"the program of \"{application}\", opened a moment ago, is still running "
+                            + "with no window: it is still opening or went to the background; to see whether its window "
+                            + "came, call " + WireNames.Call("input.visible.controls", new JsonObject { ["application"] = application }));
+                    }
+                }),
+            };
+
     /// <summary>The worker's «view» request; the words looked for go only when the look carries some (without them the
     /// view is the usual one).</summary>
     internal static string ViewCommand(
@@ -3086,6 +3450,9 @@ internal sealed class WindowsVisibleControlAdapter
         return command.ToJsonString();
     }
 
+    // C2040: how long this look waited for an opening's window, taken off its walk: the call stays within the App's 30 s.
+    private TimeSpan _openingWaited;
+
     private async ValueTask<ViewResult> BuildViewAsync(
         int limit,
         bool includeText,
@@ -3099,6 +3466,8 @@ internal sealed class WindowsVisibleControlAdapter
     {
         const string operation = "input.visible.controls";
         var stopwatch = Stopwatch.StartNew();
+        _openingWaited = TimeSpan.Zero;
+        nint frontAtLook = await FrontNowAsync(cancellationToken).ConfigureAwait(false);
         nint hwnd = 0;
         nint cover = 0;
         // Encargo EX: the window was read through the modal dialog that disabled it (ModalSurface).
@@ -3123,11 +3492,17 @@ internal sealed class WindowsVisibleControlAdapter
                 hwnd = await _requestedWindow(titledBy, cancellationToken).ConfigureAwait(false);
             }
 
+            bool? opening = null;
+            // A look waiting for a label has its own wait, which would add this one on each round.
+            if (hwnd == 0 && application is not null && !lookArguments.TryGetProperty("waitForLabel", out _))
+                (hwnd, opening) = await AwaitOpeningWindowAsync(application, cancellationToken).ConfigureAwait(false);
+
             if (hwnd == 0 && application is not null)
             {
-                return new ViewResult(await NamedWindowNotFoundAsync(
+                return new ViewResult(StillOpening(await NamedWindowNotFoundAsync(
                     operation, application, lookArguments, VisibleControlSurface.DestinationDesktop(),
-                    Windows.DesktopWindowNames.PersonBrowser(), InstalledName, cancellationToken).ConfigureAwait(false), []);
+                    Windows.DesktopWindowNames.PersonBrowser(), InstalledName, cancellationToken).ConfigureAwait(false),
+                    application, opening), []);
             }
 
             if (hwnd == 0)
@@ -3185,8 +3560,9 @@ internal sealed class WindowsVisibleControlAdapter
             Task.Run(() => CaptureQuietlyAsync(firstLooked, covered, cancellationToken, shownBehind), CancellationToken.None);
         Task<WrittenText>? textTask = includeText ? ReadTextAsync(captureTask, lines ? PlacedLinesRead : limit, cancellationToken, placed: lines) : null;
         long asked = Stopwatch.GetTimestamp();
-        JsonDocument? answer = await _worker.SendAsync(command, WorkerViewBudget, cancellationToken).ConfigureAwait(false);
-        bool unfinished = answer is null && PastWalkBudget(asked);
+        TimeSpan walk = WorkerViewBudget - _openingWaited;
+        JsonDocument? answer = await _worker.SendAsync(command, walk, cancellationToken).ConfigureAwait(false);
+        bool unfinished = answer is null && Stopwatch.GetElapsedTime(asked) >= walk - TimeSpan.FromSeconds(1);
         if (unfinished)
             answer = UnfinishedWalk(hwnd, VisibleControlSurface.IsAlive, VisibleControlSurface.NotResponding);
         if (answer is null)
@@ -3364,6 +3740,9 @@ internal sealed class WindowsVisibleControlAdapter
             {
                 _lastView = new LastView(hwnd, controls)
                 {
+                    Shown = [.. names],
+                    LookedUtc = Now,
+                    FrontsSeen = frontAtLook == 0 ? [] : [frontAtLook],
                     FrameOnly = root.TryGetProperty("frameOnly", out JsonElement frameSeen) && frameSeen.ValueKind == JsonValueKind.True,
                     Cut = counted > controls.Count,
                     TreeTitle = treeTitle,
@@ -4950,6 +5329,26 @@ internal sealed class WindowsVisibleControlAdapter
         return wanted.Length > 0 && string.Equals(wanted, WindowsVisibleOcrLocator.Fold(name), StringComparison.Ordinal);
     }
 
+    // Encargo P1 (F55): the tree's «not found» lists the control by its name among those holding the label (auditoría C10).
+    private static bool ListsCandidate(ExternalCapabilityReceipt receipt, string name) =>
+        receipt.ErrorCode == "visible_button_not_found"
+        && receipt.Result is { ValueKind: JsonValueKind.Object } result
+        && result.TryGetProperty("candidates", out JsonElement candidates) && candidates.ValueKind == JsonValueKind.Array
+        && candidates.EnumerateArray().Any(candidate => candidate.ValueKind == JsonValueKind.String
+            && SameLabel(candidate.GetString()!, name));
+
+    // The same refusal with the index's name first: copied from the top, the next call goes to the control the index meant.
+    private static ExternalCapabilityReceipt IndexNameFirst(ExternalCapabilityReceipt receipt, string name)
+    {
+        JsonElement result = receipt.Result!.Value;
+        string[] names = [.. result.GetProperty("candidates").EnumerateArray()
+            .Where(static candidate => candidate.ValueKind == JsonValueKind.String)
+            .Select(static candidate => candidate.GetString()!)
+            .OrderBy(candidate => SameLabel(candidate, name) ? 0 : 1)];
+        return NotNamed(receipt.Operation, "visible_button_not_found", names,
+            result.TryGetProperty("candidateCount", out JsonElement all) && all.TryGetInt32(out int count) ? count : null);
+    }
+
     // Nothing was pressed: the failure says the names seen instead (auditoría P3), for the model to name one exactly.
     // Ronda final 19 (regla 3): with the count of all of them when the list is a first part (<paramref name="total"/>).
     /// <summary>For a label no control had, as facts from the last look: the controls whose names are closest to it
@@ -5550,6 +5949,18 @@ internal sealed class WindowsVisibleControlAdapter
     {
         // Banco de uso 05-11 (U40, S03): the look brought only the window's frame: what the rest held then is not known.
         internal bool FrameOnly { get; set; }
+
+        // C2040: what the look showed (its controls' names and written lines) and when: a click by a label alone names it.
+        internal IReadOnlyList<string> Shown { get; init; } = [];
+
+        internal DateTime LookedUtc { get; init; }
+
+        // Revisión R2 (H2): the windows in front that came with no doing of the person: the one when this look began (none:
+        // not read), which a click's lease gives back, and those a click on this window brought up itself.
+        internal List<nint> FrontsSeen { get; init; } = [];
+
+        // Revisión R2 (H1): a click pressed in another window after this look.
+        internal bool PressedElsewhere { get; set; }
 
         // Renew al máximo (7.1): how the look read the window (its limit, words and cut), so the read after an act reads
         // it the same way and numbers it alike, and the window's name in its tree, which that read compares.

@@ -4,6 +4,7 @@ click whose label closes or quits, in a turn whose words say nothing of closing,
 import json
 from pathlib import Path
 
+import pytest
 from baxy_mind.mind import CLOSE_NOT_RUN
 
 from test_mind_final import _call, _mind, _say
@@ -39,6 +40,41 @@ def test_a_close_the_person_asked_for_is_made(tmp_path: Path, monkeypatch) -> No
         mind.decide(1, words)
         step = mind.continue_turn(2, VIEW)
         assert step["kind"] == "action" and step["operation"] == "input_visible_click", words
+
+
+def _after(tmp_path: Path, said: str, words: str):
+    label = "Salir"
+    mind, _ = _mind(tmp_path, [_say(said), _call("input_visible_click", {"label": label, "index": 2, "window": 2623998}),
+                               _say("No lo hice.")])
+    mind.decide(1, "juega a otra cosa")
+    return mind.decide(2, words)
+
+
+def test_a_close_the_model_just_asked_about_by_its_name_is_made(tmp_path: Path, monkeypatch) -> None:
+    # Cosecha 05-11: asked «¿Le doy a «SALIR»?», the person's yes in words the rule does not read was refused twice.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    step = _after(tmp_path, "Pide confirmar. ¿Le doy a «SALIR» para terminar?", "dale, por favor")
+    assert step["kind"] == "action" and step["operation"] == "input_visible_click"
+
+
+@pytest.mark.parametrize("said", [
+    "Pide confirmar: si quieres, puedo darle a «SALIR».",  # no question
+    "¿Le doy a «Cancelar» para terminar?",  # another label
+    "¿Salirse del juego te parece bien?",  # that word inside another
+])
+def test_a_close_the_model_did_not_ask_about_by_its_name_stays_refused(tmp_path: Path, monkeypatch, said: str) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    step = _after(tmp_path, said, "dale, por favor")
+    assert step["kind"] == "conversation"
+
+
+def test_the_question_of_an_earlier_turn_does_not_open_the_close(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, _ = _mind(tmp_path, [_say("¿Le doy a «Salir»?"), _say("Listo."),
+                               _call("input_visible_click", {"label": "Salir", "index": 2, "window": 2623998}), _say("No lo hice.")])
+    mind.decide(1, "juega a otra cosa")
+    mind.decide(2, "no, déjalo")
+    assert mind.decide(3, "ahora escribe hola")["kind"] == "conversation"
 
 
 def test_without_the_aid_the_close_is_made(tmp_path: Path, monkeypatch) -> None:

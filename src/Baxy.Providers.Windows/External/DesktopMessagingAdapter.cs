@@ -944,6 +944,14 @@ internal interface IExternalOperationAdapter
 
     // Renew al máximo (guarda diálogo destructivo): IExternalCapabilityProvider.PreflightMayRaise, for its operations.
     bool PreflightMayRaise(string operation, JsonElement arguments) => false;
+
+    // Revisión R2 (H4): IExternalCapabilityProvider.NoteAskedAsync, for its operations.
+    ValueTask NoteAskedAsync(string operation, JsonElement arguments, CancellationToken cancellationToken) =>
+        ValueTask.CompletedTask;
+
+    void ForgetAsked(string operation, JsonElement arguments)
+    {
+    }
 }
 
 // G6: what a lookup opens: a message's recipient, or a conversation asked for by name (client.channel.open), which
@@ -1712,7 +1720,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
             // C5: the switcher opens with an empty input, so nothing is deleted before the name; a selection that
             // shows text in the conversation's composer means the keys go there, onto the person's draft.
-            if (await ComposerHoldsTextAsync(
+            // Uso-128 (cosecha 18:45, 764: composer_has_person_draft on a page with no message box, the focus in the switcher's
+            // empty field): with the focus read in the switcher the keys go there, so there is no draft to look for, and the
+            // band's picture only saw the switcher's backdrop still fading.
+            if ((await Read(cancellationToken).ConfigureAwait(false)).Focused is not { InDialog: true }
+                && await ComposerHoldsTextAsync(
                     probe, handle, channel, CaptureRegion(handle, CaptureArea.Composer, channel), cancellationToken)
                 .ConfigureAwait(false))
             {

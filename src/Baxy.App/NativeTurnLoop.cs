@@ -94,6 +94,9 @@ internal sealed class NativeTurnLoop
         /// <summary>Whether a notice would be heard (the owner's switch, BAXY's voice): otherwise none is asked for.</summary>
         internal required Func<bool> NoticeHeard { get; init; }
 
+        /// <summary>The model is still reading and the person hears nothing (<see cref="SilenceNotice.Advanced"/>).</summary>
+        internal Action? StillReading { get; init; }
+
         internal Action<NativeTurnStep>? StepCompleted { get; init; }
 
         /// <summary>A call is about to run: its id, operation and arguments (a memory call's arguments stay sealed).</summary>
@@ -275,13 +278,16 @@ internal sealed class NativeTurnLoop
         _personAt = arrivedAt;
         long turn = ++_personTurns;
         _turnStarted = Stopwatch.GetTimestamp();
-        _notice.Open(_host.NoticeHeard() ? mind.NoticeAsync : null, arrivedAt, _host.Notice);
+        _notice.Open(_host.NoticeHeard() ? mind.NoticeAsync : null, arrivedAt, _host.Notice, _host.StillReading,
+            () => mind.NoticesAreSlow);
+        mind.ModelAdvanced += _notice.Advanced;
         try
         {
             await DriveAsync(mind, await decide(), cancellationToken);
         }
         finally
         {
+            mind.ModelAdvanced -= _notice.Advanced;
             _notice.Close();
             DropUnasked();
             DropLeftBehind();
@@ -544,6 +550,7 @@ internal sealed class NativeTurnLoop
             }
 
             _notice.Running(true);
+            string? ran = null;
             try
             {
                 if (SpeaksFirst(step.Operation!))
@@ -551,11 +558,12 @@ internal sealed class NativeTurnLoop
                     await Task.WhenAny(_notice.AheadAsync(), Task.Delay(NoticeAheadAtMost, cancellationToken));
                 }
 
-                observation = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
+                observation = ran = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             }
             finally
             {
-                _notice.Running(false);
+                // Revisión PCR1, A1: a phrase that comes after its call is said only for one that completed.
+                _notice.Running(false, ran is not null && StatusOf(ran) == OperationStatuses.Completed);
             }
 
             _egress.Observed(step.Operation!, observation);

@@ -1,0 +1,95 @@
+Notices of the msun-derived code compiled into numpy's npymath, taken unchanged from numpy 1.26.4's source; numpy's wheel does not carry them.
+
+numpy/core/src/npymath/npy_math_complex.c.src:
+
+/*
+ * vim: syntax=c
+ *
+ * Implement some C99-compatible complex math functions
+ *
+ * Most of the code is taken from the msun library in FreeBSD (HEAD @ 4th
+ * October 2013), under the following license:
+ *
+ * Copyright (c) 2007, 2011 David Schultz <das@FreeBSD.ORG>
+ * Copyright (c) 2012 Stephen Montgomery-Smith <stephen@FreeBSD.ORG>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+numpy/core/src/npymath/npy_math_internal.h.src:
+
+/*
+ * vim:syntax=c
+ * A small module to implement missing C99 math capabilities required by numpy
+ *
+ * Please keep this independent of python ! Only basic types (npy_longdouble)
+ * can be used, otherwise, pure C, without any use of Python facilities
+ *
+ * How to add a function to this section
+ * -------------------------------------
+ *
+ * Say you want to add `foo`, these are the steps and the reasons for them.
+ *
+ * 1) Add foo to the appropriate list in the configuration system. The
+ *    lists can be found in numpy/core/setup.py lines 63-105. Read the
+ *    comments that come with them, they are very helpful.
+ *
+ * 2) The configuration system will define a macro HAVE_FOO if your function
+ *    can be linked from the math library. The result can depend on the
+ *    optimization flags as well as the compiler, so can't be known ahead of
+ *    time. If the function can't be linked, then either it is absent, defined
+ *    as a macro, or is an intrinsic (hardware) function.
+ *
+ *    i) Undefine any possible macros:
+ *
+ *    #ifdef foo
+ *    #undef foo
+ *    #endif
+ *
+ *    ii) Avoid as much as possible to declare any function here. Declaring
+ *    functions is not portable: some platforms define some function inline
+ *    with a non standard identifier, for example, or may put another
+ *    identifier which changes the calling convention of the function. If you
+ *    really have to, ALWAYS declare it for the one platform you are dealing
+ *    with:
+ *
+ *    Not ok:
+ *        double exp(double a);
+ *
+ *    Ok:
+ *        #ifdef SYMBOL_DEFINED_WEIRD_PLATFORM
+ *        double exp(double);
+ *        #endif
+ *
+ * Some of the code is taken from msun library in FreeBSD, with the following
+ * notice:
+ *
+ * ====================================================
+ * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+ *
+ * Developed at SunPro, a Sun Microsystems, Inc. business.
+ * Permission to use, copy, modify, and distribute this
+ * software is freely granted, provided that this notice
+ * is preserved.
+ * ====================================================
+ */

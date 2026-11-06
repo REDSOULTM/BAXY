@@ -92,7 +92,7 @@ public sealed class ListeningSoundTests
     [Test]
     public void TheStartRisesAndTheEndFallsShortAndEachItsOwn()
     {
-        Chime[] tones = [Chime.Wake, Chime.Heard, Chime.TurnFailed, Chime.ListenFailed, Chime.Wait];
+        Chime[] tones = [Chime.Wake, Chime.Heard, Chime.TurnFailed, Chime.ListenFailed, Chime.Wait, Chime.StillReading];
         Assert.Multiple(() =>
         {
             foreach (Chime tone in (Chime[])[Chime.Wake, Chime.Heard])

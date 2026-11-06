@@ -12,7 +12,7 @@ import { AvatarVid } from './components/AvatarVid';
 import { useLipActive } from './lip';
 import { liveText } from './live';
 import { Globe, Icon } from './components/Icon';
-import { causeText, type FailureMemory } from './causes';
+import { causeText, type FailureMemory, type FailureRead } from './causes';
 import { MemoryPanel } from './components/panels/MemoryPanel';
 import { CatalogPanel } from './components/panels/CatalogPanel';
 import { SessionsPanel } from './components/panels/SessionsPanel';
@@ -47,10 +47,10 @@ function keep(key: string, value: string) {
 }
 
 // uso-116: «El modelo no está disponible» alone left a new user with nothing to do: it goes with why, when it is known.
-function failureLabel(failure: string | null | undefined, cause: string | null | undefined, memory: FailureMemory | null | undefined, t: T): string {
+function failureLabel(failure: string | null | undefined, cause: string | null | undefined, memory: FailureMemory | null | undefined, read: FailureRead | null | undefined, t: T): string {
   const words = FAILURE[failure ?? ''];
   const said = words ? t.w(words) : t('Algo falló', 'Something went wrong');
-  const why = failure === 'mind_unavailable' ? causeText(cause, t, memory) : null;
+  const why = failure === 'mind_unavailable' ? causeText(cause, t, memory, read) : null;
   return why ? said + ': ' + why : said;
 }
 
@@ -247,7 +247,7 @@ export default function App() {
         : host === 'idle' && pendingCard ? 'confirm'
           : host;
   const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
-  const label = state === 'error' ? (voiceError ? t.w(LABEL.error) : apiCapped ? t('Llegaste al tope de gasto de la API', 'You reached the API spending cap') : failureLabel(s.agent.failure, s.agent.failureCause, s.agent.failureMemory, t))
+  const label = state === 'error' ? (voiceError ? t.w(LABEL.error) : apiCapped ? t('Llegaste al tope de gasto de la API', 'You reached the API spending cap') : failureLabel(s.agent.failure, s.agent.failureCause, s.agent.failureMemory, s.agent.failureRead, t))
     // uso 95: written while the model starts, the message waits for it (the host answers it once it is up)
     : state === 'booting' && s.agent.waitingForMind ? t('Arrancando · tu mensaje espera', 'Starting · your message is waiting')
       : t.w(LABEL[state]);
@@ -590,7 +590,7 @@ export default function App() {
             <div className="bx-cbot">
               {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>{t('Salió a internet', 'Went online')}</b><span>· {banner}</span></div>
                 : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
-              {breakdown ? <Breakdown failure={breakdown} cause={s.agent.failureCause ?? null} memory={s.agent.failureMemory ?? null} />
+              {breakdown ? <Breakdown failure={breakdown} cause={s.agent.failureCause ?? null} memory={s.agent.failureMemory ?? null} read={s.agent.failureRead ?? null} onProcessor={!!s.boot?.onProcessor} />
                 : booting && s.boot ? <Boot boot={s.boot} />
                 : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} />}
               <VoiceInput mic={shownMic} micAvailable={s.voice.available} micWaiting={s.voice.waiting_memory ?? null} noRecognizer={s.voice.no_recognizer === true} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}

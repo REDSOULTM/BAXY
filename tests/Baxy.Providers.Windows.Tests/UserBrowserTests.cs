@@ -2568,6 +2568,33 @@ public sealed class UserBrowserTests
         });
     }
 
+    // Uso real 05-11 (C2040): the page the tab stays on and how what it shows is opened, beside the code.
+    [TestCase("all", true)]
+    [TestCase("none", false)]
+    public async Task BackWithNoHistorySaysThePageItStaysOn(string aids, bool told)
+    {
+        using IDisposable setting = Baxy.Providers.Windows.Infrastructure.ModelAids.Use(aids);
+        var platform = new FakePlatform(OperaGx);
+        platform.Frames.Add(Frame("doc-1", back: false));
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt control = await Control(harness, "back");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(control.ErrorCode, Is.EqualTo(UserBrowserSurface.HistoryStart));
+            Assert.That(control.Result?.ValueKind == System.Text.Json.JsonValueKind.Object
+                && control.Result.Value.TryGetProperty("next", out _), Is.EqualTo(told));
+            if (told)
+            {
+                Assert.That(control.Result!.Value.GetProperty("activeTab").GetString(), Is.EqualTo("Mine"));
+                // I4 (R2 H6): any page chooses its title; it goes as a datum, never inside the sentence the model follows.
+                Assert.That(control.Result!.Value.GetProperty("next").GetString(), Does.Not.Contain("Mine")
+                    .And.Contain("input_visible_controls {\"application\":\"opera\"}").And.Contain("input_visible_click"));
+            }
+        });
+    }
+
     [Test]
     public async Task AReloadIsSeenAsANewDocumentAndNoChangeIsUnconfirmed()
     {

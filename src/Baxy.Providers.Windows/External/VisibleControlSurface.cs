@@ -1677,6 +1677,7 @@ internal static partial class VisibleControlSurface
     // was opened: its process or one it started, the largest usable window of them, brought to the front.
     private static readonly object OpenedGate = new();
     private static OpenedApplication? _opened;
+    private static DateTime? _lastOpenedUtc;
 
     // PLAN_GENERAL B1: the executables verified openings found, by the folded name the application was asked by.
     private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> LearnedExecutables =
@@ -1703,6 +1704,45 @@ internal static partial class VisibleControlSurface
         && LearnedExecutables.TryGetValue(FoldTitle(application), out string? learned)
         && string.Equals(learned, executablePath, StringComparison.OrdinalIgnoreCase);
 
+    // C2040: the verified openings by name, with their executable and when, for a look that finds no window a moment after.
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, (string Executable, DateTime NotedUtc)>
+        VerifiedOpenings = new(StringComparer.Ordinal);
+
+    private static readonly TimeSpan OpeningFreshness = TimeSpan.FromMinutes(2);
+
+    /// <summary>A verified opening of <paramref name="application"/> just found <paramref name="executablePath"/> running it.</summary>
+    internal static void NoteVerifiedOpening(string? application, string? executablePath)
+    {
+        string name = FoldTitle(application);
+        if (name.Length > 0 && !string.IsNullOrWhiteSpace(executablePath) && Path.IsPathFullyQualified(executablePath))
+            VerifiedOpenings[name] = (Path.GetFullPath(executablePath), DateTime.UtcNow);
+    }
+
+    /// <summary>Whether the program of <paramref name="application"/>, opened by that name a moment ago, runs; null when no
+    /// verified opening by that name is that recent.</summary>
+    internal static bool? OpeningRuns(string application)
+    {
+        if (!VerifiedOpenings.TryGetValue(FoldTitle(application), out (string Executable, DateTime NotedUtc) opening)
+            || DateTime.UtcNow - opening.NotedUtc > OpeningFreshness)
+        {
+            return null;
+        }
+
+        System.Diagnostics.Process[] running = System.Diagnostics.Process.GetProcessesByName(
+            Path.GetFileNameWithoutExtension(opening.Executable));
+        try
+        {
+            return running.Any(process => string.Equals(
+                Applications.WindowsInstalledApplicationPlatform.ExecutableImagePath(process.Id),
+                opening.Executable, StringComparison.OrdinalIgnoreCase));
+        }
+        finally
+        {
+            foreach (System.Diagnostics.Process process in running)
+                process.Dispose();
+        }
+    }
+
     internal static bool HasLearnedExecutable(string? application) =>
         LearnedExecutables.ContainsKey(FoldTitle(application));
 
@@ -1725,7 +1765,10 @@ internal static partial class VisibleControlSurface
 
         DateTime noted = DateTime.UtcNow;
         lock (OpenedGate)
+        {
             _opened = new OpenedApplication(processId, started, noted, LaunchedNow(started, noted, launched), (nint)window);
+            _lastOpenedUtc = noted;
+        }
     }
 
     // A process this opening started, against a new window of one already running: File Explorer opens its folder
@@ -1752,6 +1795,15 @@ internal static partial class VisibleControlSurface
         lock (OpenedGate)
         {
             return _opened is { } value && DateTime.UtcNow - value.NotedUtc <= freshness ? value : null;
+        }
+    }
+
+    // Revisión R2 (H1): when the last opening was noted, though it was taken or went stale since.
+    internal static DateTime? LastOpenedUtc()
+    {
+        lock (OpenedGate)
+        {
+            return _lastOpenedUtc;
         }
     }
 

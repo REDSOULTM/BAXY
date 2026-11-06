@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { seededRng } from '../src/utils/seededRng';
 import { BXM, HUBS, bxMouth, bxRoute } from '../src/components/face/geometry';
 import { LIB, NEXT, groupFor } from '../src/components/avatarClips';
-import { causeText } from '../src/causes';
+import { causeAdvice, causeText, readingText, startedOnlyOnce } from '../src/causes';
 
 /* «Unitarias · lógica del diseño» of Baxy pruebas.html, against the view's own modules. */
 
@@ -14,6 +14,26 @@ test('la falta de memoria dice cuánto cuando se sabe, y nada inventado cuando n
   expect(causeText('ram_insuficiente')).toBe('falta memoria RAM libre en el equipo');
   expect(causeText('modelo_ausente', { need_mb: 1 })).toBe('no se encuentra el archivo del modelo');
   expect(causeText('proceso_salio')).toBeNull();
+});
+
+test('un equipo que lee el modelo demasiado lento lo dice con lo medido y con qué puede hacer', () => {
+  expect(causeText('lectura_lenta', null, { tokens_per_s: 20, minutes: 41 }))
+    .toBe('este equipo lee el modelo demasiado lento: prepararlo tardaría unos 41 min');
+  expect(causeText('lectura_lenta')).toBe('este equipo lee el modelo demasiado lento');
+  expect(causeText('lectura_lenta', null, { tokens_per_s: 46, minutes: 437 }))
+    .toBe('este equipo lee el modelo demasiado lento: prepararlo tardaría más de 7 h');
+  expect(causeAdvice('lectura_lenta')).toContain('tarjeta gráfica dedicada con 4 GB');
+  expect(causeText('tiempo')).toContain('dejó de avanzar');
+  expect(causeAdvice('tiempo')).toBe('Actualiza el controlador de la tarjeta gráfica y reintenta. BAXY necesita una tarjeta gráfica dedicada con 4 GB de memoria libres o un procesador más rápido.');
+  expect(causeAdvice('ram_insuficiente')).toBe('Cierra programas que no estés usando para liberar memoria.');
+  expect(startedOnlyOnce('lectura_lenta')).toBe(true);
+  expect(startedOnlyOnce('ram_insuficiente')).toBe(false);
+});
+
+test('el arranque lento dice cuánto lleva con la cuenta del servidor, y nada inventado cuando no la hay', () => {
+  expect(readingText({ done: 16500, total: 48500, seconds_left: 660 })).toBe('Preparando el modelo · 34 % · quedan unos 11 min');
+  expect(readingText({ done: 48000, total: 48500, seconds_left: 12 })).toBe('Preparando el modelo · 98 % · queda menos de 1 min');
+  expect(readingText({ done: 2048, total: 48500 })).toBe('Preparando el modelo · 4 %');
 });
 
 test('el cielo es el mismo en cada redibujado y sus valores están entre 0 y 1', () => {

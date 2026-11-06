@@ -293,6 +293,8 @@ def test_turn_decide_and_turn_notice_tell_the_voice_their_language_and_never_the
         def __init__(self, *args) -> None:
             pass
 
+        notices_are_slow = False
+
         def decide(self, *given):
             seen.append((given, speech.lang))
             return {"type": "turn.result", "id": given[0]}

@@ -1177,8 +1177,10 @@ def test_the_real_mind_decides_through_the_translator(stack, tmp_path, through_a
         import time
         until = time.monotonic() + 60
         while time.monotonic() < until:
+            # A «progress» line says the model advanced (uso-124: a streamed answer from the translator too), as the App
+            # reads it (MindSidecarClient): the request goes on, it is not the reply.
             for line in box["lines"]:
-                if line.get("id") == request_id and line.get("type") != "catalog.progress":
+                if line.get("id") == request_id and line.get("type") not in ("catalog.progress", "progress"):
                     return line
             assert mind.poll() is None, box["lines"]
             time.sleep(0.05)

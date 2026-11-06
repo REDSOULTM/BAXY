@@ -1,7 +1,7 @@
 /* The view's contract with Baxy.App (FieldProductChannel, channel baxy.field.v1). Every value here comes from the
    host; a reading the host could not take travels as null and the view shows «—», never a 0. */
 
-import type { FailureMemory } from './causes';
+import type { FailureMemory, FailureRead, ModelReading } from './causes';
 
 /** what the host says BAXY is doing (FieldProductChannel.CurrentConversationState). */
 export type HostState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
@@ -65,6 +65,8 @@ export interface AgentStatus {
   waitingForMind?: boolean;
   /** uso 95: why the model's last start failed while none is up (ram_insuficiente, vram_insuficiente, …) */
   failureCause?: string | null;
+  /** N9: the figures of a read too slow, when the cause is one. */
+  failureRead?: FailureRead | null;
   /** uso-116: the figures of that lack of memory, when known */
   failureMemory?: FailureMemory | null;
   /** active or at rest (the rail's power row and the tray menu change it) */
@@ -99,6 +101,11 @@ export interface BootPieces {
   /** uso 95: why the start before this one failed (a relaunch is under way or waits its turn). */
   lastFailure?: string | null;
   failureMemory?: FailureMemory | null;
+  failureRead?: FailureRead | null;
+  /** N9: how far the model has read what it prepares; null when it is not reading (a kept start takes under a second). */
+  reading?: ModelReading | null;
+  /** N9: no graphics card the model's server can use: the processor computes. */
+  onProcessor?: boolean;
 }
 
 export interface Metrics {
@@ -153,7 +160,7 @@ export interface GeneralSettings {
  *  list when the view connects or a session is opened. */
 export type ServerEvent =
   | { type: 'state'; value: HostState; quiet?: HostState }
-  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean; waitingForMind?: boolean; failureCause?: string | null; failureMemory?: FailureMemory | null }
+  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean; waitingForMind?: boolean; failureCause?: string | null; failureMemory?: FailureMemory | null; failureRead?: FailureRead | null }
   | { type: 'item'; item: ChatItem }
   | { type: 'transcript'; items: ChatItem[] }
   | ({ type: 'step'; phase: 'start' | 'end'; turn: string } & Step)

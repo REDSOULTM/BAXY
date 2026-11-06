@@ -572,3 +572,44 @@ test('ajustes: la pestaña Confirmación dice que sólo pregunta antes de lo des
   // creating a calendar event goes straight through since the owner's decision of 2026-10-25
   await expect(tip).not.toContainText(/calendario/i);
 });
+
+test('sin tarjeta gráfica el arranque dice por qué tarda y cuánto lleva; nada de eso con una que sirve', async () => {
+  h = await openView();
+  const boot = { type: 'boot', stt: true, wake: true, tts: true, model: false, startedAt: Date.now(), readyAt: null };
+  h.emit({ type: 'agent', built: true, ready: false, powered: true });
+  h.emit({ ...boot, reading: { done: 16500, total: 48500, seconds_left: 660 }, onProcessor: true });
+  const panel = h.page.locator('.bx-boot');
+  await expect(panel).toContainText('Preparando el modelo · 34 % · quedan unos 11 min');
+  await expect(panel).toContainText('no está usando una tarjeta gráfica');
+  h.emit({ ...boot, reading: { done: 2048, total: 48500, seconds_left: 30 }, onProcessor: false });
+  await expect(panel).toContainText('Preparando el modelo · 4 % · queda menos de 1 min');
+  await expect(panel).not.toContainText('tarjeta gráfica');
+});
+
+test('un equipo demasiado lento dice la causa y qué hacer, sin contar arranques que no hubo', async () => {
+  h = await openView();
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'lectura_lenta',
+    failureRead: { tokens_per_s: 20, minutes: 41 } });
+  const card = h.page.locator('.bx-breakdown');
+  await expect(card).toContainText('este equipo lee el modelo demasiado lento: prepararlo tardaría unos 41 min');
+  await expect(card).toContainText('tarjeta gráfica dedicada con 4 GB');
+  await expect(card).not.toContainText('varias veces');
+  await expect(card.locator('.bx-btn', { hasText: 'Reintentar' })).toBeVisible();
+});
+
+test('la avería de un equipo lento dice además que no usa tarjeta gráfica cuando no la usa', async () => {
+  h = await openView();
+  h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: false, startedAt: 1, readyAt: null, failed: 'mind_unavailable',
+    lastFailure: 'lectura_lenta', failureRead: { tokens_per_s: 46, minutes: 54 }, onProcessor: true });
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'lectura_lenta',
+    failureRead: { tokens_per_s: 46, minutes: 54 } });
+  const card = h.page.locator('.bx-breakdown');
+  await expect(card).toContainText('no está usando una tarjeta gráfica');
+  await expect(card).toContainText('prepararlo tardaría unos 54 min');
+});
+
+test('otra avería del arranque sigue diciendo que falló varias veces', async () => {
+  h = await openView();
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'ram_insuficiente' });
+  await expect(h.page.locator('.bx-breakdown')).toContainText('varias veces');
+});

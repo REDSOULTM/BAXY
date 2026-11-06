@@ -18,6 +18,181 @@ public sealed class SilenceNoticeTests
     [SetUp]
     public void NoContext() => SynchronizationContext.SetSynchronizationContext(null);
 
+    // Uso-124: a model reading for up to 89 s with no call running: nothing could be written or said, and the person heard
+    // nothing for over a minute. A sound without words while it advances, never more often than ReadingSign.
+    [Test]
+    public void AModelStillReadingSoundsEveryWhileItAdvances()
+    {
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        int sounded = 0;
+        notice.Open(Ask, clock.GetTimestamp(), _ => { }, () => sounded++);
+
+        clock.Advance(TimeSpan.FromSeconds(19));
+        notice.Advanced();
+        Assert.That(sounded, Is.EqualTo(0), "nothing yet: an NVIDIA GPU has read it all by now");
+        clock.Advance(TimeSpan.FromSeconds(2));
+        notice.Advanced();
+        Assert.That(sounded, Is.EqualTo(1));
+        notice.Advanced();
+        Assert.That(sounded, Is.EqualTo(1), "advances come far more often than the sound");
+        clock.Advance(SilenceNotice.ReadingSign);
+        notice.Advanced();
+        Assert.That(sounded, Is.EqualTo(2));
+    }
+
+    // Uso-124: on the RX 7600 a notice takes 3 s and a web call under 1 s: the call has ended when its phrase comes, and
+    // the answer is a long read away. On a fast GPU the phrase is dropped: the answer is about to come.
+    [TestCase(true, 1)]
+    [TestCase(false, 0)]
+    public async Task APhraseAfterItsCallEndedIsSaidOnlyWhenNoticesAreSlow(bool slow, int said)
+    {
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        var phrases = new List<string>();
+        var answer = new TaskCompletionSource<string?>();
+        notice.Open(_ => answer.Task, clock.GetTimestamp(), phrases.Add, null, () => slow);
+        notice.Running(true);
+        Task ahead = notice.AheadAsync();
+        notice.Running(false, completed: true);
+
+        answer.SetResult(Phrase);
+        await ahead;
+
+        Assert.That(phrases, Has.Count.EqualTo(said));
+    }
+
+    // Revisión PCR1, A1 (Feria 2026-10-27 again): a call refused, failed or waiting for the person's yes did not do what
+    // its phrase says («Borrando el archivo…» before «¿Lo borro?»): with slow notices too, its phrase is dropped. So is
+    // one that comes after a later call ended so, though an earlier one completed.
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task WithSlowNoticesAPhraseAfterACallThatDidNotCompleteIsDropped(bool anEarlierCallCompleted)
+    {
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        var phrases = new List<string>();
+        var answer = new TaskCompletionSource<string?>();
+        notice.Open(_ => answer.Task, clock.GetTimestamp(), phrases.Add, null, () => true);
+        notice.Running(true);
+        Task ahead = notice.AheadAsync();
+        if (anEarlierCallCompleted)
+        {
+            notice.Running(false, completed: true);
+            notice.Running(true);
+        }
+
+        notice.Running(false);
+
+        answer.SetResult(Phrase);
+        await ahead;
+
+        Assert.That(phrases, Is.Empty);
+    }
+
+    [Test]
+    public async Task WithSlowNoticesAPhraseDoesNotOutliveATurnThatEndedSilent()
+    {
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        var phrases = new List<string>();
+        var answer = new TaskCompletionSource<string?>();
+        notice.Open(_ => answer.Task, clock.GetTimestamp(), phrases.Add, null, () => true);
+        notice.Running(true);
+        Task ahead = notice.AheadAsync();
+        notice.Running(false, completed: true);
+        notice.Close();
+
+        answer.SetResult(Phrase);
+        await ahead;
+
+        Assert.That(phrases, Is.Empty, "the turn ended with nothing published: nothing is said after it");
+    }
+
+    [Test]
+    public void AModelThatDoesNotAdvanceSoundsNothing()
+    {
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        int sounded = 0;
+        notice.Open(Ask, clock.GetTimestamp(), _ => { }, () => sounded++);
+
+        clock.Advance(TimeSpan.FromMinutes(5));
+
+        Assert.That(sounded, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void WhileACallRunsItsNoticeSpeaksNotTheSound()
+    {
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        int sounded = 0;
+        notice.Open(_ => Task.FromResult<string?>(null), clock.GetTimestamp(), _ => { }, () => sounded++);
+        notice.Running(true);
+
+        clock.Advance(TimeSpan.FromSeconds(30));
+        notice.Advanced();
+
+        Assert.That(sounded, Is.EqualTo(0));
+    }
+
+    [Test]
+    public async Task ANoticeJustSaidPutsTheSoundOff()
+    {
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        var said = new List<string>();
+        int sounded = 0;
+        notice.Open(Ask, clock.GetTimestamp(), said.Add, () => sounded++);
+        notice.Running(true);
+        clock.Advance(TimeSpan.FromSeconds(15));
+        await notice.AheadAsync();
+        Assert.That(said, Is.Not.Empty);
+        notice.Running(false);
+
+        clock.Advance(TimeSpan.FromSeconds(10));
+        notice.Advanced();
+        Assert.That(sounded, Is.EqualTo(0), "the notice was heard 10 s ago");
+        clock.Advance(TimeSpan.FromSeconds(11));
+        notice.Advanced();
+        Assert.That(sounded, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void AfterTheLineIsPublishedOrTheTurnEndedThereIsNoSound()
+    {
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        int sounded = 0;
+        notice.Open(Ask, clock.GetTimestamp(), _ => { }, () => sounded++);
+        notice.Publish(() => { });
+        clock.Advance(TimeSpan.FromSeconds(30));
+        notice.Advanced();
+        Assert.That(sounded, Is.EqualTo(0), "its line is on its way");
+
+        notice.Open(Ask, clock.GetTimestamp(), _ => { }, () => sounded++);
+        notice.Close();
+        clock.Advance(TimeSpan.FromSeconds(30));
+        notice.Advanced();
+        Assert.That(sounded, Is.EqualTo(0), "the turn ended");
+    }
+
+    [Test]
+    public void WhenNoNoticeWouldBeHeardThereIsNoSoundEither()
+    {
+        // The owner's switch (FieldSettings.WaitNotice) or BAXY's silenced voice: NativeTurnLoop opens it with no ask.
+        var clock = new ManualClock();
+        var notice = new SilenceNotice(clock);
+        int sounded = 0;
+        notice.Open(null, clock.GetTimestamp(), _ => { }, () => sounded++);
+
+        clock.Advance(TimeSpan.FromSeconds(30));
+        notice.Advanced();
+
+        Assert.That(sounded, Is.EqualTo(0));
+    }
+
     // Uso-125: a call that needs the model's own server (the description of a capture) says its notice first: while the
     // server reads the image the notice could only wait behind it and run out of its time (F31: heard at 67 s).
     [Test]

@@ -16,10 +16,20 @@ namespace Baxy.App;
 /// reply's <c>startup</c> object. Only stable causes cross; the server's own
 /// startup lines stay in the mind's report (paths scrubbed there).
 /// </summary>
-internal sealed record MindStartupFailure(string Cause, long? ExitCode, long? NeedMb = null, long? FreeMb = null)
+internal sealed record MindStartupFailure(
+    string Cause,
+    long? ExitCode,
+    long? NeedMb = null,
+    long? FreeMb = null,
+    long? TokensPerS = null,
+    long? NeedMinutes = null)
 {
+    /// <summary>N9 (L5): this machine reads the model's prefix too slowly for the mind's limit; reading it again takes as long.</summary>
+    internal const string ReadTooSlow = "lectura_lenta";
+
     internal static readonly IReadOnlySet<string> Causes = new HashSet<string>(StringComparer.Ordinal)
     {
+        ReadTooSlow,
         "vram_insuficiente",
         "ram_insuficiente",
         // Uso 95: the server's log says it could not reserve a buffer without saying on which memory.
@@ -49,12 +59,22 @@ internal sealed record MindStartupFailure(string Cause, long? ExitCode, long? Ne
         }
 
         // uso-116: a lack of memory says how much (the buffer that did not fit, the PC's RAM free), when the mind knows.
-        return new MindStartupFailure(cause, Number(startup["exitCode"]), Number(startup["needMb"]), Number(startup["freeMb"]));
+        return new MindStartupFailure(
+            cause,
+            Number(startup["exitCode"]),
+            Number(startup["needMb"]),
+            Number(startup["freeMb"]),
+            Number(startup["tokensPerS"]),
+            Number(startup["needMinutes"]));
     }
 
     private static long? Number(JsonNode? node) =>
         node is JsonValue value && value.TryGetValue(out long number) ? number : null;
 }
+
+/// <summary>N9 (L5): how far the mind's model has read its prompt prefix, the seconds left at its pace when known, and
+/// whether the processor computes it.</summary>
+internal sealed record MindModelReading(long Done, long Total, long? SecondsLeft, bool OnProcessor);
 
 /// <summary>
 /// Feria 2026-10-27: why the mind stopped being ready, or started anew. <see cref="Cause"/>: <see cref="ProcessEnded"/>
@@ -158,11 +178,20 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     // Where the mind writes its trace (src/baxy_mind/__main__.py, trace_dir): the App keeps the mind's stderr beside it.
     internal const string TraceDirectoryEnvironmentVariable = "BAXY_RENEW_TRACE_DIR";
     internal const string StandardErrorLogName = "mind-stderr.log";
-    // One model decision (prefix cached) takes about a second; the budget covers a cold cache after a restart.
+    // One model decision (prefix cached) takes about a second; the budget covers a cold cache after a restart. Uso-124
+    // (RX 7600 on Vulkan, ~100 tokens/s): a web.fetch's 8 kB take ~29 s to read. A turn's request is waited for while the
+    // mind says its model advances (each «progress» line gives it this window again), and this stays what a mind that
+    // says nothing may take; the ceiling is the mind's own for a request with the same margin this window has over its
+    // 24 s: the mind always gives up first. Revisión PCR1 (A2, A3): the mind's ceiling is what its server may have to read
+    // (LlmServer.ceiling_s, 468 s on the RX 7600) and comes with its catalog.ready; until then, its 120 s.
     // A model behind an API takes longer (ExternalModel); read at each request, since that starts after this class loads.
+    // Its window is never past the ceiling, as the mind's is not (LlmServer.REQUEST_CEILING_S, int-staging-1).
     internal const string TurnSecondsVariable = "BAXY_MIND_TURN_SECONDS";
     internal static TimeSpan TurnRequestTimeout => TimeSpan.FromSeconds(
         double.TryParse(Environment.GetEnvironmentVariable(TurnSecondsVariable), out double seconds) ? seconds : 30);
+    internal static readonly TimeSpan TurnCeilingMargin = TimeSpan.FromSeconds(6);
+    internal static TimeSpan TurnRequestCeiling =>
+        TimeSpan.FromSeconds(Math.Max(120, (TurnRequestTimeout - TurnCeilingMargin).TotalSeconds)) + TurnCeilingMargin;
     // The mind waits up to 60 s for its ear to load before it answers a voice.start (voice.py Voice.start). With the
     // same 60 s here, a start it made at the end of that wait came after the App gave up, and the App stopped the
     // microphone the start had just opened (2026-10-25, c11b-on1): the App waits longer than the mind.
@@ -173,6 +202,13 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     // 1,800 s in llm_server.py), with a margin.
     internal static readonly TimeSpan StartupCeiling = TimeSpan.FromMinutes(45);
     private const int MaximumLineBytes = 1024 * 1024;
+
+    // A turn's window and ceiling (tests scale them down).
+    internal TimeSpan TurnWindow { get; init; } = TurnRequestTimeout;
+
+    internal TimeSpan TurnCeiling { get => _turnCeiling; init => _turnCeiling = value; }
+
+    private TimeSpan _turnCeiling = TurnRequestCeiling;
 
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonObject>> _pending = new();
     // Each pending request's deadline and its window, which a «progress» line of the same id starts again.
@@ -191,6 +227,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     private bool _disposed;
 
     public bool IsReady => _ready && _sidecar?.Process is { HasExited: false };
+
+    /// <summary>The last notice said a notice takes longer here than the usual (Mind.notices_are_slow).</summary>
+    internal bool NoticesAreSlow { get; private set; }
+
+    /// <summary>A «progress» line came: the model advanced. Raised on the client's reader.</summary>
+    internal event Action? ModelAdvanced;
 
     // The catalog the mind took last (catalog.ready), and one update of its installed list at a time.
     private MindStartupCatalog? _configured;
@@ -219,6 +261,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
     /// <summary>Estado no sensible de la tubería de voz (hilo del pump).</summary>
     public event Action<JsonObject>? VoiceEventReceived;
+
+    /// <summary>N9 (L5): the model advanced through its prompt prefix (the progress lines of a start).</summary>
+    public event Action<MindModelReading>? ModelReading;
+
+    /// <summary>N9 (L5): whether the processor computes the model, with no GPU its server can use; null until the mind says.</summary>
+    internal bool? ComputesOnProcessor { get; private set; }
 
     internal static bool IsDisabled =>
         string.Equals(
@@ -356,12 +404,19 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             cancellationToken,
             returnProtocolError: true).ConfigureAwait(false);
         LastStartupFailure = MindStartupFailure.FromReply(reply);
+        ReadProcessor(reply);
         bool ready = reply is not null
             && Str(reply["type"]) == "catalog.ready"
             && Number(reply["count"]) == capabilities.Count;
         if (ready)
         {
             _configured = new MindStartupCatalog(capabilities, applicationCatalog, gameCatalog);
+            // The mind's own ceiling for a turn's request, never past what a whole start may take.
+            if (reply?["ceiling_s"] is JsonValue said && said.TryGetValue(out double seconds) && double.IsFinite(seconds)
+                && seconds > 0 && seconds <= StartupCeiling.TotalSeconds)
+            {
+                _turnCeiling = TimeSpan.FromSeconds(seconds) + TurnCeilingMargin;
+            }
         }
 
         return ready;
@@ -583,6 +638,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             new JsonObject { ["type"] = "turn.notice", ["lang"] = UiLanguage.Current },
             TurnRequestTimeout,
             cancellationToken).ConfigureAwait(false);
+        NoticesAreSlow = reply is not null && Flag(reply["slow"]) == true;
         return reply is not null && Str(reply["type"]) == "turn.notice.result"
             && Str(reply["notice"]) is { } notice && !string.IsNullOrWhiteSpace(notice)
                 ? notice.Trim()
@@ -666,8 +722,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             return null;
         }
 
-        return ParseStep(await RequestAsync(request, TurnRequestTimeout, cancellationToken,
-            returnProtocolError: true).ConfigureAwait(false));
+        return ParseStep(await RequestAsync(request, TurnWindow, cancellationToken,
+            returnProtocolError: true, ceiling: TurnCeiling).ConfigureAwait(false));
     }
 
     internal static MindStep? ParseStep(JsonObject? reply)
@@ -836,21 +892,22 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         JsonObject request,
         TimeSpan timeout,
         CancellationToken cancellationToken,
-        bool returnProtocolError = false)
+        bool returnProtocolError = false,
+        TimeSpan? ceiling = null)
     {
         // Cancellation and speech are handled by the sidecar apart from model work and never wait for an inference.
         // 2026-10-22, review of the App: so are releasing push-to-talk and reading the voice's state (the mind answers
         // them on its reader, __main__.py), which here still queued behind a turn: a release let go of late.
         if (Str(request["type"]) is "voice.cancel" or "voice.speak" or "voice.release" or "voice.status")
         {
-            return await SendRequestAsync(request, timeout, returnProtocolError,
+            return await SendRequestAsync(request, timeout, returnProtocolError, ceiling,
                 cancellationToken).ConfigureAwait(false);
         }
 
         await _requestLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            return await SendRequestAsync(request, timeout, returnProtocolError,
+            return await SendRequestAsync(request, timeout, returnProtocolError, ceiling,
                 cancellationToken).ConfigureAwait(false);
         }
         finally
@@ -863,6 +920,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         JsonObject request,
         TimeSpan timeout,
         bool returnProtocolError,
+        TimeSpan? ceiling,
         CancellationToken cancellationToken)
     {
         if (!IsReady)
@@ -885,7 +943,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
 
         CancellationTokenSource? timeoutSource = null;
-        bool timeoutExpired() => timeoutSource?.IsCancellationRequested == true;
+        // However long its model advances, a request with a ceiling ends there, as past its window.
+        using CancellationTokenSource? ceilingSource = ceiling is { } limit ? new CancellationTokenSource(limit) : null;
+        bool timeoutExpired() => timeoutSource?.IsCancellationRequested == true
+            || ceilingSource?.IsCancellationRequested == true;
         try
         {
             byte[] utf8Line = SerializeRequestToUtf8(request);
@@ -916,7 +977,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             timeoutSource = new CancellationTokenSource(timeout);
             _windows[requestId] = (timeoutSource, timeout);
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(
-                cancellationToken, timeoutSource.Token);
+                cancellationToken, timeoutSource.Token, ceilingSource?.Token ?? CancellationToken.None);
             JsonObject reply = await completion.Task.WaitAsync(linked.Token).ConfigureAwait(false);
             if (Str(reply["type"]) != "error")
             {
@@ -980,6 +1041,14 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
     // Revisión de calidad (2026-10-25): a field of the mind's line that is not of its type is no value, never an
     // exception (a cast threw out of the reader, which ended with the mind still running, and out of the request).
+    private void ReadProcessor(JsonObject? message)
+    {
+        if (message?["onProcessor"] is JsonValue value && value.TryGetValue(out bool onProcessor))
+        {
+            ComputesOnProcessor = onProcessor;
+        }
+    }
+
     private static string? Str(JsonNode? node) =>
         node is JsonValue value && value.TryGetValue(out string? text) ? text : null;
 
@@ -1050,7 +1119,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                         continue;
                     case "progress":
                         // Uso 84: the mind's model advanced through its prompt prefix (the warm-up of a
-                        // catalog.configure, llm_server.py read_prefix): that request has its whole window again.
+                        // catalog.configure, llm_server.py read_prefix), or uso-124 through a turn's prompt or answer
+                        // (LlmServer._advance): that request has its whole window again.
                         if (Str(message["id"]) is { Length: > 0 } advancing
                             && _windows.TryGetValue(advancing, out var window))
                         {
@@ -1062,6 +1132,15 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                             {
                                 // The request ended meanwhile.
                             }
+
+                            ModelAdvanced?.Invoke();
+                        }
+
+                        ReadProcessor(message);
+                        if (Number(message["done"]) is { } done && Number(message["total"]) is { } total)
+                        {
+                            ModelReading?.Invoke(new MindModelReading(
+                                done, total, Number(message["secondsLeft"]), ComputesOnProcessor == true));
                         }
 
                         continue;

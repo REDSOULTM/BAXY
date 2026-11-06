@@ -465,6 +465,26 @@ def _walk(value: Any, key: str = "") -> Iterable[tuple[str, Any]]:
         yield key, value
 
 
+def _control_names(receipt: Receipt) -> set[str]:
+    """The names of what a look at a window listed, folded."""
+    return {_fold(value).strip() for key, value in _walk(_parsed(receipt)) if key == "name" and isinstance(value, str)}
+
+
+def _sizes_with_their_unit(value: Any) -> Iterable[tuple[float, int]]:
+    """A size whose unit is the field beside it, as (number, unit's power): {"value": 4.78, "unit": "GB"} (assistant_status).
+    Cosecha 05-11: «4,78 GB» was told that number is not in the results, with that value in the fact."""
+    if isinstance(value, dict):
+        number, unit = value.get("value"), value.get("unit")
+        if (isinstance(number, (int, float)) and not isinstance(number, bool) and isinstance(unit, str)
+                and unit.lower() in _SIZE_POWER and math.isfinite(number)):
+            yield float(number), _SIZE_POWER[unit.lower()]
+        for inner in value.values():
+            yield from _sizes_with_their_unit(inner)
+    elif isinstance(value, list):
+        for inner in value:
+            yield from _sizes_with_their_unit(inner)
+
+
 def _only_reused(receipts: list[Receipt]) -> list[Receipt]:
     """The turn's completed acts of opening, when every one is an app_open that found the application already running."""
     acts = [r for r in receipts if r.get("completed") and not r.get("read")
@@ -592,7 +612,11 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
         for start, end in statements:
             for hit in _NO_CONTROL.finditer(raw_folded, start, end):
                 name = (hit.group("quoted") or hit.group("bare") or "").strip()
-                shown = next((r for r in views if len(name) >= 3
+                # Cosecha 05-11: «no hay un botón con ese nombre» was read as a button called «con», a word every page's
+                # text has. A word with no quotes is a name when it is written as one, or begins a control's name.
+                candidates = views if hit.group("quoted") or answer[hit.start("bare")].isupper() else [
+                    r for r in views if any(c == name or c.startswith(name + " ") for c in _control_names(r))]
+                shown = next((r for r in candidates if len(name) >= 3
                               and re.search(rf"(?<!\w){re.escape(name)}(?!\w)", _fold(r.get("observation") or ""))), None)
                 if shown:
                     add("named_control", start, end, f"{_told(shown)}: su lectura muestra «{name}» (se pulsa por su texto)")
@@ -997,6 +1021,7 @@ def _numbers(answer: str, folded: str, statements: list[tuple[int, int]],
     for r in receipts:
         tool = str(r.get("tool") or r.get("op"))
         values = []
+        written_sizes.extend(_sizes_with_their_unit(_parsed(r)))
         for key, value in [*_walk(_parsed(r)), *_walk(r.get("arguments") or {})]:
             if isinstance(value, bool):
                 continue

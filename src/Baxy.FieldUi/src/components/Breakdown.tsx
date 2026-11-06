@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { sendTold } from '../api';
 import { useT, type Words } from '../i18n';
-import { causeAdvice, causeText, type FailureMemory } from '../causes';
+import { causeAdvice, causeText, ON_PROCESSOR_TEXT, startedOnlyOnce, type FailureMemory, type FailureRead } from '../causes';
 
 /* Uso 85: the engine stopped for good (MainWindowViewModel.ProfileUnreadable, EngineUnavailable) and the host no longer
    relaunches it on its own. What happened is said as a state of the interface (never words of BAXY's: zero fixed
@@ -45,7 +45,7 @@ const REFUSED: Record<string, Words> = {
   },
 };
 
-export function Breakdown({ failure, cause = null, memory = null }: { failure: string; cause?: string | null; memory?: FailureMemory | null }) {
+export function Breakdown({ failure, cause = null, memory = null, read = null, onProcessor = false }: { failure: string; cause?: string | null; memory?: FailureMemory | null; read?: FailureRead | null; onProcessor?: boolean }) {
   const t = useT();
   const [busy, setBusy] = useState(false);
   const [refused, setRefused] = useState<string | null>(null);
@@ -72,8 +72,8 @@ export function Breakdown({ failure, cause = null, memory = null }: { failure: s
     <div className="bx-card bx-breakdown" role="alertdialog" aria-labelledby="bx-breakdown-ti" aria-describedby="bx-breakdown-tg">
       <div className="hd"><span className="tag">{t('Avería', 'Breakdown')}</span></div>
       <div className="ti" id="bx-breakdown-ti">{t.w(text.title)}</div>
-      <div className="tg" id="bx-breakdown-tg">{t.w(text.body)}
-        {failure === 'engine_unavailable' && causeText(cause, t) ? t(' El modelo no pudo cargarse: ', ' The model could not load: ') + causeText(cause, t, memory) + '. ' + causeAdvice(cause, t) : ''}</div>
+      <div className="tg" id="bx-breakdown-tg">{failure === 'engine_unavailable' && startedOnlyOnce(cause) ? (onProcessor ? t.w(ON_PROCESSOR_TEXT) + ' ' : '') : t.w(text.body) + ' '}
+        {failure === 'engine_unavailable' && causeText(cause, t) ? t('El modelo no pudo cargarse: ', 'The model could not load: ') + causeText(cause, t, memory, read) + '. ' + causeAdvice(cause, t) : ''}</div>
       {refused ? <div className="tg">{refused}</div> : null}
       <div className="ft">
         <span></span>

@@ -19,6 +19,14 @@ namespace Baxy.App;
 /// until the voice says the line began to sound (<see cref="Sounded"/>), for one more notice at most: a line the voice
 /// never sounds (its synthesis failed) does not repeat it until the next turn. The voice says the notice from its own
 /// audio while the line is still synthesized, and never once a line began to sound (voice_output.py).
+/// Uso-124 (RX 7600 on Vulkan, ~100 tokens/s): between two calls, or before the first, the model may read for up to 89 s
+/// (measured), and no notice can be written or said then: the model is busy, and it is said only while a call runs. While
+/// its reading advances, a sound without words comes every <see cref="ReadingSign"/> (<see cref="Advanced"/>). There too
+/// a notice takes 3 s to write and a web call under 1 s, so a phrase written for a call is said once that call ended as
+/// well, when the mind says its notices are slow and the call completed: the turn's answer is still a long read away, and
+/// the phrase says what the turn did, no result. One refused, failed or waiting for the person's yes did not do what the
+/// phrase says (revisión PCR1, A1: «Borrando el archivo…» before «¿Lo borro?»), so its phrase is dropped, as is any on a
+/// fast GPU: the answer is about to come.
 /// </summary>
 internal sealed class SilenceNotice
 {
@@ -35,6 +43,12 @@ internal sealed class SilenceNotice
     /// it once at 2.5 s and then nothing, past the owner's 3 s without a sign).
     /// </summary>
     internal static readonly TimeSpan Again = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// How long a turn whose model is reading stays with nothing to hear before it sounds (<see cref="Advanced"/>): three
+    /// such waits fit the minute a person should never spend hearing nothing; an NVIDIA GPU reads a whole turn in less.
+    /// </summary>
+    internal static readonly TimeSpan ReadingSign = TimeSpan.FromSeconds(20);
 
     private readonly object _gate = new();
     private readonly TimeProvider _time;
@@ -54,6 +68,13 @@ internal sealed class SilenceNotice
     // This turn's way to ask (Open), and the question that last went to the mind (AheadAsync waits for it).
     private Func<Task>? _askNow;
     private Task _lastQuestion = Task.CompletedTask;
+    // The sound of a model still reading (Open), and when the person last had something to hear.
+    private Action? _reading;
+    private long _lastSign;
+    // Whether the mind says its notices are slow (Open), so a phrase may come after its call ended, and whether the
+    // turn's last call that ended completed (Running): only then.
+    private Func<bool>? _slow;
+    private bool _completed;
 
     internal SilenceNotice(TimeProvider time)
     {
@@ -68,9 +89,12 @@ internal sealed class SilenceNotice
     /// <paramref name="say"/> gets it, and again every <see cref="Again"/>; with that moment already past, the check runs
     /// now, on the turn's thread. With no <paramref name="ask"/> (nobody would hear the notice) there is none. Otherwise
     /// the timer fires on the thread pool, and the check and the phrase the mind answers run on the context the turn runs
-    /// on (the interface's thread, where the turn publishes too), when it has one.
+    /// on (the interface's thread, where the turn publishes too), when it has one. <paramref name="reading"/> sounds while
+    /// the model reads (<see cref="Advanced"/>); <paramref name="slow"/> tells whether a phrase may be said after its call
+    /// ended.
     /// </summary>
-    internal void Open(Func<CancellationToken, Task<string?>>? ask, long arrivedAt, Action<string> say)
+    internal void Open(Func<CancellationToken, Task<string?>>? ask, long arrivedAt, Action<string> say,
+        Action? reading = null, Func<bool>? slow = null)
     {
         ArgumentNullException.ThrowIfNull(say);
         lock (_gate)
@@ -83,6 +107,9 @@ internal sealed class SilenceNotice
             }
 
             _open = true;
+            _reading = reading;
+            _slow = slow;
+            _lastSign = arrivedAt;
             SynchronizationContext? context = SynchronizationContext.Current;
             // Each turn's timer asks with that turn's own number: an earlier turn's expiry says nothing in the next one.
             Func<Task> askNow = () => _lastQuestion = AskAsync(turn, ask, say, context);
@@ -142,16 +169,18 @@ internal sealed class SilenceNotice
     }
 
     /// <summary>
-    /// A call of the turn starts (<paramref name="running"/>) or ends running in the App. Feria 2026-10-27: a notice
-    /// asked while the model decided waited behind that decision in the mind and spoke of a call that had already ended,
-    /// or of one that was only asking the person's yes; it is asked while a call runs and said only if it still runs.
+    /// A call of the turn starts (<paramref name="running"/>) or ends running in the App, <paramref name="completed"/>
+    /// or not. Feria 2026-10-27: a notice asked while the model decided waited behind that decision in the mind and spoke
+    /// of a call that had already ended, or of one that was only asking the person's yes; it is asked while a call runs
+    /// and said only if it still runs, or, with slow notices, once it ended completed.
     /// </summary>
-    internal void Running(bool running)
+    internal void Running(bool running, bool completed = false)
     {
         Action? waiting;
         lock (_gate)
         {
             _running = running;
+            _completed = !running && completed;
             waiting = running ? _waiting : null;
             if (waiting is not null)
             {
@@ -162,6 +191,28 @@ internal sealed class SilenceNotice
         }
 
         waiting?.Invoke();
+    }
+
+    /// <summary>
+    /// The mind says its model advanced through this turn's prompt or answer (a «progress» line, on the client's reader).
+    /// With no call running (its notice speaks then) and no line of the turn on its way, and nothing to hear for
+    /// <see cref="ReadingSign"/>, the turn's sound for a model still reading is played.
+    /// </summary>
+    internal void Advanced()
+    {
+        Action? reading;
+        lock (_gate)
+        {
+            if (!_open || _running || _published || _time.GetElapsedTime(_lastSign) < ReadingSign)
+            {
+                return;
+            }
+
+            _lastSign = _time.GetTimestamp();
+            reading = _reading;
+        }
+
+        reading?.Invoke();
     }
 
     /// <summary>
@@ -284,7 +335,7 @@ internal sealed class SilenceNotice
             }
 
             _asking = false;
-            if (!_open || !_running || phrase is null)
+            if (!_open || phrase is null || (!_running && (!_completed || _slow?.Invoke() != true)))
             {
                 return;
             }
@@ -294,6 +345,7 @@ internal sealed class SilenceNotice
                 CloseLocked();
             }
 
+            _lastSign = _time.GetTimestamp();
             say(phrase);
         }
     }
@@ -305,6 +357,9 @@ internal sealed class SilenceNotice
         _asking = false;
         _waiting = null;
         _askNow = null;
+        _reading = null;
+        _slow = null;
+        _completed = false;
         _timer?.Dispose();
         _timer = null;
         Action? stop = _stopAsking;

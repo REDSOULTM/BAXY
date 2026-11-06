@@ -1,7 +1,7 @@
 """Turns BAXY's self-contained folder (scripts/build_steam.ps1) into a GitHub release: zips cut below GitHub's 2 GiB per
 asset, the manifest with each part's SHA-256, and BAXY-Instalador.exe (src/Baxy.Installer) with that manifest inside.
 
-    py -3.12 scripts/build_github_release.py --depot <folder> --output <folder> --version 1.2.1
+    py -3.12 scripts/build_github_release.py --depot <folder> --output <folder> --version 1.3.0
 
 The llama folder, which carries the CUDA runtime, goes in an archive of its own that the installer downloads only on a machine
 with an NVIDIA GPU: the CUDA EULA (2.1) licenses the SDK for applications «only for use in systems with NVIDIA GPUs»

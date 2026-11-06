@@ -60,6 +60,22 @@ public sealed class ExternalModelTests
         Assert.That(ExternalModel.Available, Is.False);
     }
 
+    // int-staging-1: hub/i6-l4-arreglos gave a turn's request a ceiling of 126 s until the mind says its own; a model on
+    // this PC behind the translator has a window of 300 s (LocalTurnSeconds), and the ceiling must not end it before.
+    [TestCase(null, 30.0, 126.0)]
+    [TestCase("90", 90.0, 126.0)]
+    [TestCase("300", 300.0, 300.0)]
+    public async Task ATurnsCeilingIsNeverShorterThanItsWindow(string? turn, double window, double ceiling)
+    {
+        Environment.SetEnvironmentVariable(MindSidecarClient.TurnSecondsVariable, turn);
+        await using var mind = new MindSidecarClient();
+
+        Assert.That(MindSidecarClient.TurnRequestTimeout, Is.EqualTo(TimeSpan.FromSeconds(window)));
+        Assert.That(MindSidecarClient.TurnRequestCeiling, Is.EqualTo(TimeSpan.FromSeconds(ceiling)));
+        Assert.That(mind.TurnWindow, Is.EqualTo(TimeSpan.FromSeconds(window)));
+        Assert.That(mind.TurnCeiling, Is.EqualTo(TimeSpan.FromSeconds(ceiling)));
+    }
+
     [Test]
     public void TheSwitchNeedsAKey()
     {

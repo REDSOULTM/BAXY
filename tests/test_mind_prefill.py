@@ -430,6 +430,7 @@ def test_the_sidecar_answers_a_turn_s_notice_once_its_audio_is_kept_and_none_wit
     class FakeMind:
         foresee = None
         gave_way = None
+        notices_are_slow = False
 
         def __init__(self, *args) -> None:
             pass
@@ -487,7 +488,8 @@ def test_the_sidecar_answers_a_turn_s_notice_once_its_audio_is_kept_and_none_wit
     monkeypatch.setattr(sidecar.protocol, "write_message", write)
     assert sidecar.main() == 0
     notice = [r for r in replies if r.get("type") == "turn.notice.result"]
-    assert notice == [{"type": "turn.notice.result", "id": 1, "notice": "Busco vuelos a Lima." if ready else ""}]
+    assert notice == [{"type": "turn.notice.result", "id": 1, "notice": "Busco vuelos a Lima." if ready else "",
+                       "slow": False}]
     assert asked == (["notice"] if ready else [])
 
 
