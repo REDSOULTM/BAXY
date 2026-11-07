@@ -61,7 +61,7 @@ Ordenadas por peso. Lo que es sólo atribución está al final.
 | certifi y tqdm | MPL-2.0 | Los pedían httpx y huggingface-hub | Fuera: `anthropic` usa `httpx2`, que valida con `truststore` |
 | `google/_upb/_message.pyd`, de protobuf | BSD-3-Clause, enlazado con GCC: CRT de mingw-w64 y objetos de libgcc | ONNX Runtime lo pide para sus herramientas | `build_steam.ps1` lo borra: cargar y correr un modelo no lo importa |
 
-- **Sólo las versiones nuevas cambian.** 1.2.0 y 1.2.1, ya publicadas, siguen llevando eSpeak NG (GPL-3.0-or-later) y 1.2.0 además libquadmath y autocommand (LGPL). La página de 1.2.0 lo corrige desde el 2026-11-06 y remite a la de 1.2.1, que trae como activos el código fuente de eSpeak NG, piper-phonemize y sherpa-onnx (`espeak-ng-ed530aa-source.zip`, `piper-phonemize-f3ff95a-source.zip`, `sherpa-onnx-1.13.4-baxy.2-source.zip`, `sherpa-onnx-1.13.4-dependencies-source.zip`); los textos `GPL-3.0.txt`, `LGPL-2.1.txt` y `FUENTES_GPL.md` de esas versiones van en su `baxy-1.2.1-licenses.zip`.
+- **Sólo las versiones nuevas cambian.** 1.2.0 y 1.2.1, ya distribuidas, siguen llevando eSpeak NG (GPL-3.0-or-later) y 1.2.0 además libquadmath y autocommand (LGPL). El 2026-11-07 esas dos y 1.3.0 se retiraron de GitHub (pasaron a borrador) por las dudas de licencia de su palabra de activación (punto 1 de lo pendiente). El código fuente que las acompañaba sigue disponible en la release [`fuentes-terceros`](https://github.com/REDSOULTM/BAXY/releases/tag/fuentes-terceros): eSpeak NG, piper-phonemize y sherpa-onnx (`espeak-ng-ed530aa-source.zip`, `piper-phonemize-f3ff95a-source.zip`, `sherpa-onnx-1.13.4-baxy.2-source.zip`, `sherpa-onnx-1.13.4-baxy.3-source.zip`, `sherpa-onnx-1.13.4-dependencies-source.zip`) y los textos de licencia de 1.2.1 y 1.3.0 (`baxy-1.2.1-licenses.zip`, con `GPL-3.0.txt`, `LGPL-2.1.txt` y `FUENTES_GPL.md`, y `baxy-1.3.0-licenses.zip`).
 - **Lo que sherpa-onnx compila dentro en 1.3.0** (medido el 2026-11-06 con su `cmake` y las opciones de
   `scripts/build_sherpa_runtime.py`): kaldi-native-fbank, kaldi-decoder, kaldifst, OpenFst y simple-sentencepiece (Apache-2.0), kissfft
   (BSD-3-Clause), Eigen (sobre todo MPL-2.0), hclust-cpp con fastcluster (BSD-2-Clause), nlohmann/json (MIT) y pybind11
@@ -100,10 +100,15 @@ Ordenadas por peso. Lo que es sólo atribución está al final.
   ([ficha](https://huggingface.co/Banafo/Kroko-ASR)); el motor es Apache-2.0 y hay modelos comerciales aparte.
   **Sin confirmar:** la versión exacta de CC-BY-SA (el fichero `LICENSE` del repositorio de la ficha está vacío)
   y si una cabeza entrenada sobre los embeddings cuenta como adaptación.
-- La palabra de activación del paquete, v3_b2, no lleva este encoder: es una red propia entrenada imitándolo. **Medido el 2026-11-06:**
-  comparada con `encoder_kroko_es.onnx`, de 944 tensores de 64 valores o más, ninguno es igual a uno de los 127 de `head.onnx`, y entre
-  8749 pares de la misma forma la correlación mayor es 0,46. Eso dice que no copia sus pesos, no si imitarlo la hace adaptación.
-  Su atribución va por prudencia en `licenses/ATRIBUCIONES_MODELOS.md`.
+- La palabra de activación del paquete, `baxy-wake-k6r-v7b` desde 1.3.1 (antes v3_b2), no lleva este encoder: es una red propia
+  entrenada imitándolo. **Medido el 2026-11-07:** comparada con `encoder_kroko_es.onnx`, de 944 tensores de 64 valores o más, ninguno
+  es igual a uno de los 127 de `head.onnx`, y entre 8749 pares de la misma forma la correlación mayor es 0,45 (v3_b2, el 2026-11-06:
+  0 y 0,46). Eso dice que no copia sus pesos, no si imitarlo la hace adaptación. Su atribución va por prudencia en
+  `licenses/ATRIBUCIONES_MODELOS.md`.
+- **Datos de entrenamiento de la palabra de activación, sin revisar por un abogado** (fuente: el README del paquete v7b): su
+  maestro, el detector k5, se entrenó con episodios de la serie *Impractical Jokers* (copias WEBRip), y v7b imitó a Kroko con ese
+  maestro; v7b ya no usa la serie en su banco ni en sus fondos. También entrenan con voces de amigos del desarrollador, de las que
+  falta su permiso por escrito para publicar. Lo mismo valía para v3_b2.
 - **Obligación si se redistribuye el paquete wake:** atribuir a Kroko/Banafo, enlazar la licencia, indicar
   cambios y, por ShareAlike, publicar el encoder (y lo que se considere adaptación) bajo la misma CC-BY-SA. No
   afecta al código MIT de BAXY, que sólo carga el modelo.
@@ -337,7 +342,9 @@ Todas son **obras derivadas** de proyectos permisivos y deben seguir bajo la lic
 
 ## Pendiente o sin confirmar
 
-1. **Kroko (wake word):** versión exacta de CC-BY-SA y si la cabeza `head.onnx` cuenta como adaptación.
+1. **Kroko (wake word):** versión exacta de CC-BY-SA y si la cabeza `head.onnx` cuenta como adaptación. Y los datos con que se
+   entrenó (episodios WEBRip de *Impractical Jokers* en el maestro k5, voces de amigos sin permiso escrito): **sin revisión de un
+   abogado** (ver la sección 2).
 2. **Higgsfield:** versión de los Términos de Uso vigente al generar los clips; decidir cómo excluir esos medios de
    la licencia MIT.
 3. **Laya / System One:** que la base sea `convaiinnovations/laya-multilingual` y de dónde sale el `llama-server`
@@ -347,7 +354,7 @@ Todas son **obras derivadas** de proyectos permisivos y deben seguir bajo la lic
 6. **CUDA EULA:** revisada el 2026-11-06 (ver [«Runtime CUDA 12»](#runtime-cuda-12-en-el-paquete)). En GitHub, desde 1.3.0, parte
    aparte sólo para NVIDIA. Sigue abierta la duda del apartado 2.1 en el paquete único de Steam.
 7. ~~Coherencia del lock~~: resuelto el 2026-11-04 (ver la nota del lock de Python).
-8. **eSpeak NG (GPL), libquadmath y autocommand (LGPL):** fuera del paquete desde 1.3.0 (obligación 0). Siguen en 1.2.0 y 1.2.1, ya publicadas (ver la tabla de arriba), y las ruedas con eSpeak NG siguen en la historia de git.
+8. **eSpeak NG (GPL), libquadmath y autocommand (LGPL):** fuera del paquete desde 1.3.0 (obligación 0). Siguen en 1.2.0 y 1.2.1, ya distribuidas y retiradas el 2026-11-07, y las ruedas con eSpeak NG siguen en la historia de git; su fuente está en la release [`fuentes-terceros`](https://github.com/REDSOULTM/BAXY/releases/tag/fuentes-terceros).
 9. **Intel** en torch y **ASIO** en sounddevice: fuera del paquete desde 1.3.0.
 10. **Acuerdos:** desde 1.3.0 el acuerdo del instalador da BAXY para **cualquier uso, personal o comercial**, con copia y
     redistribución, sin restricción propia: las únicas son las de las licencias de terceros. Lleva el Anexo A literal de OpenRAIL-M
@@ -370,7 +377,7 @@ Todas son **obras derivadas** de proyectos permisivos y deben seguir bajo la lic
 | Modelo de BAXY y proyector de visión | Apache-2.0 | Copia de Apache-2.0 y aviso de modificación (obligación 4), en `licenses/` |
 | Parakeet Ultra int8 | CC-BY-4.0 | Atribución a cada eslabón (obligación 3) |
 | Voz de BAXY (Supertonic 3) | OpenRAIL-M | Las restricciones del Anexo A en la EULA de BAXY (la del instalador: `src/Baxy.Installer/Assets/license/`) y avisar que la voz es sintética (obligación 1) |
-| Palabra de activación v3_b2 | Red propia, entrenada imitando al encoder Kroko y a k5; no lleva sus pesos (dicho por quien la entrenó y comparado el 2026-11-06 con `encoder_kroko_es.onnx`: obligación 2) | Por prudencia, la atribución y la licencia de Kroko (obligación 2), hasta confirmar si cuenta como adaptación (punto 1 de lo pendiente) |
+| Palabra de activación `baxy-wake-k6r-v7b` (antes v3_b2) | Red propia, entrenada imitando al encoder Kroko y a k5; no lleva sus pesos (dicho por quien la entrenó y comparado el 2026-11-07 con `encoder_kroko_es.onnx`: obligación 2); datos de entrenamiento sin revisión jurídica (punto 1 de lo pendiente) | Por prudencia, la atribución y la licencia de Kroko (obligación 2), hasta confirmar si cuenta como adaptación (punto 1 de lo pendiente) |
 | .NET 10 *self-contained* y WebView2 | MIT / BSD-3-Clause | Sus avisos de terceros |
 | Runtime de Visual C++ (`vcruntime140*`, `msvcp140*`) | Licencia de Visual Studio, código redistribuible | Sólo los ficheros de la carpeta redistribuible, junto al ejecutable; Microsoft admite este despliegue y deja sus actualizaciones a cargo de BAXY. [Lo limita a quien tiene licencia de Visual Studio](https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files). |
 

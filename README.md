@@ -18,7 +18,7 @@ to connect a model from another company yourself.
 ### Download
 
 Get the installer from the [releases page](https://github.com/REDSOULTM/BAXY/releases) (the latest is
-[BAXY 1.3.0](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.0)): download `BAXY-Instalador.exe` and open it.
+[BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1)): download `BAXY-Instalador.exe` and open it.
 It checks your PC, downloads the parts it needs, verifies each one's SHA-256 and leaves BAXY in the Start menu.
 The installer is not code-signed, so SmartScreen may warn you.
 
@@ -77,13 +77,16 @@ holds the full texts. You may use, copy and redistribute BAXY for any purpose, p
 you respect those licenses. What is not permissive: the voice model (BigScience OpenRAIL-M, with use restrictions that
 also bind its output and anyone you pass it to), Eigen (MPL-2.0), the CUDA runtime (NVIDIA's EULA, only in the part for
 NVIDIA cards), Microsoft's runtime and SDK files, and the avatar's videos and images, generated with Higgsfield and not
-under the MIT license.
+under the MIT license. The wake word detector (`baxy-wake-k6r-v7b` since 1.3.1) is BAXY's own network, but its
+training raises questions no lawyer has reviewed yet: it imitated the Kroko ASR encoder (CC-BY-SA), its teacher was
+trained with episodes of the TV series *Impractical Jokers*, and it learned from friends' voices whose written
+permission is still missing (see `THIRD_PARTY_NOTICES.md` and the release notes).
 
 Since 1.3.0 the release packages carry no GPL or LGPL code: the wheels in `runtime_wheels/` are built without eSpeak NG
-and without OpenBLAS. Releases 1.2.0 and 1.2.1, and this repository's history before 1.3.0, contain sherpa-onnx wheels
-with eSpeak NG (GPL-3.0-or-later): their complete source is in the `*-source.zip` assets of
-[release 1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1), and the written offer in `licenses/FUENTES_GPL.md`
-as of commit `a24ecb5a0`. This is not legal advice.
+and without OpenBLAS. Releases 1.2.0 and 1.2.1 (withdrawn on 2026-11-07, with 1.3.0), and this repository's
+history before 1.3.0, contain sherpa-onnx wheels with eSpeak NG (GPL-3.0-or-later): their complete source is in the
+`*-source.zip` assets of the [`fuentes-terceros`](https://github.com/REDSOULTM/BAXY/releases/tag/fuentes-terceros) release, and the written offer in
+[`licenses/FUENTES_GPL.md`](licenses/FUENTES_GPL.md). This is not legal advice.
 
 Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -103,7 +106,7 @@ conectes el modelo de otra empresa.
 ### Descargar
 
 Baja el instalador de la [página de versiones](https://github.com/REDSOULTM/BAXY/releases) (la última es
-[BAXY 1.3.0](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.0)): descarga `BAXY-Instalador.exe` y ábrelo.
+[BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1)): descarga `BAXY-Instalador.exe` y ábrelo.
 Revisa tu PC, baja las partes que necesita, comprueba el SHA-256 de cada una y deja a BAXY en el menú Inicio.
 El instalador no va firmado, así que SmartScreen puede avisar.
 
@@ -162,12 +165,15 @@ guarda los textos completos. Puedes usar, copiar y redistribuir BAXY para cualqu
 respetando esas licencias. Lo que no es permisivo: el modelo de voz (BigScience OpenRAIL-M, con restricciones de uso que
 alcanzan también a lo que genera y a quien se lo pases), Eigen (MPL-2.0), el runtime de CUDA (EULA de NVIDIA, sólo en la
 parte para tarjetas NVIDIA), los ficheros de runtime y SDK de Microsoft, y los vídeos e imágenes del avatar, generados
-con Higgsfield y fuera de la licencia MIT.
+con Higgsfield y fuera de la licencia MIT. El detector de la palabra de activación (`baxy-wake-k6r-v7b` desde 1.3.1) es una
+red propia de BAXY, pero su entrenamiento deja dudas que ningún abogado ha revisado: imitó al encoder de Kroko ASR
+(CC-BY-SA), su maestro se entrenó con episodios de la serie *Impractical Jokers* y aprendió de voces de amigos cuyo
+permiso por escrito todavía falta (ver `THIRD_PARTY_NOTICES.md` y las notas de la release).
 
 Desde 1.3.0 los paquetes de las releases no llevan código GPL ni LGPL: las ruedas de `runtime_wheels/` se compilan sin
-eSpeak NG y sin OpenBLAS. Las releases 1.2.0 y 1.2.1, y la historia de este repositorio anterior a 1.3.0, llevan ruedas de
-sherpa-onnx con eSpeak NG (GPL-3.0-or-later): su código fuente completo está en los activos `*-source.zip` de la
-[release 1.2.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.2.1), y la oferta escrita en `licenses/FUENTES_GPL.md`
-del commit `a24ecb5a0`. Esto no es asesoría legal.
+eSpeak NG y sin OpenBLAS. Las releases 1.2.0 y 1.2.1 (retiradas el 2026-11-07, con 1.3.0), y la historia de este
+repositorio anterior a 1.3.0, llevan ruedas de sherpa-onnx con eSpeak NG (GPL-3.0-or-later): su código fuente completo
+está en los activos `*-source.zip` de la release [`fuentes-terceros`](https://github.com/REDSOULTM/BAXY/releases/tag/fuentes-terceros), y la oferta escrita en
+[`licenses/FUENTES_GPL.md`](licenses/FUENTES_GPL.md). Esto no es asesoría legal.
 
 Las contribuciones son bienvenidas: ver [CONTRIBUTING.md](CONTRIBUTING.md).

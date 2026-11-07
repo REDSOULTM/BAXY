@@ -1,34 +1,59 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 
 namespace Baxy.Installer;
 
-internal static class Program
+internal static partial class Program
 {
     private const string ManifestResource = "Baxy.Installer.release.json";
-    private const string RunUninstall = "--uninstall-run";
     private const string SingleInstance = @"Local\BAXY.Installer";
     private const int Failure = 1;
+    private const int AttachParentProcess = -1;
+    private const int StandardOutput = -11;
+    private const uint DiskFile = 1;
+    private const uint PipeFile = 3;
 
     internal static readonly string LogPath = Path.Combine(Path.GetTempPath(), "BAXY-Instalador.log");
 
     [STAThread]
     private static int Main(string[] arguments)
     {
-        if (arguments.Contains("--uninstall"))
+        CommandLine command = CommandLine.Parse(arguments);
+        if (command.Help || command.Error is not null)
         {
-            string copy = Path.Combine(Directory.CreateTempSubdirectory("BAXY-").FullName, "BAXY-Desinstalador.exe");
-            File.Copy(Environment.ProcessPath!, copy, overwrite: true);
-            using Process? started = Process.Start(new ProcessStartInfo(copy, RunUninstall)
-            {
-                UseShellExecute = false,
-                WorkingDirectory = Path.GetDirectoryName(copy)!,
-            });
-            return 0;
+            string language = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "es" : "en";
+            string help = CommandLine.HelpText(language, InstallPaths.ForThisUser.Root);
+            Log(command.Error ?? "help");
+            Tell(command.Error is null ? help : $"{command.Error}{Environment.NewLine}{Environment.NewLine}{help}", command.Quiet);
+            return command.Error is null ? 0 : CommandLine.InvalidCommandLine;
+        }
+
+        InstallPaths paths;
+        try
+        {
+            paths = command.Uninstall ? InstallPaths.ForUninstall(command.Directory, WindowsPlaces.ForThisUser)
+                : command.Directory is null ? InstallPaths.ForThisUser
+                : InstallPaths.Chosen(command.Directory);
+        }
+        catch (Exception wrong) when (wrong is ArgumentException or IOException or UnauthorizedAccessException)
+        {
+            Log(wrong.Message);
+            Tell(wrong.Message, command.Quiet);
+            return CommandLine.InvalidCommandLine;
+        }
+
+        // A copy outside the folder (the downloaded installer) removes it in place and its exit code is the result; the
+        // installed copy cannot delete its own exe and hands the work to a copy in TEMP.
+        bool inPlace = command.Quiet && !IsInside(Environment.ProcessPath!, paths.Root);
+        if (command.Uninstall && !command.UninstallRun && !inPlace)
+        {
+            return UninstallFromACopy(paths, command);
         }
 
         using Mutex single = new(true, SingleInstance, out bool first);
@@ -38,14 +63,31 @@ internal static class Program
             return Failure;
         }
 
-        ReleaseManifest? manifest = LoadManifest();
-        if (arguments.Contains("--quiet"))
+        if (command.Uninstall && command.Quiet)
         {
-            return manifest is null ? Failure : InstallQuietly(manifest);
+            string? held = command.Original is int waiting && OriginalProcess.PathOf(waiting) is { } exe && IsInside(exe, paths.Root)
+                ? exe
+                : null;
+            int result = UninstallQuietly(paths, command.DeleteData, held);
+            if (command.Original is int original
+                && OriginalProcess.End(original, result, Path.GetFileNameWithoutExtension(WindowsIntegration.InstallerName))
+                && held is not null
+                && result == 0)
+            {
+                WindowsIntegration.DeleteHeld(paths, held);
+            }
+
+            return result;
+        }
+
+        ReleaseManifest? manifest = LoadManifest();
+        if (command.Quiet)
+        {
+            return manifest is null ? Failure : InstallQuietly(manifest, paths);
         }
 
         Application application = new();
-        using MainWindow window = new(manifest, uninstalling: arguments.Contains(RunUninstall));
+        using MainWindow window = new(manifest, uninstalling: command.UninstallRun, paths, voiceAllowed: !command.NoVoice);
         application.DispatcherUnhandledException += (_, unhandled) =>
         {
             Log(unhandled.Exception.ToString());
@@ -68,32 +110,126 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// This is a window program: its text goes to the file or pipe a script gave it, else to the console it was started
+    /// from (AttachConsole), else to a message box (a shortcut with --help). The file or pipe is taken before attaching,
+    /// which would point the output at the console instead; attaching still gives it the console's code page, the one
+    /// the shell that reads it decodes with.
+    /// </summary>
+    private static void Tell(string text, bool quiet)
+    {
+        nint handle = GetStdHandle(StandardOutput);
+        bool redirected = handle is not (0 or -1) && GetFileType(handle) is DiskFile or PipeFile;
+        using Stream given = redirected ? Console.OpenStandardOutput() : Stream.Null;
+        bool attached = AttachConsole(AttachParentProcess);
+        if (redirected)
+        {
+            using StreamWriter writer = new(given, attached ? ConsoleEncoding() : new UTF8Encoding(false));
+            writer.WriteLine();
+            writer.WriteLine(text);
+        }
+        else if (attached)
+        {
+            Console.Out.WriteLine();
+            Console.Out.WriteLine(text);
+        }
+        else if (!quiet)
+        {
+            // Never with --quiet: a box nobody sees would hold a script (WinRM, a scheduled task) for ever.
+            MessageBox.Show(text, "BAXY");
+        }
+    }
+
+    /// <summary>The attached console's code page (850 in a Spanish cmd), which .NET only knows with the code page provider.</summary>
+    private static Encoding ConsoleEncoding()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        int page = (int)GetConsoleOutputCP();
+        return page == Encoding.UTF8.CodePage ? new UTF8Encoding(false) : Encoding.GetEncoding(page);
+    }
+
+    private static bool IsInside(string path, string root) =>
+        Path.GetFullPath(path).StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
+
     private static ReleaseManifest? LoadManifest()
     {
         using Stream? resource = Assembly.GetExecutingAssembly().GetManifestResourceStream(ManifestResource);
         return resource is null ? null : ReleaseManifest.Parse(resource);
     }
 
-    /// <summary>For installing by remote console (tests on other machines): no window, and what happened in the log.</summary>
-    private static int InstallQuietly(ReleaseManifest manifest)
+    /// <summary>
+    /// The copy in TEMP does the uninstall. With --quiet the original waits for it: the copy ends it with the result
+    /// (<see cref="OriginalProcess"/>), so a script waiting on the original reads that result as its exit code.
+    /// </summary>
+    private static int UninstallFromACopy(InstallPaths paths, CommandLine command)
     {
-        using HttpClient http = new() { Timeout = Timeout.InfiniteTimeSpan };
-        http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + manifest.Version);
-        IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
-        manifest = manifest.ForMachine(adapters);
-        Log($"{manifest.Version}: {MachineGpu.Choose(adapters)}; {string.Join(", ", manifest.Archives.Select(archive => archive.Name))}");
+        string copy = Path.Combine(Directory.CreateTempSubdirectory("BAXY-").FullName, "BAXY-Desinstalador.exe");
+        File.Copy(Environment.ProcessPath!, copy, overwrite: true);
+        // Windows lets a folder move with a running exe inside but not with a process's working folder inside (W1, own
+        // measurement): the original waits from the copy's folder, not from the one being removed.
+        Environment.CurrentDirectory = Path.GetDirectoryName(copy)!;
+        ProcessStartInfo start = new(copy)
+        {
+            UseShellExecute = false,
+            WorkingDirectory = Path.GetDirectoryName(copy)!,
+        };
+        foreach (string argument in command.ForTheCopy(paths.Root, Environment.ProcessId))
+        {
+            start.ArgumentList.Add(argument);
+        }
+
+        using Process? started = Process.Start(start);
+        if (!command.Quiet || started is null)
+        {
+            return started is null ? Failure : 0;
+        }
+
+        started.WaitForExit();
+        return started.ExitCode;
+    }
+
+    /// <summary>For removing by script or remote console: no window, and what happened in the log.</summary>
+    private static int UninstallQuietly(InstallPaths paths, bool deleteData, string? held = null)
+    {
         if (Voice.BaxyIsOpen())
         {
             Log("a BAXY is open: close it first");
             return Failure;
         }
 
-        Installation installation = new(manifest, InstallPaths.ForThisUser, new PartFetcher(http));
         try
         {
-            Prerequisites.InstallMissingAsync(http, InstallPaths.ForThisUser.Downloads, CancellationToken.None).GetAwaiter().GetResult();
+            WindowsIntegration.Uninstall(paths, deleteData, held: held);
+            Log($"uninstalled {paths.Root}{(deleteData ? " and its data" : string.Empty)}");
+            return 0;
+        }
+        catch (Exception failure) when (failure is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            Log(failure.ToString());
+            return Failure;
+        }
+    }
+
+    /// <summary>For installing by remote console (tests on other machines): no window, and what happened in the log.</summary>
+    private static int InstallQuietly(ReleaseManifest manifest, InstallPaths paths)
+    {
+        using HttpClient http = new() { Timeout = Timeout.InfiniteTimeSpan };
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + manifest.Version);
+        IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
+        manifest = manifest.ForMachine(adapters);
+        Log($"{manifest.Version}: {MachineGpu.Choose(adapters)}; {string.Join(", ", manifest.Archives.Select(archive => archive.Name))}; {paths.Root}");
+        if (Voice.BaxyIsOpen())
+        {
+            Log("a BAXY is open: close it first");
+            return Failure;
+        }
+
+        Installation installation = new(manifest, paths, new PartFetcher(http));
+        try
+        {
+            Prerequisites.InstallMissingAsync(http, paths.Downloads, CancellationToken.None).GetAwaiter().GetResult();
             installation.RunAsync((_, _, _) => { }, CancellationToken.None).GetAwaiter().GetResult();
-            WindowsIntegration.Register(InstallPaths.ForThisUser, manifest.Version, manifest.InstalledBytes);
+            WindowsIntegration.Register(paths, manifest.Version, manifest.InstalledBytes);
             Log("installed");
             return 0;
         }
@@ -105,4 +241,17 @@ internal static class Program
             return Failure;
         }
     }
+
+    [LibraryImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool AttachConsole(int processId);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial nint GetStdHandle(int which);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial uint GetFileType(nint handle);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial uint GetConsoleOutputCP();
 }

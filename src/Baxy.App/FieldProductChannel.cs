@@ -1245,7 +1245,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     };
 
     // The start's pieces, each marked only once the mind reports it (null before); no percentage is made up.
-    private JsonObject BootEvent()
+    internal JsonObject BootEvent()
     {
         MindVoiceStatus? voice = _viewModel.VoicePieces;
         return new JsonObject

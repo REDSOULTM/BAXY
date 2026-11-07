@@ -316,4 +316,57 @@ public sealed class SlowMachineStartTests
                 .All(static e => (bool?)e["onProcessor"] != true), Is.True);
         }
     }
+
+    // W1 (REL4, 1.2.x and 1.3.0): the first start after installing said «The model isn't available» for ~25 s while the
+    // runtime's files were still being checked (no hash cache yet): nothing had been tried, so nothing had failed.
+    [Test]
+    public async Task WhileTheRuntimeIsCheckedTheModelIsOnItsWayNotUnavailable()
+    {
+        var viewModel = new MainWindowViewModel();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            // What the shell's start does before it checks the runtime (InitializeAsync).
+            viewModel.MarkStartupMindPending();
+            (int status, JsonObject agent) = await view.SendAsync("GET", "/agent/status");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(status, Is.EqualTo(200));
+                Assert.That(viewModel.MindFailed, Is.False);
+                Assert.That(viewModel.IsMindPreparing, Is.True);
+                Assert.That((string?)agent["failure"], Is.Null);
+                Assert.That((string?)view.Channel.BootEvent()["failed"], Is.Null);
+            });
+        }
+    }
+
+    // The count of seconds the view shows runs from the check: the first start of the mind does not set it back to zero
+    // halfway through the wait.
+    [Test]
+    public async Task TheFirstStartKeepsCountingFromTheCheckOfTheRuntime()
+    {
+        using var fake = new FakeMind();
+        var viewModel = new MainWindowViewModel();
+        await using (viewModel)
+        {
+            viewModel.MarkStartupMindPending();
+            DateTimeOffset checking = viewModel.MindStartedAt;
+            await Task.Delay(50);
+            await ViewModelHarness.StartMindAsync(viewModel);
+
+            Assert.That(viewModel.IsMindReady, Is.True);
+            Assert.That(viewModel.MindStartedAt, Is.EqualTo(checking));
+        }
+    }
+
+    // Nothing started (a window whose start never reached the mind): a turn ends as «mind_unavailable» at once, it does
+    // not wait for a mind that is not coming (the W1 suite hung here with a state that counted as on its way).
+    [Test]
+    public void WithNoStartUnderWayTheModelIsNotSaidToBeOnItsWay()
+    {
+        var viewModel = new MainWindowViewModel();
+
+        Assert.That(viewModel.IsMindPreparing, Is.False);
+    }
 }

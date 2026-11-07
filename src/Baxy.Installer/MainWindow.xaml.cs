@@ -55,11 +55,11 @@ internal sealed partial class MainWindow : Window, IDisposable
     private const int CaptionTextColor = 36;
     private static readonly double[] TextSizes = [16, 20, 24];
     private static readonly double[] WindowHeights = [620, 760, 900];
-    private readonly Voice voice = new();
+    private readonly Voice voice;
     private readonly HttpClient http = new() { Timeout = Timeout.InfiniteTimeSpan };
     private readonly DispatcherTimer ticker = new() { Interval = TimeSpan.FromMilliseconds(250) };
     private readonly object gate = new();
-    private readonly InstallPaths paths = InstallPaths.ForThisUser;
+    private readonly InstallPaths paths;
     private readonly ReleaseManifest? manifest;
     private readonly bool uninstalling;
     private readonly GpuSupport support;
@@ -81,9 +81,11 @@ internal sealed partial class MainWindow : Window, IDisposable
     private FailureKind failure;
     private string failureDetail = string.Empty;
 
-    internal MainWindow(ReleaseManifest? manifest, bool uninstalling)
+    internal MainWindow(ReleaseManifest? manifest, bool uninstalling, InstallPaths paths, bool voiceAllowed)
     {
         InitializeComponent();
+        this.paths = paths;
+        voice = new Voice(voiceAllowed);
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
         this.manifest = manifest?.ForMachine(adapters);
         this.uninstalling = uninstalling;
@@ -709,19 +711,10 @@ internal sealed partial class MainWindow : Window, IDisposable
 
         try
         {
-            WindowsIntegration.Remove(paths);
-            if (deleteData)
-            {
-                string data = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY");
-                if (System.IO.Directory.Exists(data))
-                {
-                    System.IO.Directory.Delete(data, recursive: true);
-                }
-            }
-
+            WindowsIntegration.Uninstall(paths, deleteData);
             screen = UninstalledScreen;
         }
-        catch (Exception problem) when (problem is System.IO.IOException or UnauthorizedAccessException)
+        catch (Exception problem) when (problem is System.IO.IOException or UnauthorizedAccessException or InvalidOperationException)
         {
             Program.Log(problem.ToString());
             failure = FailureKind.Other;

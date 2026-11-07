@@ -16,7 +16,13 @@ internal sealed partial class Voice : IDisposable
     private readonly SoundPlayer player = new();
     private Stream? playing;
 
-    internal bool IsOn { get; set; } = !ScreenReaderIsRunning() && !BaxyIsOpen();
+    /// <param name="allowed">False with --no-voice: on a machine where a BAXY may be listening and is not this one's.</param>
+    internal Voice(bool allowed = true)
+    {
+        IsOn = allowed && !ScreenReaderIsRunning() && !BaxyIsOpen();
+    }
+
+    internal bool IsOn { get; set; }
 
     /// <summary>The single-instance mutex of the App (src/Baxy.App/App.xaml.cs).</summary>
     internal static bool BaxyIsOpen()

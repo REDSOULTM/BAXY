@@ -39,8 +39,9 @@ $repo = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
 # python.org's python-3.12.10-embed-amd64.zip (Authenticode: Python Software Foundation), the interpreter's version of
 # the runtime venv the lock was measured with.
 $PythonEmbedSha256 = '4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3'
-# The wake package the owner made the default on 2026-11-05 (WakewordBaxy\models\final\baxy-wake-k6r-v3b2): its folder's hash.
-$WakeSha256 = '4003358ca24766cb46d585d96ebd72b6d9cd9ec701c94bcf690751bc804af094'
+# The wake package the owner made the official detector on 2026-11-07 (WakewordBaxy\models\final\baxy-wake-k6r-v7b), the
+# whole folder unchanged (its README and SHA256SUMS count): its folder's hash.
+$WakeSha256 = '48a02e8fbedfb2f9fd57e90af6f06c8814e361791bc4d5b0e3a4baecd264b8ac'
 
 function Copy-Verified {
     param(

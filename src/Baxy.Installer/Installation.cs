@@ -23,6 +23,57 @@ internal sealed record InstallPaths(string Root)
     internal string Downloads => Root + ".download";
 
     internal string App => Path.Combine(Root, "app", "Baxy.exe");
+
+    /// <summary>The folder has BAXY's app. Not this installer alone: a Downloads folder holds it too.</summary>
+    internal bool HoldsBaxy => File.Exists(App);
+
+    /// <summary>
+    /// A folder given with --dir: a full path, never a drive's root, that does not exist, is empty or already holds BAXY.
+    /// The swap moves whatever was there away and deletes it, so a folder of the person's own is refused.
+    /// </summary>
+    internal static InstallPaths Chosen(string folder)
+    {
+        if (!Path.IsPathFullyQualified(folder))
+        {
+            throw new ArgumentException($"--dir needs a full path, not «{folder}»");
+        }
+
+        string full = Path.TrimEndingDirectorySeparator(Path.GetFullPath(folder));
+        if (string.Equals(full, Path.TrimEndingDirectorySeparator(Path.GetPathRoot(full)!), StringComparison.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException($"--dir cannot be a whole drive ({full})");
+        }
+
+        InstallPaths paths = new(full);
+        if (Directory.Exists(full) && Directory.EnumerateFileSystemEntries(full).Any() && !paths.HoldsBaxy)
+        {
+            throw new ArgumentException($"{full} has other files and BAXY would replace them: choose a new or empty folder");
+        }
+
+        // Its .new, .old and .download beside it are deleted too: they must be BAXY's.
+        if (!paths.HoldsBaxy && new[] { paths.Staging, paths.Previous, paths.Downloads }.FirstOrDefault(Directory.Exists) is { } beside)
+        {
+            throw new ArgumentException($"{beside} is beside that folder and BAXY would delete it: choose another folder");
+        }
+
+        return paths;
+    }
+
+    /// <summary>What an uninstall removes: the folder given, else the one «Installed apps» names, else the usual one.</summary>
+    internal static InstallPaths ForUninstall(string? folder, WindowsPlaces places)
+    {
+        if (folder is not null)
+        {
+            InstallPaths chosen = Chosen(folder);
+            return Directory.Exists(chosen.Root) && !chosen.HoldsBaxy
+                ? throw new ArgumentException($"{chosen.Root} does not hold BAXY: nothing to uninstall there")
+                : chosen;
+        }
+
+        return WindowsIntegration.RegisteredRoot(places) is { } registered && new InstallPaths(registered) is { HoldsBaxy: true } found
+            ? found
+            : ForThisUser;
+    }
 }
 
 internal sealed class InstallBlockedException(string message, Exception inner) : IOException(message, inner);

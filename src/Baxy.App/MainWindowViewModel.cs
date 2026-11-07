@@ -609,6 +609,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             // Entrega 1.1.0: the registered runtime completes the environment before the core starts, which only
             // inherits it: the click's vision (BAXY_VISION_*) is pointed at the projector the registration names.
             // The files' hashes are kept between starts (RuntimeFileHashCache); the mind's start verifies it again.
+            if (_mindClient is not { IsReady: true })
+            {
+                MarkStartupMindPending();
+            }
+
             await Task.Run(
                 static () => MindRuntimeDiscovery.ApplyVerified(MindRuntimeDiscovery.DiscoverVerified()),
                 cancellationToken);
@@ -662,8 +667,28 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 await startupMindAbandoned.CancelAsync();
             }
 
+            if (startupCatalog is null && _startupMindPending)
+            {
+                // The check of the runtime failed or was cancelled before any start of the mind: none is on its way.
+                _startupMindPending = false;
+                OnPropertyChanged(nameof(IsMindPreparing));
+            }
+
             _isInitializing = false;
         }
+    }
+
+    /// <summary>
+    /// W1 (REL4, 1.2.x and 1.3.0): the shell's first start checks the runtime's files (DiscoverVerified, ~25 s without
+    /// their hash cache) before it starts the mind. That wait is the mind on its way, with its seconds counted from here;
+    /// it was told as «the model isn't available» because nothing had been tried yet.
+    /// </summary>
+    internal void MarkStartupMindPending()
+    {
+        _mindStartedAt = DateTimeOffset.UtcNow;
+        _startupMindPending = true;
+        OnPropertyChanged(nameof(MindStartedAt));
+        OnPropertyChanged(nameof(IsMindPreparing));
     }
 
 
@@ -1585,9 +1610,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return;
             }
 
+            // The shell's first start counts from its check of the runtime, the wait the person already sees (W1); a
+            // relaunch from its own start.
+            if (!_startupMindPending)
+            {
+                _mindStartedAt = DateTimeOffset.UtcNow;
+            }
+
             _mindStartupState = MindStartupState.Starting;
             _mindRetryPending = false;
-            _mindStartedAt = DateTimeOffset.UtcNow;
             _mindReadyAt = null;
             _mindReading = null;
             _mindOnProcessor = false;

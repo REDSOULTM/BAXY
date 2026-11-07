@@ -57,9 +57,13 @@ unchanged except for its file name.
 
 ## Wake word (`wake/`): attribution given as a precaution
 
-`head.onnx` is the BAXY project's own network. According to its training notes it carries no weights from Kroko (compared on
-2026-11-06 with `encoder_kroko_es.onnx`: none of its 127 tensors of 64 values or more equals one of Kroko's 944), but it
-was trained imitating the Kroko ASR encoder, by Banafo: <https://huggingface.co/Banafo/Kroko-ASR>. Kroko describes its community models as «CC-BY-SA»
+`head.onnx` (the `baxy-wake-k6r-v7b` package since 1.3.1) is the BAXY project's own network. According to its training notes it
+carries no weights from Kroko (compared on 2026-11-07 with `encoder_kroko_es.onnx`: none of its 127 tensors of 64 values or more
+equals one of Kroko's 944), but it was trained imitating the Kroko ASR encoder, by Banafo: <https://huggingface.co/Banafo/Kroko-ASR>. Kroko describes its community models as «CC-BY-SA»
 without giving a version, and the `LICENSE` file in that repository is empty. Whether a network trained this way counts
 as an adaptation has not been settled, so this attribution is given as a precaution and `CC-BY-SA-4.0.txt` is included
 for reference, on the assumption that the current version applies.
+
+Not reviewed by a lawyer either: the teacher it learned from (the k5 detector) was trained with episodes of the TV series
+*Impractical Jokers* (WEBRip copies), and its training includes voices of the developer's friends whose written permission to
+publish is still missing (source: the package's own `README.md`, inside `wake/`).

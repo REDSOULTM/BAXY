@@ -40,7 +40,8 @@ def test_every_listed_file_exists_and_every_text_has_its_source() -> None:
     readme = (LICENSES / "README.md").read_text(encoding="utf-8")
     rows = re.findall(r"^\| `([^`]+)` \| .+ \| <(https://[^>]+)> \| `([0-9a-f]{64})` \|$", readme, re.MULTILINE)
     listed = {name for name, _, _ in rows}
-    on_disk = {path.name for path in LICENSES.iterdir()} - {"README.md", "ATRIBUCIONES_MODELOS.md", "FUENTES.md", "CRATES_RUST.md"}
+    on_disk = {path.name for path in LICENSES.iterdir()} - {"README.md", "ATRIBUCIONES_MODELOS.md", "FUENTES.md", "CRATES_RUST.md",
+                                                          "FUENTES_GPL.md"}  # the public repository's offer for its history
     assert listed == on_disk
     assert set(TEXTS) <= listed
 
@@ -61,7 +62,8 @@ def test_the_notices_say_what_left_and_what_stays() -> None:
     notices = (LICENSES.parent / "THIRD_PARTY_NOTICES.md").read_text(encoding="utf-8")
     assert "el barrido de los binarios de 1.3.0 no halló código GPL ni LGPL" in notices
     assert "### 0. Lo que se quitó en 1.3.0, y Eigen (MPL-2.0), que queda" in notices
-    assert "1.2.0 y 1.2.1, ya publicadas, siguen llevando eSpeak NG" in notices
+    assert "1.2.0 y 1.2.1, ya distribuidas, siguen llevando eSpeak NG" in notices
+    assert "releases/tag/fuentes-terceros" in notices
     assert "**Eigen, MPL-2.0:**" in notices
 
 
