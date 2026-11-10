@@ -332,7 +332,7 @@ def test_turn_decide_and_turn_notice_tell_the_voice_their_language_and_never_the
     assert speech.told == told
     voice_lang = lang or "es"
     # the mind is given the text alone, as without the field: «lang» never reaches the model's prompt
-    assert seen == [((1, "play some music", None, [], None, None), voice_lang), (("notice", "One moment."), voice_lang)]
+    assert seen == [((1, "play some music", None, [], None, None, None), voice_lang), (("notice", "One moment."), voice_lang)]
 
 
 def test_a_notice_is_made_in_its_own_language_whatever_the_app_tagged(

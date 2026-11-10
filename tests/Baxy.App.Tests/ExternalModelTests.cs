@@ -77,6 +77,34 @@ public sealed class ExternalModelTests
     }
 
     [Test]
+    public void AnEmptyModelLeavesAnthropicsDefaultAndTheSwitchCanBeTurnedOn()
+    {
+        // Uso real 2026-11-08: «models»: {"anthropic": ""} took the default's place, and nothing could be turned on.
+        var model = new ExternalModel(_root);
+        Assert.That(model.Apply(new JsonObject { ["key"] = Key, ["model"] = "" }), Is.Null);
+        Assert.That((string?)model.Json()["model"], Is.EqualTo("claude-opus-5-5"));
+        Assert.That(model.Apply(new JsonObject { ["enabled"] = true }), Is.Null);
+        File.WriteAllText(Path.Combine(_root, "external-model", "config.json"), """{"provider":"anthropic","models":{"anthropic":""}}""");
+        Assert.That((string?)model.Json()["model"], Is.EqualTo("claude-opus-5-5"), "one written so before is no choice either");
+    }
+
+    [Test]
+    public void SettingsSaysWhetherTheModelInUseSeesByItsOwnSource()
+    {
+        // Pedido del dueño 2026-11-08: a model with no vision is used as it is, and BAXY says it does not see. Líder 2026-11-08: never
+        // «yes» by default; a company's model is known by what its API says once connected (the translator's /props), and one in
+        // Ollama by its list.
+        var model = new ExternalModel(_root);
+        Assert.That(model.Json()["sees"], Is.Null, "Anthropic, until its API says it");
+        model.Apply(new JsonObject { ["provider"] = "openai" });
+        Assert.That(model.Json()["sees"], Is.Null, "OpenAI's models API says no model's modalities");
+        model.Apply(new JsonObject { ["provider"] = "compatible" });
+        Assert.That(model.Json()["sees"], Is.Null);
+        model.Apply(new JsonObject { ["provider"] = "local", ["model"] = "gpt-oss:20b" });
+        Assert.That(model.Json()["sees"], Is.Null, "until Ollama's list says it");
+    }
+
+    [Test]
     public void TheSwitchNeedsAKey()
     {
         var model = new ExternalModel(_root);
@@ -157,6 +185,73 @@ public sealed class ExternalModelTests
         });
     }
 
+    // REV_VISTA V-11 (2026-11-09): Settings said «BAXY le envía unos 49.000 tokens… el contexto parte en 64.000» whatever tool
+    // profile was chosen (Esencial sends 22,661) and although the default context is another. The App says what the chosen
+    // profile's prompt takes, and the view says that.
+    [Test]
+    public void TheViewIsToldWhatTheChosenProfilesPromptTakes()
+    {
+        int need = ToolProfile.NeededContext(ToolProfile.Completo, null, null);
+        var model = new ExternalModel(_root);
+        Assert.That((int?)model.Json()["promptTokens"], Is.EqualTo(need - LocalContext.TurnRoomTokens), "the whole catalog's, with nothing else known");
+
+        model.Need = static () => 26245;
+
+        Assert.That((int?)model.Json()["promptTokens"], Is.EqualTo(26245 - LocalContext.TurnRoomTokens), "the chosen profile's");
+    }
+
+    [Test]
+    public void AModelThatAnotherPlaceListedIsNotTurnedOnWithTheChosenOnesKey()
+    {
+        // REV_VISTA V-01: «Usar» on a model of this PC sent the name without its place; with «Otra» chosen and its key saved, the
+        // conversation went to that address under a name the person had picked as local.
+        var model = new ExternalModel(_root);
+        model.Apply(new JsonObject { ["provider"] = "compatible", ["model"] = "el-de-la-api", ["key"] = Key, ["url"] = "https://ejemplo.com/v1" });
+        model.Remember("local", new JsonObject { ["models"] = new JsonArray(new JsonObject { ["id"] = "lumen:7b" }) });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(model.Apply(new JsonObject { ["model"] = "lumen:7b", ["enabled"] = true }), Is.EqualTo("external_model_other_provider"));
+            Assert.That((bool?)model.Json()["enabled"], Is.False);
+            Assert.That((string?)model.Json()["provider"], Is.EqualTo("compatible"));
+            Assert.That((string?)model.Json()["model"], Is.EqualTo("el-de-la-api"));
+        });
+
+        // Said with its place, it is that place's: the chosen one changes and the API stays off.
+        Assert.That(model.Apply(new JsonObject { ["provider"] = "local", ["model"] = "lumen:7b", ["enabled"] = true }), Is.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)model.Json()["provider"], Is.EqualTo("local"));
+            Assert.That((string?)model.Json()["model"], Is.EqualTo("lumen:7b"));
+            Assert.That((bool?)model.Json()["enabled"], Is.True);
+        });
+    }
+
+    [Test]
+    public void AModelTheChosenPlaceListsToo_OrThatNoPlaceListed_IsTheChosenPlaces()
+    {
+        var model = new ExternalModel(_root);
+        model.Apply(new JsonObject { ["provider"] = "compatible", ["key"] = Key, ["url"] = "https://ejemplo.com/v1" });
+        model.Remember("local", new JsonObject { ["models"] = new JsonArray(new JsonObject { ["id"] = "lumen:7b" }) });
+
+        // Nobody listed it (a name written by hand for an address that gives no list).
+        Assert.That(model.Apply(new JsonObject { ["model"] = "escrito-a-mano", ["enabled"] = true }), Is.Null);
+
+        // The address serves a model of the same name: its own list says so.
+        model.Remember("compatible", new JsonObject { ["models"] = new JsonArray(new JsonObject { ["id"] = "lumen:7b" }) });
+        Assert.That(model.Apply(new JsonObject { ["model"] = "lumen:7b", ["enabled"] = true }), Is.Null);
+
+        // A list that could not be read forgets nothing: the last one known stands.
+        model.Remember("compatible", new JsonObject { ["error"] = "no se pudo leer la lista" });
+        model.Apply(new JsonObject { ["model"] = "escrito-a-mano" });
+        Assert.Multiple(() =>
+        {
+            Assert.That(model.Apply(new JsonObject { ["model"] = "lumen:7b" }), Is.Null);
+            Assert.That((string?)model.Json()["model"], Is.EqualTo("lumen:7b"));
+            Assert.That((bool?)model.Json()["enabled"], Is.True);
+        });
+    }
+
     [Test]
     public async Task TheContextIsTheChosenModelsAndChangingItSwitchesAtOnce()
     {
@@ -187,6 +282,91 @@ public sealed class ExternalModelTests
         });
     }
 
+    // VIVO1 F4 (2026-11-09): mistral:latest (32.768) with Completo. A model short of the profile's prompt says the largest profile
+    // that fits its own context, for the view to offer it; one that fits, or short for another reason, says none.
+    [Test]
+    public void AModelShortOfTheProfilesPromptSaysTheProfileThatFitsIt()
+    {
+        var listed = new JsonObject
+        {
+            ["models"] = new JsonArray(
+                new JsonObject { ["id"] = "mistral:latest", ["fits"] = false, ["context"] = 32768, ["why"] = "admite 32.768" },
+                new JsonObject { ["id"] = "tiny", ["fits"] = false, ["context"] = 8192, ["why"] = "admite 8.192" },
+                new JsonObject { ["id"] = "sin-tools", ["fits"] = false, ["context"] = 131072, ["why"] = "no sabe usar herramientas" },
+                new JsonObject { ["id"] = "grande", ["fits"] = true, ["context"] = 262144 }),
+        };
+
+        ExternalModel.WithProfiles(listed, 52670, context => ToolProfile.LargestFitting(context, null, null));
+
+        JsonArray rows = listed["models"]!.AsArray();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)rows[0]!["profile"], Is.EqualTo("esencial"));
+            Assert.That(rows[1]!["profile"], Is.Null, "no profile fits 8.192");
+            Assert.That(rows[2]!["profile"], Is.Null, "short of tools, not of context");
+            Assert.That(rows[3]!["profile"], Is.Null);
+        });
+    }
+
+    // VIVO1 F4: the server refused every turn and the screen said nothing. The translator's reason (ERROR[kind]: words, never the
+    // server's own) is what the turn's failure says.
+    [Test]
+    public async Task ATurnTheServerRefusedSaysTheTranslatorsReason()
+    {
+        using var model = new ExternalModel(_root);
+        model.Apply(new JsonObject { ["provider"] = "local", ["model"] = "mistral:latest", ["enabled"] = true });
+        string log = Path.Combine(_root, "external-model", "traductor.log");
+        await File.WriteAllTextAsync(log, "Traductor en 127.0.0.1:8301 · local · mistral:latest\n");
+        Assert.That(model.Refusal, Is.Null);
+        await File.AppendAllTextAsync(log, "ERROR[plantilla]: El servidor local no puede usar mistral:latest con las herramientas de BAXY\n");
+        Assert.That(model.Refusal, Is.EqualTo("El servidor local no puede usar mistral:latest con las herramientas de BAXY"));
+        // REV_VISTA V-04: its kind too, which the view says in its own language (the words are the translator's Spanish)
+        Assert.That(model.RefusalKind, Is.EqualTo("plantilla"));
+        await File.AppendAllTextAsync(log, "ERROR: una línea de un registro viejo, sin tipo\n");
+        Assert.That(model.RefusalKind, Is.Null);
+    }
+
+    // REV_APP TUR-1 (2026-11-09): refused after a call of the turn ran, the screen said only «the model refused the turn»,
+    // as if nothing had been done. The turn's failure says the call too, and still carries the translator's reason.
+    [Test]
+    public async Task ATurnRefusedAfterACallRanSaysSoWithTheTranslatorsReason()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result", ["kind"] = "action", ["operation"] = "system.time", ["arguments"] = new JsonObject(),
+                },
+            },
+            ["fail"] = new JsonArray("turn.continue"),
+            ["failCode"] = "model_refused",
+        });
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            ViewModelHarness.AcceptTurns(viewModel);
+            string log = Path.Combine(MemoryOperationProtector.ResolveDataRoot(), "external-model", "traductor.log");
+            Directory.CreateDirectory(Path.GetDirectoryName(log)!);
+            await File.WriteAllTextAsync(log, "ERROR[plantilla]: El servidor local no puede usar lumen:7b con las herramientas de BAXY\n");
+
+            Assert.That((await view.SendAsync("POST", "/turn", new JsonObject { ["text"] = "¿qué hora es?" })).Status, Is.EqualTo(200));
+            Assert.That(await ViewModelHarness.UntilAsync(() => !viewModel.IsBusy && viewModel.LastTurnFailure is not null), Is.True);
+
+            JsonObject agent = (await view.SendAsync("GET", "/agent/status")).Body;
+            Assert.Multiple(() =>
+            {
+                Assert.That(fake.Requests("turn.continue"), Has.Count.EqualTo(1), "the call ran and its result went to the model");
+                Assert.That((string?)agent["failure"], Is.EqualTo("model_refused_after_call"));
+                Assert.That((string?)agent["failureWhy"],
+                    Is.EqualTo("El servidor local no puede usar lumen:7b con las herramientas de BAXY"));
+            });
+        }
+    }
+
     [Test]
     public async Task AnOldConnectionErrorIsNotSaidWithTheOptionOff()
     {
@@ -215,6 +395,18 @@ public sealed class ExternalModelTests
         Environment.SetEnvironmentVariable("OLLAMA_HOST", "127.0.0.1:9");
         model.Apply(new JsonObject { ["provider"] = "local" });
         Assert.That((string?)(await model.ModelsAsync(CancellationToken.None))["ollama"], Is.EqualTo("missing"));
+    }
+
+    // User test of INT17 (2026-11-09): «Modelos en este PC» listed Ollama's only with Local chosen, and said 1 with De serie
+    // though 6 were installed. The models on this PC are asked of Ollama whatever place BAXY thinks in.
+    [Test]
+    public async Task TheModelsOnThisPcAreAskedOfOllamaWhateverIsChosen()
+    {
+        using var model = new ExternalModel(_root);
+        Environment.SetEnvironmentVariable("OLLAMA_HOST", "127.0.0.1:9");
+        Assert.That((bool?)(await model.ModelsAsync(CancellationToken.None))["needsKey"], Is.True, "the chosen API's list asks for its key");
+        Assert.That((string?)(await model.ModelsAsync(CancellationToken.None, onThisPc: true))["ollama"], Is.EqualTo("missing"),
+            "this PC's list is Ollama's, not the chosen API's");
     }
 
     [TestCase(null, "http://127.0.0.1:11434")]
@@ -260,7 +452,8 @@ public sealed class ExternalModelTests
 
         JsonObject listed = await model.ModelsAsync(CancellationToken.None);
 
-        Assert.That((string?)listed["error"], Is.EqualTo("no hay conexión"));
+        // modelos-abiertos 225cfbe79: the refusal names whom it could not reach («no hay conexión con <proveedor>»).
+        Assert.That((string?)listed["error"], Is.EqualTo("no hay conexión con esa API"));
     }
 
     [Test]
@@ -354,6 +547,131 @@ public sealed class ExternalModelTests
         ProcessStartInfo start = ExternalModel.OllamaServer("ollama.exe");
 
         Assert.That(start.Environment["OLLAMA_HOST"], Is.EqualTo("http://127.0.0.1:11434"));
+    }
+
+    [Test]
+    public void TheOllamaBaxyOpensRunsFromItsOwnFolderAndNeverFromBaxys()
+    {
+        // INT12V 2026-11-08: the «serve» BAXY opened had the App's folder as its working directory, and it could not be removed.
+        string program = Path.Combine(_root, "Programs", "Ollama", "ollama.exe");
+
+        ProcessStartInfo start = ExternalModel.OllamaServer(program);
+
+        Assert.That(start.WorkingDirectory, Is.EqualTo(Path.GetDirectoryName(program)));
+    }
+
+    [Test]
+    public void WhatBaxyOpensForOllamaEndsWithBaxyEvenWhenBaxyIsCutWithItsChildren()
+    {
+        // INT12V 2026-11-08: BAXY closed by its PID left that Ollama alive. Its job closes with BAXY however BAXY ends: closing the
+        // handle here is what Windows does when the process that holds it dies.
+        string marker = Path.Combine(_root, "child.pid");
+        var start = new ProcessStartInfo("powershell.exe")
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            WorkingDirectory = _root,
+        };
+        foreach (string argument in new[] { "-NoProfile", "-Command",
+            $"$c = Start-Process ping.exe -ArgumentList '-n','300','127.0.0.1' -WindowStyle Hidden -PassThru; Set-Content -LiteralPath '{marker}' $c.Id; Start-Sleep 300" })
+        {
+            start.ArgumentList.Add(argument);
+        }
+
+        using Process server = ExternalModel.StartOwned(start, out Microsoft.Win32.SafeHandles.SafeFileHandle? job);
+        Assert.That(job, Is.Not.Null);
+        DateTime until = DateTime.UtcNow.AddSeconds(30);
+        while (!File.Exists(marker) || File.ReadAllText(marker).Trim().Length == 0)
+        {
+            Assert.That(DateTime.UtcNow, Is.LessThan(until), "the child never started");
+            Thread.Sleep(100);
+        }
+
+        using Process child = Process.GetProcessById(int.Parse(File.ReadAllText(marker).Trim(), System.Globalization.CultureInfo.InvariantCulture));
+        job!.Dispose();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(server.WaitForExit(10000), Is.True, "the server ends with the job");
+            Assert.That(child.WaitForExit(10000), Is.True, "and what it started, as Ollama's runners");
+        });
+    }
+
+    [Test]
+    public async Task OnClosingBaxyTheOllamaItOpenedEnds()
+    {
+        // The normal close (MainWindowViewModel.DisposeAsync → Dispose): BAXY's own copy, opened because none answered.
+        var model = new ExternalModel(_root);
+        string program = model.Open.OwnOllama;
+        Directory.CreateDirectory(Path.GetDirectoryName(program)!);
+        // A stand-in that stays up as «serve» would: cmd.exe waits for its console with no command to run.
+        File.Copy(Path.Combine(Environment.SystemDirectory, "cmd.exe"), program);
+        int port = FreePort();
+        Environment.SetEnvironmentVariable("OLLAMA_HOST", $"127.0.0.1:{port}");
+        model.Apply(new JsonObject { ["provider"] = "local" });
+        Task<JsonObject> asked = model.ModelsAsync(CancellationToken.None);
+        Process? opened = null;
+        DateTime until = DateTime.UtcNow.AddSeconds(30);
+        while (opened is null && DateTime.UtcNow < until)
+        {
+            opened = Process.GetProcessesByName("ollama").FirstOrDefault(p => string.Equals(SafePath(p), program, StringComparison.OrdinalIgnoreCase));
+            await Task.Delay(100);
+        }
+
+        Assert.That(opened, Is.Not.Null, "BAXY opens its Ollama when none answers");
+        model.Dispose();
+
+        Assert.That(opened!.WaitForExit(10000), Is.True, "and closes it when BAXY closes");
+        _ = await asked;
+    }
+
+    [Test]
+    public async Task ASearchSaysTheCardsFreeMemoryReadOnceBesideTheSearch()
+    {
+        // Encargo del dueño 2026-11-08: «una selección de cabe o no cabe en tu tarjeta», by what is really free on it. INT12V: sampling
+        // the card's use reads every process's counters (1.0-1.6 s on the PC), so it is read once, beside the search.
+        var gpu = new RecordingGpu();
+        var model = new ExternalModel(_root, gpu);
+
+        JsonObject found = await model.SearchAsync(" ", Task.FromResult<double?>(null), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(gpu.Scopes, Is.EqualTo(new[] { Baxy.Providers.Windows.SystemStatus.GpuStatusScope.Usage }));
+            Assert.That((long?)found["vramTotalBytes"], Is.EqualTo(8L << 30));
+        });
+    }
+
+    private static string? SafePath(Process process)
+    {
+        try
+        {
+            return process.MainModule?.FileName;
+        }
+        catch (Exception exception) when (exception is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    private static int FreePort()
+    {
+        using var probe = new TcpListener(IPAddress.Loopback, 0);
+        probe.Start();
+        return ((IPEndPoint)probe.LocalEndpoint).Port;
+    }
+
+    private sealed class RecordingGpu : Baxy.Providers.Windows.SystemStatus.IGpuStatusProvider
+    {
+        internal List<Baxy.Providers.Windows.SystemStatus.GpuStatusScope> Scopes { get; } = [];
+
+        public ValueTask<Baxy.Providers.Windows.SystemStatus.GpuStatusSnapshot> GetStatusAsync(
+            Baxy.Providers.Windows.SystemStatus.GpuStatusScope scope, CancellationToken cancellationToken)
+        {
+            Scopes.Add(scope);
+            return ValueTask.FromResult(new Baxy.Providers.Windows.SystemStatus.GpuStatusSnapshot(
+                [new("Tarjeta", 0x10DE, 1, 8UL << 30, 0, 0, null, null, null)], []));
+        }
     }
 
     [Test]
@@ -564,6 +882,40 @@ public sealed class ExternalModelTests
     public void AnEmptyKeyOrOneThatCannotGoInAHeaderIsRefused(string key)
     {
         Assert.That(new ExternalModel(_root).Apply(new JsonObject { ["key"] = key }), Is.EqualTo("external_model_invalid_key"));
+    }
+
+    [Test]
+    public async Task AnotherModelsStartDoesNotSayTheLastOnesError()
+    {
+        // Seen in the real App on the PC (2026-11-09): gemma4 refused before loading, and the view said «No se conectó gemma4:
+        // unsloth/Qwen3.5-9B… necesita 12,0 GB de RAM»: the last model's line, left in the log by a start that never ran.
+        using var model = new ExternalModel(_root);
+        Directory.CreateDirectory(Path.Combine(_root, "external-model"));
+        File.WriteAllText(Path.Combine(_root, "external-model", "traductor.log"), "ERROR: otro-modelo necesita unos 12,0 GB de RAM libre\n");
+        Assert.That(model.Apply(new JsonObject { ["provider"] = "local", ["model"] = "gemma4:26b", ["enabled"] = true }), Is.Null);
+
+        await model.StartAsync(CancellationToken.None);
+
+        Assert.That(model.Json()["lastError"], Is.Null);
+    }
+
+    [Test]
+    public async Task ChoosingToRunAModelPartlyInRamAtItsContextIsANewStart()
+    {
+        // Owner's order 2026-11-09: a model too big for the card at its context waits for the person (ShortOfVramFor); choosing
+        // RAM, more slowly, at that context starts it again, and nothing else does.
+        using var model = new ExternalModel(_root);
+        Assert.That(model.Apply(new JsonObject { ["provider"] = "local", ["model"] = "gpt-oss:20b", ["context"] = 131072, ["enabled"] = true }), Is.Null);
+        await model.StartAsync(CancellationToken.None);
+        bool before = model.NeedsSwitch;
+
+        Assert.That(model.Apply(new JsonObject { ["partialRam"] = true }), Is.Null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(before, Is.False);
+            Assert.That(model.NeedsSwitch, Is.True);
+        });
     }
 
     [Test]

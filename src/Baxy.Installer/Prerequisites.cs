@@ -68,14 +68,7 @@ internal static partial class Prerequisites
     {
         Directory.CreateDirectory(directory);
         string path = Path.Combine(directory, name);
-        using (HttpResponseMessage response = await http
-            .GetAsync(address, HttpCompletionOption.ResponseHeadersRead, cancellation)
-            .ConfigureAwait(false))
-        {
-            response.EnsureSuccessStatusCode();
-            await using FileStream file = new(path, FileMode.Create, FileAccess.Write, FileShare.None);
-            await response.Content.CopyToAsync(file, cancellation).ConfigureAwait(false);
-        }
+        await DownloadAsync(http, address, path, PartFetcher.StallLimit, cancellation).ConfigureAwait(false);
 
         if (!IsSignedByMicrosoft(path))
         {
@@ -106,6 +99,49 @@ internal static partial class Prerequisites
             {
                 throw new PrerequisiteException($"{name} ended with code {process.ExitCode}");
             }
+        }
+    }
+
+    /// <summary>
+    /// Downloads <paramref name="address"/> to <paramref name="path"/>. The client never times out by itself (the parts
+    /// are gigabytes), so the limit is on silence, as <see cref="PartFetcher"/>'s: a server that sends nothing for
+    /// <paramref name="stallLimit"/>, an answer or more bytes, is given up on as a network failure the person or the
+    /// script can retry, where the window and --quiet used to wait for ever (INS-6).
+    /// </summary>
+    internal static async Task DownloadAsync(
+        HttpClient http,
+        string address,
+        string path,
+        TimeSpan stallLimit,
+        CancellationToken cancellation)
+    {
+        try
+        {
+            using CancellationTokenSource answering = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+            answering.CancelAfter(stallLimit);
+            using HttpResponseMessage response = await http
+                .GetAsync(address, HttpCompletionOption.ResponseHeadersRead, answering.Token)
+                .ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+            await using Stream source = await response.Content.ReadAsStreamAsync(cancellation).ConfigureAwait(false);
+            await using FileStream file = new(path, FileMode.Create, FileAccess.Write, FileShare.None);
+            byte[] buffer = new byte[1 << 16];
+            while (true)
+            {
+                using CancellationTokenSource stalled = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+                stalled.CancelAfter(stallLimit);
+                int read = await source.ReadAsync(buffer, stalled.Token).ConfigureAwait(false);
+                if (read == 0)
+                {
+                    return;
+                }
+
+                await file.WriteAsync(buffer.AsMemory(0, read), cancellation).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException silent) when (!cancellation.IsCancellationRequested)
+        {
+            throw new HttpRequestException($"{address} sent nothing for {stallLimit.TotalSeconds:0.#} s", silent);
         }
     }
 

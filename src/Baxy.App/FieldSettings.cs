@@ -23,6 +23,10 @@ internal sealed class FieldSettings
     private readonly object _gate = new();
     private JsonObject _values;
 
+    // APP1 (REV_APP ASY-b): what the person chose that is not in the file yet (it could not be written). It holds over
+    // the file's old value at every reading and is written again with the next change or reading, until it is.
+    private readonly Dictionary<string, JsonNode?> _unwritten = new(StringComparer.Ordinal);
+
     internal FieldSettings(string dataRoot)
     {
         _dataRoot = dataRoot;
@@ -31,22 +35,57 @@ internal sealed class FieldSettings
 
     /// <summary>
     /// Reads the file again: baxy.settings.set wrote it from the engine. A file that cannot be read now keeps what was
-    /// read before.
+    /// read before; a choice that could not be written holds over the file and is written now if it can be.
     /// </summary>
     internal void Reload()
     {
         lock (_gate)
         {
-            if (FieldSettingsStore.TryRead(_dataRoot, out JsonObject values))
+            ReadFile();
+            if (_unwritten.Count > 0)
             {
-                _values = values;
+                Write();
             }
         }
+    }
+
+    /// <summary>True while a choice of the person is not in the file (<see cref="Write"/> failed): the view says so.</summary>
+    internal bool Unsaved
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return _unwritten.Count > 0;
+            }
+        }
+    }
+
+    private void ReadFile()
+    {
+        if (FieldSettingsStore.TryRead(_dataRoot, out JsonObject values))
+        {
+            _values = values;
+        }
+
+        foreach ((string key, JsonNode? value) in _unwritten)
+        {
+            _values[key] = value?.DeepClone();
+        }
+    }
+
+    private void Set(string key, JsonNode? value)
+    {
+        _values[key] = value;
+        _unwritten[key] = value?.DeepClone();
     }
 
     internal static FieldSettings CreateDefault() => new(MemoryOperationProtector.ResolveDataRoot());
 
     internal bool CloseToTray => Flag("closeToTray", true);
+
+    /// <summary>«Al minimizar» (owner, 2026-11-08): minimizing hides the window in the tray instead of the taskbar.</summary>
+    internal bool MinimizeToTray => Flag("minimizeToTray", false);
 
     /// <summary>The owner's «Arrancar con Windows»; until they switch it off, BAXY registers itself as before.</summary>
     internal bool AutostartWanted => Flag("autostart", true);
@@ -83,6 +122,10 @@ internal sealed class FieldSettings
 
     internal bool WebAllowed => Flag("web", true);
 
+    /// <summary>«Avisar de versiones nuevas» (actualizar-ordenes-app): one check where BAXY was published at each start; on
+    /// until the person switches it off. It only tells: nothing updates without their «Actualizar».</summary>
+    internal bool UpdateNotice => Flag("updateNotice", true);
+
     internal bool WeatherAllowed => Flag("weather", true);
 
     internal bool ScreenAllowed => Flag("screen", true);
@@ -111,14 +154,32 @@ internal sealed class FieldSettings
     internal string? QuietSpan => QuietUntil is null ? null : (string?)Snapshot()["quiet"];
 
     /// <summary>
+    /// PRV1 (revisión de privacidad 2026-11-09, PRIV-07): the calls by which BAXY itself asks a service on the internet
+    /// for what the person asked, with a request of its own: the web search and the pages it reads or downloads, the
+    /// video it picks from a search of its own, and a game's title looked up in its store's public search. «Búsqueda
+    /// web» switched off refused only the first three, and the others went out all the same under a switch that says
+    /// «sale la búsqueda». The identity: «nada sale del PC salvo lo que «La red» permite» (00_IDENTIDAD.md), so the
+    /// switch covers every one of them. What is opened in the person's own programs (a page in their browser, a place
+    /// in an application of theirs) is not BAXY asking: it stays theirs to open. Every call the catalog says goes out
+    /// is either here or named, with its reason, in FieldSettingsWebSwitchTests.
+    /// </summary>
+    internal static readonly IReadOnlySet<string> AsksTheWeb = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "web.search", "web.fetch", "web.download", "media.play.youtube", "game.store.page", "game.install.named",
+    };
+
+    /// <summary>The code of a call «Búsqueda web» refuses.</summary>
+    internal const string WebOff = "web_disabled_by_owner";
+
+    /// <summary>
     /// The privacy switch that refuses this call, as the code the model reads, or null when it may run: «Búsqueda web»
-    /// (web.search, web.fetch, web.download), «Clima» (weather.current and a place's clock) and «Mirar la pantalla».
+    /// (<see cref="AsksTheWeb"/>), «Clima» (weather.current and a place's clock) and «Mirar la pantalla».
     /// </summary>
     internal string? Refusal(string operation, JsonObject arguments)
     {
-        if (!WebAllowed && operation is "web.search" or "web.fetch" or "web.download")
+        if (!WebAllowed && AsksTheWeb.Contains(operation))
         {
-            return "web_disabled_by_owner";
+            return WebOff;
         }
 
         if (!WeatherAllowed && (operation == "weather.current"
@@ -130,6 +191,21 @@ internal sealed class FieldSettings
 
         return !ScreenAllowed && ScreenOperations.Contains(operation) ? "screen_disabled_by_owner" : null;
     }
+
+    /// <summary>
+    /// COR1: whether one of BAXY's own brakes (<see cref="OwnBrakes"/>, by its baxy.settings.set setting) is on now, as
+    /// the file says: a change that would relax it is the person's to ask for. A setting that is no brake is not on.
+    /// </summary>
+    internal bool BrakeOn(string setting) => setting switch
+    {
+        "web_search" => !WebAllowed,
+        "voice" => VoiceMuted,
+        "proposals" => QuietUntil is not null,
+        "no_interrupt_calls" => Flag("ctx.call", true),
+        "no_interrupt_games" => Flag("ctx.game", true),
+        "no_interrupt_videos" => Flag("ctx.video", true),
+        _ => false,
+    };
 
     internal JsonObject Snapshot()
     {
@@ -144,18 +220,127 @@ internal sealed class FieldSettings
     {
         lock (_gate)
         {
-            Reload();
-            foreach (string key in (string[])["autostart", "closeToTray", "voiceMuted", "wakeSound", "waitNotice", "echoCancel", "web", "weather", "screen"])
+            ReadFile();
+            foreach (string key in (string[])["autostart", "closeToTray", "minimizeToTray", "voiceMuted", "wakeSound", "waitNotice", "echoCancel", "web", "weather", "screen", "updateNotice"])
             {
                 if (body[key] is JsonValue value && value.TryGetValue(out bool on))
                 {
-                    _values[key] = on;
+                    Set(key, on);
                 }
             }
 
             Write();
         }
     }
+
+    /// <summary>The overlay that says what BAXY does while its window is behind (owner, 2026-11-08).</summary>
+    internal OverlaySettings Overlay
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return new OverlaySettings(
+                    Read("overlay", true),
+                    ReadChoice("overlayCorner", OverlaySettings.Corners, "br"),
+                    ReadChoice("overlaySize", OverlaySettings.Sizes, "m"),
+                    ReadNumber("overlayOpacity", 78, static v => v is >= 40 and <= 100),
+                    ReadNumber("overlayHide", 8, static v => OverlaySettings.Hides.Contains(v)),
+                    Read("overlayNotFullscreen", true),
+                    Read("overlayAnswer", false));
+            }
+        }
+    }
+
+    /// <summary>Writes the overlay's settings the body names; null, and nothing written, when any of them is not a choice.</summary>
+    internal OverlaySettings? ApplyOverlay(JsonObject body)
+    {
+        ArgumentNullException.ThrowIfNull(body);
+        var writes = new List<(string Key, JsonNode Value)>();
+        foreach ((string field, string key) in (ReadOnlySpan<(string, string)>)[("on", "overlay"), ("notFullscreen", "overlayNotFullscreen"), ("answer", "overlayAnswer")])
+        {
+            if (body[field] is null)
+            {
+                continue;
+            }
+
+            if (body[field] is not JsonValue flag || !flag.TryGetValue(out bool on))
+            {
+                return null;
+            }
+
+            writes.Add((key, JsonValue.Create(on)));
+        }
+
+        foreach ((string field, string key, string[] allowed) in (ReadOnlySpan<(string, string, string[])>)[("corner", "overlayCorner", OverlaySettings.Corners), ("size", "overlaySize", OverlaySettings.Sizes)])
+        {
+            if (body[field] is null)
+            {
+                continue;
+            }
+
+            if ((string?)(body[field] as JsonValue) is not { } choice || !allowed.Contains(choice))
+            {
+                return null;
+            }
+
+            writes.Add((key, JsonValue.Create(choice)));
+        }
+
+        foreach ((string field, string key, Func<int, bool> valid) in (ReadOnlySpan<(string, string, Func<int, bool>)>)[
+            ("opacity", "overlayOpacity", static v => v is >= 40 and <= 100), ("hideSeconds", "overlayHide", static v => OverlaySettings.Hides.Contains(v))])
+        {
+            if (body[field] is null)
+            {
+                continue;
+            }
+
+            if (body[field] is not JsonValue number || !number.TryGetValue(out int value) || !valid(value))
+            {
+                return null;
+            }
+
+            writes.Add((key, JsonValue.Create(value)));
+        }
+
+        lock (_gate)
+        {
+            ReadFile();
+            foreach ((string key, JsonNode value) in writes)
+            {
+                Set(key, value);
+            }
+
+            Write();
+        }
+
+        return Overlay;
+    }
+
+    internal JsonObject OverlayJson()
+    {
+        OverlaySettings o = Overlay;
+        return new JsonObject
+        {
+            ["on"] = o.On,
+            ["corner"] = o.Corner,
+            ["size"] = o.Size,
+            ["opacity"] = o.Opacity,
+            ["hideSeconds"] = o.HideSeconds,
+            ["notFullscreen"] = o.NotFullscreen,
+            ["answer"] = o.Answer,
+            ["unsaved"] = Unsaved,
+        };
+    }
+
+    private bool Read(string key, bool fallback) =>
+        _values[key] is JsonValue value && value.TryGetValue(out bool on) ? on : fallback;
+
+    private string ReadChoice(string key, string[] allowed, string fallback) =>
+        _values[key] is JsonValue value && value.TryGetValue(out string? choice) && allowed.Contains(choice) ? choice : fallback;
+
+    private int ReadNumber(string key, int fallback, Func<int, bool> valid) =>
+        _values[key] is JsonValue value && value.TryGetValue(out int number) && valid(number) ? number : fallback;
 
     /// <summary>Writes the choice of the interface's language; false, and nothing written, for any word but «auto», «es»
     /// or «en».</summary>
@@ -168,8 +353,8 @@ internal sealed class FieldSettings
 
         lock (_gate)
         {
-            Reload();
-            _values["language"] = choice;
+            ReadFile();
+            Set("language", choice);
             Write();
         }
 
@@ -181,14 +366,14 @@ internal sealed class FieldSettings
     {
         lock (_gate)
         {
-            Reload();
+            ReadFile();
             if (body["ctx"] is JsonObject ctx)
             {
                 foreach ((string name, string key) in (ReadOnlySpan<(string, string)>)[("game", "ctx.game"), ("call", "ctx.call"), ("video", "ctx.video")])
                 {
                     if (ctx[name] is JsonValue value && value.TryGetValue(out bool on))
                     {
-                        _values[key] = on;
+                        Set(key, on);
                     }
                 }
             }
@@ -197,8 +382,8 @@ internal sealed class FieldSettings
             {
                 string? span = body["quiet"] is JsonValue q && q.TryGetValue(out string? text) ? text : null;
                 DateTimeOffset? until = FieldSettingsStore.QuietUntil(span, now);
-                _values["quiet"] = until is null ? null : span;
-                _values["quietUntil"] = until?.ToUnixTimeMilliseconds();
+                Set("quiet", until is null ? null : span);
+                Set("quietUntil", until?.ToUnixTimeMilliseconds());
             }
 
             Write();
@@ -210,6 +395,7 @@ internal sealed class FieldSettings
         ["autostart"] = autostart.On,
         ["autostartBlocked"] = autostart.Blocked,
         ["closeToTray"] = CloseToTray,
+        ["minimizeToTray"] = MinimizeToTray,
         ["voiceMuted"] = VoiceMuted,
         ["wakeSound"] = WakeSound,
         ["waitNotice"] = WaitNotice,
@@ -217,8 +403,10 @@ internal sealed class FieldSettings
         ["web"] = WebAllowed,
         ["weather"] = WeatherAllowed,
         ["screen"] = ScreenAllowed,
+        ["updateNotice"] = UpdateNotice,
         ["language"] = Language,
         ["languageInUse"] = UiLanguage.Resolve(Language),
+        ["unsaved"] = Unsaved,
     };
 
     internal JsonObject ProposalsJson()
@@ -234,6 +422,7 @@ internal sealed class FieldSettings
                 ["call"] = Flag("ctx.call", true),
                 ["video"] = Flag("ctx.video", true),
             },
+            ["unsaved"] = Unsaved,
         };
     }
 
@@ -250,10 +439,23 @@ internal sealed class FieldSettings
         try
         {
             FieldSettingsStore.Write(_dataRoot, _values);
+            _unwritten.Clear();
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException)
         {
-            // The choice holds for this run; the file is written again with the next one.
+            // The choice holds for this run (_unwritten) and the view says so; the file is written again with the next
+            // change or reading. Only the exception's type is kept, never the person's values.
+            UnhandledFailures.Record("settings.write", exception, Path.Combine(_dataRoot, "diagnostics"));
         }
     }
+}
+
+/// <summary>The overlay's settings: shown or not, its corner (tl, tr, bl, br), size (s, m, l), how opaque it is (40 to 100
+/// %), how many seconds the end stays (0 keeps it), whether it stays off full-screen windows, and whether a card can be
+/// answered from it.</summary>
+internal sealed record OverlaySettings(bool On, string Corner, string Size, int Opacity, int HideSeconds, bool NotFullscreen, bool Answer)
+{
+    internal static readonly string[] Corners = ["tl", "tr", "bl", "br"];
+    internal static readonly string[] Sizes = ["s", "m", "l"];
+    internal static readonly int[] Hides = [5, 8, 15, 0];
 }

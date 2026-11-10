@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 import socket
 import subprocess
 import threading
@@ -70,6 +71,9 @@ class SystemOne:
     def __init__(self, gguf: str, server: str, threads: int = 4) -> None:
         self.gguf, self.server, self.threads = gguf, server, threads
         self.port = _free_port()
+        # PRV1 (PRIV-04): the key this server asks of every request, at random for each start, as the mind's server's
+        # (llm_server.server_key): it reads the person's words too.
+        self.key = secrets.token_urlsafe(32)
         self._process: subprocess.Popen | None = None
         self._ready = threading.Event()
         self._closing = threading.Event()
@@ -102,7 +106,8 @@ class SystemOne:
             self._process = subprocess.Popen(
                 [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), "-ngl", "0", "-dev",
                  "none", "-t", str(self.threads), "-c", "4096", "-np", "1", "-b", "2048", "-ub", "2048"],
-                stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
+                stdout=log, stderr=subprocess.STDOUT, creationflags=flags,
+                env={**os.environ, "LLAMA_API_KEY": self.key})
 
     def _watch(self) -> None:
         while True:
@@ -141,7 +146,9 @@ class SystemOne:
         deadline = time.monotonic() + 300
         while time.monotonic() < deadline and not self._closing.is_set() and self._process is not None                 and self._process.poll() is None:
             try:
-                with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/health", timeout=2) as reply:
+                health = urllib.request.Request(f"http://127.0.0.1:{self.port}/health",
+                                                headers={"Authorization": f"Bearer {self.key}"})
+                with urllib.request.urlopen(health, timeout=2) as reply:
                     if reply.status == 200:
                         self._ready.set()
                         return
@@ -192,7 +199,8 @@ class SystemOne:
         try:
             request = urllib.request.Request(f"http://127.0.0.1:{self.port}/v1/systemone",
                                              data=json.dumps(body).encode("utf-8"),
-                                             headers={"Content-Type": "application/json"})
+                                             headers={"Content-Type": "application/json",
+                                                      "Authorization": f"Bearer {self.key}"})
             with urllib.request.urlopen(request, timeout=timeout) as reply:
                 return (json.loads(reply.read()).get("answers") or {}).get("operacion") or {}
         except (OSError, urllib.error.URLError, ValueError):

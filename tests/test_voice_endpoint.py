@@ -1,12 +1,15 @@
 """When a request heard ends (src/baxy_mind/voice.py, Voice._over) and how the call is cut from its transcript
 (Voice._transcribe): pinned as measured with the owner's voice in WakewordBaxy/probar_baxy.py and TranscripcionBaxy,
 so a change to the endpointing is a decision and not an accident."""
+import math
+import queue
 from types import SimpleNamespace
 
 import numpy
 import pytest
 
 from baxy_mind import voice
+from baxy_mind.early import EARLY_SILENCE_S
 from baxy_mind.voice import BLOCK, RATE, Voice
 
 LOUD, QUIET = 0.05, 0.002  # above and below VOICE_RMS (0.012)
@@ -160,6 +163,144 @@ def test_a_request_with_no_voice_after_the_call_is_not_transcribed() -> None:
     spoken._start, spoken._early_at = 0.0, None
     spoken._event = lambda name: None
     assert len(spoken._finish(0.0)[0]) == len(spoken._audio)
+
+
+class _Said:
+    """Ultra on the request window (it opens BEFORE_S before a trigger at 2.0 s into it): the (seconds, token) said up to
+    where the audio it is given ends, each token as sure as ``sure`` says (1.0 when it does not name it)."""
+
+    def __init__(self, *said: tuple[float, str], sure: dict[str, float] | None = None, probabilities: bool = True) -> None:
+        self._said = said
+        self._sure = sure or {}
+        self._probabilities = probabilities  # False: Ultra gave none (Heard.words is empty)
+
+    def create_stream(self) -> SimpleNamespace:
+        stream = SimpleNamespace(result=None)
+        stream.accept_waveform = lambda rate, audio: setattr(stream, "seconds", len(audio) / rate)
+        return stream
+
+    def decode_stream(self, stream: SimpleNamespace) -> None:
+        said = [(at, token) for at, token in self._said if at < stream.seconds]
+        stream.result = SimpleNamespace(text="".join(t for _, t in said), tokens=[t for _, t in said],
+                                        timestamps=[at for at, _ in said],
+                                        ys_log_probs=[math.log(self._sure.get(t, 1.0)) for _, t in said]
+                                        if self._probabilities else [])
+
+
+class _Still:
+    """A detector or Silero that is only asked: the trigger is set by hand, and every block is speech (levels decide).
+    As Silero, it keeps whether each block allowed its state to be reset (``settled``)."""
+
+    def __init__(self) -> None:
+        self.settled: list[bool] = []
+
+    def accept(self, block: numpy.ndarray) -> list:
+        return []
+
+    def reset(self) -> None:
+        pass
+
+    def scores(self) -> list:
+        return []
+
+    def marks(self, block: numpy.ndarray, settle: bool = False) -> numpy.ndarray:
+        self.settled.append(settle)
+        return numpy.ones(len(block), bool)
+
+
+def _ear(said: _Said, early: list | None = None) -> tuple[Voice, list[dict]]:
+    """A voice in wake mode; with ``early``, palanca 2 on as the product runs it, its early transcripts kept there."""
+    listening = object.__new__(Voice)
+    listening._mode, listening._heard, listening._wake_log = "wake", 0, None
+    listening._on_early = None if early is None else lambda seq, text: early.append(text)
+    listening._early_s, listening._early_seq = EARLY_SILENCE_S, 0
+    listening._detector = listening._vad = _Still()
+    listening._wake_peak, listening._hotwords, listening._recognizer = voice.WAKE_TARGET, "", said
+    listening._blocks = queue.Queue()
+    listening.speech = SimpleNamespace(speaking=False)
+    told: list[dict] = []
+    listening._write = told.append
+    listening._reset()
+    return listening, told
+
+
+def _say(listening: Voice, told: list[dict], *pieces: tuple[float, float], trigger_after: int) -> list[float]:
+    """Each (seconds, level) heard block by block, every job run as Voice._listen runs it; the trigger is set when the
+    piece numbered ``trigger_after`` has been heard. When (seconds heard) each transcript was told."""
+    told_at: list[float] = []
+    for index, (seconds, level) in enumerate(pieces):
+        for _ in range(round(seconds * RATE / BLOCK)):
+            job = listening._feed(numpy.full(BLOCK, level, numpy.float32))
+            if job is not None:
+                audio, wake_at, then = job
+                before = len(told)
+                then(listening._transcribe(audio, wake_at))
+                if any(m.get("type") == "voice.transcript" for m in told[before:]):
+                    told_at.append(listening._total / RATE)
+        if index == trigger_after:
+            listening._start = listening._total / RATE
+    return told_at
+
+
+@pytest.mark.parametrize("early", [None, []])
+def test_a_short_request_said_in_one_breath_after_baxy_is_heard(early: list | None) -> None:
+    # VOZ1: «Baxi, gracias» with no pause (DEP6, 2026-11-09): the causal detector fires as the word ends, so all of
+    # «gracias» falls in the first WORD_TAIL_S after the trigger and the request was closed with nothing transcribed.
+    # The trigger is at 3.0 s, so the request window opens at 1.0 s: «Baxi» 0.5-1.0 s before it, «gracias» right after.
+    listening, told = _ear(_Said((1.5, " Ba"), (1.7, "xi"), (1.9, ","), (2.0, " gra"), (2.15, "cias"), (2.3, ".")),
+                           early)
+    told_at = _say(listening, told, (2.5, QUIET), (0.5, LOUD), (0.3, LOUD), (3.0, QUIET), trigger_after=1)
+    assert [m["text"] for m in told if m.get("type") == "voice.transcript"] == ["gracias."]
+    # told after the long silence (words only in the call's tail may be the end of «Baxy» misheard), before NO_COMMAND_S
+    assert voice.END_SLOW_S <= told_at[0] - 3.3 <= voice.END_SLOW_S + 0.2 < voice.NO_COMMAND_S
+    if early is not None:  # the mind could decide on it early, as on any request
+        assert early == ["gracias."]
+
+
+def test_baxy_alone_still_waits_for_the_request_after_a_pause() -> None:
+    # the end of «Baxi» heard after the trigger, a pause, then the request: the pause does not end it, and the call is
+    # never the request
+    listening, told = _ear(_Said((1.5, " Ba"), (1.7, "xi"), (3.2, " abre"), (3.5, " Ste"), (3.7, "am"), (3.9, ".")))
+    _say(listening, told, (2.5, QUIET), (0.5, LOUD), (0.2, LOUD), (1.0, QUIET), (0.8, LOUD), (2.0, QUIET), trigger_after=1)
+    assert [m["text"] for m in told if m.get("type") == "voice.transcript"] == ["abre Steam."]
+
+
+def test_the_end_of_baxy_misheard_as_a_word_does_not_end_the_request_before_its_words() -> None:
+    # VOZ1, the owner's real calls with a pause after «Baxi»: Ultra heard its last syllable as a word that began at the
+    # trigger («see.», «seat.»); with the usual 0.8-0.9 s the request ended on it and the words said after the pause
+    # (0.5-1.9 s) were lost, or came as a second request after a second «Baxi».
+    said = _Said((1.5, " Ba"), (1.7, "ck"), (2.0, " see"), (2.1, "."), (3.6, " abre"), (3.9, " Ste"), (4.1, "am"),
+                 (4.3, "."))
+    listening, told = _ear(said)
+    _say(listening, told, (2.5, QUIET), (0.5, LOUD), (0.1, LOUD), (1.4, QUIET), (0.8, LOUD), (2.5, QUIET),
+         trigger_after=1)
+    heard = [m["text"] for m in told if m.get("type") == "voice.transcript"]
+    assert len(heard) == 1 and heard[0].endswith("abre Steam.")
+
+
+@pytest.mark.parametrize("probabilities", [True, False])
+def test_a_word_in_the_call_s_tail_the_ear_is_unsure_of_is_the_end_of_baxy(probabilities: bool) -> None:
+    # VOZ1: on the owner's real calls the misheard last syllable of «Baxi» was unsure (0.33-0.50), a request said in one
+    # breath sure (0.54 and over, 36 decoded in two voices): an unsure word alone in the tail is no request, and after a
+    # pause of more than END_SLOW_S the words said then are the request, as before; a word Ultra gave no probability
+    # for is not known to be sure
+    said = _Said((1.5, " Ba"), (1.7, "ck"), (2.0, " see"), (2.1, "."), (4.9, " abre"), (5.2, " Ste"), (5.4, "am"),
+                 (5.6, "."), sure={" see": voice.UNSURE_P - 0.1 if probabilities else 1.0}, probabilities=probabilities)
+    listening, told = _ear(said)
+    _say(listening, told, (2.5, QUIET), (0.5, LOUD), (0.1, LOUD), (2.7, QUIET), (0.8, LOUD), (2.5, QUIET),
+         trigger_after=1)
+    assert [m["text"] for m in told if m.get("type") == "voice.transcript"] == ["see. abre Steam."]
+
+
+def test_silero_is_reset_only_while_no_request_is_open() -> None:
+    # VOZ1: a reset in a 0.7 s pause inside a request heard the owner's soft words after it too late, and the request was
+    # cut; Pipecat resets once the user is quiet, its turn over
+    listening, told = _ear(_Said((1.5, " Ba"), (1.7, "xi"), (2.1, " abre"), (2.4, " Ste"), (2.6, "am"), (2.8, ".")))
+    _say(listening, told, (2.5, QUIET), (0.5, LOUD), (1.0, LOUD), (3.0, QUIET), trigger_after=1)
+    settled = listening._vad.settled
+    request = range(30, 30 + 10 + round((voice.END_SILENCE_S + 0.1) * RATE / BLOCK) - 1)  # trigger to close
+    assert all(settled[:30]) and not any(settled[i] for i in request) and settled[-1]
+    assert [m["text"] for m in told if m.get("type") == "voice.transcript"] == ["abre Steam."]
 
 
 @pytest.mark.parametrize(("heard", "asked"), [

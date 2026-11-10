@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Core.Operations;
 
@@ -28,11 +29,18 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
             ["no_interrupt_calls"] = ("ctx.call", true, false),
             ["no_interrupt_games"] = ("ctx.game", true, false),
             ["no_interrupt_videos"] = ("ctx.video", true, false),
+            // actualizar-ordenes-app: the overlay of Settings › Personalización (FieldSettings.Overlay), shown by default.
+            ["overlay"] = ("overlay", true, false),
             ["voice"] = ("voiceMuted", false, true),
             ["web_search"] = ("web", true, false),
         };
 
     private const string Proposals = "proposals";
+
+    // actualizar-ordenes-app (held-out 09-11: the model asked for it here, with baxy_settings_set, in 4 of 4 samples): the
+    // accessible mode of BAXY's own window (PresentationModeStore, the one Ajustes › Accesibilidad and PUT /accessibility
+    // write). It left system.settings.set, so BAXY's own switches are in one tool.
+    internal const string AccessibleMode = "accessible_mode";
 
     private static readonly string[] SwitchValues = ["on", "off"];
 
@@ -71,6 +79,11 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
         if (setting == BaxySettingHandler.ConfirmationBypass)
         {
             return value == "on" ? BaxySettingHandler.BypassInterfaceOnly(dataRoot) : BypassOff(dataRoot);
+        }
+
+        if (setting == AccessibleMode)
+        {
+            return Accessible(dataRoot, value == "on");
         }
 
         if (!FieldSettingsStore.TryRead(dataRoot, out JsonObject values))
@@ -117,7 +130,7 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
     // The values each setting takes; null for one BAXY does not have.
     private static string[]? ValuesOf(string? setting) =>
         setting == Proposals ? SilenceValues
-        : setting == BaxySettingHandler.ConfirmationBypass || (setting is not null && Switches.ContainsKey(setting))
+        : setting is BaxySettingHandler.ConfirmationBypass or AccessibleMode || (setting is not null && Switches.ContainsKey(setting))
             ? SwitchValues
             : null;
 
@@ -152,6 +165,35 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
         return Receipt(BaxySettingHandler.ConfirmationBypass, "off", changed, until: null);
     }
 
+    // The accessible mode, read back from its file. A file that cannot be read is not «normal» (Revisión 2026-10-22, C-3).
+    private static OperationOutcome Accessible(string dataRoot, bool on)
+    {
+        if (!PresentationModeStore.TryReadAccessible(dataRoot, out bool before))
+        {
+            return OperationOutcome.Failure("baxy_setting_unreadable");
+        }
+
+        try
+        {
+            if (before != on)
+            {
+                PresentationModeStore.WriteAccessible(dataRoot, on);
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return OperationOutcome.Failure(
+                "baxy_setting_write_failed", effectMayHaveOccurred: true, causeCode: "external_effect_ambiguous");
+        }
+
+        if (!PresentationModeStore.TryReadAccessible(dataRoot, out bool after) || after != on)
+        {
+            return OperationOutcome.Failure("baxy_setting_postread_failed", effectMayHaveOccurred: before != on);
+        }
+
+        return Receipt(AccessibleMode, on ? "on" : "off", before != on, until: null);
+    }
+
     private static OperationOutcome Receipt(string setting, string value, bool changed, DateTimeOffset? until)
     {
         var receipt = new JsonObject
@@ -161,6 +203,13 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
             ["value"] = value,
             ["changed"] = changed,
         };
+        if (setting == AccessibleMode && ModelAids.On(ModelAids.AccessibleScope))
+        {
+            // pc-ayudas: what the mode changes (SettingsPanel's «Modo accesible») and the modes the interface shows as not
+            // ready yet (Rail's PROFILES), so a reply never promises more than the switch did.
+            receipt["scope"] = "BAXY's own window only: larger text, more contrast, wider buttons";
+            receipt["notAvailableYet"] = "a blind (screen reader) mode and a hands-free mobility mode";
+        }
         if (until is { } end)
         {
             receipt["until"] = TimeZoneInfo.ConvertTime(end, TimeZoneInfo.Local)

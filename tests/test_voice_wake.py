@@ -169,7 +169,7 @@ def _listening_quietly(speech: bool):
         def reset(self) -> None:
             pass
 
-        def marks(self, block) -> np.ndarray:
+        def marks(self, block, settle: bool = False) -> np.ndarray:
             return np.full(len(block), speech, bool)
 
     listening = object.__new__(_voice.Voice)
@@ -286,3 +286,32 @@ def test_a_package_names_how_long_f44_holds_its_firings_and_k5_keeps_the_second(
     assert fast.played_hold_s == 0.2
     # beside k5 the check is k5's (EitherWake.twin), so its second stands
     assert _voice.EitherWake(_voice.load_wake(_fake_package(tmp_path / "k5b")), fast).played_hold_s == voice_echo.PLAYED_HOLD_S
+
+
+@pytest.mark.parametrize("given", [None, "", "  "])
+def test_no_wake_folder_given_loads_none_from_the_current_folder(tmp_path, monkeypatch, capsys, given) -> None:
+    # V132 (1.3.2): the App names no wake folder when the product's is gone or changed (MindRuntimeDiscovery); Path("") is
+    # the current folder, so a config.json there was taken for the wake word. The ear starts without one and says so.
+    import sys
+    import types
+    from baxy_mind import voice as _voice
+    (tmp_path / "config.json").write_text("{}", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    if given is None:
+        monkeypatch.delenv("BAXY_RENEW_WAKE_DIR", raising=False)
+    else:
+        monkeypatch.setenv("BAXY_RENEW_WAKE_DIR", given)
+    (tmp_path / "stt").mkdir()
+    (tmp_path / "stt" / "tokens.txt").write_text("a 0", encoding="utf-8")
+    monkeypatch.setenv("BAXY_RENEW_STT_DIR", str(tmp_path / "stt"))
+    monkeypatch.setitem(sys.modules, "sherpa_onnx", types.ModuleType("sherpa_onnx"))
+    monkeypatch.setattr(_voice, "Vad", lambda _sherpa: object())
+    loaded: list = []
+    monkeypatch.setattr(_voice, "load_wake", lambda folder: loaded.append(folder))
+    ear = SimpleNamespace(failure="", _detector=None, _hear_from=lambda _vad: None, _load_turn=lambda: None,
+                          _load_recognizer=lambda _sherpa, _stt: None,
+                          _loaded=SimpleNamespace(set=lambda: None))
+    _voice.Voice._load(ear)
+    assert loaded == [] and ear._detector is None
+    assert ear.failure == "BAXY_RENEW_WAKE_DIR has no wake word"
+    assert "BAXY_RENEW_WAKE_DIR has no wake word" in capsys.readouterr().err

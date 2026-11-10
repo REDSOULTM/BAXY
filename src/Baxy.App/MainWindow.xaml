@@ -20,7 +20,7 @@
         AutomationProperties.AutomationId="BaxyMainWindow">
   <WindowChrome.WindowChrome>
     <shell:WindowChrome CaptionHeight="0"
-                        ResizeBorderThickness="6"
+                        ResizeBorderThickness="5"
                         GlassFrameThickness="0"
                         CornerRadius="0"
                         UseAeroCaptionButtons="False" />

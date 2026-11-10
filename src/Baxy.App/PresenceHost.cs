@@ -1,3 +1,5 @@
+using Baxy.Contracts;
+
 namespace Baxy.App;
 
 /// <summary>
@@ -9,6 +11,7 @@ internal sealed class PresenceHost : IDisposable
     private PresenceTrayIcon? _tray;
     private Heartbeat? _heartbeat;
     private ProposalToast? _toast;
+    private RingToast? _ringToast;
     private Presentation.TrayMenu? _menu;
     private bool _menuOpening;
     private MainWindow? _window;
@@ -54,7 +57,7 @@ internal sealed class PresenceHost : IDisposable
         _viewModel = viewModel;
         _viewModel.NotificationRequested += text => _tray?.Notify(text);
         MainWindowViewModel answering = viewModel;
-        _toast = new ProposalToast();
+        _toast = new ProposalToast { Plain = text => window.Dispatcher.InvokeAsync(() => _tray?.Notify(text)) };
         _viewModel.ProposalNotificationRequested += (question, why, asked) =>
         {
             // The toast answers the proposal it shows, never one asked after it (2026-10-22, review of the App).
@@ -65,6 +68,14 @@ internal sealed class PresenceHost : IDisposable
             }
         };
         _viewModel.ConfirmationResolved += _ => _toast?.Hide();
+
+        // ALR5 (A3): what rings shows its notification while BAXY's window is not in front, also when it stops being so.
+        _ringToast = new RingToast();
+        viewModel.RingChanged += ring => window.Dispatcher.BeginInvoke(() => OnRing(ring));
+        window.Deactivated += (_, _) => ShowRinging();
+        window.StateChanged += (_, _) => ShowRinging();
+        window.IsVisibleChanged += (_, _) => ShowRinging();
+
         if (Heartbeat.Enabled && _heartbeat is null)
         {
             MainWindowViewModel beating = viewModel;
@@ -81,6 +92,48 @@ internal sealed class PresenceHost : IDisposable
             beating.PersonTurnEnded += acted => _heartbeat?.PersonTurnEnded(acted);
         }
 
+    }
+
+    private void OnRing(RingNow ring)
+    {
+        if (ring.Status != "ringing")
+        {
+            _ringToast?.Hide(ring.Id);
+            return;
+        }
+
+        ShowRinging();
+    }
+
+    // Each one ringing, while the window is minimized, hidden or behind another (its card is not seen then).
+    private void ShowRinging()
+    {
+        if (_window is not { } window || _viewModel is not { } viewModel || _ringToast is not { } toast
+            || (window.IsVisible && window.WindowState != System.Windows.WindowState.Minimized && window.IsActive))
+        {
+            return;
+        }
+
+        foreach (RingNow ring in viewModel.Ringing)
+        {
+            toast.Show(ring, UiLanguage.IsEnglish, (action, id) => window.Dispatcher.InvokeAsync(async () =>
+            {
+                // Pressed or closed, it is off the screen: shown again while it rings and the window is not in front.
+                toast.Forget(id);
+                if (action == "open")
+                {
+                    ShowMainWindow();
+                }
+                else if (action != "dismissed")
+                {
+                    OperationResponse? answered = await viewModel.AnswerRingAsync(id, action, CancellationToken.None);
+                    if (answered is not { Status: OperationStatuses.Completed, Verified: true })
+                    {
+                        ShowRinging();
+                    }
+                }
+            }));
+        }
     }
 
     internal void ShowMainWindow()

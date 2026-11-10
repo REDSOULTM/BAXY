@@ -37,8 +37,15 @@ internal sealed class FieldSessionStore
 
     internal static FieldSessionStore CreateDefault() => new(MemoryOperationProtector.ResolveDataRoot());
 
+    /// <summary>Who gave a conversation its name: its first words (until it closes), the model when it closed
+    /// (FieldProductChannel.NameClosedAsync), or the person. The model never names over the person's own; a conversation
+    /// kept before this was known counts as the person's.</summary>
+    internal const string LabelByFirst = "first";
+    internal const string LabelByModel = "model";
+    internal const string LabelByPerson = "person";
+
     internal sealed record Session(string Id, string Label, DateTimeOffset Created, DateTimeOffset Updated, JsonArray Items,
-        JsonArray? Mind);
+        JsonArray? Mind, string LabelBy = LabelByPerson);
 
     internal IReadOnlyList<Session> List()
     {
@@ -87,6 +94,7 @@ internal sealed class FieldSessionStore
                 ["schema"] = Schema,
                 ["id"] = session.Id,
                 ["label"] = session.Label,
+                ["labelBy"] = session.LabelBy,
                 ["created"] = session.Created.ToString("O", CultureInfo.InvariantCulture),
                 ["updated"] = session.Updated.ToString("O", CultureInfo.InvariantCulture),
                 ["items"] = session.Items.DeepClone(),
@@ -116,7 +124,7 @@ internal sealed class FieldSessionStore
     internal bool Rename(string id, string label)
     {
         Session? session = Load(id);
-        return session is not null && Save(session with { Label = label });
+        return session is not null && Save(session with { Label = label, LabelBy = LabelByPerson });
     }
 
     /// <summary>
@@ -203,8 +211,9 @@ internal sealed class FieldSessionStore
                 return null;
             }
 
+            string labelBy = (string?)document["labelBy"] is LabelByFirst or LabelByModel ? (string)document["labelBy"]! : LabelByPerson;
             var session = new Session(id, (string?)document["label"] ?? string.Empty, created, updated,
-                document["items"] as JsonArray ?? [], document["mind"] as JsonArray);
+                document["items"] as JsonArray ?? [], document["mind"] as JsonArray, labelBy);
             if (clear && id == Path.GetFileNameWithoutExtension(path))
             {
                 Write(session);

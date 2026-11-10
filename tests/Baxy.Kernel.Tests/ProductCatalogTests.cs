@@ -158,7 +158,8 @@ public sealed class ProductCatalogTests
     // pc-f6-ajustes: + 1, baxy.settings.set; f6 estado: + 1, assistant.status; pc-f6-sesiones: + 4, las conversaciones por voz (ConversationAdditions).
     // noche P1.1: + 1, audio.microphone.status (NocheReadAdditions). uso-24 (G5): + 1, client.deafen.set (UsoG5Additions).
     // Encargo 25: + 1, baxy.exit (ExitAdditions). Encargo 22 (G6): + 1, client.channel.open.
-    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 4 + 1 + 1 + 1 + 1;
+    // actualizar-ordenes-app: + 1, baxy.update (UpdateAdditions).
+    internal const int ExpectedDescriptors = 170 + 21 + 14 + 2 + 7 - 30 - 12 + 2 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 4 + 1 + 1 + 1 + 1 + 1;
 
     // pc-f6-ajustes (f4-accesibilidad): BAXY's own settings by voice, one setting and its value; reversible, so it never
     // asks, and it reaches neither a window nor the network. The proposals take a span (or on to end the silence); the
@@ -168,6 +169,8 @@ public sealed class ProductCatalogTests
     [TestCase("""{"setting":"proposals","value":"on"}""", true)]
     [TestCase("""{"setting":"web_search","value":"on"}""", true)]
     [TestCase("""{"setting":"no_interrupt_games","value":"off"}""", true)]
+    [TestCase("""{"setting":"overlay","value":"off"}""", true)]
+    [TestCase("""{"setting":"accessible_mode","value":"on"}""", true)]
     // Encargo 25 (G2): the confirmation mode is one of BAXY's own settings; the handler says what the chat can do with it.
     [TestCase("""{"setting":"confirmation_bypass","value":"on"}""", true)]
     [TestCase("""{"setting":"voice"}""", false)]
@@ -246,6 +249,35 @@ public sealed class ProductCatalogTests
             Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, "baxy.exit", none.RootElement),
                 Is.EqualTo(PolicyDecision.RequireConfirmation));
             Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Bypass, "baxy.exit", none.RootElement),
+                Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
+    // actualizar-ordenes-app (dueño, 2026-11-09): BAXY se busca y se instala una versión nueva donde se publicó.
+    internal static readonly string[] UpdateAdditions =
+    [
+        "baxy.update",
+    ];
+
+    // Instalar pide el sí en Normal (decisión 8 del dueño: instalar se confirma) y nunca en Bypass; buscar y abrir la
+    // tienda los baja el preflight del handler (BaxyUpdateHandlerTests). Sólo check o install.
+    [TestCase("""{"action":"check"}""", true)]
+    [TestCase("""{"action":"install"}""", true)]
+    [TestCase("""{"action":"download"}""", false)]
+    [TestCase("""{}""", false)]
+    public void BaxysUpdateTakesCheckOrInstallAndInstallingAsksInNormal(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("baxy.update");
+        OperationRisk risk = ProductCatalog.ToPolicyRisk(descriptor.Risk);
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.Installation));
+            Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Normal, "baxy.update", arguments.RootElement),
+                Is.EqualTo(PolicyDecision.RequireConfirmation));
+            Assert.That(RiskPolicy.Evaluate(risk, ConfirmationMode.Bypass, "baxy.update", arguments.RootElement),
                 Is.EqualTo(PolicyDecision.Allow));
         });
     }
@@ -333,7 +365,7 @@ public sealed class ProductCatalogTests
 
     // Ronda 23 (índices de vista y esquema, t-menu-2 r21): a look numbers up to its cap, the goal's reserved room and
     // the body; the acts on a control of the look take all of it and nothing past it, and the look's own limit is the cap.
-    [TestCase("input.visible.click", "index", "\"label\":\"Tamaño\"")]
+    [TestCase("input.visible.click", "index", "\"consequence\":null,\"label\":\"Tamaño\"")]
     [TestCase("input.scroll", "index", "\"amount\":1,\"direction\":\"down\"")]
     [TestCase("input.text.type", "index", "\"text\":\"hola\"")]
     public void ActsOnAControlOfTheLookTakeEveryIndexTheLookNumbers(string operation, string argument, string rest)
@@ -364,13 +396,13 @@ public sealed class ProductCatalogTests
     {
         OperationArgumentsSchema schema = ProductCatalog.GetRequired("input.visible.click").ArgumentsSchema;
         using JsonDocument wrong = JsonDocument.Parse("{\"index\":71,\"manner\":\"triple\",\"labelz\":\"x\"}");
-        using JsonDocument right = JsonDocument.Parse("{\"index\":70,\"label\":\"Tamaño\",\"manner\":\"menu\"}");
+        using JsonDocument right = JsonDocument.Parse("{\"consequence\":null,\"index\":70,\"label\":\"Tamaño\",\"manner\":\"menu\"}");
 
         Assert.Multiple(() =>
         {
             IReadOnlyList<ArgumentProblem> problems = OperationArgumentValidator.Problems(wrong.RootElement, schema);
             Assert.That(problems.Select(static problem => problem.Name),
-                Is.EqualTo(new[] { "index", "manner", "labelz", "label" }));
+                Is.EqualTo(new[] { "index", "manner", "labelz", "consequence", "label" }));
             Assert.That(problems[0].Problem, Does.StartWith("expected an integer").And.Contain(" from "));
             Assert.That(problems[1].Problem, Is.EqualTo("expected one of the allowed values or null"));
             Assert.That(problems[1].Allowed, Is.EqualTo(new[] { "double", "menu", "open" }));
@@ -378,8 +410,27 @@ public sealed class ProductCatalogTests
             Assert.That(problems[2].Nearest, Is.EqualTo("label"));
             Assert.That(problems[2].Accepted, Is.EqualTo(schema.Properties.Select(static property => property.Name)));
             Assert.That(problems[3].Problem, Is.EqualTo("required and missing"));
+            Assert.That(problems[4].Problem, Is.EqualTo("required and missing"));
             Assert.That(OperationArgumentValidator.Problems(right.RootElement, schema), Is.Empty);
             Assert.That(OperationArgumentValidator.IsValid(right.RootElement, schema), Is.True);
+        });
+    }
+
+    // EFE1 (mapa PR-08): optional, the stock model left «consequence» out when it pressed «Pagar» too (1 declared in 84,
+    // 65 of 84 pressed without the person's yes). Required and nullable, it is written in every click and the model
+    // decides its value; null runs as it did.
+    [Test]
+    public void AClickSaysItsConsequenceEvenWhenItIsNull()
+    {
+        OperationArgumentsSchema schema = ProductCatalog.GetRequired("input.visible.click").ArgumentsSchema;
+        using JsonDocument without = JsonDocument.Parse("""{"label":"Pagar ahora"}""");
+        using JsonDocument none = JsonDocument.Parse("""{"consequence":null,"label":"Guardar"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(schema.Required, Does.Contain("consequence"));
+            Assert.That(OperationArgumentValidator.IsValid(without.RootElement, schema), Is.False);
+            Assert.That(OperationArgumentValidator.IsValid(none.RootElement, schema), Is.True);
         });
     }
 
@@ -597,8 +648,9 @@ public sealed class ProductCatalogTests
     }
 
     // Goal v3 point 2: a scroll may name the element to bring into view (label), a text whether it replaces the value of
-    // the field it sets (replace), a click what it writes over (consequence, only «overwrite»). Auditoría final 2, fila
-    // 12: a field named by its label (field) was resolved only by the retired mission and is no argument.
+    // the field it sets (replace), a click what it writes over or commits for good (consequence, only «overwrite» or
+    // «irreversible», encargo I8). Auditoría final 2, fila 12: a field named by its label (field) was resolved only by
+    // the retired mission and is no argument.
     [TestCase("input.scroll", """{"amount":3,"direction":"down","label":"Omega","window":4660}""", true)]
     [TestCase("input.scroll", """{"amount":3,"direction":"down","label":null}""", true)]
     [TestCase("input.scroll", """{"amount":3,"direction":"down","label":5}""", false)]
@@ -682,7 +734,7 @@ public sealed class ProductCatalogTests
                     .And.SupersetOf(RenewAgentAdditions).And.SupersetOf(RenewRealesAdditions)
                     .And.SupersetOf(UsoRealAdditions).And.SupersetOf(F6EstadoAdditions)
                     .And.SupersetOf(ConversationAdditions).And.SupersetOf(NocheReadAdditions)
-                    .And.SupersetOf(UsoG5Additions).And.SupersetOf(ExitAdditions));
+                    .And.SupersetOf(UsoG5Additions).And.SupersetOf(ExitAdditions).And.SupersetOf(UpdateAdditions));
             Assert.That(descriptors.Select(static descriptor => descriptor.Name),
                 Has.None.AnyOf(RenewRetired));
             Assert.That(
@@ -1268,6 +1320,20 @@ public sealed class ProductCatalogTests
                 || reference.Contains("ModelRuntime", StringComparison.OrdinalIgnoreCase)),
                 Is.False);
         });
+    }
+
+    // WEB1 (2026-11-07, LIC1 R3): BAXY is sold, and web.search offers no source whose terms keep it to personal use
+    // (Google News' feed) or forbid automated access (ESPN, under Disney's terms); news and a team's matches are web
+    // searches.
+    [TestCase("""{"query":"noticias de hoy","source":"web"}""", true)]
+    [TestCase("""{"query":"noticias de hoy","source":"news"}""", false)]
+    [TestCase("""{"query":"cuándo juega boca","source":"sports","team":"Boca Juniors","wants":"next"}""", false)]
+    [TestCase("""{"query":"cuándo juega boca","team":"Boca Juniors"}""", false)]
+    public void WebSearchOffersNoSourceWhoseTermsForbidASoldProduct(string json, bool valid)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("web.search");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(valid));
     }
 
     private sealed class StubHandler(OperationDefinition definition) : IOperationHandler

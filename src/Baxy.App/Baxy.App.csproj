@@ -40,6 +40,14 @@
     <!-- The same icon for the window and the tray menu (pack://application:,,,/Assets/baxy.ico). -->
     <Resource Include="Assets\baxy.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- QWB2: the tuned model the person asks for comes down with the installer's resumable, hash-checked download (TunedModel). -->
+    <Compile Include="..\Baxy.Installer\PartFetcher.cs" Link="Installer\PartFetcher.cs" />
+    <Compile Include="..\Baxy.Installer\PauseGate.cs" Link="Installer\PauseGate.cs" />
+    <Compile Include="..\Baxy.Installer\DownloadFailures.cs" Link="Installer\DownloadFailures.cs" />
+    <!-- APP1 (UPD-f): where the engine downloads BAXY's installer, to say how much of it is here (UpdatePanel). -->
+    <Compile Include="..\Baxy.Core\Operations\UpdateInstallerFile.cs" Link="Core\UpdateInstallerFile.cs" />
+  </ItemGroup>
   <Target Name="CopyDevelopmentCore"
           AfterTargets="Build"
           Condition="'$(DesignTimeBuild)' != 'true' and '$(RuntimeIdentifier)' == ''">

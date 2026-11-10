@@ -27,6 +27,9 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         Directory.CreateDirectory(_directory);
         if (new DirectoryInfo(_directory).LinkTarget is not null)
             throw new IOException("Capture directory cannot be a link.");
+        // PRV1 (PRIV-02): what an earlier run left (the App removes a request's captures as it ends; a run that was
+        // killed did not): no call of this run can name them.
+        StoredCaptures.Clear(_directory);
     }
 
     public ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken)

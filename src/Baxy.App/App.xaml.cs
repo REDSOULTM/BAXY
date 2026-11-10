@@ -29,6 +29,22 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        // SRCH1: baxy-core's hidden page reader is this executable started for that alone: no instance of its own, no
+        // window shown, no trace of an App start (HiddenPageReader).
+        if (HiddenPageReader.IsRequested(e.Args))
+        {
+            HiddenPageReader.Start(this, e.Args[1]);
+            return;
+        }
+
+        // INS-1: a store's uninstall starts this executable for that alone (ScheduledRingsUninstall): no instance, no
+        // window, and it ends by itself.
+        if (ScheduledRingsUninstall.IsRequested(e.Args))
+        {
+            Shutdown(ScheduledRingsUninstall.Run());
+            return;
+        }
+
         UnhandledFailures.Attach(this);
         ShellTraceSink.Record(
             ShellTraceScopes.Startup,

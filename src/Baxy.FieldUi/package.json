@@ -7,12 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test": "playwright test --project=vista",
     "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource/chakra-petch": "^5.3.0",
     "@fontsource/inter": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
+    "marked": "18.1.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },

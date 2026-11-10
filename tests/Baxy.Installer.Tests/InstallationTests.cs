@@ -397,6 +397,7 @@ internal sealed class InstallationTests
             CancellationToken.None);
 
         Assert.That(await File.ReadAllTextAsync(Path.Combine(paths.Root, "llama", "server.txt")), Is.EqualTo("cuda"));
+        Assert.That(await File.ReadAllTextAsync(Path.Combine(paths.Root, "licenses", "LICENSE-llama.cpp.txt")), Is.EqualTo("MIT"));
         Assert.That(File.Exists(paths.App), Is.True);
         Assert.That(chosen.InstalledBytes, Is.EqualTo(150));
         Assert.That(lastTotal, Is.EqualTo(150), "the bar counts both parts: it does not fill with the first");
@@ -431,11 +432,14 @@ internal sealed class InstallationTests
         Assert.That(manifest.ForMachine([new GpuAdapter("PCI\\VEN_1002&DEV_1", null)]).Archives.Select(archive => archive.Name), Is.EqualTo(new[] { "a" }));
     }
 
-    // The MIT license of .NET asks for its text in every copy, and this exe is one before anything is installed.
+    // The MIT license of .NET asks for its text in every copy, and this exe is one before anything is installed. The Windows SDK
+    // projections it carries are redistributable «subject to the license terms for the software»
+    // (https://learn.microsoft.com/en-us/legal/windows-sdk/redist, read 2026-11-07): those terms go inside it too.
     [TestCase("Baxy.Installer.licenses.dotnet-LICENSE.txt", ".NET Foundation")]
     [TestCase("Baxy.Installer.licenses.dotnet-runtime-THIRD-PARTY-NOTICES.txt", "third-party libraries")]
     [TestCase("Baxy.Installer.licenses.dotnet-wpf-THIRD-PARTY-NOTICES.txt", "third-party libraries")]
     [TestCase("Baxy.Installer.licenses.CsWinRT-LICENSE.txt", "Microsoft")]
+    [TestCase("Baxy.Installer.licenses.Windows-SDK-License.rtf", "WINDOWS SOFTWARE DEVELOPMENT KIT")]
     public void The_exe_carries_the_licenses_of_its_runtime_inside_it(string resource, string phrase)
     {
         using Stream? stream = typeof(ReleaseManifest).Assembly.GetManifestResourceStream(resource);
@@ -445,11 +449,14 @@ internal sealed class InstallationTests
         Assert.That(reader.ReadToEnd(), Does.Contain(phrase));
     }
 
+    // Like scripts/build_github_release.py, the NVIDIA part repeats licenses the main archive already carries, with the same bytes.
     private static (ReleaseManifest Manifest, Dictionary<string, byte[]> Assets, long BaseBytes) ReleaseWithACudaPart()
     {
         Dictionary<string, byte[]> assets = [];
-        ReleaseArchive common = Cut("baxy.zip", Zip(("app/Baxy.exe", "the app"), ("llama-vulkan/server.txt", "vulkan")), assets);
-        ReleaseArchive nvidia = Cut("baxy-nvidia.zip", Zip(("llama/server.txt", "cuda")), assets) with { GpuVendor = "10de", InstalledBytes = 50 };
+        ReleaseArchive common = Cut(
+            "baxy.zip", Zip(("app/Baxy.exe", "the app"), ("llama-vulkan/server.txt", "vulkan"), ("licenses/LICENSE-llama.cpp.txt", "MIT")), assets);
+        ReleaseArchive nvidia = Cut(
+            "baxy-nvidia.zip", Zip(("llama/server.txt", "cuda"), ("licenses/LICENSE-llama.cpp.txt", "MIT")), assets) with { GpuVendor = "10de", InstalledBytes = 50 };
         return (new ReleaseManifest("1.0.0", BaseUrl, 100, [common, nvidia]), assets, common.Bytes);
     }
 

@@ -31,6 +31,70 @@ public sealed class MindSidecarClientTests
         Assert.That(status, Is.True, "voice.status waited behind the turn");
     }
 
+    // MEN1-M5 (AMD2 §7, RX 7600 on Vulkan: 6 s for a name): the mind leaves the name of the conversation that closed as
+    // soon as another request waits (Mind.title_of, gives_way), but a typed turn never reached it: session.title held
+    // the App's request lock until it answered, so the turn was not written and the name ran to its end.
+    [Test]
+    public async Task ATurnIsWrittenToTheMindWhileItNamesAConversation()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject { ["hold"] = new JsonObject { ["session.title"] = "named" } });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        Task<string?> name = mind.SessionTitleAsync([], CancellationToken.None);
+        Assert.That(await fake.WaitSeenAsync("session.title"), Is.True);
+
+        Task<MindStep?> turn = mind.DecideAsync("hola", null, CancellationToken.None);
+        bool written = await fake.WaitSeenAsync("turn.decide", seconds: 3);
+
+        fake.Open("named");
+        string? named = await name;
+        MindStep? step = await turn;
+        Assert.Multiple(() =>
+        {
+            Assert.That(named, Is.Null);
+            Assert.That(step, Is.Not.Null);
+            Assert.That(written, Is.True, "the turn waited in the App behind the conversation's name");
+            Assert.That(fake.Seen, Is.EqualTo(new[] { "catalog.configure", "session.title", "turn.decide" }));
+        });
+    }
+
+    // Outside the lock, a name asked while the mind works on something else counts its seconds from when it was sent,
+    // behind that work: one that comes late is a conversation that keeps its first words, not a dead mind (the mind
+    // was relaunched under the turn it was busy with).
+    [Test]
+    public async Task ANameThatComesLateBehindATurnIsNotADeadMind()
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject { ["hold"] = new JsonObject { ["turn.decide"] = "go" } });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        Task<MindStep?> turn = mind.DecideAsync("hola", null, CancellationToken.None);
+        Assert.That(await fake.WaitSeenAsync("turn.decide"), Is.True);
+        string? seconds = Environment.GetEnvironmentVariable(MindSidecarClient.TurnSecondsVariable);
+        string? name;
+        try
+        {
+            Environment.SetEnvironmentVariable(MindSidecarClient.TurnSecondsVariable, "1");
+            using var patience = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            name = await mind.SessionTitleAsync([], patience.Token);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(MindSidecarClient.TurnSecondsVariable, seconds);
+        }
+
+        bool ready = mind.IsReady;
+        fake.Open("go");
+        MindStep? step = await turn;
+        Assert.Multiple(() =>
+        {
+            Assert.That(name, Is.Null);
+            Assert.That(ready, Is.True, "a late name was taken for a dead mind");
+            Assert.That(step, Is.Not.Null, "the turn the mind was busy with was lost");
+            Assert.That(MindSidecarClient.InvalidatesMind("request_timeout", "session.title"), Is.False);
+            Assert.That(MindSidecarClient.InvalidatesMind("request_io", "session.title"), Is.True);
+        });
+    }
+
     [Test]
     public void ATurnsRequestSaysHowLongTheWordsWereInTheApp()
     {
@@ -161,6 +225,7 @@ public sealed class MindSidecarClientTests
             Assert.That(Confirms("email.send"), Is.EqualTo("[\"normal\"]"));
             Assert.That(Confirms("message.send"), Is.EqualTo("[\"normal\"]"));
             Assert.That(Confirms("system.power"), Is.EqualTo("[]"));
+            Assert.That(Confirms("system.process.terminate.named"), Is.EqualTo("[\"normal\"]"));
         });
     }
 
@@ -615,6 +680,26 @@ public sealed class MindSidecarClientTests
         await using MindSidecarClient mind = await FakeMind.StartClientAsync();
 
         Assert.That(mind.TurnCeiling, Is.EqualTo(TimeSpan.FromSeconds(appWaits)));
+    }
+
+    // Settings → Model → Context: the mind says the backend its server computes on and the tokens of the prompt prefix it
+    // read, for the presets' memory and room (LocalContext); a mind that does not say them leaves both unknown.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task TheClientKeepsTheServersBackendAndThePrefixItRead(bool said)
+    {
+        using var fake = new FakeMind();
+        var ready = new JsonObject { ["type"] = "catalog.ready", ["count"] = 0 };
+        if (said)
+        {
+            ready["backend"] = "vulkan";
+            ready["prefixTokens"] = 49086;
+        }
+
+        fake.Script(new JsonObject { ["reply"] = new JsonObject { ["catalog.configure"] = ready } });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+
+        Assert.That((mind.Backend, mind.PrefixTokens), Is.EqualTo(said ? ("vulkan", 49086) : ((string?)null, (int?)null)));
     }
 
     // Uso-124: the mind says whether its notices are slow with each one (Mind.notices_are_slow).

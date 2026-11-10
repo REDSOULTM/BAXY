@@ -77,7 +77,25 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
     private void OnNavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs eventArgs) =>
         DocumentLeaving();
 
-    bool IFieldEventSink.Publish(JsonObject eventData) => PostEvent(eventData);
+    /// <summary>Every event the view is sent, as it is sent (the overlay reads the same; OverlayPresenter).</summary>
+    internal event Action<JsonObject>? Published;
+
+    /// <summary>Settings › Personalización «Probar»: the overlay shows an example.</summary>
+    internal event Action? OverlayPreviewRequested
+    {
+        add => _channel.OverlayPreviewRequested += value;
+        remove => _channel.OverlayPreviewRequested -= value;
+    }
+
+    /// <summary>The person's answer to a card, from the overlay: null when taken, else why not.</summary>
+    internal Task<string?> AnswerCardAsync(bool approve, string card) =>
+        _channel.AnswerCardAsync(approve, card, System.Diagnostics.Stopwatch.GetTimestamp());
+
+    bool IFieldEventSink.Publish(JsonObject eventData)
+    {
+        Published?.Invoke(eventData);
+        return PostEvent(eventData);
+    }
 
     private async void OnWebMessageReceived(
         object? sender,
@@ -115,39 +133,66 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         }
 
         string? id = (string?)message["id"];
+        string? failed = await AnswerAsync(
+            async () =>
+            {
+                switch (kind)
+                {
+                    case "http":
+                        FieldHttpResponse response = await HandleHttpAsync(message)
+                            .ConfigureAwait(true);
+                        Reply(id, HttpValue(response));
+                        break;
+                    case "socket_open":
+                        OpenSocket(message);
+                        break;
+                    case "socket_close":
+                        CloseSocket(message);
+                        break;
+                    case "window_command":
+                        Reply(id, HandleWindowCommand((string?)message["command"]));
+                        break;
+                    case TraceMarkKind:
+                        RecordDocumentMark(message);
+                        break;
+                }
+            },
+            () => _lifetimeCancellation.IsCancellationRequested,
+            static failure => UnhandledFailures.Record("view", failure)).ConfigureAwait(true);
+        if (failed is not null)
+        {
+            ReplyError(id, failed);
+        }
+    }
+
+    /// <summary>
+    /// Runs the handling of one message of the view; the error to answer it with when it threw, or null. APP1 (BRG-a,
+    /// review of the App 2026-11-09): only a closed list of exceptions was answered, and any other (an
+    /// HttpRequestException of a search, a TimeoutException, a call cancelled by its own time) left the view's request
+    /// with no answer for the 30 s the bridge gives one, said then as «no answer» of a host that had failed at once.
+    /// Whatever the handling throws is answered now; what the list did not expect is kept (UnhandledFailures), with no
+    /// message of it going to the view.
+    /// </summary>
+    internal static async Task<string?> AnswerAsync(Func<Task> handle, Func<bool> closing, Action<Exception> keep)
+    {
         try
         {
-            switch (kind)
+            await handle().ConfigureAwait(true);
+            return null;
+        }
+        catch (OperationCanceledException) when (closing())
+        {
+            return "BAXY is closing";
+        }
+        // Every request of the view gets its answer, whatever handling it threw.
+        catch (Exception exception)
+        {
+            if (!IsExpectedBridgeFailure(exception))
             {
-                case "http":
-                    FieldHttpResponse response = await HandleHttpAsync(message)
-                        .ConfigureAwait(true);
-                    Reply(id, HttpValue(response));
-                    break;
-                case "socket_open":
-                    OpenSocket(message);
-                    break;
-                case "socket_close":
-                    CloseSocket(message);
-                    break;
-                case "window_command":
-                    Reply(id, HandleWindowCommand((string?)message["command"]));
-                    break;
-                case "window_drag":
-                    TryDragWindow();
-                    break;
-                case TraceMarkKind:
-                    RecordDocumentMark(message);
-                    break;
+                keep(exception);
             }
-        }
-        catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
-        {
-            ReplyError(id, "BAXY is closing");
-        }
-        catch (Exception exception) when (IsExpectedBridgeFailure(exception))
-        {
-            ReplyError(id, "The local BAXY bridge could not complete the request.");
+
+            return "The local BAXY bridge could not complete the request.";
         }
     }
 
@@ -234,24 +279,6 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
                 return JsonValue.Create(false);
         }
     }
-
-    private void TryDragWindow()
-    {
-        if (_window.WindowState == WindowState.Maximized)
-        {
-            return;
-        }
-
-        try
-        {
-            _window.DragMove();
-        }
-        catch (InvalidOperationException)
-        {
-            // The pointer may have been released before the native drag began.
-        }
-    }
-
     private static JsonObject HttpValue(FieldHttpResponse response)
     {
         var headers = new JsonObject();

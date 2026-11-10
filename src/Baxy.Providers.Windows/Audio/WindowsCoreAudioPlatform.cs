@@ -566,7 +566,14 @@ internal sealed record ApplicationSessionAdjustment(
     int Level,
     bool Muted,
     string EndpointId,
-    bool Changed);
+    bool Changed,
+    IReadOnlyList<ApplicationSessionProcess>? Processes = null);
+
+/// <summary>
+/// W3 (R6-3: «discord y spotify» muted both and the receipt named only Discord): one process whose sessions a call
+/// changed, with its session count and whether every one of them was muted when read after.
+/// </summary>
+internal sealed record ApplicationSessionProcess(string ProcessName, int SessionCount, bool Muted);
 
 /// <summary>
 /// Uso 81: an application with an audio session on the default output: its process name (what app takes) and the name
@@ -607,6 +614,26 @@ internal sealed partial class WindowsCoreAudioPlatform
         CancellationToken cancellationToken = default) =>
         AdjustApplicationSessions(applicationName, delta, beforeEffect, null, cancellationToken);
 
+    /// <summary>
+    /// W2 audio.mute with scope app: every session of the application gets the same muting state (the per-session mute
+    /// of the volume mixer, ISimpleAudioVolume::SetMute), its levels untouched; null when the application has no audio
+    /// session on the default output, so nothing is muted. Muted is the state read after.
+    /// </summary>
+    internal static ApplicationSessionAdjustment? MuteApplicationSessions(
+        string applicationName,
+        bool muted,
+        Func<CancellationToken>? beforeEffect = null,
+        CancellationToken cancellationToken = default) =>
+        WithDefaultOutputSessions((sessions, endpointId) => AdjustMatchingSessions(
+            sessions,
+            applicationName,
+            0,
+            endpointId,
+            beforeEffect,
+            null,
+            muted,
+            cancellationToken));
+
     private static ApplicationSessionAdjustment? AdjustApplicationSessions(
         string applicationName,
         int delta,
@@ -620,6 +647,7 @@ internal sealed partial class WindowsCoreAudioPlatform
             endpointId,
             beforeEffect,
             absoluteLevel,
+            null,
             cancellationToken));
 
     /// <summary>
@@ -833,6 +861,7 @@ internal sealed partial class WindowsCoreAudioPlatform
         string endpointId,
         Func<CancellationToken>? beforeEffect,
         int? absoluteLevel,
+        bool? mute,
         CancellationToken cancellationToken)
     {
         int result = sessions.GetCount(out int count);
@@ -921,32 +950,37 @@ internal sealed partial class WindowsCoreAudioPlatform
             // the delta from its own level (clamped at 0 and 100); an absolute one sets every session to the level,
             // so sessions at different levels end at the same one. Each session is read before and after.
             var before = new List<int>(volumes.Count);
-            bool muted = true;
+            var mutesBefore = new List<bool>(volumes.Count);
             foreach ((ISimpleAudioVolume volume, _, _, _) in volumes)
             {
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
                 ThrowForHResult(volume.GetMute(out int sessionMuted), AudioControlErrorCodes.EndpointUnavailable);
                 before.Add(Percent(scalar));
-                muted &= sessionMuted != 0;
+                mutesBefore.Add(sessionMuted != 0);
             }
 
             beforeEffect?.Invoke().ThrowIfCancellationRequested();
             foreach ((ISimpleAudioVolume volume, _, _, _) in volumes)
             {
+                Guid context = Guid.NewGuid();
+                if (mute is { } muting)
+                {
+                    ThrowForHResult(volume.SetMute(muting ? 1 : 0, in context), AudioControlErrorCodes.EndpointUnavailable);
+                    continue;
+                }
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
                 int requested = absoluteLevel ?? Math.Clamp(Percent(scalar) + delta, 0, 100);
-                Guid context = Guid.NewGuid();
                 ThrowForHResult(volume.SetMasterVolume(requested / 100f, in context), AudioControlErrorCodes.EndpointUnavailable);
             }
 
             var after = new List<int>(volumes.Count);
-            bool mutedAfter = true;
+            var mutesAfter = new List<bool>(volumes.Count);
             foreach ((ISimpleAudioVolume volume, _, _, _) in volumes)
             {
                 ThrowForHResult(volume.GetMasterVolume(out float scalar), AudioControlErrorCodes.EndpointUnavailable);
                 ThrowForHResult(volume.GetMute(out int sessionMuted), AudioControlErrorCodes.EndpointUnavailable);
                 after.Add(Percent(scalar));
-                mutedAfter &= sessionMuted != 0;
+                mutesAfter.Add(sessionMuted != 0);
             }
 
             return new ApplicationSessionAdjustment(
@@ -954,9 +988,10 @@ internal sealed partial class WindowsCoreAudioPlatform
                 volumes.Count,
                 before.Max(),
                 after.Max(),
-                mutedAfter && muted,
+                MutedAfter(mute, mutesBefore, mutesAfter),
                 endpointId,
-                Changed: !before.SequenceEqual(after));
+                Changed: !before.SequenceEqual(after) || (mute is not null && !mutesBefore.SequenceEqual(mutesAfter)),
+                SessionsByProcess([.. volumes.Select(static session => session.ProcessName)], mutesAfter));
         }
         finally
         {
@@ -966,6 +1001,87 @@ internal sealed partial class WindowsCoreAudioPlatform
             }
         }
     }
+
+    /// <summary>
+    /// A level change says muted only when every session was muted before and after; a mute says the state after: muted
+    /// when every session is, and (W3, R6-6) an unmute says muted while any session still is, so an unmute that left one
+    /// session muted is not taken as done.
+    /// </summary>
+    internal static bool MutedAfter(bool? mute, IReadOnlyList<bool> before, IReadOnlyList<bool> after) => mute switch
+    {
+        null => after.All(static m => m) && before.All(static m => m),
+        true => after.All(static m => m),
+        false => after.Any(static m => m),
+    };
+
+    /// <summary>
+    /// W3 (R6-3): the sessions changed, by process in the enumerator's order: a name said can match several
+    /// applications, and the receipt names every one.
+    /// </summary>
+    internal static IReadOnlyList<ApplicationSessionProcess> SessionsByProcess(
+        IReadOnlyList<string> processNames,
+        IReadOnlyList<bool> mutedAfter) =>
+        [.. Enumerable.Range(0, processNames.Count)
+            .GroupBy(index => processNames[index], StringComparer.OrdinalIgnoreCase)
+            .Select(group => new ApplicationSessionProcess(
+                processNames[group.First()],
+                group.Count(),
+                group.All(index => mutedAfter[index])))];
+
+    /// <summary>
+    /// W3 (R6-1: «quítale el mute» after an application was muted unmuted the whole PC, and the application stayed
+    /// silent): the applications with an audio session on the default output whose own mute is on (the per-session mute
+    /// of the volume mixer, ISimpleAudioVolume::GetMute), in the enumerator's order; a read only. Microsoft Learn, Audio
+    /// Sessions: a rendering session's mute persists across restarts by default, and the PC's own mute does not show it.
+    /// </summary>
+    internal static IReadOnlyList<string> MutedApplicationSessions() =>
+        WithDefaultOutputSessions(static (sessions, _) =>
+        {
+            ThrowForHResult(sessions.GetCount(out int count), AudioControlErrorCodes.EndpointUnavailable);
+            var names = new List<string>();
+            for (int index = 0; index < count; index++)
+            {
+                int result = sessions.GetSession(index, out nint sessionPointer);
+                ReleaseOnFailure(result, sessionPointer);
+                if (result < 0 || sessionPointer == 0)
+                {
+                    continue;
+                }
+
+                nint controlPointer;
+                nint volumePointer;
+                try
+                {
+                    if (!QuerySessionInterfaces(
+                            sessionPointer, Marshal.QueryInterface, ReleaseIUnknown, out controlPointer, out volumePointer))
+                    {
+                        continue;
+                    }
+                }
+                finally
+                {
+                    ReleaseIUnknown(sessionPointer);
+                }
+
+                IAudioSessionControl2 control = WrapUnique<IAudioSessionControl2>(controlPointer, out IDisposable controlLease);
+                ISimpleAudioVolume volume = WrapUnique<ISimpleAudioVolume>(volumePointer, out IDisposable volumeLease);
+                using (controlLease)
+                using (volumeLease)
+                {
+                    // S_OK from IsSystemSoundsSession: the system sounds session belongs to no application.
+                    if (control.IsSystemSoundsSession() != 0
+                        && control.GetProcessId(out uint processId) >= 0 && processId != 0
+                        && volume.GetMute(out int muted) >= 0 && muted != 0
+                        && ProcessNameOf(processId) is { } processName
+                        && !names.Contains(processName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        names.Add(processName);
+                    }
+                }
+            }
+
+            return (IReadOnlyList<string>)names;
+        });
 
     // Encargo 17: the names a session's program has besides its process: its executable's own description (the product
     // name Windows shows for it) and, for the person's browser, the name Windows gives it.

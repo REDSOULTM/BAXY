@@ -300,6 +300,14 @@ def record_fingerprint(root: Path, fingerprint: str) -> None:
 CONDUCTOR_SCRIPT = ROOT / "scripts" / "run_baxy_conductor.ps1"
 
 
+def environment_for_window(dotnet: str) -> dict[str, str]:
+    # VIVO1 (2026-11-09): the App's mind is this checkout's, as scripts\run_renew.cmd gives it; without it run_baxy.ps1 left
+    # the registered runtime's copy (MindRuntimeDiscovery), six days old on the notebook. One named first is kept (a bench).
+    environment = environment_for_dotnet(dotnet)
+    environment.setdefault("BAXY_MIND_PYTHONPATH", os.fspath(ROOT / "src"))
+    return environment
+
+
 def launch(
     *,
     cpu: bool,
@@ -308,7 +316,7 @@ def launch(
     ui_capture: str | None = None,
     profile: str | None = None,
 ) -> None:
-    environment = environment_for_dotnet(dotnet_executable())
+    environment = environment_for_window(dotnet_executable())
     command = [
         "powershell",
         "-NoProfile",
@@ -333,7 +341,7 @@ def launch(
 
 
 def launch_conductor(args: argparse.Namespace) -> None:
-    environment = environment_for_dotnet(dotnet_executable())
+    environment = environment_for_window(dotnet_executable())
     command = [
         "powershell",
         "-NoProfile",

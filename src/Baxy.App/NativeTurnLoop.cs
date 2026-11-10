@@ -111,6 +111,10 @@ internal sealed class NativeTurnLoop
         /// <summary>The owner's switch that refuses a call before it runs (FieldSettings.Refusal), as its code.</summary>
         internal Func<string, JsonObject, string?>? Refuse { get; init; }
 
+        /// <summary>COR1: whether one of BAXY's own brakes (OwnBrakes, by its setting) is on as the person's settings
+        /// say now; null where no settings are read: it is weighed as on.</summary>
+        internal Func<string, bool>? BrakeOn { get; init; }
+
         internal Action? MemoryChanged { get; init; }
 
         /// <summary>The chat forgot everything memory held (memory.forget, scope all): the kept conversations go too.</summary>
@@ -134,6 +138,9 @@ internal sealed class NativeTurnLoop
         /// <summary>The open windows of other applications, title and process (a message by a channel the person did not
         /// say tells the model the ones their words name, NetworkEgress.Named); null: none is read.</summary>
         internal Func<IReadOnlyList<(string Title, string? Process)>>? Windows { get; init; }
+
+        /// <summary>ALR1: the alarms and reminders ringing now, for the turn's note (null when none rings).</summary>
+        internal Func<JsonArray?>? Ringing { get; init; }
 
         /// <summary>Banco de uso 2026-11-03 (R11, R12): the visible rows of the lists of other applications' windows that
         /// the first comparison accepts, and (encargo 65) the tabs of their tab strips that the second accepts
@@ -259,7 +266,7 @@ internal sealed class NativeTurnLoop
         await PersonTurnAsync(mind, turnFrom,
             () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken, Stopwatch.GetElapsedTime(arrivedAt), front,
                 // Encargo 119 (G7): titles only; the rows and tabs of NamedWindows are read when a rule asks, not each turn.
-                _host.Windows is { } windows ? _egress.Named(windows()) : null),
+                _host.Windows is { } windows ? _egress.Named(windows()) : null, _host.Ringing?.Invoke()),
             cancellationToken);
     }
 
@@ -498,6 +505,15 @@ internal sealed class NativeTurnLoop
                         continue;
                     }
 
+                    // VIVO1 F4 (2026-11-09): the server of another model refused the turn for good: said as that, with its
+                    // reason (ExternalModel.Refusal), never as a model that did not answer. REV_APP TUR-1 (2026-11-09): after a
+                    // call was made in this turn the code says that too, as below.
+                    if (step is { Text: "model_refused" })
+                    {
+                        _host.Fail(calls > 1 ? "model_refused_after_call" : "model_refused");
+                        return;
+                    }
+
                     // Ronda final 29 (regla 3): after a call was made in this turn the code says so (it may have had an
                     // effect), never only that no decision came.
                     _host.Fail(calls > 1 ? "decision_unavailable_after_call" : "decision_unavailable");
@@ -689,7 +705,7 @@ internal sealed class NativeTurnLoop
         // The owner switched this kind of call off in Settings (privacy): it does not run, and the model reads why.
         if (_host.Refuse?.Invoke(operation, arguments) is { } refusal)
         {
-            return Record(operation, arguments, started, Observation("rejected", refusal));
+            return Record(operation, arguments, started, Refused(refusal));
         }
 
         // Feria 2026-10-27: a search with none of the person's words, or a message by a channel they did not name, goes
@@ -703,6 +719,15 @@ internal sealed class NativeTurnLoop
         {
             return Record(operation, arguments, started, Observation("rejected", unsaid.Code,
                 Unsaid(descriptor, unsaid.Code, unsaid.Next, named)));
+        }
+
+        // COR1 (VIVO3 A3): where nothing is asked (Bypass) a brake of BAXY's own that the person did not ask to relax
+        // in this turn stays as they set it, and the model reads whose it is to change. In normal mode it waits for
+        // their «sí» below (HeldForTheYes).
+        if (!_beat && InBypass() && Unasked(operation, arguments) && OwnBrakes.Relaxed(operation, arguments) is { } brake)
+        {
+            return Record(operation, arguments, started, Observation("rejected", OwnBrakes.Cause,
+                new JsonObject { ["next"] = OwnBrakes.RefusedNext(brake) }));
         }
 
         // Renew al máximo (w6, rutas): a file call that leaves out the folder the person named in this turn is routed
@@ -723,7 +748,7 @@ internal sealed class NativeTurnLoop
                 descriptor = other;
                 if (_host.Refuse?.Invoke(operation, ruling.Arguments) is { } off)
                 {
-                    return Record(operation, ruling.Arguments, started, Observation("rejected", off));
+                    return Record(operation, ruling.Arguments, started, Refused(off));
                 }
             }
 
@@ -799,7 +824,9 @@ internal sealed class NativeTurnLoop
                 "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
         }
 
-        string? egress = HeldForTheYes(operation, arguments);
+        // COR1: nobody asked a heartbeat to relax one of BAXY's own brakes: it is proposed, with its cause on the card.
+        string? egress = HeldForTheYes(operation, arguments)
+            ?? (_beat && RelaxesABrake(operation, arguments) ? OwnBrakes.Cause : null);
         if (egress is not null || (_beat && BeatProposes(descriptor, arguments)))
         {
             // Nobody asked (a heartbeat), or what it sends out is not the person's to send unasked (NetworkEgress): the
@@ -817,6 +844,11 @@ internal sealed class NativeTurnLoop
             }
 
             held["next"] = AskThePersonAbout(operation);
+            if (egress == OwnBrakes.Cause)
+            {
+                held["next"] += "; " + OwnBrakes.HeldNext;
+            }
+
             if (egress == AccountFlow.Cause && _accounts.Holds(operation, arguments) is { } account)
             {
                 held["signIn"] = account.Facts;
@@ -848,9 +880,23 @@ internal sealed class NativeTurnLoop
     // own rule. Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca»): in Bypass nothing is held; a
     // mode that cannot be read is weighed as normal, which asks.
     internal string? HeldForTheYes(string operation, JsonObject arguments) =>
-        _beat || (Baxy.Kernel.Policy.ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(),
-            out Baxy.Kernel.Policy.ConfirmationMode mode) && mode == Baxy.Kernel.Policy.ConfirmationMode.Bypass)
-            ? null : _accounts.Holds(operation, arguments)?.Cause ?? _egress.Holds(operation, arguments);
+        _beat || InBypass()
+            ? null
+            : _accounts.Holds(operation, arguments)?.Cause
+                ?? (_egress.Holds(operation, arguments) is { } cause
+                    && (cause != OwnBrakes.Cause || RelaxesABrake(operation, arguments)) ? cause : null);
+
+    private static bool InBypass() =>
+        Baxy.Kernel.Policy.ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(),
+            out Baxy.Kernel.Policy.ConfirmationMode mode) && mode == Baxy.Kernel.Policy.ConfirmationMode.Bypass;
+
+    // COR1: the call would relax one of BAXY's own brakes that is on now (one already relaxed is no change to ask about).
+    private bool RelaxesABrake(string operation, JsonObject arguments) =>
+        OwnBrakes.Relaxed(operation, arguments) is { } brake && _host.BrakeOn?.Invoke(brake) != false;
+
+    // COR1: and the person did not ask for it in this turn (NetworkEgress.Holds).
+    private bool Unasked(string operation, JsonObject arguments) =>
+        RelaxesABrake(operation, arguments) && _egress.Holds(operation, arguments) == OwnBrakes.Cause;
 
     // f6 estado: BAXY's own readings (assistant.status, a read with no effect) are the App's: checked against the
     // catalog's schema as the kernel checks every call, read, and told by the kernel's own receipt.
@@ -1311,9 +1357,29 @@ internal sealed class NativeTurnLoop
         }
 
         DropPending();
-        return Record(prepared.OperationName, arguments, started,
-            Observation("rejected", refusal, about: prepared.OperationName));
+        return Record(prepared.OperationName, arguments, started, Refused(refusal, prepared.OperationName));
     }
+
+    // Banco 1/16 y 2/16 (08-11, juez ciego): with the code alone the 4B read a look refused as off as «no window is
+    // open» and a recall refused as off as «I have no record of that»; the result says what did not happen.
+    private const string OffInProfileNext =
+        "nothing ran and nothing was read: the person turned this tool off in Settings → Tools; say it is off there and "
+        + "say nothing of what it would have found";
+
+    // COR1 (VIVO3 A3, 2 de 2; banco cor1_ho): with the bare code the 4B took «Búsqueda web» off as an obstacle of its
+    // own to clear and switched it back on. The result says whose switch it is and what to tell them.
+    internal const string WebOffNext =
+        "nothing ran and nothing went out to the internet: the person switched web search off in BAXY's Settings → "
+        + "Privacy («Búsqueda web»), and it is theirs to switch back on, there or by telling you to; tell them it is off";
+
+    /// <summary>A call the owner's settings refuse before it runs (<see cref="Host.Refuse"/>), as the model reads it; one
+    /// off in the person's tool profile also says that nothing ran or was read, and one «Búsqueda web» refuses says
+    /// whose switch that is.</summary>
+    internal static string Refused(string code, string? about = null) =>
+        Observation("rejected", code,
+            code == ToolProfile.OffCode ? new JsonObject { ["next"] = OffInProfileNext }
+            : code == FieldSettings.WebOff ? new JsonObject { ["next"] = WebOffNext }
+            : null, about);
 
     // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
     // asks for its confirmation too, the person's «sí» to this invocation is that confirmation (same token binding), unless

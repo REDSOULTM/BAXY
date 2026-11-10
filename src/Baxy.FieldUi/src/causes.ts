@@ -1,4 +1,5 @@
 import type { T, Words } from './i18n';
+import { num } from './numbers';
 
 /* Uso 95 (F9): why the model did not start, as the host says it (MainWindowViewModel.MindFailureCause, from the mind's
    llm_server.memory_failure), told as a state of the interface: never words of BAXY's (zero fixed visible replies). */
@@ -34,7 +35,7 @@ const NEEDS: Words = {
   en: 'BAXY needs a dedicated graphics card with 4 GB of free memory or a faster processor.',
 };
 
-const gb = (mb: number, t: T) => (mb / 1024).toLocaleString(t.locale, { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + ' GB';
+const gb = (mb: number, t: T) => num(mb / 1024, t.locale, 1) + ' GB';
 
 /** uso-116: the figures of a lack of memory (llm_server.startup_failure): the buffer that did not fit, the PC's RAM free. */
 export type FailureMemory = { need_mb: number; free_mb?: number | null };
@@ -68,16 +69,39 @@ export function micBlockedText(waiting: { need_mb: number; left_mb: number } | n
     : noRecognizer ? t('Falta el reconocimiento de voz: reinstala BAXY', 'Speech recognition is missing: reinstall BAXY') : t('No hay micrófono', 'No microphone');
 }
 
+/* V132: why the ear has no wake word, as the host read it in the installation (MindRuntimeDiscovery.UnverifiedWake). */
+const WAKE: Record<string, Words> = {
+  wake_missing: { es: 'falta su detector · reinstala BAXY', en: 'its detector is missing · reinstall BAXY' },
+  wake_changed: { es: 'su detector no es el que se instaló · reinstala BAXY', en: 'its detector is not the installed one · reinstall BAXY' },
+};
+
+/** V132: the ear started without its wake word: said while «Siempre activo» is the person's choice, never a silent ear. */
+export function noWakeText(problem: string | null | undefined, t: T): string {
+  return t('Sin palabra de activación «BAXY»: ', 'No “BAXY” wake word: ')
+    + (problem && WAKE[problem] ? t.w(WAKE[problem]) : t('no está disponible', 'it isn’t available'))
+    + t(' · escribe o usa «Mantener para hablar»', ' · type, or use “Push to talk”');
+}
+
+/* QWB2: why the mind started on the stock model although the person chose the tuned one (TunedModel.Verify in the App). */
+export const TUNED_PROBLEM: Record<string, Words> = {
+  ajustado_ausente: { es: 'No encontré el modelo ajustado: BAXY sigue con el modelo de serie. Instálalo otra vez para usarlo', en: 'I didn’t find the tuned model: BAXY stays on the stock model. Install it again to use it' },
+  ajustado_danado: { es: 'El modelo ajustado está dañado y no lo voy a usar: BAXY sigue con el modelo de serie. Instálalo otra vez para usarlo', en: 'The tuned model is damaged and I won’t use it: BAXY stays on the stock model. Install it again to use it' },
+};
+
 /** N9: a start that repeats nothing the person can act on says it once, without the count of failed starts. */
 export const startedOnlyOnce = (cause: string | null | undefined) => cause === READ_TOO_SLOW;
 
 /** N9: how far a slow start is, from the server's own count, and what is left at its pace when it is known. */
-export type ModelReading = { done: number; total: number; seconds_left?: number | null };
+export type ModelReading = {
+  done: number; total: number; seconds_left?: number | null;
+  /** VUL1, the view's own (reading.ts): the least time left said so far of this read, and whether the count rose above it. */
+  least?: number | null; slower?: boolean;
+};
 
 export function readingText(reading: ModelReading, t: T): string {
   const percent = Math.floor((reading.done / Math.max(1, reading.total)) * 100);
   const left = reading.seconds_left;
-  const remaining = left == null ? ''
+  const remaining = left == null ? (reading.slower ? t(' · tarda más de lo previsto', ' · taking longer than expected') : '')
     : left < 60 ? t(' · queda menos de 1 min', ' · less than 1 min left')
       : t(' · quedan unos ', ' · about ') + Math.ceil(left / 60) + t(' min', ' min left');
   return t('Preparando el modelo · ', 'Getting the model ready · ') + percent + ' %' + remaining;

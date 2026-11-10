@@ -1084,9 +1084,14 @@ public sealed class NativeTurnLoopTests
 
     // P0.12 (noche 2026-10-27): the mind's error reply closes the person's turn as the failure it is (after a call, saying
     // so), and a heartbeat's leaves nothing on their screen; a step of a kind the loop does not run never runs as a call.
-    [TestCase(false, "decision_unavailable")]
-    [TestCase(true, "decision_unavailable_after_call")]
-    public async Task AnErrorTheMindAnswersClosesTheTurnAsAFailure(bool afterCall, string failure)
+    // VIVO1 F4 (2026-11-09): the server of another model refused the turn for good (the mind's model_refused): the turn ends
+    // with that code, which the screen says with the translator's reason, before a call or after one.
+    // REV_APP TUR-1 (2026-11-09): refused after a call ran, the code says so too, as the decision that did not come does.
+    [TestCase(false, "decision_unavailable", "request_failed")]
+    [TestCase(true, "decision_unavailable_after_call", "request_failed")]
+    [TestCase(false, "model_refused", "model_refused")]
+    [TestCase(true, "model_refused_after_call", "model_refused")]
+    public async Task AnErrorTheMindAnswersClosesTheTurnAsAFailure(bool afterCall, string failure, string code)
     {
         using var fake = new FakeMind();
         var call = new JsonObject
@@ -1097,8 +1102,8 @@ public sealed class NativeTurnLoopTests
             ["arguments"] = new JsonObject(),
         };
         fake.Script(afterCall
-            ? new JsonObject { ["reply"] = new JsonObject { ["turn.decide"] = call }, ["fail"] = new JsonArray("turn.continue") }
-            : new JsonObject { ["fail"] = new JsonArray("turn.decide", "turn.beat") });
+            ? new JsonObject { ["reply"] = new JsonObject { ["turn.decide"] = call }, ["fail"] = new JsonArray("turn.continue"), ["failCode"] = code }
+            : new JsonObject { ["fail"] = new JsonArray("turn.decide", "turn.beat"), ["failCode"] = code });
         await using MindSidecarClient mind = await FakeMind.StartClientAsync();
         var steps = new List<NativeTurnStep>();
         var failures = new List<string>();
@@ -1628,6 +1633,122 @@ public sealed class NativeTurnLoopTests
     }
 
     // An engine that says it is ready and is never sent anything: a held call stops before it.
+    // COR1 (VIVO3 A3, 2 de 2): with «Búsqueda web» off the model switched it back on with baxy.settings.set to play the
+    // video the person asked for. A brake the person did not ask to relax in this turn waits for their «sí», and its
+    // card says which setting and to what; asked by its name, it goes; where nothing asks (Bypass) it does not run.
+    [TestCase("Busca en YouTube un vídeo de cómo hacer pan amasado", false, "needs_confirmation")]
+    [TestCase("Enciende la búsqueda web", false, null)]
+    [TestCase("Pon en YouTube un vídeo de gatitos jugando", true, "rejected")]
+    [TestCase("Enciende la búsqueda web", true, null)]
+    public async Task ABrakeThePersonDidNotAskToRelaxDoesNotChangeUnasked(string words, bool bypass, string? stopped)
+    {
+        using var fake = new FakeMind();
+        fake.Script(new JsonObject
+        {
+            ["reply"] = new JsonObject
+            {
+                ["turn.decide"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "action",
+                    ["operation"] = OwnBrakes.Operation,
+                    ["arguments"] = new JsonObject { ["setting"] = "web_search", ["value"] = "on" },
+                },
+                ["turn.continue"] = new JsonObject
+                {
+                    ["type"] = "turn.result",
+                    ["kind"] = "clarify",
+                    ["question"] = "La búsqueda web está apagada. ¿La enciendo?",
+                },
+            },
+        });
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var steps = new List<NativeTurnStep>();
+        var asked = new List<NativeTurnConfirmation>();
+        var registry = new RetryableOperationRegistry();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = () => registry,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            StepCompleted = steps.Add,
+            ConfirmationAsked = asked.Add,
+            BrakeOn = static setting => setting == "web_search",
+        });
+        Baxy.Kernel.Policy.ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(),
+            bypass ? Baxy.Kernel.Policy.ConfirmationMode.Bypass : Baxy.Kernel.Policy.ConfirmationMode.Normal);
+
+        await loop.RunAsync(words, Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        JsonNode? first = JsonNode.Parse(steps[0].Observation);
+        Assert.Multiple(() =>
+        {
+            Assert.That(steps[0].Operation, Is.EqualTo(OwnBrakes.Operation));
+            if (stopped is null)
+            {
+                Assert.That(steps[0].Status, Is.Not.EqualTo("needs_confirmation").And.Not.EqualTo("rejected"));
+                Assert.That((string?)first?["error"], Is.Not.EqualTo(OwnBrakes.Cause));
+                Assert.That(asked, Is.Empty);
+                return;
+            }
+
+            Assert.That((steps[0].Status, steps[0].Sent), Is.EqualTo((stopped, false)));
+            if (bypass)
+            {
+                Assert.That((string?)first?["error"], Is.EqualTo(OwnBrakes.Cause));
+                Assert.That((string?)first?["next"], Is.EqualTo(OwnBrakes.RefusedNext("web_search")));
+                Assert.That((string?)first?["next"], Does.Contain("(«Búsqueda web», «Web search»)")
+                    .And.StartWith("nothing changed: web_search stays off, as the person set it"));
+                Assert.That(OwnBrakes.Kept("no_interrupt_calls"), Is.EqualTo("on"));
+                Assert.That(asked, Is.Empty);
+                Assert.That(loop.HasPendingConfirmation, Is.False);
+            }
+            else
+            {
+                Assert.That((string?)first?["cause"], Is.EqualTo(OwnBrakes.Cause));
+                Assert.That((string?)first?["next"], Does.EndWith(OwnBrakes.HeldNext));
+                Assert.That(asked.Select(static call => (call.Operation, call.Proposal, call.Cause)),
+                    Is.EqualTo(new[] { (OwnBrakes.Operation, false, (string?)OwnBrakes.Cause) }));
+                Assert.That(loop.HasPendingConfirmation, Is.True);
+            }
+        });
+    }
+
+    // COR1: a brake already relaxed is no change to ask about (the call runs and its receipt says «changed: false»).
+    [Test]
+    public void ABrakeAlreadyRelaxedIsNotHeld()
+    {
+        using var fake = new FakeMind();
+        Baxy.Kernel.Policy.ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(),
+            Baxy.Kernel.Policy.ConfirmationMode.Normal);
+        var given = new JsonObject { ["setting"] = "web_search", ["value"] = "on" };
+        NativeTurnLoop Built(bool on) => new(new NativeTurnLoop.Host
+        {
+            Core = static () => null,
+            Mind = static () => null,
+            Registry = static () => null,
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            BrakeOn = _ => on,
+        }, TimeProvider.System);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Built(on: true).HeldForTheYes(OwnBrakes.Operation, given), Is.EqualTo(OwnBrakes.Cause));
+            Assert.That(Built(on: false).HeldForTheYes(OwnBrakes.Operation, given), Is.Null);
+            Assert.That(Loop([], TimeProvider.System).HeldForTheYes(OwnBrakes.Operation, given), Is.EqualTo(OwnBrakes.Cause));
+        });
+    }
+
     private static CoreProcessClient ReadyCore()
     {
         var core = new CoreProcessClient();

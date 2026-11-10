@@ -30,6 +30,7 @@ public sealed class OwnSettingsHandlerTests
     // Each switch lands on the view's own key (the voice is kept as voiceMuted), and what the view had chosen stays.
     [TestCase("voice", "off", "voiceMuted", true)]
     [TestCase("voice", "on", "voiceMuted", false)]
+    [TestCase("overlay", "off", "overlay", false)]
     [TestCase("web_search", "off", "web", false)]
     [TestCase("no_interrupt_games", "off", "ctx.game", false)]
     [TestCase("no_interrupt_calls", "off", "ctx.call", false)]
@@ -118,8 +119,8 @@ public sealed class OwnSettingsHandlerTests
     [TestCase("web_search", "tomorrow", "value", new[] { "on", "off" })]
     [TestCase("weather", "off", "setting", new[]
     {
-        "confirmation_bypass", "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos", "proposals", "voice",
-        "web_search",
+        "accessible_mode", "confirmation_bypass", "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos", "overlay", "proposals",
+        "voice", "web_search",
     })]
     public async Task AValueThatIsNotTheSettingsChangesNothing(string setting, string value, string argument, string[] allowed)
     {

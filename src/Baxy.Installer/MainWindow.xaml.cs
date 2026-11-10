@@ -62,6 +62,7 @@ internal sealed partial class MainWindow : Window, IDisposable
     private readonly InstallPaths paths;
     private readonly ReleaseManifest? manifest;
     private readonly bool uninstalling;
+    private readonly bool updating;
     private readonly GpuSupport support;
     private readonly Installation? installation;
     private Texts texts;
@@ -80,8 +81,9 @@ internal sealed partial class MainWindow : Window, IDisposable
     private int announced = -1;
     private FailureKind failure;
     private string failureDetail = string.Empty;
+    private long dataBytes;
 
-    internal MainWindow(ReleaseManifest? manifest, bool uninstalling, InstallPaths paths, bool voiceAllowed)
+    internal MainWindow(ReleaseManifest? manifest, bool uninstalling, InstallPaths paths, bool voiceAllowed, bool updating = false)
     {
         InitializeComponent();
         this.paths = paths;
@@ -89,10 +91,12 @@ internal sealed partial class MainWindow : Window, IDisposable
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
         this.manifest = manifest?.ForMachine(adapters);
         this.uninstalling = uninstalling;
+        this.updating = updating && !uninstalling && this.manifest is not null;
         http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + (manifest?.Version ?? "0"));
         support = MachineGpu.Choose(adapters);
         if (this.manifest is not null)
         {
+            Program.LogMachine(this.manifest, adapters, paths);
             installation = new Installation(this.manifest, paths, new PartFetcher(http, gate: new Func<PauseGate>(() => pause)));
         }
 
@@ -105,7 +109,19 @@ internal sealed partial class MainWindow : Window, IDisposable
         Loaded += (_, _) =>
         {
             Apply();
+            if (this.updating)
+            {
+                screen = WorkingScreen;
+                Render(speak: false);
+                _ = UpdateWhenBaxyClosesAsync();
+                return;
+            }
+
             Render(speak: true);
+            if (uninstalling)
+            {
+                _ = MeasureDataAsync();
+            }
         };
         Closing += (_, closing) =>
         {
@@ -532,10 +548,21 @@ internal sealed partial class MainWindow : Window, IDisposable
             Alert: true);
     }
 
+    // No recorded line says this one: it is read, and a screen reader says it (Alert).
+    private ScreenView NotRegisteredScreen() => new(
+        Face.Sad,
+        texts.NotRegisteredTitle,
+        texts.NotRegisteredBody,
+        Help: string.Format(CultureInfo.CurrentCulture, texts.NotRegisteredHelp, Program.LogPath),
+        First: new ButtonView(texts.Retry, true, Register, IsDefault: true),
+        Second: new ButtonView(texts.OpenMe, false, OpenBaxy),
+        Third: new ButtonView(texts.Close, false, Close, IsCancel: true),
+        Alert: true);
+
     private ScreenView UninstallScreen() => new(
         Face.Sad,
         texts.UninstallTitle,
-        texts.UninstallBody,
+        texts.UninstallBodyFor(WindowsIntegration.RingsToRemove(paths), dataBytes, WindowsPlaces.ForThisUser.Data),
         First: new ButtonView(texts.UninstallKeep, false, () => Uninstall(deleteData: false), IsDefault: true),
         Second: WindowsIntegration.ADifferentBaxyIsInstalled() ? null : new ButtonView(texts.UninstallDelete, false, () => Uninstall(deleteData: true)),
         Third: new ButtonView(texts.Cancel, false, Close, IsCancel: true),
@@ -547,6 +574,31 @@ internal sealed partial class MainWindow : Window, IDisposable
         string.Empty,
         First: new ButtonView(texts.Close, false, Close, IsDefault: true, IsCancel: true),
         Line: "uninstalled");
+
+    /// <summary>
+    /// INS-9: how much «keep your data» leaves. The folder can hold very many files (measured in one in use: 134,738
+    /// files, 56 s the first time), so they are counted off the window's thread and the screen gets the figure when
+    /// there is one; until then, and if Windows does not let the folder be read, it gives none.
+    /// </summary>
+    private async Task MeasureDataAsync()
+    {
+        try
+        {
+            dataBytes = await Task.Run(() => WindowsIntegration.DataBytes());
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException)
+        {
+            Program.Log(unread.ToString());
+            return;
+        }
+
+        if (IsLoaded && shown?.Title == texts.UninstallTitle)
+        {
+            Render(speak: false);
+            // The text changed under a screen reader that already read it: it is told, as the progress is.
+            UIElementAutomationPeer.CreatePeerForElement(BodyText)?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
+        }
+    }
 
     private void Retry()
     {
@@ -562,6 +614,20 @@ internal sealed partial class MainWindow : Window, IDisposable
         failure = FailureKind.Other;
         failureDetail = problem.Message;
         Finish(FailedScreen);
+    }
+
+    /// <summary>
+    /// --update (BaxyUpdateHandler): the person said yes in BAXY, which closes itself after starting this. The swap would
+    /// refuse while it runs, so this waits for it a minute at most; a BAXY still open then is told as any open one is.
+    /// </summary>
+    private async Task UpdateWhenBaxyClosesAsync()
+    {
+        for (int waited = 0; Voice.BaxyIsOpen() && waited < 120; waited++)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+        }
+
+        Start();
     }
 
     private void Start()
@@ -618,9 +684,7 @@ internal sealed partial class MainWindow : Window, IDisposable
                     },
                     cancellation),
                 cancellation);
-            WindowsIntegration.Register(paths, manifest!.Version, manifest.InstalledBytes);
-            Program.Log("installed");
-            Finish(DoneScreen);
+            Register();
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
         {
@@ -634,6 +698,34 @@ internal sealed partial class MainWindow : Window, IDisposable
             failure = Failures.Classify(problem, Voice.BaxyIsOpen);
             failureDetail = problem.Message;
             Finish(FailedScreen);
+        }
+    }
+
+    /// <summary>
+    /// The last step, with BAXY's files already in place. Windows refusing it is not «I couldn't install myself» (INS-5):
+    /// BAXY is there and opens, and the person tries this step again alone, with nothing downloaded twice.
+    /// </summary>
+    private void Register()
+    {
+        try
+        {
+            WindowsIntegration.Register(paths, manifest!.Version, manifest.InstalledBytes);
+        }
+        catch (NotRegisteredException refused)
+        {
+            Program.Log(refused.ToString());
+            // The same screen again is said again: the person pressed «try again» and it was refused once more.
+            shown = null;
+            Finish(NotRegisteredScreen);
+            return;
+        }
+
+        Program.Log("installed");
+        Finish(DoneScreen);
+        if (updating)
+        {
+            // The person asked for the update in BAXY: it comes back as it was before it closed.
+            OpenBaxy();
         }
     }
 

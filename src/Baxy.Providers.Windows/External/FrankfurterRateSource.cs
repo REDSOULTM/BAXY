@@ -28,7 +28,7 @@ internal sealed class FrankfurterRateSource(HttpClient http)
         CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, RateUri(ask));
-        request.Headers.TryAddWithoutValidation("User-Agent", WikipediaSearchSource.UserAgent);
+        request.Headers.TryAddWithoutValidation("User-Agent", ProductIdentity.UserAgent);
         try
         {
             using HttpResponseMessage response = await _http

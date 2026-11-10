@@ -81,15 +81,51 @@ internal sealed class AccessibilityTests
         Assert.That(WindowsIntegration.LicenseText(language), Does.Match(words));
     }
 
-    [TestCase("es", "Restricciones de uso")]
-    [TestCase("en", "Use restrictions")]
-    public void The_license_carries_the_use_restrictions_the_voice_requires(string language, string section)
+    // LEG-04: the agreement names the Steam store as where the title of a game asked for goes (tests/test_license_texts.py,
+    // STEAM_STORE). It is still the installer's agreement and not Steam's: nothing else in it speaks of Steam.
+    [TestCase("es", "Restricciones de uso", "la tienda de Steam")]
+    [TestCase("en", "Use restrictions", "the Steam store")]
+    public void The_license_carries_the_use_restrictions_the_voice_requires(string language, string section, string store)
     {
         string license = WindowsIntegration.LicenseText(language);
 
         Assert.That(license, Does.Contain(section));
         Assert.That(license, Does.Contain("OpenRAIL-M"));
-        Assert.That(license, Does.Not.Contain("Steam"));
+        Assert.That(license.Replace(store, string.Empty, StringComparison.Ordinal), Does.Not.Contain("Steam"));
+    }
+
+    // CUDA EULA 1.1.2: «The terms under which you distribute your application must be consistent with the terms of this Agreement»
+    // (https://docs.nvidia.com/cuda/eula/index.html, v13.5). Visual Studio 2022 Community, 4: «require distributors and external end
+    // users to agree to terms that protect the Distributable Code at least as much as this agreement»; the Windows SDK projections,
+    // «subject to the license terms» (https://learn.microsoft.com/en-us/legal/windows-sdk/redist). All read 2026-11-07.
+    [TestCase("es", "NVIDIA no patrocina ni respalda a BAXY", "código redistribuible de Microsoft", "salvo cuando la ley aplicable lo permita expresamente")]
+    [TestCase("en", "NVIDIA does not sponsor or endorse BAXY", "Microsoft's redistributable code", "except where applicable law expressly allows it")]
+    public void The_license_carries_the_terms_nvidia_and_microsoft_ask_for(string language, string nvidia, string microsoft, string law)
+    {
+        string license = WindowsIntegration.LicenseText(language);
+
+        Assert.That(license, Does.Contain(nvidia));
+        Assert.That(license, Does.Contain(microsoft));
+        Assert.That(license, Does.Contain(law));
+    }
+
+    // The owner's decision (2026-11-08): the detector goes with BAXY officially, with a notice of what it learned from
+    // (licenses/PALABRA_DE_ACTIVACION.md), and no permission nobody gave. Section 6 says the same in both languages, and the
+    // installer is not Steam's.
+    [TestCase("es", "no se entrenó con grabaciones de L2-ARCTIC", "el uso comercial del detector está pendiente", "6. En desarrollo")]
+    [TestCase("en", "it was not trained on L2-ARCTIC recordings", "commercial use of the detector is pending", "6. In development")]
+    public void The_license_gives_the_detectors_notice(string language, string notice, string pending, string section)
+    {
+        string license = WindowsIntegration.LicenseText(language);
+
+        Assert.That(license, Does.Contain(notice));
+        Assert.That(license, Does.Not.Contain(pending));
+        // INT14: only what was measured; no «contains no third-party model».
+        Assert.That(license, Does.Not.Contain("modelos de terceros"));
+        Assert.That(license, Does.Not.Contain("third-party model"));
+        Assert.That(license, Does.Contain("PALABRA_DE_ACTIVACION.md"));
+        Assert.That(license, Does.Contain(section));
+        Assert.That(license, Does.Not.Contain("Early Access"));
     }
 
     [Test]

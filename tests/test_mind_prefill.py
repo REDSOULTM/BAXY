@@ -289,7 +289,7 @@ def _sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, incoming: list, ev
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None, ringing=None):
             return {"type": "turn.result", "id": request_id}
 
         def continue_turn(self, request_id, observation, final, beat):
@@ -369,7 +369,7 @@ def test_a_request_that_fails_leaves_its_reason_in_the_trace(tmp_path: Path, mon
     sidecar, fake_mind = _sidecar(tmp_path, monkeypatch, incoming, events)
     rows: list[tuple] = []
 
-    def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
+    def decide(self, request_id, text, pending, unsure=None, front=None, named=None, ringing=None):
         raise TimeoutError("the request's time budget is spent")
 
     monkeypatch.setattr(fake_mind, "decide", decide)
@@ -377,12 +377,35 @@ def test_a_request_that_fails_leaves_its_reason_in_the_trace(tmp_path: Path, mon
                         raising=False)
     assert sidecar.main() == 0
     assert "error:7" in events
+    # PRV1 (PRIV-02): the product's trace keeps no words, and an error's text may quote what it was reading: its type.
+    assert rows == [("request.failed", {"kind": "turn.decide", "failure": "TimeoutError"})]
+
+
+def test_a_request_that_fails_leaves_its_whole_reason_where_the_trace_keeps_words(tmp_path: Path,
+                                                                                    monkeypatch: pytest.MonkeyPatch) -> None:
+    events: list[str] = []
+    incoming = [{"type": "turn.decide", "id": 7, "text": "hola"}, None]
+    sidecar, fake_mind = _sidecar(tmp_path, monkeypatch, incoming, events)
+    rows: list[tuple] = []
+
+    def decide(self, request_id, text, pending, unsure=None, front=None, named=None, ringing=None):
+        raise TimeoutError("the request's time budget is spent")
+
+    monkeypatch.setenv("BAXY_TRACE_WORDS", "1")
+    monkeypatch.setattr(fake_mind, "decide", decide)
+    monkeypatch.setattr(fake_mind, "_log", lambda self, stage, started, reply, **fields: rows.append((stage, fields)),
+                        raising=False)
+    assert sidecar.main() == 0
     assert rows == [("request.failed", {"kind": "turn.decide",
                                         "failure": "TimeoutError(\"the request's time budget is spent\")"})]
 
 
 @pytest.mark.parametrize(("error", "code"), [(TimeoutError("timed out"), "request_timed_out"),
-                                             (RuntimeError("no open turn to continue"), "request_failed")])
+                                             (RuntimeError("no open turn to continue"), "request_failed"),
+                                             # VIVO1 F4: the server that holds another model refused it for good (the
+                                             # translator's 422): the App says why, and does not ask again.
+                                             (urllib.error.HTTPError("http://127.0.0.1/v1/chat/completions", 422,
+                                                                     "Unprocessable Entity", {}, None), "model_refused")])
 def test_a_request_past_its_budget_says_so_in_its_code(tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
                                                          error: Exception, code: str) -> None:
     # R7-NB-1 (CU C03): the App asks again for a decision whose request ran past its budget, never for one that failed
@@ -605,7 +628,7 @@ def test_the_sidecar_s_read_ahead_gives_way_while_a_request_waits(tmp_path: Path
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None, ringing=None):
             return {"type": "turn.result", "id": request_id}
 
         def prefill(self) -> bool:
@@ -706,7 +729,7 @@ def test_the_sidecar_reads_again_once_a_request_it_gave_way_to_is_answered(tmp_p
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None, ringing=None):
             return {"type": "turn.result", "id": request_id}
 
         def export_session(self) -> list:

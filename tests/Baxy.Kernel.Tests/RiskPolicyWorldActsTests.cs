@@ -112,16 +112,16 @@ public sealed class RiskPolicyWorldActsTests
 
     // A click by index in another manner (its arrow, its menu) is judged by the same name: opening the list of
     // «Compartir» asked in v3-08 and v3-09, and still does when a step names it; the fix is that no rule opens it blind.
-    [TestCase("""{"label":"Iniciar Transmisión","index":46,"window":4660}""", true)]
-    [TestCase("""{"label":"Compartir","index":16,"manner":"open","window":4660}""", true)]
-    [TestCase("""{"label":"Buscar","search":"directo","choose":"Iniciar transmisión"}""", true)]
-    [TestCase("""{"label":"Agregar página","index":40,"window":4660}""", false)]
-    [TestCase("""{"label":"Dibujar","index":10,"window":4660}""", false)]
+    [TestCase("""{"consequence":null,"label":"Iniciar Transmisión","index":46,"window":4660}""", true)]
+    [TestCase("""{"consequence":null,"label":"Compartir","index":16,"manner":"open","window":4660}""", true)]
+    [TestCase("""{"consequence":null,"label":"Buscar","search":"directo","choose":"Iniciar transmisión"}""", true)]
+    [TestCase("""{"consequence":null,"label":"Agregar página","index":40,"window":4660}""", false)]
+    [TestCase("""{"consequence":null,"label":"Dibujar","index":10,"window":4660}""", false)]
     // Encargo V (banco e2, c7: «en Discord andá al canal Cotele y después en Steam andá a la tienda», the chain's first
     // link): the step that names the voice channel the worker would not press by «cotele» asks; a text channel does not.
-    [TestCase("""{"label":"Cotele!!!😎, Canal de voz, Choche","index":60,"window":68208}""", true)]
-    [TestCase("""{"label":"Cotele!!!😎, Canal de voz, Choche","window":68208}""", true)]
-    [TestCase("""{"label":"general (canal de texto)","index":12,"window":68208}""", false)]
+    [TestCase("""{"consequence":null,"label":"Cotele!!!😎, Canal de voz, Choche","index":60,"window":68208}""", true)]
+    [TestCase("""{"consequence":null,"label":"Cotele!!!😎, Canal de voz, Choche","window":68208}""", true)]
+    [TestCase("""{"consequence":null,"label":"general (canal de texto)","index":12,"window":68208}""", false)]
     public void The_exact_invocation_decides(string arguments, bool asks)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");

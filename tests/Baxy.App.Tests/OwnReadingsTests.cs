@@ -47,6 +47,8 @@ public sealed class OwnReadingsTests
             Assert.That(receipt.GetProperty("scope").GetString(), Is.EqualTo("confirmation"));
             Assert.That(receipt.GetProperty("mode").GetString(), Is.EqualTo(said));
             Assert.That(receipt.GetProperty("asksBeforeRiskyCalls").GetBoolean(), Is.EqualTo(asks));
+            // REV7: nothing asks in Bypass, so the receipt names nothing that «always» asks (INT5 had added it).
+            Assert.That(receipt.TryGetProperty("alwaysAsksBefore", out _), Is.False);
         });
     }
 

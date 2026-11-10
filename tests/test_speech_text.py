@@ -3,7 +3,7 @@ English names as a Latin-American says them; and, with the interface in English,
 them."""
 import pytest
 
-from baxy_mind.speech_text import Utterance, cardinal, cardinal_en, language, ordinal_en, spoken
+from baxy_mind.speech_text import Utterance, cardinal, cardinal_en, language, ordinal_en, spoken, unmarked
 
 
 @pytest.mark.parametrize(("n", "words"), [
@@ -41,6 +41,22 @@ def test_cardinal(n: int, words: str) -> None:
 ])
 def test_spoken(text: str, said: str) -> None:
     assert spoken(text) == said
+
+
+# ABIERTOS_VIVO H1 / VIVO2 F16 (2026-11-09): the model writes CommonMark marks («**», lists, code) in some answers; the screen
+# draws them (markdown.tsx) and the voice says the words without them, never «asterisco». Form only: the words stay as written.
+@pytest.mark.parametrize(("text", "said"), [
+    ("**Listo**: abrí `Steam` y *el juego*.", "Listo: abrí Steam y el juego."),
+    ("Tres ideas:\n\n- Quinoa\n* Tacos\n+ Sopa", "Tres ideas:\n\nQuinoa\nTacos\nSopa"),
+    ("## Para hoy\n1. Agua\n2) Pan", "Para hoy\n1. Agua\n2) Pan"),
+    ("> Dijo que __sí__ y ~~no~~.", "Dijo que sí y no."),
+    ("Mira [la página](https://ejemplo.invalid/a) y ![una foto](x.png).", "Mira la página y una foto."),
+    ("```\nnpm run build\n```\n---", "npm run build"),
+    # what is no mark stays: an asterisk alone, a product, snake_case, a lone underscore
+    ("5 * 3 = 15 y a_b_c, 2*3*4.", "5 * 3 = 15 y a_b_c, 2*3*4."),
+])
+def test_the_marks_of_an_answer_are_not_said(text: str, said: str) -> None:
+    assert unmarked(text) == said
 
 
 def test_words_that_contain_a_name_are_left_alone() -> None:

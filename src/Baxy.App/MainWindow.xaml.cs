@@ -27,6 +27,7 @@ public partial class MainWindow : Window
     private bool _recreatingField;
     private readonly PresenceHost? _presence;
     private FieldUiBridge? _bridge;
+    private OverlayPresenter? _overlay;
     private AppSurfaceSession? _fieldNavigationLoadingSession;
     private int _fieldActivityRevision;
     private bool _closing;
@@ -57,10 +58,13 @@ public partial class MainWindow : Window
         Left = initialBounds.Left;
         Top = initialBounds.Top;
         _presence = presence;
-        _viewModel = new MainWindowViewModel();
+        _viewModel = MainWindowViewModel.ForThisPc();
         _surfacePresenter = new MainWindowSurfacePresenter(FieldWebView, AppSurfaceLayer);
         _surfaceNavigator = new AppSurfaceNavigator(AppSurfaceCatalog.CreateDefault(), _surfacePresenter);
         StateChanged += OnWindowPresentationChanged;
+        StateChanged += OnMinimizedToTray;
+        StateChanged += OnFitViewToBorder;
+        FieldWebView.Margin = WebViewMargin(WindowState);
         IsVisibleChanged += OnWindowVisibilityChanged;
         _presence?.Attach(this, _viewModel);
     }
@@ -88,6 +92,8 @@ public partial class MainWindow : Window
             ShellTraceScopes.Startup,
             "boot",
             ShellTraceStages.StartupBegin);
+        // ALR1: alarms and reminders ring in this window from its first moment, the view still loading.
+        _viewModel.StartRinging();
         try
         {
             _fieldNavigationLoadingSession = await ShowFieldLoadingAsync(
@@ -166,6 +172,9 @@ public partial class MainWindow : Window
         core.Settings.AreBrowserAcceleratorKeysEnabled = false;
         core.Settings.IsStatusBarEnabled = false;
         core.Settings.IsZoomControlEnabled = false;
+        // Owner, 2026-11-08: the window is moved from its top as any program; the view marks that band app-region: drag
+        // and WebView2 hands it to Windows as the caption (double click maximizes, Snap works).
+        core.Settings.IsNonClientRegionSupportEnabled = true;
         core.SetVirtualHostNameToFolderMapping(
             HistoricalFieldOriginPolicy.VirtualHost,
             fieldRoot,
@@ -190,8 +199,20 @@ public partial class MainWindow : Window
             this,
             FieldWebView,
             _viewModel,
-            new FieldTelemetrySampler(() => _viewModel.MindProcessId),
+            new FieldTelemetrySampler(() => _viewModel.MindProcessId, otherModel: () => _viewModel.ExternalModelState.OwnOllamaInUse),
             _lifetimeCancellation.Token);
+        if (_overlay is null)
+        {
+            // Owner, 2026-11-08: what BAXY does, in a corner, while its window is behind.
+            FieldUiBridge bridge = _bridge;
+            _overlay = new OverlayPresenter(
+                this,
+                _viewModel.Settings,
+                ShowFromOverlay,
+                (card, approve) => bridge.AnswerCardAsync(approve, card));
+            bridge.Published += _overlay.OnEvent;
+            bridge.OverlayPreviewRequested += _overlay.Preview;
+        }
         core.Navigate(HistoricalFieldOriginPolicy.EntryPoint);
         await UpdateFieldActivityAsync();
     }
@@ -249,6 +270,46 @@ public partial class MainWindow : Window
 
     internal static bool ShouldKeepFieldActive(bool isVisible, WindowState state) =>
         isVisible && state != WindowState.Minimized;
+
+    // The overlay's click: BAXY to the front, as the tray's «Abrir BAXY».
+    private void ShowFromOverlay()
+    {
+        if (_presence is not null)
+        {
+            _presence.ShowMainWindow();
+            return;
+        }
+
+        Show();
+        if (WindowState == WindowState.Minimized)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        _ = Activate();
+    }
+
+    /// <summary>The frameless window's size border (WindowChrome.ResizeBorderThickness): the view stands it off.</summary>
+    internal const double ResizeBorder = 5;
+
+    /// <summary>
+    /// Owner, 2026-11-08: the window could not be resized because the WebView covered the border WindowChrome sizes it
+    /// from. The view leaves that border free, and fills the screen when maximized (a maximized window has none).
+    /// </summary>
+    internal static Thickness WebViewMargin(WindowState state) =>
+        state == WindowState.Maximized ? new Thickness(0) : new Thickness(ResizeBorder);
+
+    private void OnFitViewToBorder(object? sender, EventArgs eventArgs) => FieldWebView.Margin = WebViewMargin(WindowState);
+
+    // «Al minimizar» (Settings › General): with the tray there, a minimized window hides in it; the tray's «Abrir BAXY»
+    // (PresenceHost.ShowMainWindow) shows it again and brings it back from minimized.
+    private void OnMinimizedToTray(object? sender, EventArgs eventArgs)
+    {
+        if (WindowState == WindowState.Minimized && _presence is { IsExitRequested: false } && _viewModel.Settings.MinimizeToTray)
+        {
+            Hide();
+        }
+    }
 
     private async void OnWindowPresentationChanged(object? sender, EventArgs eventArgs) =>
         await UpdateFieldActivityAsync();
@@ -681,6 +742,8 @@ public partial class MainWindow : Window
 
         _closing = true;
         StateChanged -= OnWindowPresentationChanged;
+        StateChanged -= OnMinimizedToTray;
+        StateChanged -= OnFitViewToBorder;
         IsVisibleChanged -= OnWindowVisibilityChanged;
         IsEnabled = false;
         _lifetimeCancellation.Cancel();
@@ -696,6 +759,8 @@ public partial class MainWindow : Window
         }
         if (_bridge is not null)
         {
+            _overlay?.Dispose();
+            _overlay = null;
             await _bridge.DisposeAsync();
             _bridge = null;
         }

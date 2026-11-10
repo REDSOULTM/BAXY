@@ -43,6 +43,28 @@ public sealed class FieldStepProjectionTests
         Assert.That((string?)view["obs"], Is.EqualTo("Ya estaba así · level: 40"));
     }
 
+    // LIC2 (2026-11-08): the services whose results BAXY shows ask to be credited there: DuckDuckGo's partnerships page
+    // («Please give us attribution where it makes sense», duckduckgo.com/duckduckgo-help-pages/company/partnerships),
+    // OpenStreetMap («credit OpenStreetMap and its contributors», openstreetmap.org/copyright) and Wikipedia's CC BY-SA.
+    // The source that answered is said first on the chip, before the facts that would push it out of the four shown.
+    [TestCase(false, "Leído · Fuente: DuckDuckGo · source: web · query: clima · region: CL")]
+    [TestCase(true, "Read · Source: DuckDuckGo · source: web · query: clima · region: CL")]
+    public void TheSourceThatAnsweredIsCreditedFirst(bool english, string obs)
+    {
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true, new JsonObject
+        {
+            ["status"] = "completed",
+            ["verification"] = OperationVisibleFacts.VerificationOutputOnly,
+            ["source"] = "web",
+            ["query"] = "clima",
+            ["region"] = "CL",
+            ["resultCount"] = 5,
+            ["answeredBy"] = "DuckDuckGo",
+        }, english: english);
+
+        Assert.That((string?)view["obs"], Is.EqualTo(obs));
+    }
+
     // SaidFolders' note is for the model, in its words: the chip says what was observed only.
     [Test]
     public void TheNoteForTheModelOfAFolderThePersonNamedIsNotAFactOfTheChip()
@@ -231,6 +253,7 @@ public sealed class FieldStepProjectionTests
     [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""")]
     [TestCase("browser.control", """{"action":"close_all"}""")]
     [TestCase("shell.command.run", """{"command":"Remove-Item notas.txt"}""")]
+    [TestCase("system.power", """{"action":"shutdown"}""")]
     public void TheCatalogSaysSometimesOfAnOperationThatAsksWithSomeArguments(string operation, string arguments)
     {
         JsonObject? item = FieldStepProjection.Catalog()["groups"]!.AsArray()

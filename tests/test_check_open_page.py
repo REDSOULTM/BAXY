@@ -87,6 +87,30 @@ def test_nothing_is_said_when_the_page_opened_or_nothing_failed_before_a_search(
 U31 = [_not_found(), _refused(), _opened(SEARCH_PAGE), _read()]
 
 
+# INT10: since srch1 a refused search opens nothing and gives no page to read its results in (WebSearchRefused: no next,
+# no searchPageUrl), and an engine that answered with nothing gives none either. Nothing was found to open, so «I could
+# not find it» is the answer, not a page left unopened: the note asked the model to open «the address the results bring»
+# that no result brought (family u31 with srch1's receipts: 32 notes, then guessed addresses and search loops).
+def _refused_srch1(error: str = "web_search_unavailable") -> dict:
+    return _r("web.search", {"status": "failed", "error": error,
+                             "observed": {"version": 1, "source": "web", "query": "docs ejemplo guia",
+                                          "asked": [{"endpoint": "html.duckduckgo.com", "outcome": "challenge",
+                                                     "httpStatus": 202}]}}, {"query": "docs ejemplo guia"})
+
+
+@pytest.mark.parametrize("receipts", [
+    [_not_found(), _refused_srch1()],
+    [_not_found(), _refused_srch1(), _refused_srch1()],
+    [_not_found(), _refused_srch1("web_search_no_results")],
+])
+def test_a_search_that_found_nothing_to_open_leaves_no_page_unopened(receipts: list[dict]) -> None:
+    assert not _flagged(receipts, answer="La página no existe y no pude buscar su dirección real.")
+
+
+def test_a_search_that_answered_after_one_refused_still_leaves_its_result_unopened() -> None:
+    assert len(_flagged([_not_found(), _refused_srch1(), _searched()])) == 1
+
+
 
 
 # Held-out uso-105: 404 and «Netflix no tiene esa página», with the search its next offered never made. Not of an address

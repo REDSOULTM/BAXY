@@ -18,14 +18,6 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bx-priv{display:flex;align-items:center;gap:6px;font:10px var(--mono);color:var(--t-muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bx-priv i{width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
 .bx-priv.out{color:var(--netc)}
-.bx-res{display:flex;flex-direction:column;gap:4px}
-.bx-res .h{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
-.bx-res .k{font-size:11px;color:var(--t-second)}
-.bx-res .v{font:12px var(--mono);color:var(--t-bone);font-feature-settings:"tnum"}
-.bx-res .u{font-size:10px;color:var(--t-muted)}
-.bx-res .b{height:3px;border-radius:2px;background:var(--hair);overflow:hidden}
-.bx-res .b span{display:block;height:100%;background:var(--bar-color,var(--p-blue-hi));transition:width .6s ease,background-color .7s}
-.bx-res .b.hot span{background:var(--carmine)}
 .bx-mod .n.q{color:var(--netc)}
 /* center */
 .bx-ctr{display:flex;align-items:center;gap:6px}
@@ -55,7 +47,19 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bx-c4-you{align-self:flex-end;max-width:86%;text-align:right;font-size:12.5px;line-height:1.45;color:var(--t-second);background:rgba(var(--glass-rgb),.55);border:1px solid var(--hair);border-radius:8px 8px 2px 8px;padding:6px 10px;text-wrap:pretty}
 .bx-c4-sys{align-self:center;font:10px var(--mono);color:var(--t-muted);text-align:center;padding:2px 8px}
 .bx-c4-baxy{display:flex;flex-direction:column;gap:7px}
-.bx-c4-baxy .tx{font-size:13px;line-height:1.5;color:var(--t-bone);text-wrap:pretty}
+.bx-c4-baxy .tx{font-size:13px;line-height:1.5;color:var(--t-bone);text-wrap:pretty;white-space:pre-line}
+/* F16: the marks the model writes, drawn (markdown.tsx) in the reply's own type and color */
+.bx-c4-baxy .tx :is(p,ul,ol,pre,blockquote){margin:0 0 .55em}
+.bx-c4-baxy .tx > :last-child{margin-bottom:0}
+.bx-c4-baxy .tx :is(ul,ol){padding-left:1.3em}
+.bx-c4-baxy .tx li{margin:.15em 0}
+.bx-c4-baxy .tx li > :is(p,ul,ol){margin:.15em 0}
+.bx-c4-baxy .tx strong{font-weight:600}
+.bx-c4-baxy .tx code{font-family:var(--mono);font-size:.92em;background:rgba(var(--glass-rgb),.55);border-radius:3px;padding:0 3px}
+.bx-c4-baxy .tx pre{white-space:pre-wrap;overflow-wrap:anywhere;padding:6px 8px;border:1px solid var(--hair);border-radius:4px}
+.bx-c4-baxy .tx pre code{background:none;padding:0}
+.bx-c4-baxy .tx blockquote{border-left:2px solid var(--hair);padding-left:8px;color:var(--t-second)}
+.bx-c4-baxy .tx hr{border:0;border-top:1px solid var(--hair);margin:.55em 0}
 .bx-c4-baxy .mt{display:flex;gap:10px;font:10px var(--mono);color:var(--t-muted)}
 .netb{display:inline-flex;align-items:center;gap:4px;color:var(--netc)}
 .bx-steps{display:flex;flex-direction:column;gap:6px}
@@ -124,7 +128,6 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bxs-log.empty{color:var(--t-muted)}
 .bx-c4-tt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
 .bx-c4-tt .mt{font:10px var(--mono);color:var(--t-muted)}
-.bx-mods .bx-mod{height:28px}
 
 /* perf: blur once on the small container, not on the 1600px rotating layer */
 .bd-glow{filter:blur(8px);inset:-14px}
@@ -135,18 +138,16 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bx-gauges{gap:6px 6px}
 .bx-gauge .ring,.bx-gauge .ring>svg:first-child{width:26px;height:26px}
 .bx-mods{gap:3px}
-.bx-mods .bx-mod{height:26px}
-.bx-left .bx-profiles .bx-pchip{height:26px}
+.bx-mods .bx-mod,.bx-mod.bx-gear{height:36px}
 .bx-left::-webkit-scrollbar{width:0}
 @container (max-height:600px){
   .bx-left{gap:6px!important;padding-top:12px!important;padding-bottom:10px!important}
   .bx-modblock>.sec-head,.bx-left .bx-foot>.sec-head{display:none}
-  .bx-mods .bx-mod{height:25px}
+  .bx-mods .bx-mod,.bx-mod.bx-gear{height:30px}
   .bx-gauges{gap:4px 6px}
-  .bx-modebtn{padding:5px 10px}
 }
 @container (max-height:530px){
-  .bx-mods .bx-mod{height:24px}
+  .bx-mods .bx-mod,.bx-mod.bx-gear{height:26px}
 }
 .bx-gauge{cursor:help}
 .bx-gauge .v{font-size:12px}
@@ -167,7 +168,7 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bx-priv span{overflow:hidden;text-overflow:ellipsis}
 html.a11y .bx-line input:focus-visible{outline:none}
 html.a11y .bx-line:focus-within{outline:2px solid var(--carmine);outline-offset:2px}
-html.a11y .bx-mod .l,html.a11y .bx-modebtn .n,html.a11y .power-row{font-size:13px}
+html.a11y .bx-mod .l,html.a11y .power-row{font-size:13px}
 .bx-statel .bx-ctxp{margin-left:6px;padding:1px 6px}
 .bx-c4-sys{text-wrap:balance;max-width:92%}
 
@@ -184,8 +185,8 @@ html.a11y .bx-mod .l,html.a11y .bx-modebtn .n,html.a11y .power-row{font-size:13p
 .panel-sec-head{font-family:var(--disp);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:10px}
 .bx-card .tag{font-family:var(--disp);letter-spacing:.14em}
 .bx-obs .h{font-family:var(--disp);font-weight:500;letter-spacing:.08em;text-transform:uppercase}
-.power-row .power-lbl,.bx-modebtn .n,.bx-mod .l{font-family:var(--sans);font-weight:500}
-.bx-mod .n,.bx-modebtn .s{font-family:var(--sans)}
+.power-row .power-lbl,.bx-mod .l{font-family:var(--sans);font-weight:500}
+.bx-mod .n{font-family:var(--sans)}
 .bx-priv{font-family:var(--sans);font-size:10.5px}
 .bx-c4-sys{font-family:var(--sans);font-size:10.5px}
 .sh h1{font-family:var(--disp);letter-spacing:.04em}
@@ -253,3 +254,86 @@ html.a11y .bx-mod .n{flex-shrink:0}
 .bx-avid:not(.lip) .bx-lip{visibility:hidden}
 /* the mouth is composed from the raw frame (a canvas draws it without the video's CSS filter): the same filter here */
 html.hc .bx-lip{filter:contrast(1.15)}
+/* ===== interfaz v5, lo que se quedó (owner, 2026-11-08): Ajustes en secciones con buscador, Sin frenos elegido en
+   Ajustes con un segundo sí y dicho arriba, y la fuente de una respuesta a la vista (atribución de OpenStreetMap). El
+   carril y la conversación son los de antes. ===== */
+/* VIVO1: the state and Sin frenos take the top's free width; baxy.css' «100% - 50px» was v4's, with the state a child of
+   the whole top, and inside this box sized by its content it left the state 14 px («Listo» unseen, «Hab») */
+.bx-ctl{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 auto}
+.bx-ctl .bx-statel{max-width:100%}
+.bx-bypass-pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:12px;border:1px solid var(--maybe);background:color-mix(in srgb,var(--maybe) 14%,transparent);color:var(--maybe);font:600 11.5px var(--sans);cursor:pointer;white-space:nowrap}
+.bx-update-pill{display:inline-flex;align-items:center;height:24px;margin-left:6px;padding:0 10px;border-radius:12px;border:1px solid var(--hair);background:transparent;color:var(--t-second);font:500 11.5px var(--sans);cursor:pointer;white-space:nowrap}
+.bx-update-pill:hover,.bx-update-pill:focus-visible{color:var(--t-bone);border-color:var(--t-second)}
+.bx-src{margin:0;font-size:11px;color:var(--t-second)}
+.bxs.settings-panel{width:min(860px,calc(var(--vw,100vw) - 40px))!important;height:min(600px,calc(var(--vh,100vh) - 60px))!important}
+.settings-main{flex:1;min-height:0;display:grid;grid-template-columns:200px minmax(0,1fr)}
+.settings-main .settings-tabs{flex-direction:column;align-items:stretch;gap:2px;padding:10px 8px;border-bottom:0;border-right:1px solid var(--hair);overflow-y:auto}
+.settings-main .settings-tablist{display:flex;flex-direction:column;align-items:stretch;gap:5px}
+.settings-main .settings-tab{text-align:left;padding:9px 12px;border:0;border-radius:6px;font:500 13px var(--sans);letter-spacing:0;color:var(--t-second);white-space:normal}
+.settings-main .settings-tab.on{color:var(--t-bone);background:var(--bg-elev);box-shadow:inset 3px 0 0 var(--carmine)}
+.settings-find{height:32px;margin:0 2px 8px;padding:0 10px;border:1px solid var(--hair);border-radius:6px;background:var(--bg-panel);color:var(--t-bone);font:13px var(--sans);outline:none}
+.settings-find:focus{border-color:var(--carmine)}
+.settings-none{font-size:12px;color:var(--t-muted);padding:6px 12px}
+.bxs-ask{display:flex;flex-direction:column;gap:8px;margin-top:10px;padding:12px 14px;border:1px solid var(--maybe);border-radius:6px;background:color-mix(in srgb,var(--maybe) 10%,transparent);font-size:12.5px;color:var(--t-bone);line-height:1.45}
+.bxs-ask .btns{display:flex;gap:8px;justify-content:flex-end}
+.panel-btn.warn{background:var(--maybe);border-color:var(--maybe);color:#1A1205}
+/* the conversation's cards (owner, 2026-11-08: «me encantó el chat»), in the conversation's width of before; sizes from
+   Settings › Personalización (look.ts) */
+:root{--readc:#8CA6FF}
+html.lt{--readc:#2F4FC4}
+.bx-c4-baxy .tx{font-size:var(--bx-reply,14.5px)}
+.bx-c4-baxy.last .tx{font-size:calc(var(--bx-reply,14.5px) + 2.5px);line-height:1.4;font-weight:500}
+.bx-c4-you{font-size:var(--bx-you,12.5px)}
+.bx-card.k-confirm.s-pending{border-color:var(--maybe)}
+.bx-card.k-confirm.s-pending .tag{color:var(--maybe)}
+.bx-c4-baxy{border:1px solid var(--hair);border-radius:10px;background:rgba(var(--glass-rgb),.72);padding:10px 14px;gap:8px}
+.bx-out{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 10px 0 8px;border-radius:11px;font:600 11.5px var(--sans);white-space:nowrap}
+.bx-out.o-ok,.bx-out.o-same{color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.bx-out.o-same{background:transparent;border:1px solid color-mix(in srgb,var(--ok) 60%,transparent)}
+.bx-out.o-read{color:var(--readc);background:color-mix(in srgb,var(--readc) 14%,transparent)}
+.bx-out.o-sent,.bx-out.o-maybe,.bx-out.o-part{color:var(--maybe);background:color-mix(in srgb,var(--maybe) 15%,transparent)}
+.bx-out.o-fail{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+.bx-out.o-skip{color:var(--t-second);border:1px dashed var(--t-dim)}
+.bx-c4-baxy.o-fail{border-color:color-mix(in srgb,var(--bad) 45%,var(--hair))}
+.bx-how{display:flex;flex-direction:column;gap:4px}
+.bx-how-t{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:2px 0;border:0;background:none;color:var(--t-second);font:500 12px var(--sans);cursor:pointer}
+.bx-how-t:hover{color:var(--t-bone)}
+.bx-how-t .ar{font-size:10px}
+.bx-how-l{list-style:none;margin:0;padding:0;border-top:1px solid var(--hair)}
+.bx-how-s{display:grid;grid-template-columns:20px 1fr;gap:8px;padding:7px 0;align-items:start}
+.bx-how-s+.bx-how-s{border-top:1px dashed var(--hair)}
+.bx-how-s .ic{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font:600 10px var(--sans);color:var(--t-second);border:1px solid var(--t-dim)}
+.bx-how-s.st-ok .ic,.bx-how-s.st-read .ic,.bx-how-s.st-same .ic{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 50%,transparent);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.bx-how-s.st-fail .ic{color:#fff;background:var(--bad);border-color:var(--bad)}
+.bx-how-s.st-sent .ic,.bx-how-s.st-maybe .ic{color:var(--maybe);border-color:color-mix(in srgb,var(--maybe) 55%,transparent)}
+.bx-how-s.st-skip .ic{border-style:dashed}
+.bx-how-s .b{display:flex;flex-direction:column;gap:2px;min-width:0}
+.bx-how-s .k{font:500 12.5px var(--sans);color:var(--t-bone);overflow-wrap:anywhere}
+.bx-how-s .o{font-size:12px;color:var(--t-second);line-height:1.4;overflow-wrap:anywhere}
+.bx-how-s.st-fail .o:not(.netb){color:var(--bad)}
+.bx-how-s .netb{display:inline-flex;gap:4px;align-items:center;color:var(--netc)}
+/* Personalización: the border's light off */
+.app-frame.bx-ring-off .bd-ring,.app-frame.bx-ring-off .bd-glow{display:none}
+/* the window is moved from its top (owner, 2026-11-08): the centre's top strip takes the pointer instead of the face under it */
+.bx-ctop{pointer-events:auto;cursor:default}
+/* the whole band at the top moves the window (owner, 2026-11-08): the centre's top from edge to edge, and the
+   conversation's head over its padding */
+.bx-ctop{top:0;left:0;right:0;min-height:56px;padding:12px 12px 10px 16px;box-sizing:border-box;pointer-events:auto;cursor:default}
+.bx-chat-head{margin:-14px -14px 0;padding:14px 14px 6px;min-height:56px;box-sizing:border-box}
+/* WebView2's draggable regions (owner, 2026-11-08: move the window from its top, as any program): Windows moves the
+   window from them and maximizes it on a double click; the controls inside stay pressable */
+.pywebview-drag-region{app-region:drag;-webkit-app-region:drag}
+.pywebview-drag-region :is(button,a[href],input,textarea,select,[role=button],[role=switch]){app-region:no-drag;-webkit-app-region:no-drag}
+/* Settings › Modelo: all the memory BAXY uses, piece by piece */
+.bx-mem-all table{width:100%;border-collapse:collapse;font-size:12.5px}
+.bx-mem-all th{text-align:left;font:600 10.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--t-muted);padding:6px 6px 6px 0;border-bottom:1px solid var(--hair)}
+.bx-mem-all td{padding:7px 6px 7px 0;border-bottom:1px solid var(--hair);color:var(--t-second)}
+.bx-mem-all td:first-child{color:var(--t-bone)}
+.bx-mem-all th:not(:first-child),.bx-mem-all td:not(:first-child){text-align:right;font-family:var(--mono);white-space:nowrap}
+.bx-mem-all tfoot td{color:var(--t-bone);font-weight:600;border-bottom:0}
+/* Settings › Personalización › Overlay: the corner picker is a little screen with a button in each corner */
+.bx-corners{position:relative;width:120px;height:72px;border:2px solid var(--hair);border-radius:6px;background:var(--bg-base)}
+.bx-corners button{position:absolute;width:28px;height:16px;border-radius:4px;border:1px solid var(--hair);background:var(--bg-elev);padding:0;cursor:pointer}
+.bx-corners button.on{background:var(--carmine);border-color:var(--carmine)}
+.bx-corners .c-tl{left:5px;top:5px}.bx-corners .c-tr{right:5px;top:5px}.bx-corners .c-bl{left:5px;bottom:5px}.bx-corners .c-br{right:5px;bottom:5px}
+.bx-range{width:150px;accent-color:var(--carmine)}

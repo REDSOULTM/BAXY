@@ -361,7 +361,9 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
     // same capture first, which reads the text of any capture, an image's too. Encargo 48: then the read of the window
     // in front, by its process when there is one to name; a protected window keeps the call without it, so naming it
     // here never opens what the person did not name.
-    internal static string VisionMissingNext(string captureId, string? application)
+    /// <param name="modelCannotSee">The vision endpoint is the model in use, which does not see images (the translator's 501,
+    /// external_model: pedido del dueño 2026-11-08, a model with no vision is used as it is).</param>
+    internal static string VisionMissingNext(string captureId, string? application, bool modelCannotSee = false)
     {
         var arguments = new System.Text.Json.Nodes.JsonObject();
         if (application is not null)
@@ -369,8 +371,10 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         arguments["includeText"] = true;
         return $"{Baxy.Kernel.Operations.WireNames.Call("ocr.read", new() { ["captureId"] = captureId })} reads the text "
             + $"in this capture, and {Baxy.Kernel.Operations.WireNames.Call("input.visible.controls", arguments)} the text "
-            + "the window in front shows; this call described nothing: no vision model is configured on this PC, so no "
-            + "capture can be described here";
+            + "the window in front shows; this call described nothing: "
+            + (modelCannotSee
+                ? "the model BAXY uses now does not see images, so no capture can be described while it is in use"
+                : "no vision model is configured on this PC, so no capture can be described here");
     }
 
     private static async ValueTask<string?> ApplicationInFrontAsync(CancellationToken cancellationToken)
@@ -582,15 +586,21 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         string? held = LocalVisionEndpoint.SlotDirectory() is null
             ? null
             : await LocalVisionEndpoint.HoldSlotAsync(_http, uri, cancellationToken).ConfigureAwait(false);
-        string? description;
+        string? description = null;
+        bool unseeing = false;
         try
         {
             using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
                 .ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode)
+            // 501: the endpoint is the model in use and it does not see (external_model's translator); said as no vision here.
+            unseeing = response.StatusCode == System.Net.HttpStatusCode.NotImplemented;
+            if (!response.IsSuccessStatusCode && !unseeing)
             {
                 return effectBoundary.Failure(operation, "vision_provider_request_failed");
             }
+
+            if (!unseeing)
+            {
             using JsonDocument document = JsonDocument.Parse(
                 await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false));
             description = document.RootElement
@@ -598,11 +608,23 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
                 .GetProperty("message")
                 .GetProperty("content")
                 .GetString();
+            }
         }
         finally
         {
             if (held is not null)
                 await LocalVisionEndpoint.PutSlotBackAsync(_http, uri, held).ConfigureAwait(false);
+        }
+        if (unseeing)
+        {
+            string? application = await ApplicationInFront(cancellationToken).ConfigureAwait(false);
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("next", VisionMissingNext(captureId, application, modelCannotSee: true));
+                writer.WriteEndObject();
+            }), "vision_provider_not_configured");
         }
         if (string.IsNullOrWhiteSpace(description) || description.Length > 32_000)
         {

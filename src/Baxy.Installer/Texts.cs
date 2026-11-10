@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Baxy.Installer;
 
 /// <summary>What BAXY says in its installer, in the first person and tuteando, as in documentacion/00_IDENTIDAD.md.
@@ -81,14 +83,35 @@ internal sealed class Texts
     internal required string FailWindowsHelp { get; init; }
     internal required string FailOther { get; init; }
     internal required string FailOtherHelp { get; init; }
+    internal required string NotRegisteredTitle { get; init; }
+    internal required string NotRegisteredBody { get; init; }
+    internal required string NotRegisteredHelp { get; init; }
     internal required string Retry { get; init; }
     internal required string UninstallTitle { get; init; }
     internal required string UninstallBody { get; init; }
+    internal required string UninstallRings { get; init; }
+    internal required string UninstallSize { get; init; }
     internal required string UninstallKeep { get; init; }
     internal required string UninstallDelete { get; init; }
     internal required string UninstalledTitle { get; init; }
 
     internal static Texts For(string language) => language == "es" ? Spanish : English;
+
+    /// <summary>What the uninstall screen says before the person chooses: what the data are, how much room they take
+    /// when that is known (INS-9) and, when the uninstall will take alarms or reminders out of Windows
+    /// (<see cref="WindowsIntegration.RingsToRemove"/>), that they go either way (INS-1).</summary>
+    internal string UninstallBodyFor(int rings, long dataBytes, string dataFolder)
+    {
+        string body = dataBytes > 0
+            ? UninstallBody + " " + string.Format(CultureInfo.CurrentCulture, UninstallSize, Size(dataBytes), dataFolder)
+            : UninstallBody;
+        return rings > 0 ? body + " " + UninstallRings : body;
+    }
+
+    // In the units of the installer's other figures (1 GB = 1,000,000,000 bytes); what is there is never «0 MB».
+    private static string Size(long bytes) => bytes >= 1_000_000_000
+        ? string.Format(CultureInfo.CurrentCulture, "{0:0.0} GB", bytes / 1e9)
+        : string.Format(CultureInfo.CurrentCulture, "{0:0} MB", Math.Max(1, Math.Round(bytes / 1e6)));
 
     internal static readonly Texts Spanish = new()
     {
@@ -167,9 +190,14 @@ internal sealed class Texts
         FailWindowsHelp = "Vuelve a intentarlo. Si Windows te pide permiso, acéptalo.",
         FailOther = "{0}",
         FailOtherHelp = "Vuelve a intentarlo. El detalle quedó en {0}.",
+        NotRegisteredTitle = "Ya estoy instalado, pero falta un paso.",
+        NotRegisteredBody = "Windows no me dejó crear mi acceso en el menú Inicio o mi entrada en «Aplicaciones instaladas».",
+        NotRegisteredHelp = "Reintenta sólo ese paso: no vuelvo a bajar nada. Mientras tanto puedes abrirme desde aquí. El detalle quedó en {0}.",
         Retry = "Reintentar",
         UninstallTitle = "¿Me desinstalo?",
-        UninstallBody = "Tus datos son lo que recuerdo de ti y tus conversaciones. Tú decides si se quedan.",
+        UninstallBody = "Tus datos son lo que recuerdo de ti, tus conversaciones, notas y ajustes, las claves que me diste, las capturas de pantalla que guardé y los modelos que bajé después de instalarme. Tú decides si se quedan.",
+        UninstallRings = "Las alarmas y los recordatorios que me pediste se quitan de Windows en los dos casos: sin mí no suenan.",
+        UninstallSize = "Hoy ocupan {0} en {1}.",
         UninstallKeep = "Desinstalarme y _conservar tus datos",
         UninstallDelete = "Desinstalarme y _borrar tus datos",
         UninstalledTitle = "Ya me desinstalé.",
@@ -252,9 +280,14 @@ internal sealed class Texts
         FailWindowsHelp = "Try again. If Windows asks your permission, accept it.",
         FailOther = "{0}",
         FailOtherHelp = "Try again. The details are in {0}.",
+        NotRegisteredTitle = "I’m installed, but one step is missing.",
+        NotRegisteredBody = "Windows didn’t let me create my Start menu shortcut or my entry in «Installed apps».",
+        NotRegisteredHelp = "Try just that step again: I won’t download anything twice. Meanwhile you can open me from here. The details are in {0}.",
         Retry = "Try again",
         UninstallTitle = "Should I uninstall myself?",
-        UninstallBody = "Your data is what I remember about you and your conversations. You decide whether it stays.",
+        UninstallBody = "Your data is what I remember about you, your conversations, notes and settings, the keys you gave me, the screenshots I saved and the models I downloaded after I was installed. You decide whether it stays.",
+        UninstallRings = "The alarms and reminders you asked me for are removed from Windows either way: they don’t ring without me.",
+        UninstallSize = "Today it takes {0} in {1}.",
         UninstallKeep = "Uninstall me and _keep your data",
         UninstallDelete = "Uninstall me and _delete your data",
         UninstalledTitle = "I’ve been uninstalled.",

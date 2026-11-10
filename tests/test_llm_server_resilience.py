@@ -157,3 +157,21 @@ def test_a_requests_ceiling_is_never_past_what_the_app_takes(monkeypatch, window
     server.kept = kept
     assert server.ceiling_s == ceiling
     assert server.ceiling_s + 6 <= 45 * 60
+
+
+def test_a_chat_says_how_long_it_took(monkeypatch) -> None:
+    # A server that says no timings (the translator: an API or Ollama) is weighed by it for a notice's budget (Mind._next).
+    calls: list = []
+    server = _server(monkeypatch, [REPLY], calls, [])
+    real = llm_server.urllib.request.urlopen
+
+    def slow(request, timeout):
+        until = time.perf_counter() + 0.3  # _server stands time.sleep in for its pauses
+        while time.perf_counter() < until:
+            pass
+        return real(request, timeout)
+
+    monkeypatch.setattr(llm_server.urllib.request, "urlopen", slow)
+    assert server.took_s is None
+    server.chat({"messages": []})
+    assert server.took_s is not None and server.took_s >= 0.3

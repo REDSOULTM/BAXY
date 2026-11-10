@@ -90,8 +90,9 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
         bool? toastEnabled = toastSetting is null ? null : toastSetting.Value != 0;
         List<FiredReceipt>? read = FiredReceipts(request.AlarmRoot);
         List<FiredReceipt> fired = read ?? [];
-        int firedNotShown = fired.Count(receipt => receipt.NotificationShown == false);
-        int firedShownUnread = fired.Count(receipt => receipt.NotificationShown is null);
+        // ALR1: a ring the open App took (rungBy app) was rung by the App, with its card, not by a notification.
+        int firedNotShown = fired.Count(receipt => receipt.RungBy is null && receipt.NotificationShown == false);
+        int firedShownUnread = fired.Count(receipt => receipt.RungBy is null && receipt.NotificationShown is null);
         IReadOnlyList<ScheduledTaskSnapshot>? observed;
         try
         {
@@ -135,6 +136,7 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
                     else writer.WriteNull("notificationShown");
                     if (receipt.Sound is not null) writer.WriteString("sound", receipt.Sound);
                     else writer.WriteNull("sound");
+                    if (receipt.RungBy is not null) writer.WriteString("rungBy", receipt.RungBy);
                     writer.WriteEndObject();
                 }
                 writer.WriteEndArray();
@@ -304,7 +306,8 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
 
     // What a ring wrote in its receipt (WindowsScheduledNotificationAdapter.WriteRingScript): null where the receipt
     // could not be read or does not say it.
-    private sealed record FiredReceipt(string TaskName, string? RangUtc, bool? NotificationShown, string? Sound);
+    private sealed record FiredReceipt(
+        string TaskName, string? RangUtc, bool? NotificationShown, string? Sound, string? RungBy = null);
 
     // The rings of this data root, the latest first; an unreadable folder has none.
     // The receipts of the rings, newest first: none when the folder was never made (nothing scheduled yet), null when
@@ -340,7 +343,9 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
                 root.TryGetProperty("notificationShown", out JsonElement shown)
                     && shown.ValueKind is JsonValueKind.True or JsonValueKind.False ? shown.GetBoolean() : null,
                 root.TryGetProperty("sound", out JsonElement sound) && sound.ValueKind == JsonValueKind.String
-                    ? sound.GetString() : null);
+                    ? sound.GetString() : null,
+                root.TryGetProperty("rungBy", out JsonElement rungBy) && rungBy.ValueKind == JsonValueKind.String
+                    ? rungBy.GetString() : null);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {

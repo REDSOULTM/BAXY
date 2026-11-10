@@ -60,6 +60,23 @@ internal sealed class CommandLineTests
         Assert.That(CommandLine.Parse([argument]).Help, Is.True);
     }
 
+    // INS-3, INS-4 and INS-5: what a script reads to know what --quiet did. With --quiet an update does not open BAXY
+    // (a console over the network has no desktop to show it on), and each way of not ending well has its number.
+    [TestCase("es", "Con --quiet no la abre", "tarjeta gráfica", "«Aplicaciones instaladas»")]
+    [TestCase("en", "With --quiet it does not open it", "graphics card", "«Installed apps»")]
+    public void The_help_says_what_quiet_does_and_what_each_exit_code_means(string language, string update, string card, string entry)
+    {
+        string[] help = CommandLine.HelpText(language, @"C:\Users\someone\AppData\Local\Programs\BAXY-App").Split('\n');
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(help, Has.Some.Contain(update));
+            Assert.That(help, Has.Some.Contain($" {QuietInstall.NoGraphicsCard} ").And.Contain(card));
+            Assert.That(help, Has.Some.Contain($" {QuietInstall.NotRegistered} ").And.Contain(entry));
+            Assert.That(help, Has.Some.Contain($" {CommandLine.InvalidCommandLine} "));
+        });
+    }
+
     [TestCase("en", "Installs with no window")]
     [TestCase("es", "Instala sin ventana")]
     public void The_help_names_every_option_in_both_languages(string language, string said)
@@ -68,7 +85,7 @@ internal sealed class CommandLineTests
 
         Assert.Multiple(() =>
         {
-            foreach (string option in new[] { "--quiet", "--dir", "--no-voice", "--uninstall", "--delete-data", "--help" })
+            foreach (string option in new[] { "--quiet", "--dir", "--no-voice", "--uninstall", "--delete-data", "--update", "--help" })
             {
                 Assert.That(help, Does.Contain(option));
             }
@@ -87,6 +104,18 @@ internal sealed class CommandLineTests
         Assert.That(command, Is.EqualTo(new CommandLine(
             Quiet: true, Uninstall: true, NoVoice: true, DeleteData: true, Directory: @"D:\Pruebas\BAXY")));
         Assert.That(CommandLine.Parse([@"--dir=D:\Pruebas\BAXY"]).Directory, Is.EqualTo(@"D:\Pruebas\BAXY"));
+    }
+
+    // BAXY updating itself (BaxyUpdateHandler) starts the installer over its own folder; an update is never an uninstall.
+    [Test]
+    public void The_update_BAXY_starts_names_its_folder_and_never_goes_with_an_uninstall()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(CommandLine.Parse(["--update", "--dir", @"D:\Pruebas\BAXY"]),
+                Is.EqualTo(new CommandLine(Update: true, Directory: @"D:\Pruebas\BAXY")));
+            Assert.That(CommandLine.Parse(["--update", "--uninstall"]).Error, Is.Not.Null);
+        });
     }
 
     [TestCase("--silent")]
@@ -192,6 +221,22 @@ internal sealed class CommandLineTests
 
         Assert.That(Directory.Exists(places.Data), Is.False);
         Assert.That(Directory.Exists(paths.Root), Is.False);
+    }
+
+    // INT16: Settings › Personalización keeps its choices in the view's localStorage (look.ts, «baxy.look»). WebView2
+    // keeps it in its user data folder (EBWebView\Default\Local Storage\leveldb), which for the default profile is
+    // BAXY\webview2-field (App, MainWindow.FieldViewDataFolder): «borrar tus datos» takes it with the rest.
+    [Test]
+    public void Deleting_the_data_takes_the_views_local_storage_too()
+    {
+        InstallPaths paths = Installed("BAXY-App");
+        string leveldb = Path.Combine(places.Data, "webview2-field", "EBWebView", "Default", "Local Storage", "leveldb");
+        Directory.CreateDirectory(leveldb);
+        File.WriteAllText(Path.Combine(leveldb, "000003.log"), "_http://127.0.0.1\0\u0001baxy.look\u0001{\"reply\":\"xl\"}");
+
+        WindowsIntegration.Uninstall(paths, deleteData: true, places);
+
+        Assert.That(Directory.Exists(Path.Combine(places.Data, "webview2-field")), Is.False);
     }
 
     // Inno Setup's way: the copy that uninstalls ends the original with its result, which the caller then reads.

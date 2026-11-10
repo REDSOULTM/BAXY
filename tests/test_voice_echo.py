@@ -157,7 +157,7 @@ class _Silent:
     def reset(self) -> None:
         pass
 
-    def marks(self, block: np.ndarray) -> np.ndarray:
+    def marks(self, block: np.ndarray, settle: bool = False) -> np.ndarray:
         return np.zeros(len(block), bool)
 
 

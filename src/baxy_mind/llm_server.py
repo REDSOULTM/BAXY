@@ -7,6 +7,7 @@ import json
 import math
 import os
 import re
+import secrets
 import select
 import socket
 import statistics
@@ -119,7 +120,7 @@ class _Advance:
             return (base * (total - start) + growth * (total * total - start * start) / 2) / 1000
 
         self.need_s = seconds(cache)
-        self.seconds_left = round(seconds(processed))
+        self.seconds_left = round(seconds(processed)) if len(self.stretches) >= PREFIX_TOLD_STRETCHES else None
         if read >= PREFIX_PACE_TOKENS and self.need_s > self.ceiling:
             raise ReadTooSlow(self.tokens_per_s, self.need_s)
 
@@ -153,6 +154,13 @@ class _Advance:
 # least a stretch of the read needs to tell its cost by: the server's batches can end early (at a checkpoint).
 PREFIX_PACE_TOKENS = 6144
 PREFIX_STRETCH_TOKENS = 512
+# VUL1 (2026-11-09): the stretches a read needs before the person is told what is left of it (seconds_left). The first
+# one carries what the server does once (on an RX 7600 on Vulkan the first 1,024 tokens took ~9 s and the rest went at
+# ~1,100 tokens/s: the window said «quedan unos 7 min» of a read that took 63 s, INFORME_AMD3.md §4). With two, that
+# one still is half of the estimate (_read_cost's medians are then means); with three, the median leaves it out: a
+# median of n values holds up to (n - 1) // 2 wrong ones (Rousseeuw & Leroy, «Robust Regression and Outlier
+# Detection», 1987, ch. 1, breakdown point). ReadTooSlow does not wait for them: it has its own count of tokens.
+PREFIX_TOLD_STRETCHES = 3
 
 
 def _read_cost(stretches: list[tuple[float, float]], mean: float) -> tuple[float, float]:
@@ -236,6 +244,7 @@ class LlmServer:
     def __init__(self, gguf: str, server: str, gpu_layers: str = "99", context: int | None = None,
                  extra_args: list[str] | None = None, log_name: str = "llama-server.log",
                  kv: tuple[str, str] | None = None, backend: str = "cuda") -> None:
+        self.took_s: float | None = None  # how long the last chat took (chat)
         self.gguf = gguf
         # The KV cache's types (K, V): BAXY_RENEW_KV when not given (kv_types), by default q8_0 and q8_0, and the flash
         # attention that goes with them (flash_attention). ``backend`` is the folder's (declared_backend). On CUDA the
@@ -257,6 +266,8 @@ class LlmServer:
         # Measurement only (ft-c3, 2026-10-29): BAXY_MIND_LLAMA_REMOTE=<port> uses a llama-server another machine runs,
         # reached on this loopback port (an ssh -L tunnel), started with this class's same arguments; nothing is launched.
         self.remote = _remote_port()
+        # PRV1 (PRIV-04): the key this server asks of every request (server_key), and each of the mind's carries it.
+        self.key = server_key()
         # Encargo 11 (measurement only): BAXY_MIND_SLOT=<n> is the slot this mind takes on that shared remote server,
         # so several minds share one server of several slots (-np); 0 when unset, the one slot of the mind's own server.
         self.slot = _mind_slot(self.remote)
@@ -377,10 +388,18 @@ class LlmServer:
             pass  # held by a server still closing: this run writes over it, as before
         # The server writes its log through its own inherited handle: the mind's copy is closed once it started.
         with open(log_path, "w", encoding="utf-8") as log:
-            self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags)
+            self._process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, creationflags=flags,
+                                             env=server_environment(self.key, self.backend))
 
     def _log_path(self) -> Path:
         return Path(os.environ.get("LOCALAPPDATA", ".")) / "BAXY" / "renew" / self.log_name
+
+    def _headers(self) -> dict[str, str]:
+        """What every request to the server carries: its body's type and the server's key (PRV1, PRIV-04)."""
+        return {"Content-Type": "application/json", **authorization(self.key)}
+
+    def _get(self, path: str) -> urllib.request.Request:
+        return urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", headers=authorization(self.key))
 
     def _wait_health(self) -> None:
         deadline = time.monotonic() + 600
@@ -394,7 +413,7 @@ class LlmServer:
                 self._failure = f"llama-server exited with {self._process.returncode}"
                 return
             try:
-                with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/health", timeout=2) as reply:
+                with urllib.request.urlopen(self._get("/health"), timeout=2) as reply:
                     if reply.status == 200:
                         self._failure = self._slot_missing()
                         if self._failure is None:
@@ -410,7 +429,7 @@ class LlmServer:
         mind's slot, in silence."""
         if not self.slot:
             return None
-        with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/props", timeout=10) as reply:
+        with urllib.request.urlopen(self._get("/props"), timeout=10) as reply:
             total = int(json.loads(reply.read()).get("total_slots") or 1)
         return None if self.slot < total else f"BAXY_MIND_SLOT {self.slot}: the server has {total} slots (-np)"
 
@@ -480,11 +499,28 @@ class LlmServer:
         return min(timeout, left)
 
     def chat(self, body: dict[str, Any], *, timeout: float = max(120.0, REQUEST_SECONDS),
-             on_text: Callable[[str | None, bool], bool] | None = None) -> dict[str, Any]:
+             on_text: Callable[[str | None, bool], bool] | None = None, gives_way: bool = False) -> dict[str, Any]:
         """One chat completion on the one slot, whose prefix stays cached between turns. With ``on_text`` it streams
-        (_stream) and returns the same reply, unless it asks for token probabilities (below)."""
+        (_stream) and returns the same reply, unless it asks for token probabilities (below). How long it took stays in
+        ``took_s``: a server that says no timings (the translator) is weighed by it (Mind._next, a notice's budget).
+        ``gives_way``: a chat nobody waits for (a closed conversation's name), ended as a read ahead is (_aside)."""
+        began = time.perf_counter()
+        reply = self._chat(body, timeout, on_text, gives_way)
+        self.took_s = time.perf_counter() - began
+        return reply
+
+    def _chat(self, body: dict[str, Any], timeout: float, on_text: Callable[[str | None, bool], bool] | None,
+              gives_way: bool = False) -> dict[str, Any]:
         self.wait_ready(self._within(timeout))
         self.resident = None
+        if gives_way:
+            request = urllib.request.Request(
+                f"http://127.0.0.1:{self.port}/v1/chat/completions",
+                data=json.dumps({**body, "id_slot": self.slot, "cache_prompt": True}).encode("utf-8"),
+                headers=self._headers(),
+            )
+            with self._open(request, timeout, self._aside) as reply:
+                return json.loads(reply.read())
         # Only a request someone waits for (``advanced``) lasts while the server advances, and not a call with a time of
         # its own, shorter than the request's (a notice).
         patient = self.advanced is not None and timeout > self.REQUEST_SECONDS
@@ -503,7 +539,7 @@ class LlmServer:
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
             data=json.dumps({**body, "id_slot": self.slot, "cache_prompt": True}).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers=self._headers(),
         )
         with self._open(request, timeout, self._answer if patient else None) as reply:
             return json.loads(reply.read())
@@ -535,6 +571,34 @@ class LlmServer:
             raise urllib.error.HTTPError(request.full_url, response.status, response.reason, response.headers, response)
         return response
 
+    def _aside(self, request: urllib.request.Request, timeout: float) -> Any:
+        """The reply to a chat nobody waits for. Revisión total (M5, 2026-11-09): a closed conversation's name was asked
+        on the request loop with up to TITLE_SECONDS of its own, and only looked at whether a request waited before it
+        began; on a GPU that takes 20-60 s a turn (RX 7600 on Vulkan, AMD2) the first turn of the new conversation waited
+        behind it. It gives way as a read ahead does (prefill): not sent with a request already waiting (``yields``), and
+        its connection closed as soon as one waits, so llama-server cancels the task and the slot is the request's (at
+        b11609 a reply that is not streamed is waited for with the connection's own «closed» as its stop, and a stop
+        cancels the task: server-context.cpp:4874, server-http.cpp:685, server-queue.cpp:548-617). It raises Yielded
+        then, and what ``urlopen`` raises for an error status, as _answer does."""
+        if self.yields():
+            raise Yielded("a request waits")
+        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=timeout)
+        try:
+            connection.request("POST", request.selector, request.data, {**request.headers, "Connection": "close"})
+            until = time.monotonic() + timeout
+            while not select.select([connection.sock], [], [], 0.05)[0]:
+                if self.yields():
+                    raise Yielded("a request waits")
+                if time.monotonic() > until:
+                    raise TimeoutError("the chat's time is spent")
+            response = connection.getresponse()
+        except BaseException:
+            connection.close()
+            raise
+        if response.status >= 400:
+            raise urllib.error.HTTPError(request.full_url, response.status, response.reason, response.headers, response)
+        return response
+
     def _connect(self, request: urllib.request.Request, timeout: float,
                  connected: list[socket.socket]) -> http.client.HTTPResponse:
         """``request`` on a connection of its own, its socket kept in ``connected`` so that each read of the reply is given
@@ -557,7 +621,7 @@ class LlmServer:
         /slots is answered during a decode (server-context.cpp:4183-4189, yield_to_queue; process_single_task,
         server-context.cpp:2732), so a decode that never ends is told from one that goes on. No answer is no advance."""
         try:
-            with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/slots", timeout=self.SLOTS_LOOK_S) as reply:
+            with urllib.request.urlopen(self._get("/slots"), timeout=self.SLOTS_LOOK_S) as reply:
                 slots = json.loads(reply.read())
             slot = next(slot for slot in slots if slot.get("id") == self.slot)
             state = (slot.get("id_task"), slot.get("n_prompt_tokens"), slot["next_token"][0].get("n_decoded"))
@@ -631,7 +695,7 @@ class LlmServer:
             f"http://127.0.0.1:{self.port}/v1/chat/completions",
             data=json.dumps({**body, "stream": True, "stream_options": {"include_usage": True}, **progress,
                              "id_slot": self.slot, "cache_prompt": True}).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers=self._headers(),
         )
         content, reasoning = "", ""
         calls: dict[int, dict[str, Any]] = {}
@@ -739,7 +803,7 @@ class LlmServer:
         try:
             connection.request("POST", "/completion", json.dumps(
                 {"prompt": prompt, "n_predict": 1, "temperature": 0.0, "cache_prompt": True,
-                 "id_slot": self.slot}).encode("utf-8"), {"Content-Type": "application/json"})
+                 "id_slot": self.slot}).encode("utf-8"), self._headers())
             until = time.monotonic() + self._within(timeout)
             while not select.select([connection.sock], [], [], 0.05)[0]:
                 if self.yields():
@@ -784,7 +848,7 @@ class LlmServer:
 
     def _post(self, path: str, body: dict[str, Any], timeout: float) -> dict[str, Any]:
         request = urllib.request.Request(f"http://127.0.0.1:{self.port}{path}", data=json.dumps(body).encode("utf-8"),
-                                         headers={"Content-Type": "application/json"})
+                                         headers=self._headers())
         with self._open(request, timeout) as reply:
             return json.loads(reply.read())
 
@@ -794,7 +858,7 @@ class LlmServer:
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/tokenize",
             data=json.dumps({"content": text, "parse_special": True}).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
+            headers=self._headers(),
         )
         with self._open(request, 30) as reply:
             return list(json.loads(reply.read())["tokens"])
@@ -807,17 +871,19 @@ class LlmServer:
     def prefix_key(self, warm: Any) -> str:
         """The key of the slot's state after the warm-up: the requests that make it (``warm``: the tools, the installed
         applications among them, and the system prompt), the server's arguments but its address (context, KV cache
-        types, projector…), the GGUF and the server binary (size and time: hashing 2.7 GB costs what is saved) and the
-        server's build as it tells it. With a remote server (BAXY_MIND_LLAMA_REMOTE) the GGUF and the binary here are
+        types, projector…), the GGUF and the server binary (size and time: hashing 2.7 GB costs what is saved), the GGUF's
+        SHA-256 the App verified (BAXY_MIND_LLM_GGUF_SHA256: the stock and the tuned model differ by 448 bytes and share
+        every shape, QWB2) and the server's build as it tells it. With a remote server (BAXY_MIND_LLAMA_REMOTE) the GGUF and the binary here are
         not the ones it runs: the model it serves and its slot's context, as its /props tells them, are in the key too."""
         self.wait_ready(self._within(600))
         try:
-            with urllib.request.urlopen(f"http://127.0.0.1:{self.port}/props", timeout=self._within(10)) as reply:
+            with urllib.request.urlopen(self._get("/props"), timeout=self._within(10)) as reply:
                 props = json.loads(reply.read())
         except (OSError, ValueError, http.client.HTTPException):
             props = {}
         props = props if isinstance(props, dict) else {}
         identity = {"settings": self._settings, "gguf": _stamp(self.gguf), "server": _stamp(self.server),
+                    "gguf_sha256": os.environ.get("BAXY_MIND_LLM_GGUF_SHA256", "").strip(),
                     "build": str(props.get("build_info") or ""), "warm": warm}
         if self.remote:
             served = props.get("default_generation_settings")
@@ -1053,6 +1119,32 @@ def read_batch(backend: str) -> list[str]:
     return ["-b", str(batch_size(backend))] if backend == "vulkan" else []
 
 
+# VUL1 (2026-11-09): ggml-vulkan asks first for video memory the processor can also see (DEVICE_LOCAL | HOST_VISIBLE |
+# HOST_COHERENT), and only then for plain video memory (ggml_vk_create_buffer_device, ggml-vulkan-buffers.cpp:219-249 at
+# b11609). That type is the whole VRAM only with Resizable BAR; without it, it is a 256 MiB window, and what AMD's
+# driver gives on Windows to a buffer asked from it is system memory, counted to the process as «shared»
+# (ggml-org/llama.cpp#30888, an RX 6950 XT, 2026-10-20; #27097, an RX 7900 XTX, 2026-08). Measured in the product on an
+# RX 7600 without it (AMD3, INFORME_AMD3.md §2 and §4, the product's line and model): 1,161 MiB shared from the load,
+# the 46,176-token prefix read at 274 → 118 tokens/s, 522 s the first start and 6-18 s a turn; with this variable 1,182
+# → 531 tokens/s, 63 s and 1-5 s, the same reply. On an RTX 4060 Ti without it, on Vulkan (NVIDIA's driver; VUL1, 13
+# rounds in turn, INFORME_VUL1.md §2), the variable moved neither the read (1,894 and 1,922 tokens/s at 46k) nor the
+# memory (4,899 + 167 MiB both ways). With Resizable BAR on it is not measured. The engine reads it as set or not,
+# whatever its value (getenv != nullptr, ggml-vulkan.cpp:4015-4016), and not at all on an integrated GPU (the «uma»
+# branch comes first). From b12236 it looks for Resizable BAR itself, card by card (ggml-org/llama.cpp#31658, merged
+# 2026-11-06): the variable goes out in the change that brings that engine, where it would still force every card.
+VULKAN_PLAIN_VIDEO_MEMORY = "GGML_VK_DISABLE_HOST_VISIBLE_VIDMEM"
+
+
+def server_environment(key: str, backend: str, environ: dict[str, str] | None = None) -> dict[str, str]:
+    """The environment a llama-server of BAXY starts with (LlmServer._launch, external_model.Engine): this process's,
+    and its key; on Vulkan also VULKAN_PLAIN_VIDEO_MEMORY, unless the person's environment already has it: theirs is
+    left as it is."""
+    environment = {**(os.environ if environ is None else environ), "LLAMA_API_KEY": key}
+    if backend == "vulkan":
+        environment.setdefault(VULKAN_PLAIN_VIDEO_MEMORY, "1")
+    return environment
+
+
 def _vision_args() -> list[str]:
     """PLAN_GENERAL A5 (measured 2026-10-21): the model's own projector, so the click's last stage can ask this server
     where a control is on a window without an accessible tree; the one slot's state is set aside meanwhile in the slot
@@ -1123,7 +1215,15 @@ def projector_placement(server: str, backend: str) -> list[str]:
     if backend == "cpu" or os.environ.get("BAXY_VISION_OFFLOAD", "").strip() == "0":
         return ["--no-mmproj-offload"]
     free = _free_vram_mib(server)
-    return ["--mmproj-offload"] if free is not None and free >= VISION_GPU_NEEDS_MIB else ["--no-mmproj-offload"]
+    return ["--mmproj-offload"] if free is not None and free >= vision_gpu_needs_mib() else ["--no-mmproj-offload"]
+
+
+def vision_gpu_needs_mib() -> int:
+    """The VRAM free the projector needs beside the server: what the App works out for the context the server starts with
+    (BAXY_VISION_GPU_NEEDS_MIB, LocalContext from ModelMemory: the server's estimate, the projector's and the same 300 MiB),
+    or with nothing given, VISION_GPU_NEEDS_MIB, the default context's."""
+    given = os.environ.get("BAXY_VISION_GPU_NEEDS_MIB", "").strip()
+    return int(given) if given.isdigit() and int(given) > 0 else VISION_GPU_NEEDS_MIB
 
 
 def _slot_dir() -> Path:
@@ -1193,6 +1293,26 @@ def declared_backend(server: str, build: str, builds: Path = BUILDS) -> str:
     if len(present) > 1:
         raise RuntimeError(f"llama-server has two GPU backends ({', '.join(present)}), keep one: {server}")
     return present[0] if present else "cpu"
+
+
+# PRV1 (revisión de privacidad 2026-11-09, PRIV-04): llama-server started with no key, on the loopback, and by default
+# «the server reflects any Origin header back with credentials allowed» (llama.cpp, tools/server/README.md, «CORS»,
+# read 2026-11-09): a page open in any browser of this PC, or another program, could ask the model, and read or erase
+# the slot that holds the person's conversation (/slots, --slot-save-path). The server takes a key, «--api-key KEY: API
+# key to use for authentication … (env: LLAMA_API_KEY)», and then answers 401 «Invalid API Key» to a request without
+# it; only /health is public (the same README). One key at random for each start of BAXY: the App makes it and gives it
+# to the mind and to its own vision calls (BAXY_MIND_LLAMA_KEY, MindRuntimeDiscovery); a mind started without the App
+# makes its own. It reaches the server in its environment, never on its command line, which other programs can read.
+KEY_VARIABLE = "BAXY_MIND_LLAMA_KEY"
+
+
+def server_key(environ: dict[str, str] | None = None) -> str:
+    source = os.environ if environ is None else environ
+    return source.get(KEY_VARIABLE, "").strip() or secrets.token_urlsafe(32)
+
+
+def authorization(key: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {key}"}
 
 
 def _pinned_port() -> int | None:

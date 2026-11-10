@@ -97,6 +97,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsAudioAdjustmentAdapter(),
             new WindowsAppVolumeAdapter(),
             new WindowsAppVolumeSetAdapter(),
+            new WindowsAppMuteAdapter(),
             new WindowsMediaSessionAdapter(),
             // 2026-09-22 (owner's turn 148): the YouTube tab this session plays answers
             // media.control/media.status after SMTC, so «para la canción» stops what was
@@ -130,7 +131,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsRecycleBinAdapter(),
             new CaptureVisionAdapter(Path.Combine(root, "captures")),
             new NamedBrowserAdapter(root, browserSessionContext),
-            new OpenMeteoWeatherAdapter(),
+            new MetNorwayWeatherAdapter(root),
             new MicrosoftAccountAdapter(),
             new OfficeFormatAdapter(),
         ];

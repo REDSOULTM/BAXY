@@ -1,10 +1,17 @@
+using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 
 namespace Baxy.Installer;
 
-/// <summary>Downloads one release part, resuming what a cut connection left, and keeps it only with its manifest hash.</summary>
+internal sealed record ReleasePart(string File, long Bytes, string Sha256);
+
+/// <summary>
+/// Downloads one release part, resuming what a cut connection left, and keeps it only with its manifest hash. The App links
+/// this file (Baxy.App.csproj) for the tuned model the person asks for (TunedModel): one pinned address into a «.part».
+/// </summary>
 internal sealed class PartFetcher(
     HttpClient http,
     TimeSpan? stallLimit = null,
@@ -14,19 +21,31 @@ internal sealed class PartFetcher(
     private const int AttemptsWithoutProgress = 8;
     private const int DamagedAttempts = 3;
     private static readonly TimeSpan LongestWait = TimeSpan.FromSeconds(60);
-    private readonly TimeSpan stallLimit = stallLimit ?? TimeSpan.FromSeconds(60);
+
+    /// <summary>How long a server may send nothing, an answer or more bytes, before it is given up on.</summary>
+    internal static readonly TimeSpan StallLimit = TimeSpan.FromSeconds(60);
+
+    private readonly TimeSpan stallLimit = stallLimit ?? StallLimit;
     private readonly TimeSpan retryDelay = retryDelay ?? TimeSpan.FromSeconds(3);
 
     /// <param name="moved">Called with each change in the bytes of this part on disk (negative when it starts over).</param>
-    internal async Task<string> FetchAsync(
+    internal Task<string> FetchAsync(
         string baseUrl,
         ReleasePart part,
         string directory,
         Action<long> moved,
+        CancellationToken cancellation) =>
+        FetchAsync(baseUrl + part.File, Path.Combine(directory, part.File), part, moved, cancellation);
+
+    /// <summary>The part at <paramref name="address"/>, downloaded into <paramref name="path"/>.</summary>
+    internal async Task<string> FetchAsync(
+        string address,
+        string path,
+        ReleasePart part,
+        Action<long> moved,
         CancellationToken cancellation)
     {
-        Directory.CreateDirectory(directory);
-        string path = Path.Combine(directory, part.File);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         long told = 0;
         void Tell(long onDisk)
         {
@@ -51,7 +70,7 @@ internal sealed class PartFetcher(
                 Tell(onDisk);
                 if (onDisk < part.Bytes)
                 {
-                    await DownloadAsync(baseUrl + part.File, path, onDisk, Tell, cancellation).ConfigureAwait(false);
+                    await DownloadAsync(address, path, onDisk, Tell, cancellation).ConfigureAwait(false);
                 }
 
                 if (await HashAsync(path, cancellation).ConfigureAwait(false) == part.Sha256)

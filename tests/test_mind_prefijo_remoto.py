@@ -176,3 +176,16 @@ def test_a_product_start_keeps_its_key_and_needs_the_state_on_its_own_disk(monke
     (local / f"{llm_server.PREFIX}{key}.json").write_text(json.dumps({"prefix_tokens": 7}), encoding="utf-8")
     assert mind.restore_prefix(key) is None
     assert server.actions == []
+
+
+def test_the_key_names_the_models_verified_hash(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, remote) -> None:
+    # QWB2: the stock Qwen3.5-4B and BAXY's tuned model differ by 448 bytes and share every shape; switching between them
+    # must not restore a state of the other. The App gives the hash it verified (BAXY_MIND_LLM_GGUF_SHA256): same file
+    # stamp, another hash, another key.
+    local = tmp_path / "pc"
+    server = remote()
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF_SHA256", "00fe7986" * 8)
+    stock = _mind(monkeypatch, local, None, server.port).prefix_key(WARM)
+    assert _mind(monkeypatch, local, None, server.port).prefix_key(WARM) == stock
+    monkeypatch.setenv("BAXY_MIND_LLM_GGUF_SHA256", "2c445631" * 8)
+    assert _mind(monkeypatch, local, None, server.port).prefix_key(WARM) != stock

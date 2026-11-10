@@ -28,6 +28,8 @@ export interface Step {
   reason?: string;
   /** what left the PC, when the call went out to the internet. */
   net?: string;
+  /** it changed one of BAXY's own settings (COR1): the steps are shown open, never only behind their fold. */
+  pin?: boolean;
 }
 
 export type CardStatus = 'pending' | 'yes' | 'no' | 'expired' | 'dropped';
@@ -50,11 +52,30 @@ export interface Confirmation {
   via?: string | null;
 }
 
-export type ChatItem =
-  | { who: 'you'; id: string; text: string; ts: string }
-  | { who: 'baxy'; id: string; text: string; ts: string; steps: Step[]; net?: string | null; silent?: string | null }
+// ended: kept «ringing» in a conversation saved while it rang, opened again when it no longer rings (FieldTranscript).
+// windows, failed (APP1): the host took it and could not sound it; Windows' notification rings it, or nothing could.
+export type RingStatus = 'ringing' | 'stopped' | 'snoozed' | 'timeout' | 'unanswered' | 'closed' | 'ended' | 'windows' | 'failed';
+
+/** an alarm or a reminder the host rings now (ALR1): what BAXY says, and how it ended. `id` is the one schedule.alarms
+ *  stop and snooze take. */
+export interface Ring {
+  id: string;
+  kind: 'alarm' | 'reminder';
+  title?: string | null;
+  clock: string;
+  words: string;
+  status: RingStatus;
+}
+
+export type ChatItem = (
+  // api: the host marks a turn made while the mind thought with a company's API (FieldTranscript); kept with the conversation
+  | { who: 'you'; id: string; text: string; ts: string; api?: boolean }
+  | { who: 'baxy'; id: string; text: string; ts: string; steps: Step[]; net?: string | null; silent?: string | null; api?: boolean }
   | { who: 'sys'; id: string; text: string; ts: string }
-  | ({ who: 'card'; ts: string } & Confirmation);
+  | ({ who: 'card'; ts: string } & Confirmation)
+  | { who: 'ring'; id: string; ts: string; ring: Ring })
+  // V-03: turns by API dropped from the start of a long conversation leave this on the first item kept (FieldTranscript, store.ts)
+  & { apiBefore?: boolean };
 
 export interface AgentStatus {
   built: boolean;
@@ -65,6 +86,10 @@ export interface AgentStatus {
   waitingForMind?: boolean;
   /** uso 95: why the model's last start failed while none is up (ram_insuficiente, vram_insuficiente, …) */
   failureCause?: string | null;
+  // VIVO1 F4: why the server of another model refused the turn (model_refused), in the translator's words
+  failureWhy?: string | null;
+  /** REV_VISTA V-04: that refusal's kind (external_model ERROR[kind]), which the view says in its own language */
+  failureKind?: string | null;
   /** N9: the figures of a read too slow, when the cause is one. */
   failureRead?: FailureRead | null;
   /** uso-116: the figures of that lack of memory, when known */
@@ -85,6 +110,10 @@ export interface VoiceStatus {
   waiting_memory?: { need_mb: number; left_mb: number } | null;
   /** uso-116: there is a microphone and the voice settled, with no recogniser to hear it */
   no_recognizer?: boolean;
+  /** V132: the voice settled without a wake word: «Siempre activo» cannot answer to «BAXY» */
+  no_wake?: boolean;
+  /** V132: why, when the installation names one: wake_missing (its folder gone or empty) or wake_changed (not the installed one) */
+  wake_problem?: string | null;
 }
 
 /** each piece is null while the host has not read it, false when it is not there. */
@@ -106,6 +135,8 @@ export interface BootPieces {
   reading?: ModelReading | null;
   /** N9: no graphics card the model's server can use: the processor computes. */
   onProcessor?: boolean;
+  /** QWB2: why this start runs the stock model although the person chose the tuned one (missing or damaged), or null. */
+  tunedProblem?: string | null;
 }
 
 export interface Metrics {
@@ -120,6 +151,8 @@ export interface Metrics {
 
 export interface Surfaces {
   sessions: number;
+  /** grows when a kept conversation's name changed after the list was read (the model named one that closed) */
+  sessions_revision?: number;
   memory: number | null;
   memory_revision?: number;
   tools: number;
@@ -135,13 +168,20 @@ export interface ProposalSettings {
   quietUntil: number | null;
   quiet: QuietSpan | null;
   ctx: { game: boolean; call: boolean; video: boolean };
+  /** a choice the host could not write to its file yet: it holds while BAXY runs and is written with the next change */
+  unsaved?: boolean;
 }
 
 export interface GeneralSettings {
+  /** a choice the host could not write to its file yet (Settings says so until one is written) */
+  unsaved?: boolean;
   autostart: boolean | null;
   /** why the switch is locked: this copy may not own the sign-in start, or the Run key could not be read */
-  autostartBlocked?: 'not_this_copy' | 'unreadable' | null;
+  // LEG1 §5: a copy from Steam or itch.io says its store (FieldProductChannel.AutostartBlocked)
+  autostartBlocked?: 'not_this_copy' | 'steam_copy' | 'itch_copy' | 'unreadable' | null;
   closeToTray: boolean;
+  /** minimizing hides the window in the tray (Settings › General) */
+  minimizeToTray?: boolean;
   voiceMuted: boolean;
   wakeSound: boolean;
   waitNotice: boolean;
@@ -150,6 +190,8 @@ export interface GeneralSettings {
   web: boolean;
   weather: boolean;
   screen: boolean;
+  /** «Avisar de versiones nuevas»: one check at each start where BAXY was published (Settings › General) */
+  updateNotice?: boolean;
   /** the interface's language as the person chose it (Settings); «auto» follows Windows */
   language?: 'auto' | 'es' | 'en';
   /** the language in use, resolved by the host (from Windows when the choice is «auto») */
@@ -160,7 +202,7 @@ export interface GeneralSettings {
  *  list when the view connects or a session is opened. */
 export type ServerEvent =
   | { type: 'state'; value: HostState; quiet?: HostState }
-  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean; waitingForMind?: boolean; failureCause?: string | null; failureMemory?: FailureMemory | null; failureRead?: FailureRead | null }
+  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean; waitingForMind?: boolean; failureCause?: string | null; failureWhy?: string | null; failureKind?: string | null; failureMemory?: FailureMemory | null; failureRead?: FailureRead | null }
   | { type: 'item'; item: ChatItem }
   | { type: 'transcript'; items: ChatItem[] }
   | ({ type: 'step'; phase: 'start' | 'end'; turn: string } & Step)
@@ -172,4 +214,6 @@ export type ServerEvent =
   | ({ type: 'net' } & NetEntry)
   | ({ type: 'surfaces' } & Surfaces)
   | { type: 'session'; id: string; label: string }
-  | { type: 'context'; activity: 'free' | 'game' | 'call' | 'video' | 'away' };
+  | { type: 'context'; activity: 'free' | 'game' | 'call' | 'video' | 'away' }
+  /** a newer BAXY where it was published (the host's baxy.update check); nothing updates without the person's «Actualizar» */
+  | { type: 'update'; latest: string; installed: string };

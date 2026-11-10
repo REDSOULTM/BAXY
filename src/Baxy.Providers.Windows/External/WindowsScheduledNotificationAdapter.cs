@@ -25,7 +25,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
 
     internal WindowsScheduledNotificationAdapter(string dataRoot, IScheduledNotificationBackend backend)
     {
-        _alarmRoot = Path.Combine(Path.GetFullPath(dataRoot), "scheduled-notifications");
+        _alarmRoot = Path.Combine(Path.GetFullPath(dataRoot), ScheduledRingTasks.FolderName);
         _backend = backend ?? throw new ArgumentNullException(nameof(backend));
     }
 
@@ -43,7 +43,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string action = OptionalString(arguments, "action") ?? string.Empty;
         string? namedKind = OptionalString(arguments, "kind");
         string kind = namedKind ?? "reminder";
-        if (action is not ("create" or "list" or "cancel" or "diagnose"))
+        if (action is not ("create" or "list" or "cancel" or "diagnose" or "stop" or "snooze"))
             return ExternalJson.FailureBeforeEffect(operation, "schedule_action_invalid");
         if (kind is not ("alarm" or "reminder"))
             return ExternalJson.FailureBeforeEffect(operation, "notification_kind_invalid");
@@ -63,6 +63,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             }
         }
 
+        if (action is "stop" or "snooze")
+            return await AnswerRingAsync(operation, action, arguments, namedKind, cancellationToken).ConfigureAwait(false);
+
         string? at = OptionalString(arguments, "at");
         if (action == "cancel" && at is not null)
         {
@@ -70,6 +73,17 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 ? await CancelAtAsync(operation, namedKind is null ? ["alarm", "reminder"] : [kind], hour, minute,
                     cancellationToken).ConfigureAwait(false)
                 : ExternalJson.FailureBeforeEffect(operation, "notification_clock_selector_invalid");
+        }
+
+        // ALR5 (B4): with no time, cancel takes «the only one pending»; while one of that kind rings, which one is meant
+        // is not said (the one ringing, if it rang once, is not even pending), and the one deleted was another.
+        if (action == "cancel" && RingingNow() is { Count: > 0 } ringing
+            && ringing.Any(ring => namedKind is null || ring.Kind == namedKind))
+        {
+            return CancelWhileItRings(operation, ringing, "nothing was canceled: cancel deletes one that is set and "
+                + "is not ringing, and with no at it does not say which. What rings now (ringingNow) is answered with "
+                + "stop, which silences it, or snooze, which rings it again later (inMinutes or at); at with its time "
+                + "names one that is set to cancel");
         }
 
         var effectBoundary = new ExternalEffectBoundary();
@@ -222,10 +236,24 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             }
         }
 
+        IReadOnlyList<AlarmRingHandoff.Ring> ringing = RingingNow();
         if (found != 1)
         {
-            return ExternalJson.FailureBeforeEffect(
-                operation, found == 0 ? resolutionError : "notification_clock_ambiguous");
+            string error = found == 0 ? resolutionError : "notification_clock_ambiguous";
+            // ALR5 (B4): while something rings, a cancel that found none at that time says that nothing was deleted
+            // nor set and that it rings on (the words after it were «te lo recordaré a las once», with nothing set).
+            return error != "notification_clock_not_found" || ringing.Count == 0
+                ? ExternalJson.FailureBeforeEffect(operation, error)
+                : CancelWhileItRings(operation, ringing, FormattableString.Invariant(
+                    $"nothing was canceled and nothing was set: none is set for {hour:00}:{minute:00}. What rings now ")
+                    + "(ringingNow) still rings: stop silences it, snooze rings it again later (inMinutes or at)", error);
+        }
+
+        if (ringing.Any(ring => string.Equals(ring.TaskName, taskName, StringComparison.Ordinal)))
+        {
+            return CancelWhileItRings(operation, ringing, "nothing was canceled: that one rings now. stop silences it "
+                + "(one that repeats still rings next time) and snooze rings it again later (inMinutes or at); cancel "
+                + "deletes it once it no longer rings");
         }
 
         var effectBoundary = new ExternalEffectBoundary();
@@ -250,6 +278,28 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             return effectBoundary.Failure(operation, "notification_scheduler_failed");
         }
     }
+
+    // ALR5 (B4, held-out bench on the base: asked to be reminded later of the one ringing, the model wrote a cancel in
+    // 4 of 45 samples and said «te lo recordaré»; a cancel deletes, and with another reminder pending it deleted that
+    // one): what is deleted does not come back, so cancel never takes the one that rings now nor picks among the rest
+    // while one rings. What rings is answered with stop or snooze, as Google's assistant keeps «Cancel an existing
+    // alarm» apart from «Stop a ringing alarm» (Google Nest Help, «Set and manage alarms») and Android's clock Stop
+    // apart from Delete (Clock Help, «Set, cancel, or snooze alarms»). Nothing is deleted, and the result says what
+    // rings and what answers it (Anthropic, «Writing tools for agents»: an error says what to change).
+    private static ExternalCapabilityReceipt CancelWhileItRings(
+        string operation, IReadOnlyList<AlarmRingHandoff.Ring> ringing, string next,
+        string error = "notification_cancel_rings_now") =>
+        ExternalJson.FailureBeforeEffect(operation, error) with
+        {
+            Result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteBoolean("canceled", false);
+                WriteRinging(writer, ringing);
+                writer.WriteString("next", next);
+                writer.WriteEndObject();
+            }),
+        };
 
     // The one task named (its identity and the next run read before), deleted only while it still rings then.
     private async ValueTask<ExternalCapabilityReceipt> CancelExactAsync(
@@ -385,6 +435,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             writer.WriteStartArray("notifications");
             foreach (var item in shown) WritePending(writer, item);
             writer.WriteEndArray();
+            WriteRinging(writer, RingingNow());
             writer.WriteNumber("staleTaskCount", staleTasks);
             writer.WriteNumber("resultLimit", limit);
             writer.WriteBoolean("resultsMayBeTruncated", items.Count > shown.Length);
@@ -471,29 +522,12 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 items.Add(new PendingNotification(
                     taskName,
                     identity.Groups[1].Value == "Alarm" ? "alarm" : "reminder",
-                    ReadRingTitle(Path.Combine(_alarmRoot, taskName + ".ps1")),
+                    ScheduledRingScript.ReadTitle(Path.Combine(_alarmRoot, taskName + ".ps1")),
                     nextRun,
                     state));
             }
         }
         return (items, staleTasks, null);
-    }
-
-    private static string? ReadRingTitle(string path)
-    {
-        if (!File.Exists(path)) return null;
-        // The title's own line: a ring script with no title has none, and the receipt path in it is no title.
-        Match encoded = Regex.Match(File.ReadAllText(path), @"^\$title=.*?FromBase64String\('([A-Za-z0-9+/=]+)'\)",
-            RegexOptions.CultureInvariant | RegexOptions.Multiline, TimeSpan.FromMilliseconds(100));
-        if (!encoded.Success) return null;
-        try
-        {
-            return Encoding.UTF8.GetString(Convert.FromBase64String(encoded.Groups[1].Value));
-        }
-        catch (FormatException)
-        {
-            return null;
-        }
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ScheduleAsync(
@@ -525,8 +559,11 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         string id = Guid.NewGuid().ToString("N");
         string taskName = "BAXY-" + (kind == "alarm" ? "Alarm-" : "Reminder-") + id;
         string ringScript = Path.Combine(_alarmRoot, taskName + ".ps1");
-        string receipt = Path.Combine(_alarmRoot, taskName + ".fired");
-        WriteRingScript(ringScript, receipt, title);
+        // ALR1: the time it is set for is said when it rings («Alarma de las 7:00»); an hourly one rings at a new hour each
+        // time, and says the time it rings.
+        ScheduledRingScript.Write(ringScript, title, recurrence == "hourly"
+            ? null
+            : due.ToLocalTime().ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture));
         ExternalProcessResult process = await _backend.RunAsync(
             new ScheduledNotificationRequest(
                 recurrence is null ? "schedule" : "schedule-recurring", kind)
@@ -577,6 +614,9 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             1 => "tomorrow",
             _ => due.LocalDateTime.ToString("dddd yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
         };
+
+    private static string LocalMinute(DateTimeOffset value) => value.ToLocalTime().ToString(
+        "yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
 
     // Encargo 57 (banco de uso U35, three cycles of five): «despiértame mañana a las 7» went as at "<today>T07:00", a date
     // and time that had passed that afternoon, and the bare notification_schedule_invalid left the model saying the time
@@ -861,34 +901,290 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
         diagnosis.TryGetProperty("schedulerRunning", out JsonElement running)
         && running.ValueKind == JsonValueKind.True;
 
-    // What rings: a Windows notification with the title (PowerShell's own AppUserModelID, which Windows registers;
-    // msg.exe, used before, does not exist on Windows 11 Home, so the title was never shown there), then the sound.
-    // The receipt is written after ringing and says what was delivered: the notification only when it is read back
-    // from the notification history, and which sound played. Auditoría final (regla 3): a history that could not be read
-    // after Show leaves notificationShown null (not read), and a sound counts once it played once.
-    // V5E060: with no title the notification is BAXY alone, its second line left empty; no words are put there.
-    private static void WriteRingScript(string path, string receiptPath, string? title)
+    /// <summary>How long a stop or a snooze waits for the App to end the ring it answers.</summary>
+    internal static TimeSpan AnswerWait { get; set; } = TimeSpan.FromSeconds(5);
+
+    /// <summary>Snooze's default, as Android's clock (AOSP DeskClock, SettingsDAO: snooze length, default "10").</summary>
+    private const int SnoozeMinutes = 10;
+
+    // What rings now in the open App (AlarmRingHandoff); with no App holding this folder, nothing rings, and a ring an
+    // App left behind when it ended is cleared.
+    private IReadOnlyList<AlarmRingHandoff.Ring> RingingNow()
     {
-        string receipt64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(receiptPath));
-        string tag = Path.GetFileNameWithoutExtension(path)[^16..];
-        string script = "$ErrorActionPreference='Stop'\n"
-            + (title is null ? "" : "$title=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"
-                + Convert.ToBase64String(Encoding.UTF8.GetBytes(title)) + "'))\n")
-            + "$receipt=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('" + receipt64 + "'))\n"
-            + "$toast=$false\n"
-            + "try{[void][Windows.UI.Notifications.ToastNotificationManager,Windows.UI.Notifications,ContentType=WindowsRuntime]\n"
-            + "$app='{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\\WindowsPowerShell\\v1.0\\powershell.exe'\n"
-            + "$xml=[Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)\n"
-            + "$text=$xml.GetElementsByTagName('text');[void]$text.Item(0).AppendChild($xml.CreateTextNode('BAXY'))"
-            + (title is null ? "" : ";[void]$text.Item(1).AppendChild($xml.CreateTextNode($title))") + "\n"
-            + "$note=[Windows.UI.Notifications.ToastNotification]::new($xml);$note.Tag='" + tag + "'\n"
-            + "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($app).Show($note);$toast=$null;Start-Sleep -Milliseconds 300\n"
-            + "$toast=@([Windows.UI.Notifications.ToastNotificationManager]::History.GetHistory($app)|Where-Object{$_.Tag -eq '" + tag + "'}).Count -gt 0}catch{}\n"
-            + "$sound='none'\n"
-            + "try{$wav='C:\\Windows\\Media\\Alarm01.wav'\n"
-            + "if([IO.File]::Exists($wav)){for($i=0;$i -lt 3;$i++){(New-Object Media.SoundPlayer $wav).PlaySync();$sound='wav'}}"
-            + "else{for($i=0;$i -lt 3;$i++){[Console]::Beep(880,700);$sound='beep'}}}catch{}\n"
-            + "[IO.File]::WriteAllText($receipt,(@{rangUtc=[DateTimeOffset]::UtcNow.ToString('O');notificationShown=$toast;sound=$sound}|ConvertTo-Json -Compress))\n";
-        File.WriteAllText(path, script, new UTF8Encoding(false));
+        IReadOnlyList<AlarmRingHandoff.Ring> ringing = AlarmRingHandoff.Ringing(_alarmRoot);
+        if (ringing.Count == 0 || AlarmRingHandoff.AppHolds(_alarmRoot)) return ringing;
+        foreach (AlarmRingHandoff.Ring left in ringing) AlarmRingHandoff.End(_alarmRoot, left.TaskName);
+        return [];
+    }
+
+    private static void WriteRinging(Utf8JsonWriter writer, IReadOnlyList<AlarmRingHandoff.Ring> ringing)
+    {
+        writer.WriteStartArray("ringingNow");
+        foreach (AlarmRingHandoff.Ring ring in ringing) WriteRing(writer, ring);
+        writer.WriteEndArray();
+    }
+
+    private static void WriteRing(Utf8JsonWriter writer, AlarmRingHandoff.Ring ring)
+    {
+        writer.WriteStartObject();
+        writer.WriteString("id", ring.Id);
+        writer.WriteString("kind", ring.Kind);
+        if (ring.Title is not null) writer.WriteString("title", ring.Title);
+        writer.WriteString("clock", ring.Clock);
+        writer.WriteEndObject();
+    }
+
+    // ALR1 (owner, 2026-11-08: «a las 3 me dice, tienes tanto, yo le digo, Baxi, perfecto… lo mismo en la alarma»; and
+    // «Baxi, gracias… Baxi para la alarma, tipos como funcionan de Alexa»): the alarm or reminder ringing now in the open
+    // App is answered with the same operation that set it, as Google's assistant stops or snoozes a ringing alarm by
+    // voice («Stop», «Snooze for 10 minutes»: Google Nest Help, «Set and manage alarms») and Alexa a reminder («Snooze
+    // reminder for 10 minutes», «Dismiss reminder»: Amazon, «Get Reminder Notifications From Alexa»). The model names it
+    // by the id its turn note shows (with no id, every one ringing: ALR3 below); the card's buttons call it the same way.
+    // stop ends this ring (a daily or hourly one rings again next time); snooze sets a one-time one of the same kind and
+    // title inMinutes from now (10 by default) and then ends this ring. The receipt is the App's ring read back gone.
+    // ALR3 (F9 of VIVO1: with a reminder and an alarm ringing, «Baxy, gracias» left both ringing): with no id, stop or
+    // snooze answers every one ringing now (of kind, and at that local clock, HH:mm as cancel's, when they are given),
+    // as a smart speaker's «stop» ends what rings; the receipt says each one.
+    // ALR5 (B4: asked to be reminded of the one ringing at a time of day, 9 held-out phrases, the model did it in none
+    // of 27 samples: 15 snoozed it ten or fifteen minutes, 7 set another and left this one ringing, 4 wrote a cancel
+    // with that time and 1 stopped it): snooze takes when it rings again, inMinutes or at, a local clock time (the next
+    // time the clock shows it), so the model does no arithmetic with the time; a reminder of Outlook is snoozed for «a
+    // few minutes, hours, or even days» (Microsoft Support, «Turn off or postpone a reminder») and one of Apple's
+    // Reminders is put off to a later time («Manage notifications from Reminders on Mac»). No source, own measurement:
+    // a date and time is taken only when it is that next time, since of 6 the model wrote for «mañana…» 3 were today's
+    // date, already past, and 2 the day after tomorrow's, told «mañana». With stop, at still names which one (ALR3).
+    private async ValueTask<ExternalCapabilityReceipt> AnswerRingAsync(
+        string operation,
+        string action,
+        JsonElement arguments,
+        string? namedKind,
+        CancellationToken cancellationToken)
+    {
+        string? id = OptionalString(arguments, "id");
+        if (id is null && Present(arguments, "id"))
+            return ExternalJson.FailureBeforeEffect(operation, "notification_ring_id_invalid");
+        string? at = OptionalString(arguments, "at");
+        int hour = -1, minute = -1;
+        if (action == "stop" && at is not null && !TryLocalClock(at, out hour, out minute))
+            return ExternalJson.FailureBeforeEffect(operation, "notification_clock_selector_invalid");
+        int minutes = SnoozeMinutes;
+        if (action == "snooze" && Present(arguments, "inMinutes")
+            && (arguments.GetProperty("inMinutes").ValueKind != JsonValueKind.Number
+                || !arguments.GetProperty("inMinutes").TryGetInt32(out minutes) || minutes is < 1 or > 1_440))
+            return ExternalJson.FailureBeforeEffect(operation, "notification_snooze_invalid");
+        IReadOnlyList<AlarmRingHandoff.Ring> ringing = RingingNow();
+        // An at that is the clock of one ringing (the one of id, or with no id one of the kind) still names that one, as
+        // before ALR5 («la de las 7» is not «mañana a las 7»: taken as when, a wake-up alarm would be silent until the next
+        // day). ALR5's blind review: «pospón la alarma de las 7» written with its id and at 07:00 moved it to tomorrow.
+        bool OfClock(AlarmRingHandoff.Ring ring) =>
+            TryLocalClock(ring.Clock, out int h, out int m) && h == hour && m == minute;
+        bool names = action == "stop" ? at is not null
+            : at is not null && TryLocalClock(at, out hour, out minute)
+                && ringing.Any(ring => (id is null
+                    ? namedKind is null || ring.Kind == namedKind
+                    : string.Equals(ring.Id, id, StringComparison.OrdinalIgnoreCase)) && OfClock(ring));
+        // The minutes win over the clock time, as in create (TryDue).
+        DateTimeOffset? again = null;
+        bool againNextDay = false;
+        if (action == "snooze" && at is not null && !names && !Present(arguments, "inMinutes"))
+        {
+            DateTimeOffset now = DateTimeOffset.Now;
+            // Nothing is set, it rings on, and the refusal says what rings and how to say when.
+            ExternalCapabilityReceipt NotSnoozed(string next) =>
+                ExternalJson.FailureBeforeEffect(operation, "notification_snooze_invalid") with
+                {
+                    Result = ExternalJson.Create(writer =>
+                    {
+                        writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                        WriteRinging(writer, ringing);
+                        writer.WriteString("next", "nothing was snoozed: " + next);
+                        writer.WriteEndObject();
+                    }),
+                };
+            if (!TryDue(default, at, now, out DateTimeOffset due))
+            {
+                return ringing.Count == 0
+                    ? ExternalJson.FailureBeforeEffect(operation, "notification_snooze_invalid")
+                    : NotSnoozed("at is not a local clock time (HH:mm, the next time the clock shows it); say when "
+                        + "with at or with inMinutes");
+            }
+
+            string clock = due.ToLocalTime().ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+            _ = TryDue(default, clock, now, out DateTimeOffset next, out bool nextDay);
+            if (ringing.Count > 0 && LocalMinute(due) != LocalMinute(next))
+            {
+                // A date and time that is not the next time the clock shows that time: the refusal ends with the same
+                // call at the clock time alone, as create's does (DuePassed).
+                var call = new System.Text.Json.Nodes.JsonObject { ["action"] = "snooze" };
+                if (id is not null) call["id"] = id;
+                else if (namedKind is not null) call["kind"] = namedKind;
+                call["at"] = clock;
+                return NotSnoozed($"a snooze reaches the next 24 hours and {LocalMinute(due)} is not in them (it is "
+                    + $"{LocalMinute(now)} here); to ring it again at {LocalMinute(next)}, call "
+                    + Baxy.Kernel.Operations.WireNames.Call(operation, call));
+            }
+
+            (again, againNextDay) = (next, nextDay);
+        }
+
+        AlarmRingHandoff.Ring[] candidates = [.. ringing.Where(ring => id is null
+            ? (namedKind is null || ring.Kind == namedKind) && (!names || OfClock(ring))
+            : string.Equals(ring.Id, id, StringComparison.OrdinalIgnoreCase))];
+        if (ringing.Count == 0 && action == "stop")
+        {
+            // Nothing rings: the silence asked for is already there, and nothing was stopped.
+            return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                writer.WriteBoolean("stopped", false);
+                writer.WriteBoolean("ringingFound", false);
+                writer.WriteString("next", "nothing was stopped: no alarm or reminder rings in the BAXY App now (one that "
+                    + "rings as a Windows notification is answered on that notification)");
+                writer.WriteString("authority", "baxy_app_ring_postread");
+                writer.WriteEndObject();
+            }), effectObserved: false);
+        }
+
+        if (candidates.Length == 0)
+        {
+            string error = ringing.Count == 0 ? "notification_not_ringing" : "notification_ring_not_found";
+            string verb = action == "stop" ? "stopped" : "snoozed";
+            return ExternalJson.FailureBeforeEffect(operation, error) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                    WriteRinging(writer, ringing);
+                    writer.WriteString("next", ringing.Count == 0
+                        ? $"nothing was {verb}: no alarm or reminder rings in the BAXY App now (one that rings as a "
+                            + "Windows notification is answered on that notification)"
+                        : $"nothing was {verb}: id names the one of ringingNow to answer");
+                    writer.WriteEndObject();
+                }),
+            };
+        }
+
+        var effectBoundary = new ExternalEffectBoundary();
+        var answered = new List<(AlarmRingHandoff.Ring Ring, JsonElement? Snoozed)>();
+        ExternalCapabilityReceipt? notSet = null;
+        try
+        {
+            foreach (AlarmRingHandoff.Ring ring in candidates)
+            {
+                JsonElement? snoozed = null;
+                if (action == "snooze")
+                {
+                    JsonElement same = ExternalJson.Create(writer =>
+                    {
+                        writer.WriteStartObject();
+                        if (ring.Title is not null) writer.WriteString("title", ring.Title);
+                        writer.WriteEndObject();
+                    });
+                    ExternalCapabilityReceipt set = await ScheduleAsync(operation, ring.Kind, same,
+                        again ?? DateTimeOffset.Now.AddMinutes(minutes), againNextDay, effectBoundary,
+                        cancellationToken).ConfigureAwait(false);
+                    // A snooze that set nothing leaves the ring ringing: the person still hears it and can answer again.
+                    if (!set.Verified)
+                    {
+                        notSet = set;
+                        break;
+                    }
+
+                    snoozed = set.Result;
+                }
+
+                effectBoundary.Cross(cancellationToken);
+                AlarmRingHandoff.Answer(_alarmRoot, ring.TaskName, action);
+                answered.Add((ring, snoozed));
+            }
+
+            DateTimeOffset until = DateTimeOffset.UtcNow + AnswerWait;
+            while (answered.Any(a => AlarmRingHandoff.IsRinging(_alarmRoot, a.Ring.TaskName))
+                   && DateTimeOffset.UtcNow < until)
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (
+            cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
+        {
+            return effectBoundary.Failure(operation, "notification_ring_answer_unconfirmed");
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return effectBoundary.Failure(operation, "notification_ring_answer_failed");
+        }
+
+        if (answered.Count == 0) return notSet!;
+        var ended = new Dictionary<string, bool>(StringComparer.Ordinal);
+        foreach ((AlarmRingHandoff.Ring ring, _) in answered)
+        {
+            ended[ring.TaskName] = !AlarmRingHandoff.IsRinging(_alarmRoot, ring.TaskName);
+            // Ended by this answer or by its own time meanwhile: no answer is left behind for the task's next ring.
+            if (ended[ring.TaskName]) AlarmRingHandoff.End(_alarmRoot, ring.TaskName);
+        }
+
+        void WriteAnswer(Utf8JsonWriter writer, AlarmRingHandoff.Ring ring, JsonElement? snoozed, bool done)
+        {
+            writer.WriteString("id", ring.Id);
+            writer.WriteString("kind", ring.Kind);
+            if (ring.Title is not null) writer.WriteString("title", ring.Title);
+            writer.WriteString("clock", ring.Clock);
+            // ALR5: «snoozed» is the new ring set, which is read back before this one is answered; whether this ring
+            // was seen to end is «ringing». A snooze the App did not end in time said snoozed:false beside the
+            // inMinutes and dueLocal of the ring it had just set.
+            writer.WriteBoolean(action == "stop" ? "stopped" : "snoozed",
+                action == "stop" ? done : snoozed is { ValueKind: JsonValueKind.Object });
+            writer.WriteBoolean("ringing", !done);
+            if (snoozed is { ValueKind: JsonValueKind.Object } next)
+            {
+                // By the minutes, the minutes; by a clock time, the time it was set for (and that it is tomorrow's).
+                if (again is null) writer.WriteNumber("inMinutes", minutes);
+                foreach (string name in (string[])["dueLocal", "scheduledFor", "nextRunUtc"])
+                {
+                    if (next.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.String)
+                        writer.WriteString(name, value.GetString());
+                }
+                if (next.TryGetProperty("movedToNextDay", out JsonElement moved) && moved.ValueKind == JsonValueKind.True)
+                {
+                    writer.WriteBoolean("movedToNextDay", true);
+                    if (next.TryGetProperty("nowLocal", out JsonElement here) && here.ValueKind == JsonValueKind.String)
+                        writer.WriteString("nowLocal", here.GetString());
+                }
+            }
+        }
+
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            if (candidates.Length == 1)
+            {
+                WriteAnswer(writer, answered[0].Ring, answered[0].Snoozed, ended[answered[0].Ring.TaskName]);
+            }
+            else
+            {
+                // Each one answered, and any a snooze that set nothing left ringing.
+                writer.WriteStartArray("rings");
+                foreach (AlarmRingHandoff.Ring ring in candidates)
+                {
+                    writer.WriteStartObject();
+                    int index = answered.FindIndex(a => a.Ring.TaskName == ring.TaskName);
+                    WriteAnswer(writer, ring, index < 0 ? null : answered[index].Snoozed,
+                        index >= 0 && ended[ring.TaskName]);
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray();
+            }
+
+            writer.WriteString("authority", "baxy_app_ring_postread");
+            writer.WriteEndObject();
+        });
+        // A ring the App did not end in time was answered (the answer waits for it) but is not seen silent; with several,
+        // one that did end is an effect seen.
+        bool seen = answered.Any(a => a.Snoozed is not null)
+            || (candidates.Length > 1 && ended.Values.Any(static done => done));
+        return notSet is null && ended.Values.All(static done => done)
+            ? ExternalJson.Success(operation, result)
+            : ExternalJson.FailureAfterEffect(operation, notSet?.ErrorCode ?? "notification_ring_answer_unconfirmed", seen)
+                with { Result = result };
     }
 }

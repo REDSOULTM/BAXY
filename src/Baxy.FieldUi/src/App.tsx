@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useBaxy } from './store';
 import { getJson, send, sendTold } from './api';
-import { Rail, type PanelId, type Profile } from './components/Rail';
+import { Rail, type PanelId } from './components/Rail';
 import { Chat } from './components/Chat';
 import { Boot, Caption } from './components/Caption';
 import { Breakdown } from './components/Breakdown';
@@ -12,15 +12,20 @@ import { AvatarVid } from './components/AvatarVid';
 import { useLipActive } from './lip';
 import { liveText } from './live';
 import { Globe, Icon } from './components/Icon';
-import { causeText, type FailureMemory, type FailureRead } from './causes';
+import { causeText, noWakeText, TUNED_PROBLEM, type FailureMemory, type FailureRead } from './causes';
+import { refusalSaid, type Failing } from './externalErrors';
+import { draftKeys, draftTab } from './drafts';
+import { Panel } from './components/Panel';
 import { MemoryPanel } from './components/panels/MemoryPanel';
 import { CatalogPanel } from './components/panels/CatalogPanel';
 import { SessionsPanel } from './components/panels/SessionsPanel';
 import { TriggersPanel } from './components/panels/TriggersPanel';
-import { ProposalsPanel } from './components/panels/ProposalsPanel';
-import { SettingsPanel, type A11y } from './components/panels/SettingsPanel';
+import { SettingsPanel, type A11y, type SettingsTab } from './components/panels/SettingsPanel';
 import type { BaxyState, GeneralSettings, Metrics, MicMode, ProposalSettings } from './types';
+import { CHAT_WIDTH, keepLook, readLook, REPLY_PX, RING_SPEED, YOU_PX, type Look } from './look';
+import { stillIn } from './still';
 import { LangContext, systemLang, translator, type Lang, type LangChoice, type T, type Words } from './i18n';
+import { enterApproves } from './approval';
 
 /* BAXY v4/v5 (design_handoff_baxy): rail · face and neural network · conversation, over the cosmos, inside the frame's
    travelling ring. Everything shown comes from Baxy.App; this file only composes it and sends what the person does. */
@@ -32,7 +37,7 @@ const AVATAR = (() => { try { return new URLSearchParams(location.search).get('a
 
 const MAX_REQUEST = 4096; /* MissionInput.MaximumCharacters */
 const NARROW = 1100; /* below this layout width the chat floats over the face */
-const RAIL = 192, CHATW = 330;
+const RAIL = 204;
 
 function stored<T extends string>(key: string, allowed: readonly T[], fallback: T): T {
   try {
@@ -47,10 +52,14 @@ function keep(key: string, value: string) {
 }
 
 // uso-116: «El modelo no está disponible» alone left a new user with nothing to do: it goes with why, when it is known.
-function failureLabel(failure: string | null | undefined, cause: string | null | undefined, memory: FailureMemory | null | undefined, read: FailureRead | null | undefined, t: T): string {
+function failureLabel(failure: string | null | undefined, cause: string | null | undefined, memory: FailureMemory | null | undefined, read: FailureRead | null | undefined, t: T, refused?: { why?: string | null; kind?: string | null; failing: Failing }): string {
   const words = FAILURE[failure ?? ''];
   const said = words ? t.w(words) : t('Algo falló', 'Something went wrong');
-  const why = failure === 'mind_unavailable' ? causeText(cause, t, memory, read) : null;
+  // REV_VISTA V-04: the refusal in the view's language by its kind (the translator's words are Spanish); REV_APP TUR-1:
+  // a refusal after a call ran is a refusal too
+  const why = failure === 'mind_unavailable' ? causeText(cause, t, memory, read)
+    : (failure === 'model_refused' || failure === 'model_refused_after_call') && refused?.why
+      ? refusalSaid(refused.kind, refused.why, t, refused.failing) : null;
   return why ? said + ': ' + why : said;
 }
 
@@ -59,6 +68,10 @@ const FAILURE: Record<string, Words> = {
   mind_unavailable: { es: 'El modelo no está disponible', en: 'The model isn’t available' },
   decision_unavailable: { es: 'El modelo no respondió', en: 'The model didn’t answer' },
   decision_unavailable_after_call: { es: 'El modelo no respondió después de actuar', en: 'The model didn’t answer after acting' },
+  // VIVO1 F4: the server of another model refused the turn for good; its reason follows (failureWhy)
+  model_refused: { es: 'El modelo rechazó el turno', en: 'The model refused the turn' },
+  // REV_APP TUR-1: refused after a call of the turn ran (it may have had an effect), as the decision that did not come
+  model_refused_after_call: { es: 'El modelo rechazó el turno después de actuar', en: 'The model refused the turn after acting' },
   core_disconnected: { es: 'El motor local se desconectó', en: 'The local engine disconnected' },
   retry_without_close: { es: 'El motor local no arrancó', en: 'The local engine didn’t start' },
   // Uso 85: nothing is relaunched any more; Breakdown says what happened and what the person can do
@@ -85,7 +98,7 @@ const RING: Record<string, string[]> = {
 };
 
 const LABEL: Record<BaxyState, Words> = {
-  booting: { es: 'Arrancando', en: 'Starting' }, standby: { es: 'En reposo', en: 'Asleep' }, idle: { es: 'En espera', en: 'Idle' },
+  booting: { es: 'Arrancando', en: 'Starting' }, standby: { es: 'En reposo', en: 'Asleep' }, idle: { es: 'Listo', en: 'Ready' },
   listening: { es: 'Escuchando', en: 'Listening' }, thinking: { es: 'Pensando', en: 'Thinking' }, speaking: { es: 'Hablando', en: 'Speaking' },
   confirm: { es: 'Esperando tu ok', en: 'Waiting for your OK' }, error: FAILURE.voice_error,
 };
@@ -95,11 +108,13 @@ export default function App() {
 
   // ---- presentation (this view's own, kept in localStorage) ----
   const [theme, setTheme] = useState<'dark' | 'light'>(() => stored('baxy.theme', ['dark', 'light'] as const, 'dark'));
-  // Only the standard mode is ready (owner, 2026-10-18): a mode kept from before is not brought back as if it were.
-  const [profile, setProfile] = useState<Profile>(() => stored('baxy.profile', ['normal'] as const, 'normal'));
   const [a11y, setA11yState] = useState<A11y>(() => ({
     on: false, size: stored('baxy.a11y.size', ['m', 'l', 'xl'] as const, 'm'), contrast: stored('baxy.a11y.contrast', ['0', '1'] as const, '0') === '1',
   }));
+  // Settings › Personalización (look.ts): sizes, the conversation's width, the steps open, captions and readings
+  const [look, setLookState] = useState<Look>(readLook);
+  const setLook = useCallback((l: Look) => { setLookState(l); keepLook(l); }, []);
+  const CHATW = CHAT_WIDTH[look.chat];
   const [mic, setMicState] = useState<MicMode>(() => stored('baxy.mic', ['off', 'always', 'ptt'] as const, 'always'));
 
   // ---- the host's settings ----
@@ -109,10 +124,18 @@ export default function App() {
   const [general, setGeneral] = useState<GeneralSettings | null>(null);
   // the model behind an API that answers now: «todo local» is not true while it does
   const [api, setApi] = useState<string | null>(null);
+  // a model of this PC other than BAXY's own (Ollama) in use: the rail's reading of BAXY's model is not that one's
+  const [otherLocal, setOtherLocal] = useState<string | null>(null);
   const [apiCapped, setApiCapped] = useState(false);
+  // the other model's place and name, for its refusal said in English (REV_VISTA V-04)
+  const [failing, setFailing] = useState<Failing>({});
   useEffect(() => {
-    const read = () => void getJson<{ active?: boolean; activeLocal?: boolean; activeModel?: string | null; lastError?: string | null }>('/settings/external-model')
-      .then((e) => { if (!e) return; setApi(e.active && !e.activeLocal ? e.activeModel ?? null : null); setApiCapped(!!e.active && !!e.lastError?.startsWith('TOPE')); });
+    const read = () => void getJson<{ active?: boolean; activeLocal?: boolean; activeModel?: string | null; lastError?: string | null; provider?: string; model?: string }>('/settings/external-model')
+      .then((e) => {
+        if (!e) return;
+        setApi(e.active && !e.activeLocal ? e.activeModel ?? null : null); setOtherLocal(e.active && e.activeLocal ? e.activeModel ?? null : null); setApiCapped(!!e.active && !!e.lastError?.startsWith('TOPE'));
+        setFailing((f) => { const now = { provider: e.provider ?? null, model: e.activeModel ?? e.model ?? null }; return f.provider === now.provider && f.model === now.model ? f : now; });
+      });
     read();
     const every = setInterval(read, 3000);
     return () => clearInterval(every);
@@ -135,6 +158,13 @@ export default function App() {
 
   // ---- layout ----
   const [panel, setPanel] = useState<PanelId | null>(null);
+  // the section Settings opens on: «Sin frenos» at the top opens it on the confirmation
+  const [settingsTab, setSettingsTab] = useState<SettingsTab>('general');
+  // the rail's «Propuestas» opens them where they live now, in Settings › Comportamiento
+  const openPanel = useCallback((p: PanelId) => {
+    if (p === 'proposals') { setSettingsTab('comportamiento'); setPanel('settings'); return; }
+    setSettingsTab('general'); setPanel(p);
+  }, []);
   const bx2 = useRef<HTMLDivElement>(null);
   const [fw, setFw] = useState(0);
   const narrow = fw > 0 && fw < NARROW;
@@ -232,6 +262,9 @@ export default function App() {
     return () => window.clearTimeout(id);
   }, [listedCard, finish]);
   const pendingCard = listedCard && done.cardGone !== listedCard.id ? listedCard : null;
+  // INT16 (blind review): an alarm or reminder ringing now is a second card asking for a key; Enter / Esc given to
+  // silence it must not answer the waiting card, so while one rings the keys answer neither (each card's buttons do)
+  const ringingNow = useMemo(() => s.items.some((it) => it.who === 'ring' && it.ring.status === 'ringing'), [s.items]);
   const voiceError = s.voiceErrorAt !== null && done.voiceError !== s.voiceErrorAt ? t.w(FAILURE.voice_error) : null;
   const breakdown = BREAKDOWNS.includes(s.agent.failure ?? '') ? s.agent.failure! : null;
   const booting = !!s.boot && !s.boot.model && !s.boot.failed && !breakdown;
@@ -247,7 +280,7 @@ export default function App() {
         : host === 'idle' && pendingCard ? 'confirm'
           : host;
   const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
-  const label = state === 'error' ? (voiceError ? t.w(LABEL.error) : apiCapped ? t('Llegaste al tope de gasto de la API', 'You reached the API spending cap') : failureLabel(s.agent.failure, s.agent.failureCause, s.agent.failureMemory, s.agent.failureRead, t))
+  const label = state === 'error' ? (voiceError ? t.w(LABEL.error) : apiCapped ? t('Llegaste al tope de gasto de la API', 'You reached the API spending cap') : failureLabel(s.agent.failure, s.agent.failureCause, s.agent.failureMemory, s.agent.failureRead, t, { why: s.agent.failureWhy, kind: s.agent.failureKind, failing }))
     // uso 95: written while the model starts, the message waits for it (the host answers it once it is up)
     : state === 'booting' && s.agent.waitingForMind ? t('Arrancando · tu mensaje espera', 'Starting · your message is waiting')
       : t.w(LABEL[state]);
@@ -273,7 +306,17 @@ export default function App() {
   }, [s.voiceDroppedAt, finish]);
   const dropped = s.voiceDroppedAt !== null && done.voiceDropped !== s.voiceDroppedAt
     ? { b: t('Voz', 'Voice'), t: t('pedido de voz no tomado: BAXY seguía ocupado · repítelo cuando termine', 'voice request not taken: BAXY was still busy · say it again when it’s done') } : null;
-  const shownNotice = notice ?? dropped;
+  // V132 (1.3.2): the ear started without its wake word (its folder gone or changed): the person's «Siempre activo» cannot
+  // answer to «BAXY», and the microphone showed off with nothing said. Said for as long as that is their choice, once the
+  // model is up (a mind starting again has not told its ear yet).
+  const noWakeWhy = s.voice.no_wake === true ? noWakeText(s.voice.wake_problem, t) : null;
+  const noWake = noWakeWhy && mic === 'always' && s.agent.built && powered && !!s.boot?.model && !booting
+    ? { b: t('Voz', 'Voice'), t: noWakeWhy } : null;
+  // QWB2: the person chose the tuned model and this start could not use it (missing or damaged): said once the model is
+  // up, for as long as that is so, as BAXY goes on with the stock model.
+  const tunedProblem = s.boot?.tunedProblem;
+  const tuned = tunedProblem && TUNED_PROBLEM[tunedProblem] && !!s.boot?.model && !booting ? { b: t('Modelo', 'Model'), t: t.w(TUNED_PROBLEM[tunedProblem]) } : null;
+  const shownNotice = notice ?? dropped ?? noWake ?? tuned;
 
   // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
   useEffect(() => {
@@ -309,16 +352,19 @@ export default function App() {
   // ---- presentation classes on <html> ----
   useEffect(() => {
     const h = document.documentElement;
+    h.style.setProperty('--bx-reply', REPLY_PX[look.reply] + 'px');
+    h.style.setProperty('--bx-you', YOU_PX[look.you] + 'px');
     h.classList.toggle('lt', theme === 'light');
     h.classList.toggle('a11y', a11y.on);
     h.classList.toggle('a11y-l', a11y.on && a11y.size === 'l');
     h.classList.toggle('a11y-xl', a11y.on && a11y.size === 'xl');
     h.classList.toggle('hc', a11y.contrast);
-  }, [theme, a11y]);
+  }, [theme, a11y, look]);
 
   // ---- the frame's ring: turns with the state (1.5× and a second comet in bypass), stops at rest ----
-  const R = useRef({ powered, bypass });
-  useEffect(() => { R.current = { powered, bypass }; }, [powered, bypass]);
+  // Personalización: the ring runs, stays still or is off, at the person's speed
+  const R = useRef({ powered, bypass, runs: true, speed: 1 });
+  useEffect(() => { R.current = { powered, bypass, runs: look.ring === 'on', speed: RING_SPEED[look.ringSpeed] }; }, [powered, bypass, look.ring, look.ringSpeed]);
   useEffect(() => {
     const frame = document.querySelector<HTMLElement>('.app-frame');
     if (!frame) return;
@@ -332,7 +378,7 @@ export default function App() {
       acc += now - last; last = now;
       if (acc < 32 || document.hidden) return; // 30 fps is enough for a slow ring
       const dt = Math.min(0.05, acc / 1000); acc = 0;
-      const tg = R.current.powered && !calm?.matches ? (R.current.bypass ? 1.5 : 1) : 0;
+      const tg = R.current.powered && R.current.runs && !calm?.matches ? (R.current.bypass ? 1.5 : 1) * R.current.speed : 0;
       speed += (tg - speed) * Math.min(1, dt * 2.6);
       if (tg === 0 && speed < 0.012) speed = 0;
       if (speed === 0) return;
@@ -352,7 +398,8 @@ export default function App() {
     frame.style.setProperty('--carmine', ['listening', 'thinking', 'speaking'].includes(gState) ? c[5] : '#B83A4A');
     frame.classList.toggle('bx-bypass', bypass);
     frame.classList.toggle('bx-standby', gState === 'standby');
-  }, [gState, bypass]);
+    frame.classList.toggle('bx-ring-off', look.ring === 'off');
+  }, [gState, bypass, look.ring]);
 
   // ---- actions ----
   const submit = useCallback(async (text: string) => {
@@ -379,6 +426,12 @@ export default function App() {
     if (await send('POST', '/confirmation/answer', { approve, card }) === null) {
       answered.current.delete(card);
       setNotice({ b: t('Confirmación', 'Confirmation'), t: t('no se tomó tu respuesta: BAXY seguía ocupado o esa tarjeta ya no espera', 'your answer wasn’t taken: BAXY was still busy or that card is no longer waiting') });
+    }
+  }, [t]);
+  // ALR1: the ringing card's Stop or Snooze, through schedule.alarms like the model's call; a refusal is said.
+  const ring = useCallback(async (id: string, action: 'stop' | 'snooze') => {
+    if (await send('POST', '/ring/answer', { id, action }) === null) {
+      setNotice({ b: t('Alarma', 'Alarm'), t: t('no se pudo: ya no suena o BAXY no respondió', 'couldn’t: it no longer rings or BAXY didn’t answer') });
     }
   }, [t]);
   const newSession = useCallback(async () => {
@@ -487,12 +540,40 @@ export default function App() {
   }, [lastReply, pendingCard]);
   const collapse = useCallback(() => toggleChat(false), [toggleChat]);
   const onNewChat = useCallback(() => { void newSession(); }, [newSession]);
-  const win = useCallback(async (command: 'minimize' | 'toggle_maximize' | 'close') => {
+  // REV_VISTA V-05: what was written in Settings and not saved lives in this view (drafts.ts); a window that closes BAXY whole
+  // (not to the tray) would take it, so it is asked first.
+  const [askClose, setAskClose] = useState<string[] | null>(null);
+  const closeToTray = !!general?.closeToTray;
+  const win = useCallback(async (command: 'minimize' | 'toggle_maximize' | 'close', unsaved = true) => {
     const api = (window as unknown as { pywebview?: { api: Record<string, () => Promise<unknown>> } }).pywebview?.api;
     if (!api) return;
+    if (command === 'close' && unsaved && !closeToTray && draftKeys().length) { setAskClose(draftKeys()); return; }
     if (command === 'minimize') await api.win_minimize();
     else if (command === 'close') await api.win_close();
     else setMaximized(!!(await api.win_toggle_maximize()));
+  }, [closeToTray]);
+  // The window's real state, asked of the host when the view starts and whenever the window changes size: a double click on
+  // the top band or a drag to the screen's edge maximizes it without the button, and a window that opens maximized said
+  // «Maximizar» while it was (controls.spec in the real App, 2026-11-09).
+  // Asked once the window stops changing size, and only the latest answer counts: one asked mid-change answered after the
+  // press's own and put the old state back (controls.spec in the real App, 2026-11-09).
+  useEffect(() => {
+    let alive = true;
+    let asked = 0;
+    let settle: number | undefined;
+    const ask = async () => {
+      const api = (window as unknown as { pywebview?: { api: Record<string, () => Promise<unknown>> } }).pywebview?.api;
+      if (!api?.win_is_maximized) return;
+      const mine = ++asked;
+      try {
+        const now = !!(await api.win_is_maximized());
+        if (alive && mine === asked) setMaximized(now);
+      } catch { /* the button keeps what it showed */ }
+    };
+    const changed = () => { window.clearTimeout(settle); settle = window.setTimeout(() => void ask(), 250); };
+    void ask();
+    window.addEventListener('resize', changed);
+    return () => { alive = false; window.clearTimeout(settle); window.removeEventListener('resize', changed); };
   }, []);
 
   // ---- keys: Sí = Enter, No = Esc for a waiting card; Esc closes a panel; space held talks in push-to-talk ----
@@ -503,7 +584,23 @@ export default function App() {
       // Enter on a focused button of a card presses that button: on the card's «No» it is a No, never the card's Sí.
       // Any other focused button (the gear a closed panel gave the focus back to) does not take the card's Enter.
       const control = e.key === 'Enter' && !!a?.closest?.('.bx-card') && !!a.closest('button, a[href], select, [role="button"], [role="switch"]');
-      if (pendingCard && !panel && !typing && !control && (e.key === 'Enter' || e.key === 'Escape')) { e.preventDefault(); void answer(e.key === 'Enter', pendingCard.id); return; }
+      if (pendingCard && !ringingNow && !panel && !askClose && !typing && !control && (e.key === 'Enter' || e.key === 'Escape')) {
+        e.preventDefault();
+        // OVL1: Enter is the key of the card's Sí and answers only when that button would take it; Esc is never held
+        if (e.key === 'Escape' || enterApproves(pendingCard.id, e)) void answer(e.key === 'Enter', pendingCard.id);
+        return;
+      }
+      // REV_VISTA V-05: Escape inside a box of Settings leaves the box, not all of Settings (its dialog keeps the focus, and the
+      // keyboard's Tab); a second Escape closes it. What was written stays as a draft either way (drafts.ts). The other panels'
+      // boxes are searches and names: Escape closes them as before.
+      if (e.key === 'Escape' && panel === 'settings' && a && a !== document.body && a.matches('input, textarea, select, [contenteditable="true"]')) {
+        e.preventDefault();
+        // a box that saves on leaving it (drafts.ts savesOnBlur) keeps what was written as a draft, unsaved
+        a.setAttribute('data-escaped', '');
+        (a.closest('[role="dialog"]') as HTMLElement | null)?.focus({ preventScroll: true });
+        return;
+      }
+      if (e.key === 'Escape' && askClose) { setAskClose(null); return; }
       if (e.key === 'Escape' && panel) setPanel(null);
       if (e.key === ' ' && mic === 'ptt' && !e.repeat && !panel && !(a && a.tagName === 'INPUT' && a.value)) { e.preventDefault(); pttStart(); }
     };
@@ -515,7 +612,7 @@ export default function App() {
     window.addEventListener('keyup', onUp);
     window.addEventListener('blur', onBlur);
     return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onUp); window.removeEventListener('blur', onBlur); };
-  }, [pendingCard, panel, mic, answer, pttStart, pttEnd]);
+  }, [pendingCard, ringingNow, panel, askClose, mic, answer, pttStart, pttEnd]);
 
   // ---- what the face shows ----
   const expr = state === 'error' ? 'sad'
@@ -527,11 +624,22 @@ export default function App() {
   // the conversation's own count: its requests and the calls of this session that went out to the internet
   const nReq = s.items.filter((x) => x.who === 'you').length;
   const nNet = s.items.reduce((n, x) => n + (x.who === 'baxy' ? x.steps.filter((st) => st.net).length : 0), 0);
+  // REV_VISTA V-03: the header speaks of this conversation (it counts its requests). The host marks each turn made by API, and
+  // everything before the last of them went with it: an API gets the conversation it joins (00_IDENTIDAD, «la conversación
+  // que ya tenía»). With the API off again, «todo local» was said of requests that had left this PC.
+  // An item marked «apiBefore» (a long conversation's turns by API dropped before it) counts with what follows it.
+  const byApi = (x: (typeof s.items)[number]) => (x.who === 'you' || x.who === 'baxy') && !!x.api;
+  const lastByApi = s.items.findLastIndex((x) => byApi(x) || !!x.apiBefore);
+  const apiPast = lastByApi < 0 ? null
+    : s.items.slice(byApi(s.items[lastByApi]) ? lastByApi + 1 : lastByApi).some((x) => x.who === 'you') ? 'part' : 'all';
+  const where = api ? (nReq === 1 ? t('sale por API', 'going out by API') : t('salen por API', 'going out by API'))
+    : apiPast === 'all' ? (nReq === 1 ? t('salió por API', 'went out by API') : t('salieron por API', 'went out by API'))
+      : apiPast === 'part' ? t('parte salió por API', 'part went out by API') : null;
   const meta = state === 'booting' ? t('Arrancando', 'Starting')
     : nReq === 0 ? t('Sin pedidos aún', 'No requests yet')
       : nReq + (nReq === 1 ? t(' pedido', ' request') : t(' pedidos', ' requests'))
-        + (api ? t(' · modelo por API', ' · model by API')
-          : nNet ? ' · ' + nNet + (nNet === 1 ? t(' salida a internet', ' internet call') : t(' salidas a internet', ' internet calls')) : t(' · todo local', ' · all local'));
+        + (where ? ' · ' + where : '')
+        + (nNet ? ' · ' + nNet + (nNet === 1 ? t(' salida a internet', ' internet call') : t(' salidas a internet', ' internet calls')) : where ? '' : t(' · todo local', ' · all local'));
   const title = s.session?.label || t('Conversación', 'Conversation');
   const counts = { sessions: s.surfaces?.sessions ?? null, memory: s.surfaces?.memory ?? null, triggers: s.surfaces?.triggers ?? null, catalog: s.surfaces?.tools ?? null };
   const chatShown = chatOpen || (!!pendingCard && done.card !== pendingCard.id);
@@ -545,18 +653,21 @@ export default function App() {
   // else the host's own mode; at rest the ear is off by itself, so the choice it will wake with is shown
   const shownMic: MicMode = mic === 'ptt' || !powered ? mic : s.voice.mode === 'wake' ? 'always' : s.agent.built && s.voice.mode === 'off' ? 'off' : mic;
 
+  // the request box, under the face
+  const input = <VoiceInput mic={shownMic} micAvailable={s.voice.available} micWaiting={s.voice.waiting_memory ?? null} noRecognizer={s.voice.no_recognizer === true} noWake={s.voice.no_wake === true} wakeProblem={s.voice.wake_problem ?? null} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
+    onSubmit={submit} state={state} canSend={canSend} />;
+
   return (
     <LangContext.Provider value={t}>
     <div className="app-frame">
       <div className="bd-ring"><i className="bd-spin"></i></div>
       <div className="bd-glow"><i className="bd-spin"></i></div>
       <div className="shell">
-        <div ref={bx2} className={'bx2 p-' + profile + (chatShown ? '' : ' chat-off') + (narrow ? ' narrow' : '')}
+        <div ref={bx2} className={'bx2' + (chatShown ? '' : ' chat-off') + (narrow ? ' narrow' : '')}
           style={{ '--rail': RAIL + 'px', '--chatw': chatVisible ? CHATW + 'px' : '0px', '--chatfull': CHATW + 'px' } as CSSProperties}>
-          <Cosmos state={gState} light={theme === 'light'} focusX={focusX} />
-          <Rail api={api} state={state} powered={powered} onPower={togglePower} bypass={bypass} onMode={() => void setBypass(!bypass)}
-            metrics={metrics} net={netShown} profile={profile} onProfile={(p) => { setProfile(p); keep('baxy.profile', p); }}
-            counts={counts} quiet={quiet} onPanel={setPanel} />
+          <Cosmos state={gState} light={theme === 'light'} focusX={focusX} still={stillIn(state)} />
+          <Rail api={api} apiPast={!!apiPast} other={api ?? otherLocal} state={state} powered={powered} onPower={togglePower} metrics={metrics} net={netShown}
+            gauges={look.gauges} counts={counts} quiet={quiet} onPanel={openPanel} />
           <div className="bx-center">
             {/* Uso real 03-11: a click here opened the ear as if the space were held; the wake word, the held space and the
                 microphone button are what open it */}
@@ -564,11 +675,18 @@ export default function App() {
               {AVATAR !== 'live' && theme !== 'light' ? <AvatarVid state={state} expr={expr} onReady={setVidOk} /> : null}
               <Face overlay={AVATAR !== 'live' && vidOk && theme !== 'light'} state={gState} expr={expr} talking={state === 'speaking'} journey={s.journey} hold={state === 'confirm'} light={theme === 'light'} net={!!netShown} />
             </div>
-            <div className="bx-ctop pywebview-drag-region" onDoubleClick={(e) => { if (e.target === e.currentTarget) void win('toggle_maximize'); }}>
+            <div className="bx-ctop pywebview-drag-region">
+              <span className="bx-ctl">
               <span className={'bx-statel ' + state + (['listening', 'thinking', 'speaking', 'confirm', 'error'].includes(state) ? ' live' : '')}>
                 <i></i>{label}
-                {bypass ? <span className="bp"><Icon name="bolt" size={10} />bypass</span> : null}
                 {s.activity === 'game' ? <span className="bx-ctxp">{t('Jugando · aviso por Windows', 'Gaming · notifications via Windows')}</span> : null}
+              </span>
+              {/* V5 D4: Sin frenos is chosen in Settings and stays in sight while it is on */}
+              {bypass ? <button className="bx-bypass-pill" onClick={() => { setSettingsTab('confirmacion'); setPanel('settings'); }}
+                aria-label={t('Sin frenos: hace todo sin preguntar · abrir el ajuste', 'No brakes: does everything without asking · open the setting')}><Icon name="bolt" size={11} />{t('Sin frenos', 'No brakes')}</button> : null}
+              {/* actualizar-ordenes-app: a newer BAXY is only told here; updating waits for «Actualizar» in Settings › General */}
+              {s.update ? <button className="bx-update-pill" onClick={() => { setSettingsTab('general'); setPanel('settings'); }}
+                aria-label={t(`Hay una versión nueva de BAXY, la ${s.update.latest} · ver en Ajustes`, `A new BAXY is out, ${s.update.latest} · see it in Settings`)}>{t(`Versión ${s.update.latest}`, `Version ${s.update.latest}`)}</button> : null}
               </span>
               <span className="bx-ctr">
                 {!chatShown ? (
@@ -592,27 +710,37 @@ export default function App() {
                 : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
               {breakdown ? <Breakdown failure={breakdown} cause={s.agent.failureCause ?? null} memory={s.agent.failureMemory ?? null} read={s.agent.failureRead ?? null} onProcessor={!!s.boot?.onProcessor} />
                 : booting && s.boot ? <Boot boot={s.boot} />
-                : <Caption state={state} sub={s.sub} subGone={subGone} live={s.live} step={s.running} waiting={waiting} />}
-              <VoiceInput mic={shownMic} micAvailable={s.voice.available} micWaiting={s.voice.waiting_memory ?? null} noRecognizer={s.voice.no_recognizer === true} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
-                onSubmit={submit} state={state} canSend={canSend} />
+                : <Caption state={state} sub={look.captions ? s.sub : null} subGone={subGone} live={s.live} step={s.running} waiting={waiting} />}
+              {input}
             </div>
           </div>
           <div className="bx-right">
-            <Chat items={s.items} title={title} meta={meta} busy={state === 'thinking'} onAnswer={answer} onCollapse={collapse} onNew={onNewChat} />
+            <Chat items={s.items} title={title} meta={meta} busy={state === 'thinking'} onAnswer={answer} onRing={ring} onCollapse={collapse} onNew={onNewChat} onHistory={() => openPanel('sessions')} stepsOpen={look.steps} />
           </div>
         </div>
       </div>
-      {panel === 'memory' ? <MemoryPanel onClose={() => setPanel(null)} revision={s.surfaces?.memory_revision ?? 0} /> : null}
+      {askClose ? (
+        <Panel title={t('¿Cerrar BAXY sin guardar?', 'Close BAXY without saving?')} onClose={() => setAskClose(null)} width={420}>
+          <div className="bxs-ask" role="alert">
+            <span>{t('Escribiste en Ajustes y no lo guardaste. BAXY se cierra del todo al cerrar la ventana, y lo escrito se pierde.', 'You wrote in Settings and didn’t save it. BAXY closes whole when its window closes, and what you wrote is lost.')}</span>
+            <span className="btns">
+              <button className="panel-btn ghost" data-cancel onClick={() => { setAskClose(null); setSettingsTab(draftTab(askClose[0])); setPanel('settings'); }}>{t('Volver a Ajustes', 'Back to Settings')}</button>
+              <button className="panel-btn warn" onClick={() => { setAskClose(null); void win('close', false); }}>{t('Cerrar sin guardar', 'Close without saving')}</button>
+            </span>
+          </div>
+        </Panel>
+      ) : null}
+      {panel === 'memory' ? <MemoryPanel onClose={() => setPanel(null)} revision={s.surfaces?.memory_revision ?? 0} ready={s.agent.ready} failed={!!s.agent.failure} /> : null}
       {panel === 'triggers' ? <TriggersPanel onClose={() => setPanel(null)} /> : null}
       {panel === 'catalog' ? <CatalogPanel onClose={() => setPanel(null)} /> : null}
-      {panel === 'sessions' ? <SessionsPanel onClose={() => setPanel(null)} onNew={onNewChat} revision={s.session?.id + ':' + s.session?.label} /> : null}
-      {panel === 'proposals' ? <ProposalsPanel value={proposals} proposalSeconds={cardLife?.proposal ?? null} onChange={(p) => void onProposals(p)} onClose={() => setPanel(null)} /> : null}
+      {panel === 'sessions' ? <SessionsPanel onClose={() => setPanel(null)} onNew={onNewChat} revision={s.session?.id + ':' + s.session?.label + ':' + (s.surfaces?.sessions_revision ?? 0)} /> : null}
       {panel === 'settings' ? (
         <SettingsPanel onClose={() => setPanel(null)} theme={theme} onTheme={(t) => { setTheme(t); keep('baxy.theme', t); }}
-          bypass={bypass} onBypass={(v) => void setBypass(v)} mic={shownMic} micAvailable={s.voice.available} onMic={(m) => void setMic(m)}
+          bypass={bypass} onBypass={(v) => void setBypass(v)} mic={shownMic} micAvailable={s.voice.available} noWake={noWakeWhy} onMic={(m) => void setMic(m)}
           a11y={a11y} onA11y={(a) => void setA11y(a)} general={general} onGeneral={(p) => void onGeneral(p)} metrics={metrics}
-          netLog={s.netLog} confirmSeconds={cardLife?.confirm ?? null} onMemory={() => setPanel('memory')}
-          lang={general?.language ?? 'auto'} onLang={(l) => void onLang(l)} />
+          netLog={s.netLog} apiPast={!!apiPast} confirmSeconds={cardLife?.confirm ?? null} onMemory={() => setPanel('memory')}
+          lang={general?.language ?? 'auto'} onLang={(l) => void onLang(l)} initialTab={settingsTab} look={look} onLook={setLook}
+          proposals={proposals} proposalSeconds={cardLife?.proposal ?? null} onProposals={(p) => void onProposals(p)} />
       ) : null}
     </div>
     </LangContext.Provider>

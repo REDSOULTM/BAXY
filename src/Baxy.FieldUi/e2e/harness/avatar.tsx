@@ -7,7 +7,8 @@ import '../../src/styles/v4.css';
 
 /* AvatarVid on its own for the tests (e2e/avatar-video.spec.ts): window.bxSet changes its state, window.bxReady
    holds what it last said through onReady, window.bxUnmount takes it off the page; ?strict renders it in StrictMode
-   (as main.tsx does), whose development build mounts every effect twice. */
+   (as main.tsx does), whose development build mounts every effect twice; ?first=<state> is the state it mounts with
+   (idle when not given). */
 
 declare global {
   interface Window { bxSet: (s: BaxyState) => void; bxReady: boolean | null; bxUnmount: () => void }
@@ -19,4 +20,4 @@ window.bxSet = (s) => flushSync(() => root.render(strict
   ? <StrictMode><AvatarVid state={s} expr="neutral" onReady={onReady} /></StrictMode>
   : <AvatarVid state={s} expr="neutral" onReady={onReady} />));
 window.bxUnmount = () => root.unmount();
-window.bxSet('idle');
+window.bxSet((new URLSearchParams(location.search).get('first') as BaxyState | null) ?? 'idle');

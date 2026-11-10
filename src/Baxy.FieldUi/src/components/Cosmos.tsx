@@ -5,7 +5,8 @@ import type { BaxyState } from '../types';
 /* Full-window starfield + travelling comets (design cosmos.jsx, ported as is): batched draws at 30 fps, the nebula
    painted at a third of the size and cached, the same sky on every rebuild (seed 707), the buffer capped at 4 MP and
    DPR ≤ 1.25. With prefers-reduced-motion the sky stays still: no turning, no twinkle, no comets (its colours still
-   follow the state). */
+   follow the state). VUL1: with `still` (still.ts) it is that same still sky, painted once and not again until its
+   state, theme or size change: the window does not spend the graphics card on it while the model reads. */
 
 type SkyState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking';
 const NEB: Record<SkyState, [string, string]> = {
@@ -30,15 +31,15 @@ function sky(state: BaxyState): SkyState {
   return state === 'error' ? 'idle' : state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
 }
 
-function CosmosView({ state, focusX, light }: { state: BaxyState; focusX: number; light: boolean }) {
+function CosmosView({ state, focusX, light, still = false }: { state: BaxyState; focusX: number; light: boolean; still?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
-  const S = useRef({ state: sky(state), focusX, light });
-  useEffect(() => { S.current = { state: sky(state), focusX, light }; }, [state, focusX, light]);
+  const S = useRef({ state: sky(state), focusX, light, still });
+  useEffect(() => { S.current = { state: sky(state), focusX, light, still }; }, [state, focusX, light, still]);
   useEffect(() => {
     const cv = ref.current!, ctx = cv.getContext('2d')!;
     let dpr = 1, rnd: () => number;
     let w = 0, h = 0, raf = 0, last = performance.now(), acc = 0;
-    let stars: Star[] = [], comets: Comet[] = [], spawn = 0, rot = 0, vis = 1, nebKey = '';
+    let stars: Star[] = [], comets: Comet[] = [], spawn = 0, rot = 0, vis = 1, nebKey = '', held = '';
     const neb = document.createElement('canvas');
     const calmQ = window.matchMedia('(prefers-reduced-motion: reduce)');
     const build = () => {
@@ -52,7 +53,7 @@ function CosmosView({ state, focusX, light }: { state: BaxyState; focusX: number
       const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
       if (cv.width !== bw || cv.height !== bh) { cv.width = bw; cv.height = bh; }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      nebKey = '';
+      nebKey = ''; held = '';
       if (!resize) return;
       rnd = seededRng(707); /* same sky every rebuild */
       const reach = Math.hypot(w, h) * 0.62, n = Math.round((w * h) / 1500);
@@ -87,7 +88,13 @@ function CosmosView({ state, focusX, light }: { state: BaxyState; focusX: number
       if (acc < 32) return;
       const dt = Math.min(0.08, acc / 1000); acc = 0;
       if (!w || !h) { build(); if (!w || !h) return; }
-      const st = S.current.state, T = now / 1000, rm = calmQ.matches;
+      const st = S.current.state, T = now / 1000, hold = S.current.still, rm = calmQ.matches || hold;
+      if (hold) {
+        // what the still sky shows: painted once, with its brightness where it would settle
+        const key = st + S.current.light + S.current.focusX;
+        if (key === held) return;
+        held = key; vis = st === 'standby' ? 0.35 : 1;
+      } else held = '';
       vis += ((st === 'standby' ? 0.35 : 1) - vis) * Math.min(1, dt * 1.5);
       if (!rm) rot += dt * (st === 'standby' ? 0.002 : st === 'thinking' ? 0.012 : 0.005);
       if (nebKey !== st + S.current.light) { paintNebula(st); nebKey = st + S.current.light; }

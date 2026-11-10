@@ -46,7 +46,7 @@ class Upstream:
                 outer.headers.append(dict(self.headers))
                 answer = outer.answers.pop(0) if outer.answers else {"blocks": [{"type": "text", "text": "ok"}]}
                 if "status" in answer:
-                    data = json.dumps({"type": "error", "error": {"type": "invalid_request_error", "message": answer["message"]}}).encode()
+                    data = json.dumps({"type": "error", "error": {"type": answer.get("type", "invalid_request_error"), "message": answer["message"]}}).encode()
                     self.send_response(answer["status"])
                     self.send_header("Content-Type", "application/json")
                     self.send_header("Content-Length", str(len(data)))
@@ -201,12 +201,11 @@ def test_words_only_and_images_reach_the_api_as_it_takes_them(stack):
     assert sent["messages"][0]["content"][0] == {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": "QUJD"}}
 
 
-def test_the_warm_up_the_notice_and_what_only_llama_server_has_cost_nothing(stack):
+def test_the_warm_up_and_what_only_llama_server_has_cost_nothing(stack):
     upstream, url, spend = stack
     warm = post(url, "/v1/chat/completions", {"stream": True, "max_tokens": 1, "tools": [TOOL],
                                               "messages": [{"role": "user", "content": "hola"}]}).decode()
     assert "\"usage\"" in warm and "[DONE]" in warm
-    post(url, "/v1/chat/completions", {"max_tokens": 24, "tool_choice": "none", "tools": [TOOL], "messages": []})
     assert json.loads(post(url, "/tokenize", {"content": "<tool_call>"}))["tokens"] == [1]
     assert json.loads(post(url, "/slots/0?action=save", {}))["n_saved"] == 1
     assert upstream.requests == [] and spend.total == 0.0
@@ -233,7 +232,7 @@ def test_only_a_prompt_past_the_context_is_a_400_for_the_mind(stack):
     upstream.answers.append({"status": 400, "message": "messages.0: something else"})
     with pytest.raises(urllib.error.HTTPError) as other:
         post(url, "/v1/chat/completions", {"max_tokens": 768, "messages": [{"role": "user", "content": "x"}]})
-    assert other.value.code == 502
+    assert other.value.code == 422  # one that will not change is not asked again (VIVO1 F4)
 
 
 def test_the_ceiling_stops_the_calls_and_survives_a_restart_with_counts_only(stack, tmp_path):
@@ -258,6 +257,7 @@ class CompatibleUpstream:
         self.requests: list[dict] = []
         self.headers: list[dict] = []
         self.answers: list[dict] = []
+        self.rule = None  # what it answers from what it was sent, instead of the next of answers
         outer = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -267,7 +267,7 @@ class CompatibleUpstream:
             def do_POST(self):  # noqa: N802
                 outer.requests.append(json.loads(self.rfile.read(int(self.headers["Content-Length"]))))
                 outer.headers.append({"path": self.path, "authorization": self.headers.get("Authorization")})
-                answer = outer.answers.pop(0)
+                answer = outer.rule(outer.requests[-1]) if outer.rule else outer.answers.pop(0)
                 status = answer.pop("status", 200)
                 data = json.dumps(answer).encode()
                 self.send_response(status)
@@ -296,7 +296,7 @@ def answer_with(message, finish="stop"):
 
 
 def test_a_compatible_api_gets_only_what_it_takes_with_its_key_on_its_path(tmp_path):
-    upstream, url, server = compatible_stack(tmp_path, provider="openai")
+    upstream, url, server = compatible_stack(tmp_path, provider="compatible")
     upstream.answers.append(answer_with({"role": "assistant", "content": "hola"}))
     reply = json.loads(post(url, "/v1/chat/completions", {
         "messages": [{"role": "user", "content": "hola"}], "tools": [TOOL], "max_tokens": 768, "temperature": 0.2, "top_p": 0.8,
@@ -304,8 +304,8 @@ def test_a_compatible_api_gets_only_what_it_takes_with_its_key_on_its_path(tmp_p
         "chat_template_kwargs": {"enable_thinking": False}, "parallel_tool_calls": True}))
     server.shutdown()
     sent = upstream.requests[0]
-    assert set(sent) == {"model", "messages", "tools", "max_completion_tokens"}
-    assert sent["max_completion_tokens"] == traductor.MIN_MAX_TOKENS
+    assert set(sent) == {"model", "messages", "tools", "max_tokens"}
+    assert sent["max_tokens"] == traductor.MIN_MAX_TOKENS
     assert upstream.headers[0] == {"path": "/v1/chat/completions", "authorization": "Bearer clave-secreta"}
     assert reply["choices"][0]["message"]["content"] == "hola"
 
@@ -352,9 +352,41 @@ def test_a_compatible_apis_refusal_is_a_failure_for_the_mind_and_its_key_is_neve
     with pytest.raises(urllib.error.HTTPError) as too_long:
         post(url, "/v1/chat/completions", {"max_tokens": 768, "messages": [{"role": "user", "content": "x"}]})
     server.shutdown()
-    assert refused.value.code == 502
+    assert refused.value.code == 422
     assert too_long.value.code == 400
     assert "clave-secreta" not in capsys.readouterr().out
+
+
+# What llama-server b11609 answered to every request of BAXY's for mistral:latest past its context (VIVO1 F4, 2026-11-09): its
+# template cannot be read with tools («Automatic parser generation failed»).
+TEMPLATE_REFUSED = {"code": 400, "type": "invalid_request_error", "message": (
+    "Unable to generate parser for this template. Automatic parser generation failed: \n------------\nWhile executing CallExpression at "
+    "line 1, column 125 in source:\n...{{ raise_exception('Conversation roles must alternate user...\nError: Jinja Exception: Conversation "
+    "roles must alternate user/assistant/user/assistant/...")}
+
+
+def test_a_refusal_that_will_not_change_is_said_with_its_cause_once_and_never_asked_again(tmp_path, capsys):
+    # VIVO1 F4: «400 invalid_request_error» with 5 retries and nothing said. Its cause, by the form of the server's error (never
+    # its words); a refusal that will not change goes back as one (422, with its kind), streamed or not, before any answer; one
+    # that may pass (a server that fell) as before (502).
+    upstream, url, server = compatible_stack(tmp_path, provider="local", model="mistral:latest")
+    upstream.answers.append({"status": 400, "error": TEMPLATE_REFUSED})
+    upstream.answers.append({"status": 400, "error": TEMPLATE_REFUSED})
+    upstream.answers.append({"status": 500, "error": {"message": "the server fell"}})
+    asked = {"max_tokens": 768, "messages": [{"role": "user", "content": "x"}]}
+    with pytest.raises(urllib.error.HTTPError) as refused:
+        post(url, "/v1/chat/completions", asked)
+    with pytest.raises(urllib.error.HTTPError) as streamed:
+        post(url, "/v1/chat/completions", {**asked, "stream": True})
+    with pytest.raises(urllib.error.HTTPError) as fell:
+        post(url, "/v1/chat/completions", asked)
+    server.shutdown()
+    log = capsys.readouterr().out
+    assert (refused.value.code, streamed.value.code, fell.value.code) == (422, 422, 502)
+    assert json.loads(refused.value.read())["error"]["code"] == "plantilla"
+    assert "ERROR[plantilla]: El servidor local no puede usar mistral:latest con las herramientas de BAXY" in log
+    assert "Conversation roles" not in log and "Jinja" not in log
+    assert len(upstream.requests) == 3
 
 
 def test_the_connection_is_asked_of_the_api_before_anything_else(tmp_path):
@@ -379,17 +411,19 @@ def test_the_connection_is_asked_of_the_api_before_anything_else(tmp_path):
     compatible.url = f"http://127.0.0.1:{listing.server_address[1]}"
     assert traductor.connection_problem(translator) is None
     Listing.status = 401
-    assert traductor.connection_problem(translator) == "la API rechazó la clave"
-    Listing.status = 404  # an API with no listing is not refused for it
+    assert traductor.connection_problem(translator).code == "clave"
+    Listing.status = 404  # a company is asked for its model by name: 404 is that it has none of that name
+    assert traductor.connection_problem(translator).code == "modelo"
+    compatible.provider = "compatible"  # another API with no listing is not refused for it
     assert traductor.connection_problem(translator) is None
     listing.shutdown()
     listing.server_close()
-    assert traductor.connection_problem(translator) == "no hay conexión con la API"
+    assert traductor.connection_problem(translator).code == "red"
     server.shutdown()
 
 
 @pytest.mark.parametrize(("status", "said"), [
-    (200, None), (401, "la API rechazó la clave"), (404, "no existe el modelo claude-opus-5-5"),
+    (200, None), (401, "clave"), (403, "permiso"), (404, "modelo"),
 ])
 def test_anthropics_key_and_model_are_asked_for_free(status, said, tmp_path):
     class Models(BaseHTTPRequestHandler):
@@ -409,7 +443,8 @@ def test_anthropics_key_and_model_are_asked_for_free(status, said, tmp_path):
     threading.Thread(target=server.serve_forever, daemon=True).start()
     client = anthropic.Anthropic(api_key="k", base_url=f"http://127.0.0.1:{server.server_address[1]}", max_retries=0)
     translator = traductor.Translator(client, traductor.Spend(tmp_path / "g.jsonl", 1.0), "low")
-    assert traductor.connection_problem(translator) == said
+    told = traductor.connection_problem(translator)
+    assert (told and told.code) == said
     server.shutdown()
 
 
@@ -422,6 +457,7 @@ class FakeOllama:
         self.loads: list[int] = []
         self.loaded: dict[str, int] = {}
         self.load_fails: str | None = None
+        self.failed_loads = 0
         outer = self
 
         def _elsewhere(name):
@@ -454,6 +490,7 @@ class FakeOllama:
                     self._send({"capabilities": caps, "model_info": {"arq.context_length": context}, **_elsewhere(body["model"]),
                                 "modelfile": "# FROM " + body["model"] + "\nFROM C:\\blobs\\sha256-" + body["model"] + "\nTEMPLATE x\n"})
                 elif self.path == "/api/generate" and outer.load_fails:
+                    outer.failed_loads += body.get("keep_alive") != 0
                     data = json.dumps({"error": outer.load_fails}).encode()
                     self.send_response(500)
                     self.send_header("Content-Length", str(len(data)))
@@ -479,14 +516,127 @@ MODELS = {"grande:4b": (262144, ["completion", "tools", "thinking"]), "qwen3:8b"
           "sin-tools": (128000, ["completion"])}
 
 
+def test_the_list_of_ollama_says_where_each_models_files_are(monkeypatch):
+    # MOD1 V-07 (REV_VISTA, 2026-11-09): «Modelos en este PC» decía sólo el peso en disco de cada modelo. La App dice la VRAM
+    # de cada uno con la cabecera de sus archivos (ModelMemory), como ya hace con el elegido: la lista dice dónde están.
+    monkeypatch.delenv("BAXY_MIND_LLAMA_SERVER", raising=False)
+    ollama = FakeOllama(MODELS)
+    got = {m["id"]: m for m in traductor.list_models("local", ollama.url, "")["models"]}
+    ollama.server.shutdown()
+    assert got["grande:4b"]["modelFiles"] == ["C:\\blobs\\sha256-grande:4b"], "la línea FROM, no el comentario que nombra el modelo"
+    assert got["sin-tools"]["modelFiles"] == ["C:\\blobs\\sha256-sin-tools"]
+
+
 def test_the_list_of_ollama_says_which_models_fit_and_why_not(monkeypatch):
     monkeypatch.delenv("BAXY_MIND_LLAMA_SERVER", raising=False)
     ollama = FakeOllama(MODELS)
     got = {m["id"]: m for m in traductor.list_models("local", ollama.url, "")["models"]}
     ollama.server.shutdown()
-    assert got["grande:4b"]["fits"] is True and got["grande:4b"]["label"] == "grande:4b · 5,2 GB"
+    assert got["grande:4b"]["fits"] is True and got["grande:4b"]["label"] == "grande:4b · 4,8 GB", "5.2e9 bytes in 2³⁰, as every size BAXY says"
+    # Lo que ocupa en disco, el «size» de /api/tags: lo que libera desinstalarlo (pestaña Modelo de la interfaz v5).
+    assert got["grande:4b"]["bytes"] == 5_200_000_000
+    assert got["grande:4b"]["diskBytes"] == 5_200_000_000
     assert got["qwen3:8b"]["fits"] is False and "40.960" in got["qwen3:8b"]["why"]
     assert got["sin-tools"]["fits"] is False and "herramientas" in got["sin-tools"]["why"]
+
+
+def test_a_model_fits_by_its_own_context_against_what_the_chosen_profile_needs(monkeypatch, tmp_path):
+    # VIVO1 F4: mistral:latest (32.768) was offered as fitting because BAXY's server would run it past what it declares, and
+    # that server could not read its template with tools. What fits is by its own context, against the profile's need.
+    engine = tmp_path / "llama-server.exe"
+    engine.write_bytes(b"")
+    monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", str(engine))
+    ollama = FakeOllama(MODELS)
+    whole = {m["id"]: m for m in traductor.list_models("local", ollama.url, "")["models"]}
+    small = {m["id"]: m for m in traductor.list_models("local", ollama.url, "", need=18_551)["models"]}
+    ollama.server.shutdown()
+    assert whole["qwen3:8b"]["fits"] is False and whole["qwen3:8b"]["context"] == 40960
+    assert "40.960" in whole["qwen3:8b"]["why"] and "52.000" in whole["qwen3:8b"]["why"]
+    assert whole["grande:4b"]["fits"] is True
+    assert small["qwen3:8b"]["fits"] is True and small["qwen3:8b"]["why"] is None
+
+
+def test_a_local_model_connects_only_where_the_profiles_prompt_fits_and_its_template_takes_the_tools(tmp_path, capsys):
+    # VIVO1 F4: connected, «Conectado», and every turn refused. Past its own context it goes on BAXY's server only if that server
+    # takes a request with tools for it (a small one, at once); else on Ollama, up to what it declares. There, a profile whose
+    # prompt does not fit is said and it does not connect.
+    ollama = FakeOllama(MODELS)
+    refusing = CompatibleUpstream()
+    refusing.answers.append({"status": 400, "error": TEMPLATE_REFUSED})
+
+    class Engine:
+        stopped = False
+
+        def __init__(self, server, show, model, context):
+            self.context = context
+
+        def start(self):
+            return refusing.url.rstrip("/")
+
+        def stop(self):
+            Engine.stopped = True
+
+    whole = traductor.local_backend(ollama.url, "qwen3:8b", 78000, 52000)
+    small = traductor.local_backend(ollama.url, "qwen3:8b", 78000, 18551)
+    engine_file = tmp_path / "llama-server.exe"
+    engine_file.write_bytes(b"")
+    tried = traductor.local_backend(ollama.url, "qwen3:8b", 78000, 18551, str(engine_file), Engine)
+    ollama.server.shutdown()
+    assert whole[2].code == "perfil" and "40.960" in whole[2].text and "52.000" in whole[2].text and "perfil" in whole[2].text
+    assert isinstance(small[0], traductor.Ollama) and small[0].num_ctx == 40960 and small[2] is None
+    assert isinstance(tried[0], traductor.Ollama) and tried[1] is None and tried[2] is None and Engine.stopped
+    assert refusing.requests[0]["tools"] and refusing.requests[0]["max_tokens"] == 1
+    assert "plantilla" in capsys.readouterr().out
+
+
+def alternating(request):
+    """BAXY's server with mistral:latest's template (its GGUF's tokenizer.chat_template, VIVO1 F4): user and assistant only, one
+    after the other. llama.cpp folds the system message into the first user one and gives a tool's result as the user's; two of
+    the same in a row are refused as the template refuses them."""
+    roles = ["user" if m["role"] in ("system", "tool") else m["role"] for m in request["messages"]]
+    if request["messages"][0]["role"] == "system":
+        roles = roles[1:] if roles[1:2] == ["user"] else ["user", *roles[1:]]
+    if any(a == b for a, b in zip(roles, roles[1:])) or roles[:1] != ["user"]:
+        return {"status": 400, "error": dict(TEMPLATE_REFUSED)}
+    return answer_with({"role": "assistant", "content": "x"})
+
+
+def test_bAXYs_server_is_tried_with_what_a_turn_of_the_mind_sends_and_not_with_less(tmp_path, capsys):
+    # VIVO1 F4 on the NB, 2026-11-09: a probe of a system and a user message passed on BAXY's server, and every turn was refused:
+    # the mind sends its clock, its notes and the person's words as user messages one after another (Mind.decide), and a tool's
+    # result before a note. The probe has that shape; where it is refused, the model goes with Ollama.
+    ollama = FakeOllama(MODELS)
+    strict, lenient = CompatibleUpstream(), CompatibleUpstream()
+    strict.rule = alternating
+    lenient.rule = lambda request: answer_with({"role": "assistant", "content": "x"})
+    engine_file = tmp_path / "llama-server.exe"
+    engine_file.write_bytes(b"")
+
+    def engine_on(upstream):
+        class Engine:
+            stopped = False
+
+            def __init__(self, server, show, model, context):
+                pass
+
+            def start(self):
+                return upstream.url.rstrip("/")
+
+            def stop(self):
+                Engine.stopped = True
+        return Engine
+
+    refused_engine, taken_engine = engine_on(strict), engine_on(lenient)
+    refused = traductor.local_backend(ollama.url, "qwen3:8b", 78000, 18551, str(engine_file), refused_engine)
+    taken = traductor.local_backend(ollama.url, "qwen3:8b", 78000, 18551, str(engine_file), taken_engine)
+    ollama.server.shutdown()
+    assert isinstance(refused[0], traductor.Ollama) and refused[1] is None and refused[2] is None and refused_engine.stopped
+    said = capsys.readouterr().out
+    assert "(plantilla)" in said and "va con Ollama, hasta 40.960 tokens" in said
+    assert isinstance(taken[0], traductor.Compatible) and taken[1] is not None and not taken_engine.stopped
+    roles = [m["role"] for m in lenient.requests[0]["messages"]]
+    assert roles[:3] == ["system", "user", "user"] and "tool" in roles and roles[-1] == "user"
+    assert lenient.requests[0]["tools"] and lenient.requests[0]["max_tokens"] == 1
 
 
 def test_ollama_gets_its_own_shape_with_the_context_set_by_baxy_and_its_answer_comes_back_as_the_mind_reads_it(tmp_path):
@@ -520,6 +670,34 @@ def test_ollama_gets_its_own_shape_with_the_context_set_by_baxy_and_its_answer_c
     ollama.server.shutdown()
 
 
+def test_what_ollama_is_told_to_do_now_goes_where_every_chat_template_takes_it():
+    # Banco del NB 2026-11-08, Qwen3.5-2B en Ollama 0.40.15: «Jinja Exception: System message must be at the beginning.» (500)
+    # a cada aviso (tool_choice none) y a cada llamada empezada: la plantilla del modelo sólo admite el sistema primero.
+    backend = traductor.Ollama("http://127.0.0.1:9", "grande:4b")
+    history = [{"role": "system", "content": "s"}, {"role": "user", "content": "abre la calculadora"},
+               {"role": "assistant", "content": "", "tool_calls": [{"id": "c1", "function": {"name": "app.open", "arguments": "{}"}}]},
+               {"role": "tool", "tool_call_id": "c1", "content": "corriendo"}]
+    notice = backend.to_request({"messages": history, "tools": [TOOL], "tool_choice": "none", "max_tokens": 24})["messages"]
+    started = backend.to_request({"messages": [*history[:2], {"role": "assistant", "content": "<tool_call>\n<function=file.find>\n"}],
+                                  "tools": [TOOL]})["messages"]
+    for sent in (notice, started):
+        assert [m["role"] for m in sent].count("system") == 1 and sent[0]["role"] == "system"
+    assert notice[-1] == {"role": "user", "content": "Answer in words now. Call no tool."}
+    assert started[-1] == {"role": "user", "content": "Call the tool file__find now, with the arguments this conversation gives."}
+
+
+def test_ollama_and_a_compatible_api_answer_without_anthropics_sdk(tmp_path, monkeypatch):
+    # Banco del NB 2026-11-08: un runtime sin el SDK de Anthropic devolvía 502 a cada pedido a Ollama («se cortó
+    # (ModuleNotFoundError)»): el SDK sólo hace falta para hablar con Anthropic.
+    monkeypatch.setitem(sys.modules, "anthropic", None)
+    ollama = FakeOllama(MODELS, [{"message": {"role": "assistant", "content": "4"}, "done_reason": "stop", "prompt_eval_count": 9, "eval_count": 1}])
+    translator = traductor.Translator(None, traductor.Spend(tmp_path / "g.jsonl", float("inf")), "low", "grande:4b",
+                                      traductor.Ollama(ollama.url, "grande:4b"))
+    reply = translator.ask({"messages": [{"role": "user", "content": "2 más 2"}], "max_tokens": 64}, lambda text: None)
+    assert reply["choices"][0]["message"]["content"] == "4"
+    ollama.server.shutdown()
+
+
 def test_a_small_model_gets_what_it_admits_and_cutting_the_prompt_is_said(tmp_path, capsys):
     ollama = FakeOllama(MODELS, [{"message": {"role": "assistant", "content": "ok"}, "done_reason": "stop", "prompt_eval_count": 50, "eval_count": 1}])
     backend = traductor.Ollama(ollama.url, "qwen3:8b")
@@ -536,14 +714,15 @@ def test_the_context_the_person_chose_is_what_ollama_gets_up_to_what_the_model_a
     ollama.server.shutdown()
 
 
-def test_with_baxys_server_a_model_that_declares_little_is_not_refused_for_it(monkeypatch, tmp_path):
+def test_with_baxys_server_the_context_past_what_a_model_declares_is_still_offered_and_estimated(monkeypatch, tmp_path):
     monkeypatch.setattr(traductor, "commit_free", lambda: None)
     server = tmp_path / "llama-server.exe"
     server.write_bytes(b"")
     monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", str(server))
     ollama = FakeOllama(MODELS)
     got = {m["id"]: m for m in traductor.list_models("local", ollama.url, "")["models"]}
-    assert got["qwen3:8b"]["fits"] is True and got["sin-tools"]["fits"] is False
+    # It fits by its own context (VIVO1 F4: BAXY's server may not read its template); past it, a context the person chooses.
+    assert got["qwen3:8b"]["fits"] is False and got["sin-tools"]["fits"] is False
     estimated = traductor.estimate(ollama.url, "qwen3:8b")
     assert [o["context"] for o in estimated["options"]] == list(traductor.OLLAMA_CHOICES) and estimated["recommended"] == 78000
     # Measured where Ollama allows; the rest follows from it.
@@ -598,12 +777,21 @@ def test_being_connected_means_the_model_loaded_with_its_context_or_it_is_said_w
     assert backend.load() is None and ollama.loads == [96000] and "grande:4b" in ollama.loaded
     ollama.loaded.clear()
     ollama.load_fails = "llama-server terminated: error loading model: unable to allocate CUDA_Host buffer"
-    assert backend.load() == "grande:4b no cabe en la memoria de este PC: elige otro modelo o menos contexto"
+    # REV_VISTA V-04: with its kind, which Settings says in its own language
+    assert backend.load() == traductor.Refusal("memoria", "grande:4b no cabe en la memoria de este PC: elige otro modelo o menos contexto")
     ollama.load_fails = "algo distinto"
-    assert backend.load() == "Ollama no pudo cargar grande:4b"
+    assert backend.load() == traductor.Refusal("carga", "Ollama no pudo cargar grande:4b")
     ollama.server.shutdown()
     ollama.server.server_close()
-    assert backend.load() == "Ollama no terminó de cargar grande:4b"
+    assert backend.load() == traductor.Refusal("carga", "Ollama no terminó de cargar grande:4b")
+
+
+def test_every_failure_line_settings_reads_carries_its_kind():
+    """REV_VISTA V-04 (2026-11-09): Settings says a failure in the person's language by its kind (ERROR[kind]); five lines were
+    written with none («ERROR: …») and an English view showed their Spanish words. Every one goes through say()."""
+    source = Path(traductor.__file__).read_text(encoding="utf-8")
+    assert [line.strip() for line in source.splitlines() if '"ERROR' in line and "print(" in line] == [
+        'print(f"ERROR[{refusal.code}]: {refusal.text}", flush=True)']
 
 
 def test_a_local_model_that_does_not_fit_is_said_plainly(tmp_path, capsys):
@@ -649,12 +837,12 @@ def test_a_model_in_use_is_not_taken_out_to_measure_it(monkeypatch, tmp_path):
 
 def test_a_model_that_would_leave_the_pc_without_memory_is_not_loaded_nor_measured(monkeypatch, tmp_path):
     monkeypatch.setattr(traductor, "commit_free", lambda: 6 * 2**30)
-    assert traductor.memory_problem("m", 2.5 * 2**30, traductor.COMMIT_PER_BYTE_ENGINE) is None
-    assert traductor.memory_problem("m", 2.6 * 2**30, traductor.COMMIT_PER_BYTE_ENGINE) is not None
-    # By Ollama the same model takes more: 1.7 GB is what fits there.
-    assert traductor.memory_problem("m", 1.7 * 2**30) is None
-    assert traductor.memory_problem("m", 2.5 * 2**30) is not None
-    assert traductor.memory_problem("m", 4 * 2**30, traductor.COMMIT_PER_BYTE_ENGINE) == "m necesita unos 7,8 GB de memoria libre, contando lo que debe quedar para tus programas, y este PC tiene 6,0 GB: elige otro modelo o menos contexto"
+    # Whole on the card: its size, 2.75 GiB of the process's own and 3 GiB left for the person's programs.
+    assert traductor.memory_problem("m", 0.25 * 2**30) is None
+    assert traductor.memory_problem("m", 0.3 * 2**30) is not None
+    assert traductor.memory_problem("m", 4 * 2**30) == ("m necesita unos 9,8 GB de RAM libre (RAM y archivo de paginación, donde Windows cuenta también lo que va a la tarjeta), "
+        "contando lo que debe quedar para tus programas, y este PC tiene 6,0 GB: elige otro modelo o menos contexto")
+    # 2026-11-09: «21,4 GB de memoria libre» was read as VRAM; it is what Windows must be able to promise, said apart.
     ollama = FakeOllama(MODELS)
     # The file of each is 5.2 GB (FakeOllama): with 6 GB free it is not even loaded to measure it.
     got = traductor.estimate(ollama.url, "grande:4b", tmp_path / "e.json")
@@ -713,10 +901,10 @@ def test_ollama_that_does_not_answer_or_lacks_the_model_is_said(tmp_path):
     make = lambda model: traductor.Translator(None, spend, "low", model, traductor.Ollama(ollama.url, model))  # noqa: E731
     assert traductor.connection_problem(make("grande:4b")) is None
     told = traductor.connection_problem(make("no-esta"))
-    assert "no-esta" in told and "grande:4b" in told
+    assert told.code == "modelo" and "no-esta" in told.text and "grande:4b" in told.text
     ollama.server.shutdown()
     ollama.server.server_close()
-    assert traductor.connection_problem(make("grande:4b")) == "Ollama no responde"
+    assert traductor.connection_problem(make("grande:4b")) == ("ollama", "Ollama no responde")
 
 
 def _company(body, status=200):
@@ -741,10 +929,10 @@ def test_a_companys_list_keeps_what_can_chat_and_a_refused_key_is_said():
     assert [m["id"] for m in traductor.list_models("openai", url, "k")["models"]] == ["gemini-y", "gpt-x"]
     server.shutdown()
     server, url = _company({}, status=401)
-    assert traductor.list_models("google", url, "k") == {"error": "la API rechazó la clave"}
+    assert traductor.list_models("google", url, "k")["code"] == "clave"
     server.shutdown()
     server.server_close()
-    assert traductor.list_models("openai", url, "k") == {"error": "no hay conexión"}
+    assert traductor.list_models("openai", url, "k") == {"error": "no hay conexión con OpenAI", "code": "red"}
 
 
 def test_anthropics_list_comes_from_the_sdk():
@@ -841,7 +1029,7 @@ def test_a_redirect_takes_neither_the_key_nor_the_conversation_elsewhere(tmp_pat
     told = traductor.connection_problem(translator)
     api.close()
     assert api.reached == []
-    assert told and "redirige" in told
+    assert told and told.code == "redirige"
     assert "clave-secreta" not in capsys.readouterr().out
 
 
@@ -857,7 +1045,7 @@ def test_a_redirect_takes_anthropics_key_nowhere(tmp_path, status, monkeypatch):
     told = traductor.connection_problem(translator)
     api.close()
     assert api.reached == []
-    assert told == f"la API respondió {status}"
+    assert told and told.code == "redirige"
 
 
 def test_what_the_machine_inherited_does_not_send_anthropics_key_elsewhere(monkeypatch):
@@ -961,8 +1149,8 @@ def test_a_compatible_apis_error_that_repeats_the_text_leaves_no_text_behind(tmp
     server.shutdown()
     log = capsys.readouterr().out
     assert ECHOED not in log
-    assert "ERROR: la API respondió 422 (bad_input)" in log
-    assert (refused.value.code, too_long.value.code) == (502, 400)
+    assert "ERROR[rechazo]: Google respondió 422 (bad_input)" in log
+    assert (refused.value.code, too_long.value.code) == (422, 400)
     assert ECHOED not in refused.value.read().decode() + too_long.value.read().decode()
 
 
@@ -974,7 +1162,7 @@ def test_anthropics_error_that_repeats_the_text_leaves_no_text_behind(stack, sta
         post(url, "/v1/chat/completions", {"max_tokens": 768, "messages": [{"role": "user", "content": ECHOED}]})
     log = capsys.readouterr().out
     assert ECHOED not in log
-    assert f"ERROR: la API respondió {status} (invalid_request_error)" in log
+    assert ("ERROR[rechazo]: Anthropic respondió 400 (invalid_request_error)" if status == 400 else "ERROR[limite]: Anthropic limitó") in log
     assert ECHOED not in refused.value.read().decode()
 
 
@@ -1046,13 +1234,10 @@ def test_a_connection_cut_before_the_answer_is_a_failure_for_the_mind(tmp_path, 
     threading.Thread(target=server.serve_forever, daemon=True).start()
     url = f"http://127.0.0.1:{server.server_address[1]}"
     try:
-        if stream:
-            told = _ask_streaming(url)
-            assert '"error"' in told and "finish_reason" not in told
-        else:
-            with pytest.raises(urllib.error.HTTPError) as refused:
-                post(url, "/v1/chat/completions", {"max_tokens": 768, "messages": [{"role": "user", "content": "x"}]})
-            assert refused.value.code == 502
+        # Before its first word, streamed or not, an HTTP failure (as llama-server's): one that may pass.
+        with pytest.raises(urllib.error.HTTPError) as refused:
+            post(url, "/v1/chat/completions", {"max_tokens": 768, "stream": stream, "messages": [{"role": "user", "content": "x"}]})
+        assert refused.value.code == 502
     finally:
         server.shutdown()
     assert "ERROR" in capsys.readouterr().out
@@ -1069,8 +1254,13 @@ def test_an_answer_cut_halfway_is_not_given_to_the_mind_as_a_whole_one(tmp_path,
     client = anthropic.Anthropic(api_key="k", base_url=api.url, max_retries=0)
     server = traductor.serve(traductor.Translator(client, traductor.Spend(tmp_path / "g.jsonl", float("inf")), "low"), 0)
     threading.Thread(target=server.serve_forever, daemon=True).start()
+    # The reset may take the words already sent with it (Windows drops what was not read yet): then the cut came before the first
+    # word, and it is the answer's HTTP status. Either way, never a whole answer.
     try:
         told = _ask_streaming(f"http://127.0.0.1:{server.server_address[1]}")
+    except urllib.error.HTTPError as error:
+        assert error.code == 502
+        told = error.read().decode()
     finally:
         server.shutdown()
     assert '"error"' in told and "finish_reason" not in told
@@ -1228,7 +1418,7 @@ def test_a_model_ollama_runs_in_its_cloud_does_not_connect_and_is_sent_nothing(t
         monkeypatch.setenv("BAXY_MIND_LLAMA_SERVER", str(server))
     else:
         monkeypatch.delenv("BAXY_MIND_LLAMA_SERVER", raising=False)
-    monkeypatch.setattr(traductor, "memory_problem", lambda *_: None)
+    monkeypatch.setattr(traductor, "memory_problem", lambda *_, **__: None)
     monkeypatch.setattr(traductor.Engine, "start", lambda self: pytest.fail("the engine started"))
     monkeypatch.setattr(traductor, "serve", lambda *_: pytest.fail("it connected"))
     ollama = FakeOllama({"nube:cloud": (40960, ["completion", "tools"])}, cloud={"nube:cloud"})
@@ -1247,7 +1437,7 @@ def test_what_ollama_lists_in_its_cloud_is_refused_even_if_it_could_not_say_so_a
     translator = traductor.Translator(None, traductor.Spend(tmp_path / "g.jsonl", float("inf")), "low", "nube:cloud", backend)
     problem = traductor.connection_problem(translator)
     ollama.server.shutdown()
-    assert "fuera de este PC" in problem
+    assert problem.code == "nube" and "fuera de este PC" in problem.text
 
 
 def test_nothing_on_the_way_to_ollama_goes_through_the_proxy_this_pc_has(proxy, monkeypatch, tmp_path):
@@ -1281,7 +1471,7 @@ def test_a_list_follows_no_redirect_with_the_key(provider):
     answer = traductor.list_models(provider, server.url, "clave-secreta")
     reached = list(server.reached)
     server.close()
-    assert answer == {"error": "esa dirección redirige a otra: escribe la final"}
+    assert answer == {"error": "esa dirección redirige a otra: escribe la final", "code": "redirige"}
     assert reached == []
 
 
@@ -1391,3 +1581,423 @@ def test_only_counts_are_kept_of_what_a_compatible_api_calls_its_counts(tmp_path
     kept = json.loads(spent.read_text(encoding="utf-8"))
     assert "PALABRAS" not in json.dumps(kept)
     assert (kept["in"], kept["out"]) == (0, 7)
+
+
+# Pedido del dueño 2026-11-08: «vi varios errores» con OpenAI y Anthropic. Each refusal says what happened and what to do, by
+# the status and the code each company documents, with its kind for the view's other language.
+@pytest.mark.parametrize(("status", "error", "code", "words"), [
+    (401, {"message": "Incorrect API key provided", "type": "invalid_request_error"}, "clave", "rechazó la clave"),
+    (429, {"message": "no money", "type": "insufficient_quota", "code": "credit_balance_exhausted"}, "saldo", "no tiene saldo"),
+    (429, {"message": "spend", "type": "insufficient_quota", "code": "project_spend_limit_exceeded"}, "saldo", "límite de gasto"),
+    (429, {"message": "slow down", "type": "rate_limit_error"}, "limite", "espera un minuto"),
+    (404, {"message": "nope", "code": "model_not_found"}, "modelo", "no tiene el modelo un-modelo"),
+    (503, {"message": "busy", "code": "server_is_overloaded"}, "saturado", "saturado"),
+    (500, {"message": "boom"}, "caido", "fallo en su servidor (500)"),
+])
+def test_each_refusal_of_openai_says_what_happened_and_what_to_do(tmp_path, capsys, status, error, code, words):
+    upstream, url, server = compatible_stack(tmp_path, provider="openai")
+    upstream.answers.append({"status": status, "error": error})
+    with pytest.raises(urllib.error.HTTPError):
+        post(url, "/v1/chat/completions", {"max_tokens": 768, "messages": [{"role": "user", "content": "x"}]})
+    server.shutdown()
+    line = next(line for line in capsys.readouterr().out.splitlines() if line.startswith("ERROR"))
+    assert line.startswith(f"ERROR[{code}]: OpenAI ") and words in line
+    assert error["message"] not in line
+
+
+@pytest.mark.parametrize(("status", "kind", "message", "code"), [
+    (401, "authentication_error", "invalid x-api-key", "clave"),
+    (402, "billing_error", "card declined", "saldo"),
+    (400, "invalid_request_error", "Your credit balance is too low to access the Anthropic API.", "saldo"),
+    (400, "invalid_request_error", "You have reached your specified API usage limits.", "saldo"),
+    (429, "rate_limit_error", "slow", "limite"),
+    (529, "overloaded_error", "Overloaded", "saturado"),
+])
+def test_each_refusal_of_anthropic_says_what_happened_and_what_to_do(stack, capsys, status, kind, message, code):
+    upstream, url, _ = stack
+    upstream.answers.append({"status": status, "type": kind, "message": message})
+    with pytest.raises(urllib.error.HTTPError) as refused:
+        post(url, "/v1/chat/completions", {"max_tokens": 768, "messages": [{"role": "user", "content": "x"}]})
+    line = next(line for line in capsys.readouterr().out.splitlines() if line.startswith("ERROR"))
+    assert line.startswith(f"ERROR[{code}]: Anthropic ")
+    assert message not in line
+    assert refused.value.code == (502 if code in traductor.PASSING else 422)
+
+
+def test_a_runtime_without_anthropics_sdk_says_so_instead_of_closing(monkeypatch, capsys, tmp_path):
+    """Uso real 2026-11-08 02:07: the runtime of this PC and of the notebook predate the SDK, and the translator ended with
+    «Fallo: ModuleNotFoundError»; Settings said only that it did not start, and the list could not be read."""
+    monkeypatch.setitem(sys.modules, "anthropic", None)
+    assert traductor.main(["--listar", "--proveedor", "anthropic"]) == 0
+    listed = json.loads(capsys.readouterr().out)
+    assert listed["code"] == "sdk" and "Anthropic" in listed["error"]
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
+    assert traductor.main(["--gasto", str(tmp_path / "g.jsonl"), "--proveedor", "anthropic"]) == 3
+    assert capsys.readouterr().out.startswith("ERROR[sdk]: ")
+
+
+def test_openai_goes_by_its_responses_api_and_gets_back_the_reasoning_of_each_call(tmp_path):
+    """gpt-6.1-sol and gpt-6.1-terra call tools only by the Responses API (developers.openai.com/api/docs/models/gpt-6.1-sol),
+    and a reasoning model's reasoning items go back with the call's output (guides/function-calling)."""
+    upstream = CompatibleUpstream()
+    responses = traductor.Responses(upstream.url, "clave-secreta", "gpt-6.1-sol", "openai")
+    spend = traductor.Spend(tmp_path / "g.jsonl", float("inf"))
+    server = traductor.serve(traductor.Translator(None, spend, "medium", "gpt-6.1-sol", responses), 0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    url = f"http://127.0.0.1:{server.server_address[1]}"
+    thought = {"type": "reasoning", "id": "rs_1", "summary": [], "encrypted_content": "cifrado"}
+    arguments = json.dumps({"query": "x"})
+    upstream.answers.append({"id": "resp_1", "model": "gpt-6.1-sol", "output": [
+        thought, {"type": "function_call", "id": "fc_1", "call_id": "call_1", "name": "file__find", "arguments": arguments}],
+        "usage": {"input_tokens": 50, "output_tokens": 9}})
+    upstream.answers.append({"id": "resp_2", "model": "gpt-6.1-sol", "output": [
+        {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": "Listo."}]}],
+        "usage": {"input_tokens": 70, "output_tokens": 3}})
+    system = {"role": "system", "content": "Eres BAXY."}
+    first = json.loads(post(url, "/v1/chat/completions", {"max_tokens": 768, "tools": [TOOL], "parallel_tool_calls": True,
+                                                           "messages": [system, {"role": "user", "content": "busca x"}]}))
+    call = first["choices"][0]["message"]["tool_calls"][0]
+    assert (first["choices"][0]["finish_reason"], call["function"]["name"]) == ("tool_calls", "file.find")
+    second = json.loads(post(url, "/v1/chat/completions", {"max_tokens": 768, "tools": [TOOL], "messages": [
+        system, {"role": "user", "content": "busca x"},
+        {"role": "assistant", "content": "", "tool_calls": [{"id": call["id"], "type": "function", "function": call["function"]}]},
+        {"role": "tool", "tool_call_id": call["id"], "content": "un archivo"}]}))
+    server.shutdown()
+    assert second["choices"][0]["message"]["content"] == "Listo."
+    assert second["usage"] == {"prompt_tokens": 70, "completion_tokens": 3}
+    assert [h["path"] for h in upstream.headers] == ["/v1/responses", "/v1/responses"]
+    sent = upstream.requests[1]
+    assert sent["store"] is False and sent["max_output_tokens"] == traductor.MIN_MAX_TOKENS
+    assert sent["tools"][0] == {"type": "function", "name": "file__find", "description": "Busca.",
+                                "parameters": TOOL["function"]["parameters"]}
+    assert sent["input"] == [
+        {"role": "developer", "content": "Eres BAXY."}, {"role": "user", "content": "busca x"}, thought,
+        {"type": "function_call", "call_id": "call_1", "name": "file__find", "arguments": arguments},
+        {"type": "function_call_output", "call_id": "call_1", "output": "un archivo"}]
+    assert not {"temperature", "messages", "max_completion_tokens"} & set(sent)
+
+
+def test_a_model_openai_does_not_have_is_said_before_the_first_turn(tmp_path):
+    server, url = _company({"error": {"message": "The model does not exist", "code": "model_not_found"}}, status=404)
+    responses = traductor.Responses(url, "k", "gpt-sin-esto", "openai")
+    translator = traductor.Translator(None, traductor.Spend(tmp_path / "g.jsonl", 1.0), "low", "gpt-sin-esto", responses)
+    told = traductor.connection_problem(translator)
+    server.shutdown()
+    assert told is not None and told.code == "modelo" and "gpt-sin-esto" in told.text
+
+
+NOTICE = {"max_tokens": 24, "tool_choice": "none", "temperature": 0.0, "tools": [TOOL], "messages": [
+    {"role": "user", "content": "busca vuelos a Lima"},
+    {"role": "assistant", "content": "", "tool_calls": [{"id": "c1", "type": "function", "function": {"name": "file.find", "arguments": "{}"}}]},
+    {"role": "tool", "tool_call_id": "c1", "content": "{\"status\": \"running\"}\n[Escribe sólo una frase...]"}]}
+
+
+def test_a_notice_reaches_the_model_and_its_words_come_back(stack):
+    """Pedido del dueño 2026-11-08: with the stock model BAXY says what it is doing during a mission of several steps, and with
+    another model it says nothing until the end. Those words are the model's notice (Mind.notice_of: 24 tokens, no tool), which the
+    translator answered itself with nothing; it goes to the model now, with the low effort a phrase of 24 tokens needs."""
+    upstream, url, _ = stack
+    upstream.answers.append({"blocks": [{"type": "text", "text": "Busco vuelos a Lima."}]})
+    reply = json.loads(post(url, "/v1/chat/completions", NOTICE))
+    assert reply["choices"][0]["message"]["content"] == "Busco vuelos a Lima."
+    assert reply["choices"][0]["finish_reason"] == "stop"
+    assert len(upstream.requests) == 1
+    assert upstream.requests[0]["output_config"]["effort"] == "low"
+    assert upstream.requests[0]["tool_choice"] == {"type": "none"}
+
+
+def test_a_notice_reaches_a_compatible_api_and_ollama_too(tmp_path):
+    upstream, url, server = compatible_stack(tmp_path, provider="compatible")
+    upstream.answers.append(answer_with({"role": "assistant", "content": "Busco vuelos a Lima."}))
+    reply = json.loads(post(url, "/v1/chat/completions", NOTICE))
+    server.shutdown()
+    assert reply["choices"][0]["message"]["content"] == "Busco vuelos a Lima."
+    assert upstream.requests[0]["tool_choice"] == "none"
+
+
+CAPTURE = {"max_tokens": 800, "messages": [{"role": "user", "content": [
+    {"type": "text", "text": "Describe esta captura."},
+    {"type": "image_url", "image_url": {"url": "data:image/png;base64,iVBORw0KGgo="}}]}]}
+
+
+def test_a_model_that_does_not_see_is_sent_no_image_and_says_so(tmp_path):
+    """Pedido del dueño 2026-11-08: «si el modelo no tiene visión, que BAXY ya no podrá usar la visión, y listo». A capture's
+    description for a model Ollama says does not see goes nowhere: it would answer on what it never saw."""
+    ollama = FakeOllama(MODELS)
+    backend = traductor.Ollama(ollama.url, "grande:4b")
+    assert backend.sees is False
+    server = traductor.serve(traductor.Translator(None, traductor.Spend(tmp_path / "g.jsonl", float("inf")), "low", "grande:4b", backend), 0)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    with pytest.raises(urllib.error.HTTPError) as refused:
+        post(f"http://127.0.0.1:{server.server_address[1]}", "/v1/chat/completions", CAPTURE)
+    server.shutdown()
+    ollama.server.shutdown()
+    assert refused.value.code == 501
+    assert json.loads(refused.value.read())["error"]["code"] == "model_without_vision"
+    assert ollama.requests == []
+
+
+def test_a_model_that_sees_gets_its_image_and_the_list_says_which_ones_see(tmp_path, monkeypatch):
+    ollama = FakeOllama({**MODELS, "ve:4b": (262144, ["completion", "tools", "vision"])})
+    assert traductor.Ollama(ollama.url, "ve:4b").sees is True
+    listed = {m["id"]: m["vision"] for m in traductor.list_models("local", ollama.url, "")["models"]}
+    ollama.server.shutdown()
+    assert listed["ve:4b"] is True and listed["grande:4b"] is False
+
+
+def test_claude_that_takes_images_gets_them_and_one_that_does_not_is_sent_none(stack):
+    upstream, url, _ = stack
+    upstream.answers.append({"blocks": [{"type": "text", "text": "Una ventana."}]})
+    assert json.loads(post(url, "/v1/chat/completions", CAPTURE))["choices"][0]["message"]["content"] == "Una ventana."
+    assert upstream.requests[-1]["messages"][0]["content"][1]["type"] == "image"
+
+
+
+def test_whether_openai_or_gemini_see_is_not_assumed_it_is_tried_and_a_refusal_says_it(tmp_path):
+    """Líder 2026-11-08: «no todos sus modelos ven… nunca "sí" por defecto». Their models APIs do not say a model's modalities, so
+    it is not known: the first image goes, and a refusal of it as a request it cannot take says this model does not see, from then on."""
+    upstream, url, server = compatible_stack(tmp_path, provider="google")
+    upstream.rule = lambda sent: (
+        {"status": 400, "error": {"message": "image input is not supported", "status": "INVALID_ARGUMENT"}} if _images(sent)
+        else answer_with({"role": "assistant", "content": "No veo ninguna imagen."}))
+    props = json.loads(urllib.request.urlopen(url + "/props", timeout=10).read())
+    assert props["vision"] is None
+    with pytest.raises(urllib.error.HTTPError) as first:
+        post(url, "/v1/chat/completions", CAPTURE)
+    with pytest.raises(urllib.error.HTTPError) as second:
+        post(url, "/v1/chat/completions", CAPTURE)
+    props = json.loads(urllib.request.urlopen(url + "/props", timeout=10).read())
+    server.shutdown()
+    assert (first.value.code, second.value.code) == (501, 501)
+    # Revisión total (M4): refused with a small image too, and answered without any: it is the image it does not take.
+    assert [len(_images(sent)) for sent in upstream.requests] == [1, 1, 0], "known now: the second image goes nowhere"
+    assert _images(upstream.requests[1]) == [traductor.PROBE_IMAGE]
+    assert json.loads(first.value.read())["error"]["code"] == "model_without_vision"  # never the answer about no image
+    assert props["vision"] is False
+    assert traductor.Responses("https://api.openai.com/v1", "k", "gpt-6.1-sol", "openai").sees is None
+
+
+def _images(sent: dict) -> list[str]:
+    """The images of a chat completions request, as their URLs."""
+    return [part["image_url"]["url"] for message in sent.get("messages") or [] if isinstance(message.get("content"), list)
+            for part in message["content"] if part.get("type") == "image_url"]
+
+
+# A capture too large for the model: OpenAI rejects an image past its patch limit instead of resizing it
+# (developers.openai.com/api/docs/guides/images-vision, «Images that exceed the 30,000-patch limit after processing are
+# rejected, not automatically resized to meet it»), and Claude one past its pixel limit with an invalid_request_error
+# (platform.claude.com/docs/en/build-with-claude/vision). Both read 2026-11-09.
+LARGE_CAPTURE = {"max_tokens": 800, "messages": [{"role": "user", "content": [
+    {"type": "text", "text": "Describe esta captura."},
+    {"type": "image_url", "image_url": {"url": "data:image/png;base64," + "iVBORw0KGgo" * 400 + "="}}]}]}
+
+
+def _too_large(sent: dict) -> dict:
+    if any(len(url) > 2000 for url in _images(sent)):
+        return {"status": 400, "error": {"message": "Invalid image: it is larger than this model accepts.",
+                                         "type": "invalid_request_error", "code": "image_too_large"}}
+    return answer_with({"role": "assistant", "content": "Una ventana."})
+
+
+def test_an_image_refused_for_its_size_does_not_say_the_model_cannot_see(tmp_path):
+    """Revisión total (M4): any 400, 415 or 422 to a request with an image, with the model's sight not known, marked the model
+    «sin visión» for the whole session. A model that takes a small image sees: what it refused was that image."""
+    upstream, url, server = compatible_stack(tmp_path, provider="openai")
+    upstream.rule = _too_large
+    with pytest.raises(urllib.error.HTTPError) as refused:
+        post(url, "/v1/chat/completions", LARGE_CAPTURE)
+    props = json.loads(urllib.request.urlopen(url + "/props", timeout=10).read())
+    seen = json.loads(post(url, "/v1/chat/completions", CAPTURE))
+    with pytest.raises(urllib.error.HTTPError) as again:
+        post(url, "/v1/chat/completions", LARGE_CAPTURE)
+    server.shutdown()
+    assert refused.value.code == 422 and again.value.code == 422  # the API's own refusal, not «no vision here» (501)
+    assert props["vision"] is None
+    assert seen["choices"][0]["message"]["content"] == "Una ventana."
+    # the large one, the same request with the small image (taken: nothing more is asked), the capture, and the large one
+    # again, alone: a model that took an image is not tried again.
+    assert [_images(sent) == [traductor.PROBE_IMAGE] for sent in upstream.requests] == [False, True, False, False]
+
+
+def test_a_request_refused_for_another_field_does_not_say_the_model_cannot_see(tmp_path):
+    # developers.openai.com/api/docs/guides/error-codes (read 2026-11-09): «400 - Invalid service_tier argument … as an
+    # invalid_request_error with error.param set to service_tier». Refused with a small image and with none: not the image.
+    upstream, url, server = compatible_stack(tmp_path, provider="openai")
+    upstream.rule = lambda sent: {"status": 400, "error": {
+        "message": "Invalid service_tier argument: The requested service tier is not allowed for this project.",
+        "type": "invalid_request_error", "param": "service_tier"}}
+    with pytest.raises(urllib.error.HTTPError) as refused:
+        post(url, "/v1/chat/completions", CAPTURE)
+    props = json.loads(urllib.request.urlopen(url + "/props", timeout=10).read())
+    server.shutdown()
+    assert refused.value.code == 422
+    assert props["vision"] is None
+    assert [len(_images(sent)) for sent in upstream.requests] == [1, 1, 0]
+
+
+def test_a_model_that_answered_an_image_is_not_blind_for_a_later_refusal(tmp_path):
+    upstream, url, server = compatible_stack(tmp_path, provider="openai")
+    upstream.rule = _too_large
+    assert json.loads(post(url, "/v1/chat/completions", CAPTURE))["choices"][0]["message"]["content"] == "Una ventana."
+    with pytest.raises(urllib.error.HTTPError) as refused:
+        post(url, "/v1/chat/completions", LARGE_CAPTURE)
+    props = json.loads(urllib.request.urlopen(url + "/props", timeout=10).read())
+    server.shutdown()
+    assert refused.value.code == 422 and props["vision"] is None
+    assert len(upstream.requests) == 2, "it took an image before: nothing is tried"
+
+
+def test_a_failure_that_is_not_a_refusal_of_the_request_tries_nothing(tmp_path):
+    # 429 and 5xx say nothing of what the request holds: as before, they are the mind's to ask again.
+    upstream, url, server = compatible_stack(tmp_path, provider="openai")
+    upstream.rule = lambda sent: {"status": 429, "error": {"message": "Rate limit reached", "type": "rate_limit_error"}}
+    with pytest.raises(urllib.error.HTTPError) as refused:
+        post(url, "/v1/chat/completions", CAPTURE)
+    server.shutdown()
+    assert refused.value.code == 502 and len(upstream.requests) == 1
+
+
+def test_claudes_spend_limit_on_a_capture_does_not_say_claude_cannot_see(stack):
+    # platform.claude.com/docs/en/api/errors (read 2026-11-09): «The API also returns a 400 when usage reaches an
+    # organization or workspace spend limit you set». With the Models API silent on images (anthropic_sees None), that 400
+    # to a capture's description marked Claude «sin visión» until BAXY was started again.
+    upstream, url, _ = stack
+    limit = {"status": 400, "message": "You have reached your specified API usage limits. You will regain access on 2026-12-01."}
+    upstream.answers.extend([dict(limit), dict(limit), dict(limit)])
+    with pytest.raises(urllib.error.HTTPError) as refused:
+        post(url, "/v1/chat/completions", CAPTURE)
+    props = json.loads(urllib.request.urlopen(url + "/props", timeout=10).read())
+    assert refused.value.code == 422 and json.loads(refused.value.read())["error"]["code"] == "saldo"
+    assert props["vision"] is None
+    assert len(upstream.requests) == 3  # the capture, the same with a small image, and without any: all refused
+
+
+def test_the_small_image_is_a_well_formed_png():
+    # W3C PNG (third edition), 5.2-5.3: the signature, then chunks of length, type, data and the CRC-32 of type and data;
+    # IHDR's width, height, bit depth 8 and colour type 0 (greyscale); IDAT inflates to one filter byte and the row.
+    import base64
+    import zlib
+    kind, _, data = traductor.PROBE_IMAGE.partition(",")
+    png = base64.b64decode(data)
+    assert kind == "data:image/png;base64" and png[:8] == b"\x89PNG\r\n\x1a\n"
+    chunks, at = [], 8
+    while at < len(png):
+        (length,) = struct.unpack(">I", png[at:at + 4])
+        name, body = png[at + 4:at + 8], png[at + 8:at + 8 + length]
+        assert struct.unpack(">I", png[at + 8 + length:at + 12 + length])[0] == zlib.crc32(name + body)
+        chunks.append((name, body))
+        at += 12 + length
+    assert [name for name, _ in chunks] == [b"IHDR", b"IDAT", b"IEND"]
+    width, height, depth, colour = struct.unpack(">IIBB", chunks[0][1][:10])
+    assert (width, height, depth, colour) == (64, 64, 8, 0)
+    assert len(zlib.decompress(chunks[1][1])) == height * (width + 1)
+
+
+def test_a_request_keeps_its_words_and_settings_when_its_images_are_changed_or_left_out():
+    body = {"max_tokens": 800, "messages": [{"role": "system", "content": "s"}, {"role": "user", "content": [
+        {"type": "text", "text": "Describe esta captura."},
+        {"type": "image_url", "image_url": {"url": "data:image/png;base64,AAAA", "detail": "high"}}]}]}
+    small, none = traductor._with_images(body, traductor.PROBE_IMAGE), traductor._with_images(body, None)
+    assert small["messages"][1]["content"] == [
+        {"type": "text", "text": "Describe esta captura."},
+        {"type": "image_url", "image_url": {"url": traductor.PROBE_IMAGE, "detail": "high"}}]
+    assert none["messages"][1]["content"] == [{"type": "text", "text": "Describe esta captura."}]
+    assert small["max_tokens"] == none["max_tokens"] == 800 and small["messages"][0] == none["messages"][0] == body["messages"][0]
+    assert body["messages"][1]["content"][1]["image_url"]["url"] == "data:image/png;base64,AAAA"  # the request itself is untouched
+
+
+def test_claude_sees_what_its_models_api_says_of_it(tmp_path):
+    def capabilities(image: bool | None):
+        class Models(BaseHTTPRequestHandler):
+            def log_message(self, format, *args):  # noqa: A002
+                pass
+
+            def do_GET(self):  # noqa: N802
+                caps = {} if image is None else {"image_input": {"supported": image}, "effort": {"supported": True}}
+                data = json.dumps({"id": "claude-opus-5-5", "type": "model", "display_name": "Opus", "created_at": "2026-01-01T00:00:00Z",
+                                   **({"capabilities": caps} if caps else {})}).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Models)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        client = anthropic.Anthropic(api_key="k", base_url=f"http://127.0.0.1:{server.server_address[1]}", max_retries=0)
+        translator = traductor.Translator(client, traductor.Spend(tmp_path / "g.jsonl", 1.0), "low")
+        assert traductor.connection_problem(translator) is None
+        server.shutdown()
+        return translator.sees
+
+    assert capabilities(True) is True
+    assert capabilities(False) is False
+    assert capabilities(None) is None, "not said: not known"
+
+
+def test_the_estimate_says_the_models_files_so_the_app_works_out_its_vram_from_their_headers(monkeypatch, tmp_path):
+    # Encargo del dueño 2026-11-08 («nunca mentir» con la VRAM): Ollama's own size left out 120-124 MiB that nvidia-smi saw
+    # (the CUDA runtime), so the App says the VRAM from the files' headers (ModelMemory) and these are only where they are.
+    monkeypatch.setattr(traductor, "commit_free", lambda: None)
+    ollama = FakeOllama(MODELS)
+    got = traductor.estimate(ollama.url, "grande:4b", tmp_path / "e.json", measure=False)
+    assert got["modelFiles"] == ["C:\\blobs\\sha256-grande:4b"]
+    ollama.server.shutdown()
+
+
+def test_a_model_ollama_could_not_load_is_not_loaded_again_by_the_next_estimate(monkeypatch, tmp_path):
+    # 2026-11-09, PC: the view asked the estimate of a model whose load crashed Ollama's runner (0xc0000005 in ggml-base.dll),
+    # and every ask loaded it again: 9 crashes in 22 minutes. A failed measure is kept, and the next estimate says it.
+    monkeypatch.setattr(traductor, "commit_free", lambda: None)
+    ollama = FakeOllama(MODELS)
+    ollama.load_fails = "llama runner process has terminated: exit status 0xc0000005"
+    first = traductor.estimate(ollama.url, "grande:4b", tmp_path / "e.json")
+    again = traductor.estimate(ollama.url, "grande:4b", tmp_path / "e.json")
+    kept = traductor.expected_memory(ollama.url, "grande:4b", 78000, tmp_path / "e.json")
+    ollama.server.shutdown()
+    assert first["error"] == "Ollama no pudo cargarlo" and again["error"] == "Ollama no pudo cargarlo"
+    assert ollama.failed_loads == 1, "one load, not one per ask"
+    assert kept == 5_200_000_000, "with no measure kept, the RAM check goes by the file"
+
+
+def test_measuring_a_model_counts_it_as_ollama_may_split_it_since_nothing_says_it_fits_the_card(monkeypatch, tmp_path):
+    # INT18 blind review: the load that measures a model comes before any VRAM check (ExternalModel.StartAsync measures first),
+    # and Ollama splits what does not fit the free VRAM, which takes up to 1.7 per byte (measured 2026-11-05 and 06). Its RAM
+    # check is the larger of the two rules, never less than before vram-contexto (×1.7 + 3 GiB).
+    monkeypatch.setattr(traductor, "commit_free", lambda: 11 * 2**30)
+    ollama = FakeOllama(MODELS)
+    # 5.2 GB (FakeOllama's file): whole on the card 10.6 GiB, split 11.2 GiB; with 11 GiB to promise it is not loaded.
+    got = traductor.estimate(ollama.url, "grande:4b", tmp_path / "e.json")
+    ollama.server.shutdown()
+    assert ollama.loads == [] and "elige otro modelo" in got["error"]
+    # Small, the rule for whole on the card is the larger one, and it stands.
+    assert traductor.memory_problem("m", 1 * 2**30, partial=None) == traductor.memory_problem("m", 1 * 2**30)
+    assert traductor.memory_problem("m", 4.84 * 2**30, partial=None) == traductor.memory_problem("m", 4.84 * 2**30, partial=True)
+
+
+def test_connecting_checks_the_ram_with_the_apps_estimate_and_where_it_goes(monkeypatch):
+    # INT18 blind review: a measure refused or failed leaves nothing kept, and connecting went by the file alone, whole on the
+    # card. With the App's estimate from the model's files (what the view says) and «whole» only when the App saw it fit.
+    monkeypatch.setattr(traductor, "commit_free", lambda: 16 * 2**30)
+    file = 8 * 2**30
+    # 12 GiB at its context: 12 + 2.75 + 3 = 17.75 > 16, refused; by the file alone 13.75 passed.
+    assert traductor.connect_memory_problem("m", file, 12 * 2**30, partial=False, whole=True, on_engine=False) is not None
+    # Where it goes not known: the larger rule (8 × 1.7 + 3 = 16.6 > 16), never the file whole on the card.
+    assert traductor.connect_memory_problem("m", file, 0, partial=False, whole=False, on_engine=False) is not None
+    # Known whole on the card (the App saw 9 GiB fit), it goes by that: 9 + 5.75 = 14.75.
+    assert traductor.connect_memory_problem("m", file, 9 * 2**30, partial=False, whole=True, on_engine=False) is None
+    # Ollama measured more than the files say (12 GiB, e.g. OLLAMA_NUM_PARALLEL): the larger, 12 + 5.75 = 17.75.
+    assert traductor.connect_memory_problem("m", 12 * 2**30, 9 * 2**30, partial=False, whole=True, on_engine=False) is not None
+    # Partly in RAM, the person's choice: × 1.7. BAXY's own server keeps every layer on the card: whole.
+    assert traductor.connect_memory_problem("m", file, 9 * 2**30, partial=True, whole=False, on_engine=False) is not None
+    assert traductor.connect_memory_problem("m", file, 9 * 2**30, partial=True, whole=False, on_engine=True) is None
+
+
+def test_a_model_whole_on_the_card_needs_its_size_and_what_the_process_holds_not_its_size_times_1_7(monkeypatch):
+    # Measured on the PC on 2026-11-09 (RTX 4060 Ti, six loads whole on the GPU, llama-server and Ollama): the commit charge grew
+    # as the card did, 1:1 (WDDM backs video memory with system commit), plus 0.9-2.4 GiB beside it. ×1.7 blocked a 6 GB model
+    # on a PC with 12 GB to promise; partly in RAM (the person's choice) the earlier ×1.7 stands.
+    monkeypatch.setattr(traductor, "commit_free", lambda: 12 * 2**30)
+    assert traductor.memory_problem("m", 6 * 2**30) is None
+    assert traductor.memory_problem("m", 6.5 * 2**30) is not None
+    assert traductor.memory_problem("m", 6 * 2**30, partial=True) is not None

@@ -101,8 +101,8 @@ public sealed class AudioHandlerStateAfterTests
                 baseline: new(40, false), final: new(0, true)),
         };
 
-        OperationOutcome outcome = await new AudioMuteHandler(provider).ExecuteAsync(
-            Invocation(new { state = true }), CancellationToken.None);
+        OperationOutcome outcome = await new AudioMuteHandler(provider, static (_, _) => throw new InvalidOperationException())
+            .ExecuteAsync(Invocation(new { scope = "pc", state = true }), CancellationToken.None);
 
         JsonElement state = outcome.Result!.Value.GetProperty("stateAfter");
         Assert.Multiple(() =>

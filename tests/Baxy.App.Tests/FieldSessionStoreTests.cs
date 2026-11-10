@@ -34,6 +34,26 @@ public sealed class FieldSessionStoreTests
         }
     }
 
+    // Who gave a kept conversation its name: the model may name it again when it closes, never over the person's own.
+    [Test]
+    public void WhoNamedAConversationIsKeptAndOneKeptBeforeCountsAsThePersons()
+    {
+        var store = new FieldSessionStore(_root);
+        Assert.That(store.Save(Session("byfirst") with { LabelBy = FieldSessionStore.LabelByFirst }), Is.True);
+        Assert.That(store.Save(Session("bymodel") with { LabelBy = FieldSessionStore.LabelByModel }), Is.True);
+        File.WriteAllText(Path.Combine(_root, "sessions", "older1.json"),
+            "{\"schema\":\"baxy.field-session.v1\",\"id\":\"older1\",\"label\":\"Lo de ayer\",\"created\":\"2026-11-01T10:00:00.0000000+00:00\",\"updated\":\"2026-11-01T10:00:00.0000000+00:00\",\"items\":[]}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(store.Load("byfirst")?.LabelBy, Is.EqualTo(FieldSessionStore.LabelByFirst));
+            Assert.That(store.Load("bymodel")?.LabelBy, Is.EqualTo(FieldSessionStore.LabelByModel));
+            Assert.That(store.Load("older1")?.LabelBy, Is.EqualTo(FieldSessionStore.LabelByPerson));
+            Assert.That(store.Rename("bymodel", "Mío") && store.Load("bymodel")?.LabelBy == FieldSessionStore.LabelByPerson,
+                Is.True, "a name the person gave stayed the model's");
+        });
+    }
+
     [Test]
     public void ASavedSessionIsNotReadableOnDiskAndComesBackWhole()
     {

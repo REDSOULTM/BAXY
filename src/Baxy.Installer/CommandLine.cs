@@ -14,6 +14,7 @@ internal sealed record CommandLine(
     bool UninstallRun = false,
     bool NoVoice = false,
     bool DeleteData = false,
+    bool Update = false,
     string? Directory = null,
     int? Original = null,
     string? Error = null)
@@ -52,6 +53,9 @@ internal sealed record CommandLine(
                 case "--delete-data":
                     command = command with { DeleteData = true };
                     break;
+                case "--update":
+                    command = command with { Update = true };
+                    break;
                 case "--dir" or OriginalOption:
                     string? value = inline ?? (index + 1 < arguments.Count ? arguments[++index] : null);
                     if (string.IsNullOrWhiteSpace(value))
@@ -78,7 +82,9 @@ internal sealed record CommandLine(
             }
         }
 
-        return command.DeleteData && !command.Uninstall ? command with { Error = "--delete-data only goes with --uninstall" } : command;
+        return command.DeleteData && !command.Uninstall ? command with { Error = "--delete-data only goes with --uninstall" }
+            : command.Update && command.Uninstall ? command with { Error = "--update does not go with --uninstall" }
+            : command;
     }
 
     /// <summary>The arguments the copy that uninstalls gets, so it does what the original was asked.</summary>
@@ -117,9 +123,18 @@ internal sealed record CommandLine(
             --uninstall        Desinstala BAXY (con ventana). Con --quiet, sin ventana; sin --dir, quita la
                                instalación registrada en «Aplicaciones instaladas».
             --delete-data      Con --uninstall: borra también los datos de BAXY (%LOCALAPPDATA%\BAXY).
+            --update           Lo usa BAXY al actualizarse: espera a que BAXY se cierre, instala sin preguntar de
+                               nuevo (ya dijiste que sí en BAXY) y la vuelve a abrir. Tus datos no se tocan.
+                               Con --quiet no la abre: instala y termina.
             --help, -h, /?     Muestra esta ayuda.
 
-          Salida: 0 si terminó; {InvalidCommandLine} si una opción no vale; otro número si no pudo terminar.
+          Salida:
+            0      terminó.
+            {QuietInstall.NotRegistered}      BAXY quedó instalada, pero sin acceso en Inicio o sin entrada en «Aplicaciones instaladas»:
+                   Windows no dejó crearlos. Al repetir la instalación se intenta otra vez.
+            {QuietInstall.NoGraphicsCard}   este PC no tiene tarjeta gráfica NVIDIA, AMD ni Intel: BAXY no funciona aquí. No se bajó nada.
+            {InvalidCommandLine}   una opción no vale.
+            otro   no pudo terminar. El motivo queda en {Program.LogPath}.
           Desde PowerShell, para esperar y leer la salida:
             (Start-Process .\BAXY-Instalador.exe -ArgumentList '--quiet' -Wait -PassThru).ExitCode
           """
@@ -136,10 +151,18 @@ internal sealed record CommandLine(
             --uninstall        Uninstalls BAXY (with a window). With --quiet, with none; without --dir, it removes
                                the installation registered in «Installed apps».
             --delete-data      With --uninstall: also deletes BAXY's data (%LOCALAPPDATA%\BAXY).
+            --update           Used by BAXY to update itself: waits for BAXY to close, installs without asking again
+                               (you said yes in BAXY) and opens it again. Your data is not touched.
+                               With --quiet it does not open it: it installs and ends.
             --help, -h, /?     Shows this help.
 
-          Exit code: 0 when it finished; {InvalidCommandLine} when an option is not valid; any other number when it
-          could not finish.
+          Exit code:
+            0      it finished.
+            {QuietInstall.NotRegistered}      BAXY is installed, but has no Start menu shortcut or no entry in «Installed apps»:
+                   Windows did not let it create them. Installing again tries once more.
+            {QuietInstall.NoGraphicsCard}   this PC has no NVIDIA, AMD or Intel graphics card: BAXY does not work here. Nothing was downloaded.
+            {InvalidCommandLine}   an option is not valid.
+            other  it could not finish. The reason is in {Program.LogPath}.
           From PowerShell, to wait and read the exit code:
             (Start-Process .\BAXY-Instalador.exe -ArgumentList '--quiet' -Wait -PassThru).ExitCode
           """;

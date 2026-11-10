@@ -19,8 +19,9 @@ class FakeServer:
         self.replies = replies
         self.bodies: list[dict] = []
 
-    def chat(self, body: dict, timeout: float = 120.0) -> dict:
+    def chat(self, body: dict, timeout: float = 120.0, gives_way: bool = False) -> dict:
         self.bodies.append(json.loads(json.dumps(body)))
+        self.gave_way = gives_way
         reply = self.replies.pop(0)
         if isinstance(reply, Exception):
             raise reply

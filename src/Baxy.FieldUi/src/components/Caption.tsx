@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import type { BaxyState, BootPieces } from '../types';
 import { useT } from '../i18n';
 import { causeText, ON_PROCESSOR_TEXT, readingText } from '../causes';
+import { plainOf } from '../marks';
 
 /* Under the face (design chat.jsx BxCap4, BxBoot; parts.jsx BxSub): BAXY's words as captions, the live transcription
    while it listens, the call it is running, what it waits for, and the start with each piece marked only once the host
    says it is ready — no percentages, no invented bar. */
 
-function Sub({ text, animate, gone }: { text: string; animate: boolean; gone: boolean }) {
+function Sub({ text: written, animate, gone }: { text: string; animate: boolean; gone: boolean }) {
+  // the reply as the voice says it: its words without the marks the chat draws (F16; speech_text.unmarked)
+  const text = plainOf(written);
   const words = text.split(' ');
   // the words appear once, when the reply first shows while BAXY speaks; BAXY speaking again later (its notice, the next
   // answer) never runs them again over what it says then (owner, 2026-10-20)

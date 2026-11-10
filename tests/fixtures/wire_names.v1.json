@@ -28,6 +28,7 @@
     "backup.verify": "backup_verify",
     "baxy.exit": "baxy_exit",
     "baxy.settings.set": "baxy_settings_set",
+    "baxy.update": "baxy_update",
     "bluetooth.device.list": "bluetooth_device_list",
     "bluetooth.device.pair": "bluetooth_device_pair",
     "bluetooth.radio.set": "bluetooth_radio_set",

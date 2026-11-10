@@ -18,9 +18,20 @@
   // FT/proveedores goal (review): a request that runs a turn answers when the turn ends (up to 90 s, TurnClosing.cs,
   // after a heartbeat that may hold it as long) and the voice's start waits for its load (up to 60 s, voice.py); with
   // the 30 s of every other request a long turn was told to the person as not received, while it ran and answered.
-  const LONG_ROUTES = new Set(['/turn', '/confirmation/answer', '/voice/start', '/voice/trigger', '/voice/release']);
+  // REV_APP EST-a (2026-11-09): the search waits on Hugging Face up to 30 s and then reads the card; uninstalling a model of
+  // Ollama's opens Ollama first (45 s) and then asks it (30 s). Given up at 30 s, the App's own answer never reached the view.
+  const LONG_ROUTES = new Set(['/turn', '/confirmation/answer', '/voice/start', '/voice/trigger', '/voice/release',
+    '/settings/external-model/search', '/settings/external-model/remove']);
   const SHORT_MS = 30000;
   const LONG_MS = 300000;
+  // What the App itself waits for before it answers a read, with room over it: Ollama's models (its start, 45 s, and the
+  // translator's list, 45 s: ExternalModel.ModelsAsync) and a model's measure (Ollama's start and up to 6 minutes of a first
+  // load, ExternalModel.MeasuredAsync). At 30 s Settings said «No se pudo calcular: Ollama no respondió» of a model Ollama
+  // was still loading.
+  const SLOW_READS = new Map([
+    ['/settings/external-model/models', 120000],
+    ['/settings/external-model/estimate', 420000],
+  ]);
 
   function rpc(kind, payload = {}, timeoutMs = SHORT_MS) {
     const id = nextId('rpc');
@@ -147,7 +158,8 @@
         method,
         path: `${url.pathname}${url.search}`,
         body,
-      }, method === 'POST' && LONG_ROUTES.has(url.pathname) ? LONG_MS : SHORT_MS);
+      }, method === 'POST' && LONG_ROUTES.has(url.pathname) ? LONG_MS
+        : method === 'GET' && SLOW_READS.has(url.pathname) ? SLOW_READS.get(url.pathname) : SHORT_MS);
       return new Response(value.body || '', {
         status: value.status,
         headers: value.headers || { 'Content-Type': 'application/json' },
@@ -171,10 +183,4 @@
     },
   };
 
-  document.addEventListener('pointerdown', (event) => {
-    if (event.button !== 0) return;
-    const target = event.target instanceof Element ? event.target : null;
-    if (!target?.closest('.pywebview-drag-region')) return;
-    post('window_drag', {});
-  }, true);
 })();

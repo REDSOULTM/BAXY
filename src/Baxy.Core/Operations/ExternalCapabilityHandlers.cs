@@ -206,16 +206,15 @@ internal sealed class KeyPressHandler(ExternalCapabilityHandler keys, IKeyWindow
 }
 
 /// <summary>
-/// Estabilización U: BAXY's own settings ride on <c>system.settings.set</c> and live in the profile, in the same
-/// stores the App reads (<see cref="PresentationModeStore"/>) and the engine reads (<see cref="ConfirmationModeStore"/>).
-/// The accessible mode is switched both ways and verified by reading the file back. Bypass is only switched off here:
+/// Estabilización U: BAXY's confirmation mode also rides on <c>system.settings.set</c> and lives in the profile, in the
+/// store the engine reads (<see cref="ConfirmationModeStore"/>); the accessible mode moved to baxy.settings.set
+/// (actualizar-ordenes-app, <see cref="OwnSettingsHandler"/>), with BAXY's other own switches. Bypass is only switched off here:
 /// switching it on is a conscious gesture in BAXY's own interface (identity, «Peligro y confirmación»), so from the chat
 /// it is refused with its cause and nothing changes. Every Windows setting goes on to the Windows provider.
 /// </summary>
 internal sealed class BaxySettingHandler(IOperationHandler windows, string? dataRoot) : IOperationHandler
 {
     internal const string Operation = "system.settings.set";
-    internal const string AccessibleMode = "accessible_mode";
     internal const string ConfirmationBypass = "confirmation_bypass";
 
     public OperationDefinition Definition => windows.Definition;
@@ -230,7 +229,7 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
             && named.ValueKind == JsonValueKind.String
                 ? named.GetString()
                 : null;
-        if (setting is not (AccessibleMode or ConfirmationBypass))
+        if (setting is not ConfirmationBypass)
         {
             return windows.ExecuteAsync(invocation, cancellationToken);
         }
@@ -249,14 +248,14 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
         }
 
         bool on = value == 1;
-        if (setting == ConfirmationBypass && on)
+        if (on)
         {
             return ValueTask.FromResult(BypassInterfaceOnly(dataRoot));
         }
 
         // Revisión 2026-10-22 (C-3): a file that cannot be read (another program holds it locked) is not «off»: taking it
         // so answered «already off», done, while the file still said on.
-        if (!TryReadOn(setting, out bool before))
+        if (!TryReadBypass(out bool before))
         {
             return ValueTask.FromResult(OperationOutcome.Failure("baxy_setting_unreadable"));
         }
@@ -265,10 +264,7 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
         {
             if (before != on)
             {
-                if (setting == AccessibleMode)
-                    PresentationModeStore.WriteAccessible(dataRoot, on);
-                else
-                    ConfirmationModeStore.Write(dataRoot, ConfirmationMode.Normal);
+                ConfirmationModeStore.Write(dataRoot, ConfirmationMode.Normal);
             }
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -277,7 +273,7 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
                 "baxy_setting_write_failed", effectMayHaveOccurred: true, causeCode: "external_effect_ambiguous"));
         }
 
-        if (!TryReadOn(setting, out bool after) || after != on)
+        if (!TryReadBypass(out bool after) || after != on)
         {
             return ValueTask.FromResult(OperationOutcome.Failure(
                 "baxy_setting_postread_failed", effectMayHaveOccurred: before != on));
@@ -291,13 +287,6 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
             writer.WriteString("setting", setting);
             writer.WriteNumber("value", value);
             writer.WriteBoolean("changed", before != on);
-            if (setting == AccessibleMode && ModelAids.On(ModelAids.AccessibleScope))
-            {
-                // pc-ayudas: what the mode changes (SettingsPanel's «Modo accesible») and the modes the interface shows
-                // as not ready yet (Rail's PROFILES), so a reply never promises more than the switch did.
-                writer.WriteString("scope", "BAXY's own window only: larger text, more contrast, wider buttons");
-                writer.WriteString("notAvailableYet", "a blind (screen reader) mode and a hands-free mobility mode");
-            }
             writer.WriteString("authority", "baxy_profile_setting_postread");
             writer.WriteEndObject();
         }
@@ -340,14 +329,9 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
         return OperationOutcome.Failure("confirmation_bypass_interface_only", result.RootElement.Clone());
     }
 
-    // Whether the setting's file could be read, and whether it says on.
-    private bool TryReadOn(string setting, out bool on)
+    // Whether the confirmation mode's file could be read, and whether it says bypass.
+    private bool TryReadBypass(out bool on)
     {
-        if (setting == AccessibleMode)
-        {
-            return PresentationModeStore.TryReadAccessible(dataRoot, out on);
-        }
-
         bool read = ConfirmationModeStore.TryRead(dataRoot, out ConfirmationMode mode);
         on = mode == ConfirmationMode.Bypass;
         return read;
@@ -500,6 +484,14 @@ internal sealed class ExternalCapabilityHandler(
                     ? "external_effect_ambiguous"
                     : "external_provider_exception");
         }
+        // ARR1: arguments the provider refused before sending anything, each with what it takes, are refused as the
+        // kernel's validation refuses them (P5.3), never a bare provider code the model cannot correct from.
+        if (receipt.ArgumentProblems.Count > 0 && !receipt.Verified && !receipt.EffectObserved
+            && !receipt.EffectMayHaveOccurred && string.Equals(receipt.Operation, operation, StringComparison.Ordinal))
+        {
+            return OperationOutcome.InvalidArguments(Definition, invocation.Arguments, receipt.ArgumentProblems);
+        }
+
         if (!string.Equals(receipt.Operation, operation, StringComparison.Ordinal)
             || !receipt.Verified
             || receipt.Result is null

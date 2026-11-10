@@ -53,6 +53,50 @@ def test_every_window_is_heard_once_with_its_context_and_marks_the_block_where_i
     assert not model.windows and np.array_equal(vad.marks(np.ones(VAD_STEP, np.float32)), np.eye(VAD_STEP)[-1] > 0)
 
 
+class _Heard(_Model):
+    """A model that hears speech in the windows ``speech`` says, and counts its resets."""
+
+    def __init__(self, speech) -> None:
+        super().__init__()
+        self.speech, self.resets = speech, 0
+
+    def reset(self) -> None:
+        self.resets += 1
+        super().reset()
+
+    def is_speech(self, window: np.ndarray) -> bool:
+        self.windows.append(window)
+        return self.speech(self.resets, len(self.windows))
+
+
+def test_silero_s_state_is_reset_in_the_quiet_as_pipecat_does() -> None:
+    # VOZ1: a minute of BAXY's own alarm tone and Silero's recurrent state heard a voice over it as no speech (0.0-0.3 of
+    # its windows against 0.9 freshly reset); Pipecat resets it after VAD_RESET_S of audio once VAD_RESET_QUIET windows
+    # in a row were not speech, with no turn going on (``settle``).
+    pytest.importorskip("silero_vad", reason="Vad finds silero_vad.onnx in the runtime's silero_vad package")
+    quiet = _Heard(lambda _resets, _n: False)
+    vad = Vad(_fake_sherpa(quiet))
+    born = quiet.resets
+    for block in np.zeros((round(voice.VAD_RESET_S * RATE / BLOCK) + 1, BLOCK), np.float32):
+        vad.marks(block, settle=True)
+    assert quiet.resets == born + 1
+    # within a request (a pause in it), never: a fresh state heard the soft words after a pause too late, and the request
+    # was cut there; nor where nobody says (the WAV feed, the benches)
+    for settle in (False, None):
+        vad = Vad(_fake_sherpa(quiet))
+        born = quiet.resets
+        for block in np.zeros((round(4 * voice.VAD_RESET_S * RATE / BLOCK), BLOCK), np.float32):
+            vad.marks(block) if settle is None else vad.marks(block, settle=settle)
+        assert quiet.resets == born
+    # while someone speaks, with pauses shorter than VAD_RESET_QUIET windows, it is never reset, however long they speak
+    talking = _Heard(lambda _resets, n: n % voice.VAD_RESET_QUIET == 0)
+    vad = Vad(_fake_sherpa(talking))
+    born = talking.resets
+    for block in np.zeros((round(4 * voice.VAD_RESET_S * RATE / BLOCK), BLOCK), np.float32):
+        vad.marks(block, settle=True)
+    assert talking.resets == born
+
+
 def test_a_block_is_voice_only_when_it_is_loud_and_heard_as_speech() -> None:
     loud, quiet = np.full(BLOCK, 0.05, np.float32), np.full(BLOCK, 0.002, np.float32)
     speech, none = np.eye(BLOCK)[BLOCK // 2] > 0, np.zeros(BLOCK, bool)

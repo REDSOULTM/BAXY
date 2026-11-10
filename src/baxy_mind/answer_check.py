@@ -24,7 +24,8 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
 - ``place``: «en la biblioteca» after an app_open that only asked for that place and nothing looked after it (F019).
 - ``partial``: «no está / no hay / revisé todo / en ningún otro lugar» after a read or a search whose result says it
   covered only part (readInPart, searchScope, subfoldersNotOpened, timeLimitReached, entriesShown < count, a view cut,
-  searchedElsewhere false, a ``covers`` that says what it read) or after a look that failed with an error that is not itself a «not found», unless the
+  searchedElsewhere false, a ``covers`` that says what it read, a ``checked`` false: it did not look at what its call
+  is for finding out) or after a look that failed with an error that is not itself a «not found», unless the
   sentence itself says the limit («en lo que leí», «sólo revisé…»).
 - ``number``: a volume, brightness or percentage, or a size in KB/MB/GB, that matches no number of the turn's results
   (0,69 % for a reading of 69 or a fraction 0.69; 3 GB for 3 145 728 bytes).
@@ -73,6 +74,19 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   diciembre de 2026» on 3 November 2026), in a turn with a completed result. Only the date against the clock and the form
   of the verb are compared, never which verb: not one that tells the date through «que» or that the date follows «hasta»,
   «para» or «al» («anunció que saldrá el…», «se retrasó hasta marzo»). A date with no year takes it from a result.
+- ``weekday_date`` (VER1, PR-03 «en siete días es el viernes 12»): a weekday told of a date that falls on another one.
+  Only the calendar is compared: the weekday right before its date («viernes 12», «viernes 12 de noviembre», «Friday,
+  November 13th») or after it as what it is («el 27 de noviembre es un jueves»). A date with no year is the nearest one
+  to today, and one with no month is read in last month, this one and the next: no finding if any falls on that
+  weekday. Not a pair the person's words or a result of the turn bring as it is, nor a date a result gives on that
+  weekday (system.time's calendar).
+- ``unread_date`` (VER1, PR-03): such a pair that the calendar has, for a date other than today's, that no result or
+  argument of the turn nor the person's words give («pasado mañana es martes 10» on Monday the 9th, with no call): a
+  date the model counted. Told once more with its tools, so system.time works it out.
+- ``past_future`` (VER1, G-03): the mirror of ``future_past``: a date wholly before today told as coming, in a turn
+  with a completed result («la próxima reunión es el 27-28 de octubre de 2026» on 9 November 2026; «la final se jugará en
+  octubre de 2026»). Only the date against the clock and the form are compared: a verb in the future or «próximo» before
+  the date in its clause, or the date first and the future after it. Not a clause that denies it, asks it or says «si».
 - ``unmatched`` (encargo A5, answer_grounding.py): the attribution to a video of words that its result says
   (``titleMatchesQuery: false``) it did not match.
 - ``recognized_number`` (uso-89): a number that a look of the turn gives only in its «Texto» lines (OCR) while the
@@ -636,7 +650,8 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
                     continue
                 if why != "searchedElsewhere" and not total and not _absence_about(sentence, absent):
                     continue
-                told = (f"{_told(receipt)}: {_PARTIAL_TOLD[why]}" if why == "failedRead"
+                told = (_told(receipt) if why == "notChecked" and _PARTIAL_TOLD[why] in _told(receipt)
+                        else f"{_told(receipt)}: {_PARTIAL_TOLD[why]}" if why in ("failedRead", "notChecked")
                         else f"{receipt.get('tool')} leyó sólo una parte: " + _PARTIAL_TOLD[why].format(
                             covers=str((_parsed(receipt).get("observed") or {}).get("covers", "")).strip()))
                 add("partial", start, end, told)
@@ -676,6 +691,10 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     findings.extend(f for f in _unopened_page(answer, receipts, wire_of, request) if f not in findings)
     # «Se estrenó el 20 de diciembre de 2026» on 3 November 2026 (uso real 2026-11-03, F8).
     findings.extend(f for f in _future_past(answer, text, folded, statements, receipts, today) if f not in findings)
+    # «La próxima reunión es el 27-28 de octubre de 2026» on 9 November 2026 (VER1, G-03).
+    findings.extend(f for f in _past_future(answer, text, folded, statements, receipts, today) if f not in findings)
+    # «En siete días es el viernes 12» when the 12th is a Thursday (VER1, PR-03).
+    findings.extend(f for f in _weekday_date(answer, folded, statements, receipts, request, today) if f not in findings)
 
     # «No tengo nada guardado de X» with nothing else looked at (F13, F35).
     findings.extend(f for f in _empty_lookup(answer, receipts, wire_of) if f not in findings)
@@ -950,6 +969,7 @@ _PARTIAL_TOLD = {
     "viewCut": "la vista se cortó: parte de lo que mostraba no se listó",
     "searchedElsewhere": "no se buscó fuera de esa carpeta",
     "failedRead": "no leyó nada: la lectura falló",
+    "notChecked": "no se comprobó lo pedido",  # the words its outcome line already has (mind.NOT_CHECKED)
     "covers": "lo que cubre su lectura, según su campo covers, es: {covers}",
 }
 # Errors of a look that are its reading that something is not there (file_not_found, window_not_found…).
@@ -963,6 +983,11 @@ def _partial(receipt: Receipt) -> str:
     if not facts:
         return ""
     observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
+    # MEN1 (AMD2 §9, hallazgo E): a result that says in its own field that it did not look at what its call is for
+    # finding out («checked» false: a failure before looking, a store that updates by itself) backs no absence, whatever
+    # its status: «No hay una versión más reciente» after baxy_update failed with baxy_update_development_build.
+    if observed.get("checked") is False:
+        return "notChecked"
     for where in (observed, facts):
         if where.get("readInPart") is True:
             return "readInPart"
@@ -1798,6 +1823,158 @@ def _future_past(answer: str, text: str, folded: str, statements: list[tuple[int
     return []
 
 
+# ---- a weekday told of a date that falls on another --------------------------------------------------------------------
+_WEEKDAYS = {name: number for number, names in enumerate((
+    ("lunes", "monday"), ("martes", "tuesday"), ("miercoles", "wednesday"), ("jueves", "thursday"), ("viernes", "friday"),
+    ("sabado", "saturday"), ("domingo", "sunday"))) for name in names}
+_WEEKDAY = "|".join(_WEEKDAYS)
+_WEEKDAY_SAID = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
+_MONTH_SAID = ("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre",
+               "diciembre")
+# The weekday right before its date. A bare day («viernes 12») only where the number ends there: not a time («12:30»,
+# «12 h»), an amount («12 %», «12 personas») nor a longer number.
+_WEEKDAY_THEN_DATE = re.compile(
+    rf"\b(?P<weekday>{_WEEKDAY}),? (?:el |the )?(?:dia )?(?:"
+    rf"(?P<day>\d{{1,2}})(?: de (?P<month>{_MONTH})(?: (?:de|del) (?P<year>\d{{4}}))?|(?=\s*(?:$|[.,;!?)»\"*])))"
+    rf"|(?P<month2>{_MONTH}) (?P<day2>\d{{1,2}})(?:st|nd|rd|th)?(?:,? (?P<year2>\d{{4}}))?)(?![\d:%])")
+# The date first, then the weekday as what it is, with no number, sentence end nor other clause between them.
+_DATE_THEN_WEEKDAY = re.compile(
+    rf"\b(?:(?P<day>\d{{1,2}}) de (?P<month>{_MONTH})(?: (?:de|del) (?P<year>\d{{4}}))?"
+    rf"|(?P<month2>{_MONTH}) (?P<day2>\d{{1,2}})(?:st|nd|rd|th)?(?:,? (?P<year2>\d{{4}}))?)"
+    rf"(?P<between>[^.;:!?\d]{{1,40}}?)\b(?P<weekday>{_WEEKDAY})\b")
+_BETWEEN_BREAK = re.compile(r"\b(?:pero|aunque|y|o|porque|mientras|luego|despues|entonces|no|ni|but|and|or|not)\b")
+
+
+def _date_candidates(hit: re.Match[str], today: dt.date) -> tuple[list[dt.date], tuple[int | None, int]]:
+    """The days a date of the answer can be, and its (month, day): its own with a year; with a month and no year, the
+    nearest one to today (the last or the coming one: «el 18 de septiembre» in November is this year's); with no month,
+    that day of last month, this one and the next. Not a date: none."""
+    day = int(hit.group("day") or hit.group("day2"))
+    month_name = hit.group("month") or hit.group("month2")
+    year = hit.group("year") or hit.group("year2")
+    found: list[dt.date] = []
+    if month_name:
+        month = _MONTHS[month_name]
+        for y in ([int(year)] if year else range(today.year - 8, today.year + 9)):
+            try:
+                found.append(dt.date(y, month, day))
+            except ValueError:  # 31/02, or a 29/02 of a common year: not a date
+                pass
+        if not year and found:
+            least = min(abs((d - today).days) for d in found)
+            found = [d for d in found if abs((d - today).days) == least]
+        return found, (month, day)
+    first = today.replace(day=1)
+    for start in ((first - dt.timedelta(days=1)).replace(day=1), first, (first + dt.timedelta(days=32)).replace(day=1)):
+        try:
+            found.append(start.replace(day=day))
+        except ValueError:
+            pass
+    return found, (None, day)
+
+
+_ISO_DAY = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
+
+
+def _weekday_date(answer: str, folded: str, statements: list[tuple[int, int]], receipts: list[Receipt], request: str,
+                  today: dt.date | None) -> list[dict]:
+    """Rules ``weekday_date`` and ``unread_date``, over a weekday told with its date. ``weekday_date``: the calendar puts
+    that date on another weekday, in every year (or month) the date can mean; the fact is the weekday of the nearest of
+    those days to today. ``unread_date``: the calendar has the pair, it is not today's, and nothing of the turn gave
+    that date. Nothing is read of what was asked."""
+    if today is None:
+        return []
+    given = _fold(request + " " + " ".join(
+        str(r.get("observation") or "") + " " + json.dumps(ensure_ascii=False, obj=r.get("arguments") or {}) for r in receipts))
+    shown = []
+    for y, m, d in _ISO_DAY.findall(given):
+        try:
+            shown.append(dt.date(int(y), int(m), int(d)))
+        except ValueError:
+            pass
+    unread: list[dict] = []
+    for start, end in statements:
+        for pattern in (_WEEKDAY_THEN_DATE, _DATE_THEN_WEEKDAY):
+            for hit in pattern.finditer(folded, start, end):
+                if "between" in hit.groupdict() and _BETWEEN_BREAK.search(hit.group("between")):
+                    continue
+                said = _WEEKDAYS[hit.group("weekday")]
+                days, (month, day) = _date_candidates(hit, today)
+                # The person's own words or a result that bring the pair as it is are theirs to be wrong; and a date a
+                # result gives (system.time's calendar: «2025-11-27») that is that day on that weekday backs it.
+                if not days or hit.group(0) in given:
+                    continue
+                if any(d.weekday() == said for d in shown if d.day == day and month in (None, d.month)):
+                    continue
+                meant = [d for d in days if d.weekday() == said]
+                if not meant:
+                    near = min(days, key=lambda d: abs((d - today).days))
+                    return [{"rule": "weekday_date", "said": _quote(answer, hit.start(), hit.end()),
+                             "fact": f"el {near.day} de {_MONTH_SAID[near.month - 1]} de {near.year} es "
+                                     f"{_WEEKDAY_SAID[near.weekday()]}, no {_WEEKDAY_SAID[said]}"}]
+                # The calendar has it. Today's own is the clock line's; a date a result or the person wrote without its
+                # weekday («28 de noviembre», «November 28») is given too.
+                names = [(d, name) for d in meant for name, number in _MONTHS.items() if number == d.month]
+                written = [f"{d.day} de {name}" for d, name in names] + [f"{name} {d.day}" for d, name in names]
+                if today in meant or any(re.search(rf"\b{re.escape(w)}\b", given) for w in written):
+                    continue
+                # Within a year of today: a date of history told with its weekday is not one counted from the clock.
+                if min(abs((d - today).days) for d in meant) > 366:
+                    continue
+                if not unread:
+                    unread = [{"rule": "unread_date", "said": _quote(answer, hit.start(), hit.end()),
+                               "fact": "esa fecha no la dio ningún resultado de este turno ni la dijo la persona: la contaste tú"}]
+    return unread
+
+
+# ---- a date before today told as coming ---------------------------------------------------------------------------------
+# What comes by its form alone: a Spanish future («se jugará», «será»), «va a …», or the date named the next one.
+_FUTURE_FORM = re.compile(r"(?<!\w)(?:\w+(?:ará|erá|irá|arán|erán|irán)|será|serán|va a \w+|van a \w+|próxim[oa]s?"
+                          r"|will(?: be)?|next|upcoming)(?!\w)", re.IGNORECASE)
+
+
+def _last_day_of(hit: re.Match[str], results: str) -> dt.date | None:
+    """The last day a date of the answer can mean: its own day, the last of its month or of its year."""
+    first = _date_of(hit, results)
+    if first is None:
+        return None
+    if hit.group("year4"):
+        return dt.date(first.year, 12, 31)
+    if hit.group("year2"):
+        return (first.replace(day=28) + dt.timedelta(days=4)).replace(day=1) - dt.timedelta(days=1)
+    return first
+
+
+def _past_future(answer: str, text: str, folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
+                 today: dt.date | None) -> list[dict]:
+    """Rule ``past_future``: a statement of a turn with a completed result that tells as coming a date that is wholly
+    before today: a future form before the date in its clause, or the date first and the future after it."""
+    done = [r for r in receipts if r.get("completed")]
+    if today is None or not done:
+        return []
+    results = _fold(" ".join(str(r.get("observation") or "") for r in done))
+    for start, end in statements:
+        if text[start:end].rstrip().endswith("?"):
+            continue
+        for hit in _DATE.finditer(folded, start, end):
+            date = _last_day_of(hit, results)
+            if date is None or date >= today:
+                continue
+            clause = _clause_start(folded, start, hit.start())
+            after = _CLAUSE_END.search(folded, hit.end(), end)
+            before = text[clause:hit.start()]
+            told = bool(_FUTURE_FORM.search(before)) and not _PAST_FORM.search(before)
+            # The date first: «El 27 de octubre de 2026 se jugará la final».
+            told = told or bool(not _fold(before).strip(" ,el") and _FUTURE_FORM.search(
+                text, hit.end(), after.start() if after else end))
+            # «para» belongs here («programada para el 27»): only a denial or a condition turn the claim off; «sí» is
+            # neither (its accent is still in ``before``).
+            if told and not re.search(r"\b(?:no|nunca|tampoco|ni|jamas|si)\b", _fold(re.sub(r"\bsí\b", " ", before, flags=re.I))):
+                return [{"rule": "past_future", "said": _quote(answer, clause, after.start() if after else end),
+                         "fact": f"hoy es {today.isoformat()}: esa fecha ya pasó, no es la que viene"}]
+    return []
+
+
 # ---- a page that failed to open, searched for, and never opened -------------------------------------------------------
 def _address_key(address: Any) -> str:
     return str(address or "").strip().rstrip("/").lower()
@@ -1810,8 +1987,8 @@ def _bare_address(address: Any) -> str:
 
 def _unopened_page(answer: str, receipts: list[Receipt], wire_of: Callable[[str], str] = plain,
                    request: str = "") -> list[dict]:
-    """Rule ``unopened_page``: the turn's last failed ``browser.navigate*`` was followed by a search (a ``web.search``, or a
-    navigation to the ``searchPageUrl`` a web.search result gave), and after that failure no call opened another page: no
+    """Rule ``unopened_page``: the turn's last failed ``browser.navigate*`` was followed by a search that found something to
+    open (results, or the ``searchPageUrl`` to read them in), and after that failure no call opened another page: no
     navigation to an address that is not such a search page (any outcome: one that went unconfirmed was still a try) and
     no ``input.visible.click`` (a result opened by its link). Only typed facts of the receipts; the model decides."""
     failed_at = None
@@ -1823,19 +2000,25 @@ def _unopened_page(answer: str, receipts: list[Receipt], wire_of: Callable[[str]
     if failed_at is None:
         return []
     search_pages: set[str] = set()
-    searched = False
+    searched = found = False
     for receipt in receipts[failed_at + 1:]:
         op = operation_of(str(receipt.get("op") or ""))
         if op == "web.search":
             searched = True
-            page = (_parsed(receipt).get("observed") or {}).get("searchPageUrl")
+            facts = _parsed(receipt)
+            page = (facts.get("observed") or {}).get("searchPageUrl")
             if page:
                 search_pages.add(_address_key(page))
+            # INT10: a search with something to open, its results or a page to read them in. Since srch1 a refused one
+            # gives neither (WebSearchRefused: no next, no searchPageUrl), nor does one the engine answered with nothing.
+            found = found or bool(page) or facts.get("status") == "completed"
         elif op == "input.visible.click":
             return []
         elif op.startswith("browser.navigate"):
             if _address_key((receipt.get("arguments") or {}).get("url")) not in search_pages:
                 return []
+    if searched and not found:
+        return []  # nothing was found to open: «I could not find it» leaves no page unopened
     failed = receipts[failed_at]
     facts = _parsed(failed)
     url = (failed.get("arguments") or {}).get("url") or (facts.get("observed") or {}).get("requestedUrl") or ""

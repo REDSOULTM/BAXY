@@ -915,6 +915,54 @@ public sealed class ExternalAdaptersTests
         }
     }
 
+    // Pedido del dueño 2026-11-08: «si el modelo no tiene visión, BAXY ya no podrá usar la visión, y listo». With another
+    // model the vision endpoint is that model (the translator); one that does not see answers 501, and the description says
+    // so, with the same reads that need no vision first, not as a failed request.
+    [Test]
+    [NonParallelizable]
+    public async Task ADescriptionByAModelThatDoesNotSeeSaysSoAndLeadsWithWhatNeedsNoVision()
+    {
+        using var directory = new TemporaryDirectory();
+        string captureId = "capture_" + new string('c', 32);
+        await File.WriteAllBytesAsync(Path.Combine(directory.Path, captureId + ".bmp"), WideCapture());
+        string? endpoint = Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT");
+        string? model = Environment.GetEnvironmentVariable("BAXY_VISION_MODEL");
+        try
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "http://127.0.0.1:8091/v1/chat/completions");
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", "otro");
+            using var http = new HttpClient(new NoVisionHandler());
+            using var adapter = new CaptureVisionAdapter(directory.Path, http)
+            {
+                ApplicationInFront = _ => ValueTask.FromResult<string?>("Notepad"),
+            };
+            ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+                "vision.describe", Json($$"""{"captureId":"{{captureId}}","prompt":"¿qué sale?"}"""), CancellationToken.None);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(receipt.ErrorCode, Is.EqualTo("vision_provider_not_configured"));
+                Assert.That(receipt.Verified, Is.False);
+                Assert.That(receipt.Result?.GetProperty("next").GetString(), Does.StartWith("ocr_read {\"captureId\":\"" + captureId + "\"}")
+                    .And.EndWith("the model BAXY uses now does not see images, so no capture can be described while it is in use"));
+            });
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", endpoint);
+            Environment.SetEnvironmentVariable("BAXY_VISION_MODEL", model);
+        }
+    }
+
+    private sealed class NoVisionHandler : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) =>
+            Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotImplemented)
+            {
+                Content = new StringContent("""{"error":{"code":"model_without_vision"}}"""),
+            });
+    }
+
     [Test]
     [NonParallelizable]
     public async Task VisionBindsConfiguredProviderResponseToExactCaptureHash()
@@ -4539,10 +4587,77 @@ public sealed class ExternalAdaptersTests
     // BAXY Renew (2026-10-15): web.search asks only the source the model named, with the arguments it typed, and
     // returns what that source returned. These tests answer each source from a stub and check that the receipt says
     // exactly that: no source chosen by the query's words, no result judged, no page read for its sentences.
-    private const string ProjectUserAgent = @"^BAXY/\d+\.\d+ \(https://github\.com/REDSOULTM/baxy-assistant\)$";
+    private const string ProjectUserAgent = @"^BAXY/\d+\.\d+\.\d+ \(https://github\.com/REDSOULTM/BAXY\)$";
 
-    private static WebBrowserAdapter SearchAdapter(TemporaryDirectory temporary, HttpClient http, EspnScheduleSource? sports = null) =>
-        new(new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused")), http, sports: sports);
+    private static WebBrowserAdapter SearchAdapter(
+        TemporaryDirectory temporary, HttpClient http, ScriptedHiddenPages? pages = null, string? homeRegion = null,
+        Func<TimeSpan, CancellationToken, Task>? engineWait = null) =>
+        new(new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused")), http, homeRegion: homeRegion,
+            hiddenPages: pages ?? new ScriptedHiddenPages(), engineWait: engineWait ?? (static (_, _) => Task.CompletedTask));
+
+    // The general engine's page as its html endpoint gives it: an ad first (the engine's own link), then each result's
+    // title link through the engine's redirect (//duckduckgo.com/l/?uddg=<the target>) or straight, and its snippet.
+    private const string EngineResultsPage = """
+        <html><body><div class="results">
+        <div class="result results_links result--ad"><a rel="nofollow" class="result__a"
+          href="https://duckduckgo.com/y.js?ad_domain=shop.example&amp;u3=x">Sponsored</a></div>
+        <div class="result results_links"><h2 class="result__title"><a rel="nofollow" class="result__a"
+          href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fguide%3Fa%3D1%26b%3D2&amp;rut=abc">An <b>example</b> guide</a></h2>
+          <a class="result__snippet" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fguide">How to <b>use</b> it</a></div>
+        <div class="result results_links"><h2 class="result__title"><a rel="nofollow" class="result__a"
+          href="ftp://files.example.com/calc">Not a web page</a></h2></div>
+        <div class="result results_links"><h2 class="result__title"><a rel="nofollow" class="result__a"
+          href="https://example.org/plain">Plain</a></h2></div>
+        <div class="result results_links"><h2 class="result__title"><a rel="nofollow" class="result__a"
+          href="https://example.net/third">Third</a></h2></div>
+        </div></body></html>
+        """;
+
+    private const string EngineEmptyPage = """
+        <html><body><div class="results"><div class="no-results">No results.</div></div>
+        <form class="search--adv" action="/html/"><input name="q"></form></body></html>
+        """;
+
+    private const string EngineCheckPage = """<html><body><form id="challenge-form" action="//duckduckgo.com/anomaly.js">"""
+        + "Unfortunately, bots use DuckDuckGo too.</form></body></html>";
+
+    // LIC2 (2026-11-08): DuckDuckGo's partnerships page says «We simply don't have the rights to allow framing based on how
+    // we generate our search results» (duckduckgo.com/duckduckgo-help-pages/company/partnerships), and the projects that
+    // read its results pace them (duckduckgo-mcp-server: «30 requests per minute by default»): BAXY asks the engine at most
+    // once every three seconds, as a person typing would, and a refusal is not asked again.
+    [Test]
+    public async Task TheEngineIsAskedAtMostOnceEveryThreeSeconds()
+    {
+        int asked = 0;
+        var pages = new ScriptedHiddenPages
+        {
+            Answer = _ => ++asked == 2
+                ? new(HiddenPageOutcome.Loaded, 202, EngineCheckPage)
+                : new(HiddenPageOutcome.Loaded, 200, EngineResultsPage),
+        };
+        var waits = new List<TimeSpan>();
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, pages,
+            engineWait: (wait, _) => { waits.Add(wait); return Task.CompletedTask; });
+
+        ExternalCapabilityReceipt first = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"example guide"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt second = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"another guide"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt third = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"a third guide"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first.Verified, Is.True, first.ErrorCode);
+            Assert.That(second.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(third.Verified, Is.True, third.ErrorCode);
+            Assert.That(pages.Asked, Has.Count.EqualTo(3), "a refusal is not asked again");
+            Assert.That(waits, Has.Count.EqualTo(2), "the first search waits for nothing; each next one, for its turn");
+            Assert.That(waits, Has.All.InRange(TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3)));
+        });
+    }
 
     // The general engine's results come back in its order, title, url and snippet as it gave them (its markup
     // removed), bounded by limit; only what is structurally no result is left out: the engine's own links and
@@ -4550,21 +4665,13 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task AWebSearchReturnsTheEnginesResultsAsItGaveThem()
     {
-        var handler = new SearchSourcesHttpHandler
-        {
-            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
-                ("Unrelated marketplace", "https://example.com/shop", "Discount products"),
-                ("More results", "https://duckduckgo.com/?q=more", "next page"),
-                ("Calculadora de WhatsApp", "ftp://files.example.com/calc", "no web page"),
-                ("Windows 11 Calculator help", "https://support.example.com/windows/calculator", "Use Calculator with WhatsApp"),
-                ("Third", "https://example.org/third", "")), "text/html"),
-        };
+        var pages = new ScriptedHiddenPages { Answer = _ => new(HiddenPageOutcome.Loaded, 200, EngineResultsPage) };
         using TemporaryDirectory temporary = new();
-        using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, pages);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"Windows 11 calculator","limit":2}"""), CancellationToken.None);
+            "web.search", Json("""{"query":"example guide","limit":2}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
@@ -4573,41 +4680,65 @@ public sealed class ExternalAdaptersTests
             JsonElement result = receipt.Result!.Value;
             Assert.That(result.GetProperty("version").GetInt32(), Is.EqualTo(1));
             Assert.That(result.GetProperty("source").GetString(), Is.EqualTo("web"));
-            Assert.That(result.GetProperty("query").GetString(), Is.EqualTo("Windows 11 calculator"));
-            Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_lite_https"));
+            Assert.That(result.GetProperty("query").GetString(), Is.EqualTo("example guide"));
+            Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_html_hidden_webview2"));
             // BAXY Renew cu (C06): the source by its known name, which the model sees («authority» it does not).
             Assert.That(result.GetProperty("answeredBy").GetString(), Is.EqualTo("DuckDuckGo"));
             Assert.That(result.GetProperty("resultCount").GetInt32(), Is.EqualTo(2));
             Assert.That(result.TryGetProperty("sent", out _), Is.False);
             JsonElement results = result.GetProperty("results");
-            Assert.That(results[0].GetProperty("title").GetString(), Is.EqualTo("Unrelated marketplace"));
-            Assert.That(results[0].GetProperty("url").GetString(), Is.EqualTo("https://example.com/shop"));
-            Assert.That(results[0].GetProperty("snippet").GetString(), Is.EqualTo("Discount products"));
-            Assert.That(results[1].GetProperty("url").GetString(), Is.EqualTo("https://support.example.com/windows/calculator"));
-            Assert.That(results[1].GetProperty("snippet").GetString(), Is.EqualTo("Use Calculator with WhatsApp"));
-            Assert.That(handler.Asked.Select(asked => asked.Uri.Host), Is.EqualTo(new[] { "lite.duckduckgo.com" }));
+            Assert.That(results[0].GetProperty("title").GetString(), Is.EqualTo("An example guide"));
+            Assert.That(results[0].GetProperty("url").GetString(), Is.EqualTo("https://example.com/guide?a=1&b=2"));
+            Assert.That(results[0].GetProperty("snippet").GetString(), Is.EqualTo("How to use it"));
+            Assert.That(results[1].GetProperty("url").GetString(), Is.EqualTo("https://example.org/plain"));
+            Assert.That(results[1].GetProperty("snippet").GetString(), Is.Empty);
+        });
+    }
+
+    // SRCH1 (owner, 2026-11-07 17:35): a web search is read by the browser BAXY embeds, never seen, from this machine;
+    // nothing is asked of the engine by BAXY's own HTTP client (which presented itself as Chrome, WEB3 §5), no page opens
+    // in the person's browser nor in BAXY's CDP one, and the page read is the engine's results page for the query, in
+    // the region it is asked in.
+    [Test]
+    public async Task AWebSearchIsReadWhereNobodySeesItAndNeverOverHttp()
+    {
+        var pages = new ScriptedHiddenPages { Answer = _ => new(HiddenPageOutcome.Loaded, 200, EngineResultsPage) };
+        var handler = new SearchSourcesHttpHandler();
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using WebBrowserAdapter adapter = new(browser, http, homeRegion: "CL", hiddenPages: pages);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search", Json("""{"query":"receta de lentejas & arroz","language":"es"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(receipt.EffectObserved || receipt.EffectMayHaveOccurred, Is.False);
+            Assert.That(pages.Asked.Select(static asked => asked.AbsoluteUri), Is.EqualTo(new[]
+            {
+                "https://html.duckduckgo.com/html/?q=receta%20de%20lentejas%20%26%20arroz&kl=cl-es",
+            }));
+            Assert.That(handler.Asked, Is.Empty);
+            Assert.That(browser.Navigations, Is.Zero);
         });
     }
 
     // Noche 2026-10-27 (P1.3): a one-word local name searched with no region came back as the English word it also is.
     // The engine is asked in the person's Windows home region when it has that country in the search language (its own
     // code: Britain is «uk»), and the receipt says the region; any other pair, or no home region, asks the whole world.
-    [TestCase("CL", "es", "q=Savory&kl=cl-es", "CL")]
-    [TestCase("GB", "en", "q=Savory&kl=uk-en", "GB")]
-    [TestCase("CL", "en", "q=Savory", null)]
-    [TestCase(null, "es", "q=Savory", null)]
+    [TestCase("CL", "es", "?q=Savory&kl=cl-es", "CL")]
+    [TestCase("GB", "en", "?q=Savory&kl=uk-en", "GB")]
+    [TestCase("CL", "en", "?q=Savory", null)]
+    [TestCase(null, "es", "?q=Savory", null)]
     public async Task AWebSearchAsksTheEngineInTheHomeRegionAndSaysIt(
-        string? homeRegion, string language, string body, string? region)
+        string? homeRegion, string language, string query, string? region)
     {
-        var handler = new SearchSourcesHttpHandler
-        {
-            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, SearchResultsPage(
-                ("A result", "https://example.com/a", "")), "text/html"),
-        };
+        var pages = new ScriptedHiddenPages { Answer = _ => new(HiddenPageOutcome.Loaded, 200, EngineResultsPage) };
         using TemporaryDirectory temporary = new();
-        using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = new(
-            new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused")), http, homeRegion: homeRegion);
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, pages, homeRegion);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "web.search", Json($$"""{"query":"Savory","language":"{{language}}"}"""), CancellationToken.None);
@@ -4617,7 +4748,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
             Assert.That(receipt.Result!.Value.TryGetProperty("region", out JsonElement said) ? said.GetString() : null,
                 Is.EqualTo(region));
-            Assert.That(handler.Asked.Single().Body, Is.EqualTo(body));
+            Assert.That(pages.Asked.Single().Query, Is.EqualTo(query));
         });
     }
 
@@ -4625,13 +4756,16 @@ public sealed class ExternalAdaptersTests
     public async Task AWebSearchSaysABlockPageIsUnavailableAndAnEmptyResultsPageHasNoResults()
     {
         using TemporaryDirectory temporary = new();
-        using var blocked = new HttpClient(new StubHttpHandler(
-            "<html><body><form>Please verify you are a human</form></body></html>"));
-        using WebBrowserAdapter blockedAdapter = SearchAdapter(temporary, blocked);
-        using var empty = new HttpClient(new StubHttpHandler(SearchResultsPage()));
-        using WebBrowserAdapter emptyAdapter = SearchAdapter(temporary, empty);
-        using var unreachable = new HttpClient(new SearchSourcesHttpHandler());
-        using WebBrowserAdapter unreachableAdapter = SearchAdapter(temporary, unreachable);
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter blockedAdapter = SearchAdapter(temporary, http, new ScriptedHiddenPages
+        {
+            Answer = _ => new(HiddenPageOutcome.Loaded, 200, "<html><body><form>Please verify you are a human</form></body></html>"),
+        });
+        using WebBrowserAdapter emptyAdapter = SearchAdapter(temporary, http, new ScriptedHiddenPages
+        {
+            Answer = _ => new(HiddenPageOutcome.Loaded, 200, EngineEmptyPage),
+        });
+        using WebBrowserAdapter unreachableAdapter = SearchAdapter(temporary, http);
 
         ExternalCapabilityReceipt block = await blockedAdapter.InvokeAsync(
             "web.search", Json("""{"query":"Windows 11 calculator"}"""), CancellationToken.None);
@@ -4644,8 +4778,6 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(block.Verified, Is.False);
             Assert.That(block.ErrorCode, Is.EqualTo("web_search_unavailable"));
-            Assert.That(block.Result!.Value.GetProperty("next").GetString(), Does.StartWith(
-                """browser_navigate_set {"url":"https://duckduckgo.com/?q=Windows%2011%20calculator"}"""));
             Assert.That(none.Verified, Is.False);
             Assert.That(none.ErrorCode, Is.EqualTo("web_search_no_results"));
             Assert.That(down.ErrorCode, Is.EqualTo("web_search_unavailable"));
@@ -4654,24 +4786,17 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    // Encargo 41 (U29, R18): from a cloud address DuckDuckGo lets one or two searches through and then answers 202 with
-    // its check that a person is asking («anomaly») for more than ten minutes, on both endpoints; the model got
-    // web_search_unavailable with nothing to do next. The failure still searched nothing and says so, and its next leads
-    // with the call that opens the same search, in the same region, in the person's browser for them to look at.
+    // SRCH1 (owner, 2026-11-07 17:35): when the engine asks to check that a person is asking, the honest answer is that
+    // the search could not be read, and nothing opens: no next that would put the search in front of the person (the
+    // route of encargo 41 and uso 80, browser_navigate_set in their browser). The receipt still says the query and what
+    // the page answered.
     [Test]
-    public async Task ASearchTheEngineRefusesLeadsWithOpeningItInThePersonsBrowser()
+    public async Task ACheckThatAPersonIsAskingOpensNothingAndSaysTheSearchWasNotRead()
     {
-        const string anomaly = """<html><body><form id="challenge-form" action="//duckduckgo.com/anomaly.js">"""
-            + "Unfortunately, bots use DuckDuckGo too.</form></body></html>";
-        var handler = new SearchSourcesHttpHandler
-        {
-            ["lite.duckduckgo.com"] = new(HttpStatusCode.Accepted, anomaly, "text/html"),
-            ["html.duckduckgo.com"] = new(HttpStatusCode.Accepted, anomaly, "text/html"),
-        };
+        var pages = new ScriptedHiddenPages { Answer = _ => new(HiddenPageOutcome.Loaded, 202, EngineCheckPage) };
         using TemporaryDirectory temporary = new();
-        using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = new(
-            new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused")), http, homeRegion: "CL");
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, pages, "CL");
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "web.search", Json("""{"query":"receta de lentejas & arroz","language":"es"}"""), CancellationToken.None);
@@ -4681,68 +4806,38 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Verified, Is.False);
             Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_unavailable"));
             Assert.That(receipt.EffectObserved || receipt.EffectMayHaveOccurred, Is.False);
-            Assert.That(handler.Asked.Select(static asked => asked.Uri.Host),
-                Is.EqualTo(new[] { "lite.duckduckgo.com", "html.duckduckgo.com" }));
             JsonElement result = receipt.Result!.Value;
             Assert.That(result.GetProperty("query").GetString(), Is.EqualTo("receta de lentejas & arroz"));
-            Assert.That(result.GetProperty("searchPageUrl").GetString(),
-                Is.EqualTo("https://duckduckgo.com/?q=receta%20de%20lentejas%20%26%20arroz&kl=cl-es"));
-            // Uso 80 (diag-a947: 38 of 44 searches refused on the fleet, U29 0/6): what each page of the engine answered,
-            // and a next that is the search itself done in the person's browser, its results read there with the page
-            // read (the chain the model followed 6 of 6 times in U31's rescue, where Edge on the same address got them).
-            Assert.That(Asked(result), Is.EqualTo(new[]
-            {
-                "lite.duckduckgo.com challenge 202", "html.duckduckgo.com challenge 202",
-            }));
-            Assert.That(result.GetProperty("next").GetString(), Is.EqualTo(
-                """browser_navigate_set {"url":"https://duckduckgo.com/?q=receta%20de%20lentejas%20%26%20arroz&kl=cl-es"}"""
-                + RouteInTheBrowser));
+            Assert.That(Asked(result), Is.EqualTo(new[] { "html.duckduckgo.com challenge 202" }));
+            Assert.That(result.TryGetProperty("next", out _), Is.False);
+            Assert.That(result.TryGetProperty("searchPageUrl", out _), Is.False);
+            Assert.That(result.GetRawText(), Does.Not.Contain("browser_"));
         });
     }
 
-    private const string RouteInTheBrowser = " does this search in the person's browser instead, and browser_page_read {}"
-        + " then reads its results there, the same engine's results this call would have given";
-
-    // Uso 80: a refusal says what each page of the engine answered, as it answered: a status that is no check (429), a
-    // page that did not answer in time, and no connection at all, which the person's browser may still have (a proxy
-    // only the browser passes); the next is the same search in the person's browser in every case.
-    [Test]
-    public async Task ASearchRefusalSaysWhatEachPageOfTheEngineAnswered()
+    // Uso 80: a refusal says what the engine's page answered, as it answered: a status that is no check (429), a page
+    // that did not arrive in time, and no reader at all (no WebView2 on this machine); none of them opens anything.
+    [TestCase("Loaded", 429, "html.duckduckgo.com refused 429")]
+    [TestCase("Timeout", null, "html.duckduckgo.com no_answer -")]
+    [TestCase("Failed", null, "html.duckduckgo.com unreachable -")]
+    [TestCase("Unavailable", null, "html.duckduckgo.com unreachable -")]
+    public async Task ASearchRefusalSaysWhatThePageAnsweredAndOpensNothing(string outcome, int? status, string asked)
     {
-        var handler = new SearchSourcesHttpHandler
-        {
-            ["lite.duckduckgo.com"] = new((HttpStatusCode)429, "Too Many Requests", "text/plain"),
-        };
-        handler.Silent.Add("html.duckduckgo.com");
+        HiddenPageOutcome answered = Enum.Parse<HiddenPageOutcome>(outcome);
+        var pages = new ScriptedHiddenPages { Answer = _ => new(answered, status, status is null ? "" : "Too Many Requests") };
         using TemporaryDirectory temporary = new();
-        using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
-        using var down = new HttpClient(new SearchSourcesHttpHandler());
-        using WebBrowserAdapter downAdapter = SearchAdapter(temporary, down);
+        using var http = new HttpClient(new SearchSourcesHttpHandler());
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, pages);
 
-        ExternalCapabilityReceipt mixed = await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"capital de Australia"}"""), CancellationToken.None);
-        ExternalCapabilityReceipt offline = await downAdapter.InvokeAsync(
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "web.search", Json("""{"query":"capital de Australia"}"""), CancellationToken.None);
 
-        const string next = """browser_navigate_set {"url":"https://duckduckgo.com/?q=capital%20de%20Australia"}"""
-            + RouteInTheBrowser;
         Assert.Multiple(() =>
         {
-            Assert.That(mixed.ErrorCode, Is.EqualTo("web_search_unavailable"));
-            Assert.That(Asked(mixed.Result!.Value), Is.EqualTo(new[]
-            {
-                "lite.duckduckgo.com refused 429", "html.duckduckgo.com no_answer -",
-            }));
-            Assert.That(mixed.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(next));
-            Assert.That(offline.ErrorCode, Is.EqualTo("web_search_unavailable"));
-            Assert.That(Asked(offline.Result!.Value), Is.EqualTo(new[]
-            {
-                "lite.duckduckgo.com unreachable -", "html.duckduckgo.com unreachable -",
-            }));
-            Assert.That(offline.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(next));
-            Assert.That(new[] { mixed, offline }, Has.All.Matches<ExternalCapabilityReceipt>(
-                receipt => !receipt.EffectObserved && !receipt.EffectMayHaveOccurred));
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_unavailable"));
+            Assert.That(Asked(receipt.Result!.Value), Is.EqualTo(new[] { asked }));
+            Assert.That(receipt.Result!.Value.TryGetProperty("next", out _), Is.False);
+            Assert.That(receipt.EffectObserved || receipt.EffectMayHaveOccurred, Is.False);
         });
     }
 
@@ -4753,69 +4848,18 @@ public sealed class ExternalAdaptersTests
             asked.TryGetProperty("httpStatus", out JsonElement status) ? status.GetInt32().ToString(CultureInfo.InvariantCulture) : "-"))
         .ToArray();
 
-    // Arreglos de uso real (2026-10-26): after a burst the lite endpoint answered a page with no results in a quarter of
-    // a second (a throttle), and every search said it could not look it up. The request reads as a browser's, and a
-    // page that is no results page is asked once more of the html endpoint, whose redirect links carry the target.
-    [Test]
-    public async Task AThrottledLiteSearchIsAskedOnceOfTheHtmlEndpoint()
-    {
-        const string htmlPage = """
-            <html><body><div class="results">
-            <div class="result results_links result--ad"><a rel="nofollow" class="result__a"
-              href="https://duckduckgo.com/y.js?ad_domain=shop.example&amp;u3=x">Sponsored</a></div>
-            <div class="result results_links"><h2 class="result__title"><a rel="nofollow" class="result__a"
-              href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fguide%3Fa%3D1%26b%3D2&amp;rut=abc">An <b>example</b> guide</a></h2>
-              <a class="result__snippet" href="//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com%2Fguide">How to <b>use</b> it</a></div>
-            <div class="result results_links"><h2 class="result__title"><a rel="nofollow" class="result__a"
-              href="https://example.org/plain">Plain</a></h2></div>
-            </div></body></html>
-            """;
-        var handler = new SearchSourcesHttpHandler
-        {
-            ["lite.duckduckgo.com"] = new(HttpStatusCode.OK, "<html><body><form>anomaly</form></body></html>", "text/html"),
-            ["html.duckduckgo.com"] = new(HttpStatusCode.OK, htmlPage, "text/html"),
-        };
-        using TemporaryDirectory temporary = new();
-        using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"example guide"}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            JsonElement result = receipt.Result!.Value;
-            Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("duckduckgo_html_https"));
-            Assert.That(result.GetProperty("answeredBy").GetString(), Is.EqualTo("DuckDuckGo"));
-            JsonElement results = result.GetProperty("results");
-            Assert.That(results.GetArrayLength(), Is.EqualTo(2));
-            Assert.That(results[0].GetProperty("title").GetString(), Is.EqualTo("An example guide"));
-            Assert.That(results[0].GetProperty("url").GetString(), Is.EqualTo("https://example.com/guide?a=1&b=2"));
-            Assert.That(results[0].GetProperty("snippet").GetString(), Is.EqualTo("How to use it"));
-            Assert.That(results[1].GetProperty("url").GetString(), Is.EqualTo("https://example.org/plain"));
-            Assert.That(results[1].GetProperty("snippet").GetString(), Is.Empty);
-            Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
-                Is.EqualTo(new[] { "lite.duckduckgo.com", "html.duckduckgo.com" }));
-            Assert.That(handler.Asked, Has.All.Matches<AskedRequest>(asked =>
-                asked.UserAgent.StartsWith("Mozilla/5.0", StringComparison.Ordinal)
-                && asked.Headers.Contains("Accept-Language")));
-        });
-    }
-
     // Uso real tanda 4c «en qué lugares puedo pedir comida para llevar cerca»: with nearby, this PC's city and its
     // country (M81: Valparaiso is also in Indiana), read from its public address, join the query; no coordinates
     // leave, and the receipt says the query as it was sent.
     [Test]
     public async Task ASearchNearbyCarriesThisPcsCityAndCountryAndNothingElse()
     {
-        string page = SearchResultsPage(
-            ("Comida para llevar en Valparaiso", "https://example.com/valpo", "Locales de comida para llevar"));
-        var handler = new RoutingHttpHandler(page,
+        var pages = new ScriptedHiddenPages { Answer = _ => new(HiddenPageOutcome.Loaded, 200, EngineResultsPage) };
+        var handler = new RoutingHttpHandler("",
             """{"success":true,"country":"Chile","region":"Valparaiso","city":"Valparaiso","latitude":-33.0363,"longitude":-71.6297}""");
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, pages);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "web.search", Json("""{"query":"comida para llevar","nearby":true}"""), CancellationToken.None);
@@ -4824,7 +4868,7 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
             Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("comida para llevar Valparaiso, Chile"));
-            Assert.That(handler.Asked.Where(uri => !uri.Host.Contains("ipwho", StringComparison.Ordinal)),
+            Assert.That(pages.Asked.Concat(handler.Asked.Where(uri => !uri.Host.Contains("ipwho", StringComparison.Ordinal))),
                 Has.All.Matches<Uri>(uri => !uri.Query.Contains("33.03", StringComparison.Ordinal)
                     && !uri.Query.Contains("71.62", StringComparison.Ordinal)));
         });
@@ -4833,10 +4877,11 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task ASearchNearbyWithoutThisPcsPlaceIsAnHonestAbsenceNotAGenericSearch()
     {
-        var handler = new RoutingHttpHandler(SearchResultsPage(("x", "https://example.com/", "x")), """{"success":false}""");
+        var pages = new ScriptedHiddenPages { Answer = _ => new(HiddenPageOutcome.Loaded, 200, EngineResultsPage) };
+        var handler = new RoutingHttpHandler("", """{"success":false}""");
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, pages);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "web.search", Json("""{"query":"farmacias","nearby":true}"""), CancellationToken.None);
@@ -4847,6 +4892,7 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_place_unavailable"));
             Assert.That(receipt.EffectMayHaveOccurred, Is.False);
             Assert.That(handler.Asked, Has.All.Matches<Uri>(uri => uri.Host.Contains("ipwho", StringComparison.Ordinal)));
+            Assert.That(pages.Asked, Is.Empty);
         });
     }
 
@@ -4877,11 +4923,11 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task ASearchWithoutNearbyNeverAsksWhereThisPcIs()
     {
-        var handler = new RoutingHttpHandler(
-            SearchResultsPage(("Hoteles en Madrid", "https://example.com/madrid", "Hoteles en Madrid")), """{"success":true}""");
+        var pages = new ScriptedHiddenPages { Answer = _ => new(HiddenPageOutcome.Loaded, 200, EngineResultsPage) };
+        var handler = new RoutingHttpHandler("", """{"success":true}""");
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, pages);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
             "web.search", Json("""{"query":"hoteles en Madrid"}"""), CancellationToken.None);
@@ -4895,6 +4941,20 @@ public sealed class ExternalAdaptersTests
             Assert.That(receipt.Result?.GetProperty("query").GetString(), Is.EqualTo("hoteles en Madrid"));
             Assert.That(handler.Asked, Has.None.Matches<Uri>(uri => uri.Host.Contains("ipwho", StringComparison.Ordinal)));
         });
+    }
+
+    // The pages of a web search as the hidden reader would answer them, and the addresses asked.
+    private sealed class ScriptedHiddenPages : IHiddenPageSource
+    {
+        internal Func<Uri, HiddenPage> Answer { get; init; } = static _ => new(HiddenPageOutcome.Unavailable, null, "");
+
+        internal List<Uri> Asked { get; } = [];
+
+        public Task<HiddenPage> ReadAsync(Uri address, TimeSpan within, TimeSpan settle, CancellationToken cancellationToken)
+        {
+            Asked.Add(address);
+            return Task.FromResult(Answer(address));
+        }
     }
 
     // D32: source=encyclopedia asks Wikipedia's open API in the language the model chose, with the project's Wikimedia
@@ -4965,153 +5025,29 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    // source=news asks the search feed of Google News in the edition of the chosen language and returns its items as
-    // the feed gave them (title without the outlet's tail, outlet, link without its tracking query, time), none left
-    // out for what it says.
-    [Test]
-    public async Task ANewsSearchReturnsTheFeedsItemsAsItGaveThem()
+    // WEB1 (2026-11-07, LIC1 R3): BAXY is sold. Google News' feed is «solely for ... a personal feed reader for personal,
+    // non-commercial use» (the feed's own terms) and Disney's terms forbid ESPN's pages to «robot, spider, script, or
+    // other automated means» (https://disneytermsofuse.com/english/): neither is asked anything.
+    [TestCase("""{"query":"noticias de hoy","source":"news"}""")]
+    [TestCase("""{"query":"boca","source":"sports","team":"Boca Juniors","wants":"next"}""")]
+    public async Task NeitherGoogleNewsNorEspnIsAskedAnything(string json)
     {
-        const string feed = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <rss version="2.0"><channel><title>Noticias</title>
-            <item><title>Dólar blue hoy: a cuánto cotiza este lunes - Diario Uno</title><link>https://news.google.com/rss/articles/abc?oc=5</link><pubDate>Mon, 28 Sep 2026 12:00:00 GMT</pubDate><source url="https://www.example.com.ar">Diario Uno</source></item>
-            <item><title>El fútbol argentino vuelve este fin de semana - Diario Dos</title><link>https://news.google.com/rss/articles/def?oc=5</link><pubDate>Mon, 28 Sep 2026 11:00:00 GMT</pubDate><source url="https://www.example.com">Diario Dos</source></item>
-            <item><title>Sin enlace seguro - Diario Tres</title><link>http://news.example.com/plain</link><pubDate>Mon, 28 Sep 2026 10:00:00 GMT</pubDate><source url="http://news.example.com">Diario Tres</source></item>
-            </channel></rss>
-            """;
-        var handler = new SearchSourcesHttpHandler
-        {
-            ["news.google.com"] = new(HttpStatusCode.OK, feed, "application/rss+xml"),
-        };
-        using TemporaryDirectory temporary = new();
-        using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
-
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"dólar blue hoy","source":"news"}"""), CancellationToken.None);
-        await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"dollar today","source":"news","language":"en","limit":1}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(receipt.Result?.GetProperty("source").GetString(), Is.EqualTo("news"));
-            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("google_news_rss_search"));
-            Assert.That(receipt.Result?.GetProperty("resultCount").GetInt32(), Is.EqualTo(2));
-            JsonElement first = receipt.Result!.Value.GetProperty("results")[0];
-            Assert.That(first.GetProperty("title").GetString(), Is.EqualTo("Dólar blue hoy: a cuánto cotiza este lunes"));
-            Assert.That(first.GetProperty("source").GetString(), Is.EqualTo("Diario Uno"));
-            Assert.That(first.GetProperty("url").GetString(), Is.EqualTo("https://news.google.com/rss/articles/abc"));
-            Assert.That(first.GetProperty("published").GetString(), Is.EqualTo("Mon, 28 Sep 2026 12:00:00 GMT"));
-            // uso-82: how a Google News link Google News did not resolve is read (this feed's article pages are no pages).
-            Assert.That(receipt.Result!.Value.GetProperty("next").GetString(),
-                Does.Contain("Google News link").And.Contain("web_fetch"));
-            Assert.That(receipt.Result!.Value.GetProperty("results")[1].GetProperty("title").GetString(),
-                Is.EqualTo("El fútbol argentino vuelve este fin de semana"));
-            // The feed's searches (each result's link is then asked of Google News: ANewsSearchGivesTheArticleEachLinkLeadsTo).
-            List<AskedRequest> searches = handler.Asked.Where(asked => asked.Uri.AbsolutePath == "/rss/search").ToList();
-            Assert.That(Uri.UnescapeDataString(searches[0].Uri.Query),
-                Is.EqualTo("?q=dólar blue hoy&hl=es-419&gl=CL&ceid=CL:es-419"));
-            Assert.That(Uri.UnescapeDataString(searches[1].Uri.Query),
-                Is.EqualTo("?q=dollar today&hl=en-US&gl=US&ceid=US:en"));
-            Assert.That(handler.Asked[0].UserAgent, Does.Match(ProjectUserAgent));
-        });
-    }
-
-    // uso-82: the feed's links are Google News links; the article each leads to is asked of Google News in one request
-    // (each link's page carries its signature) and the result's url is that article. A link Google News does not resolve
-    // keeps its Google News link, and the receipt says how that one is read.
-    [Test]
-    public async Task ANewsSearchGivesTheArticleEachLinkLeadsTo()
-    {
-        const string feed = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <rss version="2.0"><channel><title>Noticias</title>
-            <item><title>La final - Diario Uno</title><link>https://news.google.com/rss/articles/CBMiabc?oc=5</link><pubDate>Mon, 28 Sep 2026 12:00:00 GMT</pubDate><source url="https://www.example.com.ar">Diario Uno</source></item>
-            <item><title>Otra nota - Diario Dos</title><link>https://news.google.com/rss/articles/CBMidef?oc=5</link><pubDate>Mon, 28 Sep 2026 11:00:00 GMT</pubDate><source url="https://www.example.com">Diario Dos</source></item>
-            </channel></rss>
-            """;
-        const string googlePage = """<html><body><div data-n-a-sg="sg_abc" data-n-a-ts="1793769327"></div></body></html>""";
-        const string answer = ")]}'\n\n"
-            + """[["wrb.fr","Fbv4je","[\"garturlres\",\"https://www.example.com.ar/deportes/final-copa\",1]",null,null,null,"1"]]""";
         var handler = new SearchSourcesHttpHandler();
-        handler.Routes.Add(("news.google.com/rss/search", new(HttpStatusCode.OK, feed, "application/rss+xml")));
-        handler.Routes.Add(("news.google.com/rss/articles/CBMiabc", new(HttpStatusCode.OK, googlePage, "text/html")));
-        handler.Routes.Add(("news.google.com/rss/articles/CBMidef", new(HttpStatusCode.OK, "<html>Google News</html>", "text/html")));
-        handler.Routes.Add(("batchexecute", new(HttpStatusCode.OK, answer, "application/json")));
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
         using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
 
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"final copa","source":"news"}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
+        try
         {
-            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            JsonElement results = receipt.Result!.Value.GetProperty("results");
-            Assert.That(results[0].GetProperty("url").GetString(), Is.EqualTo("https://www.example.com.ar/deportes/final-copa"));
-            Assert.That(results[0].GetProperty("source").GetString(), Is.EqualTo("Diario Uno"));
-            Assert.That(results[1].GetProperty("url").GetString(), Is.EqualTo("https://news.google.com/rss/articles/CBMidef"));
-            Assert.That(receipt.Result!.Value.GetProperty("next").GetString(), Does.Contain("news.google.com"));
-            Assert.That(handler.Asked.Count(asked => asked.Uri.AbsolutePath.EndsWith("batchexecute", StringComparison.Ordinal)),
-                Is.EqualTo(1));
-            Assert.That(Uri.UnescapeDataString(handler.Asked.Single(asked => asked.Body is not null).Body!),
-                Does.Contain("\\\"CBMiabc\\\",1793769327,\\\"sg_abc\\\"").And.Not.Contain("CBMidef"));
-        });
-    }
-
-    // uso-82 (AMD e2e 2026-11-04, «¿Quién ganó la Copa América 2024?»): a news result's url is a Google News link, and
-    // web.fetch of it read Google's own page, with no article in it; the model wrote an outlet address none of the
-    // results gave. Now the link is followed to the outlet's article (Google News says where it leads), the receipt says
-    // so, and a link Google News does not resolve is told as such.
-    [Test]
-    public async Task WebFetchOfAGoogleNewsLinkReadsTheArticleItLeadsTo()
-    {
-        const string googlePage = """<html><body><c-wiz><div jscontroller="aLI87" data-n-a-sg="AdwtSYOt_sg" data-n-a-ts="1793769327"></div></c-wiz></body></html>""";
-        const string answer = ")]}'\n\n"
-            + """[["wrb.fr","Fbv4je","[\"garturlres\",\"https://www.example.com.ar/deportes/final-copa\",1]",null,null,null,"1"]]""";
-        const string article = """<html><head><title>La final</title></head><body><article><p>Argentina venció 1 a 0 a Colombia en la final.</p></article></body></html>""";
-        var handler = new SearchSourcesHttpHandler
+            await adapter.InvokeAsync("web.search", Json(json), CancellationToken.None);
+        }
+        catch (InvalidDataException)
         {
-            ["www.example.com.ar"] = new(HttpStatusCode.OK, article, "text/html"),
-        };
-        handler.Routes.Add(("news.google.com/rss/articles/CBMiabc", new(HttpStatusCode.OK, googlePage, "text/html")));
-        handler.Routes.Add(("news.google.com/rss/articles/CBMisinfirma", new(HttpStatusCode.OK, "<html>Google News</html>", "text/html")));
-        handler.Routes.Add(("batchexecute", new(HttpStatusCode.OK, answer, "application/json")));
-        using TemporaryDirectory temporary = new();
-        using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+            // A source the catalog does not offer is refused before anything is asked.
+        }
 
-        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
-            "web.fetch", Json("""{"url":"https://news.google.com/rss/articles/CBMiabc"}"""), CancellationToken.None);
-        int askedForTheFirst = handler.Asked.Count;
-        ExternalCapabilityReceipt unresolved = await adapter.InvokeAsync(
-            "web.fetch", Json("""{"url":"https://news.google.com/rss/articles/CBMisinfirma"}"""), CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(read.Verified, Is.True, read.ErrorCode);
-            Assert.That(read.Result?.GetProperty("requestedUrl").GetString(),
-                Is.EqualTo("https://news.google.com/rss/articles/CBMiabc"));
-            Assert.That(read.Result?.GetProperty("finalUrl").GetString(),
-                Is.EqualTo("https://www.example.com.ar/deportes/final-copa"));
-            Assert.That(read.Result?.GetProperty("redirectedBy").GetString(), Is.EqualTo("Google News"));
-            Assert.That(read.Result?.GetProperty("text").GetString(), Does.Contain("Argentina venció 1 a 0 a Colombia"));
-            Assert.That(handler.Asked.Select(asked => asked.Uri.Host + asked.Uri.AbsolutePath).Take(askedForTheFirst),
-                Is.EqualTo(new[]
-                {
-                    "news.google.com/rss/articles/CBMiabc", "news.google.com/_/DotsSplashUi/data/batchexecute",
-                    "www.example.com.ar/deportes/final-copa",
-                }));
-            // Only the link's id, with its page's signature, goes to Google News.
-            Assert.That(Uri.UnescapeDataString(handler.Asked[1].Body ?? ""),
-                Does.Contain("\\\"CBMiabc\\\",1793769327,\\\"AdwtSYOt_sg\\\""));
-            Assert.That(unresolved.Verified, Is.False);
-            Assert.That(unresolved.ErrorCode, Is.EqualTo("web_fetch_news_link_unresolved"));
-            Assert.That(handler.Asked.Skip(askedForTheFirst).Select(asked => asked.Uri.Host + asked.Uri.AbsolutePath),
-                Is.EqualTo(new[] { "news.google.com/rss/articles/CBMisinfirma" }));
-        });
+        Assert.That(handler.Asked.Select(asked => asked.Uri.Host),
+            Has.None.Contains("google").And.None.Contains("espn"));
     }
 
     // M51 (D32): source=currency asks Frankfurter for the pair of ISO codes the model wrote; the receipt carries the
@@ -5156,8 +5092,6 @@ public sealed class ExternalAdaptersTests
     [TestCase("""{"query":"usd","source":"currency","from":"USD"}""")]
     [TestCase("""{"query":"usd","source":"currency","from":"USD","to":"CLP","amount":-3}""")]
     [TestCase("""{"query":"farmacias","source":"places","kind":"pharmacy"}""")]
-    [TestCase("""{"query":"boca","source":"sports"}""")]
-    [TestCase("""{"query":"boca","source":"sports","team":"Boca Juniors","wants":"tomorrow"}""")]
     [TestCase("""{"query":"x","source":"recipes"}""")]
     [TestCase("""{"query":"x","source":"encyclopedia","language":"fr"}""")]
     public async Task ATypedSearchWithoutItsArgumentsAsksNothing(string arguments)
@@ -5177,95 +5111,71 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    // M168 (D77): source=sports asks ESPN for the team the model wrote (two requests: the team, its calendar, both with
-    // BAXY's User-Agent) and returns the match as the calendar gives it, with the team ESPN found; the same question
-    // again within minutes asks nothing new.
-    [Test]
-    public async Task ASportsSearchReturnsTheMatchAsEspnsCalendarGivesIt()
+    // ARR1 (INT12 6/6, DEP5 2/2 with the stock Qwen): a places search without «kind» came back to the model as a bare
+    // web_argument_invalid, and it called again without it. Anthropic's tool-use guide (platform.claude.com/docs/en/
+    // agents-and-tools/tool-use/handle-tool-calls, read 2026-11-08): «Write instructive error messages», and for a call
+    // «missing required parameters» a result that says which one lets the model «use the tool again with the missing
+    // information filled in». The schema cannot require it only for places: llama.cpp's grammars skip «if / then /
+    // else» (grammars/README.md). The kernel's refusal of arguments says each one and what it takes (P5.3); this one too,
+    // from the adapter through the engine's handler to what the model reads, and nothing is asked of any service.
+    [TestCase("""{"query":"farmacias","source":"places","place":"Plaza Mayor, Madrid, España"}""", new[] { "kind" })]
+    [TestCase("""{"query":"farmacias","source":"places","kind":"  ","nearby":true}""", new[] { "kind" })]
+    [TestCase("""{"query":"farmacias","source":"places","kind":"pharmacy"}""", new[] { "place" })]
+    [TestCase("""{"query":"farmacias","source":"places"}""", new[] { "kind", "place" })]
+    public async Task APlacesSearchWithoutItsArgumentsSaysWhichOnesToTheModel(string arguments, string[] missing)
     {
         var handler = new SearchSourcesHttpHandler();
-        handler.Routes.Add(("apis/search/v2", new(HttpStatusCode.OK,
-            EspnScheduleSourceTests.Fixture("search_lakers.json"), "application/json")));
-        handler.Routes.Add(("basketball/nba/teams/13/schedule", new(HttpStatusCode.OK,
-            EspnScheduleSourceTests.Fixture("nba_lakers_schedule.json"), "application/json")));
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, new EspnScheduleSource(
-            http, static () => EspnScheduleSourceTests.Now, EspnScheduleSourceTests.Santiago));
-        JsonElement arguments = Json("""{"query":"when do the Lakers play next","source":"sports","team":"Lakers"}""");
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+        var engine = new Baxy.Core.Operations.ExternalCapabilityHandler("web.search", new AdapterProvider(adapter));
 
-        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync("web.search", arguments, CancellationToken.None);
-        ExternalCapabilityReceipt again = await adapter.InvokeAsync("web.search", arguments, CancellationToken.None);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(receipt.Result?.GetProperty("source").GetString(), Is.EqualTo("sports"));
-            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("espn_public_schedule"));
-            Assert.That(receipt.Result?.GetProperty("sent").GetProperty("team").GetString(), Is.EqualTo("Lakers"));
-            Assert.That(receipt.Result?.GetProperty("sent").GetProperty("wants").GetString(), Is.EqualTo("next"));
-            JsonElement match = receipt.Result!.Value.GetProperty("results")[0];
-            Assert.That(match.GetProperty("team").GetString(), Is.EqualTo("Los Angeles Lakers"));
-            Assert.That(match.GetProperty("opponent").GetString(), Is.EqualTo("Sacramento Kings"));
-            Assert.That(match.GetProperty("homeAway").GetString(), Is.EqualTo("away"));
-            Assert.That(match.GetProperty("start").GetString(), Is.EqualTo("2026-10-05T23:00-03:00"));
-            Assert.That(match.GetProperty("startTimeAnnounced").GetBoolean(), Is.True);
-            Assert.That(match.GetProperty("state").GetString(), Is.EqualTo("pre"));
-            Assert.That(match.GetProperty("competition").GetString(), Is.EqualTo("NBA Preseason"));
-            Assert.That(match.GetProperty("venue").GetString(), Is.EqualTo("Golden 1 Center"));
-            Assert.That(again.Result?.GetProperty("results")[0].GetProperty("opponent").GetString(), Is.EqualTo("Sacramento Kings"));
-            Assert.That(handler.Asked.Select(static asked => asked.Uri.AbsoluteUri), Is.EqualTo(new[]
-            {
-                "https://site.api.espn.com/apis/search/v2?query=Lakers&limit=8&type=team",
-                "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/13/schedule",
-            }));
-            Assert.That(handler.Asked.Select(static asked => asked.UserAgent), Has.All.Match(ProjectUserAgent));
-        });
-    }
-
-    // A team ESPN does not know is no result; ESPN unreachable is a search that could not be made.
-    [Test]
-    public async Task ATeamEspnDoesNotKnowHasNoResultsAndEspnUnreachableIsUnavailable()
-    {
-        var handler = new SearchSourcesHttpHandler();
-        handler.Routes.Add(("query=Xyzzy", new(HttpStatusCode.OK,
-            EspnScheduleSourceTests.Fixture("search_xyzzy.json"), "application/json")));
-        using TemporaryDirectory temporary = new();
-        using var http = new HttpClient(handler);
-        using WebBrowserAdapter adapter = SearchAdapter(temporary, http, new EspnScheduleSource(
-            http, static () => EspnScheduleSourceTests.Now, EspnScheduleSourceTests.Santiago));
-
-        ExternalCapabilityReceipt unknown = await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"xyzzy","source":"sports","team":"Xyzzy Quux","wants":"last"}"""),
+        Baxy.Kernel.Operations.OperationOutcome outcome = await engine.ExecuteAsync(
+            new Baxy.Kernel.Operations.OperationInvocation("request", "mission", "invocation", Json(arguments)),
             CancellationToken.None);
-        ExternalCapabilityReceipt down = await adapter.InvokeAsync(
-            "web.search", Json("""{"query":"boca","source":"sports","team":"Boca Juniors"}"""), CancellationToken.None);
+        using JsonDocument read = JsonDocument.Parse(
+            Baxy.Kernel.Operations.OperationVisibleFacts.FromOutcome("web.search", outcome));
 
         Assert.Multiple(() =>
         {
-            Assert.That(unknown.ErrorCode, Is.EqualTo("web_search_no_results"));
-            Assert.That(down.ErrorCode, Is.EqualTo("web_search_unavailable"));
-            Assert.That(handler.Asked.Select(static asked => asked.Uri.AbsoluteUri), Is.EqualTo(new[]
+            Assert.That(read.RootElement.GetProperty("status").GetString(), Is.EqualTo("failed"));
+            Assert.That(read.RootElement.GetProperty("error").GetString(), Is.EqualTo("invalid_arguments"));
+            Assert.That(read.RootElement.TryGetProperty("effectUncertain", out _), Is.False);
+            JsonElement problems = read.RootElement.GetProperty("argumentProblems");
+            Assert.That(problems.EnumerateArray().Select(static p => p.GetProperty("argument").GetString()),
+                Is.EqualTo(missing));
+            Assert.That(problems.EnumerateArray().Select(static p => p.GetProperty("problem").GetString()),
+                Has.All.StartWith("required with source places"));
+            // ARR2: after this refusal the model wrote one of the kinds it listed for sites of another kind (pharmacy
+            // for a tyre repair shop or a liquor shop, restaurant for tapas bars): 11 of 62 «kind» written after it. The
+            // problem says what «kind» is and that only sites of that value come back, and names no kind.
+            if (missing.Contains("kind"))
             {
-                "https://site.api.espn.com/apis/search/v2?query=Xyzzy%20Quux&limit=8&type=team",
-                "https://site.api.espn.com/apis/search/v2?query=Boca%20Juniors&limit=8&type=team",
-            }));
+                string kind = problems.EnumerateArray().First(static p => p.GetProperty("argument").GetString() == "kind")
+                    .GetProperty("problem").GetString()!;
+                Assert.That(kind, Does.Contain("only sites"));
+                Assert.That(kind, Does.Not.Contain("pharmacy").And.Not.Contain("restaurant").And.Not.Contain("("));
+            }
+            Assert.That(handler.Asked, Is.Empty);
         });
     }
 
-    // M51 F-p05-t1 «Encuentra aparcamiento en Plaza del Polvorista»: source=places asks Nominatim for the place the
-    // model wrote (its first answer is the place), then for the kind of site, in English, inside its box, both with
-    // the project's User-Agent. Each site comes back with its name, address and page as Nominatim gave them and its
-    // distance from the place's centre, nearest first; the receipt says the place Nominatim found.
+    // M51 F-p05-t1 «Encuentra aparcamiento en Plaza del Polvorista»: source=places asks for the place the model wrote
+    // (the first answer is the place), then for the sites whose OpenStreetMap value is the kind, in English, nearest to
+    // its centre, both with the project's User-Agent. Each site comes back with its name, address and page as
+    // OpenStreetMap has them and its distance from the place's centre, nearest first; the receipt says the place found.
+    // LIC2 (2026-11-08): BAXY is sold, and Nominatim's policy caps «the sum of traffic by all your users» at «an absolute
+    // maximum of 1 request per second» (operations.osmfoundation.org/policies/nominatim): both are asked of Photon, which
+    // reads the same OpenStreetMap data and asks only to «be fair» (photon.komoot.io), and Nominatim is never asked.
     [Test]
-    public async Task APlacesSearchAsksTheKindOfSiteInsideThePlace()
+    public async Task APlacesSearchAsksTheKindOfSiteNearestThePlace()
     {
         var handler = new SearchSourcesHttpHandler();
         handler.Routes.Add(("q=Plaza del Polvorista, El Puerto de Santa María", new(HttpStatusCode.OK,
-            """[{"lat":"36.5985","lon":"-6.2330","boundingbox":["36.5982","36.5988","-6.2334","-6.2326"],"display_name":"Plaza del Polvorista, El Puerto de Santa María, Cádiz, España"}]""",
+            """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"W","osm_id":29451697,"osm_key":"leisure","osm_value":"park","name":"Plaza del Polvorista","district":"Valdelagrana","city":"El Puerto de Santa María","state":"Andalucía","country":"España","extent":[-6.2334,36.5988,-6.2326,36.5982]},"geometry":{"type":"Point","coordinates":[-6.2330,36.5985]}}]}""",
             "application/json")));
-        handler.Routes.Add(("q=parking", new(HttpStatusCode.OK,
-            """[{"osm_type":"way","osm_id":123,"name":"Aparcamiento Polvorista","type":"parking","lat":"36.6010","lon":"-6.2330","display_name":"Aparcamiento Polvorista, Calle Larga, El Puerto de Santa María, Cádiz, España"},{"osm_type":"node","osm_id":456,"name":"","type":"parking","lat":"36.5986","lon":"-6.2330","display_name":"Calle Ganado, El Puerto de Santa María, Cádiz, España"},{"osm_type":"other","osm_id":789,"name":"Nada","type":"parking","display_name":"Nada"}]""",
+        handler.Routes.Add(("osm_tag=:parking", new(HttpStatusCode.OK,
+            """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"W","osm_id":123,"osm_key":"amenity","osm_value":"parking","name":"Aparcamiento Polvorista","street":"Calle Larga","housenumber":"4","city":"El Puerto de Santa María","country":"España"},"geometry":{"type":"Point","coordinates":[-6.2330,36.6010]}},{"type":"Feature","properties":{"osm_type":"N","osm_id":456,"osm_key":"amenity","osm_value":"parking","street":"Calle Ganado","city":"El Puerto de Santa María","country":"España"},"geometry":{"type":"Point","coordinates":[-6.2330,36.5986]}},{"type":"Feature","properties":{"osm_type":"X","osm_id":789,"osm_value":"parking","name":"Nada"},"geometry":{"type":"Point","coordinates":[-6.2330,36.5986]}}]}""",
             "application/json")));
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
@@ -5279,29 +5189,83 @@ public sealed class ExternalAdaptersTests
         Assert.Multiple(() =>
         {
             Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
-            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("openstreetmap_nominatim"));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(), Is.EqualTo("openstreetmap_photon"));
+            Assert.That(receipt.Result?.GetProperty("answeredBy").GetString(), Is.EqualTo("OpenStreetMap"));
             JsonElement sent = receipt.Result!.Value.GetProperty("sent");
             Assert.That(sent.GetProperty("kind").GetString(), Is.EqualTo("parking"));
             Assert.That(sent.GetProperty("place").GetString(), Is.EqualTo("Plaza del Polvorista, El Puerto de Santa María"));
-            Assert.That(sent.GetProperty("placeFound").GetString(), Is.EqualTo("Plaza del Polvorista, El Puerto de Santa María, Cádiz, España"));
+            Assert.That(sent.GetProperty("placeFound").GetString(),
+                Is.EqualTo("Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Andalucía, España"));
+            Assert.That(sent.GetProperty("categoryAsked").GetString(), Is.EqualTo("parking"));
+            Assert.That(sent.GetProperty("matchedBy").GetString(), Is.EqualTo("category"));
             JsonElement results = receipt.Result!.Value.GetProperty("results");
             Assert.That(results.GetArrayLength(), Is.EqualTo(2));
+            Assert.That(results.EnumerateArray().Select(static r => r.GetProperty("category").GetString()),
+                Is.EqualTo(new[] { "amenity=parking", "amenity=parking" }));
             Assert.That(results[0].GetProperty("name").GetString(), Is.EqualTo("parking"));
-            Assert.That(results[0].GetProperty("address").GetString(), Is.EqualTo("Calle Ganado, El Puerto de Santa María, Cádiz, España"));
+            Assert.That(results[0].GetProperty("address").GetString(), Is.EqualTo("Calle Ganado, El Puerto de Santa María, España"));
             Assert.That(results[0].GetProperty("url").GetString(), Is.EqualTo("https://www.openstreetmap.org/node/456"));
             Assert.That(results[0].GetProperty("distanceMeters").GetInt32(), Is.EqualTo(10));
             Assert.That(results[1].GetProperty("name").GetString(), Is.EqualTo("Aparcamiento Polvorista"));
+            Assert.That(results[1].GetProperty("address").GetString(),
+                Is.EqualTo("Aparcamiento Polvorista, Calle Larga 4, El Puerto de Santa María, España"));
+            Assert.That(results[1].GetProperty("url").GetString(), Is.EqualTo("https://www.openstreetmap.org/way/123"));
             Assert.That(results[1].GetProperty("distanceMeters").GetInt32(), Is.InRange(270, 290));
             Assert.That(handler.Asked, Has.Count.EqualTo(2));
-            Assert.That(handler.Asked, Has.All.Matches<AskedRequest>(asked => asked.Uri.Host == "nominatim.openstreetmap.org"
-                && asked.UserAgent.Contains("github.com/REDSOULTM/baxy-assistant", StringComparison.Ordinal)));
-            Assert.That(Uri.UnescapeDataString(handler.Asked[0].Uri.Query), Does.Contain("limit=1&accept-language=es&"));
+            Assert.That(handler.Asked, Has.All.Matches<AskedRequest>(asked => asked.Uri.Host == "photon.komoot.io"
+                && asked.UserAgent.Contains("(https://github.com/REDSOULTM/BAXY)", StringComparison.Ordinal)));
+            Assert.That(handler.Asked[0].Uri.AbsolutePath, Is.EqualTo("/api/"));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[0].Uri.Query), Does.Contain("limit=1&"));
+            Assert.That(handler.Asked[1].Uri.AbsolutePath, Is.EqualTo("/reverse"));
             Assert.That(Uri.UnescapeDataString(handler.Asked[1].Uri.Query),
-                Does.Contain("bounded=1").And.Contain("viewbox=-6.243,36.6085,-6.223,36.5885"));
+                Does.Contain("lat=36.5985&lon=-6.233&radius=1.4&limit=10&osm_tag=:parking"));
         });
     }
 
-    // With nearby and no place, the place is this PC's city and country; a place Nominatim does not find is said so
+    // A kind that is no OpenStreetMap value («gas station» is «fuel» there) finds no site by its value; then the sites
+    // whose name holds it are asked inside the place's box, and the receipt lists them the same way.
+    [Test]
+    public async Task AKindThatIsNoOpenStreetMapValueIsAskedByNameInsideThePlace()
+    {
+        var handler = new SearchSourcesHttpHandler();
+        handler.Routes.Add(("q=Rancagua, Chile", new(HttpStatusCode.OK,
+            """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"R","osm_id":1,"name":"Rancagua","country":"Chile","extent":[-70.80,-34.12,-70.68,-34.20]},"geometry":{"type":"Point","coordinates":[-70.74,-34.16]}}]}""",
+            "application/json")));
+        handler.Routes.Add(("osm_tag=:gas_station", new(HttpStatusCode.OK,
+            """{"type":"FeatureCollection","features":[]}""", "application/json")));
+        handler.Routes.Add(("q=gas station", new(HttpStatusCode.OK,
+            """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"N","osm_id":9,"osm_value":"fuel","name":"Gas Station Sur","city":"Rancagua","country":"Chile"},"geometry":{"type":"Point","coordinates":[-70.74,-34.17]}}]}""",
+            "application/json")));
+        using TemporaryDirectory temporary = new();
+        using var http = new HttpClient(handler);
+        using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"bencineras en Rancagua","source":"places","kind":"gas station","place":"Rancagua, Chile"}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            JsonElement results = receipt.Result!.Value.GetProperty("results");
+            Assert.That(results.GetArrayLength(), Is.EqualTo(1));
+            Assert.That(results[0].GetProperty("name").GetString(), Is.EqualTo("Gas Station Sur"));
+            Assert.That(results[0].GetProperty("distanceMeters").GetInt32(), Is.InRange(1100, 1130));
+            JsonElement sent = receipt.Result!.Value.GetProperty("sent");
+            Assert.That(sent.GetProperty("kind").GetString(), Is.EqualTo("gas station"));
+            Assert.That(sent.GetProperty("categoryAsked").GetString(), Is.EqualTo("gas_station"));
+            Assert.That(sent.GetProperty("matchedBy").GetString(), Is.EqualTo("name"));
+            Assert.That(results[0].GetProperty("category").GetString(), Is.EqualTo("fuel"));
+            Assert.That(handler.Asked, Has.Count.EqualTo(3));
+            Assert.That(handler.Asked[2].Uri.AbsolutePath, Is.EqualTo("/api/"));
+            Assert.That(Uri.UnescapeDataString(handler.Asked[2].Uri.Query),
+                Does.Contain("limit=10&bbox=-70.8,-34.2,-70.68,-34.12&q=gas station"));
+            Assert.That(handler.Asked, Has.None.Matches<AskedRequest>(asked => asked.Uri.Host.Contains("nominatim", StringComparison.Ordinal)));
+        });
+    }
+
+    // With nearby and no place, the place is this PC's city and country; a place the source does not find is said so
     // (ronda final 11: never «no results», since no site was looked for), and no site is asked.
     [Test]
     public async Task APlacesSearchNearbyIsInThisPcsCityAndAnUnknownPlaceHasNoResults()
@@ -5311,11 +5275,12 @@ public sealed class ExternalAdaptersTests
             """{"success":true,"country":"Chile","region":"Valparaiso","city":"Valparaiso","latitude":-33.0363,"longitude":-71.6297}""",
             "application/json")));
         handler.Routes.Add(("q=Valparaiso, Chile", new(HttpStatusCode.OK,
-            """[{"boundingbox":["-33.10","-33.00","-71.70","-71.55"],"display_name":"Valparaíso, Chile"}]""", "application/json")));
-        handler.Routes.Add(("q=pharmacy", new(HttpStatusCode.OK,
-            """[{"osm_type":"node","osm_id":1,"name":"Farmacia Central","type":"pharmacy","display_name":"Farmacia Central, Valparaíso, Chile"}]""",
+            """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"R","osm_id":2,"name":"Valparaíso","country":"Chile","extent":[-71.70,-33.00,-71.55,-33.10]},"geometry":{"type":"Point","coordinates":[-71.62,-33.05]}}]}""",
             "application/json")));
-        handler.Routes.Add(("q=Nowhere Land", new(HttpStatusCode.OK, "[]", "application/json")));
+        handler.Routes.Add(("osm_tag=:pharmacy", new(HttpStatusCode.OK,
+            """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"N","osm_id":1,"osm_value":"pharmacy","name":"Farmacia Central","city":"Valparaíso","country":"Chile"}}]}""",
+            "application/json")));
+        handler.Routes.Add(("q=Nowhere Land", new(HttpStatusCode.OK, """{"type":"FeatureCollection","features":[]}""", "application/json")));
         using TemporaryDirectory temporary = new();
         using var http = new HttpClient(handler);
         using WebBrowserAdapter adapter = SearchAdapter(temporary, http);
@@ -5341,8 +5306,9 @@ public sealed class ExternalAdaptersTests
         });
     }
 
-    // M63 (v3f-final F-p05-t1, Nominatim's answers of 2026-09-29): the place is Nominatim's first answer, and the car
-    // parks around it are said with their distances from it, nearest first (as published: 150–620 m).
+    // M63 (v3f-final F-p05-t1), with Photon's answers of 2026-11-08 (LIC2): the place is the first answer, and the car
+    // parks around it are said with their distances from its centre, nearest first. Photon keeps only the sites that
+    // have a name (Nominatim listed 10 here, 6 of them without one).
     [Test]
     public void ThePlazaDelPolvoristaIsWhereOpenStreetMapHasIt()
     {
@@ -5352,21 +5318,44 @@ public sealed class ExternalAdaptersTests
             OpenStreetMapPlaceSource.Places(PolvoristaParking, anchor!.Value.Latitude, anchor.Value.Longitude);
         Assert.Multiple(() =>
         {
-            Assert.That(anchor.Value.Name, Does.StartWith("Plaza del Polvorista, Valdelagrana"));
-            Assert.That(anchor.Value.Latitude, Is.EqualTo(36.5948).Within(0.0005));
-            Assert.That(anchor.Value.Longitude, Is.EqualTo(-6.2270).Within(0.0005));
-            Assert.That(parks.Take(5).Select(static place => place.DistanceMeters),
-                Is.EqualTo(new int?[] { 150, 430, 450, 480, 620 }), "the distances published in v3f-final t113");
-            Assert.That(parks[0].Address, Does.StartWith("Avenida de la Bajamar"));
-            Assert.That(OpenStreetMapPlaceSource.AreaOf("[]"), Is.Null);
+            Assert.That(anchor.Value.Name, Does.StartWith("Plaza del Polvorista, Valdelagrana, El Puerto de Santa María"));
+            Assert.That(anchor.Value.Latitude, Is.EqualTo(36.5950).Within(0.0005));
+            Assert.That(anchor.Value.Longitude, Is.EqualTo(-6.2273).Within(0.0005));
+            Assert.That(parks.Select(static place => place.DistanceMeters), Is.EqualTo(new int?[] { 540, 610, 1040, 1300 }));
+            Assert.That(parks[0].Name, Is.EqualTo("Parking Calderón"));
+            Assert.That(parks[0].Address, Does.StartWith("Parking Calderón, Calle Curva, Sudamérica, El Puerto de Santa María"));
+            Assert.That(OpenStreetMapPlaceSource.AreaOf("""{"type":"FeatureCollection","features":[]}"""), Is.Null);
+        });
+    }
+
+    // INT12 (2026-11-08): Photon makes one document per house number of an OSM object that has several («Photon has been
+    // able for a long time to create multiple ES documents from a single Nominatim place. This is used when OSM objects
+    // reference multiple addresses», komoot/photon#884), and Nominatim splits «house number lists into individual
+    // numbers» (nominatim.org, Tokenizers, clean-housenumbers). Measured: a barber shop at «11;13;15;17;19» came back five
+    // times and left no room for the other shops. Each site is said once, at its nearest point.
+    [Test]
+    public void ASiteWithSeveralHouseNumbersIsSaidOnce()
+    {
+        const string body =
+            """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"N","osm_id":7100,"osm_key":"shop","osm_value":"hairdresser","name":"Barbería de Prueba","street":"Calle Uno","housenumber":"13","city":"Ciudad de Prueba","country":"País"},"geometry":{"type":"Point","coordinates":[-71.0010,-33.0000]}},{"type":"Feature","properties":{"osm_type":"N","osm_id":7100,"osm_key":"shop","osm_value":"hairdresser","name":"Barbería de Prueba","street":"Calle Uno","housenumber":"11","city":"Ciudad de Prueba","country":"País"},"geometry":{"type":"Point","coordinates":[-71.0010,-33.0000]}},{"type":"Feature","properties":{"osm_type":"W","osm_id":7200,"osm_key":"shop","osm_value":"hairdresser","name":"Peluquería Otra","street":"Calle Dos","city":"Ciudad de Prueba","country":"País"},"geometry":{"type":"Point","coordinates":[-71.0050,-33.0000]}},{"type":"Feature","properties":{"osm_type":"N","osm_id":7100,"osm_key":"shop","osm_value":"hairdresser","name":"Barbería de Prueba","street":"Calle Uno","housenumber":"15","city":"Ciudad de Prueba","country":"País"},"geometry":{"type":"Point","coordinates":[-71.0010,-33.0000]}}]}""";
+
+        List<OpenStreetMapPlaceSource.Place> places = OpenStreetMapPlaceSource.Places(body, -33.0000, -71.0000);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(places.Select(static place => place.Url), Is.EqualTo(new[]
+            {
+                "https://www.openstreetmap.org/node/7100", "https://www.openstreetmap.org/way/7200",
+            }));
+            Assert.That(places[0].Address, Does.StartWith("Barbería de Prueba, Calle Uno 13"));
         });
     }
 
     private const string PolvoristaCandidates =
-        """[{"osm_type":"way","osm_id":29451698,"lat":"36.5948388","lon":"-6.2270183","category":"highway","type":"tertiary","name":"Plaza del Polvorista","display_name":"Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España","boundingbox":["36.5945842","36.5950933","-6.2272746","-6.2267619"],"address":{"country_code":"es"}},{"osm_type":"way","osm_id":29451697,"lat":"36.5950470","lon":"-6.2273243","category":"leisure","type":"park","name":"Plaza del Polvorista","display_name":"Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, España","boundingbox":["36.5947017","36.5953921","-6.2277549","-6.2268937"],"address":{"country_code":"es"}},{"osm_type":"node","osm_id":13398649899,"lat":"36.5947788","lon":"-6.2271996","category":"highway","type":"bus_stop","name":"Plaza del Polvorista","display_name":"Plaza del Polvorista, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España","boundingbox":["36.5947288","36.5948288","-6.2272496","-6.2271496"],"address":{"country_code":"es"}}]""";
+        """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"W","osm_id":29451697,"osm_key":"leisure","osm_value":"park","type":"other","name":"Plaza del Polvorista","district":"Valdelagrana","city":"El Puerto de Santa María","county":"Bahía de Cádiz","state":"Andalucía","country":"España","countrycode":"ES","extent":[-6.2277549,36.5953921,-6.2268937,36.5947017]},"geometry":{"type":"Point","coordinates":[-6.2273243,36.595047]}}]}""";
 
     private const string PolvoristaParking =
-        """[{"osm_type":"way","osm_id":952407268,"lat":"36.5931010","lon":"-6.2204714","type":"parking","name":"","display_name":"Calle Río Majaceite, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":237016676,"lat":"36.5952887","lon":"-6.2254513","type":"parking","name":"","display_name":"Avenida de la Bajamar, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":952407272,"lat":"36.5930603","lon":"-6.2224781","type":"parking","name":"","display_name":"Avenida de Valdelagrana, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":1106171484,"lat":"36.5948204","lon":"-6.2221896","type":"parking","name":"","display_name":"Avenida de Europa, Las Viñas, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":1423300837,"lat":"36.6041595","lon":"-6.2182015","type":"parking","name":"Vehículos Autorizados","display_name":"Vehículos Autorizados, Avenida del Monasterio, El Tejar, Sudamérica, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":1423300839,"lat":"36.6045170","lon":"-6.2175435","type":"parking","name":"","display_name":"Avenida del Monasterio, El Tejar, Sudamérica, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":302015013,"lat":"36.6035873","lon":"-6.2174271","type":"parking","name":"","display_name":"Calle Francisco Cossi Ochoa, El Tejar, Sudamérica, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":301734888,"lat":"36.5917584","lon":"-6.2365322","type":"parking","name":"","display_name":"Calle Tórtola, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":301734891,"lat":"36.5914572","lon":"-6.2304048","type":"parking","name":"","display_name":"Calle Brújula, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"},{"osm_type":"way","osm_id":301734896,"lat":"36.5912467","lon":"-6.2365437","type":"parking","name":"","display_name":"Calle Pescadores, Valdelagrana, El Puerto de Santa María, Bahía de Cádiz, Cádiz, Andalucía, 11500, España"}]""";
+        """{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"osm_type":"W","osm_id":237016675,"osm_key":"amenity","osm_value":"parking","type":"house","name":"Parking Calderón","street":"Calle Curva","district":"Sudamérica","city":"El Puerto de Santa María","county":"Bahía de Cádiz","state":"Andalucía","country":"España","postcode":"11500","countrycode":"ES","extent":[-6.2240088,36.5992081,-6.2225388,36.5975102]},"geometry":{"type":"Point","coordinates":[-6.2231281,36.5985212]}},{"type":"Feature","properties":{"osm_type":"N","osm_id":1703329617,"osm_key":"amenity","osm_value":"parking","type":"house","name":"Centro","street":"Calle Descalzos","district":"Sudamérica","city":"El Puerto de Santa María","county":"Bahía de Cádiz","state":"Andalucía","country":"España","postcode":"11500","countrycode":"ES"},"geometry":{"type":"Point","coordinates":[-6.2250539,36.6002543]}},{"type":"Feature","properties":{"osm_type":"W","osm_id":429688699,"osm_key":"amenity","osm_value":"parking","type":"house","name":"Glorieta de San Francisco de Sales","street":"Calle Atalaya","district":"Sudamérica","city":"El Puerto de Santa María","county":"Bahía de Cádiz","state":"Andalucía","country":"España","postcode":"11500","countrycode":"ES","extent":[-6.2392854,36.5964225,-6.2385214,36.5961038]},"geometry":{"type":"Point","coordinates":[-6.2388839,36.5962767]}},{"type":"Feature","properties":{"osm_type":"W","osm_id":1423300837,"osm_key":"amenity","osm_value":"parking","type":"house","name":"Vehículos Autorizados","street":"Avenida del Monasterio","locality":"El Tejar","district":"Sudamérica","city":"El Puerto de Santa María","county":"Bahía de Cádiz","state":"Andalucía","country":"España","postcode":"11500","countrycode":"ES","extent":[-6.2184758,36.6043648,-6.2178253,36.6039593]},"geometry":{"type":"Point","coordinates":[-6.2182015,36.6041595]}}]}""";
 
     // The video played is the first one YouTube's results page lists, whatever its title says.
     [Test]
@@ -5421,9 +5410,70 @@ public sealed class ExternalAdaptersTests
             Assert.That(read.Result?.GetProperty("title").GetString(), Is.EqualTo("Solo menú"));
             Assert.That(read.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://tienda.example.com/juego"));
             Assert.That(read.Result?.GetProperty("skippedSectionCharacters").GetInt32(), Is.EqualTo(skipped));
-            Assert.That(read.Result?.GetProperty("next").GetString(),
-                Does.Contain("browser_navigate").And.Contain("https://tienda.example.com/juego")
-                    .And.Contain("browser_page_read"));
+            // SRCH1 (owner, 2026-11-07 17:35): no window opens to read it (the next opened it in the person's browser:
+            // 4 of 4 such readings in SRCH1's held-out ended with browser.navigate, a window in front of them).
+            Assert.That(read.Result?.TryGetProperty("next", out _), Is.False);
+            Assert.That(read.Result?.GetRawText(), Does.Not.Contain("browser_"));
+        });
+    }
+
+    // SRCH1: a page whose text is drawn by its scripts is read where nobody sees it, in the hidden browser BAXY embeds,
+    // after its scripts drew it; what it shows then is the page's text, said as read that way.
+    [Test]
+    public async Task APageDrawnByItsScriptsIsReadInTheHiddenBrowser()
+    {
+        const string shell = "<html><head><title>Resultados</title><script>app()</script></head><body><div id=\"root\"></div></body></html>";
+        const string drawn = "<html><head><title>Resultados</title></head><body><main><article>"
+            + "<p>Ganó el Gran Premio la piloto de prueba Ana Ejemplo, con el auto número 7.</p></article></main></body></html>";
+        var pages = new ScriptedHiddenPages
+        {
+            Answer = address => new(HiddenPageOutcome.Loaded, 200, drawn) { Final = address },
+        };
+        using TemporaryDirectory temporary = new();
+        var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(new RoutingHttpHandler(shell, "{}"));
+        using var adapter = new WebBrowserAdapter(browser, http, hiddenPages: pages);
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://carreras.example.com/resultados"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.True, read.ErrorCode);
+            Assert.That(read.Result?.GetProperty("text").GetString(), Does.Contain("Ana Ejemplo"));
+            Assert.That(read.Result?.GetProperty("finalUrl").GetString(), Is.EqualTo("https://carreras.example.com/resultados"));
+            Assert.That(read.Result?.GetProperty("authority").GetString(), Is.EqualTo("hidden_webview2_rendered_text"));
+            Assert.That(pages.Asked.Select(static asked => asked.AbsoluteUri),
+                Is.EqualTo(new[] { "https://carreras.example.com/resultados" }));
+            Assert.That(browser.Navigations, Is.Zero);
+        });
+    }
+
+    // A page the hidden browser ended on that is no public address (a redirect into this network) is not read, and one
+    // that is still empty when drawn is no reading either; neither opens anything.
+    [TestCase("http://192.168.1.1/admin", "<html><body><p>Router admin: contraseña del wifi</p></body></html>")]
+    [TestCase("https://carreras.example.com/resultados", "<html><body><div id=\"root\"></div></body></html>")]
+    public async Task APageTheHiddenBrowserCannotReadAsPublicTextIsNoReading(string final, string drawn)
+    {
+        const string shell = "<html><head><title>Resultados</title><script>app()</script></head><body><div id=\"root\"></div></body></html>";
+        var pages = new ScriptedHiddenPages
+        {
+            Answer = _ => new(HiddenPageOutcome.Loaded, 200, drawn) { Final = new Uri(final) },
+        };
+        using TemporaryDirectory temporary = new();
+        var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(new RoutingHttpHandler(shell, "{}"));
+        using var adapter = new WebBrowserAdapter(browser, http, hiddenPages: pages);
+
+        ExternalCapabilityReceipt read = await adapter.InvokeAsync(
+            "web.fetch", Json("""{"url":"https://carreras.example.com/resultados"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read.Verified, Is.False);
+            Assert.That(read.ErrorCode, Is.EqualTo("web_fetch_no_text"));
+            Assert.That(read.Result?.GetRawText(), Does.Not.Contain("contraseña").And.Not.Contain("browser_"));
+            Assert.That(browser.Navigations, Is.Zero);
         });
     }
 
@@ -5790,24 +5840,6 @@ public sealed class ExternalAdaptersTests
         return new(HttpStatusCode.OK, body.Append("]}}").ToString(), "application/json");
     }
 
-    // The general engine's lite page: each result a «result-link» anchor followed by
-    // its snippet cell.
-    private static string SearchResultsPage(params (string Title, string Url, string Snippet)[] results)
-    {
-        var page = new StringBuilder("<html><body><!-- Web results are present --><table>");
-        foreach ((string title, string url, string snippet) in results)
-        {
-            page.Append("<tr><td><a rel=\"nofollow\" href=\"")
-                .Append(url)
-                .Append("\" class='result-link'>")
-                .Append(title)
-                .Append("</a></td></tr><tr><td class='result-snippet'>")
-                .Append(snippet.Replace("WhatsApp", "<b>WhatsApp</b>"))
-                .Append("</td></tr>");
-        }
-        return page.Append("</table></body></html>").ToString();
-    }
-
     // M98: a body of raw bytes (a page in another charset) and a redirect's Location.
     private sealed record HttpAnswer(
         HttpStatusCode Status, string Body, string ContentType, byte[]? Raw = null, string? Location = null);
@@ -5815,6 +5847,14 @@ public sealed class ExternalAdaptersTests
     private sealed record AskedRequest(Uri Uri, string UserAgent, string[] Headers, string? Body);
 
     // Answers each host with its own reply; a host it does not know is unreachable.
+    // The engine's way to an adapter: its calls, as they come.
+    private sealed class AdapterProvider(WebBrowserAdapter adapter) : IExternalCapabilityProvider
+    {
+        public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+            string operation, JsonElement arguments, CancellationToken cancellationToken) =>
+            adapter.InvokeAsync(operation, arguments, cancellationToken);
+    }
+
     private sealed class SearchSourcesHttpHandler : HttpMessageHandler
     {
         private readonly Dictionary<string, HttpAnswer> _answers = new(StringComparer.OrdinalIgnoreCase);
@@ -7289,10 +7329,13 @@ public sealed class ExternalAdaptersTests
     private sealed class StubBrowserSession(string profile, CdpNavigationResult result)
         : CdpBrowserSession(profile)
     {
+        internal int Navigations { get; private set; }
+
         internal override ValueTask<CdpNavigationResult> NavigateAsync(
             Uri target, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            Navigations++;
             return ValueTask.FromResult(result);
         }
     }

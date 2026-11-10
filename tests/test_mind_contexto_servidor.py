@@ -100,6 +100,31 @@ def test_a_cut_on_vulkan_leaves_what_its_slower_cache_reads_in_time(tmp_path: pa
     assert llm_server.LlmServer("m.gguf", "llama-server.exe", backend="vulkan").reread_tokens == REREAD_TOKENS
 
 
+def test_catalog_ready_tells_the_app_the_backend_and_the_prefix_it_read() -> None:
+    # Settings → Model → Context (LocalContext in the App): each preset's memory depends on the backend, and its room for
+    # the conversation on the prefix the mind really read (fewer tools, a smaller one).
+    from types import SimpleNamespace
+
+    from baxy_mind import __main__ as sidecar
+
+    server = SimpleNamespace(ceiling_s=126.0, backend="vulkan", prefix_left=12.5, on_processor=False)
+    assert sidecar.ready_facts(server, 49086) == {"ceiling_s": 126.0, "onProcessor": False, "backend": "vulkan",
+                                                  "prefixTokens": 49086}
+
+
+def test_the_apps_automatic_context_and_turn_room_are_the_minds() -> None:
+    # The App shows «Automático» with the cells default_context gives each backend with the product's cache, and keeps
+    # the presets below prefix + TURN_ROOM_TOKENS off (LocalContext.cs holds the same numbers).
+    from baxy_mind import llm_server
+    from baxy_mind.mind import TURN_ROOM_TOKENS
+
+    app = (pathlib.Path(__file__).resolve().parents[1] / "src" / "Baxy.App" / "LocalContext.cs").read_text(encoding="utf-8")
+    assert f"internal const int CudaAutomatic = {llm_server.default_context('cuda', ('q8_0', 'q8_0'), True)};" in app
+    assert f"internal const int VulkanAutomatic = {llm_server.default_context('vulkan', ('q8_0', 'q8_0'))};" in app
+    assert f"internal const int ProcessorAutomatic = {llm_server.default_context('cpu', ('q8_0', 'q8_0'))};" in app
+    assert f"internal const int TurnRoomTokens = {TURN_ROOM_TOKENS};" in app
+
+
 def test_the_mind_takes_its_backends_context_unless_baxy_renew_ctx_says_another(tmp_path: pathlib.Path, monkeypatch) -> None:
     from baxy_mind import __main__ as sidecar
 

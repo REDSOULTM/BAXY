@@ -52,6 +52,15 @@ internal static class FieldStepProjection
                 $"operation-labels.v1.json lacks a title or theme in a language (untitled: {string.Join(", ", untitled)}).");
         }
 
+        // Perfiles de herramientas: every operation says the first profile that has it, so a new one is never left out
+        // of every profile but Completo by omission.
+        string[] unleveled = [.. operations.Where(static p => LevelOf(p.Value) is null).Select(static p => p.Key)];
+        if (unleveled.Length > 0)
+        {
+            throw new InvalidDataException(
+                $"operation-labels.v1.json lacks a tool profile level 0-{ToolProfile.Highest} (p): {string.Join(", ", unleveled)}.");
+        }
+
         return (groups, groupsEn, operations);
     });
 
@@ -71,7 +80,8 @@ internal static class FieldStepProjection
     {
         "status", "verified", "version", "authority", "next", "effectStarted", "error", "operation", "argumentsGiven",
         "arguments", "argumentProblems", "detail", "waiting", "effectUncertain", "replayed", "saidFolder",
-        OperationVisibleFacts.VerificationKey,
+        // ARR1: how the engine fitted a long result in its message (a search's ten results: «observedLimit: projected»).
+        OperationVisibleFacts.VerificationKey, OperationVisibleFacts.ObservedLimitKey,
     };
 
     // How a completed call was verified (OperationVisibleFacts' table), as the chip's status and its first words.
@@ -96,6 +106,7 @@ internal static class FieldStepProjection
         ["web_disabled_by_owner"] = ("No se ejecutó: la búsqueda web está apagada en Ajustes", "Not run: web search is off in Settings"),
         ["weather_disabled_by_owner"] = ("No se ejecutó: el clima está apagado en Ajustes", "Not run: weather is off in Settings"),
         ["screen_disabled_by_owner"] = ("No se ejecutó: mirar la pantalla está apagado en Ajustes", "Not run: looking at the screen is off in Settings"),
+        ["tool_off_in_profile"] = ("No se ejecutó: esa herramienta está apagada en tu perfil", "Not run: that tool is off in your profile"),
         ["outbox_unavailable"] = ("No se ejecutó: BAXY no estaba listo", "Not run: BAXY was not ready"),
         ["memory_protection_unavailable"] = ("No se ejecutó: la memoria privada no estaba lista", "Not run: private memory was not ready"),
         ["memory_value_needs_sensitive_channel"] = ("No se guardó: parece un dato secreto", "Not saved: it looks like a secret"),
@@ -110,6 +121,31 @@ internal static class FieldStepProjection
     private static string Title(string operation, bool english) =>
         (string?)Labels.Value.Operations[operation]?[english ? "en" : "t"] ?? operation;
 
+    /// <summary>Settings → Tools: the themes a profile still offers as what BAXY can do (mind.py CAN_DO_AREAS): those
+    /// that keep at least half of their tools, BAXY's own (level 0) not counted. VIVO1 F8, 2.ª vuelta (09-11): Esencial
+    /// told «Memoria» for the conversations alone and «Alarmas, notas y tareas» for the clock alone, and the 4B promised
+    /// to remember and to set alarms.</summary>
+    internal static IReadOnlySet<string> ShownThemes(IReadOnlySet<string> withheld)
+    {
+        ArgumentNullException.ThrowIfNull(withheld);
+        return ProductCatalog.ToolDescriptors.Select(static d => d.Name)
+            .Where(static name => ProfileLevel(name) > 0)
+            .GroupBy(static name => Group(name))
+            .Where(g => 2 * g.Count(name => !withheld.Contains(name)) >= g.Count() && g.Any(name => !withheld.Contains(name)))
+            .Select(static g => g.Key)
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    /// <summary>Settings → Tools: whether a tool off in a profile is shown to the model as a stub (operation-labels
+    /// «ficha», true unless it says false). VIVO1 F8, 2.ª vuelta (09-11, foco 16 casos × 3 semillas, juez ciego): with the
+    /// memory tools' stubs the 4B claimed to have saved or to remember (13 high falsehoods; 6 without them, as the base).</summary>
+    internal static bool HasStub(string operation) =>
+        Labels.Value.Operations[operation]?["ficha"] is not JsonValue value || !value.TryGetValue(out bool stub) || stub;
+
+    /// <summary>The operation's English title, whatever the interface's language: a withheld tool's stub for the model
+    /// reads it, as the tools' descriptions are in English (MindSidecarClient.CreateCatalogConfigureRequest).</summary>
+    internal static string EnglishTitle(string operation) => Title(operation, english: true);
+
     internal static string Family(string operation) =>
         (string?)Labels.Value.Operations[operation]?["f"] ?? "apps";
 
@@ -120,6 +156,15 @@ internal static class FieldStepProjection
     private static string Group(string operation, bool english) =>
         (string?)(english ? Labels.Value.GroupsEn : Labels.Value.Groups)[(string?)Labels.Value.Operations[operation]?["g"] ?? string.Empty]
         ?? (english ? "Other" : "Otras");
+
+    /// <summary>The first tool profile that has this operation (ToolProfile): 0 always, up to <see cref="ToolProfile.Highest"/>,
+    /// only in Completo; an operation of no catalog, the highest.</summary>
+    internal static int ProfileLevel(string operation) =>
+        LevelOf(Labels.Value.Operations[operation]) ?? ToolProfile.Highest;
+
+    private static int? LevelOf(JsonNode? entry) =>
+        entry?["p"] is JsonValue value && value.TryGetValue(out int level) && level >= 0 && level <= ToolProfile.Highest
+            ? level : null;
 
     /// <summary>Checks the labels against the catalog now, so a mismatch stops the start instead of a turn.</summary>
     internal static void Validate() => _ = Labels.Value;
@@ -143,7 +188,7 @@ internal static class FieldStepProjection
 
     internal static string Label(string operation, JsonObject arguments, bool english)
     {
-        string target = Target(arguments);
+        string target = OwnBrakes.Shown(operation, arguments, english) ?? Target(arguments);
         return target.Length == 0 ? Title(operation, english) : Title(operation, english) + " · " + target;
     }
 
@@ -230,6 +275,14 @@ internal static class FieldStepProjection
             view["net"] = net;
         }
 
+        // COR1 (VIVO3 A3: the setting changed inside «Qué hice · 3 pasos», folded): a change of one of BAXY's own
+        // settings that was read back, or that may have happened (a write that failed past its start), is shown with the
+        // steps open (Chat.tsx's HowChecked), not only behind their fold.
+        if (step.Operation == OwnBrakes.Operation && (string?)view["status"] is "ok" or "maybe")
+        {
+            view["pin"] = true;
+        }
+
         return view;
     }
 
@@ -248,7 +301,8 @@ internal static class FieldStepProjection
         // held call says why it was held, and only an unheld one its risk.
         ["risk"] = cause is not null ? CauseLabel(cause, english) : RiskLabel(operation, risk, arguments, english),
         ["title"] = Title(operation, english),
-        ["target"] = Target(arguments),
+        // COR1: a change of one of BAXY's own settings says which one and to what («Búsqueda web: activar»).
+        ["target"] = OwnBrakes.Shown(operation, arguments, english) ?? Target(arguments),
         ["context"] = context,
         ["expires"] = expiresUtc.ToUnixTimeMilliseconds(),
         ["effectStarted"] = effectStarted,
@@ -311,6 +365,7 @@ internal static class FieldStepProjection
                 ["name"] = descriptor.Name,
                 ["title"] = Title(descriptor.Name, english),
                 ["confirm"] = ConfirmationOf(descriptor),
+                ["level"] = ProfileLevel(descriptor.Name),
             });
         }
 
@@ -332,8 +387,8 @@ internal static class FieldStepProjection
     }
 
     // RiskPolicy in normal mode, without arguments: always asks, or asks only with some arguments (a click on «Enviar»,
-    // Ctrl+W, a console command that changes something, closing every tab, a click under the pointer (K-1), a
-    // replacement under a version only a refusal told: ToldVersions), or never.
+    // Ctrl+W, a console command that changes something, closing every tab, a click under the pointer (K-1), shutting the
+    // PC down, a replacement under a version only a refusal told: ToldVersions), or never.
     private static string ConfirmationOf(ProductOperationDescriptor descriptor)
     {
         if (RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, descriptor.Name)
@@ -343,7 +398,7 @@ internal static class FieldStepProjection
         }
 
         return descriptor.Name is "shell.command.run" or "input.visible.click" or "input.key.press" or "browser.control"
-                or "input.pointer.control"
+                or "input.pointer.control" or "system.power"
             || ToldVersions.ExpectsAVersion(descriptor.Name)
             ? "sometimes"
             : "never";
@@ -384,6 +439,7 @@ internal static class FieldStepProjection
     {
         "host_not_from_session" => UiLanguage.Say(english, "va a un sitio que nadie dio", "goes to a site no one mentioned"),
         "game_title_not_said" => UiLanguage.Say(english, "un juego que no nombraste", "a game you did not name"),
+        OwnBrakes.Cause => UiLanguage.Say(english, "cambia un ajuste que no pediste", "changes a setting you did not ask for"),
         PendingOperationConfirmation.SystemChangeCause => UiLanguage.Say(english, "cambia un ajuste del sistema", "changes a system setting"),
         _ => null,
     };
@@ -401,9 +457,17 @@ internal static class FieldStepProjection
         }
 
         var shown = new List<string>(4);
+        // LIC2 (2026-11-08): the source that answered («answeredBy») is credited first: DuckDuckGo («Please give us
+        // attribution where it makes sense»), OpenStreetMap («credit OpenStreetMap») and Wikipedia (CC BY-SA) ask it of
+        // whoever shows their results. ARR1 (DEP5, the App on the owner's PC: 0 of 2 searches credited): a provider's
+        // result reaches the step inside «observed» (OperationVisibleFacts.FromOutcome), so the credit is read there too.
+        if ((AnsweredBy(facts) ?? AnsweredBy(facts["observed"] as JsonObject)) is { } answeredBy)
+        {
+            shown.Add(UiLanguage.Say(english, "Fuente: ", "Source: ") + Clip(answeredBy, MaximumFactCharacters));
+        }
         foreach ((string key, JsonNode? value) in facts)
         {
-            if (shown.Count == 4 || PlumbingFacts.Contains(key) || value is not JsonValue scalar)
+            if (shown.Count == 4 || PlumbingFacts.Contains(key) || key == "answeredBy" || value is not JsonValue scalar)
             {
                 continue;
             }
@@ -420,6 +484,10 @@ internal static class FieldStepProjection
 
         return string.Join(" · ", shown);
     }
+
+    private static string? AnsweredBy(JsonObject? facts) =>
+        facts?["answeredBy"] is JsonValue source && source.TryGetValue(out string? answeredBy)
+            && !string.IsNullOrWhiteSpace(answeredBy) ? answeredBy.Trim() : null;
 
     private static bool Named(JsonNode? title) =>
         title is JsonValue value && value.TryGetValue(out string? text) && !string.IsNullOrWhiteSpace(text);

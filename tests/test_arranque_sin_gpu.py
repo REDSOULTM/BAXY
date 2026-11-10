@@ -102,10 +102,14 @@ def test_what_is_left_grows_with_the_curve_as_the_read_says_it():
     told: list[int | None] = []
     watch = llm_server._Advance(LlmServer.PREFIX_STALL_S, LlmServer.PREFIX_CEILING_S,
                                 lambda _done, _total: told.append(watch.seconds_left))
-    watch(_chunk(2048, CPU[0], total=PREFIX))
-    watch(_chunk(4096, CPU[0] + CPU[1], total=PREFIX))
-    # By the mean, the second batch says 16 min; by the curve, past that.
-    assert told[1] > (PREFIX - 4096) / (4096 / (CPU[0] + CPU[1])) * 1.3
+    # A read that fits the ceiling and slows down as it goes: 20, 24 and 28 s its first batches of 2,048 tokens. What is
+    # left is told from the third (VUL1, PREFIX_TOLD_STRETCHES: the CPU's own curve is called too slow at that batch).
+    slowing = [20.0, 24.0, 28.0]
+    for step in range(1, 4):
+        watch(_chunk(2048 * step, sum(slowing[:step]), total=PREFIX))
+    assert told[:2] == [None, None]
+    # By the mean, the third batch says under 8 min; by the curve, past that.
+    assert told[2] > (PREFIX - 6144) / (6144 / sum(slowing)) * 1.3
 
 
 def test_one_slow_first_batch_does_not_decide():
@@ -136,9 +140,11 @@ def test_what_is_left_of_a_read_is_told_while_it_reads():
     watch = llm_server._Advance(LlmServer.PREFIX_STALL_S, LlmServer.PREFIX_CEILING_S,
                                 lambda _done, _total: told.append(watch.seconds_left))
     watch(_chunk(0, 0.0))
-    watch(_chunk(4096, 100.0))
-    assert told[0] is None
-    assert told[1] == pytest.approx((TOTAL - 4096) / 41, rel=0.02)
+    for step in range(1, 4):
+        watch(_chunk(4096 * step, 100.0 * step))
+    # VUL1: nothing is promised from one stretch or two (PREFIX_TOLD_STRETCHES, tests/test_plazo_arranque.py).
+    assert told[:3] == [None, None, None]
+    assert told[3] == pytest.approx((TOTAL - 4096 * 3) / 41, rel=0.02)
 
 
 def test_a_stall_at_a_pace_that_does_not_fit_is_the_slow_read():
@@ -207,14 +213,15 @@ def test_the_read_tells_the_processor_and_what_is_left_through_the_warm_up(monke
 
     def stream(_body, _timeout, _on_text, watch):
         assert listed.wait(5)
-        watch(_chunk(4096, 100.0))
+        for step in range(1, 4):
+            watch(_chunk(4096 * step, 100.0 * step))
         return {}
 
     server._ready.set()
     server._stream = stream
     server._read_device = read_device
     server.read_prefix({}, lambda _done, _total: told.append(server.prefix_left))
-    assert told[0] == pytest.approx((TOTAL - 4096) / 41, rel=0.02)
+    assert told[-1] == pytest.approx((TOTAL - 4096 * 3) / 41, rel=0.02)
     assert server.on_processor is True
 
 

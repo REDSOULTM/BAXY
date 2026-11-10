@@ -4,8 +4,6 @@ using System.Text.RegularExpressions;
 
 namespace Baxy.Installer;
 
-internal sealed record ReleasePart(string File, long Bytes, string Sha256);
-
 /// <summary>
 /// A zip cut into release assets (GitHub takes less than 2 GiB per file). With <see cref="GpuVendor"/> (a PCI vendor id, as
 /// <see cref="MachineGpu"/> reads it) it goes only to a machine with that maker's GPU, and adds its

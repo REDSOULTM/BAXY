@@ -1,5 +1,6 @@
 import { useEffect, useReducer } from 'react';
 import { lipPush } from './lip';
+import { heldReading } from './reading';
 import type {
   AgentStatus, BootPieces, ChatItem, Fam, HostState, NetEntry, ServerEvent, Step, StepStatus, Surfaces, VoiceStatus,
 } from './types';
@@ -51,6 +52,8 @@ export interface BaxyStore {
   voiceErrorAt: number | null;
   /** when something heard was dropped because a turn ran (voice_dropped_busy), for a notice instead of silence. */
   voiceDroppedAt: number | null;
+  /** a newer BAXY the host found, for the discreet notice in the header (null: none, or not checked). */
+  update: { latest: string; installed: string } | null;
 }
 
 export const INITIAL: BaxyStore = {
@@ -73,6 +76,7 @@ export const INITIAL: BaxyStore = {
   mood: null,
   voiceErrorAt: null,
   voiceDroppedAt: null,
+  update: null,
 };
 
 const MAX_ITEMS = 150;
@@ -90,9 +94,19 @@ function netOf(items: ChatItem[]): NetEntry[] {
   return items.flatMap((it) => (it.who === 'baxy' ? it.steps.filter((st) => st.net).map((st) => ({ what: st.net!, ts: it.ts })) : []));
 }
 
+/** the last MAX_ITEMS; V-03 (VIS2 blind review): a turn by API dropped from the start leaves its mark on the first kept
+ *  («apiBefore», as FieldTranscript does with the host's longer list), so the conversation is still said to have gone out */
+function lastOf(items: ChatItem[]): ChatItem[] {
+  if (items.length <= MAX_ITEMS) return items;
+  const kept = items.slice(-MAX_ITEMS);
+  const wentOut = items.slice(0, items.length - MAX_ITEMS).some((x) => x.apiBefore || ((x.who === 'you' || x.who === 'baxy') && x.api));
+  if (wentOut) kept[0] = { ...kept[0], apiBefore: true };
+  return kept;
+}
+
 function upsert(items: ChatItem[], item: ChatItem): ChatItem[] {
   const i = items.findIndex((x) => x.id === item.id);
-  if (i < 0) return [...items, item].slice(-MAX_ITEMS);
+  if (i < 0) return lastOf([...items, item]);
   const next = items.slice();
   next[i] = item;
   return next;
@@ -108,10 +122,10 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
       return { ...s, hostState: ev.value, hostQuiet: ev.quiet ?? (ev.value === 'speaking' ? 'idle' : ev.value), live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null,
         sub: ev.value === 'listening' ? null : s.sub };
     case 'agent':
-      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, waitingForMind: !!ev.waitingForMind, failureCause: ev.failureCause ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, powered: ev.powered !== false } };
+      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, waitingForMind: !!ev.waitingForMind, failureCause: ev.failureCause ?? null, failureWhy: ev.failureWhy ?? null, failureKind: ev.failureKind ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, powered: ev.powered !== false } };
     case 'transcript':
       // a session opened or started: its internet log is its own calls' (Ajustes → Privacidad says «de esta sesión»)
-      return { ...s, items: ev.items.slice(-MAX_ITEMS), sub: null, mood: null, journey: null, netLog: netOf(ev.items) };
+      return { ...s, items: lastOf(ev.items), sub: null, mood: null, journey: null, netLog: netOf(ev.items) };
     case 'item': {
       const before = s.items.find((x) => x.id === ev.item.id);
       const items = upsert(s.items, ev.item);
@@ -143,7 +157,10 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
       const failed = ev.last_error === 'voice_error' && s.voice.last_error !== 'voice_error';
       return {
         ...s,
-        voice: { available: ev.available, mode: ev.mode, speaking: ev.speaking, last_error: ev.last_error ?? null, waiting_memory: ev.waiting_memory ?? null },
+        voice: {
+          available: ev.available, mode: ev.mode, speaking: ev.speaking, last_error: ev.last_error ?? null, waiting_memory: ev.waiting_memory ?? null,
+          no_recognizer: ev.no_recognizer === true, no_wake: ev.no_wake === true, wake_problem: ev.wake_problem ?? null,
+        },
         voiceErrorAt: failed ? Date.now() : s.voiceErrorAt,
         voiceDroppedAt: ev.last_error === 'voice_dropped_busy' && s.voice.last_error !== 'voice_dropped_busy'
           ? Date.now() : s.voiceDroppedAt,
@@ -156,13 +173,15 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
     case 'voice_wake':
       return { ...s, live: '' };
     case 'boot':
-      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null, lastFailure: ev.lastFailure ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, reading: ev.reading ?? null, onProcessor: !!ev.onProcessor } };
+      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null, lastFailure: ev.lastFailure ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, reading: heldReading(ev.reading ?? null, s.boot?.reading ?? null), onProcessor: !!ev.onProcessor, tunedProblem: ev.tunedProblem ?? null } };
     case 'surfaces':
-      return { ...s, surfaces: { sessions: ev.sessions, memory: ev.memory, memory_revision: ev.memory_revision, tools: ev.tools, triggers: ev.triggers } };
+      return { ...s, surfaces: { sessions: ev.sessions, sessions_revision: ev.sessions_revision, memory: ev.memory, memory_revision: ev.memory_revision, tools: ev.tools, triggers: ev.triggers } };
     case 'session':
       return { ...s, session: { id: ev.id, label: ev.label } };
     case 'context':
       return { ...s, activity: ev.activity };
+    case 'update':
+      return { ...s, update: { latest: ev.latest, installed: ev.installed } };
     default:
       return s;
   }

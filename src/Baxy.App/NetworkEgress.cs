@@ -13,21 +13,22 @@ namespace Baxy.App;
 /// <summary>
 /// BAXY Renew al máximo 11.5 (identity: «puede entrar información, no puede salir contenido del usuario»; lethal
 /// trifecta, OWASP LLM01, CaMeL): in a turn the person opened, a call waits for their «sí» only for what is really
-/// dangerous. Two cases. A page address to a host that came neither from this session's results (their address fields:
-/// a search result, a page fetched or read, a tab) nor from the person's words (the site's name, «youtube» for
-/// www.youtube.com), <c>host_not_from_session</c>, when the address carries something (a path past «/», a query, a
-/// fragment, a name before «@»), is an IP literal or names a port other than its scheme's: the way out for what a page
+/// dangerous. Two cases. An address (a page's, or the host a ping names) to a host that came neither from this
+/// session's results (their address fields: a search result, a page fetched or read, a tab) nor from the person's
+/// words (the site's name, «youtube» for www.youtube.com), <c>host_not_from_session</c>: the way out for what a page
 /// told the model to send. And a game the person did not name, <c>game_title_not_said</c>. A search followed by the
 /// fetch of one of its results never waits. An IP in the person's own network (loopback, private, link-local) goes; one
 /// at any other IP waits unless the person wrote it or a result gave it (auditoría de la App, 2026-10-23: a fetch of
 /// «http://203.0.113.9/?d=…» left the PC unasked). Owner's decision, 2026-10-25: only what is destructive or really
 /// dangerous asks, BAXY must not bother the person all the time; so searching or looking something up on the web never
-/// waits, whatever of the person's text or data it carries, a bare site by its name («https://ejemplo.com»,
-/// «ejemplo.com/») goes since it carries nothing past its host, and a ping sends no page. Which calls go out is the
-/// catalog's typed fact (al máximo 5.1: the network effect, with the call's exact arguments), and the address is the
-/// call's <c>url</c>. A heartbeat holds every such call already (NativeTurnLoop.BeatProposes). Before any of that, a
-/// search or a message with an argument that is the person's to say and that they did not goes back to the model
-/// (<see cref="Unsaid"/>).
+/// waits, whatever of the person's text or data it carries, and a site said by its name opens. Revisión de privacidad
+/// 2026-11-09 (PRIV-01): a bare site nobody gave went too («it carries nothing past its host») and a ping was not
+/// weighed; the host's own name carries (63 octets a label, 255 a name, RFC 1035 §2.3.4), so a host nobody gave waits
+/// whatever its address carries, and every label of it is one somebody gave. Which calls go out is the catalog's typed
+/// fact (al máximo 5.1: the network effect, with the call's exact arguments), and the address is the call's
+/// <c>url</c>, or a ping's <c>host</c>. A heartbeat holds every such call already (NativeTurnLoop.BeatProposes).
+/// Before any of that, a search or a message with an argument that is the person's to say and that they did not goes
+/// back to the model (<see cref="Unsaid"/>).
 /// </summary>
 internal sealed class NetworkEgress
 {
@@ -43,8 +44,27 @@ internal sealed class NetworkEgress
 
     private readonly HashSet<string> _hosts = new(StringComparer.Ordinal);
     private readonly HashSet<string> _words = new(StringComparer.Ordinal);
+
+    // The words of each thing the person said in this session, in the order they said them (SaidRunTogether).
+    private readonly List<string[]> _said = [];
     private readonly List<string> _resultHosts = [];
     private readonly HashSet<string> _queriesRefused = new(StringComparer.Ordinal);
+
+    // The tabs browser.tabs.list read (title, active) and the person's turn it read them in; a close refused for a tab not
+    // named goes once in that turn (said_tab).
+    private (string Title, bool Active)[] _tabs = [];
+    private int _tabsTurn = -1;
+    private int _tabRefusedTurn = -1;
+
+    // The person's turn one of BAXY's own calls went back in, for an open window their words name (own_named_window, once).
+    private int _exitRefusedTurn = -1;
+
+    // The person's turn in which a call other than a change of BAXY's own settings came back (OwnBrakes: a brake relaxed
+    // after it is the model's means to something else, never what the person asked first).
+    private int _calledTurn = -1;
+
+    // The fewest letters of a part of a tab's title weighed with its words run together («chat gpt» names «ChatGPT»).
+    private const int MinimumTabWord = 4;
 
     // A call refused for an application not said, by turn, operation and application (application_not_said goes once).
     private readonly HashSet<string> _applicationsRefused = new(StringComparer.Ordinal);
@@ -88,15 +108,30 @@ internal sealed class NetworkEgress
             return "game_title_not_said";
         }
 
+        // COR1 (VIVO3 A3, 2 de 2: refused for «Búsqueda web» off, the model switched it back on with baxy.settings.set and
+        // played the video): one of BAXY's own brakes is the person's to relax. The change goes unasked only when a
+        // clause of this turn's words ends in that setting's name as Ajustes shows it and no other call came back first
+        // in the turn; any other waits for their «sí», as a game they did not name. A form compared: «on» and «off»
+        // have no name to weigh, so the order of the turn stands for the value (what the model does after another call
+        // is its own idea), and the name at the end of the clause for what is asked («enciende la búsqueda web»; in
+        // «haz una búsqueda web de panaderías» the name is how they ask for something else, which follows it).
+        if (OwnBrakes.Relaxed(operation, arguments) is { } brake && !AskedNow(brake))
+        {
+            return OwnBrakes.Cause;
+        }
+
         if (!NativeTurnLoop.Has(operation, arguments, OperationEffects.Network))
         {
             return null;
         }
 
-        return Text(arguments["url"]) is { } url && UriOf(url) is { } address
-            && Normalized(address.Host) is { Length: > 0 } host && !Grounded(host)
-            && (Carries(address) || address.HostNameType is UriHostNameType.IPv4 or UriHostNameType.IPv6
-                || !address.IsDefaultPort)
+        // Revisión de privacidad 2026-11-09 (PRIV-01): a host nobody gave went when its address carried nothing past it,
+        // and a ping (its address is «host») was never weighed. The name itself carries: every label of it reaches the
+        // server that answers for the name above it, whether or not a page is there (RFC 1035 §2.3.4: 63 octets a
+        // label, 255 a name; the DNS channel of MITRE ATT&CK T1048 and T1071.004), and a ping resolves it first.
+        // An address whose host cannot be read is nobody's either.
+        return (Text(arguments["url"]) ?? Text(arguments["host"])) is { } given
+            && (HostOf(given) is not { Length: > 0 } host || !Grounded(host))
                 ? "host_not_from_session"
                 : null;
     }
@@ -170,6 +205,49 @@ internal sealed class NetworkEgress
                     + "asked before it goes" : string.Empty));
         }
 
+        // actualizar-ordenes-app (control e64-H-C03): without tab a close acts on the active tab, and a switch_tab goes nowhere.
+        // When this turn's tab list has another tab their words name, and the active one is not named, it goes back once with
+        // that title, as game_title_not_said and channel_not_said do with what the person did not say. A form compared: the
+        // model may mean the active tab, and the same call again runs. EFE1 (mapa G-05; base c8340433b, modelo de serie, 3
+        // semillas): the words are this turn's alone. A tab the turn before asked about sent «cierra esta pestaña» back
+        // with its title, and the model closed that tab 18 of 18.
+        if (operation == "browser.control" && ModelAids.On(ModelAids.SaidTab) && Text(arguments["action"]) is "close" or "switch_tab"
+            && Text(arguments["tab"]) is null && _tabsTurn == _turns && _tabRefusedTurn != _turns && ListedTabNamed() is { } tab)
+        {
+            _tabRefusedTurn = _turns;
+            string active = _tabs.FirstOrDefault(static t => t.Active).Title is { Length: > 0 } shown ? $", «{shown}»," : string.Empty;
+            string without = Text(arguments["action"]) == "close"
+                ? $"without tab this closes the active tab{active} which the person did not name"
+                : "without tab this goes to no tab";
+            return ("tab_not_said", $"nothing ran: {without}; they named the tab «{tab}»: call it again with tab \"{tab}\", or "
+                + "exactly as before if they meant the active one");
+        }
+
+        // actualizar-ordenes-app (pestanas_ho T14, T24): one of BAXY's own calls (closing itself, a setting of its own, its update)
+        // while the person's words name an open window or one of its tabs (NamedWindows reads both) goes back once with what
+        // they named, as said_tab does: a form compared, never what they meant; if they asked BAXY itself, it runs again.
+        // EFE1 (mapa G-05, D-07, RED-1; base c8340433b, modelo de serie, 3 semillas): held by what the turn before named
+        // («Abre YouTube», then «BAXY, ciérrate»), BAXY closed 0 of 30 and 21 of the 30 answers offered closing that
+        // window; its voice went off 3 of 9. This guard reads this turn's words alone (SaidNow): an order to BAXY itself
+        // says nothing of the window of another turn, and the name they call BAXY by names no window either.
+        if (operation is "baxy.exit" or "baxy.settings.set" or "baxy.update" && ModelAids.On(ModelAids.OwnNamedWindow)
+            && named is not null && _exitRefusedTurn != _turns && SaidNow(named()) is { Count: > 0 } openNamed)
+        {
+            _exitRefusedTurn = _turns;
+            bool exit = operation == "baxy.exit";
+            return ("own_names_window", (exit ? "nothing ran and BAXY stays open" : "nothing ran and BAXY did not change")
+                + ": the person's words name "
+                + string.Join(", ", openNamed.OfType<JsonObject>().Select(static window => "«" + (string?)window["title"] + "»"
+                    + (window["tabs"] is JsonArray tabs && tabs.Count > 0
+                        ? " (its tab " + string.Join(", ", tabs.Select(static tab => "«" + (string?)tab?["title"] + "»")) + ")"
+                        : string.Empty)))
+                + (exit
+                    ? "; close that with its own call (browser_control close with tab, or app_close), or call baxy_exit again "
+                        + "exactly as before if they asked BAXY itself to close"
+                    : "; act on that with its own calls (browser_control with tab, app_close, the window tools), or call "
+                        + WireNames.Of(operation) + " again exactly as before if they asked it of BAXY itself"));
+        }
+
         if (named is not null && ModelAids.On(ModelAids.NamedWindowApp) && ApplicationUnsaid(operation, arguments) is { } app
             && named() is { Count: > 0 } windows && !windows.OfType<JsonObject>().Any(window => Holds(window, app))
             && _applicationsRefused.Add(string.Join('\n', _turns, operation, Joined(app))))
@@ -190,12 +268,12 @@ internal sealed class NetworkEgress
                 + $"«{made}», and leave them as they are. If the person asked for a new file, call it again exactly as before");
         }
 
-        // web.search's currency, sports and places sources search their typed fields, not the query's text.
+        // web.search's currency and places sources search their typed fields, not the query's text.
         if (!ModelAids.On(ModelAids.SaidQuery) || !NativeTurnLoop.Has(operation, arguments, OperationEffects.Network)
             // Encargo 119 (F12): media.play.exact's title goes out to Spotify's search as a query does, and a name the model
             // altered as it copied it («quiero <artista>» sent as another word) ran 25 s to say nothing was found.
             || (Text(arguments["query"]) ?? (operation == "media.play.exact" ? Text(arguments["title"]) : null)) is not { } query
-            || Text(arguments["source"]) is not (null or "web" or "news" or "encyclopedia"))
+            || Text(arguments["source"]) is not (null or "web" or "encyclopedia"))
         {
             return null;
         }
@@ -334,6 +412,7 @@ internal sealed class NetworkEgress
         }
 
         Collect(words, _words);
+        _said.Add([.. Regex.Split(Folded(words), @"[^\p{L}\p{Nd}]+").Where(static word => word.Length > 0)]);
 
         // «https://www.rfc-editor.org/rfc/rfc2324» or «rfc-editor.org» is the person's own host, as a result's address
         // is (e2e E022, 2026-10-22: its name split at the hyphen never matched their words).
@@ -361,6 +440,11 @@ internal sealed class NetworkEgress
     /// <summary>A call's result as the model reads it: its addresses, and the words a search may take.</summary>
     internal void Observed(string operation, string observation)
     {
+        if (operation != OwnBrakes.Operation)
+        {
+            _calledTurn = _turns;
+        }
+
         JsonNode? facts;
         try
         {
@@ -373,6 +457,15 @@ internal sealed class NetworkEgress
 
         Walk(facts, operation is "memory.recall" or "memory.list");
         Gather(facts?["observed"]);
+        if (operation == "browser.tabs.list" && facts?["observed"]?["tabs"] is JsonArray tabs)
+        {
+            _tabs = [.. tabs.OfType<JsonObject>()
+                .Select(static tab => (Title: Text(tab["title"]) ?? string.Empty, Active: tab["active"] is JsonValue on
+                    && on.TryGetValue(out bool active) && active))
+                .Where(static tab => tab.Title.Length > 0)];
+            _tabsTurn = _turns;
+        }
+
         if (operation == "browser.page.read" && facts?["observed"] is JsonObject page
             && Text(page["browser"]) is { } browser && page["links"] is JsonArray links)
         {
@@ -414,11 +507,14 @@ internal sealed class NetworkEgress
     {
         _hosts.Clear();
         _words.Clear();
+        _said.Clear();
         _resultHosts.Clear();
         _queriesRefused.Clear();
         _channelsRefused.Clear();
         _given.Clear();
         _pageLinks = [];
+        _tabs = [];
+        _tabsTurn = _tabRefusedTurn = _exitRefusedTurn = -1;
         _latest = _previous = _latestWritten = string.Empty;
     }
 
@@ -505,28 +601,71 @@ internal sealed class NetworkEgress
             return InPersonsNetwork(ip) || _hosts.Contains(host) || _hosts.Contains(ip.ToString());
         }
 
-        if (_hosts.Any(seen => host == seen || host.EndsWith("." + seen, StringComparison.Ordinal)
-                || seen.EndsWith("." + host, StringComparison.Ordinal)))
+        // A host a result or the person gave is that host as written, and the hosts above it, which carry less. PRIV-01:
+        // every host under it counted too, so a page read sent «ana-gomez.recetas.example» to its own server unasked,
+        // and on a site that gives each of its people a host, to another's.
+        if (_hosts.Any(seen => host == seen || seen.EndsWith("." + host, StringComparison.Ordinal)))
         {
             return true;
         }
 
-        // The site's own name, the label before its ending («youtube» in m.youtube.com, «bbc» in bbc.co.uk), never a
-        // subdomain anyone may choose («lofi» in lofi.exfil.example).
+        // The site's own name, the label before its ending («youtube» in m.youtube.com, «bbc» in bbc.co.uk), is the
+        // person's to say; and so is each label before it (PRIV-01: «lofi» in lofi.youtube.com went with the site's name
+        // said, as any host under a site they named did).
+        // An ending of two labels is a country's («co.uk», «com.ar», «gob.cl»: RFC 1591, the two-letter codes and the
+        // categories registries keep under them); under any other ending the short label is somebody's own site
+        // («ana.abc.example» is abc's, not a site called «ana»).
         string[] labels = host.Split('.');
-        string name = labels.Length switch
+        int named = labels.Length switch
         {
-            1 => labels[0],
-            2 => labels[0],
-            _ => labels[^2].Length <= 3 ? labels[^3] : labels[^2],
+            1 or 2 => 0,
+            _ => labels[^1].Length == 2 && labels[^2].Length <= 3 ? labels.Length - 3 : labels.Length - 2,
         };
-        // A name with hyphens is the person's when they said every part of it («rfc editor» for rfc-editor.org).
-        // Uso real 02-11: «abre fackebook marketplace» held www.facebook.com/marketplace as a site nobody gave. A part of 5
-        // letters or more the person said with one letter changed, added or missing (as typed or as the ear wrote it)
-        // is theirs too; a shorter one must be said as it is.
-        string[] parts = name.Split('-', StringSplitOptions.RemoveEmptyEntries);
-        return name.Length >= 3 && parts.Length > 0 && parts.All(part => _words.Contains(part)
-            || (part.Length >= 5 && _words.Any(word => OneEditApart(word, part))));
+        return labels[named].Length >= 3 && labels[..(named + 1)].All(SaidLabel);
+    }
+
+    // A label of a host is the person's when they said every part of it («rfc editor» for rfc-editor.org). Uso real
+    // 02-11: «abre fackebook marketplace» held www.facebook.com/marketplace as a site nobody gave. A part of 5 letters or
+    // more the person said with one letter changed, added or missing (as typed or as the ear wrote it) is theirs too; a
+    // shorter one must be said as it is. PRIV-01, now that a bare site nobody gave waits: a site's name is written run
+    // together and said with its words apart («la tercera» for latercera.com), so a part made of words they said, whole
+    // and one after another in one thing they said, is theirs as well.
+    private bool SaidLabel(string label)
+    {
+        string[] parts = label.Split('-', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length > 0 && parts.All(part => _words.Contains(part)
+            || (part.Length >= 5 && _words.Any(word => OneEditApart(word, part)))
+            || SaidRunTogether(part));
+    }
+
+    // Whether the text is two or more words the person said one after another, in that order and in one thing they said,
+    // written together. Revisión a ciegas de PRV1: any words of the session in any order counted, so «feria» of one turn
+    // and «libre» of another made ferialibre a site they named.
+    private bool SaidRunTogether(string text)
+    {
+        foreach (string[] said in _said)
+        {
+            for (int first = 0; first < said.Length - 1; first++)
+            {
+                int at = 0;
+                for (int word = first; word < said.Length
+                    && text.AsSpan(at).StartsWith(said[word], StringComparison.Ordinal); word++)
+                {
+                    at += said[word].Length;
+                    if (at == text.Length)
+                    {
+                        if (word > first)
+                        {
+                            return true;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     // Whether two words differ by one letter changed, added or missing (Levenshtein distance 1).
@@ -735,16 +874,59 @@ internal sealed class NetworkEgress
 
     private string SaidSpaced() => " " + Spaced(_previous) + " " + Spaced(_latest) + " ";
 
-    private static bool TabNamed(string said, string title)
+    // The name the person calls BAXY by, as its own windows are titled (MainWindow, OverlayWindow), folded.
+    private const string OwnName = "baxy";
+
+    // Of the windows named now or just before (Named), the ones this turn's words name, each with the tabs and rows they
+    // name now: what holds a call of BAXY's own. A part of a title, a tab's site or a row that is BAXY's own name and no
+    // more names nothing: in «BAXY, ciérrate» it is the one they speak to (a folder or a page of that name stays out).
+    private JsonArray SaidNow(JsonArray? windows)
     {
-        string[] parts = Regex.Split(title.Trim(), @"\s+[-|–—·]\s+");
-        return parts.Any(part => SaidWhole(said, part)) || SiteWordSaid(said, parts[0]) || SiteWordSaid(said, parts[^1]);
+        var now = new JsonArray();
+        string said = " " + Spaced(_latest) + " ";
+        foreach (JsonObject window in (windows ?? []).OfType<JsonObject>())
+        {
+            string title = (string?)window["title"] ?? string.Empty;
+            JsonNode[] tabs = [.. (window["tabs"] as JsonArray ?? []).OfType<JsonNode>()
+                .Where(tab => TabNamed(said, (string?)tab["title"] ?? string.Empty, OwnName))];
+            JsonNode[] rows = [.. (window["rows"] as JsonArray ?? []).OfType<JsonNode>()
+                .Where(row => (string?)row is { } name && Spaced(name) != OwnName && SaidWhole(said, name))];
+            if (tabs.Length == 0 && rows.Length == 0
+                && !Regex.Split(title, @"\s+[-|–—·]\s+").Any(part => Spaced(part) != OwnName && SaidWhole(said, part)))
+            {
+                continue;
+            }
+
+            JsonObject kept = new() { ["title"] = title, ["process"] = (string?)window["process"] };
+            if (tabs.Length > 0)
+            {
+                kept["tabs"] = new JsonArray([.. tabs.Select(static tab => tab.DeepClone())]);
+            }
+
+            if (rows.Length > 0)
+            {
+                kept["rows"] = new JsonArray([.. rows.Select(static row => row.DeepClone())]);
+            }
+
+            now.Add(kept);
+        }
+
+        return now;
     }
 
-    private static bool SiteWordSaid(string said, string part)
+    // actualizar-ordenes-app (pestanas_ho T14): a comma parts a site from its motto too («Wikipedia, la enciclopedia libre»).
+    // «own»: a part that is that name and no more, or that word of a site, is not counted (SaidNow).
+    private static bool TabNamed(string said, string title, string? own = null)
+    {
+        string[] parts = Regex.Split(title.Trim(), @"\s+[-|–—·]\s+|,\s+");
+        return parts.Any(part => Spaced(part) != own && SaidWhole(said, part))
+            || SiteWordSaid(said, parts[0], own) || SiteWordSaid(said, parts[^1], own);
+    }
+
+    private static bool SiteWordSaid(string said, string part, string? own = null)
     {
         string[] words = Spaced(part).Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        return words.Length is > 0 and <= 2 && words.Any(word => word.Count(char.IsLetter) >= 4
+        return words.Length is > 0 and <= 2 && words.Any(word => word != own && word.Count(char.IsLetter) >= 4
             && said.Contains(" " + word + " ", StringComparison.Ordinal));
     }
 
@@ -921,6 +1103,44 @@ internal sealed class NetworkEgress
     // Letters and digits alone: «Whats App» is «whatsapp».
     private static string Joined(string text) => Regex.Replace(Folded(text), @"[^\p{L}\p{Nd}]+", string.Empty);
 
+    // The one tab of the list, other than the active one, that the person's words of this turn name: as a browser's
+    // tab strip is read (TabNamed), or by a part of its title with its words run together («chat gpt» names «ChatGPT»).
+    // Null when the active tab is named too, or none or several are.
+    private string? ListedTabNamed()
+    {
+        string said = " " + Spaced(_latest) + " ";
+        string joined = Joined(_latest);
+        bool Named(string title) => TabNamed(said, title) || Regex.Split(title.Trim(), @"\s+[-|–—·]\s+")
+            .Any(part => Joined(part) is { Length: >= MinimumTabWord } whole && joined.Contains(whole, StringComparison.Ordinal));
+        if (_tabs.Any(tab => tab.Active && Named(tab.Title)))
+        {
+            return null;
+        }
+
+        string[] named = [.. _tabs.Where(tab => !tab.Active && Named(tab.Title)).Select(static tab => tab.Title)];
+        return named.Length == 1 ? named[0] : null;
+    }
+
+    // The punctuation that ends a clause (as SaidVerbs reads it).
+    private static readonly Regex ClauseEnds = new(@"[,;:.?!¿¡\r\n]+", RegexOptions.CultureInvariant);
+
+    // A clause of this turn's words ends in one of the brake's names, its words together and in order («enciende la
+    // búsqueda web», «activa otra vez la búsqueda web, por favor»), and nothing else was called before in the turn.
+    private bool AskedNow(string brake)
+    {
+        if (_calledTurn == _turns)
+        {
+            return false;
+        }
+
+        string[][] clauses = [.. ClauseEnds.Split(_latest).Select(Words).Where(static clause => clause.Length > 0)];
+        return OwnBrakes.Names(brake).Select(static name => Words(Folded(name))).Any(name =>
+            name.Length > 0 && clauses.Any(clause => clause.Length >= name.Length && clause.AsSpan(clause.Length - name.Length).SequenceEqual(name)));
+    }
+
+    private static string[] Words(string text) =>
+        [.. Regex.Split(text, @"[^\p{L}\p{Nd}]+").Where(static word => word.Length > 0)];
+
     // Every word of the name is one the person said in this session («doom eternal» in «pon Doom Eternal»).
     private bool Said(string name)
     {
@@ -928,7 +1148,11 @@ internal sealed class NetworkEgress
         return words.Length > 0 && words.All(_words.Contains);
     }
 
-    private static string HostOf(string address) => UriOf(address) is { } uri ? Normalized(uri.Host) : string.Empty;
+    // An address's host; a ping names its host bare, and one written as an IPv6 («2001:db8::7») reads as no address.
+    private static string HostOf(string address) =>
+        address.Contains(':', StringComparison.Ordinal) && IPAddress.TryParse(address.Trim().Trim('[', ']'), out IPAddress? ip)
+            ? ip.ToString()
+            : UriOf(address) is { } uri ? Normalized(uri.Host) : string.Empty;
 
     private static Uri? UriOf(string address)
     {
@@ -937,12 +1161,6 @@ internal sealed class NetworkEgress
             : Uri.TryCreate("http://" + given, UriKind.Absolute, out uri) ? uri
             : null;
     }
-
-    // What an address takes to its host besides the host itself: a path past «/», a query, a fragment or a name before
-    // «@». A bare site («https://ejemplo.com», «ejemplo.com/») carries nothing.
-    private static bool Carries(Uri address) =>
-        address.AbsolutePath is not ("/" or "") || address.Query.Length > 0 || address.Fragment.Length > 0
-        || address.UserInfo.Length > 0;
 
     private static string Normalized(string host)
     {

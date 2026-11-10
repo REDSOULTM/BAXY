@@ -2,8 +2,8 @@
    three window glyphs are the shell's own (the window has no system frame). */
 
 export type IconName =
-  | 'send' | 'mic' | 'mic-off' | 'settings' | 'plus' | 'bolt' | 'search' | 'check' | 'person' | 'power'
-  | 'eye-off' | 'wheelchair' | 'x' | 'wave' | 'win-min' | 'win-max' | 'win-restore';
+  | 'send' | 'mic' | 'mic-off' | 'settings' | 'plus' | 'bolt' | 'search' | 'check' | 'power'
+  | 'x' | 'wave' | 'win-min' | 'win-max' | 'win-restore' | 'history';
 
 interface Props {
   name: IconName;
@@ -37,6 +37,8 @@ export function Icon({ name, size = 14, strokeWidth = 1.25 }: Props) {
           <circle cx="8" cy="8" r="2.1" />
         </svg>
       );
+    case 'history': // a clock turned back: the conversations kept before (owner, 2026-11-08: «una rueda de tiempo»)
+      return <svg {...p}><path d="M2.9 8a5.1 5.1 0 1 0 1.5-3.6" /><path d="M2.6 2.7v2.4H5" /><path d="M8 5.3V8l1.9 1.3" /></svg>;
     case 'plus':
       return <svg {...p}><path d="M 8 3.5 L 8 12.5" /><path d="M 3.5 8 L 12.5 8" /></svg>;
     case 'bolt':
@@ -45,14 +47,8 @@ export function Icon({ name, size = 14, strokeWidth = 1.25 }: Props) {
       return <svg {...p}><circle cx="7" cy="7" r="4" /><path d="M 10 10 L 13 13" /></svg>;
     case 'check':
       return <svg {...p}><path d="M 3 8 L 6.5 11.5 L 13 4" /></svg>;
-    case 'person':
-      return <svg {...p}><circle cx="8" cy="5" r="2.4" /><path d="M 3.5 13 Q 3.5 8.5 8 8.5 Q 12.5 8.5 12.5 13" /></svg>;
     case 'power':
       return <svg {...p}><path d="M 8 2 L 8 8" /><path d="M 5 4.2 Q 2.5 6 2.5 9 Q 2.5 13.5 8 13.5 Q 13.5 13.5 13.5 9 Q 13.5 6 11 4.2" /></svg>;
-    case 'eye-off':
-      return <svg {...p}><path d="M 2 8 Q 5 4 8 4 Q 11 4 14 8 Q 11 12 8 12 Q 5 12 2 8 Z" /><circle cx="8" cy="8" r="1.6" /><path d="M 3 3 L 13 13" /></svg>;
-    case 'wheelchair':
-      return <svg {...p}><circle cx="7.5" cy="10.5" r="3.4" /><circle cx="6" cy="3.2" r="1.1" fill="currentColor" stroke="none" /><path d="M 6 5 L 6 8 L 9.5 8" /><path d="M 9.5 8 L 11 13" /></svg>;
     case 'x':
       return <svg {...p}><path d="M 4 4 L 12 12" /><path d="M 12 4 L 4 12" /></svg>;
     case 'wave':

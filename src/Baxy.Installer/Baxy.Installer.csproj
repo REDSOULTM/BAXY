@@ -29,8 +29,16 @@
     <EmbeddedResource Include="Assets\fonts\OFL.txt" LogicalName="Baxy.Installer.fonts.OFL.txt" />
     <EmbeddedResource Include="Assets\voice\*.wav" LogicalName="Baxy.Installer.voice.%(Filename)" />
     <EmbeddedResource Include="Assets\license\*.txt" LogicalName="Baxy.Installer.license.%(Filename)" />
-    <!-- The exe is a copy of .NET, WPF and CsWinRT before anything is installed: their licenses go inside it. -->
-    <EmbeddedResource Include="..\..\licenses\dotnet-*.txt;..\..\licenses\CsWinRT-LICENSE.txt" LogicalName="Baxy.Installer.licenses.%(Filename)%(Extension)" />
+    <!-- The exe is a copy of .NET, WPF, CsWinRT and the Windows SDK projections before anything is installed: their licenses go inside it. -->
+    <EmbeddedResource Include="..\..\licenses\dotnet-*.txt;..\..\licenses\CsWinRT-LICENSE.txt;..\..\licenses\Windows-SDK-License.rtf" LogicalName="Baxy.Installer.licenses.%(Filename)%(Extension)" />
+  </ItemGroup>
+  <!-- INS-1: the Task Scheduler as BAXY's alarms use it, the same source: the uninstall removes the tasks BAXY set. -->
+  <ItemGroup>
+    <Compile Include="..\Baxy.Providers.Windows\External\WindowsTaskSchedulerHost.cs" Link="Providers\WindowsTaskSchedulerHost.cs" />
+    <Compile Include="..\Baxy.Providers.Windows\External\ScheduledRingTasks.cs" Link="Providers\ScheduledRingTasks.cs" />
+    <!-- INS-2: the cards as BAXY reads them at every start (DXGI), the same source: what is downloaded is what it will look for. -->
+    <Compile Include="..\Baxy.Providers.Windows\SystemStatus\WindowsGpuStatusProbe.cs" Link="Providers\WindowsGpuStatusProbe.cs" />
+    <Compile Include="..\Baxy.Providers.Windows\SystemStatus\WindowsGpuVendors.cs" Link="Providers\WindowsGpuVendors.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(BaxyReleaseManifest)' != ''">
     <EmbeddedResource Include="$(BaxyReleaseManifest)" LogicalName="Baxy.Installer.release.json" />

@@ -6,8 +6,10 @@
 #   llama\      the registered llama-server (b11609, CUDA): its declared files, CPU and CUDA backends, CUDA runtime
 #   llama-vulkan\   -VulkanServer's folder (b11609, Vulkan): its declared files, CPU and Vulkan backends. Two folders,
 #               because the mind refuses one with two backends; the App picks one at every start by the GPU's PCI vendor
-#   models\     the registered model and vision projector. System One's model stays out: the product does not use it
-#               by default (MindRuntimeDiscovery.ApplyPieces)
+#   models\     Qwen3.5-4B as Unsloth publishes it (-Gguf, pinned below) and the registered vision projector. System One's
+#               model stays out: the product does not use it by default (MindRuntimeDiscovery.ApplyPieces). BAXY's tuned
+#               model is not in it either: the registration offers it (tuned_*) and the App downloads it only when the
+#               person asks (documentacion/PLAN_QWEN_BASE.md, the owner's order of 2026-11-07)
 #   voice\ stt\ the registered voice and recognizer
 #   wake\       the wake package (-WakeDirectory), the product's default detector, alone
 #   licenses\  BAXY's license and the third parties' notices
@@ -15,7 +17,7 @@
 # llama\, llama-vulkan\ and python\ also carry the Visual C++ runtime (-VisualCppRedist): llama-server, ONNX Runtime and
 # numpy import it and a clean Windows may not have it. Steam's redistributable installs it centrally, the way Microsoft
 # prefers; these copies are for a store with no such option (itch.io) and for a System32 with an older one.
-# The pieces are the ones this machine registered (%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json), the ones measured,
+# The other pieces are the ones this machine registered (%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json), the ones measured,
 # each copied only when it still has its registered SHA-256. -VulkanServer is llama-server.exe unpacked from the official
 # llama-b11609-bin-win-vulkan-x64.zip: the mind's declaration (llm_server.declared_build, declared_backend) verifies it.
 [CmdletBinding()]
@@ -27,7 +29,12 @@ param(
     # Visual Studio's redistributable folder: VC\Redist\MSVC\<version>\x64\Microsoft.VC143.CRT.
     [Parameter(Mandatory = $true)][string]$VisualCppRedist,
     [string]$Registration,
-    [Parameter(Mandatory = $true)][string]$WakeDirectory
+    [Parameter(Mandatory = $true)][string]$WakeDirectory,
+    # The local copy of $ModelFile: the build fails unless it is that file.
+    [Parameter(Mandatory = $true)][string]$Gguf,
+    # Where this folder is published: Steam's depot as it is, or itch.io's upload as it is (documentacion/itchio/EMPAQUETADO.md).
+    # GitHub's installer writes its own (scripts/build_github_release.py). The App reads it to know who updates it.
+    [ValidateSet('steam', 'itch')][string]$Channel = 'steam'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -35,13 +42,29 @@ Set-StrictMode -Version Latest
 
 $repo = [IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
 . (Join-Path $PSScriptRoot 'mind_runtime_manifest.ps1')
+. (Join-Path $PSScriptRoot 'app_commit.ps1')
 
 # python.org's python-3.12.10-embed-amd64.zip (Authenticode: Python Software Foundation), the interpreter's version of
 # the runtime venv the lock was measured with.
 $PythonEmbedSha256 = '4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3'
-# The wake package the owner made the official detector on 2026-11-07 (WakewordBaxy\models\final\baxy-wake-k6r-v7b), the
-# whole folder unchanged (its README and SHA256SUMS count): its folder's hash.
-$WakeSha256 = '48a02e8fbedfb2f9fd57e90af6f06c8814e361791bc4d5b0e3a4baecd264b8ac'
+# The wake package the owner made the official detector on 2026-11-07, «sin la serie» (WakewordBaxy\models\final\
+# baxy-wake-k6r-v7a: trained without the TV series and without the k5 teacher), the whole folder unchanged (its README and
+# SHA256SUMS count): its folder's hash. check_package_licenses.py below sees the detectors it replaced.
+$WakeSha256 = '1b7cad869499037e901cb17d862cdfdd6074040ef50d1bf7fd89b0b1b54f083a'
+# The model the package carries, whatever this machine registered (a build machine's may be the tuned one): Qwen3.5-4B as
+# Unsloth publishes it, Apache-2.0, https://huggingface.co/unsloth/Qwen3.5-4B-GGUF at commit
+# e87f176479d0855a907a41277aca2f8ee7a09523 (its X-Linked-ETag, the LFS object's SHA-256:
+# https://huggingface.co/docs/huggingface_hub/package_reference/file_download).
+$ModelFile = 'Qwen3.5-4B-Q4_K_M.gguf'
+$ModelSha256 = '00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4'
+# BAXY's tuned model (c4c2_1-sA), offered and not carried: the App downloads it from this URL, pinned to its commit so a later
+# upload cannot change what is downloaded, and keeps it only with this SHA-256. check_package_licenses.py refuses a package
+# that carries it.
+$TunedFile = 'BAXY-Qwen3.5-4B-c4-Q4_K_M.gguf'
+$TunedSha256 = '2c445631782a5c27b9948369e9432309528688b9b761fce56586d796ea2f57c7'
+$TunedBytes = 2740937440
+$TunedUrl = 'https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF/resolve/da66d8bbb0b90ae15fc54cb4386370a4a471d54f/BAXY-Qwen3.5-4B-c4-Q4_K_M.gguf'
+$TunedLicense = 'Apache-2.0'
 
 function Copy-Verified {
     param(
@@ -147,7 +170,15 @@ $app = Join-Path $ProductBuild 'app\Baxy.exe'
 if (-not (Test-Path -LiteralPath $app -PathType Leaf)) {
     throw "steam_build_failed: no product build at $ProductBuild (run scripts\build_product.ps1 first)"
 }
+# PKG-2: one package, one commit. The App is copied as it was built, maybe days ago, and the mind is taken from Git below.
+$head = ([string](& git -C $repo rev-parse --verify HEAD)).Trim().ToLowerInvariant()
+if ($LASTEXITCODE -ne 0) { throw 'steam_build_failed: the commit of this worktree could not be read' }
+Assert-BaxyAppCommit -ProductVersion ([Diagnostics.FileVersionInfo]::GetVersionInfo($app).ProductVersion) -Commit $head
 $registered = Get-Content -LiteralPath $Registration -Raw -Encoding UTF8 | ConvertFrom-Json
+# Before anything is copied: a package with another model is never armed (Copy-Verified checks it again below).
+if ((Get-BaxySha256 -Path $Gguf) -ne $ModelSha256) {
+    throw "steam_build_failed: $Gguf is not $ModelFile as Unsloth publishes it (SHA-256 $ModelSha256)"
+}
 if ((Get-BaxySha256 -Path $PythonEmbedZip) -ne $PythonEmbedSha256) {
     throw "steam_build_failed: $PythonEmbedZip is not python.org's python-3.12.10-embed-amd64.zip"
 }
@@ -200,9 +231,9 @@ Get-ChildItem -LiteralPath $sitePackages -Filter 'protobuf-*.dist-info' | Remove
 # The mind at the build's commit: the files Git tracks, not the worktree's leftovers.
 $mindArchive = Join-Path $Output 'mind.zip'
 Invoke-Checked -FilePath 'git' -FailureMessage 'the mind could not be archived' -Arguments @(
-    # HEAD:src leaves the root's .gitattributes behind, and Git for Windows' core.autocrlf would then write every text file
+    # <commit>:src leaves the root's .gitattributes behind, and Git for Windows' core.autocrlf would then write every text file
     # with CRLF: not the bytes of the commit, nor the ones the suites ran on.
-    '-c', 'core.autocrlf=false', '-C', $repo, 'archive', '--format=zip', "--output=$mindArchive", 'HEAD:src', 'baxy_mind')
+    '-c', 'core.autocrlf=false', '-C', $repo, 'archive', '--format=zip', "--output=$mindArchive", "${head}:src", 'baxy_mind')
 Expand-Archive -LiteralPath $mindArchive -DestinationPath (Join-Path $Output 'mind')
 Remove-Item -LiteralPath $mindArchive
 
@@ -219,8 +250,7 @@ foreach ($folder in 'llama', 'llama-vulkan', 'python') {
 
 # The models and the pieces beside them.
 $models = Join-Path $Output 'models'
-Copy-Verified -Source $registered.gguf -Sha256 $registered.gguf_sha256 `
-    -Destination (Join-Path $models (Split-Path -Leaf $registered.gguf))
+Copy-Verified -Source $Gguf -Sha256 $ModelSha256 -Destination (Join-Path $models $ModelFile)
 Copy-Verified -Source $registered.mmproj -Sha256 $registered.mmproj_sha256 `
     -Destination (Join-Path $models (Split-Path -Leaf $registered.mmproj))
 Copy-VerifiedDirectory -Source $registered.renew_tts_dir -Sha256 $registered.renew_tts_sha256 `
@@ -247,8 +277,8 @@ $document = [ordered]@{
     python = 'python\python.exe'
     python_sha256 = Get-BaxySha256 -Path $python312
     python_path = 'mind'
-    gguf = "models\$(Split-Path -Leaf $registered.gguf)"
-    gguf_sha256 = $registered.gguf_sha256
+    gguf = "models\$ModelFile"
+    gguf_sha256 = $ModelSha256
     llama_server = 'llama\llama-server.exe'
     llama_server_sha256 = $registered.llama_server_sha256
     llama_server_vulkan = 'llama-vulkan\llama-server.exe'
@@ -262,16 +292,35 @@ $document = [ordered]@{
     renew_stt_sha256 = Get-BaxyDirectorySha256 -Directory (Join-Path $Output 'stt')
     mmproj = "models\$(Split-Path -Leaf $registered.mmproj)"
     mmproj_sha256 = $registered.mmproj_sha256
+    tuned_gguf = $TunedFile
+    tuned_gguf_sha256 = $TunedSha256
+    tuned_gguf_bytes = $TunedBytes
+    tuned_gguf_url = $TunedUrl
+    tuned_gguf_license = $TunedLicense
 }
 [IO.File]::WriteAllText(
     (Join-Path $Output 'mind-runtime-v1.json'),
     ($document | ConvertTo-Json),
     [Text.UTF8Encoding]::new($false))
 
+# Where this BAXY is published (src/Baxy.Core/Operations/BaxyDistribution.cs): the store that updates it.
+[IO.File]::WriteAllText(
+    (Join-Path $Output 'distribution.json'),
+    ([ordered]@{ schema = 'baxy.distribution.v1'; channel = $Channel } | ConvertTo-Json),
+    [Text.UTF8Encoding]::new($false))
+
+# What this store's package carries besides (scripts\package_channel.py). Steam: installscript.vdf, which Steam runs when the
+# app is uninstalled so BAXY's alarms leave Windows with it (INS-1; scripts\steam\app_build.vdf marks it). itch.io: its app's
+# manifest and the agreement its buyer reads, since its app runs nothing on uninstall and shows no agreement
+# (https://itch.io/docs/itch/integrating/manifest.html). check_package_licenses.py below asks for the same bytes.
+Invoke-Checked -FilePath $python312 -FailureMessage "the files of channel $Channel were not written" -Arguments @(
+    '-B', '-X', 'utf8', (Join-Path $repo 'scripts\package_channel.py'), '--depot', $Output, '--channel', $Channel)
+
 # What was copied is what the mind will accept, by the package's own interpreter and mind.
 Assert-ServerBackend -PythonExe $python312 -Vendor '10DE' -Server (Join-Path $Output 'llama\llama-server.exe')
 Assert-ServerBackend -PythonExe $python312 -Vendor '1002' -Server (Join-Path $Output 'llama-vulkan\llama-server.exe')
-# Nothing the licenses of 1.3.0 left out came back with a package of the lock.
+# Nothing the licenses of 1.3.0 left out came back with a package of the lock, no run left its files here, and the store's own
+# files are in.
 Invoke-Checked -FilePath $python312 -FailureMessage 'the package carries what its notices say it does not' -Arguments @(
     '-B', '-X', 'utf8', (Join-Path $repo 'scripts\check_package_licenses.py'), '--depot', $Output,
     '--lock', (Join-Path $repo 'pylock.runtime-win-x64.toml'))
@@ -279,7 +328,7 @@ Invoke-Checked -FilePath $python312 -FailureMessage 'the package carries what it
 $files = @(Get-ChildItem -LiteralPath $Output -Recurse -File)
 [ordered]@{
     output = $Output
-    commit = ([string](& git -C $repo rev-parse HEAD)).Trim()
+    commit = $head
     files = $files.Count
     bytes = ($files | Measure-Object -Property Length -Sum).Sum
 } | ConvertTo-Json -Compress
