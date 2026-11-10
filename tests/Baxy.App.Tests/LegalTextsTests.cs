@@ -37,21 +37,21 @@ public sealed class LegalTextsTests
             view.Channel.LegalStart = Path.Combine(_root, "app");
             view.Channel.OpenShell = path => { opened.Add(path); return true; };
 
-            Assert.That((await view.SendAsync("POST", "/settings/legal/open", new JsonObject { ["doc"] = "privacy" })).Status, Is.EqualTo(200));
+            // VIS3 (VIVO6 fila 4): the policy is a .md, and on a Windows with no program for .md the shell started «Open
+            // with» and said it had opened it. Its text is read in Settings; only the licenses' folder goes to Explorer.
+            (int read, JsonObject policy) = await view.SendAsync("GET", "/settings/legal/privacy");
+            Assert.That((read, (string?)policy["text"]), Is.EqualTo((200, "# Privacidad")));
             Assert.That((await view.SendAsync("POST", "/settings/legal/open", new JsonObject { ["doc"] = "licenses" })).Status, Is.EqualTo(200));
+            Assert.That((await view.SendAsync("POST", "/settings/legal/open", new JsonObject { ["doc"] = "privacy" })).Status, Is.EqualTo(400));
             Assert.That((await view.SendAsync("POST", "/settings/legal/open", new JsonObject { ["doc"] = "C:\\Windows" })).Status, Is.EqualTo(400));
-            Assert.That(opened, Is.EqualTo(new[] { Path.Combine(_root, "licenses", "PRIVACIDAD.md"), Path.Combine(_root, "licenses") }));
-
-            // a file Windows has no program for (.md on a clean Windows): its folder is opened instead
-            opened.Clear();
-            view.Channel.OpenShell = path => { opened.Add(path); return !path.EndsWith(".md", StringComparison.Ordinal); };
-            Assert.That((await view.SendAsync("POST", "/settings/legal/open", new JsonObject { ["doc"] = "privacy" })).Status, Is.EqualTo(200));
-            Assert.That(opened, Is.EqualTo(new[] { Path.Combine(_root, "licenses", "PRIVACIDAD.md"), Path.Combine(_root, "licenses") }));
+            Assert.That(opened, Is.EqualTo(new[] { Path.Combine(_root, "licenses") }));
 
             // a copy without them says so, and opens nothing
             opened.Clear();
             Directory.Delete(Path.Combine(_root, "licenses"), recursive: true);
-            (int status, JsonObject body) = await view.SendAsync("POST", "/settings/legal/open", new JsonObject { ["doc"] = "privacy" });
+            (int status, JsonObject body) = await view.SendAsync("GET", "/settings/legal/privacy");
+            Assert.That((status, (string?)body["error"]), Is.EqualTo((404, "legal_not_found")));
+            (status, body) = await view.SendAsync("POST", "/settings/legal/open", new JsonObject { ["doc"] = "licenses" });
             Assert.That((status, (string?)body["error"]), Is.EqualTo((404, "legal_not_found")));
             Assert.That(opened, Is.Empty);
         }

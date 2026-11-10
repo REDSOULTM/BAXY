@@ -37,7 +37,8 @@ public sealed class ToolProfileTests
         Assert.Multiple(() =>
         {
             Assert.That(levels, Has.All.InRange(0, ToolProfile.Highest));
-            Assert.That(levels.Count(static l => l <= 1), Is.EqualTo(44), "Esencial");
+            // ESE3: alarms and reminders are Esencial's (schedule.alarms, level 1).
+            Assert.That(levels.Count(static l => l <= 1), Is.EqualTo(45), "Esencial");
             Assert.That(levels.Count(static l => l <= 2), Is.EqualTo(127), "Diario");
             Assert.That(levels.Count(static l => l <= 3), Is.EqualTo(177), "Avanzado");
         });
@@ -93,9 +94,10 @@ public sealed class ToolProfileTests
         string[] offered = [.. request["capabilities"]!.AsArray().Select(static c => (string)c!["name"]!)];
         Assert.Multiple(() =>
         {
-            Assert.That(withheld, Has.Count.EqualTo(191 - 44));
-            Assert.That(offered, Has.Length.EqualTo(44));
-            Assert.That(offered, Does.Contain("app.open").And.Contain("web.search").And.Contain("baxy.settings.set"));
+            Assert.That(withheld, Has.Count.EqualTo(191 - 45));
+            Assert.That(offered, Has.Length.EqualTo(45));
+            Assert.That(offered, Does.Contain("app.open").And.Contain("web.search").And.Contain("baxy.settings.set")
+                .And.Contain("schedule.alarms"));
             Assert.That(offered, Does.Not.Contain("file.write").And.Not.Contain("package.install"));
             Assert.That(request["withheld"]!.AsArray().Select(static n => (string?)n!["name"]), Is.EquivalentTo(withheld));
             // VIVO1 F8: each one with its English title, the mind's stub for it.
@@ -125,13 +127,65 @@ public sealed class ToolProfileTests
         });
     }
 
+    // ESE1 (VIVO5 fila 7: «Read a web page» off in Esencial was told as «Búsqueda web» switched off, which was on): the two
+    // causes read differently, and the profile's names the tool, the profile and where it turns on.
+    [Test]
+    public void ARefusalAsOffInTheProfileNamesTheToolTheProfileAndWhereItTurnsOnNotTheWebSwitch()
+    {
+        var profile = new ToolProfile(_root);
+        Assert.That(profile.Apply(new JsonObject { ["profile"] = "esencial" }), Is.Null);
+        JsonNode off = JsonNode.Parse(NativeTurnLoop.Refused(ToolProfile.OffCode, null, profile.OffFacts("web.fetch")))!;
+        JsonNode web = JsonNode.Parse(NativeTurnLoop.Refused(FieldSettings.WebOff))!;
+        Assert.That(profile.Apply(new JsonObject { ["profile"] = "diario" }), Is.Null);
+        JsonNode diario = JsonNode.Parse(NativeTurnLoop.Refused(ToolProfile.OffCode, null, profile.OffFacts("package.install")))!;
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)off["tool"], Is.EqualTo(FieldStepProjection.EnglishTitle("web.fetch")));
+            Assert.That((string?)off["profile"], Is.EqualTo("Esencial"));
+            Assert.That((string?)off["turnOn"], Is.EqualTo(
+                "Settings → Tools («Ajustes → Herramientas»): the profile Diario, Avanzado or Completo, or Personalizado with «Leer una página web» ticked"));
+            Assert.That((string?)off["next"], Does.Contain("off in the person's tool profile, not by any other setting")
+                .And.Contain("how they turn it on"));
+            Assert.That((string?)diario["profile"], Is.EqualTo("Diario"));
+            Assert.That((string?)diario["turnOn"], Does.StartWith("Settings → Tools («Ajustes → Herramientas»): the profile ").And.Not.Contain("Diario"));
+            Assert.That(web["profile"] ?? web["tool"] ?? web["turnOn"], Is.Null);
+            Assert.That((string?)web["next"], Does.Contain("web search").And.Not.Contain("profile"));
+            Assert.That((string?)off["next"], Does.Not.Contain("web search"));
+        });
+    }
+
+    // ESE3 (VIVO7 fila 4, P2: «activa la opción "Alarmas o recordatorios"», an option Settings → Tools never shows): where
+    // a tool turns on is told with the names the view shows, the profiles and the tool's box in Personalizado, in Spanish
+    // and in English.
+    [Test]
+    public void WhereAToolTurnsOnIsToldWithTheNamesTheViewShowsInItsLanguage()
+    {
+        var profile = new ToolProfile(_root);
+        Assert.That(profile.Apply(new JsonObject { ["profile"] = "esencial" }), Is.Null);
+        JsonObject spanish = profile.OffFacts("note.create");
+        UiLanguage.Use(UiLanguage.English);
+        JsonObject english = profile.OffFacts("note.create");
+        UiLanguage.Use(UiLanguage.Spanish);
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)spanish["profile"], Is.EqualTo("Esencial"));
+            Assert.That((string?)spanish["turnOn"], Is.EqualTo(
+                "Settings → Tools («Ajustes → Herramientas»): the profile Diario, Avanzado or Completo, or Personalizado with «Crear nota» ticked"));
+            Assert.That((string?)english["profile"], Is.EqualTo("Essential"));
+            Assert.That((string?)english["turnOn"], Is.EqualTo(
+                "Settings → Tools: the profile Everyday, Advanced or Complete, or Custom with «Create a note» ticked"));
+            Assert.That((string?)english["tool"], Is.EqualTo((string?)spanish["tool"]), "the tool as the model knows it");
+        });
+    }
+
     [Test]
     public void WithAlarmsOffInTheProfileWhatAlreadyRingsIsStillStoppedOrSnoozed()
     {
         // ALR5 (M2, uso real 09-11): with Esencial an alarm set before rang and no words stopped it; only the card's
-        // buttons did. Setting, listing and cancelling stay off, and so does a stop with nothing ringing.
+        // buttons did. Setting, listing and cancelling stay off, and so does a stop with nothing ringing. ESE3: Esencial
+        // keeps alarms now; a Personalizado without them is where they are off.
         var profile = new ToolProfile(_root);
-        Assert.That(profile.Apply(new JsonObject { ["profile"] = "esencial" }), Is.Null);
+        Assert.That(profile.Apply(new JsonObject { ["profile"] = "personalizado", ["on"] = new JsonArray("app.open") }), Is.Null);
         JsonObject stop = new() { ["action"] = "stop", ["id"] = "89abcdef" };
         JsonObject snooze = new() { ["action"] = "snooze", ["inMinutes"] = 5 };
         JsonObject create = new() { ["action"] = "create", ["inMinutes"] = 5, ["title"] = "x" };
@@ -219,9 +273,9 @@ public sealed class ToolProfileTests
         {
             // The measured prefixes (PERFILES_HERRAMIENTAS.md) and LocalContext's turn room.
             Assert.That(ToolProfile.NeededContext("completo", null, null), Is.EqualTo(49575 + LocalContext.TurnRoomTokens));
-            Assert.That(ToolProfile.NeededContext("esencial", null, null), Is.EqualTo(23348 + LocalContext.TurnRoomTokens));
+            Assert.That(ToolProfile.NeededContext("esencial", null, null), Is.EqualTo(23816 + LocalContext.TurnRoomTokens));
             // One the running mind read for its profile scales them: the apps installed change them.
-            Assert.That(ToolProfile.NeededContext("esencial", 99150, "completo"), Is.EqualTo(46696 + LocalContext.TurnRoomTokens));
+            Assert.That(ToolProfile.NeededContext("esencial", 99150, "completo"), Is.EqualTo(47632 + LocalContext.TurnRoomTokens));
             Assert.That(ToolProfile.NeededContext("personalizado", 20000, "personalizado"), Is.EqualTo(20000 + LocalContext.TurnRoomTokens));
             Assert.That(ToolProfile.NeededContext("personalizado", null, null), Is.EqualTo(49575 + LocalContext.TurnRoomTokens));
             Assert.That(ToolProfile.LargestFitting(32768, null, null), Is.EqualTo("esencial"));
@@ -241,7 +295,7 @@ public sealed class ToolProfileTests
             Assert.That(ToolProfile.LargestFitting(40960, null, null), Is.EqualTo("esencial"));
             Assert.That(ToolProfile.LargestFitting(45056, null, null), Is.EqualTo("diario"));
             // A mind that read Esencial's prompt with its stubs scales the others by the apps alone, not by the stubs.
-            Assert.That(ToolProfile.NeededContext("completo", 23348, "esencial"), Is.EqualTo(49575 + LocalContext.TurnRoomTokens));
+            Assert.That(ToolProfile.NeededContext("completo", 23816, "esencial"), Is.EqualTo(49575 + LocalContext.TurnRoomTokens));
         });
     }
 }

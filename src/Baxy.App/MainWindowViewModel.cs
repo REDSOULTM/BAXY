@@ -202,6 +202,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 Refuse = (operation, arguments) =>
                     ToolProfileState.Refusal(operation, arguments, _ringer is { Now.Count: > 0 })
                     ?? Settings.Refusal(operation, arguments),
+                OffFacts = ToolProfileState.OffFacts,
                 BrakeOn = Settings.BrakeOn,
                 Front = HeartbeatMoment.PersonFront,
                 OwnReading = (scope, cancellationToken) => OwnReader is { } read

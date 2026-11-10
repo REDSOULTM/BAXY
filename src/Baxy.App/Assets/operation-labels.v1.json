@@ -166,7 +166,7 @@
     "peripheral.list": { "t": "Ver periféricos", "en": "See peripherals", "g": "network", "f": "ventanas", "p": 3 },
     "peripheral.print": { "t": "Imprimir", "en": "Print", "g": "network", "f": "archivos", "p": 3 },
     "peripheral.scan": { "t": "Escanear", "en": "Scan", "g": "network", "f": "archivos", "p": 3 },
-    "schedule.alarms": { "t": "Alarma o recordatorio", "en": "Alarm or reminder", "g": "time", "f": "alarmas", "p": 2 },
+    "schedule.alarms": { "t": "Alarma o recordatorio", "en": "Alarm or reminder", "g": "time", "f": "alarmas", "p": 1 },
     "shell.command.run": { "t": "Comando de consola", "en": "Console command", "g": "system", "f": "apps", "p": 4 },
     "software.python.package.status": { "t": "Ver un paquete de Python", "en": "Check a Python package", "g": "system", "f": "apps", "p": 4 },
     "software.python.status": { "t": "Ver Python instalado", "en": "Check the installed Python", "g": "system", "f": "apps", "p": 4 },

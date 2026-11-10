@@ -1739,8 +1739,17 @@ CAPTURE_GONE = "; su captura ya se borró: lo que mostró es la pantalla de {whe
 # (follow-ups that told the old look as the screen now: 9 of 36, as the base); told also as a note of its own just
 # before the person's words (where the waiting «sí» and the unsure words go), 3-4 of 36, and it looked again 31 times
 # against 27; a question about what was already read («¿qué número era?») looked again 2 of 12 times against 0.
-CAPTURE_NOTE = ("\n[Pantalla: la última captura, de {when}, ya se borró: lo que mostró es la pantalla de entonces; en este "
-                "turno aún no se miró la de ahora.]")
+# MIR2 (VIVO5 fila 4: the look went by capture_screenshot + ocr_read): the note names the calls whose results came from
+# that capture, as the clock's calls name them, so the text a read gave is tied to the screen of then by its own name.
+CAPTURE_NOTE = ("\n[Pantalla: la última captura, de {when}, ya se borró: lo que {shown} es la pantalla de entonces; en "
+                "este turno aún no se miró la de ahora.]")
+
+
+def _shown_by(calls: list[str]) -> str:
+    """«mostró», or the calls that read one capture: «mostró ocr_read», «mostraron capture_screenshot y ocr_read»."""
+    if not calls:
+        return "mostró"
+    return f"mostró {calls[0]}" if len(calls) == 1 else f"mostraron {', '.join(calls[:-1])} y {calls[-1]}"
 
 
 def _captures(node: Any) -> list[dict[str, Any]]:
@@ -3199,14 +3208,19 @@ class Mind:
         """Aid «capture_gone» (CAPTURE_NOTE): the newest capture of the earlier turns is gone, unless a call waits."""
         if self._captures_kept or not _aid_on("capture_gone"):
             return ""
-        newest, taken = None, {}
+        newest, taken, read = None, {}, {}
+        names = {call.get("id"): (call.get("function") or {}).get("name") for message in self.conversation
+                 for call in message.get("tool_calls") or [] if isinstance(call, dict)}
         for message in self.conversation:
             if message.get("role") == "tool":
                 for capture in _captures(_result_body(str(message.get("content") or ""))):
                     newest = capture["captureId"]
                     if (when := _taken_at(capture.get("createdAtUtc"))) is not None:
                         taken[newest] = when
-        return "" if newest is None else CAPTURE_NOTE.format(when=taken.get(newest, "un turno anterior"))
+                    if isinstance(name := names.get(message.get("tool_call_id")), str):
+                        read.setdefault(newest, {})[name] = None
+        return "" if newest is None else CAPTURE_NOTE.format(when=taken.get(newest, "un turno anterior"),
+                                                             shown=_shown_by(list(read.get(newest, {}))))
 
     def _receipt(self, turn: dict[str, Any], wire: str, observation: str, outcome: str) -> None:
         """A call of the turn as the answer check reads it (aid «answer_check»), and in the session's calls. A

@@ -43,8 +43,10 @@ internal sealed class ToolProfile
     // ALR5 (2026-11-10, counted the same way against int21-base): Esencial's stub of schedule.alarms, which answers what
     // rings (M2), +198; the others show schedule.alarms' description, byte for byte int21-base's. The two together,
     // counted on their merge.
+    // ESE3 (2026-11-10): alarms and reminders are Esencial's (schedule.alarms, level 1): its description instead of the
+    // stub, +468 counted by the model's own server on the mind's warm of int24-cand's Esencial (20.827 → 21.295).
     private static readonly (string Name, int Prefix)[] MeasuredPrefix =
-        [("esencial", 23348), ("diario", 38177), ("avanzado", 47833), (Completo, 49575)];
+        [("esencial", 23816), ("diario", 38177), ("avanzado", 47833), (Completo, 49575)];
 
     /// <summary>The context a model needs for <paramref name="profile"/>'s prompt and a turn beside it: the measured prefix, scaled
     /// by the one the mind read (<paramref name="measured"/>, for <paramref name="measuredProfile"/>) when known. Personalizado
@@ -102,6 +104,40 @@ internal sealed class ToolProfile
         (string profile, HashSet<string>? on) = Read();
         return Keeps(profile, on, operation) ? null : OffCode;
     }
+
+    /// <summary>ESE1 (VIVO5 fila 7, 2 de 2: «Read a web page», off in Esencial, refused as «this tool off in Settings →
+    /// Tools», was told as web search switched off in the settings, which was on): what a refusal as <see cref="OffCode"/>
+    /// says of it, the tool, the profile and the ready-made profiles that have it, so what is off and where it turns on are
+    /// the receipt's and not the model's guess.</summary>
+    /// ESE3 (VIVO7 fila 4: «with this tool on» was told as «activa la opción "Alarmas o recordatorios"», an option the
+    /// tab never shows): the profiles and the tool's box in Personalizado are named as the view shows them, in its language.
+    internal JsonObject OffFacts(string operation)
+    {
+        (string profile, _) = Read();
+        bool english = UiLanguage.IsEnglish;
+        int level = FieldStepProjection.ProfileLevel(operation);
+        string[] with = [.. Presets.Where(preset => preset.Level >= level).Select(preset => Shown(preset.Name, english))];
+        string presets = with.Length > 1 ? string.Join(", ", with[..^1]) + " or " + with[^1] : with[0];
+        string where = english ? "Settings → Tools" : "Settings → Tools («Ajustes → Herramientas»)";
+        return new JsonObject
+        {
+            ["tool"] = FieldStepProjection.EnglishTitle(operation),
+            ["profile"] = Shown(profile, english),
+            ["turnOn"] = $"{where}: the profile {presets}, or {Shown(Personalizado, english)} with «{FieldStepProjection.Title(operation, english)}» ticked",
+        };
+    }
+
+    // The profile as Settings → Tools names it (ToolsSection.tsx, PRESETS): esencial → Esencial, or Essential in English.
+    private static string Shown(string profile, bool english) => english
+        ? profile switch
+        {
+            "esencial" => "Essential",
+            "diario" => "Everyday",
+            "avanzado" => "Advanced",
+            Completo => "Complete",
+            _ => "Custom",
+        }
+        : char.ToUpperInvariant(profile[0]) + profile[1..];
 
     /// <summary>ALR5 (M2, uso real 09-11: with Alarmas outside the profile one set before rang, and no words stopped it):
     /// as <see cref="Refusal(string)"/>, but a stop or a snooze of what rings now (<paramref name="ringing"/>) is not

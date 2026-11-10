@@ -44,8 +44,9 @@ def test_a_look_of_an_earlier_turn_is_told_as_the_screen_of_its_moment_whose_cap
     assert f"vision_describe → lectura: sólo miró, sin abrir, cerrar ni cambiar nada{gone}" in clock
     # And as a note of its own just before the person's words (CAPTURE_NOTE, measured in MIR1 §3).
     notes = [str(message["content"]) for message in server.bodies[-1]["messages"] if message["role"] == "user"]
-    assert notes[-2] == (f"[Pantalla: la última captura, de las {moment}, ya se borró: lo que mostró es la pantalla de "
-                         "entonces; en este turno aún no se miró la de ahora.]")
+    # MIR2: naming the calls that read that capture.
+    assert notes[-2] == (f"[Pantalla: la última captura, de las {moment}, ya se borró: lo que mostraron capture_screenshot "
+                         "y vision_describe es la pantalla de entonces; en este turno aún no se miró la de ahora.]")
     assert notes[-1] == "¿y qué más dice ahí?"
     # The look itself stays whole in the conversation: «¿qué decía la primera línea?» is still answered from it.
     tool_results = [message for message in server.bodies[-1]["messages"] if message["role"] == "tool"]

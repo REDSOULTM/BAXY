@@ -268,6 +268,38 @@ public sealed class UpdatePanelTests
         });
     }
 
+    // VIS3 (VIVO6 fila 4): Settings › Versión showed no number until «Buscar actualizaciones» asked GitHub. The version is
+    // the App's own stamp (scripts/build_product.ps1 -p:InformationalVersion «1.3.2+<commit>»), read with General's settings
+    // and with no engine or request: the commit after «+» is the build's, not a version.
+    [TestCase("1.3.2+cf48b31dd5875fe61deedb7dd68770d4f5dc18b0", "1.3.2")]
+    [TestCase("1.4.0", "1.4.0")]
+    [TestCase("", null)]
+    [TestCase(null, null)]
+    public void TheInstalledVersionIsTheStampWithoutItsCommit(string? stamp, string? shown) =>
+        Assert.That(UpdatePanel.Version(stamp), Is.EqualTo(shown));
+
+    [Test]
+    public async Task GeneralSaysTheInstalledVersionWithNoEngine()
+    {
+        string? stamp = typeof(UpdatePanel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+        using var fake = new FakeMind();
+        var viewModel = new MainWindowViewModel();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            (int status, JsonObject general) = await view.SendAsync("GET", "/settings/general");
+            (int _, JsonObject changed) = await view.SendAsync("PUT", "/settings/general", new JsonObject { ["closeToTray"] = true });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(status, Is.EqualTo(200));
+                Assert.That(stamp, Is.Not.Null.And.Not.Empty);
+                Assert.That((string?)general["version"], Is.EqualTo(UpdatePanel.Version(stamp)).And.Not.Null);
+                Assert.That((string?)changed["version"], Is.EqualTo((string?)general["version"]));
+            });
+        }
+    }
+
     // APP1 (UPD-f): the view's two routes. With no engine the button's request answers its end at once, and the state the
     // view reads afterwards is that same end.
     [Test]

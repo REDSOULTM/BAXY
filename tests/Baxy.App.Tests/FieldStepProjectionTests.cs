@@ -196,6 +196,37 @@ public sealed class FieldStepProjectionTests
         });
     }
 
+    // VIS3 (VIVO6 fila 4): «Actualízate» on the latest version was «✕ No pude · Falló · baxy_update_already_latest». A call
+    // that found nothing to do is said in plain words, never as a failure nor with its code.
+    [TestCase("baxy_update_already_latest", false, "same", "obs", "Ya tienes la última versión (1.3.2)")]
+    [TestCase("baxy_update_already_latest", true, "same", "obs", "You have the latest version (1.3.2)")]
+    [TestCase("volume_already_at_maximum", false, "same", "obs", "Ya estaba al máximo")]
+    [TestCase("visible_control_already_open", true, "same", "obs", "It was already expanded")]
+    [TestCase("volume_already_at_maximum_muted", false, "skip", "reason", "No se subió: ya estaba al máximo, pero silenciado")]
+    [TestCase("process_not_running", false, "skip", "reason", "No se cerró nada: no había ningún proceso llamado así")]
+    public void ACallThatFoundNothingToDoIsNotAFailure(string error, bool english, string shown, string field, string said)
+    {
+        JsonObject view = Finished(OperationStatuses.Failed, verified: false, new JsonObject
+        {
+            ["status"] = "failed",
+            ["error"] = error,
+            ["observed"] = new JsonObject { ["installed"] = "1.3.2", ["latest"] = "1.3.2", ["newer"] = false },
+        }, english: english);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)view["status"], Is.EqualTo(shown));
+            Assert.That((string?)view[field], Is.EqualTo(said));
+            Assert.That(view.ToJsonString(), Does.Not.Contain(error));
+        });
+    }
+
+    [Test]
+    public void TheLatestVersionWithNoVersionReadSaysNoNumber() =>
+        Assert.That((string?)Finished(OperationStatuses.Failed, verified: false,
+            new JsonObject { ["status"] = "failed", ["error"] = "baxy_update_already_latest" })["obs"],
+            Is.EqualTo("Ya tienes la última versión"));
+
     [Test]
     public void ACallWaitingForThePersonIsNotAStep()
     {

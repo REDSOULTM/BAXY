@@ -44,7 +44,7 @@ function Row({ label, hint, children }: { label: string; hint?: string; children
   );
 }
 
-export function UpdateSection({ notice, onNotice, locked }: { notice: boolean; onNotice: (v: boolean) => void; locked?: boolean }) {
+export function UpdateSection({ installed, notice, onNotice, locked }: { installed?: string; notice: boolean; onNotice: (v: boolean) => void; locked?: boolean }) {
   const t = useT();
   const [found, setFound] = useState<Found | null>(null);
   const [busy, setBusy] = useState<'check' | 'install' | null>(null);
@@ -133,9 +133,15 @@ export function UpdateSection({ notice, onNotice, locked }: { notice: boolean; o
     if (found.newer) return t(`Hay una versión nueva: ${found.latest}${mb ? ` (instalador de ${mb} MB)` : ''}`, `A new version is out: ${found.latest}${mb ? ` (${mb} MB installer)` : ''}`);
     return t(`Ya tienes la última versión (${found.installed})`, `You have the latest version (${found.installed})`);
   };
+  // VIS3 (VIVO6 fila 4): the row said no number until «Buscar actualizaciones» asked GitHub. The installed version is the
+  // App's own stamp (GET /settings/general «version»), always said; a check's words follow it unless they already name it.
+  const mine = installed ?? found?.installed;
+  const now = said();
+  const hint = !mine ? now : !now ? t(`Instalada: ${mine}`, `Installed: ${mine}`)
+    : now.includes(mine) ? now : t(`Instalada: ${mine} · ${now}`, `Installed: ${mine} · ${now}`);
   return (
     <>
-      <Row label={t('Versión', 'Version')} hint={said() || (found?.installed ?? undefined)}>
+      <Row label={t('Versión', 'Version')} hint={hint || undefined}>
         {running
           ? <button className="panel-btn" disabled>{running.latest ? t(`Actualizando a ${running.latest}…`, `Updating to ${running.latest}…`) : t('Actualizando…', 'Updating…')}</button>
           : found?.newer && found.channel === 'github'

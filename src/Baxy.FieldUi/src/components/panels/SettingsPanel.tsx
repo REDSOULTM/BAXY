@@ -17,6 +17,7 @@ import { ToolsSection } from './ToolsSection';
 import { DownloadBar } from './DownloadBar';
 import { GIB, size } from '../../size';
 import { UpdateSection } from './UpdateSection';
+import { Marked } from '../../markdown';
 import { LOOK_DEFAULT, type Look } from '../../look';
 import type { GeneralSettings, Metrics, MicMode, NetEntry, ProposalSettings } from '../../types';
 import { num } from '../../numbers';
@@ -1254,6 +1255,13 @@ interface Props {
   onLook: (l: Look) => void;
 }
 
+// licenses/PRIVACIDAD.md says the same twice: its title, then «## Español» and «## English». The view's language is shown.
+function policyIn(text: string, english: boolean): string {
+  const at = text.search(/^## English\s*$/m);
+  if (at < 0) return text;
+  return english ? text.slice(0, text.indexOf('\n') + 1) + '\n' + text.slice(at) : text.slice(0, at);
+}
+
 export function SettingsPanel({ onClose, theme, onTheme, lang, onLang, bypass, onBypass, mic, micAvailable, noWake = null, onMic, a11y, onA11y, general, onGeneral, metrics, netLog, apiPast = false, confirmSeconds, onMemory, initialTab = 'general', proposals, proposalSeconds, onProposals, look, onLook }: Props) {
   const t = useT();
   const [tab, setTab] = useState<Tab>(initialTab);
@@ -1266,13 +1274,23 @@ export function SettingsPanel({ onClose, theme, onTheme, lang, onLang, bypass, o
   const [askBypass, setAskBypass] = useState(false);
   const bypassRef = useInnerDialog<HTMLDivElement>(() => setAskBypass(false));
   const [legalProblem, setLegalProblem] = useState<string | null>(null);
-  const openLegal = async (doc: 'privacy' | 'licenses') => {
+  const legalSaid = (code: string | null) => setLegalProblem(code === 'legal_not_found'
+    ? t('No encontré los textos legales en la carpeta de BAXY: están en la carpeta «licenses» del paquete que bajaste', 'I didn’t find the legal texts in BAXY’s folder: they’re in the «licenses» folder of the package you downloaded')
+    : t('Windows no abrió el texto: está en la carpeta «licenses» de BAXY', 'Windows didn’t open the text: it’s in BAXY’s «licenses» folder'));
+  const openLicenses = async () => {
     setLegalProblem(null);
-    const { value, code } = await sendTold('POST', '/settings/legal/open', { doc });
-    if (value) return;
-    setLegalProblem(code === 'legal_not_found'
-      ? t('No encontré los textos legales en la carpeta de BAXY: están en la carpeta «licenses» del paquete que bajaste', 'I didn’t find the legal texts in BAXY’s folder: they’re in the «licenses» folder of the package you downloaded')
-      : t('Windows no abrió el texto: está en la carpeta «licenses» de BAXY', 'Windows didn’t open the text: it’s in BAXY’s «licenses» folder'));
+    const { value, code } = await sendTold('POST', '/settings/legal/open', { doc: 'licenses' });
+    if (!value) legalSaid(code);
+  };
+  // VIS3 (VIVO6 fila 4): the policy is a .md, and a Windows with no program for .md showed «Open with» instead of it. Its text
+  // is shown here, drawn by the answers' own renderer (markdown.tsx), which needs nothing installed.
+  const [policy, setPolicy] = useState<string | null>(null);
+  const togglePolicy = async () => {
+    setLegalProblem(null);
+    if (policy !== null) { setPolicy(null); return; }
+    const told = await getJson<{ text?: string }>('/settings/legal/privacy');
+    if (typeof told?.text === 'string') setPolicy(told.text);
+    else legalSaid('legal_not_found');
   };
   const needle = find.trim().toLowerCase();
   const shownTabs = TABS.filter(([, l, k]) => !needle || (t.w(l) + ' ' + t.w(k)).toLowerCase().includes(needle));
@@ -1426,7 +1444,7 @@ export function SettingsPanel({ onClose, theme, onTheme, lang, onLang, bypass, o
             </Row>
             </Fold>
             <Fold id="gen-version" open title={t('Versión', 'Version')}>
-              <UpdateSection notice={g?.updateNotice !== false} locked={lock} onNotice={(v) => onGeneral({ updateNotice: v })} />
+              <UpdateSection installed={g?.version ?? undefined} notice={g?.updateNotice !== false} locked={lock} onNotice={(v) => onGeneral({ updateNotice: v })} />
             </Fold>
           </>) : null}
           {tab === 'herramientas' ? <ToolsSection /> : null}
@@ -1513,9 +1531,10 @@ export function SettingsPanel({ onClose, theme, onTheme, lang, onLang, bypass, o
             {/* REV_LEGAL LEG-15: the texts that go in BAXY's folder, opened from here (FieldProductChannel.OpenLegal) */}
             <Fold id="priv-legal" title={t('Privacidad y licencias', 'Privacy and licenses')} summary={t('Textos de la carpeta de BAXY', 'Texts in BAXY’s folder')}>
               <Row label={t('Política de privacidad', 'Privacy policy')} hint={t('Qué guarda BAXY, qué sale de este PC y cómo borrarlo', 'What BAXY keeps, what leaves this PC and how to delete it')}>
-                <button className="panel-btn ghost" onClick={() => void openLegal('privacy')}>{t('Abrir la política de privacidad', 'Open the privacy policy')}</button></Row>
+                <button className="panel-btn ghost" aria-expanded={policy !== null} onClick={() => void togglePolicy()}>{policy !== null ? t('Cerrar la política de privacidad', 'Close the privacy policy') : t('Abrir la política de privacidad', 'Open the privacy policy')}</button></Row>
+              {policy !== null ? <div className="bx-legal" role="region" tabIndex={0} aria-label={t('Política de privacidad', 'Privacy policy')}><Marked text={policyIn(policy, t.lang === 'en')} /></div> : null}
               <Row label={t('Licencias', 'Licenses')} hint={t('La de BAXY y las de cada pieza de terceros que lleva', 'BAXY’s and those of every third-party piece it carries')}>
-                <button className="panel-btn ghost" onClick={() => void openLegal('licenses')}>{t('Abrir las licencias', 'Open the licenses')}</button></Row>
+                <button className="panel-btn ghost" onClick={() => void openLicenses()}>{t('Abrir las licencias', 'Open the licenses')}</button></Row>
               {legalProblem ? <div className="st-tip" role="alert">{legalProblem}</div> : null}
             </Fold>
             <Fold id="priv-memoria" title={t('Memoria', 'Memory')} summary={t('Sólo en este PC', 'Only on this PC')}>

@@ -46,6 +46,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     // The last save of the conversation on screen did not reach the disk: the history says so until one does.
     private bool _unsaved;
     private DateTimeOffset _sessionCreated = DateTimeOffset.UtcNow;
+    // The rail's «Alarmas»: null while not read since the last change, and read again when the view asks for the surfaces
+    // (OCR1, VIVO3 C1: with three alarms set by chat the rail said «—» until the triggers panel was opened).
     private int? _triggerCount;
     // The card that waits for the person's Sí or No and the call it shows: an answer that names another card is refused.
     private (string Id, NativeTurnConfirmation Asked)? _pendingCard;
@@ -90,6 +92,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.VoiceWake += OnVoiceWake;
         _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
         _updates = UpdatePanel.ForEngine(() => _viewModel.CoreClient);
+        ListTriggers = (arguments, cancellationToken) =>
+            _viewModel.SendPanelOperationAsync("schedule.alarms", arguments, cancellationToken);
         _updates.InstallEnded += OnInstallEnded;
         _ = WatchForUpdatesAsync(_lifetimeCancellation);
         // A mind that starts again gets back the conversation this view shows (2026-10-22, review of the App).
@@ -272,6 +276,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                     Publish(SurfacesEvent());
                 }
 
+                if (_triggerCount is null)
+                {
+                    _ = await TriggersAsync().ConfigureAwait(true);
+                }
+
                 return Json(Surfaces());
             case ("GET", "/voice/status"):
                 return Json(VoiceStatus());
@@ -351,6 +360,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return Json(Kept());
             case ("POST", "/settings/legal/open"):
                 return OpenLegal((string?)ParseBody(body)?["doc"]);
+            case ("GET", "/settings/legal/privacy"):
+                return PrivacyText();
             case ("GET", "/catalog"):
                 return Json(FieldStepProjection.Catalog());
             case ("GET", "/triggers"):
@@ -368,7 +379,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             case ("GET", "/update/install"):
                 return Json(_updates.InstallState());
             case ("GET", "/settings/general"):
-                return Json(_viewModel.Settings.GeneralJson(Autostart()));
+                return Json(General());
             // Owner, 2026-11-08: the overlay that says what BAXY does while its window is behind (OverlayPresenter).
             case ("GET", "/settings/overlay"):
                 return Json(_viewModel.Settings.OverlayJson());
@@ -625,25 +636,53 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     /// </summary>
     private FieldHttpResponse OpenLegal(string? doc)
     {
-        if (doc is not ("privacy" or "licenses"))
+        if (doc is not "licenses")
         {
             return Error("invalid_settings", 400);
         }
 
-        string? folder = null;
-        for (DirectoryInfo? at = new(LegalStart); at is not null && folder is null; at = at.Parent)
-        {
-            string licenses = Path.Combine(at.FullName, "licenses");
-            folder = File.Exists(Path.Combine(licenses, "PRIVACIDAD.md")) ? licenses : null;
-        }
-
-        if (folder is null)
+        if (LegalFolder() is not { } folder)
         {
             return Error("legal_not_found", 404);
         }
 
-        bool opened = doc == "privacy" && OpenShell(Path.Combine(folder, "PRIVACIDAD.md")) || OpenShell(folder);
-        return opened ? Json(new JsonObject { ["ok"] = true }) : Error("legal_not_opened", 409);
+        // A folder opens in Explorer on any Windows.
+        return OpenShell(folder) ? Json(new JsonObject { ["ok"] = true }) : Error("legal_not_opened", 409);
+    }
+
+    // VIS3 (VIVO6 fila 4): the policy is a .md, and a Windows with no program for .md answered «Abrir la política de
+    // privacidad» with its «Open with» dialog (OpenWith.exe -Embedding), which ShellExecute counts as opened. Its text is
+    // shown in Settings (the view's Markdown renderer), which needs nothing installed.
+    private FieldHttpResponse PrivacyText()
+    {
+        if (LegalFolder() is not { } folder)
+        {
+            return Error("legal_not_found", 404);
+        }
+
+        try
+        {
+            return Json(new JsonObject { ["text"] = File.ReadAllText(Path.Combine(folder, "PRIVACIDAD.md")) });
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return Error("legal_not_read", 409);
+        }
+    }
+
+    // The package's «licenses» folder (scripts/build_steam.ps1: beside «app»), from Baxy.exe's folder up; null without it.
+    private string? LegalFolder()
+    {
+        for (DirectoryInfo? at = new(LegalStart); at is not null; at = at.Parent)
+        {
+            string licenses = Path.Combine(at.FullName, "licenses");
+            if (File.Exists(Path.Combine(licenses, "PRIVACIDAD.md")))
+            {
+                return licenses;
+            }
+        }
+
+        return null;
     }
 
     private static bool ShellOpen(string path)
@@ -1436,7 +1475,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private async Task<FieldHttpResponse> TriggersAsync()
     {
-        OperationResponse? response = await _viewModel.SendPanelOperationAsync("schedule.alarms",
+        OperationResponse? response = await ListTriggers(
             new JsonObject { ["action"] = "list", ["limit"] = 50 }, _lifetimeCancellation).ConfigureAwait(true);
         return TriggersReply(response);
     }
@@ -1467,6 +1506,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         return await TriggersAsync().ConfigureAwait(true);
     }
+
+    /// <summary>How BAXY's alarms are listed: the chat's own schedule.alarms through the engine (a test answers it).</summary>
+    internal Func<JsonObject, CancellationToken, Task<OperationResponse?>> ListTriggers { get; set; }
 
     private FieldHttpResponse TriggersReply(OperationResponse? response)
     {
@@ -1613,7 +1655,15 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             _viewModel.SilenceVoice();
         if (_viewModel.Settings.EchoCancel != echoCancel)
             _ = _viewModel.ApplyEchoCancelAsync(CancellationToken.None);
-        return Json(_viewModel.Settings.GeneralJson(Autostart()));
+        return Json(General());
+    }
+
+    // General's settings, and the version Settings › Versión shows before any check (VIS3: UpdatePanel.Installed).
+    private JsonObject General()
+    {
+        JsonObject general = _viewModel.Settings.GeneralJson(Autostart());
+        general["version"] = UpdatePanel.Installed;
+        return general;
     }
 
     // Steam (2026-11-04): the person's choice of language («auto», «es» or «en»), which the host keeps and the view reads

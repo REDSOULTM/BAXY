@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Contracts;
@@ -81,6 +82,16 @@ internal sealed class UpdatePanel
 
         return response;
     }, MemoryOperationProtector.ResolveDataRoot);
+
+    /// <summary>VIS3 (VIVO6 fila 4: Settings › Versión said no number until «Buscar actualizaciones» asked GitHub): the
+    /// version this App is, from its own stamp (scripts/build_product.ps1 -p:InformationalVersion), with no request.</summary>
+    internal static string? Installed { get; } =
+        Version(typeof(UpdatePanel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion);
+
+    /// <summary>The stamp's version without the build's commit after «+» (SemVer 2.0.0 §10: build metadata); null when
+    /// there is none.</summary>
+    internal static string? Version(string? stamp) =>
+        stamp?.Split('+', 2)[0].Trim() is { Length: > 0 } version ? version : null;
 
     /// <summary>What the last check found, as the view shows it; null before one ran.</summary>
     internal JsonObject? Known

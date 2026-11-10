@@ -1588,21 +1588,69 @@ test('V-12: las tarjetas se recorren con las flechas; las que cambian el modelo 
 });
 
 // REV_LEGAL LEG-15 (2026-11-09): the licenses and the privacy policy went in the package's folder and nothing in the App
-// opened them. Settings › Privacidad asks the host (POST /settings/legal/open) for one of two words, never a path.
-test('privacidad: la política de privacidad y las licencias del paquete se abren desde Ajustes', async () => {
+// opened them. Settings › Privacidad asks the host for one of two words, never a path.
+// VIS3 (VIVO6 fila 4): the policy is PRIVACIDAD.md, and a Windows with no program for .md showed «Open with» instead of it.
+// Its text is read here (GET /settings/legal/privacy) and drawn, in the view's language; only the licenses' folder is opened.
+const POLICY = '# BAXY: política de privacidad / Privacy policy\n\nÚltima actualización · Last updated\n\n## Español\n\n**Qué guarda.** Tus conversaciones, en este PC.\n\n| Cuando pides | Servicio |\n|---|---|\n| El tiempo | Un servicio meteorológico |\n\n## English\n\n**What it keeps.** Your conversations, on this PC.\n';
+test('privacidad: la política se lee dentro de Ajustes y las licencias abren su carpeta', async () => {
   h = await openView();
   let found = true;
   h.reply('/settings/legal/open', () => (found ? { body: { ok: true } } : { status: 404, body: { error: 'legal_not_found' } }));
+  h.reply('/settings/legal/privacy', () => (found ? { body: { text: POLICY } } : { status: 404, body: { error: 'legal_not_found' } }));
   const p = h.page;
   await p.locator('.bx-gear').click();
   await p.locator('.settings-tab', { hasText: 'Privacidad' }).click();
   await p.locator('.bx-fold-h', { hasText: 'Privacidad y licencias' }).click();
   await p.getByRole('button', { name: 'Abrir la política de privacidad' }).click();
+  const policy = p.getByRole('region', { name: 'Política de privacidad' });
+  await expect(policy.locator('strong', { hasText: 'Qué guarda.' })).toBeVisible();
+  await expect(policy).not.toContainText('**');
+  await expect(policy).not.toContainText('##');
+  await expect(policy.getByRole('cell', { name: 'Un servicio meteorológico' })).toBeVisible();
+  await expect(policy).not.toContainText('|');
+  await expect(policy).not.toContainText('What it keeps');
+  await p.getByRole('button', { name: 'Cerrar la política de privacidad' }).click();
+  await expect(policy).toHaveCount(0);
   await p.getByRole('button', { name: 'Abrir las licencias' }).click();
-  await expect.poll(() => h.calls.filter((c) => c.path === '/settings/legal/open').map((c) => c.body)).toEqual([{ doc: 'privacy' }, { doc: 'licenses' }]);
+  await expect.poll(() => h.calls.filter((c) => c.path === '/settings/legal/open').map((c) => c.body)).toEqual([{ doc: 'licenses' }]);
   found = false;
   await p.getByRole('button', { name: 'Abrir la política de privacidad' }).click();
   await expect(p.getByRole('alert').filter({ hasText: 'No encontré los textos legales' })).toBeVisible();
+  await expect(policy).toHaveCount(0);
+  found = true;
+  h.reply('/settings/general', () => ({ body: { language: 'en', languageInUse: 'en' } }));
+  await p.keyboard.press('Escape');
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Privacy' }).click();
+  // the fold stays as it was left (open)
+  await p.getByRole('button', { name: 'Open the privacy policy' }).click();
+  const english = p.getByRole('region', { name: 'Privacy policy' });
+  await expect(english.locator('strong', { hasText: 'What it keeps.' })).toBeVisible();
+  await expect(english).not.toContainText('Qué guarda');
+  expect(h.calls.filter((c) => c.path === '/settings/legal/open').map((c) => c.body)).toEqual([{ doc: 'licenses' }]);
+});
+
+// VIS3 (VIVO6 fila 4): Settings › Versión said no number until «Buscar actualizaciones» asked GitHub. The installed version is
+// the App's own stamp, in General's settings: it is said before any check, with no request to /update, and stays said after.
+test('versión: la fila dice la versión instalada sin buscar, y la sigue diciendo tras buscar, en los dos idiomas', async () => {
+  h = await openView();
+  h.reply('/settings/general', () => ({ body: { language: 'es', languageInUse: 'es', version: '1.3.2' } }));
+  h.reply('/update', () => ({ body: { ok: true, channel: 'github', installed: '1.3.2', latest: '1.4.0', newer: true, downloadBytes: 83886080 } }));
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  const hint = p.locator('.bxs-row', { hasText: 'Versión' }).locator('.h').first();
+  await expect(hint).toHaveText('Instalada: 1.3.2');
+  expect(h.calls.filter((c) => c.path === '/update')).toEqual([]);
+  await p.getByRole('button', { name: 'Buscar actualizaciones' }).click();
+  await expect(hint).toHaveText('Instalada: 1.3.2 · Hay una versión nueva: 1.4.0 (instalador de 80 MB)');
+  h.reply('/update', () => ({ body: { ok: false, error: 'baxy_update_already_latest', channel: 'github', installed: '1.3.2', latest: '1.3.2', newer: false } }));
+  h.reply('/settings/general', () => ({ body: { language: 'en', languageInUse: 'en', version: '1.3.2' } }));
+  await p.keyboard.press('Escape');
+  await p.locator('.bx-gear').click();
+  const en = p.locator('.bxs-row', { hasText: 'Version' }).locator('.h').first();
+  await expect(en).toHaveText('Installed: 1.3.2');
+  await p.getByRole('button', { name: 'Check for updates' }).click();
+  await expect(en).toHaveText('You have the latest version (1.3.2)');
 });
 
 // LEG1 §5 (INFORME_LEG1, «Para INS1», 2026-11-09): four texts of the view said what the agreements no longer say. Each now

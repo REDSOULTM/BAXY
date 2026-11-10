@@ -58,6 +58,15 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bx-c4-baxy .tx code{font-family:var(--mono);font-size:.92em;background:rgba(var(--glass-rgb),.55);border-radius:3px;padding:0 3px}
 .bx-c4-baxy .tx pre{white-space:pre-wrap;overflow-wrap:anywhere;padding:6px 8px;border:1px solid var(--hair);border-radius:4px}
 .bx-c4-baxy .tx pre code{background:none;padding:0}
+/* VIS3: the privacy policy read in Settings › Privacidad, drawn as the answers are (markdown.tsx) */
+.bx-legal{max-height:340px;overflow-y:auto;margin:2px 0 8px;padding:8px 10px;border:1px solid var(--hair);border-radius:4px;font-size:12.5px;line-height:1.5;color:var(--t-bone);text-wrap:pretty}
+.bx-legal :is(p,ul,ol,pre,blockquote){margin:0 0 .55em}
+.bx-legal :is(ul,ol){padding-left:1.3em}
+.bx-legal strong{font-weight:600}
+.bx-legal .md-table,.bx-c4-baxy .tx .md-table{overflow-x:auto;margin:0 0 .55em}
+.bx-legal table,.bx-c4-baxy .tx table{border-collapse:collapse;font-size:.95em;white-space:normal}
+.bx-legal :is(th,td),.bx-c4-baxy .tx :is(th,td){border:1px solid var(--hair);padding:3px 6px;text-align:left;vertical-align:top}
+.bx-legal th,.bx-c4-baxy .tx th{font-weight:600}
 .bx-c4-baxy .tx blockquote{border-left:2px solid var(--hair);padding-left:8px;color:var(--t-second)}
 .bx-c4-baxy .tx hr{border:0;border-top:1px solid var(--hair);margin:.55em 0}
 .bx-c4-baxy .mt{display:flex;gap:10px;font:10px var(--mono);color:var(--t-muted)}

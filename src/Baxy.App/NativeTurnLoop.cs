@@ -111,6 +111,9 @@ internal sealed class NativeTurnLoop
         /// <summary>The owner's switch that refuses a call before it runs (FieldSettings.Refusal), as its code.</summary>
         internal Func<string, JsonObject, string?>? Refuse { get; init; }
 
+        /// <summary>ESE1: what a refusal as off in the tool profile says of the operation (ToolProfile.OffFacts).</summary>
+        internal Func<string, JsonObject>? OffFacts { get; init; }
+
         /// <summary>COR1: whether one of BAXY's own brakes (OwnBrakes, by its setting) is on as the person's settings
         /// say now; null where no settings are read: it is weighed as on.</summary>
         internal Func<string, bool>? BrakeOn { get; init; }
@@ -705,7 +708,7 @@ internal sealed class NativeTurnLoop
         // The owner switched this kind of call off in Settings (privacy): it does not run, and the model reads why.
         if (_host.Refuse?.Invoke(operation, arguments) is { } refusal)
         {
-            return Record(operation, arguments, started, Refused(refusal));
+            return Record(operation, arguments, started, RefusedFor(refusal, operation));
         }
 
         // Feria 2026-10-27: a search with none of the person's words, or a message by a channel they did not name, goes
@@ -748,7 +751,7 @@ internal sealed class NativeTurnLoop
                 descriptor = other;
                 if (_host.Refuse?.Invoke(operation, ruling.Arguments) is { } off)
                 {
-                    return Record(operation, ruling.Arguments, started, Refused(off));
+                    return Record(operation, ruling.Arguments, started, RefusedFor(off, operation));
                 }
             }
 
@@ -1357,14 +1360,16 @@ internal sealed class NativeTurnLoop
         }
 
         DropPending();
-        return Record(prepared.OperationName, arguments, started, Refused(refusal, prepared.OperationName));
+        return Record(prepared.OperationName, arguments, started,
+            RefusedFor(refusal, prepared.OperationName, prepared.OperationName));
     }
 
     // Banco 1/16 y 2/16 (08-11, juez ciego): with the code alone the 4B read a look refused as off as «no window is
-    // open» and a recall refused as off as «I have no record of that»; the result says what did not happen.
+    // open» and a recall refused as off as «I have no record of that»; the result says what did not happen. ESE1 (VIVO5
+    // fila 7): and that it is the profile, not another setting, with how they turn it on beside it (ToolProfile.OffFacts).
     private const string OffInProfileNext =
-        "nothing ran and nothing was read: the person turned this tool off in Settings → Tools; say it is off there and "
-        + "say nothing of what it would have found";
+        "nothing ran and nothing was read: this tool is off in the person's tool profile, not by any other setting; "
+        + "tell them it is off in their profile and how they turn it on, and say nothing of what it would have found";
 
     // COR1 (VIVO3 A3, 2 de 2; banco cor1_ho): with the bare code the 4B took «Búsqueda web» off as an obstacle of its
     // own to clear and switched it back on. The result says whose switch it is and what to tell them.
@@ -1375,11 +1380,22 @@ internal sealed class NativeTurnLoop
     /// <summary>A call the owner's settings refuse before it runs (<see cref="Host.Refuse"/>), as the model reads it; one
     /// off in the person's tool profile also says that nothing ran or was read, and one «Búsqueda web» refuses says
     /// whose switch that is.</summary>
-    internal static string Refused(string code, string? about = null) =>
+    internal static string Refused(string code, string? about = null, JsonObject? off = null) =>
         Observation("rejected", code,
-            code == ToolProfile.OffCode ? new JsonObject { ["next"] = OffInProfileNext }
+            code == ToolProfile.OffCode ? OffExtra(off)
             : code == FieldSettings.WebOff ? new JsonObject { ["next"] = WebOffNext }
             : null, about);
+
+    private static JsonObject OffExtra(JsonObject? off)
+    {
+        JsonObject extra = off ?? [];
+        extra["next"] = OffInProfileNext;
+        return extra;
+    }
+
+    // ESE1: a refusal as off in the profile carries what the profile says of that operation.
+    private string RefusedFor(string code, string operation, string? about = null) =>
+        Refused(code, about, code == ToolProfile.OffCode ? _host.OffFacts?.Invoke(operation) : null);
 
     // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
     // asks for its confirmation too, the person's «sí» to this invocation is that confirmation (same token binding), unless

@@ -196,6 +196,8 @@ export interface GeneralSettings {
   language?: 'auto' | 'es' | 'en';
   /** the language in use, resolved by the host (from Windows when the choice is «auto») */
   languageInUse?: 'es' | 'en';
+  /** VIS3: the version this App is, from its own stamp (UpdatePanel.Installed): no check is needed to know it */
+  version?: string | null;
 }
 
 /** the host keeps the conversation (FieldTranscript): it sends an item whenever one is added or changes, and the whole

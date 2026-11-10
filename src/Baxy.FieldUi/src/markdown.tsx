@@ -66,7 +66,23 @@ function blocks(tokens: Token[], key: string): ReactNode[] {
       case 'code': return <pre key={k}><code>{(token as Tokens.Code).text}</code></pre>;
       case 'blockquote': return <blockquote key={k}>{blocks((token as Tokens.Blockquote).tokens, k)}</blockquote>;
       case 'hr': return <hr key={k} />;
-      // HTML blocks, tables, link definitions and anything else: as written
+      // VIS3: a GFM table (https://github.github.com/gfm/#tables-extension-), as the privacy policy has one (Settings)
+      case 'table': {
+        const table = token as Tokens.Table;
+        const cell = (c: Tokens.TableCell, j: number, head: boolean) => {
+          const Tag = head ? 'th' : 'td';
+          return <Tag key={j} style={c.align ? { textAlign: c.align } : undefined}>{inline(c.tokens, k + '.' + j)}</Tag>;
+        };
+        return (
+          <div key={k} className="md-table">
+            <table>
+              <thead><tr>{table.header.map((c, j) => cell(c, j, true))}</tr></thead>
+              <tbody>{table.rows.map((row, r) => <tr key={r}>{row.map((c, j) => cell(c, j, false))}</tr>)}</tbody>
+            </table>
+          </div>
+        );
+      }
+      // HTML blocks, link definitions and anything else: as written
       default: return <p key={k}>{'raw' in token ? token.raw.trim() : ''}</p>;
     }
   });

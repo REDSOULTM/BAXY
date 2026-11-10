@@ -17,8 +17,8 @@ interface CatalogItem { name: string; title: string; level: number }
 interface Catalog { total: number; groups: { name: string; items: CatalogItem[] }[] }
 
 const PRESETS: [Exclude<Profile, 'personalizado'>, number, Words, Words][] = [
-  ['esencial', 1, { es: 'Esencial', en: 'Essential' }, { es: 'Lo mínimo para manejar el PC: apps, ventanas, volumen, brillo, apagar, buscar en la web', en: 'The least to run the PC: apps, windows, volume, brightness, shutting down, web search' }],
-  ['diario', 2, { es: 'Diario', en: 'Everyday' }, { es: 'Además ficheros, navegador, música, memoria, notas y alarmas, Wi-Fi y Bluetooth', en: 'Plus files, browser, music, memory, notes and alarms, Wi-Fi and Bluetooth' }],
+  ['esencial', 1, { es: 'Esencial', en: 'Essential' }, { es: 'Lo mínimo para manejar el PC: apps, ventanas, volumen, brillo, apagar, alarmas y recordatorios, buscar en la web', en: 'The least to run the PC: apps, windows, volume, brightness, shutting down, alarms and reminders, web search' }],
+  ['diario', 2, { es: 'Diario', en: 'Everyday' }, { es: 'Además ficheros, navegador, música, memoria, notas y tareas, Wi-Fi y Bluetooth', en: 'Plus files, browser, music, memory, notes and tasks, Wi-Fi and Bluetooth' }],
   ['avanzado', 3, { es: 'Avanzado', en: 'Advanced' }, { es: 'Además hace clic y lee la pantalla en cualquier app, correo, mensajes, juegos y forzar el cierre de un programa', en: 'Plus clicking and reading the screen in any app, email, messages, games and forcing a program to close' }],
   ['completo', 4, { es: 'Completo', en: 'Complete' }, { es: 'Todo, como viene de fábrica: también instalar programas, la consola y copias de seguridad', en: 'Everything, as it comes: also installing programs, the console and backups' }],
 ];

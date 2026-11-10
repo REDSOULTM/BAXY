@@ -2,13 +2,13 @@
 
 [English](#english) · [Español](#español)
 
-> **This is the `experimental` branch: the source code of BAXY 1.3.2, an early-access pre-release for testing.**
-> The recommended version is still [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1) (branch `main`). What changes in 1.3.2, its known
-> problems and what was not tested are in the [1.3.2 release notes](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.2).
+> **This is the `experimental` branch: the source code of BAXY 1.3.3, an early-access pre-release for testing.**
+> The recommended version is still [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1) (branch `main`). What changes in 1.3.3, its known
+> problems and what was not tested are in the [1.3.3 release notes](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.3).
 >
-> **Esta es la rama `experimental`: el código de BAXY 1.3.2, un acceso anticipado para probar.** La versión
-> recomendada sigue siendo [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1) (rama `main`). Qué cambia en la 1.3.2, sus problemas conocidos
-> y lo que no se probó están en las [notas de la 1.3.2](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.2).
+> **Esta es la rama `experimental`: el código de BAXY 1.3.3, un acceso anticipado para probar.** La versión
+> recomendada sigue siendo [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1) (rama `main`). Qué cambia en la 1.3.3, sus problemas conocidos
+> y lo que no se probó están en las [notas de la 1.3.3](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.3).
 
 ## English
 
@@ -30,14 +30,15 @@ you turn that off in Settings.
 Get the installer from the [releases page](https://github.com/REDSOULTM/BAXY/releases) (the latest is
 [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1)): download `BAXY-Instalador.exe` and open it.
 It checks your PC, downloads the parts it needs, verifies each one's SHA-256 and leaves BAXY in the Start menu.
-The installer is not code-signed, so SmartScreen may warn you. BAXY 1.3.2, the version of this branch, is an
-early-access pre-release: its installer is on [its own page](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.2), and it is not offered through "Update".
+The installer is not code-signed, so SmartScreen may warn you. BAXY 1.3.3, the version of this branch, is an
+early-access pre-release: its installer is on [its own page](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.3), and it is not offered through "Update".
 
 ### What you need to run it
 
-- Windows 10 or 11, 64-bit.
-- **A dedicated NVIDIA or AMD graphics card with 4 GB of memory or more.** NVIDIA cards use CUDA; AMD uses Vulkan.
-- About 12 GB free while installing.
+- 64-bit Windows 11. Windows 10 has not been tested.
+- **A dedicated graphics card: NVIDIA tested with 6 GB or more (4 GB untested); AMD in testing.** NVIDIA cards use
+  CUDA; AMD uses Vulkan.
+- About 11.1 GB free while installing (the release notes give the measured figures).
 - Internet to install. BAXY itself works offline, except for what you ask of the web.
 
 ### Not tested or not supported
@@ -45,7 +46,7 @@ early-access pre-release: its installer is on [its own page](https://github.com/
 - Integrated graphics (Intel or AMD) and CPU only are not supported.
 - A freshly formatted Windows without the Visual C++ runtime or WebView2 was not tested (the installer installs both
   from Microsoft).
-- The 1.3.2 package was not tried installed on a real AMD or Intel card (its release notes say what was measured).
+- The 1.3.3 package was not tried installed on a real AMD or Intel card (its release notes say what was measured).
 - "Another model" (Settings → Model) is optional and off by default. With a company's API, what you give BAXY goes to
   that company. OpenAI and Google were not tested with a real key; other models were measured against BAXY's tuned model (an
   optional extra since 1.3.2) and did worse.
@@ -125,14 +126,15 @@ en Ajustes.
 Baja el instalador de la [página de versiones](https://github.com/REDSOULTM/BAXY/releases) (la última es
 [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1)): descarga `BAXY-Instalador.exe` y ábrelo.
 Revisa tu PC, baja las partes que necesita, comprueba el SHA-256 de cada una y deja a BAXY en el menú Inicio.
-El instalador no va firmado, así que SmartScreen puede avisar. BAXY 1.3.2, la versión de esta rama, es un
-acceso anticipado: su instalador está en [su propia página](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.2), y no se ofrece por «Actualizar».
+El instalador no va firmado, así que SmartScreen puede avisar. BAXY 1.3.3, la versión de esta rama, es un
+acceso anticipado: su instalador está en [su propia página](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.3), y no se ofrece por «Actualizar».
 
 ### Qué necesitas para usarlo
 
-- Windows 10 u 11 de 64 bits.
-- **Una tarjeta gráfica dedicada NVIDIA o AMD con 4 GB de memoria o más.** Con NVIDIA usa CUDA; con AMD, Vulkan.
-- Unos 12 GB libres al instalar.
+- Windows 11 de 64 bits. Windows 10 no se ha probado.
+- **Una tarjeta gráfica dedicada: NVIDIA probada con 6 GB o más (4 GB sin probar); AMD en pruebas.** Con NVIDIA usa
+  CUDA; con AMD, Vulkan.
+- Unos 11,1 GB libres al instalar (las notas de la versión dan las cifras medidas).
 - Internet para instalar. BAXY funciona sin conexión, salvo lo que le pidas de la web.
 
 ### Sin probar o sin soporte
@@ -140,7 +142,7 @@ acceso anticipado: su instalador está en [su propia página](https://github.com
 - Los gráficos integrados (Intel o AMD) y la CPU sola no tienen soporte.
 - Un Windows recién formateado sin el runtime de Visual C++ ni WebView2 no se probó (el instalador pone los dos desde
   Microsoft).
-- El paquete de la 1.3.2 no se probó instalado en una tarjeta AMD o Intel real (sus notas dicen qué se midió).
+- El paquete de la 1.3.3 no se probó instalado en una tarjeta AMD o Intel real (sus notas dicen qué se midió).
 - «Otro modelo» (Ajustes → Modelo) es opcional y viene apagado. Con la API de una empresa, lo que le pases a BAXY va a
   esa empresa. OpenAI y Google no se probaron con una clave real; otros modelos se midieron frente al modelo ajustado a BAXY
   (un extra opcional desde la 1.3.2) y rindieron peor.

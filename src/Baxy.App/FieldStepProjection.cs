@@ -115,10 +115,28 @@ internal static class FieldStepProjection
         ["application_not_said"] = ("No se ejecutó: no nombraste esa aplicación", "Not run: you did not name that app"),
     };
 
+    // VIS3 (VIVO6 fila 4, 10-11-2026: «Actualízate» on the latest version showed «✕ No pude · Falló ·
+    // baxy_update_already_latest»): the codes of a call that ended before any effect with nothing to do, because its provider
+    // read the asked state already there (same) or read why there was nothing it could do (skip). The model still reads the
+    // failure and its code as they came; only the chip says it in plain words. « ({installed})» is the version the call read.
+    private static readonly Dictionary<string, (string Status, string Es, string En)> NothingToDo = new(StringComparer.Ordinal)
+    {
+        ["baxy_update_already_latest"] = ("same", "Ya tienes la última versión ({installed})", "You have the latest version ({installed})"),
+        // the PC's volume or an app's (audio.volume.adjust and audio.app.volume.adjust give the same codes)
+        ["volume_already_at_minimum"] = ("same", "Ya estaba al mínimo", "It was already at its lowest"),
+        ["volume_already_at_maximum"] = ("same", "Ya estaba al máximo", "It was already at its highest"),
+        // UIA's ExpandCollapse: a list, a tree's branch, a menu or a split button
+        ["visible_control_already_open"] = ("same", "Ya estaba desplegado", "It was already expanded"),
+        // at its highest but muted: what the person wanted to hear louder is not heard, so it is not «already like that»
+        ["volume_already_at_maximum_muted"] = ("skip", "No se subió: ya estaba al máximo, pero silenciado", "Not raised: it was already at its highest, but muted"),
+        // the process's name is what was looked for (GetProcessesByName), not the program the person named
+        ["process_not_running"] = ("skip", "No se cerró nada: no había ningún proceso llamado así", "Nothing closed: no process by that name was running"),
+    };
+
     /// <summary>The operation's short title in the interface's language (<see cref="UiLanguage"/>).</summary>
     internal static string Title(string operation) => Title(operation, UiLanguage.IsEnglish);
 
-    private static string Title(string operation, bool english) =>
+    internal static string Title(string operation, bool english) =>
         (string?)Labels.Value.Operations[operation]?[english ? "en" : "t"] ?? operation;
 
     /// <summary>Settings → Tools: the themes a profile still offers as what BAXY can do (mind.py CAN_DO_AREAS): those
@@ -263,6 +281,13 @@ internal static class FieldStepProjection
         {
             view["status"] = "skip";
             view["reason"] = Reason(code, english, UiLanguage.Say(english, "No se ejecutó", "Not run"));
+        }
+        else if (NothingToDo.TryGetValue(code, out (string Status, string Es, string En) settled))
+        {
+            string? installed = (string?)(facts?["observed"] as JsonObject)?["installed"];
+            view["status"] = settled.Status;
+            view[settled.Status == "same" ? "obs" : "reason"] = UiLanguage.Say(english, settled.Es, settled.En)
+                .Replace(" ({installed})", installed is null ? string.Empty : $" ({installed})", StringComparison.Ordinal);
         }
         else
         {
