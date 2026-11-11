@@ -11,8 +11,10 @@ namespace Baxy.Core.Operations;
 /// baxy.update (actualizar-ordenes-app, encargo del dueño 2026-11-09: «un botón de actualizar y decirle BAXY actualízate»):
 /// whether there is a newer BAXY where this one came from (<see cref="BaxyDistribution"/>), and moving to it.
 /// <list type="bullet">
-/// <item>GitHub: check reads the latest stable release (<see cref="GitHubLatestRelease"/>). Install downloads its
-/// BAXY-Instalador.exe beside the profile's data, keeps it only when its bytes are the SHA-256 GitHub published, starts it
+/// <item>GitHub: check reads the latest stable release (<see cref="GitHubLatestRelease"/>) and, when it is newer, its
+/// release.json under the owner's signature (FIR1, <see cref="ReleaseSignature"/>): a release without it is never offered
+/// nor installed. Install downloads its BAXY-Instalador.exe beside the profile's data, keeps it only when its bytes are
+/// the size and SHA-256 that signed release.json gives (GitHub's own digest moves with whoever uploads), starts it
 /// with <c>--update --dir &lt;this folder&gt;</c> and asks the App to exit as «Salir» does. The installer waits for BAXY
 /// to close, downloads its own parts against the SHA-256 it carries, unpacks them beside this folder and only then swaps
 /// them in; anything that fails before the swap leaves this BAXY as it was, and a swap that fails puts it back
@@ -45,6 +47,7 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
     private readonly string _exitEvent;
     private readonly TimeSpan _stall;
     private readonly TimeSpan _budget;
+    private readonly IReadOnlyList<string> _keys;
 
     internal BaxyUpdateHandler(
         string? dataRoot,
@@ -54,7 +57,8 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         Func<ProcessStartInfo, bool>? start = null,
         string exitEvent = BaxyExitHandler.AppExitEventName,
         TimeSpan? stall = null,
-        TimeSpan? budget = null)
+        TimeSpan? budget = null,
+        IReadOnlyList<string>? keys = null)
     {
         _dataRoot = dataRoot;
         _distribution = distribution ?? BaxyDistribution.OfCore(AppContext.BaseDirectory);
@@ -64,6 +68,7 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         _exitEvent = exitEvent;
         _stall = stall ?? Stall;
         _budget = budget ?? UpdateInstallerFile.Budget;
+        _keys = keys ?? ReleaseSignature.BuiltInKeys(typeof(BaxyUpdateHandler).Assembly);
     }
 
     public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition(Operation);
@@ -136,9 +141,16 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
             case BaxyDistribution.GitHub:
                 // No yes is asked for what cannot run: no newer version, or none that can be checked.
                 (LatestRelease? latest, string? unread) = await LatestAsync(cancellationToken).ConfigureAwait(false);
-                return NotInstallable(latest, unread) is { } failure
-                    ? InvocationPreflightResult.Fails(failure)
-                    : InvocationPreflightResult.Proceed;
+                if (NotInstallable(latest, unread) is { } failure)
+                {
+                    return InvocationPreflightResult.Fails(failure);
+                }
+
+                // FIR1: nor for one the owner did not sign.
+                (_, OperationOutcome? refused) = latest is null
+                    ? (null, null)
+                    : await SignedAsync(latest, Facts(), cancellationToken).ConfigureAwait(false);
+                return refused is null ? InvocationPreflightResult.Proceed : InvocationPreflightResult.Fails(refused);
             default:
                 return InvocationPreflightResult.Fails(Development());
         }
@@ -181,9 +193,16 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         receipt["updatedBy"] = BaxyDistribution.GitHub;
         receipt["latest"] = latest?.Version.ToString(3);
         receipt["newer"] = latest is not null && latest.Version > _installed;
-        if (latest is { Installer: { } installer } && latest.Version > _installed)
+        if (latest is not null && latest.Version > _installed)
         {
-            receipt["downloadBytes"] = installer.Bytes;
+            (ReleaseInstaller? signed, OperationOutcome? refused) = await SignedAsync(latest, receipt, cancellationToken)
+                .ConfigureAwait(false);
+            if (refused is not null)
+            {
+                return refused;
+            }
+
+            receipt["downloadBytes"] = signed?.Bytes;
         }
 
         receipt["releasePage"] = latest?.Page?.AbsoluteUri;
@@ -218,12 +237,19 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         }
 
         receipt["checked"] = true;
-        if (latest is not { Installer: { } installer } || _dataRoot is not { } dataRoot)
+        if (latest is not { Installer: not null } || _dataRoot is not { } dataRoot)
         {
             return OperationOutcome.Failure("baxy_update_installer_missing", Json(receipt));
         }
 
         receipt["latest"] = latest.Version.ToString(3);
+        (ReleaseInstaller? installer, OperationOutcome? refused) = await SignedAsync(latest, receipt, cancellationToken)
+            .ConfigureAwait(false);
+        if (installer is null)
+        {
+            return refused ?? NotSigned(receipt, "invalid");
+        }
+
         string folder = UpdateInstallerFile.Folder(dataRoot);
         string? exe;
 
@@ -244,7 +270,7 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
 
         if (exe is null)
         {
-            // What came is not what GitHub published: it is deleted and never run.
+            // What came is not what the owner signed: it is deleted and never run.
             return OperationOutcome.Failure("baxy_update_hash_mismatch", Json(receipt));
         }
 
@@ -294,8 +320,106 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
             : null;
     }
 
-    // The installer goes to <data>\updates as a «.part», never more bytes of it than GitHub published (REV_APP COR-2), and
-    // is kept only when what came has the published size and SHA-256. Null when it does not.
+    /// <summary>
+    /// FIR1: the release's installer as the owner signed it, or why it is refused. release.json and release.json.sig are
+    /// read whole into memory (a few hundred bytes, never more than <see cref="ReleaseSignature.ManifestLimit"/>); the
+    /// signature must be one of the built-in keys over exactly those bytes, and what it signs must be this release's version
+    /// (an old release.json, signed for real, under a newer tag is refused) and name its installer by size and SHA-256.
+    /// «signature» in the receipt says which: missing, invalid or version.
+    /// </summary>
+    private async Task<(ReleaseInstaller? Installer, OperationOutcome? Refused)> SignedAsync(
+        LatestRelease latest, JsonObject receipt, CancellationToken cancellationToken)
+    {
+        if (latest.Manifest is not { } manifestAsset || latest.Signature is not { } signatureAsset || latest.Installer is not { } listed)
+        {
+            return (null, NotSigned(receipt, "missing"));
+        }
+
+        byte[]? manifest;
+        byte[]? signature;
+        try
+        {
+            manifest = await SmallAsync(manifestAsset.Download, ReleaseSignature.ManifestLimit, cancellationToken).ConfigureAwait(false);
+            signature = await SmallAsync(signatureAsset.Download, ReleaseSignature.SignatureLimit, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception failed) when (failed is HttpRequestException or IOException
+            or OperationCanceledException && !cancellationToken.IsCancellationRequested)
+        {
+            return (null, OperationOutcome.RetryableFailure("baxy_update_unreachable", Json(receipt)));
+        }
+
+        if (manifest is null || signature is null || !ReleaseSignature.Verifies(manifest, signature, _keys))
+        {
+            return (null, NotSigned(receipt, manifest is null || signature is null ? "missing" : "invalid"));
+        }
+
+        if (SignedInstaller(manifest, listed.Download) is not { } signed)
+        {
+            return (null, NotSigned(receipt, "invalid"));
+        }
+
+        return signed.Version == latest.Version && signed.Version > _installed
+            ? (signed.Installer, null)
+            : (null, NotSigned(receipt, "version"));
+    }
+
+    private static OperationOutcome NotSigned(JsonObject receipt, string signature)
+    {
+        receipt["signature"] = signature;
+        return OperationOutcome.Failure("baxy_update_not_signed", Json(receipt));
+    }
+
+    // What a signed release.json says of its version and its installer (scripts/build_github_release.py writes it).
+    private static (Version Version, ReleaseInstaller Installer)? SignedInstaller(byte[] manifest, Uri download)
+    {
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(manifest);
+            JsonElement root = document.RootElement;
+            return root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("version", out JsonElement version) && version.ValueKind == JsonValueKind.String
+                && GitHubLatestRelease.ParseVersion(version.GetString()) is { } number
+                && root.TryGetProperty("installer", out JsonElement installer) && installer.ValueKind == JsonValueKind.Object
+                && installer.TryGetProperty("file", out JsonElement file) && file.ValueKind == JsonValueKind.String
+                && file.GetString() == GitHubLatestRelease.InstallerName
+                && installer.TryGetProperty("bytes", out JsonElement bytes) && bytes.TryGetInt64(out long size) && size > 0
+                && installer.TryGetProperty("sha256", out JsonElement sha) && sha.ValueKind == JsonValueKind.String
+                && sha.GetString() is { Length: 64 } hash && hash.All(char.IsAsciiHexDigitLower)
+                    ? (number, new ReleaseInstaller(download, size, hash))
+                    : null;
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    // A small file of the release, whole; null when it is longer than its limit.
+    private async Task<byte[]?> SmallAsync(Uri address, int limit, CancellationToken cancellationToken)
+    {
+        using HttpRequestMessage request = new(HttpMethod.Get, address);
+        request.Headers.UserAgent.ParseAdd(UserAgent);
+        using HttpResponseMessage response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+            .ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+        await using Stream body = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        using MemoryStream kept = new();
+        byte[] buffer = new byte[4096];
+        for (int read; (read = await body.ReadAsync(buffer, cancellationToken).ConfigureAwait(false)) > 0;)
+        {
+            if (kept.Length + read > limit)
+            {
+                return null;
+            }
+
+            kept.Write(buffer, 0, read);
+        }
+
+        return kept.ToArray();
+    }
+
+    // The installer goes to <data>\updates as a «.part», never more bytes of it than the owner signed (REV_APP COR-2), and
+    // is kept only when what came has the signed size and SHA-256. Null when it does not.
     private async Task<string?> DownloadAsync(ReleaseInstaller installer, string target, CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(target)!);

@@ -239,16 +239,30 @@ internal static partial class Program
         ReleaseManifest chosen = manifest.ForMachine(adapters);
         LogMachine(chosen, adapters, paths);
         Installation installation = new(chosen, paths, new PartFetcher(http));
+        // PRV2 (A5): --quiet shows no agreement, as always; it keeps what the installation it replaces accepted, so the
+        // next update with a window asks for the agreement if it is not that one (AcceptedAgreement).
+        string? accepted = AcceptedAgreement.Read(paths);
         QuietInstall quiet = new(
             MachineGpu.Choose(adapters),
             updating,
             Voice.BaxyIsOpen,
             async () =>
             {
+                // FIR1: nothing of Windows nor of BAXY is installed before release.json's signature checks out.
+                await SignedRelease.ConfirmAsync(http, manifest, paths, SignedRelease.BuiltInKeys, CancellationToken.None)
+                    .ConfigureAwait(false);
                 await Prerequisites.InstallMissingAsync(http, paths.Downloads, CancellationToken.None).ConfigureAwait(false);
                 await installation.RunAsync((_, _, _) => { }, CancellationToken.None).ConfigureAwait(false);
             },
-            () => WindowsIntegration.Register(paths, chosen.Version, chosen.InstalledBytes),
+            () =>
+            {
+                if (accepted is not null)
+                {
+                    AcceptedAgreement.Write(paths, accepted, Log);
+                }
+
+                WindowsIntegration.Register(paths, chosen.Version, chosen.InstalledBytes);
+            },
             Log);
         try
         {

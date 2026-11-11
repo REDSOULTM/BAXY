@@ -1048,7 +1048,18 @@ def test_the_detectors_permission_comes_after_its_caveat_and_only_for_what_baxy_
 
 # INT15 (2026-11-08): beside the unofficial extra goes what its Hugging Face card says it was trained on, in the same words;
 # what is published (the package, the agreements, the itch.io page) does not name the tool the data was generated with.
+# LEG2 (decisions B5 and B6, 2026-11-10): the texts also say that the AI service the conversations were written with was asked
+# for its permission to train on them (the request went out on 2026-11-07, CORREOS_LIC2.md) and has not answered, and the
+# English says «no person's», as the Spanish «de ninguna persona». The published 1.3.2 notes keep what was published.
 TUNED_DATA = {
+    "es": "El ajuste se entrenó con conversaciones sintéticas con recibos de trazas reales; no se usó texto privado de ninguna "
+          "persona. Esas conversaciones se escribieron con un servicio de IA de terceros; la autorización de ese servicio para "
+          "entrenar un modelo con ellas se pidió el 2026-11-07 y, al 2026-11-10, sigue sin respuesta.",
+    "en": "The fine-tune was trained on synthetic conversations whose tool receipts are taken from real traces; no person's "
+          "private text was used. Those conversations were written with a third-party AI service; that service's permission "
+          "to train a model on them was requested on 2026-11-07 and, as of 2026-11-10, has had no answer.",
+}
+PUBLISHED_TUNED_DATA = {
     "es": "El ajuste se entrenó con conversaciones sintéticas con recibos de trazas reales; no se usó texto privado de ninguna "
           "persona.",
     "en": "The fine-tune was trained on synthetic conversations whose tool receipts are taken from real traces; no private user "
@@ -1059,6 +1070,7 @@ TEXTS_WITH_THE_EXTRA = {
     "src/Baxy.Installer/Assets/license/es.txt": ("es",), "documentacion/itchio/LEGAL.md": ("es", "en"),
     "documentacion/itchio/PAGINA.md": ("es", "en"), "licenses/ATRIBUCIONES_MODELOS.md": ("en",),
     "THIRD_PARTY_NOTICES.md": ("es",), "documentacion/release/NOTAS_1.3.2.md": ("en", "es"),
+    "documentacion/STEAM_PUBLICACION.md": ("es", "en"), "licenses/PRIVACIDAD.md": ("es", "en"),
 }
 PUBLISHED_FROM = {
     "documentacion/steam/EULA.md": "## English", "documentacion/itchio/LEGAL.md": "## Español (",
@@ -1068,9 +1080,11 @@ PUBLISHED_FROM = {
 
 @pytest.mark.parametrize("path", sorted(TEXTS_WITH_THE_EXTRA))
 def test_the_unofficial_extra_says_what_its_card_says_it_was_trained_on(path: str) -> None:
-    text = _flat(path)
+    text = _public(path)
+    said = PUBLISHED_TUNED_DATA if path.endswith("NOTAS_1.3.2.md") else TUNED_DATA
     for language in TEXTS_WITH_THE_EXTRA[path]:
-        assert TUNED_DATA[language] in text, language
+        assert said[language] in text, language
+    assert "no private user text" not in text or path.endswith("NOTAS_1.3.2.md")
 
 
 def _published(path: str) -> str:
@@ -1159,7 +1173,7 @@ POLICY_INT18 = (
     "conversation keeps its first words and its name is not asked of it.",
     "Las últimas 50 conversaciones, con su nombre, se guardan ahí cifradas para tu usuario de Windows, y puedes borrarlas.",
     "Your last 50 conversations, with their names, are kept there encrypted for your Windows user, and you can delete them.",
-    "Última actualización: 9 de noviembre de 2026 · Last updated: November 9, 2026",
+    "Última actualización: 10 de noviembre de 2026 · Last updated: November 10, 2026",
 )
 
 
@@ -1167,6 +1181,26 @@ def test_the_policy_names_the_other_server_the_vision_who_names_a_conversation_a
     text = _flat("licenses/PRIVACIDAD.md")
     for words in POLICY_INT18:
         assert words in text, words[:60]
+
+
+# RED2 (2026-11-10): BAXY's WebView2 contacts Microsoft on its own (RED1, measured) and the policy did not say it. What still
+# leaves after SmartScreen was switched off is named in both languages, with Microsoft's page for each service.
+POLICY_RED2 = (
+    "servicio de experimentos y configuración (config.edge.skype.com)",
+    "servicio de actualización de componentes (edge.microsoft.com)",
+    "está apagado en la ventana de BAXY y en el navegador oculto.",
+    "experimentation and configuration service (config.edge.skype.com)",
+    "component update service (edge.microsoft.com)",
+    "is off in BAXY's window and in the hidden browser.",
+    "<https://learn.microsoft.com/deployedge/microsoft-edge-security-endpoints>",
+)
+
+
+def test_the_policy_says_what_webview2_sends_microsoft_on_its_own() -> None:
+    text = _flat("licenses/PRIVACIDAD.md")
+    for words in POLICY_RED2:
+        assert words in text, words
+    assert text.count("ExperimentationAndConfigurationServiceControl") == 2
 
 
 # INT19 (2026-11-09): «Versión» and baxy.update ask GitHub only in the copy from GitHub; the policy says what, when and what
@@ -1206,7 +1240,7 @@ def test_itchios_agreement_does_not_promise_updates_to_a_copy_downloaded_without
 # LEG1 (LEG-15): the headers of itch.io's texts still dated them to 2026-11-07 against 8d89ab0f8, before LIC2 and LEG1.
 @pytest.mark.parametrize("path", ["documentacion/itchio/LEGAL.md", "documentacion/itchio/PAGINA.md"])
 def test_the_header_of_itchios_texts_says_when_they_were_last_brought_up_to_date(path: str) -> None:
-    assert "la última vez el 2026-11-09 (LEG1, sobre `hub/int20-final` 5af388064)" in _flat(path)[:1400]
+    assert "la última vez el 2026-11-10 (LEG2, sobre `hub/int26-cand` c2a4c76ac)" in _flat(path)[:1400]
 
 
 def test_the_policy_says_what_looking_for_a_new_version_asks_github_when_and_what_it_does_not_send() -> None:
@@ -1231,25 +1265,31 @@ def test_each_agreement_says_how_its_copy_is_updated(path: str) -> None:
 # the two logs kept in clear text (about 108 MB of what the person said) nor of the screens captured. The same sentence,
 # in each language, in the policy and in every agreement: what stays unencrypted, where and how much. Revisión a ciegas:
 # a PC that updates keeps the logs an earlier version wrote with the words, and nothing but «Olvidar todo» (or their
-# rotation) removes them, so the sentence says that too rather than «no words» of files that still hold them.
+# rotation) removes them, so the sentence says that too rather than «no words» of files that still hold them. PRV2
+# (decisión A2, 2026-11-10): the first start of the new version removes them unless words are kept on that PC
+# (src/Baxy.App/EarlierWords.cs), and the sentence says so.
 KEPT_IN_CLEAR = {
-    "es": ("BAXY deja además, en su carpeta de datos (%LOCALAPPDATA%\\BAXY), registros técnicos sin cifrar. Los dos que "
-           "anotan cada turno (renew\\turns.jsonl, hasta unos 100 MB, y 1\\conversation\\conversation.v1.jsonl, hasta 8 MB) "
-           "guardan la hora, cuánto tardó y qué operaciones se usaron, no lo que dices ni lo que BAXY responde, salvo que tú "
-           "lo actives en tu computador para diagnosticar un fallo (variable BAXY_TRACE_WORDS=1); un registro de errores "
-           "puede citar un fragmento de lo que el modelo escribía cuando falló. Lo que una versión anterior de BAXY ya "
-           "hubiera anotado en ellos, con lo que dijiste, sigue ahí hasta que uses «Olvidar todo». Cuando BAXY mira tu "
-           "pantalla guarda la captura, sin cifrar, en 1\\captures sólo mientras atiende ese pedido: la borra al terminarlo "
-           "y al cerrarse. «Olvidar todo» borra esos registros y las capturas junto con las conversaciones."),
-    "en": ("BAXY also leaves unencrypted technical logs in its data folder (%LOCALAPPDATA%\\BAXY). The two that note each "
-           "turn (renew\\turns.jsonl, up to about 100 MB, and 1\\conversation\\conversation.v1.jsonl, up to 8 MB) keep the "
-           "time, how long it took and which operations were used, not what you say nor what BAXY answers, unless you turn "
-           "that on in your computer to diagnose a fault (the BAXY_TRACE_WORDS=1 variable); an error log may quote a "
-           "fragment of what the model was writing when it failed. What an earlier version of BAXY had already noted in "
-           "them, with what you said, stays there until you use «Forget everything». When BAXY looks at your screen it "
-           "keeps the capture, unencrypted, in 1\\captures only while it handles that request: it deletes it when the "
-           "request ends and when BAXY closes. «Forget everything» deletes those logs and the captures along with the "
-           "conversations."),
+    "es": ("BAXY deja además, en su carpeta de datos (%LOCALAPPDATA%\\BAXY), registros técnicos sin cifrar. Los dos "
+           "que anotan cada turno (renew\\turns.jsonl, hasta unos 100 MB, y 1\\conversation\\conversation.v1.jsonl, "
+           "hasta 8 MB) guardan la hora, cuánto tardó y qué operaciones se usaron, no lo que dices ni lo que BAXY "
+           "responde, salvo que tú lo actives en tu computador para diagnosticar un fallo (variable "
+           "BAXY_TRACE_WORDS=1); un registro de errores puede citar un fragmento de lo que el modelo escribía cuando "
+           "falló. Lo que una versión anterior de BAXY hubiera anotado en ellos con lo que dijiste se borra la "
+           "primera vez que arranca esta versión (si otro programa lo tiene abierto en ese momento, en el arranque "
+           "siguiente), salvo que tengas activada esa variable: entonces sigue ahí hasta que uses «Olvidar todo». "
+           "Cuando BAXY mira tu pantalla guarda la captura, sin cifrar, en 1\\captures sólo mientras atiende ese "
+           "pedido: la borra al terminarlo y al cerrarse. «Olvidar todo» borra esos registros y las capturas junto "
+           "con las conversaciones."),
+    "en": ("BAXY also leaves unencrypted technical logs in its data folder (%LOCALAPPDATA%\\BAXY). The two that note "
+           "each turn (renew\\turns.jsonl, up to about 100 MB, and 1\\conversation\\conversation.v1.jsonl, up to 8 MB) "
+           "keep the time, how long it took and which operations were used, not what you say nor what BAXY answers, "
+           "unless you turn that on in your computer to diagnose a fault (the BAXY_TRACE_WORDS=1 variable); an error "
+           "log may quote a fragment of what the model was writing when it failed. What an earlier version of BAXY "
+           "had noted in them with what you said is deleted the first time this version starts (if another program "
+           "has it open at that moment, at the next start), unless you have that variable turned on: then it stays "
+           "there until you use «Forget everything». When BAXY looks at your screen it keeps the capture, "
+           "unencrypted, in 1\\captures only while it handles that request: it deletes it when the request ends and "
+           "when BAXY closes. «Forget everything» deletes those logs and the captures along with the conversations."),
 }
 
 
@@ -1283,6 +1323,14 @@ def test_what_the_texts_say_stays_unencrypted_is_what_the_code_keeps() -> None:
     assert 'Path.Combine(dataRoot, "captures")' in (root / "src/Baxy.Core/Program.cs").read_text(encoding="utf-8")
     model = (root / "src/Baxy.App/MainWindowViewModel.cs").read_text(encoding="utf-8")
     assert 'ResolveDataRoot(), "captures")' in model and model.count("ClearCapturesNoCallWaitsFor();") == 2
+    # PRV2 (A2): what an earlier version wrote with words in those two logs is removed at the first start, unless the
+    # variable keeps words on that PC; a file held open stays for the next start.
+    earlier = (root / "src/Baxy.App/EarlierWords.cs").read_text(encoding="utf-8")
+    assert 'TraceName = "turns.jsonl"' in earlier and '"conversation", "conversation.v1.jsonl")' in earlier
+    assert "trace + BoundedJsonlFile.ArchiveSuffix" in earlier and "log + BoundedJsonlFile.ArchiveSuffix" in earlier
+    assert "ConversationLog.KeepsWords(environment(ConversationLog.WordsEnvironmentVariable))" in earlier
+    assert "left = true;  // held open this moment" in earlier
+    assert "await RemoveEarlierWordsAsync(linked.Token);" in model and "WordsOfEarlierVersions = EarlierWords.ForThisPc()" in model
     # «Olvidar todo» / «Forget everything» is the button's own text.
     panel = (root / "src/Baxy.FieldUi/src/components/panels/MemoryPanel.tsx").read_text(encoding="utf-8")
     assert "t('Olvidar todo', 'Forget everything')" in panel
@@ -1386,10 +1434,11 @@ def test_steams_early_access_answer_does_not_say_that_baxy_only_runs_on_nvidia()
     steam = _public("documentacion/STEAM_PUBLICACION.md")
     assert "con otra GPU o sin GPU, hoy no funciona" not in steam
     assert "with another GPU, or none, it doesn't run today" not in steam
-    assert ("Necesita una tarjeta gráfica de 4 GB: con NVIDIA está probado, con AMD está en pruebas y con Intel no se ha "
-            "probado. Sin una tarjeta NVIDIA, AMD o Intel no arranca.") in steam
-    assert ("It needs a 4 GB graphics card: it is tested with NVIDIA, in testing with AMD and untested with Intel. Without an "
-            "NVIDIA, AMD or Intel card it does not start.") in steam
+    # LEG2 (B10): the tested cards had 6 GB or more (NOTAS_1.3.2.md, «Not tested»): 4 GB is said untested.
+    assert ("Necesita una tarjeta gráfica dedicada: está probado con NVIDIA de 6 GB o más (con 4 GB, sin probar), con AMD está "
+            "en pruebas y con Intel no se ha probado. Sin una tarjeta NVIDIA, AMD o Intel no arranca.") in steam
+    assert ("It needs a dedicated graphics card: it is tested with NVIDIA cards of 6 GB or more (4 GB untested), in testing "
+            "with AMD and untested with Intel. Without an NVIDIA, AMD or Intel card it does not start.") in steam
     assert "AMD, sólo cuando el paquete elija Vulkan" not in steam
 
 
@@ -1690,3 +1739,78 @@ def test_itchios_page_says_the_same_of_the_licenses_in_both_languages() -> None:
     assert "Cada componente conserva su licencia y no todas son permisivas:" in page
     assert "Each component keeps its own license and not all of them are permissive:" in page
     assert "no todos son libres" not in page
+
+
+# LEG2 (B10, 2026-11-10): both stores declare the same requirements: Windows 11 only, the disk measured on the 1.3.3 package
+# (5,910,032,666 bytes, INT26), 4 GB untested (the tested cards had 6 GB or more), the driver NVIDIA publishes for CUDA 12.4,
+# and memory not measured. No store says Windows 10, 16 GB of RAM or 11 GB.
+def test_both_stores_declare_only_what_was_measured() -> None:
+    page = _public("documentacion/itchio/PAGINA.md")
+    steam = _public("documentacion/STEAM_PUBLICACION.md")
+    for said in ("Windows 11 de 64 bits (Windows 10 no se ha probado).", "Memoria (RAM): sin medir.",
+                 "Disco: la carpeta de BAXY 1.3.3 ocupa 5,91 GB", "NVIDIA pide 551.61 para CUDA 12.4 y 551.78 para su Update 1",
+                 "64-bit Windows 11 (Windows 10 has not been tested).", "Memory (RAM): not measured.",
+                 "Disk: BAXY 1.3.3's folder takes 5.91 GB", "NVIDIA requires 551.61 for CUDA 12.4 and 551.78 for its Update 1", "con 6 GB o más (con 4 GB, sin probar)",
+                 "with 6 GB or more (4 GB untested)", "551.78 o posterior", "551.78 or later"):
+        assert said in page, said
+    for gone in ("Windows 10 u 11", "Windows 10 or 11", "16 GB de RAM", "16 GB of RAM", "11 GB libres", "11 GB free"):
+        assert gone not in page and gone not in steam, gone
+    assert "| SO | Windows 11 de 64 bits." in steam and "| RAM | **Sin medir:**" in steam
+    assert "| Disco | 5,91 GB: la carpeta del paquete 1.3.3 (`c2a4c76ac`) ocupa 5,91 GB" in steam
+    assert "6 GB libres" not in page and "6 GB free" not in page
+    assert "Windows 10/11" not in _public("documentacion/itchio/README.md")
+
+
+# LEG2 (B11): no text promises «every future version» without checking it in itch.io's settings.
+@pytest.mark.parametrize("path", ["documentacion/itchio/LEGAL.md", "documentacion/itchio/PAGINA.md"])
+def test_no_itchio_text_promises_every_future_version(path: str) -> None:
+    text = _public(path)
+    assert "todas las versiones futuras" not in text and "every future version" not in text
+
+
+# LEG2 (B9): the contact is BAXY's public issues page, the one the privacy policy already gives; no e-mail.
+def test_itchios_contact_is_the_public_issues_page() -> None:
+    page = _public("documentacion/itchio/PAGINA.md")
+    assert "**Contacto.** En la página pública de incidencias de BAXY en GitHub: <https://github.com/REDSOULTM/BAXY/issues>." in page
+    assert "**Contact.** On BAXY's public issues page on GitHub: <https://github.com/REDSOULTM/BAXY/issues>." in page
+    assert "que decida el dueño" not in page and "the owner chooses" not in page
+    assert "@" not in page[page.index("**Contacto.**"):page.index("**Contacto.**") + 200]
+
+
+# LEG2 (A3): «Búsqueda web» refuses only what BAXY asks the internet for on its own (FieldSettings.AsksTheWeb); what the person
+# asks to open by its name in their own programs is theirs and leaves through them. The policy says so in both languages.
+def test_the_policy_says_what_web_search_covers_and_what_it_does_not() -> None:
+    policy = _public("licenses/PRIVACIDAD.md")
+    assert ("cubre sólo lo que BAXY pide a internet por su cuenta: buscar en la web, leer una página, descargar un fichero, "
+            "buscar un vídeo en YouTube y consultar la tienda de Steam por un juego que pides ver o instalar.") in policy
+    assert ("covers only what BAXY asks the internet for on its own: searching the web, reading a page, downloading a file, "
+            "searching for a video on YouTube and looking up in the Steam store a game you ask to see or install.") in policy
+    assert "no pasa por ese interruptor: es tu orden y sale por ese programa; y al abrir una dirección en tu navegador, la petición propia" in policy
+    assert "does not go through that switch: it is your order and leaves through that program" in policy
+    settings = (LICENSES.parent / "src/Baxy.App/FieldSettings.cs").read_text(encoding="utf-8")
+    assert ('"web.search", "web.fetch", "web.download", "media.play.youtube", "game.store.page", "game.install.named",'
+            in settings)
+
+
+# LEG2 (T5): the itch.io app runs nothing when it uninstalls BAXY, so its page asks to cancel the alarms first.
+def test_itchios_page_asks_to_cancel_the_alarms_before_uninstalling() -> None:
+    page = _public("documentacion/itchio/PAGINA.md")
+    assert "**Antes de desinstalar, pídele a BAXY que cancele tus alarmas y recordatorios:**" in page
+    assert "**Before you uninstall, ask BAXY to cancel your alarms and reminders:**" in page
+
+
+# LEG2 (B2, B8): the two accepted risks are archived with their date, and the notices point to them.
+def test_the_accepted_risks_are_archived_with_their_date() -> None:
+    risks = _public("documentacion/release/RIESGOS_LEGALES_ACEPTADOS.md")
+    assert "## 2026-11-10 — DuckDuckGo: leer su página de resultados" in risks
+    assert "## 2026-11-10 — NVIDIA: aplicar al paquete de itch.io su respuesta sobre el de Steam" in risks
+    assert "**es lectura de BAXY, no algo que NVIDIA dijera de itch.io**" in risks
+    assert _public("THIRD_PARTY_NOTICES.md").count("RIESGOS_LEGALES_ACEPTADOS.md") == 4
+
+
+# LEG2 (T6): the scope document no longer promises a CPU profile; without a graphics card BAXY does not start.
+def test_the_scope_document_does_not_promise_a_cpu_profile() -> None:
+    scope = _public("documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md")
+    assert "- **Perfil CPU ≤ 8 GB de RAM.**" not in scope
+    assert "el perfil CPU cumple" not in scope
+    assert "**No existe en el producto:**" in scope

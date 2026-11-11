@@ -13,6 +13,11 @@ export const UPDATE_FAILED: Record<string, Words> = {
     es: 'La versión nueva no trae instalador para Windows; BAXY sigue como estaba. Vuelve a buscar más tarde',
     en: 'The new version has no Windows installer; BAXY stays as it was. Check again later',
   },
+  // FIR1: missing signature, a signature that isn't BAXY's or an old one under a newer version: the same for the person.
+  baxy_update_not_signed: {
+    es: 'No pude comprobar que la versión publicada venga firmada por quien hace BAXY, así que no instalé nada: BAXY sigue como estaba',
+    en: 'I couldn’t confirm the published version is signed by BAXY’s maker, so I installed nothing: BAXY stays as it was',
+  },
   baxy_update_installer_not_started: {
     es: 'Bajé el instalador y Windows no lo abrió; BAXY sigue como estaba. Vuelve a intentarlo, o baja la versión nueva de la página de BAXY en GitHub',
     en: 'I downloaded the installer and Windows didn’t open it; BAXY stays as it was. Try again, or download the new version from BAXY’s GitHub page',

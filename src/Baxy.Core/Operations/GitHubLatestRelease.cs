@@ -8,8 +8,15 @@ namespace Baxy.Core.Operations;
 /// <summary>The installer of a release as GitHub lists it: where it downloads, its size and the SHA-256 GitHub computed.</summary>
 internal sealed record ReleaseInstaller(Uri Download, long Bytes, string Sha256);
 
-/// <summary>A GitHub release: its version (from its tag), its page and its installer, when it has one with a digest.</summary>
-internal sealed record LatestRelease(Version Version, string Tag, Uri? Page, ReleaseInstaller? Installer);
+/// <summary>A small file of a release (its release.json or that file's signature): where it downloads and its size.</summary>
+internal sealed record ReleaseAsset(Uri Download, long Bytes);
+
+/// <summary>
+/// A GitHub release: its version (from its tag), its page and its installer, when it has one with a digest; and, from FIR1
+/// on, the release.json that names its files and that file's signature (<see cref="ReleaseSignature"/>).
+/// </summary>
+internal sealed record LatestRelease(
+    Version Version, string Tag, Uri? Page, ReleaseInstaller? Installer, ReleaseAsset? Manifest = null, ReleaseAsset? Signature = null);
 
 /// <summary>
 /// GitHub's latest release of a repository: «the most recent non-prerelease, non-draft release» (REST API, Get the latest
@@ -54,6 +61,8 @@ internal static partial class GitHubLatestRelease
 
         Uri? page = Https(Text(release, "html_url"));
         ReleaseInstaller? installer = null;
+        ReleaseAsset? manifest = null;
+        ReleaseAsset? signature = null;
         if (release.TryGetProperty("assets", out JsonElement assets) && assets.ValueKind == JsonValueKind.Array)
         {
             foreach (JsonElement asset in assets.EnumerateArray())
@@ -65,10 +74,23 @@ internal static partial class GitHubLatestRelease
                 {
                     installer = new ReleaseInstaller(download, bytes, sha.Groups[1].Value.ToLowerInvariant());
                 }
+                else if (Text(asset, "name") is ReleaseSignature.ManifestName or ReleaseSignature.SignatureName
+                    && Https(Text(asset, "browser_download_url")) is { } small
+                    && asset.TryGetProperty("size", out JsonElement smallSize) && smallSize.TryGetInt64(out long smallBytes))
+                {
+                    if (Text(asset, "name") == ReleaseSignature.ManifestName)
+                    {
+                        manifest = new ReleaseAsset(small, smallBytes);
+                    }
+                    else
+                    {
+                        signature = new ReleaseAsset(small, smallBytes);
+                    }
+                }
             }
         }
 
-        return new LatestRelease(version, tag, page, installer);
+        return new LatestRelease(version, tag, page, installer, manifest, signature);
     }
 
     /// <summary>The first three numbers of a version as BAXY writes it: «v1.3.2», «1.3.2», «1.3.2+abc1234.dirty».</summary>

@@ -22,6 +22,11 @@ public sealed class BaxyUpdateHandlerTests
     private const string Repository = "REDSOULTM/BAXY";
     private static readonly byte[] InstallerBytes = Encoding.UTF8.GetBytes("MZ installer of 1.4.0");
 
+    // FIR1: the owner's key (its private half signs release.json, scripts/ReleaseSigning.cs) and another one.
+    private static readonly ECDsa Owner = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+    private static readonly ECDsa Stranger = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+    private static readonly string[] OwnerKeys = [Owner.ExportSubjectPublicKeyInfoPem()];
+
     private string _folder = string.Empty;
     private string _root = string.Empty;
     private string _data = string.Empty;
@@ -120,8 +125,9 @@ public sealed class BaxyUpdateHandlerTests
             Assert.That(receipt.GetProperty("latest").GetString(), Is.EqualTo("1.4.0"));
             Assert.That(receipt.GetProperty("newer").GetBoolean(), Is.True);
             Assert.That(receipt.GetProperty("downloadBytes").GetInt64(), Is.EqualTo(InstallerBytes.Length));
-            Assert.That(http.Asked.Single(), Is.EqualTo($"https://api.github.com/repos/{Repository}/releases/latest"));
-            Assert.That(http.UserAgents.Single(), Is.EqualTo("BAXY/1.3.2"));
+            Assert.That(http.Asked[0], Is.EqualTo($"https://api.github.com/repos/{Repository}/releases/latest"));
+            Assert.That(http.Asked.Skip(1), Is.EqualTo(new[] { Asset("v1.4.0", "release.json"), Asset("v1.4.0", "release.json.sig") }));
+            Assert.That(http.UserAgents.Distinct(), Is.EqualTo(new[] { "BAXY/1.3.2" }));
         });
     }
 
@@ -150,6 +156,93 @@ public sealed class BaxyUpdateHandlerTests
             Assert.That(JsonDocument.Parse(facts).RootElement.GetProperty("verification").GetString(),
                 Is.EqualTo(OperationVisibleFacts.VerificationDeliveredOnly));
         });
+    }
+
+    // FIR1 (decisión A1, 10-11-2026): whoever holds BAXY's GitHub account uploads an installer and GitHub computes its digest,
+    // so the digest says nothing about who made it. What the App runs is what release.json says, under the owner's signature.
+    [TestCase("missing", TestName = "FIR1_SinFirma_NoSeInstalaNada")]
+    [TestCase("stranger", TestName = "FIR1_FirmaMala_NoSeInstalaNada")]
+    [TestCase("changed", TestName = "FIR1_JsonCambiado_NoSeInstalaNada")]
+    [TestCase("older", TestName = "FIR1_FirmaViejaValida_BajoUnaEtiquetaNueva_NoSeInstala")]
+    [TestCase("installed", TestName = "FIR1_FirmaDeLaVersionInstalada_BajoUnaEtiquetaNueva_NoSeInstala")]
+    public async Task AnInstallerIsRunOnlyUnderTheOwnersSignatureOfThatVersion(string attack)
+    {
+        Mark(GitHubMarker);
+        List<ProcessStartInfo> started = [];
+        Signed release = attack switch
+        {
+            "missing" => Signed.For("1.4.0") with { Signature = null },
+            "stranger" => Signed.For("1.4.0", Stranger),
+            "changed" => Signed.For("1.4.0").Changed("\"version\":\"1.4.0\"", "\"version\":\"1.4.0\" "),
+            "older" => Signed.For("1.3.1"),
+            _ => Signed.For("1.3.2"),
+        };
+        var http = new Server(Release("v1.4.0", signed: release));
+
+        OperationOutcome install = await Handler(http, started).ExecuteAsync(Invocation("install"), CancellationToken.None);
+        InvocationPreflightResult preflight = await Handler(new Server(Release("v1.4.0", signed: release)), started)
+            .PreflightAsync(Arguments("install"), CancellationToken.None);
+        OperationOutcome check = await Handler(new Server(Release("v1.4.0", signed: release)), started)
+            .ExecuteAsync(Invocation("check"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(install.ErrorCode, Is.EqualTo("baxy_update_not_signed"));
+            Assert.That(install.Retryable, Is.False);
+            Assert.That(install.Result?.GetProperty("signature").GetString(),
+                Is.EqualTo(attack switch { "missing" => "missing", "older" or "installed" => "version", _ => "invalid" }));
+            Assert.That(preflight.Failure?.ErrorCode, Is.EqualTo("baxy_update_not_signed"), "no yes is asked for it");
+            Assert.That(check.ErrorCode, Is.EqualTo("baxy_update_not_signed"), "a check never offers it as newer");
+            Assert.That(started, Is.Empty);
+            Assert.That(http.Asked, Has.None.EndsWith("/BAXY-Instalador.exe"), "its installer is not even downloaded");
+            Assert.That(Directory.Exists(Path.Combine(_data, "updates")), Is.False, "nothing is left behind");
+        });
+    }
+
+    // The account's holder uploads another exe: GitHub's digest is that exe's, release.json still names the owner's.
+    [Test]
+    public async Task AnInstallerThatMatchesGitHubsDigestButNotTheSignedOneIsNeverRun()
+    {
+        Mark(GitHubMarker);
+        List<ProcessStartInfo> started = [];
+        byte[] planted = Encoding.UTF8.GetBytes("MZ planted installer!");
+        var http = new Server(Release("v1.4.0", digestOf: planted), installer: planted);
+
+        OperationOutcome outcome = await Handler(http, started).ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("baxy_update_hash_mismatch"));
+            Assert.That(started, Is.Empty);
+            Assert.That(Directory.EnumerateFiles(Path.Combine(_data, "updates")), Is.Empty);
+        });
+    }
+
+    // A key being replaced: the BAXY that trusts the old and the new key takes a release signed by either.
+    [Test]
+    public async Task EitherOfTheBuiltInKeysSigns()
+    {
+        Mark(GitHubMarker);
+        List<ProcessStartInfo> started = [];
+        var http = new Server(Release("v1.4.0", signed: Signed.For("1.4.0", Stranger)));
+        string[] both = [.. OwnerKeys, Stranger.ExportSubjectPublicKeyInfoPem()];
+
+        OperationOutcome outcome = await Handler(http, started, keys: both).ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+        Assert.That(started, Has.Count.EqualTo(1));
+    }
+
+    // What every build carries: at least one P-256 public key, and the one in the repository is it.
+    [Test]
+    public void TheCoreCarriesTheRepositorysKeys()
+    {
+        IReadOnlyList<string> built = ReleaseSignature.BuiltInKeys(typeof(BaxyUpdateHandler).Assembly);
+        string file = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "..", "..",
+            "release-keys", "update-keys.pem"));
+
+        Assert.That(built, Is.Not.Empty);
+        Assert.That(built, Is.EqualTo(ReleaseSignature.Blocks(file)));
     }
 
     // What came is not what GitHub published: deleted and never run.
@@ -335,7 +428,7 @@ public sealed class BaxyUpdateHandlerTests
         {
             var handler = new BaxyUpdateHandler(
                 _data, BaxyDistribution.Read(App()), new Version(1, 3, 2), new HttpClient(http), _ => starts,
-                @"Local\BAXY.Tests.UpdateExit.none." + Guid.NewGuid().ToString("N"));
+                @"Local\BAXY.Tests.UpdateExit.none." + Guid.NewGuid().ToString("N"), keys: OwnerKeys);
             ends.Add((code, await handler.ExecuteAsync(Invocation(action), CancellationToken.None)));
         }
 
@@ -347,6 +440,7 @@ public sealed class BaxyUpdateHandlerTests
             new Server(Release("v1.4.0"), installer: Encoding.UTF8.GetBytes("MZ something else!!!")));
         await RunAsync("baxy_update_installer_not_started", "install", new Server(Release("v1.4.0")), starts: false);
         await RunAsync("", "install", new Server(Release("v1.4.0")));
+        await RunAsync("baxy_update_not_signed", "install", new Server(Release("v1.4.0", signed: Signed.For("1.4.0", Stranger))));
 
         Assert.Multiple(() =>
         {
@@ -456,7 +550,8 @@ public sealed class BaxyUpdateHandlerTests
         List<ProcessStartInfo>? started = null,
         string? exitName = null,
         TimeSpan? stall = null,
-        TimeSpan? budget = null) => new(
+        TimeSpan? budget = null,
+        IReadOnlyList<string>? keys = null) => new(
         _data,
         BaxyDistribution.Read(App()),
         new Version(1, 3, 2),
@@ -468,12 +563,25 @@ public sealed class BaxyUpdateHandlerTests
         },
         exitName ?? @"Local\BAXY.Tests.UpdateExit.none." + Guid.NewGuid().ToString("N"),
         stall,
-        budget);
+        budget,
+        keys ?? OwnerKeys);
 
-    private static string Release(string tag, string flags = "{}")
+    private static string Asset(string tag, string name) => $"https://github.com/REDSOULTM/BAXY/releases/download/{tag}/{name}";
+
+    // GitHub's answer for a release: its installer with the digest GitHub computed of what was uploaded, and (FIR1) its
+    // release.json and release.json.sig, by default the owner's for the tag's version.
+    private static string Release(string tag, string flags = "{}", Signed? signed = null, byte[]? digestOf = null)
     {
-        string digest = Convert.ToHexStringLower(SHA256.HashData(InstallerBytes));
-        string assets = $$"""[{"name":"BAXY-Instalador.exe","size":{{InstallerBytes.Length}},"digest":"sha256:{{digest}}","browser_download_url":"https://github.com/REDSOULTM/BAXY/releases/download/{{tag}}/BAXY-Instalador.exe"}]""";
+        string digest = Convert.ToHexStringLower(SHA256.HashData(digestOf ?? InstallerBytes));
+        signed ??= Signed.For(tag.TrimStart('v'));
+        Served[tag] = signed;
+        string files = $$"""{"name":"release.json","size":{{signed.Manifest.Length}},"digest":"sha256:{{Convert.ToHexStringLower(SHA256.HashData(signed.Manifest))}}","browser_download_url":"{{Asset(tag, "release.json")}}"}""";
+        if (signed.Signature is { } signature)
+        {
+            files += $$""",{"name":"release.json.sig","size":{{signature.Length}},"digest":"sha256:0","browser_download_url":"{{Asset(tag, "release.json.sig")}}"}""";
+        }
+
+        string assets = $$"""[{"name":"BAXY-Instalador.exe","size":{{(digestOf ?? InstallerBytes).Length}},"digest":"sha256:{{digest}}","browser_download_url":"{{Asset(tag, "BAXY-Instalador.exe")}}"},{{files}}]""";
         string release = $$"""{"tag_name":"{{tag}}","html_url":"https://github.com/REDSOULTM/BAXY/releases/tag/{{tag}}","draft":false,"prerelease":false,"assets":{{assets}}}""";
         using JsonDocument merged = JsonDocument.Parse(release);
         using JsonDocument extra = JsonDocument.Parse(flags);
@@ -497,6 +605,23 @@ public sealed class BaxyUpdateHandlerTests
         return outcome.Result ?? default;
     }
 
+    // What Release() last gave each tag, for the Server to hand out (tests in a fixture run one at a time).
+    private static readonly Dictionary<string, Signed> Served = [];
+
+    /// <summary>A release.json as scripts/build_github_release.py writes it, and its .sig as scripts/ReleaseSigning.cs does.</summary>
+    private sealed record Signed(byte[] Manifest, byte[]? Signature)
+    {
+        internal static Signed For(string version, ECDsa? key = null)
+        {
+            string sha = Convert.ToHexStringLower(SHA256.HashData(InstallerBytes));
+            byte[] manifest = Encoding.UTF8.GetBytes($$$"""{"version":"{{{version}}}","baseUrl":"https://github.com/REDSOULTM/BAXY/releases/download/v{{{version}}}/","installedBytes":1,"archives":[{"name":"baxy-{{{version}}}.zip","parts":[{"file":"baxy-{{{version}}}.zip.000","bytes":1,"sha256":"{{{sha}}}"}]}],"installer":{"file":"BAXY-Instalador.exe","bytes":{{{InstallerBytes.Length}}},"sha256":"{{{sha}}}"}}""");
+            return new Signed(manifest, Encoding.ASCII.GetBytes(Convert.ToBase64String((key ?? Owner).SignData(manifest, HashAlgorithmName.SHA256)) + "\n"));
+        }
+
+        internal Signed Changed(string from, string to) =>
+            this with { Manifest = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(Manifest).Replace(from, to, StringComparison.Ordinal)) };
+    }
+
     /// <summary>GitHub's API and its download, from memory.</summary>
     private sealed class Server(string release, byte[]? installer = null, Stream? body = null) : HttpMessageHandler
     {
@@ -509,8 +634,13 @@ public sealed class BaxyUpdateHandlerTests
             string url = request.RequestUri?.AbsoluteUri ?? string.Empty;
             Asked.Add(url);
             UserAgents.Add(request.Headers.UserAgent.ToString());
+            Signed? signed = Served.FirstOrDefault(pair => url.Contains($"/download/{pair.Key}/", StringComparison.Ordinal)).Value;
             HttpResponseMessage response = url.EndsWith("/releases/latest", StringComparison.Ordinal)
                 ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(release) }
+                : url.EndsWith("/release.json", StringComparison.Ordinal) && signed is not null
+                    ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(signed.Manifest) }
+                : url.EndsWith("/release.json.sig", StringComparison.Ordinal) && signed?.Signature is { } signature
+                    ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(signature) }
                 : url.EndsWith("/BAXY-Instalador.exe", StringComparison.Ordinal)
                     ? new HttpResponseMessage(HttpStatusCode.OK)
                     {

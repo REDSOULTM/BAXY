@@ -36,6 +36,9 @@ import { enterApproves } from './approval';
 const AVATAR = (() => { try { return new URLSearchParams(location.search).get('avatar') || localStorage.getItem('bx-avatar') || 'video'; } catch { return 'video'; } })();
 
 const MAX_REQUEST = 4096; /* MissionInput.MaximumCharacters */
+const tooLongText = (length: number, t: T) =>
+  t('el pedido es demasiado largo · máximo ', 'the request is too long · at most ') + MAX_REQUEST + t(' caracteres, tiene ', ' characters, it has ') + length
+  + t(' · acórtalo para enviarlo', ' · shorten it to send it');
 const NARROW = 1100; /* below this layout width the chat floats over the face */
 const RAIL = 204;
 
@@ -170,6 +173,8 @@ export default function App() {
   const narrow = fw > 0 && fw < NARROW;
   const [chatOpen, setChatOpen] = useState(true);
   const [notice, setNotice] = useState<{ b: string; t: string } | null>(null);
+  // COX-1: how long the box's request is when it is longer than the host takes; 0 when it fits
+  const [tooLong, setTooLong] = useState(0);
   const [maximized, setMaximized] = useState(false);
   // timed things are keyed by what started them: a timer marks that key done, so nothing is set during render or in an
   // effect's body (captions, mood, the internet banner and dot, the voice error, the unread dot, a card's auto-open).
@@ -316,7 +321,10 @@ export default function App() {
   // up, for as long as that is so, as BAXY goes on with the stock model.
   const tunedProblem = s.boot?.tunedProblem;
   const tuned = tunedProblem && TUNED_PROBLEM[tunedProblem] && !!s.boot?.model && !booting ? { b: t('Modelo', 'Model'), t: t.w(TUNED_PROBLEM[tunedProblem]) } : null;
-  const shownNotice = notice ?? dropped ?? noWake ?? tuned;
+  // COX-1 (VIVO4 D4): the notice of a refused long request lasted 2.6 s while the request stayed in the box, so whoever
+  // looked a moment later saw a request that did not go and no reason; the limit is said for as long as it is so
+  const long = tooLong > 0 ? { b: 'BAXY', t: tooLongText(tooLong, t) } : null;
+  const shownNotice = notice ?? long ?? dropped ?? noWake ?? tuned;
 
   // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
   useEffect(() => {
@@ -406,7 +414,7 @@ export default function App() {
     // the host refuses a longer request (MissionInput.MaximumCharacters, UTF-16 like a JS string's length): it is never
     // cut to fit, which would send a request other than the one written; it is not sent, and the view says why
     if (text.length > MAX_REQUEST) {
-      setNotice({ b: 'BAXY', t: t('el pedido es demasiado largo · máximo ', 'the request is too long · at most ') + MAX_REQUEST + t(' caracteres, tiene ', ' characters, it has ') + text.length });
+      setNotice({ b: 'BAXY', t: tooLongText(text.length, t) });
       return false;
     }
     // /turn answers when the turn ends: a request that got no answer may have been taken and is not given back to the
@@ -655,7 +663,7 @@ export default function App() {
 
   // the request box, under the face
   const input = <VoiceInput mic={shownMic} micAvailable={s.voice.available} micWaiting={s.voice.waiting_memory ?? null} noRecognizer={s.voice.no_recognizer === true} noWake={s.voice.no_wake === true} wakeProblem={s.voice.wake_problem ?? null} onMic={(m) => void setMic(m)} onPttStart={pttStart} onPttEnd={pttEnd}
-    onSubmit={submit} state={state} canSend={canSend} />;
+    onSubmit={submit} state={state} canSend={canSend} maxChars={MAX_REQUEST} onTooLong={setTooLong} />;
 
   return (
     <LangContext.Provider value={t}>
@@ -667,7 +675,7 @@ export default function App() {
           style={{ '--rail': RAIL + 'px', '--chatw': chatVisible ? CHATW + 'px' : '0px', '--chatfull': CHATW + 'px' } as CSSProperties}>
           <Cosmos state={gState} light={theme === 'light'} focusX={focusX} still={stillIn(state)} />
           <Rail api={api} apiPast={!!apiPast} other={api ?? otherLocal} state={state} powered={powered} onPower={togglePower} metrics={metrics} net={netShown}
-            gauges={look.gauges} counts={counts} quiet={quiet} onPanel={openPanel} />
+            gauges={look.gauges} counts={counts} quiet={quiet} onPanel={openPanel} version={general?.version} />
           <div className="bx-center">
             {/* Uso real 03-11: a click here opened the ear as if the space were held; the wake word, the held space and the
                 microphone button are what open it */}

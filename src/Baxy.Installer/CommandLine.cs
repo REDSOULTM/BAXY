@@ -116,6 +116,8 @@ internal sealed record CommandLine(
           Sin opciones abre la ventana del instalador.
 
             --quiet            Instala sin ventana ni voz. Lo que pasa queda en {Program.LogPath}.
+                               No muestra el acuerdo de licencia. La próxima actualización con ventana lo
+                               muestra si no es el último que se aceptó en una ventana.
             --dir <carpeta>    Instala en esa carpeta (ruta completa) en vez de {defaultRoot}.
                                La carpeta debe no existir, estar vacía o tener ya BAXY.
             --no-voice         La ventana empieza con la voz del instalador apagada (sus frases dicen «BAXY»
@@ -123,8 +125,10 @@ internal sealed record CommandLine(
             --uninstall        Desinstala BAXY (con ventana). Con --quiet, sin ventana; sin --dir, quita la
                                instalación registrada en «Aplicaciones instaladas».
             --delete-data      Con --uninstall: borra también los datos de BAXY (%LOCALAPPDATA%\BAXY).
-            --update           Lo usa BAXY al actualizarse: espera a que BAXY se cierre, instala sin preguntar de
-                               nuevo (ya dijiste que sí en BAXY) y la vuelve a abrir. Tus datos no se tocan.
+            --update           Lo usa BAXY al actualizarse: espera a que BAXY se cierre, instala (ya dijiste que
+                               sí en BAXY) y la vuelve a abrir. Si el acuerdo de licencia no es el que aceptaste,
+                               antes lo muestra: sin aceptarlo no instala y vuelve a abrir la que tenías.
+                               El instalador no toca tus datos.
                                Con --quiet no la abre: instala y termina.
             --help, -h, /?     Muestra esta ayuda.
 
@@ -144,6 +148,8 @@ internal sealed record CommandLine(
           Without options it opens the installer's window.
 
             --quiet            Installs with no window and no voice. What happens goes to {Program.LogPath}.
+                               It does not show the license agreement. The next update with a window shows it
+                               if it is not the last one accepted in a window.
             --dir <folder>     Installs in that folder (a full path) instead of {defaultRoot}.
                                The folder must not exist, be empty, or already hold BAXY.
             --no-voice         The window starts with the installer's voice off (its lines say «BAXY» and
@@ -151,8 +157,10 @@ internal sealed record CommandLine(
             --uninstall        Uninstalls BAXY (with a window). With --quiet, with none; without --dir, it removes
                                the installation registered in «Installed apps».
             --delete-data      With --uninstall: also deletes BAXY's data (%LOCALAPPDATA%\BAXY).
-            --update           Used by BAXY to update itself: waits for BAXY to close, installs without asking again
-                               (you said yes in BAXY) and opens it again. Your data is not touched.
+            --update           Used by BAXY to update itself: waits for BAXY to close, installs (you said yes in
+                               BAXY) and opens it again. If the license agreement is not the one you accepted, it
+                               shows it first: without accepting it nothing is installed and the one you had opens again.
+                               The installer does not touch your data.
                                With --quiet it does not open it: it installs and ends.
             --help, -h, /?     Shows this help.
 

@@ -36,17 +36,23 @@ interface Props {
   onPttEnd: () => void;
   /** sends the request; false when it was not taken (not sent, or the host refused it) */
   onSubmit: (text: string) => Promise<boolean>;
+  /** the longest request the host takes (MissionInput.MaximumCharacters) */
+  maxChars: number;
+  /** COX-1: the length of the box's request while it is longer than maxChars, 0 once it fits */
+  onTooLong: (length: number) => void;
   state: BaxyState;
   canSend: boolean;
 }
 
-export function VoiceInput({ mic, micAvailable, micWaiting = null, noRecognizer = false, noWake = false, wakeProblem = null, onMic, onPttStart, onPttEnd, onSubmit, state, canSend }: Props) {
+export function VoiceInput({ mic, micAvailable, micWaiting = null, noRecognizer = false, noWake = false, wakeProblem = null, onMic, onPttStart, onPttEnd, onSubmit, state, canSend, maxChars, onTooLong }: Props) {
   const t = useT();
   const [draft, setDraft] = useState('');
   const [menu, setMenu] = useState(false);
   const cur = MIC.find((m) => m.id === mic) ?? MIC[1];
   const talking = mic === 'ptt' && state === 'listening';
   const armed = draft.trim().length > 0 && canSend;
+  const length = draft.trim().length;
+  useEffect(() => { onTooLong(length > maxChars ? length : 0); }, [length, maxChars, onTooLong]);
   useEffect(() => {
     if (!menu) return;
     const close = (e: PointerEvent) => { if (!(e.target as Element | null)?.closest('.bx-micwrap')) setMenu(false); };

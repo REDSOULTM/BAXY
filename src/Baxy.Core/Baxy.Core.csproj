@@ -14,6 +14,9 @@
     <ProjectReference Include="..\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj" />
     <ProjectReference Include="..\Baxy.Security.Windows\Baxy.Security.Windows.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(BaxyUpdateKeys)" LogicalName="Baxy.UpdateKeys.pem" />
+  </ItemGroup>
   <ItemGroup Condition="'$(PublishAot)' == 'true'">
     <LinkerArg Include="/Brepro" />
   </ItemGroup>

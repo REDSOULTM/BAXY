@@ -33,6 +33,11 @@ internal sealed class Texts
     internal required string LicenseNotice { get; init; }
     internal required string ReadLicense { get; init; }
     internal required string LicenseTitle { get; init; }
+    internal required string AgreementChangedTitle { get; init; }
+    internal required string AgreementUnknownTitle { get; init; }
+    internal required string AgreementHelp { get; init; }
+    internal required string Accept { get; init; }
+    internal required string Decline { get; init; }
     internal required string Back { get; init; }
     internal required string InstallMe { get; init; }
     internal required string NotNow { get; init; }
@@ -81,6 +86,11 @@ internal sealed class Texts
     internal required string FailDamagedHelp { get; init; }
     internal required string FailWindows { get; init; }
     internal required string FailWindowsHelp { get; init; }
+    internal required string FailUnsigned { get; init; }
+    internal required string FailUnsignedHelp { get; init; }
+    internal required string FailUnsignedUpdateHelp { get; init; }
+    internal required string FailOlder { get; init; }
+    internal required string FailOlderHelp { get; init; }
     internal required string FailOther { get; init; }
     internal required string FailOtherHelp { get; init; }
     internal required string NotRegisteredTitle { get; init; }
@@ -90,6 +100,7 @@ internal sealed class Texts
     internal required string UninstallTitle { get; init; }
     internal required string UninstallBody { get; init; }
     internal required string UninstallRings { get; init; }
+    internal required string UninstallRingsKept { get; init; }
     internal required string UninstallSize { get; init; }
     internal required string UninstallKeep { get; init; }
     internal required string UninstallDelete { get; init; }
@@ -99,13 +110,19 @@ internal sealed class Texts
 
     /// <summary>What the uninstall screen says before the person chooses: what the data are, how much room they take
     /// when that is known (INS-9) and, when the uninstall will take alarms or reminders out of Windows
-    /// (<see cref="WindowsIntegration.RingsToRemove"/>), that they go either way (INS-1).</summary>
-    internal string UninstallBodyFor(int rings, long dataBytes, string dataFolder)
+    /// (<see cref="WindowsIntegration.RingsToRemove"/>), that they go either way (INS-1); when they stay because the other
+    /// BAXY shares the data (<see cref="WindowsIntegration.RingsKept"/>), how many and why (COX-1).</summary>
+    internal string UninstallBodyFor(int rings, long dataBytes, string dataFolder, int kept = 0, string otherBaxy = "")
     {
         string body = dataBytes > 0
             ? UninstallBody + " " + string.Format(CultureInfo.CurrentCulture, UninstallSize, Size(dataBytes), dataFolder)
             : UninstallBody;
-        return rings > 0 ? body + " " + UninstallRings : body;
+        if (rings > 0)
+        {
+            return body + " " + UninstallRings;
+        }
+
+        return kept > 0 ? body + " " + string.Format(CultureInfo.CurrentCulture, UninstallRingsKept, kept, otherBaxy) : body;
     }
 
     // In the units of the installer's other figures (1 GB = 1,000,000,000 bytes); what is there is never «0 MB».
@@ -142,6 +159,11 @@ internal sealed class Texts
         LicenseNotice = "Al instalarme aceptas mi licencia.",
         ReadLicense = "Ver _licencia",
         LicenseTitle = "Mi licencia.",
+        AgreementChangedTitle = "Mi licencia cambió desde la que aceptaste.",
+        AgreementUnknownTitle = "Antes de actualizarme, lee mi licencia.",
+        AgreementHelp = "Si no la aceptas, no me actualizo y sigues con la versión que tienes.",
+        Accept = "La acepto",
+        Decline = "No la acepto",
         Back = "Volver",
         InstallMe = "Instalarme",
         NotNow = "Ahora no",
@@ -188,6 +210,11 @@ internal sealed class Texts
         FailDamagedHelp = "Vuelve a intentarlo y lo bajo de nuevo.",
         FailWindows = "Windows no pudo instalar un componente que necesito.",
         FailWindowsHelp = "Vuelve a intentarlo. Si Windows te pide permiso, acéptalo.",
+        FailUnsigned = "No pude comprobar que esta versión de BAXY venga firmada por quien hace BAXY, así que no instalé nada.",
+        FailUnsignedHelp = "Baja el instalador otra vez desde la página de BAXY en GitHub. Si vuelve a pasar, no lo uses. El detalle quedó en {0}.",
+        FailOlder = "En esta carpeta ya está BAXY {0}, más nuevo que el {1} que traigo, así que no instalé nada.",
+        FailUnsignedUpdateHelp = "Tu BAXY de antes sigue instalada y sin cambios: ábrela desde el menú Inicio. Si vuelve a pasar, no instales esta versión. El detalle quedó en {0}.",
+        FailOlderHelp = "Si de verdad quieres el {1}, desinstala primero el {0} eligiendo conservar tus datos.",
         FailOther = "{0}",
         FailOtherHelp = "Vuelve a intentarlo. El detalle quedó en {0}.",
         NotRegisteredTitle = "Ya estoy instalado, pero falta un paso.",
@@ -197,6 +224,7 @@ internal sealed class Texts
         UninstallTitle = "¿Me desinstalo?",
         UninstallBody = "Tus datos son lo que recuerdo de ti, tus conversaciones, notas y ajustes, las claves que me diste, las capturas de pantalla que guardé y los modelos que bajé después de instalarme. Tú decides si se quedan.",
         UninstallRings = "Las alarmas y los recordatorios que me pediste se quitan de Windows en los dos casos: sin mí no suenan.",
+        UninstallRingsKept = "Tus alarmas y recordatorios ({0}) se quedan en Windows y seguirán sonando: la otra BAXY, en {1}, usa estos mismos datos y también son suyos.",
         UninstallSize = "Hoy ocupan {0} en {1}.",
         UninstallKeep = "Desinstalarme y _conservar tus datos",
         UninstallDelete = "Desinstalarme y _borrar tus datos",
@@ -232,6 +260,11 @@ internal sealed class Texts
         LicenseNotice = "By installing me you accept my license.",
         ReadLicense = "Read the licen_se",
         LicenseTitle = "My license.",
+        AgreementChangedTitle = "My license changed since the one you accepted.",
+        AgreementUnknownTitle = "Before I update, read my license.",
+        AgreementHelp = "If you don't accept it, I don't update and you keep the version you have.",
+        Accept = "I accept it",
+        Decline = "I don't accept it",
         Back = "Back",
         InstallMe = "Install me",
         NotNow = "Not now",
@@ -278,6 +311,11 @@ internal sealed class Texts
         FailDamagedHelp = "Try again and I’ll download it again.",
         FailWindows = "Windows couldn’t install a component I need.",
         FailWindowsHelp = "Try again. If Windows asks your permission, accept it.",
+        FailUnsigned = "I couldn’t confirm that this version of BAXY is signed by BAXY’s maker, so I installed nothing.",
+        FailUnsignedHelp = "Download the installer again from BAXY’s GitHub page. If it happens again, don’t use it. The details are in {0}.",
+        FailOlder = "This folder already holds BAXY {0}, newer than the {1} I bring, so I installed nothing.",
+        FailUnsignedUpdateHelp = "Your previous BAXY is still installed and unchanged: open it from the Start menu. If it happens again, don’t install this version. The details are in {0}.",
+        FailOlderHelp = "If you really want {1}, uninstall {0} first, choosing to keep your data.",
         FailOther = "{0}",
         FailOtherHelp = "Try again. The details are in {0}.",
         NotRegisteredTitle = "I’m installed, but one step is missing.",
@@ -287,6 +325,7 @@ internal sealed class Texts
         UninstallTitle = "Should I uninstall myself?",
         UninstallBody = "Your data is what I remember about you, your conversations, notes and settings, the keys you gave me, the screenshots I saved and the models I downloaded after I was installed. You decide whether it stays.",
         UninstallRings = "The alarms and reminders you asked me for are removed from Windows either way: they don’t ring without me.",
+        UninstallRingsKept = "Your alarms and reminders ({0}) stay in Windows and will keep ringing: the other BAXY, in {1}, uses this same data and they’re its too.",
         UninstallSize = "Today it takes {0} in {1}.",
         UninstallKeep = "Uninstall me and _keep your data",
         UninstallDelete = "Uninstall me and _delete your data",

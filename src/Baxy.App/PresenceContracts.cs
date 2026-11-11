@@ -16,4 +16,10 @@ internal interface IWindowsRunKey
     void Write(string name, string value);
 
     void Delete(string name);
+
+    /// <summary>
+    /// COX-1: keeps a Run command of another installation that this one is about to replace, where this installation's
+    /// uninstall gives it back; false when there is nowhere to keep it.
+    /// </summary>
+    bool KeepReplaced(string executable, string command);
 }

@@ -42,9 +42,23 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// </summary>
     internal string? CapturesDirectory { get; init; }
 
-    /// <summary>The product's view model: the one that keeps this PC's capture folder empty between requests.</summary>
+    /// <summary>
+    /// PRV2 (A2): what an earlier version wrote with the person's words, removed once before the first mind starts
+    /// (<see cref="EarlierWords"/>). Given by <see cref="ForThisPc"/>, and not there where words are kept on this PC; null
+    /// removes nothing (a model built for a test acts on no folder it was not given).
+    /// </summary>
+    internal EarlierWords? WordsOfEarlierVersions { get; init; }
+
+    private bool _earlierWordsDone;
+
+    /// <summary>The product's view model: the one that keeps this PC's capture folder empty between requests, and that
+    /// removes what an earlier version kept with the person's words.</summary>
     internal static MainWindowViewModel ForThisPc() =>
-        new() { CapturesDirectory = Path.Combine(MemoryOperationProtector.ResolveDataRoot(), "captures") };
+        new()
+        {
+            CapturesDirectory = Path.Combine(MemoryOperationProtector.ResolveDataRoot(), "captures"),
+            WordsOfEarlierVersions = EarlierWords.ForThisPc(),
+        };
 
     private RetryableOperationRegistry? _retryableOperations;
     private MemoryOperationProtector? _memoryProtector;
@@ -1771,6 +1785,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return;
             }
 
+            await RemoveEarlierWordsAsync(linked.Token);
+
             // The shell's first start counts from its check of the runtime, the wait the person already sees (W1); a
             // relaunch from its own start.
             if (!_startupMindPending)
@@ -2737,6 +2753,24 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _ = isUser
                 ? mind.VoiceCancelAsync(TimeSpan.FromSeconds(3), CancellationToken.None)
                 : mind.VoiceSpeakAsync(body, TimeSpan.FromSeconds(5), CancellationToken.None);
+        }
+    }
+
+    /// <summary>PRV2 (A2): before a mind writes its trace, the files an earlier version wrote with the person's words go,
+    /// once (<see cref="EarlierWords.RemoveOnce"/>); one held open stays for the next start, which never fails for it.</summary>
+    private async Task RemoveEarlierWordsAsync(CancellationToken cancellationToken)
+    {
+        if (_earlierWordsDone || WordsOfEarlierVersions is not { } earlier)
+        {
+            return;
+        }
+
+        EarlierWords.Outcome outcome = await Task.Run(earlier.RemoveOnce, cancellationToken);
+        _earlierWordsDone = outcome.Done;
+        if (outcome.Removed > 0 || !outcome.Done)
+        {
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", "earlier_words_removed",
+                string.Create(CultureInfo.InvariantCulture, $"files={outcome.Removed} bytes={outcome.Bytes} done={outcome.Done}"));
         }
     }
 

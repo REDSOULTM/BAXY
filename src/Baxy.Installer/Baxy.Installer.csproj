@@ -40,6 +40,11 @@
     <Compile Include="..\Baxy.Providers.Windows\SystemStatus\WindowsGpuStatusProbe.cs" Link="Providers\WindowsGpuStatusProbe.cs" />
     <Compile Include="..\Baxy.Providers.Windows\SystemStatus\WindowsGpuVendors.cs" Link="Providers\WindowsGpuVendors.cs" />
   </ItemGroup>
+  <!-- FIR1: the parts' hashes are used only after release.json's signature checks out, with the keys baxy-core trusts. -->
+  <ItemGroup>
+    <Compile Include="..\Baxy.Core\Operations\ReleaseSignature.cs" Link="Core\ReleaseSignature.cs" />
+    <EmbeddedResource Include="$(BaxyUpdateKeys)" LogicalName="Baxy.UpdateKeys.pem" />
+  </ItemGroup>
   <ItemGroup Condition="'$(BaxyReleaseManifest)' != ''">
     <EmbeddedResource Include="$(BaxyReleaseManifest)" LogicalName="Baxy.Installer.release.json" />
   </ItemGroup>

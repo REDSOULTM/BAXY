@@ -67,9 +67,79 @@ public sealed class AutostartRegistrationTests
         Assert.That(registration.MayRegister(executable, []), Is.True);
     }
 
+    // COX-1: another BAXY installed beside this one (its own setup) had the Run value «BAXY»; this one took it at its
+    // start and its uninstall left the other with no start with Windows. What it replaces is kept first.
+    [Test]
+    public void TheStartOfAnotherBaxyIsKeptBeforeThisOneTakesIt()
+    {
+        string other = OtherBaxy();
+        var key = new FakeRunKey { CanKeep = true };
+        key.Values[PresenceLimits.AutostartValueName] = Quoted(other);
+
+        Registration(key).EnsureRegistered([]);
+
+        Assert.That(key.Kept, Is.EqualTo(Quoted(other)));
+        Assert.That(key.Values[PresenceLimits.AutostartValueName], Does.Contain(InstallRoot));
+    }
+
+    [Test]
+    public void WithNowhereToKeepItTheStartOfAnotherBaxyStays()
+    {
+        string other = OtherBaxy();
+        var key = new FakeRunKey { CanKeep = false };
+        key.Values[PresenceLimits.AutostartValueName] = Quoted(other);
+        WindowsAutostartRegistration registration = Registration(key);
+
+        registration.EnsureRegistered([]);
+
+        Assert.That(key.Values[PresenceLimits.AutostartValueName], Is.EqualTo(Quoted(other)));
+        Assert.That(registration.IsRegisteredForCurrent(), Is.False, "the switch says this one does not start with Windows");
+    }
+
+    [Test]
+    public void TheOwnersSwitchTakesItAndKeepsWhatItReplaced()
+    {
+        string other = OtherBaxy();
+        var key = new FakeRunKey { CanKeep = false };
+        key.Values[PresenceLimits.AutostartValueName] = Quoted(other);
+
+        Assert.That(Registration(key).SetForCurrent(true, []), Is.True);
+
+        Assert.That(key.Values[PresenceLimits.AutostartValueName], Does.Contain(InstallRoot));
+        Assert.That(key.KeepAsked, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void AStartWhoseExeIsGoneIsReplacedWithNothingKept()
+    {
+        var key = new FakeRunKey { CanKeep = true };
+        key.Values[PresenceLimits.AutostartValueName] = Quoted(Path.Combine(Path.GetTempPath(), "baxy-autostart-fake", "gone", "Baxy.exe"));
+
+        Registration(key).EnsureRegistered([]);
+
+        Assert.That(key.Values[PresenceLimits.AutostartValueName], Does.Contain(InstallRoot));
+        Assert.That(key.Kept, Is.Null);
+    }
+
+    private static string Quoted(string exe) => "\"" + exe + "\" " + PresenceLimits.FromWindowsStartArgument;
+
+    private static string OtherBaxy()
+    {
+        string other = Path.Combine(Path.GetTempPath(), "baxy-autostart-fake", "Other", "versions", "1.0", "Baxy.exe");
+        Directory.CreateDirectory(Path.GetDirectoryName(other)!);
+        File.WriteAllText(other, "the other app");
+        return other;
+    }
+
     private sealed class FakeRunKey : IWindowsRunKey
     {
         internal Dictionary<string, string> Values { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+        internal bool CanKeep { get; init; }
+
+        internal string? Kept { get; private set; }
+
+        internal int KeepAsked { get; private set; }
 
         internal Exception? ReadFailure { get; init; }
 
@@ -89,5 +159,16 @@ public sealed class AutostartRegistrationTests
         }
 
         public void Delete(string name) => Values.Remove(name);
+
+        public bool KeepReplaced(string executable, string command)
+        {
+            KeepAsked++;
+            if (CanKeep)
+            {
+                Kept = command;
+            }
+
+            return CanKeep;
+        }
     }
 }

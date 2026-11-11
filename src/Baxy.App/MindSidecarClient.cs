@@ -420,7 +420,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             applicationCatalog,
             gameCatalog,
             Behavior,
-            Withheld);
+            Withheld,
+            UpdatePanel.Installed);
         int offered = request["capabilities"]!.AsArray().Count;
         JsonObject? reply = await RequestAsync(
             request,
@@ -493,7 +494,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         ApplicationCatalogSnapshot? applicationCatalog,
         GameCatalogSnapshot? gameCatalog = null,
         JsonObject? behavior = null,
-        IReadOnlySet<string>? withheld = null)
+        IReadOnlySet<string>? withheld = null,
+        string? version = null)
     {
         ArgumentNullException.ThrowIfNull(capabilities);
         var catalog = new JsonArray();
@@ -594,6 +596,14 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             request["withheld"] = new JsonArray([.. off.Select(static n => (JsonNode?)(FieldStepProjection.HasStub(n)
                 ? new JsonObject { ["name"] = n, ["title"] = FieldStepProjection.EnglishTitle(n) }
                 : new JsonObject { ["name"] = n }))]);
+        }
+
+        // VER2 (10-11, 1.3.3 just installed: asked which version it is, it said it had no information on it):
+        // the version this App is, from its stamp (UpdatePanel.Installed, the one Settings → General shows), with no
+        // request; the mind says it as a fact of this PC (mind.VERSION_FACT). A development copy has none: no field.
+        if (!string.IsNullOrWhiteSpace(version))
+        {
+            request["baxyVersion"] = version;
         }
 
         return request;

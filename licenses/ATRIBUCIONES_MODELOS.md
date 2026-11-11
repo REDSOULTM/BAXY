@@ -59,7 +59,7 @@ Face; it is downloaded only if the person asks (Settings → Model), from
 <https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF/resolve/da66d8bbb0b90ae15fc54cb4386370a4a471d54f/BAXY-Qwen3.5-4B-c4-Q4_K_M.gguf>, and used only with the SHA-256
 `2c445631782a5c27b9948369e9432309528688b9b761fce56586d796ea2f57c7`. It is kept in the person's data folder. **Changed by
 the BAXY project:** it is Qwen3.5-4B fine-tuned with a LoRA, merged and quantized to Q4_K_M, under the same Apache-2.0
-license. The fine-tune was trained on synthetic conversations whose tool receipts are taken from real traces; no private user text was used.
+license. The fine-tune was trained on synthetic conversations whose tool receipts are taken from real traces; no person's private text was used. Those conversations were written with a third-party AI service; that service's permission to train a model on them was requested on 2026-11-07 and, as of 2026-11-10, has had no answer.
 
 `Qwen3.5-4B-mmproj-F16.gguf`: same SHA-256 as `mmproj-F16.gguf` in <https://huggingface.co/unsloth/Qwen3.5-4B-GGUF>,
 unchanged except for its file name.

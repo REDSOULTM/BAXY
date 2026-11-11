@@ -11,6 +11,8 @@ internal enum FailureKind
     Open,
     Damaged,
     Windows,
+    Unsigned,
+    Older,
     Other,
 }
 
@@ -24,6 +26,8 @@ internal static partial class Failures
     internal static FailureKind Classify(Exception failure, Func<bool> baxyIsOpen) => failure switch
     {
         InstallBlockedException => baxyIsOpen() ? FailureKind.Open : FailureKind.Other,
+        UnsignedReleaseException => FailureKind.Unsigned,
+        OlderReleaseException => FailureKind.Older,
         PrerequisiteException => FailureKind.Windows,
         InvalidDataException => FailureKind.Damaged,
         HttpRequestException { StatusCode: { } status } when IsRefusal(status) => FailureKind.Other,

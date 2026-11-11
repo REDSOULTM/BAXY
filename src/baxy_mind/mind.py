@@ -160,6 +160,10 @@ assert _REPEAT in SYSTEM
 BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "").replace(_CAN_DO, "").replace(_REPEAT, "")
 # The groups of the App's panel «Qué puedo hacer» (operation-labels.v1.json), each tool's «group» in catalog.configure.
 CAN_DO_AREAS = " Por áreas: {areas}."
+# VER2 (10-11, 1.3.3 recién instalada: asked which version it is, it said it had no information on it): the
+# version this App is, from its stamp (catalog.configure «baxyVersion», UpdatePanel.Installed, the one Ajustes → General
+# shows), a fact of this PC as the areas are. None from a development copy: nothing is said then.
+VERSION_FACT = "\nVersión de BAXY instalada en este PC (la tuya): {version}."
 # Perfiles de herramientas: a withheld tool's stub, after its title (configure). In English, as the tools' descriptions.
 OFF_STUB = "Off in this PC's tool profile: nothing is done, saved or read."
 # ALR5 (M2, uso real 09-11: with Alarmas outside the profile, one set before rang and no words stopped it; only the card's
@@ -2541,7 +2545,10 @@ class Mind:
             self._log("configure.confirms_absent", time.perf_counter(), None, operations=absent)
         areas = list(dict.fromkeys(str(cap["group"]) for cap in capabilities if cap.get("group")))
         # The person's texts in their fixed places (behavior.py): with the factory's this is the text written before.
+        version = message.get("baxyVersion")
         self.system = (behavior.head(chosen) + RULES + (CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else "")
+                       + (VERSION_FACT.format(version=version.strip()) if isinstance(version, str) and version.strip()
+                          else "")
                        + behavior.tail(chosen))
         if own := behavior.custom(chosen):
             self._log("configure.behavior", time.perf_counter(), None, own=own)

@@ -267,6 +267,26 @@ test('un pedido de más de 4096 caracteres no se recorta ni se envía: se dice p
   await expect(box()).toHaveValue('a'.repeat(5000));
 });
 
+test('COX-1: 7.000 caracteres pegados dicen el límite mientras sigan en la caja, no sólo un momento', async () => {
+  // VIVO4 D4: the notice lasted 2.6 s and the text stayed in the box; whoever looked a moment later saw no reason
+  h = await openView();
+  const pasted = 'Texto pegado de un documento largo. '.repeat(200).slice(0, 6999) + '.';
+  await box().focus();
+  await h.page.keyboard.insertText(pasted);
+  await expect(h.page.locator('.bx-notice')).toContainText('máximo 4096 caracteres');
+  await box().press('Enter');
+  await h.page.waitForTimeout(3500);
+  await expect(h.page.locator('.bx-notice')).toContainText('máximo 4096 caracteres');
+  await expect(h.page.getByRole('status')).toContainText('4096');
+  expect(h.calls.filter((c) => c.path === '/turn')).toEqual([]);
+  await expect(box()).toHaveValue(pasted);
+  // shortened to the limit, the notice goes and the request is sent whole
+  await box().fill(pasted.slice(0, 4096));
+  await expect(h.page.locator('.bx-notice')).toHaveCount(0);
+  await box().press('Enter');
+  await expect.poll(() => h.calls.filter((c) => c.path === '/turn').map((c) => (c.body as { text: string }).text.length)).toEqual([pasted.slice(0, 4096).trim().length]);
+});
+
 test('accesibilidad: la opción elegida de cada selector y lo que despliega cada botón se anuncian', async () => {
   h = await openView({ items: [{ who: 'baxy', id: 'b1', ts: '12:00', text: 'Listo.', steps: [{ id: 'st1', label: 'Abrir la calculadora', fam: 'apps', status: 'ok', obs: 'Ventana a la vista' }] }] });
   const p = h.page;
@@ -1651,6 +1671,68 @@ test('versión: la fila dice la versión instalada sin buscar, y la sigue dicien
   await expect(en).toHaveText('Installed: 1.3.2');
   await p.getByRole('button', { name: 'Check for updates' }).click();
   await expect(en).toHaveText('You have the latest version (1.3.2)');
+});
+
+// VIS4 (owner, 2026-11-10: «al lado del baxy arriba a la izquierda ... la version»): the rail says the installed version
+// beside its «BAXY», on that line's baseline, smaller and in the network line's muted colour, and only once the App gave
+// it (GET /settings/general «version», VIS3's). On screen the number alone, without a build's «+…»; a screen reader hears
+// «versión 1.3.3». If it does not fit whole it is not shown, and it never moves the network line under it.
+test('versión en el carril: junto a «BAXY» en su línea, sólo cuando la App la dio, entera o nada, en los dos temas e idiomas', async () => {
+  h = await openView();
+  const p = h.page;
+  const ver = p.locator('.left-header .bx-ver');
+  const read = () => p.evaluate(() => {
+    const q = (s: string) => document.querySelector(s) as HTMLElement | null;
+    const baseline = (e: HTMLElement) => {
+      const m = document.createElement('span');
+      m.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+      e.appendChild(m);
+      const y = m.getBoundingClientRect().top;
+      m.remove();
+      return y;
+    };
+    const name = q('.left-header .name')!, row = q('.left-header .row')!, priv = q('.bx-priv')!, v = q('.left-header .bx-ver');
+    const r = row.getBoundingClientRect(), n = name.getBoundingClientRect(), b = v?.getBoundingClientRect();
+    const shown = v ? [...v.childNodes].filter((c) => c.nodeType === Node.TEXT_NODE).map((c) => c.textContent).join('') : null;
+    return {
+      privTop: priv.getBoundingClientRect().top, shown,
+      whole: b ? b.left >= n.right && b.right <= r.right + 0.5 && b.top >= r.top - 0.5 && b.bottom <= r.bottom + 0.5 : null,
+      none: b ? b.right <= r.left || b.left >= r.right || b.top >= r.bottom || b.bottom <= r.top : null,
+      sameLine: v ? Math.abs(baseline(name) - baseline(v)) <= 1 : null,
+      smaller: v ? parseFloat(getComputedStyle(v).fontSize) < parseFloat(getComputedStyle(name).fontSize) : null,
+      muted: v ? getComputedStyle(v).color === getComputedStyle(priv).color && getComputedStyle(v).color !== getComputedStyle(name).color : null,
+    };
+  });
+  // before the App gives it: no number, no «—»
+  await expect(p.locator('.left-header .name')).toBeVisible();
+  await expect(ver).toHaveCount(0);
+  await expect(p.locator('.left-header .row')).toHaveText('baxy');
+  const before = await read();
+  h.reply('/settings/general', () => ({ body: { language: 'es', languageInUse: 'es', version: '1.3.3+c2a4c76ac' } }));
+  await expect(ver).toHaveText('versión 1.3.3');
+  await expect(p.locator('.left-header')).toMatchAriaSnapshot('- text: baxy versión 1.3.3 Todo local');
+  const dark = await read();
+  expect(dark).toEqual({ privTop: before.privTop, shown: '1.3.3', whole: true, none: false, sameLine: true, smaller: true, muted: true });
+  // the full stamp the App gave stays Settings' own
+  await p.locator('.bx-gear').click();
+  await expect(p.locator('.bxs-row', { hasText: 'Versión' }).locator('.h').first()).toHaveText('Instalada: 1.3.3+c2a4c76ac');
+  await p.getByRole('button', { name: /^Apariencia/ }).click();
+  await p.locator('.bxs-seg button', { hasText: 'Claro' }).click();
+  await expect(p.locator('html')).toHaveClass(/(^| )lt( |$)/);
+  await p.keyboard.press('Escape');
+  expect(await read()).toEqual(dark);
+  // a rail too narrow for it, or a version too long: whole or not at all, and the network line stays where it was
+  for (const [rail, version, fits] of [['120px', '1.3.3', true], ['100px', '1.3.3', false], ['204px', '2026.11.10-nightly.12345', false]] as const) {
+    h.reply('/settings/general', () => ({ body: { language: 'es', languageInUse: 'es', version } }));
+    await p.locator('.bx2').evaluate((e, w) => e.style.setProperty('--rail', w), rail);
+    await expect(ver).toHaveText('versión ' + version);
+    await expect.poll(async () => { const r = await read(); return [r.privTop, fits ? r.whole : r.none]; }).toEqual([before.privTop, true]);
+  }
+  h.reply('/settings/general', () => ({ body: { language: 'en', languageInUse: 'en', version: '1.3.3' } }));
+  await p.locator('.bx2').evaluate((e) => e.style.setProperty('--rail', '204px'));
+  await expect(ver).toHaveText('version 1.3.3');
+  await expect(p.locator('.left-header')).toMatchAriaSnapshot('- text: baxy version 1.3.3 All local');
+  expect((await read()).whole).toBe(true);
 });
 
 // LEG1 §5 (INFORME_LEG1, «Para INS1», 2026-11-09): four texts of the view said what the agreements no longer say. Each now

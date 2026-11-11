@@ -113,6 +113,9 @@ internal static class FieldStepProjection
         ["query_not_said"] = ("No se ejecutó: la búsqueda no llevaba tus palabras", "Not run: the search didn't use your words"),
         ["channel_not_said"] = ("No se ejecutó: no nombraste ese canal", "Not run: you did not name that channel"),
         ["application_not_said"] = ("No se ejecutó: no nombraste esa aplicación", "Not run: you did not name that app"),
+        // FIR1: written by baxy.update itself, before any download: the published version is not under the owner's signature.
+        ["baxy_update_not_signed"] = ("No se instaló: no pude comprobar que la versión publicada venga firmada por BAXY",
+            "Not installed: I couldn't confirm the published version is signed by BAXY"),
     };
 
     // VIS3 (VIVO6 fila 4, 10-11-2026: «Actualízate» on the latest version showed «✕ No pude · Falló ·

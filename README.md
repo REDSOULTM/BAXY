@@ -2,13 +2,13 @@
 
 [English](#english) · [Español](#español)
 
-> **This is the `experimental` branch: the source code of BAXY 1.3.3, an early-access pre-release for testing.**
-> The recommended version is still [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1) (branch `main`). What changes in 1.3.3, its known
-> problems and what was not tested are in the [1.3.3 release notes](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.3).
+> **This is the `experimental` branch: the source code of BAXY 1.3.4, an early-access pre-release for testing.**
+> The recommended version is still [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1) (branch `main`). What changes in 1.3.4, its known
+> problems and what was not tested are in the [1.3.4 release notes](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.4).
 >
-> **Esta es la rama `experimental`: el código de BAXY 1.3.3, un acceso anticipado para probar.** La versión
-> recomendada sigue siendo [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1) (rama `main`). Qué cambia en la 1.3.3, sus problemas conocidos
-> y lo que no se probó están en las [notas de la 1.3.3](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.3).
+> **Esta es la rama `experimental`: el código de BAXY 1.3.4, un acceso anticipado para probar.** La versión
+> recomendada sigue siendo [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1) (rama `main`). Qué cambia en la 1.3.4, sus problemas conocidos
+> y lo que no se probó están en las [notas de la 1.3.4](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.4).
 
 ## English
 
@@ -30,8 +30,8 @@ you turn that off in Settings.
 Get the installer from the [releases page](https://github.com/REDSOULTM/BAXY/releases) (the latest is
 [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1)): download `BAXY-Instalador.exe` and open it.
 It checks your PC, downloads the parts it needs, verifies each one's SHA-256 and leaves BAXY in the Start menu.
-The installer is not code-signed, so SmartScreen may warn you. BAXY 1.3.3, the version of this branch, is an
-early-access pre-release: its installer is on [its own page](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.3), and it is not offered through "Update".
+The installer is not code-signed, so SmartScreen may warn you. BAXY 1.3.4, the version of this branch, is an
+early-access pre-release: its installer is on [its own page](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.4), and it is not offered through "Update".
 
 ### What you need to run it
 
@@ -46,7 +46,7 @@ early-access pre-release: its installer is on [its own page](https://github.com/
 - Integrated graphics (Intel or AMD) and CPU only are not supported.
 - A freshly formatted Windows without the Visual C++ runtime or WebView2 was not tested (the installer installs both
   from Microsoft).
-- The 1.3.3 package was not tried installed on a real AMD or Intel card (its release notes say what was measured).
+- The 1.3.4 package was not tried installed on a real AMD or Intel card (its release notes say what was measured).
 - "Another model" (Settings → Model) is optional and off by default. With a company's API, what you give BAXY goes to
   that company. OpenAI and Google were not tested with a real key; other models were measured against BAXY's tuned model (an
   optional extra since 1.3.2) and did worse.
@@ -126,8 +126,8 @@ en Ajustes.
 Baja el instalador de la [página de versiones](https://github.com/REDSOULTM/BAXY/releases) (la última es
 [BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1)): descarga `BAXY-Instalador.exe` y ábrelo.
 Revisa tu PC, baja las partes que necesita, comprueba el SHA-256 de cada una y deja a BAXY en el menú Inicio.
-El instalador no va firmado, así que SmartScreen puede avisar. BAXY 1.3.3, la versión de esta rama, es un
-acceso anticipado: su instalador está en [su propia página](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.3), y no se ofrece por «Actualizar».
+El instalador no va firmado, así que SmartScreen puede avisar. BAXY 1.3.4, la versión de esta rama, es un
+acceso anticipado: su instalador está en [su propia página](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.4), y no se ofrece por «Actualizar».
 
 ### Qué necesitas para usarlo
 
@@ -142,7 +142,7 @@ acceso anticipado: su instalador está en [su propia página](https://github.com
 - Los gráficos integrados (Intel o AMD) y la CPU sola no tienen soporte.
 - Un Windows recién formateado sin el runtime de Visual C++ ni WebView2 no se probó (el instalador pone los dos desde
   Microsoft).
-- El paquete de la 1.3.3 no se probó instalado en una tarjeta AMD o Intel real (sus notas dicen qué se midió).
+- El paquete de la 1.3.4 no se probó instalado en una tarjeta AMD o Intel real (sus notas dicen qué se midió).
 - «Otro modelo» (Ajustes → Modelo) es opcional y viene apagado. Con la API de una empresa, lo que le pases a BAXY va a
   esa empresa. OpenAI y Google no se probaron con una clave real; otros modelos se midieron frente al modelo ajustado a BAXY
   (un extra opcional desde la 1.3.2) y rindieron peor.

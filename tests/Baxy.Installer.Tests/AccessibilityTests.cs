@@ -56,6 +56,24 @@ internal sealed class AccessibilityTests
         }
     }
 
+    // LEG2 (T6): the screen says the alarms go only when they will (Texts.UninstallBodyFor); what is said aloud follows it.
+    [Test]
+    public void The_uninstall_line_said_aloud_names_the_alarms_only_when_the_screen_does()
+    {
+        using Stream linesFile = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "lines.json"));
+        using JsonDocument lines = JsonDocument.Parse(linesFile);
+        Assert.Multiple(() =>
+        {
+            Assert.That(MainWindow.UninstallLine(0), Is.EqualTo("uninstall"));
+            Assert.That(MainWindow.UninstallLine(3), Is.EqualTo("uninstallRings"));
+            Assert.That(lines.RootElement.GetProperty("es").GetProperty("uninstallRings").GetString(),
+                Does.Contain("Las alarmas y los recordatorios que me pediste se quitan de Windows."));
+            Assert.That(lines.RootElement.GetProperty("en").GetProperty("uninstallRings").GetString(),
+                Does.Contain("The alarms and reminders you asked me for are removed from Windows."));
+            Assert.That(lines.RootElement.GetProperty("es").GetProperty("uninstall").GetString(), Does.Not.Contain("alarma"));
+        });
+    }
+
     [Test]
     public void The_person_is_told_the_real_cause_of_a_failure()
     {

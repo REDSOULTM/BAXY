@@ -167,14 +167,7 @@ public partial class MainWindow : Window
 
         CoreWebView2 core = FieldWebView.CoreWebView2
             ?? throw new InvalidOperationException("WebView2 no terminó su inicialización local.");
-        core.Settings.AreDevToolsEnabled = false;
-        core.Settings.AreDefaultContextMenusEnabled = false;
-        core.Settings.AreBrowserAcceleratorKeysEnabled = false;
-        core.Settings.IsStatusBarEnabled = false;
-        core.Settings.IsZoomControlEnabled = false;
-        // Owner, 2026-11-08: the window is moved from its top as any program; the view marks that band app-region: drag
-        // and WebView2 hands it to Windows as the caption (double click maximizes, Snap works).
-        core.Settings.IsNonClientRegionSupportEnabled = true;
+        KeepToBaxy(core.Settings);
         core.SetVirtualHostNameToFolderMapping(
             HistoricalFieldOriginPolicy.VirtualHost,
             fieldRoot,
@@ -594,6 +587,26 @@ public partial class MainWindow : Window
         CoreWebView2ProcessFailedKind.RenderProcessExited => FieldViewRecovery.Reload,
         _ => FieldViewRecovery.None,
     };
+
+    /// <summary>
+    /// What the view that shows BAXY's own page lets that page and the browser do. RED2 (2026-11-10): it opens only
+    /// BAXY's own files, and SmartScreen was told that address at every start (RED1 measured nav-, data- and
+    /// telem-edge.smartscreen.microsoft.com, which the privacy policy did not name): «IsReputationCheckingRequired:
+    /// Determines whether SmartScreen is enabled when visiting web pages» (https://learn.microsoft.com/dotnet/api/microsoft.web.webview2.core.corewebview2settings.isreputationcheckingrequired,
+    /// read 2026-11-10).
+    /// </summary>
+    internal static void KeepToBaxy(CoreWebView2Settings settings)
+    {
+        settings.IsReputationCheckingRequired = false;
+        settings.AreDevToolsEnabled = false;
+        settings.AreDefaultContextMenusEnabled = false;
+        settings.AreBrowserAcceleratorKeysEnabled = false;
+        settings.IsStatusBarEnabled = false;
+        settings.IsZoomControlEnabled = false;
+        // Owner, 2026-11-08: the window is moved from its top as any program; the view marks that band app-region: drag
+        // and WebView2 hands it to Windows as the caption (double click maximizes, Snap works).
+        settings.IsNonClientRegionSupportEnabled = true;
+    }
 
     /// <summary>
     /// The view's WebView2 folder (preferences, its cache). 2026-11-04: it was always the one beside the default profile,

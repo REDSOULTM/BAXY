@@ -61,6 +61,7 @@ internal sealed partial class MainWindow : Window, IDisposable
     private readonly object gate = new();
     private readonly InstallPaths paths;
     private readonly ReleaseManifest? manifest;
+    private readonly ReleaseManifest? carried;
     private readonly bool uninstalling;
     private readonly bool updating;
     private readonly GpuSupport support;
@@ -81,7 +82,12 @@ internal sealed partial class MainWindow : Window, IDisposable
     private int announced = -1;
     private FailureKind failure;
     private string failureDetail = string.Empty;
+    private string olderInstalled = string.Empty;
     private long dataBytes;
+    // PRV2 (A5): the agreement the installation in the folder accepted (null: none recorded), read before the swap
+    // replaces the folder; when it is not this installer's, the window asks for this one first (AcceptedAgreement).
+    private readonly string? acceptedBefore;
+    private bool agreementPending;
 
     internal MainWindow(ReleaseManifest? manifest, bool uninstalling, InstallPaths paths, bool voiceAllowed, bool updating = false)
     {
@@ -89,6 +95,7 @@ internal sealed partial class MainWindow : Window, IDisposable
         this.paths = paths;
         voice = new Voice(voiceAllowed);
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
+        carried = manifest;
         this.manifest = manifest?.ForMachine(adapters);
         this.uninstalling = uninstalling;
         this.updating = updating && !uninstalling && this.manifest is not null;
@@ -103,13 +110,16 @@ internal sealed partial class MainWindow : Window, IDisposable
         texts = Texts.For(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "es" : "en");
         theme = SystemParameters.HighContrast ? ThemeKind.HighContrast : ThemeKind.Dark;
         textStep = WindowsTextStep();
-        screen = uninstalling ? UninstallScreen : Greeting;
+        acceptedBefore = AcceptedAgreement.Read(paths);
+        bool asksAgreement = !uninstalling && this.manifest is not null && AcceptedAgreement.MustBeAccepted(paths, acceptedBefore);
+        agreementPending = asksAgreement;
+        screen = uninstalling ? UninstallScreen : asksAgreement ? AgreementScreen : Greeting;
         ticker.Tick += (_, _) => Tick();
         SourceInitialized += (_, _) => TitleBarFollowsTheme();
         Loaded += (_, _) =>
         {
             Apply();
-            if (this.updating)
+            if (this.updating && !asksAgreement)
             {
                 screen = WorkingScreen;
                 Render(speak: false);
@@ -125,6 +135,14 @@ internal sealed partial class MainWindow : Window, IDisposable
         };
         Closing += (_, closing) =>
         {
+            if (agreementPending && this.updating)
+            {
+                // Revisión a ciegas de PRV2: the window's X on the agreement is «I don't accept it», and BAXY comes back.
+                closing.Cancel = true;
+                DeclineAgreement();
+                return;
+            }
+
             work?.Cancel();
             closing.Cancel = installation?.IsSwapping == true;
         };
@@ -463,6 +481,76 @@ internal sealed partial class MainWindow : Window, IDisposable
         Line: "license",
         LongText: true);
 
+    /// <summary>
+    /// PRV2 (A5): BAXY is in the folder and the agreement it accepted is not this one, or is not known. Shown before
+    /// anything is installed, by hand or as an update from BAXY; accepting goes on, not accepting installs nothing.
+    /// </summary>
+    private ScreenView AgreementScreen() => new(
+        Face.Happy,
+        acceptedBefore is null ? texts.AgreementUnknownTitle : texts.AgreementChangedTitle,
+        WindowsIntegration.LicenseText(texts.Language),
+        Help: texts.AgreementHelp,
+        First: new ButtonView(texts.Accept, true, AcceptAgreement, IsDefault: true),
+        Second: new ButtonView(texts.Decline, false, DeclineAgreement, IsCancel: true),
+        Line: "agreement",
+        LongText: true);
+
+    private void AcceptAgreement()
+    {
+        if (!agreementPending)
+        {
+            return;
+        }
+
+        agreementPending = false;
+        Program.Log("agreement accepted");
+        if (updating)
+        {
+            screen = WorkingScreen;
+            Render(speak: false);
+            _ = UpdateWhenBaxyClosesAsync();
+            return;
+        }
+
+        screen = Greeting;
+        Render(speak: true);
+    }
+
+    private void DeclineAgreement()
+    {
+        if (!agreementPending)
+        {
+            return;
+        }
+
+        agreementPending = false;
+        Program.Log("agreement not accepted: nothing installed");
+        if (updating)
+        {
+            // BAXY closed itself for the update: the version the person has comes back, as it was.
+            _ = ReopenWhenBaxyClosesAsync();
+            return;
+        }
+
+        Close();
+    }
+
+    private async Task ReopenWhenBaxyClosesAsync()
+    {
+        for (int waited = 0; Voice.BaxyIsOpen() && waited < 120; waited++)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+        }
+
+        if (Voice.BaxyIsOpen())
+        {
+            Close();
+            return;
+        }
+
+        OpenBaxy();
+    }
+
     private void ShowLicense()
     {
         screen = LicenseScreen;
@@ -532,6 +620,12 @@ internal sealed partial class MainWindow : Window, IDisposable
             FailureKind.Open => (texts.FailOpen, texts.FailOpenHelp),
             FailureKind.Damaged => (texts.FailDamaged, texts.FailDamagedHelp),
             FailureKind.Windows => (texts.FailWindows, texts.FailWindowsHelp),
+            // Started by BAXY (--update): the person downloaded nothing, and the BAXY that closed for it is untouched.
+            FailureKind.Unsigned => (texts.FailUnsigned, string.Format(
+                CultureInfo.CurrentCulture, updating ? texts.FailUnsignedUpdateHelp : texts.FailUnsignedHelp, Program.LogPath)),
+            FailureKind.Older => (
+                string.Format(CultureInfo.CurrentCulture, texts.FailOlder, olderInstalled, carried?.Version),
+                string.Format(CultureInfo.CurrentCulture, texts.FailOlderHelp, olderInstalled, carried?.Version)),
             _ => (
                 string.Format(CultureInfo.CurrentCulture, texts.FailOther, failureDetail),
                 string.Format(CultureInfo.CurrentCulture, texts.FailOtherHelp, Program.LogPath)),
@@ -559,14 +653,27 @@ internal sealed partial class MainWindow : Window, IDisposable
         Third: new ButtonView(texts.Close, false, Close, IsCancel: true),
         Alert: true);
 
-    private ScreenView UninstallScreen() => new(
-        Face.Sad,
-        texts.UninstallTitle,
-        texts.UninstallBodyFor(WindowsIntegration.RingsToRemove(paths), dataBytes, WindowsPlaces.ForThisUser.Data),
-        First: new ButtonView(texts.UninstallKeep, false, () => Uninstall(deleteData: false), IsDefault: true),
-        Second: WindowsIntegration.ADifferentBaxyIsInstalled() ? null : new ButtonView(texts.UninstallDelete, false, () => Uninstall(deleteData: true)),
-        Third: new ButtonView(texts.Cancel, false, Close, IsCancel: true),
-        Line: "uninstall");
+    // LEG2 (T6): the spoken line names the alarms only when the screen does, that is, when they will be removed.
+    // COX1: with another BAXY installed none are removed (RingsToRemove = 0) and the screen says how many stay.
+    private ScreenView UninstallScreen()
+    {
+        int rings = WindowsIntegration.RingsToRemove(paths);
+        return new(
+            Face.Sad,
+            texts.UninstallTitle,
+            texts.UninstallBodyFor(
+                rings,
+                dataBytes,
+                WindowsPlaces.ForThisUser.Data,
+                WindowsIntegration.RingsKept(paths),
+                WindowsPlaces.ForThisUser.OtherBaxy),
+            First: new ButtonView(texts.UninstallKeep, false, () => Uninstall(deleteData: false), IsDefault: true),
+            Second: WindowsIntegration.ADifferentBaxyIsInstalled() ? null : new ButtonView(texts.UninstallDelete, false, () => Uninstall(deleteData: true)),
+            Third: new ButtonView(texts.Cancel, false, Close, IsCancel: true),
+            Line: UninstallLine(rings));
+    }
+
+    internal static string UninstallLine(int rings) => rings > 0 ? "uninstallRings" : "uninstall";
 
     private ScreenView UninstalledScreen() => new(
         Face.Asleep,
@@ -670,6 +777,9 @@ internal sealed partial class MainWindow : Window, IDisposable
                 asking = !Prerequisites.HasVisualCpp();
             }
 
+            // FIR1: nothing of Windows nor of BAXY is installed before release.json's signature checks out.
+            ReleaseManifest own = carried ?? throw new InvalidDataException("this installer carries no release manifest");
+            await Task.Run(() => SignedRelease.ConfirmAsync(http, own, paths, SignedRelease.BuiltInKeys, cancellation), cancellation);
             await Task.Run(() => Prerequisites.InstallMissingAsync(http, paths.Downloads, cancellation), cancellation);
             await Task.Run(
                 () => installation!.RunAsync(
@@ -697,6 +807,7 @@ internal sealed partial class MainWindow : Window, IDisposable
             Program.Log(problem.ToString());
             failure = Failures.Classify(problem, Voice.BaxyIsOpen);
             failureDetail = problem.Message;
+            olderInstalled = (problem as OlderReleaseException)?.Installed ?? string.Empty;
             Finish(FailedScreen);
         }
     }
@@ -707,6 +818,8 @@ internal sealed partial class MainWindow : Window, IDisposable
     /// </summary>
     private void Register()
     {
+        // PRV2 (A5): the window installs only after the agreement was accepted (its greeting, or AgreementScreen).
+        AcceptedAgreement.Write(paths, AcceptedAgreement.Current, Program.Log);
         try
         {
             WindowsIntegration.Register(paths, manifest!.Version, manifest.InstalledBytes);

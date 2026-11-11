@@ -123,9 +123,16 @@ internal static class HiddenPageReader
     /// read 2026-11-09). Its Cancel «determines whether to cancel the navigation»: always, here. A download is cancelled
     /// as it starts (CoreWebView2DownloadStartingEventArgs.Cancel, «Indicates whether to cancel the download»,
     /// https://learn.microsoft.com/dotnet/api/microsoft.web.webview2.core.corewebview2downloadstartingeventargs.cancel).
+    /// RED2 (2026-11-10), SmartScreen off: for a page off its list of busy sites it was sent the whole address read, query
+    /// and fragment, with the page's IP and an id of this PC (measured: «"destination":{"uri":"https://…?red2=uno#…"}» to
+    /// nav-edge.smartscreen.microsoft.com). What it guards against is a person on a phishing page or a malicious download
+    /// («Microsoft Defender SmartScreen protects against phishing or malware websites and applications, and the
+    /// downloading of potentially malicious files», https://learn.microsoft.com/windows/security/operating-system-security/virus-and-threat-protection/microsoft-defender-smartscreen/,
+    /// read 2026-11-10); here nobody sees the page, types in it or gets a download, and only its markup is handed on.
     /// </summary>
     internal static void KeepInside(CoreWebView2 view)
     {
+        view.Settings.IsReputationCheckingRequired = false;
         view.IsMuted = true;
         view.Settings.AreDefaultScriptDialogsEnabled = false;
         view.Settings.AreDevToolsEnabled = false;

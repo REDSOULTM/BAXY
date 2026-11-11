@@ -60,14 +60,18 @@ interface RailProps {
   counts: Record<'sessions' | 'memory' | 'triggers' | 'catalog', number | null>;
   quiet: boolean;
   onPanel: (p: PanelId) => void;
+  /** VIS4: the version this App is (GET /settings/general «version», VIS3's), beside «BAXY»; nothing until the App gave it */
+  version?: string | null;
 }
 
 function fixed(v: number | null | undefined, digits: number, locale: string): string | null {
   return typeof v === 'number' && Number.isFinite(v) ? num(v, locale, digits) : null;
 }
 
-function RailView({ state, powered, onPower, metrics, net, api, apiPast, other, gauges: showGauges, counts, quiet, onPanel }: RailProps) {
+function RailView({ state, powered, onPower, metrics, net, api, apiPast, other, gauges: showGauges, counts, quiet, onPanel, version }: RailProps) {
   const t = useT();
+  // what the person recognises: a build's «+commit» is not a version (SemVer 2.0.0 §10); the whole stamp stays in Settings
+  const shownVersion = version?.split('+', 1)[0].trim() || null;
   const locale = t.locale;
   const m = metrics;
   const gauges: ['cpu' | 'gpu' | 'tmp', number | null | undefined, string, number, string][] = [
@@ -86,6 +90,9 @@ function RailView({ state, powered, onPower, metrics, net, api, apiPast, other, 
       <div className="left-header pywebview-drag-region">
         <div className="row">
           <span className="name">baxy</span>
+          {/* owner, 2026-11-10: the version beside «BAXY», on its line. Said «versión 1.3.3» to a screen reader (a generic
+              span takes no aria-label); a row too narrow for it wraps it out of sight rather than cut it */}
+          {shownVersion ? <span className="bx-ver"><span className="sr-only">{t('versión ', 'version ')}</span>{shownVersion}</span> : null}
         </div>
         <div className={'bx-priv' + (net || api || apiPast ? ' out' : '')} title={api ? t('Lo que le pases a BAXY sale hacia la API de ', 'What you give BAXY goes out to the API of ') + api : net ? t('Salió a internet: ', 'Went online: ') + net
           : apiPast ? t('En esta conversación, lo que le pasaste mientras usabas un modelo por API salió hacia esa empresa. Ahora el modelo corre en este PC.', 'In this conversation, what you gave BAXY while you used a model by API went out to that company. The model runs on this PC now.')

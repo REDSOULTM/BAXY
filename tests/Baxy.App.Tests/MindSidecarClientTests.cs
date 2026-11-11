@@ -230,6 +230,22 @@ public sealed class MindSidecarClientTests
     }
 
     [Test]
+    public void TheCatalogTheMindReadsCarriesTheInstalledVersionOnlyWhenTheAppHasOne()
+    {
+        // VER2 (10-11, 1.3.3 just installed: asked which version it is, it said it had no information on it):
+        // the App's stamp reaches the mind (mind.VERSION_FACT); a development copy has none and sends no field.
+        JsonObject stamped = MindSidecarClient.CreateCatalogConfigureRequest([], applicationCatalog: null, version: "1.3.3");
+        JsonObject development = MindSidecarClient.CreateCatalogConfigureRequest([], applicationCatalog: null, version: null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)stamped["baxyVersion"], Is.EqualTo("1.3.3"));
+            Assert.That(development.ContainsKey("baxyVersion"), Is.False);
+            Assert.That(UpdatePanel.Version("1.3.3+c2a4c76ac"), Is.EqualTo("1.3.3"));
+        });
+    }
+
+    [Test]
     public void TheCatalogTheMindReadsCarriesEachToolsGroupOfWhatItCanDo()
     {
         // Feria 2026-10-27: asked what it can do, the model named things no tool does; it reads the groups of the panel

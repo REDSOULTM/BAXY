@@ -13,6 +13,9 @@
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- FIR1: the public keys whose signature an update needs (src/Baxy.Core/Operations/ReleaseSignature.cs), built into
+         baxy-core and the installer. A test build names its own with -p:BaxyUpdateKeys=<file>. -->
+    <BaxyUpdateKeys Condition="'$(BaxyUpdateKeys)' == ''">$(MSBuildThisFileDirectory)release-keys\update-keys.pem</BaxyUpdateKeys>
   </PropertyGroup>
   <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
     <RunSettingsFilePath>$(MSBuildThisFileDirectory)tests\hang.runsettings</RunSettingsFilePath>

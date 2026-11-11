@@ -18,6 +18,11 @@ html.a11y :focus-visible{outline:2px solid var(--carmine);outline-offset:2px}
 .bx-priv{display:flex;align-items:center;gap:6px;font:10px var(--mono);color:var(--t-muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bx-priv i{width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0}
 .bx-priv.out{color:var(--netc)}
+/* VIS4: the version beside «BAXY», on its baseline, in the network line's type. The row is one line high and wraps:
+   a version that does not fit whole goes to a second line out of sight, never cut nor over the line under it. The row
+   takes the name's font so that 1lh is the name's own line, as tall as before */
+.bx-left .left-header .row{flex-wrap:wrap;align-items:baseline;font:600 15px var(--disp);height:1lh;overflow:hidden}
+.bx-ver{flex-shrink:0;font:10px var(--mono);color:var(--t-muted);letter-spacing:.04em;white-space:nowrap}
 .bx-mod .n.q{color:var(--netc)}
 /* center */
 .bx-ctr{display:flex;align-items:center;gap:6px}

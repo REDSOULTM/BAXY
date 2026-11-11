@@ -15,8 +15,10 @@
     "failWindows": "No pude instalarme: Windows no pudo instalar un componente que necesito. Presiona Enter para reintentar.",
     "failOther": "No pude instalarme. Dejé la causa escrita en pantalla. Presiona Enter para reintentar.",
     "uninstall": "¿Me desinstalo? Presiona Enter para desinstalarme y conservar tus datos, o Escape para cancelar.",
+    "uninstallRings": "¿Me desinstalo? Las alarmas y los recordatorios que me pediste se quitan de Windows. Presiona Enter para desinstalarme y conservar tus datos, o Escape para cancelar.",
     "uninstalled": "Ya me desinstalé.",
-    "license": "Esta es mi licencia. Las flechas la recorren, y Escape vuelve atrás."
+    "license": "Esta es mi licencia. Las flechas la recorren, y Escape vuelve atrás.",
+    "agreement": "Antes de actualizarme, lee mi licencia. Las flechas la recorren. Presiona Enter para aceptarla, o Escape para no aceptarla y quedarte con la versión que tienes."
   },
   "en": {
     "welcome": "Hi, I'm BAXY, and my voice is synthetic. I'm going to live on your PC and run it with you, by voice or by text. By installing me you accept my license: Alt and the letter S shows it. Press Enter to install me, or Escape to leave. Press Alt and the letter V to turn my voice off.",
@@ -34,7 +36,9 @@
     "failWindows": "I couldn't install myself: Windows couldn't install a component I need. Press Enter to try again.",
     "failOther": "I couldn't install myself. I left the reason on the screen. Press Enter to try again.",
     "uninstall": "Should I uninstall myself? Press Enter to uninstall me and keep your data, or Escape to cancel.",
+    "uninstallRings": "Should I uninstall myself? The alarms and reminders you asked me for are removed from Windows. Press Enter to uninstall me and keep your data, or Escape to cancel.",
     "uninstalled": "I've been uninstalled.",
-    "license": "This is my license. The arrow keys move through it, and Escape goes back."
+    "license": "This is my license. The arrow keys move through it, and Escape goes back.",
+    "agreement": "Before I update, read my license. The arrow keys move through it. Press Enter to accept it, or Escape to not accept it and keep the version you have."
   }
 }

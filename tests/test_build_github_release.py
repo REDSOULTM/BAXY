@@ -135,3 +135,94 @@ def test_a_folder_without_the_app_is_refused(tmp_path: Path) -> None:
 
     with pytest.raises(SystemExit):
         release.build_manifest(tmp_path / "depot", tmp_path / "out", "1.0.0")
+
+
+# FIR1 (decisión A1, 10-11-2026): release.json names the installer and is signed apart; a test key never reaches GitHub.
+def _pem(body: bytes) -> str:
+    import base64
+
+    return "-----BEGIN PUBLIC KEY-----\n" + base64.b64encode(body).decode() + "\n-----END PUBLIC KEY-----\n"
+
+
+def test_a_release_for_github_is_refused_with_a_test_key_and_the_twin_is_not(tmp_path: Path, monkeypatch) -> None:
+    keys = tmp_path / "keys.pem"
+    keys.write_text(_pem(b"test key") + _pem(b"real key"), encoding="ascii")
+    listed = tmp_path / "test-keys.txt"
+    listed.write_text("# comment\n" + hashlib.sha256(b"test key").hexdigest() + "  a test\n", encoding="utf-8")
+    monkeypatch.setattr(release, "TEST_KEYS", listed)
+
+    with pytest.raises(SystemExit, match="TEST key"):
+        release.refuse_test_keys(keys, "https://github.com/REDSOULTM/BAXY/releases/download/v9.9.9/")
+    release.refuse_test_keys(keys, "http://127.0.0.1:18791/")
+    keys.write_text(_pem(b"real key"), encoding="ascii")
+    release.refuse_test_keys(keys, "https://github.com/REDSOULTM/BAXY/releases/download/v9.9.9/")
+    keys.write_text("no key here", encoding="ascii")
+    with pytest.raises(SystemExit, match="no public key"):
+        release.refuse_test_keys(keys, "http://127.0.0.1:18791/")
+
+
+def test_the_repository_carries_keys_and_its_test_list_is_fingerprints() -> None:
+    assert release.fingerprints(release.PRODUCT_KEYS.read_text(encoding="ascii"))
+    assert all(re.fullmatch(r"[0-9a-f]{64}", line) for line in release.known_test_keys())
+
+
+def test_release_json_names_the_installer_by_size_and_hash(tmp_path: Path) -> None:
+    output = tmp_path / "out"
+    release.build_manifest(_depot(tmp_path), output, "9.9.9", part_bytes=4000)
+    exe = tmp_path / "BAXY-Instalador.exe"
+    exe.write_bytes(b"MZ the installer")
+
+    manifest = release.name_installer(output, exe)
+
+    assert manifest["installer"] == {"file": "BAXY-Instalador.exe", "bytes": 16,
+                                     "sha256": hashlib.sha256(b"MZ the installer").hexdigest()}
+    assert json.loads((output / "release.json").read_text(encoding="utf-8")) == manifest
+
+
+def test_a_twin_downloads_only_from_this_machine(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit, match="this machine"):
+        release.build_twin(tmp_path, "9.9.9", "https://example.com/", tmp_path / "k.pem", "k")
+
+
+def test_the_release_and_its_twin_are_signed_each_with_the_key_of_its_own_folder(tmp_path: Path, monkeypatch) -> None:
+    signed: list[tuple[str, str, Path | None]] = []
+    monkeypatch.setattr(release, "refuse_test_keys", lambda keys, url: None)
+    monkeypatch.setattr(release, "build_manifest", lambda depot, output, version: (
+        output.mkdir(parents=True, exist_ok=True),
+        (output / "release.json").write_text(json.dumps({"version": version, "archives": []}), encoding="utf-8")))
+    monkeypatch.setattr(release, "build_installer", lambda output, version, keys: output / "BAXY-Instalador.exe")
+    monkeypatch.setattr(release, "name_installer", lambda output, exe: None)
+
+    def sign(manifest: Path, keys: Path, key_name: str = release.SIGNING_KEY, folder: Path | None = None) -> None:
+        signed.append((manifest.parent.name, key_name, folder))
+        manifest.with_name("release.json.sig").write_text("sig", encoding="ascii")
+
+    monkeypatch.setattr(release, "sign", sign)
+    owner, test = tmp_path / "owner", tmp_path / "test"
+    monkeypatch.setattr(sys, "argv", ["build_github_release.py", "--depot", str(tmp_path), "--output", str(tmp_path / "out"),
+                                      "--version", "9.9.9", "--signing-folder", str(owner),
+                                      "--twin-url", "http://127.0.0.1:18791/", "--twin-keys", str(tmp_path / "t.pem"),
+                                      "--twin-signing-key", "t", "--twin-signing-folder", str(test)])
+
+    release.main()
+
+    assert signed == [("out", release.SIGNING_KEY, owner), ("twin", "t", test)]
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="DPAPI keeps the private key")
+def test_the_signing_tool_signs_and_a_changed_byte_does_not_verify(tmp_path: Path) -> None:
+    import subprocess
+
+    keys = tmp_path / "test.pem"
+    release._signing(["new", "--name", "t", "--folder", str(tmp_path / "k"), "--public", str(keys)])
+    manifest = tmp_path / "release.json"
+    manifest.write_text('{"version":"9.9.9"}', encoding="utf-8")
+
+    release.sign(manifest, keys, "t", tmp_path / "k")
+    manifest.write_text('{"version":"9.9.8"}', encoding="utf-8")
+
+    with pytest.raises(subprocess.CalledProcessError):
+        release._signing(["verify", "--keys", str(keys), str(manifest)])
+    assert release.fingerprints(keys.read_text(encoding="ascii"))[0] in subprocess.run(
+        ["dotnet", "run", str(release.SIGNING_TOOL), "--", "public", "--name", "t", "--folder", str(tmp_path / "k"),
+         "--public", str(tmp_path / "again.pem")], check=True, capture_output=True, text=True).stdout

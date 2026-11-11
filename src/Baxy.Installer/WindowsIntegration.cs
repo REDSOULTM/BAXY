@@ -29,6 +29,17 @@ internal static class WindowsIntegration
     internal const string AutostartValue = "BAXY";
 
     /// <summary>
+    /// COX-1: what this installation replaced of another BAXY's, kept in its own «Installed apps» entry (programs may keep
+    /// values of their own there, as Inno Setup does with «Inno Setup: App Path») so the uninstall gives it back. The
+    /// Run command is kept by the App, which is what writes the Run value (src/Baxy.App/WindowsAutostartRegistration.cs);
+    /// the Start-menu shortcut by <see cref="Register"/>, byte for byte, with the file it starts.
+    /// </summary>
+    internal const string ReplacedAutostartValue = "ReplacedAutostart";
+
+    private const string ReplacedLinkValue = "ReplacedStartLink";
+    private const string ReplacedLinkTargetValue = "ReplacedStartLinkTarget";
+
+    /// <summary>
     /// The last step of installing, with BAXY's files already in place: the copy of this installer that uninstalls, the
     /// agreement, the entry of «Installed apps» and the Start-menu shortcut. The entry goes before the shortcut, so a
     /// BAXY whose shortcut Windows refused can still be removed from Windows. What Windows refuses comes out as
@@ -59,6 +70,7 @@ internal static class WindowsIntegration
                 key.SetValue("NoModify", 1, RegistryValueKind.DWord);
                 key.SetValue("NoRepair", 1, RegistryValueKind.DWord);
                 key.SetValue("EstimatedSize", (int)(installedBytes / 1024), RegistryValueKind.DWord);
+                KeepReplacedLink(key, paths, places);
             }
 
             ShellLink.Write(places.Link, paths.App, "BAXY");
@@ -68,6 +80,24 @@ internal static class WindowsIntegration
             throw new NotRegisteredException($"BAXY is in {paths.Root}, but Windows refused its registration: {refused.Message}", refused);
         }
     }
+
+    /// <summary>
+    /// COX-1: a «BAXY» shortcut that starts another installation (the other BAXY's setup made it) is kept before this one
+    /// takes its name: the person looks for «BAXY» and gets the BAXY just installed, and the uninstall puts the other's
+    /// back. On an update run of this installer the shortcut is this BAXY's own and what was kept stays as it was.
+    /// </summary>
+    private static void KeepReplacedLink(RegistryKey key, InstallPaths paths, WindowsPlaces places)
+    {
+        // One whose target cannot be read is not known to be this BAXY's: it is kept too, with no target to check.
+        if (File.Exists(places.Link) && ShellLink.Target(places.Link) is var target && (target is null || !IsInside(target, paths.Root)))
+        {
+            key.SetValue(ReplacedLinkValue, File.ReadAllBytes(places.Link), RegistryValueKind.Binary);
+            key.SetValue(ReplacedLinkTargetValue, target ?? string.Empty);
+        }
+    }
+
+    private static bool IsInside(string path, string root) =>
+        path.StartsWith(Path.TrimEndingDirectorySeparator(root) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>The folder «Installed apps» names for this BAXY (it was installed with --dir or in the usual one).</summary>
     internal static string? RegisteredRoot(WindowsPlaces places)
@@ -122,6 +152,30 @@ internal static class WindowsIntegration
             : 0;
     }
 
+    /// <summary>
+    /// COX-1: how many alarms and reminders stay in Windows because the other BAXY shares the data folder, for the screen
+    /// to name them (<see cref="Texts.UninstallBodyFor"/>). They are the data's, not one installation's: each ring is a
+    /// task whose action runs powershell.exe on a script kept in the data folder (NativeScheduledNotificationBackend,
+    /// Exec action), so none starts the exe this uninstall removes, and the other BAXY, reading the same folder, lists
+    /// and cancels them as its own (NativeScheduledNotificationBackend.IsOwn).
+    /// </summary>
+    /// <remarks>It only informs: data Windows does not let it read count as none, and never stop the uninstall.</remarks>
+    internal static int RingsKept(InstallPaths paths, WindowsPlaces? places = null)
+    {
+        places ??= WindowsPlaces.ForThisUser;
+        try
+        {
+            return OwnsTheEntries(paths, places) && ADifferentBaxyIsInstalled(places)
+                ? RingFolders(places).Sum(static folder => ScheduledRingTasks.Recorded(folder).Count)
+                : 0;
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException)
+        {
+            Program.Log(unread.ToString());
+            return 0;
+        }
+    }
+
     private static bool OwnsTheEntries(InstallPaths paths, WindowsPlaces places) =>
         RegisteredRoot(places) is not { } registered
         || string.Equals(Path.TrimEndingDirectorySeparator(registered), paths.Root, StringComparison.OrdinalIgnoreCase);
@@ -150,6 +204,7 @@ internal static class WindowsIntegration
         }
 
         bool ownsTheEntries = OwnsTheEntries(paths, places);
+        int kept = RingsKept(paths, places);
         if (held is null)
         {
             Remove(paths, places, ownsTheEntries);
@@ -161,6 +216,11 @@ internal static class WindowsIntegration
             RemoveRings(paths, places);
             RemoveEntries(paths, places, ownsTheEntries);
             DeleteLeftovers(paths);
+        }
+
+        if (kept > 0)
+        {
+            Program.Log($"kept {kept} alarms and reminders: the other BAXY in {places.OtherBaxy} uses the same data");
         }
 
         if (deleteData && Directory.Exists(places.Data))
@@ -235,24 +295,70 @@ internal static class WindowsIntegration
 
     /// <param name="ownsTheEntries">False when «Installed apps» names another folder: its Start menu entry and its
     /// uninstall entry belong to that installation and stay.</param>
+    /// <remarks>
+    /// COX-1: the shortcut and the Run value go only when they start this installation, and what they replaced of
+    /// another BAXY comes back when what it starts is still there (Microsoft Learn, «Run and RunOnce Registry Keys»:
+    /// Windows runs each value of Run at every sign-in, so one whose exe is gone would fail every time). A shortcut or a
+    /// Run value the other BAXY wrote again after this one is its own and stays.
+    /// </remarks>
     private static void RemoveEntries(InstallPaths paths, WindowsPlaces places, bool ownsTheEntries)
     {
+        string? replacedCommand = null;
+        byte[]? replacedLink = null;
+        string? replacedTarget = null;
         if (ownsTheEntries)
         {
-            if (File.Exists(places.Link))
-            {
-                File.Delete(places.Link);
-            }
-
-            Registry.CurrentUser.DeleteSubKeyTree(places.UninstallKey, throwOnMissingSubKey: false);
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(places.UninstallKey);
+            replacedCommand = key?.GetValue(ReplacedAutostartValue) as string;
+            replacedLink = key?.GetValue(ReplacedLinkValue) as byte[];
+            replacedTarget = key?.GetValue(ReplacedLinkTargetValue) as string;
         }
 
-        using RegistryKey? run = Registry.CurrentUser.OpenSubKey(places.RunKey, writable: true);
-        if (run?.GetValue(AutostartValue) is string command
-            && command.Contains(paths.Root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+        // «Installed apps» goes last: while something here fails, the uninstall can be run again and what was kept is there.
+        using (RegistryKey? run = Registry.CurrentUser.OpenSubKey(places.RunKey, writable: true))
         {
-            run.DeleteValue(AutostartValue);
+            if (run?.GetValue(AutostartValue) is string command
+                && command.Contains(paths.Root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+            {
+                if (ExecutableOf(replacedCommand) is { } replacedExe && File.Exists(replacedExe))
+                {
+                    run.SetValue(AutostartValue, replacedCommand!);
+                }
+                else
+                {
+                    run.DeleteValue(AutostartValue);
+                }
+            }
         }
+
+        if (!ownsTheEntries)
+        {
+            return;
+        }
+
+        // Only a shortcut known to start this installation goes; one that cannot be read may be another's.
+        if (File.Exists(places.Link) && ShellLink.Target(places.Link) is { } linked && IsInside(linked, paths.Root))
+        {
+            File.Delete(places.Link);
+        }
+
+        // A kept shortcut whose target could not be read comes back as it was; one whose target is gone does not.
+        if (!File.Exists(places.Link) && replacedLink is { Length: > 0 } && (replacedTarget is "" || File.Exists(replacedTarget)))
+        {
+            File.WriteAllBytes(places.Link, replacedLink);
+        }
+
+        Registry.CurrentUser.DeleteSubKeyTree(places.UninstallKey, throwOnMissingSubKey: false);
+    }
+
+    // The exe a Run command starts: the quoted path the App writes, or the command up to its first space.
+    private static string? ExecutableOf(string? command)
+    {
+        string trimmed = command?.Trim() ?? string.Empty;
+        string exe = trimmed.StartsWith('"')
+            ? trimmed[1..Math.Max(1, trimmed.IndexOf('"', 1))]
+            : trimmed.Split(' ', 2)[0];
+        return Path.IsPathFullyQualified(exe) ? exe : null;
     }
 
     private static void EmptyAround(string root, string held)
