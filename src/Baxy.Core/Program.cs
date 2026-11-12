@@ -17,6 +17,7 @@ using Baxy.Providers.Windows.External;
 using Baxy.Providers.Windows.Memory;
 using Baxy.Providers.Windows.Network;
 using Baxy.Providers.Windows.Notes;
+using Baxy.Providers.Windows.Routines;
 using Baxy.Providers.Windows.SystemStatus;
 using Baxy.Providers.Windows.Tasks;
 using Baxy.Providers.Windows.Windows;
@@ -97,6 +98,7 @@ internal static class Program
 
     private static async Task<int> RunAsync(string dataRoot, CancellationToken cancellationToken)
     {
+        BaxyUpdateHandler.RemoveSpentInstallers(dataRoot);
         var noteStore = new LocalNoteStore(Path.Combine(dataRoot, "notes-store"));
         var taskStore = new LocalTaskStore(Path.Combine(dataRoot, "tasks-store"));
         var clipboardProvider = new WindowsClipboardProvider();
@@ -121,7 +123,7 @@ internal static class Program
         var systemStatusProvider = new WindowsSystemStatusProvider();
         var processStatusProvider = new WindowsProcessStatusProvider();
         var timeStatusProvider = new WindowsTimeStatusProvider();
-        using var placeTimeZoneResolver = new OpenMeteoPlaceTimeZoneResolver();
+        var placeTimeZoneResolver = new GeoNamesPlaceTimeZoneResolver();
         var gpuStatusProvider = new WindowsGpuStatusProvider();
         var windowControlProvider = new WindowsWindowControlProvider(installedApplicationProvider);
         var privatePayload = new WindowsProtectedPayload(
@@ -145,6 +147,7 @@ internal static class Program
             new AppRestartHandler(windowControlProvider, appOpenHandler.ExecuteAsync),
             new AssistantStatusHandler(),
             new BaxyExitHandler(),
+            new BaxyUpdateHandler(dataRoot),
             new GameLaunchHandler(
                 new ExternalCapabilityHandler("game.launch", externalCapabilityProvider),
                 installedApplicationProvider,
@@ -162,7 +165,10 @@ internal static class Program
             new ExternalCapabilityHandler("audio.app.volume.set", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.microphone.mute", externalCapabilityProvider),
             new ExternalCapabilityHandler("audio.microphone.status", externalCapabilityProvider),
-            new AudioMuteHandler(audioControlProvider),
+            new AudioMuteHandler(
+                audioControlProvider,
+                new ExternalCapabilityHandler("audio.mute", externalCapabilityProvider).ExecuteAsync,
+                ApplicationAudioMutes.Read),
             new AudioStatusHandler(audioControlProvider),
             new AudioVolumeHandler(audioControlProvider),
             new ExternalCapabilityHandler("audio.volume.adjust", externalCapabilityProvider),
@@ -174,6 +180,9 @@ internal static class Program
             .. FilesystemHandlers.Create(filesystemProvider),
             .. ExternalCapabilityHandlers.Create(externalCapabilityProvider, dataRoot, new KeyWindowReader()),
             new OwnSettingsHandler(dataRoot),
+            // RUT4: a step that names a sound device is looked up among this PC's when the routine is saved.
+            new RoutinesHandler(dataRoot, missing: (operation, arguments, token) =>
+                RoutineStepTargets.MissingAsync(externalCapabilityProvider, operation, arguments, token)),
             .. MemoryHandlers.Create(
                 memoryStore,
                 memoryCodec,

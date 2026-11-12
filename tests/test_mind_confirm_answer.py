@@ -23,7 +23,6 @@ def asked_again(tmp_path, monkeypatch):
     """BAXY asked whether to close the Calculator, the person's words settled nothing and the model asked again."""
     from test_mind_final import _call, _mind, _say
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    monkeypatch.delenv("BAXY_CONFIRM_FLOOR", raising=False)
     mind, server = _mind(tmp_path, [_call("app_close", {"appId": "Calculadora"}), _say("¿Cierro la Calculadora?"),
                                     _call("confirm_pending", {"answer": "unclear"}), _say("¿La cierro, sí o no?"),
                                     _say("Listo."), _say("Vale.")])

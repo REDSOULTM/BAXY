@@ -304,6 +304,8 @@ FILES_AND_GAMES = {"capabilities": [
     ("unsaved_not_read", {"app_close", "window_minimize"}),
     # G13 (uso real 2026-11-03): «WhatsApp es un mensajero de WhatsApp» and an invented origin of «Meta», with no call.
     ("entity_lookup", {"web_search"}),
+    # VER1 (G-03): «¿quién es el alcalde de París?» answered «Anne Hidalgo» from memory, with no call (21 of 42).
+    ("office_lookup", {"web_search"}),
     ("none", set())])
 def test_the_dudas_sentence_aids_end_only_their_tools_descriptions(tmp_path: Path, monkeypatch, setting: str,
                                                                    on: set[str]) -> None:

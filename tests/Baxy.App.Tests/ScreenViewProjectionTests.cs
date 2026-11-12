@@ -171,6 +171,69 @@ public sealed class ScreenViewProjectionTests
         });
     }
 
+    // Encargo LEC2: what the cap of the text left out is said with its zones, how much of it was a list's rows, and the
+    // look that reads it all; without zones, the note of always.
+    [Test]
+    public void TheTextCutSaysWhereWhatStayedOutLies()
+    {
+        const string Cut =
+            "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+            "\"window\":{\"title\":\"Notas\",\"process\":\"notas\",\"hwnd\":12,\"foreground\":true}," +
+            "\"controls\":[{\"i\":0,\"kind\":\"Button\",\"name\":\"Nueva nota\",\"state\":\"\",\"value\":null}]," +
+            "\"controlCount\":1,\"text\":{\"C\":[\"El párrafo del centro\"]},\"textAuthority\":\"windows_media_ocr_lines\"," +
+            "\"textOmittedLines\":12ZONES,\"authority\":\"windows_uia_snapshot_ocr_zones\"}";
+        const string Zones = ",\"textOmittedZones\":{\"L\":9,\"BL\":3},\"textOmittedListRows\":12,\"textRestWith\":\"lines\"";
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(View(Cut.Replace("ZONES", Zones, StringComparison.Ordinal)), Does.Contain(
+                "(texto cortado: 12 líneas leídas no se listan, por largas o pasado el tope; fuera por el tope: 9 centro izq., "
+                + "3 abajo izq. (12 de ellas, filas de una lista de controles); se leen todas, cada una en su sitio, con lines)\n"));
+            Assert.That(View(Cut.Replace("ZONES", string.Empty, StringComparison.Ordinal)), Does.Contain(
+                "(texto cortado: 12 líneas leídas no se listan, por largas o pasado el tope)\n"));
+        });
+    }
+
+    // Encargo LEC3: with its columns, the text goes by column and block, each author line with its message, the last block
+    // told as the last one seen; a line repeating a listed control is still left out. Control: without them, the bands.
+    [Test]
+    public void TheTextGoesByColumnsAndBlocksAndTheLastOneSeenIsSaid()
+    {
+        const string Look =
+            "{\"version\":2,\"ok\":true,\"error\":\"\"," +
+            "\"window\":{\"title\":\"Charlas\",\"process\":\"charlas\",\"hwnd\":12,\"foreground\":true}," +
+            "\"controls\":[{\"i\":0,\"kind\":\"Button\",\"name\":\"Grupo del barrio\",\"state\":\"\",\"value\":null}]," +
+            "\"controlCount\":1,\"text\":{\"TL\":[\"Grupo del barrio\",\"Ana · 10:02\"],\"T\":[\"Llego a las diez\"]," +
+            "\"B\":[\"Yo llevo el pan\"],\"BL\":[\"Luis · 10:05\"]},COLUMNS\"textAuthority\":\"windows_media_ocr_lines\"," +
+            "\"authority\":\"windows_uia_snapshot_ocr_zones\"}";
+        const string Columns =
+            "\"textColumns\":[{\"zone\":\"L\",\"blocks\":[[\"Grupo del barrio\"]]}," +
+            "{\"zone\":\"C\",\"blocks\":[[\"Ana · 10:02\",\"Llego a las diez\"],[\"Luis · 10:05\",\"Yo llevo el pan\"]]}],";
+
+        string byColumns = View(Look.Replace("COLUMNS", Columns, StringComparison.Ordinal));
+        Assert.Multiple(() =>
+        {
+            Assert.That(byColumns, Does.Contain("Texto bloque 1: Ana · 10:02 | Llego a las diez\n"
+                + "Texto bloque 2, el último que se ve: Luis · 10:05 | Yo llevo el pan"));
+            Assert.That(byColumns, Does.Contain("(el «Texto» va como se lee en pantalla"));
+            Assert.That(byColumns, Does.Contain("(1 líneas de texto no se listan: repiten el nombre de un control listado)"));
+            Assert.That(byColumns, Does.Not.Contain("Texto arriba"));
+            string cut = View(Look.Replace("COLUMNS", Columns.Replace("]]}],", "]],\"toBottomEdge\":true}],", StringComparison.Ordinal),
+                StringComparison.Ordinal));
+            Assert.That(cut, Does.Contain("Texto bloque 2, el último que se ve, cortado por el borde de abajo: sigue más abajo sin verse: "));
+            // A column that is mostly a list's rows (the dates under them stay): one line, no «last» of its own.
+            string withList = View(Look.Replace("COLUMNS", Columns.Replace("[[\"Grupo del barrio\"]]",
+                "[[\"Grupo del barrio\",\"hace 2 días\"],[\"Grupo del barrio\",\"ayer\"],[\"Grupo del barrio\"]]", StringComparison.Ordinal),
+                StringComparison.Ordinal));
+            Assert.That(withList, Does.Contain("Texto columna 1 (izq.), lo que queda de una lista de controles: hace 2 días | ayer\n"
+                + "Texto columna 2 (centro), bloque 1: Ana · 10:02 | Llego a las diez\n"
+                + "Texto columna 2 (centro), bloque 2, el último que se ve en esa columna: Luis · 10:05 | Yo llevo el pan"));
+            string byBands = View(Look.Replace("COLUMNS", string.Empty, StringComparison.Ordinal));
+            Assert.That(byBands, Does.Contain("Texto arriba: Ana · 10:02 | Llego a las diez\n"));
+            Assert.That(byBands, Does.Not.Contain("como se lee en pantalla"));
+        });
+    }
+
     private static string View(string lookJson)
     {
         using JsonDocument look = JsonDocument.Parse(lookJson);

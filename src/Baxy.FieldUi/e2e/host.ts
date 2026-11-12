@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
    `/events` socket are answered here. Nothing opens a window and nothing leaves the PC. */
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
-const ROUTES = /^\/(turn|confirmation|accessibility|settings|proposals|metrics|triggers|surfaces|sessions|voice|power|memory|catalog|agent)(\/|$)/;
+const ROUTES = /^\/(turn|confirmation|accessibility|settings|proposals|metrics|triggers|routines|ring|surfaces|sessions|voice|power|memory|kept|catalog|agent|update|profile|engine)(\/|$)/;
 
 export interface Call { method: string; path: string; body: unknown }
 export interface Reply { status?: number; body?: unknown }
@@ -20,6 +20,8 @@ export interface Host {
   emit: (ev: Record<string, unknown>) => void;
   /** the reply to a route: a JSON body, or a status for a refusal; default {}. It may take its time (a promise). */
   reply: (path: string, fn: (c: Call) => Reply | Promise<Reply>) => void;
+  /** the `/events` socket falls, as when the host's end closes; a socket that connects again gets the state so far. */
+  drop: () => void;
   close: () => Promise<void>;
 }
 
@@ -85,6 +87,7 @@ export async function openView(opts: { items?: unknown[]; mic?: string } = {}): 
   return {
     page, calls, emit,
     reply: (path, fn) => { replies.set(path, fn); },
+    drop: () => { const ws = socket; socket = null; void ws?.close(); },
     close: () => ctx.close(),
   };
 }

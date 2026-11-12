@@ -26,7 +26,7 @@ test.afterAll(async () => { await unsize(app); await restoreLang?.(); await app.
 
 // the clip groups each status label may show (the bridges «despertar» / «dormirse» are always allowed)
 const EXP: Record<string, string[]> = {
-  Pensando: ['pensando'], Hablando: ['hablando'], Escuchando: ['escuchando'], 'En espera': ['reposo', 'contento'],
+  Pensando: ['pensando'], Hablando: ['hablando'], Escuchando: ['escuchando'], Listo: ['reposo', 'contento'],
   'Esperando tu ok': ['reposo', 'contento'], 'En reposo': ['dormido', 'dormirse'], 'Falló la escucha': ['error'],
 };
 interface Sample { t: number; lab: string; g: string | null; src: string | null; rs: number; n: number; seen: boolean }
@@ -67,7 +67,7 @@ async function say(text: string) {
   await input.fill(text);
   await input.press('Enter');
 }
-const idle = (timeout = 90_000) => page.waitForFunction(() => /^En espera|^Esperando tu ok/.test((document.querySelector('.bx-statel')?.textContent ?? '').trim()), undefined, { timeout });
+const idle = (timeout = 90_000) => page.waitForFunction(() => /^Listo|^Esperando tu ok/.test((document.querySelector('.bx-statel')?.textContent ?? '').trim()), undefined, { timeout });
 
 test('avatar: vídeo bajo la red viva, sin imagen en la cabecera ni controles', async () => {
   expect(await page.locator('.left-header img, .left-header .mark').count(), 'sin imagen en la cabecera del panel izquierdo').toBe(0);
@@ -138,7 +138,12 @@ test('avatar: tarjeta Sí / No: en reposo mientras espera, y tras responder sigu
       await page.waitForTimeout(900);
       const a = await now();
       expect.soft(['reposo', 'contento'], `confirmación ${label}: mientras espera tu ok, BAXY queda en reposo (${a.lab} · ${a.g})`).toContain(a.g);
-      await page.locator('.bx-card.s-pending .bx-btn' + (yes ? '.yes' : ':not(.yes)')).first().click();
+      // OVL1: the Sí takes a press once it has been in its place for its wait; bringing it into view may move it
+      const button = page.locator('.bx-card.s-pending .bx-btn' + (yes ? '.yes' : ':not(.yes)')).first();
+      await button.scrollIntoViewIfNeeded();
+      await page.evaluate(() => new Promise((seen) => requestAnimationFrame(() => requestAnimationFrame(seen))));
+      if (yes) await expect(button).toHaveAttribute('aria-disabled', 'false');
+      await button.click();
       const m = mismatch(await trace(9000));
       expect.soft(m.n === 0 || m.bad / m.n < 0.12, `confirmación ${label}: tras responder, el clip sigue al estado (${m.bad}/${m.n} · ${m.ex.join(' ') || 'ok'})`).toBe(true);
       if (!yes) expect.soft(existsSync(file), 'tras «No» el archivo sigue ahí').toBe(true);

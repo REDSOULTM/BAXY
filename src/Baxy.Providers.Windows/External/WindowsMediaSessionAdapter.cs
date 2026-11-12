@@ -662,7 +662,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
 
             return verified
                 ? ExternalJson.Switched(operation,
-                    ControlResult(after, StatusName(action, status), session.SourceAppUserModelId, insteadOfCurrent),
+                    ControlResult(after, StatusName(action, status), session.SourceAppUserModelId, insteadOfCurrent,
+                        PreviousStatus(action, beforeStatus), command),
                     effectObserved: true)
                 : ExternalJson.Failure(operation, "smtc_postcondition_not_verified", effectObserved: true);
         }
@@ -682,22 +683,63 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             ? "stopped"
             : status.ToString().ToLowerInvariant();
 
+    /// <summary>
+    /// What the session read before a play, pause, stop or toggle that changed it, for the receipt; null for a skip,
+    /// which changes the title and not the state. RUT8 (the owner's routine «tiempo», the play/pause key): a toggle's
+    /// receipt said only the state after («paused»), and the model, which cannot know which way a toggle went, told it
+    /// backwards 2 of 3 times («estaba pausado, ahora suena»). The state read before the command says which way.
+    /// </summary>
+    internal static string? PreviousStatus(
+        string action, GlobalSystemMediaTransportControlsSessionPlaybackStatus before) =>
+        action is "play" or "pause" or "stop" or "toggle" ? before.ToString().ToLowerInvariant() : null;
+
     // Renew al máximo (R6.1): the receipt says it acted on the one session playing, not on Windows' current one.
     private static JsonElement ControlResult(
         GlobalSystemMediaTransportControlsSessionMediaProperties properties,
         string status,
         string sourceAppUserModelId,
-        string? insteadOfCurrent)
+        string? insteadOfCurrent,
+        string? previousStatus = null,
+        string? commandSent = null) =>
+        ControlResult(sourceAppUserModelId, properties.Title, properties.Artist, status, previousStatus, insteadOfCurrent,
+            commandSent);
+
+    /// <summary>
+    /// The media.control result: the session, what it plays and its state read after the command; with
+    /// <paramref name="previousStatus"/>, the command that was sent to it (commandSent: a toggle sends a play or a pause)
+    /// and the state read before it (previousPlaybackStatus, written right before playbackStatus: what it was, then what
+    /// it is).
+    /// </summary>
+    internal static JsonElement ControlResult(
+        string sourceAppUserModelId,
+        string title,
+        string artist,
+        string status,
+        string? previousStatus,
+        string? insteadOfCurrent,
+        string? commandSent = null) => ExternalJson.Create(writer =>
     {
-        JsonElement result = MediaResult(properties, status, sourceAppUserModelId);
-        return insteadOfCurrent is null
-            ? result
-            : ExternalJson.Extended(result, writer =>
-            {
-                writer.WriteString("sessionFrom", "only_playing_session");
-                writer.WriteString("currentSourceAppUserModelId", insteadOfCurrent);
-            });
-    }
+        writer.WriteStartObject();
+        writer.WriteNumber("version", 1);
+        writer.WriteString("sourceAppUserModelId", sourceAppUserModelId);
+        writer.WriteString("title", title);
+        writer.WriteString("artist", artist);
+        if (previousStatus is not null)
+        {
+            if (commandSent is not null)
+                writer.WriteString("commandSent", commandSent);
+            writer.WriteString("previousPlaybackStatus", previousStatus);
+        }
+
+        writer.WriteString("playbackStatus", status);
+        writer.WriteString("authority", "windows_smtc");
+        if (insteadOfCurrent is not null)
+        {
+            writer.WriteString("sessionFrom", "only_playing_session");
+            writer.WriteString("currentSourceAppUserModelId", insteadOfCurrent);
+        }
+        writer.WriteEndObject();
+    });
 
     private static async ValueTask<ExternalCapabilityReceipt> StatusAsync(
         string operation,

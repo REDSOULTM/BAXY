@@ -1,0 +1,4 @@
+# FIR1: huellas (SHA-256 de la clave pública DER, SubjectPublicKeyInfo) de claves de PRUEBAS de las actualizaciones.
+# scripts/build_github_release.py se niega a empaquetar para GitHub con una clave de esta lista.
+# Las claves de prueba que nacen en las pruebas automáticas no se apuntan: son de memoria y mueren con la prueba.
+1e1a1cae11d36b67010dba3f93643832303bc1e84bee579d33ebddfd4b602a6d  FIR1, 10-11-2026

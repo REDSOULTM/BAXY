@@ -4,8 +4,8 @@ namespace Baxy.Providers.Windows.External;
 
 /// <summary>
 /// Un lugar leído de un servicio público: su nombre, su región, su país, sus
-/// coordenadas y cómo se supo (nombrado y geocodificado, o por la dirección
-/// pública de este PC).
+/// coordenadas, cómo se supo (nombrado y geocodificado, o por la dirección
+/// pública de este PC) y su zona horaria IANA, si se sabe.
 /// </summary>
 internal readonly record struct PublicPlace(
     string Name,
@@ -13,7 +13,8 @@ internal readonly record struct PublicPlace(
     string Country,
     double Latitude,
     double Longitude,
-    string Source);
+    string Source,
+    string? TimeZone = null);
 
 /// <summary>
 /// Uso real tanda 4c (2026-09-24): el clima ya sabía dónde está este PC y la
@@ -81,7 +82,11 @@ internal sealed class PublicPlaceLocator
                     ReadString(root, "country") ?? string.Empty,
                     latitude.Value,
                     longitude.Value,
-                    "public_ip_address"), false);
+                    "public_ip_address",
+                    // WEB1: the weather of here is read in the place's own clock.
+                    root.TryGetProperty("timezone", out JsonElement zone) && zone.ValueKind == JsonValueKind.Object
+                        ? ReadString(zone, "id")
+                        : null), false);
             }
             catch (JsonException)
             {

@@ -1243,7 +1243,7 @@ internal static partial class VisibleControlSurface
         return hosts;
     }
 
-    private static bool IsShellSurface(nint window)
+    internal static bool IsShellSurface(nint window)
     {
         string className = ClassName(window);
         return className is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd";

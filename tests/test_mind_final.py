@@ -18,9 +18,15 @@ class FakeServer:
     def __init__(self, replies: list) -> None:
         self.replies = replies
         self.bodies: list[dict] = []
+        self.closed: list[dict] = []
 
-    def chat(self, body: dict, timeout: float = 120.0) -> dict:
+    def ask_apart(self, body: dict, timeout: float = 60.0) -> dict:
+        self.closed.append(json.loads(json.dumps(body)))
+        return their_answer(self.replies)
+
+    def chat(self, body: dict, timeout: float = 120.0, gives_way: bool = False) -> dict:
         self.bodies.append(json.loads(json.dumps(body)))
+        self.gave_way = gives_way
         reply = self.replies.pop(0)
         if isinstance(reply, Exception):
             raise reply
@@ -28,6 +34,23 @@ class FakeServer:
 
     def tokenize(self, text: str) -> list[int]:
         return [0] * (len(text) // 4)
+
+
+def their_answer(replies: list) -> dict:
+    """SIS3: the closed question on the person's words (Mind._their_answer), answered as the scripted model's next reply
+    would answer: a confirm_pending yes or no is that answer; a yes is taken, since the mind gives it itself, and
+    anything else stays for the decision (the model's no still answers); anything else is «maybe» (SIS4: the kinds
+    of Mind.THEIR_ANSWER_KINDS, «now» the yes)."""
+    after = replies[0] if replies and isinstance(replies[0], dict) else {}
+    calls = ((after.get("choices") or [{}])[0].get("message") or {}).get("tool_calls") or []
+    answer = "maybe"
+    if calls and calls[0]["function"]["name"] == "confirm_pending":
+        given = json.loads(calls[0]["function"].get("arguments") or "{}").get("answer")
+        if given in ("yes", "no"):
+            answer = {"yes": "now", "no": "no"}[given]
+        if given == "yes":
+            replies.pop(0)
+    return {"choices": [{"message": {"content": answer}}]}
 
 
 def _call(name: str, arguments: dict) -> dict:

@@ -4,7 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Contracts;
+using Baxy.Providers.Windows.External;
+using Baxy.Providers.Windows.Routines;
 using Baxy.Security.Windows;
 
 namespace Baxy.App;
@@ -32,6 +35,32 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // A call of the person's turn running now reached its provider (what it opened was asked for).
     private bool _personActed;
     private readonly ConversationLog? _conversationLog = ConversationLog.CreateDefault();
+
+    /// <summary>
+    /// PRV1 (PRIV-02): where the engine stores the screens it captures (its data root's «captures»), so that none stays
+    /// past the request that took it (<see cref="ClearCaptures"/>). Given by <see cref="ForThisPc"/>; null removes
+    /// nothing (a model built for a test acts on no folder it was not given).
+    /// </summary>
+    internal string? CapturesDirectory { get; init; }
+
+    /// <summary>
+    /// PRV2 (A2): what an earlier version wrote with the person's words, removed once before the first mind starts
+    /// (<see cref="EarlierWords"/>). Given by <see cref="ForThisPc"/>, and not there where words are kept on this PC; null
+    /// removes nothing (a model built for a test acts on no folder it was not given).
+    /// </summary>
+    internal EarlierWords? WordsOfEarlierVersions { get; init; }
+
+    private bool _earlierWordsDone;
+
+    /// <summary>The product's view model: the one that keeps this PC's capture folder empty between requests, and that
+    /// removes what an earlier version kept with the person's words.</summary>
+    internal static MainWindowViewModel ForThisPc() =>
+        new()
+        {
+            CapturesDirectory = Path.Combine(MemoryOperationProtector.ResolveDataRoot(), "captures"),
+            WordsOfEarlierVersions = EarlierWords.ForThisPc(),
+        };
+
     private RetryableOperationRegistry? _retryableOperations;
     private MemoryOperationProtector? _memoryProtector;
     private CoreProcessClient? _coreClient;
@@ -110,6 +139,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private MindVoiceStatus? _voicePieces;
     private DateTimeOffset _mindStartedAt = DateTimeOffset.UtcNow;
     private DateTimeOffset? _mindReadyAt;
+    private AlarmRinger? _ringer;
 
     public MainWindowViewModel()
     {
@@ -182,21 +212,179 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     _askedConfirmation = null;
                     ConfirmationResolved?.Invoke(outcome);
                 },
-                Refuse = Settings.Refusal,
+                // Settings → Tools first: a tool off in the person's profile is refused as off, whatever else says.
+                // ALR5 (M2): but not the stop or snooze of what rings now, which the card's buttons already ran.
+                Refuse = (operation, arguments) =>
+                    ToolProfileState.Refusal(operation, arguments, _ringer is { Now.Count: > 0 })
+                    ?? Settings.Refusal(operation, arguments),
+                OffFacts = ToolProfileState.OffFacts,
+                ToolOn = operation =>
+                {
+                    string? off = ToolProfileState.KeepOn(operation);
+                    if (off is null)
+                    {
+                        ToolsChangedBySpeaking();
+                    }
+
+                    return off;
+                },
+                BrakeOn = Settings.BrakeOn,
                 Front = HeartbeatMoment.PersonFront,
                 OwnReading = (scope, cancellationToken) => OwnReader is { } read
                     ? read(scope, cancellationToken)
                     : Task.FromResult(Baxy.Kernel.Operations.OperationOutcome.Failure(OwnReadings.Unavailable)),
                 MemoryChanged = () => MemoryChanged?.Invoke(),
+                MemorySwitched = MemorySwitched,
+                MemoryOff = () => ToolProfileState.MemoryOff,
+                InProfile = ToolProfileState.InProfile,
                 ForgotEverything = () =>
                 {
-                    ClearConversationLog();
+                    ClearLogAndCaptures();
                     EverythingForgotten?.Invoke();
                 },
                 Conversation = (operation, arguments) => Conversation?.Invoke(operation, arguments),
                 Windows = HeartbeatMoment.OtherWindows,
                 Rows = VisibleRows.Read,
+                Ringing = RingingNote,
+                Routines = RoutinesNote,
             });
+    }
+
+    // RUT1: the person's routines for the turn (documentacion/RUTINAS.md §5), read from baxy.routines' store; one that
+    // cannot be read is none, and the model's own baxy.routines call says why.
+    private static JsonArray? RoutinesNote()
+    {
+        try
+        {
+            IReadOnlyList<JsonObject> kept = new LocalRoutineStore(
+                Path.Combine(MemoryOperationProtector.ResolveDataRoot(), LocalRoutineStore.FolderName)).Read();
+            return kept.Count == 0 ? null : new JsonArray([.. kept]);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>An alarm or a reminder this App rings started, changed or ended (the view's card).</summary>
+    internal event Action<RingNow>? RingChanged;
+
+    /// <summary>RUT4: BAXY said a routine's text at its time; false when its voice was off or not there, and the
+    /// conversation's line is all there was.</summary>
+    internal event Action<RingNow, bool>? RoutineSaid;
+
+    /// <summary>What this App rings now (the view's cards when it opens).</summary>
+    internal IReadOnlyList<RingNow> Ringing => _ringer?.Now ?? [];
+
+    /// <summary>
+    /// ALR1: from now on this App rings the alarms and reminders of its data root (<see cref="AlarmRinger"/>): their
+    /// tone on Windows' default output, its voice saying their words unless the owner silenced it, and their card. Only
+    /// the real window starts it, once: another instance of the view model (a test, the conductor) never takes them.
+    /// </summary>
+    internal void StartRinging()
+    {
+        if (_ringer is not null || _isDisposed)
+        {
+            return;
+        }
+
+        string dataRoot = MemoryOperationProtector.ResolveDataRoot();
+        var ringer = new AlarmRinger(
+            AlarmRingHandoff.Folder(dataRoot),
+            new RingOutput(
+                RingTone.Play,
+                RingTone.Stop,
+                words =>
+                {
+                    if (!Settings.VoiceMuted && _mindClient is { IsVoiceAvailable: true } mind)
+                    {
+                        UnhandledFailures.Watch(
+                            mind.VoiceSpeakAsync(words, TimeSpan.FromSeconds(5), CancellationToken.None), "ring.voice");
+                    }
+                },
+                () => IsVoiceSpeaking,
+                RingToast.RingInWindows),
+            // The person speaks to BAXY («Baxy» heard, a dictation) or their turn runs: the ring waits.
+            () => _voiceRequestOpen || IsListening || IsBusy,
+            () => UiLanguage.IsEnglish,
+            // INS1 (PRV-2): the one-time rings that rang leave the Task Scheduler.
+            spent: () => _ = RemoveSpentRingsAsync(dataRoot),
+            // APP1 (ALR-1): what the ring went on after is kept in the profile's diagnostics and in the trace.
+            failed: static failure =>
+            {
+                ShellTraceSink.Record(ShellTraceScopes.Startup, "ring", "ring_tick_failed", failure.GetType().Name);
+                UnhandledFailures.Record("ring", failure);
+            });
+        try
+        {
+            ringer.Start();
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // The data root cannot be written: the ring scripts ring Windows' notification, as before.
+            ringer.Dispose();
+            return;
+        }
+
+        _ringer = ringer;
+        ringer.Changed += ring => RingChanged?.Invoke(ring);
+        // The same test the ring's voice makes (RingOutput.Say above), on the same thread, right after it spoke.
+        ringer.Said += say => RoutineSaid?.Invoke(say, !Settings.VoiceMuted && _mindClient is { IsVoiceAvailable: true });
+        // The loop ends only with the App: whatever a tick throws is kept and the next one goes on (AlarmRinger.RunAsync).
+        _ = ringer.RunAsync(TimeSpan.FromMilliseconds(500), static () => DateTimeOffset.UtcNow, _mindLifetimeCancellation.Token);
+    }
+
+    /// <summary>How long after a ring ends its task is looked at: the ring script that handed it over has ended by
+    /// then (it looks every 250 ms for the App to have taken it, writes its receipt and exits).</summary>
+    private static readonly TimeSpan SpentRingWait = TimeSpan.FromSeconds(5);
+
+    // PRV-2: the one-time alarms and reminders that rang leave Windows' Task Scheduler (ScheduledRingsRemoval), off the
+    // interface thread. One the scheduler would not let go stays recorded, and the next ring that ends or the next
+    // start asks again.
+    private async Task RemoveSpentRingsAsync(string dataRoot)
+    {
+        try
+        {
+            await Task.Delay(SpentRingWait, _mindLifetimeCancellation.Token).ConfigureAwait(false);
+            await Task.Run(() => ScheduledRingsRemoval.RemoveSpent(dataRoot), _mindLifetimeCancellation.Token)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // The App closes.
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "ring", "ring_spent_removal_failed", exception.GetType().Name);
+        }
+    }
+
+    /// <summary>The card's Stop or Snooze: schedule.alarms through the kernel, as the model's call.</summary>
+    internal Task<OperationResponse?> AnswerRingAsync(string id, string action, CancellationToken cancellationToken) =>
+        SendPanelOperationAsync("schedule.alarms", new JsonObject { ["action"] = action, ["id"] = id },
+            cancellationToken);
+
+    // What rings now, for the turn's note: its id (the one schedule.alarms stop and snooze take), kind, words and time.
+    private JsonArray? RingingNote()
+    {
+        if (_ringer is not { } ringer || ringer.Now.Count == 0)
+        {
+            return null;
+        }
+
+        var ringing = new JsonArray();
+        foreach (RingNow ring in ringer.Now)
+        {
+            var item = new JsonObject { ["id"] = ring.Id, ["kind"] = ring.Kind, ["clock"] = ring.Clock };
+            if (ring.Title is not null)
+            {
+                item["title"] = ring.Title;
+            }
+
+            ringing.Add(item);
+        }
+
+        return ringing;
     }
 
     /// <summary>What the owner chose in the view's Settings and Proposals panels.</summary>
@@ -206,7 +394,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal Func<string, CancellationToken, Task<Baxy.Kernel.Operations.OperationOutcome>>? OwnReader { get; set; }
 
     /// <summary>A call is about to run (the view's chip in progress).</summary>
-    internal event Action<string, string, System.Text.Json.Nodes.JsonObject>? StepStarted;
+    internal event Action<string, string, JsonObject>? StepStarted;
 
     /// <summary>A call waits for the person's Sí or No; the second value is the heartbeat's reading of the person
     /// when the call is its proposal.</summary>
@@ -224,7 +412,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>The voice's loudness for the mouth (owner, 2026-10-21: the avatar's speaking animation ended while
     /// BAXY still spoke): a take's levels every <c>step</c> ms from the wall-clock <c>t0</c> it sounds at, or
     /// <c>stop</c>, when the sound was cut. Presentation only.</summary>
-    internal event Action<System.Text.Json.Nodes.JsonObject>? VoiceLip;
+    internal event Action<JsonObject>? VoiceLip;
 
     /// <summary>«Baxy» was heard.</summary>
     internal event Action? VoiceWake;
@@ -238,6 +426,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>The start's pieces as the mind reported them (null until it says), and when the model started and was ready.</summary>
     internal MindVoiceStatus? VoicePieces => _voicePieces;
+
+    /// <summary>V132: why this start's ear has no wake word although the installation names one (MindRuntimeDiscovery.WakeProblem).</summary>
+    internal string? WakeProblem { get; set; }
 
     internal int? MindProcessId => _mindClient?.ProcessId;
 
@@ -398,6 +589,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         SetField(ref _noSupportedGpu, discovery.NoSupportedGpu, nameof(Failure));
         if (MindRuntimeDiscovery.ApplyVerified(discovery) && MindSidecarClient.IsConfigured)
         {
+            WakeProblem = MindRuntimeDiscovery.WakeProblem(discovery);
             return true;
         }
 
@@ -635,11 +827,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             }
 
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupCoreReady);
+            // MEM3: the memory's switch is read before the mind takes its catalog, so it starts with the tools that
+            // switch leaves (ToolProfile.MemoryOff) instead of being relaunched for it.
+            ToolProfileState.MemoryOff = !await InitializeMemorySessionAsync(client, _memoryProtector, cancellationToken);
             startupCatalog?.TrySetResult(new MindStartupCatalog(
                 client.Capabilities,
                 client.ApplicationCatalog,
                 client.GameCatalog));
-            await InitializeMemorySessionAsync(client, _memoryProtector, cancellationToken);
             if (!client.IsReady || Volatile.Read(ref _coreDisconnectObserved) != 0)
             {
                 throw new IOException("El motor local se desconectó al iniciar la memoria privada.");
@@ -754,8 +948,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     }
 
     /// <summary>The session's conversation as the mind holds it, to keep with the session the view shows.</summary>
-    internal async Task<System.Text.Json.Nodes.JsonArray?> ExportMindSessionAsync(CancellationToken cancellationToken) =>
+    internal async Task<JsonArray?> ExportMindSessionAsync(CancellationToken cancellationToken) =>
         _mindClient is { IsReady: true } mind ? await mind.SessionExportAsync(cancellationToken) : null;
+
+    /// <summary>The model's name for a conversation that closed (its mind conversation as exported), or null. Only a model on
+    /// this PC names it (INT17, revisión ciega): by API the whole conversation would go to the company to be named, also one
+    /// the person had only on this PC (opened from the history, or before switching); it then keeps its first words.</summary>
+    internal async Task<string?> TitleMindSessionAsync(JsonArray conversation, CancellationToken cancellationToken) =>
+        _mindClient is { IsReady: true } mind && (!ExternalModel.Available || ExternalModelState.ThinksOnThisPc)
+            ? await mind.SessionTitleAsync(conversation, cancellationToken)
+            : null;
 
     /// <summary>Auditoría de la mente (2026-10-23): memory forgot everything or every conversation was deleted, and the
     /// mind's trace (%LOCALAPPDATA%\BAXY\renew\turns.jsonl) kept the person's words in clear text: it goes too, with
@@ -774,7 +976,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>Opens a kept session: nothing pending survives, the mind gets its conversation back and the transcript
     /// the heartbeat reads is that session's words.</summary>
-    internal async Task<bool> OpenSessionAsync(System.Text.Json.Nodes.JsonArray? mindConversation,
+    internal async Task<bool> OpenSessionAsync(JsonArray? mindConversation,
         IReadOnlyList<ConversationMessage> messages, CancellationToken cancellationToken)
     {
         // 2026-10-22, review of the App: the opening holds the turn while the mind loads the session; a person's turn
@@ -813,11 +1015,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>The mind's conversation of the session the view shows, as the view's channel last kept it, or null: what
     /// a mind that starts is given back.</summary>
-    internal Func<System.Text.Json.Nodes.JsonArray?>? KeptConversation { get; set; }
+    internal Func<JsonArray?>? KeptConversation { get; set; }
 
     /// <summary>Runs a conversation.* call of the person's turn on the conversations the view's channel keeps
     /// (NativeTurnLoop.Host.Conversation): its result as the model reads it.</summary>
-    internal Func<string, System.Text.Json.Nodes.JsonObject, string?>? Conversation { get; set; }
+    internal Func<string, JsonObject, string?>? Conversation { get; set; }
 
     /// <summary>A person's turn ended and let the turn go: what waited for it (a conversation to open) can run now.</summary>
     internal event Action? TurnReleased;
@@ -839,7 +1041,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// kernel like any call, never around it; null when the engine is not ready or did not answer.
     /// </summary>
     internal async Task<OperationResponse?> SendPanelOperationAsync(string operation,
-        System.Text.Json.Nodes.JsonObject arguments, CancellationToken cancellationToken)
+        JsonObject arguments, CancellationToken cancellationToken)
     {
         if (_coreClient is not { IsReady: true } core || _retryableOperations is not { } registry)
         {
@@ -866,7 +1068,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindClient is { IsReady: true } mind && await mind.VoiceReleaseAsync(TimeSpan.FromSeconds(5), cancellationToken);
 
     /// <summary>One heartbeat with the moment observed; <paramref name="speak"/>: its words may be said aloud.</summary>
-    internal async Task RunBeatAsync(System.Text.Json.Nodes.JsonObject moment, bool speak, CancellationToken cancellationToken)
+    internal async Task RunBeatAsync(JsonObject moment, bool speak, CancellationToken cancellationToken)
     {
         if (!_turnGate.Wait(0, cancellationToken))
         {
@@ -889,6 +1091,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             _beatInterrupt = null;
             _beatActive = false;
+            ClearCapturesNoCallWaitsFor();
             _turnGate.Release();
             OnPropertyChanged(nameof(HasPendingConfirmation));
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, "beat.end");
@@ -971,6 +1174,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ShellTraceSink.Record(ShellTraceScopes.Turn, turnTraceId, ShellTraceStages.ResponseFinal);
             _turnExecutionActive = false;
             IsBusy = false;
+            ClearCapturesNoCallWaitsFor();
             PersonTurnEnded?.Invoke(_personActed);
             OnPropertyChanged(nameof(HasPendingConfirmation));
             if (_coreRecoveryPending)
@@ -1042,7 +1246,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         try
         {
-            var list = new MemoryRoutedOperation("memory.list", new System.Text.Json.Nodes.JsonObject
+            var list = new MemoryRoutedOperation("memory.list", new JsonObject
             {
                 ["version"] = 1,
                 ["limit"] = 20,
@@ -1061,7 +1265,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     prepared.OperationName, opened.Payload, out MemoryOperationResponseProjection? projection,
                     response.Replayed, arguments.Payload)
                 || projection is null
-                || System.Text.Json.Nodes.JsonNode.Parse(projection.Message) is not System.Text.Json.Nodes.JsonObject facts)
+                || JsonNode.Parse(projection.Message) is not JsonObject facts)
             {
                 return [];
             }
@@ -1079,23 +1283,23 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return [];
         }
 
-        static void Collect(System.Text.Json.Nodes.JsonNode? node, List<string> into)
+        static void Collect(JsonNode? node, List<string> into)
         {
             switch (node)
             {
-                case System.Text.Json.Nodes.JsonObject record
+                case JsonObject record
                     when (string?)record["label"] is { } label && (string?)record["value"] is { } value:
                     into.Add($"{label}: {value}");
                     break;
-                case System.Text.Json.Nodes.JsonObject other:
-                    foreach ((_, System.Text.Json.Nodes.JsonNode? child) in other)
+                case JsonObject other:
+                    foreach ((_, JsonNode? child) in other)
                     {
                         Collect(child, into);
                     }
 
                     break;
-                case System.Text.Json.Nodes.JsonArray items:
-                    foreach (System.Text.Json.Nodes.JsonNode? child in items)
+                case JsonArray items:
+                    foreach (JsonNode? child in items)
                     {
                         Collect(child, into);
                     }
@@ -1108,9 +1312,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// <summary>
     /// BAXY's alarms and reminders still to ring, for the heartbeat's moment: the schedule's own list (a read).
     /// </summary>
-    internal async Task<System.Text.Json.Nodes.JsonArray> PendingRemindersAsync(CancellationToken cancellationToken)
+    internal async Task<JsonArray> PendingRemindersAsync(CancellationToken cancellationToken)
     {
-        var reminders = new System.Text.Json.Nodes.JsonArray();
+        var reminders = new JsonArray();
         if (_coreClient is not { IsReady: true } core || _retryableOperations is not { } registry)
         {
             return reminders;
@@ -1119,7 +1323,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         try
         {
             PreparedOperation prepared = registry.GetOrAdd(new RoutedOperation(
-                "schedule.alarms", new System.Text.Json.Nodes.JsonObject { ["action"] = "list", ["limit"] = 10 }));
+                "schedule.alarms", new JsonObject { ["action"] = "list", ["limit"] = 10 }));
             OperationResponse response;
             try
             {
@@ -1139,7 +1343,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
             foreach (JsonElement item in items.EnumerateArray())
             {
-                reminders.Add(new System.Text.Json.Nodes.JsonObject
+                reminders.Add(new JsonObject
                 {
                     ["text"] = item.TryGetProperty("title", out JsonElement title) ? title.GetString() : null,
                     ["due"] = item.TryGetProperty("nextRunLocal", out JsonElement due) ? due.GetString() : null,
@@ -1150,7 +1354,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (result.TryGetProperty("count", out JsonElement count) && count.TryGetInt32(out int total)
                 && total > reminders.Count)
             {
-                reminders.Add(new System.Text.Json.Nodes.JsonObject
+                reminders.Add(new JsonObject
                 {
                     ["text"] = $"y {total - reminders.Count} más sin listar",
                     ["due"] = string.Empty,
@@ -1166,12 +1370,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return reminders;
     }
 
-    private static async Task InitializeMemorySessionAsync(
+    // Whether the memory is on, as memory.status read it.
+    private static async Task<bool> InitializeMemorySessionAsync(
         CoreProcessClient client,
         MemoryOperationProtector protector,
         CancellationToken cancellationToken)
     {
-        var status = new MemoryRoutedOperation("memory.status", new System.Text.Json.Nodes.JsonObject { ["version"] = 1 });
+        var status = new MemoryRoutedOperation("memory.status", new JsonObject { ["version"] = 1 });
         PreparedOperation prepared = protector.Prepare(status).Prepared;
         OperationResponse response = await client.SendOperationAsync(
             prepared,
@@ -1182,6 +1387,23 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             throw new InvalidDataException("El estado privado inicial no tiene una forma válida.");
         }
+
+        return opened.Payload.TryGetProperty("enabled", out System.Text.Json.JsonElement enabled)
+            && enabled.ValueKind == System.Text.Json.JsonValueKind.True;
+    }
+
+    /// <summary>MEM3: the memory's own switch changed (memory.enable / memory.disable completed, by voice or by the panel's
+    /// switch): its held call goes or comes back (ToolProfile.MemoryOff), and the mind is relaunched with it once the
+    /// running turn ends, as for a profile chosen by voice.</summary>
+    internal void MemorySwitched(bool on)
+    {
+        if (ToolProfileState.MemoryOff != on)
+        {
+            return;
+        }
+
+        ToolProfileState.MemoryOff = !on;
+        ToolsChangedBySpeaking();
     }
 
     // ---- voice ---------------------------------------------------------------------------------------------
@@ -1399,7 +1621,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         },
         null);
 
-    private void OnMindVoiceEvent(System.Text.Json.Nodes.JsonObject voiceEvent)
+    private void OnMindVoiceEvent(JsonObject voiceEvent)
     {
         string eventName = (string?)voiceEvent["event"] ?? string.Empty;
         string mode = (string?)voiceEvent["mode"] ?? string.Empty;
@@ -1428,6 +1650,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     case "wake_detected":
                         VoiceFailure = null;
                         _voiceRequestOpen = true;
+                        if (_ringer?.Heard(DateTimeOffset.UtcNow) == true && Settings.WakeSound)
+                        {
+                            // Stopping the ring's tone stopped the wake's chime that had just begun (one sound at a time).
+                            SoundUnlessMuted(Chime.Wake);
+                        }
                         StatusDescription = "Te escucho…";
                         VoiceWake?.Invoke();
                         break;
@@ -1588,6 +1815,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // ---- mind start-up -------------------------------------------------------------------------------------
 
     private ExternalModel? _externalModel;
+    private TunedModel? _tunedModel;
+    private PersonBehavior? _behavior;
+    private ToolProfile? _toolProfile;
+    private LocalContext? _localContext;
+    private PrefixRead? _prefixRead;
 
     private async Task InitializeMindAsync(
         Task<MindStartupCatalog> catalog,
@@ -1610,6 +1842,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return;
             }
 
+            await RemoveEarlierWordsAsync(linked.Token);
+
             // The shell's first start counts from its check of the runtime, the wait the person already sees (W1); a
             // relaunch from its own start.
             if (!_startupMindPending)
@@ -1621,6 +1855,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _mindRetryPending = false;
             _mindReadyAt = null;
             _mindReading = null;
+            PrefixReadState.Begin();
             _mindOnProcessor = false;
             OnPropertyChanged(nameof(MindStartedAt));
             MindRuntimeDiscoveryResult discovery = await Task.Run(
@@ -1633,10 +1868,27 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return;
             }
 
+            // One model at a time: a pair kept on together from before is started as what really ran, the other model.
+            KeepOneModel(tunedChosen: false);
+
+            // QWB2: after the registered runtime, whose stock model it replaces only once verified.
+            await TunedModelState.StartAsync(linked.Token);
+
             // After the registered runtime: it uses that interpreter and overrides the vision's address.
             if (ExternalModel.Available)
             {
+                ExternalModel.ProfileLoan? lent = ExternalModelState.Lent;
                 await ExternalModelState.StartAsync(linked.Token);
+                // VIVO2 F15: before the profile is read below, and the context of BAXY's own model with it.
+                SettleProfile(lent);
+            }
+
+            // Settings → Model → Context: BAXY's own model (stock or tuned) starts with the person's preset; another
+            // model's context is its own (ExternalModel), and the variable stays as it set it.
+            bool ownModel = !ExternalModelState.Active;
+            if (ownModel)
+            {
+                LocalContextState.ApplyEnvironment(MindBackend);
             }
 
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindVerified);
@@ -1647,8 +1899,23 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 _mindClient = null;
             }
 
-            mind = new MindSidecarClient();
+            // Settings → Behavior: the person's own texts, read as this start begins (PersonBehavior).
+            JsonObject? behavior = BehaviorState.ForMind();
+            // Settings → Tools: the profile, read as this start begins (ToolProfile).
+            IReadOnlySet<string> withheld = ToolProfileState.Withheld(
+                Baxy.Kernel.Operations.ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name));
+            // REM7: read again when the catalog is configured, after the core's hello and memory.status (MEM3), which
+            // this start does not wait for.
+            mind = new MindSidecarClient
+            {
+                Behavior = behavior,
+                Withheld = withheld,
+                WithheldNow = () => ToolProfileState.Withheld(
+                    Baxy.Kernel.Operations.ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)),
+                MemoryOffNow = () => ToolProfileState.MemoryOff,
+            };
             mind.ModelReading += OnMindReading;
+            mind.ModelReading += MeasureRead;
             // FT/proveedores goal (review of the App): the mind waits up to 600 s for its model to load (wait_ready in
             // __main__.py) before it says catalog.ready; at 120 s the App ended a slow but healthy load (no GPU, a cold
             // disk) and relaunched it for ever. A model server that dies is told at once (startup_failure). Uso 84: the
@@ -1656,6 +1923,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             // an AMD RX 7600, longer on a slower GPU), within MindSidecarClient.StartupCeiling.
             bool started = await mind.TryStartAsync(catalog, TimeSpan.FromSeconds(600), linked.Token);
             mind.ModelReading -= OnMindReading;
+            mind.ModelReading -= MeasureRead;
             _mindOnProcessor = mind.ComputesOnProcessor == true;
             _mindReading = null;
             if (!started)
@@ -1688,6 +1956,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             voiceSettled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
             _voiceSettled = voiceSettled.Task;
             _mindClient = mind;
+            BehaviorState.Started(behavior);
+            ToolProfileState.Started(mind.ConfiguredWithheld ?? withheld);
+            FactoryBehavior = mind.FactoryBehavior ?? FactoryBehavior;
+            // MOD1 D5: what this start took to read the prefix whole, if it did, is this PC's measure from now on.
+            PrefixReadState.Ended(ownModel);
+            LocalContextState.Started(ownModel);
+            if (ownModel)
+            {
+                // Read with BAXY's own model's tokens: another model's prefix is counted by its own.
+                _mindBackend = mind.Backend ?? _mindBackend;
+                MindPrefixTokens = mind.PrefixTokens ?? MindPrefixTokens;
+                MindPrefixProfile = mind.PrefixTokens is null ? MindPrefixProfile : ToolProfileState.Profile;
+            }
+
             _mindStartupState = MindStartupState.Ready;
             _mindRetries.Up(DateTimeOffset.UtcNow);
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindReady);
@@ -1704,6 +1986,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             OnPropertyChanged(nameof(IsMindReady));
             // A message that waited for this mind is its first turn (uso 95).
             MindChanged();
+            // Settings → Behavior: texts the person changed while this mind was starting (it took them as the start
+            // began): it is relaunched on them once this start ends.
+            if (BehaviorState.NeedsSwitch)
+            {
+                BehaviorChanged();
+            }
+
+            // Settings → Tools: a profile chosen while this mind was starting.
+            if (ToolProfileState.NeedsSwitch)
+            {
+                ToolsChanged();
+            }
+
+            // The same for a context chosen while it was starting.
+            if (LocalContextState.NeedsSwitch)
+            {
+                LocalContextChanged();
+            }
+
             // Ajuste c3: a list of installed applications the core read after the mind's catalog was taken.
             if (_coreClient?.ApplicationCatalog is { Verified: true } installed)
             {
@@ -1792,6 +2093,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             OnPropertyChanged(nameof(MindReading));
         },
         null);
+
+    // MOD1 D5: measured as each line arrives, on the mind's reader thread: every one is in before the start's end is known.
+    private void MeasureRead(MindModelReading reading) =>
+        PrefixReadState.Saw(reading.Done, reading.Total, System.Diagnostics.Stopwatch.GetElapsedTime(0));
 
     // Uso 85: the same failure again and again is a breakdown the interface shows, never one more relaunch. N9 (L5): a read
     // too slow is that from the first time: the next would read at the same pace for as long, and only the person knows
@@ -1882,6 +2187,109 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _ = SwitchMindAsync(model);
     }
 
+    /// <summary>
+    /// QWB2: turning the tuned model on or off, or removing it, relaunches the mind on it as a change of the model by API
+    /// does: once the running turn ends, and with its conversation back. One switch at a time serves both.
+    /// </summary>
+    /// <summary>
+    /// Owner, 2026-11-08: «tengo activo el modelo ajustado y activo usar otro modelo. Eso no tiene sentido». BAXY thinks
+    /// with one model: the stock one, the tuned one, or another (local or by API). With both switches on, the one the
+    /// person just chose stays and the other goes off; with neither chosen (a start), the other model stays, as it is
+    /// the one that ran (it takes the place of BAXY's own model, tuned or not).
+    /// </summary>
+    internal void KeepOneModel(bool tunedChosen)
+    {
+        if (!ExternalModel.Available || (bool?)ExternalModelState.Json()["enabled"] != true
+            || (bool?)TunedModelState.Json()["use"] != true)
+        {
+            return;
+        }
+
+        _ = tunedChosen
+            ? ExternalModelState.Apply(new JsonObject { ["enabled"] = false })
+            : TunedModelState.Apply(new JsonObject { ["use"] = false });
+    }
+
+    internal void TunedModelChanged()
+    {
+        ExternalModel model = ExternalModelState;
+        if (_isDisposed || !TunedModelState.NeedsSwitch || model.Switching)
+        {
+            return;
+        }
+
+        model.Switching = true;
+        _ = SwitchMindAsync(model);
+    }
+
+    /// <summary>
+    /// Settings → Behavior: the person's texts changed, and the mind is relaunched on them as a change of model does: once
+    /// the running turn ends, and with its conversation back. Its prompt prefix is then read once with them, and kept.
+    /// </summary>
+    internal void BehaviorChanged()
+    {
+        ExternalModel model = ExternalModelState;
+        if (_isDisposed || !BehaviorState.NeedsSwitch || model.Switching)
+        {
+            return;
+        }
+
+        model.Switching = true;
+        _ = SwitchMindAsync(model);
+    }
+
+    /// <summary>TPV1: a tool profile chosen by voice, or TPV6 a tool turned on with the person's «sí» (ToolProfile.KeepOn),
+    /// is applied as PUT /settings/tools applies one: the mind is relaunched with its tools once this turn ends
+    /// (ToolsChanged waits for it), and a small context chosen for the profile before may not fit this one's.</summary>
+    internal void ToolsChangedBySpeaking()
+    {
+        if (!ToolProfileState.NeedsSwitch)
+        {
+            return;
+        }
+
+        if (ExternalModel.Available)
+        {
+            ExternalModelState.ForgetLoan();
+        }
+
+        // TPV5: a chosen context grows only as much as the new tools need (LocalContext.KeepFitting).
+        _ = LocalContextState.KeepFitting(ExternalModelState.NeededNow);
+        ToolsChanged();
+    }
+
+    /// <summary>
+    /// Settings → Tools: another profile, and the mind is relaunched with its tools as for new texts: once the running turn
+    /// ends, and with its conversation back. Its prompt prefix is read once for that profile, and kept under its own key.
+    /// </summary>
+    internal void ToolsChanged()
+    {
+        ExternalModel model = ExternalModelState;
+        if (_isDisposed || !ToolProfileState.NeedsSwitch || model.Switching)
+        {
+            return;
+        }
+
+        model.Switching = true;
+        _ = SwitchMindAsync(model);
+    }
+
+    /// <summary>
+    /// Settings → Model → Context: llama-server takes its context at its start, so a new one relaunches the mind on BAXY's
+    /// own model as a change of model does: once the running turn ends, and with its conversation back.
+    /// </summary>
+    internal void LocalContextChanged()
+    {
+        ExternalModel model = ExternalModelState;
+        if (_isDisposed || !LocalContextState.NeedsSwitch || model.Switching)
+        {
+            return;
+        }
+
+        model.Switching = true;
+        _ = SwitchMindAsync(model);
+    }
+
     private async Task SwitchMindAsync(ExternalModel model)
     {
         CancellationToken lifetime = _mindLifetimeCancellation.Token;
@@ -1896,6 +2304,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     try
                     {
                         model.Stop();
+                        TunedModelState.Stop();
                         if (_mindClient is { } running)
                         {
                             DetachMind(running);
@@ -1929,7 +2338,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 _mindInitializationTask = initialization;
                 await initialization;
             }
-            while (!_isDisposed && model.NeedsSwitch);
+            // A start that brought no mind up (its runtime did not apply) leaves the choice to the next start: going round again
+            // would start nothing either, for ever.
+            while (!_isDisposed && _mindClient is not null
+                && (model.NeedsSwitch || TunedModelState.NeedsSwitch || BehaviorState.NeedsSwitch
+                    || ToolProfileState.NeedsSwitch || LocalContextState.NeedsSwitch));
         }
         catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
         {
@@ -1942,8 +2355,162 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     }
 
     /// <summary>The model by API (ExternalModel), for the view's Settings and the mind's start.</summary>
-    internal ExternalModel ExternalModelState =>
-        _externalModel ??= new ExternalModel(MemoryOperationProtector.ResolveDataRoot());
+    internal ExternalModel ExternalModelState
+    {
+        get
+        {
+            if (_externalModel is null)
+            {
+                _externalModel = new ExternalModel(MemoryOperationProtector.ResolveDataRoot())
+                {
+                    // VIVO1 F4: another model is offered and connected only where the chosen profile's prompt fits.
+                    Need = () => ToolProfile.NeededContext(ToolProfileState.Profile, MindPrefixTokens, MindPrefixProfile,
+                        ToolProfileState.Kept),
+                    Fitting = context => ToolProfile.LargestFitting(context, MindPrefixTokens, MindPrefixProfile),
+                    NeedOf = profile => ToolProfile.NeededContext(profile, MindPrefixTokens, MindPrefixProfile),
+                };
+                _externalModel.Open.WentOnline += what => ModelDownloadOnline?.Invoke(what);
+                _externalModel.Open.Pulled += name => _uiContext.Post(_ => UseModelPulled(name), null);
+            }
+
+            return _externalModel;
+        }
+    }
+
+    /// <summary>Whether the conversation's log holds words (ConversationLog): «Olvidar todo» deletes it (PRV1 D7).</summary>
+    internal bool ConversationLogHoldsAny => _conversationLog?.HoldsAny == true;
+
+    /// <summary>Whether the mind thinks now with a company's API (or «Otra»): what the person gives it leaves this PC. A model
+    /// never set up is BAXY's own, so this does not create one.</summary>
+    internal bool ThinksByApi => _externalModel is { ThinksOnThisPc: false };
+
+    /// <summary>The model's start ended, with <paramref name="lent"/> standing when it began (ExternalModel.Lent): a profile
+    /// lent to a model that did not connect goes back to the one the person had, before the mind reads it.</summary>
+    internal void SettleProfile(ExternalModel.ProfileLoan? lent)
+    {
+        if (lent is not null && ExternalModelState.Settle(lent, ToolProfileState.Profile) is { } before && ToolProfileState.Apply(before) is null)
+        {
+            _ = LocalContextState.KeepForEveryProfile();
+        }
+    }
+
+    /// <summary>«Instalar y usar»: the model Ollama finished downloading is the one chosen, and the mind connects to it. One
+    /// model at a time, as the switches keep it (INT17, revisión ciega): the tuned one goes off in the same switch.</summary>
+    internal void UseModelPulled(string name)
+    {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        // A model short of the chosen profile, installed with the one the search offered it with (VIVO2 F13): that profile too,
+        // unless the person chose meanwhile one whose prompt is no bigger.
+        ExternalModel external = ExternalModelState;
+        string? profile = external.Open.TakeProfile(name);
+        _ = UseLocalModel(name, profile is not null && external.NeedFor(profile) < external.NeededNow ? profile : null);
+    }
+
+    /// <summary>The model of this PC named is the one chosen and the mind connects to it, with the tool profile
+    /// <paramref name="profile"/> if one is given: both, or neither (the refusal's code).</summary>
+    internal string? UseLocalModel(string name, string? profile) =>
+        UseModel(new JsonObject { ["provider"] = "local", ["model"] = name, ["enabled"] = true }, profile);
+
+    /// <summary>What the panel asks of the model (ExternalModel.Apply) with the tool profile <paramref name="profile"/> if one
+    /// is given, in one gesture: both, or neither (the refusal's code). The profile is lent to the model (VIVO2 F15): if its
+    /// start does not connect it, the person gets back the one they had (SettleProfile).</summary>
+    internal string? UseModel(JsonObject asked, string? profile)
+    {
+        JsonObject before = ToolProfileState.Json();
+        bool changes = profile is not null && profile != ToolProfileState.Profile;
+        if (changes && ToolProfileState.Apply(new JsonObject { ["profile"] = profile }) is { } noProfile)
+        {
+            return noProfile;
+        }
+
+        if (ExternalModelState.Apply(asked) is { } refused)
+        {
+            if (changes)
+            {
+                _ = ToolProfileState.Apply(before);
+            }
+
+            return refused;
+        }
+
+        if (changes && profile is not null)
+        {
+            // A small context chosen for the profile left may not be among the next one's (LocalContext), as in PUT /settings/tools.
+            _ = LocalContextState.KeepForEveryProfile();
+            if (ExternalModelState.ChosenModel is { Length: > 0 } model)
+            {
+                ExternalModelState.Lend(model, profile, before);
+            }
+        }
+
+        KeepOneModel(tunedChosen: false);
+        // One relaunch serves both changes (SwitchMindAsync goes by what is chosen when it starts the mind).
+        ExternalModelChanged();
+        ToolsChanged();
+        TunedModelChanged();
+        return null;
+    }
+
+    /// <summary>A model search or a download of Settings → Model → Local reached the internet: what, for «Salidas a internet».</summary>
+    internal event Action<string>? ModelDownloadOnline;
+
+    /// <summary>BAXY's tuned model, offered by the package and downloaded only when the person asks (TunedModel).</summary>
+    internal TunedModel TunedModelState
+    {
+        get
+        {
+            if (_tunedModel is null)
+            {
+                _tunedModel = new TunedModel(
+                    MemoryOperationProtector.ResolveDataRoot(),
+                    static () => MindRuntimeDiscovery.TunedOffer(MindRuntimeDiscovery.DefaultRegistrationPath()));
+                _tunedModel.WentOnline += host => TunedModelOnline?.Invoke(host);
+                // A download that finishes while the person's choice is to use it switches the mind to it.
+                _tunedModel.Installed += () => _uiContext.Post(_ => TunedModelChanged(), null);
+            }
+
+            return _tunedModel;
+        }
+    }
+
+    /// <summary>The person's own texts for how BAXY behaves (Settings → Behavior).</summary>
+    internal PersonBehavior BehaviorState => _behavior ??= new PersonBehavior(MemoryOperationProtector.ResolveDataRoot());
+
+    /// <summary>The person's tool profile (Settings → Tools).</summary>
+    internal ToolProfile ToolProfileState => _toolProfile ??= new ToolProfile(MemoryOperationProtector.ResolveDataRoot());
+
+    /// <summary>The mind's fixed identity and factory texts, as the last mind that came up told them; null until one did.</summary>
+    internal JsonObject? FactoryBehavior { get; private set; }
+
+    /// <summary>The context BAXY's own model runs with (Settings → Model → Context).</summary>
+    internal LocalContext LocalContextState => _localContext ??= new LocalContext(MemoryOperationProtector.ResolveDataRoot());
+
+    /// <summary>What this PC took the last time BAXY's own model read its prompt prefix whole (MOD1 D5).</summary>
+    internal PrefixRead PrefixReadState => _prefixRead ??= new PrefixRead(MemoryOperationProtector.ResolveDataRoot());
+
+    /// <summary>The backend the last mind on BAXY's own model computed on, and the tokens of the prompt prefix it read; null
+    /// until one came up and said them. Before any did, the backend is the one the App's own start chose the server by, where
+    /// it chose (MindRuntimeDiscovery: BAXY_MIND_LLAMA_BACKEND, which the mind holds the server's folder to): REV_APP VRAM-b,
+    /// the figures of Settings → Model were NVIDIA's until a mind spoke, on any card.</summary>
+    internal string? MindBackend => _mindBackend
+        ?? (Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_BACKEND")?.Trim() is { } chosen && LocalContext.Automatic(chosen) is not null ? chosen : null);
+
+    private string? _mindBackend;
+
+    internal int? MindPrefixTokens { get; private set; }
+
+    /// <summary>The tool profile <see cref="MindPrefixTokens"/> was read with: it scales the others' (ToolProfile.NeededContext).</summary>
+    internal string? MindPrefixProfile { get; private set; }
+
+    /// <summary>Why this start runs the stock model although the person chose the tuned one, or null.</summary>
+    internal string? TunedModelProblem => _tunedModel?.Problem;
+
+    /// <summary>The tuned model's download reached this host: the view's «Salidas a internet».</summary>
+    internal event Action<string>? TunedModelOnline;
 
     public async ValueTask DisposeAsync()
     {
@@ -1954,7 +2521,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         _isDisposed = true;
         IsReady = false;
+        _ringer?.Dispose();
         _externalModel?.Dispose();
+        _tunedModel?.Dispose();
         _mindLifetimeCancellation.Cancel();
         MindChanged();
         if (_mindInitializationTask is not null)
@@ -1982,6 +2551,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _mindClient = null;
         }
 
+        // PRV1 (PRIV-02): BAXY closes with the engine already stopped: no screen it captured stays on the disk.
+        ClearCaptures();
         _mindLifetimeCancellation.Dispose();
         _mindStartCut.Dispose();
     }
@@ -2272,9 +2843,57 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
+    /// <summary>PRV2 (A2): before a mind writes its trace, the files an earlier version wrote with the person's words go,
+    /// once (<see cref="EarlierWords.RemoveOnce"/>); one held open stays for the next start, which never fails for it.</summary>
+    private async Task RemoveEarlierWordsAsync(CancellationToken cancellationToken)
+    {
+        if (_earlierWordsDone || WordsOfEarlierVersions is not { } earlier)
+        {
+            return;
+        }
+
+        EarlierWords.Outcome outcome = await Task.Run(earlier.RemoveOnce, cancellationToken);
+        _earlierWordsDone = outcome.Done;
+        if (outcome.Removed > 0 || !outcome.Done)
+        {
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", "earlier_words_removed",
+                string.Create(CultureInfo.InvariantCulture, $"files={outcome.Removed} bytes={outcome.Bytes} done={outcome.Done} left={outcome.Left}"));
+        }
+    }
+
     /// <summary>Memory forgot everything, or every conversation was deleted: the private log of the conversation goes
-    /// too (<see cref="ConversationLog.Clear"/>).</summary>
-    internal void ClearConversationLog() => _conversationLog?.Clear();
+    /// too (<see cref="ConversationLog.Clear"/>), and the screens captured and the notes kept beside them (PRV1,
+    /// PRIV-02: they stayed).</summary>
+    internal void ClearLogAndCaptures()
+    {
+        _conversationLog?.Clear();
+        if (CapturesDirectory is { } directory)
+        {
+            Baxy.Providers.Windows.Capture.StoredCaptures.ClearAll(directory);
+        }
+    }
+
+    /// <summary>
+    /// PRV1 (PRIV-02): the screens the engine captured are removed (<see cref="StoredCaptures.Clear"/>). A capture is
+    /// read by the calls that follow it in the same request, so they go when a turn or a heartbeat ends, unless a call
+    /// waits for the person's «sí» (it may be the one that reads the capture), when BAXY closes and when the person
+    /// deletes everything.
+    /// </summary>
+    internal void ClearCaptures()
+    {
+        if (CapturesDirectory is { } directory)
+        {
+            Baxy.Providers.Windows.Capture.StoredCaptures.Clear(directory);
+        }
+    }
+
+    private void ClearCapturesNoCallWaitsFor()
+    {
+        if (!_loop.HasPendingConfirmation)
+        {
+            ClearCaptures();
+        }
+    }
 
     /// <summary>FT/proveedores goal (review of the App): what BAXY is saying stops (a new conversation, the voice muted
     /// in the settings); before, only the person's own message stopped it.</summary>

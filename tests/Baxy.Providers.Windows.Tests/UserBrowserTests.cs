@@ -3176,6 +3176,78 @@ public sealed class UserBrowserTests
         });
     }
 
+    // LEC4 (VIVO11): the default browser closed and a window of Edge in front of the person (an app window with no tab
+    // strip): «lee lo que tengo abierto» was told only that Opera GX had no window and said «No hay ningún navegador abierto».
+    [Test]
+    public async Task TheWindowOfAnotherBrowserInFrontIsReadWhenTheDefaultOneIsClosed()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [],
+            PersonsWindow = new UserBrowserFrontWindow(77, "msedge", "Charla de prueba", EdgeBrowser),
+            PageTextOf = window => window == 77 ? new UserBrowserPageText("Charla de prueba", "riego por goteo", false) : null,
+        };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Verified, Is.True, page.ErrorCode);
+            Assert.That(page.Result?.GetProperty("text").GetString(), Is.EqualTo("riego por goteo"));
+            Assert.That(page.Result?.GetProperty("browser").GetString(), Is.EqualTo("Microsoft Edge"));
+            Assert.That(page.Result?.GetProperty("defaultBrowser").GetString(), Is.EqualTo("Opera GX"));
+            Assert.That(platform.PageReads.Select(static read => read.Item1), Is.All.EqualTo(77));
+        });
+    }
+
+    // LEC4: with the default browser open behind, the browser window the person sees in front is the one read.
+    [Test]
+    public async Task TheBrowserWindowInFrontIsReadOverTheDefaultOneBehind()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            PersonsWindow = new UserBrowserFrontWindow(77, "msedge", "Charla de prueba", EdgeBrowser),
+            PageTextOf = window => new UserBrowserPageText("Uno", "texto " + window, false),
+        };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.Result?.GetProperty("text").GetString(), Is.EqualTo("texto 77"));
+            Assert.That(page.Result?.GetProperty("browser").GetString(), Is.EqualTo("Microsoft Edge"));
+        });
+    }
+
+    // LEC4: no browser window, a desktop app in front: the read says what it checked, names that window and the look
+    // that reads it.
+    [Test]
+    public async Task AReadWithNoBrowserWindowNamesTheWindowInFront()
+    {
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [],
+            PersonsWindow = new UserBrowserFrontWindow(55, "notepad", "lista.txt - Bloc de notas", null),
+        };
+        using Harness harness = new(platform);
+
+        ExternalCapabilityReceipt page = await harness.Adapter.InvokeAsync(
+            "browser.page.read", Json("""{"maximumCharacters":2000}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(page.ErrorCode, Is.EqualTo(UserBrowserSurface.BrowserNotRunning));
+            Assert.That(page.Result?.GetProperty("frontWindow").GetProperty("application").GetString(), Is.EqualTo("notepad"));
+            Assert.That(page.Result?.GetProperty("next").GetString(),
+                Does.Contain("the default browser").And.Contain("input_visible_controls").And.Contain("notepad"));
+            Assert.That(platform.PageReads, Is.Empty);
+        });
+    }
+
     [Test]
     public async Task APageThatCannotBeReadIsSaidAsSuch()
     {
@@ -3945,6 +4017,12 @@ public sealed class UserBrowserTests
         internal List<int> Fronted { get; } = [];
 
         public nint FrontWindow() => Front;
+
+        /// <summary>LEC4: the window in front of the person (null: none known).</summary>
+        internal UserBrowserFrontWindow? PersonsWindow { get; set; }
+
+        public ValueTask<UserBrowserFrontWindow?> PersonsWindowAsync(CancellationToken cancellationToken) =>
+            ValueTask.FromResult(PersonsWindow);
 
         public ValueTask<bool> BringToFrontAsync(nint window, CancellationToken cancellationToken)
         {

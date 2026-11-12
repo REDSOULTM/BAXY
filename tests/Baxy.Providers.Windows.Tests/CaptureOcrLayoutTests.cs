@@ -211,6 +211,104 @@ public sealed class CaptureOcrLayoutTests
         }
     }
 
+    // PAN1 (VIVO10B, VIVO11: «Mira mi pantalla» on BAXY's own window said «88 capacidades»): the grid icon before
+    // «Capacidades 191» is read by OCR as «88». The window gives that row's text exactly («Capacidades 191»), so a word
+    // the OCR read inside the row and the row's text does not hold is not given, and the row's text goes as it is.
+    [Test]
+    public void AnOcrWordInsideAnAccessibleTextThatDoesNotHoldItIsNotGiven()
+    {
+        CaptureOcrLine row = Line(("88", 2, 30), ("Capacidades", 14, 30), ("191", 80, 30));
+        CaptureOcrLine outside = Line(("Oferta", 2, 2), ("2x1", 30, 2));
+        ScreenTextReading sifted = CaptureOcrLayout.Sift(
+            [outside, row], [new AccessibleTextBox("Capacidades 191", 0, 26, 100, 14)]);
+        JsonElement result = CaptureOcrLayout.CreateResult("capture_test", "es-ES", "Oferta 2x1 88 Capacidades 191",
+            ImageDigest, 100, 50, RecognizedAt, null, [outside, row], sifted: sifted);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.GetProperty("text").GetString(), Is.EqualTo("Oferta 2x1 Capacidades 191"));
+            Assert.That(result.GetProperty("text").GetString(), Does.Not.Contain("88"));
+            Assert.That(sifted.Withheld, Is.EqualTo(1));
+            Assert.That(sifted.WindowText, Is.EqualTo(new[] { "Capacidades 191" }));
+            Assert.That(result.GetProperty("layout").GetProperty("lines")[1].GetProperty("text").GetString(),
+                Is.EqualTo("Capacidades 191"));
+            // Measured (PAN1 lot 4): the window's texts beside the OCR made the model stop reading a picture's text.
+            Assert.That(result.TryGetProperty("windowText", out _), Is.False);
+        });
+    }
+
+    // PAN1 held-out: an icon beside a one-word label is half of the words inside the box, and a number the OCR read
+    // without its comma («48» for «4,8») is the other word of a two-word label.
+    [Test]
+    public void AnIconBesideAOneWordLabelIsNotGiven()
+    {
+        ScreenTextReading sifted = CaptureOcrLayout.Sift(
+            [Line(("®", 2, 2), ("Ajustes", 14, 2)), Line(("Calificación", 2, 30), ("48", 70, 30))],
+            [new AccessibleTextBox("Ajustes", 0, 0, 100, 14), new AccessibleTextBox("Calificación 4,8", 0, 26, 100, 14)]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sifted.Lines.Select(static line => line.Text), Is.EqualTo(new[] { "Ajustes", "Calificación" }));
+            Assert.That(sifted.WindowText, Is.EqualTo(new[] { "Ajustes", "Calificación 4,8" }));
+            Assert.That(sifted.Withheld, Is.EqualTo(2));
+        });
+    }
+
+    // PAN1 (VIVO11 f1e): the OCR put the grid icon («88») on a line with a word outside the panel, apart from its label.
+    [Test]
+    public void AnIconTheOcrPutOnAnotherLineThanItsLabelIsNotGiven()
+    {
+        CaptureOcrLine across = Line(("memoria", 120, 30), ("88", 2, 31));
+        CaptureOcrLine label = Line(("Capacidades", 14, 31), ("191", 80, 31));
+        ScreenTextReading sifted = CaptureOcrLayout.Sift(
+            [across, label], [new AccessibleTextBox("Capacidades 191", 0, 26, 100, 14)]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sifted.Lines.Select(static line => line.Text), Is.EqualTo(new[] { "memoria", "Capacidades 191" }));
+            Assert.That(sifted.Withheld, Is.EqualTo(1));
+        });
+    }
+
+    // PAN1 held-out (lot 2): a picture's text inside a link named otherwise shares a word with the name («se»), but most of
+    // its line is not the name's words: it is read as the OCR read it, beside the name's own line.
+    [Test]
+    public void APictureTextInsideALinkNamedOtherwiseIsStillRead()
+    {
+        CaptureOcrLine picture = Line(("SE", 2, 2), ("ALQUILA", 30, 2));
+        CaptureOcrLine title = Line(("Los", 2, 30), ("locales", 20, 30), ("se", 50, 30), ("duplican", 70, 30));
+        ScreenTextReading sifted = CaptureOcrLayout.Sift(
+            [picture, title], [new AccessibleTextBox("Los locales se duplican", 0, 0, 100, 44)]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sifted.Withheld, Is.Zero);
+            Assert.That(sifted.Lines.Select(static line => line.Text),
+                Is.EqualTo(new[] { "SE ALQUILA", "Los locales se duplican" }));
+        });
+    }
+
+    // What has no accessible text (an image's, a video's, an app without accessibility) is read by OCR as before, and a
+    // box whose words the capture mostly does not show (a picture under a link, a window that changed) is not used.
+    [Test]
+    public void TextWithoutAnAccessibleBoxOrUnderABoxItDoesNotMatchIsStillRead()
+    {
+        CaptureOcrLine picture = Line(("HOY", 2, 2), ("2x1", 20, 2), ("PIZZA", 40, 2));
+        ScreenTextReading sifted = CaptureOcrLayout.Sift(
+            [picture], [new AccessibleTextBox("Vídeo de cocina casera", 0, 0, 100, 14)]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(sifted.Withheld, Is.Zero);
+            Assert.That(sifted.WindowText, Is.Empty);
+            Assert.That(sifted.Lines.Single().Text, Is.EqualTo("HOY 2x1 PIZZA"));
+        });
+    }
+
+    private static CaptureOcrLine Line(params (string Text, double X, double Y)[] words) => new(
+        string.Join(' ', words.Select(static word => word.Text)),
+        [.. words.Select(static word => new CaptureOcrWord(word.Text, word.X, word.Y, 10, 8))]);
+
     private static JsonElement Result(
         IReadOnlyList<CaptureOcrLine> lines, string text = "original", double? angle = null, string? digest = null) =>
         CaptureOcrLayout.CreateResult("capture_test", "es-ES", text, digest ?? ImageDigest,

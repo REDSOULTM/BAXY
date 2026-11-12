@@ -34,7 +34,7 @@ def test_the_output_opens_for_every_answer_of_a_person_s_turn(
         def __init__(self, *args) -> None:
             pass
 
-        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None, ringing=None):
             turn.append(f"decide:{request_id}")
             return {"type": "turn.result", "id": request_id}
 

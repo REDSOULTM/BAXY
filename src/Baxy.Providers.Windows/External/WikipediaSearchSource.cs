@@ -8,14 +8,6 @@ namespace Baxy.Providers.Windows.External;
 // sólo la consulta tal como la escribió el modelo; vuelve cada artículo con el inicio que la API devuelve.
 internal sealed class WikipediaSearchSource(HttpClient http)
 {
-    private const string ProjectUrl = "https://github.com/REDSOULTM/baxy-assistant";
-
-    // Formato recomendado por Wikimedia: «<cliente>/<versión> (<contacto>)».
-    internal static string UserAgent { get; } = "BAXY/"
-        + (typeof(WikipediaSearchSource).Assembly.GetName().Version is { } version
-            ? version.ToString(2) : "1.0")
-        + " (" + ProjectUrl + ")";
-
     private readonly HttpClient _http = http ?? throw new ArgumentNullException(nameof(http));
 
     internal static string Authority(string language) => "wikipedia_" + language + "_api";
@@ -40,7 +32,7 @@ internal sealed class WikipediaSearchSource(HttpClient http)
         CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, SearchUri(language, terms, limit));
-        request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
+        request.Headers.TryAddWithoutValidation("User-Agent", ProductIdentity.UserAgent);
         try
         {
             using HttpResponseMessage response = await _http

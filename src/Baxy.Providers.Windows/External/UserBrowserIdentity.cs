@@ -160,6 +160,28 @@ internal static class UserBrowserIdentityResolver
         }
     }
 
+    /// <summary>
+    /// LEC4: the browser Windows knows (the one a web link opens with first, then those registered) whose windows the
+    /// process of that name draws (<see cref="UserBrowserIdentity.ProcessName"/>); null when none, or the registry cannot
+    /// be read.
+    /// </summary>
+    internal static UserBrowserIdentity? RegisteredDrawnBy(string processName)
+    {
+        try
+        {
+            return new[] { ResolveFromRegistry() }
+                .Concat(RegisteredBrowsers(Registry.CurrentUser, Registry.LocalMachine)
+                    .Select(static registered => Resolve(registered.Name, registered.OpenCommand)))
+                .FirstOrDefault(identity => identity is not null
+                    && string.Equals(identity.ProcessName, processName, StringComparison.OrdinalIgnoreCase));
+        }
+        catch (Exception exception) when (exception is System.Security.SecurityException
+            or UnauthorizedAccessException or IOException or ArgumentException or NotSupportedException)
+        {
+            return null;
+        }
+    }
+
     private static IEnumerable<(string Name, string? OpenCommand)> RegisteredBrowsers(params RegistryKey[] hives)
     {
         foreach (RegistryKey hive in hives)

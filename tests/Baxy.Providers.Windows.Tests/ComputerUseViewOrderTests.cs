@@ -531,7 +531,7 @@ public sealed class ComputerUseViewOrderTests
             Assert.That(highest, Is.EqualTo(VisibleViewNumbering.HighestIndex));
             foreach ((string operation, string argument, string rest) in new[]
             {
-                ("input.visible.click", "index", "\"label\":\"(pane)\""),
+                ("input.visible.click", "index", "\"consequence\":null,\"label\":\"(pane)\""),
                 ("input.scroll", "index", "\"amount\":1,\"direction\":\"down\""),
                 ("input.text.type", "index", "\"text\":\"hola\""),
             })

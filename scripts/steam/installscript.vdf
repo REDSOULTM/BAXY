@@ -1,0 +1,20 @@
+// Steam install script of BAXY (https://partner.steamgames.com/doc/sdk/installscripts). scripts\build_steam.ps1 copies
+// it to the root of the build, and scripts\steam\app_build.vdf marks it with «InstallScript».
+// INS-1: Steam deletes the folder itself when the app is uninstalled and no uninstaller of BAXY runs, so the alarms
+// and reminders BAXY set would stay in the Task Scheduler of Windows and go on ringing. «Run Process On Uninstall»
+// starts BAXY one last time, for that alone: it removes the tasks its data recorded and ends, with no window
+// (src\Baxy.App\ScheduledRingsUninstall.cs). As the account of the person: the tasks and the data are theirs.
+// NOT TRIED ON STEAM YET (documentacion\STEAM_PUBLICACION.md, «Desinstalar»): on a beta branch, set a daily alarm,
+// uninstall and look at the Task Scheduler; and check that «Verify integrity of files» leaves the alarms in place.
+"InstallScript"
+{
+	"Run Process On Uninstall"
+	{
+		"BAXY alarms"
+		{
+			"Process 1" "%INSTALLDIR%\\app\\Baxy.exe"
+			"Command 1" "--remove-scheduled-rings"
+			"AsCurrentUser" "1"
+		}
+	}
+}

@@ -16,11 +16,14 @@ blocks, so they are never sent back).
 from __future__ import annotations
 
 import argparse
+import base64
 import http.client
 import ipaddress
 import json
 import os
 import re
+import secrets
+import struct
 import subprocess
 import sys
 import tempfile
@@ -29,9 +32,10 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, NamedTuple
 
 MODEL = "claude-opus-5-5"
 ANTHROPIC_URL = "https://api.anthropic.com"
@@ -41,19 +45,71 @@ FALLBACK_BETA = "server-side-fallback-2026-07-01"
 PRICES = {
     "claude-opus-5-5": {"input": 4.00, "cache_read": 0.20, "cache_write": 5.00, "output": 20.00},
     "claude-sonnet-5-5": {"input": 2.00, "cache_read": 0.20, "cache_write": 2.50, "output": 10.00},
+    # platform.claude.com/docs/en/about-claude/pricing, read 2026-11-08 (cache reads 0.25 for this one).
+    "claude-fable-5-1": {"input": 10.00, "cache_read": 0.25, "cache_write": 12.50, "output": 50.00},
 }
 # max_tokens is a hard cap on thinking plus text (thinking cannot be turned off on this model), and the mind asks for 768.
 MIN_MAX_TOKENS = 8000
+# What the mind asks for a phrase and not a decision (its notice asks for 24; a decision, 768).
+SHORT_REPLY_TOKENS = 64
 _ID = re.compile(r"[^a-zA-Z0-9_-]")
 _FILL = re.compile(r"^<tool_call>\s*<function=([^>\s]+)>")
 _DATA_URL = re.compile(r"^data:(image/[a-z+.-]+);base64,(.+)$", re.S)
 _ERROR_CODE = re.compile(r"[A-Za-z0-9_.-]{1,64}")
+# An API's «this request cannot be taken as it is» (RFC 9110 §15.5: 400 Bad Request, 415 Unsupported Media Type, 422
+# Unprocessable Content): what a model with no vision answers to an image, and what any other fault of a request gets.
+NOT_TAKEN = (400, 415, 422)
+
+
+def _small_png(side: int = 64) -> str:
+    """A grey square as a PNG data URL (W3C PNG: signature, IHDR, IDAT, IEND; 8-bit greyscale, each row with filter 0):
+    an image no model that sees refuses for what it is."""
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+
+    rows = (b"\x00" + b"\x80" * side) * side
+    png = (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", side, side, 8, 0, 0, 0, 0))
+           + chunk(b"IDAT", zlib.compress(rows)) + chunk(b"IEND", b""))
+    return "data:image/png;base64," + base64.b64encode(png).decode("ascii")
+
+
+# Revisión total (M4, 2026-11-09): the image a refused request is asked again with (Translator.refused_its_images).
+PROBE_IMAGE = _small_png()
+
+
+def _with_images(body: dict[str, Any], url: str | None) -> dict[str, Any]:
+    """``body`` with ``url`` in place of each of its images, or with none of them (None)."""
+    messages = []
+    for message in body.get("messages") or []:
+        content = message.get("content")
+        if isinstance(content, list):
+            message = {**message, "content": [
+                {**part, "image_url": {**(part.get("image_url") or {}), "url": url}} if part.get("type") == "image_url" else part
+                for part in content if url is not None or part.get("type") != "image_url"]}
+        messages.append(message)
+    return {**body, "messages": messages}
 
 
 class UpstreamError(Exception):
-    def __init__(self, status: int, message: str) -> None:
+    def __init__(self, status: int, message: str, upstream: int | None = None, code: str | None = None) -> None:
         super().__init__(message)
         self.status = status
+        # The API's own status, when it answered one.
+        self.upstream = upstream
+        # Its kind (Refusal.code), for the mind and the App to say why.
+        self.code = code
+
+
+# Refusals that may pass by themselves: asked again, as a server that fell (502). Any other will not change on its own: it goes
+# back as one (422), which neither LlmServer nor the mind asks again (VIVO1 F4, 2026-11-09: 5 requests for a template refusal).
+PASSING = frozenset({"limite", "saturado", "caido", "lento", "red", "cortado"})
+
+
+def refused(said: Refusal, too_long: bool = False, upstream: int | None = None) -> UpstreamError:
+    """The failure the mind gets for an API's refusal: 400 for a prompt past the context (the mind makes room), 502 for one that
+    may pass, 422 for one that will not."""
+    status = 400 if too_long else 502 if said.code in PASSING else 422
+    return UpstreamError(status, said.text, upstream=upstream, code=said.code)
 
 
 class _MindLeft(Exception):
@@ -76,10 +132,16 @@ OLLAMA_CLOUD = "corre fuera de este PC, en la nube de Ollama"
 # What is left for everything else when a model loads. On 2026-11-05 a model of 10.8 GB left this PC with 0.3 GB of its commit limit,
 # and Windows began failing other programs' allocations: Opera and WebView2 ended with 0xe0000008.
 MEMORY_RESERVE = 3 * 2**30
-# What it takes of that per byte on the card, measured on 2026-11-05 and 06: 1.1 for qwen3:8b on BAXY's server; by Ollama, 1.6 for
-# mistral-nemo:12b (20 GB for 12.7, leaving 1.3 GB free) and 1.7 for baxy:4b, 1.1 for llama3.2:3b.
-COMMIT_PER_BYTE_ENGINE = 1.2
-COMMIT_PER_BYTE_OLLAMA = 1.7
+# What a model whole on the card adds to the commit charge beside its own size: measured on the PC on 2026-11-09 (RTX 4060 Ti,
+# llama-server with the product's arguments and Ollama 0.40.15, six loads, documentacion/VRAM_ESTIMADA.md) the charge grew as
+# the card did, 1:1 (WDDM backs video memory with system memory, learn.microsoft.com «Mapping virtual addresses to a memory
+# segment»), plus 0.9-2.4 GiB of the process's own; a mapped file does not count (Russinovich, «Pushing the Limits of Windows:
+# Virtual Memory»), and it was even less with mmap. 2.75 GiB covers the most measured and Ollama's own count being ~124 MiB short.
+# The App says the same before a download (OpenModels.CommitHost; ModelMemoryTests holds both equal).
+COMMIT_HOST = int(2.75 * 2**30)
+# Partly in RAM, only when the person chose it: what was measured on 2026-11-05 and 06, up to 1.7 per byte (mistral-nemo:12b,
+# 20 GB for 12.7).
+COMMIT_PER_BYTE_PARTIAL = 1.7
 # Reading a large model off the disk for the first time (ExternalModel.LocalStartBudget allows for this and the translator's start).
 ENGINE_START_SECONDS = 170
 # A company's list also has what cannot chat: only this tells a model apart there, and it decides nothing the person says.
@@ -117,13 +179,77 @@ def _elsewhere(fields: dict[str, Any]) -> bool:
     return bool(fields.get("remote_host") or fields.get("remote_model"))
 
 
-def _refused(status: int, body: Any) -> str:
-    """A refusal in words safe to keep: its status and the code the API gives it. An error's message may repeat the request."""
+class Refusal(NamedTuple):
+    """What failed, for Settings: its kind (the view says it in the other language by it: EXTERNAL_ERROR) and its words."""
+
+    code: str
+    text: str
+
+
+def say(refusal: Refusal) -> None:
+    """The line Settings shows (ExternalModel.LastError): «ERROR[kind]: words»."""
+    print(f"ERROR[{refusal.code}]: {refusal.text}", flush=True)
+
+
+COMPANIES = {"anthropic": "Anthropic", "openai": "OpenAI", "google": "Google", "compatible": "Esa API", "local": "El servidor local"}
+
+
+def _within(provider: str) -> str:
+    """The company's name inside a sentence."""
+    name = COMPANIES.get(provider, "La API")
+    return name if provider in ("anthropic", "openai", "google") else name[0].lower() + name[1:]
+
+
+# Refusals for money, not for the request. OpenAI's 429 codes and their type (developers.openai.com/api/docs/guides/error-codes:
+# «The broader error.type can still be insufficient_quota»); Anthropic's billing_error (platform.claude.com/docs/en/api/errors).
+_MONEY = {"insufficient_quota", "credit_balance_exhausted", "organization_spend_limit_exceeded", "project_spend_limit_exceeded",
+          "billing_error"}
+# Anthropic names two only in its message: the spend limit the person set, a 400 «You have reached your specified API usage
+# limits» (platform.claude.com/docs/en/api/rate-limits), and an empty balance, «Your credit balance is too low» (users' reports).
+_MONEY_SAID = ("specified api usage limits", "credit balance")
+
+
+def _no_credit(fields: list[Any], message: str) -> bool:
+    """Only whether the message says so is read: its words may repeat the request and are never kept."""
+    return any(field in _MONEY for field in fields if isinstance(field, str)) or any(said in message for said in _MONEY_SAID)
+
+
+# How a server on this PC says the model's chat template cannot be read with BAXY's conversation and tools (its form, never its
+# words, which quote the template): llama-server b11609, «Unable to generate parser for this template. Automatic parser generation
+# failed … Jinja Exception: Conversation roles must alternate» (mistral:latest, VIVO1 F4, 2026-11-09); Ollama 0.40.15, «chat
+# template prompt error … Jinja Exception: System message must be at the beginning.» (Qwen3.5, 2026-11-08).
+TEMPLATE_REFUSED = ("unable to generate parser for this template", "jinja exception", "chat template")
+
+
+def explain(provider: str, model: str, status: int, body: Any) -> Refusal:
+    """A refusal in words safe to keep and concrete: what happened, by its status and the code the API gives it (OpenAI:
+    {"error": {"code", "type"}}; Anthropic: {"type": "error", "error": {"type"}}; Gemini: [{"error": {"status"}}])."""
     error = body[0] if isinstance(body, list) and body else body
     error = error.get("error") if isinstance(error, dict) else None
     fields = [error.get(name) for name in ("code", "type", "status")] if isinstance(error, dict) else []
     code = next((field for field in fields if isinstance(field, str) and _ERROR_CODE.fullmatch(field)), None)
-    return f"la API respondió {status}" + (f" ({code})" if code else "")
+    message = str(error.get("message") or "").lower() if isinstance(error, dict) else ""
+    company = COMPANIES.get(provider, "La API")
+    if provider == "local" and status in (400, 500) and any(form in message for form in TEMPLATE_REFUSED):
+        return Refusal("plantilla", f"{company} no puede usar {model} con las herramientas de BAXY: la plantilla de chat del "
+                                    "modelo no acepta la conversación. Elige otro modelo")
+    if 300 <= status < 400:
+        return Refusal("redirige", "esa dirección redirige a otra y BAXY no la sigue: escribe la final")
+    if status == 402 or _no_credit(fields, message):
+        return Refusal("saldo", f"{company} no atiende: tu cuenta no tiene saldo o llegó a su límite de gasto. Revísalo en la consola de {_within(provider)}")
+    if status == 401:
+        return Refusal("clave", f"{company} rechazó la clave: comprueba que la copiaste entera o crea otra en su consola")
+    if status == 403:
+        return Refusal("permiso", f"{company} no da permiso a esta clave para usar {model}")
+    if status == 404:
+        return Refusal("modelo", f"{company} no tiene el modelo {model}: elige otro de la lista")
+    if status == 429:
+        return Refusal("limite", f"{company} limitó por un momento las llamadas de tu cuenta: espera un minuto y vuelve a pedirlo")
+    if status in (503, 529):
+        return Refusal("saturado", f"{company} está saturado ahora mismo: vuelve a intentarlo en unos minutos")
+    if status >= 500:
+        return Refusal("caido", f"{company} tuvo un fallo en su servidor ({status}): vuelve a intentarlo más tarde")
+    return Refusal("rechazo", f"{company} respondió {status}" + (f" ({code})" if code else ""))
 
 
 def _count(value: Any) -> int:
@@ -205,6 +331,10 @@ def to_request(body: dict[str, Any], effort: str | None, model: str = MODEL) -> 
     """The Messages request of a chat body. temperature, top_p, top_k, seed, logit_bias and logprobs have no place on
     this model (a 400, or nothing to send them to); forced tool use is a 400 too, so a fill_call asks in words."""
     system, turns, started = to_messages(body.get("messages") or [])
+    # A reply of a few words (the notice: 24 tokens) at the effort of a decision would think for seconds first: this model always
+    # thinks, and effort is what sets how much (platform.claude.com/docs/en/build-with-claude/effort).
+    if effort and 0 < int(body.get("max_tokens") or 0) <= SHORT_REPLY_TOKENS:
+        effort = "low"
     output: dict[str, Any] = {"effort": effort} if effort else {}
     response_format = body.get("response_format") or {}
     if response_format.get("type") == "json_schema":
@@ -285,13 +415,16 @@ class Ollama:
         asked = context or OLLAMA_CONTEXT
         self.num_ctx = min(self.context, asked) if self.context else asked
         self.thinks = "thinking" in (show.get("capabilities") or [])
+        # Whether it sees: Ollama says so of each model (/api/show «capabilities», «vision»; docs/api.md). One installed with no
+        # projector does not, and is not made to.
+        self.sees: bool | None = "vision" in (show.get("capabilities") or []) if show else None
         self.remote = _elsewhere(show)
 
     @property
     def unreachable(self) -> str:
         return f"Ollama no responde en {self.url}"
 
-    def load(self) -> str | None:
+    def load(self) -> Refusal | None:
         """Into memory now, with the context of every request (with no prompt, Ollama only loads): being connected means it loaded. What
         failed, if it did."""
         body = {"model": self.model, "keep_alive": "30m", "options": {"num_ctx": self.num_ctx}}
@@ -301,9 +434,10 @@ class Ollama:
                 return None
         except urllib.error.HTTPError as error:
             detail = error.read().decode("utf-8", "replace")
-            return f"{self.model} no cabe en la memoria de este PC: elige otro modelo o menos contexto" if _no_memory(detail) else f"Ollama no pudo cargar {self.model}"
+            return (Refusal("memoria", f"{self.model} no cabe en la memoria de este PC: elige otro modelo o menos contexto") if _no_memory(detail)
+                    else Refusal("carga", f"Ollama no pudo cargar {self.model}"))
         except (OSError, http.client.HTTPException):
-            return f"Ollama no terminó de cargar {self.model}"
+            return Refusal("carga", f"Ollama no terminó de cargar {self.model}")
 
     def to_request(self, body: dict[str, Any]) -> dict[str, Any]:
         source = list(body.get("messages") or [])
@@ -340,10 +474,13 @@ class Ollama:
             if message.get("role") == "tool":
                 sent["tool_name"] = names.get(str(message.get("tool_call_id")), "")
             messages.append(sent)
+        # Ollama's /api/chat has no tool_choice (https://docs.ollama.com/api/chat): what to do now goes as the last turn, a user's,
+        # because the model's own chat template may take a system message only first (Qwen3.5 in Ollama 0.40.15: «System
+        # message must be at the beginning.», a 500 to each notice and each started call; banco del NB 2026-11-08).
         if forced:
-            messages.append({"role": "system", "content": f"Call the tool {forced} now, with the arguments this conversation gives."})
+            messages.append({"role": "user", "content": f"Call the tool {forced} now, with the arguments this conversation gives."})
         elif body.get("tool_choice") == "none":
-            messages.append({"role": "system", "content": "Answer in words now. Call no tool."})
+            messages.append({"role": "user", "content": "Answer in words now. Call no tool."})
         options: dict[str, Any] = {"num_ctx": self.num_ctx, "num_predict": int(body.get("max_tokens") or 768)}
         options.update({k: body[k] for k in ("temperature", "top_p", "top_k", "seed") if body.get(k) is not None})
         request: dict[str, Any] = {"model": self.model, "messages": messages, "stream": False, "keep_alive": "30m", "options": options}
@@ -378,7 +515,7 @@ class Ollama:
         read = int(answer.get("prompt_eval_count") or 0)
         sent = len(json.dumps([body.get("messages"), body.get("tools")], ensure_ascii=False)) // 4
         if read and read < sent // 2:
-            print(f"ERROR: {self.model} leyó {read} tokens de unos {sent}: no le cabe lo que BAXY le envía", flush=True)
+            say(Refusal("corto", f"{self.model} leyó {read} tokens de unos {sent}: no le cabe lo que BAXY le envía"))
         finish = "tool_calls" if calls else ("length" if answer.get("done_reason") == "length" else "stop")
         return {"id": "ollama", "object": "chat.completion", "model": self.model,
                 "choices": [{"index": 0, "finish_reason": finish, "message": reply_message}],
@@ -420,12 +557,27 @@ def _no_memory(detail: str) -> bool:
     return "out of memory" in detail.lower() or "unable to allocate" in detail.lower()
 
 
-def memory_problem(model: str, needed: float, per_byte: float = COMMIT_PER_BYTE_OLLAMA) -> str | None:
+def memory_problem(model: str, needed: float, partial: bool | None = False) -> str | None:
+    """Why this model must not load (what Windows must be able to promise and what it can), or None: whole on the card, its size
+    and COMMIT_HOST; partly in RAM, COMMIT_PER_BYTE_PARTIAL; where it goes not known (None: Ollama splits what does not fit the
+    free VRAM), the larger of the two; and MEMORY_RESERVE left for the person's programs."""
     free = commit_free()
-    wanted = needed * per_byte + MEMORY_RESERVE
+    whole, split = needed + COMMIT_HOST, needed * COMMIT_PER_BYTE_PARTIAL
+    wanted = (split if partial else whole if partial is False else max(whole, split)) + MEMORY_RESERVE
     if free is None or wanted <= free:
         return None
-    return f"{model} necesita unos {_gigabytes(wanted)} GB de memoria libre, contando lo que debe quedar para tus programas, y este PC tiene {_gigabytes(free)} GB: elige otro modelo o menos contexto"
+    # RAM, not VRAM: what Windows must be able to promise (2026-11-09: «memoria libre» alone was read as the card's).
+    return (f"{model} necesita unos {_gigabytes(wanted)} GB de RAM libre (RAM y archivo de paginación, donde Windows cuenta también lo que va a la tarjeta), "
+            f"contando lo que debe quedar para tus programas, y este PC tiene {_gigabytes(free)} GB: elige otro modelo o menos contexto")
+
+
+def connect_memory_problem(model: str, measured: float, card_bytes: float, partial: bool, whole: bool, on_engine: bool) -> str | None:
+    """memory_problem when connecting. What it takes is the larger of the App's estimate from the model's files at this context
+    (card_bytes, what the view says; ModelMemory, above what the card showed in 22 loads) and Ollama's measure or the file
+    (expected_memory), since Ollama may run with more than the files say (OLLAMA_NUM_PARALLEL). Where it goes: partly in RAM when the person chose it, on Ollama; whole on the card when the App saw it
+    fit the free VRAM, or on BAXY's own server, which keeps every layer there; not known otherwise, and then the larger rule."""
+    split = True if partial and not on_engine else False if whole or on_engine else None
+    return memory_problem(model, max(card_bytes, measured), partial=split)
 
 
 def expected_memory(url: str, model: str, context: int, cache: Path | None) -> float:
@@ -434,7 +586,7 @@ def expected_memory(url: str, model: str, context: int, cache: Path | None) -> f
     with _direct(url + "/api/tags", timeout=15) as reply:
         row = next((m for m in json.loads(reply.read()).get("models") or [] if m.get("name") == model), {})
     known = json.loads(cache.read_text(encoding="utf-8")).get(str(row.get("digest"))) if cache is not None and cache.exists() else None
-    return known["base"] + known["perToken"] * context if known else float(row.get("size") or 0)
+    return known["base"] + known["perToken"] * context if known and "base" in known else float(row.get("size") or 0)
 
 
 def _measure_memory(url: str, model: str, context_length: int) -> dict[str, float]:
@@ -485,19 +637,34 @@ def estimate(url: str, model: str, cache: Path | None = None, measure: bool = Tr
         choices = context_choices(context_length, engine_path() is not None and model_file(show) is not None)
         answer.update(contextLength=context_length, options=[{"context": c, "bytes": None} for c in choices],
                       recommended=OLLAMA_CONTEXT if OLLAMA_CONTEXT in choices else max(choices, default=0))
+        # Where Ollama keeps the model and its projector: the App says the VRAM from their headers (ModelMemory), since
+        # Ollama's own size left out the 120-124 MiB of the CUDA runtime that nvidia-smi saw (2026-11-08).
+        answer["modelFiles"] = model_files(show)
         known: dict[str, Any] = {}
         if cache is not None and cache.exists():
             known = json.loads(cache.read_text(encoding="utf-8"))
         memory = known.get(digest)
+        # A load Ollama could not do is kept, not done again on the next ask (2026-11-09: the view asking again and again
+        # crashed Ollama's runner 9 times in 22 minutes). Connecting still tries once, and says why if it fails.
+        if memory is not None and "failed" in memory:
+            answer["error"] = "Ollama no pudo cargarlo"
+            return answer
         if memory is None and not measure:
             return answer
         if memory is None:
-            # Measuring loads it: not on a PC that would start failing programs for it.
-            problem = memory_problem(model, float(row.get("size") or 0))
+            # Measuring loads it: not on a PC that would start failing programs for it. Nothing has checked the card yet
+            # (ExternalModel measures before it can say what fits), so Ollama may split it (INT18 blind review).
+            problem = memory_problem(model, float(row.get("size") or 0), partial=None)
             if problem:
                 answer["error"] = problem
                 return answer
-            memory = _measure_memory(url, model, context_length)
+            try:
+                memory = _measure_memory(url, model, context_length)
+            except urllib.error.HTTPError as error:
+                if error.code == 500 and cache is not None:
+                    known[digest] = {"failed": "carga"}
+                    cache.write_text(json.dumps(known), encoding="utf-8")
+                raise
             known[digest] = memory
             if cache is not None:
                 cache.write_text(json.dumps(known), encoding="utf-8")
@@ -511,10 +678,74 @@ def estimate(url: str, model: str, cache: Path | None = None, measure: bool = Tr
     return answer
 
 
+def short_of(context: int, need: int) -> str:
+    return f"admite {context:,} tokens de contexto y el perfil de herramientas elegido necesita unos {need:,}".replace(",", ".")
+
+
+def engine_takes_tools(address: str, model: str, key: str = "") -> Refusal | None:
+    """Whether BAXY's server reads this model's template with what a turn of the mind sends: one tool and one token, before
+    anything is said to be connected. llama-server applies the template to the whole conversation and refuses the request if the
+    template does (mistral:latest, VIVO1 F4: its GGUF's template takes only user and assistant one after the other). A probe of a
+    system and a user message passed there, and every turn failed: the mind's clock, notes and the person's words are user messages
+    in a row (Mind.decide), and a tool's result comes before a note. The probe has that shape."""
+    tool = {"type": "function", "function": {"name": "probe", "description": "probe", "parameters": {"type": "object", "properties": {}}}}
+    call = {"id": "probe_1", "type": "function", "function": {"name": "probe", "arguments": "{}"}}
+    body = {"model": model, "max_tokens": 1, "tools": [tool], "messages": [
+        {"role": "system", "content": "s"}, {"role": "user", "content": "12:00"}, {"role": "user", "content": "hola"},
+        {"role": "assistant", "content": "", "tool_calls": [call]}, {"role": "tool", "tool_call_id": "probe_1", "content": "ok"},
+        {"role": "user", "content": "[nota]"}]}
+    request = urllib.request.Request(address.rstrip("/") + "/chat/completions", data=json.dumps(body).encode("utf-8"),
+                                     headers={"Content-Type": "application/json", **({"Authorization": f"Bearer {key}"} if key else {})})
+    try:
+        with _direct(request, timeout=ENGINE_START_SECONDS):
+            return None
+    except urllib.error.HTTPError as error:
+        try:
+            detail = json.loads(error.read())
+        except ValueError:
+            detail = None
+        return explain("local", model, error.code, detail)
+    except (OSError, http.client.HTTPException):
+        return Refusal("carga", f"{model} no respondió en el servidor de BAXY")
+
+
+def local_backend(url: str, model: str, context: int, need: int, server: str | None = None,
+                  engine_class: Any = None) -> tuple[Ollama | Compatible, Any, Refusal | None]:
+    """Where a model of Ollama runs, and whether BAXY can use it there: past its own context on BAXY's server (``server``) if that
+    server takes its template with tools; else on Ollama, up to what it declares. Where it runs, the profile's prompt must fit
+    (``need``): if not, the refusal says so and nothing connects. (backend, engine or None, refusal or None)."""
+    ollama = Ollama(url, model, context)
+    if ollama.context and context > ollama.context and server:
+        show = _show(url.rstrip("/"), model)
+        if model_file(show):
+            engine = (engine_class or Engine)(server, show, model, context)
+            address = engine.start()
+            if address is None:
+                return ollama, None, Refusal("carga", f"{model} no pudo cargarse en el servidor de BAXY con {context:,} tokens".replace(",", "."))
+            # PRV1 (PRIV-04): BAXY's server asks its key of every request (Engine.key); the mind's calls reach it through
+            # this translator, which carries it as it carries a company's.
+            key = str(getattr(engine, "key", "") or "")
+            problem = engine_takes_tools(address, model, key)
+            if problem is None:
+                return Compatible(address, key, model, "local"), engine, None
+            engine.stop()
+            print(f"{model}: {problem.text}. Con el servidor de BAXY no pasa de su contexto: va con Ollama, hasta "
+                  f"{f'{ollama.context:,}'.replace(',', '.')} tokens ({problem.code})", flush=True)
+    if need and ollama.num_ctx < need:
+        return ollama, None, Refusal("perfil", f"{model} {short_of(ollama.num_ctx, need)}: elige un perfil más pequeño en Ajustes → "
+                                               "Herramientas, u otro modelo")
+    return ollama, None, None
+
+
 def engine_path() -> str | None:
     """BAXY's own llama-server: past what a model declares, the one way to give it more context."""
     path = os.environ.get("BAXY_MIND_LLAMA_SERVER", "")
     return path if path and os.path.isfile(path) else None
+
+
+def model_files(show: dict[str, Any]) -> list[str]:
+    """Where Ollama keeps a model's files, the model first and then its projector (each FROM line of /api/show's modelfile)."""
+    return [path.strip() for path in re.findall(r"^FROM (.+)$", str(show.get("modelfile") or ""), re.M)]
 
 
 def model_file(show: dict[str, Any]) -> str | None:
@@ -559,6 +790,9 @@ class Engine:
         self.server, self.show, self.model, self.context = server, show, model, context
         self.process: subprocess.Popen[bytes] | None = None
         self.port = 0
+        # PRV1 (PRIV-04): a key of its own at each start, as the mind's server has (llm_server.server_key): without one any
+        # page or program of this PC could ask this model. Only this translator has it.
+        self.key = secrets.token_urlsafe(32)
 
     def arguments(self, backend: str) -> list[str]:
         from .llm_server import flash_attention, kv_types, slots
@@ -574,13 +808,13 @@ class Engine:
 
     def start(self) -> str | None:
         """Its address, or None with the cause said: the App reads it from the log."""
-        from .llm_server import _free_port, declared_backend, declared_build
+        from .llm_server import _free_port, declared_backend, declared_build, server_environment
 
         self.port = _free_port()
         backend = declared_backend(self.server, declared_build(self.server))
         output = tempfile.TemporaryFile()
         self.process = subprocess.Popen([self.server, *self.arguments(backend)], cwd=os.path.dirname(self.server), stdout=output, stderr=subprocess.STDOUT,
-                                        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+                                        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0), env=server_environment(self.key, backend))
         _end_with_this_process(self.process)
         url = f"http://127.0.0.1:{self.port}"
         until = time.monotonic() + ENGINE_START_SECONDS
@@ -593,7 +827,8 @@ class Engine:
         self.stop()
         output.seek(0)
         short = b"out of memory" in output.read().lower()
-        print(f"ERROR: {self.model} con {self.context} tokens de contexto " + ("no cabe en la VRAM: elige menos contexto" if short else "no pudo cargarse"), flush=True)
+        say(Refusal("vram", f"{self.model} con {self.context} tokens de contexto no cabe en la VRAM: elige menos contexto") if short
+            else Refusal("carga", f"{self.model} con {self.context} tokens de contexto no pudo cargarse"))
         return None
 
     def stop(self) -> None:
@@ -601,9 +836,10 @@ class Engine:
             self.process.kill()
 
 
-def list_models(provider: str, url: str, key: str, client: Any = None) -> dict[str, Any]:
+def list_models(provider: str, url: str, key: str, client: Any = None, need: int = OLLAMA_NEEDS) -> dict[str, Any]:
     """What this key or this PC can use, for the list in Settings: {"models": [{"id", "label", "fits", "why"}]} or {"error"}.
-    Asking costs nothing."""
+    Asking costs nothing. A model of Ollama fits by its own context against ``need``, the context the tool profile's prompt and a
+    turn take (the App says it, --necesita): not by BAXY's server, which may not read its template (VIVO1 F4, local_backend)."""
     try:
         if provider == "anthropic":
             return {"models": [{"id": m.id, "label": m.display_name or m.id, "fits": True} for m in client.models.list() if m.lifecycle != "retired"]}
@@ -616,11 +852,19 @@ def list_models(provider: str, url: str, key: str, client: Any = None) -> dict[s
                 show = _show(url.rstrip("/"), name)
                 context = _context_length(show)
                 tools = "tools" in (show.get("capabilities") or [])
+                sees = "vision" in (show.get("capabilities") or [])
                 why = OLLAMA_CLOUD if _elsewhere(item) or _elsewhere(show) else "no sabe usar herramientas" if not tools else None
-                if why is None and context < OLLAMA_NEEDS and engine_path() is None:
-                    why = f"admite {context:,} tokens de contexto y BAXY necesita unos {OLLAMA_NEEDS:,}".replace(",", ".")
-                size = f"{int(item.get('size') or 0) / 1e9:.1f}".replace(".", ",")
-                models.append({"id": name, "label": f"{name} · {size} GB", "fits": why is None, "why": why})
+                if why is None and context and context < need:
+                    why = short_of(context, need)
+                # «size» of /api/tags is what the model takes on disk («List Local Models», https://github.com/ollama/ollama/blob/main/docs/api.md): what removing it frees.
+                weight = int(item.get("size") or 0)
+                size = _gigabytes(weight)
+                # «bytes» for the Model tab's uninstall (modelos-abiertos), «diskBytes» as vram-contexto named it: the same weight.
+                # «modelFiles» for the App alone, which says each row's VRAM from their headers as it does for the chosen one
+                # (MOD1 V-07: the list said the weight on disk and nothing of the card) and gives the view no path.
+                models.append({"id": name, "label": f"{name} · {size} GB", "fits": why is None, "why": why, "vision": sees,
+                               "bytes": weight or None, "diskBytes": weight, "context": context or None,
+                               "modelFiles": model_files(show)})
             return {"models": models}
         headers = {"Authorization": f"Bearer {key}"} if key else {}
         with _opener(_on_this_pc(url))(urllib.request.Request(url.rstrip("/") + "/models", headers=headers), timeout=15) as reply:
@@ -630,15 +874,23 @@ def list_models(provider: str, url: str, key: str, client: Any = None) -> dict[s
         return {"models": [{"id": i, "label": i, "fits": True} for i in sorted(chat)]}
     except urllib.error.HTTPError as error:
         if 300 <= error.code < 400:
-            return {"error": "esa dirección redirige a otra: escribe la final"}
-        if error.code in (401, 403):
-            return {"error": "la API rechazó la clave" if key or provider == "anthropic" else "esa dirección pide su clave: pégala otra vez o activa la opción"}
-        return {"error": f"la API respondió {error.code}"}
+            return {"error": "esa dirección redirige a otra: escribe la final", "code": "redirige"}
+        if error.code in (401, 403) and not key and provider != "anthropic":
+            return {"error": "esa dirección pide su clave: pégala otra vez o activa la opción", "code": "clave"}
+        try:
+            body = json.loads(error.read())
+        except ValueError:
+            body = None
+        said = explain(provider, "", error.code, body)
+        return {"error": said.text, "code": said.code}
     except (ValueError, OSError, http.client.HTTPException):
-        return {"error": "no hay conexión"}
+        return {"error": f"no hay conexión con {_within(provider)}", "code": "red"}
     except Exception as error:  # noqa: BLE001 - the SDK's errors, said as the view's text
         status = getattr(error, "status_code", None)
-        return {"error": "la API rechazó la clave" if status in (401, 403) else f"no se pudo leer la lista: {type(error).__name__}"}
+        if isinstance(status, int):
+            said = explain(provider, "", status, getattr(error, "body", None))
+            return {"error": said.text, "code": said.code}
+        return {"error": f"no hay conexión con {_within(provider)}", "code": "red"}
 
 
 def cost(usage: Any, model: str = MODEL) -> float:
@@ -660,6 +912,10 @@ class Compatible:
 
     def __init__(self, url: str, key: str, model: str, provider: str) -> None:
         self.url, self.key, self.model, self.provider = url.rstrip("/"), key, model, provider
+        # Whether it sees: not known for a company's API that speaks OpenAI's format (OpenAI's and Gemini's models APIs give no
+        # model's modalities, and both have models of text only: líder 2026-11-08, never «yes» by default), so the first image is
+        # tried (Translator.unseeing); BAXY's own server of an Ollama model (Engine) loads no projector.
+        self.sees: bool | None = False if provider == "local" else None
         # A proxy set on this PC would take away, key included, what goes to an address on this PC.
         direct = provider == "local" or _on_this_pc(url)
         # A model on this PC may load first and reads its whole prompt the first time (MindSidecarClient's budget is 300 s).
@@ -670,7 +926,9 @@ class Compatible:
 
     @property
     def unreachable(self) -> str:
-        return f"no responde el servidor local en {self.url}" if self.provider == "local" else "no hay conexión con la API"
+        if self.provider in ("local", "compatible") and _on_this_pc(self.url):
+            return f"no responde el servidor local en {self.url}"
+        return f"no hay conexión con {_within(self.provider)}: revisa la conexión a internet"
 
     def headers(self) -> dict[str, str]:
         headers = {"Content-Type": "application/json"}
@@ -696,8 +954,7 @@ class Compatible:
                     calls.append({**call, **self.extras.get(str(call.get("id")), {}),
                                   "function": {**function, "name": _wire_name(str(function.get("name")))}})
                 sent[-1] = {**message, "tool_calls": calls}
-        limit = "max_completion_tokens" if self.provider == "openai" else "max_tokens"
-        request: dict[str, Any] = {"model": self.model, "messages": sent, limit: max(int(body.get("max_tokens") or 0), MIN_MAX_TOKENS)}
+        request: dict[str, Any] = {"model": self.model, "messages": sent, "max_tokens": max(int(body.get("max_tokens") or 0), MIN_MAX_TOKENS)}
         tools = [{"type": "function", "function": {
             **(tool.get("function") or tool), "name": _wire_name(str((tool.get("function") or tool)["name"]))}}
             for tool in body.get("tools") or []]
@@ -724,6 +981,100 @@ class Compatible:
             function = call.get("function") or {}
             function["name"] = names.get(function.get("name"), function.get("name"))
         return answer
+
+
+def _input_content(content: Any) -> str | list[dict[str, Any]]:
+    """A chat message's content as the Responses API takes it: text as is, and each part as an input_text or input_image."""
+    if not isinstance(content, list):
+        return str(content or "")
+    parts: list[dict[str, Any]] = []
+    for part in content:
+        if part.get("type") == "text" and part.get("text"):
+            parts.append({"type": "input_text", "text": part["text"]})
+        elif part.get("type") == "image_url":
+            parts.append({"type": "input_image", "image_url": (part.get("image_url") or {}).get("url") or ""})
+    return parts
+
+
+class Responses(Compatible):
+    """OpenAI by its Responses API, the one its current models take tools by: gpt-6.1-sol and gpt-6.1-terra call tools only
+    there (developers.openai.com/api/docs/models/gpt-6.1-sol). Stateless (store false: nothing of the conversation is kept by
+    OpenAI for later), so the reasoning items that came with a call go back with it, as the function-calling guide asks
+    (developers.openai.com/api/docs/guides/function-calling, «must also be passed back with tool call outputs»): they are
+    encrypted and this keeps them by the call they came with, as Compatible keeps Gemini's signatures."""
+
+    def to_request(self, body: dict[str, Any]) -> dict[str, Any]:
+        messages = list(body.get("messages") or [])
+        forced: str | None = None
+        if messages and messages[-1].get("role") == "assistant" and isinstance(messages[-1].get("content"), str):
+            fill = _FILL.match(messages[-1]["content"])
+            if fill:
+                forced = _wire_name(fill[1])
+                messages = messages[:-1]
+        items: list[dict[str, Any]] = []
+        for message in messages:
+            role = message.get("role")
+            if role == "tool":
+                items.append({"type": "function_call_output", "call_id": str(message.get("tool_call_id")),
+                              "output": message["content"] if isinstance(message.get("content"), str)
+                              else "".join(str(p.get("text") or "") for p in message.get("content") or [] if p.get("type") == "text")})
+                continue
+            content = _input_content(message.get("content"))
+            if content:
+                items.append({"role": "developer" if role == "system" else role, "content": content})
+            for call in message.get("tool_calls") or [] if role == "assistant" else []:
+                function = call.get("function") or {}
+                items.extend(self.extras.get(str(call.get("id")), {}).get("reasoning") or [])
+                items.append({"type": "function_call", "call_id": str(call.get("id")), "name": _wire_name(str(function.get("name"))),
+                              "arguments": function.get("arguments") or "{}"})
+        request: dict[str, Any] = {"model": self.model, "input": items, "store": False,
+                                   "max_output_tokens": max(int(body.get("max_tokens") or 0), MIN_MAX_TOKENS)}
+        tools = [{"type": "function", "name": _wire_name(str((tool.get("function") or tool)["name"])),
+                  "description": str((tool.get("function") or tool).get("description") or ""),
+                  "parameters": (tool.get("function") or tool).get("parameters") or {"type": "object", "properties": {}}}
+                 for tool in body.get("tools") or []]
+        if tools:
+            request["tools"] = tools
+            if forced:
+                request["tool_choice"] = {"type": "function", "name": forced}
+            elif body.get("tool_choice") == "none":
+                request["tool_choice"] = "none"
+            if body.get("parallel_tool_calls") is False:
+                request["parallel_tool_calls"] = False
+        schema = (body.get("response_format") or {}).get("json_schema") or {}
+        if schema.get("schema"):
+            request["text"] = {"format": {"type": "json_schema", "name": str(schema.get("name") or "answer"), "schema": schema["schema"],
+                                          "strict": bool(schema.get("strict"))}}
+        return request
+
+    def ask(self, body: dict[str, Any], names: dict[str, str]) -> dict[str, Any]:
+        request = urllib.request.Request(
+            self.url + "/responses", data=json.dumps(self.to_request(body)).encode("utf-8"), headers=self.headers())
+        with self.open(request, timeout=self.timeout) as reply:
+            answer = json.loads(reply.read())
+        text, calls, reasoning = "", [], []
+        for item in answer.get("output") or []:
+            kind = item.get("type")
+            if kind == "reasoning":
+                reasoning.append(item)
+            elif kind == "message":
+                text += "".join(str(part.get("text") or "") for part in item.get("content") or [] if part.get("type") == "output_text")
+            elif kind == "function_call":
+                call_id = str(item.get("call_id"))
+                if reasoning:
+                    self.extras[call_id] = {"reasoning": reasoning}
+                    reasoning = []
+                wire = str(item.get("name"))
+                calls.append({"id": call_id, "type": "function",
+                              "function": {"name": names.get(wire, wire), "arguments": str(item.get("arguments") or "{}")}})
+        message: dict[str, Any] = {"role": "assistant", "content": text}
+        if calls:
+            message["tool_calls"] = calls
+        cut = answer.get("status") == "incomplete" and (answer.get("incomplete_details") or {}).get("reason") == "max_output_tokens"
+        usage = answer.get("usage") or {}
+        return {"id": str(answer.get("id") or "openai"), "object": "chat.completion", "model": str(answer.get("model") or self.model),
+                "choices": [{"index": 0, "finish_reason": "tool_calls" if calls else "length" if cut else "stop", "message": message}],
+                "usage": {"prompt_tokens": _count(usage.get("input_tokens")), "completion_tokens": _count(usage.get("output_tokens"))}}
 
 
 class Spend:
@@ -764,6 +1115,67 @@ class Spend:
 class Translator:
     def __init__(self, client: Any, spend: Spend, effort: str | None, model: str = MODEL, compatible: Compatible | Ollama | None = None) -> None:
         self.client, self.spend, self.effort, self.model, self.compatible = client, spend, effort, model, compatible
+        # Claude's models say whether they take images (Models API «capabilities.image_input», read in connection_problem); not
+        # said, not known.
+        self.anthropic_sees: bool | None = None
+        # Whether the model in use answered a request with an image: a later refusal of one is then that request's.
+        self.took_image = False
+
+    @property
+    def sees(self) -> bool | None:
+        """Whether the model in use takes images: False is known, None is not known (it is asked)."""
+        return self.compatible.sees if self.compatible is not None else self.anthropic_sees
+
+    def unseeing(self, body: dict[str, Any]) -> bool:
+        """A request with an image for a model that does not see (the capture's description, the click's vision): sending it
+        would have it answer on what it never saw. Pedido del dueño 2026-11-08: a model with no vision is used as it is."""
+        return self.images(body) and self.sees is False
+
+    @staticmethod
+    def images(body: dict[str, Any]) -> bool:
+        return any(isinstance(m.get("content"), list) and any(p.get("type") == "image_url" for p in m["content"])
+                   for m in body.get("messages") or [])
+
+    def learned_unseeing(self) -> None:
+        """An API refused an image as a request it cannot take: its model does not see, from now on."""
+        if self.compatible is not None:
+            self.compatible.sees = False
+        else:
+            self.anthropic_sees = False
+
+    def refused_its_images(self, body: dict[str, Any], refusal: UpstreamError) -> bool:
+        """Whether ``refusal`` of ``body``, a request with images to a model whose sight is not known, says the model does
+        not see. Revisión total (M4, 2026-11-09): any 400, 415 or 422 said so, for the whole session, and an API answers
+        those to a model that sees too: an image past its limits (OpenAI, «Images that exceed the 30,000-patch limit after
+        processing are rejected, not automatically resized», developers.openai.com/api/docs/guides/images-vision; Claude,
+        «rejected with an invalid_request_error», platform.claude.com/docs/en/build-with-claude/vision), another field of
+        the request («400 - Invalid service_tier argument», developers.openai.com/api/docs/guides/error-codes), a spend
+        limit («The API also returns a 400 when usage reaches … spend limit», platform.claude.com/docs/en/api/errors),
+        or just «400: Bad Request (missing parameters, invalid JSON, etc.)» (docs.ollama.com/api/errors); all read
+        2026-11-09. No API says in a typed field that it was the image, and the words of each differ, so the model is
+        asked: the same request with a small image (PROBE_IMAGE) and, if that one is refused the same way, with no image.
+        Only one that refuses the small image and answers without any does not see. One that takes the small image sees
+        (took_image: nothing is tried for it again), and one that refuses all three refused something else. The two
+        requests go only after a refusal, once per model that does not see; their answers are never used."""
+        if self.sees is not None or self.took_image or refusal.upstream not in NOT_TAKEN or not self.images(body):
+            return False
+        small = self._refusal_of(_with_images(body, PROBE_IMAGE))
+        if small is None or small.upstream not in NOT_TAKEN:
+            return False
+        blind = self._refusal_of(_with_images(body, None)) is None
+        print(f"{self.model}: rechazó también una imagen pequeña y " + ("contestó sin ninguna: no ve imágenes" if blind
+              else "la petición sin ninguna: lo rechazado no es la imagen"), flush=True)
+        return blind
+
+    def _refusal_of(self, body: dict[str, Any]) -> UpstreamError | None:
+        """How the API refused ``body``, or None when it answered it."""
+        try:
+            self.ask(body, lambda _text: None)
+        except UpstreamError as refusal:
+            return refusal
+        except Exception:  # noqa: BLE001 - as Handler._reply: whatever cut the answer, nothing is learned from it
+            return UpstreamError(502, "the connection to the API was cut")
+        return None
 
     def _ask_compatible(self, body: dict[str, Any], names: dict[str, str], on_text: Callable[[str], None]) -> dict[str, Any]:
         started = time.monotonic()
@@ -772,18 +1184,20 @@ class Translator:
         except urllib.error.HTTPError as error:
             detail = error.read().decode("utf-8", "replace")
             try:
-                said = _refused(error.code, json.loads(detail))
+                said = explain(self.compatible.provider, self.model, error.code, json.loads(detail))
             except ValueError:
-                said = _refused(error.code, None)
+                said = explain(self.compatible.provider, self.model, error.code, None)
             if self.compatible.provider == "local" and _no_memory(detail):
-                print(f"ERROR: {self.model} no cabe en la memoria de este PC: elige otro modelo o menos contexto", flush=True)
-            else:
-                print(f"ERROR: {said}", flush=True)
+                said = Refusal("memoria", f"{self.model} no cabe en la memoria de este PC: elige otro modelo o menos contexto")
+            say(said)
             too_long = error.code == 400 and any(word in detail.lower() for word in ("context_length", "too long", "exceeds"))
-            raise UpstreamError(400 if too_long else 502, said) from error
+            raise refused(said, too_long, upstream=error.code) from error
+        except TimeoutError as error:
+            say(Refusal("lento", f"{COMPANIES.get(self.compatible.provider, 'La API')} no respondió a tiempo: vuelve a pedirlo"))
+            raise UpstreamError(502, "the API did not answer in time") from error
         except (OSError, http.client.HTTPException, ValueError) as error:
             # Not its text: a key that does not fit a header comes back in it.
-            print(f"ERROR: {self.compatible.unreachable}", flush=True)
+            say(Refusal("red", self.compatible.unreachable))
             raise UpstreamError(502, "no connection to the API") from error
         usage = answer.get("usage") or {}
         finish = (answer.get("choices") or [{}])[0].get("finish_reason")
@@ -792,26 +1206,23 @@ class Translator:
         text = ((answer.get("choices") or [{}])[0].get("message") or {}).get("content")
         if text:
             on_text(text)
+        self.took_image = self.took_image or self.images(body)
         return answer
 
     def local(self, body: dict[str, Any]) -> dict[str, Any] | None:
         """A reply that costs nothing, for what is not a decision: the warm-up (one token, to read the prompt into a slot
-        this server does not have) and the 1.5 s notice while a call runs, which no remote model answers in time."""
+        this server does not have). The notice while a call runs (Mind.notice_of) is the model's own words and goes to it: answered
+        here with nothing, BAXY said nothing during a mission with any model but its own (pedido del dueño 2026-11-08); its time
+        is the mind's, by what a decision takes here."""
         tokens = int(body.get("max_tokens") or 0)
         if tokens == 1:
             estimate = len(json.dumps([body.get("messages"), body.get("tools")], ensure_ascii=False)) // 4
             return {"id": "local", "object": "chat.completion", "model": self.model,
                     "choices": [{"index": 0, "finish_reason": "length", "message": {"role": "assistant", "content": ""}}],
                     "usage": {"prompt_tokens": estimate, "completion_tokens": 1}}
-        if tokens and tokens <= 24 and body.get("tool_choice") == "none":
-            return {"id": "local", "object": "chat.completion", "model": self.model,
-                    "choices": [{"index": 0, "finish_reason": "stop", "message": {"role": "assistant", "content": ""}}],
-                    "usage": {"prompt_tokens": 0, "completion_tokens": 0}}
         return None
 
     def ask(self, body: dict[str, Any], on_text: Callable[[str], None]) -> dict[str, Any]:
-        import anthropic  # only this path needs it; the mind never imports this module
-
         if self.spend.spent:
             print(f"TOPE DE GASTO: {self.spend.total:.2f} de {self.spend.ceiling:.2f} USD. No se llama a la API.", flush=True)
             raise UpstreamError(402, "the test's spending ceiling is reached")
@@ -819,6 +1230,8 @@ class Translator:
                  for t in body.get("tools") or []}
         if self.compatible is not None:
             return self._ask_compatible(body, names, on_text)
+        import anthropic  # only Anthropic's path needs it (Ollama and the compatible APIs do not); the mind never imports this module
+
         started = time.monotonic()
         try:
             with self.client.beta.messages.stream(**to_request(body, self.effort, self.model)) as stream:
@@ -826,26 +1239,27 @@ class Translator:
                     on_text(text)
                 message = stream.get_final_message()
         except anthropic.BadRequestError as error:
-            said = _refused(400, error.body)
-            print(f"ERROR: {said}", flush=True)
+            said = explain("anthropic", self.model, 400, error.body)
+            say(said)
             # The mind reads a 400 as «past the context» and cuts its history: only that one goes through as a 400.
             too_long = "too long" in str(error.message).lower()
-            raise UpstreamError(400 if too_long else 502, said) from error
-        except anthropic.AuthenticationError as error:
-            print("ERROR: la API rechazó la clave.", flush=True)
-            raise UpstreamError(502, "the API refused the key") from error
+            raise refused(said, too_long, upstream=400) from error
         except anthropic.APIStatusError as error:
-            said = _refused(error.status_code, error.body)
-            print(f"ERROR: {said}", flush=True)
-            raise UpstreamError(502, said) from error
+            said = explain("anthropic", self.model, error.status_code, error.body)
+            say(said)
+            raise refused(said, upstream=error.status_code) from error
+        except anthropic.APITimeoutError as error:
+            say(Refusal("lento", "Anthropic no respondió a tiempo: vuelve a pedirlo"))
+            raise UpstreamError(502, "the API did not answer in time") from error
         except anthropic.APIConnectionError as error:
-            print("ERROR: no hay conexión con la API", flush=True)
+            say(Refusal("red", "no hay conexión con Anthropic: revisa la conexión a internet"))
             raise UpstreamError(502, "no connection to the API") from error
         except (anthropic.APIError, ValueError) as error:
             # The SDK's words quote what it could not read, a call's arguments among them.
-            print(f"ERROR: la API respondió algo que no se pudo leer ({type(error).__name__})", flush=True)
+            say(Refusal("ilegible", f"Anthropic respondió algo que no se pudo leer ({type(error).__name__})"))
             raise UpstreamError(502, "an answer that could not be read") from error
         self.spend.add(message, time.monotonic() - started)
+        self.took_image = self.took_image or self.images(body)
         return to_reply(message, names)
 
     def tokens(self, text: str) -> list[int]:
@@ -881,7 +1295,7 @@ def _handler(translator: Translator) -> type[BaseHTTPRequestHandler]:
                 self._json(200, {"status": "ok"})
             elif self.path == "/props":
                 self._json(200, {"total_slots": 1, "model_path": translator.model, "build_info": "external_model",
-                                 "default_generation_settings": {"n_ctx": 0}})
+                                 "default_generation_settings": {"n_ctx": 0}, "vision": translator.sees})
             else:
                 self._json(404, {"error": {"message": "not found"}})
 
@@ -904,28 +1318,55 @@ def _handler(translator: Translator) -> type[BaseHTTPRequestHandler]:
             except (UpstreamError, _MindLeft):
                 raise
             except Exception as error:  # noqa: BLE001 - its kind only: the words may quote what was sent
-                print(f"ERROR: la conexión con la API se cortó ({type(error).__name__})", flush=True)
+                say(Refusal("cortado", f"la conexión con el modelo se cortó ({type(error).__name__})"))
                 raise UpstreamError(502, "the connection to the API was cut") from error
 
         def _chat(self, body: dict[str, Any]) -> None:
+            if translator.unseeing(body):
+                # 501: this server has no such thing (the core reads it as no vision here, CaptureVisionAdapter).
+                self._json(501, {"error": {"code": "model_without_vision", "message": "the model in use does not see images"}})
+                return
             if not body.get("stream"):
                 try:
                     reply = self._reply(body, lambda _text: None)
                 except UpstreamError as error:
-                    self._json(error.status, {"error": {"message": str(error)}})
+                    # Not known whether it sees, and it refuses an image while it answers the same request without one:
+                    # it does not.
+                    if translator.refused_its_images(body, error):
+                        translator.learned_unseeing()
+                        self._json(501, {"error": {"code": "model_without_vision", "message": "the model in use does not see images"}})
+                        return
+                    self._json(error.status, {"error": {"code": error.code, "message": str(error)}})
                     return
                 self._json(200, reply)
                 return
-            self.send_response(200)
-            self.send_header("Content-Type", "text/event-stream")
-            self.end_headers()
+            # As llama-server: a failure before the first word is the answer's HTTP status (LlmServer reads it, and the mind does
+            # not take it for a broken stream to ask again: VIVO1 F4); one after it, an event in the stream.
+            opened = False
+
+            def open_stream() -> None:
+                nonlocal opened
+                if not opened:
+                    opened = True
+                    self.send_response(200)
+                    self.send_header("Content-Type", "text/event-stream")
+                    self.end_headers()
+
+            def text(words: str) -> None:
+                open_stream()
+                self._text(words)
+
             try:
-                reply = self._reply(body, self._text)
+                reply = self._reply(body, text)
             except _MindLeft:
                 return
             except UpstreamError as error:
-                self._event({"error": {"message": str(error)}})
+                if opened:
+                    self._event({"error": {"code": error.code, "message": str(error)}})
+                else:
+                    self._json(error.status, {"error": {"code": error.code, "message": str(error)}})
                 return
+            open_stream()
             message = reply["choices"][0]["message"]
             delta: dict[str, Any] = {}
             if message.get("tool_calls"):
@@ -958,6 +1399,10 @@ def _handler(translator: Translator) -> type[BaseHTTPRequestHandler]:
     return Handler
 
 
+# The translator's runtime predates the SDK (the lock has it since 2026-11-05, 755ec048c): said as it is, not as a closed translator.
+NO_SDK = Refusal("sdk", "a esta instalación de BAXY le falta el componente de Anthropic: actualiza BAXY o reinstálalo")
+
+
 def anthropic_client(key: str) -> Any:
     """Anthropic's own address with the person's own key, as Settings says. Left to itself the SDK takes both from whatever
     this machine has in ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN and a profile, follows redirects, adds the headers of
@@ -969,7 +1414,7 @@ def anthropic_client(key: str) -> Any:
     return anthropic.Anthropic(api_key=key, base_url=ANTHROPIC_URL, http_client=anthropic.DefaultHttpxClient(follow_redirects=False))
 
 
-def connection_problem(translator: Translator) -> str | None:
+def connection_problem(translator: Translator) -> Refusal | None:
     """Why this key or model cannot work, asked before anything else: listing costs nothing, and the person learns at once
     rather than at their first turn. An API that has no such listing is not refused for it."""
     compatible = translator.compatible
@@ -978,27 +1423,37 @@ def connection_problem(translator: Translator) -> str | None:
             with _direct(compatible.url + "/api/tags", timeout=15) as reply:
                 rows = {str(m.get("name")): m for m in json.loads(reply.read()).get("models") or []}
         except (OSError, http.client.HTTPException, ValueError):
-            return "Ollama no responde"
+            return Refusal("ollama", "Ollama no responde")
         if compatible.model not in rows:
-            return f"Ollama no tiene el modelo {compatible.model}; tiene: {', '.join(sorted(rows))[:200]}"
-        return f"{compatible.model} {OLLAMA_CLOUD}" if _elsewhere(rows[compatible.model]) else None
+            return Refusal("modelo", f"Ollama no tiene el modelo {compatible.model}; tiene: {', '.join(sorted(rows))[:200]}")
+        return Refusal("nube", f"{compatible.model} {OLLAMA_CLOUD}") if _elsewhere(rows[compatible.model]) else None
     if compatible is not None:
-        request = urllib.request.Request(compatible.url + "/models", headers=compatible.headers())
+        # A company's list may leave out models it does serve, so its model is asked by its name (OpenAI's and Gemini's
+        # «Retrieve a model»: developers.openai.com/api/reference/resources/models, ai.google.dev/gemini-api/docs/openai).
+        company = compatible.provider in ("openai", "google")
+        path = "/models/" + urllib.parse.quote(compatible.model, safe="") if company else "/models"
+        request = urllib.request.Request(compatible.url + path, headers=compatible.headers())
         try:
             with compatible.open(request, timeout=15) as reply:
                 listing = json.loads(reply.read())
         except urllib.error.HTTPError as error:
             if 300 <= error.code < 400:
-                return "esa dirección redirige a otra: escribe la final"
-            return "la API rechazó la clave" if error.code in (401, 403) else None
+                return Refusal("redirige", "esa dirección redirige a otra: escribe la final")
+            if error.code in (401, 402, 403, 429) or (company and error.code == 404):
+                try:
+                    body = json.loads(error.read())
+                except ValueError:
+                    body = None
+                return explain(compatible.provider, compatible.model, error.code, body)
+            return None
         except (OSError, http.client.HTTPException):
-            return compatible.unreachable
+            return Refusal("red", compatible.unreachable)
         except ValueError:
             return None
         ids = {str(m.get("id")) for m in listing.get("data") or [] if isinstance(m, dict)} if isinstance(listing, dict) else set()
         # Only a server on this PC: a company's list may leave out models it does serve.
         if compatible.provider == "local" and ids and compatible.model not in ids:
-            return f"ese servidor no tiene el modelo {compatible.model}; tiene: {', '.join(sorted(ids))[:200]}"
+            return Refusal("modelo", f"ese servidor no tiene el modelo {compatible.model}; tiene: {', '.join(sorted(ids))[:200]}")
         return None
     import anthropic
 
@@ -1007,16 +1462,13 @@ def connection_problem(translator: Translator) -> str | None:
         # The list offers every model of this key, and one with no effort answers a 400 to asking for it.
         if capabilities is not None and not capabilities.effort.supported:
             translator.effort = None
-    except anthropic.AuthenticationError:
-        return "la API rechazó la clave"
-    except anthropic.PermissionDeniedError:
-        return "esa clave no tiene permiso para este modelo"
-    except anthropic.NotFoundError:
-        return f"no existe el modelo {translator.model}"
-    except anthropic.APIConnectionError:
-        return "no hay conexión con la API"
+        image_input = getattr(capabilities, "image_input", None) if capabilities is not None else None
+        if image_input is not None and isinstance(getattr(image_input, "supported", None), bool):
+            translator.anthropic_sees = image_input.supported
     except anthropic.APIStatusError as error:
-        return f"la API respondió {error.status_code}"
+        return explain("anthropic", translator.model, error.status_code, error.body)
+    except anthropic.APIConnectionError:
+        return Refusal("red", "no hay conexión con Anthropic: revisa la conexión a internet")
     return None
 
 
@@ -1045,6 +1497,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--estimaciones", type=Path, help="what --estimar already measured")
     parser.add_argument("--sin-medir", action="store_true", help="--estimar only says what is known: the model is in use, and measuring takes it out")
     parser.add_argument("--contexto", type=int, default=0, help="the context an Ollama model gets")
+    parser.add_argument("--en-parte", action="store_true", help="the person chose to run it partly in RAM at this context (ExternalModel)")
+    parser.add_argument("--vram-bytes", type=int, default=0, help="the App's estimate from the model's files at this context (ExternalModel.MemoryArguments)")
+    parser.add_argument("--entero", action="store_true", help="the App saw that estimate fit the free VRAM: whole on the card")
+    parser.add_argument("--necesita", type=int, default=0,
+                        help="the context the tool profile's prompt and a turn take: a local model with less is not offered nor connected")
     parser.add_argument("--proveedor", default="anthropic", choices=["anthropic", "openai", "google", "local", "compatible"])
     parser.add_argument("--modelo", default=MODEL)
     parser.add_argument("--url", default="", help="the base URL of an OpenAI-compatible API")
@@ -1059,8 +1516,12 @@ def main(argv: list[str] | None = None) -> int:
         key = os.environ.get("BAXY_EXTERNAL_API_KEY", "")
         client = None
         if args.proveedor == "anthropic":
-            client = anthropic_client(os.environ.get("ANTHROPIC_API_KEY", ""))
-        print(json.dumps(list_models(args.proveedor, args.url or BASE_URLS.get(args.proveedor, ""), key, client), ensure_ascii=False), flush=True)
+            try:
+                client = anthropic_client(os.environ.get("ANTHROPIC_API_KEY", ""))
+            except ImportError:
+                print(json.dumps({"error": NO_SDK.text, "code": NO_SDK.code}, ensure_ascii=False), flush=True)
+                return 0
+        print(json.dumps(list_models(args.proveedor, args.url or BASE_URLS.get(args.proveedor, ""), key, client, args.necesita or OLLAMA_NEEDS), ensure_ascii=False), flush=True)
         return 0
     if args.gasto is None:
         parser.error("--gasto is required")
@@ -1078,7 +1539,12 @@ def main(argv: list[str] | None = None) -> int:
         if not os.environ.get("ANTHROPIC_API_KEY"):
             print("Falta ANTHROPIC_API_KEY. Define la variable en esta consola y vuelve a lanzar.", file=sys.stderr)
             return 2
-        translator = Translator(anthropic_client(os.environ["ANTHROPIC_API_KEY"]), spend, args.esfuerzo, args.modelo)
+        try:
+            client = anthropic_client(os.environ["ANTHROPIC_API_KEY"])
+        except ImportError:
+            say(NO_SDK)
+            return 3
+        translator = Translator(client, spend, args.esfuerzo, args.modelo)
     else:
         key = os.environ.get("BAXY_EXTERNAL_API_KEY", "")
         url = args.url or BASE_URLS.get(args.proveedor, "")
@@ -1091,32 +1557,30 @@ def main(argv: list[str] | None = None) -> int:
             try:
                 # Past what the model declares, it goes on BAXY's own server (Engine below).
                 on_engine = args.contexto > _context_length(_show(url.rstrip("/"), args.modelo)) and engine_path() is not None
-                problem = memory_problem(args.modelo, expected_memory(url, args.modelo, args.contexto, args.estimaciones),
-                                         COMMIT_PER_BYTE_ENGINE if on_engine else COMMIT_PER_BYTE_OLLAMA)
+                problem = connect_memory_problem(args.modelo, expected_memory(url, args.modelo, args.contexto, args.estimaciones),
+                                                 args.vram_bytes, args.en_parte, args.entero, on_engine)
             except (ValueError, OSError, http.client.HTTPException):
                 problem = None  # said below, when it does not answer
             if problem:
-                print(f"ERROR: {problem}", flush=True)
+                say(Refusal("memoria", problem))
                 return 3
-        backend: Compatible | Ollama = Ollama(url, args.modelo, args.contexto) if args.proveedor == "local" else Compatible(url, key, args.modelo, args.proveedor)
-        if isinstance(backend, Ollama) and backend.remote:
-            print(f"ERROR: {args.modelo} {OLLAMA_CLOUD}", flush=True)
-            return 3
-        if isinstance(backend, Ollama) and backend.context and args.contexto > backend.context:
-            server = engine_path()
-            show = _show(url.rstrip("/"), args.modelo)
-            if server and model_file(show):
-                engine = Engine(server, show, args.modelo, args.contexto)
-                address = engine.start()
-                if address is None:
-                    return 3
-                backend = Compatible(address, "", args.modelo, "local")
+        backend: Compatible | Ollama
+        if args.proveedor == "local":
+            if Ollama(url, args.modelo, args.contexto).remote:
+                say(Refusal("nube", f"{args.modelo} {OLLAMA_CLOUD}"))
+                return 3
+            backend, engine, refusal = local_backend(url, args.modelo, args.contexto, args.necesita, engine_path())
+            if refusal:
+                say(refusal)
+                return 3
+        else:
+            backend = Responses(url, key, args.modelo, args.proveedor) if args.proveedor == "openai" else Compatible(url, key, args.modelo, args.proveedor)
         translator = Translator(None, spend, args.esfuerzo, args.modelo, backend)
     problem = None if args.sin_comprobar else connection_problem(translator)
     if not problem and not args.sin_comprobar and isinstance(translator.compatible, Ollama):
         problem = translator.compatible.load()
     if problem:
-        print(f"ERROR: {problem}", flush=True)
+        say(problem)
         if engine:
             engine.stop()
         return 3

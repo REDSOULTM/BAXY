@@ -7,6 +7,9 @@ namespace Baxy.Providers.Windows.External;
 // Topmost: an always-on-top window (WS_EX_TOPMOST), such as the pop-out of a video.
 internal sealed record UserBrowserWindow(nint Handle, string Title, bool Topmost = false);
 
+/// <summary>LEC4: the window in front of the person: its process, its title, and the browser that draws it (null: none).</summary>
+internal sealed record UserBrowserFrontWindow(nint Handle, string ProcessName, string Title, UserBrowserIdentity? Browser);
+
 internal sealed record UserMediaSession(
     string SourceAppUserModelId,
     string Title,
@@ -164,6 +167,14 @@ internal interface IUserBrowserPlatform
     /// <summary>The window in front now; 0 when it is not known.</summary>
     nint FrontWindow() => 0;
 
+    /// <summary>
+    /// LEC4: the window the person sees in front of them, as a look resolves it (the foreground, or the topmost window that
+    /// is not BAXY's when BAXY's holds it): its process, its title and the browser Windows has registered that draws it
+    /// (null when it is not a browser's); null when there is none.
+    /// </summary>
+    ValueTask<UserBrowserFrontWindow?> PersonsWindowAsync(CancellationToken cancellationToken) =>
+        ValueTask.FromResult<UserBrowserFrontWindow?>(null);
+
     /// <summary>The title and visible text of the page the window shows, or null when it cannot be read.</summary>
     ValueTask<UserBrowserPageText?> ReadPageTextAsync(
         nint window, int maximumCharacters, CancellationToken cancellationToken);
@@ -256,6 +267,19 @@ internal sealed partial class WindowsUserBrowserPlatform : IUserBrowserPlatform
 
     // Under the gate of the opening guards, and said before it happens, as a lease takes the front (ForegroundLease).
     public nint FrontWindow() => VisibleControlSurface.FrontWindow();
+
+    public async ValueTask<UserBrowserFrontWindow?> PersonsWindowAsync(CancellationToken cancellationToken)
+    {
+        nint window = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken).ConfigureAwait(false);
+        // With no window of another program up, the look falls back to BAXY's own or to the desktop: none is the person's.
+        if (window == 0 || VisibleControlSurface.IsShellSurface(window))
+            return null;
+        (int processId, string process) = VisibleControlSurface.WindowProcess(window);
+        if (process.Length == 0 || Windows.WindowsWindowControlProvider.ProductProcess(processId))
+            return null;
+        return new UserBrowserFrontWindow(window, process, VisibleControlSurface.WindowTitle(window),
+            UserBrowserIdentityResolver.RegisteredDrawnBy(process));
+    }
 
     public async ValueTask<bool> BringToFrontAsync(nint window, CancellationToken cancellationToken)
     {

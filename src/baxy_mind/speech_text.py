@@ -378,6 +378,38 @@ def _spoken_en(text: str) -> str:
                   + (" " if m.string[m.end():m.end() + 1].isalpha() else ""), text)
 
 
+# The marks of CommonMark 0.31.2 (https://spec.commonmark.org/0.31.2/) a model writes in an answer, by their form only: the screen
+# draws them (Baxy.FieldUi markdown.tsx) and the voice says the words (ABIERTOS_VIVO H1, VIVO2 F16, 2026-11-09).
+_FENCE = re.compile(r"^ {0,3}(?:`{3,}|~{3,}).*$")  # 4.5 fenced code: its fence lines
+_BREAK = re.compile(r"^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$")  # 4.1 thematic break
+_LINE_MARK = re.compile(r"^ {0,3}(?:>[ \t]?)*(?:#{1,6}(?:[ \t]+|$)|[-+*][ \t]+)?")  # 5.1 quote, 4.2 heading, 5.2 bullet
+_CLOSING_HASHES = re.compile(r"[ \t]+#+[ \t]*$")
+_CODE_SPAN = re.compile(r"(`+)(.+?)\1")  # 6.1
+_LINK = re.compile(r"!?\[([^\]\n]*)\]\([^)\s]*(?:[ \t]+\"[^\"\n]*\")?\)")  # 6.3 links, 6.4 images: their words
+_STRONG = re.compile(r"\*\*(?=\S)(.+?)(?<=\S)\*\*|(?<![\w])__(?=\S)(.+?)(?<=\S)__(?![\w])")  # 6.2, «_» never inside a word
+_EMPHASIS = re.compile(r"(?<![\w*])\*(?=[^\s*])(.+?)(?<=[^\s*])\*(?![\w*])|(?<![\w])_(?=\S)(.+?)(?<=\S)_(?![\w])")
+_STRIKE = re.compile(r"~~(?=\S)(.+?)(?<=\S)~~")  # GFM strikethrough
+
+
+def unmarked(text: str) -> str:
+    """text without the marks the model writes (emphasis, code, headings, bullets, quotes, rules, links' addresses): the words
+    as written, its line breaks kept (the voice folds them, voice_output._said). An asterisk or an underscore that marks
+    nothing (5 * 3, a_b_c) stays."""
+    lines = []
+    for line in text.split("\n"):
+        if _FENCE.match(line) or _BREAK.match(line):
+            continue
+        mark = _LINE_MARK.match(line)
+        line = line[mark.end():] if mark else line
+        lines.append(_CLOSING_HASHES.sub("", line) if mark and "#" in mark.group(0) else line)
+    text = "\n".join(lines)
+    text = _CODE_SPAN.sub(lambda m: m.group(2).strip(), text)
+    text = _LINK.sub(lambda m: m.group(1), text)
+    for pattern in (_STRONG, _EMPHASIS, _STRIKE):
+        text = pattern.sub(lambda m: next(group for group in m.groups() if group is not None), text)
+    return text
+
+
 def spoken(text: str, lang: str | None = None) -> str:
     """What the voice says for text, in lang («es» or «en»); None is the text's own (lang_of: an Utterance's, or
     Spanish)."""

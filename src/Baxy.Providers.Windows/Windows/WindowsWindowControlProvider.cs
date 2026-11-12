@@ -114,8 +114,10 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
 
         if (snapshot is null)
         {
+            // REM5 (VIVO15): none in front is not none open: how many of the person's windows are open (BAXY's own
+            // left out, minimized ones in), so «¿qué tengo abierto?» cannot be answered «ninguna ventana».
             return ValueTask.FromResult(new WindowResolveResult(
-                false, false, [], WindowControlErrorCodes.WindowNotFound));
+                false, false, [], WindowControlErrorCodes.NoWindowInFront, OpenWindows: PersonsOpenWindows()));
         }
 
         string windowId = Issue(snapshot.Identity);
@@ -136,6 +138,22 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         if (baxyInFront is not null)
             candidate = candidate with { Foreground = true };
         return ValueTask.FromResult(new WindowResolveResult(true, true, [candidate], null));
+    }
+
+    // REM5 (VIVO15): the person's windows open on the desktop (titled, root, minimized ones in), BAXY's own left out;
+    // null when they cannot be read.
+    private int? PersonsOpenWindows()
+    {
+        try
+        {
+            return _platform.DesktopWindows().Count(static window => !OwnProcessNames.Contains(window.Identity.ProcessName));
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException
+            or NotSupportedException)
+        {
+            return null;
+        }
     }
 
     // M149: the person's window was read under BAXY's; it stays theirs only while BAXY still holds the front.

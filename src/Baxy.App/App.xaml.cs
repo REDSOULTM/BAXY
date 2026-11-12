@@ -29,6 +29,22 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        // SRCH1: baxy-core's hidden page reader is this executable started for that alone: no instance of its own, no
+        // window shown, no trace of an App start (HiddenPageReader).
+        if (HiddenPageReader.IsRequested(e.Args))
+        {
+            HiddenPageReader.Start(this, e.Args[1]);
+            return;
+        }
+
+        // INS-1: a store's uninstall starts this executable for that alone (ScheduledRingsUninstall): no instance, no
+        // window, and it ends by itself.
+        if (ScheduledRingsUninstall.IsRequested(e.Args))
+        {
+            Shutdown(ScheduledRingsUninstall.Run());
+            return;
+        }
+
         UnhandledFailures.Attach(this);
         ShellTraceSink.Record(
             ShellTraceScopes.Startup,
@@ -136,9 +152,11 @@ public partial class App : Application
         _showWait = ThreadPool.RegisterWaitForSingleObject(
             _showRequest, (_, _) => presence.ShowMainWindow(), null, Timeout.Infinite, executeOnlyOnce: false);
         _exitRequest = new EventWaitHandle(false, EventResetMode.AutoReset, ExitRequestName);
+        // CER1: heard every time, not once. An ask that did not close BAXY (its Close() refused inside Closing) left
+        // the update's installer and baxy.exit asking in vain; one while the first is under way changes nothing.
         _exitWait = ThreadPool.RegisterWaitForSingleObject(
             _exitRequest, (_, _) => Dispatcher.BeginInvoke(() => presence.RequestExit("exit_request")), null,
-            Timeout.Infinite, executeOnlyOnce: true);
+            Timeout.Infinite, executeOnlyOnce: false);
         var window = new MainWindow(_presence);
         MainWindow = window;
         ShellTraceSink.Record(

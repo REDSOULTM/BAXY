@@ -1,8 +1,10 @@
 # Crates de Rust dentro de `pydantic_core` y `jiter` / Rust crates inside them
 
 Sacados de la lista CycloneDX que trae cada rueda (`*.dist-info/sboms/`), leída el 2026-11-06. Donde un crate da a elegir, BAXY no elige
-una opción copyleft: `r-efi` se ofrece también bajo MIT y Apache-2.0. **Los avisos de copyright de cada crate no están copiados:** las
-ruedas no los traen. / Taken from each wheel's own list. The copyright notices of each crate are not copied: the wheels do not carry them.
+una opción copyleft: `r-efi` se ofrece también bajo MIT y Apache-2.0. Las ruedas no traen el aviso de copyright de cada crate. Los que sólo
+se ofrecen bajo MIT lo llevan desde el 2026-11-07 en `Rust-crates-MIT-LICENSES.txt`, sacado del `.crate` de cada versión; los que dan a
+elegir Apache-2.0 quedan cubiertos por `Apache-2.0.txt`. / Taken from each wheel's own list. The wheels do not carry each crate's copyright
+notice: the MIT-only ones are in `Rust-crates-MIT-LICENSES.txt`; those that offer Apache-2.0 are covered by `Apache-2.0.txt`.
 
 ## `pydantic_core`
 

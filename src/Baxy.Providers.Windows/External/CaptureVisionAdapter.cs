@@ -39,6 +39,19 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
     /// </summary>
     internal Func<CancellationToken, ValueTask<string?>> ApplicationInFront { get; init; } = ApplicationInFrontAsync;
 
+    /// <summary>
+    /// PAN1: the texts the window in front gives for its controls on screen, in physical screen pixels
+    /// (<see cref="WindowsVisibleControlAdapter.ShownTextBoxesAsync"/>); null reads by OCR alone (tests).
+    /// </summary>
+    internal Func<CancellationToken, ValueTask<IReadOnlyList<AccessibleTextBox>>>? ShownText { get; init; }
+
+    /// <summary>PAN1: the virtual screen's box in physical pixels; a test seam names its own.</summary>
+    internal Func<Capture.CaptureBounds> Desktop { get; init; } = Capture.GdiScreenshotPlatform.PhysicalDesktopBounds;
+
+    // PAN1: the window texts are read now, so they say what a capture shows only when it was taken moments ago (a look's
+    // capture.screenshot and its ocr.read come in one turn, seconds apart); an older capture is read by OCR alone.
+    internal static readonly TimeSpan ShownTextFreshness = TimeSpan.FromSeconds(30);
+
     public bool CanHandle(string operation) => operation is "ocr.read" or "vision.describe";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
@@ -54,7 +67,7 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
             asked = captureId;
             string path = ResolveCapture(captureId);
             return operation == "ocr.read"
-                ? await ReadOcrAsync(operation, arguments, captureId, path, cancellationToken)
+                ? await ReadOcrAsync(operation, arguments, captureId, path, cancellationToken, ShownTextOf(path, cancellationToken))
                     .ConfigureAwait(false)
                 : await DescribeAsync(
                     operation,
@@ -161,12 +174,52 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         return path;
     }
 
-    private static async ValueTask<ExternalCapabilityReceipt> ReadOcrAsync(
+    // PAN1: the window texts of a whole-screen capture taken moments ago, in the capture's pixels, read while the OCR runs;
+    // null when there are none to read. A read that fails gives none: the OCR stays as it was.
+    private Task<IReadOnlyList<AccessibleTextBox>>? ShownTextOf(string path, CancellationToken cancellationToken)
+    {
+        if (ShownText is not { } read || DateTime.UtcNow - File.GetLastWriteTimeUtc(path) > ShownTextFreshness)
+            return null;
+        return Task.Run(async () =>
+        {
+            try
+            {
+                Capture.CaptureBounds desktop = Desktop();
+                IReadOnlyList<AccessibleTextBox> boxes = await read(cancellationToken).ConfigureAwait(false);
+                return (IReadOnlyList<AccessibleTextBox>)[.. boxes.Select(box => box with
+                {
+                    X = box.X - desktop.Left, Y = box.Y - desktop.Top,
+                })];
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                return [];
+            }
+        }, CancellationToken.None);
+    }
+
+    // PAN1: the window texts apply to a capture of the whole screen (its size is the desktop's); a window's own capture
+    // starts elsewhere and is read by OCR alone.
+    private bool WholeScreen(uint width, uint height)
+    {
+        try
+        {
+            Capture.CaptureBounds desktop = Desktop();
+            return desktop.Width == width && desktop.Height == height;
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            return false;
+        }
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> ReadOcrAsync(
         string operation,
         JsonElement arguments,
         string captureId,
         string path,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Task<IReadOnlyList<AccessibleTextBox>>? shownText = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
         string? languageTag = arguments.TryGetProperty("language", out JsonElement language)
@@ -202,16 +255,19 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         OcrResult recognized = await engine.RecognizeAsync(bitmap);
         DateTimeOffset recognizedAtUtc = DateTimeOffset.UtcNow;
         cancellationToken.ThrowIfCancellationRequested();
+        CaptureOcrLine[] lines = recognized.Lines.Select(line => new CaptureOcrLine(line.Text,
+            line.Words.Select(word => new CaptureOcrWord(word.Text,
+                word.BoundingRect.X / scale, word.BoundingRect.Y / scale,
+                word.BoundingRect.Width / scale, word.BoundingRect.Height / scale)).ToArray())).ToArray();
+        ScreenTextReading? sifted = shownText is not null && WholeScreen(decoder.PixelWidth, decoder.PixelHeight)
+            ? CaptureOcrLayout.Sift(lines, await shownText.ConfigureAwait(false))
+            : null;
         try
         {
             JsonElement result = CaptureOcrLayout.CreateResult(
                 captureId, engine.RecognizerLanguage.LanguageTag, recognized.Text ?? string.Empty,
                 imageSha256, (int)decoder.PixelWidth, (int)decoder.PixelHeight, recognizedAtUtc, recognized.TextAngle,
-                recognized.Lines.Select(line => new CaptureOcrLine(line.Text,
-                    line.Words.Select(word => new CaptureOcrWord(word.Text,
-                        word.BoundingRect.X / scale, word.BoundingRect.Y / scale,
-                        word.BoundingRect.Width / scale, word.BoundingRect.Height / scale)).ToArray())).ToArray(),
-                WindowsVisibleOcrLocator.RecognizerLanguages());
+                lines, WindowsVisibleOcrLocator.RecognizerLanguages(), sifted);
             return ExternalJson.Success(operation, result, effectObserved: false);
         }
         catch (InvalidDataException)
@@ -361,7 +417,9 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
     // same capture first, which reads the text of any capture, an image's too. Encargo 48: then the read of the window
     // in front, by its process when there is one to name; a protected window keeps the call without it, so naming it
     // here never opens what the person did not name.
-    internal static string VisionMissingNext(string captureId, string? application)
+    /// <param name="modelCannotSee">The vision endpoint is the model in use, which does not see images (the translator's 501,
+    /// external_model: pedido del dueño 2026-11-08, a model with no vision is used as it is).</param>
+    internal static string VisionMissingNext(string captureId, string? application, bool modelCannotSee = false)
     {
         var arguments = new System.Text.Json.Nodes.JsonObject();
         if (application is not null)
@@ -369,8 +427,10 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         arguments["includeText"] = true;
         return $"{Baxy.Kernel.Operations.WireNames.Call("ocr.read", new() { ["captureId"] = captureId })} reads the text "
             + $"in this capture, and {Baxy.Kernel.Operations.WireNames.Call("input.visible.controls", arguments)} the text "
-            + "the window in front shows; this call described nothing: no vision model is configured on this PC, so no "
-            + "capture can be described here";
+            + "the window in front shows; this call described nothing: "
+            + (modelCannotSee
+                ? "the model BAXY uses now does not see images, so no capture can be described while it is in use"
+                : "no vision model is configured on this PC, so no capture can be described here");
     }
 
     private static async ValueTask<string?> ApplicationInFrontAsync(CancellationToken cancellationToken)
@@ -582,15 +642,21 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
         string? held = LocalVisionEndpoint.SlotDirectory() is null
             ? null
             : await LocalVisionEndpoint.HoldSlotAsync(_http, uri, cancellationToken).ConfigureAwait(false);
-        string? description;
+        string? description = null;
+        bool unseeing = false;
         try
         {
             using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
                 .ConfigureAwait(false);
-            if (!response.IsSuccessStatusCode)
+            // 501: the endpoint is the model in use and it does not see (external_model's translator); said as no vision here.
+            unseeing = response.StatusCode == System.Net.HttpStatusCode.NotImplemented;
+            if (!response.IsSuccessStatusCode && !unseeing)
             {
                 return effectBoundary.Failure(operation, "vision_provider_request_failed");
             }
+
+            if (!unseeing)
+            {
             using JsonDocument document = JsonDocument.Parse(
                 await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false));
             description = document.RootElement
@@ -598,11 +664,23 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
                 .GetProperty("message")
                 .GetProperty("content")
                 .GetString();
+            }
         }
         finally
         {
             if (held is not null)
                 await LocalVisionEndpoint.PutSlotBackAsync(_http, uri, held).ConfigureAwait(false);
+        }
+        if (unseeing)
+        {
+            string? application = await ApplicationInFront(cancellationToken).ConfigureAwait(false);
+            return new ExternalCapabilityReceipt(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("next", VisionMissingNext(captureId, application, modelCannotSee: true));
+                writer.WriteEndObject();
+            }), "vision_provider_not_configured");
         }
         if (string.IsNullOrWhiteSpace(description) || description.Length > 32_000)
         {

@@ -525,6 +525,8 @@ public sealed class RecibosUso108Tests
         string folder = TemporaryFolder();
         try
         {
+            // PRV1 (PRIV-02): a provider that starts removes what an earlier run left; these are of this run.
+            var provider = new WindowsScreenshotProvider(folder, new Frames(Frame(40)), TimeProvider.System);
             string orphan = Path.Combine(folder, ".capture_" + Guid.NewGuid().ToString("N") + ".tmp");
             string inFlight = Path.Combine(folder, ".capture_" + Guid.NewGuid().ToString("N") + ".tmp");
             string foreign = Path.Combine(folder, "other.tmp");
@@ -532,7 +534,6 @@ public sealed class RecibosUso108Tests
                 File.WriteAllText(file, "x");
             File.SetLastWriteTimeUtc(orphan, DateTime.UtcNow - WindowsScreenshotProvider.OrphanedTemporaryAge - TimeSpan.FromSeconds(5));
             File.SetLastWriteTimeUtc(foreign, DateTime.UtcNow.AddDays(-3));
-            var provider = new WindowsScreenshotProvider(folder, new Frames(Frame(40)), TimeProvider.System);
 
             _ = await provider.CaptureAsync(CancellationToken.None);
 

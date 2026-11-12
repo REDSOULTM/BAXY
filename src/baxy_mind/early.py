@@ -223,7 +223,9 @@ class Anticipation:
                   # Encargo 119: a question made with no window known is decided again with the one the App told.
                   else "front" if held["result"].get("kind") == "clarify" and message.get("front")
                   # And one made without the note of the windows the words name (NAMED_NOTE).
-                  else "named" if message.get("named") else None)
+                  else "named" if message.get("named")
+                  # ALR1: or without the note of what rings now (RINGING_NOTE).
+                  else "ringing" if message.get("ringing") else None)
         if reason is not None:
             self._back(held, reason, reread=False)
             return None
@@ -248,17 +250,18 @@ class Anticipation:
 
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None,
                unsure: list[tuple[str, float]] | None = None, front: dict[str, Any] | None = None,
-               named: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+               named: list[dict[str, Any]] | None = None,
+               ringing: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """The App's turn.decide when no early decision was used: as always; after one that was put back, its row says
         why (``early``), so the A/B reads the misses beside the hits."""
         missed, discarded = self._missed, self._discarded
         self._missed, self._discarded = None, 0
         if missed is None:
-            return self.mind.decide(request_id, text, pending, unsure, front, named)
+            return self.mind.decide(request_id, text, pending, unsure, front, named, ringing)
         rows: list[dict[str, Any]] = []
         self.mind._holding = (threading.get_ident(), rows)
         try:
-            return self.mind.decide(request_id, text, pending, unsure, front, named)
+            return self.mind.decide(request_id, text, pending, unsure, front, named, ringing)
         finally:
             self.mind._holding = None
             if rows:

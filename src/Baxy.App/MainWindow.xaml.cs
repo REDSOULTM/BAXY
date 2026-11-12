@@ -21,12 +21,14 @@ public partial class MainWindow : Window
     private readonly CancellationTokenSource _lifetimeCancellation = new();
     private readonly AppSurfaceNavigator _surfaceNavigator;
     private readonly MainWindowSurfacePresenter _surfacePresenter;
+    private readonly ClosingTeardown _teardown;
     // uso-116: the view recreated after its browser process died, with a growing wait; the same death again and again is
     // said and no longer retried. Counted anew once a view stayed up (StartupRetries.Stable).
     private readonly StartupRetries _fieldRetries = new();
     private bool _recreatingField;
     private readonly PresenceHost? _presence;
     private FieldUiBridge? _bridge;
+    private OverlayPresenter? _overlay;
     private AppSurfaceSession? _fieldNavigationLoadingSession;
     private int _fieldActivityRevision;
     private bool _closing;
@@ -57,11 +59,21 @@ public partial class MainWindow : Window
         Left = initialBounds.Left;
         Top = initialBounds.Top;
         _presence = presence;
-        _viewModel = new MainWindowViewModel();
+        _viewModel = MainWindowViewModel.ForThisPc();
         _surfacePresenter = new MainWindowSurfacePresenter(FieldWebView, AppSurfaceLayer);
         _surfaceNavigator = new AppSurfaceNavigator(AppSurfaceCatalog.CreateDefault(), _surfacePresenter);
         StateChanged += OnWindowPresentationChanged;
+        StateChanged += OnMinimizedToTray;
+        StateChanged += OnFitViewToBorder;
+        FieldWebView.Margin = WebViewMargin(WindowState);
         IsVisibleChanged += OnWindowVisibilityChanged;
+        _teardown = new ClosingTeardown(this, TearDownAsync, () =>
+        {
+            if (_presence is not null)
+            {
+                Application.Current?.Shutdown();
+            }
+        });
         _presence?.Attach(this, _viewModel);
     }
 
@@ -88,6 +100,8 @@ public partial class MainWindow : Window
             ShellTraceScopes.Startup,
             "boot",
             ShellTraceStages.StartupBegin);
+        // ALR1: alarms and reminders ring in this window from its first moment, the view still loading.
+        _viewModel.StartRinging();
         try
         {
             _fieldNavigationLoadingSession = await ShowFieldLoadingAsync(
@@ -161,11 +175,7 @@ public partial class MainWindow : Window
 
         CoreWebView2 core = FieldWebView.CoreWebView2
             ?? throw new InvalidOperationException("WebView2 no terminó su inicialización local.");
-        core.Settings.AreDevToolsEnabled = false;
-        core.Settings.AreDefaultContextMenusEnabled = false;
-        core.Settings.AreBrowserAcceleratorKeysEnabled = false;
-        core.Settings.IsStatusBarEnabled = false;
-        core.Settings.IsZoomControlEnabled = false;
+        KeepToBaxy(core.Settings);
         core.SetVirtualHostNameToFolderMapping(
             HistoricalFieldOriginPolicy.VirtualHost,
             fieldRoot,
@@ -190,8 +200,20 @@ public partial class MainWindow : Window
             this,
             FieldWebView,
             _viewModel,
-            new FieldTelemetrySampler(() => _viewModel.MindProcessId),
+            new FieldTelemetrySampler(() => _viewModel.MindProcessId, otherModel: () => _viewModel.ExternalModelState.OwnOllamaInUse),
             _lifetimeCancellation.Token);
+        if (_overlay is null)
+        {
+            // Owner, 2026-11-08: what BAXY does, in a corner, while its window is behind.
+            FieldUiBridge bridge = _bridge;
+            _overlay = new OverlayPresenter(
+                this,
+                _viewModel.Settings,
+                ShowFromOverlay,
+                (card, approve) => bridge.AnswerCardAsync(approve, card));
+            bridge.Published += _overlay.OnEvent;
+            bridge.OverlayPreviewRequested += _overlay.Preview;
+        }
         core.Navigate(HistoricalFieldOriginPolicy.EntryPoint);
         await UpdateFieldActivityAsync();
     }
@@ -249,6 +271,46 @@ public partial class MainWindow : Window
 
     internal static bool ShouldKeepFieldActive(bool isVisible, WindowState state) =>
         isVisible && state != WindowState.Minimized;
+
+    // The overlay's click: BAXY to the front, as the tray's «Abrir BAXY».
+    private void ShowFromOverlay()
+    {
+        if (_presence is not null)
+        {
+            _presence.ShowMainWindow();
+            return;
+        }
+
+        Show();
+        if (WindowState == WindowState.Minimized)
+        {
+            WindowState = WindowState.Normal;
+        }
+
+        _ = Activate();
+    }
+
+    /// <summary>The frameless window's size border (WindowChrome.ResizeBorderThickness): the view stands it off.</summary>
+    internal const double ResizeBorder = 5;
+
+    /// <summary>
+    /// Owner, 2026-11-08: the window could not be resized because the WebView covered the border WindowChrome sizes it
+    /// from. The view leaves that border free, and fills the screen when maximized (a maximized window has none).
+    /// </summary>
+    internal static Thickness WebViewMargin(WindowState state) =>
+        state == WindowState.Maximized ? new Thickness(0) : new Thickness(ResizeBorder);
+
+    private void OnFitViewToBorder(object? sender, EventArgs eventArgs) => FieldWebView.Margin = WebViewMargin(WindowState);
+
+    // «Al minimizar» (Settings › General): with the tray there, a minimized window hides in it; the tray's «Abrir BAXY»
+    // (PresenceHost.ShowMainWindow) shows it again and brings it back from minimized.
+    private void OnMinimizedToTray(object? sender, EventArgs eventArgs)
+    {
+        if (WindowState == WindowState.Minimized && _presence is { IsExitRequested: false } && _viewModel.Settings.MinimizeToTray)
+        {
+            Hide();
+        }
+    }
 
     private async void OnWindowPresentationChanged(object? sender, EventArgs eventArgs) =>
         await UpdateFieldActivityAsync();
@@ -535,6 +597,26 @@ public partial class MainWindow : Window
     };
 
     /// <summary>
+    /// What the view that shows BAXY's own page lets that page and the browser do. RED2 (2026-11-10): it opens only
+    /// BAXY's own files, and SmartScreen was told that address at every start (RED1 measured nav-, data- and
+    /// telem-edge.smartscreen.microsoft.com, which the privacy policy did not name): «IsReputationCheckingRequired:
+    /// Determines whether SmartScreen is enabled when visiting web pages» (https://learn.microsoft.com/dotnet/api/microsoft.web.webview2.core.corewebview2settings.isreputationcheckingrequired,
+    /// read 2026-11-10).
+    /// </summary>
+    internal static void KeepToBaxy(CoreWebView2Settings settings)
+    {
+        settings.IsReputationCheckingRequired = false;
+        settings.AreDevToolsEnabled = false;
+        settings.AreDefaultContextMenusEnabled = false;
+        settings.AreBrowserAcceleratorKeysEnabled = false;
+        settings.IsStatusBarEnabled = false;
+        settings.IsZoomControlEnabled = false;
+        // Owner, 2026-11-08: the window is moved from its top as any program; the view marks that band app-region: drag
+        // and WebView2 hands it to Windows as the caption (double click maximizes, Snap works).
+        settings.IsNonClientRegionSupportEnabled = true;
+    }
+
+    /// <summary>
     /// The view's WebView2 folder (preferences, its cache). 2026-11-04: it was always the one beside the default profile,
     /// so a window on another profile (a test's, BAXY_DATA_DIR) shared the view's preferences with the person's BAXY. The
     /// default profile keeps the folder it has always had; any other profile has its own, inside it.
@@ -650,9 +732,9 @@ public partial class MainWindow : Window
         loading.SetStatus(message, diagnostic);
     }
 
-    private async void OnClosing(object? sender, CancelEventArgs eventArgs)
+    private void OnClosing(object? sender, CancelEventArgs eventArgs)
     {
-        if (_disposed)
+        if (_teardown.IsOver)
         {
             return;
         }
@@ -673,14 +755,15 @@ public partial class MainWindow : Window
             return;
         }
 
-        eventArgs.Cancel = true;
-        if (_closing)
-        {
-            return;
-        }
+        _teardown.OnClosing(eventArgs);
+    }
 
+    private async Task TearDownAsync()
+    {
         _closing = true;
         StateChanged -= OnWindowPresentationChanged;
+        StateChanged -= OnMinimizedToTray;
+        StateChanged -= OnFitViewToBorder;
         IsVisibleChanged -= OnWindowVisibilityChanged;
         IsEnabled = false;
         _lifetimeCancellation.Cancel();
@@ -696,6 +779,8 @@ public partial class MainWindow : Window
         }
         if (_bridge is not null)
         {
+            _overlay?.Dispose();
+            _overlay = null;
             await _bridge.DisposeAsync();
             _bridge = null;
         }
@@ -704,10 +789,5 @@ public partial class MainWindow : Window
         FieldWebView.Dispose();
         _lifetimeCancellation.Dispose();
         _disposed = true;
-        Close();
-        if (_presence is not null)
-        {
-            Application.Current?.Shutdown();
-        }
     }
 }

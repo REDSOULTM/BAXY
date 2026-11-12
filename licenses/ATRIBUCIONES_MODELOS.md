@@ -49,21 +49,33 @@ records the weights). `baxy-voice.json` was added by the BAXY project.
 Qwen3.5-4B, by the Qwen team: <https://huggingface.co/Qwen/Qwen3.5-4B> (`Qwen3.5-4B-LICENSE.txt`). The repository has
 no `NOTICE` file.
 
-`BAXY-Qwen3.5-4B-ft-c3-c4c2_1-sA-Q4_K_M.gguf`: **changed by the BAXY project.** It is Qwen3.5-4B fine-tuned with a LoRA,
-merged and quantized to Q4_K_M.
+`Qwen3.5-4B-Q4_K_M.gguf`: same SHA-256 (`00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4`) as in
+<https://huggingface.co/unsloth/Qwen3.5-4B-GGUF> at commit `e87f176479d0855a907a41277aca2f8ee7a09523`, unchanged: Unsloth's
+GGUF conversion of Qwen3.5-4B.
+
+BAXY includes only the stock Qwen3.5-4B. The model tuned for BAXY is an unofficial extra: it is not part of the
+official product or of what is sold, and it is not in this folder. Its author publishes it separately on Hugging
+Face; it is downloaded only if the person asks (Settings → Model), from
+<https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF/resolve/da66d8bbb0b90ae15fc54cb4386370a4a471d54f/BAXY-Qwen3.5-4B-c4-Q4_K_M.gguf>, and used only with the SHA-256
+`2c445631782a5c27b9948369e9432309528688b9b761fce56586d796ea2f57c7`. It is kept in the person's data folder. **Changed by
+the BAXY project:** it is Qwen3.5-4B fine-tuned with a LoRA, merged and quantized to Q4_K_M, under the same Apache-2.0
+license. The fine-tune was trained on synthetic conversations whose tool receipts are taken from real traces; no person's private text was used. Those conversations were written with a third-party AI service; that service's permission to train a model on them was requested on 2026-11-07 and, as of 2026-11-10, has had no answer.
 
 `Qwen3.5-4B-mmproj-F16.gguf`: same SHA-256 as `mmproj-F16.gguf` in <https://huggingface.co/unsloth/Qwen3.5-4B-GGUF>,
 unchanged except for its file name.
 
-## Wake word (`wake/`): attribution given as a precaution
+## Wake word (`wake/`)
 
-`head.onnx` (the `baxy-wake-k6r-v7b` package since 1.3.1) is the BAXY project's own network. According to its training notes it
-carries no weights from Kroko (compared on 2026-11-07 with `encoder_kroko_es.onnx`: none of its 127 tensors of 64 values or more
-equals one of Kroko's 944), but it was trained imitating the Kroko ASR encoder, by Banafo: <https://huggingface.co/Banafo/Kroko-ASR>. Kroko describes its community models as «CC-BY-SA»
-without giving a version, and the `LICENSE` file in that repository is empty. Whether a network trained this way counts
-as an adaptation has not been settled, so this attribution is given as a precaution and `CC-BY-SA-4.0.txt` is included
-for reference, on the assumption that the current version applies.
+`head.onnx` (the `baxy-wake-k6r-v7a` package since 1.3.2) is the BAXY project's own network, trained imitating the Kroko ASR
+encoder, by Banafo: <https://huggingface.co/Banafo/Kroko-ASR>. Kroko describes its community models as «CC-BY-SA» without
+giving a version, and the `LICENSE` file in that repository is empty. Whether a network trained this way counts as an
+adaptation has not been settled, so Kroko is credited as a precaution, the detector is published under CC BY-SA 4.0 as a
+precaution too, and `CC-BY-SA-4.0.txt` is included, on the assumption that the current version applies.
 
-Not reviewed by a lawyer either: the teacher it learned from (the k5 detector) was trained with episodes of the TV series
-*Impractical Jokers* (WEBRip copies), and its training includes voices of the developer's friends whose written permission to
-publish is still missing (source: the package's own `README.md`, inside `wake/`).
+Notice (the «Aviso» of `PALABRA_DE_ACTIVACION.md`, in Spanish, which also lists every source, its license and its credit):
+BAXY distributes the detector officially, also in the versions that are sold. BAXY licenses under CC BY-SA 4.0 the rights it has over the model it trained, and can grant no rights that belong to third parties over the data and models it learned from. As for what it learned from, it was not trained on L2-ARCTIC recordings: 2.3 % of its training examples are synthetic audio
+generated with a third-party Piper voice (en_US-l2arctic-medium) that was trained on L2-ARCTIC (CC BY-NC 4.0, Texas A&M
+University and Iowa State University), an indirect inheritance, which is credited. Eight Piper voices used (en_US-libritts_r-medium, en_GB-vctk-medium, en_US-l2arctic-medium, es_ES-sharvard-medium, en_US-arctic-medium, es_ES-davefx-medium, es_AR-daniela-high and pt_BR-faber-medium) were fine-tuned from the Piper voice lessac, and es_MX-ald-medium from es_ES-davefx-medium; lessac was trained on Blizzard 2013 data (Lessac Technologies and Voice Factory) licensed for research only. Those nine voices make up 50.1 % of its 59,363 training examples (48.96 % directly and 1.14 % through es_MX-ald-medium); v7a was not trained on those recordings (an indirect inheritance, like L2-ARCTIC). On 2026-11-08 CSTR was asked to pass a request for permission to Lessac Technologies and Voice Factory, their rights holders. 0.89 % of its examples (531) are synthetic audio from the Piper voices es_ES-mls_10246-low and es_ES-mls_9972-low, fine-tuned from the Piper voice en_US-ryan-low, which was trained on RyanSpeech (University of Denver) under a non-commercial license (CC BY-NC-SA 4.0 according to that voice's card; its authors' paper says CC BY-NC-ND); v7a was not trained on those recordings (an indirect inheritance, which is credited), and BAXY cannot grant the rights of RyanSpeech's holders. It learned to imitate the Spanish encoder of Kroko ASR (Banafo), and Kroko is credited; what was measured, on 2026-11-07, is that none of its 127 tensors of 64 values or more is identical to one of that encoder's (exact comparison; smaller tensors were not compared). The encoder compared, `encoder_kroko_es.onnx`, has 944 such tensors; the comparison says nothing about whether imitating it makes an adaptation. Unlike k6r-v7b, the detector before it, it did not
+learn from the TV series *Impractical Jokers*, neither directly nor through the k5 detector as a teacher. The earlier
+detectors that carried Kroko or audio from a TV series (k4, k5 and v3b2) are no longer distributed. BAXY considers the
+detector its own work, distinct from those data and models; this reading has not been reviewed by a lawyer. Its training also used other synthetic voices (Piper and Chatterbox), each under its own license and credited in `PALABRA_DE_ACTIVACION.md`, and recordings of the developer and of friends of the developer, used with their permission given by word; written permission is pending (source: the package's own `README.md`, inside `wake/`).

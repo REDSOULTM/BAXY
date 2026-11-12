@@ -302,9 +302,9 @@ public sealed class OperationRegistryTests
     // whatever its label («Sí»); the same label without the mark does not (a «Sí» on any other dialog).
     [TestCase("""{"label":"Sí","consequence":"overwrite"}""", true)]
     [TestCase("""{"label":"Reemplazar","consequence":"overwrite"}""", true)]
-    [TestCase("""{"label":"Sí"}""", false)]
+    [TestCase("""{"consequence":null,"label":"Sí"}""", false)]
     [TestCase("""{"label":"Sí","consequence":null}""", false)]
-    [TestCase("""{"label":"Reemplazar todo"}""", false)]
+    [TestCase("""{"consequence":null,"label":"Reemplazar todo"}""", false)]
     public void Normal_mode_asks_before_a_click_that_writes_over_a_file(string arguments, bool asks)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
@@ -326,10 +326,10 @@ public sealed class OperationRegistryTests
 
     // Goal v3 point 0, fix 3 (search burst): the result a search chooses is pressed like the label, so a voice channel
     // or a removal chosen there asks, bound to this invocation; the search alone (no result named yet) does not.
-    [TestCase("""{"label":"Buscar","search":"Cotele"}""", false)]
-    [TestCase("""{"label":"Buscar","search":"Cotele","choose":"Cotele"}""", false)]
-    [TestCase("""{"label":"Buscar","search":"General","choose":"General (canal de voz)"}""", true)]
-    [TestCase("""{"label":"Buscar","search":"pruebas","choose":"Eliminar pruebas"}""", true)]
+    [TestCase("""{"consequence":null,"label":"Buscar","search":"Cotele"}""", false)]
+    [TestCase("""{"consequence":null,"label":"Buscar","search":"Cotele","choose":"Cotele"}""", false)]
+    [TestCase("""{"consequence":null,"label":"Buscar","search":"General","choose":"General (canal de voz)"}""", true)]
+    [TestCase("""{"consequence":null,"label":"Buscar","search":"pruebas","choose":"Eliminar pruebas"}""", true)]
     public void Normal_mode_asks_before_a_search_burst_that_chooses_what_reaches_a_person(string arguments, bool asks)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");
@@ -347,11 +347,11 @@ public sealed class OperationRegistryTests
     // Goal v3 B3 (orders in closed menus): a control opened by its arrow, its context menu or a double click is a click
     // like any other for the policy: the label it names asks when it removes or reaches a person; opening a split
     // button's list or a tab's menu does not. A manner outside the catalog is no argument.
-    [TestCase("""{"label":"Nueva pestaña","index":2,"manner":"open","window":4660}""", false)]
-    [TestCase("""{"label":"Windows PowerShell","index":0,"manner":"menu"}""", false)]
-    [TestCase("""{"label":"Eliminar","index":4,"manner":"double"}""", true)]
-    [TestCase("""{"label":"Eliminar pruebas","index":4,"manner":"menu"}""", true)]
-    [TestCase("""{"label":"General (canal de voz)","index":3,"manner":"double"}""", true)]
+    [TestCase("""{"consequence":null,"label":"Nueva pestaña","index":2,"manner":"open","window":4660}""", false)]
+    [TestCase("""{"consequence":null,"label":"Windows PowerShell","index":0,"manner":"menu"}""", false)]
+    [TestCase("""{"consequence":null,"label":"Eliminar","index":4,"manner":"double"}""", true)]
+    [TestCase("""{"consequence":null,"label":"Eliminar pruebas","index":4,"manner":"menu"}""", true)]
+    [TestCase("""{"consequence":null,"label":"General (canal de voz)","index":3,"manner":"double"}""", true)]
     public void A_click_in_another_manner_asks_as_the_click_on_its_label_does(string arguments, bool asks)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("input.visible.click");

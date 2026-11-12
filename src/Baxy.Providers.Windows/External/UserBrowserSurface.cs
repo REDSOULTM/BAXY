@@ -800,9 +800,13 @@ internal sealed partial class UserBrowserSurface
 
     /// <summary>
     /// Uso-111 (N2, «abre el navegador y busca…»: another browser opened, then the page read went to the default one and
-    /// said only user_browser_not_running): which browser that is, and what opens it or reaches another one.
+    /// said only user_browser_not_running): which browser that is, and what opens it or reaches another one. LEC4 (VIVO11,
+    /// «lee lo que tengo abierto» with the default browser closed: told only that it had no window, the model said «No hay
+    /// ningún navegador abierto»): a read also says which window is in front of the person (<paramref name="front"/>) and
+    /// the look that reads it, so it goes on there.
     /// </summary>
-    internal static ExternalCapabilityReceipt NotRunning(string operation, UserBrowserIdentity browser) =>
+    internal static ExternalCapabilityReceipt NotRunning(
+        string operation, UserBrowserIdentity browser, UserBrowserFrontWindow? front = null) =>
         ExternalJson.FailureBeforeEffect(operation, BrowserNotRunning) with
         {
             Result = ExternalJson.Create(writer =>
@@ -810,10 +814,27 @@ internal sealed partial class UserBrowserSurface
                 writer.WriteStartObject();
                 writer.WriteNumber("version", 1);
                 writer.WriteString("browser", browser.DisplayName);
-                writer.WriteString("next", $"{browser.DisplayName} has no window open, so nothing was read or done in it. If "
-                    + $"the person wants a page there, {Baxy.Kernel.Operations.WireNames.Of("browser.navigate")} with its address "
-                    + $"opens it; the window of another browser is reached with "
-                    + $"{Baxy.Kernel.Operations.WireNames.Of("input.visible.controls")} with its name");
+                if (front is null)
+                {
+                    writer.WriteString("next", $"{browser.DisplayName} has no window open, so nothing was read or done in it. If "
+                        + $"the person wants a page there, {Baxy.Kernel.Operations.WireNames.Of("browser.navigate")} with its address "
+                        + $"opens it; the window of another browser is reached with "
+                        + $"{Baxy.Kernel.Operations.WireNames.Of("input.visible.controls")} with its name");
+                    writer.WriteEndObject();
+                    return;
+                }
+                writer.WriteStartObject("frontWindow");
+                writer.WriteString("application", front.ProcessName);
+                writer.WriteString("title", front.Title);
+                writer.WriteEndObject();
+                string look = Baxy.Kernel.Operations.WireNames.Call("input.visible.controls", new()
+                {
+                    ["application"] = front.ProcessName,
+                    ["includeText"] = true,
+                });
+                writer.WriteString("next", $"{browser.DisplayName}, the default browser, has no window open, so no page was "
+                    + $"read through it; the window in front of the person is {front.ProcessName}'s, and {look} reads what "
+                    + "it shows");
                 writer.WriteEndObject();
             }),
         };
@@ -840,9 +861,11 @@ internal sealed partial class UserBrowserSurface
         int maximumCharacters,
         CancellationToken cancellationToken)
     {
-        (UserBrowserWindow? window, _, _) = await TabbedWindowAsync(browser, cancellationToken).ConfigureAwait(false);
+        UserBrowserIdentity asked = browser;
+        (browser, UserBrowserWindow? window, _, _, UserBrowserFrontWindow? front) =
+            await PersonsBrowserWindowAsync(asked, cancellationToken).ConfigureAwait(false);
         if (window is null)
-            return NotRunning(operation, browser);
+            return NotRunning(operation, browser, front);
         UserBrowserPageText? page = await _platform.ReadPageTextAsync(
             window.Handle, maximumCharacters, cancellationToken).ConfigureAwait(false);
         // FT/proveedores goal (E3): a heavy page may build its accessibility tree after the script's looks: read once more.
@@ -928,6 +951,9 @@ internal sealed partial class UserBrowserSurface
                     writer.WriteBoolean("linksTruncated", true);
             }
             writer.WriteString("browser", browser.DisplayName);
+            // LEC4: the window read is another browser's than the default one, the one in front of the person.
+            if (!ReferenceEquals(browser, asked))
+                writer.WriteString("defaultBrowser", asked.DisplayName);
             writer.WriteString("authority", PageAuthority);
             writer.WriteEndObject();
         }), effectObserved: false);
@@ -940,10 +966,11 @@ internal sealed partial class UserBrowserSurface
         int limit,
         CancellationToken cancellationToken)
     {
-        (UserBrowserWindow? window, UserBrowserFrame? frame, bool read) =
-            await TabbedWindowAsync(browser, cancellationToken).ConfigureAwait(false);
+        UserBrowserIdentity asked = browser;
+        (browser, UserBrowserWindow? window, UserBrowserFrame? frame, bool read, UserBrowserFrontWindow? front) =
+            await PersonsBrowserWindowAsync(asked, cancellationToken).ConfigureAwait(false);
         if (window is null)
-            return NotRunning(operation, browser);
+            return NotRunning(operation, browser, front);
         if (!read)
             frame = await ReadFrameAsync(window.Handle, cancellationToken).ConfigureAwait(false);
         IReadOnlyList<UserBrowserTab> tabs = frame?.Tabs ?? [];
@@ -967,6 +994,8 @@ internal sealed partial class UserBrowserSurface
             }
             writer.WriteEndArray();
             writer.WriteString("browser", browser.DisplayName);
+            if (!ReferenceEquals(browser, asked))
+                writer.WriteString("defaultBrowser", asked.DisplayName);
             writer.WriteString("authority", TabsAuthority);
             writer.WriteEndObject();
         }), effectObserved: false);
@@ -990,6 +1019,25 @@ internal sealed partial class UserBrowserSurface
         {
             _ = await _platform.BringToFrontAsync(front, CancellationToken.None).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// LEC4 (VIVO11: a window of Edge in front of the person, the default browser closed, and the read said only that the
+    /// default one had no window): the page and the tabs read are those of the browser window the person has in front when
+    /// that window is another browser's than <paramref name="browser"/>, the default one (they see it; reading it changes
+    /// nothing); else the default one's (<see cref="TabbedWindowAsync"/>). Also returns the window in front, which a read
+    /// with no window to read names.
+    /// </summary>
+    private async ValueTask<(UserBrowserIdentity Browser, UserBrowserWindow? Window, UserBrowserFrame? Frame, bool FrameRead,
+        UserBrowserFrontWindow? Front)> PersonsBrowserWindowAsync(UserBrowserIdentity browser, CancellationToken cancellationToken)
+    {
+        UserBrowserFrontWindow? front = await _platform.PersonsWindowAsync(cancellationToken).ConfigureAwait(false);
+        if (front?.Browser is { } shown
+            && !string.Equals(shown.ProcessName, browser.ProcessName, StringComparison.OrdinalIgnoreCase))
+            return (shown, new UserBrowserWindow(front.Handle, front.Title), null, false, front);
+        (UserBrowserWindow? window, UserBrowserFrame? frame, bool read) =
+            await TabbedWindowAsync(browser, cancellationToken).ConfigureAwait(false);
+        return (browser, window, frame, read, front);
     }
 
     private static readonly TimeSpan PageRetry = TimeSpan.FromMilliseconds(800);

@@ -178,7 +178,7 @@ def _sidecar(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, outcomes: list[str
         def __init__(self, *args) -> None:
             self.gave_way: bool | None = None
 
-        def decide(self, request_id, text, pending, unsure=None, front=None, named=None):
+        def decide(self, request_id, text, pending, unsure=None, front=None, named=None, ringing=None):
             return {"type": "turn.result", "id": request_id}
 
         def new_session(self) -> None:

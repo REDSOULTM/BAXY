@@ -378,7 +378,7 @@ public sealed class ComputerUsePressedNameTests
                 Guid.NewGuid().ToString("D"),
                 Guid.NewGuid().ToString("D"),
                 "input.visible.click",
-                JsonSerializer.SerializeToElement(new { label }));
+                JsonSerializer.SerializeToElement(new { consequence = (string?)null, label }));
             OperationResponse response = await engine.ExecuteAsync(request, CancellationToken.None);
             return confirm && response.ErrorCode == "confirmation_required"
                 ? await engine.ExecuteAsync(

@@ -176,6 +176,51 @@ public static partial class WindowsModelResourceReader
     }
 
     /// <summary>
+    /// The process and every process under it, at any depth, with their executable's name. It lists the process table
+    /// once, so it is read only when asked (Settings › Modelo open), never on the rail's every sample.
+    /// </summary>
+    public static IReadOnlyList<(int Id, string Name)> ProcessTreeOf(int rootId)
+    {
+        var parents = new Dictionary<int, (int Parent, string Name)>();
+        foreach (Process process in Process.GetProcesses())
+        {
+            using (process)
+            {
+                try
+                {
+                    parents[process.Id] = (ParentOf(process.Handle), process.ProcessName);
+                }
+                catch (Exception exception) when (exception is System.ComponentModel.Win32Exception or InvalidOperationException)
+                {
+                    // Ended, or not ours to read: not one of BAXY's.
+                }
+            }
+        }
+
+        var tree = new List<(int Id, string Name)>();
+        if (!parents.TryGetValue(rootId, out (int Parent, string Name) root))
+        {
+            return tree;
+        }
+
+        tree.Add((rootId, root.Name));
+        var found = new HashSet<int> { rootId };
+        for (int i = 0; i < tree.Count; i++)
+        {
+            int parent = tree[i].Id;
+            foreach ((int id, (int p, string name)) in parents)
+            {
+                if (p == parent && id != parent && found.Add(id))
+                {
+                    tree.Add((id, name));
+                }
+            }
+        }
+
+        return tree;
+    }
+
+    /// <summary>
     /// Whether the process is alive and was started by the given parent. It opens that one process by id: it does not read
     /// the process table, so it is cheap enough to ask on every sample. False when it ended or is not ours to read.
     /// </summary>

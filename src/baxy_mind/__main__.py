@@ -5,13 +5,14 @@ import datetime as _dt
 import os
 import queue
 import sys
+import urllib.error
 import threading
 import time
 import urllib.request
 from concurrent import futures
 from pathlib import Path
 
-from . import protocol
+from . import behavior, protocol
 from .early import Anticipation, early_silence, wake_warm
 from .llm_server import LlmServer, declared_backend, declared_build, progress_facts
 from .mind import Mind
@@ -49,6 +50,20 @@ def trace_dir(environ: dict[str, str] | None = None) -> Path:
     return Path(given) if given else Path(source.get("LOCALAPPDATA", ".")) / "BAXY" / "renew"
 
 
+def trace_words(environ: dict[str, str] | None = None) -> bool:
+    """Whether the trace keeps what was said (the person's words, BAXY's answers, each call's arguments). PRV1 (PRIV-02,
+    2026-11-09): not in the product, whose trace is for times and names (Mind.TRACE_FACTS). A bench's run keeps it (its
+    own folder, BAXY_RENEW_TRACE_DIR, read by its tools), and so does a PC whose owner asks for it, BAXY_TRACE_WORDS=1
+    (the App's conversation log reads the same variable). UNI1 (REV8 P3): «1» or another usual way of saying yes (y, yes,
+    t, true, on, as the standard library's strtobool read it), as the App reads it (ConversationLog.KeepsWords)."""
+    source = os.environ if environ is None else environ
+    return (source.get("BAXY_TRACE_WORDS", "").strip().lower() in TRACE_WORDS_YES
+            or bool(source.get("BAXY_RENEW_TRACE_DIR", "").strip()))
+
+
+TRACE_WORDS_YES = frozenset({"1", "y", "yes", "t", "true", "on"})
+
+
 def bounded_trace(trace: Path, limit: int = TRACE_LIMIT_BYTES) -> Path:
     trace.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -61,6 +76,16 @@ def bounded_trace(trace: Path, limit: int = TRACE_LIMIT_BYTES) -> Path:
         # start; the PermissionError ended the start, with llama-server already running.
         sys.stderr.write(f"baxy_mind_renew_trace: not rotated: {error!r}\n")
     return trace
+
+
+def ready_facts(server: LlmServer, prefix_tokens: int) -> dict:
+    """What catalog.ready says beside its count. With what the server keeps known, the App's ceiling for a turn's request
+    follows the mind's own, and the App knows whether the processor computes the model. Settings → Model → Context
+    (LocalContext in the App) takes the backend, for each preset's video memory, and the prompt prefix's tokens as read,
+    for the room each one leaves."""
+    return {"ceiling_s": server.ceiling_s,
+            **{key: value for key, value in progress_facts(server).items() if key == "onProcessor"},
+            "backend": server.backend, "prefixTokens": prefix_tokens}
 
 
 def main() -> int:
@@ -103,6 +128,7 @@ def main() -> int:
         system_one.start()
     trace = bounded_trace(trace_dir() / "turns.jsonl")
     mind = Mind(server, trace, system_one)
+    mind.trace_words = trace_words()
     def spoken(queued: float, sounded: float, notice: bool) -> None:
         # From the App's voice.speak to the first sound, and when it sounded (the turn's own rows say when its text
         # reached the mind), so text-to-first-sound is read from this trace; a notice's row says so.
@@ -139,8 +165,11 @@ def main() -> int:
         "type": "hello", "protocol": protocol.PROTOCOL,
         "models": {"llm": server.name, "server": build},
         "requests": ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
-                     "turn.notice", "session.new", "session.export", "session.load", "trace.forget",
+                     "turn.notice", "session.new", "session.export", "session.title", "session.load", "trace.forget",
                      "voice.start", "voice.stop", "voice.release", "voice.status", *speaks, "voice.cancel"],
+        # Ajustes → Comportamiento: the fixed identity, the factory texts the person's own replace (behavior.py), and how
+        # long each may be.
+        "behavior": {"identity": behavior.IDENTITY, "factory": behavior.factory(), "maxChars": behavior.MAX_CHARS},
     })
     def read() -> None:
         try:
@@ -261,23 +290,29 @@ def main() -> int:
                         reply["startup"] = server.startup_failure(error)
                         protocol.write_message(reply)
                         continue
-                    # With what the server keeps known, the App's ceiling for a turn's request follows the mind's own.
                     protocol.write_message({"type": "catalog.ready", "id": request_id, "count": count,
-                                            "ceiling_s": server.ceiling_s,
-                                            **{key: value for key, value in progress_facts(server).items()
-                                               if key == "onProcessor"}})
+                                            **ready_facts(server, mind.prefix_tokens)})
                 elif kind == "turn.decide":
                     voice.speech.prepare()  # the output opens while the model decides
                     front = message.get("front") if isinstance(message.get("front"), dict) else None
                     named = message.get("named") if isinstance(message.get("named"), list) else None
+                    ringing = message.get("ringing") if isinstance(message.get("ringing"), list) else None
+                    # RUT1: the person's routines (RoutinesHandler's store); none sent is none kept.
+                    mind.routines = message["routines"] if isinstance(message.get("routines"), list) else []
+                    if message.get("lang") in ("es", "en"):
+                        mind.lang = message["lang"]  # ALR4: ring_answer's sentence, when the words are both languages'
                     protocol.write_message(held or anticipation.decide(request_id, str(message.get("text") or ""),
                                                                        message.get("pendingConfirmation"), unsure,
-                                                                       front, named))
+                                                                       front, named, ringing))
                 elif kind == "turn.continue":
                     # After a tool the answer may come long after the output closed (HOLD_S 20 s; file.find 11-14 s,
                     # web.fetch up to 160 s): it opens again (0.38 s on the PC) while the model writes it.
                     if not message.get("beat"):
                         voice.speech.prepare()
+                    # TPV7: the tool the person's «sí» just turned on (NativeTurnLoop.AnswerOffHeld), whole, for this
+                    # turn's next request (Mind.tool_on).
+                    if isinstance(message.get("toolOn"), dict):
+                        mind.tool_on(message["toolOn"])
                     protocol.write_message(mind.continue_turn(request_id, str(message.get("observation") or ""),
                                                               bool(message.get("final")), bool(message.get("beat"))))
                 elif kind == "turn.beat":
@@ -311,6 +346,14 @@ def main() -> int:
                 elif kind == "session.export":
                     protocol.write_message({"type": "session.exported", "id": request_id,
                                             "conversation": mind.export_session()})
+                elif kind == "session.title":
+                    # The name of the conversation that closed (Mind.title_of), asked once the next one started. It
+                    # gives way to any request already waiting, and to one that comes while the model writes it
+                    # (server.yields, as a read ahead; revisión total, M5): the person never waits for a name.
+                    conversation = message.get("conversation")
+                    title = (mind.title_of(conversation) if isinstance(conversation, list) and pending.empty()
+                             else "")
+                    protocol.write_message({"type": "session.titled", "id": request_id, "title": title})
                 elif kind == "session.load":
                     conversation = message.get("conversation")
                     mind.load_session(conversation if isinstance(conversation, list) else [])
@@ -343,10 +386,15 @@ def main() -> int:
                 sys.stderr.flush()
                 # R7-NB-1: a request past its budget (LlmServer.REQUEST_SECONDS) says so, as the only one the App asks
                 # for again; any other failure would fail the same way.
-                code = "request_timed_out" if isinstance(error, TimeoutError) else "request_failed"
+                # VIVO1 F4: the server of another model refused it for good (external_model.refused, 422): said apart, so the
+                # App tells why (its translator's log) and does not ask again.
+                code = ("request_timed_out" if isinstance(error, TimeoutError)
+                        else "model_refused" if isinstance(error, urllib.error.HTTPError) and error.code == 422 else "request_failed")
                 protocol.write_message(protocol.error_reply(request_id, code, f"{surface}_runtime_failure"))
                 # P1.13: the App drops this stderr, and a decide past its budget left no row saying why.
-                mind._log("request.failed", arrived, None, kind=kind, failure=repr(error))
+                # PRV1: an error's text may quote what it was reading; without the trace's words, its type alone.
+                mind._log("request.failed", arrived, None, kind=kind,
+                          failure=repr(error) if mind.trace_words else type(error).__name__)
             if kind in PREFILLED_AFTER:
                 # Al máximo W5: the reply is already out; with no turn left open, the conversation is read as the next
                 # request will show it (Mind.prefill), on a budget of its own, while BAXY speaks. A request that comes

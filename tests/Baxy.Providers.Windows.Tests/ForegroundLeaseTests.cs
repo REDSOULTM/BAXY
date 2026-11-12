@@ -61,6 +61,197 @@ public sealed class ForegroundLeaseTests
         });
     }
 
+    // MUS1 (VIVO13, NB session 1: GetAsyncKeyState said the right button was down for 41 min with no input at all, and
+    // every media.play.query waited its 8 s and failed input_user_not_paused): a key or button Windows still calls held
+    // with no input of the person for far longer than a held key repeats is a release Windows lost, not a hand on it.
+    [Test]
+    public async Task AButtonHeldForMinutesWithNoInputIsAStaleStateNotAHand()
+    {
+        var clock = new FakeClock { NowMs = 3_000_000 };
+        var pause = new FakePause { LastForeignInputMs = 540_000, HeldUntilMs = long.MaxValue };
+        pause.Clock = clock;
+
+        IInputBurst burst = await Lease(pause, clock, new FakeDesktop()).AcquireAsync(Mission, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(burst.Refusal, Is.Null);
+            Assert.That(burst.MayAct, Is.True);
+            Assert.That(burst.WaitedMs, Is.Zero);
+        });
+    }
+
+    // REM1 (REV12 B-1): a button held still makes no input (a slow drag, a button held in a game, a key with its repeat
+    // off). MUS1 took one held 30 s with no input for a lost release and acted under the person's hand. Its press was
+    // received and its release was not: the hand is there, and nothing is sent.
+    [Test]
+    public async Task AButtonThePersonPressedAndHoldsStillIsWaitedForHoweverLong()
+    {
+        var clock = new FakeClock { NowMs = 3_000_000 };
+        var pause = new FakePause { LastForeignInputMs = 540_000, HeldUntilMs = long.MaxValue, PressReceived = true };
+        pause.Clock = clock;
+
+        IInputBurst burst = await Lease(pause, clock, new FakeDesktop(), maxWaitMs: 8_000)
+            .AcquireAsync(Mission, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(burst.Refusal, Is.EqualTo("input_user_not_paused"));
+            Assert.That(burst.MayAct, Is.False);
+        });
+    }
+
+    // REM1 (REV12 B-1): the real detector, handed Raw Input records as its window procedure is. A button or key is the
+    // person's from the record that presses it to the one that releases it; one Windows calls held with no press
+    // received (the lost release of MUS1, or pressed before the detector started) is not.
+    [Test]
+    public void ThePressesTheDetectorReceivedTellAHandFromALostRelease()
+    {
+        var detector = new WindowsUserInputPause(() => 0);
+        static bool AllHeld(int key) => true;
+        bool lostRelease = detector.PressHeld(AllHeld);
+
+        detector.Observe(PersonMouse(0x0004), PersonKeyHeader, Environment.TickCount);
+        bool rightDown = detector.PressHeld(AllHeld);
+        bool rightDownButWindowsSaysUp = detector.PressHeld(static key => key != 0x02);
+        detector.Observe(PersonMouse(0x0000), PersonKeyHeader, Environment.TickCount);
+        bool afterAMove = detector.PressHeld(AllHeld);
+        detector.Observe(PersonMouse(0x0008), PersonKeyHeader, Environment.TickCount);
+        bool rightUp = detector.PressHeld(AllHeld);
+        detector.Observe(PersonKeyOf(0x10, up: false), PersonKeyHeader, Environment.TickCount);
+        bool shiftDown = detector.PressHeld(AllHeld);
+        detector.Observe(PersonKeyOf(0x10, up: true), PersonKeyHeader, Environment.TickCount);
+        bool shiftUp = detector.PressHeld(AllHeld);
+        detector.Observe(PersonKey(), PersonKeyHeader, Environment.TickCount);
+        bool aLetter = detector.PressHeld(AllHeld);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(lostRelease, Is.False, "held with no press received");
+            Assert.That(rightDown, Is.True);
+            Assert.That(rightDownButWindowsSaysUp, Is.False);
+            Assert.That(afterAMove, Is.True, "a move does not release it");
+            Assert.That(rightUp, Is.False);
+            Assert.That(shiftDown, Is.True);
+            Assert.That(shiftUp, Is.False);
+            Assert.That(aLetter, Is.False, "a letter is not held down for the pause");
+        });
+    }
+
+    // REM3 (REV13 D-2): a press received whose release Windows also lost (a keyboard unplugged mid-press, a remote
+    // desktop or software KVM cut with the key down) held every act back until someone pressed again: a person with no
+    // hands had no way out. The device that pressed it is looked at: one no longer attached holds nothing. A press with
+    // no device (injected: remote desktop, a software KVM) has none to look at, and counts only up to a ceiling of no
+    // input at all. A hand on an attached device stays a hand (REM1's test above).
+    [Test]
+    public void APressWhoseDeviceIsGoneOrInjectedLongAgoIsNoHand()
+    {
+        var detector = new WindowsUserInputPause(() => 0);
+        static bool AllHeld(int key) => true;
+        detector.Observe(PersonMouse(0x0004), PersonKeyHeader, Environment.TickCount);
+        bool attached = detector.PressHeld(AllHeld, attached: static device => device == 0x1234, laterMs: 3_600_000);
+        bool unplugged = detector.PressHeld(AllHeld, attached: static device => false, laterMs: 0);
+        bool afterUnplugged = detector.PressHeld(AllHeld, attached: static device => true, laterMs: 0);
+        detector.Observe(PersonMouse(0x0004, device: 0), PersonKeyHeader, Environment.TickCount);
+        bool injectedRecent = detector.PressHeld(AllHeld, attached: static device => false,
+            laterMs: WindowsUserInputPause.InjectedPressStaleMs - 1);
+        bool injectedStale = detector.PressHeld(AllHeld, attached: static device => true,
+            laterMs: WindowsUserInputPause.InjectedPressStaleMs);
+        bool afterStale = detector.PressHeld(AllHeld, attached: static device => true, laterMs: 0);
+        detector.Observe(PersonMouse(0x0004), PersonKeyHeader, Environment.TickCount);
+        bool pressedAgain = detector.PressHeld(AllHeld, attached: static device => true, laterMs: 0);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(attached, Is.True, "an attached device's press is a hand however long");
+            Assert.That(unplugged, Is.False, "the device that pressed it is gone");
+            Assert.That(afterUnplugged, Is.False, "forgotten, not back when a handle is reused");
+            Assert.That(injectedRecent, Is.True);
+            Assert.That(injectedStale, Is.False, "an injected press past the ceiling of no input");
+            Assert.That(afterStale, Is.False);
+            Assert.That(pressedAgain, Is.True, "a new press is a hand again");
+        });
+    }
+
+    // REM6 (REV15 C-1, reopening REV13 D-2): rem5 kept a press with no device held past the ceiling once any sign of a
+    // hand came after it (a move, another key, the cursor moved): a release lost in a software KVM or a remote tool,
+    // then someone moving the mouse or eye control moving the cursor, held every act of BAXY back for good, and who has
+    // no hands could not get out by voice. The ceiling now always ends: up to it the press counts while Windows says
+    // that very key or button is down (GetAsyncKeyState), and nothing after the press makes it longer.
+    [Test]
+    public void AnInjectedPressEndsAtItsCeilingWhateverCameAfterIt()
+    {
+        const long Stale = WindowsUserInputPause.InjectedPressStaleMs;
+        (bool Before, bool At) Held(Action<WindowsUserInputPause> after, Func<int, bool>? heldNow = null)
+        {
+            var detector = new WindowsUserInputPause(() => 0);
+            detector.Observe(PersonMouse(0x0001, device: 0), PersonKeyHeader, Environment.TickCount);
+            after(detector);
+            Func<int, bool> held = heldNow ?? (static key => true);
+            return (detector.PressHeld(held, attached: static device => true, laterMs: Stale - 1),
+                detector.PressHeld(held, attached: static device => true, laterMs: Stale));
+        }
+
+        var slowDrag = Held(d => d.Observe(PersonMouse(0x0000, device: 0), PersonKeyHeader, Environment.TickCount));
+        var otherKey = Held(d => d.Observe(PersonKey(), PersonKeyHeader, Environment.TickCount));
+        var mouseOfAnother = Held(d => d.Observe(PersonMouse(0x0000), PersonKeyHeader, Environment.TickCount));
+        var nothing = Held(_ => { });
+        var upInWindows = Held(_ => { }, static key => key != 0x01);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(slowDrag, Is.EqualTo((true, false)), "a move after the press: held up to the ceiling, not past it");
+            Assert.That(otherKey, Is.EqualTo((true, false)), "another key after it: the same");
+            Assert.That(mouseOfAnother, Is.EqualTo((true, false)), "someone moving a mouse: the same");
+            Assert.That(nothing, Is.EqualTo((true, false)), "a lost release: the ceiling");
+            Assert.That(upInWindows, Is.EqualTo((false, false)), "that button up in Windows: no hand at all");
+        });
+    }
+
+    // REM3 (REV13 D-2, revisión ciega): a remote desktop's input comes from its own device, still attached after the
+    // session was cut with a key down; a release after a lock goes to the secure desktop. A disconnect or a lock
+    // (WM_WTSSESSION_CHANGE) loses every press received before it; another change of the session (a logon) does not.
+    [Test]
+    public void ADisconnectOrALockLosesThePressesReceivedBeforeIt()
+    {
+        static bool AllHeld(int key) => true;
+        bool HeldAfter(int reason)
+        {
+            var detector = new WindowsUserInputPause(() => 0);
+            detector.Observe(PersonMouse(0x0004), PersonKeyHeader, Environment.TickCount);
+            detector.SessionChanged(reason);
+            return detector.PressHeld(AllHeld, attached: static device => true, laterMs: 0);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(HeldAfter(0x2), Is.False, "WTS_CONSOLE_DISCONNECT");
+            Assert.That(HeldAfter(0x4), Is.False, "WTS_REMOTE_DISCONNECT");
+            Assert.That(HeldAfter(0x7), Is.False, "WTS_SESSION_LOCK");
+            Assert.That(HeldAfter(0x5), Is.True, "WTS_SESSION_LOGON");
+        });
+    }
+
+    // The control: with the person's input a moment ago, a button they hold is still waited for and, held past the
+    // ceiling, nothing is sent.
+    [Test]
+    public async Task AButtonHeldRightAfterThePersonsInputIsStillWaitedFor()
+    {
+        var clock = new FakeClock { NowMs = 10_000 };
+        var pause = new FakePause { LastForeignInputMs = 8_000, HeldUntilMs = long.MaxValue };
+        pause.Clock = clock;
+
+        IInputBurst burst = await Lease(pause, clock, new FakeDesktop(), maxWaitMs: 8_000)
+            .AcquireAsync(Mission, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(burst.Refusal, Is.EqualTo("input_user_not_paused"));
+            Assert.That(burst.MayAct, Is.False);
+            Assert.That(burst.WaitedMs, Is.InRange(8_000, 8_100));
+        });
+    }
+
     [Test]
     public async Task APersonWhoNeverPausesIsNeverActedOver()
     {
@@ -1103,6 +1294,24 @@ public sealed class ForegroundLeaseTests
         return record;
     }
 
+    // An unmarked mouse record from a device with these RAWMOUSE.usButtonFlags (0: a bare move).
+    private static byte[] PersonMouse(ushort buttonFlags, int device = 0x1234)
+    {
+        var record = new byte[PersonKeyHeader + 24];
+        System.Buffers.Binary.BinaryPrimitives.WriteInt32LittleEndian(record.AsSpan(8), device);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(record.AsSpan(PersonKeyHeader + 4), buttonFlags);
+        return record;
+    }
+
+    // An unmarked key of a keyboard device going down or up (RI_KEY_BREAK).
+    private static byte[] PersonKeyOf(ushort key, bool up)
+    {
+        byte[] record = PersonKey();
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(record.AsSpan(PersonKeyHeader + 2), (ushort)(up ? 1 : 0));
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(record.AsSpan(PersonKeyHeader + 6), key);
+        return record;
+    }
+
     private static ForegroundLease Lease(FakePause pause, FakeClock clock, FakeDesktop desktop, int maxWaitMs = 8_000) =>
         new(pause, clock, desktop, maxWaitMs);
 
@@ -1127,6 +1336,9 @@ public sealed class ForegroundLeaseTests
         internal bool AlwaysActive { get; init; }
 
         internal long HeldUntilMs { get; init; }
+
+        // REM1: the detector received the press of what is held (and not its release).
+        internal bool PressReceived { get; init; }
 
         // A press, the wheel, Alt, a Windows key or a media key of the person (null: not told apart from their other
         // input).
@@ -1170,6 +1382,8 @@ public sealed class ForegroundLeaseTests
         }
 
         public bool HeldDown() => Clock is not null && Clock.NowMs < HeldUntilMs;
+
+        public bool PressHeld() => PressReceived && HeldDown();
 
         public bool TellsOwnInput => true;
 

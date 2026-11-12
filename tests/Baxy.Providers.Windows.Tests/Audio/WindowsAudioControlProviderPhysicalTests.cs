@@ -60,7 +60,7 @@ public sealed class WindowsAudioControlProviderPhysicalTests
             bool requestedMuted = !baselineMuted;
             JsonElement volumeArguments = Parse($"{{\"level\":{requestedPercent}}}");
             JsonElement muteArguments = Parse(
-                $"{{\"state\":{requestedMuted.ToString().ToLowerInvariant()}}}");
+                $"{{\"scope\":\"pc\",\"state\":{requestedMuted.ToString().ToLowerInvariant()}}}");
 
             TestContext.Progress.WriteLine(
                 $"NativeAOT baseline endpointHash={baselineHash}, scalarR={baselineScalar:R}, volumePercent={baselinePercent}, muted={baselineMuted}.");

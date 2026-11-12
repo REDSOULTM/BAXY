@@ -15,6 +15,10 @@ class FakeServer:
         self.replies = replies
         self.bodies: list[dict] = []
 
+    def ask_apart(self, body: dict) -> dict:
+        from test_mind_final import their_answer
+        return their_answer(self.replies)
+
     def chat(self, body: dict) -> dict:
         self.bodies.append(json.loads(json.dumps(body)))
         return self.replies.pop(0)
@@ -364,50 +368,16 @@ def test_layer2_asks_once_per_misunderstanding(tmp_path, monkeypatch) -> None:
     assert mind.decide(4, "ciérralo otra vez")["operation"] is None  # a new request is asked about as before
 
 
-@pytest.mark.parametrize("answer,p_name,held", [("yes", 0.78, True), ("yes", 0.999, False), ("no", 0.78, False),
-                                                ("unclear", 0.78, False)])
-def test_a_yes_the_model_is_not_sure_of_is_held_and_asked(tmp_path, monkeypatch, answer, p_name, held) -> None:
-    # Confirmaciones 2026-10-23: «sí pero el otro» approved a pending trash at 0.77-0.79; plain yeses were ≥ 0.998.
-    # Only a yes is held: a no cancels and an unclear answer (prefijo c3, S4) runs nothing and asks again.
+def test_the_doubt_of_a_confirm_pending_never_holds_it(tmp_path, monkeypatch) -> None:
+    # SIS3: the person's words are read by their own question (Mind._their_answer, test_mind_su_si.py), never by the
+    # model's confidence in its confirm_pending (CONFIRM_FLOOR and PLAIN_YES are gone): an unsure «no» still cancels.
     monkeypatch.delenv("BAXY_S1_DOUBT", raising=False)
-    monkeypatch.delenv("BAXY_CONFIRM_FLOOR", raising=False)
-    reply = _call("confirm_pending", {"answer": answer}, p_name)
-    reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", 1.0)  # the call itself is sure, as on the model
-    mind, server = _mind(tmp_path, [reply, _say("¿Cuál archivo quieres que mande a la papelera?")])
-    pending = {"operation": "filesystem.known.trash.named", "arguments": {"fileName": "notas.txt"}}
-    result = mind.decide(1, "sí pero el otro", pending)
-    if held:
-        assert result["kind"] == "conversation" and result["operation"] is None
-        assert "confirm_pending" in server.bodies[1]["messages"][-1]["content"]
-        assert server.bodies[1]["tool_choice"] == "none"  # it only asks: a reading again could approve the same «sí»
-    else:
-        assert result["kind"] == "action" and result["operation"] == "confirmation.answer"
-        assert result["arguments"]["answer"] == answer
-
-
-def test_the_confirm_floor_can_be_turned_off(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("BAXY_CONFIRM_FLOOR", "0")
-    mind, _ = _mind(tmp_path, [_call("confirm_pending", {"answer": "yes"}, 0.5)])
-    result = mind.decide(1, "sí", {"operation": "app.close", "arguments": {"appId": "Paint"}})
-    assert result["operation"] == "confirmation.answer"
-
-
-@pytest.mark.parametrize("words, held", [
-    *((yes, False) for yes in ("Sí po.", "dale", "Ya.", "ok", "Hágale", "de una", "Obvio", "sí, hazlo", "ya po",
-                               "Okey, dale", "claro que sí", "hágale pues", "sí, por favor", "go ahead")),
-    *((other, True) for other in ("mmm", "no sé", "espera", "ya, espera", "sí pero el otro", "sí no", "ok no",
-                                  "Zí"))])
-def test_words_that_are_only_a_yes_are_not_held_by_the_confirm_floor(tmp_path, monkeypatch, words, held) -> None:
-    # Menos preguntas (dueño, 2026-10-25): a held «sí» costs the model's question and the kernel's again (the App drops the
-    # call that question left behind). A plain yes approves even if the model was unsure of it; anything else is held.
-    monkeypatch.delenv("BAXY_S1_DOUBT", raising=False)
-    monkeypatch.delenv("BAXY_CONFIRM_FLOOR", raising=False)
-    reply = _call("confirm_pending", {"answer": "yes"}, 0.78)
+    reply = _call("confirm_pending", {"answer": "no"}, 0.6)
     reply["choices"][0]["logprobs"]["content"][0] = _token("<tool_call>", 1.0)
-    mind, _ = _mind(tmp_path, [reply, _say("¿Qué quieres que haga con notas.txt?")])
+    mind, _ = _mind(tmp_path, [reply])
     pending = {"operation": "filesystem.known.trash.named", "arguments": {"fileName": "notas.txt"}}
-    result = mind.decide(1, words, pending)
-    assert result["operation"] == (None if held else "confirmation.answer")
+    result = mind.decide(1, "no", pending)
+    assert (result["operation"], result["arguments"]) == ("confirmation.answer", {"answer": "no"})
 
 
 def test_an_unsure_search_for_a_dated_question_or_a_curiosity_is_not_held(tmp_path, monkeypatch) -> None:

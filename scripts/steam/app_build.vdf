@@ -21,6 +21,9 @@
 			// Written by the App at run time beside its registration (RuntimeFileHashCache), never shipped.
 			"FileExclusion" "mind-runtime-v1.hash-cache.json"
 			"FileExclusion" "*__pycache__*"
+			// INS-1: what Steam runs when the app is uninstalled (scripts\steam\installscript.vdf, copied to the root
+			// of the build by scripts\build_steam.ps1): BAXY removes the alarms it set in Windows.
+			"InstallScript" "installscript.vdf"
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using Baxy.Providers.Windows.External;
 using Microsoft.Win32;
 
 namespace Baxy.App;
@@ -126,11 +127,26 @@ internal sealed class WindowsAutostartRegistration
 
         string command = BuildCommand(executable);
         string? current = _runKey.Read(PresenceLimits.AutostartValueName);
-        if (!string.Equals(current, command, StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(current, command, StringComparison.OrdinalIgnoreCase)
+            && (!StartsAnotherExisting(current, executable) || _runKey.KeepReplaced(executable, current!)))
         {
             _runKey.Write(PresenceLimits.AutostartValueName, command);
         }
     }
+
+    /// <summary>
+    /// COX-1: whether the Run command starts another BAXY that is still there (the other installation's own setup wrote
+    /// it). Its value has the same name as this one's, so writing this one replaces it: the start does so only after
+    /// keeping it where this installation's uninstall gives it back (<see cref="IWindowsRunKey.KeepReplaced"/>), and
+    /// with nowhere to keep it leaves it alone (Microsoft Learn, «Run and RunOnce Registry Keys»: a value of Run is the
+    /// command line Windows runs at sign-in; one value, one program).
+    /// </summary>
+    private static bool StartsAnotherExisting(string? command, string executable) =>
+        !string.IsNullOrWhiteSpace(command)
+        && ExecutableOf(command) is { } other
+        && Path.IsPathFullyQualified(other)
+        && File.Exists(other)
+        && !string.Equals(Path.GetFullPath(other), Path.GetFullPath(executable), StringComparison.OrdinalIgnoreCase);
 
     /// <summary>«Arrancar con Windows» (design v4, Settings): whether the Run key starts this executable; null when this
     /// copy may not own the sign-in start (a worktree build, another profile).</summary>
@@ -155,6 +171,13 @@ internal sealed class WindowsAutostartRegistration
         string command = BuildCommand(executable);
         if (on)
         {
+            // The person asked for this one: it takes the value even with nowhere to keep the other's.
+            string? current = _runKey.Read(PresenceLimits.AutostartValueName);
+            if (StartsAnotherExisting(current, executable))
+            {
+                _ = _runKey.KeepReplaced(executable, current!);
+            }
+
             _runKey.Write(PresenceLimits.AutostartValueName, command);
         }
         else if (string.Equals(_runKey.Read(PresenceLimits.AutostartValueName), command, StringComparison.OrdinalIgnoreCase))
@@ -317,6 +340,27 @@ internal sealed class WindowsAutostartRegistration
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(RunSubKey, writable: true);
             key?.DeleteValue(name, throwOnMissingValue: false);
+        }
+
+        // In the «Installed apps» entry of the GitHub installer's BAXY, whose uninstall reads it back
+        // (src/Baxy.Installer/WindowsIntegration.cs, UninstallKey and ReplacedAutostartValue); only in the entry that
+        // names the folder this executable is in (UNI2: each installation has its own). A build anywhere else has no
+        // uninstall to give it back.
+        public bool KeepReplaced(string executable, string command)
+        {
+            if (InstalledBaxyEntries.Holding(executable) is not { } entry)
+            {
+                return false;
+            }
+
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(entry.Key, writable: true);
+            if (key is null)
+            {
+                return false;
+            }
+
+            key.SetValue("ReplacedAutostart", command, RegistryValueKind.String);
+            return true;
         }
     }
 }

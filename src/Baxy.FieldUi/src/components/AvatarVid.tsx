@@ -4,6 +4,7 @@ import { LIB, MOUTH_BOX, MOUTH_LEVELS, NEXT, SLEEP_END, clip, groupFor, mouthLev
 import { lipAt } from '../lip';
 import { cutMouths } from './mouths';
 import { LipMouth, type MouthBlend } from './mouthBlend';
+import { stillIn } from '../still';
 
 /* BAXY's avatar in video (design v5, app.jsx BxAvatarVid): a library of Higgsfield clips in public/clips. Every clip
    starts and ends on the same master frame (the «dormido» ones on the sleep frame), so any clip can follow any other
@@ -13,7 +14,9 @@ import { LipMouth, type MouthBlend } from './mouthBlend';
    the current clip, «reposo» and the likely next one are preloaded; a clip with no frame for 4 s is loaded again. While
    there is no frame the parent draws the whole face in code (onReady false): BAXY is never blank.
    While BAXY's voice sounds, the clip's own mouth is covered and a mouth chosen by the voice's loudness at that instant
-   is drawn in its place (lip.ts, avatarClips.ts MOUTH_*): the mouth moves with what is heard, never with the clip. */
+   is drawn in its place (lip.ts, avatarClips.ts MOUTH_*): the mouth moves with what is heard, never with the clip.
+   VUL1: in a state that keeps still (still.ts) the clip on screen does not play: it holds the frame it is on (the
+   master frame, for a clip that comes in then) and plays on from there once the state lets it. */
 
 interface Clip extends HTMLVideoElement { _t?: number }
 
@@ -21,9 +24,11 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
   const wrap = useRef<HTMLDivElement>(null);
   const want = useRef<Group>('reposo');
   const ready = useRef(onReady);
+  const still = useRef(false);
   const api = useRef<{ nudge: () => void } | null>(null);
   useEffect(() => {
     want.current = groupFor(state, expr);
+    still.current = stillIn(state);
     ready.current = onReady;
   });
 
@@ -57,6 +62,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       return v;
     };
     // a clip taken off the page lets go of its file: a detached video keeps its player and its frames until collected
+    const run = (v: Clip) => { if (still.current) v.pause(); else void v.play().catch(() => {}); };
     const drop = (v: Clip) => { v.pause(); v.removeAttribute('src'); v.load(); v.remove(); };
     const take = (g: Group) => { const v = warm[g] ?? make(g); delete warm[g]; return v; };
     const refill = (g: Group) => { if (!dead && !warm[g]) warm[g] = make(g); };
@@ -69,7 +75,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     const swap = (v: Clip, g: Group, fade: boolean) => {
       const old = front;
       try { v.currentTime = 0; } catch { /* not seekable yet */ }
-      void v.play().catch(() => {});
+      run(v);
       el.classList.toggle('fade', fade);
       v.classList.add('on');
       if (old) old.classList.remove('on');
@@ -101,6 +107,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     api.current = {
       nudge: () => {
         if (dead || !front) return;
+        if (front.paused !== still.current && !front.ended) run(front);
         const g = target();
         if (g === cur) return;
         // a calm change (reposo ↔ contento) waits for the clip to end; anything else cuts with a fade
@@ -116,11 +123,11 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     const watchdog = window.setInterval(() => {
       if (!dead && front && front.readyState < 2 && !pending && performance.now() - (front._t ?? 0) > 4000) {
         front._t = performance.now();
-        const src = front.src; front.src = src; front.load(); void front.play().catch(() => {});
+        const src = front.src; front.src = src; front.load(); run(front);
       }
     }, 1500);
     // a window that comes back from the tray or from minimized may find its clip paused: play it again
-    const onVis = () => { if (!document.hidden && front && front.paused && !front.ended) void front.play().catch(() => {}); };
+    const onVis = () => { if (!document.hidden && front && front.paused && !front.ended) run(front); };
     document.addEventListener('visibilitychange', onVis);
     // lip-sync: a canvas over the mouth area where the mouth the voice asks for is composed into the live frame
     const { x: MX, y: MY, w: MW, h: MH } = MOUTH_BOX;
@@ -136,6 +143,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     let cutting = 0, cuts = 0;
     const cutLater = (ms: number) => {
       cutting = window.setTimeout(() => {
+        if (still.current) { cutLater(1500); return; } // the cut decodes the speaking clips: not while keeping still
         void cutMouths(() => dead).then((b) => {
           if (dead) return;
           blend = b;

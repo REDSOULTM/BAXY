@@ -43,6 +43,14 @@ internal sealed class FieldTranscript
                     kept["status"] = "dropped";
                 }
 
+                // INT16 (second blind review): a ring kept ringing (saved while it rang) rings here no more; the App gives
+                // back the ones that still ring (FieldProductChannel.StartSession). Left «ringing», its Parar stayed live
+                // and the view held Enter and Esc for every card after it.
+                if ((string?)kept["who"] == "ring" && kept["ring"] is JsonObject rung && (string?)rung["status"] == "ringing")
+                {
+                    rung["status"] = "ended";
+                }
+
                 _items.Add(kept);
             }
         }
@@ -50,11 +58,23 @@ internal sealed class FieldTranscript
         _sequence = _items.Count;
     }
 
-    internal JsonObject You(string text)
+    /// <param name="byApi">The mind thinks with a company's API now: these words leave this PC (REV_VISTA V-03). The mark stays
+    /// with the conversation, also when it is kept and opened again.</param>
+    internal JsonObject You(string text, bool byApi = false)
     {
         _open = null;
         Turn = NextId("t");
-        return Clone(Store(new JsonObject { ["who"] = "you", ["id"] = NextId("y"), ["text"] = text, ["ts"] = Now() }));
+        return Clone(Store(ByApi(new JsonObject { ["who"] = "you", ["id"] = NextId("y"), ["text"] = text, ["ts"] = Now() }, byApi)));
+    }
+
+    private static JsonObject ByApi(JsonObject item, bool byApi)
+    {
+        if (byApi)
+        {
+            item["api"] = true;
+        }
+
+        return item;
     }
 
     internal JsonObject System(string text) =>
@@ -101,7 +121,7 @@ internal sealed class FieldTranscript
     }
 
     /// <summary>BAXY's words: they complete the open reply (its steps came first) and close the turn's reply.</summary>
-    internal JsonObject Words(string text, string? silent)
+    internal JsonObject Words(string text, string? silent, bool byApi = false)
     {
         JsonObject item = _open is { } open && string.IsNullOrEmpty((string?)open["text"]) ? open : Store(Reply(string.Empty));
         item["text"] = text;
@@ -112,13 +132,27 @@ internal sealed class FieldTranscript
         }
 
         _open = null;
-        return Clone(item);
+        return Clone(ByApi(item, byApi));
     }
 
     internal JsonObject Card(JsonObject card)
     {
         _open = null;
         return Clone(Store(Clone(card)));
+    }
+
+    /// <summary>ALR1: an alarm's or a reminder's card, new or changed (the same id): it leaves the reply being written
+    /// open, since a ring comes when it comes.</summary>
+    internal JsonObject Ring(JsonObject ring)
+    {
+        int at = _items.FindIndex(item => (string?)item["id"] == (string?)ring["id"]);
+        if (at < 0)
+        {
+            return Clone(Store(Clone(ring)));
+        }
+
+        _items[at] = Clone(ring);
+        return Clone(ring);
     }
 
     /// <summary>A card's end: answered (yes or no), expired, or dropped because the person asked something else.</summary>
@@ -169,7 +203,15 @@ internal sealed class FieldTranscript
         _items.Add(item);
         if (_items.Count > MaximumItems)
         {
-            _items.RemoveRange(0, _items.Count - MaximumItems);
+            // V-03: a turn by API that falls off leaves its mark on the first item kept, so the conversation is still said to
+            // have gone out in part (the view does the same with its own shorter list).
+            int dropped = _items.Count - MaximumItems;
+            bool wentOut = _items.Take(dropped).Any(static i => (bool?)i["api"] == true || (bool?)i["apiBefore"] == true);
+            _items.RemoveRange(0, dropped);
+            if (wentOut)
+            {
+                _items[0]["apiBefore"] = true;
+            }
         }
 
         return item;

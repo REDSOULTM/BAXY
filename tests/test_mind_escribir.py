@@ -11,6 +11,8 @@ from test_mind_final import _call, _mind, _say
 DONE = json.dumps({"status": "completed", "verification": "readback"})
 OPENED = json.dumps({"status": "completed", "verification": "window_appeared", "foreground": True})
 APPS = ["Bloc de notas", "Calculadora", "Microsoft Word", "Spotify"]
+LOOK = json.dumps({"status": "completed", "verification": "output_only",
+                   "observed": {"view": "Ventana «Sin título: Bloc de notas» (Notepad, window 2623998), al frente"}})
 
 
 def _trace(mind) -> list[dict]:
@@ -111,11 +113,13 @@ def test_a_call_that_only_read_about_the_application_does_not_count(tmp_path: Pa
 
 def test_a_key_after_a_typing_into_a_given_window_is_pressed(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola", "window": 2623998}),
+    mind, _ = _mind(tmp_path, [_call("input_visible_controls", {"application": "Bloc de notas"}),
+                               _call("input_text_type", {"text": "hola", "window": 2623998}),
                                _call("input_key_press", {"key": "enter"})])
     mind.names = list(APPS)
-    assert mind.decide(1, "escribe hola en el bloc de notas y pulsa enter")["operation"] == "input_text_type"
-    assert mind.continue_turn(2, DONE)["operation"] == "input_key_press"
+    assert mind.decide(1, "escribe hola en el bloc de notas y pulsa enter")["operation"] == "input_visible_controls"
+    assert mind.continue_turn(2, LOOK)["operation"] == "input_text_type"
+    assert mind.continue_turn(3, DONE)["operation"] == "input_key_press"
     assert _not_run(mind) == []
 
 
@@ -162,11 +166,13 @@ def test_an_application_named_in_the_answer_to_a_question_counts(tmp_path: Path,
     assert _not_run(mind)[0]["application"] == ["Bloc de notas"]
 
 
-def test_a_window_given_is_left_as_it_is(tmp_path: Path, monkeypatch) -> None:
+def test_a_window_a_look_gave_is_left_as_it_is(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    mind, _ = _mind(tmp_path, [_call("input_text_type", {"text": "hola", "window": 2623998})])
+    mind, _ = _mind(tmp_path, [_call("input_visible_controls", {"application": "Bloc de notas"}),
+                               _call("input_text_type", {"text": "hola", "window": 2623998})])
     mind.names = list(APPS)
-    step = mind.decide(1, "escribe hola en el bloc de notas")
+    mind.decide(1, "escribe hola en el bloc de notas")
+    step = mind.continue_turn(2, LOOK)
     assert step["kind"] == "action" and step["arguments"]["window"] == 2623998
 
 

@@ -37,5 +37,7 @@
     <EmbeddedResource Include="..\baxy_mind\data\render_surface_classes.v1.json" LogicalName="Baxy.Providers.Windows.RenderSurfaceClasses.json" />
     <EmbeddedResource Include="..\baxy_mind\data\search_addresses.v1.json" LogicalName="Baxy.Providers.Windows.SearchAddresses.json" />
     <EmbeddedResource Include="..\baxy_mind\data\client_cold_start.v1.json" LogicalName="Baxy.Providers.Windows.ClientColdStart.json" />
+    <!-- WEB1: los lugares de GeoNames (CC BY 4.0) que leen el clima y la hora de otro lugar (scripts/datos/geonames_lugares.py). -->
+    <EmbeddedResource Include="Data\geonames_places.v1.tsv.gz" LogicalName="Baxy.Providers.Windows.GeoNamesPlaces.tsv.gz" />
   </ItemGroup>
 </Project>

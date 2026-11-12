@@ -51,6 +51,19 @@ internal static class UnhandledFailures
         return label.Length <= ShellTrace.MaximumLabelLength ? label : label[..ShellTrace.MaximumLabelLength];
     }
 
+    /// <summary>
+    /// A task started and left: its failure is recorded when it fails, under <paramref name="source"/>. Unwatched, it is
+    /// recorded only when the collector finds the task, which may be never before BAXY closes («the exception is
+    /// escalated … when the task is garbage-collected»,
+    /// learn.microsoft.com/dotnet/standard/parallel-programming/exception-handling-task-parallel-library, read 2026-11-09).
+    /// </summary>
+    internal static void Watch(Task task, string source, string? directory = null) =>
+        _ = task.ContinueWith(
+            failed => Record(source, failed.Exception, directory),
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default);
+
     /// <summary>Records one exception nothing caught; <paramref name="directory"/>: where (tests), else the profile's.</summary>
     internal static void Record(string source, Exception? exception, string? directory = null)
     {

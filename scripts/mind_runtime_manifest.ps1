@@ -23,6 +23,11 @@ $script:BaxyMindRuntimePieces = @(
     @('s1_gguf', 's1_gguf_sha256', 'Leaf', 'Modelo de decision de System One'),
     @('mmproj', 'mmproj_sha256', 'Leaf', 'Proyector de vision')
 )
+# QWB2: a store's package offers BAXY's tuned model, which the App downloads only when the person asks
+# (MindRuntimeDiscovery.TunedOffer, build_steam.ps1). Allowed, and never a piece of this machine's runtime.
+$script:BaxyMindRuntimeTunedOffer = @(
+    'tuned_gguf', 'tuned_gguf_sha256', 'tuned_gguf_bytes', 'tuned_gguf_url', 'tuned_gguf_license'
+)
 
 function Get-BaxySha256 {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -97,6 +102,9 @@ function Get-BaxyMindRuntimeStatus {
         }
     }
     if ($actualProperties -ccontains 's1_threads') { $expectedProperties += 's1_threads' }
+    foreach ($name in $script:BaxyMindRuntimeTunedOffer) {
+        if ($actualProperties -ccontains $name) { $expectedProperties += $name }
+    }
     # LoRAs bound by hash to the registered GGUF: property, schema, label.
     $adapterContracts = @(
         @('cpu_prose_adapter', 'baxy-cpu-prose-adapter-v1', 'Adaptador CPU'),

@@ -57,6 +57,47 @@ public sealed class UnhandledFailuresTests
         });
     }
 
+    // REV_APP ASY-b (2026-11-09): a task started and left («_ = …Async()») that failed was recorded only when the
+    // collector found it, as «task», which may be never before BAXY closes. Watched, it is recorded when it fails.
+    [Test]
+    public void ATaskNobodyAwaitsIsRecordedUnderItsNameWhenItFails()
+    {
+        string folder = Path.Combine(Path.GetTempPath(), "baxy-app-tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            var failing = new TaskCompletionSource();
+            var cancelled = new TaskCompletionSource();
+            var done = new TaskCompletionSource();
+            UnhandledFailures.Watch(failing.Task, "conversation.save", folder);
+            UnhandledFailures.Watch(cancelled.Task, "conversation.name", folder);
+            UnhandledFailures.Watch(done.Task, "conversation.name", folder);
+            string log = Path.Combine(folder, "unhandled.v1.jsonl");
+
+            cancelled.SetCanceled();
+            done.SetResult();
+            Assert.That(File.Exists(log), Is.False, "a task that ended or was cancelled is no failure");
+
+            failing.SetException(new InvalidDataException("la carpeta de alguien"));
+
+            Assert.That(File.Exists(log), Is.True, "recorded when it failed, with no collection in between");
+            string text = File.ReadAllText(log);
+            JsonNode? line = JsonNode.Parse(text);
+            Assert.Multiple(() =>
+            {
+                Assert.That((string?)line?["source"], Is.EqualTo("conversation.save"));
+                Assert.That((string?)line?["type"], Is.EqualTo(typeof(InvalidDataException).FullName));
+                Assert.That(text, Does.Not.Contain("alguien"));
+            });
+        }
+        finally
+        {
+            if (Directory.Exists(folder))
+            {
+                Directory.Delete(folder, recursive: true);
+            }
+        }
+    }
+
     [Test]
     public void AnExceptionIsRecordedByItsTypeAndMethodNeverItsMessage()
     {

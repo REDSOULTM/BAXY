@@ -7,6 +7,8 @@ Las bibliotecas de Python traen además sus propias licencias en `python/Lib/sit
 - `ATRIBUCIONES_MODELOS.md`: quién hizo cada modelo y qué cambió BAXY.
 - `CRATES_RUST.md`: los crates de Rust dentro de `pydantic_core` y `jiter`, con la licencia que declara cada uno.
 - `FUENTES.md`: dónde está el código fuente de Eigen (MPL-2.0) y de lo que BAXY cambia y compila.
+- `PALABRA_DE_ACTIVACION.md`: con qué se entrenó el detector de `wake/` (k6r-v7a), la licencia de cada fuente y la suya.
+- `PRIVACIDAD.md`: la política de privacidad: qué sale del equipo, a qué servicio y cuándo (sección 5 de los acuerdos).
 
 ## Textos copiados de su fuente
 
@@ -17,8 +19,8 @@ de las piezas que sherpa-onnx compila dentro salen de sus fuentes, cada uno con 
 | Fichero | Qué cubre | Fuente | SHA-256 |
 |---|---|---|---|
 | `Apache-2.0.txt` | Lo que declara Apache-2.0 sin traer el texto: `flatbuffers` | <https://www.apache.org/licenses/LICENSE-2.0.txt> | `cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30` |
-| `Qwen3.5-4B-LICENSE.txt` | `models/`: el modelo de BAXY y el proyector de visión | <https://huggingface.co/Qwen/Qwen3.5-4B/raw/main/LICENSE> | `bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a` |
-| `CC-BY-4.0.txt` | `stt/`: Parakeet | <https://creativecommons.org/licenses/by/4.0/legalcode.txt> | `9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411` |
+| `Qwen3.5-4B-LICENSE.txt` | `models/`: Qwen3.5-4B de serie y el proyector de visión | <https://huggingface.co/Qwen/Qwen3.5-4B/raw/main/LICENSE> | `bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a` |
+| `CC-BY-4.0.txt` | `stt/`: Parakeet; `app/`: los lugares de GeoNames dentro de `Baxy.Providers.Windows.dll`; los datos del tiempo de MET Norway que BAXY lee (no se distribuyen) | <https://creativecommons.org/licenses/by/4.0/legalcode.txt> | `9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411` |
 | `CC-BY-SA-4.0.txt` | `wake/`: Kroko, por prudencia (**versión sin confirmar**, ver `ATRIBUCIONES_MODELOS.md`) | <https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt> | `28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5` |
 | `OpenRAIL-M-Supertonic-3.txt` | `voice/`: Supertonic 3 | <https://huggingface.co/Supertone/supertonic-3/raw/main/LICENSE> | `0d944a9110fed9a9602d60e0423a272903e7bd21ab060490774efc77c2275e9f` |
 | `Inter-OFL.txt` | `app/FieldUi/assets`: Inter | <https://raw.githubusercontent.com/rsms/inter/master/LICENSE.txt> | `262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a` |
@@ -57,3 +59,8 @@ de las piezas que sherpa-onnx compila dentro salen de sus fuentes, cada uno con 
 | `Zlib.txt` | `pydantic_core`: `foldhash`, ver `CRATES_RUST.md` | <https://raw.githubusercontent.com/spdx/license-list-data/main/text/Zlib.txt> | `bfb1112d49db5b1daecdfef24bd7e2f3ea0bafb33aa67aa0ab51e2bf8407c03d` |
 | `pocketfft-LICENSE.md` | `numpy/fft`: pocketfft, compilado dentro (`numpy/fft/_pocketfft.c` remite a este texto y la rueda no lo trae) | <https://raw.githubusercontent.com/mreineck/pocketfft/master/LICENSE.md> | `c254b2b5fd30ae3c89d36ba061730563b9760fca04f1b746a1b2c3157da2c789` |
 | `numpy-msun-NOTICE.txt` | `numpy`: lo derivado de msun en npymath (avisos sacados de la fuente; el SHA-256 es del fichero, no de un texto bajado) | <https://files.pythonhosted.org/packages/65/6e/09db70a523a96d25e115e71cc56a6f9031e7b8cd166c1ac8438307c14058/numpy-1.26.4.tar.gz> | `6f7dfc4110c1ae28312fc679ff98cb060c3b191aaed0c8d05d5357f300f1c54e` |
+| `xxHash-LICENSE.txt` | `llama*/mtmd.dll`: xxHash (BSD-2-Clause, pide reproducir el aviso con el binario). Cabecera copiada sin cambios; el SHA-256 es del fichero fuente entero, bajado el 2026-11-07 | <https://raw.githubusercontent.com/ggml-org/llama.cpp/fcac19079/vendor/hash/xxhash/xxhash.h> | `1d5a18c925f71a9c2d8424742df47492f846f9890e3e8c55d201e4729d9e3d6d` |
+| `llamafile-sgemm-LICENSE.txt` | `llama*/ggml-cpu-*.dll`: sgemm de llamafile (MIT, Mozilla Foundation). Ídem | <https://raw.githubusercontent.com/ggml-org/llama.cpp/fcac19079/ggml/src/ggml-cpu/llamafile/sgemm.cpp> | `8413c9a0828ddea7289aee72a32c03bd56a23ee40179ec3600f9b0589a21e338` |
+| `HACL-star-LICENSE.txt` | `python/python312.dll`: HACL* (MIT), los hashes de CPython 3.12.10, que su `LICENSE.txt` no cita. Ídem | <https://raw.githubusercontent.com/python/cpython/v3.12.10/Modules/_hacl/Hacl_Hash_SHA2.c> | `30638efb75c8b185bb09c3df6977e3f3c5d21a1e696218cf7ade6bc4d5201b31` |
+| `Rust-crates-MIT-LICENSES.txt` | `pydantic_core`, `jiter`: el texto MIT, con su copyright, de los crates que sólo se ofrecen bajo MIT (bitvec 1.0.1 y 1.1.1, funty, lru, radium, speedate, strum, tap, wyz, zmij), sacado del `.crate` de cada versión; el fichero dice el SHA-256 de cada `.crate`, y el de esta fila es el del fichero armado, bajado el 2026-11-07 | <https://static.crates.io/crates/> | `6583522b827baabeb83e9d5d7a983fe03e26dce618d0782346d1efb672578e58` |
+| `Microsoft-VisualCpp-Redistributable.txt` | `python/`, `llama*/`: `msvcp140*.dll`, `vcruntime140*.dll`. Los términos de Microsoft para redistribuirlos (apartado 4 de la licencia de Visual Studio 2022 Community y su lista REDIST), citados sin cambios; el SHA-256 es del `.docx` leído, bajado el 2026-11-07 | <https://visualstudio.microsoft.com/wp-content/uploads/2021/11/Visual-Studio-2022-Community-License-EN.docx> | `41a207b10c8ab91d0d2f10a854715f73dca54509581692d2fe179aa3ffcb8540` |

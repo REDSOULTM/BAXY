@@ -27,6 +27,9 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         Directory.CreateDirectory(_directory);
         if (new DirectoryInfo(_directory).LinkTarget is not null)
             throw new IOException("Capture directory cannot be a link.");
+        // PRV1 (PRIV-02): what an earlier run left (the App removes a request's captures as it ends; a run that was
+        // killed did not): no call of this run can name them.
+        StoredCaptures.Clear(_directory);
     }
 
     public ValueTask<CaptureResult> CaptureAsync(CancellationToken cancellationToken)
@@ -528,6 +531,21 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
                 ActiveWindowChanged, "Active window changed while observing its identity.");
         return new ActiveWindowSnapshot((long)window, processId, DateTimeOffset.FromFileTime(created),
             bounds, desktop);
+    }
+
+    /// <summary>PAN1: the virtual screen's box in physical pixels, where a capture of the whole screen starts.</summary>
+    internal static CaptureBounds PhysicalDesktopBounds()
+    {
+        nint previous = SetThreadDpiAwarenessContext((nint)(-4));
+        try
+        {
+            return ReadDesktopBounds();
+        }
+        finally
+        {
+            if (previous != 0)
+                SetThreadDpiAwarenessContext(previous);
+        }
     }
 
     private static CaptureBounds ReadDesktopBounds() => new(

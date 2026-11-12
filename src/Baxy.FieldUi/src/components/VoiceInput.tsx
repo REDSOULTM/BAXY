@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Icon, type IconName } from './Icon';
 import type { BaxyState, MicMode } from '../types';
 import { useT, type Words } from '../i18n';
-import { micBlockedText } from '../causes';
+import { micBlockedText, noWakeText } from '../causes';
 
 /* The input bar (design parts.jsx BxInput): the voice button with its three modes, the text field and the send button.
    The design's attach button is not here: attaching files waits for a typed contract on the host (README: «adjuntos sin
@@ -28,22 +28,31 @@ interface Props {
   /** uso 95: the ear waits for memory (the reason the microphone modes are off), or null */
   micWaiting?: { need_mb: number; left_mb: number } | null;
   noRecognizer?: boolean;
+  /** V132: the voice settled without its wake word (and why): «Siempre activo» is not offered */
+  noWake?: boolean;
+  wakeProblem?: string | null;
   onMic: (m: MicMode) => void;
   onPttStart: () => void;
   onPttEnd: () => void;
   /** sends the request; false when it was not taken (not sent, or the host refused it) */
   onSubmit: (text: string) => Promise<boolean>;
+  /** the longest request the host takes (MissionInput.MaximumCharacters) */
+  maxChars: number;
+  /** COX-1: the length of the box's request while it is longer than maxChars, 0 once it fits */
+  onTooLong: (length: number) => void;
   state: BaxyState;
   canSend: boolean;
 }
 
-export function VoiceInput({ mic, micAvailable, micWaiting = null, noRecognizer = false, onMic, onPttStart, onPttEnd, onSubmit, state, canSend }: Props) {
+export function VoiceInput({ mic, micAvailable, micWaiting = null, noRecognizer = false, noWake = false, wakeProblem = null, onMic, onPttStart, onPttEnd, onSubmit, state, canSend, maxChars, onTooLong }: Props) {
   const t = useT();
   const [draft, setDraft] = useState('');
   const [menu, setMenu] = useState(false);
   const cur = MIC.find((m) => m.id === mic) ?? MIC[1];
   const talking = mic === 'ptt' && state === 'listening';
   const armed = draft.trim().length > 0 && canSend;
+  const length = draft.trim().length;
+  useEffect(() => { onTooLong(length > maxChars ? length : 0); }, [length, maxChars, onTooLong]);
   useEffect(() => {
     if (!menu) return;
     const close = (e: PointerEvent) => { if (!(e.target as Element | null)?.closest('.bx-micwrap')) setMenu(false); };
@@ -63,7 +72,7 @@ export function VoiceInput({ mic, micAvailable, micWaiting = null, noRecognizer 
   const ph = state === 'booting' ? t('Cargando el modelo… lo que escribas espera', 'Loading the model… what you type will wait')
     : state === 'confirm' ? t('↵ sí · esc no', '↵ yes · esc no')
       : mic === 'ptt' ? t('Escribe o mantén espacio', 'Type, or hold space')
-        : mic === 'off' ? t('Escribe a BAXY', 'Message BAXY')
+        : mic === 'off' || noWake ? t('Escribe a BAXY', 'Message BAXY')
           : t('Escribe o di «BAXY»', 'Type, or say “BAXY”');
   return (
     <div className="bx-line">
@@ -72,12 +81,13 @@ export function VoiceInput({ mic, micAvailable, micWaiting = null, noRecognizer 
           <div className="bx-micmenu">
             {MIC.map((m) => {
               const blocked = m.id !== 'off' && !micAvailable;
+              const why = blocked ? micBlockedText(micWaiting, t, noRecognizer) : m.id === 'always' && noWake ? noWakeText(wakeProblem, t) : null;
               return (
-                <button key={m.id} className={m.id === mic ? 'on' : ''} disabled={blocked}
-                  title={blocked ? micBlockedText(micWaiting, t, noRecognizer) : undefined}
+                <button key={m.id} className={m.id === mic ? 'on' : ''} disabled={why !== null}
+                  title={why ?? undefined}
                   onClick={() => { onMic(m.id); setMenu(false); }}>
                   <Icon name={m.icon} size={14} />
-                  <span className="l"><span>{t.w(m.label)}</span><span className="s">{blocked ? micBlockedText(micWaiting, t, noRecognizer) : t.w(m.sub)}</span></span>
+                  <span className="l"><span>{t.w(m.label)}</span><span className="s">{why ?? t.w(m.sub)}</span></span>
                   {m.id === mic ? <Icon name="check" size={12} /> : null}
                 </button>
               );

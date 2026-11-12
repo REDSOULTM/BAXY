@@ -102,6 +102,16 @@ def test_the_descriptions_cite_the_names_the_model_sees(tmp_path: Path) -> None:
     assert f"(that one is {mind.wires.name('audio.volume')})" in level["function"]["description"]
 
 
+def test_the_places_search_says_what_its_receipt_tells_of_each_site(tmp_path: Path) -> None:
+    # ARR2: with hub/arr1 the 4B searched a broader kind than the one asked (restaurant for tapas bars, park for
+    # playgrounds) and told the sites as the kind asked: 10 falsehoods in 462 turns. The receipt now says each site's
+    # OpenStreetMap tag («category») and how the sites were found («matchedBy»); the description says what both mean.
+    mind, _ = _configured(tmp_path, ["web.search"])
+    text = next(t for t in mind.tools if t["function"]["name"] == mind.wires.name("web.search"))["function"]["description"]
+    assert "«category»" in text and "«matchedBy»" in text
+    assert "a broader kind finds sites of the broader kind, not of the one asked" in text
+
+
 def test_a_call_by_the_new_name_runs_its_operation_and_the_receipt_keeps_it(tmp_path: Path) -> None:
     mind, server = _configured(tmp_path, _OPERATIONS)
     wire = mind.wires.name("audio.volume")

@@ -90,7 +90,7 @@ internal static class ProductConductorHost
             capture?.WriteLine(line);
         }
 
-        await using var viewModel = new MainWindowViewModel();
+        await using MainWindowViewModel viewModel = MainWindowViewModel.ForThisPc();
         await using var telemetry = new FieldTelemetrySampler(() => viewModel.MindProcessId);
         await using FieldProductChannel view = Mount(viewModel, telemetry, lifetime.Token);
         long turnStartedMs = 0;

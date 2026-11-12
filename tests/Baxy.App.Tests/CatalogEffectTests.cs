@@ -36,6 +36,8 @@ public sealed class CatalogEffectTests
         // (the lists left them to the heartbeat's risks).
         "media.play.query", "media.play.exact", "media.play.youtube", "streaming.play.named", "streaming.navigate",
         "game.store.search", "game.store.page",
+        // actualizar-ordenes-app: BAXY asks GitHub for its latest release (its version only, nothing of the person).
+        "baxy.update",
     ];
 
     [Test]
@@ -71,13 +73,15 @@ public sealed class CatalogEffectTests
         || (operation == "app.open" && (IsTrue(arguments, "foreground") || IsTrue(arguments, "newDocument")
             || Named(arguments, "place")))
         || (operation == "system.settings.set" && Text(arguments, "setting") == "do_not_disturb")
+        // actualizar-ordenes-app: installing opens the installer's window or the store's.
+        || (operation == "baxy.update" && Text(arguments, "action") == "install")
         || (operation == "input.visible.controls" && Named(arguments, "application"))
         || (operation == "media.control" && !(Named(arguments, "sourceApp")
             && !string.Equals(Text(arguments, "sourceApp"), WindowsExternalCapabilityProvider.YouTubeTabMediaSource,
                 StringComparison.OrdinalIgnoreCase)));
 
-    private static bool Network(string operation, JsonObject arguments) =>
-        NetworkAlways.Contains(operation) || (operation == "system.time" && Named(arguments, "place"));
+    // WEB1 (2026-11-07): system.time with a place asks no service since its places are BAXY's own copy of GeoNames.
+    private static bool Network(string operation, JsonObject arguments) => NetworkAlways.Contains(operation);
 
     private static string? Text(JsonObject arguments, string name) =>
         arguments[name] is JsonValue value && value.TryGetValue(out string? text) ? text : null;

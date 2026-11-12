@@ -315,7 +315,25 @@ internal static class ScreenViewProjection
         if ((int?)view["textOmittedLines"] is > 0 and int omittedLines)
         {
             text.Append("(texto cortado: ").Append(omittedLines)
-                .Append(" líneas leídas no se listan, por largas o pasado el tope)\n");
+                .Append(" líneas leídas no se listan, por largas o pasado el tope");
+            // Encargo LEC2: where what the cap left out lies, how much of it was a list's rows, and the look that reads it.
+            if (view["textOmittedZones"] is JsonObject { Count: > 0 } cutZones)
+            {
+                text.Append("; fuera por el tope: ").Append(string.Join(", ", cutZones
+                    .Where(static zone => Zones.ContainsKey(zone.Key) && (int?)zone.Value > 0)
+                    .Select(static zone => $"{(int?)zone.Value} {Zones[zone.Key]}")));
+                if ((int?)view["textOmittedListRows"] is > 0 and int listRows)
+                {
+                    text.Append(" (").Append(listRows).Append(" de ellas, filas de una lista de controles)");
+                }
+
+                if ((string?)view["textRestWith"] == "lines")
+                {
+                    text.Append("; se leen todas, cada una en su sitio, con lines");
+                }
+            }
+
+            text.Append(")\n");
         }
 
         if (view["text"] is JsonObject zones)
@@ -348,38 +366,104 @@ internal static class ScreenViewProjection
                     .ToArray()
                 : [];
             int misreadNames = 0;
-            foreach ((string label, string[] bandZones) in Bands)
+            List<string> Kept(JsonArray read)
             {
                 var lines = new List<string>();
-                foreach (string zone in bandZones)
+                foreach (JsonNode? line in read)
                 {
-                    if (zones[zone] is not JsonArray zoneLines)
+                    if ((string?)line is not { Length: > 0 } value)
                     {
                         continue;
                     }
 
-                    foreach (JsonNode? line in zoneLines)
+                    if (listedNames.Contains(Folded(value)))
                     {
-                        if ((string?)line is not { Length: > 0 } value)
-                        {
-                            continue;
-                        }
-
-                        if (listedNames.Contains(Folded(value)))
-                        {
-                            repeatedNames++;
-                        }
-                        else if (listedShapes.Length > 0 && Misreads(Shape(value), listedShapes))
-                        {
-                            misreadNames++;
-                        }
-                        else
-                        {
-                            lines.Add(value);
-                        }
+                        repeatedNames++;
+                    }
+                    else if (listedShapes.Length > 0 && Misreads(Shape(value), listedShapes))
+                    {
+                        misreadNames++;
+                    }
+                    else
+                    {
+                        lines.Add(value);
                     }
                 }
 
+                return lines;
+            }
+
+            // Encargo LEC3: the text as it is read on screen, by columns and blocks (WindowsVisibleOcrLocator.ReadingColumns),
+            // so an author line stays with its message and the last block seen is told as such; the bands of the 3×3 grid
+            // are for a look without them.
+            var bands = new List<(string Label, List<string> Lines)>();
+            bool byColumns = false;
+            if (view["textColumns"] is JsonArray { Count: > 0 } textColumns)
+            {
+                // A column, beside others, whose lines are half or more names of listed controls is a list's (Encargo
+                // LEC2's ListRows): what is left of it goes on one line, with no «last» of its own.
+                bool besideOthers = textColumns.Count > 1;
+                var columns = textColumns.OfType<JsonObject>()
+                    .Select(column =>
+                    {
+                        List<JsonArray> read = [.. (column["blocks"] as JsonArray ?? []).OfType<JsonArray>()];
+                        int lines = read.Sum(static block => block.Count);
+                        List<List<string>> blocks = [.. read.Select(Kept).Where(static block => block.Count > 0)];
+                        bool list = besideOthers && lines >= 5 && (lines - blocks.Sum(static block => block.Count)) * 2 >= lines;
+                        return (Zone: (string?)column["zone"], ToBottomEdge: (bool?)column["toBottomEdge"] == true, List: list,
+                            Blocks: list && blocks.Count > 0 ? [[.. blocks.SelectMany(static block => block)]] : blocks);
+                    })
+                    .Where(static column => column.Blocks.Count > 0)
+                    .ToList();
+                for (int c = 0; c < columns.Count; c++)
+                {
+                    string where = columns[c].Zone switch { "L" => "izq.", "R" => "der.", _ => "centro" };
+                    string column = columns.Count == 1 ? string.Empty : $"columna {c + 1} ({where}), ";
+                    if (columns[c].List)
+                    {
+                        bands.Add(($"{column}lo que queda de una lista de controles", columns[c].Blocks[0]));
+                        continue;
+                    }
+
+                    for (int b = 0; b < columns[c].Blocks.Count; b++)
+                    {
+                        string label = $"{column}bloque {b + 1}";
+                        if (b == columns[c].Blocks.Count - 1 && columns[c].ToBottomEdge)
+                        {
+                            label += b == 0
+                                ? ", cortado por el borde de abajo: sigue más abajo sin verse"
+                                : ", el último que se ve, cortado por el borde de abajo: sigue más abajo sin verse";
+                        }
+                        else if (b == columns[c].Blocks.Count - 1 && b > 0)
+                        {
+                            label += columns.Count == 1 ? ", el último que se ve" : ", el último que se ve en esa columna";
+                        }
+
+                        bands.Add((label, columns[c].Blocks[b]));
+                    }
+                }
+
+                byColumns = bands.Count > 0;
+            }
+            else
+            {
+                foreach ((string label, string[] bandZones) in Bands)
+                {
+                    var lines = new List<string>();
+                    foreach (string zone in bandZones)
+                    {
+                        if (zones[zone] is JsonArray zoneLines)
+                        {
+                            lines.AddRange(Kept(zoneLines));
+                        }
+                    }
+
+                    bands.Add((label, lines));
+                }
+            }
+
+            foreach ((string label, List<string> lines) in bands)
+            {
                 if (lines.Count > 0)
                 {
                     if (recognized)
@@ -395,6 +479,15 @@ internal static class ScreenViewProjection
                         }
 
                         recognized = false;
+                    }
+
+                    if (byColumns)
+                    {
+                        text.Append("(el «Texto» va como se lee en pantalla: por columnas, de izquierda a derecha, y cada "
+                            + "columna de arriba abajo, en bloques; un salto grande o un cambio de sangría separa un bloque del "
+                            + "siguiente, y la línea corta de encima de un bloque (un nombre, una hora) va con él; lo de arriba "
+                            + "del todo y el último bloque son lo que se ve: si la vista se desplaza, puede haber más)\n");
+                        byColumns = false;
                     }
 
                     text.Append("Texto ").Append(label).Append(": ").Append(string.Join(" | ", lines)).Append('\n');

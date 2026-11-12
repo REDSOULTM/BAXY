@@ -2,12 +2,14 @@ import { memo, type ReactNode } from 'react';
 import { Globe, Icon } from './Icon';
 import type { BaxyState, Metrics } from '../types';
 import { useT, type Words } from '../i18n';
+import { num } from '../numbers';
 
-/* The left rail (design chat.jsx, BxRail): privacy, power, confirmation mode, the PC's readings, the panels and the
-   presentation profiles. A reading the PC did not give shows «—», never a 0. */
+/* The left rail (design chat.jsx, BxRail): privacy, power, the PC's readings, the panels and Settings. A reading the PC
+   did not give shows «—», never a 0. The accessibility profiles left it too (owner, 2026-11-08): the mode and the
+   profiles to come are in Settings › Accesibilidad. The confirmation mode left it (owner, 2026-11-08): Sin frenos is
+   chosen in Settings › Confirmación with a second yes, and a label at the top says it while it is on. */
 
-export type PanelId = 'sessions' | 'memory' | 'triggers' | 'catalog' | 'proposals' | 'settings';
-export type Profile = 'normal' | 'novidente' | 'movilidad';
+export type PanelId = 'sessions' | 'memory' | 'triggers' | 'routines' | 'catalog' | 'proposals' | 'settings';
 
 const GLYPH: Record<'mdl' | 'cpu' | 'gpu' | 'tmp', ReactNode> = {
   mdl: <><path d="M8 1.8L13.4 4.9V11.1L8 14.2L2.6 11.1V4.9Z"></path><circle cx="8" cy="5.4" r="1"></circle><circle cx="5.4" cy="9.6" r="1"></circle><circle cx="10.6" cy="9.6" r="1"></circle><path d="M7.5 6.3L5.9 8.7M8.5 6.3L10.1 8.7M6.4 9.6H9.6"></path></>,
@@ -34,44 +36,45 @@ function Gauge({ k, v, unit, norm, hot, tip }: { k: keyof typeof GLYPH; v: strin
 }
 
 const MODS: [Exclude<PanelId, 'settings'>, Words, ReactNode][] = [
-  ['sessions', { es: 'Sesiones', en: 'Sessions' }, <><rect x="2.5" y="3" width="11" height="10" rx="1"></rect><path d="M2.5 6h11M5 8.6h6M5 10.6h4"></path></>],
+  ['sessions', { es: 'Historial', en: 'History' }, <><path d="M2.9 8a5.1 5.1 0 1 0 1.5-3.6"></path><path d="M2.6 2.7v2.4H5"></path><path d="M8 5.3V8l1.9 1.3"></path></>],
   ['memory', { es: 'Memoria', en: 'Memory' }, <><path d="M8 2.5L13.5 5.5L8 8.5L2.5 5.5Z"></path><path d="M2.5 8.3L8 11.3L13.5 8.3"></path><path d="M2.5 11L8 14L13.5 11"></path></>],
-  ['triggers', { es: 'Triggers', en: 'Triggers' }, <><circle cx="8" cy="8.5" r="5"></circle><path d="M8 5.8V8.5L9.8 10M6.5 2h3"></path></>],
+  ['triggers', { es: 'Alarmas', en: 'Alarms' }, <><circle cx="8" cy="8.5" r="5"></circle><path d="M8 5.8V8.5L9.8 10M6.5 2h3"></path></>],
+  ['routines', { es: 'Rutinas', en: 'Routines' }, <><path d="M2.8 7.2A5.2 5.2 0 0 1 12.4 4.6"></path><path d="M12.6 2v2.8H9.8"></path><path d="M13.2 8.8A5.2 5.2 0 0 1 3.6 11.4"></path><path d="M3.4 14v-2.8h2.8"></path></>],
   ['catalog', { es: 'Capacidades', en: 'Capabilities' }, <><rect x="2.5" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="2.5" width="4.5" height="4.5" rx=".8"></rect><rect x="2.5" y="9" width="4.5" height="4.5" rx=".8"></rect><rect x="9" y="9" width="4.5" height="4.5" rx=".8"></rect></>],
   ['proposals', { es: 'Propuestas', en: 'Proposals' }, <><path d="M4 11V7a4 4 0 0 1 8 0v4l1.2 1.5H2.8Z"></path><path d="M6.6 14h2.8"></path></>],
-];
-
-// FT/proveedores goal, the owner's decision on the modes (2026-10-18): only the standard mode (text) is ready; the
-// blind and the mobility modes are «próximamente disponible», shown so and never chosen as if they were ready.
-const PROFILES: [Profile, 'person' | 'eye-off' | 'wheelchair', Words, boolean][] = [
-  ['normal', 'person', { es: 'Estándar', en: 'Standard' }, true],
-  ['novidente', 'eye-off', { es: 'No vidente · próximamente disponible', en: 'Blind or low vision · coming soon' }, false],
-  ['movilidad', 'wheelchair', { es: 'Movilidad · próximamente disponible', en: 'Mobility · coming soon' }, false],
 ];
 
 interface RailProps {
   state: BaxyState;
   powered: boolean;
   onPower: () => void;
-  bypass: boolean;
-  onMode: () => void;
   metrics: Metrics | null;
   net: string | null;
   /** the model behind an API that is answering, null while it is the one on this PC */
   api: string | null;
-  profile: Profile;
-  onProfile: (p: Profile) => void;
-  counts: Record<'sessions' | 'memory' | 'triggers' | 'catalog', number | null>;
+  /** REV_VISTA V-03: some of this conversation went to an API earlier (the host marks its turns), though none answers now */
+  apiPast: boolean;
+  /** another model in use (by API or Ollama's): BAXY's own holds no memory then, and its reading is not that model's */
+  other?: string | null;
+  /** Personalización: the PC's readings in the rail */
+  gauges: boolean;
+  /** «Rutinas» (RUT3) shows nothing, not «—», until the App gives its count: a number not given is not shown (OCR1) */
+  counts: Record<'sessions' | 'memory' | 'triggers' | 'routines' | 'catalog', number | null>;
   quiet: boolean;
   onPanel: (p: PanelId) => void;
+  /** VIS4: the version this App is (GET /settings/general «version», VIS3's), beside «BAXY»; nothing until the App gave it */
+  version?: string | null;
 }
 
-function fixed(v: number | null | undefined, digits: number): string | null {
-  return typeof v === 'number' && Number.isFinite(v) ? v.toFixed(digits) : null;
+function fixed(v: number | null | undefined, digits: number, locale: string): string | null {
+  return typeof v === 'number' && Number.isFinite(v) ? num(v, locale, digits) : null;
 }
 
-function RailView({ state, powered, onPower, bypass, onMode, metrics, net, api, profile, onProfile, counts, quiet, onPanel }: RailProps) {
+function RailView({ state, powered, onPower, metrics, net, api, apiPast, other, gauges: showGauges, counts, quiet, onPanel, version }: RailProps) {
   const t = useT();
+  // what the person recognises: a build's «+commit» is not a version (SemVer 2.0.0 §10); the whole stamp stays in Settings
+  const shownVersion = version?.split('+', 1)[0].trim() || null;
+  const locale = t.locale;
   const m = metrics;
   const gauges: ['cpu' | 'gpu' | 'tmp', number | null | undefined, string, number, string][] = [
     ['cpu', m?.cpu, '%', 100, t('Procesador del PC', 'Processor')],
@@ -79,19 +82,25 @@ function RailView({ state, powered, onPower, bypass, onMode, metrics, net, api, 
     ['tmp', m?.temp, '°', 90, t('Temperatura de la gráfica', 'Graphics card temperature')],
   ];
   const vram = m?.model_vram_gb, ram = m?.model_ram_gb;
-  const used = typeof vram === 'number' ? vram : null;
-  const modelTip = used !== null || typeof ram === 'number'
-    ? t('Modelo BAXY · vídeo ', 'BAXY model · VRAM ') + (fixed(vram, 1) ?? '—') + ' GB · RAM ' + (fixed(ram, 1) ?? '—') + t(' GB · límite 4 GB', ' GB · 4 GB limit')
+  const used = !other && typeof vram === 'number' ? vram : null;
+  const modelTip = other ? t(`Otro modelo en uso (${other}): su memoria se ve en Ajustes › Modelo`, `Another model in use (${other}): its memory shows in Settings › Model`)
+    : used !== null || typeof ram === 'number'
+    ? t('Modelo BAXY · vídeo ', 'BAXY model · VRAM ') + (fixed(vram, 1, t.locale) ?? '—') + ' GB · RAM ' + (fixed(ram, 1, t.locale) ?? '—') + ' GB'
     : t('Modelo BAXY · aún no se puede leer', 'BAXY model · can’t be read yet');
   return (
     <div className="bx-left">
-      <div className="left-header">
+      <div className="left-header pywebview-drag-region">
         <div className="row">
           <span className="name">baxy</span>
-          <button className="bx-ib plain bx-gear" onClick={() => onPanel('settings')} title={t('Ajustes', 'Settings')} aria-label={t('Ajustes', 'Settings')}><Icon name="settings" size={15} /></button>
+          {/* owner, 2026-11-10: the version beside «BAXY», on its line. Said «versión 1.3.3» to a screen reader (a generic
+              span takes no aria-label); a row too narrow for it wraps it out of sight rather than cut it */}
+          {shownVersion ? <span className="bx-ver"><span className="sr-only">{t('versión ', 'version ')}</span>{shownVersion}</span> : null}
         </div>
-        <div className={'bx-priv' + (net || api ? ' out' : '')} title={api ? t('Lo que le pases a BAXY sale hacia la API de ', 'What you give BAXY goes out to the API of ') + api : net ? t('Salió a internet: ', 'Went online: ') + net : t('El modelo y tus datos se quedan en este PC', 'The model and your data stay on this PC')}>
-          {api ? <><Globe s={10} /><span>{t('Modelo por API', 'Model by API')}</span></> : net ? <><Globe s={10} /><span>{t('Salió a internet', 'Went online')}</span></> : <><i></i><span>{t('Todo local', 'All local')}</span></>}
+        <div className={'bx-priv' + (net || api || apiPast ? ' out' : '')} title={api ? t('Lo que le pases a BAXY sale hacia la API de ', 'What you give BAXY goes out to the API of ') + api : net ? t('Salió a internet: ', 'Went online: ') + net
+          : apiPast ? t('En esta conversación, lo que le pasaste mientras usabas un modelo por API salió hacia esa empresa. Ahora el modelo corre en este PC.', 'In this conversation, what you gave BAXY while you used a model by API went out to that company. The model runs on this PC now.')
+            : t('El modelo y tus datos se quedan en este PC', 'The model and your data stay on this PC')}>
+          {api ? <><Globe s={10} /><span>{t('Modelo por API', 'Model by API')}</span></> : net ? <><Globe s={10} /><span>{t('Salió a internet', 'Went online')}</span></>
+            : apiPast ? <><Globe s={10} /><span>{t('Salió por API', 'Went out by API')}</span></> : <><i></i><span>{t('Todo local', 'All local')}</span></>}
         </div>
       </div>
       <button className={'power-row' + (powered ? ' on' : ' off')} onClick={onPower} title={powered ? t('Poner en reposo', 'Put to sleep') : t('Activar', 'Wake up')}
@@ -100,49 +109,36 @@ function RailView({ state, powered, onPower, bypass, onMode, metrics, net, api, 
         <span className="power-lbl">{state === 'booting' ? t('Arrancando', 'Starting') : powered ? t('Activo', 'Active') : t('En reposo', 'Asleep')}</span>
         <span className="power-dot"></span>
       </button>
-      <div className="min-block">
-        <div className="sec-head"><span>{t('confirmación', 'confirmation')}</span></div>
-        <button className={'bx-modebtn ' + (bypass ? 'bypass' : 'normal')} onClick={onMode} role="switch" aria-checked={bypass}
-          aria-label={bypass ? t('Confirmación en Bypass: hace todo sin preguntar', 'Confirmation in Bypass: does everything without asking') : t('Confirmación Normal: pregunta antes de lo arriesgado · activar Bypass', 'Normal confirmation: asks before risky things · turn on Bypass')}
-          title={bypass ? t('Bypass: hace todo sin preguntar · pulsa para volver a Normal', 'Bypass: does everything without asking · press to go back to Normal') : t('Normal: pregunta antes de lo arriesgado · pulsa para Bypass', 'Normal: asks before risky things · press for Bypass')}>
-          <span className="ic"><Icon name={bypass ? 'bolt' : 'check'} size={14} /></span>
-          <span className="tx"><span className="n">{bypass ? 'Bypass' : 'Normal'}</span><span className="s">{bypass ? t('Sin frenos', 'No brakes') : t('Si hay riesgo', 'When risky')}</span></span>
-          <span className="sw"><i></i></span>
-        </button>
-      </div>
-      <div className="min-block">
+      {showGauges ? <div className="min-block">
         <div className="sec-head"><span>{t('sistema', 'system')}</span></div>
         <div className="bx-gauges">
           {gauges.map(([k, v, u, mx, tip]) => {
-            const t = fixed(v, 0);
+            const t = fixed(v, 0, locale);
             return <Gauge key={k} k={k} v={t ?? '—'} unit={t ? u : ''} norm={t ? Math.min(1, (v as number) / mx) : 0} hot={k === 'tmp' && t !== null && (v as number) > 76} tip={tip} />;
           })}
-          <Gauge k="mdl" v={fixed(used, 1) ?? '—'} unit={used !== null ? 'gb' : ''} norm={used !== null ? used / 4 : 0} hot={used !== null && used / 4 > 0.92} tip={modelTip} />
+          <Gauge k="mdl" v={fixed(used, 1, t.locale) ?? '—'} unit={used !== null ? 'gb' : ''} norm={used !== null ? Math.min(1, used / 6) : 0} tip={modelTip} />
         </div>
-      </div>
+      </div> : null}
       <div className="min-block bx-modblock">
         <div className="sec-head"><span>{t('paneles', 'panels')}</span></div>
         <div className="bx-mods">
           {MODS.map(([id, l, g]) => (
             <button key={id} className="bx-mod" onClick={() => onPanel(id)}>
-              <span className="ic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">{g}</svg></span>
+              <span className="ic"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{g}</svg></span>
               <span className="l">{t.w(l)}</span>
               <span className={'n' + (id === 'proposals' && quiet ? ' q' : '')}>
-                {id === 'proposals' ? (quiet ? t('Silencio', 'Muted') : t('Activas', 'Active')) : counts[id] ?? '—'}
+                {id === 'proposals' ? (quiet ? t('Silencio', 'Muted') : t('Activas', 'Active')) : id === 'routines' ? counts[id] ?? '' : counts[id] ?? '—'}
               </span>
             </button>
           ))}
         </div>
       </div>
       <div className="bx-foot">
-        <div className="sec-head"><span>{t('accesibilidad', 'accessibility')}</span></div>
-        <div className="bx-profiles">
-          {PROFILES.map(([id, ic, words, ready]) => {
-            const tip = t.w(words);
-            return <button key={id} className={'bx-pchip' + (profile === id ? ' on' : '') + (ready ? '' : ' soon')} data-tip={tip} title={tip}
-              aria-label={tip} aria-pressed={profile === id} aria-disabled={!ready} onClick={() => { if (ready) onProfile(id); }}><Icon name={ic} size={14} /></button>;
-          })}
-        </div>
+        {/* owner, 2026-11-08: the rail's content as before with the v5 buttons; Settings is a labelled button at its foot */}
+        <button className="bx-mod bx-gear" onClick={() => onPanel('settings')} aria-label={t('Ajustes', 'Settings')}>
+          <span className="ic"><Icon name="settings" size={16} /></span>
+          <span className="l">{t('Ajustes', 'Settings')}</span>
+        </button>
       </div>
     </div>
   );

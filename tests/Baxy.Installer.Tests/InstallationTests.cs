@@ -110,7 +110,8 @@ internal sealed class InstallationTests
     public async Task A_swap_that_stopped_halfway_gets_its_only_copy_back_when_the_install_is_cancelled()
     {
         InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
-        Directory.CreateDirectory(paths.Previous);
+        Directory.CreateDirectory(Path.Combine(paths.Previous, "app"));
+        await File.WriteAllTextAsync(Path.Combine(paths.Previous, "app", "Baxy.exe"), "the app");
         await File.WriteAllTextAsync(Path.Combine(paths.Previous, "kept.txt"), "kept");
         Dictionary<string, byte[]> assets = [];
         ReleaseArchive common = Cut("common", Zip(("app/Baxy.exe", "new")), assets);
@@ -131,7 +132,7 @@ internal sealed class InstallationTests
         Dictionary<string, byte[]> assets = [];
         ReleaseArchive common = Cut("common", Zip(("app/Baxy.exe", "new")), assets);
         InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
-        Directory.CreateDirectory(paths.Downloads);
+        InstallPaths.MarkAsBaxys(paths.Downloads);
         string held = Path.Combine(paths.Downloads, "held.txt");
         using HttpClient http = new(new Assets(assets));
         using (new FileStream(held, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -140,6 +141,9 @@ internal sealed class InstallationTests
         }
 
         Assert.That(await File.ReadAllTextAsync(paths.App), Is.EqualTo("new"));
+        // UNI1 (REV8 U4): what stays beside the folder carries BAXY's mark, so an uninstall knows it is BAXY's.
+        Assert.That(File.Exists(Path.Combine(paths.Downloads, InstallPaths.MarkName)), Is.True);
+        Assert.That(File.Exists(Path.Combine(paths.Root, InstallPaths.MarkName)), Is.True);
     }
 
     [Test]
@@ -223,7 +227,8 @@ internal sealed class InstallationTests
         InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
         foreach (string folder in new[] { paths.Root, paths.Staging, paths.Previous, paths.Downloads })
         {
-            Directory.CreateDirectory(folder);
+            // UNI1 (REV8 U4): the install leaves its mark in what it makes; a folder that only shares the name stays.
+            InstallPaths.MarkAsBaxys(folder);
             File.WriteAllText(Path.Combine(folder, "x.txt"), "x");
         }
 
@@ -236,7 +241,7 @@ internal sealed class InstallationTests
     public void A_folder_an_earlier_removal_left_does_not_block_the_next_one()
     {
         InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
-        Directory.CreateDirectory(paths.Root + ".removing-earlier");
+        InstallPaths.MarkAsBaxys(paths.Root + ".removing-earlier");
         File.WriteAllText(Path.Combine(paths.Root + ".removing-earlier", "x.txt"), "x");
         Directory.CreateDirectory(paths.Root);
 
@@ -276,7 +281,7 @@ internal sealed class InstallationTests
         Dictionary<string, byte[]> assets = [];
         ReleaseArchive common = Cut("common", Zip(("app/Baxy.exe", "new")), assets);
         InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
-        Directory.CreateDirectory(paths.Staging);
+        InstallPaths.MarkAsBaxys(paths.Staging);
         await File.WriteAllTextAsync(Path.Combine(paths.Staging, "old.txt"), "old");
         using HttpClient http = new(new Assets(assets));
         bool stagingWasThere = true;
@@ -293,6 +298,138 @@ internal sealed class InstallationTests
 
         Assert.That(stagingWasThere, Is.False);
         Assert.That(File.Exists(Path.Combine(paths.Root, "old.txt")), Is.False);
+    }
+
+    // UPD1 (REV10 M4): an update deleted <folder>.old, .new and .download by their name alone.
+    [TestCase(".old")]
+    [TestCase(".new")]
+    [TestCase(".download")]
+    public async Task A_folder_beside_that_only_shares_the_name_is_left_and_the_update_says_so(string suffix)
+    {
+        Dictionary<string, byte[]> assets = [];
+        ReleaseArchive common = Cut("common", Zip(("app/Baxy.exe", "new")), assets);
+        InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
+        Directory.CreateDirectory(Path.Combine(paths.Root, "app"));
+        await File.WriteAllTextAsync(paths.App, "before");
+        string neighbour = paths.Root + suffix;
+        Directory.CreateDirectory(neighbour);
+        string mine = Path.Combine(neighbour, "my-backup.txt");
+        await File.WriteAllTextAsync(mine, "the person's");
+        using HttpClient http = new(new Assets(assets));
+
+        NotBaxysException refused = Assert.ThrowsAsync<NotBaxysException>(() =>
+            Make(paths, http, common).RunAsync((_, _, _) => { }, CancellationToken.None))!;
+
+        Assert.That(refused.Folder, Is.EqualTo(neighbour));
+        Assert.That(await File.ReadAllTextAsync(mine), Is.EqualTo("the person's"));
+        Assert.That(Directory.GetFileSystemEntries(neighbour), Has.Length.EqualTo(1), "no mark written into it");
+        Assert.That(await File.ReadAllTextAsync(paths.App), Is.EqualTo("before"));
+        Assert.That(Failures.Classify(refused, baxyIsOpen: () => false), Is.EqualTo(FailureKind.NotBaxys));
+    }
+
+    // Blind review of UPD1: an installer up to 1.4.2 made the .download for the Windows components without a mark, and left
+    // one half downloaded when it failed. That folder is BAXY's.
+    [Test]
+    public async Task A_download_folder_holding_only_the_windows_components_an_older_installer_left_is_baxys()
+    {
+        Dictionary<string, byte[]> assets = [];
+        ReleaseArchive common = Cut("common", Zip(("app/Baxy.exe", "new")), assets);
+        InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
+        Directory.CreateDirectory(paths.Downloads);
+        await File.WriteAllTextAsync(Path.Combine(paths.Downloads, "vc_redist.x64.exe"), "half");
+        using HttpClient http = new(new Assets(assets));
+
+        await Make(paths, http, common).RunAsync((_, _, _) => { }, CancellationToken.None);
+
+        Assert.That(await File.ReadAllTextAsync(paths.App), Is.EqualTo("new"));
+        Assert.That(Directory.Exists(paths.Downloads), Is.False);
+    }
+
+    // REM1 (REV12 A-1): an installer before UNI1 (1.3.x) downloaded the release's parts into an unmarked .download and kept
+    // them when the download was cut, to resume. Another version's parts, a part half downloaded and the Windows
+    // components beside them are BAXY's, and the update goes on.
+    [Test]
+    public async Task The_parts_an_installer_before_the_mark_left_half_downloaded_are_baxys()
+    {
+        Dictionary<string, byte[]> assets = [];
+        ReleaseArchive common = Cut("common", Zip(("app/Baxy.exe", "new")), assets);
+        InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
+        Directory.CreateDirectory(Path.Combine(paths.Root, "app"));
+        await File.WriteAllTextAsync(paths.App, "before");
+        Directory.CreateDirectory(paths.Downloads);
+        byte[] older = Zip(("app/Baxy.exe", new string('o', 4000)), ("core/x.dll", new string('c', 4000)));
+        byte[] gpu = Zip(("llama/x.dll", "gpu"));
+        await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "baxy-1.3.1.zip.000"), older[..(older.Length / 2)]);
+        await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "baxy-1.3.1.zip.001"), older[(older.Length / 2)..^10]);
+        await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "baxy-1.3.1-nvidia.zip.000"), gpu[..20]);
+        await File.WriteAllTextAsync(Path.Combine(paths.Downloads, "vc_redist.x64.exe"), "half");
+        using HttpClient http = new(new Assets(assets));
+
+        Assert.That(InstallPaths.IsBaxys(paths.Downloads), Is.True);
+        await Make(paths, http, common).RunAsync((_, _, _) => { }, CancellationToken.None);
+
+        Assert.That(await File.ReadAllTextAsync(paths.App), Is.EqualTo("new"));
+        Assert.That(Directory.Exists(paths.Downloads), Is.False);
+    }
+
+    // REM1 (REV12 A-1): what makes them BAXY's is what they hold, not their name. Zip parts that are not a BAXY release
+    // (no app\Baxy.exe first), a part whose first piece is not there, or a file of the person's beside them stay.
+    [TestCase("zip of the person's")]
+    [TestCase("a part without its first")]
+    [TestCase("a file of the person's beside BAXY's parts")]
+    [TestCase("a zip of the person's beside BAXY's parts")]
+    public async Task Parts_that_are_not_a_baxy_release_are_left(string what)
+    {
+        InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
+        Directory.CreateDirectory(paths.Downloads);
+        byte[] baxy = Zip(("app/Baxy.exe", new string('o', 4000)));
+        switch (what)
+        {
+            case "zip of the person's":
+                byte[] photos = Zip(("fotos/playa.jpg", new string('p', 4000)));
+                await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "fotos.zip.000"), photos[..100]);
+                break;
+            case "a zip of the person's beside BAXY's parts":
+                await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "baxy-1.3.1.zip.000"), baxy[..100]);
+                byte[] mine = Zip(("fotos/playa.jpg", new string('p', 4000)));
+                await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "fotos.zip.000"), mine[..100]);
+                await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "fotos.zip.001"), mine[100..]);
+                break;
+            case "a part without its first":
+                await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "baxy-1.3.1.zip.000"), baxy[..100]);
+                await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "otra.zip.001"), baxy[100..]);
+                break;
+            default:
+                await File.WriteAllBytesAsync(Path.Combine(paths.Downloads, "baxy-1.3.1.zip.000"), baxy[..100]);
+                await File.WriteAllTextAsync(Path.Combine(paths.Downloads, "mi-respaldo.txt"), "the person's");
+                break;
+        }
+
+        Assert.That(InstallPaths.IsBaxys(paths.Downloads), Is.False);
+        Assert.That(() => paths.RefuseWhatIsNotBaxys(), Throws.TypeOf<NotBaxysException>());
+    }
+
+    [Test]
+    public async Task What_an_earlier_baxy_left_beside_it_is_still_cleaned()
+    {
+        Dictionary<string, byte[]> assets = [];
+        ReleaseArchive common = Cut("common", Zip(("app/Baxy.exe", "new")), assets);
+        InstallPaths paths = new(Path.Combine(directory, "BAXY-App"));
+        Directory.CreateDirectory(Path.Combine(paths.Root, "app"));
+        await File.WriteAllTextAsync(paths.App, "before");
+        // An older BAXY moved aside (no mark before UNI1, but its app), a marked download and an empty half-made folder.
+        InstallPaths older = new(paths.Previous);
+        Directory.CreateDirectory(Path.Combine(older.Root, "app"));
+        await File.WriteAllTextAsync(older.App, "older");
+        InstallPaths.MarkAsBaxys(paths.Downloads);
+        await File.WriteAllTextAsync(Path.Combine(paths.Downloads, "left.001"), "x");
+        Directory.CreateDirectory(paths.Staging);
+        using HttpClient http = new(new Assets(assets));
+
+        await Make(paths, http, common).RunAsync((_, _, _) => { }, CancellationToken.None);
+
+        Assert.That(await File.ReadAllTextAsync(paths.App), Is.EqualTo("new"));
+        Assert.That(Directory.Exists(paths.Previous) || Directory.Exists(paths.Downloads) || Directory.Exists(paths.Staging), Is.False);
     }
 
     [Test]
@@ -340,6 +477,33 @@ internal sealed class InstallationTests
         ]);
 
         Assert.That(laptop, Is.EqualTo(GpuSupport.TooLittleMemory));
+    }
+
+    // UNI1 (REV8 F1): the plain address «only this machine» is decided on the host the address goes to (RFC 3986:
+    // authority = [ userinfo "@" ] host [ ":" port ]), not on how its text begins.
+    [TestCase("http://127.0.0.1:18791/", true)]
+    [TestCase("https://github.com/REDSOULTM/BAXY/releases/download/v1.3.4/", true)]
+    [TestCase("http://127.0.0.1:80@example.test/download/", false)]
+    [TestCase("http://127.0.0.1:18791@example.test/", false)]
+    [TestCase("http://127.0.0.1.example.test:80/", false)]
+    [TestCase("http://example.test/", false)]
+    public void A_plain_address_is_only_this_machines_by_its_host(string baseUrl, bool accepted)
+    {
+        string json = $$"""
+            {"version":"1","baseUrl":"{{baseUrl}}","installedBytes":1,
+             "archives":[{"name":"a","parts":[{"file":"a.001","bytes":1,
+             "sha256":"0000000000000000000000000000000000000000000000000000000000000000"}]}]}
+            """;
+
+        TestDelegate parse = () => ReleaseManifest.Parse(new MemoryStream(Encoding.UTF8.GetBytes(json)));
+        if (accepted)
+        {
+            Assert.DoesNotThrow(parse);
+        }
+        else
+        {
+            Assert.Throws<InvalidDataException>(parse);
+        }
     }
 
     [Test]
@@ -397,6 +561,7 @@ internal sealed class InstallationTests
             CancellationToken.None);
 
         Assert.That(await File.ReadAllTextAsync(Path.Combine(paths.Root, "llama", "server.txt")), Is.EqualTo("cuda"));
+        Assert.That(await File.ReadAllTextAsync(Path.Combine(paths.Root, "licenses", "LICENSE-llama.cpp.txt")), Is.EqualTo("MIT"));
         Assert.That(File.Exists(paths.App), Is.True);
         Assert.That(chosen.InstalledBytes, Is.EqualTo(150));
         Assert.That(lastTotal, Is.EqualTo(150), "the bar counts both parts: it does not fill with the first");
@@ -431,11 +596,14 @@ internal sealed class InstallationTests
         Assert.That(manifest.ForMachine([new GpuAdapter("PCI\\VEN_1002&DEV_1", null)]).Archives.Select(archive => archive.Name), Is.EqualTo(new[] { "a" }));
     }
 
-    // The MIT license of .NET asks for its text in every copy, and this exe is one before anything is installed.
+    // The MIT license of .NET asks for its text in every copy, and this exe is one before anything is installed. The Windows SDK
+    // projections it carries are redistributable «subject to the license terms for the software»
+    // (https://learn.microsoft.com/en-us/legal/windows-sdk/redist, read 2026-11-07): those terms go inside it too.
     [TestCase("Baxy.Installer.licenses.dotnet-LICENSE.txt", ".NET Foundation")]
     [TestCase("Baxy.Installer.licenses.dotnet-runtime-THIRD-PARTY-NOTICES.txt", "third-party libraries")]
     [TestCase("Baxy.Installer.licenses.dotnet-wpf-THIRD-PARTY-NOTICES.txt", "third-party libraries")]
     [TestCase("Baxy.Installer.licenses.CsWinRT-LICENSE.txt", "Microsoft")]
+    [TestCase("Baxy.Installer.licenses.Windows-SDK-License.rtf", "WINDOWS SOFTWARE DEVELOPMENT KIT")]
     public void The_exe_carries_the_licenses_of_its_runtime_inside_it(string resource, string phrase)
     {
         using Stream? stream = typeof(ReleaseManifest).Assembly.GetManifestResourceStream(resource);
@@ -445,11 +613,14 @@ internal sealed class InstallationTests
         Assert.That(reader.ReadToEnd(), Does.Contain(phrase));
     }
 
+    // Like scripts/build_github_release.py, the NVIDIA part repeats licenses the main archive already carries, with the same bytes.
     private static (ReleaseManifest Manifest, Dictionary<string, byte[]> Assets, long BaseBytes) ReleaseWithACudaPart()
     {
         Dictionary<string, byte[]> assets = [];
-        ReleaseArchive common = Cut("baxy.zip", Zip(("app/Baxy.exe", "the app"), ("llama-vulkan/server.txt", "vulkan")), assets);
-        ReleaseArchive nvidia = Cut("baxy-nvidia.zip", Zip(("llama/server.txt", "cuda")), assets) with { GpuVendor = "10de", InstalledBytes = 50 };
+        ReleaseArchive common = Cut(
+            "baxy.zip", Zip(("app/Baxy.exe", "the app"), ("llama-vulkan/server.txt", "vulkan"), ("licenses/LICENSE-llama.cpp.txt", "MIT")), assets);
+        ReleaseArchive nvidia = Cut(
+            "baxy-nvidia.zip", Zip(("llama/server.txt", "cuda"), ("licenses/LICENSE-llama.cpp.txt", "MIT")), assets) with { GpuVendor = "10de", InstalledBytes = 50 };
         return (new ReleaseManifest("1.0.0", BaseUrl, 100, [common, nvidia]), assets, common.Bytes);
     }
 

@@ -50,7 +50,7 @@ class _Vad:
     def reset(self) -> None:
         pass
 
-    def marks(self, block) -> np.ndarray:
+    def marks(self, block, settle: bool = False) -> np.ndarray:
         return np.ones(len(block), bool)
 
 
@@ -203,7 +203,7 @@ class _VadOutOfMemory(_Vad):
     def __init__(self, fails: int) -> None:
         self.fails, self.seen = fails, 0
 
-    def marks(self, block) -> np.ndarray:
+    def marks(self, block, settle: bool = False) -> np.ndarray:
         self.seen += 1
         if self.seen == self.fails:
             raise MemoryError("no room")

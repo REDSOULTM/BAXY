@@ -672,6 +672,36 @@ def test_a_notice_never_waits_past_its_limit(tmp_path) -> None:
     assert _noticed(tmp_path, stuck) == 6.0
 
 
+def test_a_server_that_says_no_timings_gives_a_notice_what_its_decisions_take(tmp_path) -> None:
+    # Pedido del dueño 2026-11-08: «apenas cambio el modelo… ya no me habla hasta completar la misión». The translator (an API,
+    # Ollama) says no llama-server timings, and the notice kept 1.5 s however long a request took there.
+    import time
+
+    from test_mind_final import _call, _mind, _say
+
+    mind, server = _mind(tmp_path, [_call("web_search", {"query": "vuelos a Lima"}), _say("Busco vuelos a Lima.")])
+    chat = server.chat
+
+    def slow(body: dict, **named) -> dict:
+        time.sleep(2.6)
+        reply = chat(body, **named)
+        server.took_s = 2.6  # as LlmServer.chat reads it
+        return reply
+
+    server.chat = slow
+    assert mind.decide(1, "busca vuelos a Lima")["kind"] == "action"
+    asked: list[float] = []
+
+    def timed(body: dict, **named) -> dict:
+        asked.append(named["timeout"])
+        return chat(body, **named)
+
+    server.chat = timed
+    assert mind.notice_of() == "Busco vuelos a Lima."
+    assert 2.6 * 1.25 <= asked[0] <= 6.0
+    assert mind.notices_are_slow
+
+
 def test_a_long_read_or_no_timings_says_nothing_of_a_notice(tmp_path) -> None:
     assert _noticed(tmp_path, None) == 1.5
     assert _noticed(tmp_path, {"prompt_n": 2850, "prompt_ms": 29000.0, "predicted_n": 30, "predicted_ms": 1700.0}) == 1.5

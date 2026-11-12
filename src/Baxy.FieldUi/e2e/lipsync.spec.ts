@@ -85,7 +85,7 @@ async function say(text: string) {
   await input.fill(text);
   await input.press('Enter');
 }
-const idle = (timeout = 120_000) => page.waitForFunction(() => /^En espera/.test((document.querySelector('.bx-statel')?.textContent ?? '').trim()), undefined, { timeout });
+const idle = (timeout = 120_000) => page.waitForFunction(() => /^Listo/.test((document.querySelector('.bx-statel')?.textContent ?? '').trim()), undefined, { timeout });
 
 // the sound and the page on one 10 ms grid; loudness in dB under the loudest 10 ms of the recording
 function grid(audio: [number, number][], ui: Ui[]) {

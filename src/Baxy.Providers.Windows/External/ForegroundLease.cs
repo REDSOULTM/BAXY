@@ -239,6 +239,18 @@ internal sealed class ForegroundLease : IForegroundLease
     /// <summary>The default ceiling of the wait.</summary>
     internal const int DefaultMaxWaitMs = 8000;
 
+    /// <summary>
+    /// MUS1 (VIVO13: on the NB, Windows called the right mouse button down for 41 minutes with no input at all, and every
+    /// act waited out its ceiling as input_user_not_paused): how long a key or button Windows calls held is taken for a
+    /// hand on it with no input of the person. A held key repeats after the keyboard delay (at most about 1 s,
+    /// SPI_GETKEYBOARDDELAY) and a hand on the mouse moves it; held past this with nothing at all, it is a release
+    /// Windows lost (GetAsyncKeyState keeps the last state it was given), not the person.
+    /// REM1 (REV12 B-1): but a button held still makes no input, nor a key whose repeat is off (accessibility's filter
+    /// keys): one whose press the detector received and whose release it did not is a hand on it, however long
+    /// (<see cref="IUserInputPause.PressHeld"/>). Only one held with no press received is taken for lost after this.
+    /// </summary>
+    internal const int HeldStaleMs = 30_000;
+
     /// <summary>The longest a burst waits for its own inputs to reach the detector before giving the front back.</summary>
     internal const int OwnInputSettleMs = 100;
 
@@ -545,7 +557,9 @@ internal sealed class ForegroundLease : IForegroundLease
         return new Burst(this, 0, saved, _clock.NowMs, waited, typedFlow: true);
     }
 
-    // The person's pause: QuietMs without their input and nothing held down, waited for up to the ceiling.
+    // The person's pause: QuietMs without their input and nothing held down, waited for up to the ceiling. A key or
+    // button held with no input of theirs for HeldStaleMs and whose press was never received is a lost release, not a
+    // hand on it; one pressed by an input received is the person's until its release (REM1, REV12 B-1).
     public async ValueTask<(bool Paused, long WaitedMs)> WaitForPauseAsync(CancellationToken cancellationToken)
     {
         long start = _clock.NowMs;
@@ -554,7 +568,7 @@ internal sealed class ForegroundLease : IForegroundLease
             cancellationToken.ThrowIfCancellationRequested();
             long now = _clock.NowMs;
             long quiet = now - _pause.LastForeignInputMs;
-            if (quiet >= QuietMs && !_pause.HeldDown())
+            if (quiet >= QuietMs && (!_pause.HeldDown() || (quiet >= HeldStaleMs && !_pause.PressHeld())))
                 return (true, now - start);
             if (now - start >= _maxWaitMs)
                 return (false, now - start);

@@ -53,7 +53,7 @@ class _Vad:
     def reset(self) -> None:
         pass
 
-    def marks(self, block) -> np.ndarray:
+    def marks(self, block, settle: bool = False) -> np.ndarray:
         return np.ones(len(block), bool)
 
 

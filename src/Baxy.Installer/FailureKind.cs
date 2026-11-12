@@ -11,20 +11,25 @@ internal enum FailureKind
     Open,
     Damaged,
     Windows,
+    Unsigned,
+    Older,
+    NotBaxys,
     Other,
 }
 
 internal sealed class PrerequisiteException(string message, Exception? inner = null) : Exception(message, inner);
 
-/// <summary>The cause the person is told: said plainly, with what they can do about it.</summary>
-internal static class Failures
-{
-    private const int DiskFull = 112;
-    private const int HandleDiskFull = 39;
+internal sealed class NotRegisteredException(string message, Exception inner) : Exception(message, inner);
 
+/// <summary>The cause the person is told: said plainly, with what they can do about it.</summary>
+internal static partial class Failures
+{
     internal static FailureKind Classify(Exception failure, Func<bool> baxyIsOpen) => failure switch
     {
         InstallBlockedException => baxyIsOpen() ? FailureKind.Open : FailureKind.Other,
+        UnsignedReleaseException => FailureKind.Unsigned,
+        OlderReleaseException => FailureKind.Older,
+        NotBaxysException => FailureKind.NotBaxys,
         PrerequisiteException => FailureKind.Windows,
         InvalidDataException => FailureKind.Damaged,
         HttpRequestException { StatusCode: { } status } when IsRefusal(status) => FailureKind.Other,
@@ -33,13 +38,6 @@ internal static class Failures
         _ when IsDiskFull(failure) => FailureKind.Disk,
         _ => FailureKind.Other,
     };
-
-    internal static bool IsDiskFull(Exception failure) =>
-        failure is IOException && (failure.HResult & 0xFFFF) is DiskFull or HandleDiskFull;
-
-    /// <summary>The server answered, and no: not a line that went down. A timeout and «too many» do pass with time.</summary>
-    internal static bool IsRefusal(HttpStatusCode status) =>
-        (int)status is >= 400 and < 500 && status is not (HttpStatusCode.RequestTimeout or HttpStatusCode.TooManyRequests);
 
     internal static string VoiceLine(FailureKind kind) => kind switch
     {

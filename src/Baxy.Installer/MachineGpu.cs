@@ -1,5 +1,5 @@
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
+using System.Globalization;
+using Baxy.Providers.Windows.SystemStatus;
 
 namespace Baxy.Installer;
 
@@ -18,13 +18,12 @@ internal sealed record GpuAdapter(string DeviceId, long? MemoryBytes);
 /// start (MindRuntimeDiscovery). BAXY has been measured on NVIDIA and AMD; Intel graphics have not been; with none of the
 /// three it does not start (no_supported_gpu).
 /// </summary>
-internal static partial class MachineGpu
+internal static class MachineGpu
 {
     private const long MinimumMemoryBytes = 3_800_000_000;
     private const string Nvidia = "10de";
     private const string Amd = "1002";
     private const string Intel = "8086";
-    private const uint MirroringDriver = 0x8;
 
     internal static GpuSupport Choose(IReadOnlyList<GpuAdapter> adapters)
     {
@@ -43,23 +42,30 @@ internal static partial class MachineGpu
         return adapters.Any(adapter => Vendor(adapter.DeviceId) == Intel) ? GpuSupport.NotMeasured : GpuSupport.None;
     }
 
-    internal static IReadOnlyList<GpuAdapter> Installed()
-    {
-        List<GpuAdapter> adapters = [];
-        for (uint index = 0; ; index++)
-        {
-            DisplayDevice device = new() { Size = (uint)Marshal.SizeOf<DisplayDevice>() };
-            if (!EnumDisplayDevicesW(null, index, ref device, 0))
-            {
-                return adapters;
-            }
+    /// <summary>
+    /// The cards as BAXY reads them at every start (WindowsGpuVendors, DXGI), the same source compiled in here. Not the
+    /// screens of this session (EnumDisplayDevices): a card with no screen plugged, as the NVIDIA one of a laptop whose
+    /// panel hangs from the integrated graphics, is not among them, and its part was not downloaded (INS-2).
+    /// </summary>
+    internal static IReadOnlyList<GpuAdapter> Installed() => Installed(new WindowsGpuStatusProbe());
 
-            if ((device.StateFlags & MirroringDriver) == 0)
-            {
-                adapters.Add(new GpuAdapter(device.DeviceIdText, MemoryOf(device.DeviceKeyText)));
-            }
-        }
-    }
+    internal static IReadOnlyList<GpuAdapter> Installed(IGpuStatusProbe probe) =>
+        [.. WindowsGpuVendors.Adapters(probe).Select(static adapter => new GpuAdapter(
+            HardwareId(adapter.VendorId, adapter.DeviceId),
+            (long)Math.Min(adapter.DedicatedVideoMemoryBytes, long.MaxValue)))];
+
+    /// <summary>What the log says of this machine: what is told, and every card with its dedicated memory.</summary>
+    internal static string Describe(IReadOnlyList<GpuAdapter> adapters) =>
+        string.Create(
+            CultureInfo.InvariantCulture,
+            $"{Choose(adapters)} [{string.Join(", ", adapters.Select(static adapter => string.Create(CultureInfo.InvariantCulture, $"{adapter.DeviceId} {(adapter.MemoryBytes ?? 0) / 1_000_000_000d:0.0} GB")))}]");
+
+    // DXGI_ADAPTER_DESC1.VendorId: «If this value is less than or equal to 0xFFFF, it is a PCI ID; otherwise, it is an
+    // ACPI ID». An ACPI one is written as such, so that Vendor() never takes four of its digits for a maker.
+    private static string HardwareId(uint vendor, uint device) =>
+        vendor <= 0xFFFF
+            ? string.Create(CultureInfo.InvariantCulture, $@"PCI\VEN_{vendor:X4}&DEV_{device:X4}")
+            : string.Create(CultureInfo.InvariantCulture, $@"ACPI\VEN_{vendor:X8}&DEV_{device:X8}");
 
     private static GpuSupport Sized(GpuAdapter adapter) =>
         adapter.MemoryBytes < MinimumMemoryBytes ? GpuSupport.TooLittleMemory : GpuSupport.Measured;
@@ -71,58 +77,5 @@ internal static partial class MachineGpu
         return id.StartsWith(prefix, StringComparison.Ordinal) && id.Length >= prefix.Length + 4
             ? id.Substring(prefix.Length, 4)
             : null;
-    }
-
-    private static long? MemoryOf(string deviceKey)
-    {
-        const string machine = @"\Registry\Machine\";
-        if (!deviceKey.StartsWith(machine, StringComparison.OrdinalIgnoreCase))
-        {
-            return null;
-        }
-
-        using RegistryKey? key = Registry.LocalMachine.OpenSubKey(deviceKey[machine.Length..]);
-        return key?.GetValue("HardwareInformation.qwMemorySize") switch
-        {
-            long bytes => bytes,
-            _ => null,
-        };
-    }
-
-    [LibraryImport("user32.dll", EntryPoint = "EnumDisplayDevicesW", StringMarshalling = StringMarshalling.Utf16)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool EnumDisplayDevicesW(string? device, uint index, ref DisplayDevice output, uint flags);
-
-    [StructLayout(LayoutKind.Sequential)]
-    private unsafe struct DisplayDevice
-    {
-        internal uint Size;
-        private fixed char deviceName[32];
-        private fixed char deviceString[128];
-        internal uint StateFlags;
-        private fixed char deviceId[128];
-        private fixed char deviceKey[128];
-
-        internal readonly string DeviceIdText
-        {
-            get
-            {
-                fixed (char* text = deviceId)
-                {
-                    return new string(text);
-                }
-            }
-        }
-
-        internal readonly string DeviceKeyText
-        {
-            get
-            {
-                fixed (char* text = deviceKey)
-                {
-                    return new string(text);
-                }
-            }
-        }
     }
 }

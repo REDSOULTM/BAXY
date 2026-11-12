@@ -46,6 +46,48 @@ public sealed class MediaSessionPreferenceTests
     public void AnUnnamedControlReachesTheOneSessionPlayingWhenTheCurrentDoesNot(bool[] playing, string action, int expected) =>
         Assert.That(WindowsMediaSessionAdapter.PlayingInsteadOfCurrent(false, playing, action), Is.EqualTo(expected));
 
+    // RUT8 (the owner's routine «tiempo» = the play/pause key): the receipt of a toggle said only «paused», and the
+    // model told it backwards 2 of 3 times («estaba pausado, ahora suena»). The state read before the command is in
+    // the receipt, right before the state read after it.
+    [TestCase("toggle", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, "playing")]
+    [TestCase("toggle", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused, "paused")]
+    [TestCase("pause", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, "playing")]
+    [TestCase("play", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Stopped, "stopped")]
+    [TestCase("stop", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, "playing")]
+    [TestCase("next", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing, null)]
+    [TestCase("previous", GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused, null)]
+    public void AControlThatChangesTheStateSaysWhatItReadBefore(
+        string action, GlobalSystemMediaTransportControlsSessionPlaybackStatus before, string? expected) =>
+        Assert.That(WindowsMediaSessionAdapter.PreviousStatus(action, before), Is.EqualTo(expected));
+
+    [Test]
+    public void AToggleReceiptSaysWhatItWasAndThenWhatItIs()
+    {
+        JsonElement toggled = WindowsMediaSessionAdapter.ControlResult(
+            Opera, "Volcanes de Islandia", "Canal Brezo", "paused", previousStatus: "playing", insteadOfCurrent: null,
+            commandSent: "pause");
+        JsonElement skipped = WindowsMediaSessionAdapter.ControlResult(
+            Opera, "Volcanes de Islandia", "Canal Brezo", "playing", previousStatus: null, insteadOfCurrent: Spotify,
+            commandSent: "next");
+        string[] names = toggled.EnumerateObject().Select(property => property.Name).ToArray();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(toggled.GetProperty("commandSent").GetString(), Is.EqualTo("pause"));
+            Assert.That(Array.IndexOf(names, "commandSent") + 1, Is.EqualTo(Array.IndexOf(names, "previousPlaybackStatus")));
+            Assert.That(toggled.GetProperty("previousPlaybackStatus").GetString(), Is.EqualTo("playing"));
+            Assert.That(toggled.GetProperty("playbackStatus").GetString(), Is.EqualTo("paused"));
+            Assert.That(Array.IndexOf(names, "previousPlaybackStatus") + 1, Is.EqualTo(Array.IndexOf(names, "playbackStatus")));
+            Assert.That(toggled.GetProperty("title").GetString(), Is.EqualTo("Volcanes de Islandia"));
+            Assert.That(toggled.TryGetProperty("sessionFrom", out _), Is.False);
+            Assert.That(skipped.TryGetProperty("previousPlaybackStatus", out _), Is.False);
+            Assert.That(skipped.TryGetProperty("commandSent", out _), Is.False, "a skip changes the title, not the state");
+            Assert.That(skipped.GetProperty("sessionFrom").GetString(), Is.EqualTo("only_playing_session"));
+            Assert.That(skipped.GetProperty("currentSourceAppUserModelId").GetString(), Is.EqualTo(Spotify));
+            Assert.That(skipped.GetProperty("authority").GetString(), Is.EqualTo("windows_smtc"));
+        });
+    }
+
     [Test]
     public void TheCurrentSessionStaysWhenItPlaysWhenNoneOrSeveralOthersDoOrToResume()
     {

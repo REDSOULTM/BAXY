@@ -4,6 +4,10 @@ public static class WindowControlErrorCodes
 {
     public const string InvalidSelector = "invalid_selector";
     public const string WindowNotFound = "window_not_found";
+    // REM5 (VIVO15): window.active with no window of the person's in front (the screen off, only BAXY's own in front):
+    // «window_not_found» read as «no hay ninguna ventana abierta» with BAXY's and others open. The result says how many
+    // are open (WindowResolveResult.OpenWindows).
+    public const string NoWindowInFront = "no_window_in_front";
     public const string InvalidOrExpiredWindowId = "invalid_or_expired_window_id";
     public const string WindowIdentityChanged = "window_identity_changed";
     public const string ActionFailed = "action_failed";
@@ -59,7 +63,8 @@ public sealed record WindowResolveResult(
     bool Verified,
     IReadOnlyList<WindowCandidate> Windows,
     string? ErrorCode,
-    WindowInventoryPage? Page = null);
+    WindowInventoryPage? Page = null,
+    int? OpenWindows = null);
 
 // Each request enumerates again. Offset does not bind later pages to a snapshot.
 public sealed record WindowInventoryPage(

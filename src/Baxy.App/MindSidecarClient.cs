@@ -100,7 +100,9 @@ internal sealed record MindLoss(string Cause, string? Request = null, int? ExitC
 /// never rewrites either. <see cref="Unsure"/> (P2.43): System One doubted the action, so the App only weighs it
 /// (NativeTurnLoop.UnsureHeld) and never runs it.
 /// </summary>
-internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text, bool Unsure = false)
+/// <param name="TheirYes">SIS3: the mind read the person's words as their yes to this step (Mind._their_answer).</param>
+internal sealed record MindStep(string Kind, string? Operation, JsonObject? Arguments, string Text, bool Unsure = false,
+    bool TheirYes = false)
 {
     internal const string Error = "error";
 
@@ -244,6 +246,28 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>Why the last catalog handshake found the model down, or null.</summary>
     internal MindStartupFailure? LastStartupFailure { get; private set; }
 
+    /// <summary>Settings → Behavior: the person's own texts this mind is configured with (PersonBehavior.ForMind), null
+    /// with none.</summary>
+    internal JsonObject? Behavior { get; init; }
+
+    /// <summary>Settings → Tools: the operations the person's profile keeps off (ToolProfile.Withheld), left out of the
+    /// tools the mind offers; none with Completo.</summary>
+    internal IReadOnlySet<string>? Withheld { get; init; }
+
+    /// <summary>REM7: the profile's withheld operations read when the catalog is configured, after the core's hello and
+    /// memory.status (MEM3's ToolProfile.MemoryOff), instead of <see cref="Withheld"/>, read when this client was made.</summary>
+    internal Func<IReadOnlySet<string>>? WithheldNow { get; init; }
+
+    /// <summary>REM7 (REV15 D-1): the memory's own switch as the App read it, told beside a held memory call.</summary>
+    internal Func<bool>? MemoryOffNow { get; init; }
+
+    /// <summary>The withheld operations the catalog was configured with.</summary>
+    internal IReadOnlySet<string>? ConfiguredWithheld { get; private set; }
+
+    /// <summary>What the mind's hello tells of its behavior texts (src/baxy_mind/behavior.py): its fixed identity and the
+    /// factory texts the person may replace; null when it does not.</summary>
+    internal JsonObject? FactoryBehavior { get; private set; }
+
     /// <summary>The mind runs the native loop (turn.decide, turn.continue, turn.confirm).</summary>
     public bool IsTurnAvailable => IsReady && _turnAvailable;
 
@@ -267,6 +291,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
     /// <summary>N9 (L5): whether the processor computes the model, with no GPU its server can use; null until the mind says.</summary>
     internal bool? ComputesOnProcessor { get; private set; }
+
+    /// <summary>Settings → Model → Context (LocalContext): the backend the mind's server computes on (cuda, vulkan, cpu)
+    /// and the tokens of the prompt prefix it read, as its catalog.ready said them; null when it did not.</summary>
+    internal string? Backend { get; private set; }
+
+    internal int? PrefixTokens { get; private set; }
 
     internal static bool IsDisabled =>
         string.Equals(
@@ -363,6 +393,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             _turnAvailable = hasLlm
                 && requests?.Any(static request => (string?)request == "turn.confirm") == true;
             _voiceAvailable = requests?.Any(static request => (string?)request == "voice.speak") == true;
+            FactoryBehavior = hello["behavior"] is JsonObject factory
+                ? (JsonObject)factory.DeepClone()
+                : null;
             MindStartupCatalog inputs = await catalog
                 .WaitAsync(handshakeCancellation.Token)
                 .ConfigureAwait(false);
@@ -394,10 +427,17 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         TimeSpan timeout,
         CancellationToken cancellationToken)
     {
+        IReadOnlySet<string>? withheld = WithheldNow?.Invoke() ?? Withheld;
+        ConfiguredWithheld = withheld;
         JsonObject request = CreateCatalogConfigureRequest(
             capabilities,
             applicationCatalog,
-            gameCatalog);
+            gameCatalog,
+            Behavior,
+            withheld,
+            UpdatePanel.Installed,
+            MemoryOffNow?.Invoke());
+        int offered = request["capabilities"]!.AsArray().Count;
         JsonObject? reply = await RequestAsync(
             request,
             timeout,
@@ -407,10 +447,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         ReadProcessor(reply);
         bool ready = reply is not null
             && Str(reply["type"]) == "catalog.ready"
-            && Number(reply["count"]) == capabilities.Count;
+            && Number(reply["count"]) == offered;
         if (ready)
         {
             _configured = new MindStartupCatalog(capabilities, applicationCatalog, gameCatalog);
+            Backend = Str(reply!["backend"]);
+            PrefixTokens = reply["prefixTokens"] is JsonValue prefix && prefix.TryGetValue(out int tokens) && tokens > 0 ? tokens : null;
             // The mind's own ceiling for a turn's request, never past what a whole start may take.
             if (reply?["ceiling_s"] is JsonValue said && said.TryGetValue(out double seconds) && double.IsFinite(seconds)
                 && seconds > 0 && seconds <= StartupCeiling.TotalSeconds)
@@ -465,35 +507,25 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     internal static JsonObject CreateCatalogConfigureRequest(
         IReadOnlyList<OperationDescriptor> capabilities,
         ApplicationCatalogSnapshot? applicationCatalog,
-        GameCatalogSnapshot? gameCatalog = null)
+        GameCatalogSnapshot? gameCatalog = null,
+        JsonObject? behavior = null,
+        IReadOnlySet<string>? withheld = null,
+        string? version = null,
+        bool? memoryOff = null)
     {
         ArgumentNullException.ThrowIfNull(capabilities);
         var catalog = new JsonArray();
+        IReadOnlySet<string>? shown = withheld is not null && capabilities.Any(c => withheld.Contains(c.Name))
+            ? FieldStepProjection.ShownThemes(withheld)
+            : null;
         foreach (OperationDescriptor capability in capabilities)
         {
-            var tool = new JsonObject
+            if (withheld?.Contains(capability.Name) == true)
             {
-                ["name"] = capability.Name,
-                ["description"] = capability.Description,
-                ["argumentsSchema"] = JsonNode.Parse(
-                    capability.ArgumentsSchema.GetRawText()),
-                ["risk"] = capability.Risk,
-                // Feria 2026-10-27: what the model may say it can do (mind.py, AREAS), as the panel «Qué puedo hacer».
-                ["group"] = FieldStepProjection.Group(capability.Name),
-                // P2.41: the modes in which the kernel asks the person before it runs, whatever its arguments; the mind's
-                // doubt asks in words only about a call the kernel would run unasked (mind.py, _unasked).
-                ["confirms"] = new JsonArray([.. Enum.GetValues<ConfirmationMode>()
-                    .Where(mode => RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(capability.Risk), mode, capability.Name)
-                        == PolicyDecision.RequireConfirmation)
-                    .Select(static mode => (JsonNode?)mode.ToString().ToLowerInvariant())]),
-            };
-            if (capability.Effects is { } effects)
-            {
-                // Al máximo 5.1: «corrige» never fills a tool with one (mind.py, CORRECTABLE_RISKS).
-                tool["effects"] = new JsonArray([.. effects.Select(static effect => (JsonNode?)effect)]);
+                continue;
             }
 
-            catalog.Add(tool);
+            catalog.Add(Capability(capability, shown));
         }
 
         var request = new JsonObject
@@ -541,6 +573,53 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             };
         }
 
+        // Settings → Behavior: only with texts of the person's own; with none the request is the one sent before.
+        if (behavior is not null)
+        {
+            request["behavior"] = behavior.DeepClone();
+        }
+
+        // Settings → Tools: the tools kept off, each with its English title: the mind shows each as a stub with the wire
+        // name it has with every tool, and a call to one reaches the App by its operation (refused there:
+        // ToolProfile.Refusal). With Completo, nothing: the request is the one sent before.
+        // ESE6: one whose call the App holds with its arguments (FieldStepProjection.HeldWhole) goes whole beside its
+        // title, so the mind shows its stub with the arguments its call takes.
+        OperationDescriptor[] off = [.. capabilities.Where(c => withheld?.Contains(c.Name) == true)];
+        if (off.Length > 0)
+        {
+            request["withheld"] = new JsonArray([.. off.Select(c =>
+            {
+                var entry = new JsonObject { ["name"] = c.Name };
+                if (FieldStepProjection.HasStub(c.Name))
+                {
+                    entry["title"] = FieldStepProjection.EnglishTitle(c.Name);
+                }
+
+                if (FieldStepProjection.HeldWhole(c.Name))
+                {
+                    entry["whole"] = Capability(c, shown);
+                }
+
+                return (JsonNode?)entry;
+            })]);
+        }
+
+        // VER2 (10-11, 1.3.3 just installed: asked which version it is, it said it had no information on it):
+        // the version this App is, from its stamp (UpdatePanel.Installed, the one Settings → General shows), with no
+        // request; the mind says it as a fact of this PC (mind.VERSION_FACT). A development copy has none: no field.
+        if (!string.IsNullOrWhiteSpace(version))
+        {
+            request["baxyVersion"] = version;
+        }
+
+        // REM7 (REV15 D-1): beside a memory call held whole, the switch as the App read it, so the mind's fact says that
+        // and not more (mind.MEMORY_HELD_FACT); with none held, nothing: the request is the one sent before.
+        if (memoryOff is { } switchedOff && off.Any(static c => FieldStepProjection.HeldWhole(c.Name)
+            && MemoryOperationProtector.IsMemoryOperation(c.Name)))
+        {
+            request["memoryOff"] = switchedOff;
+        }
+
         return request;
     }
 
@@ -554,17 +633,22 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         CancellationToken cancellationToken,
         TimeSpan waited = default,
         JsonObject? front = null,
-        JsonArray? named = null) =>
-        TurnRequestAsync(DecideRequest(text, pendingConfirmation, waited, front, named), cancellationToken);
+        JsonArray? named = null,
+        JsonArray? ringing = null,
+        JsonArray? routines = null) =>
+        TurnRequestAsync(DecideRequest(text, pendingConfirmation, waited, front, named, ringing, routines), cancellationToken);
 
     /// <summary>
     /// Uso 104 (F41, a greeting at 9.2 s with 8 s nothing traced): <paramref name="waited"/> is how long the person's
     /// words had been in the App when it asked the mind; the mind's trace keeps it beside its own wait (app_ms, before_ms).
     /// Encargo 119: <paramref name="front"/> is the window in front of the person when the words arrived (title, process),
-    /// and <paramref name="named"/> the open windows their words name.
+    /// and <paramref name="named"/> the open windows their words name. ALR1: <paramref name="ringing"/> the alarms and
+    /// reminders ringing now in this App (id, kind, title, clock), the ones schedule.alarms stop and snooze answer.
+    /// RUT1: <paramref name="routines"/> the person's routines (documentacion/RUTINAS.md §5); none sent is none kept.
     /// </summary>
     internal static JsonObject DecideRequest(
-        string text, JsonObject? pendingConfirmation, TimeSpan waited, JsonObject? front = null, JsonArray? named = null)
+        string text, JsonObject? pendingConfirmation, TimeSpan waited, JsonObject? front = null, JsonArray? named = null,
+        JsonArray? ringing = null, JsonArray? routines = null)
     {
         // Steam (2026-11-04): the interface's language, so the mind's voice knows it before the reply comes; the mind
         // keeps it out of the model's prompt.
@@ -590,24 +674,75 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             request["named"] = named;
         }
 
+        if (ringing is { Count: > 0 })
+        {
+            request["ringing"] = ringing;
+        }
+
+        if (routines is { Count: > 0 })
+        {
+            request["routines"] = routines;
+        }
+
         return request;
+    }
+
+    /// <summary>One capability as catalog.configure tells it to the mind; <paramref name="shown"/> are the themes a tool
+    /// profile keeps (FieldStepProjection.ShownThemes), null with none.</summary>
+    internal static JsonObject Capability(OperationDescriptor capability, IReadOnlySet<string>? shown = null)
+    {
+        ArgumentNullException.ThrowIfNull(capability);
+        var tool = new JsonObject
+        {
+            ["name"] = capability.Name,
+            ["description"] = capability.Description,
+            ["argumentsSchema"] = JsonNode.Parse(
+                capability.ArgumentsSchema.GetRawText()),
+            ["risk"] = capability.Risk,
+            // Feria 2026-10-27: what the model may say it can do (mind.py, AREAS), as the panel «Qué puedo hacer»; with a
+            // tool profile, only the themes it keeps (FieldStepProjection.ShownThemes).
+            ["group"] = shown is null || shown.Contains(FieldStepProjection.Group(capability.Name))
+                ? FieldStepProjection.Group(capability.Name) : null,
+            // P2.41: the modes in which the kernel asks the person before it runs, whatever its arguments; the mind's
+            // doubt asks in words only about a call the kernel would run unasked (mind.py, _unasked).
+            ["confirms"] = new JsonArray([.. Enum.GetValues<ConfirmationMode>()
+                .Where(mode => RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(capability.Risk), mode, capability.Name)
+                    == PolicyDecision.RequireConfirmation)
+                .Select(static mode => (JsonNode?)mode.ToString().ToLowerInvariant())]),
+        };
+        if (capability.Effects is { } effects)
+        {
+            // Al máximo 5.1: «corrige» never fills a tool with one (mind.py, CORRECTABLE_RISKS).
+            tool["effects"] = new JsonArray([.. effects.Select(static effect => (JsonNode?)effect)]);
+        }
+
+        return tool;
     }
 
     /// <summary>
     /// The verified result of the model's last call goes back to it; it answers with its next move. With
     /// <paramref name="final"/> the step budget is spent and the model answers in words from what the results show.
+    /// TPV7: <paramref name="toolOn"/> is the tool the person's «sí» just turned on in their profile (Capability): the
+    /// mind puts it whole in its stub's place for this turn's next request (mind.py, Mind.tool_on).
     /// </summary>
     public Task<MindStep?> ContinueAsync(
         string observation,
         bool final,
         bool beat,
-        CancellationToken cancellationToken) =>
-        TurnRequestAsync(
-            new JsonObject
-            {
-                ["type"] = "turn.continue", ["observation"] = observation, ["final"] = final, ["beat"] = beat,
-            },
-            cancellationToken);
+        CancellationToken cancellationToken,
+        JsonObject? toolOn = null)
+    {
+        var request = new JsonObject
+        {
+            ["type"] = "turn.continue", ["observation"] = observation, ["final"] = final, ["beat"] = beat,
+        };
+        if (toolOn is not null)
+        {
+            request["toolOn"] = toolOn;
+        }
+
+        return TurnRequestAsync(request, cancellationToken);
+    }
 
     /// <summary>The heartbeat: the moment as the App observed it; the model decides whether to intervene.</summary>
     public Task<MindStep?> BeatAsync(JsonObject context, CancellationToken cancellationToken) =>
@@ -661,6 +796,20 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         return reply is not null && Str(reply["type"]) == "session.exported" && reply["conversation"] is JsonArray conversation
             ? (JsonArray)conversation.DeepClone()
             : null;
+    }
+
+    /// <summary>The model's name for a conversation that closed, from its exported conversation (session.title,
+    /// src/baxy_mind Mind.title_of), or null when the mind gave none (none usable, a request waited, or it failed).</summary>
+    public async Task<string?> SessionTitleAsync(JsonArray conversation, CancellationToken cancellationToken)
+    {
+        JsonObject? reply = await RequestAsync(
+            new JsonObject { ["type"] = "session.title", ["conversation"] = conversation.DeepClone() },
+            TurnRequestTimeout,
+            cancellationToken).ConfigureAwait(false);
+        return reply is not null && Str(reply["type"]) == "session.titled"
+            && Str(reply["title"]) is { } title && !string.IsNullOrWhiteSpace(title)
+                ? title.Trim()
+                : null;
     }
 
     /// <summary>Gives the mind a kept session's conversation back, exactly as it was exported.</summary>
@@ -750,7 +899,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                     operation,
                     reply["arguments"]?.DeepClone() as JsonObject ?? new JsonObject(),
                     string.Empty,
-                    reply["unsure"] is JsonValue unsure && unsure.TryGetValue(out bool flagged) && flagged);
+                    reply["unsure"] is JsonValue unsure && unsure.TryGetValue(out bool flagged) && flagged,
+                    reply["theirYes"] is JsonValue theirs && theirs.TryGetValue(out bool yes) && yes);
             case "clarify" when Str(reply["question"]) is { Length: > 0 } question:
                 return new MindStep("question", null, null, question.Trim());
             case "conversation" when Str(reply["reply"]) is { Length: > 0 } text:
@@ -898,7 +1048,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         // Cancellation and speech are handled by the sidecar apart from model work and never wait for an inference.
         // 2026-10-22, review of the App: so are releasing push-to-talk and reading the voice's state (the mind answers
         // them on its reader, __main__.py), which here still queued behind a turn: a release let go of late.
-        if (Str(request["type"]) is "voice.cancel" or "voice.speak" or "voice.release" or "voice.status")
+        // MEN1-M5 (AMD2 §7, 2026-11-10): nor does the name of the conversation that closed hold the lock. The mind leaves
+        // it within 50 ms of another request waiting (Mind.title_of, gives_way; measured 0.036 s against 5.6 s), but the
+        // typed turn waited here and never reached the mind's queue, so the name ran to its end (6 s on an RX 7600). The
+        // mind still works one request at a time, in the order they are written; the name carries its own conversation.
+        if (Str(request["type"]) is "voice.cancel" or "voice.speak" or "voice.release" or "voice.status"
+            or "session.title")
         {
             return await SendRequestAsync(request, timeout, returnProtocolError, ceiling,
                 cancellationToken).ConfigureAwait(false);
@@ -1028,14 +1183,15 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// not a dead mind: the late reply is discarded and the next turn goes
     /// through (2026-10-08, v2-s02: a slow voice.status relaunched the mind
     /// three times). A closed mind was already marked by its reader. Nor is a late turn.notice: it waits behind the
-    /// turn's own decision, which may write a long document (feria 2026-10-27).
+    /// turn's own decision, which may write a long document (feria 2026-10-27). Nor a late session.title (MEN1-M5):
+    /// written outside the request lock, its seconds count while the mind is still on the request before it.
     /// </summary>
     internal static bool InvalidatesMind(string failure, string requestType) =>
         failure switch
         {
             "request_io" => true,
             "request_timeout" => !requestType.StartsWith("voice.", StringComparison.Ordinal)
-                && requestType != "turn.notice",
+                && requestType is not ("turn.notice" or "session.title"),
             _ => false,
         };
 

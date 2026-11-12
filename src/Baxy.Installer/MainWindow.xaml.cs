@@ -61,7 +61,9 @@ internal sealed partial class MainWindow : Window, IDisposable
     private readonly object gate = new();
     private readonly InstallPaths paths;
     private readonly ReleaseManifest? manifest;
+    private readonly ReleaseManifest? carried;
     private readonly bool uninstalling;
+    private readonly bool updating;
     private readonly GpuSupport support;
     private readonly Installation? installation;
     private Texts texts;
@@ -80,37 +82,95 @@ internal sealed partial class MainWindow : Window, IDisposable
     private int announced = -1;
     private FailureKind failure;
     private string failureDetail = string.Empty;
+    private string olderInstalled = string.Empty;
+    private long dataBytes;
+    // PRV2 (A5): the agreement the installation in the folder accepted (null: none recorded), read before the swap
+    // replaces the folder; when it is not this installer's, the window asks for this one first (AcceptedAgreement).
+    private readonly string? acceptedBefore;
+    private bool agreementPending;
+    // UPD1 (REV10 m3): the BAXY that started --update (it closes itself for it) opens again on any way out that did not
+    // replace it: a failure, «Cancel», the agreement not accepted or the window closed. Never twice. Whether it was open is
+    // --update itself: measured in vivo, BAXY often closes within a second, before this window could see its mutex.
+    // Null until BAXY is brought back or opened; the window does not go while it is still being brought back.
+    private Task? bringingBack;
+    // «I'm already open»: BAXY did not close for the update. The window then goes at once; BAXY is there.
+    private bool baxyStayedOpen;
+    // APP2 (VIVO14): BAXY was open and the person had it closed here (OpenScreen): like the one an update closes, it opens
+    // again on a way out that did not replace it, and the new one opens once installed.
+    private bool closedBaxy;
+    private bool closingBaxy;
+    private bool baxyStillOpen;
+    // What the window finished with, for its exit code (ExitCode): null until it installed or uninstalled.
+    private int? finished;
+    // The App's exit event (src/Baxy.App/App.xaml.cs, BaxyExitHandler.AppExitEventName): what its «Salir» sets.
+    private const string BaxyExitEvent = @"Local\BAXY.Product.App.Exit";
 
-    internal MainWindow(ReleaseManifest? manifest, bool uninstalling, InstallPaths paths, bool voiceAllowed)
+    internal MainWindow(ReleaseManifest? manifest, bool uninstalling, InstallPaths paths, bool voiceAllowed, bool updating = false)
     {
         InitializeComponent();
         this.paths = paths;
         voice = new Voice(voiceAllowed);
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
+        carried = manifest;
         this.manifest = manifest?.ForMachine(adapters);
         this.uninstalling = uninstalling;
+        this.updating = updating && !uninstalling && this.manifest is not null;
         http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + (manifest?.Version ?? "0"));
         support = MachineGpu.Choose(adapters);
         if (this.manifest is not null)
         {
+            Program.LogMachine(this.manifest, adapters, paths);
             installation = new Installation(this.manifest, paths, new PartFetcher(http, gate: new Func<PauseGate>(() => pause)));
         }
 
         texts = Texts.For(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "es" : "en");
         theme = SystemParameters.HighContrast ? ThemeKind.HighContrast : ThemeKind.Dark;
         textStep = WindowsTextStep();
-        screen = uninstalling ? UninstallScreen : Greeting;
+        acceptedBefore = AcceptedAgreement.Read(paths);
+        bool asksAgreement = !uninstalling && this.manifest is not null && AcceptedAgreement.MustBeAccepted(paths, acceptedBefore);
+        agreementPending = asksAgreement;
+        screen = FirstScreen<Func<ScreenView>>(uninstalling, this.updating, !uninstalling && BaxyIsOpenHere(), asksAgreement,
+            UninstallScreen, OpenScreen, AgreementScreen, Greeting);
         ticker.Tick += (_, _) => Tick();
         SourceInitialized += (_, _) => TitleBarFollowsTheme();
         Loaded += (_, _) =>
         {
             Apply();
+            if (this.updating && !asksAgreement)
+            {
+                screen = WorkingScreen;
+                Render(speak: false);
+                _ = UpdateWhenBaxyClosesAsync();
+                return;
+            }
+
             Render(speak: true);
+            if (uninstalling)
+            {
+                _ = MeasureDataAsync();
+            }
         };
         Closing += (_, closing) =>
         {
+            if (agreementPending && this.updating)
+            {
+                // Revisión a ciegas de PRV2: the window's X on the agreement is «I don't accept it», and BAXY comes back.
+                agreementPending = false;
+                Program.Log("agreement not accepted: nothing installed");
+            }
+
             work?.Cancel();
             closing.Cancel = installation?.IsSwapping == true;
+            if (!closing.Cancel && bringingBack is not { IsCompleted: true }
+                && (bringingBack is not null
+                    || (BringsBaxyBack(this.updating || closedBaxy, installation?.HasReplaced == true) && !(baxyStayedOpen && Voice.BaxyIsOpen()))))
+            {
+                // The window goes once the BAXY that closed for the update is open again: its process ending first would
+                // end the wait with it.
+                closing.Cancel = true;
+                bringingBack ??= OpenAgainWhenClosedAsync();
+                _ = CloseAfterAsync(bringingBack);
+            }
         };
         Apply();
     }
@@ -419,6 +479,62 @@ internal sealed partial class MainWindow : Window, IDisposable
         0,
         installation!.StillNeededBytes - new DriveInfo(System.IO.Path.GetPathRoot(paths.Root)!).AvailableFreeSpace);
 
+    /// <summary>
+    /// UPD1 (REV10 M2): what stops the work before BAXY is waited for and before anything is downloaded or deleted: too
+    /// little free space, or a folder beside the installation with BAXY's name that is not BAXY's (M4). --update went
+    /// straight to the work, past <see cref="Greeting"/>, the only place that looked at the space.
+    /// </summary>
+    internal static FailureKind? RefusalBeforeAnything(long missingBytes, InstallPaths paths, out string folder)
+    {
+        folder = string.Empty;
+        if (missingBytes > 0)
+        {
+            return FailureKind.Disk;
+        }
+
+        try
+        {
+            paths.RefuseWhatIsNotBaxys();
+            return null;
+        }
+        catch (NotBaxysException foreign)
+        {
+            folder = foreign.Folder;
+            return FailureKind.NotBaxys;
+        }
+    }
+
+    /// <summary>Shows why the work cannot start, or says it can.</summary>
+    private bool Refused()
+    {
+        FailureKind? refusal;
+        string folder;
+        try
+        {
+            refusal = RefusalBeforeAnything(MissingBytes(), paths, out folder);
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            // A drive that is not ready, a folder Windows does not let it read.
+            Program.Log(unread.ToString());
+            refusal = FailureKind.Other;
+            folder = unread.Message;
+        }
+
+        if (refusal is not { } refused)
+        {
+            return false;
+        }
+
+        Program.Log($"refused before anything: {refused} {folder}");
+        failure = refused;
+        failureDetail = folder;
+        screen = FailedScreen;
+        Render(speak: true);
+        BringBaxyBack();
+        return true;
+    }
+
     private ScreenView WarningScreen()
     {
         (string body, string line) = support switch
@@ -446,6 +562,202 @@ internal sealed partial class MainWindow : Window, IDisposable
         First: new ButtonView(texts.Back, false, BackFromLicense, IsDefault: true, IsCancel: true),
         Line: "license",
         LongText: true);
+
+    /// <summary>
+    /// PRV2 (A5): BAXY is in the folder and the agreement it accepted is not this one, or is not known. Shown before
+    /// anything is installed, by hand or as an update from BAXY; accepting goes on, not accepting installs nothing.
+    /// </summary>
+    private ScreenView AgreementScreen() => new(
+        Face.Happy,
+        acceptedBefore is null ? texts.AgreementUnknownTitle : texts.AgreementChangedTitle,
+        WindowsIntegration.LicenseText(texts.Language),
+        Help: texts.AgreementHelp,
+        First: new ButtonView(texts.Accept, true, AcceptAgreement, IsDefault: true),
+        Second: new ButtonView(texts.Decline, false, DeclineAgreement, IsCancel: true),
+        Line: "agreement",
+        LongText: true);
+
+    private void AcceptAgreement()
+    {
+        if (!agreementPending)
+        {
+            return;
+        }
+
+        agreementPending = false;
+        Program.Log("agreement accepted");
+        if (updating)
+        {
+            screen = WorkingScreen;
+            Render(speak: false);
+            _ = UpdateWhenBaxyClosesAsync();
+            return;
+        }
+
+        screen = Greeting;
+        Render(speak: true);
+    }
+
+    private void DeclineAgreement()
+    {
+        if (!agreementPending)
+        {
+            return;
+        }
+
+        agreementPending = false;
+        Program.Log("agreement not accepted: nothing installed");
+        // With --update, BAXY closed itself for it: the version the person has comes back as it was, as the window goes.
+        Close();
+    }
+
+    internal static bool BringsBaxyBack(bool updating, bool replaced) => updating && !replaced;
+
+    /// <summary>
+    /// REM1 (REV12 A-2): the BAXY in the way is the one running from this installation (<see cref="RunningBaxy"/>); one
+    /// open from another folder holds the same mutex but its files are not these, and it is neither closed nor reopened.
+    /// </summary>
+    private bool BaxyIsOpenHere() => RunningBaxy.From(paths.App).Count > 0;
+
+    /// <summary>REM1 (REV12 A-2): «Close me and go on» asks BAXY to exit only when the BAXY that would hear it is this
+    /// folder's: some runs from here and none from elsewhere.</summary>
+    internal static bool MayAskToExit(int runningHere, bool runningElsewhere) => runningHere > 0 && !runningElsewhere;
+
+    /// <summary>
+    /// APP2 (VIVO14, reparo 1): the first screen. Opened by hand with BAXY open, the window showed the agreement and the
+    /// greeting and only after «Instalarme» said BAXY was open: that comes first now, with the offer to close it. With
+    /// --update the BAXY that started it closes itself (<see cref="UpdateWhenBaxyClosesAsync"/>).
+    /// </summary>
+    internal static T FirstScreen<T>(bool uninstalling, bool updating, bool baxyOpen, bool asksAgreement, T uninstall, T open, T agreement, T greeting) =>
+        uninstalling ? uninstall : baxyOpen && !updating ? open : asksAgreement ? agreement : greeting;
+
+    /// <summary>APP2 (VIVO14): the window's exit code, as --quiet's (CommandLine's help): 0 when it installed or uninstalled,
+    /// <see cref="QuietInstall.NotRegistered"/> installed without its shortcut or entry, and <see cref="Program.Failure"/>
+    /// when it closed before finishing (BAXY open, a failure, cancelled). It always exited with 0.</summary>
+    internal static int ExitCode(int? finished) => finished ?? Program.Failure;
+
+    /// <summary>Asks the open BAXY to exit as its own «Salir» does (the App's exit event, BaxyExitHandler); false when no
+    /// BAXY listens for it.</summary>
+    internal static bool AskBaxyToExit(string eventName)
+    {
+        try
+        {
+            if (!EventWaitHandle.TryOpenExisting(eventName, out EventWaitHandle? exit))
+            {
+                return false;
+            }
+
+            using (exit)
+            {
+                return exit.Set();
+            }
+        }
+        catch (Exception refused) when (refused is UnauthorizedAccessException or IOException)
+        {
+            Program.Log(refused.ToString());
+            return false;
+        }
+    }
+
+    /// <summary>The window's exit code (<see cref="ExitCode"/>).</summary>
+    internal int Result => ExitCode(finished);
+
+    // APP2: BAXY was open when the window opened or the work was to start; it is told before anything, with «close me».
+    private ScreenView OpenScreen() => new(
+        Face.Sad,
+        texts.FailOpen,
+        closingBaxy ? texts.OpenClosing : baxyStillOpen ? texts.OpenStillOpen : texts.OpenBody,
+        Help: closingBaxy ? string.Empty : texts.OpenHelp,
+        First: closingBaxy ? null : new ButtonView(texts.CloseMeAndGoOn, true, () => _ = CloseBaxyAndGoOnAsync(), IsDefault: true),
+        Second: closingBaxy ? null : new ButtonView(texts.Close, false, Close, IsCancel: true),
+        // No recorded line: the voice is off while BAXY is open (its lines say «BAXY»); a screen reader reads it.
+        Line: null,
+        Alert: true);
+
+    private async Task CloseBaxyAndGoOnAsync()
+    {
+        Program.Log("BAXY is open: the person asked to close it");
+        closingBaxy = true;
+        baxyStillOpen = false;
+        Render(speak: false);
+        // REM1 (REV12 A-2): the exit event is every BAXY's: it is set only when the BAXY that hears it is this folder's, and
+        // the wait is for those processes. A BAXY open from another folder stays open.
+        IReadOnlyList<int> here = RunningBaxy.From(paths.App);
+        bool elsewhere = RunningBaxy.AnyElsewhere(paths.App);
+        bool asked = MayAskToExit(here.Count, elsewhere) && AskBaxyToExit(BaxyExitEvent);
+        // Revisión ciega de APP2: from the moment it is asked, BAXY closes for this window, also if the window goes while
+        // it waits; one the person closed by hand is not opened by it. A bringing back already over (an earlier round) is
+        // not the one of this closing.
+        closedBaxy |= asked;
+        if (asked && bringingBack is { IsCompleted: true })
+        {
+            bringingBack = null;
+        }
+
+        // A minute at most, as an update waits for it (UpdateWhenBaxyClosesAsync).
+        for (int waited = 0; asked && RunningBaxy.AnyAlive(here) && waited < 120; waited++)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+        }
+
+        closingBaxy = false;
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        if (BaxyIsOpenHere())
+        {
+            Program.Log(asked ? "BAXY did not close"
+                : elsewhere ? "BAXY is open here and another BAXY too: its exit event could reach the other, so it was not set"
+                : "BAXY is open and does not listen for its exit");
+            baxyStillOpen = true;
+            // BAXY is there: the window goes at once, without waiting to bring it back.
+            baxyStayedOpen = true;
+            shown = null;
+            Render(speak: true);
+            return;
+        }
+
+        Program.Log("BAXY closed for the installation");
+        screen = agreementPending ? AgreementScreen : Greeting;
+        shown = null;
+        Render(speak: true);
+    }
+
+    /// <summary>UPD1 (REV10 m3): on a way out that leaves the window open (a failure, «Cancel»), BAXY comes back now.</summary>
+    private void BringBaxyBack()
+    {
+        if (bringingBack is null && BringsBaxyBack(updating || closedBaxy, installation?.HasReplaced == true))
+        {
+            bringingBack = OpenAgainWhenClosedAsync();
+        }
+    }
+
+    private async Task CloseAfterAsync(Task first)
+    {
+        // Out of Closing first: WPF refuses Close() inside it, and the bringing back may already be over.
+        await Task.Yield();
+        await first;
+        Close();
+    }
+
+    /// <summary>The BAXY that closed for the update may still be closing: it is waited for a minute at most, as the update does.</summary>
+    private async Task OpenAgainWhenClosedAsync()
+    {
+        for (int waited = 0; Voice.BaxyIsOpen() && waited < 120; waited++)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+        }
+
+        if (Voice.BaxyIsOpen() || !paths.HoldsBaxy)
+        {
+            return;
+        }
+
+        Program.Log("the BAXY that closed for the update opens again, as it was");
+        StartBaxy();
+    }
 
     private void ShowLicense()
     {
@@ -516,6 +828,13 @@ internal sealed partial class MainWindow : Window, IDisposable
             FailureKind.Open => (texts.FailOpen, texts.FailOpenHelp),
             FailureKind.Damaged => (texts.FailDamaged, texts.FailDamagedHelp),
             FailureKind.Windows => (texts.FailWindows, texts.FailWindowsHelp),
+            // Started by BAXY (--update): the person downloaded nothing, and the BAXY that closed for it is untouched.
+            FailureKind.Unsigned => (texts.FailUnsigned, string.Format(
+                CultureInfo.CurrentCulture, updating ? texts.FailUnsignedUpdateHelp : texts.FailUnsignedHelp, Program.LogPath)),
+            FailureKind.Older => (
+                string.Format(CultureInfo.CurrentCulture, texts.FailOlder, olderInstalled, carried?.Version),
+                string.Format(CultureInfo.CurrentCulture, texts.FailOlderHelp, olderInstalled, carried?.Version)),
+            FailureKind.NotBaxys => (string.Format(CultureInfo.CurrentCulture, texts.FailNotBaxys, failureDetail), texts.FailNotBaxysHelp),
             _ => (
                 string.Format(CultureInfo.CurrentCulture, texts.FailOther, failureDetail),
                 string.Format(CultureInfo.CurrentCulture, texts.FailOtherHelp, Program.LogPath)),
@@ -532,14 +851,40 @@ internal sealed partial class MainWindow : Window, IDisposable
             Alert: true);
     }
 
-    private ScreenView UninstallScreen() => new(
+    // No recorded line says this one: it is read, and a screen reader says it (Alert).
+    private ScreenView NotRegisteredScreen() => new(
         Face.Sad,
-        texts.UninstallTitle,
-        texts.UninstallBody,
-        First: new ButtonView(texts.UninstallKeep, false, () => Uninstall(deleteData: false), IsDefault: true),
-        Second: WindowsIntegration.ADifferentBaxyIsInstalled() ? null : new ButtonView(texts.UninstallDelete, false, () => Uninstall(deleteData: true)),
-        Third: new ButtonView(texts.Cancel, false, Close, IsCancel: true),
-        Line: "uninstall");
+        texts.NotRegisteredTitle,
+        texts.NotRegisteredBody,
+        Help: string.Format(CultureInfo.CurrentCulture, texts.NotRegisteredHelp, Program.LogPath),
+        First: new ButtonView(texts.Retry, true, Register, IsDefault: true),
+        Second: new ButtonView(texts.OpenMe, false, OpenBaxy),
+        Third: new ButtonView(texts.Close, false, Close, IsCancel: true),
+        Alert: true);
+
+    // LEG2 (T6): the spoken line names the alarms only when the screen does, that is, when they will be removed.
+    // COX1: with another BAXY installed none are removed (RingsToRemove = 0) and the screen says how many stay.
+    // UNI1 (REV8 U1): the same check (DataSharedWith) hides «delete your data» and the screen says why.
+    private ScreenView UninstallScreen()
+    {
+        int rings = WindowsIntegration.RingsToRemove(paths);
+        string? sharedWith = WindowsIntegration.DataSharedWith(paths);
+        return new(
+            Face.Sad,
+            texts.UninstallTitle,
+            texts.UninstallBodyFor(
+                rings,
+                dataBytes,
+                WindowsPlaces.ForThisUser.Data,
+                WindowsIntegration.RingsKept(paths),
+                sharedWith),
+            First: new ButtonView(texts.UninstallKeep, false, () => Uninstall(deleteData: false), IsDefault: true),
+            Second: sharedWith is null ? new ButtonView(texts.UninstallDelete, false, () => Uninstall(deleteData: true)) : null,
+            Third: new ButtonView(texts.Cancel, false, Close, IsCancel: true),
+            Line: UninstallLine(rings));
+    }
+
+    internal static string UninstallLine(int rings) => rings > 0 ? "uninstallRings" : "uninstall";
 
     private ScreenView UninstalledScreen() => new(
         Face.Asleep,
@@ -548,9 +893,42 @@ internal sealed partial class MainWindow : Window, IDisposable
         First: new ButtonView(texts.Close, false, Close, IsDefault: true, IsCancel: true),
         Line: "uninstalled");
 
+    /// <summary>
+    /// INS-9: how much «keep your data» leaves. The folder can hold very many files (measured in one in use: 134,738
+    /// files, 56 s the first time), so they are counted off the window's thread and the screen gets the figure when
+    /// there is one; until then, and if Windows does not let the folder be read, it gives none.
+    /// </summary>
+    private async Task MeasureDataAsync()
+    {
+        try
+        {
+            dataBytes = await Task.Run(() => WindowsIntegration.DataBytes());
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException)
+        {
+            Program.Log(unread.ToString());
+            return;
+        }
+
+        if (IsLoaded && shown?.Title == texts.UninstallTitle)
+        {
+            Render(speak: false);
+            // The text changed under a screen reader that already read it: it is told, as the progress is.
+            UIElementAutomationPeer.CreatePeerForElement(BodyText)?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
+        }
+    }
+
+    /// <summary>
+    /// UNI1 (REV8 S1): where «Retry» goes. A failure while the agreement was still to be answered sent it to the greeting,
+    /// from which the window installs and records the agreement as accepted (<see cref="Register"/>): it goes back to
+    /// the agreement instead.
+    /// </summary>
+    internal static T RetryTo<T>(bool uninstalling, bool agreementPending, T uninstall, T agreement, T greeting) =>
+        uninstalling ? uninstall : agreementPending ? agreement : greeting;
+
     private void Retry()
     {
-        screen = uninstalling ? UninstallScreen : Greeting;
+        screen = RetryTo<Func<ScreenView>>(uninstalling, agreementPending, UninstallScreen, AgreementScreen, Greeting);
         shown = null;
         Render(speak: true);
     }
@@ -564,12 +942,65 @@ internal sealed partial class MainWindow : Window, IDisposable
         Finish(FailedScreen);
     }
 
+    /// <summary>
+    /// --update (BaxyUpdateHandler): the person said yes in BAXY, which closes itself after starting this. The swap would
+    /// refuse while it runs, so this waits for it a minute at most; a BAXY still open then is told as any open one is.
+    /// </summary>
+    private async Task UpdateWhenBaxyClosesAsync()
+    {
+        if (Refused())
+        {
+            return;
+        }
+
+        // UPD1 (REV10 m3): «Cancel» while BAXY closes is heard too (the work, and its token, start after).
+        work?.Dispose();
+        work = new CancellationTokenSource();
+        CancellationToken waiting = work.Token;
+        for (int waited = 0; Voice.BaxyIsOpen() && waited < 120 && !waiting.IsCancellationRequested; waited++)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+        }
+
+        if (waiting.IsCancellationRequested)
+        {
+            Finish(Greeting);
+            BringBaxyBack();
+            return;
+        }
+
+        Start();
+    }
+
     private void Start()
     {
-        if (Voice.BaxyIsOpen())
+        // APP2 (VIVO14): a BAXY open now (opened after the window was) is told before anything, with «close me».
+        if (!updating && BaxyIsOpenHere())
+        {
+            screen = OpenScreen;
+            shown = null;
+            Render(speak: true);
+            return;
+        }
+
+        // UNI1 (REV8 S1): nothing is installed while the agreement is still to be answered, whatever screen led here.
+        if (agreementPending)
+        {
+            screen = AgreementScreen;
+            Render(speak: true);
+            return;
+        }
+
+        if (Refused())
+        {
+            return;
+        }
+
+        if (BaxyIsOpenHere())
         {
             // Better now than after downloading gigabytes: the swap would refuse at the very end.
             failure = FailureKind.Open;
+            baxyStayedOpen = true;
             screen = FailedScreen;
             Render(speak: true);
             return;
@@ -604,6 +1035,11 @@ internal sealed partial class MainWindow : Window, IDisposable
                 asking = !Prerequisites.HasVisualCpp();
             }
 
+            // UPD1 (REV10 M4): before the components of Windows are downloaded into the .download folder.
+            paths.RefuseWhatIsNotBaxys();
+            // FIR1: nothing of Windows nor of BAXY is installed before release.json's signature checks out.
+            ReleaseManifest own = carried ?? throw new InvalidDataException("this installer carries no release manifest");
+            await Task.Run(() => SignedRelease.ConfirmAsync(http, own, paths, SignedRelease.BuiltInKeys, cancellation), cancellation);
             await Task.Run(() => Prerequisites.InstallMissingAsync(http, paths.Downloads, cancellation), cancellation);
             await Task.Run(
                 () => installation!.RunAsync(
@@ -618,13 +1054,12 @@ internal sealed partial class MainWindow : Window, IDisposable
                     },
                     cancellation),
                 cancellation);
-            WindowsIntegration.Register(paths, manifest!.Version, manifest.InstalledBytes);
-            Program.Log("installed");
-            Finish(DoneScreen);
+            Register();
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
         {
             Finish(Greeting);
+            BringBaxyBack();
         }
 #pragma warning disable CA1031 // Whatever stopped the installation is told to the person, with its cause.
         catch (Exception problem)
@@ -632,8 +1067,43 @@ internal sealed partial class MainWindow : Window, IDisposable
         {
             Program.Log(problem.ToString());
             failure = Failures.Classify(problem, Voice.BaxyIsOpen);
-            failureDetail = problem.Message;
+            baxyStayedOpen = failure == FailureKind.Open;
+            failureDetail = (problem as NotBaxysException)?.Folder ?? problem.Message;
+            olderInstalled = (problem as OlderReleaseException)?.Installed ?? string.Empty;
             Finish(FailedScreen);
+            BringBaxyBack();
+        }
+    }
+
+    /// <summary>
+    /// The last step, with BAXY's files already in place. Windows refusing it is not «I couldn't install myself» (INS-5):
+    /// BAXY is there and opens, and the person tries this step again alone, with nothing downloaded twice.
+    /// </summary>
+    private void Register()
+    {
+        // PRV2 (A5): the window installs only after the agreement was accepted (its greeting, or AgreementScreen).
+        AcceptedAgreement.Write(paths, AcceptedAgreement.Current, Program.Log);
+        try
+        {
+            WindowsIntegration.Register(paths, manifest!.Version, manifest.InstalledBytes);
+        }
+        catch (NotRegisteredException refused)
+        {
+            Program.Log(refused.ToString());
+            finished = QuietInstall.NotRegistered;
+            // The same screen again is said again: the person pressed «try again» and it was refused once more.
+            shown = null;
+            Finish(NotRegisteredScreen);
+            return;
+        }
+
+        Program.Log("installed");
+        finished = 0;
+        Finish(DoneScreen);
+        if (updating || closedBaxy)
+        {
+            // The person asked for the update in BAXY, or had it closed here: it comes back as it was before it closed.
+            OpenBaxy();
         }
     }
 
@@ -691,12 +1161,18 @@ internal sealed partial class MainWindow : Window, IDisposable
 
     private void OpenBaxy()
     {
+        bringingBack = Task.CompletedTask;
+        StartBaxy();
+        Close();
+    }
+
+    private void StartBaxy()
+    {
         using Process? started = Process.Start(new ProcessStartInfo(paths.App)
         {
             UseShellExecute = true,
             WorkingDirectory = System.IO.Path.GetDirectoryName(paths.App)!,
         });
-        Close();
     }
 
     private void Uninstall(bool deleteData)
@@ -712,6 +1188,7 @@ internal sealed partial class MainWindow : Window, IDisposable
         try
         {
             WindowsIntegration.Uninstall(paths, deleteData);
+            finished = 0;
             screen = UninstalledScreen;
         }
         catch (Exception problem) when (problem is System.IO.IOException or UnauthorizedAccessException or InvalidOperationException)

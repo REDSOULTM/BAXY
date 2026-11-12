@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Baxy.Kernel.Operations;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -35,6 +36,12 @@ public sealed record ExternalCapabilityReceipt(
     /// nothing was done, and the call runs as always once the person says yes.
     /// </summary>
     public bool NeedsConfirmation { get; init; }
+
+    /// <summary>
+    /// ARR1: the arguments a call the schema takes lacks for what it asks (a places search without its kind), each with
+    /// what it takes, refused before anything was sent. The engine refuses them as the kernel's validation does (P5.3).
+    /// </summary>
+    public IReadOnlyList<ArgumentProblem> ArgumentProblems { get; init; } = [];
 }
 
 /// <summary>A media session BAXY paused before a new playback: its source, its title and whether it plays again.</summary>

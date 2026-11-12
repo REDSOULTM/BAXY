@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Baxy.Installer;
 
 /// <summary>What BAXY says in its installer, in the first person and tuteando, as in documentacion/00_IDENTIDAD.md.
@@ -31,6 +33,11 @@ internal sealed class Texts
     internal required string LicenseNotice { get; init; }
     internal required string ReadLicense { get; init; }
     internal required string LicenseTitle { get; init; }
+    internal required string AgreementChangedTitle { get; init; }
+    internal required string AgreementUnknownTitle { get; init; }
+    internal required string AgreementHelp { get; init; }
+    internal required string Accept { get; init; }
+    internal required string Decline { get; init; }
     internal required string Back { get; init; }
     internal required string InstallMe { get; init; }
     internal required string NotNow { get; init; }
@@ -75,20 +82,64 @@ internal sealed class Texts
     internal required string FailNetworkHelp { get; init; }
     internal required string FailOpen { get; init; }
     internal required string FailOpenHelp { get; init; }
+    internal required string OpenBody { get; init; }
+    internal required string OpenHelp { get; init; }
+    internal required string OpenClosing { get; init; }
+    internal required string OpenStillOpen { get; init; }
+    internal required string CloseMeAndGoOn { get; init; }
     internal required string FailDamaged { get; init; }
     internal required string FailDamagedHelp { get; init; }
     internal required string FailWindows { get; init; }
     internal required string FailWindowsHelp { get; init; }
+    internal required string FailUnsigned { get; init; }
+    internal required string FailUnsignedHelp { get; init; }
+    internal required string FailUnsignedUpdateHelp { get; init; }
+    internal required string FailOlder { get; init; }
+    internal required string FailOlderHelp { get; init; }
+    internal required string FailNotBaxys { get; init; }
+    internal required string FailNotBaxysHelp { get; init; }
     internal required string FailOther { get; init; }
     internal required string FailOtherHelp { get; init; }
+    internal required string NotRegisteredTitle { get; init; }
+    internal required string NotRegisteredBody { get; init; }
+    internal required string NotRegisteredHelp { get; init; }
     internal required string Retry { get; init; }
     internal required string UninstallTitle { get; init; }
     internal required string UninstallBody { get; init; }
+    internal required string UninstallBodyShared { get; init; }
+    internal required string UninstallRings { get; init; }
+    internal required string UninstallRingsKept { get; init; }
+    internal required string UninstallSize { get; init; }
     internal required string UninstallKeep { get; init; }
     internal required string UninstallDelete { get; init; }
     internal required string UninstalledTitle { get; init; }
 
     internal static Texts For(string language) => language == "es" ? Spanish : English;
+
+    /// <summary>What the uninstall screen says before the person chooses: what the data are, how much room they take
+    /// when that is known (INS-9) and, when the uninstall will take alarms or reminders out of Windows
+    /// (<see cref="WindowsIntegration.RingsToRemove"/>), that they go either way (INS-1); when they stay because the other
+    /// BAXY shares the data (<see cref="WindowsIntegration.RingsKept"/>), how many and why (COX-1). UNI1 (REV8 U1): when
+    /// another installed BAXY uses the data (<paramref name="sharedWith"/>, <see cref="WindowsIntegration.DataSharedWith"/>)
+    /// the screen offers no «delete your data», and says so and why instead of «you decide whether it stays».</summary>
+    internal string UninstallBodyFor(int rings, long dataBytes, string dataFolder, int kept = 0, string? sharedWith = null)
+    {
+        string start = sharedWith is null ? UninstallBody : string.Format(CultureInfo.CurrentCulture, UninstallBodyShared, sharedWith);
+        string body = dataBytes > 0
+            ? start + " " + string.Format(CultureInfo.CurrentCulture, UninstallSize, Size(dataBytes), dataFolder)
+            : start;
+        if (rings > 0)
+        {
+            return body + " " + UninstallRings;
+        }
+
+        return kept > 0 ? body + " " + string.Format(CultureInfo.CurrentCulture, UninstallRingsKept, kept, sharedWith) : body;
+    }
+
+    // In the units of the installer's other figures (1 GB = 1,000,000,000 bytes); what is there is never «0 MB».
+    private static string Size(long bytes) => bytes >= 1_000_000_000
+        ? string.Format(CultureInfo.CurrentCulture, "{0:0.0} GB", bytes / 1e9)
+        : string.Format(CultureInfo.CurrentCulture, "{0:0} MB", Math.Max(1, Math.Round(bytes / 1e6)));
 
     internal static readonly Texts Spanish = new()
     {
@@ -119,6 +170,11 @@ internal sealed class Texts
         LicenseNotice = "Al instalarme aceptas mi licencia.",
         ReadLicense = "Ver _licencia",
         LicenseTitle = "Mi licencia.",
+        AgreementChangedTitle = "Mi licencia cambió desde la que aceptaste.",
+        AgreementUnknownTitle = "Antes de actualizarme, lee mi licencia.",
+        AgreementHelp = "Si no la aceptas, no me actualizo y sigues con la versión que tienes.",
+        Accept = "La acepto",
+        Decline = "No la acepto",
         Back = "Volver",
         InstallMe = "Instalarme",
         NotNow = "Ahora no",
@@ -161,15 +217,34 @@ internal sealed class Texts
         FailNetworkHelp = "Revisa tu conexión y vuelve a intentarlo. Lo que ya bajé no se pierde.",
         FailOpen = "Ya estoy abierto en este PC.",
         FailOpenHelp = "Ciérrame y vuelve a intentarlo.",
+        OpenBody = "Para instalarme tengo que cerrarme antes. Tus datos se quedan.",
+        OpenHelp = "«Cerrarme y seguir» me cierra como «Salir de BAXY» en mi icono de la bandeja. Si prefieres, ciérrame tú y vuelve a intentarlo.",
+        OpenClosing = "Me estoy cerrando…",
+        OpenStillOpen = "No me cerré. Ciérrame con «Salir de BAXY» en mi icono de la bandeja y pulsa «Cerrarme y seguir» otra vez.",
+        CloseMeAndGoOn = "Cerrarme y seguir",
         FailDamaged = "Un archivo llegó dañado y no lo voy a usar.",
         FailDamagedHelp = "Vuelve a intentarlo y lo bajo de nuevo.",
         FailWindows = "Windows no pudo instalar un componente que necesito.",
         FailWindowsHelp = "Vuelve a intentarlo. Si Windows te pide permiso, acéptalo.",
+        FailUnsigned = "No pude comprobar que esta versión de BAXY venga firmada por quien hace BAXY, así que no instalé nada.",
+        FailUnsignedHelp = "Baja el instalador otra vez desde la página de BAXY en GitHub. Si vuelve a pasar, no lo uses. El detalle quedó en {0}.",
+        FailOlder = "En esta carpeta ya está BAXY {0}, más nuevo que el {1} que traigo, así que no instalé nada.",
+        FailUnsignedUpdateHelp = "Tu BAXY de antes sigue instalada y sin cambios: ábrela desde el menú Inicio. Si vuelve a pasar, no instales esta versión. El detalle quedó en {0}.",
+        FailOlderHelp = "Si de verdad quieres el {1}, desinstala primero el {0} eligiendo conservar tus datos.",
+        FailNotBaxys = "Junto a mi carpeta hay otra que se llama {0} y lo que tiene dentro no lo reconozco como mío, así que no la toqué y no instalé nada.",
+        FailNotBaxysHelp = "Ábrela y mira qué tiene. Si es tuya y la quieres, cámbiale el nombre o muévela. Si no la necesitas, bórrala tú. Después vuelve a intentarlo.",
         FailOther = "{0}",
         FailOtherHelp = "Vuelve a intentarlo. El detalle quedó en {0}.",
+        NotRegisteredTitle = "Ya estoy instalado, pero falta un paso.",
+        NotRegisteredBody = "Windows no me dejó crear mi acceso en el menú Inicio o mi entrada en «Aplicaciones instaladas».",
+        NotRegisteredHelp = "Reintenta sólo ese paso: no vuelvo a bajar nada. Mientras tanto puedes abrirme desde aquí. El detalle quedó en {0}.",
         Retry = "Reintentar",
         UninstallTitle = "¿Me desinstalo?",
-        UninstallBody = "Tus datos son lo que recuerdo de ti y tus conversaciones. Tú decides si se quedan.",
+        UninstallBody = "Tus datos son lo que recuerdo de ti, tus conversaciones, notas y ajustes, las claves que me diste, las capturas de pantalla que guardé y los modelos que bajé después de instalarme. Tú decides si se quedan.",
+        UninstallBodyShared = "Tus datos son lo que recuerdo de ti, tus conversaciones, notas y ajustes, las claves que me diste, las capturas de pantalla que guardé y los modelos que bajé después de instalarme. Se quedan: la otra BAXY, en {0}, usa estos mismos datos, así que no te ofrezco borrarlos.",
+        UninstallRings = "Las alarmas y los recordatorios que me pediste se quitan de Windows en los dos casos: sin mí no suenan.",
+        UninstallRingsKept = "Tus alarmas y recordatorios ({0}) se quedan en Windows y seguirán sonando: la otra BAXY, en {1}, usa estos mismos datos y también son suyos.",
+        UninstallSize = "Hoy ocupan {0} en {1}.",
         UninstallKeep = "Desinstalarme y _conservar tus datos",
         UninstallDelete = "Desinstalarme y _borrar tus datos",
         UninstalledTitle = "Ya me desinstalé.",
@@ -204,6 +279,11 @@ internal sealed class Texts
         LicenseNotice = "By installing me you accept my license.",
         ReadLicense = "Read the licen_se",
         LicenseTitle = "My license.",
+        AgreementChangedTitle = "My license changed since the one you accepted.",
+        AgreementUnknownTitle = "Before I update, read my license.",
+        AgreementHelp = "If you don't accept it, I don't update and you keep the version you have.",
+        Accept = "I accept it",
+        Decline = "I don't accept it",
         Back = "Back",
         InstallMe = "Install me",
         NotNow = "Not now",
@@ -246,15 +326,34 @@ internal sealed class Texts
         FailNetworkHelp = "Check your connection and try again. What I already downloaded is kept.",
         FailOpen = "I’m already open on this PC.",
         FailOpenHelp = "Close me and try again.",
+        OpenBody = "To install myself I have to close first. Your data stays.",
+        OpenHelp = "«Close me and go on» closes me as «Quit BAXY» on my tray icon does. Or close me yourself and try again.",
+        OpenClosing = "I’m closing…",
+        OpenStillOpen = "I didn’t close. Close me with «Quit BAXY» on my tray icon and press «Close me and go on» again.",
+        CloseMeAndGoOn = "Close me and go on",
         FailDamaged = "A file arrived damaged and I won’t use it.",
         FailDamagedHelp = "Try again and I’ll download it again.",
         FailWindows = "Windows couldn’t install a component I need.",
         FailWindowsHelp = "Try again. If Windows asks your permission, accept it.",
+        FailUnsigned = "I couldn’t confirm that this version of BAXY is signed by BAXY’s maker, so I installed nothing.",
+        FailUnsignedHelp = "Download the installer again from BAXY’s GitHub page. If it happens again, don’t use it. The details are in {0}.",
+        FailOlder = "This folder already holds BAXY {0}, newer than the {1} I bring, so I installed nothing.",
+        FailUnsignedUpdateHelp = "Your previous BAXY is still installed and unchanged: open it from the Start menu. If it happens again, don’t install this version. The details are in {0}.",
+        FailOlderHelp = "If you really want {1}, uninstall {0} first, choosing to keep your data.",
+        FailNotBaxys = "Beside my folder there is another one called {0}, and I don’t recognise what it holds as mine, so I didn’t touch it and installed nothing.",
+        FailNotBaxysHelp = "Open it and look at what it holds. If it’s yours and you want it, rename it or move it. If you don’t need it, delete it yourself. Then try again.",
         FailOther = "{0}",
         FailOtherHelp = "Try again. The details are in {0}.",
+        NotRegisteredTitle = "I’m installed, but one step is missing.",
+        NotRegisteredBody = "Windows didn’t let me create my Start menu shortcut or my entry in «Installed apps».",
+        NotRegisteredHelp = "Try just that step again: I won’t download anything twice. Meanwhile you can open me from here. The details are in {0}.",
         Retry = "Try again",
         UninstallTitle = "Should I uninstall myself?",
-        UninstallBody = "Your data is what I remember about you and your conversations. You decide whether it stays.",
+        UninstallBody = "Your data is what I remember about you, your conversations, notes and settings, the keys you gave me, the screenshots I saved and the models I downloaded after I was installed. You decide whether it stays.",
+        UninstallBodyShared = "Your data is what I remember about you, your conversations, notes and settings, the keys you gave me, the screenshots I saved and the models I downloaded after I was installed. It stays: the other BAXY, in {0}, uses this same data, so I don’t offer to delete it.",
+        UninstallRings = "The alarms and reminders you asked me for are removed from Windows either way: they don’t ring without me.",
+        UninstallRingsKept = "Your alarms and reminders ({0}) stay in Windows and will keep ringing: the other BAXY, in {1}, uses this same data and they’re its too.",
+        UninstallSize = "Today it takes {0} in {1}.",
         UninstallKeep = "Uninstall me and _keep your data",
         UninstallDelete = "Uninstall me and _delete your data",
         UninstalledTitle = "I’ve been uninstalled.",

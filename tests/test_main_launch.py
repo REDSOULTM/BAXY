@@ -18,6 +18,30 @@ def test_the_window_starts_on_the_profile_it_was_given(monkeypatch) -> None:
     assert commands[0][-2:] == ["-Profile", "hablar-default1"]
 
 
+def test_the_window_and_the_conductor_run_this_checkouts_mind(monkeypatch) -> None:
+    # VIVO1 (2026-11-09): run_baxy.ps1 names the mind only for its probe, so the App took the registered runtime's copy
+    # (%LOCALAPPDATA%\BAXYRuntime\mind-src\49baeba53e87, six days and 850 commits old, without external_model.py): Ollama's
+    # list and translator failed in the window while the checkout had them.
+    monkeypatch.delenv("BAXY_MIND_PYTHONPATH", raising=False)
+    environments: list[dict[str, str]] = []
+    monkeypatch.setattr(main, "dotnet_executable", lambda: sys.executable)
+    monkeypatch.setattr(main, "run_checked", lambda command, **kw: environments.append(kw["environment"]))
+    main.launch(cpu=False, without_mind=False)
+    monkeypatch.setattr(sys, "argv", ["main.py", "--conductor", "--text", "hola"])
+    main.launch_conductor(main.parse_args())
+    assert [env["BAXY_MIND_PYTHONPATH"] for env in environments] == [str(main.ROOT / "src")] * 2
+
+
+def test_a_mind_asked_for_on_purpose_is_kept(monkeypatch) -> None:
+    # As run_renew.cmd: a bench may measure another copy of the mind by naming it first.
+    monkeypatch.setenv("BAXY_MIND_PYTHONPATH", r"D:\otra\src")
+    environments: list[dict[str, str]] = []
+    monkeypatch.setattr(main, "dotnet_executable", lambda: sys.executable)
+    monkeypatch.setattr(main, "run_checked", lambda command, **kw: environments.append(kw["environment"]))
+    main.launch(cpu=False, without_mind=False)
+    assert environments[0]["BAXY_MIND_PYTHONPATH"] == r"D:\otra\src"
+
+
 def test_without_a_profile_the_window_keeps_its_own(monkeypatch) -> None:
     commands: list[list[str]] = []
     monkeypatch.setattr(main, "dotnet_executable", lambda: sys.executable)

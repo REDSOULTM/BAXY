@@ -112,6 +112,27 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "audio.app.volume.set.session.postread.v1",
             "Fija el volumen propio de una aplicación (sus sesiones de audio en la salida predeterminada, el control por aplicación del mezclador) en un nivel absoluto de 0 a 100, aunque esté en pausa, y verifica la postlectura; no toca el volumen del sistema."),
+        // RUT2 (pedido del dueño 10-11-2026: cambiar entre audífonos y altavoces por su nombre): las salidas y entradas
+        // activas con el nombre que muestra Windows, y la predeterminada puesta por el nombre dicho, casado por forma con
+        // los listados (uno: se cambia y se relee; ninguno o varios: nada cambia y se devuelven).
+        Descriptor(
+            "audio.device.list",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "audio.device.list.endpoints.read.v1",
+            "Lee las salidas y entradas de audio activas por el nombre que muestra Windows y cuál es la predeterminada de cada una, sin cambiar nada."),
+        Descriptor(
+            "audio.device.set",
+            Schema(
+                [
+                    String("device", maximumUtf8Bytes: 256, nonWhitespace: true),
+                    String("kind", values: ["input", "output"]),
+                ],
+                ["device"]),
+            OperationRisks.LowReversible,
+            "audio.device.set.policyconfig.postread.v1",
+            "Hace predeterminada la salida (o la entrada, kind input) de audio activa cuyo nombre casa con el dicho y relee la predeterminada; si no casa con ninguna o casa con varias no cambia nada y las devuelve.",
+            effects: [SystemChange()]),
         Descriptor(
             "audio.microphone.mute",
             Schema([Boolean("state")], ["state"]),
@@ -125,12 +146,21 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "audio.microphone.status.capture.endpoint.read.v1",
             "Lee si el micrófono predeterminado de Windows está silenciado, sin modificarlo."),
+        // W2 (A2, A3, A5: «silencia <app>» silenciaba el PC entero): lo que se silencia va tipado. scope «pc» es la
+        // salida predeterminada entera; scope «app», las sesiones de audio de la aplicación nombrada en app (el mute
+        // por sesión del mezclador, ISimpleAudioVolume::SetMute), y si no tiene ninguna no se silencia nada.
         Descriptor(
             "audio.mute",
-            Schema([Boolean("state")], ["state"]),
+            Schema(
+                [
+                    String("app", maximumUtf8Bytes: 256, nonWhitespace: true),
+                    String("scope", values: ["app", "pc"]),
+                    Boolean("state"),
+                ],
+                ["scope", "state"]),
             OperationRisks.LowReversible,
             "audio.mute.endpoint.postread.v1",
-            "Silencia o reactiva la salida predeterminada y corrobora la postlectura."),
+            "Silencia o reactiva la salida predeterminada entera (scope pc) o sólo las sesiones de audio de una aplicación (scope app, con su nombre en app) y corrobora la postlectura; si la aplicación no tiene sesión de audio no silencia nada y dice cuáles suenan."),
         Descriptor(
             "audio.status",
             EmptySchema(),
@@ -226,27 +256,85 @@ public static class ProductCatalog
             OperationRisks.WorkLoss,
             "baxy.exit.app.event.delivered.v1",
             "Cierra BAXY como «Salir» del icono de la bandeja: guarda la conversación, quita el icono y para su voz y su modelo hasta que la persona lo vuelva a abrir; sólo se sabe que el pedido llegó a la App, no que ya se cerró."),
+        // RUT1 (dueño, 2026-11-10): rutinas de la persona (documentacion/RUTINAS.md). Una sola operación, como
+        // schedule.alarms: guardar, listar, cambiar, borrar, activar y ejecutar. Los pasos son operaciones de este
+        // catálogo («<herramienta> <argumentos JSON>») o «say: <texto>»; RoutinesHandler los valida contra su esquema al
+        // guardar, y ejecutar sólo devuelve los pasos: cada uno corre después como una llamada más, con su propio sí.
+        // RUT4: las rutinas con hora (at, repeat, days) entran en el esquema ahora que corren: una tarea BAXY-Say-… del
+        // Programador de tareas, la misma maquinaria de alarmas y recordatorios, que a su hora dice el texto una vez
+        // (RoutineSayTasks, ScheduledRingScript, AlarmRinger). Sólo llevan pasos «say»; los días se validan al guardar.
+        // RUT6: una rutina de frase guarda una orden (order): lo que la persona pidió, con sus palabras. Al decir la
+        // frase, la mente pone esa orden como el pedido del turno y el modelo la decide como cualquier otra (RUTINAS.md
+        // §5 c). Medido frente a los pasos escritos por el modelo: INFORME_RUT6.
+        Descriptor(
+            "baxy.routines",
+            Schema(
+                [
+                    String("action", values: ["change", "create", "delete", "disable", "enable", "list", "run"]),
+                    String("at", maximumLength: 16, nonWhitespace: true),
+                    new OperationArgumentProperty(
+                        "days",
+                        OperationJsonType.Array,
+                        itemTypes: OperationJsonType.String,
+                        minimumItems: 1,
+                        maximumItems: 7,
+                        itemMaximumUtf8Bytes: 3,
+                        itemNonWhitespace: true),
+                    String("name", maximumLength: 64, nonWhitespace: true),
+                    String("order", maximumLength: 400, nonWhitespace: true),
+                    String("phrase", maximumLength: 64, nonWhitespace: true),
+                    String("repeat", values: ["daily", "days", "once"]),
+                    new OperationArgumentProperty(
+                        "steps",
+                        OperationJsonType.Array,
+                        itemTypes: OperationJsonType.String,
+                        minimumItems: 1,
+                        maximumItems: 8,
+                        itemMaximumUtf8Bytes: 1_024,
+                        itemNonWhitespace: true),
+                ],
+                ["action"]),
+            OperationRisks.LowReversible,
+            "baxy.routines.local.store.postread.v1",
+            "Guarda, lista, cambia, borra, activa o desactiva las rutinas de la persona: una frase suya que vale por una orden guardada con sus palabras (al decirla, esa orden se hace como si la acabara de pedir) o que dispara pasos (operaciones del catálogo con sus argumentos, o decir un texto), comprobando cada paso contra el catálogo al guardar, o una hora a la que BAXY dice un texto una vez (una tarea del Programador de tareas de Windows, releída al guardar); ejecutar devuelve los pasos de una rutina activa, que luego corren uno a uno como cualquier otra llamada."),
         Descriptor(
             "baxy.settings.set",
             Schema(
                 [
                     // pc-f6-ajustes: los ajustes propios de BAXY que la vista cambia (FieldSettingsStore). proposals
                     // toma 30m, 1h o tomorrow (silencio hasta las 08:00) y on lo quita; los demás, on u off.
-                    // Encargo 25 (G2): el modo de confirmación también es suyo; desde el chat sólo se apaga, y
-                    // encenderlo se niega diciendo el modo puesto y dónde lo enciende la ventana (OwnSettingsHandler).
+                    // Encargo 25 (G2): el modo de confirmación también es suyo. TPV1 (dueño, 10-11: «todo se
+                    // controla por voz»): encenderlo desde el chat también, con el sí de la persona (OwnBrakes), y el
+                    // perfil de herramientas de Ajustes → Herramientas (tool_profile: un perfil hecho).
                     String(
                         "setting",
                         values:
                         [
-                            "confirmation_bypass", "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos",
-                            "proposals", "voice", "web_search",
+                            "accessible_mode", "close_to_tray", "confirmation_bypass", "echo_cancel", "minimize_to_tray",
+                            "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos", "overlay", "proposals",
+                            "screen", "tool_profile", "update_notice", "voice", "wait_notice", "wake_sound", "weather",
+                            "web_search",
                         ]),
-                    String("value", values: ["1h", "30m", "off", "on", "tomorrow"]),
+                    String(
+                        "value",
+                        values: ["1h", "30m", "avanzado", "completo", "diario", "esencial", "off", "on", "tomorrow"]),
                 ],
                 ["setting", "value"]),
             OperationRisks.LowReversible,
             "baxy.settings.set.profile.postread.v1",
-            "Cambia un ajuste propio de BAXY (su voz, la búsqueda web, no interrumpir en juegos, llamadas o vídeos, o silenciar sus propuestas 30 min, 1 h o hasta mañana) y verifica su postlectura."),
+            "Cambia un ajuste propio de BAXY (su voz, el overlay, el modo accesible de su ventana, la búsqueda web, el clima, mirar la pantalla, no interrumpir en juegos, llamadas o vídeos, silenciar sus propuestas 30 min, 1 h o hasta mañana, el sonido al despertar, ignorar lo que suena en el PC, decir «Un momento», avisar de versiones nuevas, la bandeja al cerrar o minimizar, el modo Bypass o su perfil de herramientas) y verifica su postlectura."),
+        // actualizar-ordenes-app (dueño, 2026-11-09: «un botón de actualizar y decirle BAXY actualízate»): BAXY's own
+        // update where it came from (BaxyUpdateHandler). check reads; install on GitHub downloads the installer checked
+        // against the SHA-256 GitHub published and starts it, which asks the yes in normal mode (installation); on Steam
+        // or itch.io it only opens the store, which updates BAXY itself.
+        Descriptor(
+            "baxy.update",
+            Schema([String("action", values: ["check", "install"])], ["action"]),
+            OperationRisks.Installation,
+            "baxy.update.distribution.release.v1",
+            "Busca si hay una versión nueva de BAXY donde se publicó (la última versión estable de GitHub; Steam e itch la actualizan solos) o actualiza a ella: en GitHub baja su instalador, lo comprueba con el SHA-256 publicado, lo abre y BAXY se cierra para que lo reemplace; en Steam o itch abre su página de BAXY.",
+            // GitHub is asked for its latest release (nothing of the person goes); install opens a window of its own.
+            effects: [WindowInput(EffectCondition.Is("action", "install")), Network()]),
         Descriptor(
             "bluetooth.device.list",
             EmptySchema(),
@@ -537,12 +625,29 @@ public static class ProductCatalog
             "display.mode.set.win32.test.apply.readback.v1",
             "Cambia el modo del monitor principal (resolución, frecuencia de refresco o ambas) a uno que su controlador lista: lo prueba con CDS_TEST, lo aplica, relee el modo y, si no es el pedido, vuelve al anterior y lo relee; con sólo la resolución mantiene la frecuencia si ese modo la lista, si no toma la más alta listada.",
             effects: [SystemChange()]),
+        // RUT2: un monitor sale del escritorio o vuelve a él (la topología de pantallas de Windows, QueryDisplayConfig y
+        // SetDisplayConfig), elegido por su posición o por ser o no el principal; nunca el único encendido.
+        Descriptor(
+            "display.monitor.set",
+            Schema(
+                [
+                    Boolean("active"),
+                    String(
+                        "monitor",
+                        types: NullableString,
+                        values: ["above", "below", "left", "middle", "primary", "right", "secondary"]),
+                ],
+                ["active"]),
+            OperationRisks.LowReversible,
+            "display.monitor.set.ccd.topology.postread.v1",
+            "Apaga (active false) o vuelve a encender (active true) un monitor conectado, elegido por su posición o por ser o no el principal, y relee la topología de pantallas; nunca apaga el único encendido y, si no queda claro cuál es, no cambia nada y devuelve los monitores.",
+            effects: [SystemChange()]),
         Descriptor(
             "display.status",
             EmptySchema(),
             OperationRisks.ReadOnly,
             "display.status.windows.display.devices.read.v1",
-            "Lee los monitores conectados (cantidad, resolución y frecuencia de refresco) mediante la API de pantalla de Windows; sin efecto."),
+            "Lee los monitores conectados, encendidos y apagados, con su posición en el escritorio, cuál es el principal, su resolución y su frecuencia de refresco mediante la topología de pantallas de Windows; sin efecto."),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0188 «Haz un powerpoint hablando
         // de amor de 6 diapositivas», D11): la presentación se escribe como paquete
         // Open XML, una diapositiva por entrada («Título\nviñeta\nviñeta»), en una
@@ -958,8 +1063,9 @@ public static class ProductCatalog
                 // Goal v3 punto 2: Enter o Espacio sobre el «Sí» enfocado de un aviso de
                 // sobrescritura pisa el archivo igual que el clic; el modelo lo declara desde
                 // la vista (su significado va en el argumento, tool_descriptions.en) y
-                // RiskPolicy lo confirma.
-                String("consequence", types: NullableString, values: ["overwrite"]),
+                // RiskPolicy lo confirma. Encargo I8: irreversible, la tecla que pulsa un control que paga o
+                // borra para siempre, lo diga donde lo diga su nombre.
+                String("consequence", types: NullableString, values: ["irreversible", "overwrite"]),
                 String("key", values:
                 [
                     "alt_tab", "arrow_down", "arrow_left", "arrow_right", "arrow_up",
@@ -1112,12 +1218,17 @@ public static class ProductCatalog
                 [
                     // Goal v3 punto 2: lo que el clic consuma y no se deshace según la
                     // vista donde se decidió («¿Desea reemplazarlo?» → «Sí»): overwrite
-                    // pisa un archivo que ya existe y RiskPolicy lo confirma.
+                    // pisa un archivo que ya existe y RiskPolicy lo confirma. Encargo I8 (P1: «Pagar ahora» en
+                    // medio de un nombre largo no pedía el sí): irreversible, lo que paga, compra o borra para
+                    // siempre según el modelo, que lee el nombre entero; RiskPolicy sólo mira que se declaró.
+                    // EFE1 (mapa PR-08; base c8340433b, modelo de serie): opcional, el modelo lo dejaba fuera
+                    // también al pulsar «Pagar» (1 declaración en 84; pulsó sin el sí 65 de 84). Requerido y
+                    // con null, lo escribe en cada clic y decide su valor (2 de 55 sin el sí).
                     // Goal v3 punto 0, arreglo 3 (ráfaga compuesta): el resultado exacto
                     // que la búsqueda elige; RiskPolicy lo lee como la etiqueta (un canal
                     // de voz pide confirmación ligada a esta invocación).
                     String("choose", types: NullableString, maximumUtf8Bytes: 256),
-                    String("consequence", types: NullableString, values: ["overwrite"]),
+                    String("consequence", types: NullableString, values: ["irreversible", "overwrite"]),
                     String("controlId", types: NullableString, maximumLength: 128),
                     Integer("index", 0, VisibleViewNumbering.HighestIndex, types: NullableInteger),
                     String("label", maximumUtf8Bytes: 256, nonWhitespace: true),
@@ -1137,7 +1248,7 @@ public static class ProductCatalog
                     // Windows no se la da, no se pulsa nada.
                     Integer("window", 1, uint.MaxValue, types: NullableInteger),
                 ],
-                ["label"]),
+                ["consequence", "label"]),
             OperationRisks.ExternalCommunication,
             "input.visible.click.windows.uia.invoke.postread.v2",
             "Invoca un único control visible por etiqueta, o por el índice de la vista o la identidad que dio un clic, en la ventana nombrada o, sin ella, en la de la última mirada (con índice o una etiqueta que mostró), en la aplicación recién abierta o en la de delante (UIA, luego OCR, luego el globo de ayuda, y visión sólo si está configurada), nunca en una ventana protegida, y exige postlectura: seleccionado, conmutado, desaparecido o superficie cambiada.",
@@ -1629,8 +1740,9 @@ public static class ProductCatalog
             "schedule.alarms",
             Schema(
                 [
-                    String("action", values: ["cancel", "create", "diagnose", "list"]),
+                    String("action", values: ["cancel", "create", "diagnose", "list", "snooze", "stop"]),
                     String("at", maximumLength: 32, nonWhitespace: true),
+                    String("id", maximumLength: 32, nonWhitespace: true),
                     Integer("inMinutes", 1, 525_600),
                     Integer("inSeconds", 10, 86_400),
                     String("kind", values: ["alarm", "reminder"]),
@@ -1641,7 +1753,7 @@ public static class ProductCatalog
                 ["action"]),
             OperationRisks.LowReversible,
             "schedule.windows.task.local.clock.postread.v1",
-            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, el de esa hora local o el único pendiente (con varios no cancela ninguno y dice cuáles hay); al listar, las próximas 20 por hora como mucho (dice cuántas hay); y verifica la tarea en Windows."),
+            "Programa, lista o cancela alarmas y recordatorios audibles de BAXY (o diagnostica por qué no sonaron) en el Programador de tareas de Windows: al crear, a los minutos o segundos indicados o a una hora local (HH:mm o fecha y hora), única o diaria u horaria; al cancelar, borra el de esa hora local o el único pendiente (con varios no cancela ninguno y dice cuáles hay), nunca el que está sonando; al listar, las próximas 20 por hora como mucho (dice cuántas hay); al parar o posponer, lo que suena ahora en BAXY (con id, ése; sin id, todo lo que suena), y al posponer vuelve a sonar a los minutos indicados o a una hora local (10 minutos si no se dice); y verifica la tarea en Windows."),
         Descriptor(
             "shell.command.run",
             Schema(
@@ -1772,23 +1884,22 @@ public static class ProductCatalog
                     // REOPEN1957 H0107 «poneme el modo avión»: 1 apaga todas las
                     // radios (Wi-Fi, Bluetooth, móvil) por la API de radios y 0 las
                     // vuelve a encender; la postlectura mira cada radio.
-                    // Estabilización U (identidad, accesibilidad y bypass): los dos ajustes
-                    // propios de BAXY en el mismo ajuste. accessible_mode cambia sólo la
-                    // presentación de su interfaz; confirmation_bypass desde el chat sólo
-                    // se apaga (0): encenderlo es un gesto consciente en la interfaz.
+                    // Estabilización U (identidad, accesibilidad y bypass): confirmation_bypass desde el
+                    // chat sólo se apaga (0): encenderlo es un gesto consciente en la interfaz.
+                    // actualizar-ordenes-app: accessible_mode pasó a baxy.settings.set, con los demás
+                    // ajustes propios de BAXY.
                     String(
                         "setting",
                         values:
                         [
-                            "accessible_mode", "airplane_mode", "brightness", "confirmation_bypass",
-                            "do_not_disturb",
+                            "airplane_mode", "brightness", "confirmation_bypass", "do_not_disturb",
                         ]),
                     Integer("value", 0, 100),
                 ],
                 ["setting", "value"]),
             OperationRisks.PrivacySensitive,
             "system.settings.set.windows.postread.v1",
-            "Cambia un ajuste permitido (brillo; no molestar, por la página Notificaciones de Configuración, que queda abierta; o modo avión sobre todas las radios, por la API de radios) o un ajuste de BAXY (su modo accesible; apagar el modo bypass) y verifica su postlectura.",
+            "Cambia un ajuste permitido (brillo; no molestar, por la página Notificaciones de Configuración, que queda abierta; o modo avión sobre todas las radios, por la API de radios) o apaga el modo bypass de BAXY y verifica su postlectura.",
             requiresObservedEffect: true,
             // do_not_disturb opens ms-settings:notifications (it takes the front) and presses its switch by UI
             // Automation's Toggle (DoNotDisturbScript); airplane_mode goes through the radios API and reaches no window.
@@ -1834,14 +1945,23 @@ public static class ProductCatalog
             // Uso real tanda 4 «convertir nueve de la mañana huso horario a madrid»:
             // con un lugar o una zona horaria nombrados, la misma lectura trae el
             // desfase de esa zona en el mismo instante; no hay un reloj más.
+            // VER1 (PR-03): a date that is not today is asked for as a typed argument and worked out by the handler
+            // (TimeStatusHandler.CalendarAsk): the model counted days and weekdays wrong.
             Schema(
-                [String("place", types: NullableString, maximumUtf8Bytes: 128)],
+                [
+                    Integer("day", 1, 31, types: NullableInteger),
+                    Integer("daysFromToday", -36_600, 36_600, types: NullableInteger),
+                    Integer("month", 1, 12, types: NullableInteger),
+                    String("place", types: NullableString, maximumUtf8Bytes: 128),
+                    String("weekday", types: NullableString,
+                        values: ["friday", "monday", "saturday", "sunday", "thursday", "tuesday", "wednesday"]),
+                    Integer("year", 1, 9_999, types: NullableInteger),
+                ],
                 []),
             OperationRisks.ReadOnly,
             "system.time.clock.secondread.v1",
-            "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes; con un lugar o una zona horaria nombrados, también el desfase de esa zona en ese instante.",
-            // A place's clock comes from Open-Meteo.
-            effects: [Network(EffectCondition.Named("place"))]),
+            "Lee la fecha y hora actuales, la hora UTC y el desfase local mediante dos observaciones coherentes; con un lugar o una zona horaria nombrados, también el desfase de esa zona en ese instante; con días, una fecha o un día de la semana, calcula esa fecha, su día de la semana y a cuántos días está de hoy."),
+            // WEB1 (2026-11-07): a place's clock comes from the GeoNames places BAXY carries; nothing leaves the PC.
         Descriptor(
             "task.complete",
             TaskCasSchema(),
@@ -1937,11 +2057,12 @@ public static class ProductCatalog
             // Al máximo, flujos: CaptureVisionAdapter: the local endpoint has 80 s inside these 90 (P2.17).
             budget: TimeSpan.FromSeconds(90)),
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo W): la encuesta pide el
-        // clima, no páginas sobre el clima. Lectura pública sin clave (Open-Meteo:
-        // geocodificación del lugar nombrado, o la ubicación de este PC por su IP) con
-        // temperatura, sensación, cielo, viento, humedad y la lluvia de hoy y mañana.
-        // Uso real tanda 4c: el recibo nombra el lugar leído (la ciudad de este PC
-        // cuando no se nombra ninguno) y trae la calidad del aire del mismo lugar.
+        // clima, no páginas sobre el clima. Lectura pública sin clave (MET Norway desde
+        // WEB1, 2026-11-07; el lugar nombrado, en los lugares de GeoNames que BAXY lleva,
+        // o la ubicación de este PC por su IP) con temperatura, sensación, cielo, viento,
+        // humedad y la lluvia de hoy y mañana. Uso real tanda 4c: el recibo nombra el
+        // lugar leído (la ciudad de este PC cuando no se nombra ninguno). La calidad del
+        // aire no tiene servicio gratuito de uso comercial: va como null.
         Descriptor(
             "weather.current",
             Schema(
@@ -1956,8 +2077,8 @@ public static class ProductCatalog
                 ],
                 []),
             OperationRisks.ReadOnly,
-            "weather.current.openmeteo.read.v1",
-            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol, calidad del aire y el lugar leído (la ciudad que ese servicio deduce, cuando no se nombra ninguno); hasta 8 candidatos (candidateCount).",
+            "weather.current.metnorway.read.v1",
+            "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación aproximada de este PC (la que un servicio público deduce de su dirección de internet) si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad, probabilidad de lluvia, horas de salida y puesta del sol y el lugar leído (la ciudad que ese servicio deduce, cuando no se nombra ninguno); hasta 8 candidatos (candidateCount).",
             effects: [Network()]),
         // Auditoría semántica 2026-09-20 (REOPEN1957 H0077 «descarga la imagen de
         // portada de wikipedia.org y guardala en el escritorio», H0069; D11): bajar un
@@ -2006,7 +2127,7 @@ public static class ProductCatalog
                     String("from", types: NullableString, maximumLength: 3),
                     // places: la clase de sitio, en inglés («pharmacy», «parking»).
                     String("kind", types: NullableString, maximumUtf8Bytes: 128),
-                    // encyclopedia y news: la Wikipedia o la edición de noticias.
+                    // encyclopedia: la Wikipedia en ese idioma.
                     String("language", types: NullableString, values: ["en", "es"]),
                     Integer("limit", 1, 10, types: NullableInteger),
                     // La ciudad y el país de este PC se añaden a la consulta (o son el lugar, en places).
@@ -2017,16 +2138,16 @@ public static class ProductCatalog
                     String(
                         "source",
                         types: NullableString,
-                        values: ["currency", "encyclopedia", "news", "places", "sports", "web"]),
-                    // sports: el equipo, y si se pide el próximo partido o el último.
-                    String("team", types: NullableString, maximumUtf8Bytes: 128),
+                        // WEB1 (2026-11-07, LIC1 R3): sin «news» ni «sports»: el RSS de Google News es sólo para uso
+                        // personal y no comercial, y los términos de Disney prohíben leer ESPN con un programa; las
+                        // noticias y los partidos de un equipo son una búsqueda web.
+                        values: ["currency", "encyclopedia", "places", "web"]),
                     String("to", types: NullableString, maximumLength: 3),
-                    String("wants", types: NullableString, values: ["last", "next"]),
                 ],
                 ["query"]),
             OperationRisks.ReadOnly,
             "web.search.provider.results.v1",
-            "Busca en la fuente pública que elige el modelo (buscador web, noticias, enciclopedia, divisas, deportes o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; el buscador web se consulta en la región de casa de Windows cuando el buscador la tiene; con nearby, añade la ciudad y el país de este PC a la consulta; 5 resultados por defecto.",
+            "Busca en la fuente pública que elige el modelo (buscador web, enciclopedia, divisas o sitios de un lugar) con sus argumentos tipados y devuelve los resultados tal como esa fuente los dio, acotados; el buscador web se consulta en la región de casa de Windows cuando el buscador la tiene; con nearby, añade la ciudad y el país de este PC a la consulta; 5 resultados por defecto.",
             effects: [Network()]),
         Descriptor(
             "wifi.connect",

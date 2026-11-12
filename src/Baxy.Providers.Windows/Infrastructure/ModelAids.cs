@@ -245,6 +245,21 @@ public static class ModelAids
     public const string SaidChannel = "said_channel";
 
     /// <summary>
+    /// actualizar-ordenes-app (banco de decisiones, control e64-H-C03 «saca la pestaña de …»: 2 of 5 closed the active tab,
+    /// one nobody named): a browser.control close without tab, in a turn whose tab list the person's words name another
+    /// tab of, goes back to the model once with that tab's title; the same call again runs (Baxy.App.NetworkEgress).
+    /// </summary>
+    public const string SaidTab = "said_tab";
+
+    /// <summary>
+    /// actualizar-ordenes-app (held-out pestanas_ho T14, «cierra la wikipedia, que ya está» → baxy.exit, which in Bypass
+    /// closes BAXY unasked; T24, «cámbiate a la de Netflix» → baxy.settings.set): one of BAXY's own operations (baxy.exit,
+    /// baxy.settings.set, baxy.update) while the person's words name an open window or a tab of one goes back once with what
+    /// they named; the same call again runs (Baxy.App.NetworkEgress).
+    /// </summary>
+    public const string OwnNamedWindow = "own_named_window";
+
+    /// <summary>
     /// Banco de uso 2026-11-03 (S01, S05, S06, S07: the window the person named was open and the call went to a known
     /// service, a chat client or the clipboard): a call whose closed argument holds an application they did not say,
     /// while their words name open windows none of which is that application's, is refused once with the call that

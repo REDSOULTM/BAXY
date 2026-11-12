@@ -11,7 +11,8 @@ namespace Baxy.Providers.Windows.Tests;
 public sealed class BaxySettingHandlerTests
 {
     // pc-ayudas: the accessible mode switched from the chat says what it changes (BAXY's own window) and which modes do
-    // not exist yet, in the message the model reads, so «activé el modo para ciegos» has nothing to stand on.
+    // not exist yet, in the message the model reads, so «activé el modo para ciegos» has nothing to stand on. Since
+    // actualizar-ordenes-app it is baxy.settings.set's, with BAXY's other own switches.
     [Test]
     public async Task TheAccessibleModeSaysWhatItChangesAndWhatIsNotThereYet()
     {
@@ -19,7 +20,7 @@ public sealed class BaxySettingHandlerTests
         Directory.CreateDirectory(root);
         try
         {
-            string accessible = await SettingMessage(root, """{"setting":"accessible_mode","value":1}""");
+            string accessible = await OwnMessage(root, """{"setting":"accessible_mode","value":"on"}""");
             string bypass = await SettingMessage(root, """{"setting":"confirmation_bypass","value":0}""");
             using JsonDocument facts = JsonDocument.Parse(accessible);
             using JsonDocument other = JsonDocument.Parse(bypass);
@@ -56,7 +57,7 @@ public sealed class BaxySettingHandlerTests
         {
             using IDisposable off = ModelAids.Use("none");
             using JsonDocument facts = JsonDocument.Parse(
-                await SettingMessage(root, """{"setting":"accessible_mode","value":1}"""));
+                await OwnMessage(root, """{"setting":"accessible_mode","value":"on"}"""));
             JsonElement observed = facts.RootElement.GetProperty("observed");
 
             Assert.Multiple(() =>
@@ -75,9 +76,9 @@ public sealed class BaxySettingHandlerTests
     // Revisión 2026-10-22 (C-3): a setting file another program holds locked cannot be read, and «I could not read it»
     // was taken for «off»: switching it off answered changed:false, done, while the file still said on. Unreadable is
     // its own failure, and nothing is written.
-    [TestCase("accessible_mode", "presentation-mode", "accessible")]
-    [TestCase("confirmation_bypass", "confirmation-mode", "bypass")]
-    public async Task ASettingThatCannotBeReadIsNotTakenForOff(string setting, string fileName, string stored)
+    [TestCase("baxy.settings.set", """{"setting":"accessible_mode","value":"off"}""", "presentation-mode", "accessible")]
+    [TestCase("system.settings.set", """{"setting":"confirmation_bypass","value":0}""", "confirmation-mode", "bypass")]
+    public async Task ASettingThatCannotBeReadIsNotTakenForOff(string operation, string arguments, string fileName, string stored)
     {
         string root = Path.Combine(Path.GetTempPath(), "baxy-accessible-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
@@ -88,7 +89,7 @@ public sealed class BaxySettingHandlerTests
             string message;
             using (new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
             {
-                message = await SettingMessage(root, $$"""{"setting":"{{setting}}","value":0}""");
+                message = operation == "baxy.settings.set" ? await OwnMessage(root, arguments) : await SettingMessage(root, arguments);
             }
 
             using JsonDocument facts = JsonDocument.Parse(message);
@@ -106,8 +107,9 @@ public sealed class BaxySettingHandlerTests
         }
     }
 
-    // Encargo 25 (G2): switching bypass on from the chat stays refused, now with what is true instead of a bare code: the
-    // mode it is in, what the chat can do with it and where BAXY's own window turns it on.
+    // Encargo 25 (G2): switching bypass on through system.settings.set stays refused, with what is true instead of a bare
+    // code: the mode it is in and (TPV1) the call that switches it on by voice with the person's «sí»; where BAXY's own
+    // window turns it on stays beside.
     [Test]
     public async Task BypassOnSaysTheModeAndWhereTheWindowTurnsItOn()
     {
@@ -125,6 +127,9 @@ public sealed class BaxySettingHandlerTests
                     Is.EqualTo("confirmation_bypass_interface_only"));
                 Assert.That(observed.GetProperty("mode").GetString(), Is.EqualTo("normal"));
                 Assert.That(observed.GetProperty("turnOnIn").GetString(), Does.Contain("Ajustes > Confirmación"));
+                Assert.That(observed.GetProperty("turnOnBySpeaking").GetString(), Is.EqualTo(
+                    """baxy_settings_set {"setting":"confirmation_bypass","value":"on"} switches it on: BAXY asks the person's yes itself"""));
+                Assert.That(observed.TryGetProperty("valuesByChat", out _), Is.False);
                 Assert.That(File.Exists(Path.Combine(root, "confirmation-mode")), Is.False);
             });
         }
@@ -158,6 +163,13 @@ public sealed class BaxySettingHandlerTests
         OperationOutcome outcome = await new BaxySettingHandler(windows, dataRoot).ExecuteAsync(
             new OperationInvocation("request", "mission", "invocation", Json(arguments)), CancellationToken.None);
         return OperationVisibleFacts.FromOutcome(operation, outcome);
+    }
+
+    private static async Task<string> OwnMessage(string dataRoot, string arguments)
+    {
+        OperationOutcome outcome = await new OwnSettingsHandler(dataRoot).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", Json(arguments)), CancellationToken.None);
+        return OperationVisibleFacts.FromOutcome(OwnSettingsHandler.Operation, outcome);
     }
 
     private static JsonElement Json(string value) => JsonDocument.Parse(value).RootElement.Clone();

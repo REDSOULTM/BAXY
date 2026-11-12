@@ -71,17 +71,21 @@ public static partial class RiskPolicy
         bool landingRead = false)
     {
         // Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca… el modo normal ya tendría que
-        // pedirla»): Bypass asks nothing, a message to another person included (it asked since 2026-10-21).
+        // pedirla»), repeated 2026-11-07 («Bypass es literalmente un modo sin permisos. No te tiene que preguntar nada en
+        // Bypass»): Bypass asks nothing, a message to another person, shutting down or ending a process included.
         if (mode == ConfirmationMode.Bypass)
         {
             return PolicyDecision.Allow;
         }
 
-        // Identity: apagar / cerrar sesión van directos. The catalog still
-        // labels system.power as work_loss so historical seals do not move.
+        // Identity: bloquear y suspender van directos; what ends the session asks in normal mode (EndsTheSession), and
+        // without arguments the question stays open. The catalog still labels system.power as work_loss so historical
+        // seals do not move.
         if (string.Equals(operation, "system.power", StringComparison.Ordinal))
         {
-            return PolicyDecision.Allow;
+            return arguments is { } power && EndsTheSession(operation, power)
+                ? PolicyDecision.RequireConfirmation
+                : PolicyDecision.Allow;
         }
 
         if (arguments is { } invocation
@@ -112,6 +116,23 @@ public static partial class RiskPolicy
             _ => throw new ArgumentOutOfRangeException(nameof(risk)),
         };
     }
+
+    /// <summary>
+    /// Encargo L3 (líder de la misión, 2026-11-05; pendiente de que el dueño lo ratifique, porque afina sus decisiones del
+    /// 2026-10-25, «apagar o cerrar sesión van directos», y del 2026-11-02, «bypass no debe pedir confirmación nunca»):
+    /// «apágalo» about an open application went to system.power shutdown in 5 of 14 held-out phrases, 5 seeds of 5, sure of it
+    /// (rival at 0.02, so System One's doubt would not hold it either). Shutting down, restarting or signing out closes
+    /// what the person has open and loses what is not saved, and nothing takes it back, so in normal mode this invocation
+    /// waits for their yes, bound to it. Locking and sleeping keep it all open and go directly. Fail-closed: any other
+    /// action asks. OWASP LLM06, Excessive Agency: a human approves a high-impact action. Bypass asks nothing (orden del
+    /// dueño, 2026-11-07, REV7: INT5 had made this ask there too, and it was reverted).
+    /// </summary>
+    public static bool EndsTheSession(string? operation, JsonElement arguments) =>
+        string.Equals(operation, "system.power", StringComparison.Ordinal)
+        && !(arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("action", out JsonElement action)
+            && action.ValueKind == JsonValueKind.String
+            && action.GetString() is "lock" or "sleep");
 
     /// <summary>
     /// BAXY Renew (2026-10-15; identity: confirm what destroys data and what goes out to the world): a console command
@@ -240,13 +261,15 @@ public static partial class RiskPolicy
         // erases characters.
         // Goal v3 point 2: the click that confirms writing over a file that already exists («Sí» under «¿Desea
         // reemplazarlo?»), or Enter/Space on that focused «Sí», loses that file. The model declares it from the view it
-        // was decided on.
-        bool overwrites = arguments.TryGetProperty("consequence", out JsonElement consequence)
+        // was decided on. Encargo I8 (P1: «Pagar ahora» inside a long control name went unasked): the model declares too
+        // a press that pays, buys or deletes for good (irreversible), whatever the name; a declared consequence asks,
+        // and this policy reads only that it was declared (the catalog holds its values).
+        bool declared = arguments.TryGetProperty("consequence", out JsonElement consequence)
             && consequence.ValueKind == JsonValueKind.String
-            && string.Equals(consequence.GetString(), "overwrite", StringComparison.Ordinal);
+            && !string.IsNullOrEmpty(consequence.GetString());
         if (string.Equals(operation, "input.key.press", StringComparison.Ordinal))
         {
-            return overwrites || (KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field")
+            return declared || (KeyOf(arguments) is "delete" && TargetOf(arguments) is not "text_field")
                 || (KeyOf(arguments) is "enter" or "space" && LabelCannotBeUndone(OntoOf(arguments)));
         }
 
@@ -255,7 +278,7 @@ public static partial class RiskPolicy
             return false;
         }
 
-        if (overwrites)
+        if (declared)
         {
             return true;
         }

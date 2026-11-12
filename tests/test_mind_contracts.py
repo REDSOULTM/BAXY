@@ -114,9 +114,8 @@ def test_a_correction_to_any_other_risk_asks_and_never_fills(tmp_path: Path, mon
 
 # e) The doubt never holds a confirmation, a continuation step or the heartbeat (mutation: a guard of _held removed).
 def test_the_doubt_never_holds_a_confirmation(tmp_path: Path, monkeypatch) -> None:
-    # System One's threshold never holds it; only a yes under CONFIRM_FLOOR is held (test_mind_doubt_policy.py).
+    # System One's threshold never holds it; the person's words are read by their own question (test_mind_su_si.py).
     monkeypatch.setenv("BAXY_S1_DOUBT", "0.99")
-    monkeypatch.delenv("BAXY_CONFIRM_FLOOR", raising=False)
     mind, _ = _doubt_mind(tmp_path, [_sure("confirm_pending", {"answer": "yes"}, 0.97)])
     pending = {"operation": "file.delete", "arguments": {"path": "a.txt"}}
     assert mind.decide(1, "sí, dale", pending=pending)["operation"] == "confirmation.answer"
@@ -170,8 +169,9 @@ def test_an_answer_to_a_question_can_answer_a_confirmation_asked_since(tmp_path:
     assert mind.decide(1, "borra eso")["kind"] == "clarify"
     result = mind.decide(2, "sí", pending=pending)
     assert result["operation"] == "confirmation.answer" and result["arguments"] == {"answer": "yes"}
-    answer = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][0]
-    assert answer.startswith("sí\n[Espera el sí de la persona: file_delete") and "confirm_pending" in answer
+    # SIS3: their «sí» was read by its own question, on that exchange alone: BAXY's question and their answer.
+    note = server.closed[-1]["messages"][-1]["content"]
+    assert "«¿Cuál borro?»" in note and "«sí»" in note and "tools" not in server.closed[-1]
 
 
 # A question that ended unanswered (the App says how with the next words) is told once as what it is, and the model may

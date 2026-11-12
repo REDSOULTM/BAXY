@@ -3419,6 +3419,60 @@ internal sealed class WindowsVisibleControlAdapter
                 }),
             };
 
+    // PAN1: what a read of the whole screen waits for the window in front's texts; the OCR runs meanwhile.
+    internal static readonly TimeSpan ShownTextBudget = TimeSpan.FromSeconds(4);
+
+    /// <summary>
+    /// PAN1: the texts the window in front gives through UI Automation for its controls on screen, with their boxes in
+    /// physical screen pixels (the worker is per-monitor aware), for <see cref="CaptureOcrLayout.Sift"/>. Nothing when
+    /// the walk does not answer in time: the read keeps its OCR as it was.
+    /// </summary>
+    internal async ValueTask<IReadOnlyList<AccessibleTextBox>> ShownTextBoxesAsync(CancellationToken cancellationToken)
+    {
+        nint front = VisibleControlSurface.FrontWindow();
+        if (front == 0)
+            return [];
+        using JsonDocument? answer = await _worker.SendAsync(
+            ViewCommand(front, 60, null), ShownTextBudget, cancellationToken).ConfigureAwait(false);
+        return answer is null ? [] : ShownTextBoxes(answer.RootElement);
+    }
+
+    // The control types whose UI Automation Name is the text they show (Microsoft Learn, «UI Automation Support for the
+    // Button / Hyperlink / ListItem / … Control Type»: Name is the control's text). An Edit's or a Document's Name is a
+    // label and their text is their value; an Image's Name is its alternative text, not what is drawn in it; a pane's or
+    // a group's is a caption over children: none of them says what is drawn inside it.
+    private static readonly HashSet<string> NameIsShownText = new(StringComparer.Ordinal)
+    {
+        "Button", "CheckBox", "DataItem", "HeaderItem", "Hyperlink", "ListItem", "MenuItem", "RadioButton",
+        "SplitButton", "TabItem", "Text", "TreeItem",
+    };
+
+    internal static IReadOnlyList<AccessibleTextBox> ShownTextBoxes(JsonElement root)
+    {
+        if (!root.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True
+            || !root.TryGetProperty("controls", out JsonElement controls) || controls.ValueKind != JsonValueKind.Array)
+            return [];
+        var boxes = new List<AccessibleTextBox>();
+        foreach (JsonElement control in controls.EnumerateArray())
+        {
+            // A name the worker cut (Format-Name) lacks its end: OCR words of that end are no less true.
+            if (control.ValueKind != JsonValueKind.Object || ReadInt(control, "nameCut") != 0
+                || !control.TryGetProperty("kind", out JsonElement kind) || kind.ValueKind != JsonValueKind.String
+                || !NameIsShownText.Contains(kind.GetString()!)
+                || !control.TryGetProperty("name", out JsonElement name) || name.ValueKind != JsonValueKind.String
+                || !control.TryGetProperty("rect", out JsonElement rect) || rect.ValueKind != JsonValueKind.Object)
+                continue;
+            string text = name.GetString()!;
+            // The worker writes «(button)» for a control with no name.
+            if (string.IsNullOrWhiteSpace(text) || text == "(" + kind.GetString()!.ToLowerInvariant() + ")")
+                continue;
+            int width = ReadInt(rect, "w"), height = ReadInt(rect, "h");
+            if (width > 0 && height > 0)
+                boxes.Add(new AccessibleTextBox(text, ReadInt(rect, "x"), ReadInt(rect, "y"), width, height));
+        }
+        return boxes;
+    }
+
     /// <summary>The worker's «view» request; the words looked for go only when the look carries some (without them the
     /// view is the usual one).</summary>
     internal static string ViewCommand(
@@ -3684,6 +3738,9 @@ internal sealed class WindowsVisibleControlAdapter
             Dictionary<string, List<string>> textZones = new(StringComparer.Ordinal);
             string? textAuthority = null;
             int textOmitted = 0;
+            int textOmittedRows = 0;
+            Dictionary<string, int> textOmittedZones = new(StringComparer.Ordinal);
+            IReadOnlyList<WindowsVisibleOcrLocator.TextColumn> textColumns = [];
             var names = new List<string>();
             if (captured is { } capture)
             {
@@ -3692,11 +3749,31 @@ internal sealed class WindowsVisibleControlAdapter
                     textTask = ReadTextAsync(captureTask, limit, cancellationToken);
                 if (textTask is not null)
                 {
-                    (IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? read, ocrMs, textOmitted) =
+                    (IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? read, ocrMs, textOmitted, int cap) =
                         await textTask.ConfigureAwait(false);
                     if (read is not null)
                     {
                         textAuthority = "windows_media_ocr_lines";
+                        // Encargo LEC2: the cap, once the controls are known (WindowsVisibleOcrLocator.Listed); what it
+                        // left out is told by zone, and how much of it was a list's rows.
+                        var controlNames = new HashSet<string>(
+                            controls.Concat(disabled).Select(static control => FoldedSpaces(control.Name)), StringComparer.OrdinalIgnoreCase);
+                        Func<string, bool> namesListed = text => controlNames.Contains(FoldedSpaces(text));
+                        var cutOut = new List<WindowsVisibleOcrLocator.LayoutLine>();
+                        IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine> all = read;
+                        read = WindowsVisibleOcrLocator.Listed(all, cap, namesListed, capture.Width, tail, cutOut);
+                        if (cutOut.Count > 0)
+                        {
+                            HashSet<WindowsVisibleOcrLocator.LayoutLine> rows = WindowsVisibleOcrLocator.ListRows(all, namesListed, capture.Width);
+                            textOmitted += cutOut.Count;
+                            textOmittedRows = cutOut.Count(rows.Contains);
+                            foreach (WindowsVisibleOcrLocator.LayoutLine line in cutOut)
+                            {
+                                string zone = Zone(line.X + line.Width / 2, line.Y + line.Height / 2, new Rect(0, 0, capture.Width, capture.Height));
+                                textOmittedZones[zone] = textOmittedZones.GetValueOrDefault(zone) + 1;
+                            }
+                        }
+
                         IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine> shown = lines ? read : WindowsVisibleOcrLocator.CellsAsRows(
                             read, text => controls.Any(control => string.Equals(control.Name, text, StringComparison.OrdinalIgnoreCase)));
                         foreach (WindowsVisibleOcrLocator.LayoutLine line in shown)
@@ -3712,6 +3789,15 @@ internal sealed class WindowsVisibleControlAdapter
 
                             bucket.Add(line.Text);
                             names.Add(line.Text);
+                        }
+
+                        // Encargo LEC3: the same lines as they are read on screen, by columns and blocks
+                        // (WindowsVisibleOcrLocator.ReadingColumns, a table's cells joined inside each column); a look by
+                        // lines keeps each line by its place.
+                        if (!lines)
+                        {
+                            textColumns = WindowsVisibleOcrLocator.ReadingColumns(read, capture.Width, capture.Height,
+                                text => controls.Any(control => string.Equals(control.Name, text, StringComparison.OrdinalIgnoreCase)));
                         }
                     }
                     else
@@ -3950,6 +4036,34 @@ internal sealed class WindowsVisibleControlAdapter
                     }
 
                     writer.WriteEndObject();
+                    // Encargo LEC3: the text by columns (left to right, each top to bottom) and blocks, the third of the
+                    // window each column's middle lies in, and whether it runs into the bottom edge (it may go on below).
+                    if (textColumns.Count > 0 && captured is { } shot)
+                    {
+                        writer.WriteStartArray("textColumns");
+                        foreach (WindowsVisibleOcrLocator.TextColumn column in textColumns)
+                        {
+                            double middle = (column.Left + column.Right) / 2;
+                            writer.WriteStartObject();
+                            writer.WriteString("zone", middle < shot.Width / 3.0 ? "L" : middle < shot.Width * 2 / 3.0 ? "C" : "R");
+                            writer.WriteStartArray("blocks");
+                            foreach (IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine> block in column.Blocks)
+                            {
+                                writer.WriteStartArray();
+                                foreach (WindowsVisibleOcrLocator.LayoutLine line in block)
+                                    writer.WriteStringValue(line.Text);
+                                writer.WriteEndArray();
+                            }
+
+                            writer.WriteEndArray();
+                            if (column.ToBottomEdge)
+                                writer.WriteBoolean("toBottomEdge", true);
+                            writer.WriteEndObject();
+                        }
+
+                        writer.WriteEndArray();
+                    }
+
                     writer.WriteString("textAuthority", textAuthority);
                     if (textAuthority == "windows_media_ocr_lines")
                     {
@@ -3962,6 +4076,24 @@ internal sealed class WindowsVisibleControlAdapter
                     // Ronda final 19 (regla 3): lines read and not listed (too long, or past the limit).
                     if (textOmitted > 0)
                         writer.WriteNumber("textOmittedLines", textOmitted);
+                    // Encargo LEC2: where the lines the cap left out lie, how many were a list's rows, and the look that
+                    // reads them (each line by its place, up to OperationVisibleFacts.ChatLines), so the mind can read on
+                    // or say what it did not see.
+                    if (textOmittedZones.Count > 0)
+                    {
+                        writer.WriteStartObject("textOmittedZones");
+                        foreach (string zone in ZoneOrder)
+                        {
+                            if (textOmittedZones.TryGetValue(zone, out int count))
+                                writer.WriteNumber(zone, count);
+                        }
+
+                        writer.WriteEndObject();
+                        if (textOmittedRows > 0)
+                            writer.WriteNumber("textOmittedListRows", textOmittedRows);
+                        if (!lines)
+                            writer.WriteString("textRestWith", "lines");
+                    }
                 }
                 else
                 {
@@ -3986,7 +4118,12 @@ internal sealed class WindowsVisibleControlAdapter
     private readonly record struct WrittenText(
         IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? Lines,
         long Milliseconds,
-        int Omitted = 0);
+        int Omitted = 0,
+        int Cap = 0);
+
+    // A control's name as the view compares it with a line read (ScreenViewProjection: runs of blanks as one).
+    private static string FoldedSpaces(string text) =>
+        string.Join(' ', text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
     private static async Task<VisibleControlSurface.CapturedWindow?> CaptureQuietlyAsync(
         nint hwnd,
@@ -4014,9 +4151,10 @@ internal sealed class WindowsVisibleControlAdapter
             return default;
         var watch = Stopwatch.StartNew();
         var omitted = new System.Runtime.CompilerServices.StrongBox<int>();
+        // Encargo LEC2: every line is read; the look cuts them once it knows its controls (WindowsVisibleOcrLocator.Listed).
         IReadOnlyList<WindowsVisibleOcrLocator.LayoutLine>? lines = await WindowsVisibleOcrLocator.ReadLayoutAsync(
-            capture.Bmp, Math.Max(limit, 40), cancellationToken, placed, omitted, reading: !placed).ConfigureAwait(false);
-        return new WrittenText(lines, watch.ElapsedMilliseconds, omitted.Value);
+            capture.Bmp, int.MaxValue, cancellationToken, placed, omitted, reading: !placed).ConfigureAwait(false);
+        return new WrittenText(lines, watch.ElapsedMilliseconds, omitted.Value, Math.Max(limit, 40));
     }
 
     /// <summary>

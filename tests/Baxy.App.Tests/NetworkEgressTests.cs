@@ -7,8 +7,8 @@ namespace Baxy.App.Tests;
 
 /// <summary>
 /// What a call of the person's turn may send out of the PC without their «sí» (src/Baxy.App/NetworkEgress.cs): what
-/// they said, what the session's results gave and what memory read goes; an address that carries something, or an IP
-/// or a port, to a host nobody gave, or a game they did not name, waits.
+/// they said, what the session's results gave and what memory read goes; an address to a host nobody gave, or a game
+/// they did not name, waits.
 /// </summary>
 [TestFixture]
 public sealed class NetworkEgressTests
@@ -106,7 +106,7 @@ public sealed class NetworkEgressTests
         {
             Assert.That(egress.Unsaid("media.play.youtube", renamed)?.Code, Is.EqualTo("query_not_said"));
             Assert.That(egress.Unsaid("media.play.youtube", renamed), Is.Null);
-            Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = "Centro Box", ["source"] = "news" })
+            Assert.That(egress.Unsaid("web.search", new JsonObject { ["query"] = "Centro Box", ["source"] = "encyclopedia" })
                 ?.Code, Is.EqualTo("query_not_said"));
         });
     }
@@ -740,6 +740,46 @@ public sealed class NetworkEgressTests
         }
     }
 
+    // PRV1 (PRIV-01): 40 calls an agent wrote from the rule in words, without seeing the code nor these tests
+    // (Data/network-hosts.heldout.v1.json): which go and which wait for the person's «sí».
+    [TestCaseSource(nameof(HeldOutHosts))]
+    public void HeldOutHostsGoOrWait(string[] said, string[] results, string operation, string address, bool waits)
+    {
+        var egress = new NetworkEgress();
+        foreach (string words in said)
+        {
+            egress.Heard(words);
+        }
+
+        if (results.Length > 0)
+        {
+            egress.Observed("web.search", new JsonObject
+            {
+                ["status"] = "completed",
+                ["observed"] = new JsonObject
+                {
+                    ["results"] = new JsonArray([.. results.Select(static url => (JsonNode)new JsonObject { ["url"] = url })]),
+                },
+            }.ToJsonString());
+        }
+
+        string? held = egress.Holds(operation, new JsonObject { [operation == "network.ping" ? "host" : "url"] = address });
+        Assert.That(held, waits ? Is.EqualTo("host_not_from_session") : Is.Null);
+    }
+
+    private static IEnumerable<TestCaseData> HeldOutHosts()
+    {
+        string path = Path.Combine(TestContext.CurrentContext.TestDirectory, "Data", "network-hosts.heldout.v1.json");
+        foreach (JsonNode? item in JsonNode.Parse(File.ReadAllText(path))!.AsArray())
+        {
+            yield return new TestCaseData(
+                (string[])[.. item!["said"]!.AsArray().Select(static words => (string)words!)],
+                (string[])[.. item["results"]!.AsArray().Select(static url => (string)url!)],
+                (string)item["operation"]!, (string)item["address"]!, (string)item["expected"]! == "waits")
+                .SetName($"HeldOut host {(string)item["id"]!} {(string)item["expected"]!}");
+        }
+    }
+
     // Encargo 41 (U29): a web.search the engine refused leads with opening the same search in the person's browser; its
     // address is the failure's searchPageUrl, so that call goes unasked, while the same address before it is a host
     // nobody gave.
@@ -788,22 +828,30 @@ public sealed class NetworkEgressTests
             Is.EqualTo("host_not_from_session"));
     }
 
-    // Owner's decision, 2026-10-25: a host nobody gave asks only when its address carries something past its host, or is
-    // an IP or names a port (revisión de final6: a public IP or a port nobody gave went out unasked); a bare site by its
-    // name goes, and a ping sends no page.
+    // Revisión de privacidad 2026-11-09 (PRIV-01): this test said a bare site nobody gave goes «since it carries nothing
+    // past its host», and that a ping goes whatever its host. The host's own name carries: «https://ana-gomez-vina-del-
+    // mar.ejemplo.com» takes those words to whoever answers for ejemplo.com (RFC 1035 §2.3.4: 63 octets a label, 255 a
+    // name), and so does a ping, which resolves the name first. A host nobody gave waits whatever its address carries.
     [Test]
-    public void ABareSiteNobodyGaveGoesAndOneThatCarriesSomethingWaits()
+    public void ASiteNobodyGaveWaitsEvenWhenItsAddressCarriesNothingPastItsHost()
     {
         var egress = new NetworkEgress();
         egress.Heard("abre una página cualquiera");
 
         Assert.Multiple(() =>
         {
-            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://ejemplo.com" }), Is.Null);
-            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "ejemplo.com/" }), Is.Null);
-            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://ejemplo.com:443/" }), Is.Null);
-            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "exfil.example" }), Is.Null);
-            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "203.0.113.9" }), Is.Null);
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://ejemplo.com" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "ejemplo.com/" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://ejemplo.com:443/" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("web.download", new JsonObject { ["url"] = "https://ana-gomez-vina-del-mar.ejemplo.com" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("browser.navigate.named", new JsonObject
+            {
+                ["browser"] = "chrome", ["url"] = "https://ana-gomez.vina-del-mar.ejemplo.com/",
+            }), Is.EqualTo("host_not_from_session"));
             Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://ejemplo.com/vina" }),
                 Is.EqualTo("host_not_from_session"));
             Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "ejemplo.com/?d=vina" }),
@@ -819,6 +867,150 @@ public sealed class NetworkEgressTests
             Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "ejemplo.com:8443" }),
                 Is.EqualTo("host_not_from_session"));
         });
+    }
+
+    // PRIV-01: a ping looked at no address at all (its argument is «host», and only «url» was read). It is weighed as a
+    // page's address is: a name they said, an address of their own network or one they wrote goes; any other waits.
+    [Test]
+    public void APingWaitsForAHostNobodyGaveAsAPageDoes()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("haz ping a zentrovox y al router");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "zentrovox.example" }), Is.Null);
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "www.zentrovox.example" }), Is.Null);
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "192.168.1.1" }), Is.Null);
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "exfil.example" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "ana-gomez-vina-del-mar.zentrovox.example" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "203.0.113.9" }),
+                Is.EqualTo("host_not_from_session"));
+            // A host written bare as an IPv6 is an address too, and one that cannot be read at all is nobody's.
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "fe80::1" }), Is.Null);
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "2001:db8::7" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "ana gomez:vina" }),
+                Is.EqualTo("host_not_from_session"));
+        });
+
+        egress.Heard("¿y responde 203.0.113.9?");
+        Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "203.0.113.9" }), Is.Null);
+    }
+
+    // PRIV-01: every host under one a result gave counted as given, so a page read could send «ana-gomez.recetas.example»
+    // to its own server unasked, and under a site that lends its name to anyone's pages, to another's. A result gives its
+    // host as it is written (and the hosts above it, which carry less); a name before it is nobody's, even one made of the
+    // person's own words, which are what must not leave.
+    [Test]
+    public void ANameBeforeAHostAResultGaveIsNoResults()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("busca la receta del pan amasado");
+        egress.Observed("web.search", "{\"status\":\"completed\",\"observed\":{\"results\":[" +
+            "{\"title\":\"Pan amasado\",\"url\":\"https://www.cocinarica.example/pan\"}," +
+            "{\"title\":\"Cocina\",\"url\":\"https://blog.hornocasero.example/amasado\"}]}}");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://cocinarica.example/pan?p=2" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://blog.hornocasero.example/" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://hornocasero.example/" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://ana-gomez.cocinarica.example/" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://amasado.cocinarica.example/" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://pan.blog.hornocasero.example" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("network.ping", new JsonObject { ["host"] = "receta.hornocasero.example" }),
+                Is.EqualTo("host_not_from_session"));
+        });
+    }
+
+    // PRIV-01: with the site's name said, any name before it went too («notas-de-ana.zentrovox.example», and on a site
+    // that gives each of its people a host, someone else's page). A name before the site's is theirs when they said it.
+    [Test]
+    public void ANameBeforeTheSiteTheySaidIsTheirsOnlyWhenTheySaidItToo()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("abre zentrovox música y la página de rosaura en zentrovox");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://www.zentrovox.example/lo-nuevo" }),
+                Is.Null);
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://musica.zentrovox.example/" }),
+                Is.Null);
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://rosaura.zentrovox.example/fotos" }),
+                Is.Null);
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://m.zentrovox.example/" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://notas-de-ana.zentrovox.example/c?d=1" }),
+                Is.EqualTo("host_not_from_session"));
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://rosaura.otro.zentrovox.example/" }),
+                Is.EqualTo("host_not_from_session"));
+            // An ending of two labels is a country's; under any other, the short label is somebody's site, not an ending.
+            Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://www.zentrovox.com.ar/" }), Is.Null);
+            Assert.That(egress.Holds("web.fetch", new JsonObject { ["url"] = "https://rosaura.abc.example/c?d=1" }),
+                Is.EqualTo("host_not_from_session"));
+        });
+    }
+
+    // PRIV-01: a site said by its name still opens unasked. Its name is written run together and people say its words
+    // apart; until now such a site went only because any bare site did. A name made of words they said, whole and one
+    // after another, is theirs; one with a part nobody said is not.
+    [TestCase("abre el diario la comarca", "https://www.lacomarca.example/", null)]
+    [TestCase("abre el diario la comarca", "https://www.lacomarca.example/deportes?pagina=2", null)]
+    [TestCase("entra a feria libre y busca una bici", "https://www.ferialibre.example/", null)]
+    [TestCase("abre el banco del valle", "https://bancodelvalle.example", null)]
+    [TestCase("abre zentrovox", "https://zentrovox.example", null)]
+    [TestCase("abre el diario la comarca", "https://www.lacomarcaonline.example/", "host_not_from_session")]
+    [TestCase("abre el diario la comarca", "https://www.lascomarcas.example/", "host_not_from_session")]
+    [TestCase("abre el diario la comarca", "https://www.diario.lacomarca-vina.example/", "host_not_from_session")]
+    public void ASiteSaidWithItsWordsApartIsTheirs(string words, string url, string? held)
+    {
+        var egress = new NetworkEgress();
+        egress.Heard(words);
+
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = url }), Is.EqualTo(held));
+    }
+
+    // Revisión a ciegas de PRV1: «one after another» is of one thing the person said. A name put together from words of
+    // two turns, in another order or with one skipped is a name nobody said: any word of the session next to any other
+    // made a site of whatever a page asked for. A word of one letter between two said is part of the name as they said it.
+    [TestCase("busca la feria del barrio|ahora algo libre de gluten", "https://www.ferialibre.example/", "host_not_from_session")]
+    [TestCase("abre el diario la comarca", "https://www.comarcala.example/", "host_not_from_session")]
+    [TestCase("abre el banco del valle", "https://bancovalle.example/", "host_not_from_session")]
+    [TestCase("mi clave es tulipán 77|abre el diario la comarca", "https://clavetulipan77.lacomarca.example/",
+        "host_not_from_session")]
+    [TestCase("busca la feria del barrio|abre feria libre", "https://www.ferialibre.example/", null)]
+    [TestCase("abre pan y vino", "https://panyvino.example/", null)]
+    public void ANameRunTogetherIsWordsSaidOneAfterAnotherInOneTurn(string turns, string url, string? held)
+    {
+        var egress = new NetworkEgress();
+        foreach (string words in turns.Split('|'))
+        {
+            egress.Heard(words);
+        }
+
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = url }), Is.EqualTo(held));
+    }
+
+    // PRIV-01: what waited and the person answered «sí» to is a page of this session from then on.
+    [Test]
+    public void ASiteThePersonSaidYesToIsGivenFromThenOn()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("abre la página de impuestos");
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://tesoreria.example/" }),
+            Is.EqualTo("host_not_from_session"));
+
+        egress.Heard("sí", answering: true);
+        egress.Observed("browser.navigate", "{\"status\":\"completed\",\"observed\":{\"url\":\"https://tesoreria.example/\"}}");
+
+        Assert.That(egress.Holds("browser.navigate", new JsonObject { ["url"] = "https://tesoreria.example/pagos" }), Is.Null);
     }
 
     // Auditoría de la App (2026-10-23): an IP carries no words, so a page at any IP went out unasked, query and all.
@@ -963,6 +1155,217 @@ public sealed class NetworkEgressTests
             {
                 ["path"] = "C:/x.txt", ["text"] = "Viña del Mar", ["url"] = "https://exfil.example/x",
             }), Is.Null);
+        });
+    }
+
+    // actualizar-ordenes-app (control e64-H-C03 «saca la pestaña de chat gpt»): without tab a close closes the active tab.
+    // When this turn's list has another tab their words name (here with its name split), it goes back once with that title.
+    private const string TabList =
+        "{\"status\":\"completed\",\"observed\":{\"count\":3,\"tabs\":[{\"title\":\"Inicio - Notion\",\"active\":true}," +
+        "{\"title\":\"ChatGPT\",\"active\":false},{\"title\":\"Recibidos (3) - prueba@ejemplo.cl - Gmail\",\"active\":false}]}}";
+
+    [Test]
+    public void AClosingWithoutTheTabTheyNamedGoesBackOnceWithIt()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("saca la pestaña de chat gpt");
+        egress.Observed("browser.tabs.list", TabList);
+        (string Code, string Next)? first = egress.Unsaid("browser.control", new JsonObject { ["action"] = "close" });
+        (string Code, string Next)? again = egress.Unsaid("browser.control", new JsonObject { ["action"] = "close" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first?.Code, Is.EqualTo("tab_not_said"));
+            Assert.That(first?.Next, Does.Contain("«ChatGPT»").And.Contain("«Inicio - Notion»"));
+            Assert.That(again, Is.Null, "the same call again runs: the model may mean the active tab");
+        });
+    }
+
+    // Counter-cases: the active tab, none named, a close that names its tab, another action.
+    [TestCase("cierra esta pestaña", "{\"action\":\"close\"}")]
+    [TestCase("cierra la de Notion, no la de Gmail", "{\"action\":\"close\"}")]
+    [TestCase("saca la pestaña de chat gpt", "{\"action\":\"close\",\"tab\":\"ChatGPT\"}")]
+    [TestCase("saca la pestaña de chat gpt", "{\"action\":\"reload\"}")]
+    public void WhatTheyDidNotNameOrNamedRightGoes(string said, string call)
+    {
+        var egress = new NetworkEgress();
+        egress.Heard(said);
+        egress.Observed("browser.tabs.list", TabList);
+        Assert.That(egress.Unsaid("browser.control", (JsonObject)JsonNode.Parse(call)!), Is.Null);
+    }
+
+    [Test]
+    public void AListOfAnEarlierTurnRefusesNothing()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("¿qué pestañas tengo?");
+        egress.Observed("browser.tabs.list", TabList);
+        egress.Heard("saca la pestaña de chat gpt");
+        Assert.That(egress.Unsaid("browser.control", new JsonObject { ["action"] = "close" }), Is.Null);
+    }
+
+    [Test]
+    public void ASwitchWithoutTheTabTheyNamedGoesBackOnceToo()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("pásame a la de chat gpt");
+        egress.Observed("browser.tabs.list", TabList);
+        (string Code, string Next)? first = egress.Unsaid("browser.control", new JsonObject { ["action"] = "switch_tab" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first?.Code, Is.EqualTo("tab_not_said"));
+            Assert.That(first?.Next, Does.Contain("«ChatGPT»").And.Contain("goes to no tab"));
+        });
+    }
+
+    // EFE1 (mapa G-05; base c8340433b, modelo de serie, 3 semillas): with the list read in this turn, the tab the turn
+    // before asked about sent «cierra esta pestaña» back with «they named the tab «Netflix»», and the model closed that one
+    // 18 of 18. The tab is theirs to name in the turn that closes it.
+    [TestCase("cierra esta pestaña", "close")]
+    [TestCase("ciérrala", "close")]
+    [TestCase("pásame a esa", "switch_tab")]
+    public void ATabNamedTheTurnBeforeSendsNothingBack(string said, string action)
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("¿tengo abierta la pestaña de chat gpt?");
+        egress.Observed("browser.tabs.list", TabList);
+        egress.Heard(said);
+        egress.Observed("browser.tabs.list", TabList);
+        Assert.That(egress.Unsaid("browser.control", new JsonObject { ["action"] = action }), Is.Null);
+    }
+
+    [Test]
+    public void ATabNamedInThisTurnGoesBackWhateverTheTurnBeforeNamed()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("¿tengo abierta la de Notion?");
+        egress.Observed("browser.tabs.list", TabList);
+        egress.Heard("saca la pestaña de chat gpt");
+        egress.Observed("browser.tabs.list", TabList);
+        (string Code, string Next)? first = egress.Unsaid("browser.control", new JsonObject { ["action"] = "close" });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first?.Code, Is.EqualTo("tab_not_said"), "the active tab, named the turn before, is not named now");
+            Assert.That(first?.Next, Does.Contain("«ChatGPT»").And.Contain("«Inicio - Notion»"));
+        });
+    }
+
+    // actualizar-ordenes-app (pestanas_ho T14): BAXY closing itself while the person's words name an open window or a tab of
+    // one goes back once with what they named; the same call again runs, and with nothing named it runs at once.
+    [Test]
+    public void BaxysExitWhileTheyNameAnOpenWindowGoesBackOnce()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("cierra la calculadora, ya está");
+        JsonArray Calculator() => [new JsonObject { ["title"] = "Calculadora", ["process"] = "CalculatorApp" }];
+        (string Code, string Next)? first = egress.Unsaid("baxy.exit", [], Calculator);
+        (string Code, string Next)? again = egress.Unsaid("baxy.exit", [], Calculator);
+        var own = new NetworkEgress();
+        own.Heard("BAXY, ciérrate");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first?.Code, Is.EqualTo("own_names_window"));
+            Assert.That(first?.Next, Does.Contain("«Calculadora»").And.Contain("BAXY stays open").And.Contain("browser_control close"));
+            Assert.That(again, Is.Null);
+            Assert.That(own.Unsaid("baxy.exit", [], static () => []), Is.Null);
+        });
+    }
+
+    // A comma parts a site from its motto («Wikipedia, la enciclopedia libre» is named by «la wikipedia»), as a dash parts a
+    // page from its site.
+    [Test]
+    public void ASiteBeforeACommaNamesItsTab()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("venga, cierra la wikipedia, que ya está");
+        Assert.That(egress.NamesTab()("Wikipedia, la enciclopedia libre"), Is.True);
+        Assert.That(egress.NamesTab()("Inicio - Notion"), Is.False);
+    }
+
+    // EFE1 (mapa G-05, D-07): a call of BAXY's own is held by what this turn's words name, never by the turn before. «Abre
+    // YouTube» and then «BAXY, ciérrate» names no window now: the exit runs, while the window stays named for the guards
+    // that read the turn before (a channel, an application).
+    [TestCase("baxy.exit")]
+    [TestCase("baxy.update")]
+    [TestCase("baxy.settings.set")]
+    public void WhatTheTurnBeforeNamedHoldsNoCallOfBaxysOwn(string operation)
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("Abre YouTube y de paso mira la pestaña de Gmail");
+        egress.Heard("BAXY, ciérrate");
+        JsonArray Open() => egress.Named(
+            [("YouTube - Navegador", "navegador"), ("Calculadora", "CalculatorApp")],
+            [new VisibleRow("Correo - Navegador", "navegador", "Recibidos (3) - prueba@ejemplo.cl - Gmail", Tab: true)]);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Open(), Has.Count.EqualTo(2), "named just before: the other guards still read them");
+            Assert.That(egress.Unsaid(operation, [], Open), Is.Null);
+        });
+    }
+
+    // Of the windows named now or just before, the call goes back with the ones this turn's words name, and no other.
+    [Test]
+    public void BaxysExitGoesBackWithWhatThisTurnNamesAlone()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("Abre YouTube y de paso mira la pestaña de Gmail");
+        egress.Heard("cierra la calculadora, ya está");
+        JsonArray Open() => egress.Named(
+            [("YouTube - Navegador", "navegador"), ("Calculadora", "CalculatorApp")],
+            [new VisibleRow("Correo - Navegador", "navegador", "Recibidos (3) - prueba@ejemplo.cl - Gmail", Tab: true)]);
+        (string Code, string Next)? first = egress.Unsaid("baxy.exit", [], Open);
+        var tab = new NetworkEgress();
+        tab.Heard("Abre YouTube");
+        tab.Heard("cierra lo de Gmail");
+        (string Code, string Next)? byTab = tab.Unsaid("baxy.exit", [], () => tab.Named(
+            [("YouTube - Navegador", "navegador")],
+            [new VisibleRow("YouTube - Navegador", "navegador", "Recibidos (3) - prueba@ejemplo.cl - Gmail", Tab: true)]));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first?.Code, Is.EqualTo("own_names_window"));
+            Assert.That(first?.Next, Does.Contain("«Calculadora»").And.Not.Contain("YouTube").And.Not.Contain("Gmail"));
+            Assert.That(byTab?.Code, Is.EqualTo("own_names_window"));
+            Assert.That(byTab?.Next, Does.Contain("(its tab «Recibidos (3) - prueba@ejemplo.cl - Gmail»)"));
+        });
+    }
+
+    // EFE1 (mapa RED-1): the name the person calls BAXY by names no other window. «BAXY, ciérrate» with a folder of that
+    // name open, or a page of that site in a tab, held the exit and offered closing that window.
+    [TestCase("BAXY, ciérrate", "baxy.exit")]
+    [TestCase("Baxy, actualízate", "baxy.update")]
+    [TestCase("apaga la voz, BAXY", "baxy.settings.set")]
+    public void BaxysOwnNameInAnotherWindowsTitleNamesNothing(string said, string operation)
+    {
+        var egress = new NetworkEgress();
+        egress.Heard(said);
+        JsonArray Open() => egress.Named(
+            [("BAXY - Explorador de archivos", "explorer"), ("Notas - Navegador", "navegador")],
+            [
+                new VisibleRow("Notas - Navegador", "navegador", "BAXY - Asistente de voz para Windows", Tab: true),
+                new VisibleRow("Notas - Navegador", "navegador", "Releases · BAXY", Tab: true),
+            ]);
+
+        Assert.That(egress.Unsaid(operation, [], Open), Is.Null);
+    }
+
+    // A title that carries more than that name is named by its whole part, as any other («cierra BAXY Pruebas»).
+    [Test]
+    public void AWindowNamedByMoreThanBaxysNameStillGoesBack()
+    {
+        var egress = new NetworkEgress();
+        egress.Heard("cierra BAXY Pruebas");
+        (string Code, string Next)? first = egress.Unsaid("baxy.exit", [], () => egress.Named(
+            [("BAXY Pruebas - Explorador de archivos", "explorer"), ("BAXY - Explorador de archivos", "explorer")]));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(first?.Code, Is.EqualTo("own_names_window"));
+            Assert.That(first?.Next, Does.Contain("«BAXY Pruebas - Explorador de archivos»").And.Not.Contain("«BAXY - Explorador"));
         });
     }
 }

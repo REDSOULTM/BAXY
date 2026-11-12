@@ -4,8 +4,6 @@ using System.Text.RegularExpressions;
 
 namespace Baxy.Installer;
 
-internal sealed record ReleasePart(string File, long Bytes, string Sha256);
-
 /// <summary>
 /// A zip cut into release assets (GitHub takes less than 2 GiB per file). With <see cref="GpuVendor"/> (a PCI vendor id, as
 /// <see cref="MachineGpu"/> reads it) it goes only to a machine with that maker's GPU, and adds its
@@ -42,8 +40,12 @@ internal sealed partial record ReleaseManifest(
     private void Validate()
     {
         // A plain address only for this machine itself: the end-to-end test of a build. The hashes rule either way.
-        bool trusted = BaseUrl.StartsWith("https://", StringComparison.Ordinal) ||
-            BaseUrl.StartsWith("http://127.0.0.1:", StringComparison.Ordinal);
+        // UNI1 (REV8 F1): decided on the host the address goes to (RFC 3986: authority = [ userinfo "@" ] host
+        // [ ":" port ]), so «http://127.0.0.1:80@example.test/», which goes to example.test, is not this machine.
+        bool trusted = Uri.TryCreate(BaseUrl, UriKind.Absolute, out Uri? address) && address.UserInfo.Length == 0 &&
+            (address.Scheme == Uri.UriSchemeHttps ||
+             (address.Scheme == Uri.UriSchemeHttp && address.Host == "127.0.0.1" &&
+              BaseUrl.StartsWith("http://127.0.0.1:", StringComparison.Ordinal)));
         if (string.IsNullOrWhiteSpace(Version) || !trusted || !BaseUrl.EndsWith('/') || InstalledBytes <= 0 ||
             Archives is null || Archives.Count == 0)
         {

@@ -19,10 +19,176 @@ public sealed class ConfirmationModeTests
             RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired(operation).Risk), ConfirmationMode.Normal, operation),
             Is.EqualTo(PolicyDecision.RequireConfirmation));
 
-    [Test]
-    public async Task NormalModeLetsShutdownThroughAndChallengesDeleteOnTheSamePath()
+    // Encargo L3: «apágalo» about an open application went to system.power shutdown, the model sure of it (rival at 0.02).
+    // In normal mode what ends the person's session asks, bound to the invocation; what keeps it all open goes directly;
+    // arguments that name neither ask. Bypass asks nothing (orden del dueño, 2026-11-07, REV7: «Bypass es literalmente un
+    // modo sin permisos»). Without arguments (what the catalog tells the mind) it depends on them, so it does not ask
+    // (MindSidecarClientTests, the prefix does not move).
+    [TestCase(ConfirmationMode.Normal, """{"action":"shutdown"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase(ConfirmationMode.Bypass, """{"action":"shutdown"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Normal, """{"action":"restart"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase(ConfirmationMode.Bypass, """{"action":"restart"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Normal, """{"action":"signout"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase(ConfirmationMode.Bypass, """{"action":"signout"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Normal, """{"action":"hibernate"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase(ConfirmationMode.Normal, """{"action":7}""", PolicyDecision.RequireConfirmation)]
+    [TestCase(ConfirmationMode.Normal, "{}", PolicyDecision.RequireConfirmation)]
+    [TestCase(ConfirmationMode.Bypass, """{"action":"hibernate"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Bypass, "{}", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Normal, """{"action":"lock"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Bypass, """{"action":"lock"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Normal, """{"action":"sleep"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Bypass, """{"action":"sleep"}""", PolicyDecision.Allow)]
+    public void WhatEndsThePersonsSessionAsksInNormalModeOnly(ConfirmationMode mode, string arguments, PolicyDecision expected)
     {
-        var shutdown = new CountingHandler(
+        using JsonDocument given = JsonDocument.Parse(arguments);
+        OperationRisk risk = ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired("system.power").Risk);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(RiskPolicy.Evaluate(risk, mode, "system.power", given.RootElement), Is.EqualTo(expected));
+            Assert.That(RiskPolicy.Evaluate(risk, mode, "system.power"), Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
+    // Orden del dueño (REV7, 2026-11-07: «Bypass es literalmente un modo sin permisos. No te tiene que preguntar nada en
+    // Bypass»): ending a process asks in normal mode only (work_loss), as it did before INT5; in Bypass it runs unasked,
+    // like asking a window or an application to close. Without arguments (the catalog) nothing changes.
+    [TestCase(ConfirmationMode.Normal, "system.process.terminate.named", """{"name":"tintero.exe"}""", PolicyDecision.RequireConfirmation)]
+    [TestCase(ConfirmationMode.Bypass, "system.process.terminate.named", """{"name":"tintero.exe"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Bypass, "system.process.terminate.named", "{}", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Bypass, "app.close", """{"appId":"Tintero"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Bypass, "app.close", """{"windowId":"win_1"}""", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Bypass, "window.close.all", "{}", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Bypass, "baxy.exit", "{}", PolicyDecision.Allow)]
+    [TestCase(ConfirmationMode.Normal, "app.close", """{"appId":"Tintero"}""", PolicyDecision.RequireConfirmation)]
+    public void EndingAProcessAsksInNormalModeOnlyAndClosingAWindowDoesNotInBypass(
+        ConfirmationMode mode, string operation, string arguments, PolicyDecision expected)
+    {
+        using JsonDocument given = JsonDocument.Parse(arguments);
+        OperationRisk risk = ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired(operation).Risk);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(RiskPolicy.Evaluate(risk, mode, operation, given.RootElement), Is.EqualTo(expected));
+            Assert.That(
+                RiskPolicy.Evaluate(risk, ConfirmationMode.Bypass, operation),
+                Is.EqualTo(PolicyDecision.Allow));
+        });
+    }
+
+    [Test]
+    public async Task InNormalModeEndingAProcessWaitsForTheYesAndRunsOnceWithIt()
+    {
+        var terminate = new CountingHandler(
+            "system.process.terminate.named",
+            ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired("system.process.terminate.named").Risk));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([terminate]),
+            journal,
+            new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Normal });
+        OperationRequest end = Request("system.process.terminate.named", "{\"name\":\"tintero.exe\"}");
+
+        OperationResponse asked = await engine.ExecuteAsync(end, CancellationToken.None);
+        int beforeTheYes = terminate.ExecutionCount;
+        OperationResponse confirmed = await engine.ExecuteAsync(
+            end with { ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString() },
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.Status, Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(beforeTheYes, Is.Zero);
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(terminate.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task InBypassEndingAProcessRunsOnceWithoutAsking()
+    {
+        var terminate = new CountingHandler(
+            "system.process.terminate.named",
+            ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired("system.process.terminate.named").Risk));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([terminate]),
+            journal,
+            new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Bypass });
+
+        OperationResponse ended = await engine.ExecuteAsync(
+            Request("system.process.terminate.named", "{\"name\":\"tintero.exe\"}"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ended.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(ended.ErrorCode, Is.Null);
+            Assert.That(terminate.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task InNormalModeAShutdownWaitsForTheYesAndRunsOnceWithIt()
+    {
+        var power = new CountingHandler(
+            "system.power",
+            ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired("system.power").Risk));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([power]),
+            journal,
+            new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Normal });
+        OperationRequest shutdown = Request("system.power", "{\"action\":\"shutdown\"}");
+
+        OperationResponse asked = await engine.ExecuteAsync(shutdown, CancellationToken.None);
+        int beforeTheYes = power.ExecutionCount;
+        OperationResponse confirmed = await engine.ExecuteAsync(
+            shutdown with { ConfirmationToken = asked.Result!.Value.GetProperty("token").GetString() },
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(asked.Status, Is.EqualTo(OperationStatuses.Pending));
+            Assert.That(asked.ErrorCode, Is.EqualTo("confirmation_required"));
+            Assert.That(beforeTheYes, Is.Zero);
+            Assert.That(confirmed.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(power.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    [TestCase("shutdown")]
+    [TestCase("restart")]
+    [TestCase("signout")]
+    public async Task InBypassWhatEndsTheSessionRunsOnceWithoutAsking(string action)
+    {
+        var power = new CountingHandler(
+            "system.power",
+            ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired("system.power").Risk));
+        using var journal = new InMemoryInvocationJournal();
+        using var engine = new MissionEngine(
+            new OperationRegistry([power]),
+            journal,
+            new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Bypass });
+
+        OperationResponse ended = await engine.ExecuteAsync(
+            Request("system.power", $"{{\"action\":\"{action}\"}}"),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(ended.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(ended.ErrorCode, Is.Null);
+            Assert.That(power.ExecutionCount, Is.EqualTo(1));
+        });
+    }
+
+    [Test]
+    public async Task NormalModeLetsALockThroughAndChallengesDeleteOnTheSamePath()
+    {
+        var power = new CountingHandler(
             "system.power",
             ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired("system.power").Risk));
         var delete = new CountingHandler(
@@ -30,12 +196,12 @@ public sealed class ConfirmationModeTests
             ProductCatalog.ToPolicyRisk(ProductCatalog.GetRequired("system.recyclebin.empty").Risk));
         using var journal = new InMemoryInvocationJournal();
         using var engine = new MissionEngine(
-            new OperationRegistry([shutdown, delete]),
+            new OperationRegistry([power, delete]),
             journal,
             new MissionEngineOptions { ConfirmationMode = () => ConfirmationMode.Normal });
 
-        OperationResponse power = await engine.ExecuteAsync(
-            Request("system.power", "{\"action\":\"shutdown\"}"),
+        OperationResponse locked = await engine.ExecuteAsync(
+            Request("system.power", "{\"action\":\"lock\"}"),
             CancellationToken.None);
         OperationResponse recycle = await engine.ExecuteAsync(
             Request("system.recyclebin.empty", "{}"),
@@ -43,10 +209,10 @@ public sealed class ConfirmationModeTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(power.Status, Is.EqualTo(OperationStatuses.Completed));
-            Assert.That(power.Verified, Is.True);
-            Assert.That(power.ErrorCode, Is.Null);
-            Assert.That(shutdown.ExecutionCount, Is.EqualTo(1));
+            Assert.That(locked.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(locked.Verified, Is.True);
+            Assert.That(locked.ErrorCode, Is.Null);
+            Assert.That(power.ExecutionCount, Is.EqualTo(1));
             Assert.That(recycle.Status, Is.EqualTo(OperationStatuses.Pending));
             Assert.That(recycle.ErrorCode, Is.EqualTo("confirmation_required"));
             Assert.That(recycle.Verified, Is.False);

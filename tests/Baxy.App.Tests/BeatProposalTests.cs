@@ -44,6 +44,7 @@ public sealed class BeatProposalTests
     [TestCase("app.open", "{\"appId\":\"Spotify\",\"foreground\":true}")]
     [TestCase("web.search", "{\"query\":\"x\"}")]
     [TestCase("app.close", "{\"appId\":\"Spotify\"}")]
+    [TestCase("baxy.routines", "{\"action\":\"run\",\"name\":\"cine\"}")]
     public void AHeartbeatProposesWhatIsNotHarmlessAndReversible(string operation, string arguments) =>
         Assert.That(NativeTurnLoop.BeatProposes(ProductCatalog.GetRequired(operation),
             (JsonObject)JsonNode.Parse(arguments)!), Is.True);

@@ -419,15 +419,8 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             if (omitted is not null)
                 omitted.Value = leftOut.Count;
 
-            // Orden de lectura: arriba→abajo, izquierda→derecha, con las dos
-            // pasadas fundidas.
-            lines.Sort((left, right) =>
-            {
-                int byRow = (left.Y + left.Height / 2).CompareTo(right.Y + right.Height / 2);
-                return Math.Abs(left.Y - right.Y) <= Math.Min(left.Height, right.Height) / 2
-                    ? left.X.CompareTo(right.X)
-                    : byRow;
-            });
+            // Orden de lectura, con las dos pasadas fundidas.
+            lines.Sort(ReadingOrder);
             return lines;
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException
@@ -435,6 +428,312 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         {
             return null;
         }
+    }
+
+    /// <summary>
+    /// Encargo LEC2 (the owner's 10-11 case: a conversation asked for, its side list told instead): the lines a look lists
+    /// out of all it read, at most <paramref name="limit"/>. The cap was spent in the order Windows.Media.Ocr gives its
+    /// lines (OcrResult.Lines documents no reading order; it came a text block at a time, the side column first), before
+    /// the lines that only repeat a listed control were left out as repeats: of 81 lines, the 57 listed were mostly the
+    /// list's, and 24 of the panel stayed out. Now a line that names a listed control does not count (the view leaves it
+    /// out as a repeat), and past the cap the rows of a list of controls (<see cref="ListRows"/>) go before the other
+    /// text; what stays out is told by the caller, with its zone. With <paramref name="tail"/> the cut keeps the last
+    /// lines in reading order, as it keeps the last entries of the tree.
+    /// </summary>
+    internal static IReadOnlyList<LayoutLine> Listed(
+        IReadOnlyList<LayoutLine> read,
+        int limit,
+        Func<string, bool> namesAControl,
+        double width,
+        bool tail,
+        List<LayoutLine> leftOut)
+    {
+        List<LayoutLine> ordered = [.. read];
+        ordered.Sort(ReadingOrder);
+        List<LayoutLine> counted = [.. ordered.Where(line => !namesAControl(line.Text))];
+        var kept = new HashSet<LayoutLine>(ReferenceEqualityComparer.Instance);
+        if (counted.Count <= limit)
+        {
+            kept.UnionWith(counted);
+        }
+        else
+        {
+            HashSet<LayoutLine> rows = ListRows(read, namesAControl, width);
+            kept.UnionWith(Room([.. counted.Where(line => !rows.Contains(line))], limit, tail));
+            kept.UnionWith(Room([.. counted.Where(rows.Contains)], limit - kept.Count, tail));
+        }
+
+        var listed = new List<LayoutLine>();
+        foreach (LayoutLine line in ordered)
+        {
+            if (kept.Contains(line) || namesAControl(line.Text))
+                listed.Add(line);
+            else
+                leftOut.Add(line);
+        }
+
+        return listed;
+    }
+
+    private static IEnumerable<LayoutLine> Room(List<LayoutLine> lines, int room, bool tail) =>
+        tail ? lines.Skip(Math.Max(0, lines.Count - room)) : lines.Take(Math.Max(0, room));
+
+    /// <summary>
+    /// Encargo LEC2: the rows of a list of controls among the lines read, by their shape alone. A column is the lines that
+    /// start at one left edge; it is a list when it holds at least <see cref="ListRowsAtLeast"/> lines, fits in a third of
+    /// the window (the look's own grid of zones), and at least half of its lines are names of controls the look listed
+    /// (a side list of conversations, folders or settings). Every line inside such a column's box is one of its rows (the
+    /// date under a row's title). A column of short lines that names no control (figures, short replies) is text.
+    /// </summary>
+    internal static HashSet<LayoutLine> ListRows(IReadOnlyList<LayoutLine> read, Func<string, bool> namesAControl, double width)
+    {
+        var columns = new List<List<LayoutLine>>();
+        foreach (LayoutLine line in read)
+        {
+            List<LayoutLine>? column = columns.Find(each => Math.Abs(each[0].X - line.X) <= Math.Max(each[0].Height, line.Height));
+            if (column is null)
+                columns.Add([line]);
+            else
+                column.Add(line);
+        }
+
+        var rows = new HashSet<LayoutLine>(ReferenceEqualityComparer.Instance);
+        foreach (List<LayoutLine> column in columns)
+        {
+            double left = column.Min(static line => line.X);
+            double right = column.Max(static line => line.X + line.Width);
+            if (column.Count < ListRowsAtLeast || right - left >= width / 3
+                || column.Count(line => namesAControl(line.Text)) * 2 < column.Count)
+            {
+                continue;
+            }
+
+            double top = column.Min(static line => line.Y);
+            double bottom = column.Max(static line => line.Y + line.Height);
+            rows.UnionWith(read.Where(line => line.X >= left && line.X + line.Width <= right
+                && line.Y >= top && line.Y + line.Height <= bottom));
+        }
+
+        return rows;
+    }
+
+    private const int ListRowsAtLeast = 5;
+
+    /// <summary>Encargo LEC3: one column of text as it is read, its blocks top to bottom, and whether it runs into the
+    /// window's bottom edge.</summary>
+    internal sealed record TextColumn(
+        double Left, double Right, IReadOnlyList<IReadOnlyList<LayoutLine>> Blocks, bool ToBottomEdge);
+
+    /// <summary>
+    /// Encargo LEC3 (the owner's 10-11 case: with the cap fixed by LEC2, the false answers left were all «which is the last
+    /// one» or «who said it»): the text as it is read on screen. The look listed it by the bands of its 3×3 grid, so a short
+    /// author line («Mamá · 19:30») fell in the left third and its message in the centre one, and a band listed every
+    /// author first and every message after. Now the lines go by columns, left to right, and each column top to bottom, in
+    /// blocks:
+    /// - Columns by a recursive X-Y cut (Nagy and Seth, ICPR 1984; Ha, Haralick and Phillips, ICDAR 1995): a vertical gap
+    ///   no line crosses splits a region when the lines at its two sides sit side by side (they share rows), as a side
+    ///   list and a panel do; a chat's bubbles at the left and the right, one under the other, share no row and stay one
+    ///   column in the order they were written. Without such a gap, horizontal ones split off the fewest bands at the
+    ///   top or the bottom (a title bar across the window, a footer) that leave the rest in columns.
+    /// - Blocks in a column: a line further below the one before than the column's own leading plus half a line's height
+    ///   (pdfminer.six's <c>line_margin</c>, 0.5 of a line's height, groups closer lines into one text box) or starting
+    ///   far from its left edge begins a new block; a block that is one short line (a name, a time) right on top of the block below, parted
+    ///   from it only by its left edge, is that block's top line.
+    /// - <see cref="TextColumn.ToBottomEdge"/>: the column's last line touches the window's bottom edge, so the text may
+    ///   go on below what is seen.
+    /// </summary>
+    internal static IReadOnlyList<TextColumn> ReadingColumns(
+        IReadOnlyList<LayoutLine> lines, double width, double height, Func<string, bool>? namesAControl = null)
+    {
+        List<LayoutLine> placed = [.. lines.Where(static line => line.Width > 0 && line.Height > 0)];
+        if (placed.Count == 0)
+            return [];
+        double lineHeight = Median(placed.Select(static line => line.Height));
+        var regions = new List<List<LayoutLine>>();
+        Cut(placed, lineHeight, regions);
+        var columns = new List<TextColumn>();
+        foreach (List<LayoutLine> cut in regions)
+        {
+            // A table's cells joined as its rows (CellsAsRows) inside each column: across columns, a list's date and a
+            // panel's line that happen to share a row are not a table's row, and joined they hid the gap between them.
+            List<LayoutLine> region = namesAControl is null ? cut : [.. CellsAsRows(cut, namesAControl)];
+            region.Sort(ReadingOrder);
+            double bottom = region.Max(static line => line.Y + line.Height);
+            columns.Add(new TextColumn(
+                region.Min(static line => line.X), region.Max(static line => line.X + line.Width),
+                Blocks(region, lineHeight), bottom >= height - lineHeight / 2));
+        }
+
+        return columns;
+    }
+
+    private static void Cut(List<LayoutLine> region, double lineHeight, List<List<LayoutLine>> columns)
+    {
+        if (SideBySide(region, lineHeight) is var (left, right))
+        {
+            Cut(left, lineHeight, columns);
+            Cut(right, lineHeight, columns);
+            return;
+        }
+
+        // The fewest bands at the top (a title bar, a header) or at the bottom (a footer) that leave the rest in columns.
+        List<List<LayoutLine>> bands = Bands(region, lineHeight);
+        for (int k = 1; k < bands.Count; k++)
+        {
+            List<LayoutLine> top = [.. bands.Take(k).SelectMany(static band => band)];
+            List<LayoutLine> rest = [.. bands.Skip(k).SelectMany(static band => band)];
+            if (SideBySide(rest, lineHeight) is not null)
+            {
+                Cut(top, lineHeight, columns);
+                Cut(rest, lineHeight, columns);
+                return;
+            }
+
+            rest = [.. bands.Take(bands.Count - k).SelectMany(static band => band)];
+            List<LayoutLine> bottom = [.. bands.Skip(bands.Count - k).SelectMany(static band => band)];
+            if (SideBySide(rest, lineHeight) is not null)
+            {
+                Cut(rest, lineHeight, columns);
+                Cut(bottom, lineHeight, columns);
+                return;
+            }
+        }
+
+        columns.Add(region);
+    }
+
+    // The widest vertical gap no line crosses (at least two lines' height wide) whose two sides share rows: of the lines
+    // of one side that lie within the other side's height, half or more overlap one of its lines (a panel's paragraphs,
+    // far apart, each beside some row of a dense side list).
+    private static (List<LayoutLine> Left, List<LayoutLine> Right)? SideBySide(List<LayoutLine> region, double lineHeight)
+    {
+        List<LayoutLine> byLeft = [.. region.OrderBy(static line => line.X)];
+        var gutters = new List<(int At, double Gap)>();
+        double reach = double.NegativeInfinity;
+        for (int i = 0; i < byLeft.Count; i++)
+        {
+            double gap = byLeft[i].X - reach;
+            if (i > 0 && gap >= 2 * lineHeight)
+                gutters.Add((i, gap));
+            reach = Math.Max(reach, byLeft[i].X + byLeft[i].Width);
+        }
+
+        // Only the strips right beside a gap tell whether it parts columns: the last of a person's bubbles at the
+        // right shares rows with a side list two strips away, never with the others' bubbles beside it.
+        (List<LayoutLine> Left, List<LayoutLine> Right)? best = null;
+        double widest = 0;
+        for (int g = 0; g < gutters.Count; g++)
+        {
+            int from = g == 0 ? 0 : gutters[g - 1].At, at = gutters[g].At, to = g + 1 < gutters.Count ? gutters[g + 1].At : byLeft.Count;
+            List<LayoutLine> left = byLeft[from..at], right = byLeft[at..to];
+            if (gutters[g].Gap > widest && (SharesRows(left, right) || SharesRows(right, left))
+                && !Table(left, right) && !Table(right, left))
+            {
+                best = (byLeft[..at], byLeft[at..]);
+                widest = gutters[g].Gap;
+            }
+        }
+
+        return best;
+    }
+
+    private static bool SharesRows(List<LayoutLine> side, List<LayoutLine> other)
+    {
+        double top = other.Min(static line => line.Y);
+        double bottom = other.Max(static line => line.Y + line.Height);
+        List<LayoutLine> within = [.. side.Where(line => line.Y + line.Height / 2 >= top && line.Y + line.Height / 2 <= bottom)];
+        return within.Count >= 2
+            && within.Count(line => other.Any(each => each.Y < line.Y + line.Height && line.Y < each.Y + each.Height)) * 2 >= within.Count;
+    }
+
+    // Encargo 119: a table's columns are short cells that share rows line for line (each cell has its row's twin across
+    // the gap, their middles within a quarter of a line's height). Four in five twins, with short lines at both sides (half
+    // or more under a quarter of the two sides' width): a table, not two columns. A side list beside a panel of prose
+    // can share its rows too, when both have the same leading, but the panel's lines are long.
+    private static bool Table(List<LayoutLine> side, List<LayoutLine> other)
+    {
+        double span = Math.Max(side.Max(static line => line.X + line.Width), other.Max(static line => line.X + line.Width))
+            - Math.Min(side.Min(static line => line.X), other.Min(static line => line.X));
+        if (Median(side.Select(static line => line.Width)) >= span / 4 || Median(other.Select(static line => line.Width)) >= span / 4)
+            return false;
+        double top = other.Min(static line => line.Y);
+        double bottom = other.Max(static line => line.Y + line.Height);
+        List<LayoutLine> within = [.. side.Where(line => line.Y + line.Height / 2 >= top && line.Y + line.Height / 2 <= bottom)];
+        return within.Count(line => other.Any(each => Math.Abs(each.Y + each.Height / 2 - (line.Y + line.Height / 2))
+            <= Math.Min(each.Height, line.Height) / 4)) * 5 >= within.Count * 4;
+    }
+
+    // The region split at every horizontal gap no line crosses, taller than half a line's height.
+    private static List<List<LayoutLine>> Bands(List<LayoutLine> region, double lineHeight)
+    {
+        var bands = new List<List<LayoutLine>>();
+        double reach = double.NegativeInfinity;
+        foreach (LayoutLine line in region.OrderBy(static line => line.Y))
+        {
+            if (bands.Count == 0 || line.Y - reach > lineHeight / 2)
+                bands.Add([]);
+            bands[^1].Add(line);
+            reach = Math.Max(reach, line.Y + line.Height);
+        }
+
+        return bands;
+    }
+
+    private static List<List<LayoutLine>> Blocks(List<LayoutLine> column, double lineHeight)
+    {
+        double columnWidth = column.Max(static line => line.X + line.Width) - column.Min(static line => line.X);
+        // The column's own leading: the smallest gap between two of its lines, one under the other (two lines of one
+        // paragraph; when most messages are one line long, the usual gap is the one between messages), never more than
+        // half a line's height (lines further apart are no paragraph's); a block begins past it by half a line's height.
+        double leading = Math.Min(lineHeight / 2, column.Zip(column.Skip(1), static (above, below) => below.Y - (above.Y + above.Height))
+            .Where(static gap => gap >= 0).DefaultIfEmpty(0).Min());
+        var blocks = new List<List<LayoutLine>>();
+        var gaps = new List<double>();
+        LayoutLine? previous = null;
+        foreach (LayoutLine line in column)
+        {
+            double gap = previous is null ? double.PositiveInfinity : line.Y - (previous.Y + previous.Height);
+            bool sameRow = previous is not null && gap < 0;
+            if (previous is null || (!sameRow && (gap > leading + Math.Min(previous.Height, line.Height) / 2
+                || Math.Abs(line.X - previous.X) > 4 * lineHeight)))
+            {
+                blocks.Add([]);
+                gaps.Add(gap);
+            }
+
+            blocks[^1].Add(line);
+            previous = line;
+        }
+
+        // A one-line block, short, that only its left edge parts from the block right below it (no gap between them) and
+        // that is nearer that block than the one above: that block's top line (a name, a time over a right-hand bubble).
+        for (int i = blocks.Count - 2; i >= 0; i--)
+        {
+            if (blocks[i].Count == 1 && blocks[i][0].Width < columnWidth / 2
+                && gaps[i + 1] <= leading + lineHeight / 2 && gaps[i + 1] < gaps[i])
+            {
+                blocks[i].AddRange(blocks[i + 1]);
+                blocks.RemoveAt(i + 1);
+                gaps.RemoveAt(i + 1);
+            }
+        }
+
+        return blocks;
+    }
+
+    private static double Median(IEnumerable<double> values)
+    {
+        List<double> sorted = [.. values.Order()];
+        return sorted[sorted.Count / 2];
+    }
+
+    // Orden de lectura: arriba→abajo, izquierda→derecha.
+    private static int ReadingOrder(LayoutLine left, LayoutLine right)
+    {
+        int byRow = (left.Y + left.Height / 2).CompareTo(right.Y + right.Height / 2);
+        return Math.Abs(left.Y - right.Y) <= Math.Min(left.Height, right.Height) / 2
+            ? left.X.CompareTo(right.X)
+            : byRow;
     }
 
     /// <summary>Encargo WA-LEER: the same text read again where it was read (the darkened pass over the first).</summary>

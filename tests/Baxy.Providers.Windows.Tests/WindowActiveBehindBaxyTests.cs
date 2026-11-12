@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Baxy.Core.Operations;
+using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
 
@@ -86,7 +89,50 @@ public sealed class WindowActiveBehindBaxyTests
         {
             Assert.That(result.Succeeded, Is.False);
             Assert.That(result.Windows, Is.Empty);
-            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.WindowNotFound));
+            Assert.That(result.ErrorCode, Is.EqualTo(WindowControlErrorCodes.NoWindowInFront));
+            Assert.That(result.OpenWindows, Is.EqualTo(1), "Spotify, minimized, is open: BAXY's own is left out");
+        });
+    }
+
+    // REM5 (VIVO15): «¿Qué tengo abierto en la pantalla?» with the screen off → window_active → «No hay ninguna ventana
+    // abierta en este momento.», with BAXY's and others open. None in front is not none open: the result says it typed.
+    [Test]
+    public async Task NoneInFrontSaysHowManyAreOpenNotThatNoneIs()
+    {
+        var platform = new ZOrderPlatform(
+            ("Baxy", "normal", "BAXY"),
+            ("Code", "minimized", "Visual Studio Code"),
+            ("msedge", "minimized", "YouTube - Microsoft Edge"));
+
+        WindowResolveResult result = await new WindowsWindowControlProvider(platform)
+            .ResolveForegroundAsync(CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Succeeded, Is.False);
+            Assert.That(result.ErrorCode, Is.Not.EqualTo(WindowControlErrorCodes.WindowNotFound));
+            Assert.That(result.OpenWindows, Is.EqualTo(2));
+        });
+    }
+
+    // The receipt the model reads: the active window none, and how many are open, typed.
+    [Test]
+    public async Task TheReceiptOfNoneInFrontIsTyped()
+    {
+        var platform = new ZOrderPlatform(
+            ("Baxy", "normal", "BAXY"),
+            ("Code", "minimized", "Visual Studio Code"),
+            ("msedge", "minimized", "YouTube - Microsoft Edge"));
+        var invocation = new OperationInvocation("r", "m", "i", JsonDocument.Parse("{}").RootElement);
+
+        OperationOutcome outcome = await new WindowActiveHandler(new WindowsWindowControlProvider(platform))
+            .ExecuteAsync(invocation, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("no_window_in_front"));
+            Assert.That(outcome.Result?.GetProperty("activeWindow").ValueKind, Is.EqualTo(JsonValueKind.Null));
+            Assert.That(outcome.Result?.GetProperty("openWindows").GetInt32(), Is.EqualTo(2));
         });
     }
 
@@ -160,6 +206,8 @@ public sealed class WindowActiveBehindBaxyTests
         public DateTimeOffset UtcNow => DateTimeOffset.UnixEpoch;
 
         public WindowSnapshot? FindForegroundWindow() => _order.Count == 0 ? null : Snapshot(_order[0]);
+
+        public IReadOnlyList<WindowSnapshot> DesktopWindows() => _order.Select(Snapshot).ToList();
 
         public IReadOnlyList<WindowSnapshot> DesktopWindowsBehind(WindowIdentity front)
         {

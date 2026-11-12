@@ -266,13 +266,20 @@ internal static class HeartbeatMoment
         if (front != 0 && front != GetShellWindow() && GetWindowThreadProcessId(front, out uint processId) != 0
             && processId != (uint)Environment.ProcessId && WindowTitle(front).Length > 0 && !IsCloaked(front))
         {
-            return (WindowTitle(front), ProcessOf(front));
+            return Named(front);
         }
 
         nint shell = GetShellWindow();
         nint[] others = [.. OtherWindowHandles().Where(window => window != shell)];
-        return others.Length == 0 ? null : (WindowTitle(others[0]), ProcessOf(others[0]));
+        return others.Length == 0 ? null : Named(others[0]);
     }
+
+    /// <summary>I13 (R5's review of I12, R5-1): a window as the person's front names it, its title and the program a view
+    /// names it by (a packaged app's own, never its frame host ApplicationFrameHost), as every receipt names it: with the
+    /// frame's own process, «abre la calculadora» and then «escribe 2+2» was held, the app_open result naming another
+    /// process.</summary>
+    internal static (string Title, string? Process) Named(nint window) =>
+        (WindowTitle(window), Baxy.Providers.Windows.External.WindowViewName.ProcessOf(window));
 
     /// <summary>The visible windows of other processes on screen, title and process (NativeTurnLoop.Host.Windows); empty
     /// when Windows could not enumerate them.</summary>

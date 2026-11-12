@@ -118,3 +118,16 @@ def test_no_projector_no_question(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     assert "--mmproj" in command
     monkeypatch.delenv("BAXY_MIND_MMPROJ")
     assert llm_server.projector_placement("llama-server.exe", "cuda") == []
+
+
+def test_the_app_says_what_the_projector_needs_free_at_the_context_chosen(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Encargo del dueño 2026-11-08: with 131,072 cells chosen the server alone takes ~5.2 GB, so the fixed 5,316 MiB (the
+    # default context's) would put the projector on a 6 GB card that cannot hold both. The App works it out from the
+    # model's header (ModelMemory) and gives it here; without it, the default context's figure stands.
+    monkeypatch.delenv("BAXY_VISION_OFFLOAD", raising=False)
+    six = "Available devices:\n  CUDA0: x (6143 MiB, 5934 MiB free)\n"
+    monkeypatch.setenv("BAXY_VISION_GPU_NEEDS_MIB", "6400")
+    assert "--no-mmproj-offload" in _start(tmp_path, monkeypatch, six)[0]
+    monkeypatch.delenv("BAXY_VISION_GPU_NEEDS_MIB")
+    assert "--mmproj-offload" in _start(tmp_path, monkeypatch, six)[0]

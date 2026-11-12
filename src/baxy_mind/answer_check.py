@@ -24,7 +24,8 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
 - ``place``: «en la biblioteca» after an app_open that only asked for that place and nothing looked after it (F019).
 - ``partial``: «no está / no hay / revisé todo / en ningún otro lugar» after a read or a search whose result says it
   covered only part (readInPart, searchScope, subfoldersNotOpened, timeLimitReached, entriesShown < count, a view cut,
-  searchedElsewhere false, a ``covers`` that says what it read) or after a look that failed with an error that is not itself a «not found», unless the
+  searchedElsewhere false, a ``covers`` that says what it read, a ``checked`` false: it did not look at what its call
+  is for finding out) or after a look that failed with an error that is not itself a «not found», unless the
   sentence itself says the limit («en lo que leí», «sólo revisé…»).
 - ``number``: a volume, brightness or percentage, or a size in KB/MB/GB, that matches no number of the turn's results
   (0,69 % for a reading of 69 or a fraction 0.69; 3 GB for 3 145 728 bytes).
@@ -60,6 +61,19 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   the person asked. «Indícame cómo publicar en Steam» → «No tengo herramientas para abrir Steam, navegar…».
 - ``empty_lookup`` (cosecha 04-11 F13, F35): the last call of the turn read BAXY's memory or this PC's game manifests and found
   nothing, and no search ran: the fact is how far that look reaches, and the model reads what the person asked.
+- ``unread_memory`` (MEM1, VIVO12 P1): «recuerdo que / me dijiste que / lo tengo guardado / según mi memoria / I remember»
+  (something of the person told as remembered) while no call to the memory completed in the conversation: what the person
+  told BAXY in another conversation only a memory call brings. «¿Cuál es mi color favorito?» → «Recuerdo que tu color
+  favorito es el azul» with turquesa kept and nothing read (4 of 4 in a new conversation). Also «no tengo guardado / mi
+  memoria no guarda» with the memory among the tools and no memory call at all. Only when the whole session is known;
+  the fact names the call that reads the memory, or says the memory is not among the tools. MEM2 (VIVOM1): in any person
+  («Sí, te acuerdas que tu color favorito es el azul», 5 of 6 live), and only of the person (tu/your in the answer, mi/my
+  in the question): «¿Recuerdas cómo se hace una tortilla?» → «No tengo esa información guardada» is not one.
+- ``unbacked_memory`` (MEM2): the memory was read in the conversation and what the answer tells as remembered is in no
+  value it brought («Recuerdo que tu color favorito es el azul» with turquesa read); the fact says what it brought.
+- ``memory_subject`` (MEM2, VIVOM1 H10): «Tu color favorito es el verde agua» from the record «color favorito de mi
+  hija»: a value given to the person (tu/your) whose record is named «de/of X» or «X's», X said by neither the person nor
+  the clause that gives it.
 - ``output``: «salió «Hola mundo»», «imprimió «3»» (an output quoted after a verb that tells one) in a turn with calls
   while no result of the turn shows that text (uso real 2026-10-26: a console command sent without reading its output
   and window looks that failed, then «el programa se ejecutó y salió «Hola mundo»»).
@@ -73,6 +87,19 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   diciembre de 2026» on 3 November 2026), in a turn with a completed result. Only the date against the clock and the form
   of the verb are compared, never which verb: not one that tells the date through «que» or that the date follows «hasta»,
   «para» or «al» («anunció que saldrá el…», «se retrasó hasta marzo»). A date with no year takes it from a result.
+- ``weekday_date`` (VER1, PR-03 «en siete días es el viernes 12»): a weekday told of a date that falls on another one.
+  Only the calendar is compared: the weekday right before its date («viernes 12», «viernes 12 de noviembre», «Friday,
+  November 13th») or after it as what it is («el 27 de noviembre es un jueves»). A date with no year is the nearest one
+  to today, and one with no month is read in last month, this one and the next: no finding if any falls on that
+  weekday. Not a pair the person's words or a result of the turn bring as it is, nor a date a result gives on that
+  weekday (system.time's calendar).
+- ``unread_date`` (VER1, PR-03): such a pair that the calendar has, for a date other than today's, that no result or
+  argument of the turn nor the person's words give («pasado mañana es martes 10» on Monday the 9th, with no call): a
+  date the model counted. Told once more with its tools, so system.time works it out.
+- ``past_future`` (VER1, G-03): the mirror of ``future_past``: a date wholly before today told as coming, in a turn
+  with a completed result («la próxima reunión es el 27-28 de octubre de 2026» on 9 November 2026; «la final se jugará en
+  octubre de 2026»). Only the date against the clock and the form are compared: a verb in the future or «próximo» before
+  the date in its clause, or the date first and the future after it. Not a clause that denies it, asks it or says «si».
 - ``unmatched`` (encargo A5, answer_grounding.py): the attribution to a video of words that its result says
   (``titleMatchesQuery: false``) it did not match.
 - ``recognized_number`` (uso-89): a number that a look of the turn gives only in its «Texto» lines (OCR) while the
@@ -80,6 +107,10 @@ The rules, each kept narrow (a false finding costs a regeneration and a worse se
   «829» from «calificaclon 829» for the page's «8,9»). Numbers are compared as «8,9» = «8.9», «12.490» = «12490».
 - ``already_open`` (uso-106, F20): «abrí Steam» when the only act of the turn that could have opened it is an app_open whose
   result says it was already running: that call opened nothing (it may have brought it to the front).
+- ``which_way`` (RUT8, the owner's routine «tiempo»): «pausé», «lo puse en pausa», «ya estaba sonando» after a
+  media_control of the turn whose result says it was paused and now plays (its ``previousPlaybackStatus`` and
+  ``playbackStatus``), or «reanudé», «ahora suena», «estaba pausado» after one that says it was playing and is now
+  paused. Not in a turn that went both ways, nor against a result that does not say the state before.
 - ``internal`` (uso-90): a tool's name as the model calls it or a code of a result of the turn, letter for letter as a
   whole word («media_play_youtube», «page_requires_sign_in»): BAXY's own words, never the person's. A second answer that
   carries one is not spoken (Mind._check_answer).
@@ -147,13 +178,16 @@ KINDS: dict[str, dict[str, Any]] = {
                  "asked": r"escribiste",
                  "ops": ("input.", "file.write", "file.edit", "note.", "message.", "clipboard.", "office.", "memory.",
                          "filesystem.", "task.", "calendar.", "email.", "document.")},
-    "guardar": {"said": r"guarde|he guardado",
+    "guardar": {"said": r"guarde|he guardado|anote|he anotado",
                 "passive": r"se guardo|quedo guardad[oa]",
                 "asked": r"guardaste",
                 "ops": ("file.write", "file.edit", "input.", "memory.", "note.", "office.", "filesystem.", "backup.",
                         "task.", "clipboard.", "web.download", "capture.", "document.", "calendar.", "schedule.")},
+    # TPV7 (VIVO11, 11-11-2026): «Nota creada: "Hola"» after a «sí» that only turned the tool on. The bare participle
+    # («nota creada», «recordatorio creado») is the state form of this kind, read like every passive: only against a
+    # call of its kind that the turn tried and did not complete.
     "crear": {"said": r"cree|he creado",
-              "passive": r"se creo",
+              "passive": r"se creo|cread[oa]s?",
               "asked": r"creaste",
               "ops": ("file.write", "file.edit", "filesystem.", "note.", "task.", "calendar.", "schedule.", "office.",
                       "document.", "backup.", "file.compress", "memory.")},
@@ -170,7 +204,7 @@ KINDS: dict[str, dict[str, Any]] = {
               "passive": r"se (?:movio|copio)",
               "asked": r"moviste|copiaste|pegaste",
               "ops": ("filesystem.", "clipboard.", "input.", "window.", "file.")},
-    "agregar": {"said": r"agregue|anadi|he agregado|he anadido|anote|he anotado",
+    "agregar": {"said": r"agregue|anadi|he agregado|he anadido",
                 "passive": "",
                 "asked": r"agregaste|anadiste|anotaste",
                 "ops": ("file.", "task.", "note.", "calendar.", "schedule.", "memory.", "input.", "office.",
@@ -218,17 +252,140 @@ _MADE_IN_WORDS = {"escribir", "crear", "agregar", "hacer"}
 _SAID = {kind: re.compile(rf"\b(?:{spec['said']})\b") for kind, spec in KINDS.items()}
 _PASSIVE = {kind: re.compile(rf"\b(?:{spec['passive']})\b") for kind, spec in KINDS.items() if spec["passive"]}
 _ASKED = re.compile(r"\b(?:" + "|".join(f"(?P<{k}>{s['asked']})" for k, s in KINDS.items()) + r")\b")
+# TPV7 (banco, 11-11-2026, Esencial: «Ya está, te puse la cumbia» with the music tool only turned on): the first
+# persons of KINDS that are strong preterites, stressed on the stem and written with no accent (RAE, Diccionario
+# panhispánico de dudas, apéndice 1: poner → puse, traer → traje, -ducir → -duje).
+_STRONG = frozenset({"puse", "reproduje", "traje"})
 
 
 def _preterite(text: str, hit: re.Match[str]) -> bool:
     """Whether a folded verb ending in «e» was written «é» («cerré», «borré», «creé»): unaccented it is another form of
     the verb («que el pistón baje», «que lo borre», «él cree»), which claims nothing. A model that drops the accent
-    loses the claim, never the other way round."""
+    loses the claim, never the other way round. A strong preterite is spelled with no accent and is no other form of
+    its verb («puse», «reproduje», «traje»): it claims as written."""
     word = hit.group(0).split(" ")[0]
-    if word in ("he", "te") or not word.endswith("e"):
+    if word in ("he", "te") or not word.endswith("e") or word in _STRONG:
         return True
     at = hit.start() + len(word) - 1
     return text[at] in "éÉ"
+
+
+# GUA1 (VIVO13, 11-11-2026, Completo with the memory off, no call: «¡Claro! Acabo de guardar en mi memoria que tu perro
+# se llama Chispo.», then «Ya tengo guardado…»; base K01: «Ahora lo tengo guardado en mi memoria»). The other forms a
+# first person tells an act already done with, built from each kind's own verbs: «acabo de + infinitive» (recent past)
+# and «tengo / dejé + participle» (resultative) (RAE y ASALE, Nueva gramática de la lengua española, cap. 28), and
+# the English simple past and present perfect («I saved», «I've just saved»). The resultative tells a state: a
+# completed read of its kind (memory.recall) backs it, as «lo tengo guardado» of what the memory showed is true.
+_DONE_EN = {"abrir": "opened", "cerrar": "closed", "guardar": "saved|stored|noted down|written down",
+            "crear": "created", "borrar": "deleted|removed|erased", "enviar": "sent", "agregar": "added",
+            "encender": "turned (?:on|off)|enabled|disabled", "instalar": "installed|uninstalled|downloaded"}
+
+
+def _done_forms(kind: str) -> tuple[re.Pattern[str], re.Pattern[str] | None]:
+    """The recent-past and English claims of ``kind``, and its resultative (None if the kind has no participle)."""
+    words = [w for alt in KINDS[kind]["said"].split("|") for w in [alt.split(" ")[-1]] if w.isalpha()]
+    participles = [w for w in words if w.endswith(("ado", "ido"))]
+    stems = {w[:-3] for w in participles} | {w[:-1] for w in words if w.endswith("i") and len(w) > 3}
+    recent = [rf"acab(?:o|amos) de (?:{'|'.join(sorted(stems))})(?:ar|er|ir)(?:me|te|se|nos)?(?:lo|la|los|las|le|les)?"]
+    if kind in _DONE_EN:
+        recent.append(rf"i(?:'ve|’ve| have)?(?: just| already)? (?:{_DONE_EN[kind]})")
+    held = (re.compile(rf"\b(?:tengo|tenemos|deje) (?:ya |bien )?(?:{'|'.join(participles)})s?\b")
+            if participles else None)
+    return re.compile(rf"\b(?:{'|'.join(recent)})\b"), held
+
+
+# Looks («acabo de comprobar») are not acts of the PC: left to the rule of looks with no result.
+_DONE = {kind: _done_forms(kind) for kind in KINDS if kind != "mirar"}
+
+
+# GUA3 (REV11 C-1, 11-11-2026: «If I deleted it by mistake, you can restore it…», «Unless I closed it, Chrome should still
+# be open.», «When I opened Word yesterday it was slow…»): before the verb in its clause, a negation, a condition or a
+# time clause turns these forms off as _NEGATED does the Spanish preterite: they tell no act of this turn (Quirk et al.,
+# A Comprehensive Grammar of the English Language, 1985, §15.17-15.25: conditional and temporal adverbial clauses;
+# «cuando / cada vez que + acabo de» is the habitual present, RAE y ASALE, Nueva gramática, §23.5).
+_DONE_OFF = re.compile(r"\b(?:not|never|if|unless|whether|in case|when|whenever|once|before|after|until|till|while|"
+                       r"as soon as|let me|i(?:'|’)?ll|i will|i(?:'|’)?d|can|could|should|would|might|may|"
+                       r"cuando|cada vez que|siempre que|en cuanto|apenas|mientras)\b")
+
+
+def _en_clause(folded: str, start: int, at: int) -> int:
+    """Where the clause holding position ``at`` begins, with the English joins too («…, and I've saved it»)."""
+    cut = _clause_start(folded, start, at)
+    for m in re.finditer(r"\b(?:and|but|so|because|then)\b", folded[cut:at]):
+        cut = max(cut, cut + m.end())
+    return cut
+
+
+# GUA3 (REV11 C-1: «Te anoté los pasos aquí abajo: 1. Abre Word…», «I've just sent you the summary below: the meeting is
+# at 5.»): the clause of the claim points after its verb at the answer itself, and the answer goes on past that: what it
+# tells written or sent is the answer's own text, there for the person to read, no act of the PC. A pointer in another
+# clause («Lo guardé, aquí está: …») or with nothing after it («Lo anoté aquí abajo.») still claims the act.
+_HERE = re.compile(r"\b(?:aqui abajo|aqui debajo|mas abajo|abajo|debajo|a continuacion|below|as follows)\b")
+
+
+def _in_the_answer(folded: str, hit: re.Match[str], end: int) -> bool:
+    stop = re.search(r"[,;:]", folded[hit.end():end])
+    here = _HERE.search(folded, hit.end(), hit.end() + stop.start() if stop else end)
+    return here is not None and re.search(r"\w", folded[here.end():]) is not None
+
+
+def _done_hits(kind: str, text: str, folded: str, start: int, end: int, receipts: list[Receipt],
+               session: list[Call] | None) -> list[re.Match[str]]:
+    if kind not in _DONE:
+        return []
+    recent, held = _DONE[kind]
+    hits = [h for h in recent.finditer(folded, start, end)
+            if not _DONE_OFF.search(folded, _en_clause(folded, start, h.start()), h.start())]
+    if held and not any(r.get("completed") and r.get("read") and _matches(operation_of(str(r.get("op"))),
+                                                                          KINDS[kind]["ops"]) for r in receipts) \
+            and not any(done and read and _matches(operation_of(op), KINDS[kind]["ops"]) for op, done, read in session or []):
+        hits += [h for h in held.finditer(folded, start, end) if _preterite(text, h)]  # «dejé», not «deje»
+    return hits
+
+
+# GUA3 (REV11 C-1): the orders of each kind of act, as the person says them: its verbs in the imperative, the
+# subjunctive or the infinitive («guarda», «guárdame», «acuérdate», «que lo guardes», «puedes guardar», RAE y ASALE,
+# Nueva gramática, §42.2-42.4: the imperative and its substitutes) and the English imperative («save», «note down»).
+# Only what mind.UNDONE_NOTE needs to know: whether the person's turn asked for the act the answer told done.
+_ORDERS = {"abrir": ("abr|reabr", "open|reopen"), "cerrar": ("cierr|cerr", "close|quit"),
+           "volumen": ("sub|baj", "turn (?:it )?(?:up|down)|raise|lower"),
+           "silenciar": ("silenci", "mute|unmute|silence"), "escribir": ("escrib|tecle", "write|type"),
+           "guardar": ("guard|anot|apunt|recuerd|record|acuerd|acord|memoriz", "save|store|remember|note|keep"),
+           "crear": ("cre|hac", "create|make"), "borrar": ("borr|elimin|vaci", "delete|remove|erase|empty"),
+           "enviar": ("envi|mand", "send|mail"), "mover": ("muev|mov|copi|peg", "move|copy|paste"),
+           "agregar": ("agreg|anad|anot", "add"), "ventana": ("minimiz|maximiz|restaur", "minimize|maximize|restore"),
+           "reproducir": ("paus|reanud|reproduc", "play|pause|resume"),
+           "lanzar": ("lanz|inici|ejecut", "launch|start|run"),
+           "encender": ("activ|desactiv|enciend|encend|apag|prend", "turn (?:it )?(?:on|off)|switch|enable|disable"),
+           "instalar": ("instal|desinstal|descarg", "install|uninstall|download"), "marcar": ("marc|tach", "mark"),
+           "hacer": ("cambi|ajust|configur|program", "set|change|adjust|configure|schedule")}
+_ORDERED = {kind: re.compile(rf"\b(?:(?:{es})(?:a|e|as|es|an|en|ar|er|ir)(?:me|te|se|nos)?(?:lo|la|los|las|le|les)?"
+                             rf"|(?:{en}))\b") for kind, (es, en) in _ORDERS.items()}
+# Before the order in its clause: what turns it off («no lo guardes», «if I delete it», «did you save it?»).
+_UNASKED = re.compile(r"\b(?:no|nunca|jamas|tampoco|ni|sin|si|not|never|don(?:'|’)?t|dont|did|didn(?:'|’)?t|have you|"
+                      r"has|had|if|unless|whether)\b")
+_REFUSED = re.compile(r"^\W*(?:no|nah|nope|mejor no)\b")
+
+
+def asked_for(said: str, request: str, offered: str = "") -> bool:
+    """Whether the person's turn ``request`` asked for an act of the kind that ``said`` (a finding's quote) tells done:
+    its words order it, or they answer BAXY's own question ``offered`` (its last line, when it ended in «?») that
+    offered it, and do not begin with a «no». Form only, as the rest of this module: nothing of what the act was for."""
+    folded_said = _fold(said)
+    kinds = {k for k, pattern in _SAID.items() if pattern.search(folded_said)} | {
+        k for k, (recent, held) in _DONE.items() if recent.search(folded_said) or (held and held.search(folded_said))}
+    folded = _fold(request or "")
+    question = (offered or "").rstrip()
+    question = _fold(question[question.rfind("¿") + 1:]) if question.endswith("?") else ""
+    for kind in kinds & _ORDERED.keys():
+        for hit in _ORDERED[kind].finditer(folded):
+            clause = _en_clause(folded, 0, hit.start())
+            if not any(not (m.group(0) == "si" and (request or "")[m.start():m.start() + 2].lower() == "sí")
+                       for m in _UNASKED.finditer(folded, clause, hit.start())):
+                return True
+        if question and _ORDERED[kind].search(question) and not _REFUSED.match(folded):
+            return True
+    return False
 
 # Before the verb in its clause: a negation, a condition or a wish turns the claim off («no pude abrirlo», «si quieres
 # lo abro», «antes de cerrar»).
@@ -497,11 +654,22 @@ def _told(receipt: Receipt) -> str:
     return f"{receipt.get('tool') or receipt.get('op')} → {receipt.get('outcome') or 'sin resultado'}"
 
 
+# RUT10 (RUT8's bench, «pausa o reproduce» said directly, 3 of 12 with no media_control in the turn: «Pauso lo que está
+# sonando y le doy play para que continúe», «…y le doy play para que siga reproduciéndose» after only reading what
+# sounds): the first person of the present, told as the act of this turn, is a claim of its kind as the preterite is
+# (RAE, Diccionario panhispánico de dudas, apéndice 1: pausar → pauso, reanudar → reanudo, reproducir → reproduzco; dar
+# → doy, poner → pongo). Read as the preterite is, and more narrowly: not in a question («¿lo pauso?») nor after a
+# negation, a condition or a wish anywhere before it in its sentence («si quieres, lo pauso»); only against the calls of
+# its kind.
+_PRESENT = {"reproducir": re.compile(r"\b(?:pauso|reanudo|reproduzco|(?:doy|pongo) (?:play|pausa))\b")}
+
+
 # ---- the check --------------------------------------------------------------------------------------------------------
 def check(answer: str, request: str, receipts: list[Receipt], session: list[Call] | None,
           catalog: dict[str, str] | None = None, tries: list[tuple[str, str]] | None = None,
           wire_of: Callable[[str], str] = plain, earlier: list[Receipt] | None = None,
-          today: dt.date | None = None, unsourced: list[dict[str, Any]] | None = None) -> list[dict]:
+          today: dt.date | None = None, unsourced: list[dict[str, Any]] | None = None,
+          memory: str | None = None, memory_off: bool = False) -> list[dict]:
     """The findings of an answer against its turn: ``receipts`` are the turn's calls in order, ``session`` every call
     of the session before and in this turn as (operation, completed, read), or None when the session is not known whole (a
     kept session, or one past the calls the mind keeps): then nothing is said of calls that may have been there.
@@ -511,7 +679,9 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     as receipts (``observation`` None when its body was left out), for the rule ``stale_state``. ``today``: the clock's
     date, for the rule ``future_past``, which is not read without it. ``unsourced``: the calculations of the turn whose
     expression had numbers nobody gave ({"numbers": ["900"], "value": "55.55"}), for the rule ``unsourced_number``.
-    Each finding: {"rule", "said" (the model's words), "fact" (what contradicts them)}."""
+    ``memory``: the tool name that reads BAXY's memory, or "" when the catalog has none, for the rule ``unread_memory``,
+    which is not read without it. ``memory_off``: the App said BAXY's memory is switched off (catalog.configure
+    «memoryOff»), or a memory call of the conversation failed off, for the rule ``memory_off_empty``. Each finding: {"rule", "said" (the model's words), "fact" (what contradicts them)}."""
     if not answer or not answer.strip():
         return []
     text = _blank_quotes(answer)
@@ -530,10 +700,16 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     for start, end in statements:
         for kind, pattern in _SAID.items():
             hits = [h for h in pattern.finditer(folded, start, end) if _preterite(text, h)]
+            if kind in _PRESENT and "?" not in text[start:end]:
+                # a condition or a wish anywhere before it in the sentence turns it off («si quieres, lo pauso»)
+                hits += [h for h in _PRESENT[kind].finditer(folded, start, end) if not any(
+                    not (m.group(0) == "si" and text[m.start():m.start() + 2].lower() == "sí")
+                    for m in _NEGATED.finditer(folded, start, h.start()))]
+            hits += _done_hits(kind, text, folded, start, end, receipts, session)
             passive = _PASSIVE.get(kind)
             passives = list(passive.finditer(folded, start, end)) if passive else []
             for hit, is_passive in [*((h, False) for h in hits), *((h, True) for h in passives)]:
-                if _negated(folded, start, hit.start(), text) or kind in done_kinds:
+                if _negated(folded, start, hit.start(), text) or kind in done_kinds or _in_the_answer(folded, hit, end):
                     continue
                 fact = _act_fact(kind, receipts, session, passive=is_passive,
                                  unsure_said=_UNSURE.search(folded, start, end) is not None)
@@ -576,6 +752,11 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
                     for m in re.finditer(r"\bsi\b", folded[:hit.start()])):
                 add("unread_state", start, end, "en esta sesión no se llamó a ninguna herramienta: nada miró eso")
                 break
+
+    # ACT1 (VER2 V08): «Yes, I'm up to date. I checked…» with no look for a newer version in the conversation.
+    unchecked = _unchecked_update(folded, statements, receipts, session, text, request)
+    if unchecked:
+        add("unchecked_update", *unchecked, UNCHECKED_UPDATE.format(tool=wire_of(UPDATE_OP)))
 
     # «Ya está instalado» with nothing read in the turn while the last result of that thing shows another state.
     findings.extend(f for f in _stale_states(answer, folded, statements, receipts, earlier, text) if f not in findings)
@@ -636,7 +817,8 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
                     continue
                 if why != "searchedElsewhere" and not total and not _absence_about(sentence, absent):
                     continue
-                told = (f"{_told(receipt)}: {_PARTIAL_TOLD[why]}" if why == "failedRead"
+                told = (_told(receipt) if why == "notChecked" and _PARTIAL_TOLD[why] in _told(receipt)
+                        else f"{_told(receipt)}: {_PARTIAL_TOLD[why]}" if why in ("failedRead", "notChecked")
                         else f"{receipt.get('tool')} leyó sólo una parte: " + _PARTIAL_TOLD[why].format(
                             covers=str((_parsed(receipt).get("observed") or {}).get("covers", "")).strip()))
                 add("partial", start, end, told)
@@ -676,9 +858,19 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     findings.extend(f for f in _unopened_page(answer, receipts, wire_of, request) if f not in findings)
     # «Se estrenó el 20 de diciembre de 2026» on 3 November 2026 (uso real 2026-11-03, F8).
     findings.extend(f for f in _future_past(answer, text, folded, statements, receipts, today) if f not in findings)
+    # «La próxima reunión es el 27-28 de octubre de 2026» on 9 November 2026 (VER1, G-03).
+    findings.extend(f for f in _past_future(answer, text, folded, statements, receipts, today) if f not in findings)
+    # «En siete días es el viernes 12» when the 12th is a Thursday (VER1, PR-03).
+    findings.extend(f for f in _weekday_date(answer, folded, statements, receipts, request, today) if f not in findings)
 
     # «No tengo nada guardado de X» with nothing else looked at (F13, F35).
     findings.extend(f for f in _empty_lookup(answer, receipts, wire_of) if f not in findings)
+    # «Recuerdo que tu color favorito es el azul» with no memory call in the conversation (MEM1, VIVO12 P1).
+    findings.extend(f for f in _unread_memory(folded, text, statements, receipts, session, memory, request) if f not in findings)
+    # «No tengo nada guardado de ti» with the memory switched off and nothing read (MEM4, REM7 D-1).
+    if memory_off:
+        findings.extend(f for f in _memory_off_empty(folded, text, statements, receipts, session, request)
+                        if f not in findings)
 
     # A datum the answer bends against what a result says it brought (encargo A5; answer_grounding.py).
     findings.extend(f for f in _unmatched(answer, statements, receipts) if f not in findings)
@@ -702,7 +894,64 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
                 add("already", _clause_start(folded, start, hit.start()), end,
                     f"{_told(changed[-1])}: cambió algo y nada dice que ya estuviera así")
                 break
+
+    # Which way a play/pause went (RUT8): told the other way round against the two states its result read.
+    way = _way_went(receipts)
+    if way is not None:
+        receipt, before, after, claim, fact = way
+        for start, end in statements:
+            hit = next((h for h in claim.finditer(folded, start, end)
+                        if _accented(text, h) and not _negated(folded, start, h.start(), text)), None)
+            if hit:
+                add("which_way", _clause_start(folded, start, hit.start()), end,
+                    f"{_told(receipt)}: previousPlaybackStatus «{before}» y playbackStatus «{after}»: {fact}")
+                break
     return findings
+
+
+# ---- which_way ----------------------------------------------------------------------------------------------------------
+# What tells a pause that did not happen (after a control that resumed) and a resume that did not happen (after one that
+# paused): the act in the past, or the state of now or of before said the other way round. «que estaba pausado» after a
+# resume and «que estaba sonando» after a pause are true and are not here.
+_PAUSE_TOLD = re.compile(
+    r"\b(?:pause|pauso|pausaste|(?:he|has|ha) pausado|(?:puse|pusiste|puso|he puesto|has puesto) en pausa|"
+    r"se (?:ha )?paus(?:o|ado)|ahora esta (?:pausad[oa]|en pausa)|quedo (?:pausad[oa]|en pausa)|"
+    r"(?:ya )?estaba (?:sonando|reproduciendo(?:se)?)|i(?:'ve| have)? paused|is now paused)\b")
+_RESUME_TOLD = re.compile(
+    r"\b(?:reproduje|reanude|reanudo|reanudaste|(?:he|has|ha) (?:reanudado|reproducido)|se (?:ha )?reanud(?:o|ado)|"
+    r"le di play|(?:puse|he puesto) en (?:reproduccion|play|marcha)|"
+    r"ahora (?:suena|esta sonando|se esta reproduciendo|esta reproduciendo(?:se)?|se reproduce|sigue sonando)|"
+    r"ya esta (?:sonando|reproduciendo(?:se)?)|estaba (?:pausad[oa]|en pausa)|"
+    r"i(?:'ve| have)? resumed|now playing|is playing again)\b")
+
+
+def _accented(text: str, hit: re.Match[str]) -> bool:
+    """Whether a folded «pause», «pauso», «reanude» or «reanudo» was written with its accent («pausé», «pausó»): without
+    it, it is an order or a present («pausa o reproduce», «pauso lo que suena»), which tells nothing done."""
+    word = hit.group(0).split(" ")[0]
+    if word not in ("pause", "pauso", "reanude", "reanudo"):
+        return True
+    return text[hit.start() + len(word) - 1] in "éÉóÓ"
+
+
+def _way_went(receipts: list[Receipt]) -> tuple[Receipt, str, str, re.Pattern[str], str] | None:
+    """The turn's media_control that changed the state, with the two states its result read and what an answer would say
+    to tell it the other way round; None when no result of the turn says both states, or when the turn went both ways."""
+    went: list[tuple[Receipt, str, str]] = []
+    for receipt in receipts:
+        observed = _parsed(receipt).get("observed") if receipt.get("completed") and receipt.get("op") == "media.control" else None
+        if isinstance(observed, dict):
+            before, after = observed.get("previousPlaybackStatus"), observed.get("playbackStatus")
+            if isinstance(before, str) and isinstance(after, str) and before != after:
+                went.append((receipt, before.lower(), after.lower()))
+    if not went or len({after == "playing" for _receipt, _before, after in went}) != 1:
+        return None
+    receipt, before, after = went[-1]
+    if after == "playing" and before in ("paused", "stopped"):
+        return receipt, before, after, _PAUSE_TOLD, "estaba en pausa y ahora suena; en este turno nada se pausó"
+    if before == "playing" and after in ("paused", "stopped"):
+        return receipt, before, after, _RESUME_TOLD, "estaba sonando y ahora está en pausa; en este turno nada se reanudó"
+    return None
 
 
 def _does(kind: str, op: str, read: bool) -> bool:
@@ -715,6 +964,10 @@ def _does(kind: str, op: str, read: bool) -> bool:
 def _done(kind: str, receipts: list[Receipt], session: list[Call] | None) -> bool:
     """Whether a call of this kind completed in the turn or, as far as it is known, in the session."""
     if any(r.get("completed") and _does(kind, str(r.get("op")), bool(r.get("read"))) for r in receipts):
+        return True
+    # TPV7: the «sí» that turned a tool on in the person's profile ran nothing of what was asked (its result is
+    # «rejected»), and it did turn that tool on: the result says which («turnedOn»), so «encendí las notas» is true.
+    if kind == "encender" and any(_parsed(r).get("turnedOn") for r in receipts):
         return True
     return any(done and _does(kind, op, read) for op, done, read in session or [])
 
@@ -744,6 +997,87 @@ def _act_fact(kind: str, receipts: list[Receipt], session: list[Call] | None,
     return "no_call", ("ninguna llamada de esta sesión lo hizo" +
                        (f"; en este turno sólo: {'; '.join(_told(r) for r in ran[:3])}" if ran else
                         "; en este turno no se llamó a ninguna herramienta"))
+
+
+# ---- up to date (ACT1) ------------------------------------------------------------------------------------------------
+# VER2 (held-out V08, 10-11-2026): to «are you up to date?» the model said «Yes, I'm up to date. I checked and there's no
+# newer version» (and «Sí, estoy al día») with no call at all: it has its installed version (mind.VERSION_FACT), never
+# whether a newer one exists, which only baxy.update's check reads (its «checked», «latest», «newer»). The claim is a
+# reading of that state, as «sigue abierto» is of a window: told in the first person of BAXY, or of the person's copy
+# («tienes la última versión»), or as «no hay una versión más nueva». The first person is backed only by a completed
+# baxy.update of the conversation (or a try of the turn, left to «partial»); the impersonal forms by any completed call
+# of the turn too (they may tell what another reading showed, a program's own version). Read folded, Spanish and
+# English; a clause with a negation or a
+# condition before it («no sé si estoy al día», «I'm not sure if I'm up to date») claims nothing.
+_SELF_LATEST = re.compile(
+    r"\b(?:estoy|estas|esta baxy|baxy esta) (?:ya |totalmente |completamente |del todo )?(?:al dia|actualizad[oa]|"
+    r"en (?:la|mi|tu|su) (?:ultima|mas reciente|mas nueva|version mas (?:reciente|nueva|actual)))"
+    r"|\b(?:soy|tengo|tienes|uso|usas) (?:ya )?la (?:ultima|mas reciente|mas nueva|version mas (?:reciente|nueva|actual))"
+    r"|\b(?:i(?:'|’)?m|i am|you(?:'|’)?re|you are|baxy is) (?:already |fully |completely )?(?:up to date|up-to-date|"
+    r"on the (?:latest|newest|most recent)|running the (?:latest|newest|most recent))"
+    r"|\b(?:you have|you(?:'|’)?ve got|i have) the (?:latest|newest|most recent) (?:version|release|update)")
+_NONE_NEWER = re.compile(
+    r"\bno (?:hay|existe|tengo|tienes) (?:ninguna |una |otra )?(?:version|actualizacion)(?:es)? (?:mas (?:nueva|reciente)|"
+    r"nueva|pendiente|disponible)"
+    r"|\b(?:there(?:'|’)?s|there is|there are) no (?:newer|new|more recent) (?:version|update|release)s?"
+    r"|\bno (?:newer|new) (?:version|update|release)s? (?:is |are )?available")
+_EN_OFF = re.compile(r"\b(?:not|never|if|whether|unless|cannot|can(?:'|’)?t|don(?:'|’)?t know|to see|let me|i(?:'|’)?ll)\b"
+                     r"|n(?:'|’)?t\b")
+UPDATE_OP = "baxy.update"
+# REG1 (REV11 C-3): «Sí, tienes la última versión de Chrome», «Estás al día con tus pagos», «Estás al día: no te queda
+# ninguna tarea» (after task.list) were read as BAXY's, and the note kept the tools toward baxy.update. The second person
+# and the impersonal form are BAXY's only when the sentence names BAXY, or the person asked BAXY of itself (named it, or
+# in the second person of the same state: «¿estás al día?», «are you up to date?») and no reading of the turn completed,
+# which may be what they tell. «al día con / hasta / en … / up to date on / with …» says of what, in any person: of
+# anything but a version or an update, it is not this state («estoy al día hasta mi entrenamiento»).
+_YOU_SAID = re.compile(r"(?:estas|tienes|usas|you)\b")
+_OF_WHAT = re.compile(r"\s+(?:con|hasta|sobre|en cuanto a|on|with|about|in)\s+(?!(?:(?:las|los|la|el|lo|tus|mis|sus|the|your|"
+                      r"my|its)\s+)?(?:actualizacion|version|ultima|mas reciente|update|release|latest|newest|baxy))")
+_ASKED_SELF = re.compile(
+    r"\b(?:estas|estai|eres|sos|tienes|tenes|tenis|usas|te falta|te faltan) (?:ya |bien )?(?:al dia|actualizad[oa]|"
+    r"(?:la |una |alguna )?(?:ultima|mas reciente|mas nueva|version|actualizacion))"
+    r"|\b(?:are you|you(?:'|’)?re|you are|do you have|have you got) (?:already |fully )?(?:up to date|up-to-date|updated|"
+    r"on the (?:latest|newest)|running the (?:latest|newest)|the (?:latest|newest))"
+    r"|\b(?:version|actualizacion|update)(?:es|s)? (?:[a-z]+ )?(?:de ti|tuya|of you)\b")
+_BAXY_NAMED = re.compile(r"\bbaxy\b")
+UNCHECKED_UPDATE = ("en esta conversación nada comprobó si hay una versión más nueva de BAXY: ningún resultado lo "
+                    "muestra (de la tuya sólo se sabe cuál está instalada); {tool} con action «check» sólo lo consulta")
+
+
+def _asked_of_self(request: str) -> bool:
+    """Whether the person asked BAXY of itself: named it, or asked its state in the second person, not of something
+    else («¿estás al día con las noticias?»)."""
+    asked = _fold(request or "")
+    return bool(_BAXY_NAMED.search(asked)) or any(not _OF_WHAT.match(asked, hit.end())
+                                                  for hit in _ASKED_SELF.finditer(asked))
+
+
+def _unchecked_update(folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
+                      session: list[Call] | None, text: str, request: str = "") -> tuple[int, int] | None:
+    """The span of the first statement that tells BAXY up to date or no newer version while nothing of the conversation
+    looked (ACT1), or None. Not read when the session is not known whole: a look may be in what was left out."""
+    if session is None:
+        return None
+    # A look of the turn that failed is read by «partial» on its own fields (MEN1: «checked» false), never guessed here.
+    checked = any(done and operation_of(op) == UPDATE_OP for op, done, _read in session) or any(
+        operation_of(str(r.get("op"))) == UPDATE_OP for r in receipts)
+    if checked:
+        return None
+    read_now = any(r.get("completed") for r in receipts)
+    of_self = _asked_of_self(request) and not read_now
+    for start, end in statements:
+        named = bool(_BAXY_NAMED.search(folded, start, end))
+        for pattern in (_SELF_LATEST, _NONE_NEWER):
+            for hit in pattern.finditer(folded, start, end):
+                clause = _clause_start(folded, start, hit.start())
+                if _negated(folded, start, hit.start(), text) or _EN_OFF.search(folded, clause, hit.start()):
+                    continue
+                if _OF_WHAT.match(folded, hit.end(), end):
+                    continue  # «al día con tus pagos»: of something else
+                if (pattern is _NONE_NEWER or _YOU_SAID.match(hit.group(0))) and not (named or of_self):
+                    continue
+                return _clause_start(folded, start, hit.start()), end
+    return None
 
 
 # ---- states of now (encargo 56) ---------------------------------------------------------------------------------------
@@ -950,6 +1284,7 @@ _PARTIAL_TOLD = {
     "viewCut": "la vista se cortó: parte de lo que mostraba no se listó",
     "searchedElsewhere": "no se buscó fuera de esa carpeta",
     "failedRead": "no leyó nada: la lectura falló",
+    "notChecked": "no se comprobó lo pedido",  # the words its outcome line already has (mind.NOT_CHECKED)
     "covers": "lo que cubre su lectura, según su campo covers, es: {covers}",
 }
 # Errors of a look that are its reading that something is not there (file_not_found, window_not_found…).
@@ -963,6 +1298,11 @@ def _partial(receipt: Receipt) -> str:
     if not facts:
         return ""
     observed = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
+    # MEN1 (AMD2 §9, hallazgo E): a result that says in its own field that it did not look at what its call is for
+    # finding out («checked» false: a failure before looking, a store that updates by itself) backs no absence, whatever
+    # its status: «No hay una versión más reciente» after baxy_update failed with baxy_update_development_build.
+    if observed.get("checked") is False:
+        return "notChecked"
     for where in (observed, facts):
         if where.get("readInPart") is True:
             return "readInPart"
@@ -1798,6 +2138,158 @@ def _future_past(answer: str, text: str, folded: str, statements: list[tuple[int
     return []
 
 
+# ---- a weekday told of a date that falls on another --------------------------------------------------------------------
+_WEEKDAYS = {name: number for number, names in enumerate((
+    ("lunes", "monday"), ("martes", "tuesday"), ("miercoles", "wednesday"), ("jueves", "thursday"), ("viernes", "friday"),
+    ("sabado", "saturday"), ("domingo", "sunday"))) for name in names}
+_WEEKDAY = "|".join(_WEEKDAYS)
+_WEEKDAY_SAID = ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo")
+_MONTH_SAID = ("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre",
+               "diciembre")
+# The weekday right before its date. A bare day («viernes 12») only where the number ends there: not a time («12:30»,
+# «12 h»), an amount («12 %», «12 personas») nor a longer number.
+_WEEKDAY_THEN_DATE = re.compile(
+    rf"\b(?P<weekday>{_WEEKDAY}),? (?:el |the )?(?:dia )?(?:"
+    rf"(?P<day>\d{{1,2}})(?: de (?P<month>{_MONTH})(?: (?:de|del) (?P<year>\d{{4}}))?|(?=\s*(?:$|[.,;!?)»\"*])))"
+    rf"|(?P<month2>{_MONTH}) (?P<day2>\d{{1,2}})(?:st|nd|rd|th)?(?:,? (?P<year2>\d{{4}}))?)(?![\d:%])")
+# The date first, then the weekday as what it is, with no number, sentence end nor other clause between them.
+_DATE_THEN_WEEKDAY = re.compile(
+    rf"\b(?:(?P<day>\d{{1,2}}) de (?P<month>{_MONTH})(?: (?:de|del) (?P<year>\d{{4}}))?"
+    rf"|(?P<month2>{_MONTH}) (?P<day2>\d{{1,2}})(?:st|nd|rd|th)?(?:,? (?P<year2>\d{{4}}))?)"
+    rf"(?P<between>[^.;:!?\d]{{1,40}}?)\b(?P<weekday>{_WEEKDAY})\b")
+_BETWEEN_BREAK = re.compile(r"\b(?:pero|aunque|y|o|porque|mientras|luego|despues|entonces|no|ni|but|and|or|not)\b")
+
+
+def _date_candidates(hit: re.Match[str], today: dt.date) -> tuple[list[dt.date], tuple[int | None, int]]:
+    """The days a date of the answer can be, and its (month, day): its own with a year; with a month and no year, the
+    nearest one to today (the last or the coming one: «el 18 de septiembre» in November is this year's); with no month,
+    that day of last month, this one and the next. Not a date: none."""
+    day = int(hit.group("day") or hit.group("day2"))
+    month_name = hit.group("month") or hit.group("month2")
+    year = hit.group("year") or hit.group("year2")
+    found: list[dt.date] = []
+    if month_name:
+        month = _MONTHS[month_name]
+        for y in ([int(year)] if year else range(today.year - 8, today.year + 9)):
+            try:
+                found.append(dt.date(y, month, day))
+            except ValueError:  # 31/02, or a 29/02 of a common year: not a date
+                pass
+        if not year and found:
+            least = min(abs((d - today).days) for d in found)
+            found = [d for d in found if abs((d - today).days) == least]
+        return found, (month, day)
+    first = today.replace(day=1)
+    for start in ((first - dt.timedelta(days=1)).replace(day=1), first, (first + dt.timedelta(days=32)).replace(day=1)):
+        try:
+            found.append(start.replace(day=day))
+        except ValueError:
+            pass
+    return found, (None, day)
+
+
+_ISO_DAY = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
+
+
+def _weekday_date(answer: str, folded: str, statements: list[tuple[int, int]], receipts: list[Receipt], request: str,
+                  today: dt.date | None) -> list[dict]:
+    """Rules ``weekday_date`` and ``unread_date``, over a weekday told with its date. ``weekday_date``: the calendar puts
+    that date on another weekday, in every year (or month) the date can mean; the fact is the weekday of the nearest of
+    those days to today. ``unread_date``: the calendar has the pair, it is not today's, and nothing of the turn gave
+    that date. Nothing is read of what was asked."""
+    if today is None:
+        return []
+    given = _fold(request + " " + " ".join(
+        str(r.get("observation") or "") + " " + json.dumps(ensure_ascii=False, obj=r.get("arguments") or {}) for r in receipts))
+    shown = []
+    for y, m, d in _ISO_DAY.findall(given):
+        try:
+            shown.append(dt.date(int(y), int(m), int(d)))
+        except ValueError:
+            pass
+    unread: list[dict] = []
+    for start, end in statements:
+        for pattern in (_WEEKDAY_THEN_DATE, _DATE_THEN_WEEKDAY):
+            for hit in pattern.finditer(folded, start, end):
+                if "between" in hit.groupdict() and _BETWEEN_BREAK.search(hit.group("between")):
+                    continue
+                said = _WEEKDAYS[hit.group("weekday")]
+                days, (month, day) = _date_candidates(hit, today)
+                # The person's own words or a result that bring the pair as it is are theirs to be wrong; and a date a
+                # result gives (system.time's calendar: «2025-11-27») that is that day on that weekday backs it.
+                if not days or hit.group(0) in given:
+                    continue
+                if any(d.weekday() == said for d in shown if d.day == day and month in (None, d.month)):
+                    continue
+                meant = [d for d in days if d.weekday() == said]
+                if not meant:
+                    near = min(days, key=lambda d: abs((d - today).days))
+                    return [{"rule": "weekday_date", "said": _quote(answer, hit.start(), hit.end()),
+                             "fact": f"el {near.day} de {_MONTH_SAID[near.month - 1]} de {near.year} es "
+                                     f"{_WEEKDAY_SAID[near.weekday()]}, no {_WEEKDAY_SAID[said]}"}]
+                # The calendar has it. Today's own is the clock line's; a date a result or the person wrote without its
+                # weekday («28 de noviembre», «November 28») is given too.
+                names = [(d, name) for d in meant for name, number in _MONTHS.items() if number == d.month]
+                written = [f"{d.day} de {name}" for d, name in names] + [f"{name} {d.day}" for d, name in names]
+                if today in meant or any(re.search(rf"\b{re.escape(w)}\b", given) for w in written):
+                    continue
+                # Within a year of today: a date of history told with its weekday is not one counted from the clock.
+                if min(abs((d - today).days) for d in meant) > 366:
+                    continue
+                if not unread:
+                    unread = [{"rule": "unread_date", "said": _quote(answer, hit.start(), hit.end()),
+                               "fact": "esa fecha no la dio ningún resultado de este turno ni la dijo la persona: la contaste tú"}]
+    return unread
+
+
+# ---- a date before today told as coming ---------------------------------------------------------------------------------
+# What comes by its form alone: a Spanish future («se jugará», «será»), «va a …», or the date named the next one.
+_FUTURE_FORM = re.compile(r"(?<!\w)(?:\w+(?:ará|erá|irá|arán|erán|irán)|será|serán|va a \w+|van a \w+|próxim[oa]s?"
+                          r"|will(?: be)?|next|upcoming)(?!\w)", re.IGNORECASE)
+
+
+def _last_day_of(hit: re.Match[str], results: str) -> dt.date | None:
+    """The last day a date of the answer can mean: its own day, the last of its month or of its year."""
+    first = _date_of(hit, results)
+    if first is None:
+        return None
+    if hit.group("year4"):
+        return dt.date(first.year, 12, 31)
+    if hit.group("year2"):
+        return (first.replace(day=28) + dt.timedelta(days=4)).replace(day=1) - dt.timedelta(days=1)
+    return first
+
+
+def _past_future(answer: str, text: str, folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
+                 today: dt.date | None) -> list[dict]:
+    """Rule ``past_future``: a statement of a turn with a completed result that tells as coming a date that is wholly
+    before today: a future form before the date in its clause, or the date first and the future after it."""
+    done = [r for r in receipts if r.get("completed")]
+    if today is None or not done:
+        return []
+    results = _fold(" ".join(str(r.get("observation") or "") for r in done))
+    for start, end in statements:
+        if text[start:end].rstrip().endswith("?"):
+            continue
+        for hit in _DATE.finditer(folded, start, end):
+            date = _last_day_of(hit, results)
+            if date is None or date >= today:
+                continue
+            clause = _clause_start(folded, start, hit.start())
+            after = _CLAUSE_END.search(folded, hit.end(), end)
+            before = text[clause:hit.start()]
+            told = bool(_FUTURE_FORM.search(before)) and not _PAST_FORM.search(before)
+            # The date first: «El 27 de octubre de 2026 se jugará la final».
+            told = told or bool(not _fold(before).strip(" ,el") and _FUTURE_FORM.search(
+                text, hit.end(), after.start() if after else end))
+            # «para» belongs here («programada para el 27»): only a denial or a condition turn the claim off; «sí» is
+            # neither (its accent is still in ``before``).
+            if told and not re.search(r"\b(?:no|nunca|tampoco|ni|jamas|si)\b", _fold(re.sub(r"\bsí\b", " ", before, flags=re.I))):
+                return [{"rule": "past_future", "said": _quote(answer, clause, after.start() if after else end),
+                         "fact": f"hoy es {today.isoformat()}: esa fecha ya pasó, no es la que viene"}]
+    return []
+
+
 # ---- a page that failed to open, searched for, and never opened -------------------------------------------------------
 def _address_key(address: Any) -> str:
     return str(address or "").strip().rstrip("/").lower()
@@ -1810,8 +2302,8 @@ def _bare_address(address: Any) -> str:
 
 def _unopened_page(answer: str, receipts: list[Receipt], wire_of: Callable[[str], str] = plain,
                    request: str = "") -> list[dict]:
-    """Rule ``unopened_page``: the turn's last failed ``browser.navigate*`` was followed by a search (a ``web.search``, or a
-    navigation to the ``searchPageUrl`` a web.search result gave), and after that failure no call opened another page: no
+    """Rule ``unopened_page``: the turn's last failed ``browser.navigate*`` was followed by a search that found something to
+    open (results, or the ``searchPageUrl`` to read them in), and after that failure no call opened another page: no
     navigation to an address that is not such a search page (any outcome: one that went unconfirmed was still a try) and
     no ``input.visible.click`` (a result opened by its link). Only typed facts of the receipts; the model decides."""
     failed_at = None
@@ -1823,19 +2315,25 @@ def _unopened_page(answer: str, receipts: list[Receipt], wire_of: Callable[[str]
     if failed_at is None:
         return []
     search_pages: set[str] = set()
-    searched = False
+    searched = found = False
     for receipt in receipts[failed_at + 1:]:
         op = operation_of(str(receipt.get("op") or ""))
         if op == "web.search":
             searched = True
-            page = (_parsed(receipt).get("observed") or {}).get("searchPageUrl")
+            facts = _parsed(receipt)
+            page = (facts.get("observed") or {}).get("searchPageUrl")
             if page:
                 search_pages.add(_address_key(page))
+            # INT10: a search with something to open, its results or a page to read them in. Since srch1 a refused one
+            # gives neither (WebSearchRefused: no next, no searchPageUrl), nor does one the engine answered with nothing.
+            found = found or bool(page) or facts.get("status") == "completed"
         elif op == "input.visible.click":
             return []
         elif op.startswith("browser.navigate"):
             if _address_key((receipt.get("arguments") or {}).get("url")) not in search_pages:
                 return []
+    if searched and not found:
+        return []  # nothing was found to open: «I could not find it» leaves no page unopened
     failed = receipts[failed_at]
     facts = _parsed(failed)
     url = (failed.get("arguments") or {}).get("url") or (facts.get("observed") or {}).get("requestedUrl") or ""
@@ -1877,6 +2375,230 @@ def _empty_lookup(answer: str, receipts: list[Receipt], wire_of: Callable[[str],
     else:
         return []
     return [{"rule": "empty_lookup", "said": _quote(answer, 0, len(answer)), "fact": fact}]
+
+
+# ---- something of the person told as remembered that no memory read backs ---------------------------------------------
+# A datum told as remembered or known, in any person: «recuerdo que», «te acuerdas que» (VIVOM1: «Sí, te acuerdas que tu
+# color favorito es el azul», 5 of 6 live), «recordás», «me acuerdo», «te acordé», «sé que», «ya sabes que», «I remember»,
+# «you remember», «I know». Only of the person (``_PERSON``): «recuerdo que se hace con huevo» is not of them.
+_REMEMBERED = re.compile(
+    r"\b(?:(?:lo |la |te )?(?:recuerdo|recuerdas|recorde|recordaste|recordas)|(?:me|te) (?:acuerdo|acuerdas|acordas|"
+    r"acorde|acordaste)|i (?:remember|recall)|you remember)\b")
+# REG1 (REV11 C-2): «sé que / ya sabes que / I know / you know» are also said of nothing kept («Sé que te puede resultar
+# confuso, pero…», «I know you are busy», «You know, the best laptop…»): they tell a datum of the person only when one of
+# theirs begins what they know («sé que tu color favorito…», «I know your…»), never by a «te / you» of the clause.
+_KNOWN = re.compile(r"\b(?:(?:ya )?(?:se|sabes|sabias) que|i know|you know)\b")
+_KNOWN_THEIRS = re.compile(r"\s*(?:that\s+)?(?:(?:ya|a|de)\s+)?(?:tu|tus|tuyo|tuya|tuyos|tuyas|your|yours)\b")
+# A datum told as told before or kept: «me dijiste / me contaste», «lo tengo guardado», «según mi memoria», «you told me»:
+# of what the person said, whatever it is of.
+_TOLD = re.compile(
+    r"\b(?:(?:lo |la |los |las )?tengo (?:guardad|anotad|registrad)[oa]s?|"
+    r"tengo en (?:mi |la )?memoria|(?:mi|la) memoria (?:dice|tiene|guarda|muestra|indica)|segun (?:mi|la) memoria|"
+    r"me (?:dijiste|contaste|comentaste|mencionaste|habias dicho|habias contado|has dicho|has contado)|"
+    r"i have (?:it )?(?:saved|stored)|you (?:told|mentioned)|my memory (?:says|has|shows))\b")
+# The same memory said not to hold it: «no tengo guardado / no lo tengo en mi memoria / mi memoria no guarda / no tengo
+# registro» (VIVO11, «No tengo guardado ese dato» with it kept, and MEM1's base 3 of 48). Only words of the memory's
+# content: a bare «no recuerdo» may be of anything.
+_NOT_KEPT = re.compile(
+    r"\b(?:no (?:lo |la |los |las )?tengo (?:(?:eso|esa informacion|ese dato|nada|registro)(?: de [^.,;]*?)? )?"
+    r"(?:guardad|anotad|registrad)[oa]s?|no (?:lo |la )?tengo (?:nada )?en (?:mi|la) memoria|"
+    r"(?:mi|la) memoria no (?:guarda|tiene|dice|muestra)|no tengo (?:ningun )?registro(?=(?: de [^.,;:]*?)? en (?:mi|la) memoria)|"
+    r"i (?:don'?t|do not) have (?:that|it|anything)(?: [a-z]+)? (?:saved|stored))\b")
+# REG1 (REV11 C-2): a bare «no tengo registro» is of any record («No tengo registro de tus llamadas: no veo el teléfono»):
+# it is of the memory only answering a question of theirs (mi, my: «¿Cuándo es mi cumpleaños?» → «No tengo registro de tu
+# cumpleaños», MEM1/MEM2 bench rows), or said of the memory (``_NOT_KEPT``).
+_NO_RECORD = re.compile(r"\bno tengo (?:ningun )?registro\b")
+# Whose the datum is, by its grammar: the answer says it of the person (tu, tus, te, ti, your, you) or the person asked it
+# of theirs (mi, mis, my). «¿Recuerdas cómo se hace una tortilla?» → «No tengo esa información guardada» has neither: it is
+# a question of the world (VIVOM1: told to read the memory, 2 of 2 without the recipe the base gave).
+_PERSON = re.compile(r"\b(?:tu|tus|te|ti|tuyo|tuya|tuyos|tuyas|vos|usted|your|yours|you)\b")
+_THEIRS = re.compile(r"\b(?:mi|mis|mio|mia|mios|mias|my|mine)\b")
+# A question of BAXY remembering or knowing: «¿te acuerdas…?», «¿sabés…?», «do you remember…?».
+_ASKED_KNOWN = re.compile(r"\b(?:recuerdas|recordas|te acuerdas|te acordas|sabes|sabias|you (?:remember|recall|know))\b")
+_POSSESSIVE = re.compile(r"\b(?:tu|tus|tuyo|tuya|tuyos|tuyas|your|yours)\b")
+# Where the clause of a claim ends: «No tengo guardado ese dato en mi memoria, pero te cuento: se marinan…» (MEM2 held-out
+# K08) says nothing of the person; the «te» is of the next clause.
+_CUT = re.compile(r"[,;]|\b(?:pero|aunque|porque|mientras|sino|but|although)\b")
+
+
+def _own_clause(folded: str, start: int, end: int, at: int, to: int) -> str:
+    """The clause of a claim found at ``at``-``to`` within its statement, the claim itself blanked."""
+    cut = _CUT.search(folded, to, end)
+    begin = _clause_start(folded, start, at)
+    return folded[begin:at] + " " * (to - at) + folded[to:cut.start() if cut else end]
+# Of whom a record is, by its own name: «color favorito de mi hija», «jefe de mi hermano», «my sister's birthday».
+_OF = re.compile(r"\b(?:de|del|of)\s+(?P<whose>.+)$|^(?P<owner>.+?)['’]s\b")
+_WORD = re.compile(r"[a-z0-9]+")
+# Words that tell no datum by themselves: what is left of a statement without them is what it tells.
+_FILLER = {"de", "del", "la", "el", "los", "las", "lo", "le", "mi", "mis", "my", "the", "a", "an", "of", "su", "sus", "un",
+           "una", "uno", "que", "con", "por", "para", "and", "that", "you", "your", "tus", "esa", "ese", "eso", "esta",
+           "este", "esto", "como", "pero", "muy", "mas", "has", "have", "was", "are", "is", "es", "son", "al", "en", "y"}
+
+
+def _stems(text: str) -> set[str]:
+    """The words of a folded text of three letters or more (and every number), each by its first five letters, without
+    ``_FILLER``: «favorita» is «favorito», «cumple» is «cumpleaños»."""
+    return {w[:5] for w in _WORD.findall(text) if (len(w) >= 3 or w.isdigit()) and w not in _FILLER}
+
+
+def _memory_values(receipts: list[Receipt]) -> tuple[bool, list[tuple[str, str]], bool]:
+    """What this turn's memory calls brought: whether one completed, the (label, value) of each record they bring or keep
+    (folded), and whether one completed whose body is not known (then what it brought is not known either)."""
+    completed, records, unknown = False, [], False
+    for receipt in receipts:
+        if not str(receipt.get("op") or "").startswith("memory.") or not receipt.get("completed"):
+            continue
+        completed = True
+        arguments = receipt.get("arguments") if isinstance(receipt.get("arguments"), dict) else {}
+        if receipt.get("op") in ("memory.save", "memory.sensitive.save", "memory.correct") and arguments.get("value"):
+            records.append((_fold(str(arguments.get("selector") or "")), _fold(str(arguments["value"]))))
+        observed = _parsed(receipt).get("observed")
+        found = observed.get("records") if isinstance(observed, dict) else None
+        if isinstance(found, list):
+            records.extend((_fold(str(r.get("label") or "")), _fold(str(r.get("value") or "")))
+                           for r in found if isinstance(r, dict))
+        elif receipt.get("observation") is None:
+            unknown = True
+    return completed, records, unknown
+
+
+# MEM4 (REM7 D-1): with the memory switched off and 4 records kept, «¿qué tienes guardado de mí?» → «No tengo nada
+# guardado de ti porque la memoria está apagada» 23 of 30 (bench, Esencial and Completo; 1.3.1 18, 1.4.2 19-21). Off, the
+# store keeps its records and nothing reads them (MemoryHandlers: memory_disabled), so a claim that nothing is kept of the
+# person has no read behind it. A shape: a denial («no», «nada», «don't») of having, keeping, remembering or knowing
+# something of the person (``_PERSON``, or the person asked of theirs) in one clause, and no memory read that completed. «No puedo leer lo que tengo
+# guardado» denies the reading, not the records: not this shape. REM8 (REV16 M-1): nor a doubt, what MEMORY_OFF_FACT asks
+# for: «no sé si / qué tengo guardado», «no hay forma de saber si…», «I don't know whether / what…» say no «no hay».
+_NOTHING_KEPT = re.compile(
+    r"\b(?:(?:no (?:lo |la |los |las )?(?:tengo|hay|guardo|recuerdo|se|conozco)\b|i (?:don'?t|do not) (?:have|remember|know)\b)"
+    r"(?! (?:que|cual|cuant|what|which)\b)"
+    r"(?:(?!\b(?:puedo|leer|ver|acceder|acceso|can'?t|cannot|read|see|access|si|saber|whether|if)\b)[^.;:?!])*?"
+    r"\b(?:nada|ningun[oa]?|informacion|datos?|recuerdos?|registros?|anything|nothing|information|records?|memories"
+    r"|guardad|anotad|almacenad)"
+    r"|nada (?:esta |se |hay |tengo )?(?:guardad|anotad|registrad|almacenad)|nothing (?:is )?(?:saved|stored|kept))")
+# REM8 (REV16 M-2): what makes a denial one of what is kept: kept or remembered by its own word, or of the person whole
+# («nada de ti», «información sobre vos», «ningún dato tuyo»); «ningún correo tuyo» or «ningún archivo» is another tool's.
+_OF_KEPT = re.compile(
+    r"\b(?:guardad|anotad|almacenad|recuerd|memori|saved|stored|kept|remember|memor)"
+    r"|\b(?:de|sobre|acerca de|about|of) (?:ti|vos|usted|you)\b"
+    r"|\b(?:nada|informacion|datos?|recuerdos?|anything|nothing|information) (?:tuy|de los tuy|about you)")
+MEMORY_OFF_FACT = ("la memoria de BAXY está apagada en este PC y lo que guarda no se lee mientras esté apagada: puede tener "
+                   "recuerdos de la persona de antes, y no sabes si los hay ni cuáles; dilo así, sin decir que no hay nada, "
+                   "y si quiere saberlo, ofrece encenderla")
+
+
+def _memory_off_empty(folded: str, text: str, statements: list[tuple[int, int]], receipts: list[Receipt],
+                      session: list[Call] | None, request: str) -> list[dict]:
+    """Rule ``memory_off_empty``: with the memory off, a statement says nothing is kept of the person (by its grammar, or
+    the person asked of theirs, as ``unread_memory`` reads it) while no memory read completed in the conversation
+    (``session``) nor in the turn. With ``session`` None a read may have been earlier: nothing is said (REM8, REV16 M-3:
+    the turn's read was looked for as ``outcome == "completed"``, which the mind never writes; «completed» is the flag)."""
+    reads = ("memory.recall", "memory.list")
+    if session is None or any(op in reads and done for op, done, _ in session) or any(
+            r.get("op") in reads and r.get("completed") for r in receipts):
+        return []
+    # REM8 (REV16 M-2; puerta INT33K u121-B10): off is how the memory is born, and «no hay ningún archivo con tu
+    # currículum» after files.search, or «no tengo ningún correo tuyo» after reading the mail, were struck: a completed
+    # read of another tool in the turn backs its «no hay», and only a denial of what is kept is this shape.
+    if any(r.get("completed") and r.get("read") and not str(r.get("op") or "").startswith("memory.") for r in receipts):
+        return []
+    theirs = bool(_THEIRS.search(_fold(request or "")))
+    for start, end in statements:
+        hit = _NOTHING_KEPT.search(folded, start, end)
+        if hit and _OF_KEPT.search(folded, _clause_start(folded, start, hit.start()), end) and (
+                theirs or _PERSON.search(folded, hit.start(), end)):
+            return [{"rule": "memory_off_empty", "said": _quote(text, _clause_start(folded, start, hit.start()), end),
+                     "fact": MEMORY_OFF_FACT}]
+    return []
+
+
+def _unread_memory(folded: str, text: str, statements: list[tuple[int, int]], receipts: list[Receipt],
+                   session: list[Call] | None, memory: str | None, request: str) -> list[dict]:
+    """Rules of the person's memory (MEM1, VIVO12 P1; MEM2, VIVOM1), read only in the person's first turn of the
+    conversation (``memory`` None otherwise), so nothing but a memory call brought what they told BAXY before:
+    - ``unread_memory``: a statement tells a datum of the person as remembered, known, told or kept while no call to the
+      memory completed in the conversation, or says the memory does not hold it while no call looked at the memory at all
+      and it is among the tools;
+    - ``unbacked_memory``: the memory was read, and what the statement tells as remembered is in no value it brought
+      («Recuerdo que tu color favorito es el azul» with turquesa read);
+    - ``memory_subject``: the statement gives the person (tu, your) a value whose record is named as someone else's or
+      something else's («de mi hija») that neither the person nor the answer names (VIVOM1 H10, 3 of 3).
+    Whose a datum is, only by grammar (``_PERSON``, ``_THEIRS``); a claim is not read in a clause that denies it, asks it
+    or says «si»; nothing with the session not known whole, nor without ``memory``."""
+    if memory is None or session is None:
+        return []
+    completed = any(op.startswith("memory.") and done for op, done, _ in session)
+    looked = any(op.startswith("memory.") for op, _, _ in session)
+    read, records, unknown = _memory_values(receipts)
+    asked = _fold(request or "")
+    asked_stems = _stems(asked)
+    theirs = bool(_THEIRS.search(asked))
+    backing = set().union(*(_stems(value) for _, value in records)) if records else set()
+    # «Do you remember my dog's name?» → «Sí, tu perro se llama Toby» (MEM2 held-out P03, nothing read): the «sí» that
+    # answers a question of BAXY remembering or knowing tells the rest as remembered. Then only with whose it is said
+    # (tu, your): «Sí, te explico: el IVA se calcula…» is not.
+    yes_to = _ASKED_KNOWN.search(asked)
+    # REG1 (REV11 C-2): what the person told in this conversation backs a datum as a value read does («Mi perro se llama
+    # Toby. ¿Qué nombre le pongo al gato?» → «Me dijiste que tu perro se llama Toby…»): the words of their statements, not
+    # of their questions («¿Mi color favorito es el azul?» tells nothing). Read only in their first turn (``memory``), the
+    # request is all they said.
+    stated = set().union(*(_stems(asked[s:e]) for s, e in _statements(asked) if not re.search(r"[?¿]", asked[s:e])))
+    for start, end in statements:
+        if not completed or (read and not unknown):
+            yes = _YES.match(folded[start:end]) if yes_to else None
+            hits = [(h.start(), h.end(), True) for h in _REMEMBERED.finditer(folded, start, end)]
+            hits += [(h.start(), h.end(), True) for h in _KNOWN.finditer(folded, start, end)
+                     if _KNOWN_THEIRS.match(folded, h.end(), end)]
+            hits += [(h.start(), h.end(), False) for h in _TOLD.finditer(folded, start, end)]
+            hits += [(start, start + yes.end(), None)] if yes else []
+            for at, to, remembered in hits:
+                if _negated(folded, start, at, text):
+                    continue
+                rest = folded[start:at] + " " * (to - at) + folded[to:end]
+                own = _own_clause(folded, start, end, at, to)
+                if remembered and not (theirs or _PERSON.search(own)):
+                    continue  # «recuerdo que se hace con huevo»: not of the person
+                if remembered is None and not _POSSESSIVE.search(rest):
+                    continue
+                datum = (_stems(own) if remembered is not None else set()) or _stems(rest)
+                if datum and not datum - stated:
+                    continue  # all it tells, the person said
+                said = _stems(rest) - asked_stems
+                if not completed:
+                    rule = "unread_memory"
+                elif said and not said & backing:
+                    rule = "unbacked_memory"
+                else:
+                    continue
+                fact = (f"en esta conversación ninguna llamada a tu memoria se completó: lo que la persona te contó en "
+                        f"otras conversaciones sólo lo trae {memory}" if rule == "unread_memory" and memory else
+                        "tu memoria no está entre tus herramientas en este PC: nada de lo que la persona te contó en otras "
+                        "conversaciones te llega" if rule == "unread_memory" else
+                        "lo que trajo tu memoria en esta conversación no lo dice: " + (
+                            "; ".join(f"«{label}»: «{value}»" for label, value in records[:5]) or "nada"))
+                return [{"rule": rule, "said": _quote(text, _clause_start(folded, start, at), end), "fact": fact}]
+        # Without the memory among the tools, «no lo tengo guardado» is so (MEM1, Esencial: told again 3 rounds).
+        hit = None if looked or not memory else _NOT_KEPT.search(folded, start, end)
+        if hit and (theirs or _PERSON.search(_own_clause(folded, start, end, hit.start(), hit.end()))) or (
+                not hit and not looked and memory and theirs and (hit := _NO_RECORD.search(folded, start, end))):
+            return [{"rule": "unread_memory", "said": _quote(text, _clause_start(folded, start, hit.start()), end),
+                     "fact": f"en esta conversación ninguna llamada miró tu memoria: lo que la persona te contó en otras "
+                             f"conversaciones sólo lo trae {memory}"}]
+        for label, value in records:
+            whose = _OF.search(label)
+            at = folded.find(value.strip(), start, end) if value.strip() else -1
+            if not whose or at < 0:
+                continue
+            # The clause that gives the value: «Tu color favorito es el verde agua, pero eso es de tu hija» gives it.
+            begin = _clause_start(folded, start, at)
+            stop = _CLAUSE_END.search(folded, at + len(value.strip()), end)
+            clause = folded[begin:stop.start() if stop else end]
+            owner = _stems(whose.group("whose") or whose.group("owner"))
+            if owner and not owner & (_stems(clause) | asked_stems) and _PERSON.search(clause):
+                return [{"rule": "memory_subject", "said": _quote(text, begin, stop.start() if stop else end),
+                         "fact": f"«{value.strip()}» lo trajo el recuerdo guardado como «{label}»: su nombre dice de "
+                                 f"quién o de qué es, y ni la persona ni tu respuesta lo nombran"}]
+    return []
 
 
 # ---- a search engine named that did not answer ------------------------------------------------------------------------

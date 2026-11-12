@@ -66,6 +66,15 @@ internal interface IUserInputPause
     /// <summary>Whether a modifier key (Ctrl, Alt, Shift, Win) or a mouse button is held down now.</summary>
     bool HeldDown();
 
+    /// <summary>
+    /// REM1 (REV12 B-1): whether a key or button held down now (<see cref="HeldDown"/>) went down by an input the detector
+    /// received, with no input releasing it since: a hand on it, however still it stays. One Windows calls held whose
+    /// press the detector never received (pressed before it started, or a release Windows lost) is not. When the
+    /// detector receives nothing, whatever is held counts. REM3 (REV13 D-2): nor is one whose device is gone, or one
+    /// injected with no input for a ceiling (<see cref="WindowsUserInputPause.InjectedPressStaleMs"/>).
+    /// </summary>
+    bool PressHeld() => HeldDown();
+
     /// <summary>Whether BAXY's own input is told apart; when not, only the pause before acting can be waited for.</summary>
     bool TellsOwnInput { get; }
 
@@ -122,6 +131,13 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     // The cursor at the person's last mouse input (molestia-ayudantes r2): replaced whole, read lock-free.
     private PointerSample? _pointer;
     private volatile bool _rawInput;
+    // REM1 (REV12 B-1): the keys and buttons of HeldKeys (a bit each) that went down by a record received and have not
+    // come up by one since.
+    private int _pressed;
+    // REM3 (REV13 D-2): the device (RAWINPUTHEADER.hDevice) of each of those presses, 0 for one injected.
+    private readonly nint[] _pressedBy = new nint[HeldKeys.Length];
+    // REM6 (REV15 C-1): when each of those presses came (Environment.TickCount64), for the ceiling of one with no device.
+    private readonly long[] _pressedAt = new long[HeldKeys.Length];
     // Windows' last input of the session (LastInputMs; a test gives its own).
     private readonly Func<long> _windowsLastInput;
 
@@ -538,6 +554,148 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     // Shift, Ctrl, Alt, both Win keys, and the five mouse buttons.
     private static readonly int[] HeldKeys = [0x10, 0x11, 0x12, 0x5B, 0x5C, 0x01, 0x02, 0x04, 0x05, 0x06];
 
+    // The mouse buttons of RAWMOUSE.usButtonFlags in its order (RI_MOUSE_BUTTON_1 to 5: left, right, middle, X1, X2), as
+    // the virtual keys GetAsyncKeyState reads; both are the physical buttons, not the swapped ones.
+    private static readonly int[] MouseButtonKeys = [0x01, 0x02, 0x04, 0x05, 0x06];
+
+    /// <summary>
+    /// REM3 (REV13 D-2): how long a press with no device (<c>RAWINPUTHEADER.hDevice</c> null: injected by SendInput, as
+    /// remote desktop and software KVMs give it) counts as a hand with no input at all. Such a press has no device to
+    /// look at, and those tools are where a release gets lost (a remote desktop or a software KVM cut with the key
+    /// down); past this, an act the person asked for by voice goes rather than wait for a hand nobody may have.
+    /// REM6 (REV15 C-1): counted from the press itself, and nothing after it makes it longer. REM5 (REV14 A-D2) kept it
+    /// held past this once any sign of a hand came after it (a move, another key, the cursor moved): a release lost in a
+    /// software KVM, then someone moving the mouse, held every act back for good, and who has no hands had no way out
+    /// by voice. Up to it the press counts while Windows says that key or button is down (GetAsyncKeyState).
+    /// </summary>
+    internal const int InjectedPressStaleMs = 120_000;
+
+    public bool PressHeld() =>
+        _rawInput
+            ? PressHeld(static key => (GetAsyncKeyState(key) & 0x8000) != 0, Attached)
+            : HeldDown();
+
+    /// <summary>
+    /// REM1 (REV12 B-1): <see cref="PressHeld()"/> with Windows' held state given (tests). REM3 (REV13 D-2): a press
+    /// counts while the device that made it is still attached (<paramref name="attached"/>; null: any is) or, made by
+    /// none, while it is younger than <see cref="InjectedPressStaleMs"/> (REM6: from the press; <paramref name="laterMs"/>,
+    /// how much later than now it is asked, for tests). Windows keeps
+    /// a key down whose release it never got (GetAsyncKeyState gives the last state it was told), so its word alone
+    /// held every act back until someone pressed that key again. A press that no longer counts is marked lost, not
+    /// released: only the message thread clears a press, so a new one of that key, received meanwhile, is never lost
+    /// with it (revisión ciega); a handle reused later does not bring it back.
+    /// </summary>
+    internal bool PressHeld(Func<int, bool> heldNow, Func<nint, bool>? attached = null, long laterMs = 0)
+    {
+        int pressed = Volatile.Read(ref _pressed);
+        for (int index = 0; index < HeldKeys.Length; index++)
+        {
+            if ((pressed & (1 << index)) == 0 || !heldNow(HeldKeys[index]))
+                continue;
+            nint device = Volatile.Read(ref _pressedBy[index]);
+            if (device == LostPress)
+                continue;
+            if (device != 0
+                    ? attached?.Invoke(device) ?? true
+                    : Environment.TickCount64 + laterMs - Volatile.Read(ref _pressedAt[index]) < InjectedPressStaleMs)
+                return true;
+            _ = Interlocked.CompareExchange(ref _pressedBy[index], LostPress, device);
+        }
+
+        return false;
+    }
+
+    // A press taken for lost (its device gone, injected past the ceiling, or the session left): no device's handle.
+    private const nint LostPress = -1;
+
+    /// <summary>
+    /// REM3 (REV13 D-2): the session was disconnected or locked (WM_WTSSESSION_CHANGE: WTS_CONSOLE_DISCONNECT,
+    /// WTS_REMOTE_DISCONNECT, WTS_SESSION_LOCK). A release made after it goes to another session or to the secure
+    /// desktop, never here: a remote desktop cut with a key down left it held for good, its device (the remote one)
+    /// still attached. Every press received before it is lost.
+    /// </summary>
+    internal void SessionChanged(int reason)
+    {
+        if (reason is not (WtsConsoleDisconnect or WtsRemoteDisconnect or WtsSessionLock))
+            return;
+        for (int index = 0; index < HeldKeys.Length; index++)
+            Volatile.Write(ref _pressedBy[index], LostPress);
+    }
+
+    private const int WtsConsoleDisconnect = 0x2;
+    private const int WtsRemoteDisconnect = 0x4;
+    private const int WtsSessionLock = 0x7;
+
+    // Whether the device of a Raw Input record is still attached: GetRawInputDeviceInfo answers on the handle of a device
+    // Windows lists (GetRawInputDeviceList) and fails on one it does not (INFORME_REM3).
+    private static bool Attached(nint device)
+    {
+        uint size = 0;
+        return GetRawInputDeviceInfoW(device, RidiDeviceName, null, ref size) == 0 && size > 0;
+    }
+
+    private const uint RidiDeviceName = 0x20000007;
+
+    /// <summary>
+    /// REM1 (REV12 B-1): the presses of the person and the releases of anyone in one Raw Input record: a mouse button by
+    /// <c>RAWMOUSE.usButtonFlags</c> (button n down is bit 2n, up bit 2n+1), a key by <c>RAWKEYBOARD.Flags</c>
+    /// (<c>RI_KEY_BREAK</c> is the release) and <c>VKey</c>, which says Shift, Ctrl and Alt without their side. Only
+    /// which of <see cref="HeldKeys"/> is down is kept. A press of BAXY's own (<paramref name="own"/>) is not a hand: one
+    /// whose release was lost would hold every act back (revisión ciega).
+    /// </summary>
+    private void NotePresses(ReadOnlySpan<byte> record, int header, bool own)
+    {
+        uint type = BinaryPrimitives.ReadUInt32LittleEndian(record);
+        // RAWINPUTHEADER.hDevice, kept with each press (REM3, REV13 D-2).
+        nint device = record.Length < 8 + IntPtr.Size ? 0
+            : IntPtr.Size == 8 ? (nint)BinaryPrimitives.ReadInt64LittleEndian(record[8..])
+            : BinaryPrimitives.ReadInt32LittleEndian(record[8..]);
+        if (type == 0 && record.Length >= header + 6)
+        {
+            ushort flags = BinaryPrimitives.ReadUInt16LittleEndian(record[(header + 4)..]);
+            for (int button = 0; button < MouseButtonKeys.Length; button++)
+            {
+                if (!own && (flags & (1 << (2 * button))) != 0)
+                    NotePress(MouseButtonKeys[button], down: true, device);
+                if ((flags & (2 << (2 * button))) != 0)
+                    NotePress(MouseButtonKeys[button], down: false, device);
+            }
+        }
+        else if (type == 1 && record.Length >= header + 8)
+        {
+            bool up = (BinaryPrimitives.ReadUInt16LittleEndian(record[(header + 2)..]) & 0x0001) != 0;
+            if (up || !own)
+                NotePress(BinaryPrimitives.ReadUInt16LittleEndian(record[(header + 6)..]), down: !up, device);
+        }
+    }
+
+    private void NotePress(int key, bool down, nint device)
+    {
+        int index = Array.IndexOf(HeldKeys, key);
+        if (index < 0)
+            return;
+        if (!down)
+        {
+            Forget(1 << index);
+            return;
+        }
+
+        Volatile.Write(ref _pressedAt[index], Environment.TickCount64);
+        Volatile.Write(ref _pressedBy[index], device);
+        int seen;
+        do
+            seen = Volatile.Read(ref _pressed);
+        while (Interlocked.CompareExchange(ref _pressed, seen | (1 << index), seen) != seen);
+    }
+
+    private void Forget(int bit)
+    {
+        int seen;
+        do
+            seen = Volatile.Read(ref _pressed);
+        while (Interlocked.CompareExchange(ref _pressed, seen & ~bit, seen) != seen);
+    }
+
     /// <summary>
     /// The self-check: the person's last input given what the detector saw (the person's, BAXY's) and Windows' own
     /// last-input time. An input Windows recorded that the detector has not seen once it had time to is the person's.
@@ -671,6 +829,8 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
                 devices[0] = new RawInputDevice { UsagePage = 1, Usage = 2, Flags = InputSink, Target = window };
                 devices[1] = new RawInputDevice { UsagePage = 1, Usage = 6, Flags = InputSink, Target = window };
                 _rawInput = RegisterRawInputDevices(devices, 2, (uint)sizeof(RawInputDevice));
+                // REM3 (REV13 D-2): told when the session is disconnected or locked (SessionChanged).
+                _ = _rawInput && WTSRegisterSessionNotification(window, 0);
             }
         }
         finally
@@ -698,6 +858,8 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
             _watching?.Observe(lParam);
         else if (message == WmTimer)
             _watching?.SelfCheckTick();
+        else if (message == WmWtsSessionChange)
+            _watching?.SessionChanged((int)wParam);
         return DefWindowProcW(window, message, wParam, lParam);
     }
 
@@ -726,6 +888,7 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
         bool? own = IsOwn(record, header);
         if (own is null)
             return;
+        NotePresses(record, header, own.Value);
         long now = InputAt(messageTime, Environment.TickCount64, Environment.TickCount);
         if (own.Value)
         {
@@ -845,6 +1008,7 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
     }
 
     private const uint WmInput = 0x00FF;
+    private const uint WmWtsSessionChange = 0x02B1;
     private const uint WmTimer = 0x0113;
     internal const uint SelfCheckMs = 100;
     private const uint RidInput = 0x10000003;
@@ -953,6 +1117,13 @@ internal sealed unsafe partial class WindowsUserInputPause : IUserInputPause
 
     [LibraryImport("user32.dll")]
     private static partial uint GetRawInputData(nint handle, uint command, byte* data, ref uint size, uint headerSize);
+
+    [LibraryImport("wtsapi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool WTSRegisterSessionNotification(nint window, uint flags);
+
+    [LibraryImport("user32.dll")]
+    private static partial uint GetRawInputDeviceInfoW(nint device, uint command, byte* data, ref uint size);
 
     [LibraryImport("user32.dll")]
     private static partial int GetMessageW(Message* message, nint window, uint first, uint last);

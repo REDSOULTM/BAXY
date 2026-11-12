@@ -210,9 +210,28 @@ internal sealed class WindowActiveHandler(IWindowControlProvider provider) : IOp
     {
         WindowResolveResult result = await provider.ResolveForegroundAsync(cancellationToken)
             .ConfigureAwait(false);
-        return result.Succeeded && result.Verified
-            ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Windows))
+        if (result.Succeeded && result.Verified)
+            return OperationOutcome.Success(WindowControlResultJson.Serialize(result.Windows));
+        // REM5 (VIVO15): none in front, typed: the active window none, and how many are open.
+        return result.OpenWindows is { } open
+            ? OperationOutcome.Failure(result.ErrorCode ?? "window_active_failed",
+                result: NoneInFront(open))
             : OperationOutcome.Failure(result.ErrorCode ?? "window_active_failed");
+    }
+
+    private static JsonElement NoneInFront(int open)
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteNull("activeWindow");
+            writer.WriteNumber("openWindows", open);
+            writer.WriteEndObject();
+        }
+
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
     }
 }
 

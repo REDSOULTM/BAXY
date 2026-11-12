@@ -33,7 +33,8 @@ internal sealed record NativeTurnConfirmation(
     DateTimeOffset ExpiresUtc,
     bool Proposal,
     bool EffectStarted = false,
-    string? Cause = null);
+    string? Cause = null,
+    string? Shown = null);
 
 /// <summary>
 /// BAXY Renew's harness: the native tool loop (BFCL multi-turn, Qwen function calling, OpenAI Agents run loop). The
@@ -111,7 +112,29 @@ internal sealed class NativeTurnLoop
         /// <summary>The owner's switch that refuses a call before it runs (FieldSettings.Refusal), as its code.</summary>
         internal Func<string, JsonObject, string?>? Refuse { get; init; }
 
+        /// <summary>ESE1: what a refusal as off in the tool profile says of the operation (ToolProfile.OffFacts).</summary>
+        internal Func<string, JsonObject>? OffFacts { get; init; }
+
+        /// <summary>TPV6: with the person's «sí», the tool profile keeps this operation on, alone (ToolProfile.KeepOn); null
+        /// when it is on, or why it could not be kept. Null where no profile is kept: a call off in it is only refused.</summary>
+        internal Func<string, string?>? ToolOn { get; init; }
+
+        /// <summary>COR1: whether one of BAXY's own brakes (OwnBrakes, by its setting) is on as the person's settings
+        /// say now; null where no settings are read: it is weighed as on.</summary>
+        internal Func<string, bool>? BrakeOn { get; init; }
+
         internal Action? MemoryChanged { get; init; }
+
+        /// <summary>MEM3: memory.enable (true) or memory.disable (false) completed: the memory's own switch changed.</summary>
+        internal Action<bool>? MemorySwitched { get; init; }
+
+        /// <summary>REM7 (REV15 D-1): whether the memory's own switch is off, as the App read it (ToolProfile.MemoryOff);
+        /// null where none is read: weighed as off.</summary>
+        internal Func<bool>? MemoryOff { get; init; }
+
+        /// <summary>REM8 (REV16 M-4): whether the tool profile keeps this operation on (ToolProfile.InProfile); null where
+        /// none is kept: weighed as off.</summary>
+        internal Func<string, bool>? InProfile { get; init; }
 
         /// <summary>The chat forgot everything memory held (memory.forget, scope all): the kept conversations go too.</summary>
         internal Action? ForgotEverything { get; init; }
@@ -134,6 +157,13 @@ internal sealed class NativeTurnLoop
         /// <summary>The open windows of other applications, title and process (a message by a channel the person did not
         /// say tells the model the ones their words name, NetworkEgress.Named); null: none is read.</summary>
         internal Func<IReadOnlyList<(string Title, string? Process)>>? Windows { get; init; }
+
+        /// <summary>ALR1: the alarms and reminders ringing now, for the turn's note (null when none rings).</summary>
+        internal Func<JsonArray?>? Ringing { get; init; }
+
+        /// <summary>RUT1: the person's routines as baxy.routines keeps them (documentacion/RUTINAS.md), for the mind's
+        /// note and the person's own shortcut (null when there is none).</summary>
+        internal Func<JsonArray?>? Routines { get; init; }
 
         /// <summary>Banco de uso 2026-11-03 (R11, R12): the visible rows of the lists of other applications' windows that
         /// the first comparison accepts, and (encargo 65) the tabs of their tab strips that the second accepts
@@ -169,6 +199,20 @@ internal sealed class NativeTurnLoop
     private string? _proposalCause;
     // Where the waiting call acts beside the folder the person named (SaidFolders), for its result once approved.
     private (string Key, string Note)? _waitingSaid;
+    // TPV3: the call a result of this person's turn offered (memory_disabled offers memory.enable), whether the last
+    // line this turn published ended in a question, and the offer of the turn before, which stands for this one turn
+    // only when that turn ended asking (TakesTheOffer).
+    private (string Operation, JsonObject Arguments)? _offeredNow;
+    private bool _endedAsking;
+    private (string Operation, JsonObject Arguments)? _offered;
+    private (string Operation, JsonObject Arguments)? _offerPassed;
+    private bool _takingOffer;
+    // SIS3: the mind read the person's words as their yes to what this step does (MindStep.TheirYes, Mind._their_answer).
+    private bool _theirYes;
+    // TPV5: the person's words answer a question or an offer of BAXY's (the turn before ended asking in words, a result of
+    // it offered a call, or its card's question was published before them): what holds closing BAXY (HeldForTheYes). The
+    // offer counts without the «?» (banco TPV5, semilla 1: «sale, va» after an offer worded without «?» closed BAXY).
+    private bool _answersBaxy;
     private bool _beat;
     // The person's answer is the person's: it answers only a call whose question was published before their words or
     // their press arrived (ConfirmationAsk.Answers: _askedAt before _personAt, both Stopwatch timestamps;
@@ -187,6 +231,8 @@ internal sealed class NativeTurnLoop
     // The calls the model made since the person's words opened this turn (WithNamedWindows weighs only the first).
     private int _turnCalls;
     private bool _asking;
+    // REM4 (REV14 A-R3): an unclear answer left the call waiting (AskedAgain) and its question is not said yet.
+    private bool _askedAgain;
     // Auditoría de confirmaciones (2026-10-23): a line of a later turn was published while the call waited, so its
     // question is no longer the last thing BAXY asked. «Vale, no lo cierro. ¿Guardo algo primero?» left app.close waiting,
     // and the «sí» to the new question reached the model with that call as what the person's words answer.
@@ -241,6 +287,8 @@ internal sealed class NativeTurnLoop
         bool answering = WaitingPrepared() is not null && ConfirmationAsk.Answers(_askedAt, arrivedAt);
         _egress.Heard(text, answering);
         _turnCalls = 0;
+        _answersBaxy = answering || _endedAsking || _offeredNow is not null;
+        ForgetOffers(keep: _endedAsking ? _offeredNow : null);
         if (answering)
         {
             _said.Answered(text);
@@ -259,7 +307,8 @@ internal sealed class NativeTurnLoop
         await PersonTurnAsync(mind, turnFrom,
             () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken, Stopwatch.GetElapsedTime(arrivedAt), front,
                 // Encargo 119 (G7): titles only; the rows and tabs of NamedWindows are read when a rule asks, not each turn.
-                _host.Windows is { } windows ? _egress.Named(windows()) : null),
+                _host.Windows is { } windows ? _egress.Named(windows()) : null, _host.Ringing?.Invoke(),
+                _host.Routines?.Invoke()),
             cancellationToken);
     }
 
@@ -278,6 +327,7 @@ internal sealed class NativeTurnLoop
         _personAt = arrivedAt;
         long turn = ++_personTurns;
         _turnStarted = Stopwatch.GetTimestamp();
+        _toolOn = null;
         _notice.Open(_host.NoticeHeard() ? mind.NoticeAsync : null, arrivedAt, _host.Notice, _host.StillReading,
             () => mind.NoticesAreSlow);
         mind.ModelAdvanced += _notice.Advanced;
@@ -364,6 +414,7 @@ internal sealed class NativeTurnLoop
         }
 
         _droppedOperation = null;
+        ForgetOffers();
         await PersonTurnAsync(mind, arrivedAt,
             () => mind.ConfirmAsync(approve, label, cancellationToken), cancellationToken);
     }
@@ -390,6 +441,7 @@ internal sealed class NativeTurnLoop
         }
 
         _beat = true;
+        ForgetOffers();
         _said.Clear();
         _saidApp.Clear();
         _saidVerbs.Clear();
@@ -417,6 +469,7 @@ internal sealed class NativeTurnLoop
     {
         _leftBehind = false;
         _droppedOperation = null;
+        ForgetOffers();
         DropPending();
         _egress.Reset();
         _accounts.Reset();
@@ -498,6 +551,15 @@ internal sealed class NativeTurnLoop
                         continue;
                     }
 
+                    // VIVO1 F4 (2026-11-09): the server of another model refused the turn for good: said as that, with its
+                    // reason (ExternalModel.Refusal), never as a model that did not answer. REV_APP TUR-1 (2026-11-09): after a
+                    // call was made in this turn the code says that too, as below.
+                    if (step is { Text: "model_refused" })
+                    {
+                        _host.Fail(calls > 1 ? "model_refused_after_call" : "model_refused");
+                        return;
+                    }
+
                     // Ronda final 29 (regla 3): after a call was made in this turn the code says so (it may have had an
                     // effect), never only that no decision came.
                     _host.Fail(calls > 1 ? "decision_unavailable_after_call" : "decision_unavailable");
@@ -558,6 +620,7 @@ internal sealed class NativeTurnLoop
                     await Task.WhenAny(_notice.AheadAsync(), Task.Delay(NoticeAheadAtMost, cancellationToken));
                 }
 
+                _theirYes = step.TheirYes;
                 observation = ran = await ExecuteAsync(step.Operation!, step.Arguments!, cancellationToken);
             }
             finally
@@ -581,7 +644,8 @@ internal sealed class NativeTurnLoop
             }
 
             answerInWords = final;
-            step = await mind.ContinueAsync(observation, final, _beat, cancellationToken);
+            (JsonObject? toolOn, _toolOn) = (_toolOn, null);
+            step = await mind.ContinueAsync(observation, final, _beat, cancellationToken, toolOn);
         }
     }
 
@@ -600,16 +664,23 @@ internal sealed class NativeTurnLoop
     private void Publish(string text, string route) =>
         _notice.Publish(() =>
         {
-            if (!ConfirmationAsk.Asks(HasPendingConfirmation, _askedAt, _turnStarted))
+            // REM4 (REV14 A-R3): after an unclear answer only a line that asks («…?») is its question again; any other
+            // («Vale, lo dejamos.») is not, and the call is dropped when the turn ends (DropUnasked), never left under its
+            // card for a «Sí» pressed or a «perfecto» read as one.
+            bool notAsked = _askedAgain && !text.TrimEnd().EndsWith('?');
+            if (notAsked || !ConfirmationAsk.Asks(HasPendingConfirmation, _askedAt, _turnStarted))
             {
                 // A call asked in an earlier turn still waits: this line is not its question, and from now on it is no
                 // longer what the person's next words or its card answer (dropped when this turn ends).
                 _leftBehind |= HasPendingConfirmation;
                 _droppedOperation = null;
+                _endedAsking = !_beat && text.TrimEnd().EndsWith('?');
                 _host.Publish(text, route);
                 return;
             }
 
+            _endedAsking = false;
+            _askedAgain = false;
             _host.Publish(text, PublicResponseRoute.Confirmation);
             if (_askedAt == ConfirmationAsk.Unpublished)
             {
@@ -634,14 +705,78 @@ internal sealed class NativeTurnLoop
         }
 
         bool held = ReferenceEquals(prepared, _proposal);
+        bool memory = held && _proposalCause == ToolProfile.OffCode && HeldMemory(prepared.OperationName);
         return new NativeTurnConfirmation(prepared.OperationName, PrivateArguments(prepared), descriptor.Risk,
             held ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, held && _proposalByBeat,
-            EffectStarted: !held && _pending!.ReconciliationRequired, Cause: held ? _proposalCause
-                : _pending!.SystemChange is null ? null : PendingOperationConfirmation.SystemChangeCause);
+            EffectStarted: !held && _pending!.ReconciliationRequired, Cause: memory ? MemoryCardCause(prepared.OperationName)
+                : held ? _proposalCause
+                : _pending!.SystemChange is null ? null : PendingOperationConfirmation.SystemChangeCause,
+            Shown: memory ? HeldDatum(prepared) : null);
+    }
+
+    private static bool HeldMemory(string operation) =>
+        MemoryOperationProtector.IsMemoryOperation(operation) && FieldStepProjection.HeldWhole(operation);
+
+    // REM7 (REV15 D-4): what the «sí» to a held memory call does, by the call: the memory on and this datum saved, a private
+    // one, or the memory on with nothing saved.
+    // REM8 (REV16 M-4): by the call only, the card said «la memoria está apagada» with the memory on and only the profile
+    // holding the call (Esencial chosen after using it), what the receipt (MemoryHeldProfile) and the voice already told
+    // right. It says what holds it, as the App reads it: the switch, the profile, or both.
+    private string MemoryCardCause(string operation)
+    {
+        string cause = operation switch
+        {
+            MemorySwitch => MemorySwitchHeldCause,
+            MemorySecret => MemorySecretHeldCause,
+            _ => MemoryOffHeldCause,
+        };
+        return _host.MemoryOff?.Invoke() == false ? cause + MemoryOnHeld
+            : _host.InProfile?.Invoke(operation) == true ? cause + MemoryInProfileHeld
+            : cause;
+    }
+
+    // REM7 (REV15 D-2, REV14 B-E1): the person saw «Guardar en memoria» and nothing of what their «sí» would save. The
+    // card, theirs only (never the model's, the trace's or a step's), shows the datum opened from the sealed call: its
+    // selector and value, and of a secret or sensitive detail only its selector. The switch saves nothing: none.
+    private string? HeldDatum(PreparedOperation prepared)
+    {
+        if (prepared.OperationName == MemorySwitch || _host.MemoryProtector() is not { } protector)
+        {
+            return null;
+        }
+
+        try
+        {
+            using OpenedBoundProtectedJson opened = protector.OpenPrivateArguments(prepared);
+            if (opened.Payload.ValueKind != System.Text.Json.JsonValueKind.Object
+                || !opened.Payload.TryGetProperty("selector", out System.Text.Json.JsonElement selector)
+                || selector.ValueKind != System.Text.Json.JsonValueKind.String
+                || string.IsNullOrWhiteSpace(selector.GetString()))
+            {
+                return null;
+            }
+
+            string what = selector.GetString()!.Trim();
+            if (prepared.OperationName == MemorySecret
+                || !opened.Payload.TryGetProperty("value", out System.Text.Json.JsonElement value)
+                || value.ValueKind is System.Text.Json.JsonValueKind.Null or System.Text.Json.JsonValueKind.Undefined)
+            {
+                return what;
+            }
+
+            string said = value.ValueKind == System.Text.Json.JsonValueKind.String ? value.GetString()!.Trim()
+                : value.GetRawText();
+            return said.Length == 0 ? what : what + ": " + said;
+        }
+        catch (Exception exception) when (exception is System.IO.InvalidDataException or ProtectedPayloadException)
+        {
+            return null;
+        }
     }
 
     private void Resolved(string outcome)
     {
+        _askedAgain = false;
         if (_asking)
         {
             _asking = false;
@@ -659,6 +794,9 @@ internal sealed class NativeTurnLoop
         }
 
         _turnCalls++;
+        _takingOffer = TakesTheOffer(operation, arguments);
+        _offerPassed = _takingOffer ? null : _offered;
+        _offered = null;
 
         _host.StepStarted?.Invoke(_stepId, operation,
             MemoryOperationProtector.IsMemoryOperation(operation) ? new JsonObject() : (JsonObject)arguments.DeepClone());
@@ -689,7 +827,35 @@ internal sealed class NativeTurnLoop
         // The owner switched this kind of call off in Settings (privacy): it does not run, and the model reads why.
         if (_host.Refuse?.Invoke(operation, arguments) is { } refusal)
         {
-            return Record(operation, arguments, started, Observation("rejected", refusal));
+            // TPV6: one off in the person's tool profile waits for their «sí» to turn on that tool alone (OffHeld).
+            if (refusal == ToolProfile.OffCode && !_beat && _host.ToolOn is not null)
+            {
+                // ESE6: a memory call the model is shown with its arguments (FieldStepProjection.HeldWhole) is held with
+                // them, sealed as any memory call's, so their «sí» can run that very call (AnswerMemoryOffHeldAsync).
+                if (FieldStepProjection.HeldWhole(operation) && MemoryOperationProtector.IsMemoryOperation(operation))
+                {
+                    (PreparedOperation? whole, string notPrepared) = Prepare(operation, arguments, descriptor, started);
+                    return whole is null ? notPrepared : OffHeld(whole, operation, arguments, started);
+                }
+
+                if (_host.Registry() is { } registry)
+                {
+                    return OffHeld(registry.GetOrAdd(new RoutedOperation(operation, arguments)), operation, arguments,
+                        started);
+                }
+            }
+
+            return Record(operation, arguments, started, RefusedFor(refusal, operation));
+        }
+
+        // RUT1 (documentacion/RUTINAS.md §7): a routine's steps are calls the person will make later; one that the tool
+        // profile or a privacy switch refuses is refused now, as that call would be, and nothing is saved.
+        foreach ((string step, JsonObject stepArguments) in RoutineSteps(operation, arguments))
+        {
+            if (_host.Refuse?.Invoke(step, stepArguments) is { } stepRefusal)
+            {
+                return Record(operation, arguments, started, RefusedFor(stepRefusal, step));
+            }
         }
 
         // Feria 2026-10-27: a search with none of the person's words, or a message by a channel they did not name, goes
@@ -723,7 +889,7 @@ internal sealed class NativeTurnLoop
                 descriptor = other;
                 if (_host.Refuse?.Invoke(operation, ruling.Arguments) is { } off)
                 {
-                    return Record(operation, ruling.Arguments, started, Observation("rejected", off));
+                    return Record(operation, ruling.Arguments, started, RefusedFor(off, operation));
                 }
             }
 
@@ -749,57 +915,15 @@ internal sealed class NativeTurnLoop
         }
 
         ResolveUncertain(endedTurn: null);
-        PreparedOperation prepared;
-        try
+        (PreparedOperation? made, string notMade) = Prepare(operation, arguments, descriptor, started);
+        if (made is not { } prepared)
         {
-            prepared = MemoryOperationProtector.IsMemoryOperation(operation)
-                ? (_host.MemoryProtector() ?? throw new InvalidOperationException("memory_protection_unavailable"))
-                    .Prepare(new MemoryRoutedOperation(operation, arguments)).Prepared
-                : (_host.Registry() ?? throw new InvalidOperationException("outbox_unavailable"))
-                    .GetOrAdd(new RoutedOperation(operation, arguments));
-        }
-        catch (MemoryValueNeedsSensitiveChannelException)
-        {
-            // The result says why and what to call: memory.save keeps a value that looks like a secret only as sensitive.
-            return Record(operation, arguments, started, Observation("rejected",
-                "memory_value_needs_sensitive_channel",
-                new JsonObject { ["detail"] = "This value looks like a secret: save it with memory_sensitive_save." }));
-        }
-        catch (MemoryRequestRefusedException refused)
-        {
-            // The protector's own reason, by its code and its words; the call's values stay out of the observation.
-            return Record(operation, arguments, started, Observation("rejected", refused.Code,
-                new JsonObject { ["detail"] = refused.Message }));
-        }
-        catch (InvalidOperationException unavailable)
-            when (unavailable.Message is "outbox_unavailable" or "memory_protection_unavailable")
-        {
-            // BAXY's own part that was not ready, never the model's arguments (audit 2026-10-15: it read as
-            // arguments_invalid and the model blamed its call).
-            return Record(operation, arguments, started, Observation("failed", unavailable.Message));
-        }
-        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
-            or System.IO.InvalidDataException or System.Text.Json.JsonException)
-        {
-            // Arguments that do not fit the operation are a result the model reads, with what it gave and, by the
-            // catalog's schema, which arguments and what each takes (the kernel's code and shape), so it can call again
-            // with the right ones; nothing here fills or rewrites them. A memory call's values stay out of it.
-            var facts = new JsonObject();
-            using (System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString()))
-            {
-                IReadOnlyList<ArgumentProblem> problems =
-                    OperationArgumentValidator.Problems(given.RootElement, descriptor.ArgumentsSchema);
-                if (problems.Count > 0)
-                {
-                    facts["argumentProblems"] = OperationVisibleFacts.ArgumentProblemsJson(problems);
-                }
-            }
-
-            return Record(operation, arguments, started, Observation("failed",
-                "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments)));
+            return notMade;
         }
 
-        string? egress = HeldForTheYes(operation, arguments);
+        // COR1: nobody asked a heartbeat to relax one of BAXY's own brakes: it is proposed, with its cause on the card.
+        string? egress = HeldForTheYes(operation, arguments)
+            ?? (_beat && RelaxesABrake(operation, arguments) ? OwnBrakes.Cause : null);
         if (egress is not null || (_beat && BeatProposes(descriptor, arguments)))
         {
             // Nobody asked (a heartbeat), or what it sends out is not the person's to send unasked (NetworkEgress): the
@@ -817,6 +941,16 @@ internal sealed class NativeTurnLoop
             }
 
             held["next"] = AskThePersonAbout(operation);
+            if (egress == OwnBrakes.Cause)
+            {
+                held["next"] += "; " + OwnBrakes.HeldNext;
+            }
+
+            if (egress is OfferedCause or ExitCause)
+            {
+                held["next"] += "; " + (egress == OfferedCause ? OfferedNext : ExitNext);
+            }
+
             if (egress == AccountFlow.Cause && _accounts.Holds(operation, arguments) is { } account)
             {
                 held["signIn"] = account.Facts;
@@ -844,13 +978,373 @@ internal sealed class NativeTurnLoop
             ;
     }
 
+    // The call as the engine takes it (a memory call's arguments sealed), or the result that says why it could not be made.
+    private (PreparedOperation? Prepared, string Failure) Prepare(
+        string operation,
+        JsonObject arguments,
+        ProductOperationDescriptor descriptor,
+        long started)
+    {
+        try
+        {
+            return (MemoryOperationProtector.IsMemoryOperation(operation)
+                ? (_host.MemoryProtector() ?? throw new InvalidOperationException("memory_protection_unavailable"))
+                    .Prepare(new MemoryRoutedOperation(operation, arguments)).Prepared
+                : (_host.Registry() ?? throw new InvalidOperationException("outbox_unavailable"))
+                    .GetOrAdd(new RoutedOperation(operation, arguments)), string.Empty);
+        }
+        catch (MemoryValueNeedsSensitiveChannelException)
+        {
+            // The result says why and what to call: memory.save keeps a value that looks like a secret only as sensitive.
+            return (null, Record(operation, arguments, started, Observation("rejected",
+                "memory_value_needs_sensitive_channel",
+                new JsonObject { ["detail"] = "This value looks like a secret: save it with memory_sensitive_save." })));
+        }
+        catch (MemoryRequestRefusedException refused)
+        {
+            // The protector's own reason, by its code and its words; the call's values stay out of the observation.
+            return (null, Record(operation, arguments, started, Observation("rejected", refused.Code,
+                new JsonObject { ["detail"] = refused.Message })));
+        }
+        catch (InvalidOperationException unavailable)
+            when (unavailable.Message is "outbox_unavailable" or "memory_protection_unavailable")
+        {
+            // BAXY's own part that was not ready, never the model's arguments (audit 2026-10-15: it read as
+            // arguments_invalid and the model blamed its call).
+            return (null, Record(operation, arguments, started, Observation("failed", unavailable.Message)));
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException
+            or System.IO.InvalidDataException or System.Text.Json.JsonException)
+        {
+            // Arguments that do not fit the operation are a result the model reads, with what it gave and, by the
+            // catalog's schema, which arguments and what each takes (the kernel's code and shape), so it can call again
+            // with the right ones; nothing here fills or rewrites them. A memory call's values stay out of it.
+            var facts = new JsonObject();
+            using (System.Text.Json.JsonDocument given = System.Text.Json.JsonDocument.Parse(arguments.ToJsonString()))
+            {
+                IReadOnlyList<ArgumentProblem> problems =
+                    OperationArgumentValidator.Problems(given.RootElement, descriptor.ArgumentsSchema);
+                if (problems.Count > 0)
+                {
+                    facts["argumentProblems"] = OperationVisibleFacts.ArgumentProblemsJson(problems);
+                }
+            }
+
+            return (null, Record(operation, arguments, started, Observation("failed",
+                "invalid_arguments", WithArguments(facts, "argumentsGiven", operation, arguments))));
+        }
+    }
+
     // Why the person's turn holds this call for their «sí» (AccountFlow, NetworkEgress), or null. A heartbeat holds by its
-    // own rule. Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca»): in Bypass nothing is held; a
-    // mode that cannot be read is weighed as normal, which asks.
+    // own rule. Decisión del dueño 2026-11-02 («bypass no debe pedir confirmación nunca»): in Bypass nothing is held but
+    // a brake of BAXY's own the person did not ask to relax (COR1 refused it there with «ask for it by its name, or in
+    // Settings»; TPV1, dueño 10-11: «no tiene que delegar al usuario nada», so it waits for the spoken «sí» as in
+    // normal mode, which is what lets BAXY offer it and do it); a mode that cannot be read is weighed as normal, which asks.
+    // TPV5 (TPV4, juez ciego: in Sin frenos «What did I tell you about…?» → memory_save refused off in the profile, its
+    // result offered memory_enable, the 4B made it in that same turn and it ran, and a memory was saved before the person's
+    // «no»). A call BAXY's own result offered in this turn, made before the person answered, is BAXY's offer and not the
+    // person's order: it waits for their «sí» in every mode, and Sin frenos takes away the card of what they asked, never
+    // turns an offer into an order (the offer taken after their words is TakesTheOffer). And closing BAXY in a turn whose
+    // words answer BAXY's question waits for it too (TPV4 K02, «sale, va» after «¿La activo?» → baxy_exit 3 of 3): who has
+    // no hands cannot open it again, it cannot open itself back (BaxyExitHandler), and a request to close it said on its
+    // own still closes it at once. Only shapes are compared: the call against the offer, the last line against «?».
+    internal const string OfferedCause = "offered_not_asked";
+    internal const string ExitCause = "exit_answering_baxy";
+
+    private const string OfferedNext =
+        "this is the call BAXY's own result offered in this turn, and the person has not answered that offer yet: your "
+        + "question offers it";
+
+    private const string ExitNext =
+        "the person's words answer BAXY's own question, and BAXY cannot open itself again once closed: your question asks "
+        + "whether to close BAXY";
+
     internal string? HeldForTheYes(string operation, JsonObject arguments) =>
-        _beat || (Baxy.Kernel.Policy.ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(),
-            out Baxy.Kernel.Policy.ConfirmationMode mode) && mode == Baxy.Kernel.Policy.ConfirmationMode.Bypass)
-            ? null : _accounts.Holds(operation, arguments)?.Cause ?? _egress.Holds(operation, arguments);
+        _beat
+            ? null
+            : !_takingOffer && _offeredNow is { } offered && SameCall(offered, (operation, arguments))
+            ? OfferedCause
+            : operation == "baxy.exit" && _answersBaxy
+            ? ExitCause
+            : InBypass()
+            ? (Unasked(operation, arguments) ? OwnBrakes.Cause : null)
+            : _accounts.Holds(operation, arguments)?.Cause
+                ?? (_egress.Holds(operation, arguments) is { } cause
+                    && (cause != OwnBrakes.Cause || RelaxesABrake(operation, arguments)) ? cause : null);
+
+    private static bool InBypass() =>
+        Baxy.Kernel.Policy.ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(),
+            out Baxy.Kernel.Policy.ConfirmationMode mode) && mode == Baxy.Kernel.Policy.ConfirmationMode.Bypass;
+
+    // COR1: the call would relax one of BAXY's own brakes that is on now (one already relaxed is no change to ask about).
+    private bool RelaxesABrake(string operation, JsonObject arguments) =>
+        OwnBrakes.Relaxed(operation, arguments) is { } brake && _host.BrakeOn?.Invoke(brake) != false;
+
+    // COR1: and the person did not ask for it in this turn (NetworkEgress.Holds).
+    private bool Unasked(string operation, JsonObject arguments) =>
+        RelaxesABrake(operation, arguments) && _egress.Holds(operation, arguments) == OwnBrakes.Cause;
+
+    // TPV6 (VIVO11, Esencial, 1.4.0: «Crea una nota que diga hola» → note_create, off in the profile; its refusal named
+    // Settings → Tools beside the switch to Diario, and BAXY sent the person to Settings once and gave a false reason the
+    // next; after three «sí» it switched to Diario, a whole larger profile, and said «Nota creada» with no note created).
+    // A call off in the person's tool profile is held as BAXY's offer to turn on that one tool, in every mode: their «sí»
+    // (the card or confirm_pending; REM2, REV13 A-2: since SIS3 the same call again is held again, never their yes, and
+    // the receipt no longer offers it) keeps it on alone (ToolProfile.KeepOn) and their «no» leaves
+    // the profile as it was. The tool is a stub with no arguments in the mind's catalog (VIVO1 F8), so the call itself
+    // cannot go with their «sí»: its result says it is on and that the request was not done, and it is callable from their
+    // next words, once the mind is relaunched with it. Only shapes are compared: the refusal's code and the call held.
+    private const string OffHeldNext =
+        "nothing was done: this tool is off in the person's tool profile, and with their yes BAXY turns on this one tool "
+        + "in it, nothing else; ask them in one short sentence whether to turn it on (never send them to Settings); their "
+        + "answer goes in confirm_pending";
+
+    // ACT1: the call their yes goes in, which turns on this tool alone (AnswerOffHeld).
+    internal const string OffHeldYes = """confirm_pending {"answer": "yes"}""";
+
+    // TPV6, banco (Esencial, 2 de 6 con «completed», 2 de 3 con «rejected» y el título suelto en toolOn): the 4B said «La
+    // nota se creó» after the tool alone was turned on. The call it answers did not run: its status is that, what ran is a
+    // setting, and the tool's title goes only inside that sentence.
+    internal const string NotRunToolOn = "not_run_tool_turned_on";
+
+    private const string ToolOnNext =
+        "only a setting changed: with the person's yes BAXY turned on this one tool in their profile; the call itself did "
+        + "not run, so nothing was created, written, played, saved or read, and your reply must not say it was; the tool is "
+        + "callable from the person's next words, once BAXY has restarted its model with it when this reply ends: say the "
+        + "tool is on and ask whether to do what they asked now";
+
+    // TPV7 (VIVO11, 11-11-2026, Esencial: «Crea una nota que diga hola» → «sí» → «Nota creada: "Hola"» with no
+    // note.create; banco TPV6, 2 de 9): after their «sí» the tool was on in the profile and still a stub with no arguments
+    // in the mind until its relaunch, so in that turn the model could only say it. The mind takes the whole tool with the
+    // turn's next request (ContinueAsync, toolOn), and this result says so: the call it then makes, with the arguments the
+    // request gives, is the one that runs, and its own receipt is what the reply tells.
+    private const string ToolOnNowNext =
+        "only a setting changed so far: with the person's yes BAXY turned on this one tool in their profile, and it is "
+        + "whole and callable now, in this same reply. What the person asked for is NOT done yet: this call did not run, "
+        + "so nothing was created, written, played, saved or read. Do it now: call the tool again with the arguments "
+        + "their request gives (it had none before; now it shows them). Say it was done only after that call's own result "
+        + "says so; if you do not make the call, say the tool is on and that what they asked is still not done";
+
+    // TPV7: the tool their «sí» turned on, as the mind is told a capability, for the request that carries its result.
+    private JsonObject? _toolOn;
+
+    private string OffHeld(PreparedOperation prepared, string operation, JsonObject arguments, long started)
+    {
+        _proposal = prepared;
+        _proposalByBeat = false;
+        _proposalCause = ToolProfile.OffCode;
+        _waitingSaid = null;
+        _proposalExpiresUtc = _time.GetUtcNow() + ProposalLifetime;
+        _askedAt = ConfirmationAsk.Unpublished;
+        // ESE6: a memory call held whole is the offer of the memory and of that save, which their «sí» does in one step.
+        bool memory = MemoryOperationProtector.IsMemoryOperation(operation) && FieldStepProjection.HeldWhole(operation);
+        var held = new JsonObject
+        {
+            ["status"] = "needs_confirmation",
+            ["cause"] = memory ? MemoryOffHeldCause : ToolProfile.OffCode,
+        };
+        if (_host.OffFacts?.Invoke(operation) is { } off)
+        {
+            held["tool"] = off["tool"]?.DeepClone();
+            if (!memory)
+            {
+                held["profile"] = off["profile"]?.DeepClone();
+            }
+        }
+
+        // ACT1 (TPV7/INT31 banco, Esencial, T01 y T09, 4 de 15): after «sí» to this offer the 4B made the one call the
+        // system text spells, the memory's switch to Diario (mind.MEMORY_OFF_FACT), and told it as «encender la memoria».
+        // The call that turns on this tool alone is the receipt's too, spelled as a call: which tool is off is «tool».
+        held["onTheirYes"] = OffHeldYes;
+        held["next"] = !memory ? OffHeldNext
+            : string.Format(System.Globalization.CultureInfo.InvariantCulture,
+                operation == MemorySwitch ? MemorySwitchHeldNext : MemoryOffHeldNext,
+                _host.MemoryOff?.Invoke() == false ? MemoryHeldProfile : MemoryHeldOff);
+        return Record(operation, arguments, started, held.ToJsonString(SaidFolders.AsWritten));
+    }
+
+    // ESE6 (GUA3/ESE5 lote A, Esencial, the memory off as it is born, LocalMemoryStore: «Recuerda que mi perro se llama
+    // Chispo.» → «sí» saved nothing in 18 of 18 and «guardado» was said with nothing saved in 9 of 18). The memory is off
+    // twice there, its tools in the profile and its own switch, and a stub with no arguments loses what was to be saved:
+    // ESE5's stub turned the tools on, the save came back memory_disabled and the 4B said «ya tengo la memoria
+    // encendida». The save is held with its arguments, and the receipt says what their «sí» does: both, in one step.
+    internal const string MemoryOffHeldCause = "memory_off";
+
+    // REM7 (REV15 D-4): the card's cause of the held sensitive save and of the switch itself (the save's is MemoryOffHeldCause).
+    internal const string MemorySecretHeldCause = "memory_off_secret";
+
+    internal const string MemorySwitchHeldCause = "memory_switch_off";
+
+    // REM8 (REV16 M-4): what holds it, after the card's cause above; none is both, the switch off and the profile.
+    internal const string MemoryOnHeld = "+on";
+
+    internal const string MemoryInProfileHeld = "+in_profile";
+
+    // REM7 (REV15 D-1): «off on this PC» whatever the switch was; with Esencial chosen and the memory on, false. It says
+    // the switch the App read (Host.MemoryOff), or the profile.
+    private const string MemoryHeldOff = "BAXY's memory is off on this PC";
+
+    private const string MemoryHeldProfile = "BAXY's memory is on, but its tools are off in this PC's tool profile";
+
+    // REM7 (REV15 D-2, REV14 B-E1): the question did not always say what would be saved (mem3: named 18 of 18 in Completo,
+    // ESE7 «¿Quieres que te lo guarde?»): it names it, and a secret only by what it is.
+    private const string MemoryOffHeldNext =
+        "nothing was saved: {0}, and this call waits with what it would save. With the "
+        + "person's yes BAXY turns its memory on and saves it, in one step, and nothing else changes; in one short "
+        + "sentence, name what it would save and ask them whether to turn the memory on to save it (a secret or sensitive "
+        + "detail only by what it is, never its value; never send them to Settings, and do not say it is saved, noted or "
+        + "remembered: it is not yet); their answer goes in confirm_pending";
+
+    // ESE7 (ESE6 §7, Esencial, «Baxi, activa la memoria.» with nothing to save, 2 of 2: the one memory call shown was the
+    // save, so the 4B turned the memory on by saving a filler record, «guardé que está encendida»). The memory's switch
+    // is held whole too: its call is the offer of the memory alone, and their «sí» turns it on and saves nothing.
+    private const string MemorySwitch = "memory.enable";
+
+    private const string MemorySecret = "memory.sensitive.save";
+
+    private const string MemorySwitchHeldNext =
+        "nothing changed yet: {0}, and this call waits. With the person's yes BAXY turns "
+        + "its memory on, and nothing is saved and nothing else changes; ask them in one short sentence whether to turn "
+        + "the memory on (never send them to Settings, and do not say it is on: it is not yet); their answer goes in "
+        + "confirm_pending";
+
+    internal const string MemoryNotTurnedOn = "memory_not_turned_on";
+
+    // REM7 (REV15 D-3): what their «sí» left when the memory did not turn on (nothing), may have (the engine did not
+    // answer), or did while its tools could not be kept on in the profile.
+    private const string MemoryNotOnNext =
+        "nothing changed and nothing was saved: the memory did not turn on (memory says why) and the tool profile is as it "
+        + "was; tell them so";
+
+    private const string MemoryMaybeOnNext =
+        "nothing was saved and the tool profile is as it was; whether the memory turned on is not known: the engine did "
+        + "not answer (memory); tell them so, and do not say it is on or off";
+
+    private const string MemoryOnToolsOffNext =
+        "BAXY's memory is on now, but its tools could not be turned on in the person's tool profile (error says why), so "
+        + "nothing was saved; tell them both things";
+
+    private const string MemoryTurnedOn =
+        "BAXY's memory, with the person's yes: its tools in their profile and the memory itself, nothing else";
+
+    // ESE7 (ESE6 lote A, Esencial: after the «sí» that turned the memory on and saved, the 4B told the save and said the
+    // memory was on now in 1 of 15: turnedOn was a fact beside the receipt and nothing asked for it). The receipt of the
+    // held call that turned the memory on says what to tell: both things. The switch's own receipt needs none.
+    internal const string MemoryOnNext =
+        "tell them both things: that BAXY's memory is on now, and what this result says of the save";
+
+    // ESE6: the person's «sí» to a memory call held off (OffHeld), as one step of the App: the memory's tools on in their
+    // profile (ToolProfile.KeepOn, nothing else), the memory itself on (memory.enable, with this «sí» as the kernel's
+    // confirmation of it, as a proposal's: same token binding) and the held call sent with the arguments it was made
+    // with. The model reads that call's own receipt beside what was turned on, and only has to tell it; nothing is handed
+    // to the mind to call again (TPV7's toolOn re-read the whole prefix, and the 4B asked again instead of calling).
+    private async Task<string> AnswerMemoryOffHeldAsync(
+        PreparedOperation held,
+        long started,
+        CancellationToken cancellationToken)
+    {
+        string operation = held.OperationName;
+        JsonObject arguments = PrivateArguments(held);
+        _proposal = null;
+        Resolved("approved");
+        // REM7 (REV15 D-3, REV14 B-E3): the profile was changed first, before the engine was looked at, and an engine that
+        // failed left the memory's tools on with the memory off. The engine and the memory first; the profile only once
+        // the memory is on; and what did not happen is told, also when it may have.
+        if (_host.Core() is not { IsReady: true } core || _host.MemoryProtector() is not { } protector)
+        {
+            return Record(operation, arguments, started, Observation("failed", "engine_unavailable", about: operation));
+        }
+
+        // ESE7: when the held call is the memory's switch itself (nothing to save), it is the one sent, and the only one:
+        // its own receipt is what the model reads, beside what was turned on.
+        bool switchOnly = operation == MemorySwitch;
+        PreparedOperation enable = switchOnly
+            ? held
+            : protector.Prepare(
+                new MemoryRoutedOperation(MemorySwitch, MemoryOperationResponseProjection.MemoryOn())).Prepared;
+        JsonObject enabling = switchOnly ? arguments : [];
+        string on = await SendAsync(core, enable, enabling, confirmationToken: null, answered: true, started,
+            cancellationToken);
+        if (_pending is { } challenge && challenge.AnsweredByProposal(enable))
+        {
+            _pending = null;
+            on = await SendAsync(core, enable, enabling, challenge.Token, answered: true, started, cancellationToken);
+        }
+
+        if (StatusOf(on) != OperationStatuses.Completed)
+        {
+            // The memory did not turn on: nothing else is sent nor changed, and nothing is left waiting behind this answer.
+            DropPending();
+            JsonNode? memory = JsonNode.Parse(on);
+            return Record(operation, arguments, started, Observation("failed", MemoryNotTurnedOn, new JsonObject
+            {
+                ["memory"] = memory,
+                ["next"] = memory?["effectUncertain"]?.GetValue<bool>() == true ? MemoryMaybeOnNext : MemoryNotOnNext,
+            }, about: operation));
+        }
+
+        if (_host.ToolOn?.Invoke(operation) is { } failed)
+        {
+            return Record(operation, arguments, started, Observation("failed", failed, new JsonObject
+            {
+                ["next"] = MemoryOnToolsOffNext,
+            }, about: operation));
+        }
+
+        if (switchOnly)
+        {
+            if (JsonNode.Parse(on) is not JsonObject switched)
+            {
+                return on;
+            }
+
+            switched["operation"] ??= operation;
+            switched["turnedOn"] = MemoryTurnedOn;
+            return switched.ToJsonString(SaidFolders.AsWritten);
+        }
+
+        string saved = await SendAsync(core, held, arguments, confirmationToken: null, answered: true, started,
+            cancellationToken);
+        if (JsonNode.Parse(saved) is not JsonObject facts)
+        {
+            return saved;
+        }
+
+        facts["operation"] ??= operation;
+        facts["turnedOn"] = MemoryTurnedOn;
+        facts["next"] ??= MemoryOnNext;
+        return facts.ToJsonString(SaidFolders.AsWritten);
+    }
+
+    // TPV6: the person's answer to OffHeld: their «sí» turns that tool on, and nothing of the call is sent: the call's own
+    // result says it did not run (NotRunToolOn).
+    private string AnswerOffHeld(PreparedOperation proposal, bool approve, long started)
+    {
+        string operation = proposal.OperationName;
+        JsonObject arguments = PrivateArguments(proposal);
+        _proposal = null;
+        Resolved(approve ? "approved" : "declined");
+        Release(proposal);
+        if (!approve)
+        {
+            return Record(operation, arguments, started, Observation("cancelled", "declined_by_person", about: operation));
+        }
+
+        if (_host.ToolOn?.Invoke(operation) is { } failed)
+        {
+            return Record(operation, arguments, started, Observation("failed", failed, about: operation));
+        }
+
+        // TPV7: with the engine's catalog holding the tool, the mind takes it whole now; with none (no engine), TPV6's
+        // words stand: callable from the person's next words.
+        _toolOn = _host.Core()?.Capabilities.FirstOrDefault(capability => capability.Name == operation) is { } whole
+            ? MindSidecarClient.Capability(whole)
+            : null;
+        return Record(operation, arguments, started, Observation("rejected", NotRunToolOn, new JsonObject
+        {
+            ["turnedOn"] = $"the tool «{_host.OffFacts?.Invoke(operation)["tool"]}» in the person's profile",
+            ["next"] = _toolOn is null ? ToolOnNext : ToolOnNowNext,
+        }));
+    }
 
     // f6 estado: BAXY's own readings (assistant.status, a read with no effect) are the App's: checked against the
     // catalog's schema as the kernel checks every call, read, and told by the kernel's own receipt.
@@ -987,7 +1481,8 @@ internal sealed class NativeTurnLoop
         // act 4/7 → 1/7). What a heartbeat never takes alone is what destroys, reaches a person, installs or writes over
         // what the person copied, plus the catalog's effects: a window, the network, and a system change (airplane
         // mode, a radio, the display mode: P026, airplane mode on at 8 % battery).
-        if (ProposedRisks.Contains(descriptor.Risk) || descriptor.Name == "clipboard.write.text")
+        // RUT1: the person's routines are theirs to make, change or run (documentacion/RUTINAS.md): a heartbeat proposes.
+        if (ProposedRisks.Contains(descriptor.Risk) || descriptor.Name is "clipboard.write.text" or "baxy.routines")
         {
             return true;
         }
@@ -1134,10 +1629,12 @@ internal sealed class NativeTurnLoop
 
     // The call held for the person's «sí»: nothing ran, and calling it again is not their answer (e2e E021: after «sí»
     // the model called shell_command_run again instead of confirm_pending). Ronda final: «only asks again» was false
-    // in the next turn, where the same call runs (DropPending).
+    // in the next turn, where the same call runs (DropPending). SIS3: after their words it is not their yes either (TPV2
+    // took it as one, and «puede ser», «I guess?», «sí, pero mañana» turned brakes on: SIS2, 10 of 40); the mind reads
+    // their yes (Mind._their_answer) and answers with confirm_pending, and the same call made again is held again.
     private static string AskThePersonAbout(string operation) =>
         "nothing ran: ask the person whether to do it; their answer goes in confirm_pending (answer yes, no or "
-        + $"unclear); calling {WireNames.Of(operation)} again is not their answer: it is a new call";
+        + $"unclear); calling {WireNames.Of(operation)} again before they answer is not their answer: it is a new call";
 
     // Prefijo c3, S4 (T6): words that settle nothing («sí pero el otro», «no sé») neither run the waiting call nor
     // cancel it; the model asks again, and «sin manos» (00_IDENTIDAD, Accesibilidad): an answer said aloud settles it.
@@ -1290,6 +1787,7 @@ internal sealed class NativeTurnLoop
     private string AskedAgain(PreparedOperation waiting, JsonObject arguments, long started)
     {
         _askedAt = ConfirmationAsk.Unpublished;
+        _askedAgain = true;
         string operation = waiting.OperationName;
         JsonObject facts = WithArguments(new JsonObject
         {
@@ -1312,7 +1810,129 @@ internal sealed class NativeTurnLoop
 
         DropPending();
         return Record(prepared.OperationName, arguments, started,
-            Observation("rejected", refusal, about: prepared.OperationName));
+            RefusedFor(refusal, prepared.OperationName, prepared.OperationName));
+    }
+
+    // Banco 1/16 y 2/16 (08-11, juez ciego): with the code alone the 4B read a look refused as off as «no window is
+    // open» and a recall refused as off as «I have no record of that»; the result says what did not happen. ESE1 (VIVO5
+    // fila 7): and that it is the profile, not another setting, with how they turn it on beside it (ToolProfile.OffFacts).
+    // TPV1 (dueño, 10-11: «no tiene que delegar al usuario nada»; the person may have no hands): what is off is BAXY's
+    // to switch on when the person wants it, never only «in Settings»: the call that does it (turnOnBySpeaking) waits
+    // for their spoken «sí» by itself (OwnBrakes), so it is the offer.
+    private const string OffInProfileNext =
+        "nothing ran and nothing was read: this tool is off in the person's tool profile, not by any other setting; "
+        + "tell them it is off in their profile, and BAXY can switch to a profile that has it: the call in "
+        + "turnOnBySpeaking asks their yes itself, so make it to offer it instead of asking in words or sending them to "
+        + "Settings; say nothing of what it would have found";
+
+    // COR1 (VIVO3 A3, 2 de 2; banco cor1_ho): with the bare code the 4B took «Búsqueda web» off as an obstacle of its
+    // own to clear and switched it back on. The result says whose switch it is, and (TPV1) the call that switches it on
+    // with their yes, which is the offer: it never changes unasked.
+    internal static string OwnerOffNext(string setting, string name) =>
+        $"nothing ran and nothing went out: the person switched «{name}» off in BAXY's settings, and it stays off unless "
+        + $"they want it on; BAXY can switch it on: {WireNames.Call(OwnBrakes.Operation, new() { ["setting"] = setting, ["value"] = "on" })} "
+        + "asks their yes itself, so make that call to offer it instead of asking in words or sending them to Settings; "
+        + "once it is on, call this again";
+
+    // Each switch of Ajustes → Privacidad that refuses a call (FieldSettings.Refusal): its baxy.settings.set setting
+    // and its name there.
+    private static readonly Dictionary<string, (string Setting, string Name)> OwnerOff = new(StringComparer.Ordinal)
+    {
+        [FieldSettings.WebOff] = ("web_search", "Búsqueda web"),
+        ["weather_disabled_by_owner"] = ("weather", "Clima"),
+        ["screen_disabled_by_owner"] = ("screen", "Mirar la pantalla"),
+    };
+
+    /// <summary>A call the owner's settings refuse before it runs (<see cref="Host.Refuse"/>), as the model reads it; one
+    /// off in the person's tool profile also says that nothing ran or was read, and one a switch of Privacidad refuses
+    /// says whose switch that is and the call that switches it on.</summary>
+    internal static string Refused(string code, string? about = null, JsonObject? off = null) =>
+        Observation("rejected", code,
+            code == ToolProfile.OffCode ? OffExtra(off)
+            : OwnerOff.TryGetValue(code, out (string Setting, string Name) own)
+                ? new JsonObject { ["next"] = OwnerOffNext(own.Setting, own.Name) }
+            : null, about);
+
+    private static JsonObject OffExtra(JsonObject? off)
+    {
+        JsonObject extra = off ?? [];
+        extra["next"] = OffInProfileNext;
+        return extra;
+    }
+
+    /// <summary>RUT1: the operations and arguments of a baxy.routines call's steps («operation {JSON}»; «say: …» is no
+    /// call); a step that does not read as one is left to the handler, which says why.</summary>
+    internal static IEnumerable<(string Operation, JsonObject Arguments)> RoutineSteps(string operation, JsonObject arguments)
+    {
+        if (operation != "baxy.routines" || arguments["steps"] is not JsonArray steps)
+        {
+            yield break;
+        }
+
+        foreach (JsonNode? step in steps)
+        {
+            string text = (step is JsonValue value && value.TryGetValue(out string? written) ? written : string.Empty).Trim();
+            int split = text.IndexOfAny([' ', '{']);
+            string name = split < 0 ? text : text[..split];
+            if (text.StartsWith("say:", StringComparison.OrdinalIgnoreCase) || !ProductCatalog.TryGet(name, out _))
+            {
+                continue;
+            }
+
+            JsonObject? given = null;
+            try
+            {
+                given = split < 0 ? [] : JsonNode.Parse(text[split..]) as JsonObject;
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                given = null;  // not one JSON object: the handler refuses the step and says why
+            }
+
+            if (given is not null)
+            {
+                yield return (name, given);
+            }
+        }
+    }
+
+    // ESE1: a refusal as off in the profile carries what the profile says of that operation.
+    private string RefusedFor(string code, string operation, string? about = null) =>
+        Refused(code, about, code == ToolProfile.OffCode ? _host.OffFacts?.Invoke(operation) : null);
+
+    // TPV2 (dueño 10-11: «si yo le digo Baxi, activa la memoria, la tiene que activar»; TPV1: after the person's spoken
+    // «sí» to a held call the 4B made that call again in 24 of 24, never confirm_pending, and it was held again, so the
+    // offer never completed). Once the person has spoken after BAXY's question (ConfirmationAsk.Answers), the model
+    // making exactly the call that waits, the same operation with the same arguments as it made it, is their answer:
+    // yes. Only the form of the model's own two calls is compared, never the person's words: after a «no» or something
+    // else the model does not make it again, and the waiting call is dropped as before. One made again before they spoke
+    // was not asked yet (the turn goes final at the hold), and a heartbeat never starts with one waiting.
+    // TPV3 (dueño 10-11, «la memoria está apagada, ¿la activo?» → «sí» → asked again: memory 0 of 18 in TPV2, because the
+    // 4B offers it in words and its memory_enable after the person's «sí» was held for a second «sí»). When a result of
+    // the person's turn offered exactly one call (memory_disabled: memory_enable), that turn ended with BAXY's question
+    // in words, and the person's words came after it, the model making exactly that call with exactly those arguments in
+    // this next turn, with the mind's reading of their words as a yes to that offer (SIS3: MindStep.TheirYes,
+    // Mind._their_answer; the model making the call is not their yes by itself), is their answer: the kernel's
+    // confirmation of that invocation goes with it (SendAsync). The App compares only shapes, BAXY's own result's offer
+    // and the model's call. It is not for a call that relaxes a brake of BAXY's own (OwnBrakes: Bypass, web search,
+    // weather, screen, tool profile, COR1's), nor in a heartbeat, after a press, or one turn later; another call in that
+    // turn ends it unless its result offers the same again.
+    private bool TakesTheOffer(string operation, JsonObject arguments) =>
+        !_beat && _theirYes && _offered is { } offer && WaitingPrepared() is null
+        && OwnBrakes.Relaxed(operation, arguments) is null
+        && SameCall(offer, (operation, arguments));
+
+    private static bool SameCall((string Operation, JsonObject Arguments) one, (string Operation, JsonObject Arguments) other) =>
+        string.Equals(one.Operation, other.Operation, StringComparison.Ordinal)
+        && JsonNode.DeepEquals(one.Arguments, other.Arguments);
+
+    private void ForgetOffers((string Operation, JsonObject Arguments)? keep = null)
+    {
+        _offered = keep;
+        _offeredNow = null;
+        _offerPassed = null;
+        _endedAsking = false;
+        _takingOffer = false;
     }
 
     // A heartbeat's proposal the person answered: «no» drops it; «sí» sends that exact invocation, and when the kernel
@@ -1324,6 +1944,14 @@ internal sealed class NativeTurnLoop
         long started,
         CancellationToken cancellationToken)
     {
+        if (_proposalCause == ToolProfile.OffCode)
+        {
+            return approve && FieldStepProjection.HeldWhole(proposal.OperationName)
+                && MemoryOperationProtector.IsMemoryOperation(proposal.OperationName)
+                ? await AnswerMemoryOffHeldAsync(proposal, started, cancellationToken)
+                : AnswerOffHeld(proposal, approve, started);
+        }
+
         JsonObject arguments = PrivateArguments(proposal);
         if (approve && RefusedAtApproval(proposal, arguments, started) is { } refused)
         {
@@ -1400,6 +2028,21 @@ internal sealed class NativeTurnLoop
         if (PendingOperationConfirmation.TryCreate(response, prepared, _time,
                 out PendingOperationConfirmation? challenge) && challenge is not null)
         {
+            // TPV3: the call the earlier turn's result offered, made after the person's words: their «sí» to BAXY's own
+            // question is this confirmation, sent with the kernel's token for this exact invocation.
+            if (!answered && _takingOffer && !challenge.ReconciliationRequired)
+            {
+                _takingOffer = false;
+                if (_host.Refuse?.Invoke(operation, arguments) is { } off)
+                {
+                    Release(prepared);
+                    return Record(operation, arguments, started, RefusedFor(off, operation, operation));
+                }
+
+                return await SendAsync(core, prepared, arguments, challenge.Token, answered: true, started,
+                    cancellationToken, said);
+            }
+
             // The kernel asks for the person's «sí» for this exact invocation: the model asks; the answer comes back
             // as confirm_pending, and only then is this same invocation sent again with the token.
             _pending = challenge;
@@ -1427,6 +2070,16 @@ internal sealed class NativeTurnLoop
         }
 
         Resolve(prepared, memory);
+        if (memory && !_beat && MemoryOperationResponseProjection.OffersTheMemory(operation, response))
+        {
+            _offeredNow = ("memory.enable", MemoryOperationResponseProjection.MemoryOn());
+            // The same offer made again by a call of the turn it stands in keeps it standing.
+            if (_offerPassed is { } passed && SameCall(passed, _offeredNow.Value))
+            {
+                _offered = passed;
+            }
+        }
+
         _turnPlace.Ran(operation, arguments, response.Status);
         _said.Ran(operation, arguments, response.Status);
         _said.Saw(response.Result);
@@ -1443,6 +2096,11 @@ internal sealed class NativeTurnLoop
             && operation is not ("memory.recall" or "memory.list" or "memory.status" or "memory.export"))
         {
             _host.MemoryChanged?.Invoke();
+            if (operation is "memory.enable" or "memory.disable")
+            {
+                _host.MemorySwitched?.Invoke(operation == "memory.enable");
+            }
+
             if (operation == "memory.forget" && ForgetsAll(prepared))
             {
                 _host.ForgotEverything?.Invoke();

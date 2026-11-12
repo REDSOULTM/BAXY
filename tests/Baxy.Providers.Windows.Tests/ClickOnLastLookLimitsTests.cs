@@ -568,7 +568,7 @@ public sealed class ClickOnLastLookLimitsTests
             Guid.NewGuid().ToString("D"),
             Guid.NewGuid().ToString("D"),
             "input.visible.click",
-            Json("""{"label":"Enviar"}"""));
+            Json("""{"consequence":null,"label":"Enviar"}"""));
 
         await desktop.LookAsync();
         desktop.Time.At += TimeSpan.FromSeconds(60);
@@ -609,7 +609,7 @@ public sealed class ClickOnLastLookLimitsTests
             Guid.NewGuid().ToString("D"),
             Guid.NewGuid().ToString("D"),
             "input.visible.click",
-            Json("""{"label":"Siguiente"}"""));
+            Json("""{"consequence":null,"label":"Siguiente"}"""));
 
         await desktop.LookAsync();
         OperationResponse asked = await engine.ExecuteAsync(request, CancellationToken.None);

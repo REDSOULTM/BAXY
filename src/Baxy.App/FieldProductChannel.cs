@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
+using Baxy.Providers.Windows.Routines;
+using Baxy.Providers.Windows.SystemStatus;
 using Baxy.Security.Windows;
 
 namespace Baxy.App;
@@ -38,17 +40,36 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private readonly FieldSessionStore _sessions = FieldSessionStore.CreateDefault();
     private string _sessionId = NewSessionId();
     private string? _sessionLabel;
+    private string _sessionLabelBy = FieldSessionStore.LabelByFirst;
+    // Each time a kept conversation's name changes after the view listed it (the model named one that closed): the view
+    // reads the list again (surfaces, sessions_revision).
+    private int _sessionsRevision;
+    // The last save of the conversation on screen did not reach the disk: the history says so until one does.
+    private bool _unsaved;
     private DateTimeOffset _sessionCreated = DateTimeOffset.UtcNow;
+    // The rail's «Alarmas»: null while not read since the last change, and read again when the view asks for the surfaces
+    // (OCR1, VIVO3 C1: with three alarms set by chat the rail said «—» until the triggers panel was opened).
     private int? _triggerCount;
+    // The rail's «Rutinas»: how many are active; null while not read since the last change (RUT3: no number rather than
+    // an old one), read again when the view asks for the surfaces and after the chat or a routine's time changed them.
+    private int? _routineCount;
     // The card that waits for the person's Sí or No and the call it shows: an answer that names another card is refused.
     private (string Id, NativeTurnConfirmation Asked)? _pendingCard;
     private bool _disposed;
     // The memory panel runs the chat's own catalog operations; its count is read from the store when the view asks
     // for the surfaces and the store may have changed since (first read, a chat change).
     private readonly MemoryPanel _memory;
+    // Settings › General «Buscar actualizaciones» and the notice of a newer BAXY (baxy.update through the engine).
+    private readonly UpdatePanel _updates;
     private bool _memoryCountStale = true;
     // Every chat change of the store is numbered and travels in the counter's own event, so an open list is read again.
     private int _memoryRevision;
+
+    /// <summary>Where the search for the package's legal texts starts (the folder of Baxy.exe); a test's own folder.</summary>
+    internal string LegalStart { get; set; } = AppContext.BaseDirectory;
+
+    /// <summary>Opens a file or a folder with what Windows has for it; false when it could not. A test's own.</summary>
+    internal Func<string, bool> OpenShell { get; set; } = ShellOpen;
 
     internal FieldProductChannel(
         MainWindowViewModel viewModel,
@@ -74,13 +95,154 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.VoiceLip += OnVoiceLip;
         _viewModel.VoiceWake += OnVoiceWake;
         _memory = new MemoryPanel(() => _viewModel.CoreClient, () => _viewModel.MemoryProtector);
+        _updates = UpdatePanel.ForEngine(() => _viewModel.CoreClient);
+        ListTriggers = (arguments, cancellationToken) =>
+            _viewModel.SendPanelOperationAsync("schedule.alarms", arguments, cancellationToken);
+        RunRoutines = (arguments, cancellationToken) =>
+            _viewModel.SendPanelOperationAsync(RoutinesOperation, arguments, cancellationToken);
+        _updates.InstallEnded += OnInstallEnded;
+        _ = WatchForUpdatesAsync(_lifetimeCancellation);
         // A mind that starts again gets back the conversation this view shows (2026-10-22, review of the App).
         _viewModel.KeptConversation = () => _sessions.Load(_sessionId)?.Mind;
         // f6 estado: BAXY's own readings by voice are the ones this channel serves the view.
         _viewModel.OwnReader = ReadOwnAsync;
         _viewModel.Conversation = RunConversation;
         _viewModel.TurnReleased += OnTurnReleased;
+        _viewModel.TunedModelOnline += OnTunedModelOnline;
+        _viewModel.ModelDownloadOnline += OnModelDownloadOnline;
+        _viewModel.RoutineSaid += OnRoutineSaid;
+        _viewModel.RingChanged += OnRingChanged;
+        foreach (RingNow ring in _viewModel.Ringing)
+        {
+            OnRingChanged(ring);
+        }
     }
+
+    // A view that (re)connects after the start's check found a newer BAXY sees the notice again.
+    private IEnumerable<JsonObject> UpdateNotices()
+    {
+        if (UpdatePanel.NoticeOf(_updates.Known) is { } notice)
+        {
+            yield return notice;
+        }
+    }
+
+    // A check goes to GitHub only (nothing of the person, BAXY's version in the user agent), and «Salidas a internet» says so.
+    private async Task<JsonObject> CheckForUpdateAsync()
+    {
+        JsonObject found = await _updates.CheckAsync(_lifetimeCancellation).ConfigureAwait(true);
+        if (_updates.WentOnline("check", found) is { } online)
+        {
+            OnModelDownloadOnline(online);
+        }
+
+        if (UpdatePanel.NoticeOf(found) is { } notice)
+        {
+            Publish(notice);
+        }
+
+        return found;
+    }
+
+    // «Actualizar»: GitHub is asked again and the installer comes from it, and «Salidas a internet» says so (INT19) when
+    // the install ends, whoever still waits for it (APP1: the button's request answers before the download does).
+    private void OnInstallEnded(JsonObject done)
+    {
+        if (_updates.WentOnline("install", done) is { } online)
+        {
+            OnModelDownloadOnline(online);
+        }
+    }
+
+    // Once per start, when the engine is ready and the person has not switched «Avisar de versiones nuevas» off.
+    private async Task WatchForUpdatesAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            for (int tries = 0; tries < 120 && _viewModel.CoreClient is not { IsReady: true }; tries++)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(true);
+            }
+
+            if (_viewModel.CoreClient is { IsReady: true } && _viewModel.Settings.UpdateNotice)
+            {
+                _ = await CheckForUpdateAsync().ConfigureAwait(true);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // BAXY is closing: there is nothing to tell.
+        }
+    }
+
+    // QWB2: the tuned model's state for Settings → Model, and whether the mind is being relaunched for a change.
+    private JsonObject BehaviorJson() =>
+        _viewModel.BehaviorState.Json(_viewModel.FactoryBehavior, _viewModel.ExternalModelState.Switching);
+
+    // Settings → Tools: the profile, and whether the mind is being relaunched for a change.
+    private JsonObject ToolsJson()
+    {
+        JsonObject state = _viewModel.ToolProfileState.Json();
+        state["switching"] = _viewModel.ExternalModelState.Switching;
+        // REM3 (REV13 C-2): the view said «under 53,248» by hand once the floor had become 61,440: the number it tells,
+        // that a smaller context goes back to «Automático» on a change of profile, is the one LocalContext keeps.
+        state["contextKeptFrom"] = LocalContext.FitsEveryProfile;
+        return state;
+    }
+
+    // What BAXY's own model takes on the card now (the telemetry's reading of the mind's processes).
+    private async Task<double?> OwnModelVramAsync() =>
+        (await _telemetry.SampleAsync(_lifetimeCancellation).ConfigureAwait(false)).ModelVramGb;
+
+    // And what its processes hold of what Windows can promise (their private bytes), which a switch frees too.
+    private async Task<double?> OwnModelCommitAsync() =>
+        (await _telemetry.SampleAsync(_lifetimeCancellation).ConfigureAwait(false)).ModelCommitGb;
+
+    // With the person's graphics card's memory, so each option says whether it fits it (and whether the projector goes there),
+    // and what is free on it with BAXY's own model gone, for the recommended context. The card's use is read only when the
+    // view asks once, not while it asks every second during a switch (it reads every process's counters, ~1-1.6 s).
+    private async Task<JsonObject> LocalContextJsonAsync()
+    {
+        bool switching = _viewModel.ExternalModelState.Switching || _viewModel.LocalContextState.NeedsSwitch;
+        (long Total, long? Free)? card = switching ? null
+            : await _viewModel.ExternalModelState.CardAsync(await OwnModelVramAsync().ConfigureAwait(true), _lifetimeCancellation).ConfigureAwait(true);
+        long? total = card?.Total ?? await _viewModel.ExternalModelState.CardTotalAsync(_lifetimeCancellation).ConfigureAwait(true);
+        JsonObject state = _viewModel.LocalContextState.Json(_viewModel.MindPrefixTokens, _viewModel.MindBackend, _viewModel.ExternalModelState.Switching,
+            total, card?.Free);
+        // MOD1 V-07: what the stock model and the tuned one take on disk and on the card, for their rows in «Modelos en este PC».
+        state["stock"] = _viewModel.LocalContextState.OnDisk(_viewModel.TunedModelState.StockPath, _viewModel.MindBackend, total);
+        state["tuned"] = _viewModel.LocalContextState.OnDisk(_viewModel.TunedModelState.InstalledPath, _viewModel.MindBackend, total);
+        // MOD1 D5: what this PC took the last time the model read its instructions whole, said before a change that reads them again.
+        state["lastRead"] = _viewModel.PrefixReadState.Json();
+        // REM5 (REV14 A-C1): the person's choice is kept at the start even when the profile's tools do not fit it; which
+        // profile does not, and which one does, to say aloud.
+        int? chosen = _viewModel.LocalContextState.Chosen();
+        state["short"] = _viewModel.LocalContextState.Short(_viewModel.ToolProfileState.Profile, _viewModel.ExternalModelState.NeededNow,
+            chosen is { } cells ? ToolProfile.LargestFitting(cells, _viewModel.MindPrefixTokens, _viewModel.MindPrefixProfile) : null);
+        return state;
+    }
+
+    private JsonObject TunedModelJson()
+    {
+        JsonObject state = _viewModel.TunedModelState.Json();
+        state["switching"] = _viewModel.ExternalModelState.Switching;
+        return state;
+    }
+
+    private void OnModelDownloadOnline(string what) => Publish(new JsonObject
+    {
+        ["type"] = "net",
+        ["what"] = what,
+        ["ts"] = DateTimeOffset.Now.ToString("HH:mm", CultureInfo.InvariantCulture),
+    });
+
+    // The download the person asked for goes in «Salidas a internet», as a step that went online does.
+    private void OnTunedModelOnline(string host) => Publish(new JsonObject
+    {
+        ["type"] = "net",
+        ["what"] = UiLanguage.Say($"descarga del modelo ajustado a BAXY desde {host}", $"download of BAXY's tuned model from {host}"),
+        ["ts"] = DateTimeOffset.Now.ToString("HH:mm", CultureInfo.InvariantCulture),
+    });
 
     // assistant.status: the confirmation mode the engine rereads (null when its file could not be read), GET /metrics'
     // model reading (the same sampler), or this session's internet log, which the view builds from the same transcript
@@ -115,11 +277,28 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                     : Error(MindUnavailable ? "mind_unavailable" : "model_not_loaded", 503);
             case ("GET", "/metrics"):
                 return Json(MetricsJson(await _telemetry.SampleAsync(_lifetimeCancellation).ConfigureAwait(true)));
+            case ("GET", "/metrics/breakdown"):
+                // Owner, 2026-11-08: all the memory BAXY uses, piece by piece (Settings › Modelo asks while it is open).
+                return Json(await Task.Run(static () => OwnMemory.Read(
+                    Environment.ProcessId,
+                    WindowsModelResourceReader.ProcessTreeOf(Environment.ProcessId),
+                    WindowsModelResourceReader.WorkingSetBytes,
+                    WindowsModelResourceReader.DedicatedVideoBytes), _lifetimeCancellation).ConfigureAwait(true));
             case ("GET", "/surfaces"):
                 if (_memoryCountStale)
                 {
                     _memoryCountStale = !await _memory.RefreshCountAsync(_lifetimeCancellation).ConfigureAwait(true);
                     Publish(SurfacesEvent());
+                }
+
+                if (_triggerCount is null)
+                {
+                    _ = await TriggersAsync().ConfigureAwait(true);
+                }
+
+                if (_routineCount is null)
+                {
+                    _ = await RoutinesAsync().ConfigureAwait(true);
                 }
 
                 return Json(Surfaces());
@@ -160,32 +339,15 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                     return Error("invalid_answer", 400);
                 }
 
-                if (!_viewModel.HasPendingConfirmation)
-                {
-                    return Error("nothing_pending", 409);
-                }
-
-                // 2026-10-22, review of the App: the answer names the card pressed («card»); a late press on an ended
-                // card no longer answers the next one. A press while a turn runs is refused, never taken and lost.
-                // Auditoría de la App (2026-10-23): the view never sent «card», so any answer took whichever card
-                // waited (Enter on one that had just ended approved the next); an answer that names none is refused.
+                // 2026-10-22, review of the App: the answer names the card pressed («card»); see AnswerCardAsync.
                 if ((string?)ParseBody(body)?["card"] is not { Length: > 0 } card)
                 {
-                    return Error("card_required", 400);
+                    return HasPendingCard ? Error("card_required", 400) : Error("nothing_pending", 409);
                 }
 
-                if (_pendingCard is not { } pending || pending.Id != card)
-                {
-                    return Error("card_not_pending", 409);
-                }
-
-                if (!await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation, pending.Asked)
-                        .ConfigureAwait(true))
-                {
-                    return Error(_viewModel.HasPendingConfirmation ? "turn_in_progress" : "nothing_pending", 409);
-                }
-
-                return Json(new JsonObject { ["ok"] = true });
+                return await AnswerCardAsync(approve, card, arrivedAt).ConfigureAwait(true) is { } refused
+                    ? Error(refused, 409)
+                    : Json(new JsonObject { ["ok"] = true });
             }
 
             case ("POST", "/power"):
@@ -214,21 +376,96 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return RenameSession(ParseBody(body));
             case ("DELETE", "/sessions"):
                 return await DeleteSessionsAsync(ParseBody(body)).ConfigureAwait(true);
+            case ("GET", "/kept"):
+                return Json(Kept());
+            case ("POST", "/settings/legal/open"):
+                return OpenLegal((string?)ParseBody(body)?["doc"]);
+            case ("GET", "/settings/legal/privacy"):
+                return PrivacyText();
             case ("GET", "/catalog"):
                 return Json(FieldStepProjection.Catalog());
             case ("GET", "/triggers"):
                 return await TriggersAsync().ConfigureAwait(true);
             case ("POST", "/triggers/cancel"):
                 return await CancelTriggerAsync(ParseBody(body)).ConfigureAwait(true);
+            case ("POST", "/ring/answer"):
+                return await AnswerRingAsync(ParseBody(body)).ConfigureAwait(true);
+            // actualizar-ordenes-app: whether there is a newer BAXY where it came from, and the person's «Actualizar».
+            case ("GET", "/update"):
+                return Json(await CheckForUpdateAsync().ConfigureAwait(true));
+            // APP1 (UPD-f): the install is a long operation the view reads, not one answer it waits for (UpdatePanel).
+            case ("POST", "/update/install"):
+                return Json(await _updates.InstallAsync(_lifetimeCancellation).ConfigureAwait(true));
+            case ("GET", "/update/install"):
+                return Json(_updates.InstallState());
             case ("GET", "/settings/general"):
-                return Json(_viewModel.Settings.GeneralJson(Autostart()));
+                return Json(General());
+            // Owner, 2026-11-08: the overlay that says what BAXY does while its window is behind (OverlayPresenter).
+            case ("GET", "/settings/overlay"):
+                return Json(_viewModel.Settings.OverlayJson());
+            case ("PUT", "/settings/overlay"):
+                return ParseBody(body) is { } overlay && _viewModel.Settings.ApplyOverlay(overlay) is not null
+                    ? Json(_viewModel.Settings.OverlayJson())
+                    : Error("invalid_overlay", 400);
+            case ("POST", "/settings/overlay/preview"):
+                OverlayPreviewRequested?.Invoke();
+                return Json(new JsonObject { ["ok"] = true });
             case ("PUT", "/settings/general"):
                 return PutGeneral(ParseBody(body));
             case ("GET", "/settings/external-model/estimate") when ExternalModel.Available:
                 FieldMetricSnapshot own = await _telemetry.SampleAsync(_lifetimeCancellation).ConfigureAwait(true);
                 return Json(await _viewModel.ExternalModelState.EstimateAsync(own.ModelVramGb, own.ModelRamGb, _lifetimeCancellation).ConfigureAwait(true));
             case ("GET", "/settings/external-model/models") when ExternalModel.Available:
-                return Json(await _viewModel.ExternalModelState.ModelsAsync(_lifetimeCancellation).ConfigureAwait(true));
+                // «?provider=local»: the models on this PC (Ollama's), whatever place BAXY thinks in.
+                return Json(await _viewModel.ExternalModelState.ModelsAsync(_lifetimeCancellation,
+                    onThisPc: path.EndsWith("?provider=local", StringComparison.Ordinal)).ConfigureAwait(true));
+            case ("POST", "/settings/external-model/search") when ExternalModel.Available:
+                return ParseBody(body) is not { } search || (string?)search["q"] is not { } words
+                    ? Error("invalid_settings", 400)
+                    : Json(await _viewModel.ExternalModelState.SearchAsync(words, OwnModelVramAsync(), _lifetimeCancellation, OwnModelCommitAsync()).ConfigureAwait(true));
+            case ("POST", "/settings/external-model/ollama") when ExternalModel.Available:
+                return _viewModel.ExternalModelState.Open.InstallOllama(_lifetimeCancellation) is { } notInstalled
+                    ? Error(notInstalled, 409)
+                    : Json(_viewModel.ExternalModelState.Json());
+            case ("POST", "/settings/external-model/pull") when ExternalModel.Available:
+            {
+                ExternalModel external = _viewModel.ExternalModelState;
+                // «profile»: the tool profile the search offered a short model with, to use it with once it is here.
+                return ParseBody(body) is not { } pull || (string?)pull["name"] is not { } name
+                    || ((string?)pull["profile"] is { } pullWith && !ToolProfile.IsPreset(pullWith))
+                    ? Error("invalid_settings", 400)
+                    // The size the search said (the file and its projector): the bar's total until Ollama tells its layers.
+                    : external.Open.Pull(name, external.EnsureOllamaAsync, _lifetimeCancellation,
+                        pull["bytes"] is JsonValue size && size.TryGetValue(out long expected) ? expected : 0, (string?)pull["profile"]) is { } notPulled
+                        ? Error(notPulled, 409)
+                        : Json(external.Json());
+            }
+            case ("POST", "/settings/external-model/install") when ExternalModel.Available:
+            {
+                // The model alone, with no vision (OpenModels.Install); its vision is the pull of its «visionName».
+                ExternalModel external = _viewModel.ExternalModelState;
+                return ParseBody(body) is not { } install || (string?)install["repo"] is not { } repo || (string?)install["file"] is not { } file
+                    || (string?)install["sha256"] is not { } sha256 || (string?)install["quant"] is not { } quant
+                    || install["bytes"] is not JsonValue size || !size.TryGetValue(out long bytes)
+                    || ((string?)install["profile"] is { } installWith && !ToolProfile.IsPreset(installWith))
+                    ? Error("invalid_settings", 400)
+                    : external.Open.Install(repo, file, sha256, bytes, quant, external.EnsureOllamaAsync, _lifetimeCancellation,
+                        (string?)install["profile"]) is { } notMade
+                        ? Error(notMade, 409)
+                        : Json(external.Json());
+            }
+            case ("POST", "/settings/external-model/remove") when ExternalModel.Available:
+            {
+                ExternalModel external = _viewModel.ExternalModelState;
+                return ParseBody(body) is not { } remove || (string?)remove["name"] is not { } removed
+                    ? Error("invalid_settings", 400)
+                    : await external.RemoveModelAsync(removed, _lifetimeCancellation).ConfigureAwait(true) is { } notRemoved
+                        ? Error(notRemoved, 409)
+                        : Json(external.Json());
+            }
+            case ("POST", "/settings/external-model/cancel") when ExternalModel.Available:
+                _viewModel.ExternalModelState.Open.Cancel();
+                return Json(_viewModel.ExternalModelState.Json());
             case ("GET", "/settings/external-model") when ExternalModel.Available:
                 return Json(_viewModel.ExternalModelState.Json());
             case ("PUT", "/settings/external-model") when ExternalModel.Available:
@@ -238,13 +475,110 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                     return Error("invalid_settings", 400);
                 }
 
-                if (_viewModel.ExternalModelState.Apply(externalModel) is { } refused)
+                // VIVO2 F15: «Usar con <perfil>» asks for the model and the tool profile it works with in this one request.
+                string? profile = null;
+                if (externalModel["profile"] is { } withProfile)
+                {
+                    profile = withProfile is JsonValue named && named.TryGetValue(out string? preset) ? preset : null;
+                    if (!ToolProfile.IsPreset(profile))
+                    {
+                        return Error("invalid_settings", 400);
+                    }
+
+                    externalModel.Remove("profile");
+                }
+
+                // One model at a time: turning another one on turns the tuned one off, in the same switch of the mind.
+                return _viewModel.UseModel(externalModel, profile) is { } refused
+                    ? Error(refused, 409)
+                    : Json(_viewModel.ExternalModelState.Json());
+            }
+            case ("GET", "/settings/tuned-model"):
+                return Json(TunedModelJson());
+            case ("PUT", "/settings/tuned-model"):
+            {
+                if (ParseBody(body) is not { } tuned)
+                {
+                    return Error("invalid_settings", 400);
+                }
+
+                if (_viewModel.TunedModelState.Apply(tuned) is { } refused)
                 {
                     return Error(refused, 409);
                 }
 
+                // One model at a time: turning the tuned one on turns another model off, in the same switch of the mind.
+                _viewModel.KeepOneModel(tunedChosen: true);
                 _viewModel.ExternalModelChanged();
-                return Json(_viewModel.ExternalModelState.Json());
+                _viewModel.TunedModelChanged();
+                return Json(TunedModelJson());
+            }
+            case ("POST", "/settings/tuned-model/install"):
+                return _viewModel.TunedModelState.Install(_lifetimeCancellation) is { } notStarted
+                    ? Error(notStarted, 409)
+                    : Json(TunedModelJson());
+            // Settings → Model → Context: the context BAXY's own model runs with (LocalContext).
+            case ("GET", "/settings/local-context"):
+                return Json(await LocalContextJsonAsync().ConfigureAwait(true));
+            case ("PUT", "/settings/local-context"):
+            {
+                if (ParseBody(body) is not { } context)
+                {
+                    return Error("invalid_settings", 400);
+                }
+
+                if (_viewModel.LocalContextState.Apply(context, _viewModel.MindPrefixTokens) is { } refused)
+                {
+                    return Error(refused, 409);
+                }
+
+                _viewModel.LocalContextChanged();
+                return Json(await LocalContextJsonAsync().ConfigureAwait(true));
+            }
+            // Settings → Behavior: the person's own texts for BAXY's personality, replies and preferences (PersonBehavior).
+            case ("GET", "/settings/behavior"):
+                return Json(BehaviorJson());
+            case ("PUT", "/settings/behavior"):
+            {
+                if (ParseBody(body) is not { } behavior)
+                {
+                    return Error("invalid_settings", 400);
+                }
+
+                if (_viewModel.BehaviorState.Apply(behavior) is { } refused)
+                {
+                    return Error(refused, 409);
+                }
+
+                _viewModel.BehaviorChanged();
+                return Json(BehaviorJson());
+            }
+            // Settings → Tools: which of BAXY's tools the model sees (ToolProfile); the catalog with each one's level is
+            // GET /catalog.
+            case ("GET", "/settings/tools"):
+                return Json(ToolsJson());
+            case ("PUT", "/settings/tools"):
+            {
+                if (ParseBody(body) is not { } tools)
+                {
+                    return Error("invalid_settings", 400);
+                }
+
+                if (_viewModel.ToolProfileState.Apply(tools) is { } refused)
+                {
+                    return Error(refused, 409);
+                }
+
+                // The profile is the person's own choice now: none lent to a model is taken back (VIVO2 F15).
+                if (ExternalModel.Available)
+                {
+                    _viewModel.ExternalModelState.ForgetLoan();
+                }
+
+                // A small context chosen for this profile's prefix may not fit the next one's (LocalContext).
+                _ = _viewModel.LocalContextState.KeepForEveryProfile();
+                _viewModel.ToolsChanged();
+                return Json(ToolsJson());
             }
             case ("PUT", "/settings/language"):
                 return PutLanguage(ParseBody(body));
@@ -262,7 +596,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             }
 
             // The accessible mode is the profile's file (PresentationModeStore), the same one the chat's
-            // system.settings.set writes. It changes only how the view is presented: the view switches its own styles.
+            // baxy.settings.set writes. It changes only how the view is presented: the view switches its own styles.
             case ("GET", "/accessibility"):
                 return Json(PresentationMode(PresentationModeStore.ReadAccessible(MemoryOperationProtector.ResolveDataRoot())));
             case ("PUT", "/accessibility"):
@@ -300,17 +634,118 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 Publish(SurfacesEvent());
             }
 
-            // The panel's «olvidar todo» (DELETE /memory, scope all) takes the kept conversations with it.
+            // MEM3: the panel's switch, or what its list read of it, is the memory's own switch (ToolProfile.MemoryOff).
+            if (memory.Status == 200 && memory.Body.StartsWith('{') && JsonNode.Parse(memory.Body) is JsonObject shown
+                && shown["enabled"] is JsonValue enabled && enabled.TryGetValue(out bool on))
+            {
+                _viewModel.MemorySwitched(on);
+            }
+
+            // The panel's «olvidar todo» (DELETE /memory, scope all) takes the kept conversations with it, and the
+            // person's routines with their tasks (RUT4; the button names them).
             if (method == "DELETE" && route == "/memory" && memory.Status == 200)
             {
-                _viewModel.ClearConversationLog();
+                _viewModel.ClearLogAndCaptures();
+                bool routinesKept = !ForgetRoutines();
+                if (routinesKept)
+                {
+                    ShellTraceSink.Record(ShellTraceScopes.Startup, "routines", "routines_forget_failed", "kept");
+                }
+
+                _routineCount = null;
                 OnEverythingForgotten();
+                // RUT9 (REV9 H5): the panel says it when the routines stayed (the button promises them); before, only the
+                // trace knew.
+                if (routinesKept && memory.Body.StartsWith('{') && JsonNode.Parse(memory.Body) is JsonObject told)
+                {
+                    told["routinesKept"] = true;
+                    return memory with { Body = told.ToJsonString() };
+                }
             }
 
             return memory;
         }
 
+        if (route == "/routines" || route.StartsWith("/routines/", StringComparison.Ordinal))
+        {
+            return method == "GET" && route == "/routines"
+                ? await RoutinesAsync().ConfigureAwait(true)
+                : await ChangeRoutineAsync(method, route["/routines".Length..].TrimStart('/'), ParseBody(body))
+                    .ConfigureAwait(true);
+        }
+
         return Error("not_found", 404);
+    }
+
+    /// <summary>
+    /// REV_LEGAL LEG-15 (2026-11-09): the privacy policy and the licenses go in the package (scripts/build_steam.ps1:
+    /// <c>licenses\</c> beside <c>app\</c>, with <c>PRIVACIDAD.md</c> and <c>THIRD_PARTY_NOTICES.md</c>) and only existed as
+    /// files: Settings › Privacidad opens them. «privacy» is the policy (its folder if Windows has no program for .md),
+    /// «licenses» the folder of every text. The folder is the first <c>licenses</c> with the policy in it, from Baxy.exe's
+    /// folder upwards (a development run finds the repository's). Nothing else can be named: the view sends a word, not a path.
+    /// </summary>
+    private FieldHttpResponse OpenLegal(string? doc)
+    {
+        if (doc is not "licenses")
+        {
+            return Error("invalid_settings", 400);
+        }
+
+        if (LegalFolder() is not { } folder)
+        {
+            return Error("legal_not_found", 404);
+        }
+
+        // A folder opens in Explorer on any Windows.
+        return OpenShell(folder) ? Json(new JsonObject { ["ok"] = true }) : Error("legal_not_opened", 409);
+    }
+
+    // VIS3 (VIVO6 fila 4): the policy is a .md, and a Windows with no program for .md answered «Abrir la política de
+    // privacidad» with its «Open with» dialog (OpenWith.exe -Embedding), which ShellExecute counts as opened. Its text is
+    // shown in Settings (the view's Markdown renderer), which needs nothing installed.
+    private FieldHttpResponse PrivacyText()
+    {
+        if (LegalFolder() is not { } folder)
+        {
+            return Error("legal_not_found", 404);
+        }
+
+        try
+        {
+            return Json(new JsonObject { ["text"] = File.ReadAllText(Path.Combine(folder, "PRIVACIDAD.md")) });
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return Error("legal_not_read", 409);
+        }
+    }
+
+    // The package's «licenses» folder (scripts/build_steam.ps1: beside «app»), from Baxy.exe's folder up; null without it.
+    private string? LegalFolder()
+    {
+        for (DirectoryInfo? at = new(LegalStart); at is not null; at = at.Parent)
+        {
+            string licenses = Path.Combine(at.FullName, "licenses");
+            if (File.Exists(Path.Combine(licenses, "PRIVACIDAD.md")))
+            {
+                return licenses;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool ShellOpen(string path)
+    {
+        try
+        {
+            using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = true });
+            return true;
+        }
+        catch (Exception exception) when (exception is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            return false;
+        }
     }
 
     /// <summary>What a view that (re)connects receives: the current state, never fragments already published.</summary>
@@ -325,6 +760,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         VoiceEvent(),
         BootEvent(),
         ContextEvent(),
+        .. UpdateNotices(),
     ];
 
     // ---- the conversation ---------------------------------------------------------------------------------------
@@ -338,13 +774,18 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (message.IsUser)
         {
-            _sessionLabel ??= Clip(message.Body, 40);
-            Publish(ItemEvent(_transcript.You(message.Body)));
+            if (_sessionLabel is null)
+            {
+                _sessionLabel = Clip(message.Body, 40);
+                _sessionLabelBy = FieldSessionStore.LabelByFirst;
+            }
+
+            Publish(ItemEvent(_transcript.You(message.Body, _viewModel.ThinksByApi)));
             Publish(SessionEvent());
             return;
         }
 
-        Publish(ItemEvent(_transcript.Words(message.Body, message.Silent)));
+        Publish(ItemEvent(_transcript.Words(message.Body, message.Silent, _viewModel.ThinksByApi)));
     }
 
     private void OnStepStarted(string id, string operation, JsonObject arguments)
@@ -356,9 +797,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private void OnStepCompleted(NativeTurnStep step)
     {
-        // What left the PC: a call that reaches the internet and got to its provider (the kernel let it through).
+        // What left the PC: a call that reaches the internet and got to its provider (the kernel let it through). An
+        // update whose receipt says it asked no one (a store's copy, a development one) left nothing.
         bool english = UiLanguage.IsEnglish;
         string? net = step.Sent && NativeTurnLoop.Has(step.Operation, step.Arguments, OperationEffects.Network)
+            && !(step.Operation == UpdatePanel.Operation && UpdatePanel.StayedIn(step))
             ? FieldStepProjection.NetWhat(step.Operation, step.Arguments, english)
             : null;
         JsonObject? view = FieldStepProjection.Finished(step.Id, step, net, english);
@@ -417,13 +860,25 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             _triggerCount = null; // read again when the view asks
         }
 
+        // RUT4: the chat may have made, changed or deleted a routine: the rail's number is not shown stale (null takes
+        // it away) and is read again now, so the view gets the new one without asking.
+        if (step.Operation == RoutinesOperation && step.Sent)
+        {
+            RereadRoutines();
+        }
+
         // The chat changed one of BAXY's own settings in the profile's file (baxy.settings.set): the App reads it again,
         // and a voice switched off stops speaking now, as the view's switch does (PutGeneral).
         if (step.Operation == "baxy.settings.set" && step.Sent)
         {
+            bool echoCancel = _viewModel.Settings.EchoCancel;
             _viewModel.Settings.Reload();
             if (_viewModel.Settings.VoiceMuted)
                 _viewModel.SilenceVoice();
+            if (_viewModel.Settings.EchoCancel != echoCancel)
+                _ = _viewModel.ApplyEchoCancelAsync(CancellationToken.None);
+
+            _viewModel.ToolsChangedBySpeaking();
         }
     }
 
@@ -440,7 +895,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         } : null;
         string id = _transcript.NextId("k");
         JsonObject card = FieldStepProjection.Card(id, asked.Proposal ? "proposal" : "confirm",
-            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, english, asked.EffectStarted, asked.Cause);
+            asked.Operation, asked.Arguments, asked.Risk, asked.ExpiresUtc, context, english, asked.EffectStarted, asked.Cause,
+            asked.Shown);
         _pendingCard = (id, asked);
         Publish(ItemEvent(_transcript.Card(card)));
     }
@@ -576,7 +1032,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             });
         }
 
-        return new JsonObject { ["sessions"] = list };
+        return new JsonObject { ["sessions"] = list, ["unsaved"] = _unsaved };
     }
 
     // ---- conversations asked by voice ------------------------------------------------------------------------------
@@ -652,11 +1108,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         string renamed;
-        if (conversation.Id == _sessionId)
+        if (conversation.Id == _sessionId && RenameCurrent(title))
         {
-            _sessionLabel = title;
-            Publish(SessionEvent());
             renamed = SessionTitle;
+        }
+        else if (conversation.Id == _sessionId)
+        {
+            return Failed("conversation_not_renamed", null);
         }
         else if (_sessions.Rename(conversation.Id, title) && _sessions.Load(conversation.Id)?.Label is { } label)
         {
@@ -793,12 +1251,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
     }
 
-    // Keeps the current conversation (what the view showed and the mind's own) when it holds anything.
-    private async Task SaveCurrentAsync(CancellationToken? cancellationToken = null)
+    // Keeps the current conversation (what the view showed and the mind's own) when it holds anything: the mind's
+    // conversation it kept, or null when there was nothing to keep or the mind exported none.
+    private async Task<JsonArray?> SaveCurrentAsync(CancellationToken? cancellationToken = null)
     {
         if (_transcript.Items.Count == 0)
         {
-            return;
+            return null;
         }
 
         JsonArray? mind;
@@ -816,9 +1275,93 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         // A mind lost in the turn exports nothing: its conversation stays as last kept, for the one that starts next
         // (2026-10-22, review of the App: the save wrote it away and the relaunched mind had nothing to get back).
         mind ??= _sessions.Load(_sessionId)?.Mind;
-        _sessions.Save(new FieldSessionStore.Session(_sessionId, SessionTitle, _sessionCreated, DateTimeOffset.UtcNow,
-            _transcript.Snapshot(), mind));
+        Kept(_sessions.Save(new FieldSessionStore.Session(_sessionId, SessionTitle, _sessionCreated, DateTimeOffset.UtcNow,
+            _transcript.Snapshot(), mind, _sessionLabelBy)));
         Publish(SurfacesEvent());
+        return mind;
+    }
+
+    // Whether the conversation on screen reached the disk this time; a change makes the view read its history again.
+    private void Kept(bool saved)
+    {
+        if (_unsaved == saved)
+        {
+            _unsaved = !saved;
+            Interlocked.Increment(ref _sessionsRevision);
+            ShellTraceSink.Record(ShellTraceScopes.Bridge, ShellTraceSink.TurnId,
+                saved ? "conversation.kept_again" : "conversation.not_kept", "");
+        }
+    }
+
+    // The person's name for the conversation on screen. One already on the disk gets it there first: a name that could
+    // not be written is not given (REV_APP HIS-1, 2026-11-09: it lived in memory until the next save). One that is not
+    // kept yet (nothing said in it) carries it to its first save.
+    private bool RenameCurrent(string title)
+    {
+        if (_sessions.Load(_sessionId) is not null && !_sessions.Rename(_sessionId, title))
+        {
+            return false;
+        }
+
+        _sessionLabel = title;
+        _sessionLabelBy = FieldSessionStore.LabelByPerson;
+        Publish(SessionEvent());
+        return true;
+    }
+
+    // What the conversation that closes needs to be named once the next one opened: its id and its mind conversation as
+    // kept; nothing when the person named it (then it is never named again) or the mind kept none.
+    private (string Id, JsonArray Mind)? Closing(JsonArray? mind) =>
+        mind is not null && _sessionLabelBy != FieldSessionStore.LabelByPerson ? (_sessionId, mind) : null;
+
+    /// <summary>
+    /// Owner, 2026-11-08: «al momento de yo darle a nueva conversación … que el LLM reciba la instrucción de darle un
+    /// nombre a la conversación … para después yo poder ubicarla». Asked once the next conversation opened, so the person
+    /// never waits for it; the model writes it (session.title, Mind.title_of). With none, the conversation keeps its
+    /// first words, and the panel shows when it was used beside them. A name the person gave meanwhile stays.
+    /// </summary>
+    private async Task NameClosedAsync((string Id, JsonArray Mind)? closing)
+    {
+        if (closing is not { } closed)
+        {
+            return;
+        }
+
+        string? title;
+        try
+        {
+            title = await _viewModel.TitleMindSessionAsync(closed.Mind, _lifetimeCancellation).ConfigureAwait(true);
+        }
+        catch (Exception exception) when (exception is OperationCanceledException or IOException
+            or InvalidOperationException or JsonException)
+        {
+            title = null;
+        }
+
+        if (_disposed || title is not { Length: > 0 and <= MaximumSessionLabel })
+        {
+            return;
+        }
+
+        if (closed.Id == _sessionId)
+        {
+            // Opened again before the name came: it is named on screen, unless the person named it meanwhile.
+            if (_sessionLabelBy != FieldSessionStore.LabelByPerson)
+            {
+                _sessionLabel = title;
+                _sessionLabelBy = FieldSessionStore.LabelByModel;
+                Publish(SessionEvent());
+            }
+
+            return;
+        }
+
+        if (_sessions.Load(closed.Id) is { } kept && kept.LabelBy != FieldSessionStore.LabelByPerson
+            && _sessions.Save(kept with { Label = title, LabelBy = FieldSessionStore.LabelByModel }))
+        {
+            Interlocked.Increment(ref _sessionsRevision);
+            Publish(SurfacesEvent());
+        }
     }
 
     private async Task<FieldHttpResponse> NewSessionAsync(bool silence = true)
@@ -828,13 +1371,14 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Error("turn_in_progress", 409);
         }
 
-        await SaveCurrentAsync().ConfigureAwait(true);
+        (string Id, JsonArray Mind)? closing = Closing(await SaveCurrentAsync().ConfigureAwait(true));
         if (!await _viewModel.StartNewUiSessionAsync(_lifetimeCancellation, silence).ConfigureAwait(true))
         {
             return Error(_viewModel.IsBusy ? "turn_in_progress" : "session_not_started", 409);
         }
 
         StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
+        UnhandledFailures.Watch(NameClosedAsync(closing), "conversation.name");
         return Json(new JsonObject { ["ok"] = true, ["id"] = _sessionId });
     }
 
@@ -855,7 +1399,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Error("turn_in_progress", 409);
         }
 
-        await SaveCurrentAsync().ConfigureAwait(true);
+        (string Id, JsonArray Mind)? closing = Closing(await SaveCurrentAsync().ConfigureAwait(true));
         // The heartbeat reads the session's words; the mind gets its own conversation back as it was kept.
         var messages = new List<ConversationMessage>();
         foreach (JsonNode? node in kept.Items)
@@ -873,19 +1417,40 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             return Error("session_not_opened", 409);
         }
 
-        StartSession(kept.Id, kept.Label, kept.Created, kept.Items);
+        StartSession(kept.Id, kept.Label, kept.Created, kept.Items, kept.LabelBy);
+        UnhandledFailures.Watch(NameClosedAsync(closing), "conversation.name");
         return Json(new JsonObject { ["ok"] = true });
     }
 
-    private void StartSession(string id, string? label, DateTimeOffset created, JsonArray? items)
+    private void StartSession(string id, string? label, DateTimeOffset created, JsonArray? items,
+        string labelBy = FieldSessionStore.LabelByFirst)
     {
         _sessionId = id;
         _sessionLabel = string.IsNullOrWhiteSpace(label) ? null : label;
+        _sessionLabelBy = labelBy;
         _sessionCreated = created;
-        _transcript.Replace(items);
+        if (_unsaved)
+        {
+            // It was said of the conversation that was on screen; this one has had no save yet.
+            _unsaved = false;
+            Interlocked.Increment(ref _sessionsRevision);
+        }
+
+        Reopen(_transcript, items, _viewModel.Ringing);
         Publish(new JsonObject { ["type"] = "transcript", ["items"] = _transcript.Snapshot() });
         Publish(SessionEvent());
         Publish(SurfacesEvent());
+    }
+
+    /// <summary>The conversation the person opens: what rang in it when it was kept rings no more
+    /// (<see cref="FieldTranscript.Replace"/>), and what still rings is in it, live, whatever conversation it rang in (INT16).</summary>
+    internal static void Reopen(FieldTranscript transcript, JsonArray? items, IEnumerable<RingNow> ringing)
+    {
+        transcript.Replace(items);
+        foreach (RingNow ring in ringing)
+        {
+            _ = transcript.Ring(RingItem(ring));
+        }
     }
 
     private FieldHttpResponse RenameSession(JsonObject? payload)
@@ -899,9 +1464,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
         if (id == _sessionId)
         {
-            _sessionLabel = title;
-            Publish(SessionEvent());
-            return Json(new JsonObject { ["ok"] = true });
+            return RenameCurrent(title) ? Json(new JsonObject { ["ok"] = true }) : Error("session_not_saved", 500);
         }
 
         return _sessions.Rename(id, title) ? Json(new JsonObject { ["ok"] = true }) : Error("session_not_found", 404);
@@ -927,7 +1490,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         int deleted = _sessions.DeleteAll();
-        _viewModel.ClearConversationLog();
+        _viewModel.ClearLogAndCaptures();
         StartSession(NewSessionId(), null, DateTimeOffset.UtcNow, null);
         await _viewModel.ForgetMindTraceAsync(_lifetimeCancellation).ConfigureAwait(true);
         return Json(new JsonObject { ["ok"] = true, ["deleted"] = deleted });
@@ -938,9 +1501,25 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private void OnEverythingForgotten()
     {
         _sessions.DeleteAll(keep: _sessionId);
-        _ = _viewModel.ForgetMindTraceAsync(_lifetimeCancellation);
+        UnhandledFailures.Watch(_viewModel.ForgetMindTraceAsync(_lifetimeCancellation), "trace.forget");
+        // SIS1 (REV10 M1): and what the hidden reader's folder kept of the searches it read.
+        string dataRoot = MemoryOperationProtector.ResolveDataRoot();
+        UnhandledFailures.Watch(Task.Run(() => HiddenPageReader.Forget(dataRoot)), "reader.forget");
         Publish(SurfacesEvent());
     }
+
+    /// <summary>
+    /// PRV1 D7 (INFORME_PRV1 §9, 2026-11-10): what «Olvidar todo» takes besides the memories (the DELETE /memory route and
+    /// <see cref="OnEverythingForgotten"/>): the kept conversations other than the one on screen, which stays, and the
+    /// conversation's log. The memory panel offered the button only with memories, and with none these had no way out of
+    /// the interface; it offers it whenever any of them is here.
+    /// </summary>
+    private JsonObject Kept() => new()
+    {
+        ["conversations"] = _sessions.List().Count(session => session.Id != _sessionId),
+        ["log"] = _viewModel.ConversationLogHoldsAny,
+        ["routines"] = RoutinesKept(),
+    };
 
     private static string NewSessionId() => Guid.NewGuid().ToString("N")[..12];
 
@@ -963,7 +1542,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private async Task<FieldHttpResponse> TriggersAsync()
     {
-        OperationResponse? response = await _viewModel.SendPanelOperationAsync("schedule.alarms",
+        OperationResponse? response = await ListTriggers(
             new JsonObject { ["action"] = "list", ["limit"] = 50 }, _lifetimeCancellation).ConfigureAwait(true);
         return TriggersReply(response);
     }
@@ -995,6 +1574,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         return await TriggersAsync().ConfigureAwait(true);
     }
 
+    /// <summary>How BAXY's alarms are listed: the chat's own schedule.alarms through the engine (a test answers it).</summary>
+    internal Func<JsonObject, CancellationToken, Task<OperationResponse?>> ListTriggers { get; set; }
+
     private FieldHttpResponse TriggersReply(OperationResponse? response)
     {
         if (response is not { Status: OperationStatuses.Completed } || response.Result is not { ValueKind: JsonValueKind.Object } result
@@ -1025,6 +1607,261 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         return Json(new JsonObject { ["count"] = count, ["items"] = items, ["truncated"] = count > items.Count });
     }
 
+    // ---- routines (RUT1 documentacion/RUTINAS.md §6; RUT3's panel) ---------------------------------------------------
+
+    private const string RoutinesOperation = "baxy.routines";
+
+    /// <summary>How the person's routines are read and changed: the chat's own baxy.routines through the engine, as the
+    /// alarms panel does with schedule.alarms (a test answers it).</summary>
+    internal Func<JsonObject, CancellationToken, Task<OperationResponse?>> RunRoutines { get; set; }
+
+    /// <summary>«Olvidar todo»: the routines and the tasks of the ones at a time go; false when a task stayed, and then
+    /// the routines stay too (one gone from the list that still spoke at its time would be a lie). A test's own.</summary>
+    internal Func<bool> ForgetRoutines { get; set; } = static () => ForgetStoredRoutines(MemoryOperationProtector.ResolveDataRoot());
+
+    /// <param name="removeTasks">Removes the tasks of the routines with those ids (RoutineSayTasks by default; a
+    /// test's own, so no test reaches Windows' Task Scheduler).</param>
+    /// <param name="removeEveryTask">RUT9 (REV9 H5): with a routines file that cannot be read, removes every routine
+    /// task of this data root (no id is known); true when none stayed. Then the file goes too: before, it was never
+    /// deleted and «Olvidar todo» said it was. REV11 B-2: with a file that reads, too, after the listed ones.</param>
+    internal static bool ForgetStoredRoutines(
+        string dataRoot, Func<IReadOnlyList<string>, bool>? removeTasks = null, Func<bool>? removeEveryTask = null)
+    {
+        var store = new LocalRoutineStore(Path.Combine(dataRoot, LocalRoutineStore.FolderName));
+        try
+        {
+            try
+            {
+                _ = store.Read();
+            }
+            catch (InvalidDataException)
+            {
+                removeEveryTask ??= () => new RoutineSayTasks(dataRoot).RemoveEvery() is not null;
+                if (!removeEveryTask())
+                {
+                    return false;
+                }
+
+                store.DeleteAll();
+                return true;
+            }
+
+            string[] timed = [.. store.Read()
+                .Where(static routine => routine["trigger"]?["at"] is not null && routine["id"] is not null)
+                .Select(static routine => (string)routine["id"]!)];
+            removeTasks ??= ids => new RoutineSayTasks(dataRoot).RemoveAll(ids);
+            if (timed.Length > 0 && !removeTasks(timed))
+            {
+                return false;
+            }
+
+            // REV11 B-2: and every routine task this data root recorded, also the ones of routines no longer listed (a
+            // routine said «once» leaves the list when its time passed even if the PC slept then; its task stays to say
+            // it, REV9 H10, and with the list gone nothing would remove it).
+            removeEveryTask ??= () => new RoutineSayTasks(dataRoot).RemoveEvery() is not null;
+            if (!removeEveryTask())
+            {
+                return false;
+            }
+
+            store.DeleteAll();
+            return true;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            return false;
+        }
+    }
+
+    // How many routines the store keeps, for «Olvidar todo» (0 when it cannot be read: the button offers what it sees).
+    private static int RoutinesKept()
+    {
+        try
+        {
+            return new LocalRoutineStore(Path.Combine(
+                MemoryOperationProtector.ResolveDataRoot(), LocalRoutineStore.FolderName)).Read().Count;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            return 0;
+        }
+    }
+
+    private void RereadRoutines()
+    {
+        _routineCount = null;
+        UnhandledFailures.Watch(RoutinesAsync(), "routines.count");
+    }
+
+    // GET /routines: the routines as the store keeps them (§1), each step with the title the conversation's cards give
+    // that call (FieldStepProjection, with its target) and, when it would not run today, why (`blocked`): the operation
+    // is off in the tool profile, or BAXY no longer has it. The rail's number is the active ones.
+    private async Task<FieldHttpResponse> RoutinesAsync()
+    {
+        OperationResponse? response = await RunRoutines(new JsonObject { ["action"] = "list" }, _lifetimeCancellation)
+            .ConfigureAwait(true);
+        if (Listed(response) is not { } routines)
+        {
+            Counted(null);
+            return Error(response?.ErrorCode ?? "routines_unavailable", 503);
+        }
+
+        bool english = UiLanguage.IsEnglish;
+        foreach (JsonObject routine in routines.OfType<JsonObject>())
+        {
+            Shown(routine, english);
+        }
+
+        Counted(routines.Count(static routine => (bool?)routine?["active"] == true));
+        return Json(new JsonObject { ["routines"] = routines, ["count"] = routines.Count });
+    }
+
+    // PUT /routines/{id} {action: enable|disable} and DELETE /routines/{id}: the routine is found by its id in the
+    // list and the change goes by its name through baxy.routines; the reply is the routine as the store left it, or
+    // 4xx with the handler's cause («routine_» aside: not_found, duplicate_phrase…).
+    private async Task<FieldHttpResponse> ChangeRoutineAsync(string method, string id, JsonObject? payload)
+    {
+        string? action = method switch
+        {
+            "DELETE" => "delete",
+            "PUT" when (string?)payload?["action"] is "enable" or "disable" => (string?)payload?["action"],
+            _ => null,
+        };
+        if (action is null || !Regex.IsMatch(id, "^r-[0-9a-f]{6}$", RegexOptions.CultureInvariant))
+        {
+            return Error("invalid_routine", 400);
+        }
+
+        OperationResponse? listed = await RunRoutines(new JsonObject { ["action"] = "list" }, _lifetimeCancellation)
+            .ConfigureAwait(true);
+        if (Listed(listed) is not { } routines)
+        {
+            return Error(listed?.ErrorCode ?? "routines_unavailable", 503);
+        }
+
+        if (routines.OfType<JsonObject>().FirstOrDefault(routine => (string?)routine["id"] == id) is not { } found
+            || (string?)found["name"] is not { } name)
+        {
+            return Error("not_found", 404);
+        }
+
+        OperationResponse? changed = await RunRoutines(
+            new JsonObject { ["action"] = action, ["name"] = name }, _lifetimeCancellation).ConfigureAwait(true);
+        if (changed is null)
+        {
+            return Error("routines_unavailable", 503);
+        }
+
+        string key = action == "delete" ? "deleted" : "routine";
+        if (changed is not { Status: OperationStatuses.Completed, Result: { ValueKind: JsonValueKind.Object } result }
+            || !result.TryGetProperty(key, out JsonElement left) || JsonNode.Parse(left.GetRawText()) is not JsonObject routineLeft)
+        {
+            string code = changed.ErrorCode ?? "routine_not_changed";
+            return Error(code.StartsWith("routine_", StringComparison.Ordinal) ? code["routine_".Length..] : code, 409);
+        }
+
+        Shown(routineLeft, UiLanguage.IsEnglish);
+        RereadRoutines();
+        return Json(routineLeft);
+    }
+
+    private static JsonArray? Listed(OperationResponse? response) =>
+        response is { Status: OperationStatuses.Completed, Result: { ValueKind: JsonValueKind.Object } result }
+        && result.TryGetProperty("routines", out JsonElement routines) && routines.ValueKind == JsonValueKind.Array
+            ? JsonNode.Parse(routines.GetRawText()) as JsonArray
+            : null;
+
+    private void Shown(JsonObject routine, bool english)
+    {
+        foreach (JsonObject step in (routine["steps"] as JsonArray ?? []).OfType<JsonObject>())
+        {
+            if ((string?)step["op"] is not { } operation)
+            {
+                continue;
+            }
+
+            if (!Baxy.Kernel.Operations.ProductCatalog.TryGet(operation, out _))
+            {
+                step["blocked"] = "unknown_operation";
+                continue;
+            }
+
+            step["title"] = FieldStepProjection.Label(operation, step["arguments"] as JsonObject ?? [], english);
+            if (_viewModel.ToolProfileState.Refusal(operation) is { } off)
+            {
+                step["blocked"] = off;
+            }
+        }
+    }
+
+    private void Counted(int? active)
+    {
+        if (_routineCount != active)
+        {
+            _routineCount = active;
+            Publish(SurfacesEvent());
+        }
+    }
+
+    // ---- what rings now (ALR1) -------------------------------------------------------------------------------------
+
+    // An alarm or a reminder this App rings: its card, with its words, until it is answered or ends.
+    private void OnRingChanged(RingNow ring) => Publish(ItemEvent(_transcript.Ring(RingItem(ring))));
+
+    // RUT4: a routine at a time said its text: one line in the conversation, with its time and the text, and whether
+    // BAXY's voice said it (off or not there, the line is all there was). No card: there is nothing to answer.
+    private void OnRoutineSaid(RingNow say, bool spoken)
+    {
+        Publish(ItemEvent(_transcript.System(RoutineSaidLine(say, spoken, UiLanguage.IsEnglish))));
+        // One said once is gone from the list after its time: the rail's number is read again.
+        RereadRoutines();
+    }
+
+    internal static string RoutineSaidLine(RingNow say, bool spoken, bool english)
+    {
+        string clock = DateTime.TryParseExact(say.Clock, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None,
+            out DateTime at) ? at.ToString("H:mm", CultureInfo.InvariantCulture) : say.Clock;
+        return spoken
+            ? UiLanguage.Say(english, $"Rutina de las {clock} · dije: «{say.Words}»", $"Routine, {clock} · I said: “{say.Words}”")
+            : UiLanguage.Say(english, $"Rutina de las {clock} · con la voz apagada, sólo aquí: «{say.Words}»",
+                $"Routine, {clock} · voice off, only here: “{say.Words}”");
+    }
+
+    // One card each time it rings (INT16B, third blind review): a daily alarm's task rings every day under the same name,
+    // and named by the task alone, today's ring took the place of yesterday's card, up in the conversation, unseen.
+    internal static JsonObject RingItem(RingNow ring) => new()
+    {
+        ["who"] = "ring",
+        ["id"] = "ring-" + ring.TaskName[^32..] + "-" + ring.RangUtc.UtcTicks.ToString(CultureInfo.InvariantCulture),
+        ["ts"] = ring.RangUtc.ToLocalTime().ToString("HH:mm", CultureInfo.InvariantCulture),
+        ["ring"] = new JsonObject
+        {
+            ["id"] = ring.Id,
+            ["kind"] = ring.Kind,
+            ["title"] = ring.Title,
+            ["clock"] = ring.Clock,
+            ["words"] = ring.Words,
+            ["status"] = ring.Status,
+        },
+    };
+
+    // The card's Stop (or Done) and Snooze: schedule.alarms through the kernel, as the model's call would.
+    private async Task<FieldHttpResponse> AnswerRingAsync(JsonObject? payload)
+    {
+        string id = ((string?)payload?["id"] ?? string.Empty).Trim();
+        string action = (string?)payload?["action"] ?? string.Empty;
+        if (!Regex.IsMatch(id, "^[0-9a-f]{8}$", RegexOptions.CultureInvariant) || action is not ("stop" or "snooze"))
+        {
+            return Error("invalid_ring_answer", 400);
+        }
+
+        OperationResponse? answered = await _viewModel.AnswerRingAsync(id, action, _lifetimeCancellation)
+            .ConfigureAwait(true);
+        return answered is { Status: OperationStatuses.Completed, Verified: true }
+            ? Json(new JsonObject { ["ok"] = true })
+            : Error(answered?.ErrorCode ?? "ring_not_answered", 409);
+    }
+
     // ---- settings ---------------------------------------------------------------------------------------------------
 
     // «Arrancar con Windows» is the Run key's entry for this executable, when this copy may own the sign-in start
@@ -1035,12 +1872,39 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         try
         {
             bool? on = WindowsAutostartRegistration.CreateDefault().IsRegisteredForCurrent();
-            return (on, on is null ? "not_this_copy" : null);
+            return (on, AutostartBlocked(on, AppContext.BaseDirectory));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or InvalidOperationException
             or System.Security.SecurityException)
         {
             return (null, "unreadable");
+        }
+    }
+
+    /// <summary>
+    /// Why this copy may not start with Windows, or null when it may (<paramref name="on"/> read). LEG1 §5 (2026-11-09): a copy
+    /// from Steam or itch.io may not either (only the installed one and the owner's checkout do), and Settings called it a
+    /// development copy that opens with run_renew.cmd; its store is said instead, from the packager's distribution.json beside
+    /// <c>app\</c> (scripts/build_steam.ps1, read as BaxyDistribution.Read does).
+    /// </summary>
+    internal static string? AutostartBlocked(bool? on, string appFolder)
+    {
+        if (on is not null)
+        {
+            return null;
+        }
+
+        try
+        {
+            using JsonDocument marker = JsonDocument.Parse(File.ReadAllText(Path.Combine(appFolder, "..", "distribution.json")));
+            JsonElement value = marker.RootElement;
+            string? Text(string name) => value.ValueKind == JsonValueKind.Object && value.TryGetProperty(name, out JsonElement field)
+                && field.ValueKind == JsonValueKind.String ? field.GetString() : null;
+            return Text("schema") == "baxy.distribution.v1" && Text("channel") is "steam" or "itch" ? Text("channel") + "_copy" : "not_this_copy";
+        }
+        catch (Exception unreadable) when (unreadable is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return "not_this_copy";
         }
     }
 
@@ -1073,7 +1937,15 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             _viewModel.SilenceVoice();
         if (_viewModel.Settings.EchoCancel != echoCancel)
             _ = _viewModel.ApplyEchoCancelAsync(CancellationToken.None);
-        return Json(_viewModel.Settings.GeneralJson(Autostart()));
+        return Json(General());
+    }
+
+    // General's settings, and the version Settings › Versión shows before any check (VIS3: UpdatePanel.Installed).
+    private JsonObject General()
+    {
+        JsonObject general = _viewModel.Settings.GeneralJson(Autostart());
+        general["version"] = UpdatePanel.Installed;
+        return general;
     }
 
     // Steam (2026-11-04): the person's choice of language («auto», «es» or «en»), which the host keeps and the view reads
@@ -1174,7 +2046,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         // A turn that ended keeps the conversation as it stands (the session survives a restart).
         if (name is nameof(MainWindowViewModel.IsBusy) && !_viewModel.IsBusy && !_disposed)
         {
-            _ = SaveCurrentAsync();
+            UnhandledFailures.Watch(SaveCurrentAsync(), "conversation.save");
         }
     }
 
@@ -1185,6 +2057,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["type"] = "state",
         ["value"] = CurrentConversationState(),
         ["quiet"] = QuietConversationState(),
+        // APP1 (REV_APP OVL-2): whether a turn runs, apart from listening or speaking; the overlay ends its turn with it
+        ["busy"] = _viewModel.IsBusy,
     };
 
     private string CurrentConversationState() =>
@@ -1215,6 +2089,14 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         // both instead of a turn that ended with nothing.
         ["waitingForMind"] = _viewModel.IsAwaitingMind,
         ["failureCause"] = _viewModel.MindFailureCause,
+        // VIVO1 F4: why the server of another model refused the turn, in the translator's words (ExternalModel.Refusal).
+        ["failureWhy"] = _viewModel.Failure is "model_refused" or "model_refused_after_call"
+            ? _viewModel.ExternalModelState.Refusal
+            : null,
+        // REV_VISTA V-04: its kind, which the view says in its own language (an English view showed the Spanish words).
+        ["failureKind"] = _viewModel.Failure is "model_refused" or "model_refused_after_call"
+            ? _viewModel.ExternalModelState.RefusalKind
+            : null,
         ["failureMemory"] = FailureMemory(),
         ["failureRead"] = FailureRead(),
         // At rest or active: the rail's power row and the tray menu change it, the view only shows it.
@@ -1227,6 +2109,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         voice["type"] = "voice";
         return voice;
     }
+
+    private bool NoWake() =>
+        _viewModel.VoicePieces is { Pending: false, WakeAvailable: false, SttAvailable: true, WaitingMemory: null };
 
     private JsonObject VoiceStatus() => new()
     {
@@ -1242,6 +2127,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             : null,
         // uso-116: a microphone with no recogniser is not «no hay micrófono».
         ["no_recognizer"] = _viewModel.VoicePieces is { Pending: false, InputAvailable: true, SttAvailable: false, WaitingMemory: null },
+        // V132: the voice settled with its recogniser and no wake word (its folder gone or changed: why, when the
+        // installation named one): «Siempre activo» cannot answer to «BAXY» while holding to talk still can, and the view
+        // says it instead of an ear that is silently off. An ear without its recogniser is said as such (no_recognizer).
+        ["no_wake"] = NoWake(),
+        ["wake_problem"] = NoWake() ? _viewModel.WakeProblem : null,
     };
 
     // The start's pieces, each marked only once the mind reports it (null before); no percentage is made up.
@@ -1267,6 +2157,8 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 ? new JsonObject { ["done"] = reading.Done, ["total"] = reading.Total, ["seconds_left"] = reading.SecondsLeft }
                 : null,
             ["onProcessor"] = _viewModel.MindOnProcessor,
+            // QWB2: the tuned model the person chose and this start could not use (missing or damaged).
+            ["tunedProblem"] = _viewModel.TunedModelProblem,
         };
     }
 
@@ -1296,10 +2188,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private JsonObject Surfaces() => new()
     {
         ["sessions"] = 1 + _sessions.List().Count(s => s.Id != _sessionId),
+        ["sessions_revision"] = Volatile.Read(ref _sessionsRevision),
         ["memory"] = _memory.Count,
         ["memory_revision"] = Volatile.Read(ref _memoryRevision),
         ["tools"] = Baxy.Kernel.Operations.ProductCatalog.ToolDescriptors.Count,
         ["triggers"] = _triggerCount,
+        ["routines"] = _routineCount,
     };
 
     private JsonObject SurfacesEvent()
@@ -1387,15 +2281,24 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         };
     }
 
-    // The model the mind was given (BAXY_MIND_LLM_GGUF) and its context.
-    private static JsonObject CurrentSettings()
+    // The stock model the package carries (THIRD_PARTY_NOTICES.md: unsloth/Qwen3.5-4B-GGUF, Qwen3.5-4B-Q4_K_M.gguf), by its SHA-256.
+    internal const string StockModelName = "Qwen3.5-4B";
+    internal const string StockModelSha256 = "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4";
+
+    // The model the mind was given (BAXY_MIND_LLM_GGUF) and its context, and whether it is the stock model: by the SHA-256 the
+    // registry gave with it (TunedModel puts the tuned one's in its place), null when a launcher set the file itself and none
+    // was given (scripts/run_renew.cmd gives the development mind a tuned file as BAXY's own: the view never calls it stock).
+    private JsonObject CurrentSettings()
     {
         FieldModelIdentity identity = ResolveModelIdentity(Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"));
+        string? sha256 = Environment.GetEnvironmentVariable(MindRuntimeDiscovery.GgufSha256Variable);
         return new JsonObject
         {
             ["modelAlias"] = identity.Alias,
             ["ggufPath"] = identity.FileName,
             ["ctxSize"] = ContextSize(),
+            ["stockName"] = StockModelName,
+            ["ownIsStock"] = string.IsNullOrWhiteSpace(sha256) ? null : string.Equals(sha256.Trim(), StockModelSha256, StringComparison.OrdinalIgnoreCase),
         };
     }
 
@@ -1405,7 +2308,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private JsonObject ModelEvent() =>
         new() { ["type"] = "model", ["info"] = _viewModel.IsMindReady ? ModelInfo() : null };
 
-    private static JsonObject ModelInfo()
+    private JsonObject ModelInfo()
     {
         FieldModelIdentity identity = ResolveModelIdentity(Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"));
         return new JsonObject
@@ -1417,14 +2320,14 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         };
     }
 
-    private static int ContextSize()
+    private int ContextSize()
     {
-        // The same variable the mind passes to llama-server, and its default on NVIDIA with the output matrix in RAM
-        // (llm_server.default_context; 53,248 on Vulkan and the CPU).
-        string? raw = Environment.GetEnvironmentVariable("BAXY_RENEW_CTX");
+        // The same variable the mind passes to llama-server, and without it the mind's default on the backend its last
+        // start said (llm_server.default_context); NVIDIA's until one did.
+        string? raw = Environment.GetEnvironmentVariable(LocalContext.Variable);
         return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value) && value > 0
             ? value
-            : 77824;
+            : LocalContext.Automatic(_viewModel.MindBackend) ?? LocalContext.CudaAutomatic;
     }
 
     // A reading the PC did not give (no GPU counter, no temperature, no model process) travels as null; the view
@@ -1437,6 +2340,33 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         ["model_vram_gb"] = metrics.ModelVramGb,
         ["model_ram_gb"] = metrics.ModelRamGb,
     };
+
+    /// <summary>Settings › Personalización «Probar»: the overlay shows an example in its corner.</summary>
+    internal event Action? OverlayPreviewRequested;
+
+    private bool HasPendingCard => _viewModel.HasPendingConfirmation;
+
+    /// <summary>
+    /// The person's answer to the card it names, from the view or the overlay: null when taken, else why not
+    /// (nothing_pending, card_not_pending, turn_in_progress). Auditoría de la App (2026-10-23): an answer that names no card,
+    /// or one that ended, never answers the next. A press while a turn runs is refused, never taken and lost.
+    /// </summary>
+    internal async Task<string?> AnswerCardAsync(bool approve, string card, long arrivedAt)
+    {
+        if (!_viewModel.HasPendingConfirmation)
+        {
+            return "nothing_pending";
+        }
+
+        if (_pendingCard is not { } pending || pending.Id != card)
+        {
+            return "card_not_pending";
+        }
+
+        return await _viewModel.AnswerConfirmationAsync(approve, arrivedAt, _lifetimeCancellation, pending.Asked).ConfigureAwait(true)
+            ? null
+            : _viewModel.HasPendingConfirmation ? "turn_in_progress" : "nothing_pending";
+    }
 
     private static JsonObject? ParseBody(string? body)
     {
@@ -1508,6 +2438,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         _viewModel.KeptConversation = null;
         _viewModel.Conversation = null;
         _viewModel.TurnReleased -= OnTurnReleased;
+        _viewModel.TunedModelOnline -= OnTunedModelOnline;
+        _viewModel.ModelDownloadOnline -= OnModelDownloadOnline;
+        _viewModel.RingChanged -= OnRingChanged;
+        _viewModel.RoutineSaid -= OnRoutineSaid;
         try
         {
             // The conversation as it stands is kept when BAXY closes. FT/proveedores goal (review of the App): the window

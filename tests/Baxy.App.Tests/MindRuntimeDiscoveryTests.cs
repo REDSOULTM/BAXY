@@ -21,7 +21,7 @@ public sealed class MindRuntimeDiscoveryTests
         "BAXY_MIND_NGL", "BAXY_RENEW_TTS_DIR", "BAXY_RENEW_WAKE_DIR", "BAXY_RENEW_WAKE_FAST_DIR", "BAXY_RENEW_STT_DIR",
         "BAXY_S1_GGUF", "BAXY_S1_THREADS", "BAXY_MIND_MMPROJ", "BAXY_MIND_LLAMA_PORT", "BAXY_VISION_OFF",
         "BAXY_VISION_ENDPOINT", "BAXY_VISION_MODEL", "BAXY_VISION_SLOT", "BAXY_VISION_SLOT_DIR", "BAXY_MIND_SLOT",
-        "BAXY_MIND_LLAMA_BACKEND",
+        "BAXY_MIND_LLAMA_BACKEND", "BAXY_MIND_LLM_GGUF_SHA256", "BAXY_MIND_LLAMA_KEY", "BAXY_VISION_API_KEY",
     ];
 
     private readonly Dictionary<string, string?> _saved = [];
@@ -76,6 +76,47 @@ public sealed class MindRuntimeDiscoveryTests
             ["BAXY_VISION_SLOT_DIR"] = Path.Combine(_local, "BAXY", "renew", "slots"),
         }));
         Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_PYTHON"), Does.EndWith("python.exe"));
+    }
+
+    // PRV1 (revisión de privacidad 2026-11-09, PRIV-04): the mind's llama-server started with no key, on a port any page
+    // of this PC reaches. Each start of BAXY makes one at random before the mind and the engine start: the mind's
+    // server asks it of every request, and the engine's vision calls carry it (LocalVisionEndpoint.Authorize).
+    [Test]
+    public void EachStartMakesAKeyForTheMindsServerAndTheEnginesVisionCarriesIt()
+    {
+        string registration = Register(out _);
+
+        Assert.That(Apply(registration), Is.True);
+        string? first = Environment.GetEnvironmentVariable(MindRuntimeDiscovery.ServerKeyVariable);
+        Assert.That(first, Does.Match("^[0-9a-f]{64}$"));
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_VISION_API_KEY"), Is.EqualTo(first));
+
+        // The same start again (a mind that is relaunched) keeps it: the server that is up was started with it.
+        Assert.That(Apply(registration), Is.True);
+        Assert.That(Environment.GetEnvironmentVariable(MindRuntimeDiscovery.ServerKeyVariable), Is.EqualTo(first));
+
+        // Another start of BAXY, with nothing in its environment yet: another key.
+        foreach (string name in Touched)
+        {
+            Environment.SetEnvironmentVariable(name, null);
+        }
+
+        Assert.That(Apply(registration), Is.True);
+        Assert.That(Environment.GetEnvironmentVariable(MindRuntimeDiscovery.ServerKeyVariable),
+            Does.Match("^[0-9a-f]{64}$").And.Not.EqualTo(first));
+    }
+
+    [Test]
+    public void AKeyABenchGaveIsKeptAndAVisionServerOfItsOwnIsNotGivenTheMinds()
+    {
+        string registration = Register(out _);
+        Environment.SetEnvironmentVariable(MindRuntimeDiscovery.ServerKeyVariable, "la-del-banco");
+        Environment.SetEnvironmentVariable("BAXY_VISION_ENDPOINT", "http://127.0.0.1:9000/v1/chat/completions");
+
+        Assert.That(Apply(registration), Is.True);
+
+        Assert.That(Environment.GetEnvironmentVariable(MindRuntimeDiscovery.ServerKeyVariable), Is.EqualTo("la-del-banco"));
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_VISION_API_KEY"), Is.Null);
     }
 
     [Test]
@@ -147,6 +188,84 @@ public sealed class MindRuntimeDiscoveryTests
         Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"), Does.EndWith("qwen.gguf"));
     }
 
+    // V132 (1.3.2): the product's wake folder gone, emptied or not the installed one: everything else starts, the mind hears
+    // no wake word, and the App knows why, to say it (FieldProductChannel's voice status) instead of a silent ear.
+    [TestCase("gone", "wake_missing")]
+    [TestCase("emptied", "wake_missing")]
+    [TestCase("changed", "wake_changed")]
+    [TestCase("extra", "wake_changed")]
+    [TestCase("a file", "wake_missing")] // held-out (V132): a file where the folder was
+    public void AWakeThatIsNotTheInstalledOneStartsTheRestAndSaysWhy(string how, string problem)
+    {
+        string registration = Register(out Pieces pieces);
+        switch (how)
+        {
+            case "gone":
+                Directory.Delete(pieces.Wake, recursive: true);
+                break;
+            case "emptied":
+                foreach (string file in Directory.GetFiles(pieces.Wake))
+                {
+                    File.Delete(file);
+                }
+
+                break;
+            case "changed":
+                File.WriteAllText(Path.Combine(pieces.Wake, "config.json"), "{\"otro\": 1}");
+                break;
+            case "a file":
+                Directory.Delete(pieces.Wake, recursive: true);
+                File.WriteAllText(pieces.Wake, string.Empty);
+                break;
+            default:
+                File.WriteAllText(Path.Combine(pieces.Wake, "desktop.ini"), "[.ShellClassInfo]");
+                break;
+        }
+
+        MindRuntimeDiscoveryResult discovery = MindRuntimeDiscovery.DiscoverVerified(registration);
+
+        Assert.That(discovery.Runtime?.Pieces.WakeProblem, Is.EqualTo(problem));
+        Assert.That(MindRuntimeDiscovery.ApplyVerified(discovery, _local), Is.True);
+        Assert.That(MindRuntimeDiscovery.WakeProblem(discovery), Is.EqualTo(problem));
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_DIR"), Is.Null);
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_STT_DIR"), Is.EqualTo(pieces.Stt));
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_TTS_DIR"), Is.EqualTo(pieces.Voice));
+        Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF"), Does.EndWith("qwen.gguf"));
+    }
+
+    // The installed wake, a registration that names none, or a bench's own variable: nothing to say.
+    [TestCase("installed")]
+    [TestCase("unregistered")]
+    [TestCase("bench")]
+    [TestCase("pycache")] // held-out (V132): the mind's import writes __pycache__ inside it; subfolders are not its hash
+    public void AWakeThatIsTheInstalledOneOrNotTheRegistrationsHasNothingToSay(string how)
+    {
+        string registration = Register(out Pieces pieces);
+        if (how == "pycache")
+        {
+            Directory.CreateDirectory(Path.Combine(pieces.Wake, "__pycache__"));
+            File.WriteAllText(Path.Combine(pieces.Wake, "__pycache__", "baxy_wake_runtime.cpython-312.pyc"), "x");
+        }
+        else if (how == "unregistered")
+        {
+            JsonObject document = JsonNode.Parse(File.ReadAllText(registration))!.AsObject();
+            document.Remove("renew_wake_dir");
+            document.Remove("renew_wake_sha256");
+            File.WriteAllText(registration, document.ToJsonString());
+        }
+        else if (how == "bench")
+        {
+            Directory.Delete(pieces.Wake, recursive: true);
+            Environment.SetEnvironmentVariable("BAXY_RENEW_WAKE_DIR", "none");
+        }
+
+        MindRuntimeDiscoveryResult discovery = MindRuntimeDiscovery.DiscoverVerified(registration);
+
+        Assert.That(MindRuntimeDiscovery.ApplyVerified(discovery, _local), Is.True);
+        Assert.That(MindRuntimeDiscovery.WakeProblem(discovery), Is.Null);
+        Assert.That(discovery.Runtime?.Pieces.WakeProblem, how == "bench" ? Is.EqualTo("wake_missing") : Is.Null);
+    }
+
     // A registration written before 1.1.0 (Definitivo's voice entries, no piece) still starts the mind, with no piece.
     [Test]
     public void ARegistrationBeforeThePiecesStillStartsTheMind()
@@ -186,6 +305,78 @@ public sealed class MindRuntimeDiscoveryTests
         File.WriteAllText(registration, document.ToJsonString());
 
         Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration).Runtime, Is.Null);
+    }
+
+    // QWB2: the package carries the stock model and offers the tuned one (scripts/build_steam.ps1, tuned_*). The offer does
+    // not refuse the registration, and the stock model starts.
+    [Test]
+    public void ARegistrationWithTheTunedOfferStillStartsTheStockModel()
+    {
+        string registration = WithTunedOffer(RegisterPackaged(Path.Combine(_folder, "steamapps", "common", "BAXY"), @"python\python.exe"));
+
+        MindRuntimeConfiguration? runtime = MindRuntimeDiscovery.DiscoverVerified(registration).Runtime;
+
+        Assert.That(runtime, Is.Not.Null);
+        Assert.That(runtime!.Gguf, Is.EqualTo(Path.Combine(Path.GetDirectoryName(registration)!, "models", "qwen.gguf")));
+    }
+
+    [Test]
+    public void TheTunedOfferIsReadFromTheRegistration()
+    {
+        string registration = WithTunedOffer(RegisterPackaged(Path.Combine(_folder, "BAXY"), @"python\python.exe"));
+
+        TunedModelOffer? offer = MindRuntimeDiscovery.TunedOffer(registration);
+
+        Assert.That(offer, Is.EqualTo(new TunedModelOffer(TunedFile, TunedSha256, TunedBytes, TunedUrl, "Apache-2.0")));
+    }
+
+    [TestCase("tuned_gguf", @"..\BAXY-Qwen3.5-4B-c4-Q4_K_M.gguf")]
+    [TestCase("tuned_gguf", "BAXY-Qwen3.5-4B-c4-Q4_K_M.bin")]
+    [TestCase("tuned_gguf_sha256", "2C445631782A5C27B9948369E9432309528688B9B761FCE56586D796EA2F57C7")]
+    [TestCase("tuned_gguf_url", "http://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF/resolve/main/x.gguf")]
+    [TestCase("tuned_gguf_bytes", "2740937440")]
+    [TestCase("tuned_gguf_license", "")]
+    public void AnOfferThatIsNotWellFormedIsNoOfferAndTheStockModelStillStarts(string property, string value)
+    {
+        string registration = WithTunedOffer(RegisterPackaged(Path.Combine(_folder, "BAXY"), @"python\python.exe"));
+        JsonObject document = JsonNode.Parse(File.ReadAllText(registration))!.AsObject();
+        document[property] = value;
+        File.WriteAllText(registration, document.ToJsonString());
+
+        Assert.That(MindRuntimeDiscovery.TunedOffer(registration), Is.Null);
+        Assert.That(MindRuntimeDiscovery.DiscoverVerified(registration).Runtime, Is.Not.Null);
+    }
+
+    [Test]
+    public void ARegistrationWithoutTheOfferOffersNothing()
+    {
+        string registration = RegisterPackaged(Path.Combine(_folder, "BAXY"), @"python\python.exe");
+
+        Assert.That(MindRuntimeDiscovery.TunedOffer(registration), Is.Null);
+        Assert.That(MindRuntimeDiscovery.TunedOffer(Path.Combine(_folder, "missing.json")), Is.Null);
+    }
+
+    // The mind keys its kept prompt prefix by the model's verified SHA-256 (llm_server.prefix_key), not by its size alone.
+    [Test]
+    public void TheRegisteredModelReachesTheMindWithItsVerifiedHash()
+    {
+        string registration = Register(out _);
+        string sha256 = (string)JsonNode.Parse(File.ReadAllText(registration))!["gguf_sha256"]!;
+
+        Assert.That(Apply(registration), Is.True);
+
+        Assert.That(Environment.GetEnvironmentVariable(MindRuntimeDiscovery.GgufSha256Variable), Is.EqualTo(sha256));
+    }
+
+    [Test]
+    public void AModelGivenByAVariableGetsNoRegisteredHash()
+    {
+        string registration = Register(out _);
+        Environment.SetEnvironmentVariable("BAXY_MIND_LLM_GGUF", Write(Path.Combine(_folder, "other.gguf"), "other"));
+
+        Assert.That(Apply(registration), Is.True);
+
+        Assert.That(Environment.GetEnvironmentVariable(MindRuntimeDiscovery.GgufSha256Variable), Is.Null);
     }
 
     // The Steam build (scripts/build_steam.ps1) ships its registration with the product, its paths relative to it, in a
@@ -529,6 +720,24 @@ public sealed class MindRuntimeDiscoveryTests
 
     private sealed record Pieces(
         string Voice, string Wake, string WakeFast, string Stt, string SystemOne, string Projector);
+
+    private const string TunedFile = "BAXY-Qwen3.5-4B-c4-Q4_K_M.gguf";
+    private const string TunedSha256 = "2c445631782a5c27b9948369e9432309528688b9b761fce56586d796ea2f57c7";
+    private const long TunedBytes = 2740937440;
+    private const string TunedUrl =
+        "https://huggingface.co/REDSOULTM/BAXY-Qwen3.5-4B-GGUF/resolve/da66d8bbb0b90ae15fc54cb4386370a4a471d54f/" + TunedFile;
+
+    private static string WithTunedOffer(string registration)
+    {
+        JsonObject document = JsonNode.Parse(File.ReadAllText(registration))!.AsObject();
+        document["tuned_gguf"] = TunedFile;
+        document["tuned_gguf_sha256"] = TunedSha256;
+        document["tuned_gguf_bytes"] = TunedBytes;
+        document["tuned_gguf_url"] = TunedUrl;
+        document["tuned_gguf_license"] = "Apache-2.0";
+        File.WriteAllText(registration, document.ToJsonString());
+        return registration;
+    }
 
     private bool Apply(string registration) =>
         MindRuntimeDiscovery.ApplyVerified(MindRuntimeDiscovery.DiscoverVerified(registration), _local);

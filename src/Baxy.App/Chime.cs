@@ -13,7 +13,7 @@ namespace Baxy.App;
 internal sealed class Chime
 {
     private const int Rate = 22_050;
-    private const uint Async = 0x1, NoDefault = 0x2, Memory = 0x4;
+    private const uint Async = 0x1, NoDefault = 0x2, Memory = 0x4, NoStop = 0x10;
 
     /// <summary>«Sonido al despertar» (design v4, Settings → Voz): «Baxy» was heard. Two notes up, 140 ms.</summary>
     internal static readonly Chime Wake = new([(880, 70), (1320, 70)]);
@@ -49,7 +49,11 @@ internal sealed class Chime
     internal byte[] Wave => _wave.Value;
 
     /// <summary>Starts the tone and returns; with no output device it is false and BAXY goes on, only silently.</summary>
-    internal void Play() => _ = PlaySound(Wave, 0, Async | Memory | NoDefault);
+    internal void Play() => _ = PlaySound(Wave, 0, Flags);
+
+    /// <summary>What <see cref="Play"/> asks of PlaySound. APP2 (REV10 S1): SND_NOSTOP, so a chime yields to an alarm's
+    /// tone that already rings (<see cref="RingTone"/>) instead of cutting it; it plays only when nothing sounds.</summary>
+    internal const uint Flags = Async | Memory | NoDefault | NoStop;
 
     [DllImport("winmm.dll", EntryPoint = "PlaySoundW")]
     private static extern bool PlaySound(byte[] sound, nint module, uint flags);

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 import sys
 import tomllib
 import zipfile
@@ -81,6 +82,38 @@ def test_a_python_package_outside_the_lock_is_seen(tmp_path: Path) -> None:
     assert any("torch-2.13.0.dist-info" in line for line in check.findings(tmp_path, LOCK))
 
 
+def _with_texts(depot: Path) -> Path:
+    (depot / "licenses").mkdir(parents=True)
+    for text in (REPOSITORY / "licenses").iterdir():
+        (depot / "licenses" / text.name).write_bytes(text.read_bytes())
+    return depot
+
+
+def test_a_package_with_every_text_of_the_repository_misses_none(tmp_path: Path) -> None:
+    assert check.missing_texts(_with_texts(tmp_path)) == []
+
+
+@pytest.mark.parametrize(
+    "name", ["xxHash-LICENSE.txt", "Microsoft-VisualCpp-Redistributable.txt", "HACL-star-LICENSE.txt", "Windows-SDK-License.rtf"]
+)
+def test_a_text_the_package_lost_or_changed_is_seen(tmp_path: Path, name: str) -> None:
+    depot = _with_texts(tmp_path)
+    (depot / "licenses" / name).unlink()
+    (depot / "licenses" / "Zlib.txt").write_bytes(b"another text")
+
+    missing = check.missing_texts(depot)
+
+    assert [line for line in missing if name in line]
+    assert [line for line in missing if "Zlib.txt" in line]
+
+
+def test_the_check_fails_on_a_package_without_its_texts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys) -> None:
+    monkeypatch.setattr(sys, "argv", ["check_package_licenses.py", "--depot", str(tmp_path), "--lock", str(LOCK)])
+
+    assert check.main() == 1
+    assert "licenses/xxHash-LICENSE.txt" in capsys.readouterr().err
+
+
 def test_espeaks_data_is_seen_by_its_folder(tmp_path: Path) -> None:
     (tmp_path / "espeak-ng-data").mkdir()
     (tmp_path / "espeak-ng-data" / "phontab").write_bytes(b"x")
@@ -138,3 +171,40 @@ def test_silero_keeps_the_model_the_voice_reads_and_asks_for_no_torch() -> None:
         metadata = archive.read("silero_vad-6.2.1+baxy.1.dist-info/METADATA").decode()
     required = [line for line in metadata.splitlines() if line.startswith("Requires-Dist:") and "extra ==" not in line]
     assert required == ["Requires-Dist: packaging"]
+
+
+# DET1: the owner made baxy-wake-k6r-v7a the official detector on 2026-11-07 («sin la serie»): its folder's hash, and the head.onnx of
+# the detectors that learned from the TV series through their teacher k5 (v7b, v3_b2).
+V7A_FOLDER = "1b7cad869499037e901cb17d862cdfdd6074040ef50d1bf7fd89b0b1b54f083a"
+V7B_FOLDER = "48a02e8fbedfb2f9fd57e90af6f06c8814e361791bc4d5b0e3a4baecd264b8ac"
+V7A_HEAD = "f8bc7ad059c972415399702c36bb780eedbe6063ce0779c6806f31969cd31599"
+RETIRED_HEADS = {
+    "de79f68a0ce6fb4b48f62da0e07447d2d387f58ec68d73076be1e1db4f904276": "k6r-v7b",
+    "7fb6bdeaea1b7fc1bf040221331987034b7e5be574b8f01333e8edd3395bf64e": "k6r-v3_b2",
+}
+
+
+def test_the_package_takes_the_wake_detector_without_the_series() -> None:
+    build = (REPOSITORY / "scripts" / "build_steam.ps1").read_text(encoding="utf-8")
+    assert f"$WakeSha256 = '{V7A_FOLDER}'" in build
+    assert "baxy-wake-k6r-v7a" in build
+    assert V7B_FOLDER not in build
+    assert "k6r-v7b" not in build
+
+
+def test_the_check_knows_the_retired_wake_detectors_and_not_v7a() -> None:
+    known = {sha256: what for (_, sha256), what in check.RETIRED_WAKE.items()}
+    assert set(known) == set(RETIRED_HEADS)
+    for sha256, name in RETIRED_HEADS.items():
+        assert name in known[sha256]
+    assert V7A_HEAD not in known
+
+
+def test_a_retired_wake_detector_is_seen_by_its_bytes_under_any_name(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    head = b"a retired head"
+    monkeypatch.setattr(check, "RETIRED_WAKE", {(len(head), hashlib.sha256(head).hexdigest()): "the wake detector k6r-v7b"})
+    (tmp_path / "wake").mkdir()
+    (tmp_path / "wake" / "otro.bin").write_bytes(head)
+    (tmp_path / "wake" / "head.onnx").write_bytes(b"a retired heaD")
+    found = check.findings(tmp_path, LOCK)
+    assert found == ["wake/otro.bin: the wake detector k6r-v7b"], found

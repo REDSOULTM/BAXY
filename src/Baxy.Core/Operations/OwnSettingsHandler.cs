@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
 using Baxy.Kernel.Policy;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Core.Operations;
 
@@ -12,9 +13,12 @@ namespace Baxy.Core.Operations;
 /// in a call or watches a video, and the proposals' silence (30m, 1h or until tomorrow at 08:00; «on» ends it). Every
 /// one is reversible and none asks. The file is read back and the result says the setting, its new value and, for a
 /// silence, until when. Encargo 25 (G2): the confirmation mode is one of them too. Switching it off is done as
-/// system.settings.set does; switching it on stays a gesture in BAXY's own window, so it is refused with what is true
-/// (<see cref="BaxySettingHandler.BypassInterfaceOnly"/>). A value a setting does not take is refused with the values
-/// it does take.
+/// system.settings.set does. TPV1 (dueño, 10-11-2026: «la aplicación todo se controle por voz… el usuario probablemente no
+/// tenga manos»; identidad: «No hay ninguna capacidad que exija ver la pantalla o usar el ratón»): switching it on is done
+/// here too, after the person's «sí» the App always asks for it (OwnBrakes: the conscious setting of the identity, said
+/// aloud), and so is the tool profile of Settings → Tools, a ready-made one (<see cref="ToolProfileStore"/>; the App
+/// relaunches the mind with its tools once the turn ends). A value a setting does not take is refused with the values it
+/// does take.
 /// </summary>
 internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = null) : IOperationHandler
 {
@@ -28,11 +32,30 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
             ["no_interrupt_calls"] = ("ctx.call", true, false),
             ["no_interrupt_games"] = ("ctx.game", true, false),
             ["no_interrupt_videos"] = ("ctx.video", true, false),
+            // actualizar-ordenes-app: the overlay of Settings › Personalización (FieldSettings.Overlay), shown by default.
+            ["overlay"] = ("overlay", true, false),
             ["voice"] = ("voiceMuted", false, true),
             ["web_search"] = ("web", true, false),
+            // TPV1 (dueño, 10-11: everything the view switches, by voice too): the rest of Ajustes' own switches, by the
+            // keys FieldSettings keeps (General, Voz, Privacidad, Versión).
+            ["close_to_tray"] = ("closeToTray", true, false),
+            ["echo_cancel"] = ("echoCancel", true, false),
+            ["minimize_to_tray"] = ("minimizeToTray", false, false),
+            ["screen"] = ("screen", true, false),
+            ["update_notice"] = ("updateNotice", true, false),
+            ["wait_notice"] = ("waitNotice", true, false),
+            ["wake_sound"] = ("wakeSound", true, false),
+            ["weather"] = ("weather", true, false),
         };
 
     private const string Proposals = "proposals";
+
+    // actualizar-ordenes-app (held-out 09-11: the model asked for it here, with baxy_settings_set, in 4 of 4 samples): the
+    // accessible mode of BAXY's own window (PresentationModeStore, the one Ajustes › Accesibilidad and PUT /accessibility
+    // write). It left system.settings.set, so BAXY's own switches are in one tool.
+    internal const string AccessibleMode = "accessible_mode";
+
+    internal const string ToolProfile = "tool_profile";
 
     private static readonly string[] SwitchValues = ["on", "off"];
 
@@ -70,7 +93,17 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
 
         if (setting == BaxySettingHandler.ConfirmationBypass)
         {
-            return value == "on" ? BaxySettingHandler.BypassInterfaceOnly(dataRoot) : BypassOff(dataRoot);
+            return Bypass(dataRoot, value == "on");
+        }
+
+        if (setting == ToolProfile)
+        {
+            return Profile(dataRoot, value!);
+        }
+
+        if (setting == AccessibleMode)
+        {
+            return Accessible(dataRoot, value == "on");
         }
 
         if (!FieldSettingsStore.TryRead(dataRoot, out JsonObject values))
@@ -117,25 +150,27 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
     // The values each setting takes; null for one BAXY does not have.
     private static string[]? ValuesOf(string? setting) =>
         setting == Proposals ? SilenceValues
-        : setting == BaxySettingHandler.ConfirmationBypass || (setting is not null && Switches.ContainsKey(setting))
+        : setting == ToolProfile ? ToolProfileStore.Presets
+        : setting is BaxySettingHandler.ConfirmationBypass or AccessibleMode || (setting is not null && Switches.ContainsKey(setting))
             ? SwitchValues
             : null;
 
-    // Bypass off, as system.settings.set switches it: a file that cannot be read is not «normal», it is written only
-    // when it said bypass, and then read back.
-    private static OperationOutcome BypassOff(string dataRoot)
+    // The confirmation mode, as system.settings.set switches it off: a file that cannot be read is not «normal», it is
+    // written only when it says otherwise, and then read back.
+    private static OperationOutcome Bypass(string dataRoot, bool on)
     {
         if (!ConfirmationModeStore.TryRead(dataRoot, out ConfirmationMode before))
         {
             return OperationOutcome.Failure("baxy_setting_unreadable");
         }
 
-        bool changed = before == ConfirmationMode.Bypass;
+        ConfirmationMode wanted = on ? ConfirmationMode.Bypass : ConfirmationMode.Normal;
+        bool changed = before != wanted;
         try
         {
             if (changed)
             {
-                ConfirmationModeStore.Write(dataRoot, ConfirmationMode.Normal);
+                ConfirmationModeStore.Write(dataRoot, wanted);
             }
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
@@ -144,23 +179,116 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
                 "baxy_setting_write_failed", effectMayHaveOccurred: true, causeCode: "external_effect_ambiguous");
         }
 
-        if (!ConfirmationModeStore.TryRead(dataRoot, out ConfirmationMode after) || after != ConfirmationMode.Normal)
+        if (!ConfirmationModeStore.TryRead(dataRoot, out ConfirmationMode after) || after != wanted)
         {
             return OperationOutcome.Failure("baxy_setting_postread_failed", effectMayHaveOccurred: changed);
         }
 
-        return Receipt(BaxySettingHandler.ConfirmationBypass, "off", changed, until: null);
+        return Receipt(BaxySettingHandler.ConfirmationBypass, on ? "on" : "off", changed, until: null);
     }
 
-    private static OperationOutcome Receipt(string setting, string value, bool changed, DateTimeOffset? until)
+    // A ready-made tool profile, read back from its file. The mind keeps the tools it started with until the App
+    // relaunches it, once this turn ends: the receipt says so, so a reply never claims a tool this turn does not have.
+    // REM1 (REV12 B-2): a broken file (a cut write) is replaced by the profile the person asked for: refusing left every
+    // «pásate a…» unreadable for good, and only the panel could mend it. One another program holds is not written over.
+    private static OperationOutcome Profile(string dataRoot, string profile)
+    {
+        bool read = ToolProfileStore.TryRead(dataRoot, out string before, out bool broken);
+        if (!read && !broken)
+        {
+            return OperationOutcome.Failure("baxy_setting_unreadable");
+        }
+
+        bool changes = broken || before != profile;
+        try
+        {
+            if (changes)
+            {
+                ToolProfileStore.WritePreset(dataRoot, profile);
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return OperationOutcome.Failure(
+                "baxy_setting_write_failed", effectMayHaveOccurred: true, causeCode: "external_effect_ambiguous");
+        }
+
+        if (!ToolProfileStore.TryRead(dataRoot, out string after) || after != profile)
+        {
+            return OperationOutcome.Failure("baxy_setting_postread_failed", effectMayHaveOccurred: changes);
+        }
+
+        return Receipt(ToolProfile, profile, changes, until: null, repaired: broken);
+    }
+
+    // The accessible mode, read back from its file. A file that cannot be read is not «normal» (Revisión 2026-10-22, C-3).
+    private static OperationOutcome Accessible(string dataRoot, bool on)
+    {
+        if (!PresentationModeStore.TryReadAccessible(dataRoot, out bool before))
+        {
+            return OperationOutcome.Failure("baxy_setting_unreadable");
+        }
+
+        try
+        {
+            if (before != on)
+            {
+                PresentationModeStore.WriteAccessible(dataRoot, on);
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return OperationOutcome.Failure(
+                "baxy_setting_write_failed", effectMayHaveOccurred: true, causeCode: "external_effect_ambiguous");
+        }
+
+        if (!PresentationModeStore.TryReadAccessible(dataRoot, out bool after) || after != on)
+        {
+            return OperationOutcome.Failure("baxy_setting_postread_failed", effectMayHaveOccurred: before != on);
+        }
+
+        return Receipt(AccessibleMode, on ? "on" : "off", before != on, until: null);
+    }
+
+    // REM3 (REV13 D-1): repaired, a broken tool profile file written over. The App keeps the tools the mind started
+    // with and relaunches it only if the file now withholds others (ToolProfile.NeedsSwitch); which ones it started with
+    // this process does not know, so whether the profile in effect changed is not said, nor a restart promised.
+    private static OperationOutcome Receipt(
+        string setting, string value, bool changed, DateTimeOffset? until, bool repaired = false)
     {
         var receipt = new JsonObject
         {
             ["version"] = 1,
             ["setting"] = setting,
             ["value"] = value,
-            ["changed"] = changed,
         };
+        if (repaired)
+        {
+            receipt["repaired"] = true;
+        }
+        else
+        {
+            receipt["changed"] = changed;
+        }
+        if (setting == AccessibleMode && ModelAids.On(ModelAids.AccessibleScope))
+        {
+            // pc-ayudas: what the mode changes (SettingsPanel's «Modo accesible») and the modes the interface shows as not
+            // ready yet (Rail's PROFILES), so a reply never promises more than the switch did.
+            receipt["scope"] = "BAXY's own window only: larger text, more contrast, wider buttons";
+            receipt["notAvailableYet"] = "a blind (screen reader) mode and a hands-free mobility mode";
+        }
+        if (setting == ToolProfile && changed)
+        {
+            // MUS1 (VIVO13: «BAXY se reiniciará en unos segundos», paraphrasing prose that said its model restarts; the
+            // App never closed, only the model got ready again): what happens is typed. A tool the profile brings is
+            // callable from the person's next request, not in this reply; the model gets ready with them once this
+            // reply ends; the App stays open and the conversation is kept.
+            receipt["toolsFrom"] = "next_request";
+            receipt["modelGetsReady"] = repaired ? "after_this_reply_if_its_tools_differ" : "after_this_reply";
+            receipt["appStaysOpen"] = true;
+            receipt["conversationKept"] = true;
+        }
+
         if (until is { } end)
         {
             receipt["until"] = TimeZoneInfo.ConvertTime(end, TimeZoneInfo.Local)

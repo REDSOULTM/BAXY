@@ -2,9 +2,11 @@
 
 As the real mind (src/baxy_mind/__main__.py), the reader answers voice.speak, voice.cancel, voice.status and
 voice.release as they arrive and every other request waits its turn on one loop. What it does is read from script.json
-in its folder at each request: "hold" {type: file} waits until that file exists, "delay" {type: seconds}, "fail" [type]
+in its folder at each request: "hold" {type: file} waits until that file exists (or, for a type in "yield" [type], until
+another request waits its turn, as the mind's name of a conversation does), "delay" {type: seconds}, "fail" [type]
 answers an error, "progress" {type: {"every": seconds, "count": n, "facts": {...}}} writes n progress lines for the request, with those facts
-(as the mind does while its model reads the prompt prefix) one every that many seconds before it answers, "time_out" {type: n} answers the first n of that type as past their budget, "reply" {type: object} answers that object, "emit" {type: [message]} writes those messages after the
+(as the mind does while its model reads the prompt prefix) one every that many seconds before it answers, "time_out" {type: n} answers the first n of that type as past their budget, "reply" {type: object} answers that object, "replies" {type: [object]} answers the n-th request of that type with the
+n-th object (the last one from there on), "emit" {type: [message]} writes those messages after the
 reply, "stderr" {type: [line]} writes those lines to stderr before the reply; "delay" {"hello": seconds} holds the hello
 at start, and "unoffered" [type] leaves those requests out of it (a mind with no voice does not offer voice.speak). Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process
 writes its pid under pids/.
@@ -19,10 +21,11 @@ import time
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REQUESTS = ["catalog.configure", "turn.decide", "turn.continue", "turn.confirm", "turn.beat", "turn.beat.end",
-            "session.new", "session.export", "session.load", "trace.forget",
+            "session.new", "session.export", "session.title", "session.load", "trace.forget",
             "voice.start", "voice.stop", "voice.release", "voice.status", "voice.speak", "voice.cancel"]
 READER = {"voice.speak", "voice.cancel", "voice.status", "voice.release"}
 _write_lock = threading.Lock()
+_pending: queue.Queue = queue.Queue()
 
 
 def write(message: dict) -> None:
@@ -58,7 +61,9 @@ def answer(message: dict) -> None:
     hold = plan.get("hold", {}).get(kind)
     if hold:
         deadline = time.monotonic() + 60
-        while not os.path.exists(os.path.join(HERE, hold)) and time.monotonic() < deadline:
+        yields = kind in plan.get("yield", [])
+        while (not os.path.exists(os.path.join(HERE, hold)) and time.monotonic() < deadline
+               and not (yields and not _pending.empty())):
             time.sleep(0.02)
     time.sleep(float(plan.get("delay", {}).get(kind, 0)))
     progress = plan.get("progress", {}).get(kind) or {}
@@ -70,9 +75,12 @@ def answer(message: dict) -> None:
         sys.stderr.write(line + "\n")
     sys.stderr.flush()
     if kind in plan.get("fail", []):
-        reply = {"type": "error", "code": "request_failed", "detail": kind}
+        reply = {"type": "error", "code": plan.get("failCode", "request_failed"), "detail": kind}
     elif times_seen(kind) <= int(plan.get("time_out", {}).get(kind, 0)):
         reply = {"type": "error", "code": "request_timed_out", "detail": kind}
+    elif kind in plan.get("replies", {}):
+        chain = plan["replies"][kind]
+        reply = dict(chain[min(times_seen(kind), len(chain)) - 1])
     elif kind in plan.get("reply", {}):
         reply = dict(plan["reply"][kind])
     elif kind == "catalog.configure":
@@ -115,8 +123,6 @@ def main() -> None:
     unoffered = script().get("unoffered", [])
     write({"type": "hello", "protocol": "baxy.mind.v1", "models": {"llm": "fake"},
            "requests": [kind for kind in REQUESTS if kind not in unoffered]})
-    pending: queue.Queue = queue.Queue()
-
     def read() -> None:
         for line in sys.stdin:
             if not line.strip():
@@ -126,11 +132,11 @@ def main() -> None:
             if message.get("type") in READER:
                 answer(message)
             else:
-                pending.put(message)
-        pending.put(None)
+                _pending.put(message)
+        _pending.put(None)
 
     threading.Thread(target=read, daemon=True).start()
-    while (message := pending.get()) is not None:
+    while (message := _pending.get()) is not None:
         answer(message)
 
 

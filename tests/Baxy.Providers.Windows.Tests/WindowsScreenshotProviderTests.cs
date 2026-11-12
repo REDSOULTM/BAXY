@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using Baxy.Providers.Windows.Capture;
+using Baxy.Providers.Windows.External;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -39,13 +40,14 @@ public sealed class WindowsScreenshotProviderTests
     {
         using TemporaryDirectory temporary = new();
         DateTime now = DateTime.UtcNow;
+        // PRV1 (PRIV-02): a provider that starts removes what an earlier run left, so these are of this run.
+        var provider = new WindowsScreenshotProvider(temporary.Path, new FakePlatform(), new FixedTimeProvider());
         string[] seeded = Enumerable.Range(0, 20)
             .Select(index => Seed(temporary.Path, index, now.AddHours(index - 20)))
             .ToArray();
         string diagnostic = Path.Combine(temporary.Path, "streaming-playback-rejections.jsonl");
         File.WriteAllText(diagnostic, "{}\n");
         File.SetLastWriteTimeUtc(diagnostic, now.AddDays(-30));
-        var provider = new WindowsScreenshotProvider(temporary.Path, new FakePlatform(), new FixedTimeProvider());
 
         CaptureResult result = await provider.CaptureAsync(CancellationToken.None);
 
@@ -65,10 +67,10 @@ public sealed class WindowsScreenshotProviderTests
     {
         using TemporaryDirectory temporary = new();
         DateTime now = DateTime.UtcNow;
+        var provider = new WindowsScreenshotProvider(temporary.Path, new FakePlatform(), new FixedTimeProvider());
         string[] seeded = Enumerable.Range(0, 3)
             .Select(index => Seed(temporary.Path, index, now.AddDays(index - 40)))
             .ToArray();
-        var provider = new WindowsScreenshotProvider(temporary.Path, new FakePlatform(), new FixedTimeProvider());
 
         await provider.CaptureAsync(CancellationToken.None);
 
@@ -76,6 +78,91 @@ public sealed class WindowsScreenshotProviderTests
         {
             Assert.That(seeded.All(File.Exists), Is.True);
             Assert.That(Directory.GetFiles(temporary.Path, "capture_*.bmp"), Has.Length.EqualTo(4));
+        });
+    }
+
+    // PRV1 (revisión de privacidad 2026-11-09, PRIV-02): up to 16 whole screens stayed in the folder from one run of
+    // BAXY to the next. What an earlier run left goes when the engine starts; nothing else in the folder does.
+    [Test]
+    public void AProviderThatStartsRemovesTheCapturesAnEarlierRunLeft()
+    {
+        using TemporaryDirectory temporary = new();
+        string[] left = [.. Enumerable.Range(0, 3).Select(index => Seed(temporary.Path, index, DateTime.UtcNow.AddDays(-2)))];
+        string unfinished = Path.Combine(temporary.Path, ".capture_" + Guid.NewGuid().ToString("N") + ".tmp");
+        string diagnostic = Path.Combine(temporary.Path, "streaming-playback-rejections.jsonl");
+        File.WriteAllText(unfinished, "x");
+        File.WriteAllText(diagnostic, "{}\n");
+
+        _ = new WindowsScreenshotProvider(temporary.Path, new FakePlatform(), new FixedTimeProvider());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(left.Where(File.Exists), Is.Empty);
+            Assert.That(File.Exists(unfinished), Is.False);
+            Assert.That(File.Exists(diagnostic), Is.True);
+        });
+    }
+
+    [Test]
+    public void ClearingTheStoredCapturesSaysHowManyAReaderStillHolds()
+    {
+        using TemporaryDirectory temporary = new();
+        string free = Seed(temporary.Path, 1, DateTime.UtcNow);
+        string held = Seed(temporary.Path, 2, DateTime.UtcNow);
+        string other = Path.Combine(temporary.Path, "notas.bmp");
+        File.WriteAllText(other, "x");
+
+        using (new FileStream(held, FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            Assert.That(StoredCaptures.Clear(temporary.Path), Is.EqualTo(1));
+            Assert.That(File.Exists(free), Is.False);
+            Assert.That(File.Exists(held), Is.True);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(StoredCaptures.Clear(temporary.Path), Is.Zero);
+            Assert.That(File.Exists(held), Is.False);
+            Assert.That(File.Exists(other), Is.True);
+            Assert.That(StoredCaptures.Clear(Path.Combine(temporary.Path, "no-esta")), Is.Zero);
+        });
+    }
+
+    // Revisión a ciegas de PRV1 (PRIV-02): the note of a playback that was not verified stayed in this folder, in clear
+    // text and without end, with the title the person asked for and the last address and page; deleting everything left
+    // it. It is written only where the PC's owner asked for words to be kept, and deleting everything removes it.
+    [Test]
+    public void ThePlaybackNoteIsWrittenOnlyWhereWordsAreKeptAndGoesWhenEverythingIsDeleted()
+    {
+        using TemporaryDirectory temporary = new();
+        var playback = new CdpStreamingPlaybackResult(false, false, "la casa del lago",
+            "https://stream.example/search?q=la%20casa%20del%20lago", "Buscar: la casa del lago", "t1", 0,
+            "playback_not_verified", "{\"profile\":\"Infantil\"}");
+        string note = Path.Combine(temporary.Path, StoredCaptures.PlaybackNotes);
+        string other = Path.Combine(temporary.Path, "notas.jsonl");
+        File.WriteAllText(other, "x");
+
+        WebBrowserAdapter.RecordStreamingRejection(temporary.Path, keepsWords: false, "la casa del lago", playback);
+        Assert.That(File.Exists(note), Is.False, "the note was written where nobody asked for words to be kept");
+
+        WebBrowserAdapter.RecordStreamingRejection(temporary.Path, keepsWords: true, "la casa del lago", playback);
+        string capture = Seed(temporary.Path, 1, DateTime.UtcNow);
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.ReadAllText(note), Does.Contain("la casa del lago").And.Contain("playback_not_verified"));
+            // The end of a request removes its captures alone.
+            Assert.That(StoredCaptures.Clear(temporary.Path), Is.Zero);
+            Assert.That(File.Exists(capture), Is.False);
+            Assert.That(File.Exists(note), Is.True);
+        });
+
+        capture = Seed(temporary.Path, 2, DateTime.UtcNow);
+        Assert.Multiple(() =>
+        {
+            Assert.That(StoredCaptures.ClearAll(temporary.Path), Is.Zero);
+            Assert.That(File.Exists(capture), Is.False);
+            Assert.That(File.Exists(note), Is.False, "the note of a playback stayed after everything was deleted");
+            Assert.That(File.Exists(other), Is.True);
         });
     }
 

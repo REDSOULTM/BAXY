@@ -14,7 +14,15 @@ internal sealed record MindRuntimeConfiguration(
     string LlamaServer,
     int GpuLayers,
     MindRuntimePieces Pieces,
-    string? LlamaBackend = null);
+    string? LlamaBackend = null,
+    string? GgufSha256 = null);
+
+/// <summary>
+/// QWB2 (documentacion/PLAN_QWEN_BASE.md §3): BAXY's tuned model, which a store's package offers and does not carry
+/// (scripts/build_steam.ps1, tuned_*): its file name, its SHA-256, its size, the address pinned to its commit and its
+/// license. The App downloads it only when the person asks (TunedModel) and keeps it only with this SHA-256.
+/// </summary>
+internal sealed record TunedModelOffer(string File, string Sha256, long Bytes, string Url, string License);
 
 /// <summary>
 /// The pieces beside the model that a registration names on this machine (entrega 1.1.0): BAXY's voice (Supertonic),
@@ -27,7 +35,8 @@ internal sealed record MindRuntimePieces(
     string? Wake,
     string? WakeFast,
     string? Stt,
-    string? VisionProjector);
+    string? VisionProjector,
+    string? WakeProblem = null);
 
 internal sealed record MindRuntimeEnvironmentSnapshot(
     string? Disabled,
@@ -66,6 +75,9 @@ internal static class MindRuntimeDiscovery
     private const string MissingComponent = "componente_ausente";
     private const int MaximumRegistrationBytes = 16 * 1024;
 
+    /// <summary>The verified SHA-256 of the model the mind is given, which keys its kept prompt prefix (llm_server.prefix_key).</summary>
+    internal const string GgufSha256Variable = "BAXY_MIND_LLM_GGUF_SHA256";
+
     private static readonly string[] RegistrationProperties =
     [
         "schema",
@@ -85,6 +97,8 @@ internal static class MindRuntimeDiscovery
         "renew_tts_dir", "renew_tts_sha256", "renew_wake_dir", "renew_wake_sha256", "renew_wake_fast_dir",
         "renew_wake_fast_sha256", "renew_stt_dir", "renew_stt_sha256", "s1_gguf", "s1_gguf_sha256", "s1_threads", "mmproj",
         "mmproj_sha256", "llama_server_vulkan", "llama_server_vulkan_sha256",
+        // QWB2: the tuned model the package offers (TunedOffer), never a piece this start loads.
+        "tuned_gguf", "tuned_gguf_sha256", "tuned_gguf_bytes", "tuned_gguf_url", "tuned_gguf_license",
     ];
 
     // PCI vendor ids, as src/baxy_mind/gpu.py reads them for an installation (tests/test_mind_gpu.py compares the two):
@@ -187,6 +201,17 @@ internal static class MindRuntimeDiscovery
         }
     }
 
+    /// <summary>
+    /// V132 (1.3.2): why the mind of this start hears no wake word although the registration names one (wake_missing: its
+    /// folder is gone or empty; wake_changed: its files are not the registered ones), once applied; null when it hears the
+    /// registered one or a variable named another (a bench's, <c>none</c> included). The App says it: the ear starts
+    /// without it, and the person's «Siempre activo» could not answer to «BAXY».
+    /// </summary>
+    internal static string? WakeProblem(MindRuntimeDiscoveryResult discovery) =>
+        string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("BAXY_RENEW_WAKE_DIR"))
+            ? discovery.Runtime?.Pieces.WakeProblem
+            : null;
+
     internal static bool ApplyVerified(MindRuntimeDiscoveryResult discovery) =>
         ApplyVerified(discovery, Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
 
@@ -210,6 +235,7 @@ internal static class MindRuntimeDiscovery
             MindRuntimeConfiguration? runtime = discovery.Runtime;
             if (runtime is null)
             {
+                ApplyServerKey();
                 ApplyVision(localData);
                 return true;
             }
@@ -218,6 +244,12 @@ internal static class MindRuntimeDiscovery
             // this variable as its readiness flag, so no registered runtime can
             // become observable before every auxiliary value has been applied.
             SetIfMissing(MindSidecarClient.PythonPathEnvironmentVariable, runtime.PythonPath);
+            // Its hash only with the registered model: a model given by a variable is not the one the registration hashed.
+            if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF")))
+            {
+                Environment.SetEnvironmentVariable(GgufSha256Variable, runtime.GgufSha256);
+            }
+
             SetIfMissing("BAXY_MIND_LLM_GGUF", runtime.Gguf);
             SetIfMissing("BAXY_MIND_LLAMA_SERVER", runtime.LlamaServer);
             SetIfMissing("BAXY_MIND_LLAMA_BACKEND", runtime.LlamaBackend);
@@ -225,6 +257,7 @@ internal static class MindRuntimeDiscovery
                 "BAXY_MIND_NGL",
                 runtime.GpuLayers.ToString(CultureInfo.InvariantCulture));
             ApplyPieces(runtime.Pieces);
+            ApplyServerKey();
             ApplyVision(localData);
             if (string.IsNullOrWhiteSpace(discovery.Environment.Python))
             {
@@ -253,6 +286,20 @@ internal static class MindRuntimeDiscovery
     }
 
     /// <summary>
+    /// PRV1 (revisión de privacidad 2026-11-09, PRIV-04): the mind's llama-server started with no key, on a port any page
+    /// open in a browser of this PC can reach (and with a projector, on a fixed one), and by default it «reflects any
+    /// Origin header back with credentials allowed» (llama.cpp, tools/server/README.md, «CORS», read 2026-11-09). It takes
+    /// a key («--api-key KEY … (env: LLAMA_API_KEY)», the same README) and then answers 401 without it. One key at random
+    /// for each start of BAXY, made here before the mind and the engine start: the mind gives it to its server and
+    /// sends it with every request (src/baxy_mind/llm_server.py, server_key), and the engine's vision calls send it too
+    /// (LocalVisionEndpoint.Authorize). A key already given (a bench that shares a server) is kept.
+    /// </summary>
+    internal const string ServerKeyVariable = "BAXY_MIND_LLAMA_KEY";
+
+    private static void ApplyServerKey() =>
+        SetIfMissing(ServerKeyVariable, Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32)));
+
+    /// <summary>
     /// With a projector on the mind's server (registered, or given by a bench), the click's vision is pointed at it
     /// before the core starts, which reads these variables (LocalVisionEndpoint): a pinned port (8077 unless one is
     /// given), its chat endpoint, the mind's slot on that server, and the folder where that slot's state is set aside meanwhile,
@@ -268,7 +315,14 @@ internal static class MindRuntimeDiscovery
 
         SetIfMissing("BAXY_MIND_LLAMA_PORT", VisionPort);
         string port = Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_PORT")!.Trim();
-        SetIfMissing("BAXY_VISION_ENDPOINT", $"http://127.0.0.1:{port}/v1/chat/completions");
+        string own = $"http://127.0.0.1:{port}/v1/chat/completions";
+        SetIfMissing("BAXY_VISION_ENDPOINT", own);
+        if (string.Equals(Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT"), own, StringComparison.Ordinal))
+        {
+            // PRV1 (PRIV-04): the mind's own server asks its key of the engine's vision calls too.
+            SetIfMissing("BAXY_VISION_API_KEY", Environment.GetEnvironmentVariable(ServerKeyVariable));
+        }
+
         SetIfMissing("BAXY_VISION_MODEL", "baxy");
         // Encargo 11: on a server several machines' minds share (measurement), the mind's slot (BAXY_MIND_SLOT).
         string? mindSlot = Environment.GetEnvironmentVariable("BAXY_MIND_SLOT");
@@ -430,6 +484,7 @@ internal static class MindRuntimeDiscovery
                 return null;
             }
 
+            string? wake = RegisteredDirectory(hashes, folder, root, "renew_wake_dir", "renew_wake_sha256");
             return new MindRuntimeConfiguration(
                 python,
                 pythonPath,
@@ -438,11 +493,61 @@ internal static class MindRuntimeDiscovery
                 ngl,
                 new MindRuntimePieces(
                     RegisteredDirectory(hashes, folder, root, "renew_tts_dir", "renew_tts_sha256"),
-                    RegisteredDirectory(hashes, folder, root, "renew_wake_dir", "renew_wake_sha256"),
+                    wake,
                     RegisteredDirectory(hashes, folder, root, "renew_wake_fast_dir", "renew_wake_fast_sha256"),
                     RegisteredDirectory(hashes, folder, root, "renew_stt_dir", "renew_stt_sha256"),
-                    RegisteredModel(hashes, folder, root, "mmproj", "mmproj_sha256")),
-                backend);
+                    RegisteredModel(hashes, folder, root, "mmproj", "mmproj_sha256"),
+                    wake is null ? UnverifiedWake(folder, root) : null),
+                backend,
+                RequiredString(root, "gguf_sha256"));
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException
+            or ArgumentException
+            or NotSupportedException
+            or JsonException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// The tuned model a registration offers (QWB2), or null: none offered, a registration that cannot be read, or an offer
+    /// that is not well formed (a bare .gguf file name, a lower-case SHA-256, a positive size, an https address and a
+    /// license). The offer never refuses the registration: the stock model starts all the same.
+    /// </summary>
+    internal static TunedModelOffer? TunedOffer(string registrationPath)
+    {
+        try
+        {
+            var info = new FileInfo(Path.GetFullPath(registrationPath));
+            if (!info.Exists || info.Length is <= 0 or > MaximumRegistrationBytes)
+            {
+                return null;
+            }
+
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(info.FullName));
+            JsonElement root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object
+                || OptionalString(root, "tuned_gguf") is not { } file
+                || OptionalString(root, "tuned_gguf_sha256") is not { } sha256
+                || OptionalString(root, "tuned_gguf_url") is not { } url
+                || OptionalString(root, "tuned_gguf_license") is not { Length: > 0 } license
+                || !root.TryGetProperty("tuned_gguf_bytes", out JsonElement size)
+                || size.ValueKind != JsonValueKind.Number
+                || !size.TryGetInt64(out long bytes)
+                || bytes <= 0
+                || !IsSha256(sha256)
+                || file != Path.GetFileName(file)
+                || !file.EndsWith(".gguf", StringComparison.OrdinalIgnoreCase)
+                || file.AsSpan().IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
+                || !Uri.TryCreate(url, UriKind.Absolute, out Uri? address)
+                || address.Scheme != Uri.UriSchemeHttps)
+            {
+                return null;
+            }
+
+            return new TunedModelOffer(file, sha256, bytes, url, license);
         }
         catch (Exception exception) when (exception is IOException
             or UnauthorizedAccessException
@@ -496,6 +601,29 @@ internal static class MindRuntimeDiscovery
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
             return null;
+        }
+    }
+
+    /// <summary>
+    /// V132: a registered wake folder that did not verify, as the cause the App says: wake_missing when it is not there
+    /// or has no file (Get-BaxyDirectorySha256 has no hash for it), wake_changed otherwise (a file changed, added or
+    /// unreadable); null when the registration names no wake word.
+    /// </summary>
+    private static string? UnverifiedWake(string folder, JsonElement root)
+    {
+        if (OptionalString(root, "renew_wake_dir") is not { } registered)
+        {
+            return null;
+        }
+
+        try
+        {
+            string? directory = ExistingDirectory(folder, registered);
+            return directory is null || Directory.GetFiles(directory).Length == 0 ? "wake_missing" : "wake_changed";
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return "wake_changed";
         }
     }
 

@@ -7,7 +7,9 @@
 **BAXY runs your Windows PC with you, by voice or by text.** You ask in Spanish, English or a mix of both; BAXY
 works out what to do, does it, checks that it really happened and tells you in a sentence. Its language model runs
 on your own graphics card: nothing you say leaves your PC unless you ask for something from the web, or you choose
-to connect a model from another company yourself.
+to connect a model from another company yourself. [`licenses/PRIVACIDAD.md`](licenses/PRIVACIDAD.md) lists what goes
+out and to whom; since 1.3.2 the GitHub copy also asks GitHub on every start whether there is a newer version, unless
+you turn that off in Settings.
 
 - **It checks before it claims.** Every action goes through a typed catalog of operations; a Windows provider
   carries it out and returns a receipt with what it observed. "The command was sent" is not reported as success.
@@ -18,15 +20,18 @@ to connect a model from another company yourself.
 ### Download
 
 Get the installer from the [releases page](https://github.com/REDSOULTM/BAXY/releases) (the latest is
-[BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1)): download `BAXY-Instalador.exe` and open it.
-It checks your PC, downloads the parts it needs, verifies each one's SHA-256 and leaves BAXY in the Start menu.
-The installer is not code-signed, so SmartScreen may warn you.
+[BAXY 1.5.0](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.0)): download `BAXY-Instalador.exe` and open it.
+It checks your PC, downloads the list of parts (it refuses it unless it carries BAXY's signature), verifies each
+part's SHA-256 and leaves BAXY in the Start menu. The installer itself is not code-signed, so SmartScreen may warn
+you. If you have BAXY 1.3.1, its "Update" button does not take you to 1.5.0: download the new installer and run it
+over it; your data stays (see the release notes).
 
 ### What you need to run it
 
-- Windows 10 or 11, 64-bit.
-- **A dedicated NVIDIA or AMD graphics card with 4 GB of memory or more.** NVIDIA cards use CUDA; AMD uses Vulkan.
-- About 12 GB free while installing.
+- 64-bit Windows 11. Windows 10 has not been tested.
+- **A dedicated graphics card: NVIDIA tested with 6 GB or more (4 GB untested); AMD in testing.** NVIDIA cards use
+  CUDA; AMD uses Vulkan.
+- About 11.1 GB free while installing (the release notes give the measured figures).
 - Internet to install. BAXY itself works offline, except for what you ask of the web.
 
 ### Not tested or not supported
@@ -34,9 +39,10 @@ The installer is not code-signed, so SmartScreen may warn you.
 - Integrated graphics (Intel or AMD) and CPU only are not supported.
 - A freshly formatted Windows without the Visual C++ runtime or WebView2 was not tested (the installer installs both
   from Microsoft).
-- A real AMD or Intel card was not tested for the CUDA/Vulkan split: it was simulated.
+- The 1.5.0 package was not tried installed on a real AMD or Intel card (its release notes say what was measured).
 - "Another model" (Settings → Model) is optional and off by default. With a company's API, what you give BAXY goes to
-  that company. OpenAI and Google were not tested with a real key; other models do worse than BAXY's own.
+  that company. OpenAI and Google were not tested with a real key; other models were measured against BAXY's tuned model (an
+  optional extra since 1.3.2) and did worse.
 - Running BAXY from a fresh clone of this repository (below) was built and unit-tested, not tried end to end with
   voice.
 
@@ -61,7 +67,7 @@ Then `py -3.12 -m pytest tests` runs its tests. Some tests in
 
 **What is not in this repository, and how to get it:**
 
-- **Model weights** (BAXY's model, the vision projector, speech recognition, the voice and the wake word) and the
+- **Model weights** (the language model, the vision projector, speech recognition, the voice and the wake word) and the
   `llama-server` build. They come inside the release package: install BAXY, or unpack the release `.zip` parts, and
   point BAXY at them with `scripts\register_mind_runtime.ps1` (or the `BAXY_MIND_LLM_GGUF` and
   `BAXY_MIND_LLAMA_SERVER` variables). `py -3.12 main.py` then builds what changed and starts the App. Each model
@@ -77,10 +83,13 @@ holds the full texts. You may use, copy and redistribute BAXY for any purpose, p
 you respect those licenses. What is not permissive: the voice model (BigScience OpenRAIL-M, with use restrictions that
 also bind its output and anyone you pass it to), Eigen (MPL-2.0), the CUDA runtime (NVIDIA's EULA, only in the part for
 NVIDIA cards), Microsoft's runtime and SDK files, and the avatar's videos and images, generated with Higgsfield and not
-under the MIT license. The wake word detector (`baxy-wake-k6r-v7b` since 1.3.1) is BAXY's own network, but its
-training raises questions no lawyer has reviewed yet: it imitated the Kroko ASR encoder (CC-BY-SA), its teacher was
-trained with episodes of the TV series *Impractical Jokers*, and it learned from friends' voices whose written
-permission is still missing (see `THIRD_PARTY_NOTICES.md` and the release notes).
+under the MIT license. The wake word detector (`baxy-wake-k6r-v7a` since 1.3.2) is BAXY's own network, trained
+without the TV series and without the k5 teacher that the detector of 1.3.1 (`k6r-v7b`) had. Its training still raises
+questions no lawyer has reviewed: it imitated the Kroko ASR encoder (CC-BY-SA), about half of its training examples
+are synthetic audio from Piper voices derived from data licensed only for research or non-commercial use, and it
+learned from friends' voices whose written permission is still missing (see
+[`licenses/PALABRA_DE_ACTIVACION.md`](licenses/PALABRA_DE_ACTIVACION.md), `THIRD_PARTY_NOTICES.md` and the release
+notes).
 
 Since 1.3.0 the release packages carry no GPL or LGPL code: the wheels in `runtime_wheels/` are built without eSpeak NG
 and without OpenBLAS. Releases 1.2.0 and 1.2.1 (withdrawn on 2026-11-07, with 1.3.0), and this repository's
@@ -95,7 +104,9 @@ Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
 **BAXY maneja tu PC con Windows contigo, por voz o por texto.** Le pides algo en español, en inglés o mezclando los
 dos; BAXY entiende qué hacer, lo hace, comprueba que de verdad pasó y te lo cuenta en una frase. Su modelo de lenguaje
 corre en tu propia tarjeta gráfica: nada de lo que dices sale de tu PC salvo que pidas algo de la web, o que tú
-conectes el modelo de otra empresa.
+conectes el modelo de otra empresa. [`licenses/PRIVACIDAD.md`](licenses/PRIVACIDAD.md) dice qué sale y a quién; desde
+la 1.3.2 la copia de GitHub pregunta además a GitHub en cada arranque si hay una versión nueva, salvo que lo apagues
+en Ajustes.
 
 - **Comprueba antes de afirmar.** Cada acción pasa por un catálogo tipado de operaciones; un proveedor de Windows la
   ejecuta y devuelve un recibo con lo que observó. «Se envió el comando» no se cuenta como éxito.
@@ -106,15 +117,18 @@ conectes el modelo de otra empresa.
 ### Descargar
 
 Baja el instalador de la [página de versiones](https://github.com/REDSOULTM/BAXY/releases) (la última es
-[BAXY 1.3.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.3.1)): descarga `BAXY-Instalador.exe` y ábrelo.
-Revisa tu PC, baja las partes que necesita, comprueba el SHA-256 de cada una y deja a BAXY en el menú Inicio.
-El instalador no va firmado, así que SmartScreen puede avisar.
+[BAXY 1.5.0](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.0)): descarga `BAXY-Instalador.exe` y ábrelo.
+Revisa tu PC, baja la lista de partes (la rechaza si no lleva la firma de BAXY), comprueba el SHA-256 de cada parte
+y deja a BAXY en el menú Inicio. El instalador en sí no va firmado, así que SmartScreen puede avisar. Si tienes la
+BAXY 1.3.1, su botón «Actualizar» no te lleva a la 1.5.0: baja el instalador nuevo y ejecútalo encima; tus datos se
+quedan (ver las notas de la versión).
 
 ### Qué necesitas para usarlo
 
-- Windows 10 u 11 de 64 bits.
-- **Una tarjeta gráfica dedicada NVIDIA o AMD con 4 GB de memoria o más.** Con NVIDIA usa CUDA; con AMD, Vulkan.
-- Unos 12 GB libres al instalar.
+- Windows 11 de 64 bits. Windows 10 no se ha probado.
+- **Una tarjeta gráfica dedicada: NVIDIA probada con 6 GB o más (4 GB sin probar); AMD en pruebas.** Con NVIDIA usa
+  CUDA; con AMD, Vulkan.
+- Unos 11,1 GB libres al instalar (las notas de la versión dan las cifras medidas).
 - Internet para instalar. BAXY funciona sin conexión, salvo lo que le pidas de la web.
 
 ### Sin probar o sin soporte
@@ -122,9 +136,10 @@ El instalador no va firmado, así que SmartScreen puede avisar.
 - Los gráficos integrados (Intel o AMD) y la CPU sola no tienen soporte.
 - Un Windows recién formateado sin el runtime de Visual C++ ni WebView2 no se probó (el instalador pone los dos desde
   Microsoft).
-- El reparto CUDA/Vulkan no se probó en una tarjeta AMD o Intel real: se simuló.
+- El paquete de la 1.5.0 no se probó instalado en una tarjeta AMD o Intel real (sus notas dicen qué se midió).
 - «Otro modelo» (Ajustes → Modelo) es opcional y viene apagado. Con la API de una empresa, lo que le pases a BAXY va a
-  esa empresa. OpenAI y Google no se probaron con una clave real; otros modelos rinden peor que el propio de BAXY.
+  esa empresa. OpenAI y Google no se probaron con una clave real; otros modelos se midieron frente al modelo ajustado a BAXY
+  (un extra opcional desde la 1.3.2) y rindieron peor.
 - Ejecutar BAXY desde un clon de este repositorio (abajo) se compiló y pasó sus pruebas, pero no se probó de punta a
   punta con voz.
 
@@ -149,7 +164,7 @@ pruebas de `tests\Baxy.Providers.Windows.Tests` manejan el escritorio real: cór
 
 **Qué no está en este repositorio y cómo se obtiene:**
 
-- **Los pesos de los modelos** (el modelo de BAXY, el proyector de visión, el reconocimiento de voz, la voz y la
+- **Los pesos de los modelos** (el modelo de lenguaje, el proyector de visión, el reconocimiento de voz, la voz y la
   palabra de activación) y el `llama-server`. Vienen dentro del paquete de la release: instala BAXY, o descomprime las
   partes `.zip` de la release, y apunta BAXY a ellos con `scripts\register_mind_runtime.ps1` (o con las variables
   `BAXY_MIND_LLM_GGUF` y `BAXY_MIND_LLAMA_SERVER`). Luego `py -3.12 main.py` compila lo que cambió y arranca la App.
@@ -165,10 +180,13 @@ guarda los textos completos. Puedes usar, copiar y redistribuir BAXY para cualqu
 respetando esas licencias. Lo que no es permisivo: el modelo de voz (BigScience OpenRAIL-M, con restricciones de uso que
 alcanzan también a lo que genera y a quien se lo pases), Eigen (MPL-2.0), el runtime de CUDA (EULA de NVIDIA, sólo en la
 parte para tarjetas NVIDIA), los ficheros de runtime y SDK de Microsoft, y los vídeos e imágenes del avatar, generados
-con Higgsfield y fuera de la licencia MIT. El detector de la palabra de activación (`baxy-wake-k6r-v7b` desde 1.3.1) es una
-red propia de BAXY, pero su entrenamiento deja dudas que ningún abogado ha revisado: imitó al encoder de Kroko ASR
-(CC-BY-SA), su maestro se entrenó con episodios de la serie *Impractical Jokers* y aprendió de voces de amigos cuyo
-permiso por escrito todavía falta (ver `THIRD_PARTY_NOTICES.md` y las notas de la release).
+con Higgsfield y fuera de la licencia MIT. El detector de la palabra de activación (`baxy-wake-k6r-v7a` desde 1.3.2) es una
+red propia de BAXY, entrenada sin la serie de TV y sin el maestro k5 que tenía el detector de la 1.3.1 (`k6r-v7b`). Su
+entrenamiento sigue dejando dudas que ningún abogado ha revisado: imitó al encoder de Kroko ASR (CC-BY-SA), cerca de la
+mitad de sus ejemplos de entrenamiento es audio sintético de voces Piper derivadas de datos con licencia sólo para
+investigación o no comercial, y aprendió de voces de amigos cuyo permiso por escrito todavía falta (ver
+[`licenses/PALABRA_DE_ACTIVACION.md`](licenses/PALABRA_DE_ACTIVACION.md), `THIRD_PARTY_NOTICES.md` y las notas de la
+release).
 
 Desde 1.3.0 los paquetes de las releases no llevan código GPL ni LGPL: las ruedas de `runtime_wheels/` se compilan sin
 eSpeak NG y sin OpenBLAS. Las releases 1.2.0 y 1.2.1 (retiradas el 2026-11-07, con 1.3.0), y la historia de este

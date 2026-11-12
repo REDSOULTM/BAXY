@@ -52,7 +52,7 @@ import numpy as np
 from . import language_id
 from .memory import commit_available_mb
 from .resample import resample_poly
-from .speech_text import NUMBER_WORDS, Utterance, lang_of, language, spoken
+from .speech_text import NUMBER_WORDS, Utterance, lang_of, language, spoken, unmarked
 
 MAX_CHARS = 8192
 BLOCK_S = 0.03      # playback block: a cancel stops the sound within one block
@@ -324,8 +324,9 @@ class Speech:
         self._lang = language(lang)
 
     def _said(self, text: str) -> Utterance:
-        """text as said: its spaces folded, cut at MAX_CHARS, in its own language or the App's (language_id.said_in)."""
-        text = " ".join(text.split())[:MAX_CHARS]
+        """text as said: without the marks the model writes (speech_text.unmarked: the screen draws them, VIVO2 F16), its
+        spaces folded, cut at MAX_CHARS, in its own language or the App's (language_id.said_in)."""
+        text = " ".join(unmarked(text).split())[:MAX_CHARS]
         return Utterance(text, language_id.said_in(text, self._lang) if text else self._lang)
 
     def foresee(self, text: str | None, done: bool) -> bool:

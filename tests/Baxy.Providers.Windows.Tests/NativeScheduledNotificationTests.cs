@@ -6,6 +6,7 @@ using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.External;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace Baxy.Providers.Windows.Tests;
 
@@ -308,6 +309,31 @@ public sealed class NativeScheduledNotificationTests
         });
     }
 
+    // ALR1: a ring the open App took wrote rungBy app and no notification: it rang, with the App's card, and it is not a
+    // notification Windows failed to show.
+    [Test]
+    public async Task DiagnosisCountsARingTheAppRangAsRung()
+    {
+        using TemporaryDirectory temporary = new();
+        string alarms = Path.Combine(temporary.Path, "scheduled-notifications");
+        Directory.CreateDirectory(alarms);
+        await File.WriteAllTextAsync(Path.Combine(alarms, TaskName("Alarm", 'c') + ".fired"),
+            """{"rangUtc":"2026-11-08T07:00:00.0000000+00:00","rungBy":"app"}""");
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, new FakeTaskScheduler());
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "schedule.alarms", Json("""{"action":"diagnose"}"""), CancellationToken.None);
+
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+            Assert.That(result.GetProperty("firedNotShownCount").GetInt32(), Is.EqualTo(0));
+            Assert.That(result.TryGetProperty("firedShownUnreadCount", out _), Is.False);
+            Assert.That(result.GetProperty("firedReceipts")[0].GetProperty("rungBy").GetString(), Is.EqualTo("app"));
+        });
+    }
+
     [Test]
     public async Task DiagnosisSaysASchedulerThatDoesNotAnswer()
     {
@@ -598,6 +624,139 @@ public sealed class NativeScheduledNotificationTests
             Assert.That(outcome.Result!.Value.GetProperty("pendingFound").GetBoolean(), Is.False);
             Assert.That(outcome.Result!.Value.GetProperty("next").GetString(), Is.EqualTo(next));
         });
+    }
+
+    // ALR5 (B4): «recuérdamelo después de almuerzo» while a reminder rang went as a cancel. One that rang once is no
+    // longer pending, so «the only one pending» was another reminder, and that one was deleted. While one of the kind
+    // rings a cancel with no time deletes nothing and says what rings and what answers it.
+    [TestCase("""{"action":"cancel"}""")]
+    [TestCase("""{"action":"cancel","kind":"reminder"}""")]
+    public async Task ACancelWithNoTimeWhileOneOfTheKindRingsDeletesNothingAndSaysWhatRings(string arguments)
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(2))}}","kind":"reminder","title":"Dentista"}"""),
+            CancellationToken.None);
+        using Mutex app = Rings(temporary, TaskName("Reminder", 'a'), "comprar pan", "15:00");
+
+        OperationOutcome outcome = await Handle(adapter, arguments);
+
+        JsonElement result = outcome.Result ?? default;
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("notification_cancel_rings_now"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(scheduler.Tasks, Has.Count.EqualTo(1));
+            Assert.That(Told(result, "canceled")?.GetBoolean(), Is.False);
+            Assert.That(Told(result, "ringingNow")?[0].GetProperty("title").GetString(), Is.EqualTo("comprar pan"));
+            Assert.That(Told(result, "next")?.GetString(), Does.StartWith("nothing was canceled: "));
+        });
+    }
+
+    // What rings is of another kind than the one named: the cancel is of one that is set, as before.
+    [Test]
+    public async Task ACancelOfTheOtherKindWhileOneRingsCancelsTheOnePending()
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(DateTimeOffset.UtcNow.AddHours(2))}}","kind":"alarm","title":"Despertar"}"""),
+            CancellationToken.None);
+        using Mutex app = Rings(temporary, TaskName("Reminder", 'a'), "comprar pan", "15:00");
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","kind":"alarm"}""");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(outcome.Result!.Value.GetProperty("canceled").GetBoolean(), Is.True);
+            Assert.That(scheduler.Tasks, Is.Empty);
+        });
+    }
+
+    // A time names one that is set: the one at that time is canceled while another rings, but never the one ringing
+    // (a daily one is pending for its next time while it rings).
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ACancelAtATimeWhileOneRingsCancelsTheOneSetThenButNeverTheOneRinging(bool itRings)
+    {
+        using TemporaryDirectory temporary = new();
+        var scheduler = new FakeTaskScheduler();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, scheduler);
+        DateTimeOffset due = new DateTimeOffset(DateTime.Today.AddDays(1).AddHours(17)).ToUniversalTime();
+        ExternalCapabilityReceipt set = await adapter.InvokeAsync(
+            "schedule.alarms",
+            Json($$"""{"action":"create","at":"{{LocalAt(due)}}","kind":"alarm","title":"Pastilla","recurrence":"daily"}"""),
+            CancellationToken.None);
+        string taskName = set.Result!.Value.GetProperty("taskName").GetString()!;
+        using Mutex app = Rings(temporary, itRings ? taskName : TaskName("Reminder", 'a'), "Pastilla", "17:00");
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","at":"17:00"}""");
+
+        JsonElement result = outcome.Result ?? default;
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.EqualTo(!itRings), outcome.ErrorCode);
+            Assert.That(outcome.ErrorCode, Is.EqualTo(itRings ? "notification_cancel_rings_now" : null));
+            Assert.That(itRings && outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(scheduler.Tasks, Has.Count.EqualTo(itRings ? 1 : 0));
+            Assert.That(Told(result, "canceled")?.GetBoolean(), Is.EqualTo(!itRings));
+            Assert.That(Told(result, "next")?.GetString(),
+                itRings ? Does.StartWith("nothing was canceled: that one rings now") : (IResolveConstraint)Is.Null);
+        });
+    }
+
+    // ALR5 (B4): «recuérdamelo a las once» while it rang went as a cancel at 11:00; the bare «not found» was followed by
+    // «te lo recordaré a las once» with nothing set. While something rings the failure says nothing was canceled nor set
+    // and that it still rings; with nothing ringing it is as it was.
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ACancelAtATimeNoneIsSetForSaysWhileOneRingsThatNothingWasSetAndItRingsOn(bool rings)
+    {
+        using TemporaryDirectory temporary = new();
+        WindowsScheduledNotificationAdapter adapter = Adapter(temporary, new FakeTaskScheduler());
+        using Mutex? app = rings ? Rings(temporary, TaskName("Reminder", 'a'), "comprar pan", "09:00") : null;
+
+        OperationOutcome outcome = await Handle(adapter, """{"action":"cancel","at":"11:00"}""");
+
+        JsonElement result = outcome.Result ?? default;
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo("notification_clock_not_found"));
+            Assert.That(outcome.EffectMayHaveOccurred, Is.False);
+            Assert.That(Told(result, "canceled")?.GetBoolean(), Is.EqualTo(rings ? (bool?)false : null));
+            Assert.That(Told(result, "ringingNow")?.GetArrayLength(), Is.EqualTo(rings ? (int?)1 : null));
+            Assert.That(Told(result, "next")?.GetString(), rings
+                ? Does.StartWith("nothing was canceled and nothing was set: none is set for 11:00. What rings now")
+                : (IResolveConstraint)Is.Null);
+        });
+    }
+
+    private static JsonElement? Told(JsonElement result, string name) =>
+        result.ValueKind == JsonValueKind.Object && result.TryGetProperty(name, out JsonElement value) ? value : null;
+
+    // An open App holding this data root's rings (its mutex) with one ring taken, as the hand-over leaves it.
+    private static Mutex Rings(TemporaryDirectory temporary, string taskName, string? title, string clock)
+    {
+        string alarms = AlarmRingHandoff.Folder(temporary.Path);
+        Directory.CreateDirectory(alarms);
+        var held = new Mutex(false, AlarmRingHandoff.MutexName(alarms));
+        string due = Path.Combine(alarms, taskName + AlarmRingHandoff.DueExtension);
+        File.WriteAllText(due, JsonSerializer.Serialize(new Dictionary<string, string?>
+        {
+            ["rangUtc"] = DateTimeOffset.UtcNow.ToString("O"),
+            ["title"] = title,
+            ["clock"] = clock,
+        }));
+        Assert.That(AlarmRingHandoff.Take(due), Is.Not.Null);
+        return held;
     }
 
     private static ValueTask<OperationOutcome> Handle(WindowsScheduledNotificationAdapter adapter, string arguments) =>

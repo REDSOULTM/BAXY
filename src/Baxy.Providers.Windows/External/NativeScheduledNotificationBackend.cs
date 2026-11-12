@@ -90,8 +90,9 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
         bool? toastEnabled = toastSetting is null ? null : toastSetting.Value != 0;
         List<FiredReceipt>? read = FiredReceipts(request.AlarmRoot);
         List<FiredReceipt> fired = read ?? [];
-        int firedNotShown = fired.Count(receipt => receipt.NotificationShown == false);
-        int firedShownUnread = fired.Count(receipt => receipt.NotificationShown is null);
+        // ALR1: a ring the open App took (rungBy app) was rung by the App, with its card, not by a notification.
+        int firedNotShown = fired.Count(receipt => receipt.RungBy is null && receipt.NotificationShown == false);
+        int firedShownUnread = fired.Count(receipt => receipt.RungBy is null && receipt.NotificationShown is null);
         IReadOnlyList<ScheduledTaskSnapshot>? observed;
         try
         {
@@ -135,6 +136,7 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
                     else writer.WriteNull("notificationShown");
                     if (receipt.Sound is not null) writer.WriteString("sound", receipt.Sound);
                     else writer.WriteNull("sound");
+                    if (receipt.RungBy is not null) writer.WriteString("rungBy", receipt.RungBy);
                     writer.WriteEndObject();
                 }
                 writer.WriteEndArray();
@@ -304,7 +306,8 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
 
     // What a ring wrote in its receipt (WindowsScheduledNotificationAdapter.WriteRingScript): null where the receipt
     // could not be read or does not say it.
-    private sealed record FiredReceipt(string TaskName, string? RangUtc, bool? NotificationShown, string? Sound);
+    private sealed record FiredReceipt(
+        string TaskName, string? RangUtc, bool? NotificationShown, string? Sound, string? RungBy = null);
 
     // The rings of this data root, the latest first; an unreadable folder has none.
     // The receipts of the rings, newest first: none when the folder was never made (nothing scheduled yet), null when
@@ -340,7 +343,9 @@ internal sealed class NativeScheduledNotificationBackend(ITaskSchedulerHost host
                 root.TryGetProperty("notificationShown", out JsonElement shown)
                     && shown.ValueKind is JsonValueKind.True or JsonValueKind.False ? shown.GetBoolean() : null,
                 root.TryGetProperty("sound", out JsonElement sound) && sound.ValueKind == JsonValueKind.String
-                    ? sound.GetString() : null);
+                    ? sound.GetString() : null,
+                root.TryGetProperty("rungBy", out JsonElement rungBy) && rungBy.ValueKind == JsonValueKind.String
+                    ? rungBy.GetString() : null);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
@@ -401,10 +406,23 @@ internal static class ScheduledNotificationTaskXml
 {
     private const string Namespace = "http://schemas.microsoft.com/windows/2004/02/mit/task";
 
-    /// <param name="trigger">null (once), "daily" or "hourly".</param>
+    // Microsoft Learn, Task Scheduler schema, DaysOfWeek (daysOfWeekType): one empty element per day, by these names.
+    private static readonly string[] WeekDays =
+        ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+    /// <param name="trigger">null (once), "daily", "hourly" or "weekly" (RUT4: on <paramref name="days"/>).</param>
+    /// <param name="days">The days of a weekly trigger.</param>
+    /// <param name="wake">False for what is not worth waking a sleeping PC (RUT4: a routine's text is said, or shown,
+    /// when the PC is next on: StartWhenAvailable).</param>
     internal static string Build(
-        string kind, string ringScriptPath, DateTimeOffset due, string? trigger, string userSid)
+        string kind, string ringScriptPath, DateTimeOffset due, string? trigger, string userSid,
+        IReadOnlyCollection<DayOfWeek>? days = null, bool wake = true)
     {
+        if (trigger == "weekly" && days is not { Count: > 0 })
+        {
+            throw new ArgumentException("a weekly trigger needs its days", nameof(days));
+        }
+
         // The trigger keeps the local wall time to the second, with its offset.
         DateTimeOffset local = due.ToLocalTime();
         string startBoundary = local.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture)
@@ -436,7 +454,7 @@ internal static class ScheduledNotificationTaskXml
             writer.WriteElementString("ExecutionTimeLimit", Namespace, "PT10M");
             writer.WriteElementString("MultipleInstancesPolicy", Namespace, "IgnoreNew");
             writer.WriteElementString("StartWhenAvailable", Namespace, "true");
-            writer.WriteElementString("WakeToRun", Namespace, "true");
+            writer.WriteElementString("WakeToRun", Namespace, wake ? "true" : "false");
             writer.WriteStartElement("IdleSettings", Namespace);
             writer.WriteElementString("Duration", Namespace, "PT10M");
             writer.WriteElementString("WaitTimeout", Namespace, "PT1H");
@@ -446,7 +464,7 @@ internal static class ScheduledNotificationTaskXml
             writer.WriteElementString("UseUnifiedSchedulingEngine", Namespace, "true");
             writer.WriteEndElement();
             writer.WriteStartElement("Triggers", Namespace);
-            writer.WriteStartElement(trigger == "daily" ? "CalendarTrigger" : "TimeTrigger", Namespace);
+            writer.WriteStartElement(trigger is "daily" or "weekly" ? "CalendarTrigger" : "TimeTrigger", Namespace);
             writer.WriteElementString("StartBoundary", Namespace, startBoundary);
             if (trigger == "hourly")
             {
@@ -460,6 +478,21 @@ internal static class ScheduledNotificationTaskXml
             {
                 writer.WriteStartElement("ScheduleByDay", Namespace);
                 writer.WriteElementString("DaysInterval", Namespace, "1");
+                writer.WriteEndElement();
+            }
+            if (trigger == "weekly")
+            {
+                // Microsoft Learn, Task Scheduler schema, ScheduleByWeek: WeeksInterval and DaysOfWeek.
+                writer.WriteStartElement("ScheduleByWeek", Namespace);
+                writer.WriteElementString("WeeksInterval", Namespace, "1");
+                writer.WriteStartElement("DaysOfWeek", Namespace);
+                foreach (DayOfWeek day in (days ?? []).Distinct().Order())
+                {
+                    writer.WriteStartElement(WeekDays[(int)day], Namespace);
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();

@@ -96,6 +96,11 @@ public static class OperationVisibleFacts
         bool processInventory = operation == "system.process.list";
         bool ocrObservation = operation == "ocr.read";
         bool captureObservation = operation is "capture.active.window" or "capture.screenshot";
+        // RUT9 (REV9 H1): the routines are read whole, as they were saved. Past four levels the list lost what each one
+        // says and on which days (routines[i].steps[j].say, trigger.days[k]) and a run its steps' arguments, and the
+        // mind told a weekday routine as said «una vez» with nothing to say. The store bounds them (64 in 64 KiB) and
+        // the size budget below still holds; every other operation keeps its four levels.
+        int deepest = operation == "baxy.routines" ? RoutineDepth : 4;
         // Ronda final 12 (regla 3): only an operation whose typed schema takes an offset pages its list (window.resolve,
         // note.list); note.search, with a nextOffset null and no offset to take, is never given a next page.
         bool paged = ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
@@ -158,7 +163,7 @@ public static class OperationVisibleFacts
             // instead of failing the whole parse.
             bool cut = false;
             sanitized = Sanitize(
-                result, ref cut,
+                result, ref cut, deepest: deepest,
                 processInventory: processInventory, ocrObservation: ocrObservation,
                 captureObservation: captureObservation, paged: paged);
             // Auditoría final V2: what the bounds below left out is said where the model reads, as the size budget
@@ -676,7 +681,7 @@ public static class OperationVisibleFacts
     // «deviceId» (peripheral.print, peripheral.scan, bluetooth.device.pair),
     // «sha256»/«hash» (expectedSha256 of filesystem.copy and filesystem.move)
     // and «recordId».
-    // Bounded too: past four levels nothing is kept, and a list keeps its first twenty items (fifty processes); each
+    // Bounded too: past four levels nothing is kept (eight for the routines, RoutineDepth), and a list keeps its first twenty items (fifty processes); each
     // cut sets «cut». A list cut under a name says how many items it shows («<name>Shown»: a count or a next offset
     // of the provider speaks of all of them) and, when the observation carries no count of its own, how many it had
     // («<name>Count»).
@@ -690,11 +695,15 @@ public static class OperationVisibleFacts
         "authority", "taskName",
     };
 
+    // A routine's step arguments are a tool's typed arguments under routines[i].steps[j].arguments (five levels down
+    // when listed): eight keep a nested argument whole.
+    private const int RoutineDepth = 8;
+
     private static JsonNode? Sanitize(
         JsonElement element, ref bool cut, int depth = 0, bool processInventory = false, bool ocrObservation = false,
-        bool captureObservation = false, bool paged = false)
+        bool captureObservation = false, bool paged = false, int deepest = 4)
     {
-        if (!ocrObservation && depth > 4)
+        if (!ocrObservation && depth > deepest)
         {
             cut |= element.ValueKind != JsonValueKind.Null;
             return null;
@@ -722,7 +731,7 @@ public static class OperationVisibleFacts
                         continue;
                     }
 
-                    JsonNode? sanitized = Sanitize(property.Value, ref cut, depth + 1, processInventory, ocrObservation, captureObservation, paged);
+                    JsonNode? sanitized = Sanitize(property.Value, ref cut, depth + 1, processInventory, ocrObservation, captureObservation, paged, deepest);
                     // Ronda final 12 (regla 3): a last page's «nextOffset: null» is kept, so a later cut of its list
                     // still knows it is a page by offset and says where to go on.
                     if (sanitized is not null || key == "nextOffset")
@@ -759,7 +768,7 @@ public static class OperationVisibleFacts
                 int shown = processInventory && !ocrObservation ? 50 : int.MaxValue;
                 foreach (JsonElement item in element.EnumerateArray().Take(shown))
                 {
-                    cleanArray.Add(Sanitize(item, ref cut, depth + 1, processInventory, ocrObservation, captureObservation, paged));
+                    cleanArray.Add(Sanitize(item, ref cut, depth + 1, processInventory, ocrObservation, captureObservation, paged, deepest));
                 }
 
                 cut |= element.GetArrayLength() > shown;

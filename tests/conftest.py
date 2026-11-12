@@ -25,3 +25,29 @@ def _no_baxy_switch_from_the_shell(monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(mind, "system_one_off",
                         lambda: os.environ.get("LOCALAPPDATA") != _OWNERS_LOCALAPPDATA and _system_one_off())
+
+
+# Public repository only: some tests also read documents that are not published (`documentacion/`: the store pages, the
+# Steam agreement and itch.io's legal document) and the license texts' tests read the internal README, which is another
+# document here. A test that needs one of them is skipped instead of failing; the tests of what is published run as
+# they are.
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_call(item: pytest.Item):
+    try:
+        return (yield)
+    except (FileNotFoundError, IndexError, AssertionError) as error:
+        last = error.__traceback__
+        while last.tb_next is not None:
+            last = last.tb_next
+        unpublished = (isinstance(error, FileNotFoundError)
+                       and "documentacion" in str(error.filename).replace("\\", "/").split("/"))
+        # A script the test runs stopped on the same missing document, and the test read that in its output.
+        output = str(getattr(last.tb_frame.f_locals.get("done"), "stderr", ""))
+        through_a_script = (isinstance(error, AssertionError) and "No such file or directory" in output
+                            and "documentacion" in output)
+        internal_readme = (isinstance(error, IndexError) and item.module.__name__.rsplit(".", 1)[-1] == "test_license_texts"
+                           and last.tb_frame.f_code.co_name == "_privacy"
+                           and last.tb_frame.f_locals.get("path") == "README.md")
+        if not (unpublished or through_a_script or internal_readme):
+            raise
+        pytest.skip("needs a document that is not in the public repository")

@@ -41,6 +41,9 @@ internal sealed class CoreProcessClient : IAsyncDisposable
     private bool _started;
     private bool _ready;
     private bool _disposed;
+
+    // Tests only (TPV3): the engine's answer to each request, with the token it carried, instead of the sidecar.
+    internal Func<PreparedOperation, string?, OperationResponse>? AnswersForTests { get; set; }
     private int _disconnectSignaled;
 
     public event Action? Disconnected;
@@ -195,6 +198,11 @@ internal sealed class CoreProcessClient : IAsyncDisposable
         if (!IsReady)
         {
             throw new InvalidOperationException("El motor local no completó el saludo de protocolo.");
+        }
+
+        if (AnswersForTests is { } answers)
+        {
+            return answers(operation, confirmationToken);
         }
 
         // El envío al Core cubre kernel, provider y verificación de

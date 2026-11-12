@@ -85,6 +85,16 @@ def test_an_answer_given_before_the_notice_sounds_drops_the_notice(
     assert played == ["Tienes 36 juegos en Steam."]
 
 
+def test_what_reaches_the_synthesis_has_no_marks(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """ABIERTOS_VIVO H1 / VIVO2 F16: the answer is published with the marks the model wrote (the screen draws them); the text
+    the synthesis gets has none, its line breaks folded as before."""
+    played: list[str] = []
+    speech = _loaded_voice(tmp_path, monkeypatch, played)
+    assert speech.speak("## Hoy\n\n**Listo**: abrí `Steam`.\n\n- uno\n- dos")
+    _wait_for(played, 1)
+    assert played == ["Hoy Listo: abrí Steam. uno dos"]
+
+
 def test_a_notice_with_no_answer_yet_is_said_and_the_answer_follows(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     played: list[str] = []

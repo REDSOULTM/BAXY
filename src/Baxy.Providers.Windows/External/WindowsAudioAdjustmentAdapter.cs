@@ -411,6 +411,139 @@ internal sealed class WindowsAppVolumeSetAdapter : IExternalOperationAdapter
 }
 
 /// <summary>
+/// W2 (A2, A3, A5 «silencia Lumitrak» muted the whole PC): audio.mute with scope app mutes or unmutes one application's
+/// own audio sessions (the per-app mute of the volume mixer, ISimpleAudioVolume::SetMute), its levels and the system
+/// endpoint untouched, and verifies the post-read. An application with no audio session on the default output mutes
+/// nothing and says so (<see cref="AppSessionNotFound.MuteErrorCode"/>, muted false, the applications that have one).
+/// </summary>
+internal sealed class WindowsAppMuteAdapter : IExternalOperationAdapter
+{
+    private readonly Func<string, bool, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> _mute;
+    private readonly Func<IReadOnlyList<AudioSessionProgram>> _sessionNames;
+    private readonly Func<(string Name, string Process)?> _browser;
+
+    internal WindowsAppMuteAdapter()
+    {
+        _mute = static (application, muted, beforeEffect, cancellationToken) =>
+            WindowsCoreAudioPlatform.MuteApplicationSessions(application, muted, beforeEffect, cancellationToken);
+        _sessionNames = WindowsCoreAudioPlatform.ApplicationSessionPrograms;
+        _browser = Windows.DesktopWindowNames.PersonBrowser;
+    }
+
+    internal WindowsAppMuteAdapter(
+        Func<string, bool, Func<CancellationToken>?, CancellationToken, ApplicationSessionAdjustment?> mute,
+        Func<IReadOnlyList<AudioSessionProgram>>? sessionNames = null,
+        Func<(string Name, string Process)?>? browser = null)
+    {
+        _mute = mute ?? throw new ArgumentNullException(nameof(mute));
+        _sessionNames = sessionNames ?? (static () => []);
+        _browser = browser ?? (static () => null);
+    }
+
+    // Only scope app reaches it: AudioMuteHandler sends scope pc to the system endpoint.
+    public bool CanHandle(string operation) => operation == "audio.mute";
+
+    public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        string application;
+        try
+        {
+            application = ExternalJson.RequiredString(arguments, "app");
+        }
+        catch (InvalidDataException)
+        {
+            return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(operation, "mute_app_invalid"));
+        }
+        if (string.IsNullOrWhiteSpace(application)
+            || !arguments.TryGetProperty("state", out JsonElement stateElement)
+            || stateElement.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+        {
+            return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(operation, "mute_app_invalid"));
+        }
+        bool state = stateElement.GetBoolean();
+
+        var effectBoundary = new ExternalEffectBoundary();
+        try
+        {
+            ApplicationSessionAdjustment? muted = _mute(
+                application,
+                state,
+                () =>
+                {
+                    effectBoundary.Cross(cancellationToken);
+                    return cancellationToken;
+                },
+                cancellationToken);
+            if (muted is null)
+            {
+                return ValueTask.FromResult(AppSessionNotFound.Receipt(operation, application,
+                    new JsonObject { ["scope"] = "app", ["state"] = state }, state ? "mutes {0}" : "unmutes {0}",
+                    _sessionNames, _browser, WireNames.Of("audio.mute"), "scope \"pc\"", mute: true, muting: state));
+            }
+            if (muted.Muted != state)
+            {
+                // Renew al máximo (8.3): the application's state read after is the state after, never dropped.
+                return ValueTask.FromResult(ExternalJson.WithStateAfter(
+                    effectBoundary.Failure(operation, "mute_postread_mismatch", muted.Changed),
+                    WindowsAudioAdjustmentAdapter.VolumeState(muted.Level, muted.Muted, muted.BaselineLevel, state,
+                        "windows_core_audio_session_postread")));
+            }
+            JsonElement result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("app", application);
+                // W3 (R6-3: «discord y spotify» muted both and the receipt named only Discord): a name that matched
+                // several applications names every one, each with its sessions and its state read after.
+                if (muted.Processes is { Count: > 1 } processes)
+                {
+                    writer.WriteStartArray("processes");
+                    foreach (ApplicationSessionProcess process in processes)
+                    {
+                        writer.WriteStartObject();
+                        writer.WriteString("processName", process.ProcessName);
+                        writer.WriteNumber("sessionCount", process.SessionCount);
+                        writer.WriteBoolean("muted", process.Muted);
+                        writer.WriteEndObject();
+                    }
+                    writer.WriteEndArray();
+                }
+                else
+                {
+                    writer.WriteString("processName", muted.ProcessName);
+                }
+                writer.WriteNumber("sessionCount", muted.SessionCount);
+                writer.WriteBoolean("muted", muted.Muted);
+                writer.WriteNumber("level", muted.Level);
+                writer.WriteString("endpointIdHash", AudioEndpointIdentity.Hash(muted.EndpointId));
+                writer.WriteString("authority", "windows_core_audio_session_postread");
+                writer.WriteEndObject();
+            });
+            return ValueTask.FromResult(ExternalJson.Switched(operation, result, effectObserved: muted.Changed));
+        }
+        catch (OperationCanceledException) when (
+            cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
+        {
+            return ValueTask.FromResult(effectBoundary.Failure(operation, "audio_output_endpoint_unavailable"));
+        }
+        catch (AudioPlatformException exception)
+        {
+            return ValueTask.FromResult(effectBoundary.Failure(operation, exception.ErrorCode));
+        }
+        catch (Exception exception) when (exception is COMException
+            or InvalidComObjectException or UnauthorizedAccessException
+            or SecurityException or ObjectDisposedException)
+        {
+            return ValueTask.FromResult(effectBoundary.Failure(operation, "audio_output_endpoint_unavailable"));
+        }
+    }
+}
+
+/// <summary>
 /// Renew al máximo (auditoría de flujos, P257 «deja el volumen en 20» → audio.app.volume.set {app:"volumen"}): an
 /// application with no audio session on the default output fails before any effect, and (model aid) the failure names
 /// the applications that have one, few and by their process names, and the operation of the PC's own volume. Holdout v6
@@ -427,10 +560,20 @@ internal static class AppSessionNotFound
 {
     internal const string ErrorCode = "app_audio_session_not_found_on_default_output";
 
+    // W2: audio.mute with scope app, for an application with no audio session: nothing was muted (muted false).
+    internal const string MuteErrorCode = "app_audio_not_found";
+
     internal const int NameLimit = 8;
 
     /// <param name="sameArguments">The call's other arguments (level, or amount and direction), as the model gave them.</param>
     /// <param name="effect">What the call does to the application named by its one placeholder, «{0}».</param>
+    /// <param name="mute">W2: the call muted an application (audio.mute with scope app). Its failure is
+    /// <see cref="MuteErrorCode"/>, says muted false and, with no application to lead with, says what plays and that
+    /// the rest of the PC's sound is as it was, without naming the whole PC's call: muting all of it is the model's own
+    /// call, with scope pc (A2, A3, A5: «silencia Lumitrak» muted the whole PC).</param>
+    /// <param name="muting">W3 (R6-5): the state the mute call asked for. An unmute of an application with no session
+    /// read no mute of it (Microsoft Learn: a session's mute persists across restarts, so it may still be on), so its
+    /// failure says nothing was unmuted and no muted state.</param>
     internal static ExternalCapabilityReceipt Receipt(
         string operation,
         string application,
@@ -439,9 +582,11 @@ internal static class AppSessionNotFound
         Func<IReadOnlyList<AudioSessionProgram>> sessionNames,
         Func<(string Name, string Process)?> browser,
         string systemOperation,
-        string systemArguments)
+        string systemArguments,
+        bool mute = false,
+        bool muting = true)
     {
-        ExternalCapabilityReceipt failure = ExternalJson.FailureBeforeEffect(operation, ErrorCode);
+        ExternalCapabilityReceipt failure = ExternalJson.FailureBeforeEffect(operation, mute ? MuteErrorCode : ErrorCode);
         if (!ModelAids.On(ModelAids.AppVolumeCandidates))
             return failure;
         AudioSessionProgram[] programs;
@@ -469,6 +614,8 @@ internal static class AppSessionNotFound
             {
                 writer.WriteStartObject();
                 writer.WriteNumber("version", 1);
+                if (mute && muting)
+                    writer.WriteBoolean("muted", false);
                 writer.WriteStartArray("appsWithAudio");
                 foreach (AudioSessionProgram program in programs)
                     writer.WriteStringValue(program.Process);
@@ -496,6 +643,13 @@ internal static class AppSessionNotFound
                                 != WindowsCoreAudioPlatform.FoldToken(one.Process) ? $" ({name})" : ""))
                         + $"; this call changed nothing: no application with audio is named \"{application}\", and "
                         + $"{one.Process} is the one whose names match it"
+                    : mute && !muting
+                    ? $"nothing was unmuted: no application with audio is named \"{application}\", so its own mute "
+                        + "could not be read or changed; only these applications have sound of their own now (app takes "
+                        + "one of them), and the rest of the PC's sound is as it was"
+                    : mute
+                    ? $"nothing was muted: no application with audio is named \"{application}\"; only these applications "
+                        + "have sound of their own now (app takes one of them), and the rest of the PC's sound is as it was"
                     : "only these applications have a volume of their own now (app takes one of "
                         + $"them); the volume of the whole PC is {systemOperation}, not an application: if the person "
                         + $"meant the whole PC, call {systemOperation} with {systemArguments}");

@@ -24,7 +24,7 @@ class _Marks:
     def reset(self) -> None:
         pass
 
-    def marks(self, block) -> np.ndarray:
+    def marks(self, block, settle: bool = False) -> np.ndarray:
         return np.zeros(len(block), bool)
 
 

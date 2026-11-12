@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ConfirmRow, Panel } from '../Panel';
-import { getJson, send } from '../../api';
+import { getJson, sendTold } from '../../api';
 import { useT } from '../../i18n';
 
 /* Triggers (design parts.jsx BxModulePanel «triggers»): only what the person created — BAXY's alarms and reminders in
@@ -18,13 +18,21 @@ export function TriggersPanel({ onClose }: { onClose: () => void }) {
   useEffect(() => { void getJson<Triggers>('/triggers').then(setData); }, []);
   const cancel = async (x: Trigger) => {
     setAsk(null);
-    const r = await send<Triggers>('POST', '/triggers/cancel', { at: x.next_local, kind: x.kind });
-    if (r === null) { setNote(t('No se pudo cancelar.', 'Couldn’t cancel it.')); return; }
-    setNote(null);
-    setData(r);
+    const r = await sendTold<Triggers>('POST', '/triggers/cancel', { at: x.next_local, kind: x.kind });
+    if (r.value) { setNote(null); setData(r.value); return; }
+    // APP1 (REV_APP TRG-a): the host cancels by the clock; two at the same clock are refused, never one taken for the
+    // other; and a request with no answer may have cancelled it: the list is read again rather than saying «no».
+    if (!r.refused) {
+      setNote(t('BAXY no contestó: no sé si se canceló. Esta es la lista de ahora.', 'BAXY didn’t answer: I don’t know whether it was cancelled. This is the list as it is now.'));
+      void getJson<Triggers>('/triggers').then(setData);
+      return;
+    }
+    setNote(r.code === 'notification_clock_ambiguous'
+      ? t('Hay otra a la misma hora y no sé distinguir cuál es: no se canceló ninguna.', 'There is another one at the same time and I can’t tell which is which: none was cancelled.')
+      : t('No se pudo cancelar: sigue puesta.', 'Couldn’t cancel it: it is still set.'));
   };
   return (
-    <Panel title={t('Triggers · solo los que tú creaste', 'Triggers · only the ones you created')} onClose={onClose} width={460}>
+    <Panel title={t('Alarmas y recordatorios · solo los que tú creaste', 'Alarms and reminders · only the ones you created')} onClose={onClose} width={460}>
       {data === null ? <div className="bx-mem-empty" role="status">{t('No se pudieron leer las alarmas y recordatorios.', 'Couldn’t read the alarms and reminders.')}</div> : null}
       {note ? <div className="bx-mem-empty" role="status">{note}</div> : null}
       <div className="bx-mem">

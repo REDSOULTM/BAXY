@@ -1,14 +1,19 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { Globe, Icon } from './Icon';
-import type { ChatItem, Confirmation, Fam, Step, StepStatus } from '../types';
+import type { ChatItem, Confirmation, Ring, Step, StepStatus } from '../types';
+import { outcomeOf } from '../outcome';
+import { sourcesOf, withoutSource } from '../sources';
 import { useT, type Words } from '../i18n';
+import { useApproval } from '../approval';
+import { Marked } from '../markdown';
 
-/* The conversation (design chat.jsx, BxChat4): the person's words, BAXY's, a chip per call under each reply and the
-   Sí / No card of a call waiting for the person, always inside the conversation and never as a modal. */
+/* The conversation (design chat.jsx, BxChat4; interfaz v5, V5.md §5): the person's words, and each reply of BAXY's as a
+   card that says how the request ended, what BAXY said (the last one largest) and «Cómo lo comprobé»; the Sí / No card
+   of a call waiting for the person, always inside the conversation and never as a modal. */
 
 const ST: Record<StepStatus, { ic: string | null; label: Words }> = {
   run: { ic: null, label: { es: 'en curso', en: 'running' } },
-  ok: { ic: '✓', label: { es: 'verificado', en: 'verified' } },
+  ok: { ic: '✓', label: { es: 'comprobado', en: 'checked' } },
   same: { ic: '=', label: { es: 'ya estaba así', en: 'already set' } },
   sent: { ic: '↗', label: { es: 'enviado, sin comprobar', en: 'sent, not checked' } },
   read: { ic: '✓', label: { es: 'leído', en: 'read' } },
@@ -17,41 +22,43 @@ const ST: Record<StepStatus, { ic: string | null; label: Words }> = {
   maybe: { ic: '?', label: { es: 'puede haber corrido', en: 'may have run' } },
 };
 
-const FAM_LABEL: Record<Fam, Words> = {
-  apps: { es: 'apps', en: 'apps' }, ventanas: { es: 'ventanas', en: 'windows' }, archivos: { es: 'archivos', en: 'files' },
-  web: { es: 'web', en: 'web' }, musica: { es: 'música', en: 'music' }, memoria: { es: 'memoria', en: 'memory' },
-  alarmas: { es: 'alarmas', en: 'alarms' },
-};
-
-function StepChip({ s, open, onClick }: { s: Step; open: boolean; onClick: () => void }) {
+/* «Cómo lo comprobé» (V5 §5): one row per step with what the provider observed, or why it failed or did not run. An
+   observation that only repeats the status («Leído») is left out instead of said twice. It is open while a step runs,
+   when one failed and when one changed a setting of BAXY's own (COR1: a change of the person's settings is never
+   only behind the fold); otherwise a click away. Its title says a check only when every step was checked or read (INT13):
+   a step sent without a check, failed, skipped or still running is told as what was done. What went online is said
+   once: a step's line leaves out what the card's foot already says (DEP5: the same search showed twice). */
+function HowChecked({ steps, net, open: always }: { steps: Step[]; net: string | null; open: boolean }) {
   const t = useT();
-  const st = ST[s.status] ?? ST.run;
-  return (
-    <button className={'bx-chip st-' + s.status + (open ? ' open' : '')} onClick={onClick} title={t.w(st.label)} aria-expanded={open}>
-      <span className="ic">{s.status === 'run' ? <i className="spin"></i> : st.ic}</span>
-      <span className="lb">{s.label}</span>
-      {s.net ? <span className="nt"><Globe s={10} /></span> : null}
-    </button>
-  );
-}
-
-function Steps({ steps }: { steps: Step[] }) {
-  const t = useT();
-  const [open, setOpen] = useState(-1);
+  const live = steps.some((s) => s.status === 'run' || s.status === 'fail' || s.pin);
+  const checked = steps.every((s) => s.status === 'ok' || s.status === 'same' || s.status === 'read');
+  const [mine, setOpen] = useState<boolean | null>(null);
   if (!steps.length) return null;
-  const o = open >= 0 ? steps[open] : undefined;
+  const open = mine ?? (live || always);
+  const n = steps.length;
   return (
-    <div className="bx-steps">
-      <div className="row">
-        {steps.map((s, i) => <StepChip key={s.id} s={s} open={open === i} onClick={() => setOpen(open === i ? -1 : i)} />)}
-      </div>
-      {steps.map((s, i) => (s.status === 'fail' && open !== i ? <div key={s.id} className="bx-why"><b>✕ {s.label}:</b> {s.reason}</div> : null))}
-      {o ? (
-        <div className={'bx-obs st-' + o.status}>
-          <div className="h"><span>{t.w(ST[o.status].label)}</span><span className="fam">{FAM_LABEL[o.fam] ? t.w(FAM_LABEL[o.fam]) : null}</span></div>
-          <div className="t">{o.obs || o.reason || t('En curso…', 'Running…')}</div>
-          {o.net ? <div className="net"><Globe s={10} /> {t('salió a internet', 'went online')} · {o.net}</div> : null}
-        </div>
+    <div className="bx-how">
+      <button className="bx-how-t" aria-expanded={open} onClick={() => setOpen(!open)}>
+        {checked ? t('Cómo lo comprobé', 'How I checked it') : t('Qué hice', 'What I did')} · {n} {n === 1 ? t('paso', 'step') : t('pasos', 'steps')}<span className="ar" aria-hidden="true">{open ? '▴' : '▾'}</span>
+      </button>
+      {open ? (
+        <ol className="bx-how-l">
+          {steps.map((s) => {
+            const st = ST[s.status] ?? ST.run;
+            const said = s.status === 'fail' || s.status === 'skip' || s.status === 'maybe' ? s.reason : s.obs && withoutSource(s.obs);
+            const note = said && said.trim().toLowerCase() !== t.w(st.label).toLowerCase() ? said : null;
+            return (
+              <li key={s.id} className={'bx-how-s st-' + s.status}>
+                <span className="ic" aria-label={t.w(st.label)}>{s.status === 'run' ? <i className="spin"></i> : st.ic}</span>
+                <span className="b">
+                  <span className="k">{s.label}</span>
+                  {note ? <span className="o">{note}</span> : null}
+                  {s.net && s.net !== net ? <span className="o netb"><Globe s={10} /> {t('salió a internet', 'went online')} · {s.net}</span> : null}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
       ) : null}
     </div>
   );
@@ -75,6 +82,9 @@ function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; onNo: ()
   // the kernel's token is dead past its time even before the host says so: the card never offers a Sí that cannot run.
   const status = live && left <= 0 ? 'expired' : c.status;
   const pend = status === 'pending';
+  // OVL1: the Sí authorizes an effect: it is off, and looks it, until it has been drawn in its place for its wait
+  const yesButton = useRef<HTMLButtonElement>(null);
+  const yes = useApproval(c.id, [c.kind, c.title, c.target, c.risk, c.context, c.effectStarted].join('\n'), pend, yesButton);
   // nothing was done by this card unless an earlier attempt of the same call may already have run (then it only did
   // not run again)
   const none = c.effectStarted ? t('no se repitió', 'not run again') : t('no se hizo nada', 'nothing was done');
@@ -93,7 +103,8 @@ function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; onNo: ()
           <span className="exp">{t('vence en', 'expires in')} {mmss(left)}</span>
           <div className="btns">
             <button className="bx-btn" onClick={onNo}>No <kbd>esc</kbd></button>
-            <button className="bx-btn yes" onClick={onYes}>{t('Sí', 'Yes')} <kbd>↵</kbd></button>
+            <button ref={yesButton} className={'bx-btn yes' + (yes.lit ? '' : ' off')} aria-disabled={!yes.armed} onPointerDown={yes.down} onKeyDown={yes.key}
+              onClick={(e) => { if (yes.click(e)) onYes(); }}>{t('Sí', 'Yes')} <kbd className={yes.keys ? undefined : 'off'}>↵</kbd></button>
           </div>
         </div>
       ) : (
@@ -108,6 +119,47 @@ function Card({ c, onYes, onNo }: { c: Confirmation; onYes: () => void; onNo: ()
   );
 }
 
+/* An alarm or a reminder ringing now (ALR1): its words, and Stop and Snooze as a phone's alarm has them (Android's
+   clock snoozes 10 minutes); a reminder's are Done and Remind in 10 min. Both go through schedule.alarms, as the
+   model's call when the person says it. */
+function RingCard({ r, onRing }: { r: Ring; onRing: (id: string, action: 'stop' | 'snooze') => void }) {
+  const t = useT();
+  const alarm = r.kind === 'alarm';
+  const live = r.status === 'ringing';
+  const ended: Record<Ring['status'], Words> = {
+    ringing: { es: 'sonando', en: 'ringing' },
+    stopped: alarm ? { es: '✓ Parada', en: '✓ Stopped' } : { es: '✓ Listo', en: '✓ Done' },
+    snoozed: alarm ? { es: 'Pospuesta', en: 'Snoozed' } : { es: 'Pospuesto', en: 'Snoozed' },
+    timeout: { es: 'Sonó 10 min sin respuesta', en: 'Rang 10 min with no answer' },
+    unanswered: { es: 'Dicho dos veces sin respuesta', en: 'Said twice with no answer' },
+    closed: { es: 'BAXY se cerró mientras sonaba', en: 'BAXY closed while it rang' },
+    ended: { es: 'Ya no suena', en: 'No longer ringing' },
+    windows: alarm ? { es: 'BAXY no pudo hacerla sonar: te avisa Windows', en: 'BAXY couldn’t ring it: Windows notifies you' }
+      : { es: 'BAXY no pudo hacerlo sonar: te avisa Windows', en: 'BAXY couldn’t ring it: Windows notifies you' },
+    failed: alarm ? { es: 'BAXY no pudo hacerla sonar', en: 'BAXY couldn’t ring it' } : { es: 'BAXY no pudo hacerlo sonar', en: 'BAXY couldn’t ring it' },
+  };
+  return (
+    <div className={'bx-card k-ring' + (live ? ' s-pending' : ' s-' + r.status)} role={live ? 'alert' : undefined}>
+      <div className="hd">
+        <span className="tag">{alarm ? t('Alarma', 'Alarm') : t('Recordatorio', 'Reminder')}</span>
+        <span className="ctx">{r.clock}</span>
+      </div>
+      <div className="ti">{r.title ?? r.words}</div>
+      {live ? (
+        <div className="ft">
+          <span className="exp">{t('sonando · di «BAXY, para» o «cinco minutos más»', 'ringing · say “BAXY, stop” or “five more minutes”')}</span>
+          <div className="btns">
+            <button className="bx-btn" onClick={() => onRing(r.id, 'snooze')}>{alarm ? t('Posponer 10 min', 'Snooze 10 min') : t('Recordar en 10 min', 'Remind in 10 min')}</button>
+            <button className="bx-btn yes" onClick={() => onRing(r.id, 'stop')}>{alarm ? t('Parar', 'Stop') : t('Listo', 'Done')}</button>
+          </div>
+        </div>
+      ) : (
+        <div className="res">{t.w(ended[r.status])}</div>
+      )}
+    </div>
+  );
+}
+
 interface ChatProps {
   items: ChatItem[];
   title: string;
@@ -115,11 +167,17 @@ interface ChatProps {
   busy: boolean;
   /** the person's Sí or No on the card it names */
   onAnswer: (approve: boolean, card: string) => void;
+  /** Stop or Snooze on the alarm or reminder ringing now */
+  onRing: (id: string, action: 'stop' | 'snooze') => void;
   onCollapse: () => void;
   onNew: () => void;
+  /** the conversations kept before (SessionsPanel) */
+  onHistory: () => void;
+  /** Personalización: «Cómo lo comprobé» open on every reply */
+  stepsOpen?: boolean;
 }
 
-function ChatView({ items, title, meta, busy, onAnswer, onCollapse, onNew }: ChatProps) {
+function ChatView({ items, title, meta, busy, onAnswer, onRing, onCollapse, onNew, onHistory, stepsOpen = false }: ChatProps) {
   const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
@@ -146,11 +204,14 @@ function ChatView({ items, title, meta, busy, onAnswer, onCollapse, onNew }: Cha
     const el = ref.current;
     if (el && stick.current) requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
   }, [items]);
+  let last = -1;
+  for (let i = items.length - 1; i >= 0; i--) if (items[i].who === 'baxy') { last = i; break; }
   return (
     <div className="bx-chat4">
-      <div className="bx-chat-head">
+      <div className="bx-chat-head pywebview-drag-region">
         <div className="bx-c4-tt"><span className="ttl">{title}</span>{meta ? <span className="mt">{meta}</span> : null}</div>
         <div className="acts">
+          <button className="bx-ib plain" title={t('Conversaciones anteriores', 'Earlier conversations')} aria-label={t('Conversaciones anteriores', 'Earlier conversations')} onClick={onHistory}><Icon name="history" size={13} /></button>
           <button className="bx-ib plain" title={t('Nueva conversación', 'New conversation')} onClick={onNew}><Icon name="plus" size={13} /></button>
           <button className="bx-ib plain" title={t('Ocultar conversación', 'Hide conversation')} onClick={onCollapse}>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.25"><path d="M4.5 2.5L8 6L4.5 9.5"></path></svg>
@@ -159,21 +220,30 @@ function ChatView({ items, title, meta, busy, onAnswer, onCollapse, onNew }: Cha
       </div>
       <div className="bx-c4-list" ref={ref}>
         {items.length === 0 ? <div className="bx-c4-empty">{t('Conversación nueva. Escribe o di «BAXY».', 'New conversation. Type, or say “BAXY”.')}</div> : null}
-        {items.map((h) => {
+        {items.map((h, i) => {
           if (h.who === 'you') return <div key={h.id} className="bx-c4-you">{h.text}</div>;
           if (h.who === 'sys') return <div key={h.id} className="bx-c4-sys">{h.text}</div>;
           if (h.who === 'card') return <Card key={h.id} c={h} onYes={() => onAnswer(true, h.id)} onNo={() => onAnswer(false, h.id)} />;
+          if (h.who === 'ring') return <RingCard key={h.id} r={h.ring} onRing={onRing} />;
+          const out = outcomeOf(h.steps);
+          const credited = sourcesOf(h.steps);
           return (
-            <div key={h.id} className="bx-c4-baxy">
-              {h.text ? <div className="tx">{h.text}</div> : null}
-              <Steps steps={h.steps} />
+            <article key={h.id} className={'bx-c4-baxy' + (i === last ? ' last' : '') + (out ? ' o-' + out.kind : '')}
+              aria-label={out ? t('Respuesta de BAXY: ', 'BAXY’s reply: ') + t.w(out.label) : t('Respuesta de BAXY', 'BAXY’s reply')}>
+              {out ? <span className={'bx-out o-' + out.kind}><span aria-hidden="true">{out.ic}</span> {t.w(out.label)}</span> : null}
+              {/* its own line breaks are drawn (white-space: pre-line, VIVO2 F16); none before or after it; its marks as what
+                  they mean (markdown.tsx: CommonMark, never as HTML) */}
+              {h.text ? <div className="tx"><Marked text={h.text.trim()} /></div> : null}
+              {/* the source that answered, on the card's face and never behind a click (OSMF attribution, src/sources.ts) */}
+              {credited.length ? <p className="bx-src">{(credited.length === 1 ? t('Fuente', 'Source') : t('Fuentes', 'Sources')) + ': ' + credited.join(' · ')}</p> : null}
+              <HowChecked steps={h.steps} net={h.net ?? null} open={stepsOpen} />
               {h.net || h.silent ? (
                 <div className="mt">
                   {h.net ? <span className="netb"><Globe s={10} /> {t('salió a internet', 'went online')} · {h.net}</span> : null}
                   {h.silent ? <span>{t('sin voz', 'no voice')} · {h.silent}</span> : null}
                 </div>
               ) : null}
-            </div>
+            </article>
           );
         })}
         {busy ? <div className="bx-c-think"><i></i><i></i><i></i></div> : null}

@@ -23,6 +23,29 @@ public sealed class FieldTelemetrySamplerTests
         Assert.ThrowsAsync<ObjectDisposedException>(() => sampler.SampleAsync(CancellationToken.None));
     }
 
+    // Seen in the real App on the PC (2026-11-09): with a model of Ollama's in use the rail said «0.0gb» of the model's VRAM, as
+    // only the mind's processes were counted. BAXY's own Ollama and the runner under it count too while its model is in use.
+    [Test]
+    public void TheOllamaBaxyOpenedCountsAsTheModelWhileItsModelIsInUse()
+    {
+        var mind = new ModelProcessTracker(scan: static (parents, name) => name == "llama-server" && parents.Contains(4242) ? [(4300, 4242)] : [],
+            isChildOf: static (_, _) => true);
+        var ollama = new ModelProcessTracker(scan: static (parents, name) => name == "llama-server" && parents.Contains(777) ? [(778, 777)] : [],
+            isChildOf: static (_, _) => true);
+        int? inUse = 777;
+        var sampler = new FieldTelemetrySampler(static () => 4242, processes: mind, otherModel: () => inUse, otherProcesses: ollama);
+
+        List<int> counted = sampler.ModelProcesses();
+        inUse = null;
+        List<int> afterwards = sampler.ModelProcesses();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(counted, Is.EquivalentTo(new[] { 4242, 4300, 777, 778 }));
+            Assert.That(afterwards, Is.EquivalentTo(new[] { 4242, 4300 }));
+        });
+    }
+
     // F17 (2026-11-03 23:00): on a PC short of RAM, listing the processes threw OutOfMemoryException into the rail's
     // reading and the view (WebView2) went down twice.
     [Test]
@@ -32,7 +55,7 @@ public sealed class FieldTelemetrySamplerTests
         var tracker = new ModelProcessTracker(scan: static (_, _) => RunOutOfMemory());
         var sampler = new FieldTelemetrySampler(static () => 4242, processes: tracker, report: reports.Add);
 
-        (double? _, double? vram, double? ram) = sampler.ReadModel();
+        (double? _, double? vram, double? ram, double? _) = sampler.ReadModel();
 
         Assert.Multiple(() =>
         {
@@ -50,7 +73,7 @@ public sealed class FieldTelemetrySamplerTests
         var reports = new List<string>();
         var sampler = new FieldTelemetrySampler(static () => Environment.ProcessId, report: reports.Add);
 
-        (double? _, double? _, double? ram) = sampler.ReadModel();
+        (double? _, double? _, double? ram, double? _) = sampler.ReadModel();
 
         Assert.Multiple(() =>
         {

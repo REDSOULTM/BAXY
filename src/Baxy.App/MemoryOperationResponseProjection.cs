@@ -119,8 +119,7 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         ArgumentNullException.ThrowIfNull(response);
         string message = OperationResponseProjection.Create(response, operationName).Message;
         bool reads = operationName is "memory.recall" or "memory.list";
-        if (response.ErrorCode != "memory_disabled"
-            || !(reads || operationName is "memory.save" or "memory.sensitive.save" or "memory.correct"))
+        if (!OffersTheMemory(operationName, response))
         {
             return message;
         }
@@ -147,6 +146,19 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return message;
         }
     }
+
+    /// <summary>Whether this failed memory call's result offers the call that turns the memory on (<see cref="Failed"/>):
+    /// one the store refused because the memory is off.</summary>
+    internal static bool OffersTheMemory(string operationName, OperationResponse response)
+    {
+        ArgumentNullException.ThrowIfNull(response);
+        return response.ErrorCode == "memory_disabled"
+            && operationName is "memory.recall" or "memory.list" or "memory.save" or "memory.sensitive.save"
+                or "memory.correct";
+    }
+
+    /// <summary>The call that offer names, as the model makes it: memory.enable with its schema's two constants.</summary>
+    internal static JsonObject MemoryOn() => new() { ["enabled"] = true, ["version"] = 1 };
 
     /// <summary>
     /// Encargo 82 (vivo del 81): a memory.save of a name the store already keeps otherwise failed with memory_conflict

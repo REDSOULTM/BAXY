@@ -43,6 +43,28 @@ public sealed class FieldStepProjectionTests
         Assert.That((string?)view["obs"], Is.EqualTo("Ya estaba así · level: 40"));
     }
 
+    // LIC2 (2026-11-08): the services whose results BAXY shows ask to be credited there: DuckDuckGo's partnerships page
+    // («Please give us attribution where it makes sense», duckduckgo.com/duckduckgo-help-pages/company/partnerships),
+    // OpenStreetMap («credit OpenStreetMap and its contributors», openstreetmap.org/copyright) and Wikipedia's CC BY-SA.
+    // The source that answered is said first on the chip, before the facts that would push it out of the four shown.
+    [TestCase(false, "Leído · Fuente: DuckDuckGo · source: web · query: clima · region: CL")]
+    [TestCase(true, "Read · Source: DuckDuckGo · source: web · query: clima · region: CL")]
+    public void TheSourceThatAnsweredIsCreditedFirst(bool english, string obs)
+    {
+        JsonObject view = Finished(OperationStatuses.Completed, verified: true, new JsonObject
+        {
+            ["status"] = "completed",
+            ["verification"] = OperationVisibleFacts.VerificationOutputOnly,
+            ["source"] = "web",
+            ["query"] = "clima",
+            ["region"] = "CL",
+            ["resultCount"] = 5,
+            ["answeredBy"] = "DuckDuckGo",
+        }, english: english);
+
+        Assert.That((string?)view["obs"], Is.EqualTo(obs));
+    }
+
     // SaidFolders' note is for the model, in its words: the chip says what was observed only.
     [Test]
     public void TheNoteForTheModelOfAFolderThePersonNamedIsNotAFactOfTheChip()
@@ -174,6 +196,37 @@ public sealed class FieldStepProjectionTests
         });
     }
 
+    // VIS3 (VIVO6 fila 4): «Actualízate» on the latest version was «✕ No pude · Falló · baxy_update_already_latest». A call
+    // that found nothing to do is said in plain words, never as a failure nor with its code.
+    [TestCase("baxy_update_already_latest", false, "same", "obs", "Ya tienes la última versión (1.3.2)")]
+    [TestCase("baxy_update_already_latest", true, "same", "obs", "You have the latest version (1.3.2)")]
+    [TestCase("volume_already_at_maximum", false, "same", "obs", "Ya estaba al máximo")]
+    [TestCase("visible_control_already_open", true, "same", "obs", "It was already expanded")]
+    [TestCase("volume_already_at_maximum_muted", false, "skip", "reason", "No se subió: ya estaba al máximo, pero silenciado")]
+    [TestCase("process_not_running", false, "skip", "reason", "No se cerró nada: no había ningún proceso llamado así")]
+    public void ACallThatFoundNothingToDoIsNotAFailure(string error, bool english, string shown, string field, string said)
+    {
+        JsonObject view = Finished(OperationStatuses.Failed, verified: false, new JsonObject
+        {
+            ["status"] = "failed",
+            ["error"] = error,
+            ["observed"] = new JsonObject { ["installed"] = "1.3.2", ["latest"] = "1.3.2", ["newer"] = false },
+        }, english: english);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)view["status"], Is.EqualTo(shown));
+            Assert.That((string?)view[field], Is.EqualTo(said));
+            Assert.That(view.ToJsonString(), Does.Not.Contain(error));
+        });
+    }
+
+    [Test]
+    public void TheLatestVersionWithNoVersionReadSaysNoNumber() =>
+        Assert.That((string?)Finished(OperationStatuses.Failed, verified: false,
+            new JsonObject { ["status"] = "failed", ["error"] = "baxy_update_already_latest" })["obs"],
+            Is.EqualTo("Ya tienes la última versión"));
+
     [Test]
     public void ACallWaitingForThePersonIsNotAStep()
     {
@@ -193,6 +246,51 @@ public sealed class FieldStepProjectionTests
         Assert.That((bool?)card["effectStarted"], Is.EqualTo(effectStarted));
     }
 
+    // REM7 (REV15 D-4, REV14 B-E4): a memory call held off said «con tu sí se enciende sólo esta» while the «sí» turns on
+    // the memory with its tools and saves; and (D-2) the card showed «Guardar en memoria» and nothing of what. It says what
+    // the «sí» does, and the datum it saves: a private one only by what it is.
+    [TestCase(NativeTurnLoop.MemoryOffHeldCause, "nombre del perro: Chispo", "se guarda este dato")]
+    [TestCase(NativeTurnLoop.MemorySecretHeldCause, "clave del candado", "dato privado")]
+    [TestCase(NativeTurnLoop.MemorySwitchHeldCause, null, "no se guarda nada")]
+    public void AHeldMemoryCardSaysWhatTheYesDoesAndTheDatum(string cause, string? datum, string says)
+    {
+        JsonObject card = FieldStepProjection.Card("k1", "confirm", "memory.save", new JsonObject(),
+            OperationRisks.LowReversible, DateTimeOffset.UtcNow.AddMinutes(2), context: null, english: false, cause: cause,
+            shown: datum);
+        JsonObject english = FieldStepProjection.Card("k1", "confirm", "memory.save", new JsonObject(),
+            OperationRisks.LowReversible, DateTimeOffset.UtcNow.AddMinutes(2), context: null, english: true, cause: cause,
+            shown: datum);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)card["risk"], Does.Contain(says).And.Not.Contain("sólo esta"));
+            Assert.That((string?)card["risk"], Does.Contain("memoria"));
+            Assert.That((string?)english["risk"], Does.Not.Contain("just this one").And.Contain("memory"));
+            Assert.That((string?)card["target"], Is.EqualTo(datum ?? string.Empty));
+        });
+    }
+
+    // REM8 (REV16 M-4): with the memory on and only the profile holding the call, the card said «la memoria está apagada».
+    // It says what holds it: the switch and the profile, the profile alone, or the switch alone.
+    [TestCase(NativeTurnLoop.MemoryOffHeldCause, "la memoria está apagada; con tu sí se enciende la memoria, con sus herramientas, y se guarda este dato")]
+    [TestCase(NativeTurnLoop.MemoryOffHeldCause + NativeTurnLoop.MemoryOnHeld, "la memoria está encendida, pero sus herramientas están apagadas en tu perfil; con tu sí se encienden y se guarda este dato")]
+    [TestCase(NativeTurnLoop.MemorySwitchHeldCause + NativeTurnLoop.MemoryOnHeld, "la memoria está encendida, pero sus herramientas están apagadas en tu perfil; con tu sí se encienden y no se guarda nada")]
+    [TestCase(NativeTurnLoop.MemoryOffHeldCause + NativeTurnLoop.MemoryInProfileHeld, "la memoria está apagada; con tu sí se enciende la memoria y se guarda este dato")]
+    public void AHeldMemoryCardSaysWhatHoldsIt(string cause, string says)
+    {
+        JsonObject card = FieldStepProjection.Card("k1", "confirm", "memory.save", new JsonObject(),
+            OperationRisks.LowReversible, DateTimeOffset.UtcNow.AddMinutes(2), context: null, english: false, cause: cause);
+        JsonObject english = FieldStepProjection.Card("k1", "confirm", "memory.save", new JsonObject(),
+            OperationRisks.LowReversible, DateTimeOffset.UtcNow.AddMinutes(2), context: null, english: true, cause: cause);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)card["risk"], Is.EqualTo(says));
+            Assert.That((string?)english["risk"], cause.EndsWith(NativeTurnLoop.MemoryOnHeld, StringComparison.Ordinal)
+                ? Does.StartWith("memory is on") : Does.StartWith("memory is off"));
+        });
+    }
+
     // A game the person did not name waits for their «sí» (NetworkEgress, game_title_not_said): its card names the game.
     [Test]
     public void TheCardOfAGameNamesTheGameNotItsStoreId()
@@ -206,6 +304,8 @@ public sealed class FieldStepProjectionTests
             Assert.That((string?)card["target"], Is.EqualTo("Rocket League"));
             Assert.That(FieldStepProjection.Label("game.launch", arguments), Does.EndWith("· Rocket League"));
             Assert.That(FieldStepProjection.Target(new JsonObject { ["appId"] = "Calculadora" }), Is.EqualTo("Calculadora"));
+            // RUT4: the sound device a call names is what it is about.
+            Assert.That(FieldStepProjection.Target(new JsonObject { ["device"] = "Nimbo", ["kind"] = "output" }), Is.EqualTo("Nimbo"));
         });
     }
 
@@ -231,6 +331,7 @@ public sealed class FieldStepProjectionTests
     [TestCase("input.key.press", """{"key":"enter","target":"message_composer"}""")]
     [TestCase("browser.control", """{"action":"close_all"}""")]
     [TestCase("shell.command.run", """{"command":"Remove-Item notas.txt"}""")]
+    [TestCase("system.power", """{"action":"shutdown"}""")]
     public void TheCatalogSaysSometimesOfAnOperationThatAsksWithSomeArguments(string operation, string arguments)
     {
         JsonObject? item = FieldStepProjection.Catalog()["groups"]!.AsArray()

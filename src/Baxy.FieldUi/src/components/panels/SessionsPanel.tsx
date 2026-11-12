@@ -8,20 +8,23 @@ import { useT } from '../../i18n';
    started anew. Opening one gives the model back that conversation as it was, calls and results included. */
 
 interface SessionRow { id: string; label: string; ts: string; current: boolean; turn_count: number }
+interface SessionsReply { sessions: SessionRow[]; unsaved?: boolean }
 
 export function SessionsPanel({ onClose, onNew, revision }: { onClose: () => void; onNew: () => void; revision: string | undefined }) {
   const t = useT();
   const [list, setList] = useState<SessionRow[] | null | undefined>(undefined);
+  // the conversation on screen did not reach the disk at its last save (REV_APP ASY-b, 2026-11-09)
+  const [unsaved, setUnsaved] = useState(false);
   const [ed, setEd] = useState<string | null>(null);
   const [val, setVal] = useState('');
   const [note, setNote] = useState<string | null>(null);
   // a list read before the session changed again never covers the newer one, even if it answers last
   useEffect(() => {
     let stale = false;
-    void getJson<{ sessions: SessionRow[] }>('/sessions').then((r) => { if (!stale) setList(r ? r.sessions : null); });
+    void getJson<SessionsReply>('/sessions').then((r) => { if (!stale) { setList(r ? r.sessions : null); setUnsaved(r?.unsaved === true); } });
     return () => { stale = true; };
   }, [revision]);
-  const reload = async () => { const r = await getJson<{ sessions: SessionRow[] }>('/sessions'); setList(r ? r.sessions : null); };
+  const reload = async () => { const r = await getJson<SessionsReply>('/sessions'); setList(r ? r.sessions : null); setUnsaved(r?.unsaved === true); };
   const save = async () => {
     const id = ed;
     setEd(null);
@@ -35,9 +38,10 @@ export function SessionsPanel({ onClose, onNew, revision }: { onClose: () => voi
     onClose();
   };
   return (
-    <Panel title={t('Sesiones', 'Sessions')} onClose={onClose} width={480}>
+    <Panel title={t('Historial de conversaciones', 'Conversation history')} onClose={onClose} width={480}>
       <button className="panel-btn" style={{ marginBottom: 12 }} onClick={onNew}><Icon name="plus" size={11} /> {t('Nueva conversación', 'New conversation')}</button>
       {note ? <div className="bx-mem-empty" role="status">{note}</div> : null}
+      {unsaved ? <div className="bx-mem-empty" role="status">{t('No pude guardar esta conversación en el disco. Sigue en pantalla y lo intento de nuevo con cada respuesta; mientras no se guarde, se puede perder al cerrar BAXY o al abrir otra.', 'I couldn’t save this conversation to disk. It stays on screen and I try again with each answer; until it is saved, closing BAXY or opening another one can lose it.')}</div> : null}
       {list === null ? <div className="bx-mem-empty" role="status">{t('No se pudieron leer las sesiones.', 'Couldn’t read the sessions.')}</div> : null}
       <div className="bx-mem">
         {list?.map((s) => (

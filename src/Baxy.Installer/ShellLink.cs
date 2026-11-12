@@ -3,7 +3,7 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace Baxy.Installer;
 
-/// <summary>Writes a Windows shortcut through the shell's own COM object, with source-generated interop for NativeAOT.</summary>
+/// <summary>Writes and reads a Windows shortcut through the shell's own COM object, with source-generated interop for NativeAOT.</summary>
 internal static unsafe partial class ShellLink
 {
     private const uint InProcessServer = 0x1;
@@ -31,6 +31,47 @@ internal static unsafe partial class ShellLink
             Marshal.Release(created);
         }
     }
+
+    /// <summary>
+    /// The file a shortcut starts, or null when the shortcut cannot be read (Microsoft Learn, IShellLinkW::GetPath:
+    /// «Gets the path and file name of the target of a Shell link object»; IPersistFile::Load with STGM_READ).
+    /// </summary>
+    /// <remarks>Never throws for the shell: an uninstall that asks must not stop halfway because COM refused.</remarks>
+    internal static string? Target(string linkPath)
+    {
+        Guid classId = ShellLinkClass;
+        Guid interfaceId = ShellLinkInterface;
+        if (CoCreateInstance(ref classId, 0, InProcessServer, ref interfaceId, out nint created) < 0)
+        {
+            return null;
+        }
+
+        nint buffer = Marshal.AllocHGlobal(TargetLength * sizeof(char));
+        try
+        {
+            StrategyBasedComWrappers wrappers = new();
+            object instance = wrappers.GetOrCreateObjectForComInstance(created, CreateObjectFlags.None);
+            if (((IPersistFile)instance).Load(linkPath, Read) < 0 || ((IShellLinkW)instance).GetPath(buffer, TargetLength, 0, 0) != 0)
+            {
+                return null;
+            }
+
+            return Marshal.PtrToStringUni(buffer) is { Length: > 0 } target ? target : null;
+        }
+        catch (Exception refused) when (refused is COMException or InvalidCastException)
+        {
+            return null;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+            Marshal.Release(created);
+        }
+    }
+
+    // STGM_READ, and the longest path a shortcut holds in the units GetPath counts (characters).
+    private const uint Read = 0;
+    private const int TargetLength = 32_768;
 
     [LibraryImport("ole32.dll")]
     private static partial int CoCreateInstance(ref Guid classId, nint outer, uint context, ref Guid interfaceId, out nint instance);

@@ -13,7 +13,7 @@ internal static partial class Program
 {
     private const string ManifestResource = "Baxy.Installer.release.json";
     private const string SingleInstance = @"Local\BAXY.Installer";
-    private const int Failure = 1;
+    internal const int Failure = 1;
     private const int AttachParentProcess = -1;
     private const int StandardOutput = -11;
     private const uint DiskFile = 1;
@@ -25,10 +25,21 @@ internal static partial class Program
     private static int Main(string[] arguments)
     {
         CommandLine command = CommandLine.Parse(arguments);
+        int result = Run(command);
+        // V132: the copy in TEMP that did the uninstall cannot delete itself; it hands its removal over as it ends.
+        if (command.UninstallRun)
+        {
+            TempCopy.RemoveWhenDone();
+        }
+
+        return result;
+    }
+
+    private static int Run(CommandLine command)
+    {
         if (command.Help || command.Error is not null)
         {
-            string language = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "es" : "en";
-            string help = CommandLine.HelpText(language, InstallPaths.ForThisUser.Root);
+            string help = CommandLine.HelpText(CommandLine.Language, InstallPaths.ForThisUser.Root);
             Log(command.Error ?? "help");
             Tell(command.Error is null ? help : $"{command.Error}{Environment.NewLine}{Environment.NewLine}{help}", command.Quiet);
             return command.Error is null ? 0 : CommandLine.InvalidCommandLine;
@@ -37,7 +48,7 @@ internal static partial class Program
         InstallPaths paths;
         try
         {
-            paths = command.Uninstall ? InstallPaths.ForUninstall(command.Directory, WindowsPlaces.ForThisUser)
+            paths = command.Uninstall ? InstallPaths.ForUninstall(command.Directory, WindowsPlaces.ForThisUser, Environment.ProcessPath)
                 : command.Directory is null ? InstallPaths.ForThisUser
                 : InstallPaths.Chosen(command.Directory);
         }
@@ -45,7 +56,16 @@ internal static partial class Program
         {
             Log(wrong.Message);
             Tell(wrong.Message, command.Quiet);
-            return CommandLine.InvalidCommandLine;
+            return wrong is NothingToUninstallException ? CommandLine.NotInstalled : CommandLine.InvalidCommandLine;
+        }
+
+        // UNI1 (REV8 U1): --delete-data of data another installed BAXY uses removes nothing, and says why, before any copy.
+        if (command.Uninstall && command.DeleteData && WindowsIntegration.DataSharedWith(paths) is { } sharedWith)
+        {
+            string refused = CommandLine.DataStays(CommandLine.Language, sharedWith, WindowsPlaces.ForThisUser.Data);
+            Log(refused);
+            Tell(refused, command.Quiet);
+            return Failure;
         }
 
         // A copy outside the folder (the downloaded installer) removes it in place and its exit code is the result; the
@@ -62,6 +82,9 @@ internal static partial class Program
             Log("another installer is already running");
             return Failure;
         }
+
+        // UNI3 (VIVOU2): what an uninstaller before UNI2 left of a BAXY that is gone, before anything else is done.
+        WindowsIntegration.ForgetGone(WindowsPlaces.ForThisUser);
 
         if (command.Uninstall && command.Quiet)
         {
@@ -83,21 +106,36 @@ internal static partial class Program
         ReleaseManifest? manifest = LoadManifest();
         if (command.Quiet)
         {
-            return manifest is null ? Failure : InstallQuietly(manifest, paths);
+            return manifest is null ? Failure : InstallQuietly(manifest, paths, command.Update);
         }
 
         Application application = new();
-        using MainWindow window = new(manifest, uninstalling: command.UninstallRun, paths, voiceAllowed: !command.NoVoice);
+        using MainWindow window = new(
+            manifest, uninstalling: command.UninstallRun, paths, voiceAllowed: !command.NoVoice, updating: command.Update);
         application.DispatcherUnhandledException += (_, unhandled) =>
         {
             Log(unhandled.Exception.ToString());
             unhandled.Handled = true;
             window.ShowFailure(unhandled.Exception);
         };
-        return application.Run(window);
+        _ = application.Run(window);
+        // APP2 (VIVO14): «No pude instalarme… Ya estoy abierto» exited with 0, which a script reads as installed.
+        if (window.Result != 0)
+        {
+            Log($"the window closed without finishing: exit {window.Result}");
+        }
+
+        return window.Result;
     }
 
     /// <summary>A log that cannot be written (the disk that just filled up) never stops what is being told.</summary>
+    /// <summary>
+    /// The first line of an installation, with or without window: the cards read on this machine and what is told of
+    /// them, the parts chosen for it and where it goes. It is what to look at when a machine got the wrong parts (INS-2).
+    /// </summary>
+    internal static void LogMachine(ReleaseManifest forMachine, IReadOnlyList<GpuAdapter> adapters, InstallPaths paths) =>
+        Log($"{forMachine.Version}: {MachineGpu.Describe(adapters)}; {string.Join(", ", forMachine.Archives.Select(archive => archive.Name))}; {paths.Root}");
+
     internal static void Log(string line)
     {
         try
@@ -163,7 +201,7 @@ internal static partial class Program
     /// </summary>
     private static int UninstallFromACopy(InstallPaths paths, CommandLine command)
     {
-        string copy = Path.Combine(Directory.CreateTempSubdirectory("BAXY-").FullName, "BAXY-Desinstalador.exe");
+        string copy = Path.Combine(Directory.CreateTempSubdirectory(TempCopy.FolderPrefix).FullName, TempCopy.CopyName);
         File.Copy(Environment.ProcessPath!, copy, overwrite: true);
         // Windows lets a folder move with a running exe inside but not with a process's working folder inside (W1, own
         // measurement): the original waits from the copy's folder, not from the one being removed.
@@ -211,27 +249,44 @@ internal static partial class Program
     }
 
     /// <summary>For installing by remote console (tests on other machines): no window, and what happened in the log.</summary>
-    private static int InstallQuietly(ReleaseManifest manifest, InstallPaths paths)
+    private static int InstallQuietly(ReleaseManifest manifest, InstallPaths paths, bool updating = false)
     {
         using HttpClient http = new() { Timeout = Timeout.InfiniteTimeSpan };
         http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + manifest.Version);
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
-        manifest = manifest.ForMachine(adapters);
-        Log($"{manifest.Version}: {MachineGpu.Choose(adapters)}; {string.Join(", ", manifest.Archives.Select(archive => archive.Name))}; {paths.Root}");
-        if (Voice.BaxyIsOpen())
-        {
-            Log("a BAXY is open: close it first");
-            return Failure;
-        }
+        ReleaseManifest chosen = manifest.ForMachine(adapters);
+        LogMachine(chosen, adapters, paths);
+        Installation installation = new(chosen, paths, new PartFetcher(http));
+        // PRV2 (A5): --quiet shows no agreement, as always; it keeps what the installation it replaces accepted, so the
+        // next update with a window asks for the agreement if it is not that one (AcceptedAgreement).
+        string? accepted = AcceptedAgreement.Read(paths);
+        QuietInstall quiet = new(
+            MachineGpu.Choose(adapters),
+            updating,
+            Voice.BaxyIsOpen,
+            async () =>
+            {
+                // UPD1 (REV10 M4): before the components of Windows are downloaded into the .download folder.
+                paths.RefuseWhatIsNotBaxys();
+                // FIR1: nothing of Windows nor of BAXY is installed before release.json's signature checks out.
+                await SignedRelease.ConfirmAsync(http, manifest, paths, SignedRelease.BuiltInKeys, CancellationToken.None)
+                    .ConfigureAwait(false);
+                await Prerequisites.InstallMissingAsync(http, paths.Downloads, CancellationToken.None).ConfigureAwait(false);
+                await installation.RunAsync((_, _, _) => { }, CancellationToken.None).ConfigureAwait(false);
+            },
+            () =>
+            {
+                if (accepted is not null)
+                {
+                    AcceptedAgreement.Write(paths, accepted, Log);
+                }
 
-        Installation installation = new(manifest, paths, new PartFetcher(http));
+                WindowsIntegration.Register(paths, chosen.Version, chosen.InstalledBytes);
+            },
+            Log);
         try
         {
-            Prerequisites.InstallMissingAsync(http, paths.Downloads, CancellationToken.None).GetAwaiter().GetResult();
-            installation.RunAsync((_, _, _) => { }, CancellationToken.None).GetAwaiter().GetResult();
-            WindowsIntegration.Register(paths, manifest.Version, manifest.InstalledBytes);
-            Log("installed");
-            return 0;
+            return quiet.RunAsync().GetAwaiter().GetResult();
         }
 #pragma warning disable CA1031 // The log is all a remote console has.
         catch (Exception failure)

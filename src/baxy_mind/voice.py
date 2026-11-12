@@ -47,6 +47,17 @@ BEFORE_S = 2.0          # audio before the trigger that goes into the transcript
 VOICE_RMS = 0.012       # voice threshold of TranscripcionBaxy/probar_ultra.py
 SPEECH_P = 0.5          # Silero's own speech threshold (0.3 and 0.7 closed the same requests within 0.1 s)
 VAD_STEP = 512          # Silero's window at 16 kHz (32 ms); sherpa-onnx gives it the 64 samples before as context
+# VOZ1: Silero is recurrent, and its state drifts on a long steady sound: after 30-120 s of BAXY's own alarm (Alarm01.wav
+# through the simulated room of ALR1), a voice said over it was heard as speech in 0.0-0.3 of its windows on the
+# microphone and 0.24-0.7 after the canceller, against 0.8-0.9 with the state freshly reset; a request said over a
+# ringing alarm then had no voice and was dropped. Silero's authors: the model «isn't» stateless, reset_states() between
+# streams (snakers4/silero-vad#538, 2024-09); Pipecat resets it once VAD_RESET_S of audio passed since the last reset
+# and VAD_RESET_QUIET windows in a row were not speech (src/pipecat/audio/vad/silero.py, _maybe_reset_model;
+# v0.0.90 reset it every 5 s). Measured with that rule: 0.78-0.87 over the alarm, a clean voice as before (0.88-0.90).
+# Pipecat resets once the user's turn is over; here, only while no request is open (Vad.marks ``settle``): a reset in a
+# 0.7 s pause inside one of the owner's requests heard his soft words after it too late, and the request was cut.
+VAD_RESET_S = 2.0
+VAD_RESET_QUIET = 5
 END_SILENCE_S = 0.9     # silence that closes the request
 # A request whose early transcript (palanca 2, decoded 0.2 s into the silence) is left hanging (a preposition, article,
 # conjunction, filler or comma at its end) waits END_SLOW_S instead of END_SILENCE_S, so a slow speaker is not cut
@@ -80,6 +91,14 @@ HANGING_WORDS = frozenset(
     "este esto bueno pues tipo the an to of and but or so because um uh like my your".split())
 HANGING_ENDS = frozenset({"o sea", "a ver", "voy a", "hay que", "es que", "i mean", "quiero que", "puedes"})
 WORD_TAIL_S = 0.4       # voice in the first 0.4 s after the trigger is the end of «Baxy», not the request
+# VOZ1 (DEP6, 2026-11-09: «Baxi, gracias» said in one breath gave no turn): the tail was set for k4, which fired a chunk
+# after the word; v7a decides every 40 ms and fires 0.14 s p50 after it (its README), so a short request said with no
+# pause lies wholly inside the tail (on BAXY's voice, its words began 0.0-0.24 s after the trigger) and was dropped
+# untranscribed. Time alone cannot tell Silero's hold of «Baxy» from a word begun at the trigger; the recognizer can,
+# with the same cut by time as every transcript (Voice._said_in_tail). Home Assistant keeps the audio around the
+# detection for STT for the same reason («Wake-word-detection occurs *after* the wake word was actually spoken. Keeping
+# audio right before detection allows the voice command to be spoken immediately after the wake word»,
+# homeassistant/components/assist_pipeline/pipeline.py, 2025.6.0).
 # The same where the room is loud by itself (Voice._noisy): loudness no longer trims Silero's hold of the word, which
 # reached 0.5 s past the trigger at 10 dB and 0.7 s at 5 dB (0.2 s in a quiet room; 50 «Baxi» + request, OneCore).
 NOISY_TAIL_S = 0.8
@@ -661,10 +680,13 @@ class Vad:
     def reset(self) -> None:
         self._model.reset()
         self._pending = np.zeros(self._size - VAD_STEP, np.float32)  # silence as the first window's context
+        self._since_reset = 0  # windows heard since the model's state was reset
+        self._quiet = 0        # windows in a row not heard as speech
 
-    def marks(self, block: np.ndarray) -> np.ndarray:
+    def marks(self, block: np.ndarray, settle: bool = False) -> np.ndarray:
         """One per sample of ``block``: True at the last sample of each window heard as speech, so a window counts for
-        the block in which it was heard whole."""
+        the block in which it was heard whole. ``settle``: no request is open, so the model's state may be reset in the
+        quiet (VAD_RESET_S)."""
         behind = len(self._pending) - (self._size - VAD_STEP)  # samples of the blocks before not yet in a window
         self._pending = np.concatenate([self._pending, block])
         marks = np.zeros(len(block), bool)
@@ -672,6 +694,13 @@ class Vad:
         while len(self._pending) - at >= self._size:
             if self._model.is_speech(self._pending[at:at + self._size]):
                 marks[at + VAD_STEP - 1 - behind] = True
+                self._quiet = 0
+            else:
+                self._quiet += 1
+            self._since_reset += 1
+            if settle and self._since_reset * VAD_STEP >= VAD_RESET_S * RATE and self._quiet >= VAD_RESET_QUIET:
+                self._model.reset()  # its state only: the next window keeps the context before it (VAD_RESET_S)
+                self._since_reset = 0
             at += VAD_STEP
         self._pending = self._pending[at:]
         return marks
@@ -748,6 +777,7 @@ class Voice:
     _lost_at: float | None = None     # F17: when, of the audio heard, a block was last lost
     _played_span: np.ndarray | None = None  # F44: what was played over the request just finished, to be decoded
     _played_said = ""                 # F44: what the recognizer heard in it
+    _tail_said: tuple[float, Heard] | None = None  # VOZ1: the end of the voice in the call's tail, and its words
 
     def __init__(self, write: Callable[[dict[str, Any]], None],
                  on_spoken: Callable[[float, float, bool], None] = lambda *_spoken: None,
@@ -873,8 +903,11 @@ class Voice:
             self._vad = Vad(sherpa_onnx)
             self._hear_from(lambda: Vad(sherpa_onnx))
             self._load_turn()
-            wake = Path(os.environ.get("BAXY_RENEW_WAKE_DIR", ""))
-            if (wake / "config.json").is_file():
+            # V132: none given (the App names none when the product's is gone or changed) is no wake word, never the
+            # current folder that Path("") is.
+            folder = os.environ.get("BAXY_RENEW_WAKE_DIR", "").strip()
+            wake = Path(folder) if folder else None
+            if wake is not None and (wake / "config.json").is_file():
                 detector = load_wake(wake)
                 fast = load_fast_wake()
                 self._detector = detector if fast is None else EitherWake(detector, fast)
@@ -1092,6 +1125,7 @@ class Voice:
         self._partial_at = 0.0          # when what was said so far was last decoded
         self._partial = ""
         self._turn_heard = None
+        self._tail_said = None
         self._held_call: _HeldCall | None = None  # F44: a firing waiting to know whether the PC played the word
         self._lost_at = None
         self._played_span, self._played_said = None, ""
@@ -1220,7 +1254,7 @@ class Voice:
             self._on_wake()
 
     def _feed(self, block: np.ndarray) -> tuple[np.ndarray, float | None, Callable[[Heard], None]] | None:
-        self._recent.add(block, self._vad.marks(block))
+        self._recent.add(block, self._vad.marks(block, settle=self._start is None and self._held_call is None))
         self._audio, self._speech = self._recent.audio, self._recent.speech
         self._total += len(block)
         self._first = self._total - len(self._audio)
@@ -1242,7 +1276,7 @@ class Voice:
         if start is not None and self._over(start):
             return self._finish(start)
         if start is not None:
-            return self._early(start) or self._live(start)
+            return self._early(start) or self._said_in_tail(start) or self._live(start)
         return None
 
     def _told_wake(self, detection: Any, lag_s: float, how: str = "") -> None:
@@ -1284,12 +1318,21 @@ class Voice:
         return self._audio[a:max(a, self._at(stop_s))]
 
     def _voice_end(self, start: float) -> float | None:
-        """When the last block of voice of the request ended (the end of «Baxy» left out), or None before any."""
+        """When the last block of voice of the request ended (the end of «Baxy» left out), or None before any. VOZ1: a
+        request all inside the call's tail ends where its voice ended, once the recognizer heard words in it."""
         blocks = self._request_voice(start)
+        if blocks:
+            return start + (blocks[-1] + 1) * BLOCK / RATE
+        said = self._tail_said
+        return said[0] if said is not None and said[1].text and said[0] == self._tail_end(start) else None
+
+    def _tail_end(self, start: float) -> float | None:
+        """When the voice heard in the call's tail (the first WORD_TAIL_S after the trigger) ended, or None."""
+        blocks = self._request_voice(start, tail=False)
         return start + (blocks[-1] + 1) * BLOCK / RATE if blocks else None
 
-    def _request_voice(self, start: float) -> list[int]:
-        """The blocks from ``start`` that are the speaker's voice (SPEAKER_DB), the end of «Baxy» left out."""
+    def _request_voice(self, start: float, tail: bool = True) -> list[int]:
+        """The blocks from ``start`` that are the speaker's voice (SPEAKER_DB), the end of «Baxy» left out (``tail``)."""
         a = self._at(start)
         wake = self._mode == "wake"
         level = self._speaker_level(self._at(start - CALL_BACK_S) if wake else a)
@@ -1297,8 +1340,8 @@ class Voice:
             return []
         rms, speech = _blocks(self._audio[a:], self._speech[a:])
         voice_blocks = speech & (rms >= max(SPEAKER_FLOOR, level * 10 ** (-SPEAKER_DB / 20)))
-        tail = (NOISY_TAIL_S if self._noisy(a) else WORD_TAIL_S) if wake else 0.0
-        return [int(i) for i in np.flatnonzero(voice_blocks) if i * BLOCK / RATE >= tail]
+        cut = (NOISY_TAIL_S if self._noisy(a) else WORD_TAIL_S) if wake and tail else 0.0
+        return [int(i) for i in np.flatnonzero(voice_blocks) if i * BLOCK / RATE >= cut]
 
     def _speaker_level(self, r: int) -> float | None:
         """The level of the one who speaks: the 80th percentile of the blocks of speech heard from ``r`` (None before
@@ -1327,6 +1370,12 @@ class Voice:
             return now - start >= (NO_COMMAND_S if self._mode == "wake" else DIRECT_WAIT_S)
         early = self._early_heard if self._early_at == end else None
         rule = end_silence(early.text) if early is not None else END_SILENCE_S
+        if not self._request_voice(start):
+            # VOZ1: words only in the call's tail (_said_in_tail) may be the end of «Baxy» misheard: on the owner's real
+            # calls with a pause after it, Ultra wrote its last syllable as «see.» or «seat.», begun at the trigger, and
+            # the usual wait ended the request on it before the words said after the pause (0.5-1.9 s; 2 of 181 calls
+            # paused longer than 2 s). They wait as words left hanging do.
+            rule = END_SLOW_S
         heard = self._turn_wait(start, end, now)
         # Words left hanging keep their long wait whatever the model heard (it only sets how long to wait).
         wait = rule if heard is None else max(heard, rule) if rule > END_SILENCE_S else heard
@@ -1381,6 +1430,30 @@ class Voice:
 
         return self._segment(begin, now), start - begin if wake else None, then
 
+    def _said_in_tail(self, start: float) -> tuple[np.ndarray, float | None, Callable[[Heard], None]] | None:
+        """VOZ1: when all the voice after the trigger is in the call's tail, TURN_AT_S into the silence after it (as the
+        turn model listens), the request so far is decoded once with the call cut by time (_transcribe): words left are a
+        request said in one breath («Baxi, gracias»), and it ends after END_SLOW_S of silence (_voice_end, _over); none,
+        or words the ear is unsure of (UNSURE_P, or with no probabilities from Ultra), and it was the end of «Baxy»: the
+        request waits for its words as before. On the owner's real calls with a pause after «Baxi», its last syllable misheard as a word («see.»,
+        «seat.», «to.») was unsure in the ones that cut a request (0.33-0.50); the requests said in one breath were sure
+        (0.54 and over, BAXY's voice and Sabina, 36 decoded)."""
+        if self._mode != "wake" or self._request_voice(start):
+            return None
+        end = self._tail_end(start)
+        now = self._total / RATE
+        if end is None or now - end < TURN_AT_S - 1e-6 or (self._tail_said is not None and self._tail_said[0] == end):
+            return None
+        self._tail_said = (end, Heard(""))  # asked once for this end of voice
+        begin = max(0.0, start - BEFORE_S)
+
+        def then(transcript: Heard) -> None:
+            if self._tail_said is not None and self._tail_said[0] == end:
+                said = transcript.without_call()
+                self._tail_said = (end, said if said.words and not said.unsure() else Heard(""))
+
+        return self._segment(begin, now), start - begin, then
+
     def _early_back(self) -> None:
         """The last early transcript no longer stands for the request (the person went on, or what was heard is
         dropped)."""
@@ -1392,12 +1465,18 @@ class Voice:
     def _finish(self, start: float) -> tuple[np.ndarray, float | None, Callable[[Heard], None]]:
         # No voice after the early transcript: it was decoded from the same words with less silence after them, so it is
         # the request's transcript and nothing is decoded again (Deepgram Flux's EagerEndOfTurn without TurnResumed).
-        early = self._early_heard if self._early_at is not None and self._early_at == self._voice_end(start) else None
+        end = self._voice_end(start)
+        early = self._early_heard if self._early_at is not None and self._early_at == end else None
+        voiced_enough = len(self._request_voice(start)) * BLOCK / RATE >= MIN_VOICE_S
+        if not voiced_enough and end is not None:
+            # VOZ1: the request was all in the call's tail, and its words were heard (_said_in_tail): they are its
+            # transcript, from the same audio with less silence after it, as an early one.
+            voiced_enough = True
+            early = early or self._tail_said[1]
         self._start = None
         self._early_at = None  # the request's own transcript says whether the early one stands (early.py)
         wake = self._mode == "wake"
         begin = max(0.0, start - BEFORE_S) if wake else 0.0
-        voiced_enough = len(self._request_voice(start)) * BLOCK / RATE >= MIN_VOICE_S
         stop = self._total / RATE if voiced_enough and early is None else begin
         logged, self._wake_logged = self._wake_logged, None
         self._event("transcribing")

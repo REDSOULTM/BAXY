@@ -1,0 +1,58 @@
+Microsoft Visual C++ runtime in BAXY's package
+
+Files: msvcp140.dll, msvcp140_1.dll, msvcp140_2.dll, msvcp140_atomic_wait.dll, vcruntime140.dll and vcruntime140_1.dll,
+in python\, llama\ and llama-vulkan\. They are not BAXY's and not under its MIT license: Microsoft distributes them as
+"Distributable Code" of Visual Studio. scripts/build_steam.ps1 copies them, unmodified and with Microsoft's signature checked,
+from the Visual Studio of the machine that builds the package (-VisualCppRedist). BAXY 1.3.1 took them from
+Visual Studio 2022 Community, VC\Redist\MSVC\14.42.34433\x64\Microsoft.VC143.CRT.
+
+The terms below are quoted unchanged from Microsoft's own pages, read on 2026-11-07. They are given so that whoever
+receives or redistributes BAXY knows them; they bind the redistribution of these files, not the use of BAXY.
+
+1. Visual Studio 2022 Community license terms, section 4 "Distributable Code"
+   https://visualstudio.microsoft.com/wp-content/uploads/2021/11/Visual-Studio-2022-Community-License-EN.docx
+   (SHA-256 of the file read: 41a207b10c8ab91d0d2f10a854715f73dca54509581692d2fe179aa3ffcb8540)
+
+   DISTRIBUTABLE CODE. The software contains code that you may distribute in applications you develop as described in
+   this Section. For purposes of this Section 4, the term "distribution" also means deployment of your applications for
+   third parties to access over the Internet.
+   Right to Use and Distribute. The code and text files listed below are "Distributable Code".
+   Distributable List. You may copy and distribute the object code form of code listed on the Distributable List
+   located at https://aka.ms/vs/17/redistribution.
+   Third Party Distribution. You may permit distributors of your applications to copy and distribute the Distributable
+   Code as part of those applications.
+   Distribution Requirements. For any Distributable Code you distribute, you must:
+   add significant primary functionality to it in your applications; and
+   require distributors and external end users to agree to terms that protect the Distributable Code at least as much
+   as this agreement.
+   Distribution Restrictions. You may not:
+   distribute components or runtimes that are marked "Preview", "Pre-release" or "Beta";
+   use Microsoft's trademarks in your applications' names or in a way that suggests your applications come from or are
+   endorsed by Microsoft; or
+   modify or distribute the source code of any Distributable Code so that any part of it becomes subject to an Excluded
+   License. An "Excluded License" is one that requires, as a condition of use, modification or distribution of code,
+   that (i) it be disclosed or distributed in source code form; or (ii) others have the right to modify it.
+
+2. Distributable Code for Visual Studio 2022, "Visual C++ Runtime Files"
+   https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution
+   (SHA-256 of the page read: 6de6c8099244239a669769d3d721c4ee850a3451b6c6aa7dac0486cb2413f04c)
+
+   Subject to the License Terms for the software, you may copy and distribute with your program any of the files within
+   the following folder and its subfolders except as noted below. You may not modify these files.
+   [VisualStudioFolder]\VC\redist
+   The same Visual C++ Runtime Redistributable package is available from Latest supported Visual C++ Redistributable
+   downloads and Download Visual Studio Tools. Distribution of the Visual C++ Runtime Redistributable package, merge
+   modules, and individual binaries obtained from those pages is limited to licensed Visual Studio users and is subject
+   to its license terms.
+
+3. Redistributing Visual C++ files
+   https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files
+   (SHA-256 of the page read: c78a26b1c5cdd1cdf637e7b3917a189b6a0a6183c7dda4c7217549e95806b4b5)
+   Explains that these files may be installed in the application's own folder (central deployment through the
+   Visual C++ Redistributable package is the recommended one) and that whoever deploys them that way is responsible
+   for updating them.
+
+What this means for you, in plain words (not legal advice): you may use these files only as part of BAXY. Do not modify
+them, do not separate them from BAXY to distribute them on their own, do not remove Microsoft's notices, and do not use
+Microsoft's trademarks to suggest that BAXY comes from Microsoft. BAXY's installer also installs Microsoft's own
+Visual C++ Redistributable from https://aka.ms/vs/17/release/vc_redist.x64.exe when the computer lacks it.

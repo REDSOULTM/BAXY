@@ -52,6 +52,15 @@ internal static class FieldStepProjection
                 $"operation-labels.v1.json lacks a title or theme in a language (untitled: {string.Join(", ", untitled)}).");
         }
 
+        // Perfiles de herramientas: every operation says the first profile that has it, so a new one is never left out
+        // of every profile but Completo by omission.
+        string[] unleveled = [.. operations.Where(static p => LevelOf(p.Value) is null).Select(static p => p.Key)];
+        if (unleveled.Length > 0)
+        {
+            throw new InvalidDataException(
+                $"operation-labels.v1.json lacks a tool profile level 0-{ToolProfile.Highest} (p): {string.Join(", ", unleveled)}.");
+        }
+
         return (groups, groupsEn, operations);
     });
 
@@ -62,6 +71,8 @@ internal static class FieldStepProjection
     [
         "title", "appId", "name", "path", "application", "query", "url", "location", "place", "host", "command", "label",
         "key", "setting", "folder", "packageId", "to", "subject", "text",
+        // RUT4: audio.device.set's device, as the person named it (a routine's step in the panel, and its card).
+        "device",
     ];
 
     // Facts of a result that only describe the reply itself, never what was observed, and the App's notes written for
@@ -71,7 +82,8 @@ internal static class FieldStepProjection
     {
         "status", "verified", "version", "authority", "next", "effectStarted", "error", "operation", "argumentsGiven",
         "arguments", "argumentProblems", "detail", "waiting", "effectUncertain", "replayed", "saidFolder",
-        OperationVisibleFacts.VerificationKey,
+        // ARR1: how the engine fitted a long result in its message (a search's ten results: «observedLimit: projected»).
+        OperationVisibleFacts.VerificationKey, OperationVisibleFacts.ObservedLimitKey,
     };
 
     // How a completed call was verified (OperationVisibleFacts' table), as the chip's status and its first words.
@@ -93,22 +105,78 @@ internal static class FieldStepProjection
         ["operation_unexpected_failure"] = ("Falló de forma inesperada: puede haber corrido", "Failed unexpectedly: it may have run"),
         ["invalid_arguments"] = ("No se ejecutó: los datos de la llamada no eran válidos", "Not run: the call's data was not valid"),
         ["unknown_operation"] = ("No se ejecutó: esa acción no existe", "Not run: that action does not exist"),
-        ["web_disabled_by_owner"] = ("No se ejecutó: la búsqueda web está apagada en Ajustes", "Not run: web search is off in Settings"),
-        ["weather_disabled_by_owner"] = ("No se ejecutó: el clima está apagado en Ajustes", "Not run: weather is off in Settings"),
-        ["screen_disabled_by_owner"] = ("No se ejecutó: mirar la pantalla está apagado en Ajustes", "Not run: looking at the screen is off in Settings"),
+        // TPV1 (dueño, 10-11: the person may have no hands): what is off says BAXY switches it when asked, not «en Ajustes».
+        ["web_disabled_by_owner"] = ("No se ejecutó: la búsqueda web está apagada (pídeme que la encienda)", "Not run: web search is off (ask me to turn it on)"),
+        ["weather_disabled_by_owner"] = ("No se ejecutó: el clima está apagado (pídeme que lo encienda)", "Not run: weather is off (ask me to turn it on)"),
+        ["screen_disabled_by_owner"] = ("No se ejecutó: mirar la pantalla está apagado (pídeme que lo encienda)", "Not run: looking at the screen is off (ask me to turn it on)"),
+        ["tool_off_in_profile"] = ("No se ejecutó: esa herramienta está fuera de tu perfil (pídeme cambiar de perfil)", "Not run: that tool is off in your profile (ask me to switch profile)"),
         ["outbox_unavailable"] = ("No se ejecutó: BAXY no estaba listo", "Not run: BAXY was not ready"),
         ["memory_protection_unavailable"] = ("No se ejecutó: la memoria privada no estaba lista", "Not run: private memory was not ready"),
         ["memory_value_needs_sensitive_channel"] = ("No se guardó: parece un dato secreto", "Not saved: it looks like a secret"),
         ["query_not_said"] = ("No se ejecutó: la búsqueda no llevaba tus palabras", "Not run: the search didn't use your words"),
         ["channel_not_said"] = ("No se ejecutó: no nombraste ese canal", "Not run: you did not name that channel"),
         ["application_not_said"] = ("No se ejecutó: no nombraste esa aplicación", "Not run: you did not name that app"),
+        // FIR1: written by baxy.update itself, before any download: the published version is not under the owner's signature.
+        ["baxy_update_not_signed"] = ("No se instaló: no pude comprobar que la versión publicada venga firmada por BAXY",
+            "Not installed: I couldn't confirm the published version is signed by BAXY"),
+    };
+
+    // VIS3 (VIVO6 fila 4, 10-11-2026: «Actualízate» on the latest version showed «✕ No pude · Falló ·
+    // baxy_update_already_latest»): the codes of a call that ended before any effect with nothing to do, because its provider
+    // read the asked state already there (same) or read why there was nothing it could do (skip). The model still reads the
+    // failure and its code as they came; only the chip says it in plain words. « ({installed})» is the version the call read.
+    private static readonly Dictionary<string, (string Status, string Es, string En)> NothingToDo = new(StringComparer.Ordinal)
+    {
+        ["baxy_update_already_latest"] = ("same", "Ya tienes la última versión ({installed})", "You have the latest version ({installed})"),
+        // the PC's volume or an app's (audio.volume.adjust and audio.app.volume.adjust give the same codes)
+        ["volume_already_at_minimum"] = ("same", "Ya estaba al mínimo", "It was already at its lowest"),
+        ["volume_already_at_maximum"] = ("same", "Ya estaba al máximo", "It was already at its highest"),
+        // UIA's ExpandCollapse: a list, a tree's branch, a menu or a split button
+        ["visible_control_already_open"] = ("same", "Ya estaba desplegado", "It was already expanded"),
+        // at its highest but muted: what the person wanted to hear louder is not heard, so it is not «already like that»
+        ["volume_already_at_maximum_muted"] = ("skip", "No se subió: ya estaba al máximo, pero silenciado", "Not raised: it was already at its highest, but muted"),
+        // the process's name is what was looked for (GetProcessesByName), not the program the person named
+        ["process_not_running"] = ("skip", "No se cerró nada: no había ningún proceso llamado así", "Nothing closed: no process by that name was running"),
     };
 
     /// <summary>The operation's short title in the interface's language (<see cref="UiLanguage"/>).</summary>
     internal static string Title(string operation) => Title(operation, UiLanguage.IsEnglish);
 
-    private static string Title(string operation, bool english) =>
+    internal static string Title(string operation, bool english) =>
         (string?)Labels.Value.Operations[operation]?[english ? "en" : "t"] ?? operation;
+
+    /// <summary>Settings → Tools: the themes a profile still offers as what BAXY can do (mind.py CAN_DO_AREAS): those
+    /// that keep at least half of their tools, BAXY's own (level 0) not counted. VIVO1 F8, 2.ª vuelta (09-11): Esencial
+    /// told «Memoria» for the conversations alone and «Alarmas, notas y tareas» for the clock alone, and the 4B promised
+    /// to remember and to set alarms.</summary>
+    internal static IReadOnlySet<string> ShownThemes(IReadOnlySet<string> withheld)
+    {
+        ArgumentNullException.ThrowIfNull(withheld);
+        return ProductCatalog.ToolDescriptors.Select(static d => d.Name)
+            .Where(static name => ProfileLevel(name) > 0)
+            .GroupBy(static name => Group(name))
+            .Where(g => 2 * g.Count(name => !withheld.Contains(name)) >= g.Count() && g.Any(name => !withheld.Contains(name)))
+            .Select(static g => g.Key)
+            .ToHashSet(StringComparer.Ordinal);
+    }
+
+    /// <summary>Settings → Tools: whether a tool off in a profile is shown to the model as a stub (operation-labels
+    /// «ficha», true unless it says false). VIVO1 F8, 2.ª vuelta (09-11, foco 16 casos × 3 semillas, juez ciego): with the
+    /// memory tools' stubs the 4B claimed to have saved or to remember (13 high falsehoods; 6 without them, as the base).</summary>
+    internal static bool HasStub(string operation) =>
+        Labels.Value.Operations[operation]?["ficha"] is not JsonValue value || !value.TryGetValue(out bool stub) || stub;
+
+    /// <summary>ESE6: whether a tool off in a profile is shown to the model with its arguments (operation-labels «ficha»:
+    /// "entera"): its call is held with them for the person's «sí», which runs that very call
+    /// (NativeTurnLoop.AnswerMemoryOffHeldAsync). A stub with no arguments can only be turned on by their «sí»; what they
+    /// asked to be saved would be lost with it (ESE5: saved 0 of 18).</summary>
+    internal static bool HeldWhole(string operation) =>
+        Labels.Value.Operations[operation]?["ficha"] is JsonValue value && value.TryGetValue(out string? stub)
+        && stub == "entera";
+
+    /// <summary>The operation's English title, whatever the interface's language: a withheld tool's stub for the model
+    /// reads it, as the tools' descriptions are in English (MindSidecarClient.CreateCatalogConfigureRequest).</summary>
+    internal static string EnglishTitle(string operation) => Title(operation, english: true);
 
     internal static string Family(string operation) =>
         (string?)Labels.Value.Operations[operation]?["f"] ?? "apps";
@@ -120,6 +188,15 @@ internal static class FieldStepProjection
     private static string Group(string operation, bool english) =>
         (string?)(english ? Labels.Value.GroupsEn : Labels.Value.Groups)[(string?)Labels.Value.Operations[operation]?["g"] ?? string.Empty]
         ?? (english ? "Other" : "Otras");
+
+    /// <summary>The first tool profile that has this operation (ToolProfile): 0 always, up to <see cref="ToolProfile.Highest"/>,
+    /// only in Completo; an operation of no catalog, the highest.</summary>
+    internal static int ProfileLevel(string operation) =>
+        LevelOf(Labels.Value.Operations[operation]) ?? ToolProfile.Highest;
+
+    private static int? LevelOf(JsonNode? entry) =>
+        entry?["p"] is JsonValue value && value.TryGetValue(out int level) && level >= 0 && level <= ToolProfile.Highest
+            ? level : null;
 
     /// <summary>Checks the labels against the catalog now, so a mismatch stops the start instead of a turn.</summary>
     internal static void Validate() => _ = Labels.Value;
@@ -143,7 +220,7 @@ internal static class FieldStepProjection
 
     internal static string Label(string operation, JsonObject arguments, bool english)
     {
-        string target = Target(arguments);
+        string target = OwnBrakes.Shown(operation, arguments, english) ?? Target(arguments);
         return target.Length == 0 ? Title(operation, english) : Title(operation, english) + " · " + target;
     }
 
@@ -219,6 +296,13 @@ internal static class FieldStepProjection
             view["status"] = "skip";
             view["reason"] = Reason(code, english, UiLanguage.Say(english, "No se ejecutó", "Not run"));
         }
+        else if (NothingToDo.TryGetValue(code, out (string Status, string Es, string En) settled))
+        {
+            string? installed = (string?)(facts?["observed"] as JsonObject)?["installed"];
+            view["status"] = settled.Status;
+            view[settled.Status == "same" ? "obs" : "reason"] = UiLanguage.Say(english, settled.Es, settled.En)
+                .Replace(" ({installed})", installed is null ? string.Empty : $" ({installed})", StringComparison.Ordinal);
+        }
         else
         {
             view["status"] = "fail";
@@ -230,6 +314,14 @@ internal static class FieldStepProjection
             view["net"] = net;
         }
 
+        // COR1 (VIVO3 A3: the setting changed inside «Qué hice · 3 pasos», folded): a change of one of BAXY's own
+        // settings that was read back, or that may have happened (a write that failed past its start), is shown with the
+        // steps open (Chat.tsx's HowChecked), not only behind their fold.
+        if (step.Operation == OwnBrakes.Operation && (string?)view["status"] is "ok" or "maybe")
+        {
+            view["pin"] = true;
+        }
+
         return view;
     }
 
@@ -238,7 +330,8 @@ internal static class FieldStepProjection
     /// <paramref name="cause"/>: why the person's turn held it (NetworkEgress), said before its risk. Its words, and the
     /// caller's <paramref name="context"/>, are in the one language the caller read (<paramref name="english"/>).</summary>
     internal static JsonObject Card(string id, string kind, string operation, JsonObject arguments, string risk,
-        DateTimeOffset expiresUtc, string? context, bool english, bool effectStarted = false, string? cause = null) => new()
+        DateTimeOffset expiresUtc, string? context, bool english, bool effectStarted = false, string? cause = null,
+        string? shown = null) => new()
     {
         ["who"] = "card",
         ["id"] = id,
@@ -248,7 +341,9 @@ internal static class FieldStepProjection
         // held call says why it was held, and only an unheld one its risk.
         ["risk"] = cause is not null ? CauseLabel(cause, english) : RiskLabel(operation, risk, arguments, english),
         ["title"] = Title(operation, english),
-        ["target"] = Target(arguments),
+        // COR1: a change of one of BAXY's own settings says which one and to what («Búsqueda web: activar»).
+        // REM7 (REV15 D-2): a held memory call's datum, opened for the person's card only (NativeTurnConfirmation.Shown).
+        ["target"] = shown ?? OwnBrakes.Shown(operation, arguments, english) ?? Target(arguments),
         ["context"] = context,
         ["expires"] = expiresUtc.ToUnixTimeMilliseconds(),
         ["effectStarted"] = effectStarted,
@@ -311,6 +406,7 @@ internal static class FieldStepProjection
                 ["name"] = descriptor.Name,
                 ["title"] = Title(descriptor.Name, english),
                 ["confirm"] = ConfirmationOf(descriptor),
+                ["level"] = ProfileLevel(descriptor.Name),
             });
         }
 
@@ -332,8 +428,8 @@ internal static class FieldStepProjection
     }
 
     // RiskPolicy in normal mode, without arguments: always asks, or asks only with some arguments (a click on «Enviar»,
-    // Ctrl+W, a console command that changes something, closing every tab, a click under the pointer (K-1), a
-    // replacement under a version only a refusal told: ToldVersions), or never.
+    // Ctrl+W, a console command that changes something, closing every tab, a click under the pointer (K-1), shutting the
+    // PC down, a replacement under a version only a refusal told: ToldVersions), or never.
     private static string ConfirmationOf(ProductOperationDescriptor descriptor)
     {
         if (RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, descriptor.Name)
@@ -343,7 +439,7 @@ internal static class FieldStepProjection
         }
 
         return descriptor.Name is "shell.command.run" or "input.visible.click" or "input.key.press" or "browser.control"
-                or "input.pointer.control"
+                or "input.pointer.control" or "system.power"
             || ToldVersions.ExpectsAVersion(descriptor.Name)
             ? "sometimes"
             : "never";
@@ -382,11 +478,52 @@ internal static class FieldStepProjection
     // to show, and its card said nothing of why it asked; the cause NetworkEgress gave the model is said.
     private static string? CauseLabel(string? cause, bool english) => cause switch
     {
+        _ when MemoryCauseLabel(cause, english) is { } memory => memory,
         "host_not_from_session" => UiLanguage.Say(english, "va a un sitio que nadie dio", "goes to a site no one mentioned"),
         "game_title_not_said" => UiLanguage.Say(english, "un juego que no nombraste", "a game you did not name"),
+        OwnBrakes.Cause => UiLanguage.Say(english, "cambia un ajuste que no pediste", "changes a setting you did not ask for"),
+        NativeTurnLoop.OfferedCause => UiLanguage.Say(english, "te lo ofrece BAXY; no lo pediste", "BAXY offers it; you did not ask"),
+        NativeTurnLoop.ExitCause => UiLanguage.Say(english, "BAXY no puede volver a abrirse sola", "BAXY cannot open itself again"),
+        ToolProfile.OffCode => UiLanguage.Say(english, "está apagada en tu perfil; con tu sí se enciende sólo esta",
+            "it is off in your tool profile; your yes turns on just this one"),
         PendingOperationConfirmation.SystemChangeCause => UiLanguage.Say(english, "cambia un ajuste del sistema", "changes a system setting"),
         _ => null,
     };
+
+    // REM7 (REV15 D-4, REV14 B-E4): the profile's words promised «sólo esta» while the «sí» to a held memory call turns on
+    // the memory with its tools and saves: what that «sí» does. REM8 (REV16 M-4): and what holds it, as the App read it
+    // (NativeTurnLoop.MemoryCardCause): «la memoria está apagada» was said with the memory on and only the profile holding.
+    private static string? MemoryCauseLabel(string? cause, bool english)
+    {
+        string said = cause ?? string.Empty;
+        int at = said.IndexOf('+', StringComparison.Ordinal);
+        string kind = at < 0 ? said : said[..at];
+        (string Es, string En)? what = kind switch
+        {
+            NativeTurnLoop.MemoryOffHeldCause => ("se guarda este dato", "saves this"),
+            NativeTurnLoop.MemorySecretHeldCause => ("se guarda este dato privado", "saves this private detail"),
+            NativeTurnLoop.MemorySwitchHeldCause => ("no se guarda nada", "saves nothing"),
+            _ => null,
+        };
+        if (what is not { } does)
+        {
+            return null;
+        }
+
+        return (at < 0 ? string.Empty : said[at..]) switch
+        {
+            NativeTurnLoop.MemoryOnHeld => UiLanguage.Say(english,
+                $"la memoria está encendida, pero sus herramientas están apagadas en tu perfil; con tu sí se encienden y {does.Es}",
+                $"memory is on, but its tools are off in your tool profile; your yes turns them on and {does.En}"),
+            NativeTurnLoop.MemoryInProfileHeld => UiLanguage.Say(english,
+                $"la memoria está apagada; con tu sí se enciende la memoria y {does.Es}",
+                $"memory is off; your yes turns memory on and {does.En}"),
+            "" => UiLanguage.Say(english,
+                $"la memoria está apagada; con tu sí se enciende la memoria, con sus herramientas, y {does.Es}",
+                $"memory is off; your yes turns memory on, with its tools, and {does.En}"),
+            _ => null,
+        };
+    }
 
     private static string Reason(string code, bool english, string fallback) =>
         code.Length == 0 ? fallback
@@ -401,9 +538,17 @@ internal static class FieldStepProjection
         }
 
         var shown = new List<string>(4);
+        // LIC2 (2026-11-08): the source that answered («answeredBy») is credited first: DuckDuckGo («Please give us
+        // attribution where it makes sense»), OpenStreetMap («credit OpenStreetMap») and Wikipedia (CC BY-SA) ask it of
+        // whoever shows their results. ARR1 (DEP5, the App on the owner's PC: 0 of 2 searches credited): a provider's
+        // result reaches the step inside «observed» (OperationVisibleFacts.FromOutcome), so the credit is read there too.
+        if ((AnsweredBy(facts) ?? AnsweredBy(facts["observed"] as JsonObject)) is { } answeredBy)
+        {
+            shown.Add(UiLanguage.Say(english, "Fuente: ", "Source: ") + Clip(answeredBy, MaximumFactCharacters));
+        }
         foreach ((string key, JsonNode? value) in facts)
         {
-            if (shown.Count == 4 || PlumbingFacts.Contains(key) || value is not JsonValue scalar)
+            if (shown.Count == 4 || PlumbingFacts.Contains(key) || key == "answeredBy" || value is not JsonValue scalar)
             {
                 continue;
             }
@@ -420,6 +565,10 @@ internal static class FieldStepProjection
 
         return string.Join(" · ", shown);
     }
+
+    private static string? AnsweredBy(JsonObject? facts) =>
+        facts?["answeredBy"] is JsonValue source && source.TryGetValue(out string? answeredBy)
+            && !string.IsNullOrWhiteSpace(answeredBy) ? answeredBy.Trim() : null;
 
     private static bool Named(JsonNode? title) =>
         title is JsonValue value && value.TryGetValue(out string? text) && !string.IsNullOrWhiteSpace(text);

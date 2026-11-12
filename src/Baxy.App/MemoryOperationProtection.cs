@@ -165,16 +165,18 @@ internal sealed class MemoryOperationProtector
         or "memory.session.clear"
         or "memory.status";
 
-    internal static string ResolveDataRoot()
+    internal static string ResolveDataRoot() => WindowsPrivateStorage.PreparePrivateDataRoot(DataRootPath());
+
+    /// <summary>Where this BAXY's data root is, without creating or protecting it (the store's uninstall only looks).</summary>
+    internal static string DataRootPath()
     {
         string? configured = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
-        string dataRoot = string.IsNullOrWhiteSpace(configured)
+        return string.IsNullOrWhiteSpace(configured)
             ? Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "BAXY",
                 "1")
             : configured;
-        return WindowsPrivateStorage.PreparePrivateDataRoot(dataRoot);
     }
 
     private static void ValidateWireRiskBinding(string operation, JsonElement payload)

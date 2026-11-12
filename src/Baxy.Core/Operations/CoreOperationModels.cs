@@ -98,8 +98,11 @@ internal sealed record WindowName(string Title, string Process);
 internal sealed record AudioVolumeArguments(
     [property: JsonRequired] int Level);
 
+// W2: scope «pc» is the whole default output; «app» is one application's sessions, named in App.
 internal sealed record AudioMuteArguments(
-    [property: JsonRequired] bool State);
+    [property: JsonRequired] bool State,
+    [property: JsonRequired] string Scope,
+    string? App = null);
 
 internal sealed record AudioEndpointStateResult(
     int VolumePercent,

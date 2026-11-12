@@ -3,6 +3,9 @@ import { chromium, type Browser, type CDPSession, type Page } from '@playwright/
 /* Attaches to the real BAXY window: Baxy.App started with WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port
    (scripts/test_field_ui.ps1 does it). The page is the Field view on its local virtual host. */
 
+/** the engine's Sí / No card as the view draws it (Chat.tsx, kind «confirm»): the specs against the real app look for it
+ *  by this, and view.spec checks the view really draws it */
+export const CONFIRM_CARD = '.bx-card.k-confirm';
 export const CDP_URL = process.env.BAXY_CDP_URL ?? 'http://127.0.0.1:9333';
 
 export interface App {

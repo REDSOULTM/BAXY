@@ -281,6 +281,40 @@ public sealed class StartupWakeTests
         Assert.That(reads, Is.EqualTo(4));
     }
 
+    // V132 (1.3.2): with the product's wake folder gone or changed the ear starts without a wake word; the person chose
+    // «Siempre activo» (the default) and saw the microphone off and nothing more. The voice state says it, and why. An ear
+    // without its recogniser is not this (holding to talk would not work either): no_recognizer says that one.
+    [TestCase(false, true, null, false, null)]
+    [TestCase(true, true, null, true, null)]
+    [TestCase(true, true, "wake_missing", true, "wake_missing")]
+    [TestCase(true, true, "wake_changed", true, "wake_changed")]
+    [TestCase(true, false, "wake_missing", false, null)]
+    public async Task AnEarWithoutItsWakeWordSaysSoAndWhy(bool noWake, bool stt, string? problem, bool said, string? why)
+    {
+        using var fake = new FakeMind();
+        JsonObject script = VoiceStatus(pending: false);
+        script["reply"]!["voice.status"]!["status"]!["wake"] = !noWake;
+        script["reply"]!["voice.status"]!["status"]!["stt"] = stt;
+        script["reply"]!["voice.status"]!["status"]!["available"] = stt;
+        fake.Script(script);
+        MainWindowViewModel viewModel = await ViewModelHarness.WithMindAsync();
+        await using (viewModel)
+        await using (var view = new ChannelHarness(viewModel))
+        {
+            viewModel.WakeProblem = problem;
+            Assert.That(await ViewModelHarness.UntilAsync(() => viewModel.VoicePieces is { Pending: false }), Is.True);
+
+            (_, JsonObject voice) = await view.SendAsync("GET", "/voice/status");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That((bool?)voice["no_wake"], Is.EqualTo(said));
+                Assert.That((string?)voice["wake_problem"], Is.EqualTo(why));
+                Assert.That((bool?)voice["available"], Is.EqualTo(stt), "the rest of the ear is still offered");
+            });
+        }
+    }
+
     private static JsonObject VoiceStatus(bool pending) => new()
     {
         ["reply"] = new JsonObject
