@@ -132,6 +132,10 @@ internal sealed class NativeTurnLoop
         /// null where none is read: weighed as off.</summary>
         internal Func<bool>? MemoryOff { get; init; }
 
+        /// <summary>MEM8: how many records the memory kept at the start (ToolProfile.MemoryRecords), null when not known.
+        /// No call is made for it: memory.status could hold the turn ~72 s and drop the engine (CoreProcessClient).</summary>
+        internal Func<int?>? MemoryRecords { get; init; }
+
         /// <summary>REM8 (REV16 M-4): whether the tool profile keeps this operation on (ToolProfile.InProfile); null where
         /// none is kept: weighed as off.</summary>
         internal Func<string, bool>? InProfile { get; init; }
@@ -308,7 +312,7 @@ internal sealed class NativeTurnLoop
             () => mind.DecideAsync(text, TakeWaitingCall(), cancellationToken, Stopwatch.GetElapsedTime(arrivedAt), front,
                 // Encargo 119 (G7): titles only; the rows and tabs of NamedWindows are read when a rule asks, not each turn.
                 _host.Windows is { } windows ? _egress.Named(windows()) : null, _host.Ringing?.Invoke(),
-                _host.Routines?.Invoke()),
+                _host.Routines?.Invoke(), _host.MemoryRecords?.Invoke()),
             cancellationToken);
     }
 
@@ -706,9 +710,13 @@ internal sealed class NativeTurnLoop
 
         bool held = ReferenceEquals(prepared, _proposal);
         bool memory = held && _proposalCause == ToolProfile.OffCode && HeldMemory(prepared.OperationName);
+        // MEM8 (revisión ciega #1 alto): the «sí» to a memory tool's stub turns on all of the memory's tools (KeepOn).
+        bool memoryTools = held && _proposalCause == ToolProfile.OffCode
+            && MemoryOperationProtector.IsMemoryOperation(prepared.OperationName);
         return new NativeTurnConfirmation(prepared.OperationName, PrivateArguments(prepared), descriptor.Risk,
             held ? _proposalExpiresUtc : _pending!.ExpiresAtUtc, held && _proposalByBeat,
             EffectStarted: !held && _pending!.ReconciliationRequired, Cause: memory ? MemoryCardCause(prepared.OperationName)
+                : memoryTools ? MemoryToolsOffCause
                 : held ? _proposalCause
                 : _pending!.SystemChange is null ? null : PendingOperationConfirmation.SystemChangeCause,
             Shown: memory ? HeldDatum(prepared) : null);
@@ -832,9 +840,18 @@ internal sealed class NativeTurnLoop
             {
                 // ESE6: a memory call the model is shown with its arguments (FieldStepProjection.HeldWhole) is held with
                 // them, sealed as any memory call's, so their «sí» can run that very call (AnswerMemoryOffHeldAsync).
-                if (FieldStepProjection.HeldWhole(operation) && MemoryOperationProtector.IsMemoryOperation(operation))
+                // MEM8: a memory stub shown while the memory is on (ToolProfile.StubbedWhileMemoryOn) is sealed too: a
+                // memory call is never prepared in plain (PreparedOperation.Create throws for it); its offer sends nothing.
+                if (MemoryOperationProtector.IsMemoryOperation(operation))
                 {
-                    (PreparedOperation? whole, string notPrepared) = Prepare(operation, arguments, descriptor, started);
+                    // MEM8C (REV20 M-2): a stub shown only while the memory is on is held for its offer alone, and
+                    // nothing runs that call (AnswerOffHeld turns the memory's tools on): its arguments, none, are sealed
+                    // as they came, not checked as the whole operation's («memory_forget {}» was refused for its scope
+                    // and never offered).
+                    bool offer = !FieldStepProjection.HeldWhole(operation) && ToolProfile.StubbedWhileMemoryOn(operation)
+                        && _host.MemoryOff?.Invoke() == false;
+                    (PreparedOperation? whole, string notPrepared) = Prepare(operation, arguments, descriptor, started,
+                        offer);
                     return whole is null ? notPrepared : OffHeld(whole, operation, arguments, started);
                 }
 
@@ -983,13 +1000,14 @@ internal sealed class NativeTurnLoop
         string operation,
         JsonObject arguments,
         ProductOperationDescriptor descriptor,
-        long started)
+        long started,
+        bool offer = false)
     {
         try
         {
             return (MemoryOperationProtector.IsMemoryOperation(operation)
                 ? (_host.MemoryProtector() ?? throw new InvalidOperationException("memory_protection_unavailable"))
-                    .Prepare(new MemoryRoutedOperation(operation, arguments)).Prepared
+                    .Prepare(new MemoryRoutedOperation(operation, arguments), offer).Prepared
                 : (_host.Registry() ?? throw new InvalidOperationException("outbox_unavailable"))
                     .GetOrAdd(new RoutedOperation(operation, arguments)), string.Empty);
         }
@@ -1127,6 +1145,35 @@ internal sealed class NativeTurnLoop
     // TPV7: the tool their «sí» turned on, as the mind is told a capability, for the request that carries its result.
     private JsonObject? _toolOn;
 
+    // MEM8: a memory tool off in the profile while the memory is on (its stub, ToolProfile.StubbedWhileMemoryOn): nothing
+    // ran, and the switch, the records and what the «sí» turns on are the receipt's. KeepOn turns on all the memory's
+    // tools for one of them, not «this one tool» (OffHeldNext).
+    private const string MemoryToolsOffHeldNext =
+        "nothing was read, forgotten or saved: BAXY's memory is on, but this tool is off in the person's tool profile "
+        + "(saved, when it is there: how many records the memory keeps). With their yes BAXY turns on all of the memory's "
+        + "tools in their profile; the memory itself is already on, so ask them in one short sentence whether to turn on the "
+        + "memory's tools, never whether to turn the memory on (never send them to Settings; do not say what is saved: you "
+        + "have not read it; nor that anything was forgotten: it was not); their answer goes in confirm_pending";
+
+    /// <summary>MEM8: the card's cause of a memory tool's stub held for the «sí» (FieldStepProjection.CauseLabel).</summary>
+    internal const string MemoryToolsOffCause = "tool_off_in_profile_memory";
+
+    // MEM8 (revisión ciega 3 #6): what the «sí» to that offer turned on, as KeepOn does it for a memory tool: all of the
+    // memory's tools; the one called is whole now (TPV7, toolOn), the others once the App restarts the model.
+    private const string MemoryToolsOnNext =
+        "only a setting changed: with the person's yes BAXY turned on all of the memory's tools in their profile; the call "
+        + "itself did not run, so nothing was read, forgotten or saved, and your reply must not say it was; they are "
+        + "callable from the person's next words, once BAXY has restarted its model with them when this reply ends: say "
+        + "they are on and ask whether to do what they asked now";
+
+    private const string MemoryToolsOnNowNext =
+        "only a setting changed so far: with the person's yes BAXY turned on all of the memory's tools in their profile. "
+        + "This tool is whole and callable now, in this same reply; the other memory tools come whole once BAXY restarts "
+        + "its model after this reply. What the person asked for is NOT done yet: this call did not run, so nothing was "
+        + "read, forgotten or saved. Do it now: call this tool again with the arguments their request gives (it had none "
+        + "before; now it shows them). Say it was done only after that call's own result says so; if you do not make the "
+        + "call, say the memory's tools are on and that what they asked is still not done";
+
     private string OffHeld(PreparedOperation prepared, string operation, JsonObject arguments, long started)
     {
         _proposal = prepared;
@@ -1137,11 +1184,18 @@ internal sealed class NativeTurnLoop
         _askedAt = ConfirmationAsk.Unpublished;
         // ESE6: a memory call held whole is the offer of the memory and of that save, which their «sí» does in one step.
         bool memory = MemoryOperationProtector.IsMemoryOperation(operation) && FieldStepProjection.HeldWhole(operation);
+        // MEM8: a memory tool shown as a stub only while the memory is on.
+        bool memoryOn = !memory && MemoryOperationProtector.IsMemoryOperation(operation) && _host.MemoryOff?.Invoke() == false;
         var held = new JsonObject
         {
             ["status"] = "needs_confirmation",
             ["cause"] = memory ? MemoryOffHeldCause : ToolProfile.OffCode,
         };
+        // MEM8 (revisión ciega 3 #2-#4): the records the App read at the start, all kinds; none known after a change.
+        if (memoryOn && _host.MemoryRecords?.Invoke() is { } count)
+        {
+            held["saved"] = count;
+        }
         if (_host.OffFacts?.Invoke(operation) is { } off)
         {
             held["tool"] = off["tool"]?.DeepClone();
@@ -1155,7 +1209,7 @@ internal sealed class NativeTurnLoop
         // system text spells, the memory's switch to Diario (mind.MEMORY_OFF_FACT), and told it as «encender la memoria».
         // The call that turns on this tool alone is the receipt's too, spelled as a call: which tool is off is «tool».
         held["onTheirYes"] = OffHeldYes;
-        held["next"] = !memory ? OffHeldNext
+        held["next"] = memoryOn ? MemoryToolsOffHeldNext : !memory ? OffHeldNext
             : string.Format(System.Globalization.CultureInfo.InvariantCulture,
                 operation == MemorySwitch ? MemorySwitchHeldNext : MemoryOffHeldNext,
                 _host.MemoryOff?.Invoke() == false ? MemoryHeldProfile : MemoryHeldOff);
@@ -1339,10 +1393,14 @@ internal sealed class NativeTurnLoop
         _toolOn = _host.Core()?.Capabilities.FirstOrDefault(capability => capability.Name == operation) is { } whole
             ? MindSidecarClient.Capability(whole)
             : null;
+        bool memory = MemoryOperationProtector.IsMemoryOperation(operation);
         return Record(operation, arguments, started, Observation("rejected", NotRunToolOn, new JsonObject
         {
-            ["turnedOn"] = $"the tool «{_host.OffFacts?.Invoke(operation)["tool"]}» in the person's profile",
-            ["next"] = _toolOn is null ? ToolOnNext : ToolOnNowNext,
+            ["turnedOn"] = memory
+                ? "all of the memory's tools in the person's profile"
+                : $"the tool «{_host.OffFacts?.Invoke(operation)["tool"]}» in the person's profile",
+            ["next"] = memory ? _toolOn is null ? MemoryToolsOnNext : MemoryToolsOnNowNext
+                : _toolOn is null ? ToolOnNext : ToolOnNowNext,
         }));
     }
 

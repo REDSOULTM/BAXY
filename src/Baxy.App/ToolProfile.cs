@@ -328,10 +328,37 @@ internal sealed class ToolProfile
         set => Volatile.Write(ref _memoryOff, value);
     }
 
+    /// <summary>MEM8 (D4b): how many records the memory kept when memory.status was read at the start (totalRecords),
+    /// null when not read, with a temporary one (MainWindowViewModel.RecordsKept), or once the memory changed since, by
+    /// the chat (MemoryChanged) or the panel (MEM8C, FieldProductChannel). The stub's offer says it, and the mind's check
+    /// reads it with each turn (turn.decide «memoryRecords»), never the model's prompt.</summary>
+    internal int? MemoryRecords { get; set; }
+
     // REM7 (union of mem3 and ese7): ese7 shows the switch itself whole too, so with the switch off only the calls that
     // save are held; memory.enable is the person's own way to turn it on, held only where the profile keeps it off.
     private bool HeldWhileMemoryOff(string operation) => MemoryOff && FieldStepProjection.HeldWhole(operation)
         && MemoryOperationProtector.IsMemoryOperation(operation) && operation != "memory.enable";
+
+    // MEM5 (VIVO16 fila 3, Esencial with the switch on: «Desactiva la memoria.» → «La memoria ya no estaba activa» 3 of 3,
+    // and it stayed on; the model changed another setting, unchanged, and told that): with no way off in the profile, the
+    // person's privacy order had nothing to run. While the switch is on, turning it off runs in any profile: it turns
+    // nothing on and reads nothing, and it goes without a «sí» (RiskPolicy). MEM8: it stays withheld, so the model is shown
+    // its short stub (StubbedWhileMemoryOn) and not the whole tool's description (+147 tokens in mem5), and Refusal lets
+    // its call run. Its arguments go with it (MindSidecarClient, «whole»): a stub with none was called {} and refused as
+    // memory_argument_missing (revisión ciega D1b #1). Off, the profile withholds and refuses it as before.
+    private bool KeptWhileMemoryOn(string operation) => !MemoryOff && operation == WayOff;
+
+    /// <summary>MEM8: the memory's way off, the one memory call that runs in any profile while the switch is on.</summary>
+    internal const string WayOff = "memory.disable";
+
+    /// <summary>MEM8 (MEM7 trazas, Esencial with the switch on and 4 records: «¿Qué recuerdas de mí?» wanted memory_recall
+    /// first, 0,49-0,79 after «memory», and «Olvida mi dirección» memory_forget, 0,17-0,35; neither was shown, so the call
+    /// fell on the one memory name the call grammar allowed, an empty memory_save held, 9-10 of 20). While the switch is on
+    /// and the profile keeps them off, reading and forgetting are shown as stubs (their title, no arguments), so the call
+    /// the model wants has its own name and its refusal says the truth; turning it off is shown the same way, and its call
+    /// runs (KeptWhileMemoryOn); off, they have no stub, as before (operation-labels «ficha»: false; VIVO1 F8).</summary>
+    internal static bool StubbedWhileMemoryOn(string operation) =>
+        operation is "memory.recall" or "memory.forget" or "memory.disable";
 
     /// <summary>The operations of <paramref name="catalog"/> the profile keeps off; none with Completo (but the memory's
     /// own held call while the memory is off, <see cref="MemoryOff"/>).</summary>
@@ -353,7 +380,8 @@ internal sealed class ToolProfile
         }
 
         (string profile, HashSet<string>? on) = Read();
-        return Keeps(profile, on, operation) && !HeldWhileMemoryOff(operation) ? null : OffCode;
+        return (Keeps(profile, on, operation) || KeptWhileMemoryOn(operation)) && !HeldWhileMemoryOff(operation)
+            ? null : OffCode;
     }
 
     /// <summary>ESE1 (VIVO5 fila 7, 2 de 2: «Read a web page», off in Esencial, refused as «this tool off in Settings →

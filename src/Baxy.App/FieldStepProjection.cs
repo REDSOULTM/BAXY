@@ -486,6 +486,10 @@ internal static class FieldStepProjection
         NativeTurnLoop.ExitCause => UiLanguage.Say(english, "BAXY no puede volver a abrirse sola", "BAXY cannot open itself again"),
         ToolProfile.OffCode => UiLanguage.Say(english, "está apagada en tu perfil; con tu sí se enciende sólo esta",
             "it is off in your tool profile; your yes turns on just this one"),
+        // MEM8: one of the memory's: their «sí» turns them all on (ToolProfile.KeepOn).
+        NativeTurnLoop.MemoryToolsOffCause => UiLanguage.Say(english,
+            "está apagada en tu perfil; con tu sí se encienden todas las de la memoria",
+            "it is off in your tool profile; your yes turns on all of the memory's tools"),
         PendingOperationConfirmation.SystemChangeCause => UiLanguage.Say(english, "cambia un ajuste del sistema", "changes a system setting"),
         _ => null,
     };

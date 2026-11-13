@@ -179,7 +179,8 @@ public sealed class OwnSettingsHandlerTests
     }
 
     // TPV1 (dueño, 10-11: «pásate al perfil Completo» by voice): a ready-made tool profile lands in the file Settings →
-    // Tools keeps, read back; Completo is the file's absence; and the receipt says when its tools come, so a reply never
+    // Tools keeps, read back (VRAM4D, REV18 R18-1: Completo too, so a 4 GB card never overrides what the person chose);
+    // and the receipt says when its tools come, so a reply never
     // claims a tool this turn does not have. MUS1 (VIVO13: «BAXY se reiniciará en unos segundos», and the App did not
     // restart): what happens is typed, the model gets ready again after the reply while the App and the conversation
     // stay, with no prose about a restart to paraphrase.
@@ -207,7 +208,7 @@ public sealed class OwnSettingsHandlerTests
             Assert.That(again.GetProperty("changed").GetBoolean(), Is.False);
             Assert.That(again.TryGetProperty("toolsFrom", out _), Is.False);
             Assert.That(completo.GetProperty("changed").GetBoolean(), Is.True);
-            Assert.That(File.Exists(path), Is.False);
+            Assert.That(File.ReadAllText(path), Is.EqualTo("""{"profile":"completo"}"""));
         });
     }
 

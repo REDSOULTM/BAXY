@@ -637,6 +637,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 Publish(SurfacesEvent());
             }
 
+            // MEM8C (REV20 M-1): an edit or a forget in the panel changes what the memory keeps: the count read at the
+            // start is not known now (ToolProfile.MemoryRecords), for the next turn's offer and check.
+            if (MemoryPanel.ChangesKept(method, memory.Status))
+            {
+                _viewModel.ToolProfileState.MemoryRecords = null;
+            }
+
             // MEM3: the panel's switch, or what its list read of it, is the memory's own switch (ToolProfile.MemoryOff).
             if (memory.Status == 200 && memory.Body.StartsWith('{') && JsonNode.Parse(memory.Body) is JsonObject shown
                 && shown["enabled"] is JsonValue enabled && enabled.TryGetValue(out bool on))
@@ -2186,7 +2193,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     // N9 (L5): «prepararlo tardaría tanto»: the figures of the read too slow the cause names.
     private JsonObject? FailureRead() => _viewModel.MindFailureRead is { } read
-        ? new JsonObject { ["tokens_per_s"] = read.TokensPerS, ["minutes"] = read.NeedMinutes }
+        ? read.CardFull is { } full
+            // VRAM5 (AUD1 F9): the card had no memory left and Windows gave the server the PC's RAM instead.
+            ? new JsonObject { ["tokens_per_s"] = read.TokensPerS, ["minutes"] = read.NeedMinutes, ["card_free_mb"] = full.FreeMb, ["shared_mb"] = full.SharedMb }
+            : new JsonObject { ["tokens_per_s"] = read.TokensPerS, ["minutes"] = read.NeedMinutes }
         : null;
 
     private JsonObject ContextEvent() => new()

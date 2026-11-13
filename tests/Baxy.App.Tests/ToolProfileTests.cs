@@ -359,7 +359,11 @@ public sealed class ToolProfileTests
         {
             Assert.That(profile.Profile, Is.EqualTo("esencial"), "broken");
             Assert.That(profile.Withheld(Names), Is.EquivalentTo(off), "broken");
-            Assert.That(off.Select(profile.Refusal), Has.All.EqualTo(ToolProfile.OffCode), "broken");
+            // MEM8: but the memory's way off while its switch is on: withheld for its short stub, and its call runs
+            // (ToolProfile.KeptWhileMemoryOn); turning the memory off opens nothing.
+            Assert.That(off.Where(static name => name != ToolProfile.WayOff).Select(profile.Refusal),
+                Has.All.EqualTo(ToolProfile.OffCode), "broken");
+            Assert.That(profile.Refusal(ToolProfile.WayOff), Is.Null, "broken");
         });
 
         File.WriteAllText(path, """{"profile":"esencial"}""");
@@ -528,5 +532,30 @@ public sealed class ToolProfileTests
             Assert.That(profile.Apply(new JsonObject { ["profile"] = preset }), Is.Null);
             Assert.That(ToolProfile.PersonalPrefix(profile.Kept), Is.EqualTo(prefix), preset);
         }
+    }
+
+    [Test]
+    public void WhileTheMemoryIsOnItsWayOffIsAStubWhoseCallRuns()
+    {
+        // MEM8 D1b (MEM5/MEM7: memory_disable shown whole, +147 tokens, raised the 4B's memory calls; «¿Qué recuerdas de
+        // mí?» fell on an empty memory_save): in Esencial with the switch on, turning the memory off stays withheld, so the
+        // mind shows only its stub with its title, and its call is not refused (it runs, with no «sí»). Off, as before.
+        var profile = new ToolProfile(_root);
+        Assert.That(profile.Apply(new JsonObject { ["profile"] = "esencial" }), Is.Null);
+        profile.MemoryOff = false;
+        IReadOnlySet<string> withheld = profile.Withheld(Names);
+        JsonObject request = MindSidecarClient.CreateCatalogConfigureRequest(Catalog(), null, null, null, withheld,
+            memoryOff: false);
+        string? Title(string name) => (string?)request["withheld"]!.AsArray().OfType<JsonObject>()
+            .Single(entry => (string?)entry["name"] == name)["title"];
+        Assert.Multiple(() =>
+        {
+            Assert.That(withheld, Does.Contain("memory.disable"));
+            Assert.That(profile.Refusal("memory.disable"), Is.Null);
+            Assert.That(Title("memory.disable"), Is.EqualTo("Turn memory off"));
+            Assert.That(profile.Refusal("memory.recall"), Is.EqualTo(ToolProfile.OffCode));
+        });
+        profile.MemoryOff = true;
+        Assert.That(profile.Refusal("memory.disable"), Is.EqualTo(ToolProfile.OffCode));
     }
 }

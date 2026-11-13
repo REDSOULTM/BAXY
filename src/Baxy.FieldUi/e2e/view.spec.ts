@@ -1510,6 +1510,35 @@ test('VRAM4B: el perfil elegido que no cabe en la tarjeta se dice una vez y ofre
   await expect(card).not.toContainText('vuelve a intentarlo');
 });
 
+// VRAM5B (REV19 V-1, V-9): a context given in Settings that the card does not hold: the way out that starts is «Automático»,
+// as a button (what Settings → Model → Context does, then a new start); never a profile, which has the same cells.
+test('VRAM5B: un contexto de Ajustes que no cabe ofrece volver a «Automático» y arrancar, no otro perfil', async () => {
+  h = await openView();
+  h.reply('/settings/local-context', () => ({ body: { chosen: null, automatic: 61440, options: [] } }));
+  h.reply('/engine/retry', () => ({ body: { ok: true } }));
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'vram_insuficiente',
+    failureCard: { profile: 'esencial', freeMb: 3400, needMb: 4080, context: 61440, given: true, fitsContext: 32768, fittingProfile: null } });
+  const card = h.page.locator('.bx-breakdown');
+  await expect(card).toContainText('El contexto de Ajustes → Modelo → Contexto (61.440) no cabe entero');
+  await expect(card).not.toContainText('32.768');
+  await expect(card.locator('.bx-btn')).toHaveText(['Salir', 'Volver a «Automático»', 'Reintentar']);
+  await card.locator('.bx-btn', { hasText: 'Volver a «Automático»' }).click();
+  await expect.poll(() => h.calls.filter((c) => c.path === '/settings/local-context' && c.method === 'PUT' || c.path === '/engine/retry').map((c) => c.method + ' ' + c.path + ' ' + JSON.stringify(c.body ?? null)))
+    .toEqual(['PUT /settings/local-context {"context":null}', 'POST /engine/retry null']);
+  await expect(card).not.toContainText('vuelve a intentarlo');
+});
+
+// VRAM5B (REV19 V-2): an integrated GPU's breakdown speaks of the PC's RAM from its first words, not of a graphics card.
+test('VRAM5B: la avería de una gráfica integrada no dice que falte memoria en una tarjeta gráfica', async () => {
+  h = await openView();
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'vram_insuficiente',
+    failureCard: { profile: 'completo', freeMb: 348, needMb: 4083, context: 61440, integrated: true, fittingProfile: null } });
+  const card = h.page.locator('.bx-breakdown');
+  await expect(card).toContainText('El modelo no pudo cargarse: falta memoria RAM libre para la gráfica integrada. Tu gráfica es integrada y usa la memoria RAM del equipo');
+  await expect(card).not.toContainText('en la tarjeta gráfica');
+  await expect(card).not.toContainText('Cierra lo que esté usando la tarjeta gráfica');
+});
+
 test('VRAM4B: sin un perfil que quepa, la avería no ofrece arrancar en otro', async () => {
   h = await openView();
   h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'vram_insuficiente',

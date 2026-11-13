@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { BaxyState, BootPieces } from '../types';
 import { useT } from '../i18n';
-import { causeText, ON_PROCESSOR_TEXT, readingText } from '../causes';
+import { causeText, ON_PROCESSOR_TEXT, readingText, type FailureCard } from '../causes';
 import { plainOf } from '../marks';
 
 /* Under the face (design chat.jsx BxCap4, BxBoot; parts.jsx BxSub): BAXY's words as captions, the live transcription
@@ -59,7 +59,8 @@ function lastLoad(): number | null {
   }
 }
 
-export function Boot({ boot }: { boot: BootPieces }) {
+// VRAM5B (REV19 V-2): the failed start's card, so an integrated GPU's line speaks of RAM as the breakdown does.
+export function Boot({ boot, card }: { boot: BootPieces; card?: FailureCard | null }) {
   const t = useT();
   const [now, setNow] = useState(() => Date.now());
   const [previous] = useState(lastLoad);
@@ -87,12 +88,12 @@ export function Boot({ boot }: { boot: BootPieces }) {
       {!boot.model && boot.onProcessor ? <div className="el">{t.w(ON_PROCESSOR_TEXT)}</div> : null}
       {!boot.model && !boot.failed && boot.lastFailure ? (
         <div className="el">
-          {t('El intento anterior no arrancó', 'The last attempt did not start') + (causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead) : '') + t(' · reintentando', ' · retrying')}
+          {t('El intento anterior no arrancó', 'The last attempt did not start') + (causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead, card) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead, card) : '') + t(' · reintentando', ' · retrying')}
         </div>
       ) : null}
       <div className="el">
         {boot.model ? t('Listo · cargó en ', 'Ready · loaded in ') + secs + ' s'
-          : boot.failed ? t('El modelo no arrancó', 'The model did not start') + (causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead) : '')
+          : boot.failed ? t('El modelo no arrancó', 'The model did not start') + (causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead, card) ? ': ' + causeText(boot.lastFailure, t, boot.failureMemory, boot.failureRead, card) : '')
             : secs + ' s' + (previous ? t(' · la última vez tardó ', ' · last time it took ') + previous + ' s' : '')}
       </div>
     </div>

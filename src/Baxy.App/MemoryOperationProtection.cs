@@ -57,7 +57,10 @@ internal sealed class MemoryOperationProtector
             sessionId);
     }
 
-    internal ProtectedMemoryOperation Prepare(MemoryRoutedOperation privateOperation)
+    /// <summary>Seals a memory call. MEM8C (REV20 M-2): <paramref name="offerOnly"/> for a stub's call held for its offer
+    /// alone, which nothing runs and nothing opens (NativeTurnLoop.AnswerOffHeld): its arguments are not checked as the
+    /// whole operation's.</summary>
+    internal ProtectedMemoryOperation Prepare(MemoryRoutedOperation privateOperation, bool offerOnly = false)
     {
         ArgumentNullException.ThrowIfNull(privateOperation);
         EnsureMemoryOperation(privateOperation.Name);
@@ -67,7 +70,10 @@ internal sealed class MemoryOperationProtector
         // The operation is the one the model chose: arguments that do not fit it are refused, never re-routed.
         JsonElement payload = JsonSerializer.SerializeToElement(privateArguments);
         string operation = privateOperation.Name;
-        ValidateWireRiskBinding(operation, payload);
+        if (!offerOnly)
+        {
+            ValidateWireRiskBinding(operation, payload);
+        }
         string missionId = Guid.NewGuid().ToString("D");
         string invocationId = Guid.NewGuid().ToString("D");
         JsonElement envelope = _codec.SealArguments(

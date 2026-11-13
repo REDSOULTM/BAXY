@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http.Headers;
@@ -466,6 +467,43 @@ internal sealed class InstallationTests
     public void What_is_said_follows_the_vendor(string device, GpuSupport support)
     {
         Assert.That(MachineGpu.Choose([new GpuAdapter(device, 8_000_000_000)]), Is.EqualTo(support));
+    }
+
+    // VRAM5 (AUD1 F7): the installer never looked at the RAM. An 8 GB PC with a card has the 7,844 MiB BAXY and Windows
+    // need; 6 GB does not; Intel graphics only take the model from that same RAM, so 8 GB is short and 16 GB is not; an
+    // Intel card with its own memory (an Arc) is a card.
+    [TestCase(@"PCI\VEN_10DE&DEV_2803", 8_000_000_000L, 8192L, GpuSupport.Measured)]
+    [TestCase(@"PCI\VEN_10DE&DEV_2803", 8_000_000_000L, 6144L, GpuSupport.TooLittleRam)]
+    [TestCase(@"PCI\VEN_8086&DEV_9A49", 128_000_000L, 8192L, GpuSupport.TooLittleRamIntegrated)]
+    [TestCase(@"PCI\VEN_8086&DEV_9A49", 128_000_000L, 16384L, GpuSupport.NotMeasured)]
+    [TestCase(@"PCI\VEN_8086&DEV_56A0", 16_000_000_000L, 8192L, GpuSupport.NotMeasured)]
+    [TestCase(@"PCI\VEN_8086&DEV_56A0", 16_000_000_000L, 6144L, GpuSupport.TooLittleRam)]
+    [TestCase(@"PCI\VEN_10DE&DEV_1C82", 2_000_000_000L, 4096L, GpuSupport.TooLittleMemory)]
+    [TestCase(@"PCI\VEN_1414&DEV_008C", 0L, 4096L, GpuSupport.None)]
+    [TestCase(@"PCI\VEN_10DE&DEV_2803", 8_000_000_000L, null, GpuSupport.Measured)]
+    public void VRAM5_The_ram_installed_is_told_when_it_is_short(string device, long memory, long? ram, GpuSupport told)
+    {
+        Assert.That(MachineGpu.WithRam([new GpuAdapter(device, memory)], ram), Is.EqualTo(told));
+        Assert.That(MachineGpu.MinimumRamMib(integrated: false), Is.EqualTo(4096 + 3748));
+        Assert.That(MachineGpu.MinimumRamMib(integrated: true), Is.EqualTo(4096 + 3748 + 3579));
+    }
+
+    [Test]
+    public void VRAM5_Each_ram_warning_has_its_figures_in_both_languages()
+    {
+        foreach (Texts texts in new[] { Texts.Spanish, Texts.English })
+        {
+            Assert.That(string.Format(CultureInfo.InvariantCulture, texts.WarningRam, 6.0, 7.66), Does.Contain("6").And.Contain("7.7"));
+            Assert.That(string.Format(CultureInfo.InvariantCulture, texts.WarningRamIntegrated, 8.0, 11.15), Does.Contain("11.2"));
+            Assert.That(texts.WarningRamHelp, Is.Not.Empty);
+        }
+
+        // VRAM5B (REV19 N6): just under the least figure the mind still starts without its margin (llm_server.fit_profiles),
+        // and 4 GB is what Windows 11 asks to be installed, not what it uses: neither is told as a certainty.
+        Assert.That(Texts.Spanish.WarningRamIntegrated, Does.Not.Contain("con menos no arranco"));
+        Assert.That(Texts.English.WarningRamIntegrated, Does.Not.Contain("I won’t start"));
+        Assert.That(Texts.Spanish.WarningRam, Does.Not.Contain("Windows necesita 4"));
+        Assert.That(Texts.English.WarningRam, Does.Not.Contain("Windows needs 4"));
     }
 
     [Test]

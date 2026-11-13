@@ -7,7 +7,7 @@ import { readdirSync } from 'node:fs';
 import { seededRng } from '../src/utils/seededRng';
 import { BXM, HUBS, bxMouth, bxRoute } from '../src/components/face/geometry';
 import { LIB, NEXT, groupFor } from '../src/components/avatarClips';
-import { cardProfileText, causeAdvice, causeText, fittingProfile, readingText, startedOnlyOnce } from '../src/causes';
+import { backToAutomatic, cardProfileText, cardShortInSettings, causeAdvice, causeText, fittingProfile, readingText, startedOnlyOnce } from '../src/causes';
 import { translator } from '../src/i18n';
 import { outcomeOf } from '../src/outcome';
 import { what, when } from '../src/routines';
@@ -299,4 +299,72 @@ test('rutinas: el disparador en llano (palabra, hoy, mañana, otro día, cada d�
   expect(when(es, { at: '07:00', repeat: 'days', days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] }, now)).toBe('Todos los días a las 7:00');
   // the last day of a month and of a year roll over to the next
   expect(when(es, { at: '08:00', repeat: 'once', date: '2027-01-01' }, new Date(2026, 11, 31, 23, 0))).toBe('Mañana a las 8:00, una vez');
+});
+
+test('VRAM5: un contexto elegido a mano que no cabe lo dice y ofrece el que cabe, sin cambiar de perfil', () => {
+  const card = { profile: 'completo', freeMb: 3400, needMb: 4232, context: 77824, given: true, fitsContext: 32768, fittingProfile: null };
+  const said = causeAdvice('vram_insuficiente', es, card) ?? '';
+  expect(said).toContain('(77.824) no cabe entero');
+  expect(said).not.toContain('perfil');
+  expect(fittingProfile(card)).toBeNull();
+});
+
+test('VRAM5B (REV19 V-1, V-9): la salida de un contexto que no cabe es «Automático», que sí arranca, no un contexto que la lista no deja elegir', () => {
+  const card = { profile: 'esencial', freeMb: 3400, needMb: 4080, context: 61440, given: true, fitsContext: 32768, fittingProfile: null };
+  const said = causeAdvice('vram_insuficiente', es, card) ?? '';
+  expect(said).not.toContain('32.768');
+  expect(said).toContain('vuelve a «Automático»');
+  expect(backToAutomatic(card)).toBe(true);
+  // nothing fits even its fewest cells: no button that would fail again
+  expect(backToAutomatic({ ...card, fitsContext: null })).toBe(false);
+  expect(backToAutomatic({ profile: 'completo', freeMb: 3400, needMb: 4232, context: 61440 })).toBe(false);
+  expect(backToAutomatic(null)).toBe(false);
+});
+
+test('VRAM5B (REV19 V-10): un contexto que subió BAXY (KeepFitting) no se dice «que elegiste»: se nombra el ajuste', () => {
+  const en = translator('en');
+  const card = { profile: 'completo', freeMb: 3400, needMb: 4080, context: 61440, given: true, fitsContext: 32768, fittingProfile: null };
+  const said = causeAdvice('vram_insuficiente', es, card) ?? '';
+  expect(said).not.toContain('elegiste');
+  expect(said).toContain('El contexto de Ajustes → Modelo → Contexto (61.440) no cabe entero');
+  expect(causeAdvice('vram_insuficiente', en, card) ?? '').toContain('The context in Settings → Model → Context (61,440) doesn’t fit whole');
+});
+
+test('VRAM5B (REV19 V-2): con una gráfica integrada la cabecera de la avería no habla de una tarjeta gráfica', () => {
+  const en = translator('en');
+  const card = { profile: 'completo', freeMb: 348, needMb: 4083, context: 61440, integrated: true, fittingProfile: null };
+  const head = causeText('vram_insuficiente', es, null, null, card) ?? '';
+  expect(head).not.toContain('tarjeta gráfica');
+  expect(head).toContain('RAM');
+  expect(causeText('vram_insuficiente', en, null, null, card) ?? '').not.toContain('graphics card');
+  // a card of its own: as before
+  expect(causeText('vram_insuficiente', es, null, null, { ...card, integrated: false })).toBe('falta memoria libre en la tarjeta gráfica');
+});
+
+test('VRAM5B (REV19 N9): el aviso de un contexto que no cabía no sigue en Ajustes con «Automático» ya puesto', () => {
+  const given = { profile: 'esencial', freeMb: 3400, needMb: 4080, context: 61440, given: true, fitsContext: 32768 };
+  expect(cardShortInSettings(given, 61440)).toBe(true);
+  expect(cardShortInSettings(given, null)).toBe(false);
+  // another context chosen since (with the mind down there is no «Cambiando»): not the one that did not fit
+  expect(cardShortInSettings(given, 45056)).toBe(false);
+  const auto = { profile: 'completo', freeMb: 3400, needMb: 4232, context: 61440 };
+  expect(cardShortInSettings(auto, null)).toBe(true);
+  expect(cardShortInSettings(auto, 61440)).toBe(false);
+  expect(cardShortInSettings(null, null)).toBe(false);
+});
+
+test('VRAM5: una gráfica integrada dice que usa la RAM, con lo que queda y lo que necesita', () => {
+  const card = { profile: 'completo', freeMb: 348, needMb: 4083, context: 61440, integrated: true, fittingProfile: null };
+  const said = causeAdvice('vram_insuficiente', es, card) ?? '';
+  expect(said).toContain('Tu gráfica es integrada y usa la memoria RAM del equipo');
+  expect(said).toContain('usa otro modelo');
+});
+
+test('VRAM5: una lectura lenta con la tarjeta llena dice que Windows usa la RAM', () => {
+  const read = { tokens_per_s: 47, minutes: 32, card_free_mb: 40, shared_mb: 1298 };
+  // VRAM5B (REV19 V-4, N4): the shared figure holds what a server that fits shares too: no figure as the spill
+  expect(causeText('lectura_lenta', es, null, read))
+    .toBe('la tarjeta gráfica se quedó sin memoria y Windows pasa parte del modelo a la RAM del equipo, mucho más lenta: prepararlo tardaría unos 32 min');
+  expect(causeAdvice('lectura_lenta', es, null, read)).toContain('Cierra lo que esté usando la tarjeta gráfica');
+  expect(causeText('lectura_lenta', es, null, { tokens_per_s: 20, minutes: 41 })).toContain('este equipo lee el modelo demasiado lento');
 });

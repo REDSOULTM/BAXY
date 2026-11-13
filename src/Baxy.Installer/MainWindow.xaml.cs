@@ -116,7 +116,7 @@ internal sealed partial class MainWindow : Window, IDisposable
         this.uninstalling = uninstalling;
         this.updating = updating && !uninstalling && this.manifest is not null;
         http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + (manifest?.Version ?? "0"));
-        support = MachineGpu.Choose(adapters);
+        support = MachineGpu.WithRam(adapters, MachineRam.InstalledMib());
         if (this.manifest is not null)
         {
             Program.LogMachine(this.manifest, adapters, paths);
@@ -541,19 +541,25 @@ internal sealed partial class MainWindow : Window, IDisposable
         {
             GpuSupport.NotMeasured => (texts.WarningIntel, "warningIntel"),
             GpuSupport.TooLittleMemory => (texts.WarningMemory, "warningMemory"),
+            GpuSupport.TooLittleRam => (RamText(texts.WarningRam, integrated: false), "warningRam"),
+            GpuSupport.TooLittleRamIntegrated => (RamText(texts.WarningRamIntegrated, integrated: true), "warningRamIntegrated"),
             _ => (texts.WarningNone, "warningNone"),
         };
         return new ScreenView(
             Face.Sad,
             support == GpuSupport.None ? texts.NoGpuTitle : texts.WarningTitle,
             body,
-            Help: texts.WarningHelp,
+            Help: support is GpuSupport.TooLittleRam or GpuSupport.TooLittleRamIntegrated ? texts.WarningRamHelp : texts.WarningHelp,
             Hint: support == GpuSupport.None ? string.Empty : texts.LicenseNotice,
             First: new ButtonView(support == GpuSupport.None ? texts.Close : texts.NotNow, false, Close, IsDefault: true, IsCancel: true),
             Second: support == GpuSupport.None ? null : new ButtonView(texts.InstallAnyway, true, Start),
             Third: support == GpuSupport.None ? null : new ButtonView(texts.ReadLicense, false, ShowLicense),
             Line: line);
     }
+
+    // VRAM5 (AUD1 F7): the RAM installed and the least BAXY needs, in GB as the person reads them.
+    private static string RamText(string text, bool integrated) => string.Format(
+        CultureInfo.CurrentCulture, text, (MachineRam.InstalledMib() ?? 0) / 1024d, MachineGpu.MinimumRamMib(integrated) / 1024d);
 
     private ScreenView LicenseScreen() => new(
         Face.Happy,

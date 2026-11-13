@@ -6,6 +6,8 @@ import { num } from './numbers';
 const MEMORY: Record<string, Words> = {
   ram_insuficiente: { es: 'falta memoria RAM libre en el equipo', en: 'this PC is short of free RAM' },
   vram_insuficiente: { es: 'falta memoria libre en la tarjeta gráfica', en: 'the graphics card is short of free memory' },
+  /* VRAM5B (REV19 V-2): an integrated GPU has no card of its own: what it lacks is the PC's RAM (llm_server.integrated_room) */
+  vram_integrada: { es: 'falta memoria RAM libre para la gráfica integrada', en: 'there isn’t enough free RAM for the integrated graphics' },
   memoria_insuficiente: { es: 'falta memoria libre en el equipo', en: 'this PC is short of free memory' },
 };
 
@@ -49,16 +51,53 @@ export const PROFILE_NAME: Record<string, Words> = {
 /** VRAM4: the model's start found a card whose free video memory does not hold the profile's instructions and tools whole
     (LocalContext.CardShort in the App, from the mind's llm_server.fit_card): the profile, what was free, what it takes, and
     the ready-made profile that fits whole (null when none does). */
-export type FailureCard = { profile: string; freeMb: number; needMb: number; context?: number; fittingProfile?: string | null };
+export type FailureCard = {
+  profile: string; freeMb: number; needMb: number; context?: number; fittingProfile?: string | null;
+  /** VRAM5 (AUD1 F4): the cells are the person's own (Settings → Model → Context), and the most the card holds whole. */
+  given?: boolean; fitsContext?: number | null;
+  /** VRAM5 (AUD1 F5): an integrated GPU: its memory is the PC's RAM, and freeMb what it leaves past Windows and BAXY. */
+  integrated?: boolean;
+};
 
 export function cardShortText(card: FailureCard, t: T): string {
   const name = (profile: string) => (PROFILE_NAME[profile] ? t.w(PROFILE_NAME[profile]) : profile);
   const fits = card.fittingProfile && card.fittingProfile !== card.profile ? card.fittingProfile : null;
+  // VRAM5 (AUD1 F5): no card of its own: the RAM it shares, with what Windows and the rest of BAXY take of it.
+  const where = card.integrated
+    ? t(`Tu gráfica es integrada y usa la memoria RAM del equipo: después de Windows y del resto de BAXY quedan ${gb(card.freeMb, t)} para el modelo y necesita unos ${gb(card.needMb, t)}.`,
+      `Your graphics is integrated and uses this PC’s RAM: after Windows and the rest of BAXY, ${gb(card.freeMb, t)} is left for the model and it needs about ${gb(card.needMb, t)}.`)
+    : null;
+  // VRAM5 (AUD1 F4): cells given in Settings are never changed: what was free, what they take, and the way out.
+  // VRAM5B (REV19 V-10): the setting is named, not who wrote it (BAXY's KeepFitting writes it too, on a profile asked by
+  // voice). V-1, V-9: the way out is «Automático», which fits the cells to the card (backToAutomatic); a smaller context
+  // of the list is no way out right after a failed start: with no prefix read, the list allows none below every profile's.
+  if (card.given) {
+    const cells = (n: number) => num(n, t.locale, 0);
+    return (where ?? t(`El contexto de Ajustes → Modelo → Contexto (${cells(card.context ?? 0)}) no cabe entero en la memoria de vídeo de tu tarjeta gráfica: había ${gb(card.freeMb, t)} libres al arrancar y necesita unos ${gb(card.needMb, t)}.`,
+      `The context in Settings → Model → Context (${cells(card.context ?? 0)}) doesn’t fit whole in your graphics card’s video memory: ${gb(card.freeMb, t)} was free at start and it needs about ${gb(card.needMb, t)}.`))
+      + (card.fitsContext ? t(' Para que BAXY lo ajuste a la memoria que hay, vuelve a «Automático» en Ajustes → Modelo → Contexto.', ' For BAXY to fit it to the memory there is, go back to “Automatic” in Settings → Model → Context.')
+        : where ? t(' Ningún contexto cabe en la RAM de este equipo: usa otro modelo (Ajustes → Modelo).', ' No context fits this PC’s RAM: use another model (Settings → Model).')
+          : t(' Ningún contexto cabe ahora: cierra lo que esté usando la tarjeta gráfica o usa otro modelo.', ' No context fits now: close what is using the graphics card or use another model.'));
+  }
+  if (where) {
+    return where + (fits ? t(` El perfil ${name(fits)} sí cabe entero: elígelo en Ajustes → Herramientas → Perfil.`, ` The ${name(fits)} profile does fit whole: choose it in Settings → Tools → Profile.`)
+      : t(' No cabe ningún perfil: usa otro modelo (Ajustes → Modelo), o un equipo con más RAM o con una tarjeta gráfica dedicada.', ' No profile fits: use another model (Settings → Model), or a PC with more RAM or a dedicated graphics card.'));
+  }
   return t(`El perfil ${name(card.profile)} no cabe entero en la memoria de vídeo de tu tarjeta gráfica: había ${gb(card.freeMb, t)} libres al arrancar y necesita unos ${gb(card.needMb, t)}.`,
     `The ${name(card.profile)} profile doesn’t fit whole in your graphics card’s video memory: ${gb(card.freeMb, t)} was free at start and it needs about ${gb(card.needMb, t)}.`)
     + (fits ? t(` El perfil ${name(fits)} sí cabe entero: elígelo en Ajustes → Herramientas → Perfil.`, ` The ${name(fits)} profile does fit whole: choose it in Settings → Tools → Profile.`)
       : t(' Cierra lo que esté usando la tarjeta gráfica y reintenta.', ' Close what is using the graphics card and try again.'));
 }
+
+/** VRAM5B (REV19 V-1, V-9): a context given in Settings that the card does not hold, when some fewer cells would: the
+    breakdown offers «Automático» (PUT /settings/local-context with none, then a new start), the way out that starts. */
+export const backToAutomatic = (card: FailureCard | null | undefined): boolean => !!card?.given && !!card.fitsContext;
+
+/** VRAM5B (REV19 N9): whether Settings → Model → Context says what the last start found: a context given there while one is
+    still chosen, or the automatic one while «Automático» is. Not the other way, nor another context chosen since (with the
+    mind down there is no «Cambiando»): the hint would outlive the change. */
+export const cardShortInSettings = (card: FailureCard | null | undefined, chosen: number | null): boolean =>
+  !!card && (card.given ? chosen !== null && chosen === card.context : chosen === null);
 
 /** VRAM4B: the ready-made profile the card holds whole, when it is another than the one that did not fit: the breakdown
     offers to start in it («Arrancar en Esencial»). */
@@ -88,13 +127,27 @@ export function cardProfileText(card: CardProfile, t: T): string {
 export type FailureMemory = { need_mb: number; free_mb?: number | null };
 
 /** N9: the figures of a read too slow (llm_server.startup_failure): its pace, and what the whole prefix would take. */
-export type FailureRead = { tokens_per_s: number; minutes: number };
+export type FailureRead = {
+  tokens_per_s: number; minutes: number;
+  /** VRAM5 (AUD1 F9): the card had less free than the mind's margin when it gave up, and the PC's RAM Windows gave the
+      server as video memory (llm_server._card_full); absent otherwise. */
+  card_free_mb?: number | null; shared_mb?: number | null;
+};
 
 /** what the person can read of a start's cause, or null when the host gave none it can name. */
-export function causeText(cause: string | null | undefined, t: T, memory?: FailureMemory | null, read?: FailureRead | null): string | null {
+export function causeText(cause: string | null | undefined, t: T, memory?: FailureMemory | null, read?: FailureRead | null, card?: FailureCard | null): string | null {
   if (!cause) return null;
+  if (cause === 'vram_insuficiente' && card?.integrated) return t.w(MEMORY.vram_integrada);
   if (cause === READ_TOO_SLOW) {
     if (!read) return t.w(READ_TOO_SLOW_TEXT);
+    // VRAM5 (AUD1 F9): what Windows does in silence when the card is full, as measured when the read gave up
+    if (read.card_free_mb != null) {
+      // VRAM5B (REV19 V-4, N4): no figure: the shared memory counted holds what a server that fits shares too
+      return t('la tarjeta gráfica se quedó sin memoria y Windows pasa parte del modelo a la RAM del equipo, mucho más lenta',
+        'the graphics card ran out of memory and Windows moves part of the model to this PC’s RAM, which is much slower')
+        + t(': prepararlo tardaría ', ': getting it ready would take ')
+        + (read.minutes < 90 ? t('unos ', 'about ') + read.minutes + ' min' : t('más de ', 'more than ') + Math.floor(read.minutes / 60) + ' h');
+    }
     // past 90 min the figure is a curve drawn from the first batches: an order of size, not a promise
     return t.w(READ_TOO_SLOW_TEXT) + t(': prepararlo tardaría ', ': getting it ready would take ')
       + (read.minutes < 90 ? t('unos ', 'about ') + read.minutes + ' min' : t('más de ', 'more than ') + Math.floor(read.minutes / 60) + ' h');
@@ -162,9 +215,11 @@ export const ON_PROCESSOR_TEXT: Words = {
 };
 
 /** what the person can do about it: free memory, bring the model's file back, or a machine that can run the model. */
-export function causeAdvice(cause: string | null | undefined, t: T, card?: FailureCard | null): string | null {
+export function causeAdvice(cause: string | null | undefined, t: T, card?: FailureCard | null, read?: FailureRead | null): string | null {
   // VRAM4: a start that was slow, stopped or ran out of memory on a card that does not hold the profile whole: that is the cause
   if (card && cause && (cause === READ_TOO_SLOW || cause === NO_ADVANCE || MEMORY[cause])) return cardShortText(card, t);
+  // VRAM5 (AUD1 F9): the card was full: what frees it, not a faster PC
+  if (cause === READ_TOO_SLOW && read?.card_free_mb != null) return t('Cierra lo que esté usando la tarjeta gráfica (un juego, por ejemplo) y reintenta, o usa otro modelo.', 'Close what is using the graphics card (a game, for example) and try again, or use another model.');
   if (cause === READ_TOO_SLOW) return t.w(NEEDS) + t(' Si el equipo estaba ocupado, cierra lo que no uses y reintenta.', ' If the PC was busy, close what you are not using and try again.');
   if (cause === NO_ADVANCE) return t('Actualiza el controlador de la tarjeta gráfica y reintenta. ', 'Update the graphics card driver and try again. ') + t.w(NEEDS);
   if (cause && MODEL_FILE[cause]) return t('Reinstala BAXY para recuperarlo: tus datos no se borran.', 'Reinstall BAXY to get it back: your data is not deleted.');

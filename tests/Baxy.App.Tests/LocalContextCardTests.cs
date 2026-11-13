@@ -114,4 +114,56 @@ public sealed class LocalContextCardTests
         Assert.That(context.CardShort("completo", Fitting), Is.Null);
         Assert.That(LocalContext.CardFound.From(new JsonObject { ["freeMb"] = 3400 }), Is.Null);
     }
+
+    [Test]
+    public void VRAM5_AContextThePersonGaveOffersNoProfileButTheCellsThatFit()
+    {
+        // AUD1 F4: another profile keeps the person's cells, so «Arrancar en Esencial» would fail again: the cells instead.
+        var reply = new JsonObject
+        {
+            ["type"] = "error",
+            ["startup"] = new JsonObject
+            {
+                ["cause"] = "vram_insuficiente",
+                ["cardShort"] = new JsonObject
+                {
+                    ["freeMb"] = 3400, ["needMb"] = 4232, ["context"] = 77824, ["given"] = true, ["fitsContext"] = 32768,
+                },
+            },
+        };
+        MindStartupFailure failure = MindStartupFailure.FromReply(reply)!;
+        Assert.That(failure.CardShort, Is.EqualTo(new LocalContext.CardFound(3400, 4232, 77824, 32768, Given: true)));
+        var context = new LocalContext(_root);
+        context.Failed(failure.CardShort);
+        JsonObject said = context.CardShort("completo", Fitting)!;
+        Assert.That(said["fittingProfile"], Is.Null, "no profile holds other cells than the person's");
+        Assert.That((int?)said["fitsContext"], Is.EqualTo(32768));
+        Assert.That((bool?)said["given"], Is.True);
+    }
+
+    [Test]
+    public void VRAM5_AnIntegratedGpuAndAFullCardReachTheView()
+    {
+        var reply = new JsonObject
+        {
+            ["type"] = "error",
+            ["startup"] = new JsonObject
+            {
+                ["cause"] = "vram_insuficiente",
+                ["cardShort"] = new JsonObject { ["freeMb"] = 0, ["needMb"] = 4083, ["context"] = 61440, ["integrated"] = true },
+            },
+        };
+        var context = new LocalContext(_root);
+        context.Failed(MindStartupFailure.FromReply(reply)!.CardShort);
+        Assert.That((bool?)context.CardShort("completo", Fitting)!["integrated"], Is.True);
+
+        // AUD1 F9: a read too slow on a card left without memory.
+        // As the mind's reply line is read: parsed from its text.
+        JsonObject slow = JsonNode.Parse("""
+            {"type":"error","startup":{"cause":"lectura_lenta","tokensPerS":47,"needMinutes":32,"cardFull":{"freeMb":40,"sharedMb":1298}}}
+            """)!.AsObject();
+        Assert.That(MindStartupFailure.FromReply(slow)!.CardFull, Is.EqualTo(new MindCardFull(40, 1298)));
+        slow["startup"]!.AsObject().Remove("cardFull");
+        Assert.That(MindStartupFailure.FromReply(slow)!.CardFull, Is.Null);
+    }
 }

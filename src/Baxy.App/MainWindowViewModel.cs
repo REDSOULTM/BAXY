@@ -84,7 +84,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private volatile bool _mindRetryPending;
     // Why the last start (or run) of the mind failed (MindStartupFailure.Cause, or the App's own label), until one is up.
     private string? _mindFailureCause;
-    private (long TokensPerS, long NeedMinutes)? _mindFailureRead;
+    private (long TokensPerS, long NeedMinutes, MindCardFull? CardFull)? _mindFailureRead;
     private MindModelReading? _mindReading;
     private bool _mindOnProcessor;
     private (long NeedMb, long? FreeMb)? _mindFailureMemory;
@@ -235,9 +235,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 OwnReading = (scope, cancellationToken) => OwnReader is { } read
                     ? read(scope, cancellationToken)
                     : Task.FromResult(Baxy.Kernel.Operations.OperationOutcome.Failure(OwnReadings.Unavailable)),
-                MemoryChanged = () => MemoryChanged?.Invoke(),
+                MemoryChanged = () =>
+                {
+                    // MEM8 (revisión ciega 3 #3): a save or a forget makes the count read at the start stale: not known.
+                    ToolProfileState.MemoryRecords = null;
+                    MemoryChanged?.Invoke();
+                },
                 MemorySwitched = MemorySwitched,
                 MemoryOff = () => ToolProfileState.MemoryOff,
+                MemoryRecords = () => ToolProfileState.MemoryRecords,
                 InProfile = ToolProfileState.InProfile,
                 ForgotEverything = () =>
                 {
@@ -453,7 +459,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>N9 (L5): the figures of a read too slow, when the mind has them: its pace and what the whole prefix would
     /// take (<see cref="MindStartupFailure"/>); null otherwise.</summary>
-    internal (long TokensPerS, long NeedMinutes)? MindFailureRead => IsMindReady ? null : _mindFailureRead;
+    internal (long TokensPerS, long NeedMinutes, MindCardFull? CardFull)? MindFailureRead => IsMindReady ? null : _mindFailureRead;
 
     /// <summary>N9 (L5): how far the model being started has read its prefix; null when it is not reading one.</summary>
     internal MindModelReading? MindReading => _mindStartupState == MindStartupState.Starting ? _mindReading : null;
@@ -833,7 +839,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupCoreReady);
             // MEM3: the memory's switch is read before the mind takes its catalog, so it starts with the tools that
             // switch leaves (ToolProfile.MemoryOff) instead of being relaunched for it.
-            ToolProfileState.MemoryOff = !await InitializeMemorySessionAsync(client, _memoryProtector, cancellationToken);
+            (bool memoryOn, int? kept) = await InitializeMemorySessionAsync(client, _memoryProtector, cancellationToken);
+            ToolProfileState.MemoryOff = !memoryOn;
+            ToolProfileState.MemoryRecords = kept;
             startupCatalog?.TrySetResult(new MindStartupCatalog(
                 client.Capabilities,
                 client.ApplicationCatalog,
@@ -1374,8 +1382,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return reminders;
     }
 
-    // Whether the memory is on, as memory.status read it.
-    private static async Task<bool> InitializeMemorySessionAsync(
+    // Whether the memory is on, as memory.status read it, and (MEM8) how many records it keeps (RecordsKept), or null.
+    private static async Task<(bool On, int? Kept)> InitializeMemorySessionAsync(
         CoreProcessClient client,
         MemoryOperationProtector protector,
         CancellationToken cancellationToken)
@@ -1392,9 +1400,19 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             throw new InvalidDataException("El estado privado inicial no tiene una forma válida.");
         }
 
-        return opened.Payload.TryGetProperty("enabled", out System.Text.Json.JsonElement enabled)
+        bool on = opened.Payload.TryGetProperty("enabled", out System.Text.Json.JsonElement enabled)
             && enabled.ValueKind == System.Text.Json.JsonValueKind.True;
+        return (on, RecordsKept(opened.Payload));
     }
+
+    /// <summary>MEM8: how many records memory.status says the memory keeps, all kinds (totalRecords: a session one is kept
+    /// too, so only none at all is «nothing kept»), or null. MEM8C (REV20 M-5): with a temporary one among them, null: it
+    /// goes when its time ends while BAXY stays open, and the count would then say one more than there is.</summary>
+    internal static int? RecordsKept(System.Text.Json.JsonElement status) =>
+        status.TryGetProperty("totalRecords", out System.Text.Json.JsonElement kept)
+        && kept.TryGetInt32(out int count) && count >= 0
+        && status.TryGetProperty("temporaryRecords", out System.Text.Json.JsonElement temporary)
+        && temporary.TryGetInt32(out int passing) && passing == 0 ? count : null;
 
     /// <summary>MEM3: the memory's own switch changed (memory.enable / memory.disable completed, by voice or by the panel's
     /// switch): its held call goes or comes back (ToolProfile.MemoryOff), and the mind is relaunched with it once the
@@ -2092,7 +2110,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindStartupState = MindStartupState.Failed;
         _mindFailureCause = failure?.Cause ?? "desconocida";
         _mindFailureMemory = failure?.NeedMb is { } need ? (need, failure.FreeMb) : null;
-        _mindFailureRead = failure is { TokensPerS: { } pace, NeedMinutes: { } minutes } ? (pace, minutes) : null;
+        _mindFailureRead = failure is { TokensPerS: { } pace, NeedMinutes: { } minutes } ? (pace, minutes, failure.CardFull) : null;
         LocalContextState.Failed(failure?.CardShort);
         string cause = failure?.TraceLabel ?? "desconocida";
         ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed, cause);

@@ -246,6 +246,67 @@ public sealed class MindSidecarClientTests
     }
 
     [Test]
+    public void ReadingAndForgettingHaveAStubOnlyWhileTheMemoryIsOn()
+    {
+        // MEM8 (MEM7 trazas: «¿Qué recuerdas de mí?» wanted memory_recall, not shown, and an empty memory_save was held):
+        // in Esencial with the switch on, reading and forgetting go with their title (a stub); off, or not said, the
+        // request is the one sent before, byte for byte.
+        Baxy.Contracts.OperationDescriptor[] capabilities = [.. ProductCatalog.ToolDescriptors.Select(static descriptor =>
+            ProductCatalog.CreateToolDescriptor(new OperationDefinition(descriptor)))];
+        var withheld = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "memory.recall", "memory.forget", "memory.disable", "memory.list", "memory.save", "memory.enable",
+            "note.create",
+        };
+        JsonObject on = MindSidecarClient.CreateCatalogConfigureRequest(capabilities, null, withheld: withheld, memoryOff: false);
+        JsonObject off = MindSidecarClient.CreateCatalogConfigureRequest(capabilities, null, withheld: withheld, memoryOff: true);
+        JsonObject unsaid = MindSidecarClient.CreateCatalogConfigureRequest(capabilities, null, withheld: withheld);
+        JsonObject Entry(JsonObject request, string name) => request["withheld"]!.AsArray().OfType<JsonObject>()
+            .Single(entry => (string?)entry["name"] == name);
+        string? Title(JsonObject request, string name) => (string?)Entry(request, name)["title"];
+        var reading = new HashSet<string>(StringComparer.Ordinal) { "memory.recall", "note.create" };
+        JsonObject alone = MindSidecarClient.CreateCatalogConfigureRequest(capabilities, null, withheld: reading, memoryOff: false);
+        JsonObject aloneOff = MindSidecarClient.CreateCatalogConfigureRequest(capabilities, null, withheld: reading, memoryOff: true);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Title(on, "memory.recall"), Is.EqualTo("Recall something"));
+            Assert.That(Title(on, "memory.forget"), Is.EqualTo("Forget"));
+            Assert.That(Title(on, "memory.disable"), Is.EqualTo("Turn memory off"));
+            Assert.That(Title(off, "memory.disable"), Is.Null);
+            Assert.That(Entry(on, "memory.disable")["whole"], Is.Not.Null, "the way off goes with its arguments");
+            Assert.That(Entry(off, "memory.disable").ContainsKey("whole"), Is.False);
+            Assert.That(Entry(on, "memory.recall").ContainsKey("whole"), Is.False);
+            // Personalizado with save and enable kept on: the stubs alone carry the switch (revisión ciega #3).
+            Assert.That((bool?)alone["memoryOff"], Is.False);
+            Assert.That(aloneOff.ContainsKey("memoryOff"), Is.False, "switched off, the request is the one before");
+            Assert.That(Title(on, "memory.list"), Is.Null, "only reading and forgetting");
+            Assert.That(Title(off, "memory.recall"), Is.Null);
+            Assert.That(Title(off, "memory.forget"), Is.Null);
+            Assert.That(off["withheld"]!.ToJsonString(), Is.EqualTo(unsaid["withheld"]!.ToJsonString()));
+            Assert.That(Title(on, "note.create"), Is.EqualTo(Title(off, "note.create")));
+        });
+    }
+
+    [Test]
+    public void TheCountOfWhatTheMemoryKeptGoesOnlyBesideItsSwitchOn()
+    {
+        // MEM8 D4b (MEM7, Esencial with the switch on and 4 records: «No tengo nada guardado de ti» 19 of 80, unflagged):
+        // the records the memory keeps go to the mind's check. MEM8C (REV20 M-1): with each turn, as the App knows them
+        // then (sent once in catalog.configure, «Olvidar todo» in the panel left the note saying «tiene 4 datos» until the
+        // App restarted); none known, none sent: the request is the one sent before.
+        JsonObject counted = MindSidecarClient.DecideRequest("¿Qué recuerdas de mí?", null, TimeSpan.Zero, memoryRecords: 4);
+        JsonObject none = MindSidecarClient.DecideRequest("¿Qué recuerdas de mí?", null, TimeSpan.Zero, memoryRecords: null);
+        JsonObject before = MindSidecarClient.DecideRequest("¿Qué recuerdas de mí?", null, TimeSpan.Zero);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((int?)counted["memoryRecords"], Is.EqualTo(4));
+            Assert.That(none.ToJsonString(), Is.EqualTo(before.ToJsonString()));
+        });
+    }
+
+    [Test]
     public void TheCatalogTheMindReadsCarriesEachToolsGroupOfWhatItCanDo()
     {
         // Feria 2026-10-27: asked what it can do, the model named things no tool does; it reads the groups of the panel

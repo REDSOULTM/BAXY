@@ -20,11 +20,12 @@ you turn that off in Settings.
 ### Download
 
 Get the installer from the [releases page](https://github.com/REDSOULTM/BAXY/releases) (the latest is
-[BAXY 1.5.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.1)): download `BAXY-Instalador.exe` and open it.
+[BAXY 1.5.2](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.2)): download `BAXY-Instalador.exe` and open it.
 It checks your PC, downloads the list of parts (it refuses it unless it carries BAXY's signature), verifies each
 part's SHA-256 and leaves BAXY in the Start menu. The installer itself is not code-signed, so SmartScreen may warn
-you. If you have BAXY 1.5.0, BAXY offers the update itself. If you have BAXY 1.3.1, its "Update" button does not take
-you to 1.5.1: download the new installer and run it over it; your data stays (see the release notes).
+you. If you have BAXY 1.5.0 or 1.5.1, BAXY offers the update itself. If you have BAXY 1.3.1, its "Update" button does
+not take you to 1.5.2: download the new installer and run it over it (the release notes say which updates were tried
+without losing data).
 
 ### What you need to run it
 
@@ -41,7 +42,7 @@ you to 1.5.1: download the new installer and run it over it; your data stays (se
 - The 4 GB figures were measured on a larger NVIDIA card made to look like a 4 GB one, not on a real 4 GB card.
 - A freshly formatted Windows without the Visual C++ runtime or WebView2 was not tested (the installer installs both
   from Microsoft).
-- The 1.5.1 package was not tried installed on a real AMD or Intel card (its release notes say what was measured).
+- The 1.5.2 package was not tried installed on a real AMD or Intel card (its release notes say what was measured).
 - "Another model" (Settings → Model) is optional and off by default. With a company's API, what you give BAXY goes to
   that company. OpenAI and Google were not tested with a real key; other models were measured against BAXY's tuned model (an
   optional extra since 1.3.2) and did worse.
@@ -119,11 +120,12 @@ en Ajustes.
 ### Descargar
 
 Baja el instalador de la [página de versiones](https://github.com/REDSOULTM/BAXY/releases) (la última es
-[BAXY 1.5.1](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.1)): descarga `BAXY-Instalador.exe` y ábrelo.
+[BAXY 1.5.2](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.2)): descarga `BAXY-Instalador.exe` y ábrelo.
 Revisa tu PC, baja la lista de partes (la rechaza si no lleva la firma de BAXY), comprueba el SHA-256 de cada parte
 y deja a BAXY en el menú Inicio. El instalador en sí no va firmado, así que SmartScreen puede avisar. Si tienes la
-BAXY 1.5.0, la actualización te la ofrece la propia BAXY. Si tienes la BAXY 1.3.1, su botón «Actualizar» no te lleva
-a la 1.5.1: baja el instalador nuevo y ejecútalo encima; tus datos se quedan (ver las notas de la versión).
+BAXY 1.5.0 o la 1.5.1, la actualización te la ofrece la propia BAXY. Si tienes la BAXY 1.3.1, su botón «Actualizar»
+no te lleva a la 1.5.2: baja el instalador nuevo y ejecútalo encima (las notas de la versión dicen qué saltos se
+probaron sin perder datos).
 
 ### Qué necesitas para usarlo
 
@@ -140,7 +142,7 @@ a la 1.5.1: baja el instalador nuevo y ejecútalo encima; tus datos se quedan (v
 - Las cifras de 4 GB se midieron en una NVIDIA más grande haciéndola pasar por una de 4 GB, no en una de 4 GB real.
 - Un Windows recién formateado sin el runtime de Visual C++ ni WebView2 no se probó (el instalador pone los dos desde
   Microsoft).
-- El paquete de la 1.5.1 no se probó instalado en una tarjeta AMD o Intel real (sus notas dicen qué se midió).
+- El paquete de la 1.5.2 no se probó instalado en una tarjeta AMD o Intel real (sus notas dicen qué se midió).
 - «Otro modelo» (Ajustes → Modelo) es opcional y viene apagado. Con la API de una empresa, lo que le pases a BAXY va a
   esa empresa. OpenAI y Google no se probaron con una clave real; otros modelos se midieron frente al modelo ajustado a BAXY
   (un extra opcional desde la 1.3.2) y rindieron peor.

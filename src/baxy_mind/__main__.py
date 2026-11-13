@@ -306,6 +306,10 @@ def main() -> int:
                     ringing = message.get("ringing") if isinstance(message.get("ringing"), list) else None
                     # RUT1: the person's routines (RoutinesHandler's store); none sent is none kept.
                     mind.routines = message["routines"] if isinstance(message.get("routines"), list) else []
+                    # MEM8C (REV20 M-1): what the memory keeps now, as the App knows it this turn; none sent, not known.
+                    records = message.get("memoryRecords")
+                    mind.memory_records = records if isinstance(records, int) and not isinstance(records, bool) \
+                        and records >= 0 else None
                     if message.get("lang") in ("es", "en"):
                         mind.lang = message["lang"]  # ALR4: ring_answer's sentence, when the words are both languages'
                     protocol.write_message(held or anticipation.decide(request_id, str(message.get("text") or ""),

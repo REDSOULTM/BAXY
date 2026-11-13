@@ -227,6 +227,18 @@ MEMORY_HELD_SWITCH = (" Si sólo pide encender la memoria, sin un dato que guard
 MEMORY_HELD_ALSO = ((MEMORY_SWITCH, MEMORY_HELD_SWITCH),)
 # Perfiles de herramientas: a withheld tool's stub, after its title (configure). In English, as the tools' descriptions.
 OFF_STUB = "Off in this PC's tool profile: nothing is done, saved or read."
+# MEM8 (MEM7: with the memory on, every stub said «Off» and the 4B said «mi memoria está apagada», 18 of 20 in (c)): the
+# stub of a memory tool the App shows only while the switch is on (ToolProfile.StubbedWhileMemoryOn, catalog.configure
+# «memoryOff»: false) says the switch as the App read it, and that the call reads and forgets nothing.
+MEMORY_ON_STUB = ("Out of this PC's tool profile while BAXY's memory is on: calling it reads and forgets nothing; its "
+                  "result says what the person's yes would turn on.")
+# MEM8: turning the memory off while the switch is on: sent whole (its constants and its risk, so its call is the one the
+# App runs: ToolProfile.KeptWhileMemoryOn, with no «sí»), shown with this short text instead of its description (+147
+# tokens in mem5, which raised the 4B's memory calls) or HELD_STUB (it is not held).
+MEMORY_OFF_WAY = "memory.disable"
+# MEM8 (revisión ciega 3 #5): the stubs MEMORY_ON_STUB is true of, reading and forgetting (ToolProfile.StubbedWhileMemoryOn).
+MEMORY_ON_STUBBED = ("memory.recall", "memory.forget")
+MEMORY_OFF_WAY_STUB = "BAXY's memory is on: calling this turns it off now and erases nothing (what is saved stays saved)."
 # ESE6: the stub of a tool off in the profile whose call the App holds with its arguments (withheld «whole»): the call
 # itself does nothing, and the person's yes to it runs it.
 HELD_STUB = ("Off on this PC: calling it does nothing yet. Your call waits, with its arguments, for the person's yes; "
@@ -2607,6 +2619,9 @@ class Mind:
         self.lang = "es"
         # RUT1: the person's routines as the App's turn.decide gives them (RoutinesHandler's store), set by the loop.
         self.routines: list[dict[str, Any]] = []
+        # MEM8C (REV20 M-1, M-5): the records BAXY's memory keeps as the App's turn.decide says them («memoryRecords»,
+        # none known after a change), set by the loop: only for the check, never in the prompt.
+        self.memory_records: int | None = None
         # RUT7: the routine BAXY is making with the person, question by question (routine_guide.Guide), and when they
         # last answered: after GUIDE_SILENCE_S of nothing it is dropped and their words are a turn as any other.
         self._guide: routine_guide.Guide | None = None
@@ -2804,15 +2819,17 @@ class Mind:
                 # ESE6: a tool of its own too, with the arguments, the constants and the risk the whole one has: the
                 # App holds exactly the call the model makes, and the person's yes runs it.
                 wire, tool, constants = self._whole(held_whole[name], wires, {})
-                tool["function"]["description"] = f"{title}. {HELD_STUB}"
+                tool["function"]["description"] = f"{title}. " + (
+                    MEMORY_OFF_WAY_STUB if name == MEMORY_OFF_WAY and message.get("memoryOff") is False else HELD_STUB)
                 tools.append(tool)
                 wire_to_op[wire] = name
                 risk[wire], effects[wire], confirms[wire] = self._weighed(held_whole[name])
                 if constants:
                     constants_of[name] = constants
             elif name and title and name not in wire_to_op.values():
+                stub = MEMORY_ON_STUB if name in MEMORY_ON_STUBBED and message.get("memoryOff") is False else OFF_STUB
                 tools.append({"type": "function", "function": {
-                    "name": wires.name(name), "description": f"{title}. {OFF_STUB}",
+                    "name": wires.name(name), "description": f"{title}. {stub}",
                     "parameters": {"type": "object", "properties": {}}}})
         self.tools, self.wire_to_op, self.risk, self.effects, self.confirms = tools, wire_to_op, risk, effects, confirms
         self.wires, self._stubs = wires, stubs
@@ -2824,6 +2841,8 @@ class Mind:
         version = message.get("baxyVersion")
         # MEM4: the switch the App read, for the check's rule «memory_off_empty» (only an «off» said: none said, unknown).
         self._switch_off = message.get("memoryOff") is True
+        # MEM8: on, as the App read it, beside a memory call held whole (REM7: the field comes only then).
+        self._switch_on = message.get("memoryOff") is False
         self.system = (behavior.head(chosen) + RULES + (CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else "")
                        + (VERSION_FACT.format(version=version.strip()) if isinstance(version, str) and version.strip()
                           else "")
@@ -3196,6 +3215,11 @@ class Mind:
             rings.append(f"{kind} id {ring_id}" + (f" «{title}»" if title else "") + (f" de las {clock}" if clock else ""))
         return "; ".join(rings)
 
+    @staticmethod
+    def _ring_ids(ringing: list[dict[str, Any]] | None) -> set[str]:
+        """The ids of what rings now, as _rings_told tells them."""
+        return {str((ring or {}).get("id") or "").strip() for ring in ringing or []} - {""}
+
     def decide(self, request_id: Any, text: str, pending: dict[str, Any] | None = None,
                unsure: list[tuple[str, float]] | None = None, front: dict[str, Any] | None = None,
                named: list[dict[str, Any]] | None = None,
@@ -3350,13 +3374,16 @@ class Mind:
             while keep > CUT_TEXT_FLOOR and not self._fits(self._turn_sizes()):
                 keep //= 2
                 request["content"] = text[:keep] + CUT_TEXT.format(n=len(text) - keep)
+            # ALR10 (VIVO19 R19-1): the rings told in the turn whose words asked, for the closed question (_ring_not_asked).
+            was_ringing = (turn or {}).get("ring_ids") or set() if asked else set()
             self._turn = {"conv": self.conversation, "queue": [], "awaiting": None, "text": text, "said": text,
                           "pending": self._waits(pending), "ended": self._ended(pending), "answering": bool(doubts),
                           "answering_other": any(DOUBT_OTHER_ASKED in note for note in doubts),
                           "confirming": self._confirming(pending), "pending_op": self._pending_op(pending),
                           "front": self._front_window(front), "in_front": front or {},
                           "ringing": self._rings_told(ringing), "alone": clock if order is not None else None,
-                          "asked_words": str(last.get("content") or "") if asked else ""}
+                          "asked_words": str(last.get("content") or "") if asked else "",
+                          "ring_ids": self._ring_ids(ringing), "asked_while": was_ringing}
             # ALR4 (owner's exception, ring_answer): with something ringing and nothing of BAXY waiting for these words
             # (a «sí» or one that just went unanswered, its doubt's question), and no word the ear was unsure of, a short
             # acknowledgement answers what rings before the model is asked. ALR5 (M1, REV_MENTE): nor after a question in
@@ -3466,7 +3493,12 @@ class Mind:
             return False
         if "ring_read" not in turn:
             started = time.perf_counter()
-            asked = " ".join(str(turn.get("asked_words") or "").split())[-THEIR_ANSWER_ASKED:]
+            # ALR10 (VIVO19 R19-1): BAXY's question goes with their words only if it was asked while this rang. One
+            # asked before it rang is of something else: «¿Quieres que active la herramienta de notas?» (its «sí» taken
+            # on the card), then the alarm snoozed earlier rang again under a new id, and «Para la alarma.» beside that
+            # question was read «seguir»: held, still ringing.
+            asked = (" ".join(str(turn.get("asked_words") or "").split())[-THEIR_ANSWER_ASKED:]
+                     if turn.get("ring_ids", set()) & turn.get("asked_while", set()) else "")
             note = RING_READ_NOTE.format(rings=turn["ringing"], said=" ".join(str(turn["text"]).split()),
                                          asked=RING_READ_ASKED.format(asked=asked) if asked else "")
             body = {"messages": [{"role": "system", "content": RING_READ_SYSTEM}, {"role": "user", "content": note}],
@@ -4867,7 +4899,11 @@ class Mind:
                                                 memory=(self.wires.name("memory.recall")
                                                         if "memory.recall" in self.wire_to_op.values() else "")
                                                 if _first_words(turn["conv"]) else None,
-                                                memory_off=getattr(self, "_switch_off", False) or self._memory_was_off)
+                                                memory_off=getattr(self, "_switch_off", False) or self._memory_was_off,
+                                                memory_unread=getattr(self, "_switch_on", False)
+                                                and "memory.recall" not in self.wire_to_op.values()
+                                                and "memory.list" not in self.wire_to_op.values(),
+                                                memory_records=self.memory_records)
                         if f["rule"] not in CHECK_RULE_AIDS or _aid_on(CHECK_RULE_AIDS[f["rule"]])]
         except Exception as error:  # noqa: BLE001 - a check that fails finds nothing: the answer stands
             # Revisión de calidad: a heuristic that breaks on some answer never takes the turn with it; the trace says

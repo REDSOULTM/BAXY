@@ -9,6 +9,9 @@ internal enum GpuSupport
     NotMeasured,
     TooLittleMemory,
     None,
+    // VRAM5 (AUD1 F7): a card BAXY runs on, or Intel graphics, on a PC with less RAM installed than the least measured.
+    TooLittleRam,
+    TooLittleRamIntegrated,
 }
 
 internal sealed record GpuAdapter(string DeviceId, long? MemoryBytes);
@@ -21,6 +24,33 @@ internal sealed record GpuAdapter(string DeviceId, long? MemoryBytes);
 internal static class MachineGpu
 {
     private const long MinimumMemoryBytes = 3_800_000_000;
+
+    // VRAM5 (AUD1 F7): the RAM a PC needs installed, MiB, the same figures the mind starts an integrated GPU by
+    // (llm_server.integrated_room): Windows 11's own minimum, «RAM: 4 gigabyte (GB) or greater» (Microsoft, Windows 11
+    // specifications, https://www.microsoft.com/windows/windows-11-specifications, read 2026-11-13); all of BAXY but the
+    // server's GPU memory, 3,748 MiB with its window and the voice loaded (measured on the PC, 2026-11-05, INFORME_AUD1
+    // §2); and on integrated graphics, whose memory is that RAM, the server in its fewest cells on Vulkan with the mind's
+    // margin, 3,379 + 200 MiB (llm_server.card_mib: AMD3 §3, an RX 7600, 2026-11-09).
+    internal const long WindowsRamMib = 4096;
+    internal const long BaxyRamMib = 3748;
+    internal const long IntegratedServerMib = 3379 + 200;
+
+    internal static long MinimumRamMib(bool integrated) => WindowsRamMib + BaxyRamMib + (integrated ? IntegratedServerMib : 0);
+
+    /// <summary>VRAM5 (AUD1 F7): what is told of <paramref name="adapters"/> once the RAM installed is known
+    /// (<paramref name="installedRamMib"/>, MachineRam; null when unread: as before): a card BAXY runs on, or Intel graphics
+    /// only, on a PC with less than <see cref="MinimumRamMib"/>. Intel graphics with less dedicated memory than a card BAXY
+    /// takes are integrated, and hold the model in that RAM; an Intel card with its own memory (an Arc) is not. Any other
+    /// answer stays.</summary>
+    internal static GpuSupport WithRam(IReadOnlyList<GpuAdapter> adapters, long? installedRamMib)
+    {
+        GpuSupport support = Choose(adapters);
+        bool integrated = support == GpuSupport.NotMeasured
+            && adapters.Where(static adapter => Vendor(adapter.DeviceId) == Intel).All(static adapter => !(adapter.MemoryBytes >= MinimumMemoryBytes));
+        return support is GpuSupport.Measured or GpuSupport.NotMeasured && installedRamMib is { } ram && ram < MinimumRamMib(integrated)
+            ? (integrated ? GpuSupport.TooLittleRamIntegrated : GpuSupport.TooLittleRam)
+            : support;
+    }
     private const string Nvidia = "10de";
     private const string Amd = "1002";
     private const string Intel = "8086";

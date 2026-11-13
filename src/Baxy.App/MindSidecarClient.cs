@@ -23,7 +23,8 @@ internal sealed record MindStartupFailure(
     long? FreeMb = null,
     long? TokensPerS = null,
     long? NeedMinutes = null,
-    LocalContext.CardFound? CardShort = null)
+    LocalContext.CardFound? CardShort = null,
+    MindCardFull? CardFull = null)
 {
     /// <summary>N9 (L5): this machine reads the model's prefix too slowly for the mind's limit; reading it again takes as long.</summary>
     internal const string ReadTooSlow = "lectura_lenta";
@@ -68,12 +69,20 @@ internal sealed record MindStartupFailure(
             Number(startup["tokensPerS"]),
             Number(startup["needMinutes"]),
             // VRAM4: the start was on a card whose free video memory did not hold the profile's cells whole.
-            LocalContext.CardFound.From(startup["cardShort"]));
+            LocalContext.CardFound.From(startup["cardShort"]),
+            // VRAM5 (AUD1 F9): the read was too slow on a card left without free memory (llm_server._card_full).
+            startup["cardFull"] is JsonObject full && Number(full["freeMb"]) is { } cardFree
+                ? new MindCardFull(cardFree, Number(full["sharedMb"]))
+                : null);
     }
 
     private static long? Number(JsonNode? node) =>
         node is JsonValue value && value.TryGetValue(out long number) ? number : null;
 }
+
+/// <summary>VRAM5 (AUD1 F9): a read too slow on a card with less free memory than the mind's margin, measured again when it
+/// gave up: what the card had free, MiB, and the PC's RAM Windows gave the server as video memory («Shared Usage»), when read.</summary>
+internal sealed record MindCardFull(long FreeMb, long? SharedMb);
 
 /// <summary>N9 (L5): how far the mind's model has read its prompt prefix, the seconds left at its pace when known, and
 /// whether the processor computes it.</summary>
@@ -613,12 +622,16 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             request["withheld"] = new JsonArray([.. off.Select(c =>
             {
                 var entry = new JsonObject { ["name"] = c.Name };
-                if (FieldStepProjection.HasStub(c.Name))
+                // MEM8: reading and forgetting get their stub only while the memory's switch is on (memoryOff false):
+                // switched off, or not said, the request is the one sent before, byte for byte.
+                if (FieldStepProjection.HasStub(c.Name) || memoryOff == false && ToolProfile.StubbedWhileMemoryOn(c.Name))
                 {
                     entry["title"] = FieldStepProjection.EnglishTitle(c.Name);
                 }
 
-                if (FieldStepProjection.HeldWhole(c.Name))
+                // MEM8: the way off goes with its arguments while the memory is on, so its call carries its constants
+                // and its risk (it runs: ToolProfile.KeptWhileMemoryOn); HeldWhole, the calls held for a «sí», unchanged.
+                if (FieldStepProjection.HeldWhole(c.Name) || memoryOff == false && c.Name == ToolProfile.WayOff)
                 {
                     entry["whole"] = Capability(c, shown);
                 }
@@ -637,8 +650,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
         // REM7 (REV15 D-1): beside a memory call held whole, the switch as the App read it, so the mind's fact says that
         // and not more (mind.MEMORY_HELD_FACT); with none held, nothing: the request is the one sent before.
-        if (memoryOff is { } switchedOff && off.Any(static c => FieldStepProjection.HeldWhole(c.Name)
-            && MemoryOperationProtector.IsMemoryOperation(c.Name)))
+        // MEM8: and beside a memory stub shown only while the switch is on, so the mind says it on (revisión ciega #3).
+        if (memoryOff is { } switchedOff && off.Any(c => FieldStepProjection.HeldWhole(c.Name)
+            && MemoryOperationProtector.IsMemoryOperation(c.Name)
+            || !switchedOff && ToolProfile.StubbedWhileMemoryOn(c.Name)))
         {
             request["memoryOff"] = switchedOff;
         }
@@ -665,8 +680,10 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         JsonObject? front = null,
         JsonArray? named = null,
         JsonArray? ringing = null,
-        JsonArray? routines = null) =>
-        TurnRequestAsync(DecideRequest(text, pendingConfirmation, waited, front, named, ringing, routines), cancellationToken);
+        JsonArray? routines = null,
+        int? memoryRecords = null) =>
+        TurnRequestAsync(DecideRequest(text, pendingConfirmation, waited, front, named, ringing, routines, memoryRecords),
+            cancellationToken);
 
     /// <summary>
     /// Uso 104 (F41, a greeting at 9.2 s with 8 s nothing traced): <paramref name="waited"/> is how long the person's
@@ -675,10 +692,13 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// and <paramref name="named"/> the open windows their words name. ALR1: <paramref name="ringing"/> the alarms and
     /// reminders ringing now in this App (id, kind, title, clock), the ones schedule.alarms stop and snooze answer.
     /// RUT1: <paramref name="routines"/> the person's routines (documentacion/RUTINAS.md §5); none sent is none kept.
+    /// MEM8C (REV20 M-1): <paramref name="memoryRecords"/> how many records BAXY's memory keeps as the App knows it this
+    /// turn (ToolProfile.MemoryRecords: none after a change), for the mind's check only (answer_check «memory_off_empty»),
+    /// never its prompt; none sent is not known.
     /// </summary>
     internal static JsonObject DecideRequest(
         string text, JsonObject? pendingConfirmation, TimeSpan waited, JsonObject? front = null, JsonArray? named = null,
-        JsonArray? ringing = null, JsonArray? routines = null)
+        JsonArray? ringing = null, JsonArray? routines = null, int? memoryRecords = null)
     {
         // Steam (2026-11-04): the interface's language, so the mind's voice knows it before the reply comes; the mind
         // keeps it out of the model's prompt.
@@ -712,6 +732,11 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         if (routines is { Count: > 0 })
         {
             request["routines"] = routines;
+        }
+
+        if (memoryRecords is { } kept)
+        {
+            request["memoryRecords"] = kept;
         }
 
         return request;

@@ -50,6 +50,13 @@ internal sealed class Texts
     internal required string WarningNone { get; init; }
     internal required string NoGpuTitle { get; init; }
     internal required string WarningHelp { get; init; }
+
+    // VRAM5 (AUD1 F7): {0} the RAM installed, {1} the least BAXY needs, both in GB (MachineGpu.MinimumRamMib).
+    internal required string WarningRam { get; init; }
+
+    internal required string WarningRamIntegrated { get; init; }
+
+    internal required string WarningRamHelp { get; init; }
     internal required string InstallAnyway { get; init; }
     internal required string WorkingTitle { get; init; }
     internal required string PausedTitle { get; init; }
@@ -184,6 +191,9 @@ internal sealed class Texts
         WarningNone = "No encontré una tarjeta gráfica NVIDIA, AMD o Intel, y sin ella no puedo arrancar en este PC.",
         NoGpuTitle = "No puedo funcionar aquí.",
         WarningHelp = "Con una tarjeta NVIDIA de 4 GB funciono en el perfil Esencial. Con AMD o con gráficos Intel integrados sigo en pruebas. Con menos memoria puedes usar otro modelo (Ajustes → Modelo).",
+        WarningRam = "Tu PC tiene {0:0.#} GB de RAM. Windows 11 pide al menos 4 y yo uso unos 3,7 más: con menos de {1:0.#} GB puedo ir muy lento o no arrancar.",
+        WarningRamIntegrated = "Tu PC tiene {0:0.#} GB de RAM y sólo gráficos integrados, que usan esa misma RAM para el modelo. Con Windows, el modelo y el resto de mí necesito unos {1:0.#} GB: con menos puedo no arrancar.",
+        WarningRamHelp = "Si me instalas igual, puedo usar otro modelo: en Ajustes → Modelo, o con el botón «Usar otro modelo» si no arranco.",
         InstallAnyway = "Instalarme i_gual",
         WorkingTitle = "Me estoy instalando.",
         PausedTitle = "En pausa.",
@@ -293,6 +303,9 @@ internal sealed class Texts
         WarningNone = "I found no NVIDIA, AMD or Intel graphics card, and I can’t start on this PC without one.",
         NoGpuTitle = "I can’t work here.",
         WarningHelp = "With a 4 GB NVIDIA card I work in the Essential profile. On AMD or integrated Intel graphics I’m still being tested. With less memory you can use another model (Settings → Model).",
+        WarningRam = "Your PC has {0:0.#} GB of RAM. Windows 11 asks for at least 4 and I use about 3.7 more: with less than {1:0.#} GB I may run very slowly or not start.",
+        WarningRamIntegrated = "Your PC has {0:0.#} GB of RAM and only integrated graphics, which use that same RAM for the model. With Windows, the model and the rest of me I need about {1:0.#} GB: with less I may not start.",
+        WarningRamHelp = "If you install me anyway, I can use another model: in Settings → Model, or with the “Use another model” button if I don’t start.",
         InstallAnyway = "Install me an_yway",
         WorkingTitle = "I’m installing myself.",
         PausedTitle = "Paused.",

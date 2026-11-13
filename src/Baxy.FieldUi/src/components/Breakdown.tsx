@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { sendTold } from '../api';
 import { useT, type Words } from '../i18n';
-import { causeAdvice, causeText, fittingProfile, ON_PROCESSOR_TEXT, PROFILE_NAME, startedOnlyOnce, type FailureCard, type FailureMemory, type FailureRead } from '../causes';
+import { backToAutomatic, causeAdvice, causeText, fittingProfile, ON_PROCESSOR_TEXT, PROFILE_NAME, startedOnlyOnce, type FailureCard, type FailureMemory, type FailureRead } from '../causes';
 
 /* Uso 85: the engine stopped for good (MainWindowViewModel.ProfileUnreadable, EngineUnavailable) and the host no longer
    relaunches it on its own. What happened is said as a state of the interface (never words of BAXY's: zero fixed
@@ -86,6 +86,22 @@ export function Breakdown({ failure, cause = null, memory = null, read = null, c
     if (!told.value?.ok && !told.refused) setRefused(t('BAXY no respondió: vuelve a intentarlo.', 'BAXY didn’t answer: try again.'));
     setBusy(false);
   };
+  /* VRAM5B (REV19 V-1, V-9): a context given in Settings the card does not hold: «Automático» there (what Settings → Model
+     → Context does) and a new start, as startIn does with a profile. */
+  const automatic = failure === 'engine_unavailable' && backToAutomatic(card);
+  const startAutomatic = async () => {
+    setBusy(true);
+    setRefused(null);
+    const kept = await sendTold<{ chosen?: number | null }>('PUT', '/settings/local-context', { context: null });
+    if (!kept.value || kept.value.chosen != null) {
+      setRefused(kept.refused ? t('No se pudo volver a «Automático»: vuelve a intentarlo.', 'Couldn’t go back to “Automatic”: try again.') : t('BAXY no respondió: vuelve a intentarlo.', 'BAXY didn’t answer: try again.'));
+      setBusy(false);
+      return;
+    }
+    const told = await sendTold<{ ok?: boolean }>('POST', '/engine/retry');
+    if (!told.value?.ok && !told.refused) setRefused(t('BAXY no respondió: vuelve a intentarlo.', 'BAXY didn’t answer: try again.'));
+    setBusy(false);
+  };
   const leave = async () => {
     const api = (window as unknown as { pywebview?: { api: Record<string, () => Promise<unknown>> } }).pywebview?.api;
     if (api?.win_exit) await api.win_exit();
@@ -96,7 +112,7 @@ export function Breakdown({ failure, cause = null, memory = null, read = null, c
       <div className="hd"><span className="tag">{t('Avería', 'Breakdown')}</span></div>
       <div className="ti" id="bx-breakdown-ti">{t.w(text.title)}</div>
       <div className="tg" id="bx-breakdown-tg">{failure === 'engine_unavailable' && startedOnlyOnce(cause, card) ? (onProcessor ? t.w(ON_PROCESSOR_TEXT) + ' ' : '') : t.w(text.body) + ' '}
-        {failure === 'engine_unavailable' && causeText(cause, t) ? t('El modelo no pudo cargarse: ', 'The model could not load: ') + causeText(cause, t, memory, read) + '. ' + causeAdvice(cause, t, card) : ''}</div>
+        {failure === 'engine_unavailable' && causeText(cause, t) ? t('El modelo no pudo cargarse: ', 'The model could not load: ') + causeText(cause, t, memory, read, card) + '. ' + causeAdvice(cause, t, card, read) : ''}</div>
       {refused ? <div className="tg">{refused}</div> : null}
       <div className="ft">
         <span></span>
@@ -104,7 +120,8 @@ export function Breakdown({ failure, cause = null, memory = null, read = null, c
           <button className="bx-btn" onClick={() => void leave()} disabled={busy}>{t('Salir', 'Quit')}</button>
           {onOtherModel && OTHER_MODEL.has(failure) ? <button className="bx-btn" onClick={onOtherModel} disabled={busy}>{t('Usar otro modelo', 'Use another model')}</button> : null}
           {fits ? <button className="bx-btn yes" onClick={() => void startIn(fits)} disabled={busy}>{t('Arrancar en ', 'Start in ') + t.w(PROFILE_NAME[fits])}</button> : null}
-          {text.act && text.path ? <button className={fits ? 'bx-btn' : 'bx-btn yes'} onClick={() => void act(text.path!)} disabled={busy}>{t.w(text.act)}</button> : null}
+          {automatic ? <button className="bx-btn yes" onClick={() => void startAutomatic()} disabled={busy}>{t('Volver a «Automático»', 'Back to “Automatic”')}</button> : null}
+          {text.act && text.path ? <button className={fits || automatic ? 'bx-btn' : 'bx-btn yes'} onClick={() => void act(text.path!)} disabled={busy}>{t.w(text.act)}</button> : null}
         </div>
       </div>
     </div>

@@ -726,7 +726,7 @@ export default function App() {
                 : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
               {breakdown ? <Breakdown failure={breakdown} cause={s.agent.failureCause ?? null} memory={s.agent.failureMemory ?? null} read={s.agent.failureRead ?? null} card={s.agent.failureCard ?? null} onProcessor={!!s.boot?.onProcessor}
                   onOtherModel={otherOffered ? () => { setSettingsTab('modelo'); setPanel('settings'); } : null} />
-                : booting && s.boot ? <Boot boot={s.boot} />
+                : booting && s.boot ? <Boot boot={s.boot} card={s.agent.failureCard ?? null} />
                 : <Caption state={state} sub={look.captions ? s.sub : null} subGone={subGone} live={s.live} step={s.running} waiting={waiting} />}
               {input}
             </div>

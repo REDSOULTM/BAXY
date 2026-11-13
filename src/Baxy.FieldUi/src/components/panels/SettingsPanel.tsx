@@ -5,7 +5,7 @@ import { getJson, send, sendTold } from '../../api';
 import { spoken } from '../../duration';
 import { useDialogFocus, useInnerDialog } from '../../utils/dialogFocus';
 import { radioKeys, rovingIndex, tabKeys } from '../../utils/radioKeys';
-import { cardShortText, PROFILE_NAME, TUNED_PROBLEM, type FailureCard } from '../../causes';
+import { cardShortInSettings, cardShortText, PROFILE_NAME, TUNED_PROBLEM, type FailureCard } from '../../causes';
 import { useT, type LangChoice, type Words } from '../../i18n';
 import { translatorSaid } from '../../externalErrors';
 import { draftTab, forgetDraft, savesOnBlur, useDraft, useDraftKeys } from '../../drafts';
@@ -649,7 +649,8 @@ function LocalContextRow({ value, onChange, tuned, ownRuns }: { value: LocalCont
   const now = value.options.find((o) => o.context === (value.chosen ?? value.automatic));
   const hint = value.switching ? t('Cambiando: el modelo se reinicia al acabar el turno en curso', 'Switching: the model restarts once the current turn ends')
     : refused ?? ([
-      value.chosen === null && value.cardShort ? cardShortText(value.cardShort, t).replace(/\.$/, '') : '',
+      // VRAM5 (AUD1 F4): a context the person chose that the card does not hold whole is said here too
+      value.cardShort && cardShortInSettings(value.cardShort, value.chosen) ? cardShortText(value.cardShort, t).replace(/\.$/, '') : '',
       now?.room != null ? t(`Deja unos ${tokens(now.room)} tokens para la conversación`, `It leaves about ${tokens(now.room)} tokens for the conversation`) : '',
       now?.vramBytes && now.vramBytes > value.cardBytes ? (value.cardKnown ? t(`No cabe en tu tarjeta de ${gigabytes(value.cardBytes)}: lo que sobre irá a la memoria compartida, mucho más lento`, `It doesn’t fit your ${gigabytes(value.cardBytes)} card: what’s left over goes to shared memory, much more slowly`) : t('Puede no caber en una tarjeta de 4 GB', 'It may not fit on a 4 GB card')) : '',
       now?.slower ? t('En tarjetas AMD o Intel, con más de 61.440 tokens se midió unas 4 veces más lento', 'On AMD or Intel cards, with more than 61,440 tokens it was measured about 4 times slower') : '',

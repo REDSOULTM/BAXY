@@ -62,22 +62,30 @@ internal sealed class LocalContext
 
     /// <summary>VRAM4: what a mind found on a card that does not hold its server whole (its ready line's cardShort): the
     /// video memory free at its start, what the cells it took need, those cells, and the most cells the card holds whole
-    /// (null when none of the ones it tries does).</summary>
-    internal sealed record CardFound(int FreeMb, int NeedMb, int Context, int? FitsContext)
+    /// (null when none of the ones it tries does). VRAM5: whether those cells are the person's own (Settings → Model →
+    /// Context, never changed by BAXY: llm_server._card_given), and whether the card is an integrated GPU, whose memory is
+    /// the PC's RAM (llm_server.integrated_room).</summary>
+    internal sealed record CardFound(int FreeMb, int NeedMb, int Context, int? FitsContext, bool Given = false, bool Integrated = false)
     {
         internal static CardFound? From(JsonNode? said)
         {
-            if (said is not JsonObject found || Cells(found["freeMb"]) is not { } free || Cells(found["needMb"]) is not { } need
+            if (said is not JsonObject found || Free(found["freeMb"]) is not { } free || Cells(found["needMb"]) is not { } need
                 || Cells(found["context"]) is not { } context)
             {
                 return null;
             }
 
-            return new CardFound(free, need, context, Cells(found["fitsContext"]));
+            return new CardFound(free, need, context, Cells(found["fitsContext"]), Said(found["given"]), Said(found["integrated"]));
         }
 
         private static int? Cells(JsonNode? node) =>
             node is JsonValue value && value.TryGetValue(out int number) && number > 0 ? number : null;
+
+        private static bool Said(JsonNode? node) => node is JsonValue value && value.TryGetValue(out bool said) && said;
+
+        // VRAM5: none free is a figure too: an integrated GPU on a PC whose RAM leaves the model nothing.
+        private static int? Free(JsonNode? node) =>
+            node is JsonValue value && value.TryGetValue(out int number) && number >= 0 ? number : null;
     }
 
     /// <summary>VRAM4B: what a mind's hello says when its start took, for a person who never chose a tool profile, the
@@ -356,7 +364,12 @@ internal sealed class LocalContext
             ["freeMb"] = found.FreeMb,
             ["needMb"] = found.NeedMb,
             ["context"] = found.Context,
-            ["fittingProfile"] = found.FitsContext is { } cells ? fitting(cells) : null,
+            // VRAM5 (AUD1 F4): cells the person gave are no profile's: another profile has the same cells, so none is
+            // offered; the view says the cells that fit instead.
+            ["fittingProfile"] = found.FitsContext is { } cells && !found.Given ? fitting(cells) : null,
+            ["fitsContext"] = found.FitsContext,
+            ["given"] = found.Given,
+            ["integrated"] = found.Integrated,
         };
     }
 
@@ -472,7 +485,7 @@ internal sealed class LocalContext
 
     /// <summary>What llama-server takes with <paramref name="model"/> at <paramref name="context"/> on
     /// <paramref name="backend"/>, with the mind's own settings (llm_server.LlmServer): its cache type (BAXY_RENEW_KV, q8_0 by
-    /// default; of two, the larger), the output matrix in RAM on CUDA unless BAXY_RENEW_OUTPUT_CPU=0, three slots on Vulkan.
+    /// default; of two, the larger), the output matrix in RAM on CUDA unless BAXY_RENEW_OUTPUT_CPU=0, one slot (VRAM5: Vulkan too).
     /// Null on the processor, with the backend not known, or without the model's file.</summary>
     private static long? ServerBytes((string Path, long Bytes, GgufShape? Shape)? found, int context, string? backend)
     {
@@ -487,7 +500,7 @@ internal sealed class LocalContext
             .DefaultIfEmpty("q8_0")
             .MaxBy(ModelMemory.CacheBytesPerValue)!;
         bool outputInRam = backend == "cuda" && Environment.GetEnvironmentVariable("BAXY_RENEW_OUTPUT_CPU")?.Trim() != "0";
-        return ModelMemory.GpuBytes(shape, model.Bytes, context, kv, outputInRam, sequences: backend == "vulkan" ? 3 : 1);
+        return ModelMemory.GpuBytes(shape, model.Bytes, context, kv, outputInRam, sequences: 1);
     }
 
     /// <summary>What the mind's vision projector (BAXY_MIND_MMPROJ) takes on the card, or null with none.</summary>

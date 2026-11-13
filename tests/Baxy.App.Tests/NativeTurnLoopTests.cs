@@ -1464,7 +1464,8 @@ public sealed class NativeTurnLoopTests
                 ? Is.EqualTo(new (string, string?)[] { ("memory.enable", null), ("memory.enable", Token) })
                 : Is.Empty);
             Assert.That(profile.Refusal("memory.save"), yes ? Is.Null : Is.EqualTo(ToolProfile.OffCode));
-            Assert.That(profile.Refusal("memory.disable"), yes ? Is.Null : Is.EqualTo(ToolProfile.OffCode));
+            // MEM8: the switch is on here (MemoryOff false): its way off runs in any profile, before and after.
+            Assert.That(profile.Refusal("memory.disable"), Is.Null);
             Assert.That(profile.Profile, Is.EqualTo(yes ? ToolProfile.Personalizado : "esencial"));
             Assert.That(profile.Refusal("note.create"), Is.EqualTo(ToolProfile.OffCode), "nothing else is turned on");
             Assert.That(loop.HasPendingConfirmation, Is.False);
@@ -1714,6 +1715,202 @@ public sealed class NativeTurnLoopTests
             Assert.That(steps.Single().Observation, operation == "memory.enable"
                 ? Does.Not.Contain("name what it would save")
                 : Does.Contain("name what it would save").And.Contain("never its value"));
+        });
+    }
+
+    // MEM8 (VIVO16 fila 3; revisión ciega D1b #1): in Esencial with the memory on, «Desactiva la memoria.» → the way off,
+    // with the constant the mind sends (enabled false): it runs with no question in Normal and in Bypass, the switch goes
+    // off (MemorySwitched) and the configure after it carries no MEM8 stub and no whole way off.
+    [TestCase(Baxy.Kernel.Policy.ConfirmationMode.Normal)]
+    [TestCase(Baxy.Kernel.Policy.ConfirmationMode.Bypass)]
+    public async Task InEsencialWithTheMemoryOnItsWayOffRunsWithNoQuestion(Baxy.Kernel.Policy.ConfirmationMode mode)
+    {
+        string root = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "baxy-mem8-" + Guid.NewGuid().ToString("N"));
+        var profile = new ToolProfile(root) { MemoryOff = false };
+        Assert.That(profile.Apply(new JsonObject { ["profile"] = "esencial" }), Is.Null);
+        using var fake = new FakeMind();
+        fake.Script(CallsThenReplies("memory.disable", new JsonObject { ["enabled"] = false, ["version"] = 1 },
+            "La memoria está apagada."));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var sent = new List<(string Operation, string? Token)>();
+        core.AnswersForTests = (prepared, token) =>
+        {
+            sent.Add((prepared.OperationName, token));
+            return new OperationResponse(ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"), prepared.MissionId,
+                prepared.InvocationId, OperationStatuses.Completed, "{\"enabled\":false}", true, false, null, null);
+        };
+        var steps = new List<NativeTurnStep>();
+        var cards = new List<NativeTurnConfirmation>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = static () => new RetryableOperationRegistry(),
+            MemoryProtector = static () => new MemoryOperationProtector(
+                new Baxy.Security.Windows.BoundProtectedJsonCodec(new PlainPayload()), Guid.NewGuid().ToString("D")),
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            StepCompleted = steps.Add,
+            Refuse = (operation, _) => profile.Refusal(operation),
+            OffFacts = profile.OffFacts,
+            ToolOn = profile.KeepOn,
+            MemoryOff = () => profile.MemoryOff,
+            MemorySwitched = on => profile.MemoryOff = !on,
+            InProfile = profile.InProfile,
+            ConfirmationAsked = cards.Add,
+        });
+        Baxy.Kernel.Policy.ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(), mode);
+
+        await loop.RunAsync("Desactiva la memoria.", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        string[] names = ["memory.disable", "memory.recall", "memory.forget", "memory.save", "memory.enable"];
+        OperationDescriptor[] capabilities = [.. Baxy.Kernel.Operations.ProductCatalog.ToolDescriptors.Where(d => names.Contains(d.Name))
+            .Select(static descriptor => Baxy.Kernel.Operations.ProductCatalog.CreateToolDescriptor(
+                new Baxy.Kernel.Operations.OperationDefinition(descriptor)))];
+        JsonObject after = MindSidecarClient.CreateCatalogConfigureRequest(capabilities, null,
+            withheld: profile.Withheld(names), memoryOff: profile.MemoryOff);
+        JsonObject[] entries = [.. after["withheld"]!.AsArray().OfType<JsonObject>()];
+        Assert.Multiple(() =>
+        {
+            Assert.That(sent.Select(static s => s.Operation), Is.EqualTo(new[] { "memory.disable" }));
+            Assert.That(sent.Single().Token, Is.Null, "no confirmation token: nothing asked");
+            Assert.That(cards, Is.Empty);
+            Assert.That(steps.Single().Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(profile.MemoryOff, Is.True);
+            Assert.That(entries.Where(e => (string?)e["name"] is "memory.recall" or "memory.forget" or "memory.disable")
+                .Any(static e => e.ContainsKey("title") || e.ContainsKey("whole")), Is.False);
+        });
+    }
+
+    // MEM8: a stub of reading, called with the memory on, is offered for the «sí» with the count memory.status gives
+    // (the records the App read at the start, all kinds; no call for it), and says what the «sí» turns on: all of the memory's tools.
+    [Test]
+    public async Task AReadingStubWithTheMemoryOnIsOfferedWithTheCountAndWhatItsYesTurnsOn()
+    {
+        string root = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "baxy-mem8-" + Guid.NewGuid().ToString("N"));
+        var profile = new ToolProfile(root) { MemoryOff = false };
+        Assert.That(profile.Apply(new JsonObject { ["profile"] = "esencial" }), Is.Null);
+        using var fake = new FakeMind();
+        fake.Script(CallsThenReplies("memory.recall", new JsonObject(), "¿Enciendo las herramientas de la memoria?"));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var sent = new List<string>();
+        core.AnswersForTests = (prepared, _) =>
+        {
+            sent.Add(prepared.OperationName);
+            return new OperationResponse(ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"), prepared.MissionId,
+                prepared.InvocationId, OperationStatuses.Completed, "{\"status\":\"completed\"}", true, false, null, null);
+        };
+        var steps = new List<NativeTurnStep>();
+        var cards = new List<NativeTurnConfirmation>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = static () => new RetryableOperationRegistry(),
+            MemoryProtector = static () => new MemoryOperationProtector(
+                new Baxy.Security.Windows.BoundProtectedJsonCodec(new PlainPayload()), Guid.NewGuid().ToString("D")),
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            StepCompleted = steps.Add,
+            Refuse = (operation, _) => profile.Refusal(operation),
+            OffFacts = profile.OffFacts,
+            ToolOn = profile.KeepOn,
+            MemoryOff = () => profile.MemoryOff,
+            MemoryRecords = () => 6,
+            InProfile = profile.InProfile,
+            ConfirmationAsked = cards.Add,
+        });
+        Baxy.Kernel.Policy.ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(),
+            Baxy.Kernel.Policy.ConfirmationMode.Normal);
+
+        await loop.RunAsync("¿Qué recuerdas de mí?", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        JsonObject offer = JsonNode.Parse(steps.Single().Observation)!.AsObject();
+        string said = (string?)FieldStepProjection.Card("k1", "confirm", "memory.recall", new JsonObject(),
+            OperationRisks.ReadOnly, DateTimeOffset.UtcNow.AddMinutes(2), context: null, english: false,
+            cause: cards.Single().Cause)["risk"] ?? string.Empty;
+        Assert.Multiple(() =>
+        {
+            Assert.That(sent, Is.Empty, "nothing is sent: the count is the one read at the start");
+            Assert.That((string?)offer["status"], Is.EqualTo("needs_confirmation"));
+            Assert.That((int?)offer["saved"], Is.EqualTo(6), "all the records kept, the session's too");
+            Assert.That((string?)offer["next"], Does.Contain("all of the memory's tools").And.Not.Contain("this one tool")
+                .And.Not.Contain("keeps what it saved"));
+            // MEM8B (criba, F2 «¿Qué recuerdas de mí?» × 10 semillas): asked «whether to turn them on», the 4B asked
+            // «¿Quieres que encienda la memoria…?» 9 of 10 with the memory on; told what is on, «…las herramientas de la
+            // memoria…» 10 of 10.
+            Assert.That((string?)offer["next"], Does.Contain("the memory itself is already on")
+                .And.Contain("never whether to turn the memory on"));
+            Assert.That(cards.Single().Cause, Is.EqualTo(NativeTurnLoop.MemoryToolsOffCause));
+            Assert.That(said, Does.Contain("todas las de la memoria").And.Not.Contain("sólo esta"));
+        });
+    }
+
+    // MEM8C (REV20 M-2): «Olvida mi dirección» in Esencial with the memory on: the stub memory_forget has no arguments,
+    // its call came as {} and was refused for its scope (memory_argument_missing) before any offer. Held for its offer
+    // alone, nothing runs it: it is offered as reading is, with the count. MEM8C (REV20 M-1): the count is the one the App
+    // knows at that turn, sent with turn.decide too; after a change in the panel it is not known, and neither says it.
+    [TestCase("memory.forget", 4)]
+    [TestCase("memory.recall", 4)]
+    [TestCase("memory.forget", null)]
+    public async Task AStubOfTheMemoryWithNoArgumentsIsOfferedWithTheCountOfThatTurn(string operation, int? kept)
+    {
+        string root = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "baxy-mem8c-" + Guid.NewGuid().ToString("N"));
+        var profile = new ToolProfile(root) { MemoryOff = false };
+        Assert.That(profile.Apply(new JsonObject { ["profile"] = "esencial" }), Is.Null);
+        using var fake = new FakeMind();
+        fake.Script(CallsThenReplies(operation, new JsonObject(), "¿Enciendo las herramientas de la memoria?"));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var sent = new List<string>();
+        core.AnswersForTests = (prepared, _) =>
+        {
+            sent.Add(prepared.OperationName);
+            return new OperationResponse(ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"), prepared.MissionId,
+                prepared.InvocationId, OperationStatuses.Completed, "{\"status\":\"completed\"}", true, false, null, null);
+        };
+        var steps = new List<NativeTurnStep>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = static () => new RetryableOperationRegistry(),
+            MemoryProtector = static () => new MemoryOperationProtector(
+                new Baxy.Security.Windows.BoundProtectedJsonCodec(new PlainPayload()), Guid.NewGuid().ToString("D")),
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            StepCompleted = steps.Add,
+            Refuse = (name, _) => profile.Refusal(name),
+            OffFacts = profile.OffFacts,
+            ToolOn = profile.KeepOn,
+            MemoryOff = () => profile.MemoryOff,
+            MemoryRecords = () => kept,
+            InProfile = profile.InProfile,
+            ConfirmationAsked = static _ => { },
+        });
+        Baxy.Kernel.Policy.ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(),
+            Baxy.Kernel.Policy.ConfirmationMode.Normal);
+
+        await loop.RunAsync("Olvida mi dirección.", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        JsonObject offer = JsonNode.Parse(steps.Single().Observation)!.AsObject();
+        JsonObject decide = fake.Requests("turn.decide").Single();
+        Assert.Multiple(() =>
+        {
+            Assert.That(sent, Is.Empty, "the offer sends nothing");
+            Assert.That((string?)offer["status"], Is.EqualTo("needs_confirmation"), offer.ToJsonString());
+            Assert.That((string?)offer["next"], Does.Contain("all of the memory's tools"));
+            Assert.That((int?)offer["saved"], Is.EqualTo(kept));
+            Assert.That((int?)decide["memoryRecords"], Is.EqualTo(kept));
+            Assert.That(decide.ContainsKey("memoryRecords"), Is.EqualTo(kept is not null));
         });
     }
 

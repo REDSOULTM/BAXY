@@ -147,6 +147,10 @@ internal sealed class MemoryPanel
         return FieldHttpResponse.Json(listed);
     }
 
+    /// <summary>MEM8C (REV20 M-1): whether a panel request may have changed what the memory keeps: any answered one that
+    /// is not a read.</summary>
+    internal static bool ChangesKept(string method, int status) => status == 200 && method != "GET";
+
     /// <summary>Reads the count again from the store (after the chat changed it); false when it could not be read.</summary>
     internal async Task<bool> RefreshCountAsync(CancellationToken cancellationToken)
     {

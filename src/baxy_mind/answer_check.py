@@ -669,7 +669,8 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
           catalog: dict[str, str] | None = None, tries: list[tuple[str, str]] | None = None,
           wire_of: Callable[[str], str] = plain, earlier: list[Receipt] | None = None,
           today: dt.date | None = None, unsourced: list[dict[str, Any]] | None = None,
-          memory: str | None = None, memory_off: bool = False) -> list[dict]:
+          memory: str | None = None, memory_off: bool = False, memory_unread: bool = False,
+          memory_records: int | None = None) -> list[dict]:
     """The findings of an answer against its turn: ``receipts`` are the turn's calls in order, ``session`` every call
     of the session before and in this turn as (operation, completed, read), or None when the session is not known whole (a
     kept session, or one past the calls the mind keeps): then nothing is said of calls that may have been there.
@@ -681,7 +682,12 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     expression had numbers nobody gave ({"numbers": ["900"], "value": "55.55"}), for the rule ``unsourced_number``.
     ``memory``: the tool name that reads BAXY's memory, or "" when the catalog has none, for the rule ``unread_memory``,
     which is not read without it. ``memory_off``: the App said BAXY's memory is switched off (catalog.configure
-    «memoryOff»), or a memory call of the conversation failed off, for the rule ``memory_off_empty``. Each finding: {"rule", "said" (the model's words), "fact" (what contradicts them)}."""
+    «memoryOff»), or a memory call of the conversation failed off, for the rule ``memory_off_empty``. ``memory_unread``
+    (MEM8): the App said the memory is on and the profile shows no tool that reads it: the same rule, with the fact of
+    that state; ``memory_records``: how many records it kept at the start, all kinds, as the App read them (None: not
+    read; and not used once a memory change completed in the conversation): with 0, «nothing is kept» is true and there
+    is no finding. Each finding: {"rule", "said" (the model's words), "fact" (what
+    contradicts them)}."""
     if not answer or not answer.strip():
         return []
     text = _blank_quotes(answer)
@@ -868,8 +874,25 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     # «Recuerdo que tu color favorito es el azul» with no memory call in the conversation (MEM1, VIVO12 P1).
     findings.extend(f for f in _unread_memory(folded, text, statements, receipts, session, memory, request) if f not in findings)
     # «No tengo nada guardado de ti» with the memory switched off and nothing read (MEM4, REM7 D-1).
-    if memory_off:
-        findings.extend(f for f in _memory_off_empty(folded, text, statements, receipts, session, request)
+    # MEM8 (MEM7, Esencial with the memory on and 4 records: «No tengo nada guardado de ti» 19 of 80, unflagged): on and
+    # unread in this profile, the store keeps what it kept just the same.
+    # D4b (revisión ciega #6): with 0 kept, «no tengo nada guardado» is so; with a count, the fact says it.
+    # Revisión ciega 3 #3: the count is the start's; after a memory change completed in the conversation it is not known.
+    if memory_records is not None and (
+            any(op.startswith("memory.") and op not in _MEMORY_READS_ONLY and done for op, done, _ in session or [])
+            or any(str(r.get("op") or "").startswith("memory.") and r.get("op") not in _MEMORY_READS_ONLY
+                   and r.get("completed") for r in receipts)):
+        memory_records = None
+    # MEM8C (REV20 M-4): «Apaga la memoria» completed and, in that turn, «no tengo nada guardado» was told the switch the
+    # App read before it («encendida»). The last switch call completed in the conversation is the switch now.
+    switched = [op for op, done, _ in session or [] if done and op in _MEMORY_SWITCHES] + [
+        str(r.get("op")) for r in receipts if r.get("completed") and r.get("op") in _MEMORY_SWITCHES]
+    if switched:
+        memory_off, memory_unread = switched[-1] == "memory.disable", memory_unread and switched[-1] != "memory.disable"
+    if memory_off or (memory_unread and memory_records != 0):
+        fact = (MEMORY_OFF_FACT if memory_off else MEMORY_UNREAD_FACT if memory_records is None
+                else MEMORY_KEPT_UNREAD_FACT.format(n=memory_records))
+        findings.extend(f for f in _memory_off_empty(folded, text, statements, receipts, session, request, fact)
                         if f not in findings)
 
     # A datum the answer bends against what a result says it brought (encargo A5; answer_grounding.py).
@@ -2485,10 +2508,22 @@ _OF_KEPT = re.compile(
 MEMORY_OFF_FACT = ("la memoria de BAXY está apagada en este PC y lo que guarda no se lee mientras esté apagada: puede tener "
                    "recuerdos de la persona de antes, y no sabes si los hay ni cuáles; dilo así, sin decir que no hay nada, "
                    "y si quiere saberlo, ofrece encenderla")
+# MEM8: the memory on, its reading tools out of the profile. No offer in it: what turns them on is the receipt's
+# (OffFacts), and the second answer has no tools.
+MEMORY_UNREAD_FACT = ("la memoria de BAXY está encendida en este PC y guarda lo que tenga guardado, pero este perfil de "
+                      "herramientas no la lee: puede tener recuerdos de la persona, y no sabes si los hay ni cuáles; "
+                      "dilo así, sin decir que no hay nada ni que la memoria está apagada")
+# D4b: the same with the count the App read at the start (catalog.configure «memoryRecords»: totalRecords, all kinds).
+# The memory calls that change nothing kept, which leave that count as it was.
+_MEMORY_READS_ONLY = ("memory.recall", "memory.list", "memory.status", "memory.export")
+# MEM8C: the calls that set the memory's switch, off and on.
+_MEMORY_SWITCHES = ("memory.disable", "memory.enable")
+MEMORY_KEPT_UNREAD_FACT = ("la memoria de BAXY está encendida y tiene {n} datos guardados de la persona que este perfil de "
+                           "herramientas no lee: no sabes cuáles; dilo así, sin decir que no hay nada ni que está apagada")
 
 
 def _memory_off_empty(folded: str, text: str, statements: list[tuple[int, int]], receipts: list[Receipt],
-                      session: list[Call] | None, request: str) -> list[dict]:
+                      session: list[Call] | None, request: str, fact: str = MEMORY_OFF_FACT) -> list[dict]:
     """Rule ``memory_off_empty``: with the memory off, a statement says nothing is kept of the person (by its grammar, or
     the person asked of theirs, as ``unread_memory`` reads it) while no memory read completed in the conversation
     (``session``) nor in the turn. With ``session`` None a read may have been earlier: nothing is said (REM8, REV16 M-3:
@@ -2508,7 +2543,7 @@ def _memory_off_empty(folded: str, text: str, statements: list[tuple[int, int]],
         if hit and _OF_KEPT.search(folded, _clause_start(folded, start, hit.start()), end) and (
                 theirs or _PERSON.search(folded, hit.start(), end)):
             return [{"rule": "memory_off_empty", "said": _quote(text, _clause_start(folded, start, hit.start()), end),
-                     "fact": MEMORY_OFF_FACT}]
+                     "fact": fact}]
     return []
 
 

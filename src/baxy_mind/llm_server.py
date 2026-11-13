@@ -16,10 +16,11 @@ import threading
 import time
 import urllib.error
 import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from .memory import free_memory_mb
+from .memory import free_memory_mb, gpu_shared_mb, installed_memory_mb
 
 
 # Uso 95 (F9, uso real 2026-11-04 12:06): how ggml says, in the server's log, that a buffer could not be reserved. The
@@ -262,9 +263,13 @@ class LlmServer:
         # VRAM4: with no context given, the cells are the mind's to choose, and start fits them to the VRAM free then
         # (fit_card), on the one configuration its line was measured for: CUDA, the default cache, the output matrix in
         # RAM and every layer asked for. ``card_short`` is what start found when the server does not fit whole.
-        self._fits_card = (context is None and backend == "cuda" and self.kv == ("q8_0", "q8_0") and self.output_cpu
-                           and gpu_layers.strip() == "99")
-        self.card_short: dict[str, int] | None = None
+        # VRAM5 (AUD1 F1): and on Vulkan, with the output matrix on the GPU, its own line (card_mib). F4: a context the
+        # person gave (Settings → Model, BAXY_RENEW_CTX) is checked the same way (_checks_card), but its cells are theirs:
+        # they never change; a start that does not hold them whole says so (card_short) instead of spilling in silence.
+        self._checks_card = (self.kv == ("q8_0", "q8_0") and gpu_layers.strip() == "99"
+                             and ((backend == "cuda" and self.output_cpu) or (backend == "vulkan" and not self.output_cpu)))
+        self._fits_card = context is None and self._checks_card
+        self.card_short: dict[str, int | bool] | None = None
         # VRAM4B: what start found when the person never chose a tool profile and the card holds a smaller ready-made
         # one whole, not the factory's (the App takes that one for this run, ToolProfile.FitCard); and whether start
         # launched no server at all, because not even the fewest cells fit the card's free memory (startup_failure).
@@ -365,16 +370,54 @@ class LlmServer:
         said = os.environ.get(CARD_TOTAL_TEST_VARIABLE, "").strip()
         return int(said) if said.isdigit() else _LISTED_TOTAL.get(self.server)
 
+    def _card_integrated(self) -> bool:
+        """VRAM5 (AUD1 F5): whether the device the start measured is integrated, so what it holds is the PC's RAM. A test
+        may say it instead (CARD_INTEGRATED_TEST_VARIABLE), with the free memory."""
+        said = os.environ.get(CARD_INTEGRATED_TEST_VARIABLE, "").strip()
+        return said == "1" if said else device_integrated(self.server)
+
+    def _card_given(self, free: int | None) -> None:
+        """VRAM5 (AUD1 F4): a context the person gave is never changed, but a start whose free video memory does not hold
+        it whole says so, with the most cells that fit (fitsContext), and launches no server where not even its cells
+        without the margin fit (card_refused), as a ready-made profile's (VRAM4B): never a spill in silence."""
+        if free is None or card_mib(self.context, self.backend) + CARD_MARGIN_MIB <= free:
+            return
+        # VRAM5B: only cells «Automático» could take (fit_card, fit_profiles): none below what the smallest profile the
+        # App may start in needs (one need when the person chose a profile), so the way out the App offers starts.
+        needs = context_needs_all()
+        least = min(needs) if needs else CONTEXT
+        held = [cells for cells in CARD_CONTEXTS if least <= cells and card_mib(cells, self.backend) + CARD_MARGIN_MIB <= free]
+        self.card_short = {"freeMb": free, "needMb": card_mib(self.context, self.backend) + CARD_MARGIN_MIB,
+                           "context": self.context, "given": True, **({"fitsContext": max(held)} if held else {})}
+        self.card_refused = card_mib(self.context, self.backend) > free
+
     def start(self) -> None:
         vision = _vision_args()
         measured: tuple[int | None] | None = None
+        if self._checks_card and not self._fits_card and not self.remote:
+            free = self._card_free()
+            total = self._card_total()
+            free = free if free is not None and free > 0 and (total is None or free <= total) else None
+            integrated = free is not None and self._card_integrated()
+            free = integrated_room(free) if integrated else free
+            measured = (free,)
+            self._card_given(free)
+            if self.card_short is not None and integrated:
+                self.card_short["integrated"] = True
         if self._fits_card and not self.remote:
             measured = (self._card_free(),)
             needs = context_needs_all()
             total = self._card_total()
             # R18-15: none free, or more than the card has, is no measure: as when the card says nothing.
             free = measured[0] if measured[0] is not None and measured[0] > 0 and (total is None or measured[0] <= total) else None
-            short = card_short(total, self.context, needs[0] if needs else None) if free is not None else None
+            # VRAM5 (AUD1 F5): on an integrated GPU what it holds is RAM: the room is what the PC's RAM leaves the server
+            # (integrated_room), and that is the card's whole memory too (the card is short when it does not hold the
+            # factory's profile).
+            integrated = free is not None and self._card_integrated()
+            if integrated:
+                free = integrated_room(free)
+                total = None if free is None else free + CARD_DESKTOP_MIB
+            short = card_short(total, self.context, needs[0] if needs else None, self.backend) if free is not None else None
             if short is not None:
                 self.card_memory = {"totalMb": total, "short": short}
             # VRAM4D: the profile BAXY chose for this card before (context_kept) goes alone while the card is short, or
@@ -383,24 +426,25 @@ class LlmServer:
             kept = context_kept()
             if kept is not None and kept in needs and short is not False:
                 needs = [kept]
-            asked = fit_card(free, self.context, needs[0] if needs else None)[0]
-            self.context, whole, served = fit_profiles(free, self.context, needs)
+            asked = fit_card(free, self.context, needs[0] if needs else None, self.backend)[0]
+            self.context, whole, served = fit_profiles(free, self.context, needs, self.backend)
             measured = (free,) if free is not None or measured[0] is None else measured
             if served and measured[0] is not None:
                 # VRAM4B: the profile asked first does not fit and a smaller one of the App's list does: what was free,
                 # what the first one takes, and the need served, for the App to start this run in that profile.
-                self.card_fit = {"freeMb": measured[0], "needMb": card_mib(asked) + CARD_MARGIN_MIB,
+                self.card_fit = {"freeMb": measured[0], "needMb": card_mib(asked, self.backend) + CARD_MARGIN_MIB,
                                  "needs": needs[served], "context": self.context}
             if not whole and measured[0] is not None:
                 # What the App says to the person (LocalContext.CardShort): what was free, what these cells take, and
                 # the most cells the card holds whole, when any, for the tool profile that fits them.
-                held = [cells for cells in CARD_CONTEXTS if card_mib(cells) + CARD_MARGIN_MIB <= measured[0]]
-                self.card_short = {"freeMb": measured[0], "needMb": card_mib(self.context) + CARD_MARGIN_MIB,
-                                   "context": self.context, **({"fitsContext": max(held)} if held else {})}
+                held = [cells for cells in CARD_CONTEXTS if card_mib(cells, self.backend) + CARD_MARGIN_MIB <= measured[0]]
+                self.card_short = {"freeMb": measured[0], "needMb": card_mib(self.context, self.backend) + CARD_MARGIN_MIB,
+                                   "context": self.context, **({"fitsContext": max(held)} if held else {}),
+                                   **({"integrated": True} if integrated else {})}
                 # VRAM4B: the server's own memory at these cells is more than the card has free: NVIDIA's driver would
                 # give the rest from the PC's memory and the prefix would be read at tens of tokens a second for half an
                 # hour (INFORME_VRAM4.md). No server is launched: the start fails now, with what it found.
-                self.card_refused = card_mib(self.context) > measured[0]
+                self.card_refused = card_mib(self.context, self.backend) > measured[0]
         self._settings = [
             "-ngl", self.gpu_layers, "-c", str(self.context), *slots(self.backend), *read_batch(self.backend),
             "-fa", self.flash,
@@ -438,7 +482,7 @@ class LlmServer:
     def _launch(self, placement: list[str]) -> None:
         self._placement = placement
         command = [self.server, "-m", self.gguf, "--host", "127.0.0.1", "--port", str(self.port), *self._settings,
-                   *placement]
+                   *device_args(self.server), *placement]
         log_path = self._log_path()
         log_path.parent.mkdir(parents=True, exist_ok=True)
         flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
@@ -539,8 +583,29 @@ class LlmServer:
             return {"cause": "ram_insuficiente"}
         if isinstance(error, ReadTooSlow):
             return {"cause": "lectura_lenta", "tokensPerS": error.tokens_per_s,
-                    "needMinutes": math.ceil(error.need_s / 60)}
+                    "needMinutes": math.ceil(error.need_s / 60), **self._card_full()}
         return {"cause": "tiempo"}
+
+    def _card_full(self) -> dict[str, Any]:
+        """VRAM5 (AUD1 F9): a read too slow on a card left with less free than the margin (CARD_MARGIN_MIB) as it counts it
+        now, with the server running: what the card has free and the PC's RAM Windows gives the server as video memory
+        («Shared Usage», memory.gpu_shared_mb), for the App to say the card ran out of memory instead of a slow PC. On
+        Windows (WDDM) what does not fit the card goes to that memory in silence: NVIDIA's «CUDA Sysmem Fallback Policy»
+        («allows the CUDA application to use system RAM when VRAM is exhausted», nvidia.custhelp.com a_id 5490), and
+        AMD's driver the same (AMD3 V8: 6,740 + 1,298 MiB, the read at 56-84 tokens/s). The shared memory alone is no
+        sign of it: a CUDA server that fits holds some (706 MiB measured on the PC, 2026-11-13). Empty otherwise.
+        VRAM5B (REV19 V-4): every card fitted to the margin may have less than it free once the view starts, so a full
+        card is told only when the server shares more than one that fits does (SHARED_FITTED_MIB) by the margin: never
+        on a shared memory unread."""
+        if self._process is None or self.remote or not self._checks_card or self._card_integrated():
+            return {}
+        free = self._card_free()
+        if free is None or free >= CARD_MARGIN_MIB:
+            return {}
+        shared = gpu_shared_mb(self._process.pid)
+        if shared is None or shared <= SHARED_FITTED_MIB[self.backend] + CARD_MARGIN_MIB:
+            return {}
+        return {"cardFull": {"freeMb": max(free, 0), "sharedMb": shared}}
 
     def _log_tail(self) -> str:
         """The end of this run's server log, where an exit's cause is written last; empty when it cannot be read."""
@@ -1221,14 +1286,28 @@ CONTEXT_KEPT_VARIABLE = "BAXY_RENEW_CTX_KEPT"
 # §3); a card of 4 GB in all leaves 3.3-3.6 GB free (INFORME_VRAM4.md §1), 500-800 MiB. Any figure from 217 to 2,263 MiB
 # says the same of the cards sold (4 GB short; 6, 8 and more not); this one, the largest measured.
 CARD_DESKTOP_MIB = 923
+# VRAM5 (AUD1 F1): the same line on Vulkan, with its line's own placement: the output matrix on the GPU (output_cpu), one
+# slot (slots), the projector on the CPU (on a card short of memory it never holds it, VISION_GPU_NEEDS_MIB). Measured by
+# Windows on an RX 7600 (AMD3, 2026-11-09, INFORME_AMD3.md §3, b11609, VULKAN_PLAIN_VIDEO_MEMORY set, 46k tokens in use,
+# the process's dedicated memory): 5,022 MiB at 61,440 cells and 4,878 at 53,248 (144 MiB per 8,192 cells, the 17 KiB of
+# a q8_0 cell llama.cpp counts, uso-60, and its compute), 277 MiB less with one slot and 862 less with the projector on
+# the CPU: 3,883 MiB at 61,440, 3,379 at 32,768. The 618-648 MiB the same process keeps in shared memory are the PC's RAM.
+VULKAN_CARD_CELL_MIB = (5022 - 4878) / (61440 - 53248)
+# VRAM5B (REV19 V-4): the PC's RAM a server that fits whole keeps as «Shared Usage» by itself (no spill): CUDA, 706 MiB
+# (the PC, 2026-11-13, INFORME_VRAM5.md §1 F9); Vulkan, 618-648 MiB (AMD3 §3, above). Without source: own measurement.
+SHARED_FITTED_MIB = {"cuda": 706, "vulkan": 648}
+VULKAN_CARD_FIXED_MIB = 5022 - 277 - 862 - 61440 * VULKAN_CARD_CELL_MIB
 
 
-def card_mib(context: int) -> int:
-    """The video memory the server takes on CUDA at ``context`` cells of the default cache (see CARD_FIXED_MIB)."""
+def card_mib(context: int, backend: str = "cuda") -> int:
+    """The video memory the server takes at ``context`` cells of the default cache on ``backend`` (see CARD_FIXED_MIB;
+    VRAM5: VULKAN_CARD_FIXED_MIB on Vulkan)."""
+    if backend == "vulkan":
+        return math.ceil(VULKAN_CARD_FIXED_MIB + context * VULKAN_CARD_CELL_MIB)
     return math.ceil(CARD_FIXED_MIB + context * CARD_CELL_MIB)
 
 
-def fit_card(free: int | None, automatic: int, needs: int | None) -> tuple[int, bool]:
+def fit_card(free: int | None, automatic: int, needs: int | None, backend: str = "cuda") -> tuple[int, bool]:
     """VRAM4: the cells an automatic context gets on a card with ``free`` MiB, and whether the server fits it whole.
     The automatic ones when they fit, or when the free memory is not known: nothing changes there. Else the most of
     CARD_CONTEXTS that fits and holds what the person's profile needs (``needs``; CONTEXT, which holds every profile,
@@ -1236,22 +1315,22 @@ def fit_card(free: int | None, automatic: int, needs: int | None) -> tuple[int, 
     what it found goes to the App (LlmServer.card_short), which says the profile that does not fit and the one that
     does. Layers are not shared out with the processor here: llama.cpp's own fit does not act with the output matrix
     placed by hand («tensor_buft_overrides already set by user, abort», common/fit.cpp) and no split was measured."""
-    if free is None or card_mib(automatic) + CARD_MARGIN_MIB <= free:
+    if free is None or card_mib(automatic, backend) + CARD_MARGIN_MIB <= free:
         return automatic, True
     holding = [cells for cells in CARD_CONTEXTS if (needs or CONTEXT) <= cells <= automatic]
-    fitting = [cells for cells in holding if card_mib(cells) + CARD_MARGIN_MIB <= free]
+    fitting = [cells for cells in holding if card_mib(cells, backend) + CARD_MARGIN_MIB <= free]
     if fitting:
         return max(fitting), True
     return (min(holding) if holding else automatic), False
 
 
-def card_short(total: int | None, automatic: int, factory: int | None) -> bool | None:
+def card_short(total: int | None, automatic: int, factory: int | None, backend: str = "cuda") -> bool | None:
     """VRAM4D: whether a card of ``total`` MiB in all is short: the factory's profile (``factory``, the first need the App
     gave) does not fit whole (fit_card) even in all of it but what the desktop keeps (CARD_DESKTOP_MIB). None when
     either is not known."""
     if total is None or factory is None:
         return None
-    return not fit_card(total - CARD_DESKTOP_MIB, automatic, factory)[1]
+    return not fit_card(total - CARD_DESKTOP_MIB, automatic, factory, backend)[1]
 
 
 def context_kept(environ: dict[str, str] | None = None) -> int | None:
@@ -1280,9 +1359,28 @@ def context_needs_all(environ: dict[str, str] | None = None) -> list[int]:
 CARD_FREE_TEST_VARIABLE = "BAXY_TEST_VRAM_FREE_MIB"
 # VRAM4D: and here the card's whole memory, MiB (LlmServer._card_total).
 CARD_TOTAL_TEST_VARIABLE = "BAXY_TEST_VRAM_TOTAL_MIB"
+# VRAM5: and here «1» for an integrated GPU (LlmServer._card_integrated), «0» for a dedicated one.
+CARD_INTEGRATED_TEST_VARIABLE = "BAXY_TEST_VRAM_INTEGRATED"
+# VRAM5 (AUD1 F5): an integrated GPU's memory is the PC's RAM, which Windows and the rest of BAXY use too. What they keep:
+# Windows 11's own minimum, «RAM: 4 gigabyte (GB) or greater» (Microsoft, Windows 11 specifications,
+# https://www.microsoft.com/windows/windows-11-specifications, read 2026-11-13), and all of BAXY's processes but the
+# server's GPU memory, 3,748 MiB with its window and the voice loaded, measured on the PC on 2026-11-05 (INFORME_AUD1.md
+# §2; it counts the server's own RAM too, so it errs on the side of less room).
+WINDOWS_RAM_MIB = 4096
+BAXY_RAM_MIB = 3748
 
 
-def fit_profiles(free: int | None, automatic: int, needs: list[int]) -> tuple[int, bool, int]:
+def integrated_room(free: int | None) -> int | None:
+    """VRAM5 (AUD1 F5): the memory an integrated GPU has for BAXY's server: what the device says free, but never more than
+    the RAM installed leaves past Windows and the rest of BAXY (WINDOWS_RAM_MIB, BAXY_RAM_MIB); none on a PC without
+    that much. As the device says when the RAM installed is not known."""
+    installed = installed_memory_mb()
+    if installed is None or free is None:
+        return free
+    return max(0, min(free, installed - WINDOWS_RAM_MIB - BAXY_RAM_MIB))
+
+
+def fit_profiles(free: int | None, automatic: int, needs: list[int], backend: str = "cuda") -> tuple[int, bool, int]:
     """VRAM4B (the leader's decision on what VRAM4 left open; the owner: «Tiene que caber en 4 GB»): the cells of an
     automatic context on a card with ``free`` MiB when the App gave more than one need (the person never chose a tool
     profile: the factory's first, then each smaller ready-made one), whether the server fits whole, and which need
@@ -1291,14 +1389,14 @@ def fit_profiles(free: int | None, automatic: int, needs: list[int]) -> tuple[in
     free memory, without the margin; with none of those either, the first need's, not whole: start launches nothing."""
     tried: list[int | None] = list(needs) or [None]
     for place, need in enumerate(tried):
-        cells, whole = fit_card(free, automatic, need)
+        cells, whole = fit_card(free, automatic, need, backend)
         if whole:
             return cells, True, place
     for place, need in enumerate(tried):
-        cells, _ = fit_card(free, automatic, need)
-        if free is not None and card_mib(cells) <= free:
+        cells, _ = fit_card(free, automatic, need, backend)
+        if free is not None and card_mib(cells, backend) <= free:
             return cells, False, place
-    return fit_card(free, automatic, tried[0])[0], False, 0
+    return fit_card(free, automatic, tried[0], backend)[0], False, 0
 
 
 # uso-51: a cut keeps at most this many tokens of history (Mind._fits), which the model re-reads in the decision that cut
@@ -1317,12 +1415,13 @@ def reread_tokens(backend: str, kv: tuple[str, str]) -> int:
 
 
 def slots(backend: str) -> list[str]:
-    """llama-server's slots: one (the mind's, slot 0), but three on one unified cache on Vulkan. Measured on an RX 7600
-    (b11609, 2026-11-03, ft_v1/c5/AMD_TUKIPC_0311.md): with one or two slots the ~45k-token prefix read at 244 tokens/s
-    and the decode ran at 21; with three or more, at 946 and 33, the same 22 decisions, for +76 MiB (each slot keeps
-    its recurrent state); the cause inside ggml-vulkan is not isolated. With «-kvu» every slot sees the whole context
-    (n_ctx_seq = n_ctx, llama-context.cpp), so slot 0 alone keeps all of it; on CUDA it read no faster here (INFORME_51)."""
-    return ["-np", "3", "-kvu"] if backend == "vulkan" else ["-np", "1"]
+    """llama-server's slots: one, the mind's (slot 0), on every backend. Vulkan had three on one unified cache
+    («-np 3 -kvu»): measured on an RX 7600 (b11609, 2026-11-03, ft_v1/c5/AMD_TUKIPC_0311.md), with one or two slots the
+    ~45k-token prefix read at 244 tokens/s and with three at 946. VRAM5 (AUD1 F1b): that was not the slots. With VUL1's
+    VULKAN_PLAIN_VIDEO_MEMORY the same card read the same way with one slot (AMD3, 2026-11-09, INFORME_AMD3.md §3, the
+    product's line: 1,176 against 1,182 tokens/s at 2k, 523 against 531 at 46k, 40.1 tokens/s written both ways) and took
+    277 MiB less of its memory (4,745 against 5,022 MiB): the gap was which buffer the driver put in shared memory."""
+    return ["-np", "1"]
 
 
 def batch_size(backend: str) -> int:
@@ -1395,23 +1494,94 @@ _LISTED_TOTAL: dict[str, int] = {}
 
 
 def _listed_devices(server: str) -> str | None:
-    """What the server says with --list-devices, the same for CUDA and Vulkan, whatever the make; None when it cannot."""
+    """What the server says with --list-devices, the same for CUDA and Vulkan, whatever the make; None when it cannot.
+    VRAM5: with «-v» its log comes too (stderr), where ggml-vulkan says which device is integrated (listed_devices)."""
     flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
     try:
-        return subprocess.run([server, "--list-devices"], capture_output=True, text=True, encoding="utf-8",
-                              errors="replace", timeout=20, creationflags=flags).stdout
+        ran = subprocess.run([server, "-v", "--list-devices"], capture_output=True, text=True, encoding="utf-8",
+                             errors="replace", timeout=20, creationflags=flags)
     except (OSError, subprocess.SubprocessError):
         return None
+    return (ran.stdout or "") + (ran.stderr or "")
+
+
+# VRAM5 (AUD1 F6): one line per device of --list-devices, «  <name>: <description> (<total> MiB, <free> MiB free)»
+# (common_print_available_devices, common/arg.cpp:1143-1160 at b11609), and ggml-vulkan's own line per device with -v,
+# «ggml_vulkan: <index> = <description> (<driver>) | uma: <0|1> | …» (ggml_vk_print_gpu_info, ggml-vulkan.cpp:5164: uma
+# is VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU, :5117), the index the one of its name «Vulkan<index>» (:16200). Measured on
+# this PC (2026-11-13, b11609 Vulkan): the integrated Intel GPU first as «Vulkan0», uma 1, with some 15 GB «free»,
+# and the NVIDIA card second: an integrated GPU's total and free are its share of the PC's RAM (the sum of its heaps,
+# ggml-vulkan.cpp:15248-15268), and the first line was what the mind read.
+_DEVICE_LINE = re.compile(r"^\s*(\S+): (.*) \((\d+) MiB, (\d+) MiB free\)\s*$", re.MULTILINE)
+_VULKAN_UMA = re.compile(r"ggml_vulkan: (\d+) = .*\| uma: (\d)")
+
+
+@dataclass(frozen=True)
+class Device:
+    """A device the server lists: its name for «-dev», its memory in MiB, and whether it is integrated (shares RAM)."""
+    name: str
+    total: int
+    free: int
+    integrated: bool = False
+    # Whether its kind is known: a Vulkan device's only from ggml-vulkan's own line (CUDA lists no integrated ones).
+    known: bool = True
+
+
+def listed_devices(listed: str) -> list[Device]:
+    """VRAM5: every device of a --list-devices output (with its -v log), in its order."""
+    kinds = {f"Vulkan{index}": uma == "1" for index, uma in _VULKAN_UMA.findall(listed)}
+    return [Device(name, int(total), int(free), kinds.get(name, False), name in kinds or not name.startswith("Vulkan"))
+            for name, _, total, free in _DEVICE_LINE.findall(listed)]
+
+
+def chosen_device(devices: list[Device]) -> Device | None:
+    """VRAM5 (AUD1 F6): the device BAXY's server uses: of the dedicated ones, the one with the most memory (the first of
+    them on a tie); an integrated one only when there is no dedicated one, as llama.cpp itself does (integrated GPUs only
+    if no discrete one was found, src/llama.cpp:260-284 at b11609). With a device of unknown kind (another engine's log),
+    the one with the least free (VRAM5B, REV19 V-6): an integrated one lists its share of the RAM as free and could pass
+    for the largest, the first listed is the integrated one on a PC that has one, and llama.cpp runs on a discrete one
+    whatever the order; the least free is never more than the device used has. None with no device."""
+    if any(not device.known for device in devices):
+        # and the least total too, so a card short in all is never taken for one with room (card_short)
+        least = min(devices, key=lambda device: device.free)
+        return Device(least.name, min(device.total for device in devices), least.free, False, False)
+    dedicated = [device for device in devices if not device.integrated] or devices
+    return max(dedicated, key=lambda device: device.total) if dedicated else None
+
+
+# VRAM5: what each server's last listing said: its devices, for «-dev» (device_args) and the integrated one (F5).
+_LISTED_DEVICES: dict[str, list[Device]] = {}
 
 
 def _free_vram_mib(server: str) -> int | None:
-    """The VRAM free on the device the server would use, as the server itself counts it; None when it does not say."""
-    found = _DEVICE_MEMORY.search(_listed_devices(server) or "")
-    if found:
-        _LISTED_TOTAL[server] = int(found.group(1))
+    """The VRAM free on the device the server uses (chosen_device), as the server itself counts it; None when it does
+    not say."""
+    devices = listed_devices(_listed_devices(server) or "")
+    device = chosen_device(devices)
+    if device is not None:
+        _LISTED_TOTAL[server] = device.total
+        _LISTED_DEVICES[server] = devices
     else:
         _LISTED_TOTAL.pop(server, None)
-    return int(found.group(2)) if found else None
+        _LISTED_DEVICES.pop(server, None)
+    return device.free if device is not None else None
+
+
+def device_args(server: str) -> list[str]:
+    """VRAM5 (AUD1 F6, R18-15): «-dev <name>» of the device measured (chosen_device) when the server listed more than one,
+    so the memory measured is the memory used: llama-server's -dev takes «a comma-separated list of devices to use for
+    offloading» and the projector «follows --device» (llama-server --help at b11609). With one device the command is as
+    it was; with none listed, nothing."""
+    devices = _LISTED_DEVICES.get(server, [])
+    device = chosen_device(devices)
+    known = all(listed.known for listed in devices)
+    return ["-dev", device.name] if device is not None and len(devices) > 1 and known else []
+
+
+def device_integrated(server: str) -> bool:
+    """VRAM5 (AUD1 F5): whether the device the server's last listing chose is integrated: what it holds is the PC's RAM."""
+    device = chosen_device(_LISTED_DEVICES.get(server, []))
+    return device is not None and device.integrated
 
 
 def computes_on_processor(server: str, backend: str, layers: str) -> bool | None:

@@ -41,15 +41,12 @@ def test_each_cache_and_output_place_keeps_the_context_that_fits_it(tmp_path: pa
     assert _context(_command(monkeypatch, tmp_path, backend="cuda")) == 61440
 
 
-def test_on_vulkan_the_server_has_three_slots_on_one_unified_cache(tmp_path: pathlib.Path, monkeypatch) -> None:
-    # Measured on an RX 7600 (AMD_TUKIPC_0311.md): with one or two slots the prefix read at 244 tokens/s and the decode
-    # at 21; with «-np 3 -kvu» at 946 and 33, the same 22 decisions, +76 MiB. The mind still uses slot 0 alone, and with
-    # the unified cache that slot sees the whole context.
+def test_every_backend_has_one_slot(tmp_path: pathlib.Path, monkeypatch) -> None:
+    # VRAM5 (AUD1 F1b): Vulkan had «-np 3 -kvu» for a read of 946 tokens/s against 244 with one slot (AMD_TUKIPC_0311.md).
+    # With VUL1's variable one slot read the same on that RX 7600 (AMD3 §3: 1,176 against 1,182 at 2k) for 277 MiB less.
     from test_mind_gpu import _command
 
-    vulkan = _command(monkeypatch, tmp_path, backend="vulkan")
-    assert vulkan[vulkan.index("-np") + 1] == "3" and "-kvu" in vulkan
-    for backend in ("cuda", "cpu"):
+    for backend in ("vulkan", "cuda", "cpu"):
         command = _command(monkeypatch, tmp_path, backend=backend)
         assert command[command.index("-np") + 1] == "1" and "-kvu" not in command
 

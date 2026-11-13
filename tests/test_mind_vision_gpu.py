@@ -45,7 +45,7 @@ def test_the_projector_goes_to_the_gpu_when_the_vram_free_holds_it_for_any_make(
     monkeypatch.delenv("BAXY_VISION_OFFLOAD", raising=False)
     command, asked, _ = _start(tmp_path, monkeypatch, devices)
     assert "--mmproj-offload" in command and "--no-mmproj-offload" not in command
-    assert asked == [["llama-server.exe", "--list-devices"]]  # the server's own count, not one make's tool
+    assert asked == [["llama-server.exe", "-v", "--list-devices"]]  # the server's own count, not one make's tool
 
 
 @pytest.mark.parametrize("devices", [TIGHT, "Available devices:\n", OSError("no such file"),
@@ -72,7 +72,7 @@ def test_a_person_can_keep_the_projector_on_the_cpu_and_nothing_is_asked(
     monkeypatch.setenv("BAXY_VISION_OFFLOAD", "0")
     command, asked, _ = _start(tmp_path, monkeypatch, CUDA)
     # VRAM4: nothing for the projector; the one question left is the start's own, for its cells (test_mind_vram_libre).
-    assert "--no-mmproj-offload" in command and asked == [["llama-server.exe", "--list-devices"]]
+    assert "--no-mmproj-offload" in command and asked == [["llama-server.exe", "-v", "--list-devices"]]
 
 
 def test_a_server_without_a_gpu_backend_does_not_offload(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

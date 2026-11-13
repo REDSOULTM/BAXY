@@ -108,16 +108,15 @@ def test_with_no_need_said_every_profile_still_fits_the_cells(tmp_path: Path, mo
 
 
 def test_a_context_the_person_chose_is_theirs(tmp_path: Path, monkeypatch) -> None:
-    # Settings → Model → Context (BAXY_RENEW_CTX): as chosen, and the view says there what the card holds.
-    asked: list[int] = []
-    monkeypatch.setattr(llm_server, "_free_vram_mib", lambda server: asked.append(1) or 3400)
-    server, command = _started(monkeypatch, tmp_path, 3400, context=77824)
-    assert _given(command, "-c") == "77824" and server.card_short is None and not asked
+    # Settings → Model → Context (BAXY_RENEW_CTX): as chosen, on a card that holds it, with nothing to say.
+    server, command = _started(monkeypatch, tmp_path, 9000, context=77824)
+    assert _given(command, "-c") == "77824" and server.card_short is None
 
 
-@pytest.mark.parametrize("backend", ["vulkan", "cpu"])
+@pytest.mark.parametrize("backend", ["cpu"])
 def test_only_the_measured_backend_follows_the_card(tmp_path: Path, monkeypatch, backend: str) -> None:
-    # The line of video memory over the cells was measured on CUDA (INFORME_51): the others start as before.
+    # The line of video memory over the cells was measured on CUDA (INFORME_51) and, VRAM5, on Vulkan (test_mind_vram5):
+    # the processor starts as before.
     server, command = _started(monkeypatch, tmp_path, 3400, backend=backend)
     assert int(_given(command, "-c")) == llm_server.default_context(backend, ("q8_0", "q8_0"), False)
     assert server.card_short is None
