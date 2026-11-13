@@ -7,7 +7,7 @@ import { readdirSync } from 'node:fs';
 import { seededRng } from '../src/utils/seededRng';
 import { BXM, HUBS, bxMouth, bxRoute } from '../src/components/face/geometry';
 import { LIB, NEXT, groupFor } from '../src/components/avatarClips';
-import { causeAdvice, causeText, readingText, startedOnlyOnce } from '../src/causes';
+import { cardProfileText, causeAdvice, causeText, fittingProfile, readingText, startedOnlyOnce } from '../src/causes';
 import { translator } from '../src/i18n';
 import { outcomeOf } from '../src/outcome';
 import { what, when } from '../src/routines';
@@ -35,10 +35,32 @@ test('un equipo que lee el modelo demasiado lento lo dice con lo medido y con qu
     .toBe('este equipo lee el modelo demasiado lento: prepararlo tardaría más de 7 h');
   expect(causeAdvice('lectura_lenta', es)).toContain('tarjeta gráfica dedicada con 4 GB');
   expect(causeText('tiempo', es)).toContain('dejó de avanzar');
-  expect(causeAdvice('tiempo', es)).toBe('Actualiza el controlador de la tarjeta gráfica y reintenta. BAXY necesita una tarjeta gráfica dedicada con 4 GB de memoria libres o un procesador más rápido.');
+  // VRAM4: «con 4 GB de memoria libres» was false on the 4 GB card BAXY is made for
+  expect(causeAdvice('tiempo', es)).toBe('Actualiza el controlador de la tarjeta gráfica y reintenta. BAXY necesita una tarjeta gráfica dedicada con 4 GB de memoria o un procesador más rápido.');
+  expect(causeAdvice('lectura_lenta', es)).not.toContain('libres o');
+  // VRAM4: a start on a card that does not hold the profile whole says that, and the profile that fits
+  const card = { profile: 'completo', freeMb: 3400, needMb: 3880, context: 61440, fittingProfile: 'esencial' };
+  for (const cause of ['lectura_lenta', 'tiempo', 'vram_insuficiente']) {
+    expect(causeAdvice(cause, es, card)).toBe('El perfil Completo no cabe entero en la memoria de vídeo de tu tarjeta gráfica: había 3,3 GB libres al arrancar y necesita unos 3,8 GB. El perfil Esencial sí cabe entero: elígelo en Ajustes → Herramientas → Perfil.');
+  }
+  expect(causeAdvice('lectura_lenta', es, { ...card, profile: 'esencial', fittingProfile: null })).toBe('El perfil Esencial no cabe entero en la memoria de vídeo de tu tarjeta gráfica: había 3,3 GB libres al arrancar y necesita unos 3,8 GB. Cierra lo que esté usando la tarjeta gráfica y reintenta.');
+  expect(causeAdvice('modelo_ausente', es, card)).toBe('Reinstala BAXY para recuperarlo: tus datos no se borran.');
   expect(causeAdvice('ram_insuficiente', es)).toBe('Cierra programas que no estés usando para liberar memoria.');
   expect(startedOnlyOnce('lectura_lenta')).toBe(true);
   expect(startedOnlyOnce('ram_insuficiente')).toBe(false);
+  // VRAM4B: a start on a card that does not hold the profile is tried once by the host: no «falló varias veces»
+  expect(startedOnlyOnce('vram_insuficiente', card)).toBe(true);
+  expect(startedOnlyOnce('vram_insuficiente', null)).toBe(false);
+  expect(fittingProfile(card)).toBe('esencial');
+  expect(fittingProfile({ ...card, profile: 'esencial' })).toBeNull();
+  expect(fittingProfile({ ...card, fittingProfile: null })).toBeNull();
+  expect(fittingProfile(null)).toBeNull();
+  // VRAM4B: a new install that started by itself in the profile the card holds says what it measured and the two ways out
+  expect(cardProfileText({ profile: 'esencial', factory: 'completo', freeMb: 3400, needMb: 3880 }, es))
+    .toBe('Tu tarjeta gráfica tenía 3,3 GB de memoria de vídeo libres y el perfil Completo necesita unos 3,8 GB: BAXY eligió para este equipo el perfil Esencial, que sí cabe, y se queda en él. Para tener más herramientas, usa otro modelo (Ajustes → Modelo) o libera memoria de la tarjeta gráfica, y elige el perfil Completo en Ajustes → Herramientas o pidiéndomelo.');
+  // VRAM4D (REV18 R18-2): on a card with room, a start that something held the card at says it is that start's alone
+  expect(cardProfileText({ profile: 'esencial', factory: 'completo', freeMb: 3400, needMb: 3880, thisStart: true }, es))
+    .toBe('Tu tarjeta gráfica tenía 3,3 GB de memoria de vídeo libres al arrancar y el perfil Completo necesita unos 3,8 GB: sólo en este arranque, BAXY usa el perfil Esencial, que sí cabe. El próximo arranque vuelve a intentar el perfil Completo: para tenerlo ya, cierra lo que esté usando la tarjeta gráfica (un juego, por ejemplo) y vuelve a abrir BAXY.');
 });
 
 test('el arranque lento dice cuánto lleva con la cuenta del servidor, y nada inventado cuando no la hay', () => {

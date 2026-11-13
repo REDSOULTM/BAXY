@@ -34,6 +34,16 @@ internal sealed class ToolProfile
     private (string Profile, HashSet<string>? On)? _lastRead;
     // REM1 (APP2's A-4 medio): _lastRead is the most closed profile kept while nothing could be read yet, not a choice.
     private bool _provisional;
+    // VRAM4B: the ready-made profile this run started in because the card's free video memory did not hold the factory's
+    // and the person never chose one (FitCard). VRAM4C: written as BAXY's choice for this PC (ByCard); this field is the
+    // start that chose it, the only one whose view says it (SaidNow), and the profile if the folder refused the file.
+    // VRAM4D: on a card that is not short, this start's alone (ThisStart), never written.
+    private CardFitted? _fitted;
+
+    /// <summary>VRAM4B: the profile a start took by itself for the card (<paramref name="Profile"/>), with the video
+    /// memory that was free and what the factory's profile takes, MiB. VRAM4D (REV18 R18-2): <paramref name="ThisStart"/>
+    /// on a card with room that a start found short of free memory (a game open): that start's alone, not kept.</summary>
+    internal sealed record CardFitted(string Profile, int FreeMb, int NeedMb, bool ThisStart = false);
 
     internal ToolProfile(string dataRoot) => _path = Path.Combine(dataRoot, Baxy.Kernel.Policy.ToolProfileStore.FileName);
 
@@ -95,6 +105,12 @@ internal sealed class ToolProfile
         return LocalContext.MinimumContext(prefix);
     }
 
+    /// <summary>VRAM4B: the ready-made profiles under the factory's with the context each needs, the one with the most
+    /// tools first: what a start may take by itself on a card that does not hold the factory's (<see cref="FitCard"/>).</summary>
+    internal static IReadOnlyList<(string Profile, int Need)> Smaller(int? measured, string? measuredProfile) =>
+        [.. MeasuredPrefix.Reverse().Where(static preset => preset.Name != Completo)
+            .Select(preset => (preset.Name, NeededContext(preset.Name, measured, measuredProfile)))];
+
     /// <summary>The largest prefix measured for a ready-made profile (Completo's): a Personalizado's is never above it.</summary>
     internal static int LargestPrefix => MeasuredPrefix.Max(static preset => preset.Prefix);
 
@@ -151,6 +167,155 @@ internal sealed class ToolProfile
     /// that cannot be read or names no profile keeps the last one read (<see cref="Read"/>).</summary>
     internal string Profile => Read().Profile;
 
+    /// <summary>VRAM4B: whether a profile is kept (its file is there): the person's, or, VRAM4C, the one BAXY chose for this
+    /// PC's card (<see cref="Fitted"/>). Until then the profile is the factory's, and a start may take a smaller one for the
+    /// card (<see cref="FitCard"/>). VRAM4D: the person's only; BAXY's is <see cref="KeptForTheCard"/>.</summary>
+    internal bool Chosen => File.Exists(_path) && KeptForTheCard is null;
+
+    /// <summary>VRAM4D: the profile BAXY chose for this PC's card on a start before, while the file keeps it (byCard); null
+    /// with none. The next start gives the mind its need to serve alone while the card is short (LocalContext.KeptVariable),
+    /// the list as for a new install, and a card with room does not keep it (<see cref="FitCard"/>).</summary>
+    internal CardFitted? KeptForTheCard
+    {
+        get
+        {
+            lock (_sync)
+            {
+                try
+                {
+                    return File.Exists(_path) ? ByCardOf(JsonNode.Parse(File.ReadAllText(_path))) : null;
+                }
+                catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+                {
+                    return null;
+                }
+            }
+        }
+    }
+
+    /// <summary>VRAM4B (the leader's decision, 2026-11-12: «si la persona nunca eligió perfil y el de fábrica no cabe, BAXY
+    /// arranca sola en el perfil que sí cabe»): the mind's start found the card holds <paramref name="fitted"/>'s profile
+    /// whole and not the factory's (MindSidecarClient.CardSaid, before the catalog is configured), or found nothing of the
+    /// kind (null). VRAM4C (the leader's decision on VRAM4B's §7.2: «un asistente tiene que portarse igual todos los
+    /// días… esa elección se queda fija… no vuelve sola a Completo aunque otro día haya memoria»): kept, while no profile
+    /// is, as BAXY's choice for this PC (<see cref="Baxy.Kernel.Policy.ToolProfileStore.ByCard"/>), never the person's;
+    /// changing it stays theirs (<see cref="Apply"/>, by voice too). VRAM4D (REV18 R18-2; the leader: «BAXY sólo fija una
+    /// elección suya cuando la tarjeta es pequeña de verdad»): kept only when the mind found the card short in all
+    /// (<paramref name="shortCard"/> true, LocalContext.CardMemory); on a card with room, or not known, this start's alone,
+    /// and a choice of BAXY's kept from before goes (the 1.5.1's, on a card a game held at one start).</summary>
+    internal void FitCard(CardFitted? fitted, bool? shortCard = null)
+    {
+        lock (_sync)
+        {
+            _fitted = null;
+            if (shortCard == false && KeptForTheCard is not null)
+            {
+                _ = Keep(null);
+            }
+
+            if (fitted is null || !IsPreset(fitted.Profile) || fitted.Profile == Completo || File.Exists(_path))
+            {
+                return;
+            }
+
+            if (shortCard != true)
+            {
+                _fitted = fitted with { ThisStart = true };
+                return;
+            }
+
+            _fitted = fitted with { ThisStart = false };
+            // A folder that refuses the file leaves the profile this run's (Read), as before VRAM4C.
+            _ = Keep(new JsonObject { ["profile"] = fitted.Profile, [ByCard] = CardJson(_fitted) });
+        }
+    }
+
+    private const string ByCard = Baxy.Kernel.Policy.ToolProfileStore.ByCard;
+
+    /// <summary>The view's notice of <paramref name="fitted"/> (boot «cardProfile»): the profile and Settings' figures.</summary>
+    internal static JsonObject Notice(CardFitted fitted)
+    {
+        JsonObject json = CardJson(fitted);
+        json.Insert(0, "profile", fitted.Profile);
+        return json;
+    }
+
+    private static JsonObject CardJson(CardFitted fitted)
+    {
+        var json = new JsonObject { ["factory"] = Completo, ["freeMb"] = fitted.FreeMb, ["needMb"] = fitted.NeedMb };
+        if (fitted.ThisStart)
+        {
+            json["thisStart"] = true;
+        }
+
+        return json;
+    }
+
+    // VRAM4C: BAXY's choice for the card as a file (or Json(), put back) says it: a smaller ready-made profile and the two
+    // figures. Anything else is no such choice.
+    private static CardFitted? ByCardOf(JsonNode? said) =>
+        said is JsonObject file && file["profile"] is JsonValue named && named.TryGetValue(out string? profile)
+        && profile is not null && IsPreset(profile) && profile != Completo && file[ByCard] is JsonObject card
+        && card["freeMb"] is JsonValue free && free.TryGetValue(out int freeMb) && freeMb > 0
+        && card["needMb"] is JsonValue need && need.TryGetValue(out int needMb) && needMb > 0
+            ? new CardFitted(profile, freeMb, needMb, card["thisStart"] is JsonValue start && start.TryGetValue(out bool alone) && alone)
+            : null;
+
+    /// <summary>VRAM4B: what the mind is told of a profile this run took for the card (catalog.configure «cardProfile»,
+    /// mind.CARD_PROFILE_FACT): the two profiles as Settings → Tools names them and the two figures; null with none.
+    /// VRAM4D: none for a start's alone (ThisStart): the fact says the profile is kept, and the system text stays the one
+    /// a person's Esencial reads.</summary>
+    internal JsonObject? CardProfileFact() => Fitted is { ThisStart: false } fitted
+        ? new JsonObject
+        {
+            ["profile"] = Shown(fitted.Profile, UiLanguage.IsEnglish),
+            ["factory"] = Shown(Completo, UiLanguage.IsEnglish),
+            ["freeMb"] = fitted.FreeMb,
+            ["needMb"] = fitted.NeedMb,
+        }
+        : null;
+
+    /// <summary>VRAM4B: what the profile is by the card, while it is (<see cref="FitCard"/>, nothing chosen since). VRAM4C: read
+    /// from the file, so every start after the one that chose it says the same (Settings → Tools, the mind's fact).</summary>
+    internal CardFitted? Fitted
+    {
+        get
+        {
+            lock (_sync)
+            {
+                if (!File.Exists(_path))
+                {
+                    return _fitted;
+                }
+
+                try
+                {
+                    return ByCardOf(JsonNode.Parse(File.ReadAllText(_path)));
+                }
+                catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+                {
+                    return null;
+                }
+            }
+        }
+    }
+
+    /// <summary>VRAM4C (the leader: «el aviso sale una sola vez (la primera)»): the profile BAXY chose for the card on this
+    /// run's start, while it is still the profile: the view's notice. Every start after it says nothing.</summary>
+    internal CardFitted? SaidNow
+    {
+        get
+        {
+            CardFitted? now;
+            lock (_sync)
+            {
+                now = _fitted;
+            }
+
+            return now is not null && Fitted == now ? now : null;
+        }
+    }
+
     /// <summary>MEM3 (VIVO15 fila 3, Completo with the memory's own switch off: «Recuerda que mi perro se llama Chispo.» →
     /// «¡Genial, ahora sé que tu perro se llama Chispo!» 5 of 5, nothing called nor offered): with the switch off, memory.save
     /// was shown whole, as if it saved, and nothing the model read said the memory was off. Off, the memory call shown with
@@ -196,17 +361,16 @@ internal sealed class ToolProfile
     /// says of it, the tool, the profile and the ready-made profiles that have it, so what is off and where it turns on are
     /// the receipt's and not the model's guess.</summary>
     /// ESE3 (VIVO7 fila 4: «with this tool on» was told as «activa la opción "Alarmas o recordatorios"», an option the
-    /// tab never shows): the profiles and the tool's box in Personalizado are named as the view shows them, in its language.
+    /// tab never shows): the profile is named as the view shows it, in its language.
+    /// AJU1 (dueño, 10-11: everything by voice, «actívalo en Ajustes» is never the only way): the call that turns it on by
+    /// speaking, and no menu: with «turnOn» (Settings → Tools) beside it the 4B sent the person there instead of offering.
     internal JsonObject OffFacts(string operation)
     {
         (string profile, _) = Read();
         bool english = UiLanguage.IsEnglish;
         int level = FieldStepProjection.ProfileLevel(operation);
-        string[] with = [.. Presets.Where(preset => preset.Level >= level).Select(preset => Shown(preset.Name, english))];
-        string presets = with.Length > 1 ? string.Join(", ", with[..^1]) + " or " + with[^1] : with[0];
-        string where = english ? "Settings → Tools" : "Settings → Tools («Ajustes → Herramientas»)";
         // TPV1 (dueño, 10-11: everything by voice): the smallest ready-made profile that has it, switched by BAXY with the
-        // person's «sí»; where Settings has it stays beside, never as the only way.
+        // person's «sí».
         string smallest = Presets.First(preset => preset.Level >= level).Name;
         return new JsonObject
         {
@@ -214,7 +378,6 @@ internal sealed class ToolProfile
             ["profile"] = Shown(profile, english),
             ["turnOnBySpeaking"] = WireNames.Call(OwnBrakes.Operation, new() { ["setting"] = OwnBrakes.ToolProfile, ["value"] = smallest })
                 + $" switches to the profile {Shown(smallest, english)}, which has it; BAXY asks the person's yes itself",
-            ["turnOn"] = $"{where}: the profile {presets}, or {Shown(Personalizado, english)} with «{FieldStepProjection.Title(operation, english)}» ticked",
         };
     }
 
@@ -312,6 +475,29 @@ internal sealed class ToolProfile
             return null;
         }
 
+        // VRAM4B: the same for the profile a start took for the card (Json's «byCard»): put back, it is still no choice of
+        // the person's. VRAM4C: what was written in between (a profile lent to another model) goes, and BAXY's choice for
+        // the card is kept again as it was.
+        if (body[ByCard] is JsonObject)
+        {
+            if (ByCardOf(body) is not { } card)
+            {
+                return Invalid;
+            }
+
+            if (card.ThisStart)
+            {
+                // VRAM4D: this start's alone was never written: no file again, and the profile this run's.
+                lock (_sync)
+                {
+                    _fitted = card;
+                    return Keep(null);
+                }
+            }
+
+            return Keep(new JsonObject { ["profile"] = card.Profile, [ByCard] = CardJson(card) });
+        }
+
         if (body["profile"] is not JsonValue chosen || !chosen.TryGetValue(out string? profile)
             || (profile != Personalizado && !Presets.Any(p => p.Name == profile)))
         {
@@ -343,9 +529,20 @@ internal sealed class ToolProfile
 
         lock (_sync)
         {
+            // VRAM4C: the person's now. VRAM4D (REV18 R18-1): Completo is written too, theirs, kept as any other.
+            _fitted = null;
+            return Keep(file);
+        }
+    }
+
+    // The profile's file (null: none, the factory's). Null when kept, or why not.
+    private string? Keep(JsonObject? file)
+    {
+        lock (_sync)
+        {
             try
             {
-                if (profile == Completo)
+                if (file is null)
                 {
                     File.Delete(_path);
                 }
@@ -383,6 +580,12 @@ internal sealed class ToolProfile
             }
         }
 
+        // VRAM4B: the profile is the card's, not the person's: Settings → Tools says why (VRAM4C: for as long as it is).
+        if (Fitted is { } fitted)
+        {
+            json[ByCard] = CardJson(fitted);
+        }
+
         return json;
     }
 
@@ -416,7 +619,8 @@ internal sealed class ToolProfile
             (string Profile, HashSet<string>? On)? read;
             try
             {
-                read = !File.Exists(_path) ? (Completo, null) : Parse(File.ReadAllText(_path));
+                // VRAM4B: with no choice of the person's, the factory's, or the one this run's start took for the card.
+                read = !File.Exists(_path) ? (_fitted?.Profile ?? Completo, null) : Parse(File.ReadAllText(_path));
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
             {

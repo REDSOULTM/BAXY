@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from baxy_mind.llm_server import REREAD_TOKENS
-from baxy_mind.mind import COMPACTED, NO_MORE_CALLS, Mind
+from baxy_mind.mind import COMPACTED, NO_MORE_CALLS, RING_READ_SYSTEM, Mind
 
 
 class FakeServer:
@@ -22,12 +22,15 @@ class FakeServer:
 
     def ask_apart(self, body: dict, timeout: float = 60.0) -> dict:
         self.closed.append(json.loads(json.dumps(body)))
+        if body["messages"][0]["content"] == RING_READ_SYSTEM:
+            return ring_read(getattr(self, "last", None))
         return their_answer(self.replies)
 
     def chat(self, body: dict, timeout: float = 120.0, gives_way: bool = False) -> dict:
         self.bodies.append(json.loads(json.dumps(body)))
         self.gave_way = gives_way
         reply = self.replies.pop(0)
+        self.last = reply
         if isinstance(reply, Exception):
             raise reply
         return reply
@@ -51,6 +54,17 @@ def their_answer(replies: list) -> dict:
         if given == "yes":
             replies.pop(0)
     return {"choices": [{"message": {"content": answer}}]}
+
+
+def ring_read(last: object) -> dict:
+    """ALR9: the closed question on what the words ask of what rings (Mind._ring_not_asked), answered as the scripted
+    model read them: the action of the stop or snooze it just proposed («other» for anything else)."""
+    calls = (((last or {}).get("choices") or [{}])[0].get("message") or {}).get("tool_calls") or [] \
+        if isinstance(last, dict) else []
+    actions = [json.loads(call["function"].get("arguments") or "{}").get("action") for call in calls]
+    answer = next((action for action in actions if action in ("stop", "snooze")), "other")
+    label = {"stop": "parar", "snooze": "posponer", "other": "otra"}[answer]  # ALR9C: the question's Spanish labels
+    return {"choices": [{"message": {"content": label}}]}
 
 
 def _call(name: str, arguments: dict) -> dict:

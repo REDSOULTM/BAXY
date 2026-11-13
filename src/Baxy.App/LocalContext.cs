@@ -52,6 +52,62 @@ internal sealed class LocalContext
     // The mind reads here the VRAM the projector needs free, the server's included, at the context it starts with.
     internal const string VisionNeedsVariable = "BAXY_VISION_GPU_NEEDS_MIB";
 
+    // VRAM4: the mind reads here the cells the person's tool profile needs, its prompt and a turn. With «Automático» it
+    // fits its context to the video memory free when its server starts (llm_server.fit_card), never under these.
+    internal const string NeedsVariable = "BAXY_RENEW_CTX_NEEDS";
+
+    // VRAM4D (REV18 R18-2): and here, one of those needs: the profile's BAXY chose for this card on a start before
+    // (ToolProfile.KeptForTheCard). The mind serves it alone while the card is short (llm_server.context_kept).
+    internal const string KeptVariable = "BAXY_RENEW_CTX_KEPT";
+
+    /// <summary>VRAM4: what a mind found on a card that does not hold its server whole (its ready line's cardShort): the
+    /// video memory free at its start, what the cells it took need, those cells, and the most cells the card holds whole
+    /// (null when none of the ones it tries does).</summary>
+    internal sealed record CardFound(int FreeMb, int NeedMb, int Context, int? FitsContext)
+    {
+        internal static CardFound? From(JsonNode? said)
+        {
+            if (said is not JsonObject found || Cells(found["freeMb"]) is not { } free || Cells(found["needMb"]) is not { } need
+                || Cells(found["context"]) is not { } context)
+            {
+                return null;
+            }
+
+            return new CardFound(free, need, context, Cells(found["fitsContext"]));
+        }
+
+        private static int? Cells(JsonNode? node) =>
+            node is JsonValue value && value.TryGetValue(out int number) && number > 0 ? number : null;
+    }
+
+    /// <summary>VRAM4B: what a mind's hello says when its start took, for a person who never chose a tool profile, the
+    /// cells of a smaller ready-made one than the factory's (llm_server.fit_profiles): the video memory free at its
+    /// start, what the factory's profile takes, the need it serves (one of the list in <see cref="NeedsVariable"/>) and
+    /// the cells it started with.</summary>
+    internal sealed record CardFit(int FreeMb, int NeedMb, int Needs, int Context)
+    {
+        internal static CardFit? From(JsonNode? said) =>
+            said is JsonObject found && Cells(found["freeMb"]) is { } free && Cells(found["needMb"]) is { } need
+                && Cells(found["needs"]) is { } needs && Cells(found["context"]) is { } context
+                ? new CardFit(free, need, needs, context)
+                : null;
+
+        private static int? Cells(JsonNode? node) =>
+            node is JsonValue value && value.TryGetValue(out int number) && number > 0 ? number : null;
+    }
+
+    /// <summary>VRAM4D (REV18 R18-2): what a mind's hello says of the card's whole memory, MiB, and whether the card is
+    /// short (llm_server.card_short: the factory's profile does not fit even in all of it but what the desktop keeps).
+    /// Only a short card keeps the profile a start took for it (ToolProfile.FitCard).</summary>
+    internal sealed record CardMemory(int TotalMb, bool Short)
+    {
+        internal static CardMemory? From(JsonNode? said) =>
+            said is JsonObject found && found["totalMb"] is JsonValue total && total.TryGetValue(out int totalMb) && totalMb > 0
+                && found["short"] is JsonValue shortCard && shortCard.TryGetValue(out bool isShort)
+                ? new CardMemory(totalMb, isShort)
+                : null;
+    }
+
     private readonly string _path;
     private readonly object _sync = new();
     // What the environment had before this setting gave the mind anything (a bench's own BAXY_RENEW_CTX, or none):
@@ -62,6 +118,10 @@ internal sealed class LocalContext
     // (null with none, or with another model, which does not run it).
     private string? _given;
     private string? _applied;
+    // VRAM4: what the running mind on BAXY's own model said of its start: the cells its server took (with «Automático»,
+    // fewer than the factory's on a card short of video memory) and what it found when not even those fit whole.
+    private int? _runs;
+    private CardFound? _cardShort;
     // The header of each file of BAXY's own (the mind's, and the stock and tuned ones' for their rows), read once per size.
     private readonly Dictionary<string, (long Bytes, GgufShape? Shape)> _models = new(StringComparer.OrdinalIgnoreCase);
 
@@ -213,8 +273,12 @@ internal sealed class LocalContext
     /// (<see cref="VisionNeedsVariable"/>) on <paramref name="backend"/>, the last one a mind said (NVIDIA's before any).
     /// REM5 (REV14 A-C1): the person's choice goes to the mind as they made it, never grown here. REM3 grew one too small
     /// for the profile (<see cref="KeepFitting"/>) at every start and rewrote their file, and with it the video memory, on a
-    /// card they had chosen it small for; the view says instead which profile does not fit it (<see cref="Short"/>).</summary>
-    internal void ApplyEnvironment(string? backend = null)
+    /// card they had chosen it small for; the view says instead which profile does not fit it (<see cref="Short"/>).
+    /// VRAM4: and what the person's profile needs (<paramref name="needed"/>, ToolProfile.NeededContext) in
+    /// <see cref="NeedsVariable"/>, the floor of a context the mind fits to the card. VRAM4B: after it, only when the
+    /// person never chose a profile, what each smaller ready-made one needs (<paramref name="orElse"/>, largest first):
+    /// the mind takes the first the card holds whole and says which (<see cref="CardFit"/>).</summary>
+    internal void ApplyEnvironment(string? backend = null, int? needed = null, IEnumerable<int>? orElse = null, int? kept = null)
     {
         lock (_sync)
         {
@@ -233,16 +297,67 @@ internal sealed class LocalContext
             long? needs = ServerBytes(Model(), context, running) is { } server && ProjectorBytes() is { } projector
                 ? server + projector + VisionMarginBytes : null;
             Environment.SetEnvironmentVariable(VisionNeedsVariable, needs is { } bytes ? (bytes >> 20).ToString(CultureInfo.InvariantCulture) : null);
+            Environment.SetEnvironmentVariable(NeedsVariable, needed is > 0
+                ? string.Join(',', new[] { needed.Value }.Concat(orElse ?? []).Select(static cells => cells.ToString(CultureInfo.InvariantCulture)))
+                : null);
+            Environment.SetEnvironmentVariable(KeptVariable, needed is > 0 && kept is > 0 ? kept.Value.ToString(CultureInfo.InvariantCulture) : null);
         }
     }
 
-    /// <summary>A mind came up, on BAXY's own model or not (<paramref name="ownModel"/>).</summary>
-    internal void Started(bool ownModel)
+    /// <summary>A mind came up, on BAXY's own model or not (<paramref name="ownModel"/>), with the cells its server took
+    /// (<paramref name="context"/>) and what it found on a card that does not hold it whole (<paramref name="cardShort"/>),
+    /// when it said them.</summary>
+    internal void Started(bool ownModel, int? context = null, CardFound? cardShort = null)
     {
         lock (_sync)
         {
             _applied = ownModel ? _given : null;
+            _runs = ownModel ? context : null;
+            _cardShort = ownModel ? cardShort : null;
         }
+    }
+
+    /// <summary>VRAM4: a mind did not come up: what it found on a card that does not hold the profile's cells whole, when it
+    /// said so with its failure (<paramref name="cardShort"/>), for the breakdown card to say it.</summary>
+    internal void Failed(CardFound? cardShort)
+    {
+        lock (_sync)
+        {
+            _runs = null;
+            _cardShort = cardShort;
+        }
+    }
+
+    /// <summary>VRAM4: «Automático» as the running mind took it, one of the presets, on a card whose free video memory did
+    /// not hold the factory's cells; else the factory's on <paramref name="backend"/>.</summary>
+    internal int? AutomaticNow(string? backend)
+    {
+        lock (_sync)
+        {
+            return _applied == Key(null) && _runs is { } cells && Presets.Contains(cells) ? cells : Automatic(backend);
+        }
+    }
+
+    /// <summary>VRAM4: when the card did not hold whole the cells <paramref name="profile"/> needs, what to say: the
+    /// profile, the video memory that was free and what those cells take, and the ready-made profile with the most tools
+    /// that fits the card whole (<paramref name="fitting"/> of the cells it holds; null when none does). Null otherwise.</summary>
+    internal JsonObject? CardShort(string profile, Func<int, string?> fitting)
+    {
+        ArgumentNullException.ThrowIfNull(fitting);
+        CardFound? found;
+        lock (_sync)
+        {
+            found = _cardShort;
+        }
+
+        return found is null ? null : new JsonObject
+        {
+            ["profile"] = profile,
+            ["freeMb"] = found.FreeMb,
+            ["needMb"] = found.NeedMb,
+            ["context"] = found.Context,
+            ["fittingProfile"] = found.FitsContext is { } cells ? fitting(cells) : null,
+        };
     }
 
     /// <summary>A mind on BAXY's own model came up with another choice than the one kept. Before any did (a start that
@@ -305,7 +420,7 @@ internal sealed class LocalContext
         return new JsonObject
         {
             ["chosen"] = Chosen(),
-            ["automatic"] = Automatic(backend),
+            ["automatic"] = AutomaticNow(backend),
             ["native"] = native,
             ["recommended"] = freeBytes is null ? null : fitting,
             ["recommendedWhy"] = freeBytes is null || native is null || backend is null ? null : fitting == native ? "nativo" : fitting is null ? "no_cabe" : "tarjeta",

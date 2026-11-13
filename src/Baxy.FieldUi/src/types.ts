@@ -1,7 +1,7 @@
 /* The view's contract with Baxy.App (FieldProductChannel, channel baxy.field.v1). Every value here comes from the
    host; a reading the host could not take travels as null and the view shows «—», never a 0. */
 
-import type { FailureMemory, FailureRead, ModelReading } from './causes';
+import type { CardProfile, FailureCard, FailureMemory, FailureRead, ModelReading } from './causes';
 
 /** what the host says BAXY is doing (FieldProductChannel.CurrentConversationState). */
 export type HostState = 'idle' | 'listening' | 'thinking' | 'speaking' | 'error';
@@ -92,6 +92,8 @@ export interface AgentStatus {
   failureKind?: string | null;
   /** N9: the figures of a read too slow, when the cause is one. */
   failureRead?: FailureRead | null;
+  /** VRAM4: the start that failed was on a card that does not hold the profile whole (LocalContext.CardShort) */
+  failureCard?: FailureCard | null;
   /** uso-116: the figures of that lack of memory, when known */
   failureMemory?: FailureMemory | null;
   /** active or at rest (the rail's power row and the tray menu change it) */
@@ -137,6 +139,8 @@ export interface BootPieces {
   onProcessor?: boolean;
   /** QWB2: why this start runs the stock model although the person chose the tuned one (missing or damaged), or null. */
   tunedProblem?: string | null;
+  /** VRAM4B: this run started by itself in a smaller profile than the factory's, for the card's free video memory, or null. */
+  cardProfile?: CardProfile | null;
 }
 
 export interface Metrics {
@@ -206,7 +210,7 @@ export interface GeneralSettings {
  *  list when the view connects or a session is opened. */
 export type ServerEvent =
   | { type: 'state'; value: HostState; quiet?: HostState }
-  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean; waitingForMind?: boolean; failureCause?: string | null; failureWhy?: string | null; failureKind?: string | null; failureMemory?: FailureMemory | null; failureRead?: FailureRead | null }
+  | { type: 'agent'; built: boolean; ready: boolean; failure?: string | null; pendingConfirmation?: boolean; powered?: boolean; waitingForMind?: boolean; failureCause?: string | null; failureWhy?: string | null; failureKind?: string | null; failureMemory?: FailureMemory | null; failureRead?: FailureRead | null; failureCard?: FailureCard | null }
   | { type: 'item'; item: ChatItem }
   | { type: 'transcript'; items: ChatItem[] }
   | ({ type: 'step'; phase: 'start' | 'end'; turn: string } & Step)

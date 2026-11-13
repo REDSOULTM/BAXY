@@ -27,6 +27,9 @@ export type Mood = 'happy' | 'sad' | 'curious' | null;
 
 export interface BaxyStore {
   connected: boolean;
+  /** VRAM4B: the notice of a profile this run took for the card (boot.cardProfile) was there when the person's first
+      request came: it is not said again in this view. */
+  cardSeen: boolean;
   hostState: HostState;
   /** the host's state without the voice (what follows when the voice stops sounding) */
   hostQuiet: HostState;
@@ -71,6 +74,7 @@ export const INITIAL: BaxyStore = {
   journey: null,
   net: null,
   netLog: [],
+  cardSeen: false,
   activity: 'free',
   sub: null,
   mood: null,
@@ -119,10 +123,10 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
     case 'state':
       // listening starts a new request: the last reply's captions leave (owner, 2026-10-20: they came back and
       // re-animated over what BAXY said next)
-      return { ...s, hostState: ev.value, hostQuiet: ev.quiet ?? (ev.value === 'speaking' ? 'idle' : ev.value), live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null,
+      return { ...s, cardSeen: s.cardSeen || (ev.value === 'thinking' && !!s.boot?.model && !!s.boot.cardProfile), hostState: ev.value, hostQuiet: ev.quiet ?? (ev.value === 'speaking' ? 'idle' : ev.value), live: ev.value === 'listening' ? s.live : '', running: ev.value === 'thinking' ? s.running : null,
         sub: ev.value === 'listening' ? null : s.sub };
     case 'agent':
-      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, waitingForMind: !!ev.waitingForMind, failureCause: ev.failureCause ?? null, failureWhy: ev.failureWhy ?? null, failureKind: ev.failureKind ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, powered: ev.powered !== false } };
+      return { ...s, agent: { built: ev.built, ready: ev.ready, failure: ev.failure ?? null, pendingConfirmation: !!ev.pendingConfirmation, waitingForMind: !!ev.waitingForMind, failureCause: ev.failureCause ?? null, failureWhy: ev.failureWhy ?? null, failureKind: ev.failureKind ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, failureCard: ev.failureCard ?? null, powered: ev.powered !== false } };
     case 'transcript':
       // a session opened or started: its internet log is its own calls' (Ajustes → Privacidad says «de esta sesión»)
       return { ...s, items: lastOf(ev.items), sub: null, mood: null, journey: null, netLog: netOf(ev.items) };
@@ -173,7 +177,7 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
     case 'voice_wake':
       return { ...s, live: '' };
     case 'boot':
-      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null, lastFailure: ev.lastFailure ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, reading: heldReading(ev.reading ?? null, s.boot?.reading ?? null), onProcessor: !!ev.onProcessor, tunedProblem: ev.tunedProblem ?? null } };
+      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null, lastFailure: ev.lastFailure ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, reading: heldReading(ev.reading ?? null, s.boot?.reading ?? null), onProcessor: !!ev.onProcessor, tunedProblem: ev.tunedProblem ?? null, cardProfile: ev.cardProfile ?? null } };
     case 'surfaces':
       return { ...s, surfaces: { sessions: ev.sessions, sessions_revision: ev.sessions_revision, memory: ev.memory, memory_revision: ev.memory_revision, tools: ev.tools, triggers: ev.triggers, routines: ev.routines ?? null } };
     case 'session':

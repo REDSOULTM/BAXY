@@ -11,6 +11,8 @@ const MEMORY: Record<string, Words> = {
 
 /* Uso 112: the server's log says it could not open the model's file, or that what it read is no model
    (llm_server.model_file_failure). */
+const gb = (mb: number, t: T) => num(mb / 1024, t.locale, 1) + ' GB';
+
 const MODEL_FILE: Record<string, Words> = {
   modelo_ausente: { es: 'no se encuentra el archivo del modelo', en: 'the model file can’t be found' },
   modelo_danado: { es: 'el archivo del modelo está dañado', en: 'the model file is damaged' },
@@ -30,12 +32,57 @@ const NO_ADVANCE_TEXT: Words = {
   es: 'dejó de avanzar antes de terminar: este equipo puede ir demasiado lento para él, o su tarjeta gráfica se colgó',
   en: 'it stopped advancing before it finished: this PC may be too slow for it, or its graphics card hung',
 };
+/* VRAM4: «con 4 GB de memoria libres» was false on a card of 4 GB in all, the one BAXY is made for: with Windows and a desktop
+   open it never has them free. API1 said the same of that card («unos 4 GB libres… a su contexto»): since VRAM4 the context
+   follows what is free at start (llm_server.fit_card), so that figure is no longer what the model takes there. */
 const NEEDS: Words = {
-  es: 'BAXY necesita una tarjeta gráfica dedicada con 4 GB de memoria libres o un procesador más rápido.',
-  en: 'BAXY needs a dedicated graphics card with 4 GB of free memory or a faster processor.',
+  es: 'BAXY necesita una tarjeta gráfica dedicada con 4 GB de memoria o un procesador más rápido.',
+  en: 'BAXY needs a dedicated graphics card with 4 GB of memory or a faster processor.',
 };
 
-const gb = (mb: number, t: T) => num(mb / 1024, t.locale, 1) + ' GB';
+/* The tool profiles by their names (ToolProfile's presets in the App). */
+export const PROFILE_NAME: Record<string, Words> = {
+  esencial: { es: 'Esencial', en: 'Essential' }, diario: { es: 'Diario', en: 'Everyday' },
+  avanzado: { es: 'Avanzado', en: 'Advanced' }, completo: { es: 'Completo', en: 'Complete' },
+};
+
+/** VRAM4: the model's start found a card whose free video memory does not hold the profile's instructions and tools whole
+    (LocalContext.CardShort in the App, from the mind's llm_server.fit_card): the profile, what was free, what it takes, and
+    the ready-made profile that fits whole (null when none does). */
+export type FailureCard = { profile: string; freeMb: number; needMb: number; context?: number; fittingProfile?: string | null };
+
+export function cardShortText(card: FailureCard, t: T): string {
+  const name = (profile: string) => (PROFILE_NAME[profile] ? t.w(PROFILE_NAME[profile]) : profile);
+  const fits = card.fittingProfile && card.fittingProfile !== card.profile ? card.fittingProfile : null;
+  return t(`El perfil ${name(card.profile)} no cabe entero en la memoria de vídeo de tu tarjeta gráfica: había ${gb(card.freeMb, t)} libres al arrancar y necesita unos ${gb(card.needMb, t)}.`,
+    `The ${name(card.profile)} profile doesn’t fit whole in your graphics card’s video memory: ${gb(card.freeMb, t)} was free at start and it needs about ${gb(card.needMb, t)}.`)
+    + (fits ? t(` El perfil ${name(fits)} sí cabe entero: elígelo en Ajustes → Herramientas → Perfil.`, ` The ${name(fits)} profile does fit whole: choose it in Settings → Tools → Profile.`)
+      : t(' Cierra lo que esté usando la tarjeta gráfica y reintenta.', ' Close what is using the graphics card and try again.'));
+}
+
+/** VRAM4B: the ready-made profile the card holds whole, when it is another than the one that did not fit: the breakdown
+    offers to start in it («Arrancar en Esencial»). */
+export const fittingProfile = (card: FailureCard | null | undefined): string | null =>
+  card?.fittingProfile && card.fittingProfile !== card.profile && PROFILE_NAME[card.fittingProfile] ? card.fittingProfile : null;
+
+/** VRAM4B (the leader's decision, 2026-11-12): the person never chose a tool profile, the card's free video memory did not
+    hold the factory's, and a start took by itself the one it holds (ToolProfile.FitCard in the App): what was free, what
+    the factory's takes, the profile it took, and the ways to more tools. VRAM4C: kept for this PC as BAXY's choice (not
+    the person's) until the person chooses another; the notice is said on that start only, Settings → Tools always.
+    VRAM4D (REV18 R18-2): only on a card short in all; on one with room (something held its memory at that start) the
+    profile is that start's alone («thisStart»), and the next start tries the factory's again. */
+export type CardProfile = { profile: string; factory: string; freeMb: number; needMb: number; thisStart?: boolean };
+
+export function cardProfileText(card: CardProfile, t: T): string {
+  const name = (profile: string) => (PROFILE_NAME[profile] ? t.w(PROFILE_NAME[profile]) : profile);
+  if (card.thisStart) {
+    return t(`Tu tarjeta gráfica tenía ${gb(card.freeMb, t)} de memoria de vídeo libres al arrancar y el perfil ${name(card.factory)} necesita unos ${gb(card.needMb, t)}: sólo en este arranque, BAXY usa el perfil ${name(card.profile)}, que sí cabe. El próximo arranque vuelve a intentar el perfil ${name(card.factory)}: para tenerlo ya, cierra lo que esté usando la tarjeta gráfica (un juego, por ejemplo) y vuelve a abrir BAXY.`,
+      `Your graphics card had ${gb(card.freeMb, t)} of video memory free at start and the ${name(card.factory)} profile needs about ${gb(card.needMb, t)}: for this start only, BAXY uses the ${name(card.profile)} profile, which fits. The next start tries the ${name(card.factory)} profile again: to have it now, close what is using the graphics card (a game, for example) and open BAXY again.`);
+  }
+  // R18-12: another model alone does not bring the tools back: the profile is still the one BAXY chose.
+  return t(`Tu tarjeta gráfica tenía ${gb(card.freeMb, t)} de memoria de vídeo libres y el perfil ${name(card.factory)} necesita unos ${gb(card.needMb, t)}: BAXY eligió para este equipo el perfil ${name(card.profile)}, que sí cabe, y se queda en él. Para tener más herramientas, usa otro modelo (Ajustes → Modelo) o libera memoria de la tarjeta gráfica, y elige el perfil ${name(card.factory)} en Ajustes → Herramientas o pidiéndomelo.`,
+    `Your graphics card had ${gb(card.freeMb, t)} of video memory free and the ${name(card.factory)} profile needs about ${gb(card.needMb, t)}: BAXY chose the ${name(card.profile)} profile for this PC, which fits, and stays in it. For more tools, use another model (Settings → Model) or free up the graphics card’s memory, and choose the ${name(card.factory)} profile in Settings → Tools or by asking me.`);
+}
 
 /** uso-116: the figures of a lack of memory (llm_server.startup_failure): the buffer that did not fit, the PC's RAM free. */
 export type FailureMemory = { need_mb: number; free_mb?: number | null };
@@ -88,8 +135,9 @@ export const TUNED_PROBLEM: Record<string, Words> = {
   ajustado_danado: { es: 'El modelo ajustado está dañado y no lo voy a usar: BAXY sigue con el modelo de serie. Instálalo otra vez para usarlo', en: 'The tuned model is damaged and I won’t use it: BAXY stays on the stock model. Install it again to use it' },
 };
 
-/** N9: a start that repeats nothing the person can act on says it once, without the count of failed starts. */
-export const startedOnlyOnce = (cause: string | null | undefined) => cause === READ_TOO_SLOW;
+/** N9: a start that repeats nothing the person can act on says it once, without the count of failed starts. VRAM4B: so
+    does one on a card that does not hold the profile (the host tries it once, MainWindowViewModel.RetryMindOrGiveUp). */
+export const startedOnlyOnce = (cause: string | null | undefined, card?: FailureCard | null) => cause === READ_TOO_SLOW || !!card;
 
 /** N9: how far a slow start is, from the server's own count, and what is left at its pace when it is known. */
 export type ModelReading = {
@@ -114,7 +162,9 @@ export const ON_PROCESSOR_TEXT: Words = {
 };
 
 /** what the person can do about it: free memory, bring the model's file back, or a machine that can run the model. */
-export function causeAdvice(cause: string | null | undefined, t: T): string | null {
+export function causeAdvice(cause: string | null | undefined, t: T, card?: FailureCard | null): string | null {
+  // VRAM4: a start that was slow, stopped or ran out of memory on a card that does not hold the profile whole: that is the cause
+  if (card && cause && (cause === READ_TOO_SLOW || cause === NO_ADVANCE || MEMORY[cause])) return cardShortText(card, t);
   if (cause === READ_TOO_SLOW) return t.w(NEEDS) + t(' Si el equipo estaba ocupado, cierra lo que no uses y reintenta.', ' If the PC was busy, close what you are not using and try again.');
   if (cause === NO_ADVANCE) return t('Actualiza el controlador de la tarjeta gráfica y reintenta. ', 'Update the graphics card driver and try again. ') + t.w(NEEDS);
   if (cause && MODEL_FILE[cause]) return t('Reinstala BAXY para recuperarlo: tus datos no se borran.', 'Reinstall BAXY to get it back: your data is not deleted.');

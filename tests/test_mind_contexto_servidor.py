@@ -107,9 +107,11 @@ def test_catalog_ready_tells_the_app_the_backend_and_the_prefix_it_read() -> Non
 
     from baxy_mind import __main__ as sidecar
 
-    server = SimpleNamespace(ceiling_s=126.0, backend="vulkan", prefix_left=12.5, on_processor=False)
+    server = SimpleNamespace(ceiling_s=126.0, backend="vulkan", prefix_left=12.5, on_processor=False, context=73728,
+                             card_short=None)
+    # VRAM4: and the cells the server started with (test_mind_vram_libre).
     assert sidecar.ready_facts(server, 49086) == {"ceiling_s": 126.0, "onProcessor": False, "backend": "vulkan",
-                                                  "prefixTokens": 49086}
+                                                  "prefixTokens": 49086, "context": 73728}
 
 
 def test_the_apps_automatic_context_and_turn_room_are_the_minds() -> None:

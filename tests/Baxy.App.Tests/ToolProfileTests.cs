@@ -241,24 +241,25 @@ public sealed class ToolProfileTests
         {
             Assert.That((string?)off["tool"], Is.EqualTo(FieldStepProjection.EnglishTitle("web.fetch")));
             Assert.That((string?)off["profile"], Is.EqualTo("Esencial"));
-            Assert.That((string?)off["turnOn"], Is.EqualTo(
-                "Settings → Tools («Ajustes → Herramientas»): the profile Diario, Avanzado or Completo, or Personalizado with «Leer una página web» ticked"));
+            // AJU1 (dueño, 10-11: «actívalo en Ajustes» never as a way): the call by voice, and no menu.
+            Assert.That(off["turnOn"], Is.Null);
+            Assert.That(off.ToJsonString(), Does.Not.Contain("Settings →").And.Not.Contain("Ajustes"));
             Assert.That((string?)off["next"], Does.Contain("off in the person's tool profile, not by any other setting")
                 .And.Contain("the call in turnOnBySpeaking asks their yes itself"));
             // TPV1 (dueño, 10-11: never «do it yourself in Settings»): the smallest profile that has it, switched by voice.
             Assert.That((string?)off["turnOnBySpeaking"], Is.EqualTo(
                 """baxy_settings_set {"setting":"tool_profile","value":"diario"} switches to the profile Diario, which has it; BAXY asks the person's yes itself"""));
             Assert.That((string?)diario["profile"], Is.EqualTo("Diario"));
-            Assert.That((string?)diario["turnOn"], Does.StartWith("Settings → Tools («Ajustes → Herramientas»): the profile ").And.Not.Contain("Diario"));
-            Assert.That(web["profile"] ?? web["tool"] ?? web["turnOn"], Is.Null);
+            Assert.That((string?)diario["turnOnBySpeaking"], Does.Contain("\"value\":\"completo\"").And.Not.Contain("Settings"));
+            Assert.That(web["profile"] ?? web["tool"] ?? web["turnOnBySpeaking"], Is.Null);
             Assert.That((string?)web["next"], Does.Contain("«Búsqueda web»").And.Not.Contain("profile"));
             Assert.That((string?)off["next"], Does.Not.Contain("web search"));
         });
     }
 
-    // ESE3 (VIVO7 fila 4, P2: «activa la opción "Alarmas o recordatorios"», an option Settings → Tools never shows): where
-    // a tool turns on is told with the names the view shows, the profiles and the tool's box in Personalizado, in Spanish
-    // and in English.
+    // ESE3 (VIVO7 fila 4, P2: «activa la opción "Alarmas o recordatorios"», an option Settings → Tools never shows): the
+    // profile is told with the name the view shows, in Spanish and in English. AJU1: and how it turns on is the call by
+    // voice, with no menu in either language.
     [Test]
     public void WhereAToolTurnsOnIsToldWithTheNamesTheViewShowsInItsLanguage()
     {
@@ -271,11 +272,12 @@ public sealed class ToolProfileTests
         Assert.Multiple(() =>
         {
             Assert.That((string?)spanish["profile"], Is.EqualTo("Esencial"));
-            Assert.That((string?)spanish["turnOn"], Is.EqualTo(
-                "Settings → Tools («Ajustes → Herramientas»): the profile Diario, Avanzado or Completo, or Personalizado with «Crear nota» ticked"));
+            Assert.That((string?)spanish["turnOnBySpeaking"], Does.EndWith(
+                "switches to the profile Diario, which has it; BAXY asks the person's yes itself"));
             Assert.That((string?)english["profile"], Is.EqualTo("Essential"));
-            Assert.That((string?)english["turnOn"], Is.EqualTo(
-                "Settings → Tools: the profile Everyday, Advanced or Complete, or Custom with «Create a note» ticked"));
+            Assert.That((string?)english["turnOnBySpeaking"], Does.EndWith(
+                "switches to the profile Everyday, which has it; BAXY asks the person's yes itself"));
+            Assert.That(spanish.ToJsonString() + english.ToJsonString(), Does.Not.Contain("Settings").And.Not.Contain("Ajustes"));
             Assert.That((string?)english["tool"], Is.EqualTo((string?)spanish["tool"]), "the tool as the model knows it");
         });
     }

@@ -5,6 +5,7 @@ import { useDraft } from '../../drafts';
 import { num } from '../../numbers';
 import { radioKeys, rovingIndex } from '../../utils/radioKeys';
 import { Fold } from './Fold';
+import { cardProfileText } from '../../causes';
 
 /* Settings › Tools (owner's decision, 2026-11-08: ready-made tool profiles and a manual choice): how many of BAXY's tools the
    model sees (ToolProfile, GET/PUT /settings/tools; each tool's first profile is its level in GET /catalog). A preset
@@ -14,7 +15,7 @@ import { Fold } from './Fold';
 
 type Profile = 'esencial' | 'diario' | 'avanzado' | 'completo' | 'personalizado';
 // contextKeptFrom: the smallest context a change of profile keeps (LocalContext.FitsEveryProfile, REM3: REV13 C-2).
-interface ToolsState { profile: Profile; on: string[]; switching?: boolean; contextKeptFrom?: number }
+interface ToolsState { profile: Profile; on: string[]; switching?: boolean; contextKeptFrom?: number; byCard?: { factory: string; freeMb: number; needMb: number; thisStart?: boolean } | null }
 interface CatalogItem { name: string; title: string; level: number }
 interface Catalog { total: number; groups: { name: string; items: CatalogItem[] }[] }
 
@@ -100,6 +101,7 @@ export function ToolsSection() {
           <span className="h">{t('Enciende o apaga cada herramienta', 'Turn each tool on or off')}</span>
         </button>
       </div>
+      {state.byCard && !custom ? <div className="st-tip" role="note">{cardProfileText({ profile: state.profile, ...state.byCard }, t) + t(' No lo elegiste tú: si eliges un perfil aquí, BAXY usa el tuyo.', ' You didn’t choose it: pick a profile here and BAXY uses yours.')}</div> : null}
       {busy ? <div className="st-tip" role="status">{t('Cambiando de perfil: BAXY vuelve al acabar el turno en curso.', 'Changing profile: BAXY is back once the current turn ends.')}</div> : null}
       {problem ? <div className="st-tip" role="alert">{problem}</div> : null}
       </Fold>

@@ -20,6 +20,18 @@ _system_one_off = mind.system_one_off
 
 
 @pytest.fixture(autouse=True)
+def _no_card_asked(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> None:
+    # VRAM4: a server's start asks the card for its free memory (LlmServer.start, one --list-devices). No test asks this
+    # PC's: the ones about it say what the card answers (test_mind_vision_gpu, the server's own --list-devices).
+    from baxy_mind import llm_server
+
+    if request.module.__name__.rpartition(".")[2] == "test_mind_vision_gpu":
+        return
+    monkeypatch.setattr(llm_server.LlmServer, "_card_free", lambda self: None, raising=False)
+    monkeypatch.setattr(llm_server.LlmServer, "_card_total", lambda self: None, raising=False)
+
+
+@pytest.fixture(autouse=True)
 def _no_baxy_switch_from_the_shell(monkeypatch: pytest.MonkeyPatch) -> None:
     for name in [name for name in os.environ if name.upper().startswith("BAXY_")]:
         monkeypatch.delenv(name, raising=False)

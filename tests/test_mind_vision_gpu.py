@@ -11,6 +11,8 @@ from baxy_mind import llm_server
 CUDA = "Available devices:\n  CUDA0: x (16379 MiB, 15235 MiB free)\n"
 VULKAN = "Available devices:\n  Vulkan0: y (8176 MiB, 7420 MiB free)\n"
 TIGHT = "Available devices:\n  CUDA0: z (4096 MiB, 3890 MiB free)\n"
+# VRAM4: free memory that holds the automatic cells whole (llm_server.fit_card) and not the projector beside them.
+NO_PROJECTOR = "Available devices:\n  CUDA0: w (6144 MiB, 4500 MiB free)\n"
 
 
 def _start(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, devices: str | Exception,
@@ -69,7 +71,8 @@ def test_a_person_can_keep_the_projector_on_the_cpu_and_nothing_is_asked(
         tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("BAXY_VISION_OFFLOAD", "0")
     command, asked, _ = _start(tmp_path, monkeypatch, CUDA)
-    assert "--no-mmproj-offload" in command and asked == []
+    # VRAM4: nothing for the projector; the one question left is the start's own, for its cells (test_mind_vram_libre).
+    assert "--no-mmproj-offload" in command and asked == [["llama-server.exe", "--list-devices"]]
 
 
 def test_a_server_without_a_gpu_backend_does_not_offload(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -79,10 +82,11 @@ def test_a_server_without_a_gpu_backend_does_not_offload(tmp_path: Path, monkeyp
 
 
 def test_where_the_projector_runs_is_not_in_the_prefix_key(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The slot's state does not depend on it: a day with less VRAM free does not throw away the kept prefix."""
+    """The slot's state does not depend on it: a day with less VRAM free does not throw away the kept prefix. (VRAM4:
+    while the cells still fit whole; a card that no longer holds them starts with fewer, test_mind_vram_libre.)"""
     monkeypatch.delenv("BAXY_VISION_OFFLOAD", raising=False)
     _, _, on_gpu = _start(tmp_path, monkeypatch, CUDA)
-    _, _, on_cpu = _start(tmp_path, monkeypatch, TIGHT)
+    _, _, on_cpu = _start(tmp_path, monkeypatch, NO_PROJECTOR)
     assert on_gpu._settings == on_cpu._settings
     assert "--mmproj" in on_gpu._settings
 

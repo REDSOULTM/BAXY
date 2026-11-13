@@ -219,6 +219,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         int? chosen = _viewModel.LocalContextState.Chosen();
         state["short"] = _viewModel.LocalContextState.Short(_viewModel.ToolProfileState.Profile, _viewModel.ExternalModelState.NeededNow,
             chosen is { } cells ? ToolProfile.LargestFitting(cells, _viewModel.MindPrefixTokens, _viewModel.MindPrefixProfile) : null);
+        // VRAM4: «Automático» on a card whose free video memory does not hold the profile's cells whole: which profile, what
+        // was free and what it takes, and the profile that fits whole, to say it instead of a start that only goes slow.
+        state["cardShort"] = CardShort();
         return state;
     }
 
@@ -2099,6 +2102,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             : null,
         ["failureMemory"] = FailureMemory(),
         ["failureRead"] = FailureRead(),
+        // VRAM4: the start that failed was on a card whose free video memory did not hold the profile whole: said with the
+        // profile that fits, instead of «needs a faster PC».
+        ["failureCard"] = !_viewModel.IsMindReady && _viewModel.MindFailed ? CardShort() : null,
         // At rest or active: the rail's power row and the tray menu change it, the view only shows it.
         ["powered"] = _viewModel.IsPowered,
     };
@@ -2159,6 +2165,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["onProcessor"] = _viewModel.MindOnProcessor,
             // QWB2: the tuned model the person chose and this start could not use (missing or damaged).
             ["tunedProblem"] = _viewModel.TunedModelProblem,
+            // VRAM4B: this run started in a smaller profile than the factory's because of the card's free video memory,
+            // without the person choosing it: the view says it once (profile, factory, freeMb, needMb). VRAM4C: only on
+            // the start that chose it; the ones after keep it without a word (Settings → Tools and the mind say why).
+            // VRAM4D: «thisStart» on a card with room (REV18 R18-2): that start's alone, not kept.
+            ["cardProfile"] = _viewModel.IsMindReady && _viewModel.ToolProfileState.SaidNow is { } fitted
+                ? ToolProfile.Notice(fitted)
+                : null,
         };
     }
 
@@ -2166,6 +2179,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private JsonObject? FailureMemory() => _viewModel.MindFailureMemory is { } memory
         ? new JsonObject { ["need_mb"] = memory.NeedMb, ["free_mb"] = memory.FreeMb }
         : null;
+
+    // VRAM4: the profile the card did not hold whole at the mind's start, what was free, what it takes and the profile that fits.
+    private JsonObject? CardShort() => _viewModel.LocalContextState.CardShort(_viewModel.ToolProfileState.Profile,
+        held => ToolProfile.LargestFitting(held, _viewModel.MindPrefixTokens, _viewModel.MindPrefixProfile));
 
     // N9 (L5): «prepararlo tardaría tanto»: the figures of the read too slow the cause names.
     private JsonObject? FailureRead() => _viewModel.MindFailureRead is { } read

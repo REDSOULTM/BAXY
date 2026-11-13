@@ -82,10 +82,12 @@ def ready_facts(server: LlmServer, prefix_tokens: int) -> dict:
     """What catalog.ready says beside its count. With what the server keeps known, the App's ceiling for a turn's request
     follows the mind's own, and the App knows whether the processor computes the model. Settings → Model → Context
     (LocalContext in the App) takes the backend, for each preset's video memory, and the prompt prefix's tokens as read,
-    for the room each one leaves."""
+    for the room each one leaves. VRAM4: and the cells the server started with, which on a card short of video memory are
+    fewer than the automatic ones (LlmServer.start), with what it found free when not even those fit whole (cardShort)."""
     return {"ceiling_s": server.ceiling_s,
             **{key: value for key, value in progress_facts(server).items() if key == "onProcessor"},
-            "backend": server.backend, "prefixTokens": prefix_tokens}
+            "backend": server.backend, "prefixTokens": prefix_tokens, "context": server.context,
+            **({"cardShort": server.card_short} if server.card_short else {})}
 
 
 def main() -> int:
@@ -170,6 +172,11 @@ def main() -> int:
         # Ajustes → Comportamiento: the fixed identity, the factory texts the person's own replace (behavior.py), and how
         # long each may be.
         "behavior": {"identity": behavior.IDENTITY, "factory": behavior.factory(), "maxChars": behavior.MAX_CHARS},
+        # VRAM4B: the card holds a smaller ready-made profile than the factory's, which the person never chose: said
+        # before the catalog comes, so the App configures this run with that profile's tools (LlmServer.card_fit).
+        **({"card": server.card_fit} if getattr(server, "card_fit", None) else {}),
+        # VRAM4D (REV18 R18-2): the card's whole memory and whether it is short: only then does the App keep that profile.
+        **({"cardMemory": server.card_memory} if getattr(server, "card_memory", None) else {}),
     })
     def read() -> None:
         try:

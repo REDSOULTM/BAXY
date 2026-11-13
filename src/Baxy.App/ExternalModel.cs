@@ -75,6 +75,8 @@ internal sealed class ExternalModel : IDisposable
     private bool _activeLocal;
     private bool _apiThisRun;
     private string? _applied;
+    // API1: the choice whose start ended without connecting (Problem), while the switch that asked for it may still run.
+    private string? _notConnected;
     private Process? _ollama;
     // Holds the Ollama BAXY opened (and its runners): Windows ends them when this handle closes, also when BAXY is cut by its PID.
     private SafeFileHandle? _ollamaJob;
@@ -459,7 +461,7 @@ internal sealed class ExternalModel : IDisposable
             // The context it connected with (the person's, or the one recommended for the card), not only the one chosen.
             ["activeContext"] = Active && _activeLocal && _activeContext > 0 ? _activeContext : null,
             ["apiThisRun"] = _apiThisRun,
-            ["switching"] = Switching,
+            ["switching"] = Switching && (_notConnected is null || _notConnected != Choice()),
             ["problem"] = fell ? "traductor_caido" : Problem,
             ["vramShort"] = Problem == ShortOfVram && _short is { } shortOf ? new JsonObject
             {
@@ -692,6 +694,16 @@ internal sealed class ExternalModel : IDisposable
     /// <summary>The translator up and the mind's variables pointed at it, when the person turned it on. Never throws for
     /// a translator that cannot start: <see cref="Problem"/> says why and the local model starts as always.</summary>
     internal async Task StartAsync(CancellationToken cancellationToken)
+    {
+        // A start cut half-way says nothing of the choice it was for, nor of the one before.
+        _notConnected = null;
+        await StartChoiceAsync(cancellationToken).ConfigureAwait(true);
+        // API1: a choice that did not connect is said as soon as it is known, not once the start of BAXY's own model that
+        // follows it ends: on a slow PC that start reads for many minutes, and Settings said «Cambiando…» all that time.
+        _notConnected = Problem is not null && !Active ? _applied : null;
+    }
+
+    private async Task StartChoiceAsync(CancellationToken cancellationToken)
     {
         JsonObject config = Config();
         string choice = Choice();

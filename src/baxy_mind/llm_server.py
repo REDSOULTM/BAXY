@@ -259,6 +259,20 @@ class LlmServer:
         self.gpu_layers = gpu_layers
         # The cells that fit the backend's budget with this cache (default_context) when not given.
         self.context = context or default_context(backend, self.kv, self.output_cpu)
+        # VRAM4: with no context given, the cells are the mind's to choose, and start fits them to the VRAM free then
+        # (fit_card), on the one configuration its line was measured for: CUDA, the default cache, the output matrix in
+        # RAM and every layer asked for. ``card_short`` is what start found when the server does not fit whole.
+        self._fits_card = (context is None and backend == "cuda" and self.kv == ("q8_0", "q8_0") and self.output_cpu
+                           and gpu_layers.strip() == "99")
+        self.card_short: dict[str, int] | None = None
+        # VRAM4B: what start found when the person never chose a tool profile and the card holds a smaller ready-made
+        # one whole, not the factory's (the App takes that one for this run, ToolProfile.FitCard); and whether start
+        # launched no server at all, because not even the fewest cells fit the card's free memory (startup_failure).
+        self.card_fit: dict[str, int] | None = None
+        self.card_refused = False
+        # VRAM4D (REV18 R18-2): the card's whole memory as start read it, and whether it is short (card_short): only a
+        # short card keeps the profile a start took for it (the App's ToolProfile.FitCard). None when not read.
+        self.card_memory: dict[str, int | bool] | None = None
         # The most history a cut may leave for the model to read again in one decision (Mind._fits): what this cache
         # reads in time on this backend (reread_tokens).
         self.reread_tokens = reread_tokens(backend, self.kv)
@@ -338,8 +352,55 @@ class LlmServer:
             self._told = now
             self.advanced()
 
+    def _card_free(self) -> int | None:
+        """The VRAM free for this server, MiB; None when the server does not say. VRAM4B: a test of this process alone
+        may say it instead (CARD_FREE_TEST_VARIABLE), to walk a 4 GB card's start on a larger one."""
+        said = os.environ.get(CARD_FREE_TEST_VARIABLE, "").strip()
+        return int(said) if said.isdigit() else _free_vram_mib(self.server)
+
+    def _card_total(self) -> int | None:
+        """VRAM4D: the card's whole memory, MiB, from the same listing that said the free one (_card_free); None when
+        it did not say. A test may say it instead (CARD_TOTAL_TEST_VARIABLE), with the free one, to walk a card of
+        another size."""
+        said = os.environ.get(CARD_TOTAL_TEST_VARIABLE, "").strip()
+        return int(said) if said.isdigit() else _LISTED_TOTAL.get(self.server)
+
     def start(self) -> None:
         vision = _vision_args()
+        measured: tuple[int | None] | None = None
+        if self._fits_card and not self.remote:
+            measured = (self._card_free(),)
+            needs = context_needs_all()
+            total = self._card_total()
+            # R18-15: none free, or more than the card has, is no measure: as when the card says nothing.
+            free = measured[0] if measured[0] is not None and measured[0] > 0 and (total is None or measured[0] <= total) else None
+            short = card_short(total, self.context, needs[0] if needs else None) if free is not None else None
+            if short is not None:
+                self.card_memory = {"totalMb": total, "short": short}
+            # VRAM4D: the profile BAXY chose for this card before (context_kept) goes alone while the card is short, or
+            # when its whole memory is not known: the start takes no other one by itself (VRAM4C). On a card with room
+            # it is no choice to keep (R18-2): the start tries the factory's profile, as a new install's.
+            kept = context_kept()
+            if kept is not None and kept in needs and short is not False:
+                needs = [kept]
+            asked = fit_card(free, self.context, needs[0] if needs else None)[0]
+            self.context, whole, served = fit_profiles(free, self.context, needs)
+            measured = (free,) if free is not None or measured[0] is None else measured
+            if served and measured[0] is not None:
+                # VRAM4B: the profile asked first does not fit and a smaller one of the App's list does: what was free,
+                # what the first one takes, and the need served, for the App to start this run in that profile.
+                self.card_fit = {"freeMb": measured[0], "needMb": card_mib(asked) + CARD_MARGIN_MIB,
+                                 "needs": needs[served], "context": self.context}
+            if not whole and measured[0] is not None:
+                # What the App says to the person (LocalContext.CardShort): what was free, what these cells take, and
+                # the most cells the card holds whole, when any, for the tool profile that fits them.
+                held = [cells for cells in CARD_CONTEXTS if card_mib(cells) + CARD_MARGIN_MIB <= measured[0]]
+                self.card_short = {"freeMb": measured[0], "needMb": card_mib(self.context) + CARD_MARGIN_MIB,
+                                   "context": self.context, **({"fitsContext": max(held)} if held else {})}
+                # VRAM4B: the server's own memory at these cells is more than the card has free: NVIDIA's driver would
+                # give the rest from the PC's memory and the prefix would be read at tens of tokens a second for half an
+                # hour (INFORME_VRAM4.md). No server is launched: the start fails now, with what it found.
+                self.card_refused = card_mib(self.context) > measured[0]
         self._settings = [
             "-ngl", self.gpu_layers, "-c", str(self.context), *slots(self.backend), *read_batch(self.backend),
             "-fa", self.flash,
@@ -368,7 +429,10 @@ class LlmServer:
         # kept prefix (PREFIX) is not one of them: it is saved before any turn (Mind.warm).
         self.slot_dir.mkdir(parents=True, exist_ok=True)
         self.forget_set_aside()
-        self._launch(projector_placement(self.server, self.backend))
+        if self.card_refused:
+            self._failure = "the card's free video memory does not hold the model's server"
+            return
+        self._launch(projector_placement(self.server, self.backend, measured))
         threading.Thread(target=self._wait_health, daemon=True).start()
 
     def _launch(self, placement: list[str]) -> None:
@@ -440,6 +504,16 @@ class LlmServer:
                 raise RuntimeError(self._failure or "llama-server is not ready")
 
     def startup_failure(self, error: BaseException | None = None) -> dict[str, Any]:
+        """Why the model did not come up (_why_not_started), and with it what this start found on a card that does not
+        hold the profile's cells whole (VRAM4, cardShort): the App says that, and the profile that fits, instead of a PC
+        that only «reads too slowly»."""
+        if self.card_refused:
+            # VRAM4B: no server ran, so its log is an earlier run's: the cause is what the start measured.
+            return {"cause": "vram_insuficiente", "cardShort": self.card_short}
+        failure = self._why_not_started(error)
+        return {**failure, "cardShort": self.card_short} if self.card_short else failure
+
+    def _why_not_started(self, error: BaseException | None = None) -> dict[str, Any]:
         """The App's startup-failure shape (MindStartupFailure): why the model did not come up. A server that exited is
         «proceso_salio» unless its log says it ran out of memory (memory_failure); ``error``, what the start raised in
         the mind, is the PC's memory when it is a MemoryError (uso 95). A lack of memory goes with its figures where they
@@ -1120,6 +1194,113 @@ def default_context(backend: str, kv: tuple[str, str], output_cpu: bool = False)
     return measured.get((kv[0], output_cpu), CONTEXT) if kv[0] == kv[1] else CONTEXT
 
 
+# VRAM4 (2026-11-12; the owner: «Baxi debe de funcionar en un hardware de 4 GB… Tiene que caber en 4 GB»): CUDA_CONTEXT's
+# 4,032 MiB were measured as the server's own memory on a 16 GB card. A card of 4 GB in all has 3.3-3.6 GB free with
+# Windows and a desktop open, the server asked for 77,824 cells and every layer all the same («-ngl 99», which stops
+# llama.cpp's own fit: «n_gpu_layers already set by user to 99, abort»), and NVIDIA's driver on Windows gives what does
+# not fit from the system's memory instead of failing («CUDA Sysmem Fallback Policy», on by default: «allows the CUDA
+# application to use system RAM when VRAM is exhausted», https://nvidia.custhelp.com/app/answers/detail/a_id/5490, read
+# 2026-11-12): a GTX 1050 Ti read the prefix at 62 → 47 tokens/s, 31-42 min, and the App gave up (INFORME_VRAM4.md).
+# So with the context left to the mind («Automático») the cells follow the VRAM free when the server starts, as the
+# server itself counts it (--list-devices): what the default cache takes on CUDA with the output matrix in RAM is a line
+# over the cells (INFORME_51.md: 3,504 MiB at 53,248 cells, 4,032 at 77,824; INFORME_VRAM4.md §2 measures it again).
+CARD_FIXED_MIB = 2360
+CARD_CELL_MIB = (4032 - 3504) / (77824 - 53248)
+# Left free beside the server: what a desktop takes and gives back while BAXY runs (INFORME_VRAM4.md §2).
+CARD_MARGIN_MIB = 200
+# The contexts tried, the App's presets (LocalContext.Presets) up to the automatic one: a start on a card whose free
+# memory moves a little keeps the same cells, and with them the prefix kept on disk (prefix_key).
+CARD_CONTEXTS = (32768, 45056, 53248, 61440, 65536, 77824)
+# The App says here the cells the person's tool profile needs, its prompt and a turn (LocalContext.NeedsVariable).
+CONTEXT_NEEDS_VARIABLE = "BAXY_RENEW_CTX_NEEDS"
+# VRAM4D: and here, one of those needs: the profile's BAXY chose for this card on a start before (LocalContext.KeptVariable).
+CONTEXT_KEPT_VARIABLE = "BAXY_RENEW_CTX_KEPT"
+# VRAM4D (REV18 R18-2; the leader: «la tarjeta es corta si el perfil de fábrica no cabe ni con la tarjeta entera menos
+# una reserva fija para Windows y el escritorio»): what Windows and the desktop keep of a card's memory beside BAXY. The
+# most measured: 923 MiB in use with nothing of BAXY's on the PC's RTX 4060 Ti with its owner's desktop (INFORME_VRAM4B.md
+# §3); a card of 4 GB in all leaves 3.3-3.6 GB free (INFORME_VRAM4.md §1), 500-800 MiB. Any figure from 217 to 2,263 MiB
+# says the same of the cards sold (4 GB short; 6, 8 and more not); this one, the largest measured.
+CARD_DESKTOP_MIB = 923
+
+
+def card_mib(context: int) -> int:
+    """The video memory the server takes on CUDA at ``context`` cells of the default cache (see CARD_FIXED_MIB)."""
+    return math.ceil(CARD_FIXED_MIB + context * CARD_CELL_MIB)
+
+
+def fit_card(free: int | None, automatic: int, needs: int | None) -> tuple[int, bool]:
+    """VRAM4: the cells an automatic context gets on a card with ``free`` MiB, and whether the server fits it whole.
+    The automatic ones when they fit, or when the free memory is not known: nothing changes there. Else the most of
+    CARD_CONTEXTS that fits and holds what the person's profile needs (``needs``; CONTEXT, which holds every profile,
+    when the App did not say). When none fits, the fewest that hold it, not whole: the server starts as it did, and
+    what it found goes to the App (LlmServer.card_short), which says the profile that does not fit and the one that
+    does. Layers are not shared out with the processor here: llama.cpp's own fit does not act with the output matrix
+    placed by hand («tensor_buft_overrides already set by user, abort», common/fit.cpp) and no split was measured."""
+    if free is None or card_mib(automatic) + CARD_MARGIN_MIB <= free:
+        return automatic, True
+    holding = [cells for cells in CARD_CONTEXTS if (needs or CONTEXT) <= cells <= automatic]
+    fitting = [cells for cells in holding if card_mib(cells) + CARD_MARGIN_MIB <= free]
+    if fitting:
+        return max(fitting), True
+    return (min(holding) if holding else automatic), False
+
+
+def card_short(total: int | None, automatic: int, factory: int | None) -> bool | None:
+    """VRAM4D: whether a card of ``total`` MiB in all is short: the factory's profile (``factory``, the first need the App
+    gave) does not fit whole (fit_card) even in all of it but what the desktop keeps (CARD_DESKTOP_MIB). None when
+    either is not known."""
+    if total is None or factory is None:
+        return None
+    return not fit_card(total - CARD_DESKTOP_MIB, automatic, factory)[1]
+
+
+def context_kept(environ: dict[str, str] | None = None) -> int | None:
+    """VRAM4D: what CONTEXT_KEPT_VARIABLE says, the need of the profile BAXY chose for this card; None without one."""
+    given = (os.environ if environ is None else environ).get(CONTEXT_KEPT_VARIABLE, "").strip()
+    return int(given) if given.isdigit() and int(given) > 0 else None
+
+
+def context_needs(environ: dict[str, str] | None = None) -> int | None:
+    """What CONTEXT_NEEDS_VARIABLE says of the person's profile (its first figure), or None with nothing usable in it."""
+    needs = context_needs_all(environ)
+    return needs[0] if needs else None
+
+
+def context_needs_all(environ: dict[str, str] | None = None) -> list[int]:
+    """VRAM4B: every figure of CONTEXT_NEEDS_VARIABLE, separated by commas: the cells the profile needs and, only when
+    the person never chose one (the factory's), the ones each smaller ready-made profile needs, largest first. Empty
+    with anything unusable in it."""
+    given = (os.environ if environ is None else environ).get(CONTEXT_NEEDS_VARIABLE, "").strip()
+    parts = [part.strip() for part in given.split(",")] if given else []
+    return [int(part) for part in parts] if parts and all(part.isdigit() and int(part) > 0 for part in parts) else []
+
+
+# VRAM4B: a test says here the VRAM free the start «measured», MiB, instead of asking the card (this process only; unset,
+# nothing changes): a 4 GB card's first start, walked on a card with more.
+CARD_FREE_TEST_VARIABLE = "BAXY_TEST_VRAM_FREE_MIB"
+# VRAM4D: and here the card's whole memory, MiB (LlmServer._card_total).
+CARD_TOTAL_TEST_VARIABLE = "BAXY_TEST_VRAM_TOTAL_MIB"
+
+
+def fit_profiles(free: int | None, automatic: int, needs: list[int]) -> tuple[int, bool, int]:
+    """VRAM4B (the leader's decision on what VRAM4 left open; the owner: «Tiene que caber en 4 GB»): the cells of an
+    automatic context on a card with ``free`` MiB when the App gave more than one need (the person never chose a tool
+    profile: the factory's first, then each smaller ready-made one), whether the server fits whole, and which need
+    they serve (its place in ``needs``). The first need that fits whole (fit_card) wins: a new install on a 4 GB card
+    starts by itself in the profile the card holds. With none whole, the first whose fewest cells are no more than the
+    free memory, without the margin; with none of those either, the first need's, not whole: start launches nothing."""
+    tried: list[int | None] = list(needs) or [None]
+    for place, need in enumerate(tried):
+        cells, whole = fit_card(free, automatic, need)
+        if whole:
+            return cells, True, place
+    for place, need in enumerate(tried):
+        cells, _ = fit_card(free, automatic, need)
+        if free is not None and card_mib(cells) <= free:
+            return cells, False, place
+    return fit_card(free, automatic, tried[0])[0], False, 0
+
+
 # uso-51: a cut keeps at most this many tokens of history (Mind._fits), which the model re-reads in the decision that cut
 # it (from the prefix's checkpoint on), inside the decision's REQUEST_SECONDS with its own reading and writing. Measured on
 # the PC (b11609, history past the 48.5k-token prefix, INFORME_51.md): ~1,440 tokens/s with the GPU to itself (~4.3 s),
@@ -1209,6 +1390,8 @@ def _vision_args() -> list[str]:
 # 300 MiB. A 4 GB card keeps it on the CPU; 6 GB and up take it.
 VISION_GPU_NEEDS_MIB = 4096 + 920 + 300
 _DEVICE_MEMORY = re.compile(r"\((\d+) MiB, (\d+) MiB free\)")
+# VRAM4D: the whole memory each server's last listing said, beside the free one (_free_vram_mib), for LlmServer._card_total.
+_LISTED_TOTAL: dict[str, int] = {}
 
 
 def _listed_devices(server: str) -> str | None:
@@ -1224,6 +1407,10 @@ def _listed_devices(server: str) -> str | None:
 def _free_vram_mib(server: str) -> int | None:
     """The VRAM free on the device the server would use, as the server itself counts it; None when it does not say."""
     found = _DEVICE_MEMORY.search(_listed_devices(server) or "")
+    if found:
+        _LISTED_TOTAL[server] = int(found.group(1))
+    else:
+        _LISTED_TOTAL.pop(server, None)
     return int(found.group(2)) if found else None
 
 
@@ -1249,14 +1436,15 @@ def progress_facts(server: LlmServer) -> dict[str, Any]:
     return facts
 
 
-def projector_placement(server: str, backend: str) -> list[str]:
+def projector_placement(server: str, backend: str, measured: tuple[int | None] | None = None) -> list[str]:
     """Where the projector reads an image: on the GPU when the VRAM really free holds it (see VISION_GPU_NEEDS_MIB), on
-    the CPU otherwise, or with BAXY_VISION_OFFLOAD=0; nothing without a projector."""
+    the CPU otherwise, or with BAXY_VISION_OFFLOAD=0; nothing without a projector. ``measured`` holds the VRAM free when
+    this start already asked the server for it (LlmServer.start): one process less."""
     if not _vision_args():
         return []
     if backend == "cpu" or os.environ.get("BAXY_VISION_OFFLOAD", "").strip() == "0":
         return ["--no-mmproj-offload"]
-    free = _free_vram_mib(server)
+    free = measured[0] if measured else _free_vram_mib(server)
     return ["--mmproj-offload"] if free is not None and free >= vision_gpu_needs_mib() else ["--no-mmproj-offload"]
 
 

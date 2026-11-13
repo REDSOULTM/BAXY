@@ -1456,9 +1456,92 @@ test('un equipo demasiado lento dice la causa y qué hacer, sin contar arranques
     failureRead: { tokens_per_s: 20, minutes: 41 } });
   const card = h.page.locator('.bx-breakdown');
   await expect(card).toContainText('este equipo lee el modelo demasiado lento: prepararlo tardaría unos 41 min');
-  await expect(card).toContainText('tarjeta gráfica dedicada con 4 GB');
+  await expect(card).toContainText('BAXY necesita una tarjeta gráfica dedicada con 4 GB de memoria');
   await expect(card).not.toContainText('varias veces');
   await expect(card.locator('.bx-btn', { hasText: 'Reintentar' })).toBeVisible();
+});
+
+// API1 (12-11-2026, a 4 GB card): the model could not load, and the way out that needs none of it was not offered there.
+test('la avería del modelo ofrece usar otro modelo, que abre Ajustes en Modelo', async () => {
+  h = await openView();
+  h.reply('/settings/external-model', () => ({ body: { ...EXTERNAL, available: true } }));
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'lectura_lenta',
+    failureRead: { tokens_per_s: 20, minutes: 42 } });
+  const card = h.page.locator('.bx-breakdown');
+  await expect(card.locator('.bx-btn')).toHaveText(['Salir', 'Usar otro modelo', 'Reintentar']);
+  await card.locator('.bx-btn', { hasText: 'Usar otro modelo' }).click();
+  await expect(h.page.getByRole('tab', { name: 'Modelo' })).toHaveAttribute('aria-selected', 'true');
+});
+
+test('sin otro modelo que ofrecer, la avería no lo ofrece', async () => {
+  h = await openView();
+  h.reply('/settings/external-model', () => ({ body: { available: false } }));
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'lectura_lenta',
+    failureRead: { tokens_per_s: 20, minutes: 42 } });
+  await expect(h.page.locator('.bx-breakdown .bx-btn')).toHaveText(['Salir', 'Reintentar']);
+});
+
+test('VRAM4: la avería de un arranque en una tarjeta donde el perfil no cabe entero dice cuál sí cabe', async () => {
+  h = await openView();
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'lectura_lenta',
+    failureRead: { tokens_per_s: 47, minutes: 31 }, failureCard: { profile: 'completo', freeMb: 3400, needMb: 3880, context: 61440, fittingProfile: 'esencial' } });
+  const card = h.page.locator('.bx-breakdown');
+  await expect(card).toContainText('prepararlo tardaría unos 31 min');
+  await expect(card).toContainText('El perfil Completo no cabe entero en la memoria de vídeo de tu tarjeta gráfica: había 3,3 GB libres al arrancar y necesita unos 3,8 GB. El perfil Esencial sí cabe entero: elígelo en Ajustes → Herramientas → Perfil.');
+  await expect(card).not.toContainText('procesador más rápido');
+});
+
+// VRAM4B (the leader's decision, 2026-11-12): a profile chosen by hand that the card does not hold is said in seconds, once,
+// with the two ways out as buttons; the profile that fits is taken only with the person's press.
+test('VRAM4B: el perfil elegido que no cabe en la tarjeta se dice una vez y ofrece arrancar en el que cabe y usar otro modelo', async () => {
+  h = await openView();
+  h.reply('/settings/external-model', () => ({ body: { ...EXTERNAL, available: true } }));
+  h.reply('/settings/tools', () => ({ body: { profile: 'esencial', on: [] } }));
+  h.reply('/engine/retry', () => ({ body: { ok: true } }));
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'vram_insuficiente',
+    failureCard: { profile: 'completo', freeMb: 3400, needMb: 3880, context: 61440, fittingProfile: 'esencial' } });
+  const card = h.page.locator('.bx-breakdown');
+  await expect(card).toContainText('El modelo no pudo cargarse: falta memoria libre en la tarjeta gráfica. El perfil Completo no cabe entero en la memoria de vídeo de tu tarjeta gráfica: había 3,3 GB libres al arrancar y necesita unos 3,8 GB. El perfil Esencial sí cabe entero');
+  await expect(card).not.toContainText('varias veces');
+  await expect(card.locator('.bx-btn')).toHaveText(['Salir', 'Usar otro modelo', 'Arrancar en Esencial', 'Reintentar']);
+  await card.locator('.bx-btn', { hasText: 'Arrancar en Esencial' }).click();
+  await expect.poll(() => h.calls.filter((c) => c.path === '/settings/tools' || c.path === '/engine/retry').map((c) => c.method + ' ' + c.path + ' ' + JSON.stringify(c.body ?? null)))
+    .toEqual(['PUT /settings/tools {"profile":"esencial"}', 'POST /engine/retry null']);
+  await expect(card).not.toContainText('vuelve a intentarlo');
+});
+
+test('VRAM4B: sin un perfil que quepa, la avería no ofrece arrancar en otro', async () => {
+  h = await openView();
+  h.emit({ type: 'agent', built: true, ready: false, powered: true, failure: 'engine_unavailable', failureCause: 'vram_insuficiente',
+    failureCard: { profile: 'completo', freeMb: 2500, needMb: 3880, context: 61440, fittingProfile: null } });
+  const card = h.page.locator('.bx-breakdown');
+  await expect(card).toContainText('Cierra lo que esté usando la tarjeta gráfica y reintenta.');
+  await expect(card.locator('.bx-btn')).toHaveText(['Salir', 'Reintentar']);
+});
+
+test('VRAM4B: una instalación nueva que arrancó sola en el perfil que cabe lo dice una vez, hasta el primer pedido', async () => {
+  h = await openView();
+  const cardProfile = { profile: 'esencial', factory: 'completo', freeMb: 3400, needMb: 3880 };
+  h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: false, startedAt: 1, readyAt: null, cardProfile });
+  const note = h.page.locator('.bx-notice');
+  await expect(note).toHaveCount(0);
+  h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: true, startedAt: 1, readyAt: 2, cardProfile });
+  await expect(note).toContainText('Tu tarjeta gráfica tenía 3,3 GB de memoria de vídeo libres y el perfil Completo necesita unos 3,8 GB: BAXY eligió para este equipo el perfil Esencial, que sí cabe, y se queda en él. Para tener más herramientas, usa otro modelo (Ajustes → Modelo) o libera memoria de la tarjeta gráfica, y elige el perfil Completo en Ajustes → Herramientas o pidiéndomelo.');
+  h.emit({ type: 'state', value: 'thinking' });
+  h.emit({ type: 'state', value: 'idle' });
+  await expect(note).toHaveCount(0);
+  // the same start said again (another boot line) does not bring it back
+  h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: true, startedAt: 1, readyAt: 2, cardProfile });
+  await expect(note).toHaveCount(0);
+});
+
+test('VRAM4D: en una tarjeta con sitio, el perfil que cupo en un arranque se dice de ese arranque solo', async () => {
+  h = await openView();
+  const cardProfile = { profile: 'esencial', factory: 'completo', freeMb: 3400, needMb: 3880, thisStart: true };
+  h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: true, startedAt: 1, readyAt: 2, cardProfile });
+  const note = h.page.locator('.bx-notice');
+  await expect(note).toContainText('sólo en este arranque, BAXY usa el perfil Esencial, que sí cabe. El próximo arranque vuelve a intentar el perfil Completo');
+  await expect(note).not.toContainText('se queda en él');
 });
 
 test('la avería de un equipo lento dice además que no usa tarjeta gráfica cuando no la usa', async () => {

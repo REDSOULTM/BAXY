@@ -22,7 +22,8 @@ internal sealed record MindStartupFailure(
     long? NeedMb = null,
     long? FreeMb = null,
     long? TokensPerS = null,
-    long? NeedMinutes = null)
+    long? NeedMinutes = null,
+    LocalContext.CardFound? CardShort = null)
 {
     /// <summary>N9 (L5): this machine reads the model's prefix too slowly for the mind's limit; reading it again takes as long.</summary>
     internal const string ReadTooSlow = "lectura_lenta";
@@ -65,7 +66,9 @@ internal sealed record MindStartupFailure(
             Number(startup["needMb"]),
             Number(startup["freeMb"]),
             Number(startup["tokensPerS"]),
-            Number(startup["needMinutes"]));
+            Number(startup["needMinutes"]),
+            // VRAM4: the start was on a card whose free video memory did not hold the profile's cells whole.
+            LocalContext.CardFound.From(startup["cardShort"]));
     }
 
     private static long? Number(JsonNode? node) =>
@@ -298,6 +301,21 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
     internal int? PrefixTokens { get; private set; }
 
+    /// <summary>VRAM4: the cells the mind's server started with, and what it found on a card that does not hold it whole
+    /// (LocalContext.CardFound), as its catalog.ready said them; null when it did not.</summary>
+    internal int? Context { get; private set; }
+
+    internal LocalContext.CardFound? CardShort { get; private set; }
+
+    /// <summary>VRAM4B: told what the mind's hello said of the card (LocalContext.CardFit; null when it said nothing),
+    /// before the catalog is configured: the profile's withheld operations (<see cref="WithheldNow"/>) are read after it.
+    /// VRAM4D: and of its whole memory (LocalContext.CardMemory; null when it said nothing).</summary>
+    internal Action<LocalContext.CardFit?, LocalContext.CardMemory?>? CardSaid { get; init; }
+
+    /// <summary>VRAM4B: what catalog.configure says of a profile this run took for the card (mind.CARD_PROFILE_FACT):
+    /// its name and the factory's as the view shows them, and the two figures in MiB. Null: nothing is sent.</summary>
+    internal Func<JsonObject?>? CardProfileNow { get; init; }
+
     internal static bool IsDisabled =>
         string.Equals(
             Environment.GetEnvironmentVariable(DisabledEnvironmentVariable),
@@ -396,6 +414,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             FactoryBehavior = hello["behavior"] is JsonObject factory
                 ? (JsonObject)factory.DeepClone()
                 : null;
+            CardSaid?.Invoke(LocalContext.CardFit.From(hello["card"]), LocalContext.CardMemory.From(hello["cardMemory"]));
             MindStartupCatalog inputs = await catalog
                 .WaitAsync(handshakeCancellation.Token)
                 .ConfigureAwait(false);
@@ -436,7 +455,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             Behavior,
             withheld,
             UpdatePanel.Installed,
-            MemoryOffNow?.Invoke());
+            MemoryOffNow?.Invoke(),
+            CardProfileNow?.Invoke());
         int offered = request["capabilities"]!.AsArray().Count;
         JsonObject? reply = await RequestAsync(
             request,
@@ -453,6 +473,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             _configured = new MindStartupCatalog(capabilities, applicationCatalog, gameCatalog);
             Backend = Str(reply!["backend"]);
             PrefixTokens = reply["prefixTokens"] is JsonValue prefix && prefix.TryGetValue(out int tokens) && tokens > 0 ? tokens : null;
+            Context = reply["context"] is JsonValue cells && cells.TryGetValue(out int context) && context > 0 ? context : null;
+            CardShort = LocalContext.CardFound.From(reply["cardShort"]);
             // The mind's own ceiling for a turn's request, never past what a whole start may take.
             if (reply?["ceiling_s"] is JsonValue said && said.TryGetValue(out double seconds) && double.IsFinite(seconds)
                 && seconds > 0 && seconds <= StartupCeiling.TotalSeconds)
@@ -511,7 +533,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         JsonObject? behavior = null,
         IReadOnlySet<string>? withheld = null,
         string? version = null,
-        bool? memoryOff = null)
+        bool? memoryOff = null,
+        JsonObject? cardProfile = null)
     {
         ArgumentNullException.ThrowIfNull(capabilities);
         var catalog = new JsonArray();
@@ -618,6 +641,13 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             && MemoryOperationProtector.IsMemoryOperation(c.Name)))
         {
             request["memoryOff"] = switchedOff;
+        }
+
+        // VRAM4B: the profile is one this run's start took for the card, not the person's choice: the mind says it as a
+        // fact of this PC (mind.CARD_PROFILE_FACT). With none, nothing: the request is the one sent before.
+        if (cardProfile is not null)
+        {
+            request["cardProfile"] = cardProfile.DeepClone();
         }
 
         return request;

@@ -1184,7 +1184,7 @@ public sealed class ExternalModelTests
     }
 
     [Test]
-    public async Task AChangeCancelsAMindStartingOnTheTranslatorButNotOneOnTheLocalModel()
+    public async Task AChangeCancelsAMindStartingOnTheTranslatorOrOnTheLocalModel()
     {
         FieldInfo cut = typeof(MainWindowViewModel).GetField("_mindStartCut", BindingFlags.Instance | BindingFlags.NonPublic)!;
         FieldInfo external = typeof(MainWindowViewModel).GetField("_externalModel", BindingFlags.Instance | BindingFlags.NonPublic)!;
@@ -1198,7 +1198,8 @@ public sealed class ExternalModelTests
             CancellationToken starting = ((CancellationTokenSource)cut.GetValue(viewModel)!).Token;
             local.Apply(new JsonObject { ["key"] = Key, ["enabled"] = true });
             viewModel.ExternalModelChanged();
-            Assert.That(starting.IsCancellationRequested, Is.False, "its model only has to finish loading");
+            // API1: «its model only has to finish loading» was 45 min on a PC that reads it too slowly, and the switch waited.
+            Assert.That(starting.IsCancellationRequested, Is.True, "it serves a choice the person left");
             Assert.That(() => local.Switching, Is.False.After(5000, 50));
 
             await local.StartAsync(CancellationToken.None);

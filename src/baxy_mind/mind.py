@@ -165,6 +165,32 @@ CAN_DO_AREAS = " Por áreas: {areas}."
 # version this App is, from its stamp (catalog.configure «baxyVersion», UpdatePanel.Installed, the one Ajustes → General
 # shows), a fact of this PC as the areas are. None from a development copy: nothing is said then.
 VERSION_FACT = "\nVersión de BAXY instalada en este PC (la tuya): {version}."
+# VRAM4B (12-11-2026, a card of 4 GB in all; the leader: «es un dato tipado que el modelo puede contar si le preguntan
+# "¿por qué estás en Esencial?"»): the person never chose a tool profile and the card's free video memory did not hold
+# the factory's, so a start took the one it holds (LlmServer.card_fit, ToolProfile.FitCard in the App). What the start
+# measured, a fact of this PC as the version is (catalog.configure «cardProfile»); none said, nothing is added.
+# VRAM4C (the leader: «esa elección se queda fija… el dato tipado sigue disponible para siempre… las salidas: otro
+# modelo, liberar memoria de la tarjeta, o pedir el cambio de perfil»): kept for this PC, said at every start after.
+CARD_PROFILE_FACT = ("\nEl perfil de herramientas de fábrica de BAXY es {factory}. En este PC, BAXY eligió por su cuenta "
+                     "el perfil {profile} (la persona no lo eligió) porque, cuando lo eligió, la tarjeta gráfica de "
+                     "este PC tenía {free} GB de memoria de vídeo libres y el perfil {factory} necesita unos {need} GB. "
+                     "BAXY se queda en el perfil {profile} aunque otro día haya más memoria libre: sólo cambia si la "
+                     "persona lo pide. Para tener más herramientas, la persona puede usar otro modelo (Ajustes → "
+                     "Modelo), o liberar memoria de la tarjeta gráfica y pedir el perfil {factory} (en Ajustes → "
+                     "Herramientas o pidiéndotelo): si en ese momento cabe, se cambia; si no cabe, BAXY lo dice al "
+                     "volver a arrancar.")
+
+
+def card_profile_fact(said: object) -> str:
+    """CARD_PROFILE_FACT with what the App said (the two profiles' names and the two figures in MiB), or nothing."""
+    if not isinstance(said, dict):
+        return ""
+    profile, factory, free, need = (said.get(key) for key in ("profile", "factory", "freeMb", "needMb"))
+    if not (isinstance(profile, str) and profile.strip() and isinstance(factory, str) and factory.strip()
+            and type(free) is int and type(need) is int and free > 0 and need > 0):
+        return ""
+    gb = lambda mib: f"{mib / 1024:.1f}".replace(".", ",")  # noqa: E731 - as the view says it (causes.ts gb)
+    return CARD_PROFILE_FACT.format(profile=profile.strip(), factory=factory.strip(), free=gb(free), need=gb(need))
 # TPV1 (dueño, 10-11-2026, prueba en vivo de la 1.3.4: asked to remember a fact, BAXY said its memory was off and to
 # turn it on in Settings; «si yo le digo Baxi, activa la memoria, la tiene que activar, no tiene que delegar al usuario
 # nada»): a profile without the memory shows none of its tools, not even as a stub (operation-labels «ficha»: false,
@@ -1185,6 +1211,33 @@ RINGING_ASKED_NOTE = ("[Nota interna, no la escribió la persona: ahora mismo su
 RINGING_STILL_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta todavía no se dijo. En este turno no se paró "
                       "ni se pospuso nada: {rings} sigue sonando o esperando respuesta. Responde de nuevo a la persona "
                       "según lo que pidió.]")
+# ALR9 (VIVO9, banco de ALR7: «todavía no la apagues», «Pará, no la cortes», «Don't shut that off» stopped what rang 9 of
+# 18): the model's own stop or snooze of what rings, never the acknowledgement rule's (ring_answer: no such turn is made
+# only of its pieces). Read inside the whole prompt, the 4B takes the stop verb and leaves the «no» before it, as language
+# models do with negation (Truong et al., «Language models are not naysayers», *SEM 2023, arXiv:2306.08189); three
+# sentences in what it reads (the note, the stop clause, an example) left them stopped 6-8 of 14 (base 7). So, as SIS3
+# does for a «sí», whether their words ask that of what rings is the model's to read in a closed question of its own
+# (Chain-of-Verification, Dhuliawala et al., arXiv:2309.11495: a short question apart is answered better than inside the
+# long context), holding only what rings, BAXY's question if its last words were one, and their words; only stop or snooze
+# runs (in doubt nothing is done to what rings, the owner's rule of SIS3).
+# ALR9C: asked in English with English labels, the 4B read the short ones as stop («Todavía no la apagues.», «Déjala
+# sonar.»: «no la pares» read stop or snooze 2 of 16, 4 of 16 with a reminder ringing); asked in Spanish, as the mind's
+# other notes are, with Spanish labels, 0 of 16 for either, and no stop or snooze read otherwise (0 of 50; sonda9c,
+# sin fuente: medición propia). Each label is the kind it stands for.
+RING_READ_SYSTEM = ("Lees lo que una persona le dijo a un asistente de voz mientras suena una de sus alarmas o "
+                    "recordatorios. Contesta con una palabra: qué piden sus palabras sobre lo que suena.")
+RING_READ_NOTE = ("Suena ahora: {rings}\n{asked}La persona dijo: «{said}»\n¿Qué piden sus palabras sobre lo que suena? "
+                  "parar = que lo pares o lo apagues ahora, o lo dan por recibido (gracias, ya me levanté, ya está, ya "
+                  "voy); posponer = que vuelva a sonar más tarde, o más tiempo; seguir = que siga sonando, o que no lo "
+                  "apagues ni lo pares (todavía); otra = otra cosa, nada de lo que suena.")
+RING_READ_ASKED = "El asistente había preguntado: «{asked}»\n"
+RING_READ_KINDS = {"parar": "stop", "posponer": "snooze", "seguir": "keep", "otra": "other"}
+RING_READ_GRAMMAR = "root ::= " + " | ".join(f'"{label}"' for label in RING_READ_KINDS)
+RING_NOT_ASKED = json.dumps({"status": "rejected", "error": "not_asked_of_what_rings",
+                             "reason": "their words do not ask to stop or snooze what rings: nothing was stopped or "
+                                       "snoozed and it still rings",
+                             "next": "answer what they said in words; do not say it stopped"}, ensure_ascii=False)
+RING_NOT_ASKED_REFUSED = "no se paró ni se pospuso: sus palabras no lo piden"
 NAMED_NOTE = ("[Nota interna, no la escribió la persona: sus palabras nombran estas ventanas abiertas en este PC: {windows}. "
               "Si preguntan por un dato que esa ventana muestra, puedes verlo: input_visible_controls con su application y "
               "includeText.]")
@@ -2774,6 +2827,7 @@ class Mind:
         self.system = (behavior.head(chosen) + RULES + (CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else "")
                        + (VERSION_FACT.format(version=version.strip()) if isinstance(version, str) and version.strip()
                           else "")
+                       + card_profile_fact(message.get("cardProfile"))
                        + (MEMORY_HELD_FACT.format(call=wires.name(MEMORY_TOOL), state=MEMORY_HELD_PROFILE
                                                   if message.get("memoryOff") is False else MEMORY_HELD_OFF)
                           + "".join(sentence.format(call=wires.name(tool), save=wires.name(MEMORY_TOOL))
@@ -3301,7 +3355,8 @@ class Mind:
                           "answering_other": any(DOUBT_OTHER_ASKED in note for note in doubts),
                           "confirming": self._confirming(pending), "pending_op": self._pending_op(pending),
                           "front": self._front_window(front), "in_front": front or {},
-                          "ringing": self._rings_told(ringing), "alone": clock if order is not None else None}
+                          "ringing": self._rings_told(ringing), "alone": clock if order is not None else None,
+                          "asked_words": str(last.get("content") or "") if asked else ""}
             # ALR4 (owner's exception, ring_answer): with something ringing and nothing of BAXY waiting for these words
             # (a «sí» or one that just went unanswered, its doubt's question), and no word the ear was unsure of, a short
             # acknowledgement answers what rings before the model is asked. ALR5 (M1, REV_MENTE): nor after a question in
@@ -3400,6 +3455,37 @@ class Mind:
                   read=read or None, operation=operation, arguments=None, content=None,
                   **({"failure": failure} if failure else {}))
         return answer
+
+    def _ring_not_asked(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> bool:
+        """ALR9: whether the model's stop or snooze of what rings is held because the person's words, read in their own
+        closed question (RING_READ_NOTE, apart from the conversation), ask neither. Read once in a turn; never for the
+        acknowledgement rule's call (ring_answer), nor with nothing ringing. Unreadable (the server failed or wrote
+        something else) is other: held."""
+        if (name != "schedule.alarms" or not turn.get("ringing") or turn.get("ring_answer") is not None
+                or str(call["arguments"].get("action") or "") not in ("stop", "snooze")):
+            return False
+        if "ring_read" not in turn:
+            started = time.perf_counter()
+            asked = " ".join(str(turn.get("asked_words") or "").split())[-THEIR_ANSWER_ASKED:]
+            note = RING_READ_NOTE.format(rings=turn["ringing"], said=" ".join(str(turn["text"]).split()),
+                                         asked=RING_READ_ASKED.format(asked=asked) if asked else "")
+            body = {"messages": [{"role": "system", "content": RING_READ_SYSTEM}, {"role": "user", "content": note}],
+                    "max_tokens": 4, "grammar": RING_READ_GRAMMAR, "chat_template_kwargs": {"enable_thinking": False},
+                    "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": self.seed}
+            reply, failure = None, None
+            try:
+                reply = self.server.ask_apart(body)
+                read = str(reply["choices"][0]["message"].get("content") or "").strip()
+            except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+                read, failure = "", type(error).__name__
+            if read not in RING_READ_KINDS:
+                failure, read = failure or "unreadable", "otra"
+            read = RING_READ_KINDS[read]
+            turn["ring_read"] = read
+            self._log("turn.ring_read", started, reply, text=None if turn.get("private") else turn["text"], kind=read,
+                      operation=name, arguments=call["arguments"], content=None,
+                      **({"failure": failure} if failure else {}))
+        return turn["ring_read"] not in ("stop", "snooze")
 
     def _ring_answered(self, request_id: Any, turn: dict[str, Any], answer: ring_answer.Answer,
                        ringing: list[dict[str, Any]]) -> dict[str, Any]:
@@ -5427,6 +5513,9 @@ class Mind:
                 turn["file_told"] = True
                 return self._held_back(request_id, turn, call, reply, stage, started, unsaid, FILE_UNSAID_REFUSED,
                                        "said_file_name")
+            if self._ring_not_asked(turn, name, call):
+                return self._held_back(request_id, turn, call, reply, stage, started, RING_NOT_ASKED,
+                                       RING_NOT_ASKED_REFUSED, "ring_not_asked")
             unsaid = self._unsaid_place(turn, name, call)
             if unsaid:
                 turn["place_told"] = True

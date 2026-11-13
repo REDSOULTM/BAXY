@@ -24,6 +24,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly string _memorySessionId;
     private readonly CancellationTokenSource _mindLifetimeCancellation = new();
     private CancellationTokenSource _mindStartCut = new();
+    // API1: how many starts a change of the model cut (ExternalModelChanged): a switch whose own start was cut goes round again.
+    private int _mindStartsCut;
     private readonly NativeTurnLoop _loop;
     // One turn at a time, the person's or the heartbeat's: a person's words that arrive during a heartbeat wait for it.
     private readonly SemaphoreSlim _turnGate = new(1, 1);
@@ -674,7 +676,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     /// or when it is not configured.</summary>
     public bool IsMindPreparing => !_isDisposed && _mindClient is not { IsReady: true }
         && (_startupMindPending || _mindStartupState == MindStartupState.Starting
-            || (_mindStartupState == MindStartupState.Failed && _mindRetryPending && !_mindGaveUp));
+            || (_mindStartupState == MindStartupState.Failed && _mindRetryPending && !_mindGaveUp)
+            // API1: a change of the model cut the start under way, and the switch starts the next one.
+            || _externalModel is { Switching: true });
 
     /// <summary>
     /// Uso 95 (F9, uso real 2026-11-04 12:06): the mind a person's turn talks with. While it is on its way
@@ -1886,9 +1890,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             // Settings → Model → Context: BAXY's own model (stock or tuned) starts with the person's preset; another
             // model's context is its own (ExternalModel), and the variable stays as it set it.
             bool ownModel = !ExternalModelState.Active;
+            IReadOnlyList<(string Profile, int Need)> orElse = [];
             if (ownModel)
             {
-                LocalContextState.ApplyEnvironment(MindBackend);
+                // VRAM4B: what the person's own profile needs; and, while none is kept, what each smaller ready-made
+                // profile needs, for the mind to start in the largest the card's free video memory holds instead of
+                // failing (ToolProfile.FitCard, at its hello). VRAM4C: the one it took is kept for this PC (ByCard) and
+                // goes alone from then on, as a chosen one: another day's free memory changes nothing by itself.
+                // VRAM4D (REV18 R18-2): alone while the card is short; the mind is given the list and which one it is
+                // (KeptVariable), so on a card with room the start tries the factory's again and the App drops it.
+                bool chosen = ToolProfileState.Chosen;
+                orElse = chosen ? [] : ToolProfile.Smaller(MindPrefixTokens, MindPrefixProfile);
+                string? keptName = ToolProfileState.KeptForTheCard?.Profile;
+                LocalContextState.ApplyEnvironment(MindBackend,
+                    chosen ? ExternalModelState.NeededNow : ToolProfile.NeededContext(ToolProfile.Completo, MindPrefixTokens, MindPrefixProfile),
+                    orElse.Select(static smaller => smaller.Need),
+                    orElse.FirstOrDefault(smaller => smaller.Profile == keptName) is { Profile: not null } keptOne ? keptOne.Need : null);
             }
 
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindVerified);
@@ -1913,6 +1930,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 WithheldNow = () => ToolProfileState.Withheld(
                     Baxy.Kernel.Operations.ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)),
                 MemoryOffNow = () => ToolProfileState.MemoryOff,
+                CardSaid = (fit, memory) => ToolProfileState.FitCard(fit is not null && ownModel && !ToolProfileState.Chosen
+                    && orElse.FirstOrDefault(smaller => smaller.Need == fit.Needs) is { Profile: { } fitting }
+                        ? new ToolProfile.CardFitted(fitting, fit.FreeMb, fit.NeedMb) : null, ownModel ? memory?.Short : null),
+                CardProfileNow = () => ToolProfileState.CardProfileFact(),
             };
             mind.ModelReading += OnMindReading;
             mind.ModelReading += MeasureRead;
@@ -1961,7 +1982,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             FactoryBehavior = mind.FactoryBehavior ?? FactoryBehavior;
             // MOD1 D5: what this start took to read the prefix whole, if it did, is this PC's measure from now on.
             PrefixReadState.Ended(ownModel);
-            LocalContextState.Started(ownModel);
+            LocalContextState.Started(ownModel, mind.Context, mind.CardShort);
             if (ownModel)
             {
                 // Read with BAXY's own model's tokens: another model's prefix is counted by its own.
@@ -2072,9 +2093,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindFailureCause = failure?.Cause ?? "desconocida";
         _mindFailureMemory = failure?.NeedMb is { } need ? (need, failure.FreeMb) : null;
         _mindFailureRead = failure is { TokensPerS: { } pace, NeedMinutes: { } minutes } ? (pace, minutes) : null;
+        LocalContextState.Failed(failure?.CardShort);
         string cause = failure?.TraceLabel ?? "desconocida";
         ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed, cause);
-        RetryMindOrGiveUp(cause);
+        RetryMindOrGiveUp(cause, once: failure?.CardShort is not null);
         MindRestarts.Record(new MindLoss("startup." + cause), DateTimeOffset.UtcNow - _mindStartedAt);
     }
 
@@ -2101,9 +2123,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     // Uso 85: the same failure again and again is a breakdown the interface shows, never one more relaunch. N9 (L5): a read
     // too slow is that from the first time: the next would read at the same pace for as long, and only the person knows
     // whether the PC was busy (RetryEngine).
-    private void RetryMindOrGiveUp(string cause)
+    private void RetryMindOrGiveUp(string cause, bool once = false)
     {
-        if (cause != MindStartupFailure.ReadTooSlow && _mindRetries.Failed(cause, DateTimeOffset.UtcNow) is { } delay)
+        // VRAM4B: a start on a card that does not hold the profile whole repeats the same on its own: one attempt, and the
+        // breakdown says what it found and the ways out (never a chain of starts from zero).
+        if (cause != MindStartupFailure.ReadTooSlow && !once
+            && _mindRetries.Failed(cause, DateTimeOffset.UtcNow) is { } delay)
         {
             _mindRetryPending = true;
             _ = RetryMindAfterAsync(delay);
@@ -2169,14 +2194,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return;
         }
 
-        if (model.Cut())
-        {
-            // A mind starting on that translator would wait out its 600 s on a port with nobody there.
-            CancellationTokenSource cut = _mindStartCut;
-            _mindStartCut = new CancellationTokenSource();
-            cut.Cancel();
-            cut.Dispose();
-        }
+        // A mind starting on the translator stopped here would wait out its 600 s on a port with nobody there. API1 (a friend
+        // of the owner's, 4 GB card, 12-11-2026): one starting on BAXY's own model is cut too. It serves a choice the person
+        // left, and on a PC that reads the model too slowly it held the switch for up to 45 min (StartupCeiling): «Cambiando…»
+        // for ever, behind a card preparing the model the switch says it no longer loads. Its mind ends with its process's
+        // job, and the llama-server it started with it (LocalJsonlSidecarProcess, KillOnJobClose).
+        _ = model.Cut();
+        CancellationTokenSource cut = _mindStartCut;
+        _mindStartCut = new CancellationTokenSource();
+        Interlocked.Increment(ref _mindStartsCut);
+        cut.Cancel();
+        cut.Dispose();
 
         if (model.Switching)
         {
@@ -2293,34 +2321,32 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private async Task SwitchMindAsync(ExternalModel model)
     {
         CancellationToken lifetime = _mindLifetimeCancellation.Token;
+        int cuts = 0;
         try
         {
+            bool again;
             do
             {
-                await _turnGate.WaitAsync(lifetime);
+                bool gated = await TurnGateAndMindStartAsync(lifetime);
                 try
                 {
-                    await _mindStart.WaitAsync(lifetime);
-                    try
+                    model.Stop();
+                    TunedModelState.Stop();
+                    if (_mindClient is { } running)
                     {
-                        model.Stop();
-                        TunedModelState.Stop();
-                        if (_mindClient is { } running)
-                        {
-                            DetachMind(running);
-                            _mindClient = null;
-                            OnPropertyChanged(nameof(IsMindReady));
-                            await running.DisposeAsync();
-                        }
-                    }
-                    finally
-                    {
-                        _mindStart.Release();
+                        DetachMind(running);
+                        _mindClient = null;
+                        OnPropertyChanged(nameof(IsMindReady));
+                        await running.DisposeAsync();
                     }
                 }
                 finally
                 {
-                    _turnGate.Release();
+                    _mindStart.Release();
+                    if (gated)
+                    {
+                        _turnGate.Release();
+                    }
                 }
 
                 // A recovery under way starts a mind only if none was there when it began.
@@ -2331,18 +2357,26 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     return;
                 }
 
+                cuts = Volatile.Read(ref _mindStartsCut);
                 Task initialization = InitializeMindAsync(
                     Task.FromResult(new MindStartupCatalog(core.Capabilities, core.ApplicationCatalog, core.GameCatalog)),
                     CancellationToken.None,
                     lifetime);
                 _mindInitializationTask = initialization;
                 await initialization;
+
+                // A start that brought no mind up (its runtime did not apply) leaves the choice to the next start: going round
+                // again would start nothing either, for ever. API1: one a newer change cut goes round again, on what is chosen
+                // now, and also when that change was taken back meanwhile (nothing else would start a mind: a cut start
+                // schedules no retry).
+                bool cut = cuts != Volatile.Read(ref _mindStartsCut);
+                again = !_isDisposed
+                    && ((cut && _mindClient is null)
+                        || ((_mindClient is not null || cut)
+                            && (model.NeedsSwitch || TunedModelState.NeedsSwitch || BehaviorState.NeedsSwitch
+                                || ToolProfileState.NeedsSwitch || LocalContextState.NeedsSwitch)));
             }
-            // A start that brought no mind up (its runtime did not apply) leaves the choice to the next start: going round again
-            // would start nothing either, for ever.
-            while (!_isDisposed && _mindClient is not null
-                && (model.NeedsSwitch || TunedModelState.NeedsSwitch || BehaviorState.NeedsSwitch
-                    || ToolProfileState.NeedsSwitch || LocalContextState.NeedsSwitch));
+            while (again);
         }
         catch (Exception exception) when (exception is OperationCanceledException or ObjectDisposedException)
         {
@@ -2351,6 +2385,55 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         finally
         {
             model.Switching = false;
+            // A turn that waited for the mind this switch was bringing looks again (IsMindPreparing).
+            MindChanged();
+        }
+    }
+
+    /// <summary>
+    /// The turn gate, so that no turn is cut half-way by a relaunch; false when it was not taken because the turn holding it
+    /// waits for a mind and none is up (uso 95, MindForTurnAsync). API1: a «hola» written while BAXY's own model loaded
+    /// held the gate the switch to another model waited for, while it waited for the mind that switch was to bring.
+    /// </summary>
+    private async Task<bool> TurnGateOrAwaitedMindAsync(CancellationToken cancellationToken)
+    {
+        while (!await _turnGate.WaitAsync(TimeSpan.FromMilliseconds(100), cancellationToken))
+        {
+            if (IsAwaitingMind && _mindClient is not { IsReady: true })
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The turn gate as <see cref="TurnGateOrAwaitedMindAsync"/> gives it, and then the start of the mind. Without the gate, a
+    /// mind that came up while this waited for the start (the start it waited for was not cut) is the waiting turn's now: the
+    /// switch lets the start go and waits for that turn like any other. Holding the start, no other mind can come up.
+    /// </summary>
+    private async Task<bool> TurnGateAndMindStartAsync(CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            bool gated = await TurnGateOrAwaitedMindAsync(cancellationToken);
+            try
+            {
+                await _mindStart.WaitAsync(cancellationToken);
+            }
+            catch when (gated)
+            {
+                _turnGate.Release();
+                throw;
+            }
+
+            if (gated || _mindClient is not { IsReady: true })
+            {
+                return gated;
+            }
+
+            _mindStart.Release();
         }
     }
 

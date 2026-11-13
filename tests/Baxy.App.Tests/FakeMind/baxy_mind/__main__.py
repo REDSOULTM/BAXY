@@ -8,7 +8,8 @@ answers an error, "progress" {type: {"every": seconds, "count": n, "facts": {...
 (as the mind does while its model reads the prompt prefix) one every that many seconds before it answers, "time_out" {type: n} answers the first n of that type as past their budget, "reply" {type: object} answers that object, "replies" {type: [object]} answers the n-th request of that type with the
 n-th object (the last one from there on), "emit" {type: [message]} writes those messages after the
 reply, "stderr" {type: [line]} writes those lines to stderr before the reply; "delay" {"hello": seconds} holds the hello
-at start, and "unoffered" [type] leaves those requests out of it (a mind with no voice does not offer voice.speak). Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process
+at start, "hello_card" {...} says that of the card in it (VRAM4C; "needs": "last" is the last need the App put in
+BAXY_RENEW_CTX_NEEDS, the smallest profile's), "hello_card_memory" {...} says that of the card's whole memory (VRAM4D), and "unoffered" [type] leaves those requests out of it (a mind with no voice does not offer voice.speak). Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process
 writes its pid under pids/.
 """
 
@@ -121,8 +122,18 @@ def main() -> None:
     open(os.path.join(HERE, "pids", str(os.getpid())), "w", encoding="utf-8").close()
     time.sleep(float(script().get("delay", {}).get("hello", 0)))
     unoffered = script().get("unoffered", [])
-    write({"type": "hello", "protocol": "baxy.mind.v1", "models": {"llm": "fake"},
-           "requests": [kind for kind in REQUESTS if kind not in unoffered]})
+    hello = {"type": "hello", "protocol": "baxy.mind.v1", "models": {"llm": "fake"},
+             "requests": [kind for kind in REQUESTS if kind not in unoffered]}
+    card = script().get("hello_card")
+    if isinstance(card, dict):
+        card = dict(card)
+        if card.get("needs") == "last":
+            card["needs"] = int(os.environ["BAXY_RENEW_CTX_NEEDS"].split(",")[-1])
+        hello["card"] = card
+    memory = script().get("hello_card_memory")
+    if isinstance(memory, dict):
+        hello["cardMemory"] = memory
+    write(hello)
     def read() -> None:
         for line in sys.stdin:
             if not line.strip():

@@ -12,7 +12,7 @@ import { AvatarVid } from './components/AvatarVid';
 import { useLipActive } from './lip';
 import { liveText } from './live';
 import { Globe, Icon } from './components/Icon';
-import { causeText, noWakeText, TUNED_PROBLEM, type FailureMemory, type FailureRead } from './causes';
+import { cardProfileText, causeText, noWakeText, TUNED_PROBLEM, type FailureMemory, type FailureRead } from './causes';
 import { refusalSaid, type Failing } from './externalErrors';
 import { draftKeys, draftTab } from './drafts';
 import { Panel } from './components/Panel';
@@ -131,12 +131,15 @@ export default function App() {
   // a model of this PC other than BAXY's own (Ollama) in use: the rail's reading of BAXY's model is not that one's
   const [otherLocal, setOtherLocal] = useState<string | null>(null);
   const [apiCapped, setApiCapped] = useState(false);
+  // whether the host offers another model at all (ExternalModel.Available): the breakdown's way out to it (API1)
+  const [otherOffered, setOtherOffered] = useState(false);
   // the other model's place and name, for its refusal said in English (REV_VISTA V-04)
   const [failing, setFailing] = useState<Failing>({});
   useEffect(() => {
-    const read = () => void getJson<{ active?: boolean; activeLocal?: boolean; activeModel?: string | null; lastError?: string | null; provider?: string; model?: string }>('/settings/external-model')
+    const read = () => void getJson<{ available?: boolean; active?: boolean; activeLocal?: boolean; activeModel?: string | null; lastError?: string | null; provider?: string; model?: string }>('/settings/external-model')
       .then((e) => {
         if (!e) return;
+        setOtherOffered(e.available === true);
         setApi(e.active && !e.activeLocal ? e.activeModel ?? null : null); setOtherLocal(e.active && e.activeLocal ? e.activeModel ?? null : null); setApiCapped(!!e.active && !!e.lastError?.startsWith('TOPE'));
         setFailing((f) => { const now = { provider: e.provider ?? null, model: e.activeModel ?? e.model ?? null }; return f.provider === now.provider && f.model === now.model ? f : now; });
       });
@@ -325,7 +328,11 @@ export default function App() {
   // COX-1 (VIVO4 D4): the notice of a refused long request lasted 2.6 s while the request stayed in the box, so whoever
   // looked a moment later saw a request that did not go and no reason; the limit is said for as long as it is so
   const long = tooLong > 0 ? { b: 'BAXY', t: tooLongText(tooLong, t) } : null;
-  const shownNotice = notice ?? long ?? dropped ?? noWake ?? tuned;
+  // VRAM4B: this run started by itself in a smaller tool profile than the factory's, for the card's free video memory:
+  // said once, when the model is up, until the person's first request (Settings → Tools goes on saying it).
+  const cardProfile = s.boot?.cardProfile;
+  const cardNote = cardProfile && !s.cardSeen && !!s.boot?.model && !booting ? { b: t('Perfil', 'Profile'), t: cardProfileText(cardProfile, t) } : null;
+  const shownNotice = notice ?? long ?? dropped ?? noWake ?? tuned ?? cardNote;
 
   // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
   useEffect(() => {
@@ -717,7 +724,8 @@ export default function App() {
             <div className="bx-cbot">
               {banner ? <div className="bx-netban" key={banner}><Globe s={11} /><b>{t('Salió a internet', 'Went online')}</b><span>· {banner}</span></div>
                 : shownNotice ? <div className="bx-notice" key={shownNotice.t}><b>{shownNotice.b}</b> · {shownNotice.t}</div> : null}
-              {breakdown ? <Breakdown failure={breakdown} cause={s.agent.failureCause ?? null} memory={s.agent.failureMemory ?? null} read={s.agent.failureRead ?? null} onProcessor={!!s.boot?.onProcessor} />
+              {breakdown ? <Breakdown failure={breakdown} cause={s.agent.failureCause ?? null} memory={s.agent.failureMemory ?? null} read={s.agent.failureRead ?? null} card={s.agent.failureCard ?? null} onProcessor={!!s.boot?.onProcessor}
+                  onOtherModel={otherOffered ? () => { setSettingsTab('modelo'); setPanel('settings'); } : null} />
                 : booting && s.boot ? <Boot boot={s.boot} />
                 : <Caption state={state} sub={look.captions ? s.sub : null} subGone={subGone} live={s.live} step={s.running} waiting={waiting} />}
               {input}

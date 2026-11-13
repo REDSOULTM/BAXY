@@ -5,7 +5,7 @@ import { getJson, send, sendTold } from '../../api';
 import { spoken } from '../../duration';
 import { useDialogFocus, useInnerDialog } from '../../utils/dialogFocus';
 import { radioKeys, rovingIndex, tabKeys } from '../../utils/radioKeys';
-import { TUNED_PROBLEM } from '../../causes';
+import { cardShortText, PROFILE_NAME, TUNED_PROBLEM, type FailureCard } from '../../causes';
 import { useT, type LangChoice, type Words } from '../../i18n';
 import { translatorSaid } from '../../externalErrors';
 import { draftTab, forgetDraft, savesOnBlur, useDraft, useDraftKeys } from '../../drafts';
@@ -183,12 +183,6 @@ const FIT: Record<Found['fit'], Words> = {
   no_cabe: { es: 'no cabe en tu tarjeta: no lo conectaré sin preguntarte; en parte en la RAM iría mucho más lento', en: 'doesn’t fit your card: I won’t connect it without asking you; partly in RAM it would run much more slowly' },
   no_cabe_ram: { es: 'cabe en tu tarjeta, pero falta RAM libre para conectarlo', en: 'it fits your card, but there isn’t enough free RAM to connect it' },
   desconocido: { es: 'no sé si cabe en tu tarjeta', en: 'I don’t know whether it fits your card' },
-};
-
-/* The tool profiles by their names (ToolProfile's presets in the App). */
-const PROFILE_NAME: Record<string, Words> = {
-  esencial: { es: 'Esencial', en: 'Essential' }, diario: { es: 'Diario', en: 'Everyday' },
-  avanzado: { es: 'Avanzado', en: 'Advanced' }, completo: { es: 'Completo', en: 'Complete' },
 };
 
 /* Settings → Model → Local: install Ollama if it is missing, then write a name, choose what Hugging Face has under it, and
@@ -597,6 +591,8 @@ interface LocalContextState {
   tuned?: OwnModelFile | null;
   /** MOD1 D5: what this PC took the last time the model read its instructions and tools whole (PrefixRead in the App); null before any */
   lastRead?: { tokens: number; seconds: number } | null;
+  /** VRAM4: «Automático» on a card whose free video memory did not hold the profile's cells whole when the model started */
+  cardShort?: FailureCard | null;
 }
 
 /* MOD1 D5: from a minute of reading on, a change of context asks first (once started it cannot be stopped, and BAXY does not
@@ -653,6 +649,7 @@ function LocalContextRow({ value, onChange, tuned, ownRuns }: { value: LocalCont
   const now = value.options.find((o) => o.context === (value.chosen ?? value.automatic));
   const hint = value.switching ? t('Cambiando: el modelo se reinicia al acabar el turno en curso', 'Switching: the model restarts once the current turn ends')
     : refused ?? ([
+      value.chosen === null && value.cardShort ? cardShortText(value.cardShort, t).replace(/\.$/, '') : '',
       now?.room != null ? t(`Deja unos ${tokens(now.room)} tokens para la conversación`, `It leaves about ${tokens(now.room)} tokens for the conversation`) : '',
       now?.vramBytes && now.vramBytes > value.cardBytes ? (value.cardKnown ? t(`No cabe en tu tarjeta de ${gigabytes(value.cardBytes)}: lo que sobre irá a la memoria compartida, mucho más lento`, `It doesn’t fit your ${gigabytes(value.cardBytes)} card: what’s left over goes to shared memory, much more slowly`) : t('Puede no caber en una tarjeta de 4 GB', 'It may not fit on a 4 GB card')) : '',
       now?.slower ? t('En tarjetas AMD o Intel, con más de 61.440 tokens se midió unas 4 veces más lento', 'On AMD or Intel cards, with more than 61,440 tokens it was measured about 4 times slower') : '',

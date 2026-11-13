@@ -479,6 +479,27 @@ internal sealed class InstallationTests
         Assert.That(laptop, Is.EqualTo(GpuSupport.TooLittleMemory));
     }
 
+    // INT34D (AUD1 F2): the welcome said «me sirve» to any card of 4 GB and every warning «con una NVIDIA o AMD de 4 GB sí sé
+    // que funciono». What was measured: a 4 GB NVIDIA starts in Essential (VRAM4B), AMD has no fit to its memory yet (AUD1 F1).
+    [TestCase("es", "NVIDIA de 4 GB", "Esencial", "AMD", "pruebas")]
+    [TestCase("en", "4 GB NVIDIA", "Essential", "AMD", "tested")]
+    public void What_is_promised_of_a_4_GB_card_is_what_was_measured(string language, string nvidia, string profile, string amd, string testing)
+    {
+        Texts texts = Texts.For(language);
+
+        Assert.Multiple(() =>
+        {
+            foreach (string said in new[] { texts.CheckGraphics, texts.WarningHelp })
+            {
+                Assert.That(said, Does.Contain(nvidia).And.Contain(profile), said);
+                Assert.That(said, Does.Contain(amd).And.Contain(testing), said);
+                Assert.That(said, Does.Not.Contain("NVIDIA o AMD").And.Not.Contain("NVIDIA or AMD"), said);
+            }
+
+            Assert.That(texts.WarningHelp, Does.Contain(language == "es" ? "Ajustes → Modelo" : "Settings → Model"));
+        });
+    }
+
     // UNI1 (REV8 F1): the plain address «only this machine» is decided on the host the address goes to (RFC 3986:
     // authority = [ userinfo "@" ] host [ ":" port ]), not on how its text begins.
     [TestCase("http://127.0.0.1:18791/", true)]

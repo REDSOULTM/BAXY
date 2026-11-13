@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { sendTold } from '../api';
 import { useT, type Words } from '../i18n';
-import { causeAdvice, causeText, ON_PROCESSOR_TEXT, startedOnlyOnce, type FailureMemory, type FailureRead } from '../causes';
+import { causeAdvice, causeText, fittingProfile, ON_PROCESSOR_TEXT, PROFILE_NAME, startedOnlyOnce, type FailureCard, type FailureMemory, type FailureRead } from '../causes';
 
 /* Uso 85: the engine stopped for good (MainWindowViewModel.ProfileUnreadable, EngineUnavailable) and the host no longer
    relaunches it on its own. What happened is said as a state of the interface (never words of BAXY's: zero fixed
@@ -45,7 +45,12 @@ const REFUSED: Record<string, Words> = {
   },
 };
 
-export function Breakdown({ failure, cause = null, memory = null, read = null, onProcessor = false }: { failure: string; cause?: string | null; memory?: FailureMemory | null; read?: FailureRead | null; onProcessor?: boolean }) {
+/* API1 (a friend of the owner's, a 4 GB card, 12-11-2026): BAXY's own model could not load, and the way out that needs none of
+   it, another model (Settings → Model, «Usar otro modelo»), was not offered where he was stuck. Offered where the model is what
+   failed (not for unreadable data), whenever the host offers another model. */
+const OTHER_MODEL = new Set(['engine_unavailable', 'no_supported_gpu']);
+
+export function Breakdown({ failure, cause = null, memory = null, read = null, card = null, onProcessor = false, onOtherModel = null }: { failure: string; cause?: string | null; memory?: FailureMemory | null; read?: FailureRead | null; card?: FailureCard | null; onProcessor?: boolean; onOtherModel?: (() => void) | null }) {
   const t = useT();
   const [busy, setBusy] = useState(false);
   const [refused, setRefused] = useState<string | null>(null);
@@ -63,6 +68,24 @@ export function Breakdown({ failure, cause = null, memory = null, read = null, o
     }
     setBusy(false);
   };
+  /* VRAM4B (the leader's decision, 2026-11-12): a profile the person chose that the card's free video memory does not hold is
+     never changed by BAXY: the card says it in seconds and offers the profile that fits, as their choice (PUT /settings/tools,
+     what Settings → Tools does) and a new start with it. A start the host already began for that change refuses the retry:
+     nothing to say then. */
+  const fits = failure === 'engine_unavailable' ? fittingProfile(card) : null;
+  const startIn = async (profile: string) => {
+    setBusy(true);
+    setRefused(null);
+    const kept = await sendTold<{ profile?: string }>('PUT', '/settings/tools', { profile });
+    if (kept.value?.profile !== profile) {
+      setRefused(kept.refused ? t('No se pudo cambiar de perfil: vuelve a intentarlo.', 'The profile couldn’t be changed: try again.') : t('BAXY no respondió: vuelve a intentarlo.', 'BAXY didn’t answer: try again.'));
+      setBusy(false);
+      return;
+    }
+    const told = await sendTold<{ ok?: boolean }>('POST', '/engine/retry');
+    if (!told.value?.ok && !told.refused) setRefused(t('BAXY no respondió: vuelve a intentarlo.', 'BAXY didn’t answer: try again.'));
+    setBusy(false);
+  };
   const leave = async () => {
     const api = (window as unknown as { pywebview?: { api: Record<string, () => Promise<unknown>> } }).pywebview?.api;
     if (api?.win_exit) await api.win_exit();
@@ -72,14 +95,16 @@ export function Breakdown({ failure, cause = null, memory = null, read = null, o
     <div className="bx-card bx-breakdown" role="alertdialog" aria-labelledby="bx-breakdown-ti" aria-describedby="bx-breakdown-tg">
       <div className="hd"><span className="tag">{t('Avería', 'Breakdown')}</span></div>
       <div className="ti" id="bx-breakdown-ti">{t.w(text.title)}</div>
-      <div className="tg" id="bx-breakdown-tg">{failure === 'engine_unavailable' && startedOnlyOnce(cause) ? (onProcessor ? t.w(ON_PROCESSOR_TEXT) + ' ' : '') : t.w(text.body) + ' '}
-        {failure === 'engine_unavailable' && causeText(cause, t) ? t('El modelo no pudo cargarse: ', 'The model could not load: ') + causeText(cause, t, memory, read) + '. ' + causeAdvice(cause, t) : ''}</div>
+      <div className="tg" id="bx-breakdown-tg">{failure === 'engine_unavailable' && startedOnlyOnce(cause, card) ? (onProcessor ? t.w(ON_PROCESSOR_TEXT) + ' ' : '') : t.w(text.body) + ' '}
+        {failure === 'engine_unavailable' && causeText(cause, t) ? t('El modelo no pudo cargarse: ', 'The model could not load: ') + causeText(cause, t, memory, read) + '. ' + causeAdvice(cause, t, card) : ''}</div>
       {refused ? <div className="tg">{refused}</div> : null}
       <div className="ft">
         <span></span>
         <div className="btns">
           <button className="bx-btn" onClick={() => void leave()} disabled={busy}>{t('Salir', 'Quit')}</button>
-          {text.act && text.path ? <button className="bx-btn yes" onClick={() => void act(text.path!)} disabled={busy}>{t.w(text.act)}</button> : null}
+          {onOtherModel && OTHER_MODEL.has(failure) ? <button className="bx-btn" onClick={onOtherModel} disabled={busy}>{t('Usar otro modelo', 'Use another model')}</button> : null}
+          {fits ? <button className="bx-btn yes" onClick={() => void startIn(fits)} disabled={busy}>{t('Arrancar en ', 'Start in ') + t.w(PROFILE_NAME[fits])}</button> : null}
+          {text.act && text.path ? <button className={fits ? 'bx-btn' : 'bx-btn yes'} onClick={() => void act(text.path!)} disabled={busy}>{t.w(text.act)}</button> : null}
         </div>
       </div>
     </div>
