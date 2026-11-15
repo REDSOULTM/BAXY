@@ -192,6 +192,10 @@ public sealed class ProductCatalogTests
     [TestCase("""{"setting":"wake_sound","value":"on"}""", true)]
     [TestCase("""{"setting":"tool_profile","value":"personalizado"}""", false)]
     [TestCase("""{"setting":"do_not_disturb","value":"on"}""", false)]
+    // ING5 (dueño, 13-11: the language is a setting, by voice too): spanish or english, and no other language.
+    [TestCase("""{"setting":"language","value":"english"}""", true)]
+    [TestCase("""{"setting":"language","value":"spanish"}""", true)]
+    [TestCase("""{"setting":"language","value":"french"}""", false)]
     public void BaxysOwnSettingsAreOneReversibleSettingAndItsValue(string json, bool expected)
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("baxy.settings.set");
@@ -575,7 +579,9 @@ public sealed class ProductCatalogTests
             Assert.That(descriptor.EffectKinds, Is.Empty);
             Assert.That(descriptor.RequiresObservedEffect, Is.False);
             Assert.That(schema.Properties.Single().Name, Is.EqualTo("scope"));
-            Assert.That(schema.Properties.Single().AllowedValues, Is.EqualTo(new[] { "confirmation", "internet", "model" }));
+            // VER3: and the version installed, which the system text no longer says.
+            Assert.That(schema.Properties.Single().AllowedValues,
+                Is.EqualTo(new[] { "confirmation", "internet", "model", "version" }));
             Assert.That(schema.Required, Is.EqualTo(new[] { "scope" }));
             Assert.That(ProductCatalog.ToPolicyRisk(descriptor.Risk), Is.EqualTo(OperationRisk.ReadOnly));
         });

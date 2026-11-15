@@ -41,7 +41,7 @@ public sealed class ClipboardPasteSentToTests
             Assert.That(receipt.GetProperty("delivered").GetBoolean(), Is.True);
             Assert.That(receipt.TryGetProperty("next", out JsonElement next), Is.EqualTo(said));
             if (said)
-                Assert.That(next.GetString(), Is.EqualTo("it went into the window of Steam (steamwebhelper); no other application received it"));
+                Assert.That(next.GetString(), Is.EqualTo("BAXY pasted it into the window of Steam (steamwebhelper); no other application received it"));
         });
     }
 

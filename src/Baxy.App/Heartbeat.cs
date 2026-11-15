@@ -215,8 +215,8 @@ internal sealed class Heartbeat : IAsyncDisposable
 
         // Auditoría final (regla 3): an unread last input is neither an absence nor a return.
         if (HeartbeatMoment.ReadIdleTime() is { } idle
-            && _awayWatch.Look(DateTimeOffset.UtcNow, idle, HeartbeatMoment.Presence(out _) == HeartbeatMoment.Away)
-                is { } presence)
+            && _awayWatch.Look(DateTimeOffset.UtcNow, idle, HeartbeatMoment.Presence(out _) == HeartbeatMoment.Away,
+                UiLanguage.IsEnglish) is { } presence)
         {
             Note(presence);
         }
@@ -275,8 +275,13 @@ internal sealed class Heartbeat : IAsyncDisposable
             return;
         }
 
-        Note($"file appeared in Descargas: {name}");
+        Note(FileAppearedNote(name, UiLanguage.IsEnglish));
     }
+
+    /// <summary>The change a new file in the person's downloads folder is told as; the folder is named in the language
+    /// in use (ING6), the file by its own name.</summary>
+    internal static string FileAppearedNote(string name, bool english) =>
+        $"file appeared in {UiLanguage.Say(english, "Descargas", "Downloads")}: {name}";
 
     private void Note(string line)
     {

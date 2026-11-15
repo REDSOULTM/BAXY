@@ -84,6 +84,8 @@ internal sealed partial class MainWindow : Window, IDisposable
     private string failureDetail = string.Empty;
     private string olderInstalled = string.Empty;
     private long dataBytes;
+    // AUT1: the version an update replaces, read before the swap, for what the BAXY that opens is told (UpdateOutcome).
+    private readonly string? updatedFrom;
     // PRV2 (A5): the agreement the installation in the folder accepted (null: none recorded), read before the swap
     // replaces the folder; when it is not this installer's, the window asks for this one first (AcceptedAgreement).
     private readonly string? acceptedBefore;
@@ -105,7 +107,8 @@ internal sealed partial class MainWindow : Window, IDisposable
     // The App's exit event (src/Baxy.App/App.xaml.cs, BaxyExitHandler.AppExitEventName): what its «Salir» sets.
     private const string BaxyExitEvent = @"Local\BAXY.Product.App.Exit";
 
-    internal MainWindow(ReleaseManifest? manifest, bool uninstalling, InstallPaths paths, bool voiceAllowed, bool updating = false)
+    internal MainWindow(
+        ReleaseManifest? manifest, bool uninstalling, InstallPaths paths, bool voiceAllowed, bool updating = false, FileManifest? files = null)
     {
         InitializeComponent();
         this.paths = paths;
@@ -120,13 +123,17 @@ internal sealed partial class MainWindow : Window, IDisposable
         if (this.manifest is not null)
         {
             Program.LogMachine(this.manifest, adapters, paths);
-            installation = new Installation(this.manifest, paths, new PartFetcher(http, gate: new Func<PauseGate>(() => pause)));
+            // AUT1: over a BAXY already in the folder, only the files that differ are downloaded.
+            Func<PauseGate> paused = () => pause;
+            installation = new Installation(
+                this.manifest, paths, new PartFetcher(http, gate: paused), files: files, ranges: new RangeFetcher(http, gate: paused));
         }
 
         texts = Texts.For(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "es" : "en");
         theme = SystemParameters.HighContrast ? ThemeKind.HighContrast : ThemeKind.Dark;
         textStep = WindowsTextStep();
         acceptedBefore = AcceptedAgreement.Read(paths);
+        updatedFrom = SignedRelease.InstalledVersion(paths.App)?.ToString(3);
         bool asksAgreement = !uninstalling && this.manifest is not null && AcceptedAgreement.MustBeAccepted(paths, acceptedBefore);
         agreementPending = asksAgreement;
         screen = FirstScreen<Func<ScreenView>>(uninstalling, this.updating, !uninstalling && BaxyIsOpenHere(), asksAgreement,
@@ -1106,6 +1113,15 @@ internal sealed partial class MainWindow : Window, IDisposable
         Program.Log("installed");
         finished = 0;
         Finish(DoneScreen);
+        if (updating && updatedFrom is not null)
+        {
+            // AUT1: an update that went through the window (the agreement had to be accepted) is told by the BAXY that
+            // opens as one with no window is: «me actualicé a la X», read from this.
+            Program.LeaveWritten(new UpdateOutcome(
+                updatedFrom, manifest.Version, UpdateOutcome.Installed, null, installation?.DownloadedBytes ?? 0, 0,
+                DateTimeOffset.Now.ToString("o", CultureInfo.InvariantCulture)));
+        }
+
         if (updating || closedBaxy)
         {
             // The person asked for the update in BAXY, or had it closed here: it comes back as it was before it closed.

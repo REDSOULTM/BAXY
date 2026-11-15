@@ -37,6 +37,9 @@ internal static class OwnBrakes
 
     internal const string Bypass = "confirmation_bypass";
 
+    /// <summary>ING5: the language BAXY is set to (Ajustes › General «Idioma»): no brake, a setting like the overlay.</summary>
+    internal const string Language = "language";
+
     // Each brake: the value that relaxes it, the name the person's words are weighed against (its row in Ajustes:
     // SettingsPanel «Búsqueda web», «Silenciar su voz»; ProposalsSection «Propuestas» and, under «No me interrumpas
     // durante…», «Llamadas», «Juegos», «Vídeo a pantalla completa»), and what the card and the step show, each in
@@ -81,6 +84,8 @@ internal static class OwnBrakes
         ["echo_cancel"] = ("Ignorar lo que suena en el PC", "Ignore what the PC plays"),
         ["wait_notice"] = ("Decir «Un momento»", "Say «One moment»"),
         ["wake_sound"] = ("Sonido al despertar", "Wake sound"),
+        // ING5 (dueño, 13-11: the language is a setting, by voice too): Ajustes › General «Idioma».
+        [Language] = ("Idioma", "Language"),
     };
 
     private static readonly Dictionary<string, (string Es, string En)> Values = new(StringComparer.Ordinal)
@@ -90,6 +95,8 @@ internal static class OwnBrakes
         ["30m"] = ("silenciar 30 min", "mute for 30 min"),
         ["1h"] = ("silenciar 1 h", "mute for 1 h"),
         ["tomorrow"] = ("silenciar hasta mañana", "mute until tomorrow"),
+        ["english"] = ("inglés", "English"),
+        ["spanish"] = ("español", "Spanish"),
     };
 
     /// <summary>The brake this call relaxes, by its setting, or null: any other call, setting or value. Any change of

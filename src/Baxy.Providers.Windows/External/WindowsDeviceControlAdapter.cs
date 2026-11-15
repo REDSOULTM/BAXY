@@ -2762,6 +2762,10 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         [pscustomobject]@{ok=$true;visible=$visible;networks=@($networks|ForEach-Object {[pscustomobject]$_})}|ConvertTo-Json -Compress -Depth 4
         """;
 
+    /// <summary>What a scan writes for the name of a network that broadcasts none, in the language of the request
+    /// (ING6).</summary>
+    internal static string HiddenNetworkName => ModelLanguage.Say("(oculta)", "(hidden)");
+
     private async ValueTask<ExternalCapabilityReceipt> WifiScanAsync(
         string operation,
         CancellationToken token)
@@ -2811,7 +2815,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             foreach ((string ssid, string authentication, int? signal) in networks)
             {
                 writer.WriteStartObject();
-                writer.WriteString("ssid", string.IsNullOrWhiteSpace(ssid) ? "(oculta)" : ssid);
+                writer.WriteString("ssid", string.IsNullOrWhiteSpace(ssid) ? HiddenNetworkName : ssid);
                 writer.WriteBoolean("hidden", string.IsNullOrWhiteSpace(ssid));
                 writer.WriteString("authentication", authentication);
                 if (signal is int value)

@@ -54,6 +54,18 @@ public static class ProtocolTypes
     public const string ApplicationCatalogUpdate = "catalog.applications";
 }
 
+/// <summary>
+/// ING6 (owner's decision of 2026-11-13: the language is a setting, and choosing it puts all the model reads in it): the
+/// languages an <see cref="OperationRequest"/> may ask the core's own words in. A request that names none is in Spanish.
+/// </summary>
+public static class ProtocolLanguages
+{
+    public const string Spanish = "es";
+    public const string English = "en";
+
+    public static bool IsKnown(string? language) => language is Spanish or English;
+}
+
 public static class OperationStatuses
 {
     public const string Completed = "completed";

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.Windows;
 
@@ -11,8 +12,9 @@ namespace Baxy.Providers.Windows.Windows;
 /// </summary>
 public static partial class DesktopWindowNames
 {
-    /// <summary>What <see cref="Visible"/> adds to a minimized window's title.</summary>
-    public const string MinimizedMark = " (minimizada)";
+    /// <summary>What <see cref="Visible"/> adds to a minimized window's title: BAXY's own words beside the title, in the
+    /// language of the request (ING6); the title is the window's and stays as read.</summary>
+    public static string MinimizedMark => ModelLanguage.Say(" (minimizada)", " (minimized)");
 
     public static IReadOnlyList<(string Process, string Title)> Visible()
     {

@@ -276,6 +276,12 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     /// <summary>The withheld operations the catalog was configured with.</summary>
     internal IReadOnlySet<string>? ConfiguredWithheld { get; private set; }
 
+    /// <summary>ING5: the language the catalog was configured with («es» or «en»), read once, at its first configuring:
+    /// the installed list arriving later (UpdateApplicationCatalogAsync) is sent in the same one, so this mind's
+    /// conversation is never begun anew half-way through a turn. Another language is another mind
+    /// (MainWindowViewModel.LanguageChanged). Null until then.</summary>
+    internal string? ConfiguredLanguage { get; private set; }
+
     /// <summary>What the mind's hello tells of its behavior texts (src/baxy_mind/behavior.py): its fixed identity and the
     /// factory texts the person may replace; null when it does not.</summary>
     internal JsonObject? FactoryBehavior { get; private set; }
@@ -457,6 +463,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
     {
         IReadOnlySet<string>? withheld = WithheldNow?.Invoke() ?? Withheld;
         ConfiguredWithheld = withheld;
+        ConfiguredLanguage ??= UiLanguage.Current;
         JsonObject request = CreateCatalogConfigureRequest(
             capabilities,
             applicationCatalog,
@@ -465,7 +472,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             withheld,
             UpdatePanel.Installed,
             MemoryOffNow?.Invoke(),
-            CardProfileNow?.Invoke());
+            CardProfileNow?.Invoke(),
+            ConfiguredLanguage);
         int offered = request["capabilities"]!.AsArray().Count;
         JsonObject? reply = await RequestAsync(
             request,
@@ -543,7 +551,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         IReadOnlySet<string>? withheld = null,
         string? version = null,
         bool? memoryOff = null,
-        JsonObject? cardProfile = null)
+        JsonObject? cardProfile = null,
+        string? language = null)
     {
         ArgumentNullException.ThrowIfNull(capabilities);
         var catalog = new JsonArray();
@@ -560,10 +569,16 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             catalog.Add(Capability(capability, shown));
         }
 
+        // ING5 (owner's decision of 2026-11-13: the language is a setting, and choosing it puts all the model reads in
+        // it): the language chosen, «es» or «en» (UiLanguage.Current, or the one this mind was first configured with),
+        // as a datum of the configuration and never a reading of the person's words. The mind writes its own rules and
+        // the tools' texts for the model in it (harness_language, mind.use_language). The groups below go in Spanish
+        // whatever it is: the mind says each by its English name. In Spanish the mind reads what it read before.
         var request = new JsonObject
         {
             ["type"] = "catalog.configure",
             ["capabilities"] = catalog,
+            ["lang"] = language ?? UiLanguage.Current,
         };
         if (applicationCatalog is not null)
         {
@@ -642,7 +657,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
         // VER2 (10-11, 1.3.3 just installed: asked which version it is, it said it had no information on it):
         // the version this App is, from its stamp (UpdatePanel.Installed, the one Settings → General shows), with no
-        // request; the mind says it as a fact of this PC (mind.VERSION_FACT). A development copy has none: no field.
+        // request. A development copy has none: no field. VER3 (13-11): the mind no longer says it in the system text (each
+        // new number moved its answers); the model reads it when asked (assistant.status scope version, OwnReadings).
         if (!string.IsNullOrWhiteSpace(version))
         {
             request["baxyVersion"] = version;
@@ -701,7 +717,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         JsonArray? ringing = null, JsonArray? routines = null, int? memoryRecords = null)
     {
         // Steam (2026-11-04): the interface's language, so the mind's voice knows it before the reply comes; the mind
-        // keeps it out of the model's prompt.
+        // keeps this one out of the model's prompt (ING5: what the model reads follows the one its catalog was
+        // configured with, CreateCatalogConfigureRequest).
         var request = new JsonObject
         {
             ["type"] = "turn.decide",

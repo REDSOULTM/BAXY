@@ -82,8 +82,30 @@ internal sealed class ToolProfile
     // stock tokenizer and the GGUF template, each preset's catalog.configure from this App with the memory switch on and
     // off (the larger kept): Esencial 23.406 → 23.433 (+27: rut13's 16 and rem7's memory fact), Diario +16, Avanzado
     // and Completo +33 (rut13's; the memory switch off is 2 fewer there).
+    // VER3 (2026-11-13): the version's number leaves the system text (each release moved the bench); where it stood, a
+    // fixed sentence says it is read with assistant_status, whose description names the scope: +35 in each of the 8
+    // (memory on and off), counted with the stock tokenizer and the GGUF template on this App's catalog.configure.
+    // VER3B (2026-11-13): that sentence also names baxy_update for a newer one, and the scope comes first in the
+    // description: +17 more in each of the 8, counted the same way.
+    // R4A (2026-11-13): with pan6 (the screen's and the PC's off in display_monitor_set and system_power, and its catalog
+    // line) and hor4 beside ver3b: +74 more in each of the 8, counted the same way (pan6 alone, +74; hor4, 0).
+    // INT36A (2026-11-13): with ing5-voz (baxy_settings_set's language: one setting, two values, a clause and two
+    // examples in its description, a sentence in its «value»): +69 more in each of the 8, counted the same way in
+    // Spanish (1.5.2 → this tree +195 = ver3 35 + ver3b 17 + r4a 74 + 69). In English the prefix is shorter (Esencial
+    // 257 fewer, Completo 770 fewer): the table keeps the Spanish count, the larger. INT36A's +50 for app_open's
+    // sentence on an application outside the installed list (gate H2) went out again with it in INT36B (−50 measured).
+    // ING6 (2026-11-14): baxy_settings_set's language (ING5: the setting, its two values and, in Spanish, the clause
+    // «its language (language: spanish or english)» and no more): +19 in each of the 8 (4 presets, the memory switch
+    // on and off), counted the same way with the harness in Spanish (tmp\ING6\p1\tokens6.py). With the harness in
+    // English the prefix is shorter in every preset (Esencial 211 fewer, Diario 487, Avanzado 671, Completo 724; with
+    // the memory switch on 213, 492, 676 and 729): the table keeps the Spanish count, the larger, so what fits in
+    // Spanish fits in English.
+    // INT36C (2026-11-14): ing6 replaces ing5-voz's +69 with its +19 (ING6's note above). baxy_update's sentence stays as it
+    // was: the two new wordings tried (+26 and -4) each moved a gate row to an effect (INFORME_INT36C). Counted on this tree
+    // with the same tokenizer and template and its App's catalog.configure: 1.5.2 + 145 in each of the 8 (ver3 35 + ver3b
+    // 17 + pan6 74 + ing6 19), in Spanish; in English shorter.
     private static readonly (string Name, int Prefix)[] MeasuredPrefix =
-        [("esencial", 26342), ("diario", 40035), ("avanzado", 49708), (Completo, 51450)];
+        [("esencial", 26487), ("diario", 40180), ("avanzado", 49853), (Completo, 51595)];
 
     /// <summary>The context a model needs for <paramref name="profile"/>'s prompt and a turn beside it: the measured prefix, scaled
     /// by the one the mind read (<paramref name="measured"/>, for <paramref name="measuredProfile"/>) when known. Personalizado

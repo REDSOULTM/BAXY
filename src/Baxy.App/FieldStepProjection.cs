@@ -351,7 +351,7 @@ internal static class FieldStepProjection
     };
 
     /// <summary>What leaves the PC with a call that reaches the internet (the catalog's OperationEffects.Network), in
-    /// English or in Spanish: the Spanish one is also what assistant.status reads to the model (OwnReadings.Internet).</summary>
+    /// English or in Spanish: what assistant.status reads to the model too, in the language in use (OwnReadings.Internet).</summary>
     internal static string NetWhat(string operation, JsonObject arguments, bool english)
     {
         string Arg(string key) => arguments[key] is JsonValue v && v.TryGetValue(out string? s) && !string.IsNullOrWhiteSpace(s)

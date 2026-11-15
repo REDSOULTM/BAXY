@@ -18,7 +18,9 @@ namespace Baxy.Core.Operations;
 /// here too, after the person's «sí» the App always asks for it (OwnBrakes: the conscious setting of the identity, said
 /// aloud), and so is the tool profile of Settings → Tools, a ready-made one (<see cref="ToolProfileStore"/>; the App
 /// relaunches the mind with its tools once the turn ends). A value a setting does not take is refused with the values it
-/// does take.
+/// does take. ING5 (dueño, 13-11-2026: the language is a setting, and choosing it puts all the model reads in it): the
+/// language of Settings → General too, by the key the view writes («language»); the App relaunches the mind in it once
+/// the turn ends, and the mind begins the conversation anew.
 /// </summary>
 internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = null) : IOperationHandler
 {
@@ -56,6 +58,14 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
     internal const string AccessibleMode = "accessible_mode";
 
     internal const string ToolProfile = "tool_profile";
+
+    // ING5: the language BAXY is set to, kept under the key and with the words the view writes (FieldSettings.Language:
+    // «es» or «en»; «auto», or none, is Windows' display language).
+    internal const string Language = "language";
+
+    private const string LanguageKey = "language";
+
+    private static readonly string[] LanguageValues = ["english", "spanish"];
 
     private static readonly string[] SwitchValues = ["on", "off"];
 
@@ -121,6 +131,16 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
             values["quiet"] = until is null ? null : value;
             values["quietUntil"] = until?.ToUnixTimeMilliseconds();
         }
+        else if (setting == Language)
+        {
+            // Already in that language (chosen, or Windows' with «auto»): the person's choice stays as it is written.
+            string wanted = LanguageCode(value!);
+            changed = LanguageInUse(values) != wanted;
+            if (changed)
+            {
+                values[LanguageKey] = wanted;
+            }
+        }
         else
         {
             (string key, bool fallback, bool inverted) = Switches[setting!];
@@ -151,6 +171,7 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
     private static string[]? ValuesOf(string? setting) =>
         setting == Proposals ? SilenceValues
         : setting == ToolProfile ? ToolProfileStore.Presets
+        : setting == Language ? LanguageValues
         : setting is BaxySettingHandler.ConfirmationBypass or AccessibleMode || (setting is not null && Switches.ContainsKey(setting))
             ? SwitchValues
             : null;
@@ -289,6 +310,17 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
             receipt["conversationKept"] = true;
         }
 
+        if (setting == Language && changed)
+        {
+            // ING5: typed as the profile's is (MUS1), and what differs said: the model gets ready in that language once
+            // this reply ends, the App stays open, and the conversation is not kept: the mind begins it anew, so the
+            // person's next request is the first of a conversation in the language chosen (mind.use_language).
+            receipt["modelGetsReady"] = "after_this_reply";
+            receipt["appStaysOpen"] = true;
+            receipt["conversationKept"] = false;
+            receipt["nextRequestStartsAnewIn"] = value;
+        }
+
         if (until is { } end)
         {
             receipt["until"] = TimeZoneInfo.ConvertTime(end, TimeZoneInfo.Local)
@@ -308,9 +340,23 @@ internal sealed class OwnSettingsHandler(string? dataRoot, TimeProvider? time = 
             return FieldSettingsStore.QuietUntil(values, now)?.ToUnixTimeMilliseconds() == until?.ToUnixTimeMilliseconds();
         }
 
+        if (setting == Language)
+        {
+            return LanguageInUse(values) == LanguageCode(value);
+        }
+
         (string key, bool fallback, bool inverted) = Switches[setting];
         return Flag(values, key, fallback) == ((value == "on") != inverted);
     }
+
+    private static string LanguageCode(string value) => value == "english" ? "en" : "es";
+
+    // The language in use with what the file says: its «es» or «en», or Windows' display language for «auto», none or any
+    // other word, Spanish for Spanish and English for any other, as the App resolves it (UiLanguage.Resolve).
+    private static string LanguageInUse(JsonObject values) =>
+        values[LanguageKey] is JsonValue kept && kept.TryGetValue(out string? choice) && choice is "es" or "en"
+            ? choice
+            : CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "es" : "en";
 
     private static bool Flag(JsonObject values, string key, bool fallback) =>
         values[key] is JsonValue stored && stored.TryGetValue(out bool on) ? on : fallback;

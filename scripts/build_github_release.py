@@ -1,5 +1,6 @@
 """Turns BAXY's self-contained folder (scripts/build_steam.ps1) into a GitHub release: zips cut below GitHub's 2 GiB per
-asset, the manifest with each part's SHA-256, and BAXY-Instalador.exe (src/Baxy.Installer) with that manifest inside.
+asset, the manifest with each part's SHA-256, files.json with each file's, and BAXY-Instalador.exe (src/Baxy.Installer) with
+both inside.
 
     py -3.12 scripts/build_github_release.py --depot <folder> --output <folder> --version 1.3.0
         [--twin-url http://127.0.0.1:18791/ --twin-keys <test.pem> --twin-signing-key <test key name>]
@@ -28,6 +29,7 @@ import hashlib
 import json
 import os
 import re
+import struct
 import subprocess
 import urllib.parse
 import zipfile
@@ -46,6 +48,10 @@ RELEASES = f"https://github.com/{GITHUB_REPOSITORY}/releases/download"
 # Where the installed BAXY was published (src/Baxy.Core/Operations/BaxyDistribution.cs): GitHub, whose latest release it
 # looks for and installs with this installer. The depot's own (steam or itch, scripts/build_steam.ps1) does not travel here.
 DISTRIBUTION = "distribution.json"
+# AUT1 (orden del dueño, 13-11-2026: «No debe volver a descargar nada que ya exista»): every file of the release by size,
+# SHA-256 and place in the parts. The installer carries it and, over a BAXY already installed, downloads only the files that
+# differ, each with a Range request into the same parts (RFC 9110 §14.2); a first install still takes the parts whole.
+FILES = "files.json"
 PART_BYTES = 1_900_000_000
 STORED = {".gguf", ".onnx", ".bin", ".zip", ".png", ".jpg", ".woff2"}
 CHUNK = 1 << 24
@@ -59,13 +65,32 @@ NVIDIA_TEXTS = (
 )
 
 
-def _pack(depot: Path, files: list[Path], target: Path, written: dict[str, bytes] | None = None) -> None:
+def _pack(depot: Path, files: list[Path], target: Path, written: dict[str, bytes] | None = None) -> list[dict]:
+    """Writes the zip and returns, for each file in it, what an update needs to take that file alone (AUT1): its size and
+    SHA-256, and where its bytes are in the zip (``offset`` of its data, ``packed`` bytes, ``method`` 0 stored or 8 deflate)."""
+    hashes = {}
     with zipfile.ZipFile(target, "w", allowZip64=True) as archive:
         for path in files:
             method = zipfile.ZIP_STORED if path.suffix.lower() in STORED else zipfile.ZIP_DEFLATED
-            archive.write(path, path.relative_to(depot).as_posix(), compress_type=method)
+            name = path.relative_to(depot).as_posix()
+            archive.write(path, name, compress_type=method)
+            hashes[name] = _sha256(path)
         for name, content in (written or {}).items():
             archive.writestr(name, content, compress_type=zipfile.ZIP_DEFLATED)
+            hashes[name] = hashlib.sha256(content).hexdigest()
+    listed = []
+    with zipfile.ZipFile(target) as archive, target.open("rb") as raw:
+        for entry in archive.infolist():
+            # The data follows the entry's local header: 30 bytes, then its name and its extra field, whose lengths are at
+            # bytes 26 and 28 (PKWARE APPNOTE.TXT 4.3.7; the central directory's extra field may be another).
+            raw.seek(entry.header_offset + 26)
+            name_bytes, extra_bytes = struct.unpack("<HH", raw.read(4))
+            listed.append({
+                "path": entry.filename, "bytes": entry.file_size, "sha256": hashes[entry.filename], "archive": target.name,
+                "offset": entry.header_offset + 30 + name_bytes + extra_bytes, "packed": entry.compress_size,
+                "method": entry.compress_type,
+            })
+    return listed
 
 
 def distribution() -> bytes:
@@ -111,8 +136,11 @@ def build_manifest(depot: Path, output: Path, version: str, part_bytes: int = PA
     name = f"baxy-{version}.zip"
     nvidia = f"baxy-{version}-nvidia.zip"
     marker = distribution()
-    _pack(depot, common, output / name, {DISTRIBUTION: marker})
-    _pack(depot, cuda + texts, output / nvidia)
+    listed = _pack(depot, common, output / name, {DISTRIBUTION: marker}) + _pack(depot, cuda + texts, output / nvidia)
+    # AUT1: one line per file, so the JSON of some 5,000 files stays readable in a diff and small.
+    lines = ",\n".join("  " + json.dumps(file) for file in listed)
+    files = f'{{\n "version": {json.dumps(version)},\n "files": [\n{lines}\n ]\n}}\n'
+    (output / FILES).write_bytes(files.encode("utf-8"))
     manifest = {
         "version": version,
         "baseUrl": f"{RELEASES}/v{version}/",
@@ -126,6 +154,8 @@ def build_manifest(depot: Path, output: Path, version: str, part_bytes: int = PA
                 "parts": _cut(output / nvidia, part_bytes),
             },
         ],
+        # Signed with the rest: the installer takes a file's hash from files.json only when files.json is this one.
+        "files": {"file": FILES, "bytes": (output / FILES).stat().st_size, "sha256": _sha256(output / FILES)},
     }
     (output / "release.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     return manifest
@@ -137,7 +167,7 @@ def build_installer(output: Path, version: str, keys: Path = PRODUCT_KEYS) -> Pa
         [
             "dotnet", "publish", str(REPOSITORY / "src" / "Baxy.Installer"), "-c", "Release", "--nologo", "-v:minimal",
             "-o", str(output / "installer"), f"-p:BaxyReleaseManifest={output / 'release.json'}", f"-p:Version={version}",
-            f"-p:BaxyUpdateKeys={keys}",
+            f"-p:BaxyFilesManifest={output / FILES}", f"-p:BaxyUpdateKeys={keys}",
         ],
         check=True,
     )
@@ -214,6 +244,8 @@ def build_twin(output: Path, version: str, base_url: str, keys: Path, key_name: 
     manifest.pop("installer", None)
     manifest["baseUrl"] = base_url
     (twin / "release.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
+    # The same parts, so the same files.json, byte for byte (its hash is in the manifest).
+    (twin / FILES).write_bytes((output / FILES).read_bytes())
     exe = build_installer(twin, version, keys)
     name_installer(twin, exe)
     sign(twin / "release.json", keys, key_name, folder)
@@ -221,7 +253,7 @@ def build_twin(output: Path, version: str, base_url: str, keys: Path, key_name: 
         for part in archive["parts"]:
             if not (served / part["file"]).exists():
                 os.link(output / part["file"], served / part["file"])
-    for name in ("release.json", "release.json.sig"):
+    for name in ("release.json", "release.json.sig", FILES):
         (served / name).write_bytes((twin / name).read_bytes())
     return exe
 

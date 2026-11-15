@@ -26,6 +26,17 @@ public sealed class AwayWatchTests
         Assert.That(watch.Look(Start.AddMinutes(40), TimeSpan.FromMinutes(1), away: false), Is.Null);
     }
 
+    // ING5B (owner, 2026-11-13: in English, not a word of Spanish in what the model reads): the return, in English.
+    [Test]
+    public void TheReturnIsSaidInEnglishWhenThatIsTheLanguage()
+    {
+        var watch = new AwayWatch();
+
+        Assert.That(watch.Look(Start, TimeSpan.FromMinutes(12), away: true, english: true), Is.EqualTo("user idle: 12 min"));
+        Assert.That(watch.Look(Start.AddMinutes(30), TimeSpan.FromMinutes(1), away: false, english: true),
+            Is.EqualTo("back after 41 min away"));
+    }
+
     [Test]
     public void ACallThatStartsWhileThePersonIsAwayIsNoReturn()
     {

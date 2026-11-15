@@ -19,7 +19,8 @@ internal sealed partial record ReleaseManifest(
     string Version,
     string BaseUrl,
     long InstalledBytes,
-    IReadOnlyList<ReleaseArchive> Archives)
+    IReadOnlyList<ReleaseArchive> Archives,
+    ReleaseFiles? Files = null)
 {
     internal static ReleaseManifest Parse(Stream json)
     {
@@ -52,6 +53,13 @@ internal sealed partial record ReleaseManifest(
             throw new InvalidDataException("release manifest: version, base address or size is not valid");
         }
 
+        // AUT1: files.json, when the release names one (FileManifest).
+        if (Files is not null && (Files.File is null || !AssetName().IsMatch(Files.File) || Files.Bytes <= 0
+            || Files.Sha256 is null || !Hash().IsMatch(Files.Sha256)))
+        {
+            throw new InvalidDataException("release manifest: its file manifest is not valid");
+        }
+
         foreach (ReleaseArchive archive in Archives)
         {
             if (archive.Parts is null || archive.Parts.Count == 0 || archive.InstalledBytes < 0 ||
@@ -82,4 +90,5 @@ internal sealed partial record ReleaseManifest(
 
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 [JsonSerializable(typeof(ReleaseManifest))]
+[JsonSerializable(typeof(FileManifest))]
 internal sealed partial class ReleaseManifestJson : JsonSerializerContext;

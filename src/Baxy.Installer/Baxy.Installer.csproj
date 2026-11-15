@@ -50,4 +50,8 @@
   <ItemGroup Condition="'$(BaxyReleaseManifest)' != ''">
     <EmbeddedResource Include="$(BaxyReleaseManifest)" LogicalName="Baxy.Installer.release.json" />
   </ItemGroup>
+  <!-- AUT1: each file of the release by size, SHA-256 and place in the parts; release.json names it by SHA-256. -->
+  <ItemGroup Condition="'$(BaxyFilesManifest)' != ''">
+    <EmbeddedResource Include="$(BaxyFilesManifest)" LogicalName="Baxy.Installer.files.json" />
+  </ItemGroup>
 </Project>

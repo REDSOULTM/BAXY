@@ -302,6 +302,33 @@ public sealed class WindowNotRespondingTests
             Assert.That(gone, Is.Null);
             Assert.That(stoppedAfter?.RootElement.GetProperty("uiaFailed").GetString(), Is.EqualTo("la ventana no responde"));
             Assert.That(slow?.RootElement.GetProperty("uiaFailed").GetString(), Is.EqualTo(WindowsVisibleControlAdapter.UnfinishedWalkReason));
+            Assert.That(slow?.RootElement.GetProperty("uiaFailed").GetString(),
+                Is.EqualTo("la lectura del árbol accesible no terminó en su plazo"));
         });
+    }
+
+    // ING6: the reason is BAXY's own words, read by the model inside the look: in English with the language in English.
+    [Test]
+    public void ALookLeftWithoutItsTreeSaysWhyInEnglishWithTheLanguageInEnglish()
+    {
+        using JsonDocument answer = JsonDocument.Parse("""{"ok":false,"error":"window_not_responding"}""");
+        Baxy.Providers.Windows.Infrastructure.ModelLanguage.Use(Baxy.Contracts.ProtocolLanguages.English);
+        try
+        {
+            using JsonDocument? there = WindowsVisibleControlAdapter.WithoutTree(answer.RootElement, 7, _ => true);
+            using JsonDocument? stoppedAfter = WindowsVisibleControlAdapter.UnfinishedWalk(7, _ => true, _ => true);
+            using JsonDocument? slow = WindowsVisibleControlAdapter.UnfinishedWalk(7, _ => true, _ => false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(there?.RootElement.GetProperty("uiaFailed").GetString(), Is.EqualTo("the window is not responding"));
+                Assert.That(stoppedAfter?.RootElement.GetProperty("uiaFailed").GetString(), Is.EqualTo("the window is not responding"));
+                Assert.That(slow?.RootElement.GetProperty("uiaFailed").GetString(),
+                    Is.EqualTo("the read of the accessible tree did not finish within its time limit"));
+            });
+        }
+        finally
+        {
+            Baxy.Providers.Windows.Infrastructure.ModelLanguage.Use(null);
+        }
     }
 }

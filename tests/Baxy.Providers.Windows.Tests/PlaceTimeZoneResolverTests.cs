@@ -77,6 +77,34 @@ public sealed class PlaceTimeZoneResolverTests
         });
     }
 
+    // ING6: the place read is named in the language of the request, by GeoNames' Spanish or English name.
+    [Test]
+    public async Task ThePlaceReadIsNamedInTheLanguageOfTheRequest()
+    {
+        var resolver = new GeoNamesPlaceTimeZoneResolver(Places(World));
+
+        PlaceTimeZoneReading spanish = await resolver.ResolveAsync("Washington", CancellationToken.None);
+        PlaceTimeZoneReading english;
+        Baxy.Providers.Windows.Infrastructure.ModelLanguage.Use(Baxy.Contracts.ProtocolLanguages.English);
+        try
+        {
+            english = await resolver.ResolveAsync("Washington", CancellationToken.None);
+        }
+        finally
+        {
+            Baxy.Providers.Windows.Infrastructure.ModelLanguage.Use(null);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(spanish.Place!.Name, Is.EqualTo("Washington"));
+            Assert.That(spanish.Place.Country, Is.EqualTo("Estados Unidos"));
+            Assert.That(english.Place!.Name, Is.EqualTo("Washington D.C."));
+            Assert.That(english.Place.Country, Is.EqualTo("United States"));
+            Assert.That(english.Place.Zone.Id, Is.EqualTo(spanish.Place.Zone.Id));
+        });
+    }
+
     // WEB2 (2026-11-07, held-out «¿qué hora es en Georgia?»): namesakes of comparable size, the state and the country,
     // were the most populated said as the place; as the weather, they go back as candidates, so the person is asked.
     [TestCase("Georgia", "Estados Unidos", "Georgia")]

@@ -47,6 +47,8 @@
     <Compile Include="..\Baxy.Installer\DownloadFailures.cs" Link="Installer\DownloadFailures.cs" />
     <!-- APP1 (UPD-f): where the engine downloads BAXY's installer, to say how much of it is here (UpdatePanel). -->
     <Compile Include="..\Baxy.Core\Operations\UpdateInstallerFile.cs" Link="Core\UpdateInstallerFile.cs" />
+    <!-- AUT1: how the installer says an update ended, read by the BAXY that opens after it (LastUpdate). -->
+    <Compile Include="..\Baxy.Installer\UpdateOutcome.cs" Link="Installer\UpdateOutcome.cs" />
   </ItemGroup>
   <Target Name="CopyDevelopmentCore"
           AfterTargets="Build"

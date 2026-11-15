@@ -85,7 +85,9 @@ internal sealed class PreparedOperation
         InvocationId,
         OperationName,
         _arguments,
-        confirmationToken);
+        confirmationToken,
+        // ING6: baxy-core writes its own words for the model in the language in use; none says Spanish, the wire of always.
+        UiLanguage.IsEnglish ? ProtocolLanguages.English : null);
 
     private static string CreateIdentityKey(string operationName, JsonElement arguments)
     {

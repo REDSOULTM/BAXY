@@ -369,6 +369,36 @@ internal static class WindowsIntegration
         }
     }
 
+    /// <summary>
+    /// AUT1: the version and size «Installed apps» says of the BAXY in <paramref name="paths"/>, read before an update so
+    /// they can be put back if the update is undone (<see cref="SayAgain"/>); null when no entry names the folder.
+    /// </summary>
+    internal static (string Version, int SizeKb)? Registered(InstallPaths paths, WindowsPlaces? places = null)
+    {
+        places ??= WindowsPlaces.ForThisUser;
+        if (InstalledBaxyEntries.All(places.UninstallKey).FirstOrDefault(entry => SameFolder(entry.Root, paths.Root)) is not { } own)
+        {
+            return null;
+        }
+
+        using RegistryKey? key = Registry.CurrentUser.OpenSubKey(own.Key);
+        return key?.GetValue("DisplayVersion") is string version && key.GetValue("EstimatedSize") is int size
+            ? (version, size)
+            : null;
+    }
+
+    /// <summary>AUT1: «Installed apps» says again the version and size of the BAXY that came back to its folder.</summary>
+    internal static void SayAgain(InstallPaths paths, (string Version, int SizeKb) was, WindowsPlaces? places = null) => Logged(() =>
+    {
+        places ??= WindowsPlaces.ForThisUser;
+        if (InstalledBaxyEntries.All(places.UninstallKey).FirstOrDefault(entry => SameFolder(entry.Root, paths.Root)) is { } own)
+        {
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(own.Key, writable: true);
+            key?.SetValue("DisplayVersion", was.Version);
+            key?.SetValue("EstimatedSize", was.SizeKb, RegistryValueKind.DWord);
+        }
+    });
+
     /// <summary>Whether an entry of «Installed apps» names <paramref name="root"/>.</summary>
     internal static bool IsRegistered(string root, WindowsPlaces places) =>
         InstalledBaxyEntries.All(places.UninstallKey).Any(entry => SameFolder(entry.Root, root));

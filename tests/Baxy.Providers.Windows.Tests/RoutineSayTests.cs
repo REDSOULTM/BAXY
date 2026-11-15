@@ -729,6 +729,33 @@ public sealed class RoutineSayTests
         });
     }
 
+    // ING6: with the language in English the way out is the button as the English view names it (MemoryPanel).
+    [Test]
+    public async Task ADamagedRoutinesFileNamesItsWayOutAsTheEnglishViewDoes()
+    {
+        await Run("""{"action":"create","name":"café","at":"16:00","repeat":"daily","steps":["say: Hora del café."]}""");
+        File.WriteAllText(Path.Combine(_root, LocalRoutineStore.FolderName, "routines.v1.json"), "{\"routines\":[{\"id\":\"r-000001\",\"order\":\"apaga");
+
+        string spanish = Result(await Run("""{"action":"list"}"""))["next"]!.GetValue<string>();
+        string english;
+        Baxy.Providers.Windows.Infrastructure.ModelLanguage.Use(Baxy.Contracts.ProtocolLanguages.English);
+        try
+        {
+            english = Result(await Run("""{"action":"list"}"""))["next"]!.GetValue<string>();
+        }
+        finally
+        {
+            Baxy.Providers.Windows.Infrastructure.ModelLanguage.Use(null);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(spanish, Does.Contain("and that «Olvidar todo» in BAXY's memory panel deletes them"));
+            Assert.That(english, Is.EqualTo(spanish.Replace("«Olvidar todo»", "«Forget everything»", StringComparison.Ordinal)));
+            Assert.That(english, Does.Contain("«Forget everything»"));
+        });
+    }
+
     // RUT9 (second blind review): a clock without its leading zero finds only a routine at a time, and only when no
     // routine has that name as it was said: a phrase routine named «8:00» is never the routine «08:00».
     [Test]

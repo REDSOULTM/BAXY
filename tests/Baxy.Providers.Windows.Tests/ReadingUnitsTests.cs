@@ -30,6 +30,42 @@ public sealed class ReadingUnitsTests
     public void ASizeIsWrittenInTheLargestUnitOf1024ItReaches(double bytes, string written) =>
         Assert.That(ReadingUnits.Size(bytes), Is.EqualTo(written));
 
+    // ING6: with the language in English a reading is written as a person reads it in English: a decimal point.
+    [TestCase(0.6923, "0.69 %")]
+    [TestCase(69, "69 %")]
+    [TestCase(12.345, "12.35 %")]
+    [TestCase(0, "0 %")]
+    [TestCase(0.001, "less than 0.01 %")]
+    public void InEnglishAPercentageIsWrittenWithADecimalPoint(double percent, string written)
+    {
+        ModelLanguage.Use(Baxy.Contracts.ProtocolLanguages.English);
+        try
+        {
+            Assert.That(ReadingUnits.Percent(percent), Is.EqualTo(written));
+        }
+        finally
+        {
+            ModelLanguage.Use(null);
+        }
+    }
+
+    [TestCase(512d, "512 bytes")]
+    [TestCase(1536d, "1.5 KB")]
+    [TestCase(34_037_329_920d, "31.7 GB")]
+    [TestCase(2_199_023_255_552d, "2 TB")]
+    public void InEnglishASizeIsWrittenWithADecimalPoint(double bytes, string written)
+    {
+        ModelLanguage.Use(Baxy.Contracts.ProtocolLanguages.English);
+        try
+        {
+            Assert.That(ReadingUnits.Size(bytes), Is.EqualTo(written));
+        }
+        finally
+        {
+            ModelLanguage.Use(null);
+        }
+    }
+
     [Test]
     public async Task TheStatusOfThePcSaysEachReadingWithItsUnit()
     {

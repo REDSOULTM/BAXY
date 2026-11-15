@@ -147,11 +147,12 @@ internal sealed record CommandLine(
                                «Aplicaciones instaladas». Donde no hay BAXY no hace nada y sale con {NotInstalled}.
             --delete-data      Con --uninstall: borra también los datos de BAXY (%LOCALAPPDATA%\BAXY).
                                Si otra BAXY instalada los usa, no hace nada y sale con 1.
-            --update           Lo usa BAXY al actualizarse: espera a que BAXY se cierre, instala (ya dijiste que
-                               sí en BAXY) y la vuelve a abrir. Si el acuerdo de licencia no es el que aceptaste,
-                               antes lo muestra: sin aceptarlo no instala y vuelve a abrir la que tenías.
-                               Si falla, la cancelas o cierras la ventana antes de cambiarla, también vuelve
-                               a abrir la que tenías. Antes de bajar nada mira el espacio libre.
+            --update           Lo usa BAXY al actualizarse, sin ventana: espera a que BAXY se cierre, baja sólo
+                               los ficheros que cambiaron, instala y la vuelve a abrir. Si falla antes de
+                               cambiarla, no toca nada y vuelve a abrir la que tenías; si la nueva no arranca,
+                               vuelve la que tenías. Antes de bajar nada mira el espacio libre.
+                               Si el acuerdo de licencia no es el que aceptaste, y sólo entonces, abre la ventana
+                               y lo muestra antes: sin aceptarlo no instala y vuelve a abrir la que tenías.
                                El instalador no toca tus datos.
                                Con --quiet no la abre: instala y termina.
             --help, -h, /?     Muestra esta ayuda.
@@ -186,11 +187,14 @@ internal sealed record CommandLine(
                                «Installed apps». Where there is no BAXY it does nothing and exits with {NotInstalled}.
             --delete-data      With --uninstall: also deletes BAXY's data (%LOCALAPPDATA%\BAXY).
                                If another installed BAXY uses it, it does nothing and exits with 1.
-            --update           Used by BAXY to update itself: waits for BAXY to close, installs (you said yes in
-                               BAXY) and opens it again. If the license agreement is not the one you accepted, it
-                               shows it first: without accepting it nothing is installed and the one you had opens again.
-                               If it fails, you cancel it or close the window before it is replaced, the one
-                               you had opens again too. Before downloading anything it checks the free space.
+            --update           Used by BAXY to update itself, with no window: waits for BAXY to close, downloads
+                               only the files that changed, installs and opens it again. If it fails before
+                               replacing it, nothing is touched and the one you had opens again; if the new one
+                               does not start, the one you had comes back. Before downloading anything it
+                               checks the free space.
+                               If the license agreement is not the one you accepted, and only then, it opens the
+                               window and shows it first: without accepting it nothing is installed and the one
+                               you had opens again.
                                The installer does not touch your data.
                                With --quiet it does not open it: it installs and ends.
             --help, -h, /?     Shows this help.

@@ -6075,10 +6075,13 @@ public sealed class ExternalAdaptersTests
     }
 
     // Banco de uso 05-11 (F12): an event at 11:20 here was read as «14:20Z» and said as «2:20 PM»: the reader was
-    // right and the model read the UTC out as the hour. Each instant also comes in this PC's own hour, as an alarm's does
+    // right and the model read the UTC out as the hour. Each instant comes in this PC's own hour, as an alarm's does
     // (dueLocal), at that instant's own offset: a date across a daylight change keeps its own.
+    // PAN6 (puerta INT35, u121-B11 «Can you check my agenda for this week?»): with the UTC beside it the model still
+    // told the UTC hour as the hour, 4 to 8 of 10 as unrelated texts moved: each event says one hour, its own, and
+    // the zone it is in apart; no UTC instant is left to be told.
     [Test]
-    public async Task ACalendarEventSaysItsHourHereBesideItsUtc()
+    public async Task ACalendarEventSaysOneHourItsOwnAndTheZoneApart()
     {
         const string output = """
             {"ok":true,"effectObserved":false,"events":[{"entryId":"e","title":"Reunión de prueba","startUtc":"2026-11-09T14:20:00.0000000Z","endUtc":"2026-11-09T15:40:00.0000000Z"},{"entryId":"f","title":"Otra","startUtc":"2026-07-09T14:20:00.0000000Z","endUtc":"2026-07-09T15:40:00.0000000Z"}]}
@@ -6098,7 +6101,10 @@ public sealed class ExternalAdaptersTests
             Assert.That(first.GetProperty("startLocal").GetString(), Is.EqualTo(HourHere("2026-11-09T14:20:00Z")));
             Assert.That(first.GetProperty("endLocal").GetString(), Is.EqualTo(HourHere("2026-11-09T15:40:00Z")));
             Assert.That(second.GetProperty("startLocal").GetString(), Is.EqualTo(HourHere("2026-07-09T14:20:00Z")));
-            Assert.That(first.GetProperty("startUtc").GetString(), Is.EqualTo("2026-11-09T14:20:00.0000000Z"));
+            Assert.That(first.GetProperty("zone").GetString(), Is.EqualTo(ZoneHere("2026-11-09T14:20:00Z")));
+            Assert.That(second.GetProperty("zone").GetString(), Is.EqualTo(ZoneHere("2026-07-09T14:20:00Z")));
+            Assert.That(first.TryGetProperty("startUtc", out _), Is.False);
+            Assert.That(first.TryGetProperty("endUtc", out _), Is.False);
         });
     }
 
@@ -6124,6 +6130,8 @@ public sealed class ExternalAdaptersTests
         {
             Assert.That(made.Result?.GetProperty("startLocal").GetString(), Is.EqualTo(HourHere("2026-11-09T18:00:00Z")));
             Assert.That(made.Result?.GetProperty("endLocal").GetString(), Is.EqualTo(HourHere("2026-11-09T19:00:00Z")));
+            Assert.That(made.Result?.GetProperty("zone").GetString(), Is.EqualTo(ZoneHere("2026-11-09T18:00:00Z")));
+            Assert.That(made.Result?.TryGetProperty("startUtc", out _), Is.False);
             Assert.That(read.Result?.GetProperty("receivedLocal").GetString(), Is.EqualTo(HourHere("2026-11-02T10:26:00Z")));
         });
     }
@@ -6131,6 +6139,10 @@ public sealed class ExternalAdaptersTests
     private static string HourHere(string utc) =>
         DateTimeOffset.Parse(utc, System.Globalization.CultureInfo.InvariantCulture).ToLocalTime()
             .ToString("dddd yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+
+    private static string ZoneHere(string utc) =>
+        "UTC" + DateTimeOffset.Parse(utc, System.Globalization.CultureInfo.InvariantCulture).ToLocalTime()
+            .ToString("zzz", System.Globalization.CultureInfo.InvariantCulture);
 
     // Renew al máximo (w5): a time with its own offset is that instant, sent to Outlook in UTC; it came back
     // «microsoft_desktop_adapter_failed», read as Outlook failing. One with no offset is refused before anything runs,

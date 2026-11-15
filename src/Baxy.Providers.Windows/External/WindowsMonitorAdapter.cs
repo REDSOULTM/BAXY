@@ -8,7 +8,8 @@ namespace Baxy.Providers.Windows.External;
 /// monitor from the display topology, on and off, with its desktop position (left, right, above, below or middle of the
 /// ones on), whether it is the primary one and its mode; display.monitor.set takes one off the desktop or puts it back,
 /// chosen by that position or by being (or not being) the primary one, and reads the topology again. Never the only
-/// monitor on; the receipt says when BAXY's own window was on the one taken off (Windows moves it to one that stays).
+/// monitor on (PAN2: that one goes dark instead, Darken, and active true wakes it; PAN7: on a Modern Standby PC, where the
+/// display turning off is the standby, it goes black under a window instead, Blackout); the receipt says when BAXY's own window was on the one taken off (Windows moves it to one that stays).
 /// What a monitor looked like when this adapter took it off is kept, and putting it back says whether it came back the
 /// same (asBefore). Windows itself restores the layout that set of monitors last had (<see cref="WindowsMonitorPlatform"/>).
 /// </summary>
@@ -18,10 +19,23 @@ internal sealed class WindowsMonitorAdapter : IExternalOperationAdapter
     internal const string NotFound = "monitor_not_found";
     internal const string Ambiguous = "monitor_ambiguous";
     internal const string NotVerified = "monitor_change_not_verified";
+    internal const string WouldSleep = "screen_off_would_sleep";
 
     private readonly IMonitorPlatform _platform;
     private readonly Dictionary<string, (MonitorState State, string Position)> _takenOff = new(StringComparer.Ordinal);
     private readonly Lock _gate = new();
+    // PAN5 (REV19 P-4): the name of the monitor BAXY darkened, null when it darkened none (or it was woken).
+    private string? _darkened;
+
+    // PAN5 (REV19 P-5): this session's last input when the screen went dark; a different one later is a key or a mouse
+    // move, which lit it.
+    private uint? _darkenedInput;
+
+    // PAN7: whether what BAXY darkened went black (a window over it, Modern Standby) rather than powered off.
+    private bool _blackedOut;
+
+    // PAN7: whether going black lowered the panel's brightness (and taking the black off gives it back).
+    private bool _brightnessLowered;
 
     internal WindowsMonitorAdapter()
         : this(new WindowsMonitorPlatform())
@@ -44,6 +58,7 @@ internal sealed class WindowsMonitorAdapter : IExternalOperationAdapter
             cancellationToken.ThrowIfCancellationRequested();
             lock (_gate)
             {
+                ForgetDarkAfterInput();
                 return ValueTask.FromResult(operation == "display.status"
                     ? Status(operation)
                     : Set(operation, arguments, effectBoundary));
@@ -70,6 +85,7 @@ internal sealed class WindowsMonitorAdapter : IExternalOperationAdapter
             writer.WriteNumber("version", 2);
             writer.WriteNumber("monitorCount", monitors.Count(static monitor => monitor.Active));
             WriteMonitors(writer, monitors);
+            WriteDark(writer);
             writer.WriteString("authority", "windows_display_config_read");
             writer.WriteEndObject();
         }), effectObserved: false);
@@ -86,9 +102,72 @@ internal sealed class WindowsMonitorAdapter : IExternalOperationAdapter
         MonitorState[] pool = active
             ? monitors.Where(static monitor => !monitor.Active).ToArray()
             : on;
+        // PAN2 (CMP1: «Apaga la pantalla.» with one monitor went to system.power lock 30 of 40, as no tool darkened the
+        // screen): the only monitor on stays on the desktop and goes dark instead, as Windows darkens it when idle.
         if (!active && on.Length <= 1)
         {
-            return Refused(operation, OnlyMonitor, monitors);
+            // PAN4 (puerta INT34, c129-V4: «el Belmora sigue ahí abajo… apágalo completo» → monitor below, 9 of 10, and the
+            // screen went dark): a monitor named that is not the one on (a place among several, secondary) is no monitor
+            // here, as with more than one; nothing changes and the result lists the one there is.
+            if (on.Length == 1 && which is not null && !Is(on[0], which, on))
+            {
+                return Refused(operation, NotFound, monitors, alone: on[0].Name);
+            }
+
+            // PAN7 (VIVO21: on the notebook SC_MONITORPOWER put the whole PC on Modern Standby; the network went down and
+            // BAXY stopped hearing): where the display turning off is the standby (or Windows does not say), the display
+            // is never turned off; a black window and the lowest brightness darken it, and the PC stays on.
+            if (on.Length == 1 && _platform.ModernStandby() is not false)
+            {
+                effectBoundary.Cross();
+                ScreenBlackout? black = _platform.Blackout();
+                if (black is null)
+                {
+                    return Refused(operation, WouldSleep, monitors);
+                }
+
+                _darkened = on[0].Name;
+                _blackedOut = true;
+                // Revisión ciega PAN7 (4): the input the window itself started from, not one read seconds later.
+                _darkenedInput = black.InputAtStart ?? _platform.LastInput();
+                return Black(operation, _darkened, black);
+            }
+
+            effectBoundary.Cross();
+            if (on.Length == 0 || !_platform.Darken())
+            {
+                return Refused(operation, OnlyMonitor, monitors);
+            }
+
+            _darkened = on[0].Name;
+            _blackedOut = false;
+            _darkenedInput = _platform.LastInput();
+            return Lit(operation, false, _darkened);
+        }
+
+        // PAN5 (REV19 P-2: with a TV connected off the desktop, «vuelve a encender la pantalla» after darkening put the TV
+        // on the desktop and the dark screen stayed dark): what BAXY darkened wakes first, unless what was asked names
+        // another monitor; the topology is not touched.
+        if (active && _darkened is { } dark && (pool.Length == 0 || which is null || (on.Length == 1 && Is(on[0], which, on))))
+        {
+            effectBoundary.Cross();
+            if (_blackedOut)
+            {
+                // PAN7: what went black comes back by taking the window off; nothing is posted to Windows. Revisión ciega
+                // PAN7 (5): with no window up any more (or one that did not end in time), the receipt says so.
+                bool ended = _platform.EndBlackout();
+                _darkened = null;
+                _blackedOut = false;
+                return Black(operation, dark, null, ended);
+            }
+
+            if (!_platform.Wake())
+            {
+                return ExternalJson.FailureBeforeEffect(operation, NotVerified);
+            }
+
+            _darkened = null;
+            return Lit(operation, true, dark);
         }
 
         if (active && pool.Length == 0)
@@ -182,15 +261,124 @@ internal sealed class WindowsMonitorAdapter : IExternalOperationAdapter
             }
 
             WriteMonitors(writer, after);
+            WriteDark(writer);
             writer.WriteString("authority", "windows_display_config_postread");
             writer.WriteEndObject();
         }));
     }
 
+    // PAN5 (blind review of PAN5, 2 and 3): what BAXY darkened and nothing lit since is said by name wherever the monitors
+    // are listed, a monitor put on while it is dark included (whether that lights it is not read); with no last input
+    // from Windows when it went dark, BAXY cannot tell whether a key or the mouse lit it.
+    private void WriteDark(Utf8JsonWriter writer)
+    {
+        if (_darkened is null)
+        {
+            return;
+        }
+
+        writer.WriteBoolean("screenTurnedOffByBaxy", true);
+        writer.WriteString("darkenedMonitor", _darkened);
+        writer.WriteString("note", _blackedOut
+            ? "BAXY covered this screen with a black window; the display and the PC are still on"
+                + (_darkenedInput is null ? "" : " and no key or mouse move came since")
+            : _darkenedInput is null
+            ? "BAXY asked Windows to turn this screen off; BAXY cannot tell whether a key or mouse move lit it since: "
+                + "active only says the monitor is still on the desktop"
+            : "BAXY asked Windows to turn this screen off and no key or mouse move came since: active only says the "
+                + "monitor is still on the desktop");
+    }
+
+    // PAN5 (REV19 P-5: darkened at 10:00, the mouse moved, and at 18:00 display.status still said screenTurnedOffByBaxy):
+    // input after darkening lit the screen; it is no longer BAXY's dark one. Unknown input changes nothing.
+    private void ForgetDarkAfterInput()
+    {
+        if (_darkened is not null && _darkenedInput is { } then && _platform.LastInput() is { } now && now != then)
+        {
+            // PAN7: the black window took itself off on that input (WindowsScreenBlackout).
+            _darkened = null;
+            _blackedOut = false;
+        }
+    }
+
+    // PAN7: what going black did (black: what Blackout did) or taking the black off (black null). The display was never
+    // turned off: on a Modern Standby PC that is the standby (Microsoft Learn, «Prepare software for modern standby»).
+    private ExternalCapabilityReceipt Black(string operation, string monitor, ScreenBlackout? black, bool ended = true)
+    {
+        bool on = black is null;
+        if (black is { } shown)
+        {
+            _brightnessLowered = shown.BrightnessBefore is not null;
+        }
+
+        bool lowered = _brightnessLowered;
+        if (on && !ended)
+        {
+            return ExternalJson.Switched(operation, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteBoolean("active", true);
+                writer.WriteBoolean("changed", false);
+                writer.WriteString("monitor", monitor);
+                writer.WriteString("next", "BAXY's black window was no longer up on this screen (a key or a mouse move "
+                    + "takes it off): nothing changed now");
+                writer.WriteEndObject();
+            }), effectObserved: false);
+        }
+
+        return ExternalJson.Success(operation, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteBoolean("active", on);
+            writer.WriteBoolean("changed", true);
+            writer.WriteString("monitor", monitor);
+            writer.WriteBoolean("screenBlack", !on);
+            writer.WriteBoolean("displayPoweredOff", false);
+            writer.WriteBoolean("pcStaysOn", true);
+            writer.WriteBoolean(on ? "brightnessGivenBack" : "brightnessLowered", lowered);
+            writer.WriteString("authority", "baxy_black_window");
+            writer.WriteString("next", on
+                ? "BAXY took its black window off the screen" + (lowered ? " and gave the brightness back" : "")
+                : "the screen is black now: BAXY put a black window over it"
+                    + (lowered ? " and set the brightness to its minimum" : "")
+                    + "; it did not turn the display off, because on this PC that puts the whole PC on standby and BAXY "
+                    + "would stop hearing; the PC stays on and BAXY keeps listening; a key, a mouse move or turning the "
+                    + "screen on again takes the black off");
+            writer.WriteEndObject();
+        }));
+    }
+
+    // What darkening or waking the screens was: asked of Windows, not read back (no read of the displays' power state).
+    // No monitor list: the one darkened is still active on the desktop, and the model read that as never turned off.
+    // PAN5 (REV19 P-4: «apaga la tele» with the TV off the desktop darkens the monitor): the monitor's name is said.
+    // REV20 P5-2: nothing says whether the session locked (with Modern Standby, Screen Off leads to sleep in S0 and waking
+    // can ask for the password; BAXY never reads it), so the receipt does not say it did not.
+    private static ExternalCapabilityReceipt Lit(string operation, bool on, string monitor) =>
+        ExternalJson.Success(operation, ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteBoolean("active", on);
+            writer.WriteBoolean("changed", true);
+            writer.WriteString("monitor", monitor);
+            writer.WriteBoolean("screenOff", !on);
+            writer.WriteString("authority", "windows_sc_monitorpower_request");
+            writer.WriteBoolean("effectReadBack", false);
+            // INT36B (BAN2 b2p-06 «Windows la apagó porque está en modo inactividad», 3 of 10; b2p-13 «Ya apagaste la
+            // pantalla de la izquierda», 7 of 10; the 1.5.2 0 and 0): «Windows was asked …, as when idle» said neither
+            // who asked nor that it was now, and the model told an idle timer as the cause or gave the act to the
+            // person. It says BAXY asked it, now; how Windows does it stays in WindowsMonitorPlatform.
+            writer.WriteString("next", on
+                ? "BAXY asked Windows to turn the screen on again; a key or a mouse move turns it on too"
+                : "BAXY asked Windows to turn this screen off now; BAXY cannot see whether it did; nothing closed; a key "
+                    + "or a mouse move turns it on again");
+            writer.WriteEndObject();
+        }));
+
     private ExternalCapabilityReceipt Refused(
         string operation,
         string errorCode,
-        IReadOnlyList<MonitorState> monitors) =>
+        IReadOnlyList<MonitorState> monitors,
+        string? alone = null) =>
         ExternalJson.FailureBeforeEffect(operation, errorCode) with
         {
             Result = ExternalJson.Create(writer =>
@@ -201,7 +389,18 @@ internal sealed class WindowsMonitorAdapter : IExternalOperationAdapter
                 writer.WriteString("next", errorCode switch
                 {
                     OnlyMonitor => "nothing changed: it is the only monitor on, and turning it off would leave no screen",
+                    // PAN7 (b): posting the display off would put this PC on standby; nothing was done.
+                    WouldSleep => "nothing changed: on this PC turning the display off puts the whole PC on standby and "
+                        + "BAXY would stop hearing, and BAXY could not cover the screen with black instead; the brightness "
+                        + "can be lowered instead",
                     Ambiguous => "nothing changed: more than one monitor fits; ask the person which one",
+                    // PAN4: with one monitor on there is no other to choose; «which one» would ask for one that is not there.
+                    // INT36B (BAN2 b2p-13, «apaga las dos pantallas»: the left one off, then «right» refused here, and
+                    // «la de la derecha ya no está activa / ya no se ve», 8 of 10, the 1.5.2 0): «this is the only
+                    // monitor on and what was said names no other» did not say which one it is nor that it stays on.
+                    NotFound when alone is not null =>
+                        $"nothing changed: {alone}, the only monitor on, is still on; what was said names no other "
+                        + "monitor; ask the person what they meant",
                     _ => "nothing changed: no monitor fits what was said; these are the monitors: ask the person which one",
                 });
                 writer.WriteEndObject();

@@ -89,6 +89,8 @@ internal static class SignedRelease
 
     private static bool Same(ReleaseManifest carried, ReleaseManifest signed) =>
         carried.Version == signed.Version && carried.BaseUrl == signed.BaseUrl && carried.InstalledBytes == signed.InstalledBytes
+        // AUT1: and the same files.json, so each file's hash is under the signature too.
+        && carried.Files == signed.Files
         && carried.Archives.Count == signed.Archives.Count
         && carried.Archives.Zip(signed.Archives).All(pair =>
             pair.First.Name == pair.Second.Name && pair.First.GpuVendor == pair.Second.GpuVendor

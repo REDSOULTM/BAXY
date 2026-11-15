@@ -1,7 +1,9 @@
 using System.Text.Json;
+using Baxy.Contracts;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.External;
+using Baxy.Providers.Windows.Infrastructure;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -312,6 +314,31 @@ public sealed class PasteIntoNewDocumentHandlerTests
             Assert.That(next, Does.StartWith("""clipboard_paste_into {"appId":"Cuaderno Lumbre"} pastes into that window"""));
             Assert.That(next, Does.Contain("pasted nothing"));
         });
+    }
+
+    // ING6: with the language in English the list of windows marks a minimized one in English, and the call of the next
+    // is written without that mark too.
+    [Test]
+    public async Task AMinimizedWindowsEnglishMarkIsLeftOutOfTheNextToo()
+    {
+        var handler = new PasteIntoNewDocumentHandler(new RecordingPaste(),
+            (_, _) => ValueTask.FromResult(OperationOutcome.Failure("app_not_found")),
+            destination: (_, _) => ValueTask.FromResult(PasteDestination.NewDocument("cuaderno", "Editor Lumbre")),
+            desktop: () => [("otro", "Otra Ventana"), ("cuaderno", "Cuaderno Lumbre (minimized)")]);
+
+        OperationOutcome outcome;
+        ModelLanguage.Use(ProtocolLanguages.English);
+        try
+        {
+            outcome = await handler.ExecuteAsync(Invocation("""{"appId":"cuaderno"}"""), CancellationToken.None);
+        }
+        finally
+        {
+            ModelLanguage.Use(null);
+        }
+
+        Assert.That(outcome.Result!.Value.GetProperty("next").GetString(),
+            Does.StartWith("""clipboard_paste_into {"appId":"Cuaderno Lumbre"} pastes into that window"""));
     }
 
     // F3: «no está abierto» with the window in view came from a failure that listed no window. A name that answers to

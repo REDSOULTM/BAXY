@@ -80,7 +80,7 @@ public sealed class GeoNamesPlaceTimeZoneResolver : IPlaceTimeZoneResolver
         }
 
         return ValueTask.FromResult(new PlaceTimeZoneReading(
-            new PlaceTimeZone(found.NameEs, places.Country(found)?.NameEs ?? string.Empty, placeZone, "named_place_geocoded"),
+            new PlaceTimeZone(found.Name, places.Country(found)?.Name ?? string.Empty, placeZone, "named_place_geocoded"),
             null));
     }
 }

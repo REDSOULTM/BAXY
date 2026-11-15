@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -25,8 +26,11 @@ namespace Baxy.Core.Operations;
 /// 2026-11-09). BAXY never downloads around them: check says so, and install opens the store's page of BAXY (Steam's
 /// library; itch.io's page from the itch app's receipt).</item>
 /// </list>
-/// Install asks the person's yes in normal mode (installation); check, and install on a store, lower it
-/// (<see cref="PreflightAsync"/>), and there is nothing to ask when there is no newer version.
+/// The operation is declared an installation; each invocation lowers it (<see cref="PreflightAsync"/>): check reads, a
+/// store only opens its page, and since AUT1 (orden del dueño, 13-11-2026) installing BAXY's own newer version, signed,
+/// asks no yes either: «actualízate» is the yes. There is nothing to ask when there is no newer version. The installer
+/// it starts has no window (src/Baxy.Installer/SilentUpdate.cs): it downloads only the files that differ, opens the new
+/// BAXY and goes back to this one if that one does not start.
 /// </summary>
 internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPreflight
 {
@@ -150,7 +154,14 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
                 (_, OperationOutcome? refused) = latest is null
                     ? (null, null)
                     : await SignedAsync(latest, Facts(), cancellationToken).ConfigureAwait(false);
-                return refused is null ? InvocationPreflightResult.Proceed : InvocationPreflightResult.Fails(refused);
+                // AUT1 (orden del dueño, 13-11-2026: «El usuario debe simplemente decir Baxi actualízate y que se actualice
+                // automáticamente»): the order is the yes, and nothing more is asked. What the identity confirms is installing
+                // or uninstalling programs («Peligro y confirmación»); this is BAXY replaced by its own newer version, only
+                // under the owner's signature (checked just above), with the person's data untouched and the version before
+                // kept and put back by itself if the new one does not start (src/Baxy.Installer/SilentUpdate.cs).
+                return refused is null
+                    ? InvocationPreflightResult.Lowered(OperationRisk.Reversible)
+                    : InvocationPreflightResult.Fails(refused);
             default:
                 return InvocationPreflightResult.Fails(Development());
         }
@@ -203,6 +214,11 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
             }
 
             receipt["downloadBytes"] = signed?.Bytes;
+            receipt["toInstall"] = ToInstall(latest.Version.ToString(3));
+        }
+        else if (latest is not null)
+        {
+            receipt["upToDate"] = UpToDate(_installed, latest.Version);
         }
 
         receipt["releasePage"] = latest?.Page?.AbsoluteUri;
@@ -311,11 +327,42 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
 
         receipt["installerSha256"] = installer.Sha256;
         receipt["installerStarted"] = true;
+        receipt["installerBytes"] = installer.Bytes;
+        receipt["updated"] = false;
+        receipt["now"] = Updating(latest.Version.ToString(3), installer.Bytes);
         receipt["appExitRequested"] = AskTheAppToExit();
         receipt["delivered"] = true;
         receipt["authority"] = "baxy_update_installer_started";
         return Success(receipt);
     }
+
+    // INT36F (orden del dueño, 13-11-2026: «el usuario debe simplemente decir Baxi actualízate y que se actualice
+    // automáticamente. Así de simple»). Measured on int36c: to «Baxi, actualízate» the model called check 20 of 20 and,
+    // reading «newer», asked «¿quieres que la instale?» 19 of 20, though the description says to call install directly.
+    // What the check found says what is true of the next step: which call installs it and that nothing more is asked
+    // (the preflight lowers it to Reversible since AUT1); whether the person asked to update or only whether there is one
+    // is the model's to read in their words, never this code's.
+    private static string ToInstall(string latest) =>
+        $"action install updates BAXY to {latest} now and asks the person nothing more: their order to update BAXY is "
+        + "the yes. If they asked BAXY to update itself, that call is what they asked for: make it now. If they only asked "
+        + "whether there is a newer version, tell them it is there";
+
+    // INT36F: right after this call the model said «Ya te actualicé a la versión 1.5.4» 1 of 20 times, while the installer
+    // had only started (src/Baxy.Installer/SilentUpdate.cs: it compares, downloads what changed, swaps the folder, then
+    // opens the new BAXY, which says «Me actualicé» by itself from last-update.json). What it is now, said plainly.
+    private static string Updating(string latest, long installerBytes) =>
+        $"BAXY is updating to {latest}: its installer ({(installerBytes / 1_000_000d).ToString("0.#", CultureInfo.InvariantCulture)} MB) "
+        + "started and downloads only the files that changed; BAXY closes and opens again by itself in version "
+        + $"{latest}. It is not updated yet: tell the person it is updating now, not that it is done";
+
+    // INT36G (VIVO21, 3 of 3: «¿estás al día?» with 1.5.3 installed and 1.5.2 the latest published was answered «estoy
+    // desactualizado», though the receipt said installed 1.5.3, latest 1.5.2, newer false). Which of the two is newer and
+    // that there is nothing to update, in one sentence, whenever nothing published is newer than what is installed.
+    private static string UpToDate(Version installed, Version latest) =>
+        (latest < installed
+            ? $"BAXY {installed.ToString(3)} is installed, newer than {latest.ToString(3)}, the latest version published"
+            : $"BAXY {installed.ToString(3)} is installed and it is the latest version published")
+        + ": BAXY is up to date and there is nothing to update";
 
     // Why GitHub's latest release cannot be installed now, or null when it can. Pure: preflight and the run both use it.
     private OperationOutcome? NotInstallable(LatestRelease? latest, string? unread)
@@ -331,6 +378,11 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         if (latest is null || latest.Version <= _installed)
         {
             receipt["newer"] = false;
+            if (latest is not null)
+            {
+                receipt["upToDate"] = UpToDate(_installed, latest.Version);
+            }
+
             return OperationOutcome.Failure("baxy_update_already_latest", Json(receipt));
         }
 

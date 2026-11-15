@@ -269,6 +269,11 @@ public static class ContractValidator
         {
             RequireConfirmationToken(value.ConfirmationToken);
         }
+
+        if (value.Language is not null && !ProtocolLanguages.IsKnown(value.Language))
+        {
+            ThrowInvalid("language must be one of the protocol's languages");
+        }
     }
 
     public static void Validate(OperationResponse value)

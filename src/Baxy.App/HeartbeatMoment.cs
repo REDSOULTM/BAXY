@@ -75,11 +75,12 @@ internal static class HeartbeatMoment
         IEnumerable<string> events, IReadOnlyList<ConversationMessage> recent, string? connectivity)
     {
         DateTimeOffset now = DateTimeOffset.Now;
+        bool english = UiLanguage.IsEnglish;
         string activity = Activity(out bool? fullscreen, out bool? gpuBusy);
         var context = new JsonObject
         {
             ["now"] = now.ToString("yyyy-MM-dd'T'HH:mm:sszzz", CultureInfo.InvariantCulture),
-            ["weekday"] = now.ToString("dddd", CultureInfo.GetCultureInfo("es-ES")),
+            ["weekday"] = Weekday(now, english),
             ["owner_activity"] = activity,
         };
         nint front = GetForegroundWindow();
@@ -111,16 +112,12 @@ internal static class HeartbeatMoment
 
         if (cloaked > 0)
         {
-            windows.Add(new JsonObject
-            {
-                ["title"] = $"y {cloaked} más que Windows oculta (encubiertas: no se ven en la pantalla)",
-                ["process"] = "sin leer",
-            });
+            windows.Add(CloakedNote(cloaked, english));
         }
 
         if (listed is null)
         {
-            windows.Add(new JsonObject { ["title"] = "las ventanas no se pudieron leer", ["process"] = "sin leer" });
+            windows.Add(UnreadWindowsNote(english));
         }
 
         context["windows"] = windows;
@@ -132,8 +129,7 @@ internal static class HeartbeatMoment
             history.Add(new JsonObject
             {
                 ["role"] = message.IsUser ? "user" : "assistant",
-                // Ronda final 7 (regla 3): a message cut at 200 characters says it was cut.
-                ["content"] = message.Body.Length > 200 ? message.Body[..200] + "… (cortado)" : message.Body,
+                ["content"] = Shown(message.Body, english),
                 ["ago_min"] = (int)Math.Max(0, (now - message.CreatedAt).TotalMinutes),
             });
         }
@@ -142,6 +138,64 @@ internal static class HeartbeatMoment
         if (recent.Count > 6)
             context["history_omitted"] = recent.Count - 6;
         return context;
+    }
+
+    // ING6 (owner's decision of 2026-11-13: choosing the language puts all the model reads in it): the moment's own
+    // words below follow the language in use; in Spanish each is the one of always.
+
+    /// <summary>The weekday of the moment, in words («sábado», «Saturday»).</summary>
+    internal static string Weekday(DateTimeOffset now, bool english) =>
+        now.ToString("dddd", UiLanguage.CultureOf(english));
+
+    /// <summary>The row that says how many windows were left out of the list because Windows cloaks them.</summary>
+    internal static JsonObject CloakedNote(int cloaked, bool english) => new()
+    {
+        ["title"] = UiLanguage.Say(
+            english,
+            $"y {cloaked} más que Windows oculta (encubiertas: no se ven en la pantalla)",
+            $"and {cloaked} more that Windows hides (cloaked: they are not seen on the screen)"),
+        ["process"] = UiLanguage.Say(english, "sin leer", "not read"),
+    };
+
+    /// <summary>The row that says Windows could not enumerate the windows.</summary>
+    internal static JsonObject UnreadWindowsNote(bool english) => new()
+    {
+        ["title"] = UiLanguage.Say(english, "las ventanas no se pudieron leer", "the windows could not be read"),
+        ["process"] = UiLanguage.Say(english, "sin leer", "not read"),
+    };
+
+    /// <summary>Ronda final 7 (regla 3): a message cut at 200 characters says it was cut.</summary>
+    internal static string Shown(string body, bool english) =>
+        body.Length > 200 ? body[..200] + UiLanguage.Say(english, "… (cortado)", "… (cut off)") : body;
+
+    /// <summary>
+    /// The moment as the model reads it. What the person is doing is a key of the App's (<see cref="Speaks"/>, the
+    /// settings' «No me interrumpas durante…», the view's chip) and also the word the mind shows the model as it comes
+    /// («la persona está: jugando»): in Spanish the moment goes as it is, the same object; in English a copy goes with
+    /// that word in English, as the mind's rule and the English view say it («gaming», «on a call»), and the App keeps
+    /// reading its own. An activity that is none of the App's is left as it came.
+    /// </summary>
+    internal static JsonObject AsTheModelReadsIt(JsonObject moment, bool english)
+    {
+        ArgumentNullException.ThrowIfNull(moment);
+        string? said = !english ? null : (string?)moment["owner_activity"] switch
+        {
+            Free => "free",
+            Away => "away",
+            InCall => "on a call",
+            Playing => "gaming",
+            Watching => "watching",
+            Unknown => "unknown",
+            _ => null,
+        };
+        if (said is null)
+        {
+            return moment;
+        }
+
+        var read = (JsonObject)moment.DeepClone();
+        read["owner_activity"] = said;
+        return read;
     }
 
     /// <param name="connectivity">Windows' internet check (internet, constrained, local, none); left out when unread.</param>

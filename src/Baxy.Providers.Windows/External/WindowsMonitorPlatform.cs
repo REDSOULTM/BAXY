@@ -32,7 +32,36 @@ internal interface IMonitorPlatform
 
     /// <summary>The rectangles of the product's own visible windows (BAXY's chat), as left, top, width and height.</summary>
     IReadOnlyList<(int X, int Y, int Width, int Height)> ProductWindows();
+
+    /// <summary>PAN2: asks Windows to shut the displays off as when idle (they light again on the next input); whether
+    /// the request was posted.</summary>
+    bool Darken();
+
+    /// <summary>PAN2: asks Windows to power the displays on again; whether the request was posted.</summary>
+    bool Wake();
+
+    /// <summary>PAN5 (REV19 P-5): the tick of this session's last keyboard or mouse input, or null when Windows does not
+    /// give it; any change after the screen went dark is input that lit it.</summary>
+    uint? LastInput();
+
+    /// <summary>PAN7: whether this PC sleeps in S0 low power idle (Modern Standby, SYSTEM_POWER_CAPABILITIES.AoAc), where
+    /// the display turning off puts the whole PC on standby; null when Windows does not say.</summary>
+    bool? ModernStandby();
+
+    /// <summary>PAN7: a black window over every screen and the panel's brightness at its minimum, until a key or a mouse
+    /// move or <see cref="EndBlackout"/>; what was done, or null when no black window could be shown.</summary>
+    ScreenBlackout? Blackout();
+
+    /// <summary>PAN7: takes the black window off and gives the brightness back; whether there was one to take off.</summary>
+    bool EndBlackout();
 }
+
+/// <summary>
+/// PAN7: what blacking the screens out did: the black window shown over them, and the brightness the panel had before
+/// BAXY set it to its minimum (null when Windows let BAXY change no brightness, as with a desktop monitor), and the
+/// session's last input when the window came up (a change after it is a key or a mouse move, which took it off).
+/// </summary>
+internal sealed record ScreenBlackout(int? BrightnessBefore, uint? InputAtStart = null);
 
 /// <summary>
 /// The Connecting and Configuring Displays (CCD) API of Windows 7 and later (Microsoft Learn, «CCD APIs» and
@@ -249,6 +278,41 @@ internal sealed partial class WindowsMonitorPlatform : IMonitorPlatform
         return found;
     }
 
+    // PAN2: WM_SYSCOMMAND with SC_MONITORPOWER (Microsoft Learn, «WM_SYSCOMMAND message», consulted 2026-11-12: «Sets the
+    // state of the display… -1 (the display is powering on)… 2 (the display is being shut off)»). Posted, not sent, to
+    // every top-level window: a window that does not answer cannot hold the call.
+    private const nint Broadcast = 0xffff;
+    private const uint SysCommand = 0x0112;
+    private const nint MonitorPower = 0xF170;
+
+    public bool Darken() => PostMessage(Broadcast, SysCommand, MonitorPower, 2);
+
+    public bool Wake() => PostMessage(Broadcast, SysCommand, MonitorPower, -1);
+
+    // PAN7 (VIVO21, 14-11-2026: «apaga la pantalla» → Kernel-Power «entering Modern Standby, reason: SC_MONITORPOWER»;
+    // the network went down and BAXY stopped hearing): Microsoft Learn, «SYSTEM_POWER_CAPABILITIES structure» (consulted
+    // 2026-11-14): «AoAc: If this member is TRUE, the system supports the S0 low power idle model», and «Prepare software
+    // for modern standby»: «A system enters modern standby when the display turns off». GetPwrCapabilities (powrprof.dll)
+    // fills it; read on this desktop PC: S3 1, AoAc 0, as «powercfg /a» says.
+    public bool? ModernStandby() => GetPwrCapabilities(out PowerCapabilities capabilities) != 0
+        ? capabilities.AoAc != 0
+        : null;
+
+    private readonly WindowsScreenBlackout _blackout = new();
+
+    public ScreenBlackout? Blackout() => _blackout.Show(LastInput);
+
+    public bool EndBlackout() => _blackout.End();
+
+    // PAN5 (REV19 P-5): GetLastInputInfo (Microsoft Learn, «GetLastInputInfo function (winuser.h)», consulted 2026-11-13:
+    // the time of the last input event, session-specific; the tick is not guaranteed to grow), so only a change is read,
+    // never an order.
+    public uint? LastInput()
+    {
+        var info = new LastInputInfo { Size = (uint)Marshal.SizeOf<LastInputInfo>() };
+        return GetLastInputInfo(ref info) ? info.Time : null;
+    }
+
     private static (PathInfo[] Paths, ModeInfo[] Modes) Query()
     {
         for (int attempt = 0; attempt < 4; attempt++)
@@ -336,6 +400,21 @@ internal sealed partial class WindowsMonitorPlatform : IMonitorPlatform
         [FieldOffset(164)] public fixed char DevicePath[128];
     }
 
+    // SYSTEM_POWER_CAPABILITIES (winnt.h, 76 bytes): fifteen BOOLEANs, ProcessorMinThrottle and ProcessorMaxThrottle,
+    // FastSystemS4, Hiberboot, WakeAlarmPresent, then AoAc at 20.
+    [StructLayout(LayoutKind.Explicit, Size = 76)]
+    private struct PowerCapabilities
+    {
+        [FieldOffset(20)] public byte AoAc;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct LastInputInfo
+    {
+        public uint Size;
+        public uint Time;
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     private struct Rect
     {
@@ -384,4 +463,15 @@ internal sealed partial class WindowsMonitorPlatform : IMonitorPlatform
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool GetWindowRect(nint window, out Rect rect);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetLastInputInfo(ref LastInputInfo info);
+
+    [LibraryImport("powrprof.dll")]
+    private static partial byte GetPwrCapabilities(out PowerCapabilities capabilities);
+
+    [LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool PostMessage(nint window, uint message, nint wParam, nint lParam);
 }

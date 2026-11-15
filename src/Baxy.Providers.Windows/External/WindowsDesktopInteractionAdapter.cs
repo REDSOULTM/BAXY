@@ -3093,8 +3093,11 @@ internal sealed partial class WindowsDesktopInteractionAdapter : IExternalOperat
                 writer.WriteString("process", window.Process);
                 writer.WriteEndObject();
                 // The reply named the app asked for even with sentTo there (PC, C18): the same fact as a sentence.
+                // INT36B (a11-H1-dp, a11-P1-dp: «Lo pegaste en lista.txt», 5-8 of 10 with the 1.5.3 pieces, the 1.5.2
+                // 0-1): the sentence said where it went and not who pasted it; the person was given BAXY's act. It
+                // says BAXY pasted it.
                 if (Infrastructure.ModelAids.On(Infrastructure.ModelAids.PasteTargetNext))
-                    writer.WriteString("next", $"it went into the window of {window.Title} ({window.Process}); "
+                    writer.WriteString("next", $"BAXY pasted it into the window of {window.Title} ({window.Process}); "
                         + "no other application received it");
             }
 

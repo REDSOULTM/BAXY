@@ -3,6 +3,7 @@ using Baxy.Contracts;
 using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Core;
 
@@ -31,6 +32,9 @@ internal static class CoreRequest
         ArgumentNullException.ThrowIfNull(engine);
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(diagnostics);
+        // ING6: the language of the setting comes with the request, and what its handler and the providers write for the
+        // model is in it. The core runs one request at a time, so each is written whole in its own.
+        ModelLanguage.Use(request.Language);
         try
         {
             return await engine.ExecuteAsync(request, cancellationToken).ConfigureAwait(false);

@@ -233,7 +233,8 @@ public sealed class MindSidecarClientTests
     public void TheCatalogTheMindReadsCarriesTheInstalledVersionOnlyWhenTheAppHasOne()
     {
         // VER2 (10-11, 1.3.3 just installed: asked which version it is, it said it had no information on it):
-        // the App's stamp reaches the mind (mind.VERSION_FACT); a development copy has none and sends no field.
+        // the App's stamp reaches the mind; a development copy has none and sends no field. VER3: the mind no longer says
+        // it in its prefix (test_mind_version.py); the model reads it from assistant.status (OwnReadingsTests).
         JsonObject stamped = MindSidecarClient.CreateCatalogConfigureRequest([], applicationCatalog: null, version: "1.3.3");
         JsonObject development = MindSidecarClient.CreateCatalogConfigureRequest([], applicationCatalog: null, version: null);
 
@@ -242,6 +243,23 @@ public sealed class MindSidecarClientTests
             Assert.That((string?)stamped["baxyVersion"], Is.EqualTo("1.3.3"));
             Assert.That(development.ContainsKey("baxyVersion"), Is.False);
             Assert.That(UpdatePanel.Version("1.3.3+c2a4c76ac"), Is.EqualTo("1.3.3"));
+        });
+    }
+
+    [Test]
+    public void TheCatalogTheMindReadsCarriesTheLanguageChosen()
+    {
+        // ING5 (owner's decision of 2026-11-13: the language is a setting, and choosing it puts all the model reads in
+        // it): «lang» is the language chosen (these tests run in Spanish, UiLanguageSetUp), or the one the mind was
+        // first configured with (UiLanguageTests): a datum of the configuration, never read from the person's words.
+        JsonObject chosen = MindSidecarClient.CreateCatalogConfigureRequest([], applicationCatalog: null);
+        JsonObject started = MindSidecarClient.CreateCatalogConfigureRequest([], applicationCatalog: null, language: "en");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UiLanguage.Current, Is.EqualTo("es"));
+            Assert.That((string?)chosen["lang"], Is.EqualTo("es"));
+            Assert.That((string?)started["lang"], Is.EqualTo("en"));
         });
     }
 

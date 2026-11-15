@@ -11,7 +11,9 @@ namespace Baxy.App;
 /// meter (FieldTelemetrySampler, nothing measured anew). Scope internet: the session's «Salidas a internet» (Ajustes ›
 /// Privacidad), the steps of this session's conversation that reached the internet, each with what went out and when;
 /// they are the person's own (the addresses visited), so they are read from this session only and go nowhere but to
-/// BAXY's local model. The App answers the call itself (NativeTurnLoop): the engine holds none of these readings.
+/// BAXY's local model. Scope version (VER3, 13-11-2026): the version this App is, its stamp (UpdatePanel.Installed, the
+/// one Ajustes › General shows); the system text said it until then and each new number moved the model's answers. The
+/// App answers the call itself (NativeTurnLoop): the engine holds none of these readings.
 /// </summary>
 internal static class OwnReadings
 {
@@ -26,6 +28,9 @@ internal static class OwnReadings
 
     /// <summary>Nothing in the App holds the view's readings (no view channel).</summary>
     internal const string Unavailable = "own_readings_unavailable";
+
+    /// <summary>A development copy has no stamp: no version is said in its place.</summary>
+    internal const string VersionUnknown = "installed_version_unknown";
 
     /// <summary>A scope the catalog does not list (the schema is checked before).</summary>
     internal const string UnknownScope = "unknown_scope";
@@ -85,7 +90,10 @@ internal static class OwnReadings
             foreach (JsonNode? step in steps)
             {
                 // An English view's step keeps the Spanish words beside its own (FieldProductChannel.OnStepCompleted).
-                if (((string?)step?["netEs"] ?? (string?)step?["net"]) is { Length: > 0 } what)
+                // ING5B (owner, 2026-11-13: in English, not a word of Spanish in what the model reads): the log is read
+                // in the language in use; a step from before the change has only the words of then.
+                if ((UiLanguage.IsEnglish ? (string?)step?["net"] : (string?)step?["netEs"] ?? (string?)step?["net"])
+                    is { Length: > 0 } what)
                 {
                     exits.Add(new JsonObject { ["destination"] = what, ["at"] = (string?)item["ts"] });
                 }
@@ -106,6 +114,16 @@ internal static class OwnReadings
 
         return Success(receipt);
     }
+
+    /// <summary>The version installed, as the App's stamp says it with no build commit (UpdatePanel.Version); none (a
+    /// development copy) is a failure, never a number made up.</summary>
+    internal static OperationOutcome Version(string? installed) =>
+        string.IsNullOrWhiteSpace(installed) ? OperationOutcome.Failure(VersionUnknown) : Success(new JsonObject
+        {
+            ["version"] = 1,
+            ["scope"] = "version",
+            ["installed"] = installed.Trim(),
+        });
 
     private static double? Gigabytes(double? value) =>
         value is { } measured && double.IsFinite(measured) && measured >= 0 ? Math.Round(measured, 2) : null;

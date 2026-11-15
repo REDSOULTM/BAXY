@@ -12,6 +12,7 @@ namespace Baxy.Installer;
 internal static partial class Program
 {
     private const string ManifestResource = "Baxy.Installer.release.json";
+    private const string FilesResource = "Baxy.Installer.files.json";
     private const string SingleInstance = @"Local\BAXY.Installer";
     internal const int Failure = 1;
     private const int AttachParentProcess = -1;
@@ -104,14 +105,22 @@ internal static partial class Program
         }
 
         ReleaseManifest? manifest = LoadManifest();
+        FileManifest? files = manifest is null ? null : LoadFiles(manifest);
         if (command.Quiet)
         {
-            return manifest is null ? Failure : InstallQuietly(manifest, paths, command.Update);
+            return manifest is null ? Failure : InstallQuietly(manifest, files, paths, command.Update);
+        }
+
+        // AUT1: the update BAXY started has nothing to ask (the agreement is the one already accepted): no window.
+        if (command.Update && manifest is not null && paths.HoldsBaxy
+            && !AcceptedAgreement.MustBeAccepted(paths, AcceptedAgreement.Read(paths)))
+        {
+            return UpdateSilently(manifest, files, paths, voiceAllowed: !command.NoVoice);
         }
 
         Application application = new();
         using MainWindow window = new(
-            manifest, uninstalling: command.UninstallRun, paths, voiceAllowed: !command.NoVoice, updating: command.Update);
+            manifest, uninstalling: command.UninstallRun, paths, voiceAllowed: !command.NoVoice, updating: command.Update, files);
         application.DispatcherUnhandledException += (_, unhandled) =>
         {
             Log(unhandled.Exception.ToString());
@@ -195,6 +204,20 @@ internal static partial class Program
         return resource is null ? null : ReleaseManifest.Parse(resource);
     }
 
+    // AUT1: files.json as this installer carries it; it counts only when it is the one its release.json names.
+    private static FileManifest? LoadFiles(ReleaseManifest manifest)
+    {
+        using Stream? resource = Assembly.GetExecutingAssembly().GetManifestResourceStream(FilesResource);
+        if (resource is null)
+        {
+            return null;
+        }
+
+        using MemoryStream carried = new();
+        resource.CopyTo(carried);
+        return FileManifest.Named(carried.ToArray(), manifest);
+    }
+
     /// <summary>
     /// The copy in TEMP does the uninstall. With --quiet the original waits for it: the copy ends it with the result
     /// (<see cref="OriginalProcess"/>), so a script waiting on the original reads that result as its exit code.
@@ -249,14 +272,14 @@ internal static partial class Program
     }
 
     /// <summary>For installing by remote console (tests on other machines): no window, and what happened in the log.</summary>
-    private static int InstallQuietly(ReleaseManifest manifest, InstallPaths paths, bool updating = false)
+    private static int InstallQuietly(ReleaseManifest manifest, FileManifest? files, InstallPaths paths, bool updating = false)
     {
         using HttpClient http = new() { Timeout = Timeout.InfiniteTimeSpan };
         http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + manifest.Version);
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
         ReleaseManifest chosen = manifest.ForMachine(adapters);
         LogMachine(chosen, adapters, paths);
-        Installation installation = new(chosen, paths, new PartFetcher(http));
+        Installation installation = new(chosen, paths, new PartFetcher(http), files: files, ranges: new RangeFetcher(http));
         // PRV2 (A5): --quiet shows no agreement, as always; it keeps what the installation it replaces accepted, so the
         // next update with a window asks for the agreement if it is not that one (AcceptedAgreement).
         string? accepted = AcceptedAgreement.Read(paths);
@@ -294,6 +317,143 @@ internal static partial class Program
         {
             Log(failure.ToString());
             return Failure;
+        }
+    }
+
+    /// <summary>
+    /// AUT1: the update BAXY started for itself, with no window (<see cref="SilentUpdate"/>). How it ended is written
+    /// beside this installer, in the folder BAXY downloaded it to, for the BAXY that opens next (<see cref="UpdateOutcome"/>).
+    /// </summary>
+    private static int UpdateSilently(ReleaseManifest manifest, FileManifest? files, InstallPaths paths, bool voiceAllowed)
+    {
+        using HttpClient http = new() { Timeout = Timeout.InfiniteTimeSpan };
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + manifest.Version);
+        IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
+        ReleaseManifest chosen = manifest.ForMachine(adapters);
+        LogMachine(chosen, adapters, paths);
+        // The agreement is the one this installation accepted (else the window asks): it stays accepted.
+        string? accepted = AcceptedAgreement.Read(paths);
+        (string Version, int SizeKb)? registered = WindowsIntegration.Registered(paths);
+        string told = Path.GetDirectoryName(Environment.ProcessPath!)!;
+        Voice? voice = null;
+        try
+        {
+            return SilentUpdate.Over(
+                manifest,
+                chosen,
+                files,
+                paths,
+                http,
+                SignedRelease.BuiltInKeys,
+                told,
+                Voice.BaxyIsOpen,
+                within => Prerequisites.InstallMissingAsync(http, paths.Downloads, within),
+                () =>
+                {
+                    if (accepted is not null)
+                    {
+                        AcceptedAgreement.Write(paths, accepted, Log);
+                    }
+
+                    WindowsIntegration.Register(paths, chosen.Version, chosen.InstalledBytes);
+                },
+                () =>
+                {
+                    if (registered is { } was)
+                    {
+                        WindowsIntegration.SayAgain(paths, was);
+                    }
+                },
+                () => Open(paths),
+                // The first line comes with BAXY closed, so its own voice is free; a BAXY whose voice the person
+                // turned off is not spoken for either.
+                line => (voice ??= new Voice(voiceAllowed && !VoiceIsOff(told))).Say(CommandLine.Language, line),
+                Log).RunAsync().GetAwaiter().GetResult();
+        }
+#pragma warning disable CA1031 // The log is all there is: no window to tell it in.
+        catch (Exception failure)
+#pragma warning restore CA1031
+        {
+            Log(failure.ToString());
+            return Failure;
+        }
+        finally
+        {
+            voice?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// AUT1: how an update ended, written beside this installer (the profile's updates folder, where BAXY downloads it)
+    /// for the BAXY that opens next. What Windows refuses to write is logged: the update itself is not undone for it.
+    /// </summary>
+    internal static void LeaveWritten(UpdateOutcome outcome)
+    {
+        try
+        {
+            outcome.Write(Path.GetDirectoryName(Environment.ProcessPath!)!);
+        }
+        catch (Exception unwritten) when (unwritten is IOException or UnauthorizedAccessException)
+        {
+            Log("the outcome was not written: " + unwritten.Message);
+        }
+    }
+
+    /// <summary>
+    /// Whether the BAXY that downloaded this installer has its voice off (Settings › «voz», the profile's
+    /// field-settings.v1.json, «voiceMuted»): the installer runs from that profile's updates folder
+    /// (UpdateInstallerFile.Folder). No file there, or one that says nothing of it, is BAXY as it comes: with voice.
+    /// </summary>
+    internal static bool VoiceIsOff(string updatesFolder)
+    {
+        try
+        {
+            string settings = Path.Combine(Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(updatesFolder)) ?? updatesFolder, "field-settings.v1.json");
+            return File.Exists(settings)
+                && System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(settings)) is System.Text.Json.Nodes.JsonObject values
+                && values["voiceMuted"] is System.Text.Json.Nodes.JsonValue muted && muted.TryGetValue(out bool off) && off;
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+        {
+            return false;
+        }
+    }
+
+    // BAXY's app, opened as the window opens it; null when Windows did not start it.
+    private static StartedBaxy? Open(InstallPaths paths)
+    {
+        try
+        {
+            Process? started = Process.Start(new ProcessStartInfo(paths.App)
+            {
+                UseShellExecute = true,
+                WorkingDirectory = Path.GetDirectoryName(paths.App)!,
+            });
+            return started is null
+                ? null
+                : new StartedBaxy(
+                    () => started.HasExited,
+                    () =>
+                    {
+                        try
+                        {
+                            if (!started.HasExited)
+                            {
+                                // By its own process, and what it started with it: never another BAXY's.
+                                started.Kill(entireProcessTree: true);
+                                _ = started.WaitForExit(TimeSpan.FromSeconds(30));
+                            }
+                        }
+                        catch (Exception gone) when (gone is InvalidOperationException or System.ComponentModel.Win32Exception)
+                        {
+                            Log(gone.Message);
+                        }
+                    });
+        }
+        catch (Exception refused) when (refused is System.ComponentModel.Win32Exception or FileNotFoundException or InvalidOperationException)
+        {
+            Log(refused.ToString());
+            return null;
         }
     }
 

@@ -27,6 +27,11 @@ class FakeServer:
         return their_answer(self.replies)
 
     def chat(self, body: dict, timeout: float = 120.0, gives_way: bool = False) -> dict:
+        if ((body.get("response_format") or {}).get("json_schema") or {}).get("name") == "rutina":
+            # RUT15: the typed reading of a routine (Mind._routine_read) is no decision: unread, the guide's reader
+            # decides, as it did when this was asked apart (ask_apart, «maybe»)
+            self.closed.append(json.loads(json.dumps(body)))
+            return {"choices": [{"message": {"content": "maybe"}}]}
         self.bodies.append(json.loads(json.dumps(body)))
         self.gave_way = gives_way
         reply = self.replies.pop(0)

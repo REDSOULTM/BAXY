@@ -119,9 +119,12 @@ public sealed class OwnBrakesTests
             }));
             Assert.That(settings.Except(brakes), Is.EquivalentTo(new[]
             {
-                "accessible_mode", "close_to_tray", "echo_cancel", "minimize_to_tray", "overlay",
+                "accessible_mode", "close_to_tray", "echo_cancel", "language", "minimize_to_tray", "overlay",
                 "wait_notice", "wake_sound",
             }));
+            // ING5: the language is a setting like these, and its card and step say it by the name Ajustes gives it.
+            Assert.That(OwnBrakes.Shown(OwnBrakes.Operation, Set("language", "english"), english: false), Is.EqualTo("Idioma: inglés"));
+            Assert.That(OwnBrakes.Shown(OwnBrakes.Operation, Set("language", "spanish"), english: true), Is.EqualTo("Language: Spanish"));
             foreach (string setting in settings)
             {
                 string value = setting == OwnBrakes.ToolProfile ? "diario" : "on";

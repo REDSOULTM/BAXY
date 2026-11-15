@@ -82,13 +82,14 @@ public static class ProductCatalog
             "Reinicia una aplicación abierta: cierra con gracia sus ventanas como app.close (nunca fuerza; si una ventana responde con un diálogo propio, como guardar, se detiene y lo dice), espera hasta 10 segundos a que sus procesos terminen (si sigue corriendo oculta lo dice y no la mata), la abre otra vez como app.open y sólo da por reiniciada una aplicación con un proceso nuevo."),
         // f6 estado (2026-10-25): lo que la vista ya muestra de BAXY (Ajustes › Modelo y el medidor del rail; Ajustes ›
         // Privacidad, «Salidas a internet de esta sesión»; el interruptor de bypass) se pregunta también por voz. Lo lee la App de lo suyo
-        // (OwnReadings): nada sale del PC ni se mide de nuevo.
+        // (OwnReadings): nada sale del PC ni se mide de nuevo. VER3 (13-11-2026): y la versión instalada (Ajustes › General),
+        // que el texto de sistema ya no dice: un número de versión nuevo movía las respuestas del banco.
         Descriptor(
             "assistant.status",
-            Schema([String("scope", values: ["confirmation", "internet", "model"])], ["scope"]),
+            Schema([String("scope", values: ["confirmation", "internet", "model", "version"])], ["scope"]),
             OperationRisks.ReadOnly,
             "assistant.status.app.view.readings.v1",
-            "Lee lo que la vista muestra de BAXY: su modo de confirmación (normal o bypass), la memoria de vídeo y la RAM de su modelo, o las salidas a internet de esta sesión con su destino y hora."),
+            "Lee lo que la vista muestra de BAXY: su modo de confirmación (normal o bypass), la memoria de vídeo y la RAM de su modelo, las salidas a internet de esta sesión con su destino y hora, o la versión de BAXY instalada en este PC."),
         Descriptor(
             "audio.app.volume.adjust",
             Schema(
@@ -305,24 +306,30 @@ public static class ProductCatalog
                     // toma 30m, 1h o tomorrow (silencio hasta las 08:00) y on lo quita; los demás, on u off.
                     // Encargo 25 (G2): el modo de confirmación también es suyo. TPV1 (dueño, 10-11: «todo se
                     // controla por voz»): encenderlo desde el chat también, con el sí de la persona (OwnBrakes), y el
-                    // perfil de herramientas de Ajustes → Herramientas (tool_profile: un perfil hecho).
+                    // perfil de herramientas de Ajustes → Herramientas (tool_profile: un perfil hecho). ING5 (dueño,
+                    // 13-11: el idioma es un ajuste y todo se controla por voz): el idioma de Ajustes → General
+                    // (language: spanish o english).
                     String(
                         "setting",
                         values:
                         [
-                            "accessible_mode", "close_to_tray", "confirmation_bypass", "echo_cancel", "minimize_to_tray",
-                            "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos", "overlay", "proposals",
-                            "screen", "tool_profile", "update_notice", "voice", "wait_notice", "wake_sound", "weather",
-                            "web_search",
+                            "accessible_mode", "close_to_tray", "confirmation_bypass", "echo_cancel", "language",
+                            "minimize_to_tray", "no_interrupt_calls", "no_interrupt_games", "no_interrupt_videos", "overlay",
+                            "proposals", "screen", "tool_profile", "update_notice", "voice", "wait_notice", "wake_sound",
+                            "weather", "web_search",
                         ]),
                     String(
                         "value",
-                        values: ["1h", "30m", "avanzado", "completo", "diario", "esencial", "off", "on", "tomorrow"]),
+                        values:
+                        [
+                            "1h", "30m", "avanzado", "completo", "diario", "english", "esencial", "off", "on", "spanish",
+                            "tomorrow",
+                        ]),
                 ],
                 ["setting", "value"]),
             OperationRisks.LowReversible,
             "baxy.settings.set.profile.postread.v1",
-            "Cambia un ajuste propio de BAXY (su voz, el overlay, el modo accesible de su ventana, la búsqueda web, el clima, mirar la pantalla, no interrumpir en juegos, llamadas o vídeos, silenciar sus propuestas 30 min, 1 h o hasta mañana, el sonido al despertar, ignorar lo que suena en el PC, decir «Un momento», avisar de versiones nuevas, la bandeja al cerrar o minimizar, el modo Bypass o su perfil de herramientas) y verifica su postlectura."),
+            "Cambia un ajuste propio de BAXY (su voz, el overlay, el modo accesible de su ventana, la búsqueda web, el clima, mirar la pantalla, no interrumpir en juegos, llamadas o vídeos, silenciar sus propuestas 30 min, 1 h o hasta mañana, el sonido al despertar, ignorar lo que suena en el PC, decir «Un momento», avisar de versiones nuevas, la bandeja al cerrar o minimizar, el modo Bypass, su idioma o su perfil de herramientas) y verifica su postlectura."),
         // actualizar-ordenes-app (dueño, 2026-11-09: «un botón de actualizar y decirle BAXY actualízate»): BAXY's own
         // update where it came from (BaxyUpdateHandler). check reads; install on GitHub downloads the installer checked
         // against the SHA-256 GitHub published and starts it, which asks the yes in normal mode (installation); on Steam
@@ -640,7 +647,7 @@ public static class ProductCatalog
                 ["active"]),
             OperationRisks.LowReversible,
             "display.monitor.set.ccd.topology.postread.v1",
-            "Apaga (active false) o vuelve a encender (active true) un monitor conectado, elegido por su posición o por ser o no el principal, y relee la topología de pantallas; nunca apaga el único encendido y, si no queda claro cuál es, no cambia nada y devuelve los monitores.",
+            "Apaga (active false) o vuelve a encender (active true) un monitor conectado, elegido por su posición o por ser o no el principal, y relee la topología de pantallas; el único encendido no se quita: se oscurece como cuando Windows lo apaga por inactividad, sin bloquear ni cerrar nada; si no queda claro cuál es, no cambia nada y devuelve los monitores.",
             effects: [SystemChange()]),
         Descriptor(
             "display.status",

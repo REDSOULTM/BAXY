@@ -125,6 +125,10 @@ public sealed class BaxyUpdateHandlerTests
             Assert.That(receipt.GetProperty("latest").GetString(), Is.EqualTo("1.4.0"));
             Assert.That(receipt.GetProperty("newer").GetBoolean(), Is.True);
             Assert.That(receipt.GetProperty("downloadBytes").GetInt64(), Is.EqualTo(InstallerBytes.Length));
+            // INT36F: the call that installs it, and that it asks nothing more: «actualízate» checked and asked «¿la
+            // instalo?» 19 of 20 times.
+            Assert.That(receipt.GetProperty("toInstall").GetString(), Does.Contain("action install")
+                .And.Contain("1.4.0").And.Contain("asks the person nothing more"));
             Assert.That(http.Asked[0], Is.EqualTo($"https://api.github.com/repos/{Repository}/releases/latest"));
             Assert.That(http.Asked.Skip(1), Is.EqualTo(new[] { Asset("v1.4.0", "release.json"), Asset("v1.4.0", "release.json.sig") }));
             Assert.That(http.UserAgents.Distinct(), Is.EqualTo(new[] { "BAXY/1.3.2" }));
@@ -155,6 +159,14 @@ public sealed class BaxyUpdateHandlerTests
             Assert.That(exit.WaitOne(0), Is.True);
             Assert.That(JsonDocument.Parse(facts).RootElement.GetProperty("verification").GetString(),
                 Is.EqualTo(OperationVisibleFacts.VerificationDeliveredOnly));
+            // INT36F: «Ya te actualicé» 1 of 20 right after this call: the receipt says it is not updated yet.
+            JsonElement receipt = outcome.Result ?? default;
+            Assert.That(receipt.GetProperty("updated").GetBoolean(), Is.False);
+            Assert.That(receipt.GetProperty("installerBytes").GetInt64(), Is.EqualTo(InstallerBytes.Length));
+            Assert.That(receipt.GetProperty("now").GetString(), Does.Contain("updating to 1.4.0")
+                .And.Contain("opens again by itself in version 1.4.0").And.Contain("not updated yet"));
+            Assert.That(JsonDocument.Parse(facts).RootElement.GetProperty("observed").GetProperty("now").GetString(),
+                Is.EqualTo(receipt.GetProperty("now").GetString()));
         });
     }
 
@@ -459,7 +471,9 @@ public sealed class BaxyUpdateHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(check.Risk, Is.EqualTo(OperationRisk.ReadOnly));
-            Assert.That(newer, Is.SameAs(InvocationPreflightResult.Proceed));
+            // AUT1 (orden del dueño, 13-11-2026): «actualízate» is the yes; a signed, newer BAXY asks nothing more.
+            Assert.That(newer.Risk, Is.EqualTo(OperationRisk.Reversible));
+            Assert.That(newer.Failure, Is.Null);
             Assert.That(same.Failure?.ErrorCode, Is.EqualTo("baxy_update_already_latest"));
             Assert.That(steam.Risk, Is.EqualTo(OperationRisk.Reversible));
             Assert.That(development.Failure?.ErrorCode, Is.EqualTo("baxy_update_development_build"));
@@ -533,6 +547,31 @@ public sealed class BaxyUpdateHandlerTests
         });
     }
 
+    // INT36G (VIVO21, 3 of 3): «¿estás al día?» with 1.5.3 installed and 1.5.2 the latest published was answered «estoy
+    // desactualizado» from installed, latest and newer false. Which one is newer and that nothing is to be updated, in one
+    // sentence, when the installed one is the latest or newer than it; never beside a newer version.
+    [TestCase("v1.3.2", "check", "BAXY 1.3.2 is installed and it is the latest version published")]
+    [TestCase("v1.3.1", "check", "BAXY 1.3.2 is installed, newer than 1.3.1, the latest version published")]
+    [TestCase("v1.3.2", "install", "BAXY 1.3.2 is installed and it is the latest version published")]
+    [TestCase("v1.3.1", "install", "BAXY 1.3.2 is installed, newer than 1.3.1, the latest version published")]
+    [TestCase("v1.4.0", "check", null)]
+    public async Task NothingNewerIsSaidUpToDateWithNothingToUpdate(string published, string action, string? said)
+    {
+        Mark(GitHubMarker);
+        OperationOutcome outcome = await Handler(new Server(Release(published))).ExecuteAsync(Invocation(action), CancellationToken.None);
+        using JsonDocument facts = JsonDocument.Parse(OperationVisibleFacts.FromOutcome(BaxyUpdateHandler.Operation, outcome));
+        JsonElement observed = facts.RootElement.GetProperty("observed");
+
+        if (said is null)
+        {
+            Assert.That(observed.TryGetProperty("upToDate", out _), Is.False);
+            return;
+        }
+
+        Assert.That(observed.GetProperty("upToDate").GetString(),
+            Is.EqualTo(said + ": BAXY is up to date and there is nothing to update"));
+    }
+
     [Test]
     public async Task TheReceiptSaysItCheckedOnceTheLatestVersionWasRead()
     {
@@ -582,7 +621,7 @@ public sealed class BaxyUpdateHandlerTests
             Assert.That(OperationVisibleFacts.FromOutcome(BaxyUpdateHandler.Operation, development), Is.EqualTo(
                 """{"status":"failed","error":"baxy_update_development_build","observed":{"version":1,"channel":"development","installed":"1.3.2","checked":false}}"""));
             Assert.That(OperationVisibleFacts.FromOutcome(BaxyUpdateHandler.Operation, same), Is.EqualTo(
-                """{"status":"failed","error":"baxy_update_already_latest","observed":{"version":1,"channel":"github","installed":"1.3.2","checked":true,"latest":"1.3.2","newer":false}}"""));
+                """{"status":"failed","error":"baxy_update_already_latest","observed":{"version":1,"channel":"github","installed":"1.3.2","checked":true,"latest":"1.3.2","newer":false,"upToDate":"BAXY 1.3.2 is installed and it is the latest version published: BAXY is up to date and there is nothing to update"}}"""));
         });
     }
 

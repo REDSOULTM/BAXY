@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -7,8 +8,8 @@ internal static partial class VisibleControlSurface
     /// <summary>The code of an act refused, with nothing sent, because its window's thread does not pump messages.</summary>
     internal const string WindowNotResponding = "window_not_responding";
 
-    /// <summary>The reason a look at such a window gives the model («uiaFailed»).</summary>
-    internal const string NotRespondingReason = "la ventana no responde";
+    /// <summary>The reason a look at such a window gives the model («uiaFailed»), in the language of the request (ING6).</summary>
+    internal static string NotRespondingReason => ModelLanguage.Say("la ventana no responde", "the window is not responding");
 
     private const uint NullMessage = 0;
     private const uint AbortIfHung = 2;

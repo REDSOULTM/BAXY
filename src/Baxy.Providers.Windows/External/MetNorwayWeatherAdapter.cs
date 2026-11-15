@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Text.Json;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -263,11 +264,11 @@ internal sealed class MetNorwayWeatherAdapter : IExternalOperationAdapter, IDisp
 
     private static PublicPlace PlaceOf(GeoNamesGazetteer places, GazetteerPlace place)
     {
-        string? region = places.Region(place)?.NameEs;
+        string? region = places.Region(place)?.Name;
         return new PublicPlace(
-            place.NameEs,
-            region is not null && GeoNamesGazetteer.Fold(region) == GeoNamesGazetteer.Fold(place.NameEs) ? null : region,
-            places.Country(place)?.NameEs ?? string.Empty,
+            place.Name,
+            region is not null && GeoNamesGazetteer.Fold(region) == GeoNamesGazetteer.Fold(place.Name) ? null : region,
+            places.Country(place)?.Name ?? string.Empty,
             place.Latitude,
             place.Longitude,
             "named_place_geocoded",
@@ -601,8 +602,42 @@ internal sealed class MetNorwayWeatherAdapter : IExternalOperationAdapter, IDisp
         };
     }
 
-    // Códigos WMO, en las palabras que una persona usa para el cielo.
-    internal static string Condition(int code) => code switch
+    // Códigos WMO, en las palabras que una persona usa para el cielo. ING6: in the language of the request
+    // (ModelLanguage), each sky of the Spanish table with its English one.
+    internal static string Condition(int code) => ModelLanguage.IsEnglish ? EnglishCondition(code) : SpanishCondition(code);
+
+    private static string EnglishCondition(int code) => code switch
+    {
+        0 => "clear",
+        1 => "mostly clear",
+        2 => "partly cloudy",
+        3 => "cloudy",
+        45 or 48 => "fog",
+        51 or 53 or 55 => "drizzle",
+        56 or 57 => "freezing drizzle",
+        61 => "light rain",
+        63 => "rain",
+        65 => "heavy rain",
+        66 or 67 => "freezing rain",
+        68 => "light sleet",
+        69 => "sleet",
+        71 => "light snow",
+        73 => "snow",
+        75 => "heavy snow",
+        77 => "small hail",
+        80 => "light showers",
+        81 => "showers",
+        82 => "heavy showers",
+        83 => "light sleet showers",
+        84 => "sleet showers",
+        85 or 86 => "snow showers",
+        95 => "thunderstorm",
+        96 or 99 => "thunderstorm with hail",
+        97 => "severe thunderstorm",
+        _ => "no data",
+    };
+
+    private static string SpanishCondition(int code) => code switch
     {
         0 => "despejado",
         1 => "mayormente despejado",
@@ -676,22 +711,22 @@ internal sealed class MetNorwayWeatherAdapter : IExternalOperationAdapter, IDisp
 
     // Uso real tanda 6: a day of the forecast is named by the person by its weekday
     // («el sábado»), so each day carries its date and the weekday of that date, in the
-    // same plain Spanish words as the sky.
+    // same plain words as the sky and in its language (ING6).
     private static void WriteDay(Utf8JsonWriter writer, Day day)
     {
         writer.WriteString("date", day.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
         writer.WriteString("weekday", Weekday(day.Date.DayOfWeek));
     }
 
-    private static string Weekday(DayOfWeek day) => day switch
+    internal static string Weekday(DayOfWeek day) => day switch
     {
-        DayOfWeek.Monday => "lunes",
-        DayOfWeek.Tuesday => "martes",
-        DayOfWeek.Wednesday => "miércoles",
-        DayOfWeek.Thursday => "jueves",
-        DayOfWeek.Friday => "viernes",
-        DayOfWeek.Saturday => "sábado",
-        _ => "domingo",
+        DayOfWeek.Monday => ModelLanguage.Say("lunes", "Monday"),
+        DayOfWeek.Tuesday => ModelLanguage.Say("martes", "Tuesday"),
+        DayOfWeek.Wednesday => ModelLanguage.Say("miércoles", "Wednesday"),
+        DayOfWeek.Thursday => ModelLanguage.Say("jueves", "Thursday"),
+        DayOfWeek.Friday => ModelLanguage.Say("viernes", "Friday"),
+        DayOfWeek.Saturday => ModelLanguage.Say("sábado", "Saturday"),
+        _ => ModelLanguage.Say("domingo", "Sunday"),
     };
 
     public void Dispose() => _http.Dispose();

@@ -1271,7 +1271,11 @@ internal sealed class WindowsVisibleControlAdapter
 
         static string Entry(ViewControl control, ViewControl? was = null) =>
             $"[{control.Index}] {control.Kind} «{control.Name}»"
-            + (control.NameCut > 0 ? $" (nombre cortado: faltan {control.NameCut} caracteres)" : string.Empty)
+            + (control.NameCut > 0
+                ? ModelLanguage.Say(
+                    $" (nombre cortado: faltan {control.NameCut} caracteres)",
+                    $" (name cut off: {control.NameCut} characters missing)")
+                : string.Empty)
             + (was is not null && was.State != control.State
                 ? $" {StateOrNone(was.State)} → {StateOrNone(control.State)}"
                 : control.State.Length > 0 ? " " + control.State : string.Empty)
@@ -3115,8 +3119,11 @@ internal sealed class WindowsVisibleControlAdapter
             new JsonObject { ["ok"] = true, ["controls"] = new JsonArray(), ["uiaFailed"] = reason }.ToJsonString());
     }
 
-    /// <summary>The reason a look whose walk did not end gives the model («uiaFailed»).</summary>
-    internal const string UnfinishedWalkReason = "la lectura del árbol accesible no terminó en su plazo";
+    /// <summary>The reason a look whose walk did not end gives the model («uiaFailed»), in the language of the request
+    /// (ING6).</summary>
+    internal static string UnfinishedWalkReason => ModelLanguage.Say(
+        "la lectura del árbol accesible no terminó en su plazo",
+        "the read of the accessible tree did not finish within its time limit");
 
     /// <summary>Whether a worker that answered nothing (<paramref name="asked"/> the timestamp the walk was asked at) spent
     /// <see cref="WorkerViewBudget"/> on it: a slow walk, not a worker missing or broken (those answer nothing at once).

@@ -14,7 +14,7 @@ internal sealed record OperationResponseProjection(string Message)
         // The look's whole view is the receipt's result; the kernel's visible facts keep only its first rows.
         if (operationName == "input.visible.controls"
             && response.Result is { ValueKind: JsonValueKind.Object } look
-            && ScreenViewProjection.TryCreate(response.Message, look, out string view, asked))
+            && ScreenViewProjection.TryCreate(response.Message, look, out string view, asked, UiLanguage.IsEnglish))
         {
             return new OperationResponseProjection(Replay(response, view));
         }

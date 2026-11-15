@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.Infrastructure;
 using Baxy.Providers.Windows.Routines;
 
 namespace Baxy.Core.Operations;
@@ -147,7 +148,9 @@ internal sealed class RoutinesHandler(
             ["damaged"] = true,
             ["saved"] = false,
             ["next"] = "the routines file is damaged and cannot be read; nothing was changed. Tell the person their "
-                + "routines cannot be read, and that «Olvidar todo» in BAXY's memory panel deletes them (with their tasks "
+                // ING6: the button as the view names it in the language in use (MemoryPanel).
+                + $"routines cannot be read, and that «{ModelLanguage.Say("Olvidar todo", "Forget everything")}» in BAXY's "
+                + "memory panel deletes them (with their tasks "
                 + "in Windows) so they can make them again",
         });
 

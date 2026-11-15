@@ -15,9 +15,10 @@ internal sealed class AwayWatch
 
     /// <summary>
     /// One look at <paramref name="now"/>: <paramref name="idle"/> is the time since the person's last input, and
-    /// <paramref name="away"/> whether the moment reads them away. The change it saw, or null.
+    /// <paramref name="away"/> whether the moment reads them away. The change it saw, or null; the return, in English
+    /// with <paramref name="english"/> (ING5B: the model reads it, and in English reads no Spanish).
     /// </summary>
-    internal string? Look(DateTimeOffset now, TimeSpan idle, bool away)
+    internal string? Look(DateTimeOffset now, TimeSpan idle, bool away, bool english = false)
     {
         if (_since is null)
         {
@@ -38,6 +39,8 @@ internal sealed class AwayWatch
         // From their last input before leaving to their first one back.
         TimeSpan gone = now - idle - _since.Value;
         _since = null;
-        return $"volvió tras {(int)gone.TotalMinutes} min ausente";
+        return english
+            ? $"back after {(int)gone.TotalMinutes} min away"
+            : $"volvió tras {(int)gone.TotalMinutes} min ausente";
     }
 }

@@ -5,6 +5,9 @@ using Baxy.Core;
 using Baxy.Kernel.Journal;
 using Baxy.Kernel.Mission;
 using Baxy.Kernel.Operations;
+using Baxy.Providers.Windows.External;
+using Baxy.Providers.Windows.Infrastructure;
+using Baxy.Providers.Windows.Windows;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -168,6 +171,84 @@ public sealed class CoreRequestTests
             Assert.That(answered.ErrorCode, Is.EqualTo(CoreRequest.UnexpectedFailureCode));
             Assert.That(answered.EffectMayHaveOccurred, Is.True);
         });
+    }
+
+    // ING6: the language of the setting reaches the core with each request (OperationRequest.Language), and what a
+    // handler or a provider writes for the model while it runs is in it; a request that names none is in Spanish again.
+    [Test]
+    public async Task ARequestsLanguageIsTheOneItsHandlerWritesIn()
+    {
+        var written = new List<string>();
+        await using var core = await Core.OpenAsync(new ThrowingHandler(() =>
+        {
+            written.Add(ModelLanguage.Say("español", "English"));
+            return new IOException("x");
+        }));
+
+        try
+        {
+            foreach (string? language in (string?[])[ProtocolLanguages.English, null, ProtocolLanguages.English,
+                         ProtocolLanguages.Spanish])
+            {
+                _ = await CoreRequest.ExecuteAsync(
+                    core.Engine, Request() with { Language = language }, core.Diagnostics, CancellationToken.None);
+            }
+        }
+        finally
+        {
+            ModelLanguage.Use(null);
+        }
+
+        Assert.That(written, Is.EqualTo(new[] { "English", "español", "English", "español" }));
+    }
+
+    // ING6: the result the App receives, which the model reads, is written in the language of its request; the same
+    // request without a language is answered with the words of always.
+    [Test]
+    public async Task WhatAHandlerWritesComesBackInTheLanguageOfItsRequest()
+    {
+        await using var core = await Core.OpenAsync(new ReadingHandler());
+        OperationResponse spanish, english, spanishAgain;
+        try
+        {
+            spanish = await CoreRequest.ExecuteAsync(core.Engine, Request(), core.Diagnostics, CancellationToken.None);
+            english = await CoreRequest.ExecuteAsync(
+                core.Engine, Request() with { Language = ProtocolLanguages.English }, core.Diagnostics, CancellationToken.None);
+            spanishAgain = await CoreRequest.ExecuteAsync(core.Engine, Request(), core.Diagnostics, CancellationToken.None);
+        }
+        finally
+        {
+            ModelLanguage.Use(null);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Said(spanish), Is.EqualTo(new[] { "0,69 %", "31,7 GB", "lluvia débil", "sábado", "Notas (minimizada)" }));
+            Assert.That(Said(english), Is.EqualTo(new[] { "0.69 %", "31.7 GB", "light rain", "Saturday", "Notas (minimized)" }));
+            Assert.That(spanishAgain.Result?.GetRawText(), Is.EqualTo(spanish.Result?.GetRawText()));
+        });
+
+        static string?[] Said(OperationResponse response) =>
+        [
+            .. new[] { "usage", "free", "sky", "weekday" }.Select(name => response.Result?.GetProperty(name).GetString()),
+            response.Result?.GetProperty("windows")[0].GetString(),
+        ];
+    }
+
+    // What several operations write of their own for the model, with the data of a PC (a window's title) beside it.
+    private sealed class ReadingHandler : IOperationHandler
+    {
+        public OperationDefinition Definition { get; } = new(ProductCatalog.GetRequired("app.open"));
+
+        public ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken) =>
+            ValueTask.FromResult(OperationOutcome.Success(JsonSerializer.SerializeToElement(new
+            {
+                usage = ReadingUnits.Percent(0.6923),
+                free = ReadingUnits.Size(34_037_329_920d),
+                sky = MetNorwayWeatherAdapter.Condition(61),
+                weekday = MetNorwayWeatherAdapter.Weekday(DayOfWeek.Saturday),
+                windows = new[] { "Notas" + DesktopWindowNames.MinimizedMark },
+            })));
     }
 
     private sealed class AnsweringHandler(OperationOutcome outcome) : IOperationHandler

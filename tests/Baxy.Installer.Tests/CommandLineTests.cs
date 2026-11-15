@@ -107,6 +107,16 @@ internal sealed class CommandLineTests
         Assert.That(CommandLine.Parse([@"--dir=D:\Pruebas\BAXY"]).Directory, Is.EqualTo(@"D:\Pruebas\BAXY"));
     }
 
+    // AUT1 (orden del dueño, 13-11-2026): the update BAXY starts has no window; the help says so, and when it has one.
+    [TestCase("es", "sin ventana", "baja sólo los ficheros que cambiaron", "y sólo entonces, abre la ventana")]
+    [TestCase("en", "with no window", "downloads only the files that changed", "and only then, it opens the window")]
+    public void The_help_says_an_update_has_no_window_and_takes_only_what_changed(string language, string silent, string only, string window)
+    {
+        string help = string.Join(' ', CommandLine.HelpText(language, @"C:\BAXY-App").Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+
+        Assert.That(help, Does.Contain(silent).And.Contain(only).And.Contain(window));
+    }
+
     // BAXY updating itself (BaxyUpdateHandler) starts the installer over its own folder; an update is never an uninstall.
     [Test]
     public void The_update_BAXY_starts_names_its_folder_and_never_goes_with_an_uninstall()

@@ -2,7 +2,9 @@ using System.Globalization;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Baxy.Contracts;
 using Baxy.Providers.Windows.External;
+using Baxy.Providers.Windows.Infrastructure;
 using NUnit.Framework;
 
 namespace Baxy.Providers.Windows.Tests;
@@ -295,6 +297,68 @@ public sealed class MetNorwayWeatherAdapterTests
             Assert.That(tomorrow.GetProperty("sunset").GetString(), Is.EqualTo("19:03"));
             Assert.That(result.GetProperty("authority").GetString(), Is.EqualTo("met_norway_locationforecast_v2"));
         });
+    }
+
+    // ING6: with the language in English the receipt is the same reading: BAXY's own words of it (the sky and the
+    // weekday) are in English and the place goes by the gazetteer's English names; the figures are the service's.
+    [Test]
+    public async Task InEnglishOnlyTheSkyTheWeekdayAndThePlacesNamesOfTheReceiptChange()
+    {
+        ExternalCapabilityReceipt spanish = await Read(Adapter(Met()), new { location = "buenos aires" });
+        ExternalCapabilityReceipt english;
+        ModelLanguage.Use(ProtocolLanguages.English);
+        try
+        {
+            english = await Read(Adapter(Met()), new { location = "buenos aires" });
+        }
+        finally
+        {
+            ModelLanguage.Use(null);
+        }
+
+        var inSpanish = new Dictionary<string, string>(StringComparer.Ordinal);
+        var inEnglish = new Dictionary<string, string>(StringComparer.Ordinal);
+        Leaves(spanish.Result!.Value, string.Empty, inSpanish);
+        Leaves(english.Result!.Value, string.Empty, inEnglish);
+        string[] changed = [.. inSpanish.Where(leaf => inEnglish[leaf.Key] != leaf.Value).Select(static leaf => leaf.Key)];
+        JsonElement result = english.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(inEnglish.Keys, Is.EqualTo(inSpanish.Keys));
+            Assert.That(changed, Is.Not.Empty);
+            Assert.That(changed.Where(static path => path != ".region"),
+                Has.All.EndsWith(".condition").Or.EndsWith(".weekday"));
+            Assert.That(inSpanish.Keys.Where(static path => path.EndsWith(".condition", StringComparison.Ordinal)
+                    || path.EndsWith(".weekday", StringComparison.Ordinal)),
+                Is.EquivalentTo(changed.Where(static path => path != ".region")));
+            Assert.That(spanish.Result!.Value.GetProperty("region").GetString(), Is.EqualTo("Ciudad Autónoma de Buenos Aires"));
+            Assert.That(result.GetProperty("region").GetString(), Is.EqualTo("Buenos Aires F.D."));
+            Assert.That(result.GetProperty("location").GetString(), Is.EqualTo("Buenos Aires"));
+            Assert.That(result.GetProperty("condition").GetString(), Is.EqualTo("cloudy"));
+            Assert.That(result.GetProperty("today").GetProperty("weekday").GetString(), Is.EqualTo("Sunday"));
+            Assert.That(result.GetProperty("tomorrow").GetProperty("weekday").GetString(), Is.EqualTo("Monday"));
+            Assert.That(result.GetProperty("tomorrow").GetProperty("condition").GetString(), Is.EqualTo("light rain"));
+        });
+
+        // Every leaf of the receipt by its path; how long the read took is of each read, not of the reading.
+        static void Leaves(JsonElement element, string path, Dictionary<string, string> leaves)
+        {
+            if (element.ValueKind == JsonValueKind.Object)
+            {
+                foreach (JsonProperty property in element.EnumerateObject().Where(static property => property.Name != "elapsedMs"))
+                    Leaves(property.Value, path + "." + property.Name, leaves);
+            }
+            else if (element.ValueKind == JsonValueKind.Array)
+            {
+                int index = 0;
+                foreach (JsonElement item in element.EnumerateArray())
+                    Leaves(item, path + "[" + index++ + "]", leaves);
+            }
+            else
+            {
+                leaves[path] = element.GetRawText();
+            }
+        }
     }
 
     [Test]
@@ -715,6 +779,64 @@ public sealed class MetNorwayWeatherAdapterTests
             Assert.That(result.TryGetProperty("namesakesElsewhere", out JsonElement told) && told.GetBoolean(),
                 Is.EqualTo(namesakesTold));
         });
+    }
+
+    // ING6: GeoNames gives each place a Spanish name and an English one; the receipt names it in the language of the
+    // request. A place is found by either name in both languages.
+    [TestCase("Valencia, ES", "Valencia", null, "Spain")]
+    [TestCase("Valencia, España", "Valencia", null, "Spain")]
+    [TestCase("Carolina del Norte", "North Carolina", null, "United States")]
+    [TestCase("Santiago de Chile", "Santiago", null, "Chile")]
+    public async Task InEnglishThePlaceReadIsNamedByItsEnglishNames(string asked, string location, string? region, string country)
+    {
+        ExternalCapabilityReceipt receipt;
+        ModelLanguage.Use(ProtocolLanguages.English);
+        try
+        {
+            receipt = await Read(Adapter(Met()), new { location = asked });
+        }
+        finally
+        {
+            ModelLanguage.Use(null);
+        }
+
+        Assert.That(receipt.Verified, Is.True, receipt.ErrorCode);
+        JsonElement result = receipt.Result!.Value;
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.GetProperty("location").GetString(), Is.EqualTo(location));
+            Assert.That(result.TryGetProperty("region", out JsonElement written) ? written.GetString() : null, Is.EqualTo(region));
+            Assert.That(result.GetProperty("country").GetString(), Is.EqualTo(country));
+        });
+    }
+
+    [Test]
+    public async Task InEnglishTheCandidatesAreNamedByTheirEnglishNames()
+    {
+        ExternalCapabilityReceipt spanish = await Read(Adapter(Met()), new { location = "Valencia" });
+        ExternalCapabilityReceipt english;
+        ModelLanguage.Use(ProtocolLanguages.English);
+        try
+        {
+            english = await Read(Adapter(Met()), new { location = "Valencia" });
+        }
+        finally
+        {
+            ModelLanguage.Use(null);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Named(spanish), Is.EqualTo(new[] { "Valencia|Carabobo|Venezuela", "Valencia|Comunidad Valenciana|España" }));
+            Assert.That(Named(english), Is.EqualTo(new[] { "Valencia|Carabobo|Venezuela", "Valencia|Valencia|Spain" }));
+        });
+
+        static string[] Named(ExternalCapabilityReceipt receipt) =>
+        [
+            .. receipt.Result!.Value.GetProperty("candidates").EnumerateArray().Select(static place =>
+                place.GetProperty("name").GetString() + "|" + place.GetProperty("region").GetString() + "|"
+                + place.GetProperty("country").GetString()),
+        ];
     }
 
     [TestCase("Valencia", null, "weather_place_ambiguous", 2)]

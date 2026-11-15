@@ -6,11 +6,20 @@ namespace Baxy.App;
 /// The language of BAXY's own words on screen and in its voice (Steam, 2026-11-04). The person's choice is «auto», «es»
 /// or «en»: the view sends it (PUT /settings/language) and the field settings keep it for the next start
 /// (<see cref="FieldSettings.Language"/>). «auto», or no choice yet, is Windows' display language, resolved here only
-/// (<see cref="Resolve"/>): Spanish for Spanish, English for any other. Only what the person reads or hears follows it:
-/// what the model reads (the catalog's groups, a conversation's titles, the internet log) stays as it was, in Spanish.
+/// (<see cref="Resolve"/>): Spanish for Spanish, English for any other.
 /// Words already shown keep theirs; the tray menu, built at each opening, takes the new one at its next. A projection
 /// that says several words reads the language once (<see cref="IsEnglish"/>) and passes it down, so one chip or card is
 /// never half in each.
+/// <para>ING5 (owner's decision of 2026-11-13: the language is a setting, and choosing it puts all the model reads in
+/// it): the mind is told it with its catalog (MindSidecarClient.CreateCatalogConfigureRequest, «lang») and writes its
+/// rules and the tools' texts for the model in it; a change relaunches the mind (<see cref="MindLanguage"/>), which
+/// begins the conversation anew. ING5B: of what the App itself writes for the model, the look of the screen
+/// (ScreenViewProjection), the internet log (OwnReadings.Internet) and a refused call's switch name follow it; still in
+/// Spanish: the catalog's groups, which the mind says in English when that is the language, and a conversation's titles
+/// (kept and looked up by them).</para>
+/// <para>ING6: the heartbeat's moment follows it too (HeartbeatMoment), and so does what baxy-core writes of its own
+/// for the model (the weather's sky and weekday, a minimized window's mark, a reading's unit): each request tells that
+/// process the language in use (PreparedOperation.CreateRequest, OperationRequest.Language).</para>
 /// </summary>
 internal static class UiLanguage
 {

@@ -23,6 +23,14 @@ What is compared here is form only, on orders about BAXY's own routines:
   said without «de la mañana / de la tarde» is asked, never assumed.
 - ``told``: the fixed sentence for the receipt of the call the guide proposed, from that receipt only.
 
+RUT14 (2026-11-13, the owner's real case): these forms no longer decide what they do not know. A routine said in words
+that are none of them («quiero que los lunes a las 10 digas…») reached the guide through the model's call with
+everything said thrown away, and each answer met fixed words («No te entendí. Di «con una palabra»…»): four turns and
+nothing saved. Now what the person said is read by the model in a closed, typed question (routine_fill; Guide.fill,
+Guide.take), the guide asks only what is missing, and the forms here are what they compare well: the closed orders, the
+whole-answer shortcuts of each step (Guide.closed: no model, no wait) and the validation of what the model read (the
+tables of ``spoken``, in routine_fill.checked). Only the «sí» saves, as before.
+
 As a smart speaker's own routines are made by fixed steps (Google Nest Help, «Set up and manage Routines»,
 support.google.com/googlenest/answer/7029585; Amazon, «Create a Routine», amazon.com/gp/help/customer/display.html
 ?nodeId=G202200080; both read 2026-11-11): a starter (a phrase or a time) and what it does, confirmed before saving.
@@ -189,6 +197,7 @@ TIME_KIND = {"hora", "horario", "time", "reloj", "clock", "segunda", "segundo", 
 HALF_ALONE = {"manana": "am", "la manana": "am", "morning": "am", "the morning": "am"}
 ALL_DAYS = ("todos", "todas", "siempre", "todos ellos", "all", "all of them", "always", "every one")
 MOST_PHRASE_WORDS = 6   # a word of theirs, or a short phrase
+MOST_KIND_WORDS = 4     # RUT14: «con una palabra», «a una hora», «la primera»: longer, the model reads the answer
 LEAST_PHRASE_CHARS = 2  # RUT9 (REV9 H7): «a» or «eh» alone is what the ear writes for a sound after «Baxy»
 # RUT9 (REV9 H4): a guide left because the person said something else; the model reads it once, with their words.
 LEFT_NOTE = ("[Nota interna, no la escribió la persona: la rutina que BAXY estaba creando con la persona quedó sin "
@@ -582,6 +591,11 @@ TEXT = {
         "left": "Listo, lo dejo.",
         "confirm_delete_all": "¿Borro tus {count} rutinas: {items}?",
         "confirm_delete_one": "¿Borro tu rutina «{name}»?",
+        # INT36G: a routine the model's reading chose (Mind._routine_have), asked by what it is
+        "confirm_delete_about": "¿Borro esta rutina: {about}?",
+        "confirm_disable_about": "¿Desactivo esta rutina: {about}?",
+        "confirm_enable_about": "¿Activo esta rutina: {about}?",
+        "kept_one": "Listo, la dejo como está.",
         "kept_all": "No borré nada.",
         "deleted_all": "Borré tus {count} rutinas: {items}.",
         "disabled_all": "Desactivé tus {count} rutinas: {items}.",
@@ -592,6 +606,12 @@ TEXT = {
                        "pídemelo directo cuando quieras. ¿Qué otra cosa quieres que haga cuando digas «{phrase}»?"),
         "phrase_everyday": ("«{phrase}» se dice en cualquier conversación, y como frase de una rutina la harías sin "
                             "querer. Dime otra palabra."),
+        # RUT14: an answer that added nothing, asked again once with what there is so far
+        "so_far": "Tengo: {items}. {question}",
+        "again": "No te entendí. {question}",
+        "have_say": "decir «{say}»",
+        "have_phrase": "la palabra «{phrase}»",
+        "have_order": "hacer «{order}»",
     },
     "en": {
         "kind": "With a word of yours or at a time?",
@@ -664,6 +684,10 @@ TEXT = {
         "left": "Okay, leaving it.",
         "confirm_delete_all": "Shall I delete your {count} routines: {items}?",
         "confirm_delete_one": "Shall I delete your routine «{name}»?",
+        "confirm_delete_about": "Shall I delete this routine: {about}?",
+        "confirm_disable_about": "Shall I turn off this routine: {about}?",
+        "confirm_enable_about": "Shall I turn on this routine: {about}?",
+        "kept_one": "Okay, I'm leaving it as it is.",
         "kept_all": "I didn't delete anything.",
         "deleted_all": "I deleted your {count} routines: {items}.",
         "disabled_all": "I turned off your {count} routines: {items}.",
@@ -674,6 +698,11 @@ TEXT = {
                        "directly whenever you want. What else should I do when you say «{phrase}»?"),
         "phrase_everyday": ("«{phrase}» is said in any conversation, and as a routine's phrase you would run it without "
                             "meaning to. Tell me another word."),
+        "so_far": "I have: {items}. {question}",
+        "again": "I didn't get that. {question}",
+        "have_say": "say «{say}»",
+        "have_phrase": "the word «{phrase}»",
+        "have_order": "do «{order}»",
     },
 }
 DAY_NAMES = {"es": ("lunes", "martes", "miércoles", "jueves", "viernes", "sábados", "domingos"),
@@ -718,6 +747,21 @@ def said_when(clock: str, repeat: str, days: Any, offset: int | None, lang: str)
     if offset == 2:
         return f"The day after tomorrow {at}" if lang == "en" else f"Pasado mañana {at}"
     return f"Once, {at}" if lang == "en" else f"Una vez, {at}"
+
+
+def said_days(repeat: str, days: Any, offset: int | None, lang: str) -> str:
+    """RUT14: the days of a routine at a time whose hour is not known yet, as said_when says them."""
+    index = sorted({day for day in (days or []) if isinstance(day, int) and 0 <= day <= 6})
+    if repeat == "daily" or (repeat == "days" and len(index) == 7):
+        return "every day" if lang == "en" else "todos los días"
+    if repeat == "days" and index:
+        if index == [0, 1, 2, 3, 4]:
+            return "Monday to Friday" if lang == "en" else "de lunes a viernes"
+        names = _listed([DAY_NAMES[lang][day] for day in index], lang)
+        return f"on {names}" if lang == "en" else f"los {names}"
+    told = {0: ("today", "hoy"), 1: ("tomorrow", "mañana"), 2: ("the day after tomorrow", "pasado mañana")}.get(
+        offset if offset is not None else -1, ("once", "una vez"))
+    return told[0] if lang == "en" else told[1]
 
 
 def _plain(text: Any) -> str:
@@ -922,9 +966,169 @@ class Guide:
     ids: tuple[tuple[str, str], ...] = ()
     targets: tuple[str, ...] = ()
     steps_only: bool = False
+    unread: int = 0         # RUT14: answers in a row the model read (take) that added nothing to the routine
+    # INT36G: the one routine of ``targets`` said by what it is (_item), when the model's reading chose it: «¿Borro esta
+    # rutina: los lunes, miércoles y viernes a las 10:00…?» (its name, «10:00», says neither its days nor its text)
+    about: str = ""
+    described: bool = False   # and the one chosen at «which» is asked so too
 
     def _state(self) -> tuple[Any, ...]:
         return self.step, self.kind, self.phrase, self.order, self.say, self.when, self.part, self.mode
+
+    def closed(self, text: str, routines: Any = None) -> bool:
+        """RUT14: whether the person's words are, whole, one of the forms this step compares by itself (``answer``), so
+        no model is asked: any step of a change, a deletion or a choice among routines (what RUT11, REM2, REM4 and REM6
+        closed stays as it was); «cancela»; the «sí» or the «no» to «¿La guardo?»; a time said whole (spoken); a short
+        choice between a word and a time; a word of theirs that passes every check. Anything else said while a routine
+        is made is the model's to read (Mind._guide_read, routine_fill): the reader no longer refuses what it does not
+        know («No te entendí. Di «con una palabra»…» trapped whoever answered in a sentence)."""
+        if self.mode != "create" or _is(text, CANCEL):
+            return True
+        if self.step == "confirm":
+            return _is(text, YES) or _is(text, NO)
+        core = _core(text)
+        if self.step == "when":
+            return spoken(text) is not None or core in HALF_ALONE or core in ALL_DAYS
+        if self.step == "kind":
+            return spoken(text) is not None or (len(core.split()) <= MOST_KIND_WORDS
+                                                and bool(set(core.split()) & (WORD_KIND | TIME_KIND)))
+        if self.step == "phrase":
+            trial = replace(self)
+            trial._answer(text, routines, False, None)
+            return trial.step != "phrase"
+        return False   # the order and the text: a long answer carries more than them
+
+    def _missing(self) -> str:
+        """RUT14: the step of the first thing a routine being made still lacks; with nothing missing, its repetition."""
+        if self.kind is None:
+            return "kind"
+        if self.kind == "word":
+            return "phrase" if not self.phrase else "order" if not self.order else "confirm"
+        if self.when.clock() is None or self.when.repeat is None:
+            return "when"
+        return "say" if not self.say else "confirm"
+
+    def _refused(self, phrase: str, routines: Any) -> str:
+        """RUT14: why these words cannot be the routine's phrase, as the step «¿Qué palabra…?» says it; nothing: they can."""
+        words = _words(phrase)
+        if not words or thin(phrase):
+            return self._t("phrase_again")
+        if len(words) > MOST_PHRASE_WORDS:
+            return self._t("phrase_long")
+        if mine(phrase):
+            return self._t("phrase_mine", phrase=phrase)
+        if everyday(phrase):
+            return self._t("phrase_everyday", phrase=phrase)
+        if _taken(phrase, routines, but=self.target):
+            return self._t("phrase_taken", phrase=phrase)
+        return ""
+
+    def fill(self, read: Any, routines: Any = None) -> str:
+        """RUT14: what the model read of the person's words (routine_fill.Read: each value already checked against
+        them) put into the routine being made, and the step of what is still missing. A value known changes only for
+        another one; an hour read again without its half does not lose the half it had; the kind of routine is taken
+        while it is not known or nothing of it is. A phrase or an order that cannot be one is not kept and its reason
+        is returned (what BAXY says instead of its question), and the step is that one's: RUT14B, the reason asks for
+        another, so the step stays where it asks; left at «¿La guardo?» with the rest of a correction taken, a «sí» to
+        the reason saved a routine nobody heard read back."""
+        reason, refused = "", ""
+        bare = not (self.phrase or self.order or self.say or self.when.hour is not None or self.when.repeat)
+        if read.kind and (self.kind is None or self.step == "kind" or bare):
+            self.kind = read.kind
+        new = read.when
+        if self.kind is None and new is not None and new.hour is not None:
+            self.kind = "time"   # an hour said is its kind, as at «¿Con una palabra tuya o a una hora?»
+        same = read.kind in (None, self.kind)   # a text read for the other kind of routine is not this one's
+        if self.kind == "time":
+            if new is not None and new.hour is not None and (
+                    new.clock() != self.when.clock() if new.clock() is not None
+                    else self.when.hour is None or (new.hour, new.minute) != (self.when.hour, self.when.minute)):
+                self.when = replace(self.when, hour=new.hour, minute=new.minute, meridiem=new.meridiem, fixed=new.fixed)
+            if new is not None and new.repeat is not None and (
+                    (new.repeat, new.days, new.offset) != (self.when.repeat, self.when.days, self.when.offset)):
+                self.when = replace(self.when, repeat=new.repeat, days=new.days, offset=new.offset)
+            if same and read.text and len(read.text) <= MOST_SAY and (read.fresh or not self.say):
+                self.say = read.text   # one known changes only for a text of their last words
+        elif self.kind == "word" and same:
+            if read.phrase and unnamed(read.phrase) != unnamed(self.phrase):
+                reason = self._refused(read.phrase, routines)
+                self.taken = bool(reason) and _taken(read.phrase, routines, but=self.target)
+                self.phrase = self.phrase if reason else read.phrase
+                refused = "phrase" if reason else ""
+            if read.text and len(read.text) <= MOST_ORDER and read.text != self.order and (read.fresh or not self.order):
+                if about_routines(read.text):
+                    reason = reason or self._t("order_mine", phrase=self.phrase or read.phrase)
+                    refused = refused or "order"
+                else:
+                    self.order = read.text
+        self.step = refused or self._missing()
+        return reason
+
+    def take(self, read: Any, routines: Any = None, today: _dt.date | None = None,
+             yes: Any = None) -> tuple[str, dict[str, Any] | None, bool, bool]:
+        """RUT14: the person's words, as the model read them (routine_fill.Read), as the answer to the step's question:
+        (what BAXY says, the baxy.routines create to propose or None, whether the guide ended, whether these words
+        leave it unsaved and are the model's turn). What they give or correct goes in first (fill): if the routine
+        changed, that was their answer, whatever the model called it, and BAXY asks what is still missing or repeats
+        the routine as it is now. With nothing changed: «cancela» in any words ends it; at «¿La guardo?» only a yes
+        saves, and only when the closed question of the «sí» says so (``yes()``: Mind._answer_read, SIS3), asked only
+        when this reading calls the words a yes, or an answer whose words alone carry nothing of a routine
+        (``read.bare``: «sí, dale», which the 4B called an answer). RUT14B: the routine said again, «quiero que los
+        viernes… digas eso», is no yes, and SIS3 alone could read it «now»; a no ends it unsaved; words about something else
+        leave it at once, as Guide.leaves did by their form (RUT9, REV9 H4). An answer that adds nothing is asked again
+        once, saying what there is so far; a second one in a row is the model's turn: nobody is kept in the guide by
+        words it does not understand."""
+        before = self._state()
+        reason = self.fill(read, routines)
+        if self._state() != before:
+            self.unread = 0
+            return reason or self.question(), None, False, False
+        if reason and self.taken:
+            return reason, None, False, False   # REM6 (REV15 B-1): a phrase taken is said so, never left with
+        if read.does == "cancel":
+            return self._t("cancelled"), None, True, False
+        if self.step == "confirm" and read.does == "no":
+            return self._t("not_saved"), None, True, False
+        if (self.step == "confirm" and (read.does == "yes" or (read.does == "answer" and read.bare))
+                and yes is not None and yes() == "yes"):
+            return "", self.arguments(today), True, False
+        if read.does == "other":
+            return "", None, True, True
+        if reason and not self.unread:
+            self.unread = 1
+            return reason, None, False, False
+        self.unread += 1
+        if self.unread >= 2:
+            # RUT14B: at «¿La guardo?» the guide ends in its own words: handed to the model there, the 4B saved a
+            # memory and said «Guardado» for a routine not saved (two «sure, save it» SIS3 read «later»)
+            return (self._t("not_saved"), None, True, False) if self.step == "confirm" else ("", None, True, True)
+        return self.having(), None, False, False
+
+    def having(self) -> str:
+        """RUT14: the step's question again, with what the routine has so far said first."""
+        if self.step == "confirm":
+            return self._t("confirm_again", confirm=self.question())
+        items = []
+        if self.kind == "time":
+            timed = self.when.clock() is not None
+            if timed and self.when.repeat is not None:
+                told = said_when(self.when.clock() or "", self.when.repeat, self.when.days, self.when.offset, self.lang)
+                items.append(told[0].lower() + told[1:])
+            elif timed:
+                told = said_clock(self.when.clock() or "", self.lang)
+                items.append(f"at {told}" if self.lang == "en" else f"{'a la' if told.startswith('1:') else 'a las'} {told}")
+            elif self.when.repeat is not None:
+                items.append(said_days(self.when.repeat, self.when.days, self.when.offset, self.lang))
+            if self.say:
+                items.append(self._t("have_say", say=self.say))
+        elif self.kind == "word":
+            if self.phrase:
+                items.append(self._t("have_phrase", phrase=self.phrase))
+            if self.order:
+                items.append(self._t("have_order", order=self.order))
+        if not items:
+            return self._t("again", question=self.question())
+        return self._t("so_far", items=_listed(items, self.lang), question=self.question())
 
     @classmethod
     def changing(cls, routine: dict[str, Any], lang: str, part: str = "") -> Guide:
@@ -1028,6 +1232,8 @@ class Guide:
         if self.step == "which":
             return self._t("which", items=self._names())
         if self.step == "confirm_all":
+            if self.about:
+                return self._t(f"confirm_{self.act}_about", about=self.about)
             if len(self.targets) == 1:
                 return self._t("confirm_delete_one", name=self.targets[0])
             return self._t("confirm_delete_all", count=len(self.targets), items=self._names())
@@ -1061,12 +1267,15 @@ class Guide:
         before = self._state()
         said, arguments, ended = self._answer(text, routines, unsure, today)
         self.misses = 0 if ended or unsure or self._state() != before else self.misses + 1
+        if self._state() != before:
+            self.unread = 0   # RUT14B: an answer that moved the routine starts the count of the model's reads again
         return said, arguments, ended
 
     def _answer(self, text: str, routines: Any, unsure: bool,
                 today: _dt.date | None) -> tuple[str, dict[str, Any] | None, bool]:
         if _is(text, CANCEL):
-            left = {"change": "cancelled_change", "all": "kept_all", "which": "left"}.get(self.mode, "cancelled")
+            left = {"change": "cancelled_change", "all": "kept_one" if self.about else "kept_all",
+                    "which": "left"}.get(self.mode, "cancelled")
             return self._t(left), None, True
         if unsure:
             return self._t("unsure", question=self.question()), None, False
@@ -1095,6 +1304,7 @@ class Guide:
                 # delete is asked by its name («¿Borro tu rutina «X»?») and only their «sí» deletes it. INT33F: without
                 # rut11's model path only «bórrala» with several named comes here; turning one off or on is undone.
                 self.step, self.mode, self.targets, self.ids = "confirm_all", "all", (_named(found),), keyed([found])
+                self.about = _item(found, self.lang) if self.described else ""
                 return self.question(), None, False
             return "", {"action": self.act, "name": _named(found)}, True   # this turn, the routine in the list now
         if self.step == "confirm_all":
@@ -1102,7 +1312,7 @@ class Guide:
                 return "", {"action": self.act, "name": self.id_of(self.targets[0])}, True
             words = _core(text).split()
             if _is(text, NO) or (words[:1] == ["no"] and not _within(words[1:], self._yeses())):
-                return self._t("kept_all"), None, True
+                return self._t("kept_one" if self.about else "kept_all"), None, True
             return self._t("confirm_again", confirm=self.question()).replace("guardarla", "borrarlas").replace(
                 "dejarla", "dejarlas").replace("save it", "delete them").replace("leave it", "leave them"), None, False
         if self.step == "kind":

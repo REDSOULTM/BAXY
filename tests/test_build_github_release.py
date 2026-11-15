@@ -207,6 +207,7 @@ def test_the_release_and_its_twin_are_signed_each_with_the_key_of_its_own_folder
     monkeypatch.setattr(release, "refuse_test_keys", lambda keys, url: None)
     monkeypatch.setattr(release, "build_manifest", lambda depot, output, version: (
         output.mkdir(parents=True, exist_ok=True),
+        (output / release.FILES).write_text(json.dumps({"version": version, "files": []}), encoding="utf-8"),
         (output / "release.json").write_text(json.dumps({"version": version, "archives": []}), encoding="utf-8")))
     monkeypatch.setattr(release, "build_installer", lambda output, version, keys: output / "BAXY-Instalador.exe")
     monkeypatch.setattr(release, "name_installer", lambda output, exe: None)
@@ -244,3 +245,29 @@ def test_the_signing_tool_signs_and_a_changed_byte_does_not_verify(tmp_path: Pat
     assert release.fingerprints(keys.read_text(encoding="ascii"))[0] in subprocess.run(
         ["dotnet", "run", str(release.SIGNING_TOOL), "--", "public", "--name", "t", "--folder", str(tmp_path / "k"),
          "--public", str(tmp_path / "again.pem")], check=True, capture_output=True, text=True).stdout
+
+
+def test_files_json_names_every_file_by_hash_and_where_its_bytes_are_in_the_parts(tmp_path: Path) -> None:
+    # AUT1: an update downloads only the files that differ, each by its own range of the same parts (no other asset).
+    import zlib
+
+    output = tmp_path / "out"
+    depot = _depot(tmp_path)
+
+    manifest = release.build_manifest(depot, output, "9.9.9", part_bytes=4000)
+
+    raw = (output / "files.json").read_bytes()
+    assert manifest["files"] == {"file": "files.json", "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+    listed = json.loads(raw)
+    assert listed["version"] == "9.9.9"
+    for archive in manifest["archives"]:
+        joined = b"".join((output / part["file"]).read_bytes() for part in archive["parts"])
+        inside = [file for file in listed["files"] if file["archive"] == archive["name"]]
+        assert {file["path"] for file in inside} == set(_entries(output, archive))
+        for file in inside:
+            packed = joined[file["offset"]:file["offset"] + file["packed"]]
+            content = packed if file["method"] == 0 else zlib.decompress(packed, -15)
+            expected = release.distribution() if file["path"] == "distribution.json" else (depot / file["path"]).read_bytes()
+            assert content == expected
+            assert (file["bytes"], file["sha256"]) == (len(expected), hashlib.sha256(expected).hexdigest())
+    assert {file["method"] for file in listed["files"]} == {0, 8}

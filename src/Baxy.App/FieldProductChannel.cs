@@ -61,6 +61,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     private readonly MemoryPanel _memory;
     // Settings › General «Buscar actualizaciones» and the notice of a newer BAXY (baxy.update through the engine).
     private readonly UpdatePanel _updates;
+    private bool _awaitingUpdate;
     private bool _memoryCountStale = true;
     // Every chat change of the store is numbered and travels in the counter's own event, so an open list is read again.
     private int _memoryRevision;
@@ -152,6 +153,40 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             OnModelDownloadOnline(online);
         }
+
+        if (UpdatePanel.StartedInstaller(done))
+        {
+            _ = TellAnUpdateThatLeftBaxyOpenAsync();
+        }
+    }
+
+    // AUT1: the installer was started and BAXY closes for it. When BAXY does not close (it stays busy), the installer
+    // gives up after a minute, changes nothing and leaves that written: this BAXY, still open, is the one that tells it.
+    // Looked at for two minutes; a BAXY that closed, as it should, never gets here.
+    private async Task TellAnUpdateThatLeftBaxyOpenAsync()
+    {
+        if (_awaitingUpdate)
+        {
+            return;
+        }
+
+        _awaitingUpdate = true;
+        try
+        {
+            for (int looks = 0; looks < 24; looks++)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5), _lifetimeCancellation).ConfigureAwait(true);
+                await TellLastUpdateAsync(_lifetimeCancellation).ConfigureAwait(true);
+            }
+        }
+        catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
+        {
+            // BAXY closed for the update: the one that opens next tells how it ended.
+        }
+        finally
+        {
+            _awaitingUpdate = false;
+        }
     }
 
     // Once per start, when the engine is ready and the person has not switched «Avisar de versiones nuevas» off.
@@ -161,7 +196,14 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             for (int tries = 0; tries < 120 && _viewModel.CoreClient is not { IsReady: true }; tries++)
             {
-                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(true);
+                // AUT1: the first half minute is looked at every second: an installer may be waiting for this BAXY to say
+                // it started, and until it hears it the BAXY before is not let go.
+                await Task.Delay(TimeSpan.FromSeconds(tries < 30 ? 1 : 5), cancellationToken).ConfigureAwait(true);
+            }
+
+            if (_viewModel.CoreClient is { IsReady: true })
+            {
+                await TellLastUpdateAsync(cancellationToken).ConfigureAwait(true);
             }
 
             if (_viewModel.CoreClient is { IsReady: true } && _viewModel.Settings.UpdateNotice)
@@ -173,6 +215,32 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             // BAXY is closing: there is nothing to tell.
         }
+    }
+
+    // AUT1: this BAXY opened after an update. With its engine ready it says so to the installer that waits (which then
+    // lets the BAXY before go), and tells the person once how the update ended, read from what the installer wrote: a
+    // line in the conversation, and aloud when the voice is there (LastUpdate).
+    private async Task TellLastUpdateAsync(CancellationToken cancellationToken)
+    {
+        string folder;
+        try
+        {
+            folder = Baxy.Core.Operations.UpdateInstallerFile.Folder(MemoryOperationProtector.ResolveDataRoot());
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException or InvalidOperationException
+            or ArgumentException)
+        {
+            return;
+        }
+
+        if (LastUpdate.OnStart(folder, UpdatePanel.Installed, UiLanguage.IsEnglish, out Action told) is not { } line)
+        {
+            return;
+        }
+
+        Publish(ItemEvent(_transcript.System(line)));
+        told();
+        _ = await _viewModel.SayWhenFreeAsync(line, TimeSpan.FromMinutes(5), cancellationToken).ConfigureAwait(true);
     }
 
     // QWB2: the tuned model's state for Settings → Model, and whether the mind is being relaunched for a change.
@@ -257,6 +325,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(), out ConfirmationMode mode) ? mode : null),
             "model" => OwnReadings.Model(await _telemetry.SampleAsync(cancellationToken).ConfigureAwait(true)),
             "internet" => OwnReadings.Internet(_transcript.Items),
+            "version" => OwnReadings.Version(UpdatePanel.Installed),
             _ => Baxy.Kernel.Operations.OperationOutcome.Failure(OwnReadings.UnknownScope),
         };
 
@@ -807,6 +876,11 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private void OnStepCompleted(NativeTurnStep step)
     {
+        if (UpdatePanel.StartedInstaller(step))
+        {
+            _ = TellAnUpdateThatLeftBaxyOpenAsync();
+        }
+
         // What left the PC: a call that reaches the internet and got to its provider (the kernel let it through). An
         // update whose receipt says it asked no one (a store's copy, a development one) left nothing.
         bool english = UiLanguage.IsEnglish;
@@ -817,7 +891,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         JsonObject? view = FieldStepProjection.Finished(step.Id, step, net, english);
         if (english && view?["net"] is not null)
         {
-            // The internet log the model reads (OwnReadings.Internet) keeps its Spanish words in an English view.
+            // The Spanish words stay beside the view's, for the internet log read in Spanish (OwnReadings.Internet).
             view["netEs"] = FieldStepProjection.NetWhat(step.Operation, step.Arguments, english: false);
         }
 
@@ -889,6 +963,15 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 _ = _viewModel.ApplyEchoCancelAsync(CancellationToken.None);
 
             _viewModel.ToolsChangedBySpeaking();
+
+            // ING5: the language chosen by voice is the view's choice (PutLanguage): BAXY's own words follow it from
+            // now on, and the mind is relaunched in it once this reply ends. Another setting leaves it as it is.
+            if (step.Arguments["setting"] is JsonValue setting && setting.TryGetValue(out string? name)
+                && name == OwnBrakes.Language)
+            {
+                UiLanguage.Use(_viewModel.Settings.Language);
+                _viewModel.LanguageChanged();
+            }
         }
     }
 
@@ -1960,8 +2043,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     // Steam (2026-11-04): the person's choice of language («auto», «es» or «en»), which the host keeps and the view reads
     // back in GET /settings/general («language», and «languageInUse» for what «auto» stands for). BAXY's own words follow
-    // it from now on (UiLanguage), the tray and the start's screen from the file at the next start; what the model
-    // reads does not change.
+    // it from now on (UiLanguage), the tray and the start's screen from the file at the next start. ING5 (owner's
+    // decision of 2026-11-13): what the model reads follows it too: the mind is relaunched in the language chosen once
+    // the running turn ends (MainWindowViewModel.LanguageChanged), and begins the conversation anew.
     private FieldHttpResponse PutLanguage(JsonObject? body)
     {
         string? choice = body?["lang"] is JsonValue value && value.TryGetValue(out string? said) ? said : null;
@@ -1971,6 +2055,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
 
         UiLanguage.Use(choice);
+        _viewModel.LanguageChanged();
         return Json(new JsonObject { ["ok"] = true, ["language"] = choice, ["languageInUse"] = UiLanguage.Current });
     }
 

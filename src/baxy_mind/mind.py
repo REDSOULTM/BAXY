@@ -33,11 +33,15 @@ from .llm_server import LlmServer, Yielded
 from .protocol import whole_code_points
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
-from . import behavior, language_id, ring_answer, routine_guide, routines, web_focus
+from . import behavior, harness_language, language_id, ring_answer, routine_fill, routine_guide, routines, web_focus
+from .harness_language import t as _t
 from .wire import Wires, operation_of, plain
 
 _DATA = Path(__file__).with_name("data")
 _ENGLISH_FILE = _DATA / "tool_descriptions.en.v1.json"
+# ING5: the same texts with every example and word of theirs in English too, for the harness in English
+# (harness_language): what the person says in them is said in the language BAXY is set to.
+_ENGLISH_ONLY_FILE = _DATA / "tool_descriptions.en_only.v1.json"
 
 # What BAXY says when a turn of the person's has said nothing for 2.5 s (SilenceNotice.After) and is still working,
 # and again every 10 s while it stays silent (goal identity: a notice that claims no result when the turn will go past
@@ -161,10 +165,19 @@ assert _REPEAT in SYSTEM
 BEAT_SYSTEM = SYSTEM.replace(_ASKED_IF_DONE, "").replace(_CAN_DO, "").replace(_REPEAT, "")
 # The groups of the App's panel «Qué puedo hacer» (operation-labels.v1.json), each tool's «group» in catalog.configure.
 CAN_DO_AREAS = " Por áreas: {areas}."
-# VER2 (10-11, 1.3.3 recién instalada: asked which version it is, it said it had no information on it): the
-# version this App is, from its stamp (catalog.configure «baxyVersion», UpdatePanel.Installed, the one Ajustes → General
-# shows), a fact of this PC as the areas are. None from a development copy: nothing is said then.
-VERSION_FACT = "\nVersión de BAXY instalada en este PC (la tuya): {version}."
+# VER2 (10-11, 1.3.3 recién instalada: asked which version it is, it said it had no information on it) said the version
+# this App is here, from catalog.configure «baxyVersion». VER3 (13-11): that one character moved the bench with every
+# release (INT34C, INT35: the same tree answered as the release before only while it said that release's number), so the
+# prefix carries none: the model reads it when asked, assistant.status scope version (OwnReadings.Version), and
+# baxy.update's check says it beside the latest published. The App still states it; nothing here reads it. Said only as
+# a scope in that tool's description, the model answered «Soy la versión 1.0.0» without reading it (VER3 held-out, 3 of 3
+# seeds): where the number stood, this text says where it is read, the same words whatever the release.
+VERSION_WHERE = ("\nVersión de BAXY instalada en este PC (la tuya): no la sabes de memoria; léela con {call} "
+                 '{{"scope": "version"}}{newer}.')
+# VER3B (13-11): with the number gone, «¿estás al día?» went unasked 6 of 24 (VER3 held-out; the base 1): the model
+# answered from memory or asked «¿de BAXY o de un programa?». The same fixed sentence says where a newer one is looked
+# for, when the profile has that tool: Esencial 9 → 12 of 12 with it (tmp\VER3B, arm w3).
+VERSION_NEWER = '; si hay una más nueva lo mira {call} {{"action": "check"}}'
 # VRAM4B (12-11-2026, a card of 4 GB in all; the leader: «es un dato tipado que el modelo puede contar si le preguntan
 # "¿por qué estás en Esencial?"»): the person never chose a tool profile and the card's free video memory did not hold
 # the factory's, so a start took the one it holds (LlmServer.card_fit, ToolProfile.FitCard in the App). What the start
@@ -332,6 +345,18 @@ SET_BY_SAME = "ya había quedado así por la misma llamada hecha antes en este t
 # not rung yet. Answers in that past tense, 3 seeds × 2 on 22 held-out phrases (counted by form, then judged blind in
 # INFORME_ALR5): base 20 of 66, with ALR5's description alone 30 of 132, with this line 19 of 132.
 SET_FOR_LATER = "; quedó puesto para más tarde: aún no ha sonado ni se le ha recordado nada a la persona"
+# RUT15 (the owner's «todos los lunes, miércoles y viernes a las 10 de la mañana digas Buenos días…»): the 4B set
+# a daily reminder «Buenos días, Aurelio» at 10:10 (9 of 10 times in Esencial, three times over) and said «cada lunes,
+# miércoles y viernes… diga…». A repeating alarm or reminder of the App rings with a tone and BAXY says its kind and
+# title (AlarmRinger.Words), on every day of the week (WindowsScheduledNotificationAdapter: recurrence daily or hourly,
+# no days): what the result's facts line now says it does, and that a text said on some days is a routine.
+RINGS_REPEAT = "; cuando suene dará un timbre y BAXY dirá «{words}»; se repite {every}"
+EVERY_DAY = "todos los días, los siete de la semana, a esa hora (ninguna alarma ni recordatorio suena sólo algunos días)"
+EVERY_HOUR = "cada hora"
+RING_WORDS_REMINDER = "Recordatorio: {title}"
+RING_WORDS_ALARM = "Alarma de las {clock}: {title}"
+RING_WORDS_UNTITLED = "Recordatorio de las {clock}"
+ROUTINE_SAID = "; un texto que BAXY diga sin timbre a una hora, cada día o sólo algunos días, es una rutina ({tool})"
 # Every outcome of a completed call (the App runs the queued calls after one of these).
 COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ, SET_BY_SAME)
 # What the facts line adds of a result's own fields (_outcome), and what _deduplicated leaves out of it for that.
@@ -436,25 +461,25 @@ def _outcome(observation: str, read: bool = False) -> str:
     try:
         facts = json.loads(observation)
     except json.JSONDecodeError:
-        return "resultado arriba"
+        return _t("resultado arriba")
     if not isinstance(facts, dict):
-        return "resultado arriba"
+        return _t("resultado arriba")
     # Ronda final 37 (regla 3): the journal's answer to the same call made earlier (the App's «replayed») ran nothing now.
     if facts.get("replayed"):
-        return "respuesta de la misma llamada hecha antes: no se ejecutó de nuevo"
+        return _t("respuesta de la misma llamada hecha antes: no se ejecutó de nuevo")
     status = str(facts.get("status") or "failed")
     if status == "needs_confirmation":
         return WAITS_FOR_YES
     if status == "cancelled":
-        return "cancelado por la persona"
+        return _t("cancelado por la persona")
     # Uso real 2026-10-21 (e2e del notebook): a message stopped before it was written touched the client (an uncertain
     # effect) and the model told «le mandé el mensaje»; what the result knows of the message comes first.
     # Renew al máximo (w9): one typed and stopped just before Enter (the chat no longer named the recipient) was not sent.
     shown = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
     if status != "completed" and shown.get("sent") is False and isinstance(shown.get("messageWritten"), bool):
         error = facts.get("error") or facts.get("cause")
-        written = "quedó escrito y no se envió" if shown["messageWritten"] else "no se escribió ni se envió"
-        return "falló" + (f" ({error})" if error else "") + ": el mensaje " + written
+        written = _t("quedó escrito y no se envió") if shown["messageWritten"] else _t("no se escribió ni se envió")
+        return _t("falló") + (f" ({error})" if error else "") + _t(": el mensaje ") + written
     # Al máximo 8.3 (notebook): an act that failed or stayed unsure but whose state was read again after it says whether
     # what was asked holds now; the result's code and its uncertainty stay as they are.
     after = shown.get("stateAfter")
@@ -467,20 +492,20 @@ def _outcome(observation: str, read: bool = False) -> str:
     error = facts.get("error") or facts.get("cause")
     code = f" ({error})" if isinstance(error, str) and error else ""
     if facts.get("effectUncertain"):
-        return "sin confirmar" + code + ": pudo o no ocurrir" + reread
+        return _t("sin confirmar") + code + _t(": pudo o no ocurrir") + reread
     stale = (STALE if isinstance(error, str) and _STALE_CODE.search(error) and not error.startswith("confirmation")
              else "")
     left = OBSERVED_LEFT_OUT if facts.get("observedLimit") == "omitted" and "observed" not in facts else ""
     unchecked = NOT_CHECKED if shown.get("checked") is False else ""
     if status == "pending":
-        return "no se completó" + code + stale + reread + unchecked
+        return _t("no se completó") + code + stale + reread + unchecked
     if status == "completed":
         # Al máximo 8.2: how it was verified is the result's own typed fact (OperationVisibleFacts' table in the kernel,
         # and the App's for memory and for a result it could not read); one without it is not taken as verified.
         # FT/proveedores goal (e2e E006, E017): where a file or folder was made, from its own result, beside the facts
         # the model tells («lo creé en BAXY-bench» after a write that went to the home folder).
         where = shown.get("fullPath")
-        where = f" en {where}" if isinstance(where, str) and where else ""
+        where = _t(" en {0}").format(where) if isinstance(where, str) and where else ""
         # Al máximo 7.1 (notebook): an act in a window brings the window as it is after it; what it says is told.
         view = shown.get("after")
         seen = ("" if not isinstance(view, dict) or view.get("omitted")
@@ -501,7 +526,7 @@ def _outcome(observation: str, read: bool = False) -> str:
         later = SET_FOR_LATER if isinstance(shown.get("scheduledFor"), str) and "snoozed" not in shown else ""
         return told + code + where + before + other + later + seen + empty + _read_in_part(shown) + unchecked + left
     gone = WINDOW_NOT_FOUND if shown.get("windowFound") is False else ""
-    return "falló" + code + stale + reread + gone + _looked_elsewhere(shown) + unchecked + left
+    return _t("falló") + code + stale + reread + gone + _looked_elsewhere(shown) + unchecked + left
 
 
 # Renew al máximo (w8): file_open of a path that was not there looked only at that path (searchedElsewhere false), and the
@@ -567,47 +592,48 @@ def _read_in_part(shown: dict[str, Any]) -> str:
         return ""
     part = []
     if fewer:
-        part.append(f"se muestran {total_entries} de {total_count}")
-    part.extend(f"{name}: se muestran {value} de {whole}" for name, value, whole in lists)
+        part.append(_t("se muestran {0} de {1}").format(total_entries, total_count))
+    part.extend(_t("{0}: se muestran {1} de {2}").format(name, value, whole) for name, value, whole in lists)
     first, last, total = (_number(shown, k) for k in ("fromLine", "toLine", "totalLines"))
     offset, returned = _number(shown, "offset"), _number(shown, "returnedCharacters")
     characters = _number(shown, "characters")
     characters = characters if characters is not None else _number(shown, "totalCharacters")
     if first is not None and last is not None and total is not None:
-        part.append(f"líneas {first}–{last} de {total}")
+        part.append(_t("líneas {0}–{1} de {2}").format(first, last, total))
     elif offset is not None and characters is not None:
         upto = offset + returned if returned is not None else _number(shown, "nextOffset")
         if upto is not None:
-            part.append(f"caracteres {min(offset + 1, upto)}–{upto} de {characters}")
+            part.append(_t("caracteres {0}–{1} de {2}").format(min(offset + 1, upto), upto, characters))
     scope = shown.get("searchScope") if isinstance(shown.get("searchScope"), dict) else {}
     scanned = _number(scope, "filesScanned")
     if scanned is not None:
         skipped = sum(_number(scope, k) or 0 for k in ("skippedTooLarge", "skippedNotText", "skippedUnreadable"))
-        part.append(f"{scanned} archivos recorridos" + (f", {skipped} de ellos sin leer su texto" if skipped else ""))
+        part.append(_t("{0} archivos recorridos").format(scanned) + (_t(", {0} de ellos sin leer su texto").format(skipped) if skipped else ""))
     if scope.get("timeLimitReached") is True:
-        part.append("la búsqueda paró en su tiempo límite")
+        part.append(_t("la búsqueda paró en su tiempo límite"))
     # Holdout v4 (falsedad: «Sí, porque no había .bak» with three present): a listing or a count of a folder's top level.
     folders = _number(shown, "subfoldersNotOpened")
     if folders:
-        part.append(f"sólo lo que está directamente en la carpeta: sus {folders} subcarpetas no se abrieron")
+        part.append(_t("sólo lo que está directamente en la carpeta: sus {0} subcarpetas no se abrieron").format(
+            folders))
     hidden = _number(shown, "hiddenOrSystemSkipped")
     if hidden:
-        part.append(f"{hidden} entradas ocultas o de sistema sin mirar")
+        part.append(_t("{0} entradas ocultas o de sistema sin mirar").format(hidden))
     unlisted = (total_entries - listed if listed is not None and total_entries is not None
                 else _number(shown, "entriesNotListed"))
     if unlisted:
-        part.append(f"{unlisted} entradas sin listar")
+        part.append(_t("{0} entradas sin listar").format(unlisted))
     seen, cap = _number(shown, "eventsSeen"), _number(shown, "readCap")
     if cap is not None and seen is not None:
-        part.append(f"sólo los {cap} eventos más recientes del registro")
+        part.append(_t("sólo los {0} eventos más recientes del registro").format(cap))
     if shown.get("endReached") is False:
-        part.append("no llegó al final")
+        part.append(_t("no llegó al final"))
     if flagged and not part:
         part.append(TRUNCATED_PART)
     if more and not part:
         part.append(MORE_PART)
     detail = (": " + ", ".join(part)) if part else ""
-    return f"; leído en parte{detail}{PART_TAIL}"
+    return _t("; leído en parte{0}{1}").format(detail, PART_TAIL)
 
 
 def _cut_told(outcome: str, left_out: int, total: int) -> str:
@@ -615,8 +641,8 @@ def _cut_told(outcome: str, left_out: int, total: int) -> str:
     cut = RESULT_CUT_TOLD.format(n=left_out, total=total)
     head, tail, rest = outcome.partition(PART_TAIL)
     if not tail:
-        return outcome + "; leído en parte: " + cut + PART_TAIL
-    joiner = ", " if ": " in head[head.rfind("; leído en parte"):] else ": "
+        return outcome + _t("; leído en parte: ") + cut + PART_TAIL
+    joiner = ", " if ": " in head[head.rfind(_t("; leído en parte")):] else ": "
     return head + joiner + cut + tail + rest
 
 
@@ -639,6 +665,22 @@ def _said_once(done: list[str]) -> list[str]:
             entry = head + arrow + outcome
         told.append(entry)
     return told
+
+
+# Aid «local_day_part», INT36A (gate u121-M0, 13-11: «¿a qué hora me llegó el último correo?» with the receipt's
+# receivedLocal «Wednesday 2026-11-04 11:25» was answered «a las 11:25 de la noche» 9 of 10 on r4a and 7 of 10 with
+# ing5-voz joined, the 1.5.2 0 of 10: since HOR4 the clock line tells its own part of the day, «22:00 hora local (de la
+# noche)», and the model put the clock's part on the receipt's hour). A local time of a result is told with its own part
+# of the day, written here from its hour as the clock's is (_day_part), in the language in use: «… 11:25 (de la mañana)».
+# Only the form is read: a field whose name ends in «Local» and whose text ends in an hour of the 24-hour clock. The
+# result the App gave is kept as it came (the receipts, and what reads them by form: ring_answer, routine_guide).
+_LOCAL_HOUR = re.compile(r'("[A-Za-z]*Local":\s*"[^"\\]*?(?<![\d:])([01]\d|2[0-3]):[0-5]\d)(")')
+
+
+def _local_day_parts(observation: str) -> str:
+    """A result with the part of the day beside each of its local times (aid «local_day_part»)."""
+    return _LOCAL_HOUR.sub(lambda found: f"{found.group(1)} ({Mind._day_part(int(found.group(2)))}){found.group(3)}",
+                           observation)
 
 
 def _deduplicated(observation: str, outcome: str) -> str:
@@ -666,7 +708,7 @@ def _deduplicated(observation: str, outcome: str) -> str:
     if isinstance(facts.get("observed"), dict):
         observed = dict(facts["observed"])
         where = observed.get("fullPath")
-        if isinstance(where, str) and where and f" en {where}" in outcome:
+        if isinstance(where, str) and where and _t(" en {0}").format(where) in outcome:
             del observed["fullPath"]
         if observed.get("alreadyRunning") is True and ALREADY_OPEN in outcome:
             del observed["alreadyRunning"]
@@ -680,7 +722,7 @@ def _deduplicated(observation: str, outcome: str) -> str:
         if isinstance(after, dict) and isinstance(after.get("requestedStateReached"), bool) \
                 and REREAD[after["requestedStateReached"]] in outcome:
             observed["stateAfter"] = {k: v for k, v in after.items() if k != "requestedStateReached"}
-        if observed.get("truncated") is True and "; leído en parte" in outcome:
+        if observed.get("truncated") is True and _t("; leído en parte") in outcome:
             del observed["truncated"]
         if observed or not facts["observed"]:
             shown["observed"] = observed
@@ -735,6 +777,79 @@ def _names_left_out(text: str, arguments: Any) -> list[str]:
     if not names or {_fold(name) for name in names} & asked or {word for word in said & asked if len(word) >= 4}:
         return []
     return list(dict.fromkeys(names))
+
+
+# Aid «exit_unnamed» (R4A, c129-R4: after «No pude cerrar Velmora», «ya, una vez más» went to baxy_exit 9 of 10 seeds with
+# ver3b in Esencial and 12 of 30 with pan6 in Completo, the 1.5.2 1 of 10 and 2 of 30: any text of the prefix moved that
+# edge, and in Bypass the call closes BAXY with no «sí»). As «said_place», only the form is compared: neither the person's
+# words of this turn nor those of their turn before name BAXY anywhere (routines.NAMES, as the ear writes it). Held once
+# in a turn and the result says so, as data; the same call again runs as written: the model decides.
+# What it says was said back as the answer: «No cerré BAXY porque no me pediste que me cierre» (15 of 20 with the first
+# words), «BAXY no se cerró: sus palabras no la nombran» (the line of the turn) and «No, no puedo cerrarme a mí mismo»
+# (false: 6 of 20 with the second) to «ya, una vez más» on a prefix that leans to baxy_exit; and «Cerrado.» with no call
+# again to «ciérrate…» (2 of 10). As RING_NOT_ASKED, it says what to do, that BAXY is still open, the line of the turn
+# says only that it did not run, and their words before are given back as they were.
+EXIT_UNNAMED_REFUSED = "no se ejecutó"
+
+
+def exit_unnamed_not_run(before: str) -> str:
+    """The result of a baxy_exit held by «exit_unnamed», with the person's words of their turn before, as said."""
+    held = {"status": "not_run", "error": "baxy_not_named", "baxyStillOpen": True,
+            "reason": "nothing ran: baxy_exit closes BAXY itself, this assistant, and the person's words in this turn and "
+                      "their turn before do not name BAXY"}
+    if before:
+        held["theirWordsBefore"] = before
+    held["next"] = ("if they asked you to close yourself, call baxy_exit again now: it runs as written; else carry on "
+                    "with what they asked, with its tool (an application they want closed, or closed again, is "
+                    "app_close), and do not tell them about this call")
+    return json.dumps(held, ensure_ascii=False)
+
+
+def _names_baxy(text: str) -> bool:
+    """Whether words name BAXY anywhere, said first to call it too («Baxi, ciérrate»: with the name it runs at once;
+    held, it was answered «Cerrado.» without the call 1 of 10)."""
+    return any(word in routines.NAMES for word in _words(text).split())
+
+
+# Aid «power_unnamed» (INT36D, held-out HA-07, Completo: «pues apágalo, el que sale abajo con las flechitas al lado de la
+# hora», after a close that failed, became system_power {action: shutdown} 10 of 10 on the 1.5.2, int36c and int36d; in
+# Bypass a shutdown asks nothing, RiskPolicy.cs). As INT36D's «screen_unnamed» did (out of the 1.5.3: it lost b2p-10,
+# INT36E/INT36F) and «exit_unnamed» does: a shutdown in a turn where neither the person's
+# words, BAXY's words before them nor the person's turn before name the computer or the session (a word that begins with
+# one of POWER_NAMES) is held once and goes back to the model as data; the same call again runs as written.
+# POW1: alike in the four modes, and it asks the person nothing (owner's decision of 2026-11-07: Bypass asks nothing); the
+# doubt layers (_held) still run before it, as before, and a call the catalog says only reads is not held. Only shutdown,
+# by what the POW1 held-out measured on int36d (60 rows by a subagent that did not see this): unasked, shutdown 9 of 60
+# rows, restart, lock and sleep none; sign-out held kept 3 unasked (an app's account, «sign me out of it») and lost 3
+# asked for («sign me out, I'm done for today»: the model asked instead of calling again, whatever the next said).
+# How the result's next is worded decided what the model says after it (POW1, HA-07 Completo, Bypass, 20 seeds; none
+# turned the computer off): «…do not tell them about this call» was answered «No puedo apagar el PC…» 12 times (false:
+# BAXY can); naming what to talk about («an application, a window…; say nothing of the computer») 3 and «No cerré
+# Clevanto porque no lo encontré» twice; «go on as if this call had never been made» 11; «say nothing of turning the
+# computer off: they did not ask for it» 1, the rest «No apagué el PC, porque no pediste que se apague» and a question.
+POWER_UNNAMED_REFUSED = "no se ejecutó"
+POWER_NAMES = ("pc", "computadora", "computador", "ordenador", "equipo", "compu", "maquina", "laptop", "portatil",
+               "notebook", "sesion", "computer", "session", "windows")
+
+
+def power_unnamed_not_run(wire: str, words: str, before: str) -> str:
+    """The result of a system_power held by «power_unnamed», with the person's words, as said."""
+    held = {"status": "not_run", "error": "computer_not_named", "computerStillOn": True,
+            "reason": f"nothing ran: {wire} shuts down, restarts or signs out of the whole computer, and the person's "
+                      "words in this turn and their turn before name no computer or session",
+            "theirWords": words}
+    if before:
+        held["theirWordsBefore"] = before
+    held["next"] = (f"their words name no computer: do what they ask of what they named, with its tool, and say nothing "
+                    f"of turning the computer off: they did not ask for it. Call {wire} again only if they asked "
+                    f"to turn off the computer itself")
+    return json.dumps(held, ensure_ascii=False)
+
+
+def _names_power(text: str) -> bool:
+    """Whether words name the computer or the session anywhere: a word that begins with one of POWER_NAMES («compus»,
+    «pcs»). Not alike in spelling, as _alike reads four letters: «completito» was taken for «compu» (PA-03)."""
+    return any(word.startswith(name) for word in _words(text).split() for name in POWER_NAMES)
 
 
 # Aid «person_folder_sentence» (lever 8): one sentence of fact at the end of a tool's description
@@ -849,7 +964,7 @@ def _app_places() -> dict[str, dict[str, str]]:
         data = json.loads((_DATA / "app_places.v1.json").read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
-    slots = {"{query}": "lo que se busca", "{game}": "el número del juego", "{slug}": "el nombre del juego"}
+    slots = {"{query}": _t("lo que se busca"), "{game}": _t("el número del juego"), "{slug}": _t("el nombre del juego")}
     return {_fold(name): {place: next((meaning for slot, meaning in slots.items() if slot in str(entry.get("address"))),
                                       "")
                           for place, entry in (body.get("places") or {}).items()}
@@ -894,6 +1009,53 @@ def _known_applications() -> list[str]:
 KNOWN_APPLICATIONS = _known_applications()
 
 
+def _application_names() -> dict[str, frozenset[str]]:
+    """Each name an application goes by in app_aliases.v1.json (its name and its aliases, as whole folded words, a leading
+    article left out), mapped to all the names of that application: «notepad» → {«bloc de notas», «block de notas»,
+    «bloc», «notepad»}. Equivalences of name only, as the kernel's ApplicationAliases reads them."""
+    try:
+        data = json.loads((_DATA / "app_aliases.v1.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    names: dict[str, frozenset[str]] = {}
+    for name, entry in (data.get("applications") or {}).items():
+        group = frozenset(re.sub(r"^ (?:el|la|los|las) ", " ", _words(said)) for said in
+                          [name, *((entry or {}).get("aliases") or [])] if _words(said).strip())
+        for said in group:
+            names.setdefault(said, group)
+    return names
+
+
+APPLICATION_NAMES = _application_names()
+
+
+def _alias_said(app: str, shown: str, seen: set[str]) -> bool:
+    """Whether the person's words (``shown``, as _words gives them; ``seen``, its words) say another name of ``app`` in
+    app_aliases.v1.json: the whole name among them, or, for a name with a word of four letters or more, each of its
+    words of three or more alike one of theirs («el cromo» for «crome»). The application's names are those of the entry
+    that names it whole, else of an entry with a name holding all its words («Settings» in «ms settings»)."""
+    wanted = _words(app)
+    names = APPLICATION_NAMES.get(wanted) or next(
+        (group for said, group in APPLICATION_NAMES.items() if set(wanted.split()) <= set(said.split())), frozenset())
+    for said in names:
+        words = [word for word in said.split() if len(word) >= 3]
+        if said in shown or (any(len(word) >= 4 for word in words)
+                             and all(any(_alike(word, other) for other in seen) for word in words)):
+            return True
+    return False
+
+
+def names_app(app: str, text: str) -> bool:
+    """PAN7 (answer_check rule «unclosed_name»): whether ``text`` names the application or window ``app``, as said_app
+    reads a name: each of its words of three letters or more alike one of the text's, or another of its names in
+    app_aliases.v1.json («el bloc de notas» for Notepad)."""
+    shown = _words(text)
+    seen = set(shown.split())
+    words = [word for word in _words(app).split() if len(word) >= 3]
+    return bool(words) and (all(any(_alike(word, other) for other in seen) for word in words)
+                            or _alias_said(app, shown, seen))
+
+
 def places_note(application: str) -> str:
     """Aid «app_places_next» (uso real 2026-10-20: seven clicks in Steam's and Epic's web-drawn windows, whose own
     addresses app_open already opens): after a click or a look there fails or is unsure, the places the application
@@ -901,8 +1063,8 @@ def places_note(application: str) -> str:
     listed = _places_listed(application)
     if not listed:
         return ""
-    return (f"\n[Ayuda: {application} también se abre directo en sus lugares, sin pulsar: app_open con appId "
-            f"«{application}» y place {listed}.]")
+    return (_t("\n[Ayuda: {0} también se abre directo en sus lugares, sin pulsar: app_open con appId «{1}» y place "
+               "{2}.]").format(application, application, listed))
 
 
 def opened_places_note(application: str) -> str:
@@ -912,7 +1074,8 @@ def opened_places_note(application: str) -> str:
     Held-out (uso-109), 3 seeds: went to the place 3 → 40 of 48; only opening names no place 24 = 24; 36 other second
     requests 34 = 34. With the opening's result as it was: 10 of 48, and 15 of 24 named one."""
     listed = _places_listed(application)
-    return f"[{application} quedó abierta en el turno anterior; sus lugares se abren directo, sin mirar: app_open con appId «{application}» y place {listed}.]" if listed else ""
+    return _t("[{0} quedó abierta en el turno anterior; sus lugares se abren directo, sin mirar: app_open con appId "
+              "«{1}» y place {2}.]").format(application, application, listed) if listed else ""
 
 
 def _app_knows() -> list[dict[str, Any]]:
@@ -965,7 +1128,7 @@ def knows_note(observation: str, args: Any, today: _dt.date, conv: list[dict[str
         except ValueError:
             return ""
         told = any(entry["text"] in str(message.get("content") or "") for message in conv)
-        return "" if age > KNOWS_DAYS or told else f"\n[Ayuda: {entry['text']}]"
+        return "" if age > KNOWS_DAYS or told else _t("\n[Ayuda: {0}]").format(entry['text'])
     return ""
 
 
@@ -1366,7 +1529,7 @@ def flip_not_run(before: dict[str, Any], now: dict[str, Any]) -> tuple[str, str]
     result = json.dumps({"status": "not_run", "reason": "this call would turn back what an earlier call of this turn "
                                                         "set; it was not made, and what that call set stays",
                          "notMade": {k: now[k] for k in turned}, "stays": stays}, ensure_ascii=False)
-    return result, FLIP_REFUSED + "; sigue " + ", ".join(f"{k}={json.dumps(v)}" for k, v in stays.items())
+    return result, FLIP_REFUSED + _t("; sigue ") + ", ".join(f"{k}={json.dumps(v)}" for k, v in stays.items())
 # Feria 2026-10-27 (the same volume set four times in a row, the last three «unchanged»): a call that acted and came back
 # unchanged in this turn showed that making it again changes nothing; the same call again is not made, and its result
 # is the first one's. One that changed something each time (a key, a digit) runs again.
@@ -1553,6 +1716,99 @@ def place_unsaid_not_run(wire: str, location: str) -> str:
                        "location": location}, ensure_ascii=False)
 
 
+# Aid «said_app», INT36A (gate H2, 13-11: «Abre WordPad y escribe: …» became app_open {appId: "Notepad"} 12 of 20 in
+# Esencial on r4a and 20 of 20 with ing5-voz joined, the 1.5.2 0 of 20: the list of installed applications in app_open's
+# description holds «Notepad» and no «WordPad», the description said «use one of these names as appId», and which of
+# the two names the model writes is a near-tie that any text of the prefix moves; another application opened and was
+# typed into, in silence). A sentence in the description on a name outside the list left 10 of 20 in Esencial and 14
+# of 20 in Completo and moved other rows (INT36B took it out again), so the form is compared, as «said_place» compares a place: the
+# appId is a whole name of that list and has no word in the person's words of the whole conversation, in BAXY's own
+# (an offer they took) nor in any result, not even one alike in spelling. Nothing is opened; once per turn, so the same
+# call again runs as it is (the person may have named it in words this cannot match: «el Bloc de notas» for
+# «Notepad»), and a name outside the list runs too: its result says whether it is installed. With both, 0 of 20 in
+# each profile; the result's first wording («decide again») made Completo type without opening, 4 of 10, on «abre el
+# Bloc de notas y escribe…»: it now says that the same call again opens (0 of 10).
+APP_UNSAID_REFUSED = "no se ejecutó: abría una aplicación que nadie nombró"
+
+
+def app_unsaid_not_run(wire: str, app: str, words: str) -> str:
+    """The result of an app_open held by «said_app»: the name nobody said and the person's words, as said."""
+    return json.dumps({"status": "not_run", "error": "application_not_named", "appId": app,
+                       "reason": f"nothing was opened yet: «{app}» is a name of the installed list that is not in the "
+                                 "person's words nor in any result of this conversation",
+                       "theirWords": words,
+                       "next": f"if «{app}» is the application their words name, in their language or by another "
+                               f"name of it, call {wire} again exactly as before: it opens. If their words name a "
+                               f"different application, call {wire} with the name they said as appId: its result "
+                               "says whether it is installed. Do not tell them about this call"}, ensure_ascii=False)
+
+
+# The same aid for app_close, INT36F (BAN2 b2p-41: «cierra la calculadora y el bloc de notas» became app_close {appId:
+# "Command Prompt"} 6 of 10 on int36c, the 1.5.2 and int36b 0 of 10: a near-tie of the joined prefix; an application
+# nobody named closed, its unsaved work with it, and the answer said the calculator was closed). Beside what was said
+# and shown, the window in front when they spoke names what «ciérrala» or «cierra esto» means.
+APP_UNCLOSED_REFUSED = "no se ejecutó: cerraba una aplicación que nadie nombró"
+CLOSE_OPS = ("app.close", "app_close")
+# INT36G (cn-18): with the result above, the 4B still did not repeat the call 9 of 10 («no lo nombraste exactamente
+# así»): whether the held name is one the person named is asked of the model in a closed question of its own, apart from
+# the conversation (as ALR9's RING_READ_*), on their words and that name; «yes» runs the call, «no» or unreadable holds it.
+SAME_APP_SYSTEM = ("Lees lo que una persona le pidió a un asistente de voz de Windows y el nombre de una aplicación instalada. "
+                   "Contesta con una palabra: yes o no.")
+SAME_APP_NOTE = ("La persona dijo: «{said}»\nAplicación instalada: «{app}»\n¿Es «{app}» una de las aplicaciones que nombran "
+                 "sus palabras, quizá con otro nombre o en otro idioma? yes = sí, es esa misma aplicación; no = es otra "
+                 "aplicación, o no la nombran.")
+SAME_APP_GRAMMAR = 'root ::= "yes" | "no"'
+
+
+def app_unclosed_not_run(wire: str, app: str, words: str) -> str:
+    """The result of an app_close held by «said_app»: the name nobody said and the person's words, as said."""
+    return json.dumps({"status": "not_run", "error": "application_not_named", "appId": app,
+                       "reason": f"nothing was closed yet: «{app}» is a name of the installed list that is not in the "
+                                 "person's words, in any result of this conversation nor in the window in front",
+                       "theirWords": words,
+                       "next": f"if «{app}» is the application their words name, in their language or by another "
+                               f"name of it, call {wire} again exactly as before: it closes. If their words name a "
+                               f"different application, call {wire} with that one. Do not tell them about this call"},
+                      ensure_ascii=False)
+
+
+# Aid «said_days», RUT16 (RUT15's owner phrase, «todos los lunes, miércoles y viernes a las 10 10 de la mañana digas
+# Buenos días…», in Esencial: 7 of 10 a reminder at 10:10 with recurrence daily, 2 of 10 three reminders once each, on
+# Saturday, Sunday and Monday at the time it was said). An alarm or reminder rings once, every day or every hour
+# (WindowsScheduledNotificationAdapter), so a create is compared by form with the days of the week the person's words of
+# the turn name, as routine_fill compares the days a routine reads (routine_guide's names of the days): recurrence daily
+# with days named and «todos los días» unsaid, or once on a day none of them is (and no «hoy» or «mañana» said). Nothing
+# is set; the result says so, as data, and the model decides again, once per turn (the same call then sets it).
+RING_DAYS_REFUSED = "no se ejecutó: sonaba otros días que los dichos"
+DAY_NAMES_EN = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+
+def ring_days_not_run(named: Collection[int], due: _dt.datetime | None, today: _dt.date, routines: str,
+                      twice: str) -> str:
+    """The result of a schedule.alarms create held by «said_days»: the days said, the day it rang and the date each
+    day said comes next (Test of Time, arXiv 2406.09170: date arithmetic is where models slip), what rings on some days
+    of the week, and the number the ear may have written twice («10 10»)."""
+    days = sorted(named)
+    said = ", ".join(DAY_NAMES_EN[day] for day in days[:-1]) + (" and " if len(days) > 1 else "") + DAY_NAMES_EN[days[-1]]
+    if due is None:
+        reason = (f"the person's words name {said} and do not say every day; recurrence daily rings on all seven days "
+                  "of the week: nothing was set")
+    else:
+        nexts = [today + _dt.timedelta(days=(day - today.weekday()) % 7 or 7) for day in days]
+        reason = (f"this rings once, on {DAY_NAMES_EN[due.weekday()]} {due:%Y-%m-%d} at {due:%H:%M}, a day the "
+                  f"person's words do not name (they name {said}): nothing was set. "
+                  + "; ".join(f"The next {DAY_NAMES_EN[after.weekday()]} is {after:%Y-%m-%d}" for after in nexts))
+    reason += (". An alarm or reminder rings once, every day or every hour, never only on some days of the week; a text "
+               "BAXY says at an hour on some days of every week is a routine" + (f" ({routines})" if routines else "")
+               + ". If what they asked is what this call sets, the same call again sets it")
+    if twice:
+        reason += (f". Their words have the number «{twice}» twice in a row: speech recognizers repeat a number by "
+                   f"mistake, so it is «{twice}» said once, an hour with no minutes, unless the two clearly are an "
+                   "hour and its minutes")
+    return json.dumps({"status": "not_run", "reason": reason, "days": [DAY_NAMES_EN[day] for day in days]},
+                      ensure_ascii=False)
+
+
 def _alike(word: str, other: str) -> bool:
     """Whether two folded words are one name: equal, or of four letters or more and alike in spelling."""
     return word == other or (min(len(word), len(other)) >= 4 and (
@@ -1712,7 +1968,7 @@ def _span(minutes: int) -> str:
         return f"{minutes} min"
     if minutes < 48 * 60:
         return f"{minutes // 60} h" + (f" {minutes % 60} min" if minutes % 60 else "")
-    return f"{round(minutes / 1440)} días"
+    return _t("{0} días").format(round(minutes / 1440))
 
 
 def _relative(due: Any, now: _dt.datetime | None) -> str:
@@ -1726,9 +1982,10 @@ def _relative(due: Any, now: _dt.datetime | None) -> str:
     elif when.tzinfo is not None and now.tzinfo is not None:
         when = when.astimezone(now.tzinfo)
     days = (when.date() - now.date()).days
-    day = {0: "hoy", 1: "mañana", -1: "ayer"}.get(days, f"{_WEEKDAYS[when.weekday()]} {when:%d/%m}")
+    day = {0: _t("hoy"), 1: _t("mañana"), -1: _t("ayer")}.get(days, f"{_WEEKDAYS[when.weekday()]} {when:%d/%m}")
     minutes = round((when.replace(tzinfo=None) - now.replace(tzinfo=None)).total_seconds() / 60)
-    far = "ahora" if minutes == 0 else f"en {_span(minutes)}" if minutes > 0 else f"hace {_span(minutes)}"
+    far = (_t("ahora") if minutes == 0 else _t("en {0}").format(_span(minutes)) if minutes > 0
+           else _t("hace {0}").format(_span(minutes)))
     return f"{day} {when:%H:%M}, {far}"
 
 
@@ -1740,18 +1997,18 @@ def beat_message(context: dict[str, Any]) -> str:
     now = _when(context.get("now"))
     # Al máximo 10.4: the moment as a day and a clock, not an ISO stamp (as it came when it does not read).
     shown = f"{now:%d/%m/%Y %H:%M}" if now else context.get("now", "")
-    lines.append(f"Momento: {context.get('weekday', '')} {shown} · la persona está: "
-                 f"{context.get('owner_activity', 'desconocido')}")
+    lines.append(_t("Momento: {0} {1} · la persona está: {2}").format(
+        context.get('weekday', ''), shown, context.get('owner_activity', _t('desconocido'))))
     if fg:
-        lines.append(f"Al frente: {fg.get('title', '')} ({fg.get('process', '')})"
-                     + (" en pantalla completa" if fg.get("fullscreen") else ""))
+        lines.append(_t("Al frente: {0} ({1})").format(fg.get('title', ''), fg.get('process', ''))
+                     + (_t(" en pantalla completa") if fg.get("fullscreen") else ""))
     windows = [f"{w.get('title', '')} ({w.get('process', '')})" for w in context.get("windows") or []]
     if windows:
-        lines.append("Ventanas abiertas: " + "; ".join(windows))
+        lines.append(_t("Ventanas abiertas: ") + "; ".join(windows))
     pc = context.get("pc") or {}
     if pc:
         lines.append("PC: " + ", ".join(f"{k}={v}" for k, v in pc.items() if v is not None))
-    for title, key in (("Cambios desde el último latido", "events"), ("Lo que recuerdas de la persona", "memory")):
+    for title, key in ((_t("Cambios desde el último latido"), "events"), (_t("Lo que recuerdas de la persona"), "memory")):
         values = [str(v) for v in context.get(key) or []]
         if values:
             lines.append(f"{title}: " + "; ".join(values))
@@ -1759,15 +2016,16 @@ def beat_message(context: dict[str, Any]) -> str:
     if history:
         # Ronda final 45 (regla 3): the older messages left out are said, as the session's own trim says them.
         omitted = int(context.get("history_omitted") or 0)
-        shown = f" (los {omitted} mensajes anteriores no se muestran)" if omitted else ""
-        lines.append(f"Conversación reciente{shown}: " + " / ".join(
-            f"{'persona' if h.get('role') == 'user' else 'tú'} (hace {h.get('ago_min', '?')} min): {h.get('content', '')}"
+        shown = _t(" (los {0} mensajes anteriores no se muestran)").format(omitted) if omitted else ""
+        lines.append(_t("Conversación reciente{0}: ").format(shown) + " / ".join(
+            _t("{0} (hace {1} min): {2}").format(_t('persona') if h.get('role') == 'user' else _t('tú'),
+                                                h.get('ago_min', '?'), h.get('content', ''))
             for h in history))
     reminders = context.get("reminders") or []
     if reminders:
         # R10.3: one without a time (the App's «y 3 más sin listar») has no empty brackets.
-        lines.append("Recordatorios: " + "; ".join(
-            f"{r.get('text') or 'sin título'}" + (f" ({_relative(r['due'], now)})" if r.get("due") else "")
+        lines.append(_t("Recordatorios: ") + "; ".join(
+            f"{r.get('text') or _t('sin título')}" + (f" ({_relative(r['due'], now)})" if r.get("due") else "")
             for r in reminders))
     return "\n".join(lines + ["", BEAT_RULES, BEAT_DECIDE])
 
@@ -1896,8 +2154,8 @@ CAPTURE_AGE_NOTE = ("\n[Pantalla: la última captura se tomó hace {age} y ya se
 def _shown_by(calls: list[str]) -> str:
     """«mostró», or the calls that read one capture: «mostró ocr_read», «mostraron capture_screenshot y ocr_read»."""
     if not calls:
-        return "mostró"
-    return f"mostró {calls[0]}" if len(calls) == 1 else f"mostraron {', '.join(calls[:-1])} y {calls[-1]}"
+        return _t("mostró")
+    return _t("mostró {0}").format(calls[0]) if len(calls) == 1 else _t("mostraron {0} y {1}").format(', '.join(calls[:-1]), calls[-1])
 
 
 def _captures(node: Any) -> list[dict[str, Any]]:
@@ -1921,7 +2179,8 @@ def _result_body(content: str) -> Any:
 def _taken_at(created: Any) -> str | None:
     """A capture's «createdAtUtc» as the clock tells the time (local, to the minute), or None."""
     try:
-        return f"las {_dt.datetime.fromisoformat(str(created).replace('Z', '+00:00')).astimezone().strftime('%H:%M')}"
+        return _t("las {0}").format(
+            _dt.datetime.fromisoformat(str(created).replace('Z', '+00:00')).astimezone().strftime('%H:%M'))
     except ValueError:
         return None
 
@@ -1993,7 +2252,7 @@ CHECK_RULE_AIDS = {"found": "check_found", "read": "check_read", "denial": "chec
                    "weekday_date": "check_weekday_date", "unread_date": "check_weekday_date",
                    "which_way": "check_which_way", "unread_memory": "check_unread_memory",
                    "unbacked_memory": "check_unread_memory", "memory_subject": "check_unread_memory",
-                   "memory_off_empty": "check_unread_memory"}
+                   "memory_off_empty": "check_unread_memory", "given_act": "check_given_act"}
 # Aid «check_weekday_date» (VER1, PR-03; answer_check rules «weekday_date» and «unread_date»): an answer that puts a date
 # on a weekday the calendar does not («en siete días es el viernes 12»: the 12th was a Thursday), or that tells with its
 # weekday a date other than today's that nothing of the turn gave («pasado mañana es martes 10» on Monday the 9th: the
@@ -2100,6 +2359,8 @@ THEIR_ANSWER_NOTE = ("The assistant asked: «{asked}»\nThe person answered: «{
                      "leave the choice to the assistant.")
 # How much of BAXY's last words the note quotes (their end: the question).
 THEIR_ANSWER_ASKED = 400
+# RUT15: what the typed reading of a routine may take (Mind._routine_read), as SIS3's closed question (ask_apart).
+ROUTINE_READ_SECONDS = 60.0
 THEIR_ANSWER_KINDS = {"now": "yes", "no": "no", "later": "other", "maybe": "other", "ask": "other",
                       "different": "other", "yours": "other"}
 THEIR_ANSWER_GRAMMAR = "root ::= " + " | ".join(f'"{kind}"' for kind in THEIR_ANSWER_KINDS)
@@ -2402,7 +2663,7 @@ def _unsourced(expression: str, messages: list[dict[str, Any]]) -> list[str]:
     the mind's notes (as digits, with their thousands, or as words) nor a tool's result (its aid notes left out). 0 and
     1 carry no magnitude of their own and are never told."""
     given = [str(m.get("content") or "") for m in messages if m.get("role") in ("user", "tool")]
-    text = "\n".join(line for content in given for line in content.splitlines() if not line.startswith("[Ayuda:"))
+    text = "\n".join(line for content in given for line in content.splitlines() if not line.startswith(_t("[Ayuda:")))
     values, words = _given_values(text), _words(text)
     told: list[str] = []
     for token in re.findall(r"\d+(?:[.,]\d+)?", expression):
@@ -2443,8 +2704,8 @@ def unsourced_note(expression: str, messages: list[dict[str, Any]]) -> str:
         return ""
     many = len(told) > 1
     numbers = ", ".join(told[:-1]) + " y " + told[-1] if many else told[0]
-    return UNSOURCED_NOTE.format(numbers=numbers, said="los dijo" if many else "lo dijo",
-                                 came="salieron" if many else "salió")
+    return UNSOURCED_NOTE.format(numbers=numbers, said=_t("los dijo") if many else _t("lo dijo"),
+                                 came=_t("salieron") if many else _t("salió"))
 
 
 # What the model sees of an argument schema: meaning only. Validation-only keywords stay with the kernel, which
@@ -2573,9 +2834,10 @@ class Mind:
         self.prefix_tokens = 0
         self._tokens: dict[str, int] = {}  # each turn's text in the conversation and its tokens (_turn_sizes)
         self.constants: dict[str, dict[str, Any]] = {}
-        english = json.loads(_ENGLISH_FILE.read_text(encoding="utf-8")) if _ENGLISH_FILE.is_file() else {}
-        self.english: dict[str, str] = english.get("tools") or {}
-        self.arguments: dict[str, dict[str, str]] = english.get("arguments") or {}
+        self.english: dict[str, str] = {}
+        self.arguments: dict[str, dict[str, str]] = {}
+        self._described = ""  # the harness language those texts were read for (_describe)
+        self._describe()
         self.decide_temperature = _env_float("BAXY_RENEW_DECIDE_TEMPERATURE", 0.2)
         self.seed = int(_env_float("BAXY_RENEW_SEED", 0))
         # PLAN_GENERAL C1: the long addresses results carried, by the short reference the model saw, and back.
@@ -2680,6 +2942,30 @@ class Mind:
         return f"{kind}-{self._ids}"
 
     # ---- catalog -------------------------------------------------------------------------------------------
+    def _describe(self) -> None:
+        """The tools' texts of the harness language in use (ING5): the ones written for the model, whose examples are
+        Spanish, or with the harness in English the same texts with their examples in English."""
+        language = harness_language.current()
+        if language == self._described:
+            return
+        file = _ENGLISH_ONLY_FILE if language == harness_language.ENGLISH else _ENGLISH_FILE
+        english = json.loads(file.read_text(encoding="utf-8")) if file.is_file() else {}
+        self.english = english.get("tools") or {}
+        self.arguments = english.get("arguments") or {}
+        self._described = language
+
+    def use_language(self, language: Any) -> bool:
+        """ING5: the language everything the mind writes for the model is in, as the App's catalog.configure says it
+        («lang»: the person's setting, never a reading of their words). A change starts the conversation anew: what
+        was said and done in the other language is not read in this one, or its Spanish would be the last thing the
+        model read. Whether it changed; a word that is neither language changes nothing."""
+        if not harness_language.use(language if isinstance(language, str) else ""):
+            return False
+        self._describe()
+        self.new_session()
+        self._log("configure.language", time.perf_counter(), None, lang=harness_language.current())
+        return True
+
     def _whole(self, cap: dict[str, Any], wires: "Wires",
                aids: dict[str, Any]) -> tuple[str, dict[str, Any], dict[str, Any]]:
         """One capability of the catalog as the model is shown it: its wire name, its tool and its constants."""
@@ -2690,6 +2976,9 @@ class Mind:
         description = wires.cite((self.english.get(name) or str(cap.get("description") or "")).replace(
             "{app_places}", APP_PLACES_TEXT))
         if name == "app.open" and apps:
+            # INT36B: INT36A's sentence on a name outside this list (+50 tokens) is out again: it moved two rows that
+            # are not about opening («borra esta conversación» renamed it 8 of 10, «bloquea las notificaciones» 10 of
+            # 10, the 1.5.2 1 and 1); the aid «said_app» alone keeps H2 at 1 of 20 in Completo and 0 in Esencial.
             description += " Installed applications (use one of these names as appId): " + "; ".join(apps) + "."
         if name == "game.launch" and games:
             description += " The person's installed games: " + "; ".join(games) + "."
@@ -2755,13 +3044,15 @@ class Mind:
         return True
 
     def configure(self, message: dict[str, Any]) -> int:
+        self.use_language(message.get("lang"))
         capabilities = list(message.get("capabilities") or [])
         # The person's own texts (Ajustes → Comportamiento) are the person's: the benches take the catalog kept here
         # from one machine to another, so it is kept without them and measures the factory texts.
         chosen = behavior.texts(message.get("behavior"))
         try:  # the exact catalog the App sent, for offline measurement of the presentation
             (self.trace.parent / "catalog.configure.json").write_text(
-                json.dumps({key: value for key, value in message.items() if key != "behavior"}, ensure_ascii=False),
+                json.dumps({key: value for key, value in message.items() if key not in ("behavior", "lang")},
+                           ensure_ascii=False),
                 encoding="utf-8")
         except OSError:
             pass
@@ -2836,16 +3127,17 @@ class Mind:
         self.withheld = {wires.name(op): op for op in withheld if op not in wire_to_op.values()}
         if absent := [wire_to_op[wire] for wire, modes in confirms.items() if modes is None]:
             self._log("configure.confirms_absent", time.perf_counter(), None, operations=absent)
-        areas = list(dict.fromkeys(str(cap["group"]) for cap in capabilities if cap.get("group")))
+        # ING5: the App names the groups in Spanish; with the harness in English each is said by its English name.
+        areas = list(dict.fromkeys(harness_language.t(str(cap["group"])) for cap in capabilities if cap.get("group")))
         # The person's texts in their fixed places (behavior.py): with the factory's this is the text written before.
-        version = message.get("baxyVersion")
         # MEM4: the switch the App read, for the check's rule «memory_off_empty» (only an «off» said: none said, unknown).
         self._switch_off = message.get("memoryOff") is True
         # MEM8: on, as the App read it, beside a memory call held whole (REM7: the field comes only then).
         self._switch_on = message.get("memoryOff") is False
         self.system = (behavior.head(chosen) + RULES + (CAN_DO_AREAS.format(areas="; ".join(areas)) if areas else "")
-                       + (VERSION_FACT.format(version=version.strip()) if isinstance(version, str) and version.strip()
-                          else "")
+                       + (VERSION_WHERE.format(call=wires.name("assistant.status"), newer=VERSION_NEWER.format(
+                          call=wires.name("baxy.update")) if "baxy.update" in wire_to_op.values() else "")
+                          if "assistant.status" in wire_to_op.values() else "")
                        + card_profile_fact(message.get("cardProfile"))
                        + (MEMORY_HELD_FACT.format(call=wires.name(MEMORY_TOOL), state=MEMORY_HELD_PROFILE
                                                   if message.get("memoryOff") is False else MEMORY_HELD_OFF)
@@ -3012,8 +3304,8 @@ class Mind:
         wire = self.wires.name(str(pending["operation"]))
         arguments = pending.get("arguments")
         shown = f" {json.dumps(arguments, ensure_ascii=False)}" if isinstance(arguments, dict) else ""
-        return (f"\n[Espera el sí de la persona: {wire}{shown}. Si sus palabras contestan a tu pregunta, llama a "
-                f"confirm_pending con answer yes, no o unclear.]")
+        return (_t("\n[Espera el sí de la persona: {0}{1}. Si sus palabras contestan a tu pregunta, llama a "
+                   "confirm_pending con answer yes, no o unclear.]").format(wire, shown))
 
     @staticmethod
     def _unsure_note(unsure: list[tuple[str, float]]) -> str:
@@ -3031,13 +3323,13 @@ class Mind:
         # 24 % of the time against 6 % (falsedades p5-p8); decision2 on the notebook gained by that mechanism (P041
         # stopped inventing, P049 stopped looking up the clock): 227/230 vs 226. Al máximo 8.1: and the session's calls.
         # Plan c3 (estado explícito): and that what the results above show is of when they were read (STALE_TURNS).
-        ran = str(self._ran_count or "ninguna")
+        ran = str(self._ran_count or _t("ninguna"))
         if self._ran:
-            last = "" if len(self._ran) == self._ran_count else f", las {len(self._ran)} últimas"
+            last = "" if len(self._ran) == self._ran_count else _t(", las {0} últimas").format(len(self._ran))
             ran += f"{last} ({' / '.join(self._ran_told(self._captures_kept))})"
-        return (f"{CLOCK_MARK} {self._clock_time()}; "
-                "los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna herramienta en este "
-                f"turno{STALE_TURNS if self._ran_count else ''}; llamadas a herramientas en esta sesión: {ran}]")
+        return (_t("{0} {1}; los campos que terminan en Utc van en UTC; turno nuevo: aún no se ejecutó ninguna "
+                   "herramienta en este turno{2}; llamadas a herramientas en esta sesión: {3}]").format(
+            CLOCK_MARK, self._clock_time(), STALE_TURNS if self._ran_count else '', ran))
 
     @staticmethod
     def _clock_time() -> str:
@@ -3047,9 +3339,30 @@ class Mind:
         read the 11th for the day (of 54 alarms asked for another day, «mañana», «en tres días», «el viernes», 30 were
         set for the day asked) and as «Monday 2026-11-09 22:10» it read 11 for the hour («son las 23:10», 7 of 30
         answers to the time; none with the time first). So the time stands first, apart from the date."""
-        now = _dt.datetime.now().astimezone()
+        return Mind._clock_text(_dt.datetime.now().astimezone())
+
+    @staticmethod
+    def _clock_text(now: _dt.datetime) -> str:
+        """The clock line's reading of a moment (banco.fix_clock tells a fixed one in this same form).
+        HOR4: the part of the day told beside the 24-hour time, as the RAE's DPD reads the hours («las diez de la
+        noche», «hora»). The model turned 22:17 into «11:17 PM» and 00:10 into «11:10 de la mañana» itself (HOR2: 23 of
+        144 answers to the time on 1.5.1); with the part told, 9 of 144 (HOR3). A 12-hour reading told too took them to
+        0, but then the line read as the whole answer and the model counted other days' dates itself instead of calling
+        system.time («deadline de 10 días» → «hace 10 días»; HOR3: dates 66 → 56-61 of 130, and «faltan 114 días» for
+        97 with a hint). With the part alone the dates held (72 of 130)."""
         offset = now.strftime("%z")
-        return f"{now.strftime('%H:%M')} hora local, UTC{offset[:3]}:{offset[3:]}, {now.strftime('%A %Y-%m-%d')}"
+        return _t("{0} hora local ({1}), UTC{2}:{3}, {4}").format(
+            now.strftime('%H:%M'), Mind._day_part(now.hour), offset[:3], offset[3:5], now.strftime('%A %Y-%m-%d'))
+
+    @staticmethod
+    def _day_part(hour: int) -> str:
+        """The part of the day an hour of the 24-hour clock falls in, in the language in use (HOR4's, by the DPD's
+        reading of the hours). English tells the evening apart («7 in the evening»), where Spanish says «las siete de
+        la tarde»: its two last hours before the night have their own text in the English data."""
+        if 18 <= hour < 20 and harness_language.current() == harness_language.ENGLISH:
+            return _t("de la tarde, pasadas las seis")
+        return (_t("de la noche") if hour == 0 or hour >= 20 else _t("de la madrugada") if hour < 6 else
+                _t("de la mañana") if hour < 12 else _t("del mediodía") if hour == 12 else _t("de la tarde"))
 
     @staticmethod
     def _now() -> _dt.datetime:
@@ -3091,12 +3404,19 @@ class Mind:
                  "ran_ids": self._ran_ids, "ran_count": self._ran_count, "states": self._states}
         if self._calls is not None:
             state["calls"] = [list(call) for call in self._calls]
+        if harness_language.current() != harness_language.SPANISH:
+            state["lang"] = harness_language.current()  # ING5: a session kept before the setting is a Spanish one
         return json.loads(json.dumps([*self.conversation, state], ensure_ascii=False))
 
     def load_session(self, conversation: list[Any]) -> None:
         """Go back to a kept session: its conversation exactly as exported, so the model reads what really ran."""
         self.new_session()
         state = next((m for m in conversation if isinstance(m, dict) and m.get("role") == SESSION_STATE), {})
+        if (state.get("lang") or harness_language.SPANISH) != harness_language.current():
+            # ING5: kept with the harness in the other language: its clock lines, receipts and answers are in it, and
+            # read now they would be the last thing the model read. The App still shows it; the model starts anew.
+            self._log("session.other_language", time.perf_counter(), None, lang=state.get("lang") or "es")
+            return
         if isinstance(state.get("refs"), dict):
             self._refs = {str(ref): str(value) for ref, value in state["refs"].items()}
             self._ref_of = {value: ref for ref, value in self._refs.items()}
@@ -3210,9 +3530,9 @@ class Mind:
             if not ring_id:
                 continue
             title = str(ring.get("title") or "").strip()[:FRONT_TITLE_CHARS]
-            kind = "la alarma" if ring.get("kind") == "alarm" else "el recordatorio"
+            kind = _t("la alarma") if ring.get("kind") == "alarm" else _t("el recordatorio")
             clock = str(ring.get("clock") or "").strip()
-            rings.append(f"{kind} id {ring_id}" + (f" «{title}»" if title else "") + (f" de las {clock}" if clock else ""))
+            rings.append(f"{kind} id {ring_id}" + (f" «{title}»" if title else "") + (_t(" de las {0}").format(clock) if clock else ""))
         return "; ".join(rings)
 
     @staticmethod
@@ -3290,14 +3610,21 @@ class Mind:
         # are another request (Guide.leaves) leave it unsaved: they are this turn, and the model reads that it was not
         # saved (routine_guide.LEFT_NOTE) to say so.
         left = ""
+        taken: tuple[Any, ...] | None = None
         if self._guide is not None and (pending or doubts or not own
                                         or time.monotonic() - self._guide_at > GUIDE_SILENCE_S):
             left = "" if pending or doubts or not own else routine_guide.SILENT_NOTE
             self._guide = None
-        elif self._guide is not None and not unsure and self._guide.leaves(text, self.routines, self._today()):
-            self._log("turn.routine_guide", time.perf_counter(), None, step=self._guide.step, next=None, saved=False,
-                      lang=self._guide.lang, left=True)
-            self._guide, left = None, self._guide.left_note()
+        elif self._guide is not None and not unsure:
+            # RUT14: what is no closed form of the step is read by the model (typed, apart from the conversation);
+            # unreadable, the reader decides as before. RUT14B: with something ringing, the reader decides as in the
+            # 1.5.2 (the guide stays and ring_answer answers what rings): read as «other», the guide was left after
+            # BAXY's question and nothing answered the ring.
+            taken = None if ringing else self._guide_read(self._guide, text)
+            if taken[4] if taken is not None else self._guide.leaves(text, self.routines, self._today()):
+                self._log("turn.routine_guide", time.perf_counter(), None, step=self._guide.step, next=None, saved=False,
+                          lang=self._guide.lang, left=True)
+                self._guide, left, taken = None, self._guide.left_note(), None
         guide = self._guide
         free = guide is None and not self._rings_told(ringing) and not pending and not doubts and not unsure and own
         # REM6 (REV15 B-1): the turn that left the guide answered its question: no routine's phrase fires in it.
@@ -3396,7 +3723,7 @@ class Mind:
             if answer is not None:
                 return self._ring_answered(request_id, self._turn, answer, ringing or [])
             if guide is not None:
-                return self._guide_answered(request_id, self._turn, guide, text, bool(unsure))
+                return self._guide_answered(request_id, self._turn, guide, text, bool(unsure), taken)
             if ordered is not None:
                 return self._routine_ordered(request_id, self._turn, ordered)
             # RUT1 (RUTINAS.md §5 b, the person's own shortcut): with nothing of BAXY waiting for these words and nothing
@@ -3463,8 +3790,14 @@ class Mind:
                 "").strip() or str(message.get("content") or "").strip()
             if asked:
                 break
+        private = bool(turn.get("private")) or str(operation or "").startswith("memory.")
+        return self._answer_read(asked, str(turn["text"]), operation, private, started)
+
+    def _answer_read(self, asked: str, said: str, operation: str | None, private: bool, started: float) -> str:
+        """SIS3's closed question itself: BAXY's last words and the person's, apart from the conversation. RUT14: also
+        asked for the «sí» to «¿La guardo?» when the guide's own list of yeses does not have their words."""
         note = THEIR_ANSWER_NOTE.format(asked=" ".join(asked.split())[-THEIR_ANSWER_ASKED:],
-                                        said=" ".join(str(turn["text"]).split()))
+                                        said=" ".join(said.split()))
         body = {"messages": [{"role": "system", "content": THEIR_ANSWER_SYSTEM}, {"role": "user", "content": note}],
                 "max_tokens": 4, "grammar": THEIR_ANSWER_GRAMMAR, "chat_template_kwargs": {"enable_thinking": False},
                 "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": self.seed}
@@ -3477,11 +3810,99 @@ class Mind:
         if read not in THEIR_ANSWER_KINDS:
             failure = failure or "unreadable"
         answer = THEIR_ANSWER_KINDS.get(read, "other")
-        private = bool(turn.get("private")) or str(operation or "").startswith("memory.")
-        self._log("turn.their_answer", started, reply, text=None if private else turn["text"], kind=answer,
+        self._log("turn.their_answer", started, reply, text=None if private else said, kind=answer,
                   read=read or None, operation=operation, arguments=None, content=None,
                   **({"failure": failure} if failure else {}))
         return answer
+
+    def _rings_said(self, wire: str, observation: str) -> str:
+        """RUT15: what a repeating alarm or reminder just set will do, from its result (RINGS_REPEAT), and with a title
+        that repeats every day, that a text said on some days is a routine; nothing for any other result."""
+        try:
+            facts = json.loads(observation)
+        except json.JSONDecodeError:
+            return ""
+        shown = facts.get("observed") if isinstance(facts, dict) and isinstance(facts.get("observed"), dict) else {}
+        every = {"daily": EVERY_DAY, "hourly": EVERY_HOUR}.get(str(shown.get("recurrence")))
+        if self.wire_to_op.get(wire) != RING_TOOL or facts.get("status") != "completed" or every is None:
+            return ""
+        title = " ".join(str(shown.get("title") or "").split())
+        clock = str(shown.get("dueLocal") or "")[11:16]
+        clock = clock[1:] if clock.startswith("0") else clock
+        words = (RING_WORDS_ALARM if shown.get("kind") == "alarm" else RING_WORDS_REMINDER if title
+                 else RING_WORDS_UNTITLED).format(title=title, clock=clock).rstrip(": ")
+        routine = (ROUTINE_SAID.format(tool=self.wires.name("baxy.routines"))
+                   if title and every is EVERY_DAY and "baxy.routines" in self.wire_to_op.values() else "")
+        return RINGS_REPEAT.format(words=words, every=every) + routine
+
+    def _routine_lines(self) -> list[tuple[str, str]]:
+        """RUT14: what the person and BAXY said since the last routine BAXY saved, changed or deleted (the conversation
+        the routine being made is in), oldest first: their words and BAXY's, never a note «[…]» nor a result."""
+        lines: list[tuple[str, str]] = []
+        for message in reversed(self.conversation):
+            done = False
+            for call in message.get("tool_calls") or []:
+                if self.wire_to_op.get(call["function"]["name"]) == "baxy.routines":
+                    try:
+                        done = done or bool(json.loads(call["function"].get("arguments") or "{}").get("action"))
+                    except (json.JSONDecodeError, AttributeError):
+                        pass
+            if done:
+                break
+            content = message.get("content")
+            if message.get("role") in ("user", "assistant") and isinstance(content, str) and content.strip() \
+                    and not content.startswith("["):
+                lines.append((str(message["role"]), content))
+        return lines[::-1]
+
+    def _routine_read(self, guide: routine_guide.Guide, text: str, asked: str) -> routine_fill.Read | None:
+        """RUT14: the fields of the routine being made as the model reads them from what the person said, in one closed
+        question apart from the conversation whose answer is typed (routine_fill: SCHEMA as response_format, the same
+        for the product's model and for one by API), each value then checked against the person's own words
+        (routine_fill.checked). None when it cannot be read (the server failed or wrote something else): then nothing
+        is taken from it and the guide goes on as its reader says.
+        RUT15: asked after the conversation as the server holds it (the system text, the tools and the conversation,
+        as a decision sends them, and the question as one more message), the way title_of asks: the server reads only
+        what is new since its last request and nothing is set aside. Apart from the conversation (ask_apart) the slot's
+        state was saved and restored around it, 1.3 s of every answer to the guide in Esencial and 2.4 s in Completo
+        on the RTX 3060 of the measurements; and the next decision reads again only from the slot's last checkpoint
+        before the question (a hybrid model's: llama-server's context checkpoints, -ctxcp)."""
+        started = time.perf_counter()
+        lines = self._routine_lines()
+        if lines and lines[-1] == ("user", text):
+            lines.pop()   # the words being read, when they are already in the conversation
+        reply, failure, fields = None, None, None
+        body = routine_fill.body(lines, text, guide, asked, self.seed)
+        body.update(messages=[{"role": "system", "content": self._system()}, *self._history(self.conversation),
+                              *body["messages"]], tools=self.tools, tool_choice="none")
+        try:
+            reply = self.server.chat(body, timeout=ROUTINE_READ_SECONDS)
+            fields = routine_fill.parsed(reply, guide)
+        except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+            failure = type(error).__name__
+        if fields is None:
+            self._log("turn.routine_read", started, reply, kind=None, lang=guide.lang, failure=failure or "unreadable")
+            return None
+        read = routine_fill.checked(fields, [words for who, words in lines if who == "user"] + [text], guide.when.days)
+        self._log("turn.routine_read", started, reply, kind=read.does, lang=guide.lang)
+        return read
+
+    def _guide_read(self, guide: routine_guide.Guide, text: str) -> tuple[Any, ...] | None:
+        """RUT14: the person's words to a question of the guide that makes a routine, when they are no closed form of
+        its step (Guide.closed), as the model reads them: (the guide after them, what BAXY says, the create to propose,
+        whether it ended, whether they leave it). The yes to «¿La guardo?» is SIS3's closed question's, on that
+        exchange alone (_answer_read). None: the reader decides (a closed form, or the model could not be read)."""
+        if guide.closed(text, self.routines):
+            return None
+        asked = guide.question()
+        read = self._routine_read(guide, text, asked)
+        if read is None:
+            return None
+        after = dataclasses.replace(guide)
+        said, arguments, ended, left = after.take(
+            read, self.routines, self._today(),
+            lambda: self._answer_read(asked, text, "baxy.routines", False, time.perf_counter()))
+        return after, said, arguments, ended, left
 
     def _ring_not_asked(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> bool:
         """ALR9: whether the model's stop or snooze of what rings is held because the person's words, read in their own
@@ -3598,7 +4019,14 @@ class Mind:
         if ordered.guide is not None:
             ended = ordered.guide.step == "steps_only"
             self._guide, self._guide_at = (None if ended else ordered.guide), time.monotonic()
-            return self._guide_said(request_id, turn, ordered.said or ordered.guide.question(), "turn.decide", started)
+            said = ordered.said
+            if (ordered.action == "new" and ordered.guide.kind is None and not said
+                    and routine_guide.heard(str(turn["text"]), ordered.lang, whole=True) is None):
+                # RUT14: a routine said in one breath that its form did not split («…abre el guiado desde la primera
+                # pregunta»): what they already said is read by the model, and BAXY asks only what is missing. A
+                # closed order alone («crea una rutina») says nothing to read: its first question, as before.
+                said = self._guide_filled(ordered.guide, str(turn["text"]))
+            return self._guide_said(request_id, turn, said or ordered.guide.question(), "turn.decide", started)
         arguments = {"action": ordered.action, **({"name": ordered.name} if ordered.name else {})}
         return self._routine_call(request_id, turn, arguments, (ordered.action, ordered.lang, ordered.name), started)
 
@@ -3611,15 +4039,19 @@ class Mind:
         return self._routine_call(request_id, turn, {"action": act, "name": names[0]}, ("all", lang, act), started)
 
     def _guide_answered(self, request_id: Any, turn: dict[str, Any], guide: routine_guide.Guide, text: str,
-                        unsure: bool) -> dict[str, Any]:
+                        unsure: bool, taken: tuple[Any, ...] | None = None) -> dict[str, Any]:
         """RUT7: the person's words as the answer to the guide's question: its next question, said as it is, or (the
-        last «sí») the baxy.routines create of what they answered. Nothing else is done with these words."""
+        last «sí») the baxy.routines create of what they answered. Nothing else is done with these words.
+        RUT14: ``taken``, when the model read them (_guide_read): the guide after them and what it says."""
         started = time.perf_counter()
         was = guide.step
-        said, arguments, ended = guide.answer(text, self.routines, unsure, self._today())
+        if taken is not None:
+            guide, said, arguments, ended = taken[:4]
+        else:
+            said, arguments, ended = guide.answer(text, self.routines, unsure, self._today())
         # RUT9 (REV9 H4): an answer that answered nothing does not put the silence off.
         self._guide = None if ended else guide
-        self._guide_at = self._guide_at if guide.misses and not ended else time.monotonic()
+        self._guide_at = self._guide_at if (guide.misses or guide.unread) and not ended else time.monotonic()
         self._log("turn.routine_guide", started, None, step=was, next=None if ended else guide.step,
                   saved=arguments is not None, lang=guide.lang)
         if arguments is not None and guide.mode == "all":
@@ -3644,6 +4076,59 @@ class Mind:
             "function": {"name": call["wire"], "arguments": json.dumps(arguments, ensure_ascii=False)}}]})
         turn["guide_call"] = told
         return self._result(request_id, turn, call, None, stage, started, "")
+
+    def _routine_have(self, text: str) -> tuple[str, str] | None:
+        """INT36G: the person's words that made the model call baxy.routines, when they have routines, read in a closed
+        question of their own with those routines listed by what they are (routine_fill.have_body): (what BAXY says,
+        what they asked) when they ask something of one they have, and the guide set to ask it; None: a new routine,
+        something else or unreadable (the guide of a new one, as before). Deleting, turning off or on one routine asks
+        it by what it is and only their «sí» acts; several it may be, or none of theirs named, BAXY asks which; a
+        change opens the guide of its change; «list» says the routines the App gave this turn."""
+        kept = [r for r in self.routines or [] if isinstance(r, dict)][:routine_fill.MOST_HAVE]
+        if not kept:
+            return None
+        started, lang = time.perf_counter(), routine_guide.lang_of(self.lang)
+        body = routine_fill.have_body(kept, text, lang, self.seed)
+        body.update(messages=[{"role": "system", "content": self._system()}, *self._history(self.conversation),
+                              *body["messages"]], tools=self.tools, tool_choice="none")
+        reply, failure, read = None, None, None
+        try:
+            reply = self.server.chat(body, timeout=ROUTINE_READ_SECONDS)
+            read = routine_fill.have_parsed(reply, [routine_guide._named(r) for r in kept])
+        except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+            failure = type(error).__name__
+        self._log("turn.routine_have", started, reply, kind=read[0] if read else None,
+                  keys=[i + 1 for i in read[1]] if read else None, failure=failure or (None if read else "unreadable"))
+        if read is None or read[0] in ("new", "other"):
+            return None
+        act, chosen = read[0], [kept[i] for i in read[1]]
+        if act == "list":
+            listed = json.dumps({"status": "completed", "observed": {"routines": kept, "count": len(kept)}})
+            said = routine_guide.told(listed, "list", lang, routines=kept)
+            return (said, act) if said else None
+        verb = {"turn_off": "disable", "turn_on": "enable"}.get(act, act)
+        # none of theirs named: any of them may be it (one alone is asked by what it is, as one named)
+        among = chosen or kept
+        if len(among) == 1 and act == "change":
+            guide = routine_guide.Guide.changing(among[0], lang)
+        elif len(among) == 1:
+            guide = routine_guide.Guide(lang=lang, step="confirm_all", mode="all", act=verb,
+                                        targets=(routine_guide._named(among[0]),), ids=routine_guide.keyed(among),
+                                        about=routine_guide._item(among[0], lang))
+        else:
+            guide = routine_guide.Guide(lang=lang, step="which", mode="which", act=verb, described=True,
+                                        targets=tuple(routine_guide._named(r) for r in among),
+                                        ids=routine_guide.keyed(among))
+        said = guide.question()
+        self._guide, self._guide_at = (None if guide.step == "steps_only" else guide), time.monotonic()
+        return said, act
+
+    def _guide_filled(self, guide: routine_guide.Guide, text: str) -> str:
+        """RUT14: a guide just opened takes what the person already said (their words of this turn and of the
+        conversation before it), as the model reads it; what BAXY says instead of its question when a word or an order
+        said cannot be one, else nothing. Unreadable, the guide stays at its first question."""
+        read = self._routine_read(guide, text, "")
+        return guide.fill(read, self.routines) if read is not None else ""
 
     def _guide_said(self, request_id: Any, turn: dict[str, Any], said: str, stage: str,
                     started: float) -> dict[str, Any]:
@@ -3902,7 +4387,7 @@ class Mind:
         shown = _shown_by(list(read.get(newest, {})))
         if newest in aged:
             return CAPTURE_AGE_NOTE.format(age=aged[newest], shown=shown)
-        return CAPTURE_NOTE.format(when=taken.get(newest, "un turno anterior"), shown=shown)
+        return CAPTURE_NOTE.format(when=taken.get(newest, _t("un turno anterior")), shown=shown)
 
     def _receipt(self, turn: dict[str, Any], wire: str, observation: str, outcome: str) -> None:
         """A call of the turn as the answer check reads it (aid «answer_check»), and in the session's calls. A
@@ -3925,8 +4410,12 @@ class Mind:
                                                 "observation": observation, "outcome": outcome,
                                                 "completed": completed, "read": read})
         self._session_call((op, completed, read))
+        # PAN7: what the call named (an application or a window by its name), for the check's rule «unclosed_name».
+        target = next((str(arguments[key])[:200] for key in ("appId", "name", "title", "processName")
+                       if isinstance(arguments, dict) and isinstance(arguments.get(key), str) and arguments[key].strip()),
+                      None)
         self._states = [*self._states, {"op": op, "tool": wire, "observation": _scalars(observation), "outcome": outcome,
-                                        "completed": completed, "read": read}][-SESSION_CALLS:]
+                                        "completed": completed, "read": read, "target": target}][-SESSION_CALLS:]
 
     def _session_call(self, call: tuple[str, bool, bool]) -> None:
         """One call of the session for the answer check, which only asks whether one of a kind completed or ran at all:
@@ -4191,9 +4680,12 @@ class Mind:
         if outcome.startswith(VERIFICATION["unchanged"]) and _aid_on("same_call_closes") and _same_done(
                 turn, calling, turn.get("calling_args"), VERIFICATION["readback"]):
             outcome = SET_BY_SAME + outcome[len(VERIFICATION["unchanged"]):]
+        outcome += self._rings_said(calling, observation)
         # Aid «result_dedup» (w6-lat): what the facts line below says of this result is not said in it again.
         compact = _aid_on("result_dedup")
         body = _deduplicated(observation, outcome) if compact else observation
+        if _aid_on("local_day_part"):
+            body = _local_day_parts(body)
         # Aid «short_refs» (PLAN_GENERAL C1; uso real: news addresses of ~500 tokens copied wrong, 11 s each): a long
         # address in a result reaches the model as a short reference, and the mind puts the address back in its calls.
         shown, made = self._shorten(body, compact) if _aid_on("short_refs") else (body, {})
@@ -4214,7 +4706,7 @@ class Mind:
         turn["last_call"] = (calling, turn.get("calling_args"), outcome)
         if done and same == turn["last_call"]:
             turn["repeats"] = turn.get("repeats", 1) + 1
-            done[-1] = f"{told} ×{turn['repeats']} con los mismos argumentos → {outcome}"
+            done[-1] = _t("{0} ×{1} con los mismos argumentos → {2}").format(told, turn['repeats'], outcome)
         else:
             turn["repeats"] = 1
             done.append(entry)
@@ -4275,7 +4767,7 @@ class Mind:
             if after_navigation:
                 note += after_navigation
                 aids["read_after_navigation"] = after_navigation.strip()
-        if (outcome.startswith("falló") and _memory_off(observation) and "memory.enable" in self.wire_to_op.values()
+        if (outcome.startswith(_t("falló")) and _memory_off(observation) and "memory.enable" in self.wire_to_op.values()
                 and calling != self.wires.name("memory.enable") and _aid_on("memory_off_next")):
             off = MEMORY_OFF_NOTE.format(enable=self.wires.name("memory.enable"))
             note += off
@@ -4283,7 +4775,7 @@ class Mind:
             self._memory_was_off = True
         if calling == self.wires.name("memory.enable"):
             self._memory_was_off = False
-        if outcome.startswith("falló") and _has_next(observation) and _aid_on("next_not_done"):
+        if outcome.startswith(_t("falló")) and _has_next(observation) and _aid_on("next_not_done"):
             note += NEXT_NOT_DONE
             aids["next_not_done"] = NEXT_NOT_DONE.strip()
         # Aid «same_call_next» (PLAN_GENERAL C2; uso real: the same click 5-7 times, a reload and a typing in turn): a
@@ -4321,7 +4813,7 @@ class Mind:
             aids["result_cap"] = capped  # the trace says which results the model read in part
         line = _said_once(done) if _aid_on("facts_once") else done
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
-                     "content": shown + "\n[En este turno: " + "; ".join(line) + "]" + note})
+                     "content": shown + _t("\n[En este turno: ") + "; ".join(line) + "]" + note})
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
@@ -4552,12 +5044,16 @@ class Mind:
                 # change measured, not by sampling noise (±3 of 90 without it). Review 2026-10-22: BAXY_RENEW_SEED moves
                 # it, to measure that noise (0 by default).
                 "seed": self.seed}
-        if self._stubs:
+        # INT36G (VIVO21: «borra la de las 10:00» took ~70 s): baxy.routines has no arguments either (RUT7), and the 4B
+        # wrote «baxy_routines {}» over and over to DECISION_TOKENS (768 tokens, ~20 s on the PC); only the first call
+        # opens the guide, the ones after it are not run.
+        again = self._stubs | ({self.wires.name("baxy.routines")} if "baxy.routines" in self.wire_to_op.values() else set())
+        if again:
             # MUS1 (VIVO13, «Lee la página …» in Esencial: the offer took 84-87 s): a stub has no arguments, and the 4B
             # wrote «web_fetch {}» 37 times over, to DECISION_TOKENS (768 tokens, 78 s). The request stops where another
             # call to a stub would begin after a call (Qwen3.5's call format, its chat template): the first call and
             # everything before it are as they were; a call to a tool that does nothing, again, is never written.
-            body["stop"] = [STUB_AGAIN.format(wire=wire) for wire in sorted(self._stubs)]
+            body["stop"] = [STUB_AGAIN.format(wire=wire) for wire in sorted(again)]
         if self._doubted(stage, turn, final):
             # The decision's own token probabilities, for its doubt (doubt.py, System One) and the trace: same call, no
             # other pass. Al máximo 9.5 (2026-10-22): only where the doubt is read; elsewhere (turn.continue, the last
@@ -4868,7 +5364,7 @@ class Mind:
         """BAXY's last words before the person's last message of ``conv`` (what it may have offered them); the mind's own
         notes, written as the user's role, are not the person's."""
         users = [index for index, message in enumerate(conv) if message.get("role") == "user"
-                 and not str(message.get("content") or "").startswith("[Nota interna")]
+                 and not str(message.get("content") or "").startswith(_t("[Nota interna"))]
         return next((str(message["content"]) for message in reversed(conv[:users[-1]] if users else [])
                      if message.get("role") == "assistant" and isinstance(message.get("content"), str)
                      and message["content"].strip()), "")
@@ -4903,7 +5399,8 @@ class Mind:
                                                 memory_unread=getattr(self, "_switch_on", False)
                                                 and "memory.recall" not in self.wire_to_op.values()
                                                 and "memory.list" not in self.wire_to_op.values(),
-                                                memory_records=self.memory_records)
+                                                memory_records=self.memory_records, system_text=self.system,
+                                                said_app=names_app)
                         if f["rule"] not in CHECK_RULE_AIDS or _aid_on(CHECK_RULE_AIDS[f["rule"]])]
         except Exception as error:  # noqa: BLE001 - a check that fails finds nothing: the answer stands
             # Revisión de calidad: a heuristic that breaks on some answer never takes the turn with it; the trace says
@@ -4916,8 +5413,9 @@ class Mind:
             # the answer after it is the model's decision: told again, the controls (42 millas, 150 libras) got the note
             # a second and a third time and searched for a «tasa» of a unit (2 of 20 on the decision bench).
             # Encargo A10: a page that never opened is said once too; the answer after that note is the model's decision.
+            # INT36F: and a newer version only checked: what the model answers after that note is its decision.
             findings = [f for f in findings if f["rule"] not in ("unsourced_number", "unopened_page", "denial_lookup",
-                                                                    "empty_lookup")]
+                                                                    "empty_lookup", "update_offered")]
         private = bool(turn.get("private"))
         shown = [{"rule": f["rule"], "fact": f["fact"]} if private else f for f in findings]
         if turn.get("checked"):
@@ -4935,12 +5433,24 @@ class Mind:
             if clean and any(f["rule"] == "internal" for f in findings):
                 self._log("turn.check", started, None, round=3 if third else 2, findings=shown, kept=False, echo=True)
                 return self._spoken_instead(request_id, stage, turn, clean, reply, started)
+            # INT36B (b2m-off-09/11, memory off and nothing read: «¿qué sabes de mí?» → «No tengo nada guardado de ti»,
+            # memory_off_empty twice, and the third answer «Tengo guardado que te gusta el café y que vives en Madrid»,
+            # unread_memory, spoken as it was: 6 of 20 on int36a sin la frase, the 1.5.2 3 of 20 on the notebook): the
+            # last answer brought a contradiction of a kind the one before it did not have, the notes' doing; with no
+            # call run since, the answer before it is spoken, the model's own words, as «internal» does above.
+            new = {f["rule"] for f in findings} - set(turn.get("check_rules") or ())
+            if (third and clean and new and _aid_on("check_no_worse")
+                    and turn.get("check_receipts") == len(turn.get("receipts") or [])):
+                self._log("turn.check", started, None, round=3, findings=shown, kept=False, worse=sorted(new))
+                return self._spoken_instead(request_id, stage, turn, clean, reply, started)
             self._log("turn.check", started, None, round=3 if third else 2, findings=shown, kept=bool(findings))
             if not any(f["rule"] == "internal" for f in findings):
                 turn["check_clean"] = content
             if not findings or third:
                 return None
             turn["checked_again"] = True
+            turn["check_rules"] = [f["rule"] for f in findings]
+            turn["check_receipts"] = len(turn.get("receipts") or [])
         elif not findings:
             return None
         else:
@@ -4961,7 +5471,13 @@ class Mind:
         opens = not turn.get("closed")
         denied = opens and any(f["rule"] == "denial" for f in findings)
         # ACT1: «estoy al día» with nothing that looked for a newer version is a state nothing read: the model may look.
-        stale = opens and not denied and any(f["rule"] in ("stale_state", "unchecked_update") for f in findings)
+        # VER3: and a version of BAXY nothing read («Soy la versión 2.1.0»): the model may read it (assistant.status).
+        # VER3B: and a size nothing read («Tienes 32 GB de RAM» with no call): the model may read it.
+        # INT36F: and a newer version only checked while the answer asks, or tells it installed or under way: the model may
+        # install it (update_offered, update_not_installed).
+        stale = opens and not denied and any(f["rule"] in ("stale_state", "unchecked_update", "unread_version",
+                                                           "unread_size", "update_offered", "update_not_installed")
+                                                           for f in findings)
         rate = opens and not denied and not stale and any(f["rule"] == "unsourced_number" for f in findings)
         unopened = opens and not denied and not stale and not rate and any(f["rule"] == "unopened_page" for f in findings)
         # MEM1: with the memory among the tools, the model keeps them so it may read it. Before the lookup's note, whose
@@ -4990,8 +5506,9 @@ class Mind:
                                             else UNDONE_NOTE if undone
                                             else CHECK_NOTE).format(
             facts=" ".join(CHECK_FACT.format(said=f["said"], fact=f["fact"]) for f in findings[:CHECK_FACTS]),
-            how=(f'{self.wires.name("web.search")} busca su dirección real' if any(f.get("unsearched") for f in findings)
-                 else f'{self.wires.name("browser.navigate")} con la dirección que traen los resultados'),
+            how=(_t("{0} busca su dirección real").format(
+                self.wires.name("web.search")) if any(f.get("unsearched") for f in findings)
+                 else _t("{0} con la dirección que traen los resultados").format(self.wires.name("browser.navigate"))),
             search=self.wires.name("web.search"), request=str(turn.get("text") or ""),
             time=self.wires.name("system.time"), recall=self.wires.name("memory.recall"))}
         conv = turn["conv"]
@@ -5485,7 +6002,7 @@ class Mind:
                 told = json.dumps({"status": "completed", "value": evaluate(expression)}, ensure_ascii=False)
                 if _aid_on("unsourced_number"):
                     told += unsourced_note(expression, turn["conv"])
-                    if "[Ayuda: " in told:
+                    if _t("[Ayuda: ") in told:
                         turn.setdefault("unsourced", []).append(_unsourced_entry(
                             expression, turn["conv"], evaluate(expression)))
             except ValueError as error:
@@ -5507,15 +6024,24 @@ class Mind:
                 turn["conv"].append({"role": "tool", "tool_call_id": call_id,
                                      "content": GUIDE_OPENED if call_id == call["id"] else NOT_RUN})
             turn["queue"], turn["awaiting"] = [], None
-            self._guide, self._guide_at = routine_guide.Guide(lang=routine_guide.lang_of(self.lang)), time.monotonic()
-            content = self._guide.question()
+            # INT36G: with routines of theirs, their words may be about one of them («borra la de las 10:00»): read
+            # first which (_routine_have); a new one, other, or unreadable opens the guide of a new one as before.
+            content, action = self._routine_have(str(turn["text"])), None
+            if content is not None:
+                content, action = content
+            else:
+                self._guide, self._guide_at = routine_guide.Guide(lang=routine_guide.lang_of(self.lang)), time.monotonic()
+                # RUT14: the model asked for a routine because of what the person said: those words are read (typed) and
+                # BAXY asks only what they did not say, or repeats the whole routine for their «sí».
+                content = self._guide_filled(self._guide, str(turn["text"])) or self._guide.question()
             turn["conv"].append({"role": "assistant", "content": content})
             if self.foresee is not None:
                 try:
                     self.foresee(content, True)
                 except Exception:  # noqa: BLE001 - a failing look-ahead never fails the answer
                     pass
-            self._log("turn.routine_order", started, None, action="new", lang=self._guide.lang, step="kind", model=True)
+            self._log("turn.routine_order", started, None, action=action or "new",
+                      lang=routine_guide.lang_of(self.lang), step=self._guide.step if self._guide else None, model=True)
             call = None
             result.update(reply=content)
         elif call is not None:
@@ -5557,9 +6083,30 @@ class Mind:
                 turn["place_told"] = True
                 return self._held_back(request_id, turn, call, reply, stage, started, unsaid, PLACE_UNSAID_REFUSED,
                                        "said_place")
+            unsaid = self._unsaid_app(turn, name, call)
+            if unsaid:
+                turn["app_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started, unsaid,
+                                       APP_UNCLOSED_REFUSED if name in CLOSE_OPS else APP_UNSAID_REFUSED, "said_app")
+            unsaid = self._ring_days(turn, name, call)
+            if unsaid:
+                turn["days_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started, unsaid, RING_DAYS_REFUSED,
+                                       "said_days")
             left_out =self._left_out(turn, name, call)
             if left_out:
                 return self._left_out_back(request_id, turn, call, reply, stage, started, left_out)
+            unnamed = self._exit_unnamed(turn, name)
+            if unnamed is not None:
+                turn["exit_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started, exit_unnamed_not_run(unnamed),
+                                       EXIT_UNNAMED_REFUSED, "exit_unnamed")
+            unnamed_power = self._power_unnamed(turn, name, call)
+            if unnamed_power is not None:
+                turn["power_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started,
+                                       power_unnamed_not_run(call["wire"], *unnamed_power), POWER_UNNAMED_REFUSED,
+                                       "power_unnamed")
             cut_address = self._cut_address(turn, call)
             if cut_address is not None:
                 return self._cut_address_back(request_id, turn, call, reply, stage, started, cut_address)
@@ -5779,6 +6326,105 @@ class Mind:
             return ""
         return place_unsaid_not_run(call["wire"], location)
 
+    def _unsaid_app(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> str:
+        """Aid «said_app» (INT36A; app_close INT36F): the result that holds an app_open or app_close whose appId is a
+        name of the installed list that neither the person's words of the conversation, BAXY's own nor any of its
+        results show (nor, closing, the window in front when they spoke), not even alike in spelling; empty, it runs.
+        Said once in a turn."""
+        if name not in ("app.open", "app_open", *CLOSE_OPS) or turn.get("beat") or turn.get("app_told") \
+                or not _aid_on("said_app"):
+            return ""
+        app = str(call["arguments"].get("appId") or "").strip()
+        words = str(turn.get("said") or turn.get("text") or "")
+        front = (turn.get("in_front") or {}) if name in CLOSE_OPS else {}
+        shown = " ".join([str(m.get("content") or "") for m in turn["conv"] if m.get("role") in ("user", "assistant")
+                          and not str(m.get("content") or "").startswith("[")]
+                         + [str(m.get("content") or "") for m in turn["conv"] if m.get("role") == "tool"
+                            and not str(m.get("content") or "").startswith(NOT_RUN_MARK)]
+                         + [str(front.get("title") or ""), str(front.get("process") or ""), words])
+        if not app or not words.strip() or not self._listed(app) or not _latin_only(app + shown):
+            return ""
+        seen = set(_words(shown).split())
+        if any(_alike(word, other) for word in _words(app).split() if len(word) >= 3 for other in seen):
+            return ""
+        # INT36F (b2p-41 on the first wording: «el bloc de notas» → app_close Notepad held, and the model, told so, left
+        # it open 11 of 20, «no lo cerré porque no encontré la aplicación exacta»): closing, a name the person said for
+        # the same application (app_aliases.v1.json) is that application said.
+        if name in CLOSE_OPS and _alias_said(app, _words(shown), seen):
+            return ""
+        if name in CLOSE_OPS and self._same_app(turn, app, words):
+            return ""
+        return (app_unclosed_not_run if name in CLOSE_OPS else app_unsaid_not_run)(call["wire"], app, words)
+
+    def _same_app(self, turn: dict[str, Any], app: str, words: str) -> bool:
+        """INT36G (cn-18): whether the model, asked apart in a closed question (SAME_APP_*), reads «app» as an
+        application the person's words name, in another language or by another name; unreadable is no."""
+        started = time.perf_counter()
+        body = {"messages": [{"role": "system", "content": SAME_APP_SYSTEM},
+                             {"role": "user", "content": SAME_APP_NOTE.format(said=" ".join(words.split()), app=app)}],
+                "max_tokens": 2, "grammar": SAME_APP_GRAMMAR, "chat_template_kwargs": {"enable_thinking": False},
+                "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": self.seed}
+        reply, failure, read = None, None, ""
+        try:
+            reply = self.server.ask_apart(body)
+            read = str(reply["choices"][0]["message"].get("content") or "").strip()
+        except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+            failure = type(error).__name__
+        self._log("turn.same_app", started, reply, text=None if turn.get("private") else turn["text"],
+                  kind=read if read in ("yes", "no") else None, operation=None, arguments={"appId": app}, content=None,
+                  **({"failure": failure or "unreadable"} if read not in ("yes", "no") else {}))
+        return read == "yes"
+
+    def _ring_days(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> str:
+        """Aid «said_days» (RUT16): the result that holds a schedule.alarms create that rings on days other than the
+        days of the week the person's words of the turn name (ring_days_not_run); empty, it runs. Said once in a
+        turn."""
+        arguments = call["arguments"]
+        if name not in (RING_TOOL, "schedule_alarms") or arguments.get("action") != "create" or turn.get("beat") \
+                or turn.get("days_told") or not _aid_on("said_days"):
+            return ""
+        words = routine_guide._time_words(str(turn.get("said") or turn.get("text") or ""))
+        named = routine_fill._days_said(words)
+        if not named or routine_fill._anywhere(words, routine_guide.DAILY):
+            return ""
+        recurrence, due = arguments.get("recurrence"), None
+        if recurrence is None:
+            if any(when.offset is not None for when, _ in routine_fill._times([" ".join(words)], [])):
+                return ""   # «mañana», «hoy»: the day is the one they said, whatever days they name besides
+            due = self._ring_due(arguments)
+            if due is None or due.weekday() in named:
+                return ""
+        elif recurrence != "daily" or len(named) == 7:
+            return ""
+        twice = routine_fill._twice_in(words)
+        clock = str(arguments.get("at") or "")[-5:]
+        twice = twice if twice and twice.isdigit() and clock in (f"{int(twice):02}:{int(twice):02}",
+                                                                 f"{int(twice)}:{int(twice):02}") else ""
+        routines = self.wires.name("baxy.routines") if "baxy.routines" in self.wire_to_op.values() else ""
+        return ring_days_not_run(named, due, self._today(), routines, twice)
+
+    def _ring_due(self, arguments: dict[str, Any]) -> _dt.datetime | None:
+        """When a schedule.alarms create rings, as the App reads its time (WindowsScheduledNotificationAdapter.TryDue:
+        minutes or seconds from now, a local clock time the next time it comes, or a local date and time); None when
+        it cannot be read here."""
+        now = self._now().replace(tzinfo=None, second=0, microsecond=0)
+        minutes, seconds = arguments.get("inMinutes"), arguments.get("inSeconds")
+        if isinstance(minutes, int) or isinstance(seconds, int):
+            return now + _dt.timedelta(minutes=minutes if isinstance(minutes, int) else 0,
+                                       seconds=seconds if isinstance(seconds, int) else 0)
+        at = str(arguments.get("at") or "").strip()
+        clock = re.fullmatch(r"(\d{1,2}):(\d{2})", at)
+        dated = re.fullmatch(r"(\d{4}-\d{2}-\d{2})[Tt ](\d{1,2}):(\d{2})(?::\d{2})?", at)
+        try:
+            if clock:
+                due = now.replace(hour=int(clock.group(1)), minute=int(clock.group(2)))
+                return due if due > now else due + _dt.timedelta(days=1)
+            if dated:
+                return _dt.datetime.fromisoformat(f"{dated.group(1)}T{int(dated.group(2)):02}:{dated.group(3)}")
+        except ValueError:
+            return None
+        return None
+
     # Encargo A11 (R18 en la flota, diag-6f20): the calls whose «url» _cut_address weighs, by operation and by wire
     # name (a mind with no catalog yet knows only the wire).
     ADDRESS_OPS = ("web.fetch", "browser.navigate", "browser.navigate.named",
@@ -5862,9 +6508,9 @@ class Mind:
         told = json.dumps({"status": "failed", "error": error, "observed": observed},
                           ensure_ascii=False, separators=(",", ":"))
         done = turn.setdefault("done", [])
-        done.append(f"{call['wire']} → no se ejecutó: "
-                    + ("la dirección era la que muestra una página de resultados con «›»" if cut["shown"]
-                       else "la dirección estaba cortada con «…»"))
+        done.append(_t("{0} → no se ejecutó: ").format(call['wire'])
+                    + (_t("la dirección era la que muestra una página de resultados con «›»") if cut["shown"]
+                       else _t("la dirección estaba cortada con «…»")))
         line = _said_once(done) if _aid_on("facts_once") else done
         for later in [call, *(turn.get("queue") or [])]:
             turn["conv"].append({"role": "tool", "tool_call_id": later["id"],
@@ -5880,6 +6526,63 @@ class Mind:
                   operation=self.wire_to_op.get(call["wire"], call["wire"]),
                   arguments=None if private else call["arguments"], content=None)
         return self._next(request_id, "turn.continue", turn)
+
+    @staticmethod
+    def _exit_unnamed(turn: dict[str, Any], name: str) -> str | None:
+        """Aid «exit_unnamed»: when this baxy_exit is held because neither the person's words of this turn nor those of
+        their turn before name BAXY, those words before (empty without a turn before); None, it runs. Said once in a
+        turn."""
+        if name not in ("baxy.exit", "baxy_exit") or turn.get("beat") or turn.get("exit_told") \
+                or not _aid_on("exit_unnamed"):
+            return None
+        theirs = [str(m.get("content") or "") for m in turn["conv"] if m.get("role") == "user"
+                  and not str(m.get("content") or "").startswith("[")]
+        before = theirs[-2] if len(theirs) > 1 else ""
+        said = [str(turn.get("said") or turn.get("text") or ""), before]
+        return None if any(_names_baxy(words) for words in said) else before
+
+    def _power_unnamed(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> tuple[str, str] | None:
+        """Aid «power_unnamed»: a system_power that shuts the computer down in a turn where neither the person's words,
+        BAXY's words before them nor the person's turn before name the computer or the session: their words and those
+        before; None, it runs (and when the catalog says that tool only reads: test_mind_doubt_policy's stand-in)."""
+        if name not in ("system.power", "system_power") or turn.get("beat") or turn.get("power_told") \
+                or call["arguments"].get("action") != "shutdown" \
+                or self.risk.get(call["wire"]) == "read_only" or not _aid_on("power_unnamed"):
+            return None
+        words, baxy, before = Mind._exchange(turn)
+        return None if any(_names_power(text) for text in (words, baxy, before)) else (words, before)
+
+    @staticmethod
+    def _exchange(turn: dict[str, Any]) -> tuple[str, str, str]:
+        """The person's words of this turn, BAXY's words before them and the person's turn before (empty without one).
+        POW1 (test_mind_review): an ask_user's question is BAXY's words and its answer a turn of the person's, as
+        _said reads them; «¿Apago el PC o cierro la ventana?» → «el PC» was not seen, and «apágalo otra vez» was held."""
+        theirs: list[str] = []  # the person's turns, in order
+        baxy: list[list[str]] = [[]]  # BAXY's words after each of them (the first: before any)
+        asked: dict[Any, str] = {}  # the ask_user calls of the last message with calls (ids repeat across turns)
+        for message in turn["conv"]:
+            content = str(message.get("content") or "")
+            if message.get("role") == "user" and not content.startswith("["):
+                theirs.append(content)
+                baxy.append([])
+            elif message.get("role") == "tool" and message.get("tool_call_id") in asked:
+                theirs.append(content.split("\n[", 1)[0])  # the note after an answer is the harness's
+                baxy.append([])
+            elif message.get("role") == "assistant":
+                baxy[-1].append(content)
+                if message.get("tool_calls"):
+                    asked = {}
+                for call in message.get("tool_calls") or []:
+                    if call["function"]["name"] == ASK_USER["function"]["name"]:
+                        try:
+                            question = json.loads(call["function"]["arguments"]).get("question")
+                        except (json.JSONDecodeError, AttributeError):
+                            question = None
+                        asked[call.get("id")] = str(question or "")
+                        baxy[-1].append(asked[call.get("id")])
+        before = theirs[-2] if len(theirs) > 1 else ""
+        said = baxy[-2] if theirs else baxy[-1]
+        return str(turn.get("said") or turn.get("text") or ""), " ".join(said), before
 
     @staticmethod
     def _left_out(turn: dict[str, Any], name: str, call: dict[str, Any]) -> list[str]:
@@ -6040,3 +6743,20 @@ class Mind:
                 out.write(line + "\n")
         except OSError:
             pass
+
+
+def _relanguage() -> None:
+    """ING5: what this module builds out of its texts, built again once they are in the language in use
+    (harness_language.use): the system text and the parts the heartbeat leaves out, what a doubt's note starts
+    with, the pattern of a read still shown and the applications' places. In Spanish, the values written above."""
+    rebind = harness_language.rebind
+    system = behavior.head(behavior.factory()) + RULES
+    can_do = system[system.index("\n11. "):]
+    rebind("mind", "SYSTEM", system)
+    rebind("mind", "_CAN_DO", can_do)
+    rebind("mind", "BEAT_SYSTEM", system.replace(_ASKED_IF_DONE, "").replace(can_do, "").replace(_REPEAT, ""))
+    rebind("mind", "DOUBT_ASKED", DOUBT_NOTE[:DOUBT_NOTE.index("{call}")])
+    rebind("mind", "DOUBT_OTHER_ASKED", DOUBT_OTHER_NOTE[DOUBT_OTHER_NOTE.index("{call}") + len("{call}"):
+                                                         DOUBT_OTHER_NOTE.index("{other}")])
+    rebind("mind", "_READ_KEPT", re.compile(re.escape(OUTPUT_READ) + "(?!" + re.escape(READ_OMITTED) + ")"))
+    rebind("mind", "APP_PLACES", _app_places())

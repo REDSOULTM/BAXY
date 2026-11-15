@@ -454,7 +454,9 @@ internal sealed class NativeTurnLoop
         _turnStarted = Stopwatch.GetTimestamp();
         try
         {
-            await DriveAsync(mind, await mind.BeatAsync(context, cancellationToken),
+            await DriveAsync(
+                mind,
+                await mind.BeatAsync(HeartbeatMoment.AsTheModelReadsIt(context, UiLanguage.IsEnglish), cancellationToken),
                 cancellationToken, interrupted);
         }
         finally
@@ -1893,12 +1895,13 @@ internal sealed class NativeTurnLoop
         + "once it is on, call this again";
 
     // Each switch of Ajustes → Privacidad that refuses a call (FieldSettings.Refusal): its baxy.settings.set setting
-    // and its name there.
-    private static readonly Dictionary<string, (string Setting, string Name)> OwnerOff = new(StringComparer.Ordinal)
+    // and its name there, and (ING5B: not a word of Spanish in what the model reads in English) its name in the
+    // English view (PrivacySection; OwnBrakes says the same two).
+    private static readonly Dictionary<string, (string Setting, string Name, string English)> OwnerOff = new(StringComparer.Ordinal)
     {
-        [FieldSettings.WebOff] = ("web_search", "Búsqueda web"),
-        ["weather_disabled_by_owner"] = ("weather", "Clima"),
-        ["screen_disabled_by_owner"] = ("screen", "Mirar la pantalla"),
+        [FieldSettings.WebOff] = ("web_search", "Búsqueda web", "Web search"),
+        ["weather_disabled_by_owner"] = ("weather", "Clima", "Weather"),
+        ["screen_disabled_by_owner"] = ("screen", "Mirar la pantalla", "Look at the screen"),
     };
 
     /// <summary>A call the owner's settings refuse before it runs (<see cref="Host.Refuse"/>), as the model reads it; one
@@ -1907,8 +1910,8 @@ internal sealed class NativeTurnLoop
     internal static string Refused(string code, string? about = null, JsonObject? off = null) =>
         Observation("rejected", code,
             code == ToolProfile.OffCode ? OffExtra(off)
-            : OwnerOff.TryGetValue(code, out (string Setting, string Name) own)
-                ? new JsonObject { ["next"] = OwnerOffNext(own.Setting, own.Name) }
+            : OwnerOff.TryGetValue(code, out (string Setting, string Name, string English) own)
+                ? new JsonObject { ["next"] = OwnerOffNext(own.Setting, UiLanguage.Say(own.Name, own.English)) }
             : null, about);
 
     private static JsonObject OffExtra(JsonObject? off)

@@ -322,8 +322,11 @@ internal sealed class BaxySettingHandler(IOperationHandler windows, string? data
                     + " switches it on: BAXY asks the person's yes itself");
             if (ModelAids.On(ModelAids.ConfirmationWhere))
             {
+                // ING6: the section as the view names it in the language in use (SettingsPanel).
                 writer.WriteString(
-                    "turnOnIn", "BAXY's own window: Ajustes > Confirmación, or the Normal/Bypass switch on its side panel");
+                    "turnOnIn",
+                    $"BAXY's own window: {ModelLanguage.Say("Ajustes > Confirmación", "Settings > Confirmation")}, "
+                    + "or the Normal/Bypass switch on its side panel");
             }
 
             writer.WriteEndObject();

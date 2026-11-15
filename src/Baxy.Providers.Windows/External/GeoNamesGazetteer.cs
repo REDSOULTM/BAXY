@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
+using Baxy.Providers.Windows.Infrastructure;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -212,10 +213,10 @@ internal sealed class GeoNamesGazetteer
             foreach (GazetteerPlace item in candidates.Take(ListedCandidates))
             {
                 writer.WriteStartObject();
-                writer.WriteString("name", item.NameEs);
+                writer.WriteString("name", item.Name);
                 if (Region(item) is { } region)
-                    writer.WriteString("region", region.NameEs);
-                writer.WriteString("country", Country(item)?.NameEs ?? string.Empty);
+                    writer.WriteString("region", region.Name);
+                writer.WriteString("country", Country(item)?.Name ?? string.Empty);
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
@@ -327,6 +328,10 @@ internal sealed record GazetteerPlace(
     string NameEs,
     string NameEn)
 {
+    // ING6: the name a receipt gives the model, in the language of the request (ModelLanguage); GeoNames names the place
+    // in both, and is found by either in both.
+    internal string Name => ModelLanguage.IsEnglish ? NameEn : NameEs;
+
     internal bool IsRegion => FeatureCode == "ADM1";
 
     internal bool IsDivision => FeatureCode is "ADM2" or "ADM3";

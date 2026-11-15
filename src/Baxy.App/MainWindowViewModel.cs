@@ -1997,6 +1997,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _mindClient = mind;
             BehaviorState.Started(behavior);
             ToolProfileState.Started(mind.ConfiguredWithheld ?? withheld);
+            LanguageState.Started(mind.ConfiguredLanguage);
             FactoryBehavior = mind.FactoryBehavior ?? FactoryBehavior;
             // MOD1 D5: what this start took to read the prefix whole, if it did, is this PC's measure from now on.
             PrefixReadState.Ended(ownModel);
@@ -2042,6 +2043,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             if (LocalContextState.NeedsSwitch)
             {
                 LocalContextChanged();
+            }
+
+            // ING5: and for a language chosen after its catalog was configured in the one before.
+            if (LanguageState.NeedsSwitch)
+            {
+                LanguageChanged();
             }
 
             // Ajuste c3: a list of installed applications the core read after the mind's catalog was taken.
@@ -2336,6 +2343,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _ = SwitchMindAsync(model);
     }
 
+    /// <summary>
+    /// ING5 (owner's decision of 2026-11-13: the language is a setting, and choosing it puts all the model reads in it):
+    /// another language, chosen in the view or by voice, and the mind is relaunched in it as for new texts: once the
+    /// running turn ends. Its conversation does not come back: the mind begins it anew in the language chosen
+    /// (mind.use_language, and load_session takes none kept in the other one), so what was said in the one before is not
+    /// the last thing the model read. Its prompt prefix is read once in that language, and kept under its own key.
+    /// </summary>
+    internal void LanguageChanged()
+    {
+        ExternalModel model = ExternalModelState;
+        if (_isDisposed || !LanguageState.NeedsSwitch || model.Switching)
+        {
+            return;
+        }
+
+        model.Switching = true;
+        _ = SwitchMindAsync(model);
+    }
+
     private async Task SwitchMindAsync(ExternalModel model)
     {
         CancellationToken lifetime = _mindLifetimeCancellation.Token;
@@ -2392,7 +2418,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     && ((cut && _mindClient is null)
                         || ((_mindClient is not null || cut)
                             && (model.NeedsSwitch || TunedModelState.NeedsSwitch || BehaviorState.NeedsSwitch
-                                || ToolProfileState.NeedsSwitch || LocalContextState.NeedsSwitch)));
+                                || ToolProfileState.NeedsSwitch || LocalContextState.NeedsSwitch
+                                || LanguageState.NeedsSwitch)));
             }
             while (again);
         }
@@ -2583,6 +2610,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>The person's tool profile (Settings → Tools).</summary>
     internal ToolProfile ToolProfileState => _toolProfile ??= new ToolProfile(MemoryOperationProtector.ResolveDataRoot());
+
+    /// <summary>ING5: the language the running mind was configured in, against the one chosen now.</summary>
+    internal MindLanguage LanguageState { get; } = new();
 
     /// <summary>The mind's fixed identity and factory texts, as the last mind that came up told them; null until one did.</summary>
     internal JsonObject? FactoryBehavior { get; private set; }
@@ -2994,6 +3024,27 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             ClearCaptures();
         }
+    }
+
+    /// <summary>
+    /// AUT1: a line of the App's own (how an update ended) said aloud with BAXY's voice once it is there and the person is
+    /// not speaking nor a turn running, as a ring waits (StartRinging). False when the voice is off or never came.
+    /// </summary>
+    internal async Task<bool> SayWhenFreeAsync(string words, TimeSpan limit, CancellationToken cancellationToken)
+    {
+        DateTimeOffset until = DateTimeOffset.UtcNow + limit;
+        while (_mindClient is not { IsVoiceAvailable: true } || _voiceRequestOpen || IsListening || IsBusy)
+        {
+            if (DateTimeOffset.UtcNow >= until)
+            {
+                return false;
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(true);
+        }
+
+        return !Settings.VoiceMuted && _mindClient is { IsVoiceAvailable: true } mind
+            && await mind.VoiceSpeakAsync(words, TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(true);
     }
 
     /// <summary>FT/proveedores goal (review of the App): what BAXY is saying stops (a new conversation, the voice muted

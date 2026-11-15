@@ -169,6 +169,50 @@ public sealed class ProtocolContractTests
         });
     }
 
+    // ING6: the language of the core's own words for the model goes with the request; none is Spanish.
+    [Test]
+    public void Optional_language_round_trips_when_present()
+    {
+        OperationRequest expected = CreateRequest() with { Language = ProtocolLanguages.English };
+
+        byte[] encoded = ProtocolJson.SerializeToUtf8Bytes(expected);
+        OperationRequest actual = ProtocolJson.DeserializeRequest(encoded);
+
+        Assert.That(actual.Language, Is.EqualTo("en"));
+        using var document = JsonDocument.Parse(encoded);
+        Assert.That(document.RootElement.GetProperty("language").GetString(), Is.EqualTo("en"));
+    }
+
+    [Test]
+    public void Missing_optional_language_remains_wire_compatible()
+    {
+        OperationRequest request = CreateRequest();
+
+        byte[] encoded = ProtocolJson.SerializeToUtf8Bytes(request);
+        using var document = JsonDocument.Parse(encoded);
+        OperationRequest restored = ProtocolJson.DeserializeRequest(encoded);
+
+        Assert.Multiple(() =>
+        {
+            // The six fields of always, in their order, and nothing else: a request in Spanish is the same bytes.
+            Assert.That(document.RootElement.EnumerateObject().Select(static property => property.Name),
+                Is.EqualTo(new[] { "type", "requestId", "missionId", "invocationId", "operation", "arguments" }));
+            Assert.That(restored.Language, Is.Null);
+        });
+    }
+
+    [TestCase("fr")]
+    [TestCase("EN")]
+    [TestCase("")]
+    public void A_language_that_is_not_one_of_the_protocols_is_refused(string language)
+    {
+        OperationRequest request = CreateRequest() with { Language = language };
+
+        Assert.That(
+            () => ProtocolJson.SerializeToUtf8Bytes(request),
+            Throws.TypeOf<JsonException>().With.Message.Contains("language"));
+    }
+
     [Test]
     public void Hello_round_trip_carries_protocol_identity_and_capabilities()
     {

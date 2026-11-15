@@ -456,12 +456,12 @@ public sealed class ToolProfileTests
         Assert.Multiple(() =>
         {
             // The measured prefixes (PERFILES_HERRAMIENTAS.md) and LocalContext's turn room.
-            Assert.That(ToolProfile.NeededContext("completo", null, null), Is.EqualTo(51450 + LocalContext.TurnRoomTokens));
-            Assert.That(ToolProfile.NeededContext("esencial", null, null), Is.EqualTo(26342 + LocalContext.TurnRoomTokens));
+            Assert.That(ToolProfile.NeededContext("completo", null, null), Is.EqualTo(51595 + LocalContext.TurnRoomTokens));
+            Assert.That(ToolProfile.NeededContext("esencial", null, null), Is.EqualTo(26487 + LocalContext.TurnRoomTokens));
             // One the running mind read for its profile scales them: the apps installed change them.
-            Assert.That(ToolProfile.NeededContext("esencial", 99150, "completo"), Is.EqualTo(50764 + LocalContext.TurnRoomTokens));
+            Assert.That(ToolProfile.NeededContext("esencial", 99150, "completo"), Is.EqualTo(50900 + LocalContext.TurnRoomTokens));
             Assert.That(ToolProfile.NeededContext("personalizado", 20000, "personalizado"), Is.EqualTo(20000 + LocalContext.TurnRoomTokens));
-            Assert.That(ToolProfile.NeededContext("personalizado", null, null), Is.EqualTo(51450 + LocalContext.TurnRoomTokens));
+            Assert.That(ToolProfile.NeededContext("personalizado", null, null), Is.EqualTo(51595 + LocalContext.TurnRoomTokens));
             Assert.That(ToolProfile.LargestFitting(32768, null, null), Is.EqualTo("esencial"));
             Assert.That(ToolProfile.LargestFitting(16384, null, null), Is.Null);
         });
@@ -479,7 +479,7 @@ public sealed class ToolProfileTests
             Assert.That(ToolProfile.LargestFitting(40960, null, null), Is.EqualTo("esencial"));
             Assert.That(ToolProfile.LargestFitting(45056, null, null), Is.EqualTo("diario"));
             // A mind that read Esencial's prompt with its stubs scales the others by the apps alone, not by the stubs.
-            Assert.That(ToolProfile.NeededContext("completo", 26342, "esencial"), Is.EqualTo(51450 + LocalContext.TurnRoomTokens));
+            Assert.That(ToolProfile.NeededContext("completo", 26487, "esencial"), Is.EqualTo(51595 + LocalContext.TurnRoomTokens));
         });
     }
     // TPV5 (TPV4, revisión ciega): Esencial with the memory turned on is Personalizado; its need was weighed as
@@ -504,7 +504,7 @@ public sealed class ToolProfileTests
         Assert.That(profile.Kept, Is.EqualTo(ticked));
         int need = ToolProfile.NeededContext(profile.Profile, null, null, profile.Kept);
         var context = new LocalContext(_root);
-        Assert.That(context.Apply(new JsonObject { ["context"] = 32768 }, prefixTokens: 26342), Is.Null);
+        Assert.That(context.Apply(new JsonObject { ["context"] = 32768 }, prefixTokens: 26487), Is.Null);
 
         Assert.Multiple(() =>
         {
@@ -527,7 +527,7 @@ public sealed class ToolProfileTests
     public void APersonalizadoWithAPresetsToolsTakesThatPresetsPrefix()
     {
         var profile = new ToolProfile(_root);
-        foreach ((string preset, int prefix) in new[] { ("esencial", 26342), ("diario", 40035), ("avanzado", 49708), ("completo", 51450) })
+        foreach ((string preset, int prefix) in new[] { ("esencial", 26487), ("diario", 40180), ("avanzado", 49853), ("completo", 51595) })
         {
             Assert.That(profile.Apply(new JsonObject { ["profile"] = preset }), Is.Null);
             Assert.That(ToolProfile.PersonalPrefix(profile.Kept), Is.EqualTo(prefix), preset);

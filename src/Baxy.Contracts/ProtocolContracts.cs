@@ -57,7 +57,11 @@ public sealed record OperationRequest(
     [property: JsonRequired] string Operation,
     [property: JsonRequired] JsonElement Arguments,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    string? ConfirmationToken = null)
+    string? ConfirmationToken = null,
+    // ING6: the language of BAXY's own words in what the core writes for the model (ProtocolLanguages); left out for
+    // Spanish, so a request in Spanish goes on the wire as it always did.
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    string? Language = null)
 {
     public override string ToString() =>
         $"{nameof(OperationRequest)} {{ Type = {Type}, RequestId = {RequestId}, "

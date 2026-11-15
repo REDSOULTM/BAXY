@@ -27,6 +27,8 @@ import re
 import unicodedata
 from typing import Any
 
+from .harness_language import t as _t
+
 # The sentence says itself that it is not sure of what it tells.
 _UNSURE = re.compile(r"\b(?:no (?:estoy|estaba) segur|no se si|no puedo (?:confirmar|asegurar)|no (?:esta|queda) "
                      r"confirmad|sin confirmar|no (?:lo )?(?:pude|puedo) (?:comprobar|verificar|confirmar)|"
@@ -77,7 +79,7 @@ def unmatched(answer: str, statements: list[tuple[int, int]], receipts: list[dic
             said = [w for w in lacking if re.search(rf"\b{re.escape(w)}\b", statement)]
             if said:
                 return [{"rule": "unmatched", "said": _quote(answer[start:end]),
-                         "fact": f"{receipt.get('tool') or receipt.get('op')} dice {off[0]}: false, el título que sonó es "
-                                 f"«{title}» y no trae «{' '.join(lacking)}» de lo que se buscó; que eso sea lo que sonó no "
-                                 "está confirmado"}]
+                         "fact": _t("{0} dice {1}: false, el título que sonó es «{2}» y no trae «{3}» de lo que se "
+                                    "buscó; que eso sea lo que sonó no está confirmado").format(
+                             receipt.get('tool') or receipt.get('op'), off[0], title, ' '.join(lacking))}]
     return []

@@ -241,6 +241,28 @@ internal sealed class UpdatePanel
             && AskedNoOne(channel, step.ErrorCode);
     }
 
+    /// <summary>
+    /// AUT1: whether a baxy.update said in the chat started BAXY's installer, by its own receipt («installerStarted»):
+    /// BAXY is about to close for it, and when it does not, the installer leaves written why (LastUpdate).
+    /// </summary>
+    internal static bool StartedInstaller(NativeTurnStep step)
+    {
+        try
+        {
+            return step.Operation == Operation
+                && (JsonNode.Parse(step.Observation) as JsonObject)?["observed"] is JsonObject observed
+                && StartedInstaller(observed);
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>The same of an install's receipt as the «Actualizar» button gets it.</summary>
+    internal static bool StartedInstaller(JsonObject receipt) =>
+        receipt["installerStarted"] is JsonValue started && started.TryGetValue(out bool yes) && yes;
+
     // GitHub is the one channel BAXY itself asks, and only when the copy says which repository is its own.
     private static bool AskedNoOne(string channel, string? error) =>
         channel != "github" || error == "baxy_update_source_unknown";

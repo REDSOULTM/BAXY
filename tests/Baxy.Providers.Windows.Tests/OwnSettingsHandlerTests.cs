@@ -126,6 +126,8 @@ public sealed class OwnSettingsHandlerTests
     [TestCase("web_search", "tomorrow", "value", new[] { "on", "off" })]
     [TestCase("tool_profile", "on", "value", new[] { "esencial", "diario", "avanzado", "completo" })]
     [TestCase("voice", "diario", "value", new[] { "on", "off" })]
+    [TestCase("language", "on", "value", new[] { "english", "spanish" })]
+    [TestCase("voice", "english", "value", new[] { "on", "off" })]
 
     public async Task AValueThatIsNotTheSettingsChangesNothing(string setting, string value, string argument, string[] allowed)
     {
@@ -210,6 +212,76 @@ public sealed class OwnSettingsHandlerTests
             Assert.That(completo.GetProperty("changed").GetBoolean(), Is.True);
             Assert.That(File.ReadAllText(path), Is.EqualTo("""{"profile":"completo"}"""));
         });
+    }
+
+    // ING5 (dueño, 13-11-2026: the language is a setting, and everything is done by voice): the language lands on the key
+    // the view writes («language»: «en» or «es»), what the view had chosen stays, and the receipt is typed as the
+    // profile's: the model gets ready after the reply and the App stays, but the conversation is not kept (the mind
+    // begins it anew in the language chosen), so a reply never promises to go on with what was said.
+    [TestCase("english", "en", "es")]
+    [TestCase("spanish", "es", "en")]
+    public async Task TheLanguageIsKeptReadBackAndSaysTheConversationStartsAnew(string value, string code, string before)
+    {
+        FieldSettingsStore.Write(_root, new JsonObject { ["language"] = before, ["web"] = false });
+
+        JsonElement set = Observed(await Set("language", value), out string status);
+        JsonObject file = Read();
+        JsonElement again = Observed(await Set("language", value), out string againStatus);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(status, Is.EqualTo("completed"));
+            Assert.That(set.GetProperty("setting").GetString(), Is.EqualTo("language"));
+            Assert.That(set.GetProperty("value").GetString(), Is.EqualTo(value));
+            Assert.That(set.GetProperty("changed").GetBoolean(), Is.True);
+            Assert.That(set.GetProperty("modelGetsReady").GetString(), Is.EqualTo("after_this_reply"));
+            Assert.That(set.GetProperty("appStaysOpen").GetBoolean(), Is.True);
+            Assert.That(set.GetProperty("conversationKept").GetBoolean(), Is.False);
+            Assert.That(set.GetProperty("nextRequestStartsAnewIn").GetString(), Is.EqualTo(value));
+            Assert.That(set.TryGetProperty("toolsFrom", out _), Is.False);
+            Assert.That(set.GetRawText(), Does.Not.Contain("restart"));
+            Assert.That((string?)file["language"], Is.EqualTo(code));
+            Assert.That((bool?)file["web"], Is.False);
+            Assert.That(againStatus, Is.EqualTo("completed"));
+            Assert.That(again.GetProperty("changed").GetBoolean(), Is.False, "already in it");
+            Assert.That(again.TryGetProperty("modelGetsReady", out _), Is.False, "and nothing gets ready again");
+            Assert.That(again.TryGetProperty("conversationKept", out _), Is.False);
+            Assert.That((string?)Read()["language"], Is.EqualTo(code));
+        });
+    }
+
+    // «auto», or no choice yet, is Windows' display language (UiLanguage.Resolve): asked for the language that stands
+    // for, nothing changes, the choice stays «auto» and no restart is promised; asked for the other, it is written.
+    [TestCase("es-ES", "spanish", "english", "en")]
+    [TestCase("en-US", "english", "spanish", "es")]
+    [TestCase("fr-FR", "english", "spanish", "es")]
+    public async Task WithNoLanguageChosenWindowsDisplayLanguageIsTheOneInUse(string culture, string same, string other, string code)
+    {
+        System.Globalization.CultureInfo before = System.Globalization.CultureInfo.CurrentUICulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(culture);
+            FieldSettingsStore.Write(_root, new JsonObject { ["language"] = "auto" });
+
+            JsonElement already = Observed(await Set("language", same), out string status);
+            string? kept = (string?)Read()["language"];
+            JsonElement changed = Observed(await Set("language", other), out _);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(status, Is.EqualTo("completed"));
+                Assert.That(already.GetProperty("changed").GetBoolean(), Is.False);
+                Assert.That(already.TryGetProperty("modelGetsReady", out _), Is.False);
+                Assert.That(kept, Is.EqualTo("auto"));
+                Assert.That(changed.GetProperty("changed").GetBoolean(), Is.True);
+                Assert.That(changed.GetProperty("conversationKept").GetBoolean(), Is.False);
+                Assert.That((string?)Read()["language"], Is.EqualTo(code));
+            });
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = before;
+        }
     }
 
     // Switching it off is what the chat may do (as system.settings.set does): written, read back, changed.

@@ -22,6 +22,8 @@ import re
 import unicodedata
 from typing import Any
 
+from .harness_language import t as _t
+
 WINDOW = 8_000
 CAP = 2_000
 LEAD = 400
@@ -166,11 +168,11 @@ def focus(observation: str, queries: list[str], arguments: dict[str, Any]) -> st
     total = page.get("totalCharacters")
     url = page.get("finalUrl") or page.get("requestedUrl") or arguments.get("url") or ""
     of_total = f" de {total}" if isinstance(total, int) else ""
-    note = (f"\n[recortado: {left_out} caracteres más de esta parte (caracteres {start + 1}–{end}{of_total}) sin "
-            f"mostrar; se muestran los párrafos más relacionados con lo pedido. Para leer esta parte entera: web_fetch "
-            f"con url {url}, offset {start} y maximumCharacters {len(text)}.")
+    note = (_t("\n[recortado: {0} caracteres más de esta parte (caracteres {1}–{2}{3}) sin mostrar; se muestran los "
+               "párrafos más relacionados con lo pedido. Para leer esta parte entera: web_fetch con url {4}, offset "
+               "{5} y maximumCharacters {6}.").format(left_out, start + 1, end, of_total, url, start, len(text)))
     if page.get("hasMore") is True and isinstance(page.get("nextOffset"), int):
-        note += f" Para seguir con el resto de la página: offset {page['nextOffset']}."
+        note += _t(" Para seguir con el resto de la página: offset {0}.").format(page['nextOffset'])
     note += "]"
     page = {**page, "text": shown + note, "readInPart": True, "shownCharacters": len(shown),
             "omittedCharacters": left_out}

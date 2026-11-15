@@ -259,20 +259,58 @@ internal sealed class NotBaxysException(string folder)
     internal string Folder { get; } = folder;
 }
 
-/// <summary>Downloads the release, unpacks it beside the target and only then replaces what was there.</summary>
-internal sealed class Installation(ReleaseManifest manifest, InstallPaths paths, PartFetcher fetcher, int moveAttempts = 5)
+/// <summary>
+/// Downloads the release, unpacks it beside the target and only then replaces what was there. AUT1: over a BAXY already
+/// in the folder, and with the release's files.json (<paramref name="files"/>, <paramref name="ranges"/>), it downloads
+/// only the files that differ and takes the rest from the folder (<see cref="FileDelta"/>); the new folder is still
+/// made whole beside the old one and swapped in at the end, so a failure before that leaves BAXY as it was.
+/// </summary>
+internal sealed class Installation(
+    ReleaseManifest manifest,
+    InstallPaths paths,
+    PartFetcher fetcher,
+    int moveAttempts = 5,
+    FileManifest? files = null,
+    RangeFetcher? ranges = null)
 {
     private static readonly TimeSpan MoveRetry = TimeSpan.FromSeconds(2);
     private bool swapping;
     private bool replaced;
+    private long downloaded;
+    private int keptFiles;
+    private int takenFiles;
+
+    /// <summary>
+    /// The bytes this run downloaded of BAXY: the parts taken whole and, of the files taken alone, all the server sent for
+    /// them. What was here from an earlier try does not count.
+    /// </summary>
+    internal long DownloadedBytes => Interlocked.Read(ref downloaded) + (ranges?.ReceivedBytes ?? 0);
+
+    /// <summary>The files the folder already had as the release has them, taken from it and not downloaded.</summary>
+    internal int KeptFiles => keptFiles;
+
+    /// <summary>The files downloaded alone because they differ.</summary>
+    internal int TakenFiles => takenFiles;
+
+    /// <summary>The free bytes of the installation's drive; tests give their own.</summary>
+    internal Func<long> FreeBytes { get; init; } = () => new DriveInfo(Path.GetPathRoot(paths.Root)!).AvailableFreeSpace;
 
     internal long RequiredBytes => manifest.InstalledBytes + manifest.Archives.Sum(archive => archive.Bytes);
 
-    /// <summary>A retry reuses the parts already downloaded and replaces the half-unpacked folder.</summary>
+    /// <summary>
+    /// A retry reuses the parts already downloaded and replaces the half-unpacked folder. AUT1: over a BAXY already in
+    /// the folder, with files.json, what is needed is only what differs, and that is known once the installed files are
+    /// read: nothing is asked for beforehand, and <see cref="RunAsync"/> looks at the space then, before it downloads.
+    /// </summary>
     internal long StillNeededBytes
     {
         get
         {
+            if (files is not null && ranges is not null && paths.HoldsBaxy)
+            {
+                return 0;
+            }
+
             long downloaded = manifest.Archives.SelectMany(archive => archive.Parts).Sum(part =>
             {
                 FileInfo file = new(Path.Combine(paths.Downloads, part.File));
@@ -288,12 +326,14 @@ internal sealed class Installation(ReleaseManifest manifest, InstallPaths paths,
     /// <summary>UPD1: the new BAXY is in place (the clean-up after it may still run).</summary>
     internal bool HasReplaced => Volatile.Read(ref replaced);
 
-    private long StagedBytes()
+    private long StagedBytes() => BytesIn(paths.Staging);
+
+    private static long BytesIn(string folder)
     {
         try
         {
-            return Directory.Exists(paths.Staging)
-                ? new DirectoryInfo(paths.Staging).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length)
+            return Directory.Exists(folder)
+                ? new DirectoryInfo(folder).EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length)
                 : 0;
         }
         catch (Exception unreadable) when (unreadable is IOException or UnauthorizedAccessException)
@@ -303,7 +343,9 @@ internal sealed class Installation(ReleaseManifest manifest, InstallPaths paths,
         }
     }
 
-    internal async Task RunAsync(Action<InstallPhase, long, long> progress, CancellationToken cancellation)
+    /// <param name="keepPrevious">The BAXY that was replaced stays beside the new one (<see cref="InstallPaths.Previous"/>)
+    /// until <see cref="DropPrevious"/> or <see cref="RollBack"/>: an update keeps it until the new one has started.</param>
+    internal async Task RunAsync(Action<InstallPhase, long, long> progress, CancellationToken cancellation, bool keepPrevious = false)
     {
         paths.RefuseWhatIsNotBaxys();
         BringBackAnInterruptedSwap();
@@ -311,39 +353,66 @@ internal sealed class Installation(ReleaseManifest manifest, InstallPaths paths,
         RemoveIfPresent(paths.Staging);
         InstallPaths.MarkAsBaxys(paths.Downloads);
         IReadOnlyList<ReleaseArchive> archives = manifest.Archives;
-        long total = archives.Sum(archive => archive.Bytes);
-        long done = 0;
-        Dictionary<ReleaseArchive, List<string>> downloaded = [];
-        foreach (ReleaseArchive archive in archives)
+        Dictionary<ReleaseArchive, ArchivePlan> plans = ranges is null
+            ? []
+            : await FileDelta.PlanAsync(manifest, files, paths, cancellation).ConfigureAwait(false);
+        Dictionary<ReleaseArchive, List<string>> parts;
+        while (true)
         {
-            List<string> files = [];
-            foreach (ReleasePart part in archive.Parts)
+            try
             {
-                files.Add(await fetcher.FetchAsync(
-                    manifest.BaseUrl,
-                    part,
-                    paths.Downloads,
-                    moved => progress(InstallPhase.Downloading, Interlocked.Add(ref done, moved), total),
-                    cancellation).ConfigureAwait(false));
+                RefuseWithoutSpace(archives, plans);
+                parts = await DownloadAsync(archives, plans, progress, cancellation).ConfigureAwait(false);
+                break;
             }
-
-            downloaded[archive] = files;
+            catch (RangeRefusedException refused) when (plans.Count > 0)
+            {
+                // A server that does not answer ranges: the parts whole, as a first install takes them.
+                Program.Log(refused.Message + ": the parts are downloaded whole");
+                plans.Clear();
+            }
         }
 
         RemoveIfPresent(paths.Staging);
         InstallPaths.MarkAsBaxys(paths.Staging);
         long unpacked = 0;
-        foreach (ReleaseArchive archive in archives)
+        long whole = Math.Max(manifest.InstalledBytes, 1);
+        foreach (ReleaseArchive archive in archives.Where(archive => !plans.ContainsKey(archive)))
         {
-            using ConcatenatedStream stream = new(downloaded[archive]);
+            using ConcatenatedStream stream = new(parts[archive]);
             using ZipArchive zip = new(stream, ZipArchiveMode.Read);
             foreach (ZipArchiveEntry entry in zip.Entries)
             {
                 cancellation.ThrowIfCancellationRequested();
                 await UnpackAsync(entry, paths.Staging, cancellation).ConfigureAwait(false);
                 unpacked += entry.Length;
-                progress(InstallPhase.Unpacking, unpacked, Math.Max(manifest.InstalledBytes, unpacked));
+                progress(InstallPhase.Unpacking, unpacked, Math.Max(whole, unpacked));
             }
+        }
+
+        string store = Path.Combine(paths.Downloads, RangeFetcher.StoreName);
+        foreach (ArchivePlan plan in plans.Values)
+        {
+            foreach ((ReleaseFile file, bool kept) in plan.Kept.Select(static file => (file, true))
+                .Concat(plan.Needed.Select(static file => (file, false))))
+            {
+                cancellation.ThrowIfCancellationRequested();
+                string source = kept ? FileDelta.InRoot(paths.Root, file) : RangeFetcher.Kept(store, file);
+                // What an earlier try left downloaded is read again before it is installed: the name alone does not
+                // say its bytes reached the disk (blind review, B-1).
+                if (!kept && !await FileDelta.IsAsync(source, file, cancellation).ConfigureAwait(false))
+                {
+                    File.Delete(source);
+                    throw new InvalidDataException($"{file.Path} does not have the expected hash");
+                }
+
+                FileDelta.Place(source, FileDelta.InRoot(paths.Staging, file));
+                unpacked += file.Bytes;
+                progress(InstallPhase.Unpacking, unpacked, Math.Max(whole, unpacked));
+            }
+
+            keptFiles += plan.Kept.Count;
+            takenFiles += plan.Needed.Count;
         }
 
         if (!File.Exists(Path.Combine(paths.Staging, "app", "Baxy.exe")))
@@ -362,8 +431,123 @@ internal sealed class Installation(ReleaseManifest manifest, InstallPaths paths,
             Volatile.Write(ref swapping, false);
         }
 
-        CleanUp(paths.Previous);
+        if (!keepPrevious)
+        {
+            CleanUp(paths.Previous);
+        }
+
         CleanUp(paths.Downloads);
+    }
+
+    /// <summary>
+    /// AUT1: before anything is downloaded, the drive must hold it: the parts taken whole and what they unpack to, and of
+    /// the archives taken file by file only the files that differ (the rest are named a second time, not copied). What an
+    /// earlier try left in the downloads counts as already here. A drive without that room stops it with Windows' own
+    /// «disk full» (ERROR_DISK_FULL, 0x70: Microsoft Learn, System Error Codes 0-499), told as such
+    /// (<see cref="Failures.IsDiskFull"/>), with BAXY as it was.
+    /// </summary>
+    private void RefuseWithoutSpace(IReadOnlyList<ReleaseArchive> archives, Dictionary<ReleaseArchive, ArchivePlan> plans)
+    {
+        long need = archives.Sum(archive => plans.TryGetValue(archive, out ArchivePlan? plan)
+                ? plan.Needed.DistinctBy(static file => file.Sha256).Sum(static file => file.Bytes)
+                : archive.Bytes)
+            + (plans.Count < archives.Count ? manifest.InstalledBytes : 0)
+            - BytesIn(paths.Downloads);
+        long free = FreeBytes();
+        if (need > free)
+        {
+            throw new IOException($"{paths.Root}: {need} bytes are needed and its drive has {free} free") { HResult = unchecked((int)0x80070070) };
+        }
+    }
+
+    /// <summary>The BAXY the swap replaced is not needed any more: the new one started.</summary>
+    internal void DropPrevious() => CleanUp(paths.Previous);
+
+    /// <summary>
+    /// The new BAXY did not start: the one the swap replaced comes back to its folder, as it was (its files were never
+    /// written, only named a second time), and the new one goes.
+    /// </summary>
+    internal void RollBack()
+    {
+        if (!Directory.Exists(paths.Previous))
+        {
+            throw new InvalidOperationException($"{paths.Previous} is not there: there is nothing to go back to");
+        }
+
+        RemoveIfPresent(paths.Staging);
+        if (Directory.Exists(paths.Root))
+        {
+            MoveAllowingAScan(paths.Root, paths.Staging);
+        }
+
+        try
+        {
+            MoveAllowingAScan(paths.Previous, paths.Root);
+        }
+        catch (Exception held) when (held is IOException or UnauthorizedAccessException)
+        {
+            // Windows holds the one before: the folder is never left without a BAXY (blind review, A-1). The new one
+            // goes back to it, and the one before stays beside it for the next installation.
+            if (!Directory.Exists(paths.Root) && Directory.Exists(paths.Staging))
+            {
+                MoveAllowingAScan(paths.Staging, paths.Root);
+            }
+
+            throw;
+        }
+
+        Volatile.Write(ref replaced, false);
+        CleanUp(paths.Staging);
+    }
+
+    // The parts of the archives taken whole; of the others, only the files that differ, into the downloads' store.
+    private async Task<Dictionary<ReleaseArchive, List<string>>> DownloadAsync(
+        IReadOnlyList<ReleaseArchive> archives,
+        Dictionary<ReleaseArchive, ArchivePlan> plans,
+        Action<InstallPhase, long, long> progress,
+        CancellationToken cancellation)
+    {
+        long total = archives.Sum(archive => plans.TryGetValue(archive, out ArchivePlan? plan) ? plan.NeededBytes : archive.Bytes);
+        long done = 0;
+        bool first = true;
+        bool whole = false;
+        void Moved(long bytes)
+        {
+            // The first call of each part says what an earlier try left on disk: that was not downloaded now. The files
+            // taken alone are counted by what the server sent (RangeFetcher.ReceivedBytes).
+            if (whole && !first && bytes > 0)
+            {
+                Interlocked.Add(ref downloaded, bytes);
+            }
+
+            first = false;
+            progress(InstallPhase.Downloading, Interlocked.Add(ref done, bytes), total);
+        }
+
+        Dictionary<ReleaseArchive, List<string>> parts = [];
+        foreach (ReleaseArchive archive in archives)
+        {
+            if (plans.TryGetValue(archive, out ArchivePlan? plan))
+            {
+                whole = false;
+                await ranges!.FetchAsync(
+                    manifest.BaseUrl, archive, plan.Needed, Path.Combine(paths.Downloads, RangeFetcher.StoreName), Moved, cancellation)
+                    .ConfigureAwait(false);
+                continue;
+            }
+
+            List<string> taken = [];
+            whole = true;
+            foreach (ReleasePart part in archive.Parts)
+            {
+                first = true;
+                taken.Add(await fetcher.FetchAsync(manifest.BaseUrl, part, paths.Downloads, Moved, cancellation).ConfigureAwait(false));
+            }
+
+            parts[archive] = taken;
+        }
+
+        return parts;
     }
 
     private static async Task UnpackAsync(ZipArchiveEntry entry, string root, CancellationToken cancellation)

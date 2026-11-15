@@ -107,6 +107,40 @@ public sealed class BaxySettingHandlerTests
         }
     }
 
+    // ING6: with the language in English the place is named as the English view shows it (SettingsPanel: «Settings»,
+    // «Confirmation»), and nothing else of the receipt changes.
+    [Test]
+    public async Task BypassOnSaysWhereTheWindowTurnsItOnAsTheEnglishViewNamesIt()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-bypass-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        try
+        {
+            string spanish = await SettingMessage(root, """{"setting":"confirmation_bypass","value":1}""");
+            string english;
+            ModelLanguage.Use(Baxy.Contracts.ProtocolLanguages.English);
+            try
+            {
+                english = await SettingMessage(root, """{"setting":"confirmation_bypass","value":1}""");
+            }
+            finally
+            {
+                ModelLanguage.Use(null);
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(spanish, Does.Contain("BAXY's own window: Ajustes > Confirmación, or the Normal/Bypass switch on its side panel"));
+                Assert.That(english, Does.Contain("BAXY's own window: Settings > Confirmation, or the Normal/Bypass switch on its side panel"));
+                Assert.That(english, Is.EqualTo(spanish.Replace("Ajustes > Confirmación", "Settings > Confirmation", StringComparison.Ordinal)));
+            });
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
     // Encargo 25 (G2): switching bypass on through system.settings.set stays refused, with what is true instead of a bare
     // code: the mode it is in and (TPV1) the call that switches it on by voice with the person's «sí»; where BAXY's own
     // window turns it on stays beside.

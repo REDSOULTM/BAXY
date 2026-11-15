@@ -68,6 +68,36 @@ internal sealed class SignedReleaseTests
         });
     }
 
+    // AUT1: the file-by-file hashes are under the signature too. An installer whose files.json is not the one the signed
+    // release.json names (or that names one where the signed release has none) installs nothing.
+    [TestCase(true, TestName = "AUT1_Instalador_FicherosDeOtraHuella_NoInstalaNada")]
+    [TestCase(false, TestName = "AUT1_Instalador_FicherosQueLaFirmaNoNombra_NoInstalaNada")]
+    public void AFileManifestThatIsNotTheSignedOneStopsItBeforeAnyDownload(bool signedNamesOne)
+    {
+        InstallPaths paths = Paths();
+        ReleaseFiles carried = new("files.json", 10, new string('d', 64));
+        string signed = signedNamesOne
+            ? Manifest("1.1.0").Replace("\"installer\"", $"\"files\":{{\"file\":\"files.json\",\"bytes\":10,\"sha256\":\"{new string('e', 64)}\"}},\"installer\"", StringComparison.Ordinal)
+            : Manifest("1.1.0");
+        Files files = new(signed, Owner);
+        using HttpClient http = new(files);
+
+        Assert.ThrowsAsync<UnsignedReleaseException>(
+            () => SignedRelease.ConfirmAsync(http, Carried() with { Files = carried }, paths, OwnerKeys, CancellationToken.None));
+        Assert.That(files.Asked, Has.None.Contains(".zip"), "no part is asked for");
+    }
+
+    [Test]
+    public async Task TheSignedManifestNamingTheSameFilesLetsItGoOn()
+    {
+        string named = $"\"files\":{{\"file\":\"files.json\",\"bytes\":10,\"sha256\":\"{new string('d', 64)}\"}},\"installer\"";
+        string signed = Manifest("1.1.0").Replace("\"installer\"", named, StringComparison.Ordinal);
+        using HttpClient http = new(new Files(signed, Owner));
+        using MemoryStream json = new(Encoding.UTF8.GetBytes(signed));
+
+        await SignedRelease.ConfirmAsync(http, ReleaseManifest.Parse(json), Paths(), OwnerKeys, CancellationToken.None);
+    }
+
     // A real exe with a newer version where BAXY's would be: an old installer, signed for real, does not replace it.
     [Test]
     public void ANewerBaxyInTheFolderIsNotReplacedByAnOlderOne()

@@ -281,6 +281,25 @@ public sealed class OwnReadingsTests
         return steps;
     }
 
+    // VER3 (13-11-2026): the version this App is, its stamp (UpdatePanel.Installed, the one Settings → General shows),
+    // read when asked: the system text no longer says it, so a new release number does not move what BAXY answers.
+    [Test]
+    public void TheInstalledVersionIsTheAppsStampAndNoneIsNeverMadeUp()
+    {
+        JsonElement receipt = Completed(OwnReadings.Version("1.5.2"));
+        OperationOutcome development = OwnReadings.Version(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.GetProperty("scope").GetString(), Is.EqualTo("version"));
+            Assert.That(receipt.GetProperty("installed").GetString(), Is.EqualTo("1.5.2"));
+            // A development copy has no stamp: a failure, never a number.
+            Assert.That(development.Succeeded, Is.False);
+            Assert.That(development.ErrorCode, Is.EqualTo(OwnReadings.VersionUnknown));
+            Assert.That(OwnReadings.Version(" ").ErrorCode, Is.EqualTo(OwnReadings.VersionUnknown));
+        });
+    }
+
     private static JsonElement Completed(OperationOutcome outcome)
     {
         Assert.That(outcome is { Succeeded: true, Verified: true }, outcome.ErrorCode);

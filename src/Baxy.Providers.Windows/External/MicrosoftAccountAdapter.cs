@@ -810,7 +810,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("eventId", Opaque("event", entryId));
             writer.WriteString("title", root.GetProperty("title").GetString());
-            WriteHereAndUtc(writer, root);
+            WriteHereAndZone(writer, root);
             writer.WriteString("authority", "outlook_mapi_postread"); writer.WriteEndObject();
         });
     }
@@ -820,14 +820,17 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
     // comes first, at that instant's own offset: a date past a daylight change keeps its own, which the offset of today would
     // not. With its weekday, a fact the model got wrong by itself (measured: «el sábado 6» for a Friday, 2 of 2; with it, 2 of 2
     // right).
-    private static void WriteHereAndUtc(Utf8JsonWriter writer, JsonElement item)
+    // PAN6 (puerta INT35, u121-B11): with the UTC instant beside it the model still told the UTC as the hour (4 to 8 of
+    // 10 as unrelated texts of the prompt moved), so each event says one hour, its own, and its zone apart; nothing reads
+    // the UTC back from this result (calendar.event.create takes its own startUtc from the person's words).
+    private static void WriteHereAndZone(Utf8JsonWriter writer, JsonElement item)
     {
         string? start = item.GetProperty("startUtc").GetString();
         string? end = item.GetProperty("endUtc").GetString();
         WriteHourHere(writer, "startLocal", start);
         WriteHourHere(writer, "endLocal", end);
-        writer.WriteString("startUtc", start);
-        writer.WriteString("endUtc", end);
+        if (DateTimeOffset.TryParse(start, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out DateTimeOffset instant))
+            writer.WriteString("zone", "UTC" + instant.ToLocalTime().ToString("zzz", CultureInfo.InvariantCulture));
     }
 
     // An instant that does not read says no hour rather than an empty one.
@@ -848,7 +851,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
                 writer.WriteStartObject();
                 writer.WriteString("eventId", Opaque("event", item.GetProperty("entryId").GetString() ?? string.Empty));
                 writer.WriteString("title", item.GetProperty("title").GetString());
-                WriteHereAndUtc(writer, item);
+                WriteHereAndZone(writer, item);
                 writer.WriteEndObject();
             }
         }
