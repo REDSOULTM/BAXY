@@ -518,7 +518,8 @@ def test_a_name_that_is_no_routine_is_said_with_the_ones_there_are(tmp_path: Pat
     mind.decide(3, "desactiva la rutina tele")
     assert mind.continue_turn(4, _failed("routine_not_found"))["reply"] == (
         "No tengo ninguna rutina «tele». No tienes rutinas guardadas.")
-    assert server.bodies == []
+    # RUT17: no decision of the model; only the closed reading of the time a name says (test_mind_rut17_hora_en_palabras)
+    assert [((b.get("response_format") or {}).get("json_schema") or {}).get("name") for b in server.bodies] == ["hora"]
 
 
 def test_ejecuta_la_rutina_x_is_saying_x(tmp_path: Path) -> None:

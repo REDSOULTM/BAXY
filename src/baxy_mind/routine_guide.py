@@ -544,6 +544,7 @@ TEXT = {
         "say_long": "Ese texto es muy largo. Dímelo más corto.",
         "confirm_word": "Cuando digas «{phrase}»: «{order}». ¿La guardo?",
         "confirm_time": "{when}, te digo: «{say}». ¿La guardo?",
+        "confirm_time_twin": "Ya tienes una rutina igual, «{name}»: {when_low}, te digo: «{say}». ¿Guardo otra igual?",
         "confirm_again": "Di «sí» para guardarla o «no» para dejarla. {confirm}",
         "unsure": "No te oí bien. {question}",
         "cancelled": "Listo, lo dejo: no guardé ninguna rutina.",
@@ -636,6 +637,7 @@ TEXT = {
         "say_long": "That text is too long. Tell me a shorter one.",
         "confirm_word": "When you say «{phrase}»: «{order}». Shall I save it?",
         "confirm_time": "{when}, I'll tell you: «{say}». Shall I save it?",
+        "confirm_time_twin": "You already have the same routine, «{name}»: {when_low}, I'll tell you: «{say}». Shall I save another one?",
         "confirm_again": "Say «yes» to save it or «no» to leave it. {confirm}",
         "unsure": "I didn't hear you well. {question}",
         "cancelled": "Okay, leaving it: I didn't save any routine.",
@@ -764,14 +766,23 @@ def said_days(repeat: str, days: Any, offset: int | None, lang: str) -> str:
     return told[0] if lang == "en" else told[1]
 
 
+QUOTE_PAIRS = {"«": "»", "\"": "\"", "“": "”", "'": "'", "‘": "’"}   # an opening quote and its closing one
+
+
 def _plain(text: Any) -> str:
     """The person's words as they are kept: one line, without the quotes or the signs around them."""
     return " ".join(str(text or "").split()).strip(" \t«»\"“”'‘’¡!¿?.,;:").strip()
 
 
 def _kept(text: Any) -> str:
-    """An order or a text to say as it is kept: the person's words, whole, on one line."""
-    return " ".join(str(text or "").split()).strip(" \t«»\"“”")
+    """An order or a text to say as it is kept: the person's words, whole, on one line.
+    RUT17 (VIVO22: «… dime «hora de regar las plantas».» was kept «hora de regar las plantas»»): words between a pair of
+    quotes (QUOTE_PAIRS) are kept without them, whatever signs end the sentence after the closing one; by form only."""
+    kept = " ".join(str(text or "").split())
+    ends, close = kept.rstrip(" .,;:!?"), QUOTE_PAIRS.get(kept[:1], "")
+    if close and len(ends) > 2 and ends.endswith(close) and close not in ends[1:-1]:
+        return ends[1:-1].strip()
+    return kept.strip(" \t«»\"“”")
 
 
 def _is(text: str, pieces: tuple[str, ...]) -> bool:
@@ -971,6 +982,8 @@ class Guide:
     # rutina: los lunes, miércoles y viernes a las 10:00…?» (its name, «10:00», says neither its days nor its text)
     about: str = ""
     described: bool = False   # and the one chosen at «which» is asked so too
+    # RUT17: the routines the person has, as the last answer or reading saw them (answer, fill, take), for _twin
+    known: Any = field(default=None, repr=False, compare=False)
 
     def _state(self) -> tuple[Any, ...]:
         return self.step, self.kind, self.phrase, self.order, self.say, self.when, self.part, self.mode
@@ -1032,6 +1045,7 @@ class Guide:
         another, so the step stays where it asks; left at «¿La guardo?» with the rest of a correction taken, a «sí» to
         the reason saved a routine nobody heard read back."""
         reason, refused = "", ""
+        self.known = routines
         bare = not (self.phrase or self.order or self.say or self.when.hour is not None or self.when.repeat)
         if read.kind and (self.kind is None or self.step == "kind" or bare):
             self.kind = read.kind
@@ -1150,6 +1164,29 @@ class Guide:
         guide._to(part if part else "phrase" if guide.steps_only else "")
         return guide
 
+    def changed_by(self, read: Any, routines: Any = None) -> None:
+        """RUT17 (INT37B's held-out, 0 of 6: «La de las seis y media de la mañana, pásala a las siete…» → «¿Qué cambio de
+        «06:30»: la hora o lo que te digo?»): what the person's words of the order already say of the change, as the
+        model read them (routine_fill.Read, each value checked against their words), taken by the change of a routine at
+        a time that still asks what to change: a time or days that are not its own go to «when» (its text stays), else a
+        text of their last words to «say»; BAXY then asks the half of the day if it was not said, or repeats it for
+        their «sí». Nothing read, or nothing new: it asks what to change, as before."""
+        if self.mode != "change" or self.kind != "time" or self.step != "what":
+            return
+        when, say = self.when, self.say
+        self.fill(read, routines)
+        if (self.when.clock() is None and self.when.hour is not None and when.hour is not None
+                and (self.when.hour % 12, self.when.minute) == (when.hour % 12, when.minute)):
+            # its own time said without its half («la del domingo a las nueve y cuarto», at 21:15) names it: no new time
+            self.when = replace(self.when, hour=when.hour, minute=when.minute, meridiem=when.meridiem, fixed=when.fixed)
+        if self.when != when:
+            self.part, self.say = "when", say
+            self.step = "when" if self.when.clock() is None else "confirm"
+        elif self.say != say:
+            self.part, self.step = "say", "confirm"
+        else:
+            self.step = "what"
+
     def _to(self, part: str) -> None:
         """The change goes to the step of that part; one not of its kind (or none) asks which."""
         if part == "order" and self.steps_only:
@@ -1225,8 +1262,12 @@ class Guide:
             change = "_change" if self.mode == "change" else ""
             if self.kind == "word":
                 return self._t("confirm" + change + "_word", phrase=self.phrase, order=self.order, name=self.target)
-            return self._t("confirm" + change + "_time", say=self.say, name=self.target, when=said_when(
-                self.when.clock() or "", self.when.repeat or "once", self.when.days, self.when.offset, self.lang))
+            when = said_when(self.when.clock() or "", self.when.repeat or "once", self.when.days, self.when.offset,
+                             self.lang)
+            twin = self._twin()
+            if twin:
+                return self._t("confirm_time_twin", say=self.say, name=twin, when_low=when[0].lower() + when[1:])
+            return self._t("confirm" + change + "_time", say=self.say, name=self.target, when=when)
         if self.step == "what":
             return self._t("what_word" if self.kind == "word" else "what_time", name=self.target)
         if self.step == "which":
@@ -1242,6 +1283,23 @@ class Guide:
         if self.step == "order" and self.mode == "change":
             return self._t("order_again", phrase=self.phrase).split(". ", 1)[-1]
         return self._t(self.step)
+
+    def _twin(self) -> str:
+        """RUT17 (VIVO22: the owner's routine made again while it was kept was saved as «10:00 (2)», and nobody was told):
+        the name of a routine of theirs (``known``) that already is the one being made: the same time, the same days
+        and the same text, compared by form (fold). Nothing for a change, a routine at a word or one of a single day."""
+        if self.mode != "create" or self.kind != "time" or self.when.repeat not in ("daily", "days"):
+            return ""
+        days = sorted(DAYS[day] for day in self.when.days) if self.when.repeat == "days" else []
+        for routine in self.known or []:
+            trigger = routine.get("trigger") if isinstance(routine, dict) else None
+            if not isinstance(trigger, dict):
+                continue
+            says = " ".join(str(step.get("say") or "") for step in routine.get("steps") or [] if isinstance(step, dict))
+            if (trigger.get("at") == self.when.clock() and trigger.get("repeat") == self.when.repeat
+                    and sorted(trigger.get("days") or []) == days and fold(says) and fold(says) == fold(self.say)):
+                return _named(routine)
+        return ""
 
     def _names(self) -> str:
         return _listed([f"«{name}»" for name in self.targets], self.lang)
@@ -1265,6 +1323,7 @@ class Guide:
         """The person's words as the answer to the step's question: (what BAXY says, the baxy.routines create to
         propose or None, whether the guide ended). ``today`` is the clock's date, for a day said («mañana»)."""
         before = self._state()
+        self.known = routines
         said, arguments, ended = self._answer(text, routines, unsure, today)
         self.misses = 0 if ended or unsure or self._state() != before else self.misses + 1
         if self._state() != before:

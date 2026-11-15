@@ -271,3 +271,27 @@ def test_files_json_names_every_file_by_hash_and_where_its_bytes_are_in_the_part
             assert content == expected
             assert (file["bytes"], file["sha256"]) == (len(expected), hashlib.sha256(expected).hexdigest())
     assert {file["method"] for file in listed["files"]} == {0, 8}
+
+
+def test_release_json_signs_the_agreement_and_the_oldest_installer_that_applies_it(tmp_path: Path) -> None:
+    # AUT2: a BAXY that reads a new agreement asks for it by voice before updating, and one whose installer is at least
+    # installerMin applies the release with it instead of downloading the release's own (81 MB).
+    output = tmp_path / "out"
+
+    manifest = release.build_manifest(_depot(tmp_path), output, "9.9.9", part_bytes=4000)
+
+    assert manifest["installerMin"] == release.INSTALLER_MIN
+    agreement = manifest["agreement"]
+    texts = {language: (release.AGREEMENT / f"{language}.txt").read_text(encoding="utf-8-sig") for language in ("es", "en")}
+    assert agreement["sha256"] == release.agreement_fingerprint(texts["es"], texts["en"])
+    for language in ("es", "en"):
+        published = (output / agreement[language]["file"]).read_bytes()
+        assert published.decode("utf-8") == texts[language]
+        assert agreement[language]["bytes"] == len(published)
+        assert agreement[language]["sha256"] == hashlib.sha256(published).hexdigest()
+
+
+def test_the_agreement_fingerprint_is_the_installers_with_any_line_ending() -> None:
+    # The same function as src/Baxy.Installer/AcceptedAgreement.cs, Of: a checkout's CRLF changes nothing.
+    assert release.agreement_fingerprint("a\r\nb", "c") == release.agreement_fingerprint("a\nb", "c")
+    assert release.agreement_fingerprint("a", "c") == hashlib.sha256("a\0c".encode("utf-8")).hexdigest()

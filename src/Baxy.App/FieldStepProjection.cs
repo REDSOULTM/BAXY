@@ -491,6 +491,9 @@ internal static class FieldStepProjection
             "está apagada en tu perfil; con tu sí se encienden todas las de la memoria",
             "it is off in your tool profile; your yes turns on all of the memory's tools"),
         PendingOperationConfirmation.SystemChangeCause => UiLanguage.Say(english, "cambia un ajuste del sistema", "changes a system setting"),
+        // AUT2: their «Sí» on this card accepts the new license agreement the update brings.
+        NativeTurnLoop.AgreementCause => UiLanguage.Say(english, "trae un acuerdo de licencia nuevo; con tu sí lo aceptas",
+            "brings a new license agreement; your yes accepts it"),
         _ => null,
     };
 

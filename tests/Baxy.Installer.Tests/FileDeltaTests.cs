@@ -55,6 +55,35 @@ internal sealed class FileDeltaTests
     }
 
     [Test]
+    public async Task Fetching_with_baxy_open_changes_nothing_and_the_update_after_it_downloads_nothing_more()
+    {
+        // AUT2: the download goes with BAXY open; with it closed, only the new folder is made and swapped in.
+        InstallPaths paths = Installed();
+        Dictionary<string, string> before = Tree(paths.Root);
+        Release release = Release.Of(NewFiles());
+        RangeServer server = new(release.Assets);
+        using HttpClient http = new(server);
+        List<(long Done, long Total)> told = [];
+        Installation fetching = release.Installation(paths, http);
+
+        await fetching.FetchAsync((phase, done, total) => told.Add((done, total)), CancellationToken.None);
+
+        long differing = release.Packed("app/Baxy.exe", "mind/a.py", "mind/c.py");
+        Assert.That(Tree(paths.Root), Is.EqualTo(before), "nothing of the installation is touched");
+        Assert.That((fetching.DownloadedBytes, fetching.NeededBytes), Is.EqualTo((differing, differing)));
+        Assert.That(told[^1], Is.EqualTo((differing, differing)));
+        long served = server.Served;
+
+        Installation installing = release.Installation(paths, http);
+        await installing.RunAsync((_, _, _) => { }, CancellationToken.None);
+
+        Assert.That(server.Served, Is.EqualTo(served), "the update with BAXY closed downloads nothing more");
+        Assert.That(installing.DownloadedBytes, Is.Zero);
+        Assert.That(await File.ReadAllTextAsync(paths.App), Is.EqualTo("the new app"));
+        Assert.That(await File.ReadAllTextAsync(In(paths.Root, "mind/c.py")), Is.EqualTo("c = 1  # new"));
+    }
+
+    [Test]
     public async Task Neighbours_in_the_zip_come_in_one_request_and_what_lies_between_is_counted()
     {
         InstallPaths paths = Installed();

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -14,13 +15,22 @@ internal sealed record ReleaseArchive(string Name, IReadOnlyList<ReleasePart> Pa
     internal long Bytes => Parts.Sum(part => part.Bytes);
 }
 
-/// <summary>What the installer may download, embedded in it at build time: its hashes are the only ones it trusts.</summary>
+/// <summary>
+/// AUT2: the license agreement a release brings, by the fingerprint the installer keeps of an accepted one
+/// (<see cref="AcceptedAgreement.Of"/>). Its two texts are published beside the parts for a BAXY that asks for it by voice.
+/// </summary>
+internal sealed record ReleaseAgreement(string Sha256);
+
+/// <summary>What the installer may download, embedded in it at build time: its hashes are the only ones it trusts.
+/// AUT2: or a newer release's, signed, that an older installer applies (<see cref="SignedRelease.ReadAsync"/>).</summary>
 internal sealed partial record ReleaseManifest(
     string Version,
     string BaseUrl,
     long InstalledBytes,
     IReadOnlyList<ReleaseArchive> Archives,
-    ReleaseFiles? Files = null)
+    ReleaseFiles? Files = null,
+    string? InstallerMin = null,
+    ReleaseAgreement? Agreement = null)
 {
     internal static ReleaseManifest Parse(Stream json)
     {
@@ -60,6 +70,13 @@ internal sealed partial record ReleaseManifest(
             throw new InvalidDataException("release manifest: its file manifest is not valid");
         }
 
+        // AUT2: the oldest installer that applies this release, and the agreement's fingerprint, when it names them.
+        if ((InstallerMin is not null && Numbers(InstallerMin) is null)
+            || (Agreement is not null && (Agreement.Sha256 is null || !Hash().IsMatch(Agreement.Sha256))))
+        {
+            throw new InvalidDataException("release manifest: its installer minimum or its agreement is not valid");
+        }
+
         foreach (ReleaseArchive archive in Archives)
         {
             if (archive.Parts is null || archive.Parts.Count == 0 || archive.InstalledBytes < 0 ||
@@ -76,6 +93,16 @@ internal sealed partial record ReleaseManifest(
                 }
             }
         }
+    }
+
+    /// <summary>A version as release.json writes it (1.5.3); null when it is not one.</summary>
+    internal static Version? Numbers(string? text)
+    {
+        string[] numbers = (text ?? string.Empty).Split('+', '-')[0].Split('.');
+        return numbers.Length == 3 && numbers.All(static number => number.Length is > 0 and < 6 && number.All(char.IsAsciiDigit))
+            ? new Version(int.Parse(numbers[0], CultureInfo.InvariantCulture), int.Parse(numbers[1], CultureInfo.InvariantCulture),
+                int.Parse(numbers[2], CultureInfo.InvariantCulture))
+            : null;
     }
 
     [GeneratedRegex(@"^[A-Za-z0-9][A-Za-z0-9._-]*$")]

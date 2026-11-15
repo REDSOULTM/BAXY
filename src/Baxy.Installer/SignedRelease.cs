@@ -10,6 +10,9 @@ namespace Baxy.Installer;
 /// <summary>Where the parts come from, release.json is missing, not signed with a key this installer trusts, or not its own.</summary>
 internal sealed class UnsignedReleaseException(string message) : Exception(message);
 
+/// <summary>AUT2: a newer release this installer does not apply (too old for it, or another agreement): its own does.</summary>
+internal sealed class InstallerTooOldException(string message) : Exception(message);
+
 /// <summary>The folder holds a newer BAXY than the one this installer brings: it is not replaced by an older one.</summary>
 internal sealed class OlderReleaseException(string installed, string offered)
     : Exception($"the folder holds BAXY {installed}, newer than {offered}")
@@ -72,6 +75,56 @@ internal static class SignedRelease
         }
     }
 
+    /// <summary>
+    /// AUT2 (orden del dueño, 13-11-2026: «No debe volver a descargar nada que ya exista»): the release published at
+    /// <paramref name="address"/> (its folder, where release.json is), read so that this installer, the one BAXY already
+    /// has, applies it instead of the release's own installer (81 MB) being downloaded. Only under the same rules as its
+    /// own: release.json signed with a key built into this installer, with a files.json (each file by its hash) it names,
+    /// and this installer at least as new as the oldest one the release says applies it (<c>installerMin</c>); and only
+    /// when the agreement it brings is the one this installer carries, since that is the text it leaves installed. The
+    /// folder holding a newer BAXY is refused later, as for its own (<see cref="ConfirmAsync"/>). Nothing is written.
+    /// </summary>
+    internal static async Task<(ReleaseManifest Manifest, FileManifest Files)> ReadAsync(
+        HttpClient http, Uri address, IReadOnlyList<string> keys, string ownVersion, string ownAgreement, CancellationToken cancellation)
+    {
+        byte[]? manifest = await SmallAsync(http, new Uri(address, ReleaseSignature.ManifestName), ReleaseSignature.ManifestLimit, cancellation)
+            .ConfigureAwait(false);
+        byte[]? signature = await SmallAsync(http, new Uri(address, ReleaseSignature.SignatureName), ReleaseSignature.SignatureLimit, cancellation)
+            .ConfigureAwait(false);
+        if (manifest is null || signature is null || !ReleaseSignature.Verifies(manifest, signature, keys))
+        {
+            throw new UnsignedReleaseException($"{address}{ReleaseSignature.ManifestName} is not signed with BAXY's key");
+        }
+
+        ReleaseManifest signed;
+        try
+        {
+            using MemoryStream json = new(manifest);
+            signed = ReleaseManifest.Parse(json);
+        }
+        catch (Exception unreadable) when (unreadable is InvalidDataException or JsonException)
+        {
+            throw new UnsignedReleaseException($"the signed release.json is not valid: {unreadable.Message}");
+        }
+
+        if (signed.Files is not { } named || ReleaseManifest.Numbers(signed.InstallerMin) is not { } oldest
+            || ReleaseManifest.Numbers(ownVersion) is not { } own || own < oldest)
+        {
+            throw new InstallerTooOldException($"BAXY {signed.Version} is applied by its own installer, not by this one ({ownVersion})");
+        }
+
+        if (signed.Agreement is not { } agreement || agreement.Sha256 != ownAgreement)
+        {
+            throw new InstallerTooOldException($"BAXY {signed.Version} brings an agreement this installer does not carry");
+        }
+
+        byte[]? files = await SmallAsync(http, new Uri(new Uri(signed.BaseUrl), named.File), FileManifest.Limit, cancellation)
+            .ConfigureAwait(false);
+        return files is not null && FileManifest.Named(files, signed) is { } listed
+            ? (signed, listed)
+            : throw new UnsignedReleaseException($"{named.File} is not the one the signed release.json names");
+    }
+
     // The version of the BAXY in that folder, from its exe (1.3.2+<commit>); null when there is none.
     internal static Version? InstalledVersion(string app) =>
         File.Exists(app) ? Numbers(FileVersionInfo.GetVersionInfo(app).ProductVersion) : null;
@@ -91,6 +144,8 @@ internal static class SignedRelease
         carried.Version == signed.Version && carried.BaseUrl == signed.BaseUrl && carried.InstalledBytes == signed.InstalledBytes
         // AUT1: and the same files.json, so each file's hash is under the signature too.
         && carried.Files == signed.Files
+        // AUT2: and the same oldest installer and agreement.
+        && carried.InstallerMin == signed.InstallerMin && carried.Agreement == signed.Agreement
         && carried.Archives.Count == signed.Archives.Count
         && carried.Archives.Zip(signed.Archives).All(pair =>
             pair.First.Name == pair.Second.Name && pair.First.GpuVendor == pair.Second.GpuVendor

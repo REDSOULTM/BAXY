@@ -837,6 +837,10 @@ def check(answer: str, request: str, receipts: list[Receipt], session: list[Call
     early = _update_early(folded, statements, receipts, text)
     if early:
         add(*early)
+    # INT36G: «la rutina de las 10:00 se ha eliminado» with no completed baxy.routines in the turn.
+    undone = _routine_not_done(folded, statements, receipts, text)
+    if undone:
+        add("routine_not_done", *undone, ROUTINE_NOT_DONE.format(tool=wire_of(ROUTINES_OP)))
     # INT36G: «estoy desactualizado» while this turn's baxy.update found nothing newer than the installed BAXY.
     outdated = _update_outdated(folded, statements, receipts, text)
     if outdated:
@@ -1351,6 +1355,42 @@ UPDATE_OFFERED = ("{told} sólo comprobó: hay una versión más nueva ({latest}
                   "persona le piden a BAXY que se actualice o que instale la versión nueva, eso ya es su sí: llama ahora a "
                   "{tool} con action «install», sin volver a preguntar. Si sólo preguntan si hay una versión nueva, si BAXY "
                   "está al día o si tiene actualizaciones, no instales nada: tu respuesta está bien así")
+
+
+# INT36G (banco de «borra la de las 10:00», Esencial: tras un schedule_alarms cancel sin nada que cancelar, «Borrad. La
+# rutina de las 10:00 ya estaba activa y se ha eliminado.» sin ninguna llamada que la borrara; RUT11 §2.1 ya la propuso).
+# A routine told deleted, turned off or changed — the routine named in the sentence — in a turn with no completed
+# baxy.routines call: the fact goes back, as «mostré», with the tools open so the model may make that call.
+ROUTINES_OP = "baxy.routines"
+# INT37B (banco corregido, Completo, la rutina hecha en la misma conversación: 4 de 10 filas sin ninguna llamada que la
+# borrara): «Borrada la rutina de las 10:00.», «Borrad la rutina…» y «La rutina … ya estaba puesta para los lunes,
+# miércoles y viernes; ahora está borrada.»: el participio delante, la forma que escribe el 4B y la frase más larga.
+_ROUTINE_DONE_SAID = re.compile(
+    r"\b(?:borre|elimine|desactive|cambie|quite)\b[^.?!]{0,40}\brutinas?\b"
+    r"|\b(?:borrad|eliminad|desactivad|quitad)[oa]?s?\b[^.?!]{0,20}\brutinas?\b"
+    r"|\brutinas?\b[^.?!]{0,100}\b(?:se (?:ha |han )?(?:borrado|eliminado|desactivado|cambiado|borro|elimino)"
+    r"|(?:ya )?(?:esta|estan|quedo|quedaron) (?:borrad|eliminad|desactivad|cambiad)[oa]s?)\b"
+    r"|\bya no (?:hay|existe|tienes) (?:esa |la |tu )?rutina\b"
+    r"|\bi (?:deleted|removed|turned off|changed)\b[^.?!]{0,40}\broutines?\b"
+    r"|\broutines?\b[^.?!]{0,40}\b(?:has been|was|is now) (?:deleted|removed|turned off|changed)\b")
+ROUTINE_NOT_DONE = ("en este turno ninguna llamada completada borró, desactivó ni cambió una rutina: una rutina se borra, "
+                    "se desactiva o se cambia con {tool}, y BAXY pregunta antes")
+
+
+def _routine_not_done(folded: str, statements: list[tuple[int, int]], receipts: list[Receipt],
+                      text: str) -> tuple[int, int] | None:
+    """The span of the first statement that tells a routine deleted, turned off or changed while no baxy.routines call
+    of this turn completed; None otherwise."""
+    if any(operation_of(str(r.get("op"))) == ROUTINES_OP and r.get("completed") for r in receipts):
+        return None
+    for start, end in statements:
+        for hit in _ROUTINE_DONE_SAID.finditer(folded, start, end):
+            clause = _clause_start(folded, start, hit.start())
+            if _negated(folded, start, hit.start(), text) or _EN_OFF.search(folded, clause, hit.start()) \
+                    or "?" in text[start:end]:
+                continue
+            return clause, end
+    return None
 
 
 # INT36G (VIVO21, 3 of 3: «¿estás al día?» with 1.5.3 installed and 1.5.2 the latest published was answered «estoy

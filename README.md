@@ -20,11 +20,11 @@ you turn that off in Settings.
 ### Download
 
 Get the installer from the [releases page](https://github.com/REDSOULTM/BAXY/releases) (the latest is
-[BAXY 1.5.3](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.3)): download `BAXY-Instalador.exe` and open it. It
+[BAXY 1.5.4](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.4)): download `BAXY-Instalador.exe` and open it. It
 checks your PC, downloads the list of parts (it refuses it unless it carries BAXY's signature), verifies each part's
 SHA-256 and leaves BAXY in the Start menu. The installer itself is not code-signed, so SmartScreen may warn you. If
-you have BAXY 1.5.0, 1.5.1 or 1.5.2, BAXY offers the update itself. If you have BAXY 1.3.1, its "Update" button does
-not take you to 1.5.3: download the new installer and run it over it (the release notes say which updates were tried
+you have BAXY 1.5.0, 1.5.1, 1.5.2 or 1.5.3, BAXY offers the update itself. If you have BAXY 1.3.1, its "Update"
+button does not take you to 1.5.4: download the new installer and run it over it (the release notes say which updates were tried
 without losing data).
 
 ### What you need to run it
@@ -42,7 +42,8 @@ without losing data).
 - The 4 GB figures were measured on a larger NVIDIA card made to look like a 4 GB one, not on a real 4 GB card.
 - A freshly formatted Windows without the Visual C++ runtime or WebView2 was not tested (the installer installs both
   from Microsoft).
-- The 1.5.3 package was not tried installed on a real AMD or Intel card (its release notes say what was measured).
+- The 1.5.4 package was not tried installed on a real AMD or Intel card. The 1.5.3 one was installed and used on one
+  AMD Radeon RX 7600 (8 GB); no Intel card was tried (the release notes say what was measured).
 - "Another model" (Settings → Model) is optional and off by default. With a company's API, what you give BAXY goes to
   that company. OpenAI and Google were not tested with a real key; other models were measured against BAXY's tuned model (an
   optional extra since 1.3.2) and did worse.
@@ -120,11 +121,11 @@ en Ajustes.
 ### Descargar
 
 Baja el instalador de la [página de versiones](https://github.com/REDSOULTM/BAXY/releases) (la última es
-[BAXY 1.5.3](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.3)): descarga `BAXY-Instalador.exe` y ábrelo. Revisa
+[BAXY 1.5.4](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.4)): descarga `BAXY-Instalador.exe` y ábrelo. Revisa
 tu PC, baja la lista de partes (la rechaza si no lleva la firma de BAXY), comprueba el SHA-256 de cada parte y deja a
 BAXY en el menú Inicio. El instalador en sí no va firmado, así que SmartScreen puede avisar. Si tienes la BAXY 1.5.0,
-la 1.5.1 o la 1.5.2, la actualización te la ofrece la propia BAXY. Si tienes la BAXY 1.3.1, su botón «Actualizar» no
-te lleva a la 1.5.3: baja el instalador nuevo y ejecútalo encima (las notas de la versión dicen qué saltos se probaron
+la 1.5.1, la 1.5.2 o la 1.5.3, la actualización te la ofrece la propia BAXY. Si tienes la BAXY 1.3.1, su botón
+«Actualizar» no te lleva a la 1.5.4: baja el instalador nuevo y ejecútalo encima (las notas de la versión dicen qué saltos se probaron
 sin perder datos).
 
 ### Qué necesitas para usarlo
@@ -142,7 +143,8 @@ sin perder datos).
 - Las cifras de 4 GB se midieron en una NVIDIA más grande haciéndola pasar por una de 4 GB, no en una de 4 GB real.
 - Un Windows recién formateado sin el runtime de Visual C++ ni WebView2 no se probó (el instalador pone los dos desde
   Microsoft).
-- El paquete de la 1.5.3 no se probó instalado en una tarjeta AMD o Intel real (sus notas dicen qué se midió).
+- El paquete de la 1.5.4 no se probó instalado en una tarjeta AMD o Intel real. El de la 1.5.3 se instaló y se usó en
+  una AMD Radeon RX 7600 (8 GB); ninguna Intel (las notas de la versión dicen qué se midió).
 - «Otro modelo» (Ajustes → Modelo) es opcional y viene apagado. Con la API de una empresa, lo que le pases a BAXY va a
   esa empresa. OpenAI y Google no se probaron con una clave real; otros modelos se midieron frente al modelo ajustado a BAXY
   (un extra opcional desde la 1.3.2) y rindieron peor.

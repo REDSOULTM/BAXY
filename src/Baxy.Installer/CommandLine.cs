@@ -17,6 +17,8 @@ internal sealed record CommandLine(
     bool Update = false,
     string? Directory = null,
     int? Original = null,
+    string? Release = null,
+    bool Fetch = false,
     string? Error = null)
 {
     /// <summary>ERROR_INVALID_COMMAND_LINE, the code Windows Installer gives an argument it does not know.</summary>
@@ -34,6 +36,12 @@ internal sealed record CommandLine(
     /// <summary>The language of what is told: Spanish on a Spanish Windows, else English.</summary>
     internal static string Language => CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "es" ? "es" : "en";
     internal const string OriginalOption = "--original";
+
+    /// <summary>AUT2: only the download, with BAXY open (<see cref="Installation.FetchAsync"/>).</summary>
+    internal const string FetchOption = "--fetch";
+
+    /// <summary>AUT2: the newer release this installer applies instead of its own (<see cref="SignedRelease.ReadAsync"/>).</summary>
+    internal const string ReleaseOption = "--release";
 
     internal static CommandLine Parse(IReadOnlyList<string> arguments)
     {
@@ -66,7 +74,10 @@ internal sealed record CommandLine(
                 case "--update":
                     command = command with { Update = true };
                     break;
-                case "--dir" or OriginalOption:
+                case FetchOption:
+                    command = command with { Fetch = true };
+                    break;
+                case "--dir" or OriginalOption or ReleaseOption:
                     string? value = inline ?? (index + 1 < arguments.Count ? arguments[++index] : null);
                     if (string.IsNullOrWhiteSpace(value))
                     {
@@ -76,6 +87,15 @@ internal sealed record CommandLine(
                     if (name == "--dir")
                     {
                         command = command with { Directory = value };
+                    }
+                    else if (name == ReleaseOption)
+                    {
+                        if (!Uri.TryCreate(value, UriKind.Absolute, out Uri? release) || !value.EndsWith('/'))
+                        {
+                            return command with { Error = $"{name} needs the address of a release's folder, ending in /" };
+                        }
+
+                        command = command with { Release = release.AbsoluteUri };
                     }
                     else if (int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out int process))
                     {
@@ -94,6 +114,8 @@ internal sealed record CommandLine(
 
         return command.DeleteData && !command.Uninstall ? command with { Error = "--delete-data only goes with --uninstall" }
             : command.Update && command.Uninstall ? command with { Error = "--update does not go with --uninstall" }
+            : (command.Fetch || command.Release is not null) && (!command.Update || command.Quiet)
+                ? command with { Error = "--fetch and --release go with --update, without --quiet" }
             : command;
     }
 
@@ -155,6 +177,10 @@ internal sealed record CommandLine(
                                y lo muestra antes: sin aceptarlo no instala y vuelve a abrir la que tenías.
                                El instalador no toca tus datos.
                                Con --quiet no la abre: instala y termina.
+            --fetch            Con --update: sólo baja lo que cambió, con BAXY abierta, y dice cuánto lleva en
+                               update-progress.json junto a este instalador. No cambia nada ni cierra BAXY.
+            --release <url>    Con --update: aplica la versión publicada en esa dirección (su release.json
+                               firmado), no la que trae este instalador, si este instalador basta para ella.
             --help, -h, /?     Muestra esta ayuda.
 
           Salida:
@@ -197,6 +223,10 @@ internal sealed record CommandLine(
                                you had opens again.
                                The installer does not touch your data.
                                With --quiet it does not open it: it installs and ends.
+            --fetch            With --update: only downloads what changed, with BAXY open, and says how far it is
+                               in update-progress.json beside this installer. It changes nothing and closes nothing.
+            --release <url>    With --update: applies the release published at that address (its signed
+                               release.json), not the one this installer brings, when this installer is enough for it.
             --help, -h, /?     Shows this help.
 
           Exit code:

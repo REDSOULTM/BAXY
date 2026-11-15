@@ -686,6 +686,208 @@ public sealed class BaxyUpdateHandlerTests
         Assert.That(Directory.Exists(Path.Combine(_data, "updates")), Is.False);
     }
 
+    // AUT2: the agreement a release brings (scripts/build_github_release.py, publish_agreement) and the installer that is
+    // already in the folder, the copy that uninstalls (src/Baxy.Installer/WindowsIntegration.cs, Register).
+    private const string Spanish = "BAXY: acuerdo de licencia\nTexto.";
+    private const string English = "BAXY: license agreement\nText.";
+
+    private static Dictionary<string, byte[]> AgreementFiles() => new()
+    {
+        ["BAXY-acuerdo-es.txt"] = Encoding.UTF8.GetBytes(Spanish),
+        ["BAXY-acuerdo-en.txt"] = Encoding.UTF8.GetBytes(English),
+    };
+
+    // release.json of 1.4.0 as AUT2 writes it: with its oldest installer and its agreement.
+    private static Signed WithAgreement(string oldest = "1.3.2", string spanish = Spanish)
+    {
+        string Text(string name, string text) => $$"""{"file":"{{name}}","bytes":{{Encoding.UTF8.GetByteCount(text)}},"sha256":"{{Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(text)))}}"}""";
+        string fields = $$""","installerMin":"{{oldest}}","agreement":{"sha256":"{{BaxyUpdateHandler.AgreementFingerprint(spanish, English)}}","es":{{Text("BAXY-acuerdo-es.txt", spanish)}},"en":""" + Text("BAXY-acuerdo-en.txt", English) + "}}";
+        Signed plain = Signed.For("1.4.0");
+        string manifest = Encoding.UTF8.GetString(plain.Manifest);
+        byte[] bytes = Encoding.UTF8.GetBytes(manifest[..^1] + fields);
+        return new Signed(bytes, Encoding.ASCII.GetBytes(Convert.ToBase64String(Owner.SignData(bytes, HashAlgorithmName.SHA256)) + "\n"));
+    }
+
+    // An installed BAXY whose installer copy and license texts are those of a given version and agreement.
+    private string InstalledWith(string version, string spanish = Spanish, string? accepted = null)
+    {
+        string licenses = Path.Combine(_root, "licenses");
+        Directory.CreateDirectory(licenses);
+        File.WriteAllText(Path.Combine(licenses, "BAXY-licencia-es.txt"), spanish);
+        File.WriteAllText(Path.Combine(licenses, "BAXY-license-en.txt"), English);
+        File.WriteAllText(Path.Combine(licenses, BaxyUpdateHandler.AcceptedAgreementFile),
+            (accepted ?? BaxyUpdateHandler.AgreementFingerprint(spanish, English)) + "\n");
+        // A real exe with that product version: this test assembly's own host is not; any signed .NET exe stamped with a
+        // version would do, so the test stamps nothing and reads the version the handler reads (FileVersionInfo).
+        string installer = Path.Combine(_root, "BAXY-Instalador.exe");
+        File.Copy(Environment.ProcessPath!, installer, overwrite: true);
+        return System.Diagnostics.FileVersionInfo.GetVersionInfo(installer).ProductVersion ?? version;
+    }
+
+    // The installer's --fetch as a test runs it: it writes its progress beside itself, as FetchProgress does, and ends.
+    private static Func<ProcessStartInfo, CancellationToken, Task<int?>> Fetches(List<ProcessStartInfo> ran, string phase = "fetched",
+        string? reason = null) => (start, _) =>
+    {
+        ran.Add(start);
+        string progress = Path.Combine(Path.GetDirectoryName(start.FileName)!, BaxyUpdateHandler.UpdateProgressFile);
+        File.WriteAllText(progress, $$"""{"version":"1.4.0","phase":"{{phase}}","done":94,"total":94,"downloaded":90,"reason":{{(reason is null ? "null" : $"\"{reason}\"")}}}""");
+        return Task.FromResult<int?>(phase == "fetched" ? 0 : 1);
+    };
+
+    [Test]
+    public async Task ANewAgreementIsAskedForBeforeAnythingIsDownloadedAndItsTextsAreTheSignedOnes()
+    {
+        // AUT2: the agreement is accepted by voice (NativeTurnLoop.AgreementHeld); until then nothing is installed.
+        Mark(GitHubMarker);
+        InstalledWith("1.3.2", spanish: "BAXY: el acuerdo de antes");
+        List<ProcessStartInfo> started = [];
+        List<ProcessStartInfo> ran = [];
+        Server server = new(Release("v1.4.0", signed: WithAgreement()), files: AgreementFiles());
+        var handler = Handler(server, started, run: Fetches(ran));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        JsonElement agreement = outcome.Result!.Value.GetProperty("agreement");
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo(BaxyUpdateHandler.AgreementNew));
+            Assert.That(agreement.GetProperty("recorded").GetBoolean(), Is.True);
+            Assert.That(File.ReadAllText(agreement.GetProperty("es").GetString()!), Is.EqualTo(Spanish));
+            Assert.That(File.ReadAllText(agreement.GetProperty("en").GetString()!), Is.EqualTo(English));
+            Assert.That(agreement.GetProperty("fingerprint").GetString(), Is.EqualTo(BaxyUpdateHandler.AgreementFingerprint(Spanish, English)));
+            Assert.That(started, Is.Empty);
+            Assert.That(ran, Is.Empty);
+            Assert.That(server.Asked.Any(url => url.EndsWith("/BAXY-Instalador.exe", StringComparison.Ordinal)), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task AnAgreementTextThatIsNotTheSignedOneIsNeverOffered()
+    {
+        Mark(GitHubMarker);
+        Dictionary<string, byte[]> files = AgreementFiles();
+        files["BAXY-acuerdo-es.txt"] = Encoding.UTF8.GetBytes("BAXY: otro texto");
+        var handler = Handler(new Server(Release("v1.4.0", signed: WithAgreement()), files: files), run: Fetches([]));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        Assert.That(outcome.ErrorCode, Is.EqualTo("baxy_update_not_signed"));
+        Assert.That(outcome.Result!.Value.GetProperty("signature").GetString(), Is.EqualTo("agreement"));
+    }
+
+    [Test]
+    public async Task TheInstalledInstallerAppliesTheReleaseAfterDownloadingWithBaxyOpenAndNoInstallerIsDownloaded()
+    {
+        // AUT2: 81 MB less per update, and BAXY closes only for the swap.
+        Mark(GitHubMarker);
+        string exitName = @"Local\BAXY.Tests.UpdateExit." + Guid.NewGuid().ToString("N");
+        using var exit = new EventWaitHandle(false, EventResetMode.AutoReset, exitName);
+        string own = InstalledWith("1.3.2");
+        List<ProcessStartInfo> started = [];
+        List<ProcessStartInfo> ran = [];
+        bool exitAskedWhileFetching = false;
+        Func<ProcessStartInfo, CancellationToken, Task<int?>> fetches = Fetches(ran);
+        Server server = new(Release("v1.4.0", signed: WithAgreement(oldest: GitHubLatestRelease.ParseVersion(own)!.ToString(3))), files: AgreementFiles());
+        var handler = Handler(server, started, exitName, run: async (start, token) =>
+        {
+            exitAskedWhileFetching = exit.WaitOne(0);
+            return await fetches(start, token);
+        });
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        string release = "https://github.com/REDSOULTM/BAXY/releases/download/v1.4.0/";
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(server.Asked.Any(url => url.EndsWith("/BAXY-Instalador.exe", StringComparison.Ordinal)), Is.False);
+            Assert.That(ran.Single().ArgumentList, Is.EqualTo(new[] { "--update", "--dir", Path.GetFullPath(_root), "--release", release, "--fetch" }));
+            Assert.That(started.Single().ArgumentList, Is.EqualTo(new[] { "--update", "--dir", Path.GetFullPath(_root), "--release", release }));
+            Assert.That(started.Single().FileName, Does.StartWith(Path.Combine(_data, "updates")));
+            Assert.That(exitAskedWhileFetching, Is.False, "BAXY stays open while it downloads");
+            Assert.That(exit.WaitOne(0), Is.True);
+            Assert.That(outcome.Result!.Value.GetProperty("installerDownloaded").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("fetched").GetProperty("downloaded").GetInt64(), Is.EqualTo(90));
+        });
+    }
+
+    [Test]
+    public async Task AnInstalledInstallerOlderThanTheReleaseSaysIsReplacedByTheReleasesOwn()
+    {
+        Mark(GitHubMarker);
+        InstalledWith("1.3.2");
+        List<ProcessStartInfo> started = [];
+        List<ProcessStartInfo> ran = [];
+        Server server = new(Release("v1.4.0", signed: WithAgreement(oldest: "99.0.0")), files: AgreementFiles());
+        var handler = Handler(server, started, run: Fetches(ran));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+            Assert.That(server.Asked.Any(url => url.EndsWith("/BAXY-Instalador.exe", StringComparison.Ordinal)), Is.True);
+            Assert.That(ran.Single().ArgumentList, Is.EqualTo(new[] { "--update", "--dir", Path.GetFullPath(_root), "--fetch" }));
+            Assert.That(started.Single().ArgumentList, Is.EqualTo(new[] { "--update", "--dir", Path.GetFullPath(_root) }));
+        });
+    }
+
+    [Test]
+    public async Task AReleaseWhoseFilesJsonWasNotUploadedIsAppliedByItsOwnInstaller()
+    {
+        // Revisión (AUT2): the installed installer reads files.json from the release; one not uploaded would refuse it.
+        Mark(GitHubMarker);
+        string own = InstalledWith("1.3.2");
+        List<ProcessStartInfo> started = [];
+        Server server = new(Release("v1.4.0", signed: WithAgreement(oldest: GitHubLatestRelease.ParseVersion(own)!.ToString(3)), filesJson: false),
+            files: AgreementFiles());
+        var handler = Handler(server, started, run: Fetches([]));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+        Assert.That(server.Asked.Any(url => url.EndsWith("/BAXY-Instalador.exe", StringComparison.Ordinal)), Is.True);
+        Assert.That(started.Single().ArgumentList, Does.Not.Contain("--release"));
+    }
+
+    [Test]
+    public async Task ADownloadThatFailsWithBaxyOpenLeavesItOpenAndStartsNothing()
+    {
+        Mark(GitHubMarker);
+        InstalledWith("1.3.2");
+        string exitName = @"Local\BAXY.Tests.UpdateExit." + Guid.NewGuid().ToString("N");
+        using var exit = new EventWaitHandle(false, EventResetMode.AutoReset, exitName);
+        List<ProcessStartInfo> started = [];
+        var handler = Handler(new Server(Release("v1.4.0", signed: WithAgreement(oldest: "99.0.0")), files: AgreementFiles()), started,
+            exitName, run: Fetches([], phase: "failed", reason: "network"));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.ErrorCode, Is.EqualTo("baxy_update_download_failed"));
+            Assert.That(outcome.Result!.Value.GetProperty("reason").GetString(), Is.EqualTo("network"));
+            Assert.That(started, Is.Empty);
+            Assert.That(exit.WaitOne(0), Is.False);
+        });
+    }
+
+    [Test]
+    public async Task AReleaseWithoutAnOldestInstallerGoesAsBeforeWithNoSeparateDownload()
+    {
+        // The 1.5.2 and 1.5.3 published: their release.json names neither, and their installer has no --fetch.
+        Mark(GitHubMarker);
+        List<ProcessStartInfo> started = [];
+        List<ProcessStartInfo> ran = [];
+        var handler = Handler(new Server(Release("v1.4.0")), started, run: Fetches(ran));
+
+        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("install"), CancellationToken.None);
+
+        Assert.That(outcome.Succeeded, Is.True, outcome.ErrorCode);
+        Assert.That(ran, Is.Empty);
+        Assert.That(started.Single().ArgumentList, Is.EqualTo(new[] { "--update", "--dir", Path.GetFullPath(_root) }));
+    }
+
     private string App() => Path.Combine(_root, "app");
 
     private void Mark(string json) => File.WriteAllText(Path.Combine(_root, BaxyDistribution.FileName), json);
@@ -704,7 +906,8 @@ public sealed class BaxyUpdateHandlerTests
         string? exitName = null,
         TimeSpan? stall = null,
         TimeSpan? budget = null,
-        IReadOnlyList<string>? keys = null) => new(
+        IReadOnlyList<string>? keys = null,
+        Func<ProcessStartInfo, CancellationToken, Task<int?>>? run = null) => new(
         _data,
         BaxyDistribution.Read(App()),
         new Version(1, 3, 2),
@@ -717,13 +920,14 @@ public sealed class BaxyUpdateHandlerTests
         exitName ?? @"Local\BAXY.Tests.UpdateExit.none." + Guid.NewGuid().ToString("N"),
         stall,
         budget,
-        keys ?? OwnerKeys);
+        keys ?? OwnerKeys,
+        run);
 
     private static string Asset(string tag, string name) => $"https://github.com/REDSOULTM/BAXY/releases/download/{tag}/{name}";
 
     // GitHub's answer for a release: its installer with the digest GitHub computed of what was uploaded, and (FIR1) its
     // release.json and release.json.sig, by default the owner's for the tag's version.
-    private static string Release(string tag, string flags = "{}", Signed? signed = null, byte[]? digestOf = null)
+    private static string Release(string tag, string flags = "{}", Signed? signed = null, byte[]? digestOf = null, bool filesJson = true)
     {
         string digest = Convert.ToHexStringLower(SHA256.HashData(digestOf ?? InstallerBytes));
         signed ??= Signed.For(tag.TrimStart('v'));
@@ -732,6 +936,12 @@ public sealed class BaxyUpdateHandlerTests
         if (signed.Signature is { } signature)
         {
             files += $$""",{"name":"release.json.sig","size":{{signature.Length}},"digest":"sha256:0","browser_download_url":"{{Asset(tag, "release.json.sig")}}"}""";
+        }
+
+        if (filesJson)
+        {
+            // AUT2: files.json, uploaded beside release.json (an installer that is not the release's own reads it).
+            files += $$""",{"name":"files.json","size":2,"digest":"sha256:0","browser_download_url":"{{Asset(tag, "files.json")}}"}""";
         }
 
         string assets = $$"""[{"name":"BAXY-Instalador.exe","size":{{(digestOf ?? InstallerBytes).Length}},"digest":"sha256:{{digest}}","browser_download_url":"{{Asset(tag, "BAXY-Instalador.exe")}}"},{{files}}]""";
@@ -776,7 +986,8 @@ public sealed class BaxyUpdateHandlerTests
     }
 
     /// <summary>GitHub's API and its download, from memory.</summary>
-    private sealed class Server(string release, byte[]? installer = null, Stream? body = null) : HttpMessageHandler
+    private sealed class Server(string release, byte[]? installer = null, Stream? body = null, Dictionary<string, byte[]>? files = null)
+        : HttpMessageHandler
     {
         internal List<string> Asked { get; } = [];
 
@@ -794,6 +1005,8 @@ public sealed class BaxyUpdateHandlerTests
                     ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(signed.Manifest) }
                 : url.EndsWith("/release.json.sig", StringComparison.Ordinal) && signed?.Signature is { } signature
                     ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(signature) }
+                : files?.FirstOrDefault(file => url.EndsWith("/" + file.Key, StringComparison.Ordinal)).Value is { } file
+                    ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(file) }
                 : url.EndsWith("/BAXY-Instalador.exe", StringComparison.Ordinal)
                     ? new HttpResponseMessage(HttpStatusCode.OK)
                     {

@@ -52,6 +52,17 @@ DISTRIBUTION = "distribution.json"
 # SHA-256 and place in the parts. The installer carries it and, over a BAXY already installed, downloads only the files that
 # differ, each with a Range request into the same parts (RFC 9110 §14.2); a first install still takes the parts whole.
 FILES = "files.json"
+# AUT2 (orden del dueño, 13-11-2026: «No debe volver a descargar nada que ya exista»): the installer a BAXY already has applies a
+# newer signed release itself (BAXY-Instalador.exe --update --release <its address>), so the 81 MB installer is downloaded only
+# when the installed one is older than this: the first version whose installer reads a release other than its own. Raise it
+# when a release needs what an older installer does not do.
+INSTALLER_MIN = "1.5.3"
+# AUT2: the license agreement of this release, both languages (src/Baxy.Installer/Assets/license, the texts the installer
+# carries and copies), published beside the parts and named in the signed release.json by its fingerprint, as the installer
+# keeps what was accepted (src/Baxy.Installer/AcceptedAgreement.cs): a BAXY that reads a new one asks for it by voice before it
+# updates, and can read it or open it before the person accepts it.
+AGREEMENT = REPOSITORY / "src" / "Baxy.Installer" / "Assets" / "license"
+AGREEMENT_FILES = {"es": "BAXY-acuerdo-es.txt", "en": "BAXY-acuerdo-en.txt"}
 PART_BYTES = 1_900_000_000
 STORED = {".gguf", ".onnx", ".bin", ".zip", ".png", ".jpg", ".woff2"}
 CHUNK = 1 << 24
@@ -157,8 +168,27 @@ def build_manifest(depot: Path, output: Path, version: str, part_bytes: int = PA
         # Signed with the rest: the installer takes a file's hash from files.json only when files.json is this one.
         "files": {"file": FILES, "bytes": (output / FILES).stat().st_size, "sha256": _sha256(output / FILES)},
     }
+    manifest["installerMin"] = INSTALLER_MIN
+    manifest["agreement"] = publish_agreement(output)
     (output / "release.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     return manifest
+
+
+def agreement_fingerprint(spanish: str, english: str) -> str:
+    """The fingerprint the installer keeps of an accepted agreement (AcceptedAgreement.Of): SHA-256 of both texts, LF line
+    endings, joined by a NUL, in UTF-8."""
+    whole = spanish.replace("\r\n", "\n") + "\0" + english.replace("\r\n", "\n")
+    return hashlib.sha256(whole.encode("utf-8")).hexdigest()
+
+
+def publish_agreement(output: Path, source: Path = AGREEMENT) -> dict:
+    """Copies the agreement's two texts to ``output`` and says them for release.json: the fingerprint and each file."""
+    texts = {language: (source / f"{language}.txt").read_text(encoding="utf-8-sig") for language in AGREEMENT_FILES}
+    named = {"sha256": agreement_fingerprint(texts["es"], texts["en"])}
+    for language, name in AGREEMENT_FILES.items():
+        (output / name).write_bytes(texts[language].encode("utf-8"))
+        named[language] = {"file": name, "bytes": (output / name).stat().st_size, "sha256": _sha256(output / name)}
+    return named
 
 
 def build_installer(output: Path, version: str, keys: Path = PRODUCT_KEYS) -> Path:
@@ -246,6 +276,10 @@ def build_twin(output: Path, version: str, base_url: str, keys: Path, key_name: 
     (twin / "release.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     # The same parts, so the same files.json, byte for byte (its hash is in the manifest).
     (twin / FILES).write_bytes((output / FILES).read_bytes())
+    # The agreement's texts its release.json names (AUT2), served beside it.
+    agreement = [manifest["agreement"][language]["file"] for language in AGREEMENT_FILES if "agreement" in manifest]
+    for name in agreement:
+        (twin / name).write_bytes((output / name).read_bytes())
     exe = build_installer(twin, version, keys)
     name_installer(twin, exe)
     sign(twin / "release.json", keys, key_name, folder)
@@ -253,7 +287,7 @@ def build_twin(output: Path, version: str, base_url: str, keys: Path, key_name: 
         for part in archive["parts"]:
             if not (served / part["file"]).exists():
                 os.link(output / part["file"], served / part["file"])
-    for name in ("release.json", "release.json.sig", FILES):
+    for name in ("release.json", "release.json.sig", FILES, *agreement):
         (served / name).write_bytes((twin / name).read_bytes())
     return exe
 

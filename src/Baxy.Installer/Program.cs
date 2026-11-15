@@ -106,6 +106,12 @@ internal static partial class Program
 
         ReleaseManifest? manifest = LoadManifest();
         FileManifest? files = manifest is null ? null : LoadFiles(manifest);
+        // AUT2: the installer BAXY already has, given a newer release (--release), or BAXY's own download first (--fetch).
+        if (command.Update && paths.HoldsBaxy && (command.Release is not null || command.Fetch))
+        {
+            return Applied(command, manifest, files, paths);
+        }
+
         if (command.Quiet)
         {
             return manifest is null ? Failure : InstallQuietly(manifest, files, paths, command.Update);
@@ -381,6 +387,112 @@ internal static partial class Program
         {
             voice?.Dispose();
         }
+    }
+
+    /// <summary>
+    /// AUT2: --fetch and --release, with no window ever. The release is this installer's own, or with --release a newer
+    /// one it applies (<see cref="SignedRelease.ReadAsync"/>: refused when this installer is not enough for it, so BAXY
+    /// downloads that release's installer). --fetch only downloads, with BAXY open, and says how far it is
+    /// (<see cref="FetchProgress"/>); without it, the update with BAXY closed (<see cref="UpdateSilently"/>), which then
+    /// finds what --fetch left. An agreement this installation did not accept is never shown here: BAXY asks for it by
+    /// voice before starting this, and without it nothing is installed.
+    /// </summary>
+    private static int Applied(CommandLine command, ReleaseManifest? carried, FileManifest? carriedFiles, InstallPaths paths)
+    {
+        string told = Path.GetDirectoryName(Environment.ProcessPath!)!;
+        using HttpClient http = new() { Timeout = Timeout.InfiniteTimeSpan };
+        string own = typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+            ?? "0.0.0";
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + own.Split('+')[0]);
+        ReleaseManifest? manifest = carried;
+        FileManifest? files = carriedFiles;
+        string? refused = null;
+        if (command.Release is { } release)
+        {
+            try
+            {
+                (manifest, files) = SignedRelease.ReadAsync(http, new Uri(release), SignedRelease.BuiltInKeys, own,
+                    AcceptedAgreement.Current, CancellationToken.None).GetAwaiter().GetResult();
+            }
+#pragma warning disable CA1031 // Whatever it was, nothing was changed, and BAXY is told why.
+            catch (Exception failure)
+#pragma warning restore CA1031
+            {
+                Log(failure.ToString());
+                refused = failure is InstallerTooOldException ? TooOld : SilentUpdate.Reason(Failures.Classify(failure, () => false));
+            }
+        }
+
+        if (refused is null && (manifest is null || AcceptedAgreement.MustBeAccepted(paths, AcceptedAgreement.Read(paths))))
+        {
+            refused = manifest is null ? "other" : NotAccepted;
+        }
+
+        if (refused is not null)
+        {
+            Log($"not updated ({refused}): nothing was changed");
+            if (command.Fetch)
+            {
+                new FetchProgress(told, manifest?.Version ?? "?").Fail(refused, 0);
+            }
+            else
+            {
+                LeaveWritten(new UpdateOutcome(SignedRelease.InstalledVersion(paths.App)?.ToString(3) ?? "0.0.0",
+                    manifest?.Version ?? "?", UpdateOutcome.Failed, refused, 0, 0,
+                    DateTimeOffset.Now.ToString("o", CultureInfo.InvariantCulture)));
+                _ = OpenAgain(paths);
+            }
+
+            return Failure;
+        }
+
+        return command.Fetch ? FetchSilently(manifest!, files, paths, http, told) : UpdateSilently(manifest!, files, paths, !command.NoVoice);
+    }
+
+    /// <summary>AUT2: what --release says when this installer is not the one for that release (outcome «reason»).</summary>
+    internal const string TooOld = "installer_too_old";
+
+    /// <summary>AUT2: the agreement this installation accepted is not the one this release brings.</summary>
+    internal const string NotAccepted = "agreement_not_accepted";
+
+    private static int FetchSilently(ReleaseManifest manifest, FileManifest? files, InstallPaths paths, HttpClient http, string told)
+    {
+        IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
+        ReleaseManifest chosen = manifest.ForMachine(adapters);
+        LogMachine(chosen, adapters, paths);
+        FetchProgress progress = new(told, chosen.Version);
+        Installation installation = new(chosen, paths, new PartFetcher(http), files: files, ranges: new RangeFetcher(http));
+        try
+        {
+            SignedRelease.ConfirmAsync(http, manifest, paths, SignedRelease.BuiltInKeys, CancellationToken.None).GetAwaiter().GetResult();
+            installation.FetchAsync(progress.Report, CancellationToken.None).GetAwaiter().GetResult();
+            long total = installation.NeededBytes;
+            progress.End(installation.DownloadedBytes, total);
+            Log($"fetched {chosen.Version} with BAXY open: {installation.DownloadedBytes} bytes downloaded of {total} needed");
+            return 0;
+        }
+#pragma warning disable CA1031 // The progress file is all the BAXY that waits has.
+        catch (Exception failure)
+#pragma warning restore CA1031
+        {
+            Log(failure.ToString());
+            progress.Fail(SilentUpdate.Reason(Failures.Classify(failure, () => false)), installation.DownloadedBytes);
+            return Failure;
+        }
+    }
+
+    // The BAXY a refused update leaves as it was, opened again as the update would have. Revisión ciega (AUT2): the BAXY
+    // that started this was asked to close and may still be closing; it is given the minute SilentUpdate gives it (else it
+    // closed after this looked and was left closed), and one that stays open (busy) is left as it is.
+    private static StartedBaxy? OpenAgain(InstallPaths paths)
+    {
+        Stopwatch closing = Stopwatch.StartNew();
+        while (Voice.BaxyIsOpen() && closing.Elapsed < TimeSpan.FromSeconds(60))
+        {
+            Thread.Sleep(500);
+        }
+
+        return Voice.BaxyIsOpen() ? null : Open(paths);
     }
 
     /// <summary>

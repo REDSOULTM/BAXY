@@ -279,12 +279,16 @@ internal sealed class Installation(
     private long downloaded;
     private int keptFiles;
     private int takenFiles;
+    private long neededBytes;
 
     /// <summary>
     /// The bytes this run downloaded of BAXY: the parts taken whole and, of the files taken alone, all the server sent for
     /// them. What was here from an earlier try does not count.
     /// </summary>
     internal long DownloadedBytes => Interlocked.Read(ref downloaded) + (ranges?.ReceivedBytes ?? 0);
+
+    /// <summary>AUT2: what this machine needed of the release, in bytes as they travel (here already or downloaded).</summary>
+    internal long NeededBytes => Interlocked.Read(ref neededBytes);
 
     /// <summary>The files the folder already had as the release has them, taken from it and not downloaded.</summary>
     internal int KeptFiles => keptFiles;
@@ -351,27 +355,9 @@ internal sealed class Installation(
         BringBackAnInterruptedSwap();
         cancellation.ThrowIfCancellationRequested();
         RemoveIfPresent(paths.Staging);
-        InstallPaths.MarkAsBaxys(paths.Downloads);
         IReadOnlyList<ReleaseArchive> archives = manifest.Archives;
-        Dictionary<ReleaseArchive, ArchivePlan> plans = ranges is null
-            ? []
-            : await FileDelta.PlanAsync(manifest, files, paths, cancellation).ConfigureAwait(false);
-        Dictionary<ReleaseArchive, List<string>> parts;
-        while (true)
-        {
-            try
-            {
-                RefuseWithoutSpace(archives, plans);
-                parts = await DownloadAsync(archives, plans, progress, cancellation).ConfigureAwait(false);
-                break;
-            }
-            catch (RangeRefusedException refused) when (plans.Count > 0)
-            {
-                // A server that does not answer ranges: the parts whole, as a first install takes them.
-                Program.Log(refused.Message + ": the parts are downloaded whole");
-                plans.Clear();
-            }
-        }
+        (Dictionary<ReleaseArchive, ArchivePlan> plans, Dictionary<ReleaseArchive, List<string>> parts) =
+            await PlanAndDownloadAsync(progress, cancellation).ConfigureAwait(false);
 
         RemoveIfPresent(paths.Staging);
         InstallPaths.MarkAsBaxys(paths.Staging);
@@ -437,6 +423,43 @@ internal sealed class Installation(
         }
 
         CleanUp(paths.Downloads);
+    }
+
+    /// <summary>
+    /// AUT2 (encargo: «que la bajada de los ficheros la haga BAXY abierta […] y que se cierre sólo para el cambio de
+    /// carpeta»): only what <see cref="RunAsync"/> downloads, with BAXY still open, into the same downloads folder. Nothing
+    /// of the installation is touched; the run that follows, with BAXY closed, finds every file here (each read again by
+    /// its hash before it is used) and only makes the new folder and swaps it in. A cut leaves what came, for next time.
+    /// </summary>
+    internal async Task FetchAsync(Action<InstallPhase, long, long> progress, CancellationToken cancellation)
+    {
+        paths.RefuseWhatIsNotBaxys();
+        cancellation.ThrowIfCancellationRequested();
+        _ = await PlanAndDownloadAsync(progress, cancellation).ConfigureAwait(false);
+    }
+
+    private async Task<(Dictionary<ReleaseArchive, ArchivePlan> Plans, Dictionary<ReleaseArchive, List<string>> Parts)> PlanAndDownloadAsync(
+        Action<InstallPhase, long, long> progress, CancellationToken cancellation)
+    {
+        InstallPaths.MarkAsBaxys(paths.Downloads);
+        IReadOnlyList<ReleaseArchive> archives = manifest.Archives;
+        Dictionary<ReleaseArchive, ArchivePlan> plans = ranges is null
+            ? []
+            : await FileDelta.PlanAsync(manifest, files, paths, cancellation).ConfigureAwait(false);
+        while (true)
+        {
+            try
+            {
+                RefuseWithoutSpace(archives, plans);
+                return (plans, await DownloadAsync(archives, plans, progress, cancellation).ConfigureAwait(false));
+            }
+            catch (RangeRefusedException refused) when (plans.Count > 0)
+            {
+                // A server that does not answer ranges: the parts whole, as a first install takes them.
+                Program.Log(refused.Message + ": the parts are downloaded whole");
+                plans.Clear();
+            }
+        }
     }
 
     /// <summary>
@@ -508,6 +531,7 @@ internal sealed class Installation(
         CancellationToken cancellation)
     {
         long total = archives.Sum(archive => plans.TryGetValue(archive, out ArchivePlan? plan) ? plan.NeededBytes : archive.Bytes);
+        Interlocked.Exchange(ref neededBytes, total);
         long done = 0;
         bool first = true;
         bool whole = false;

@@ -1222,6 +1222,123 @@ public sealed class NativeTurnLoopTests
         });
     }
 
+    // AUT2 (encargo: «sólo con un "sí, lo acepto" de la persona […] deja apuntada la aceptación con la huella del texto y
+    // sigue sin ventana. Sin ese "sí" no se actualiza»). The engine stops an update whose agreement this installation did
+    // not accept; the App holds it for the person's answer in every mode (Bypass too), tells the mind that what waits is
+    // an agreement (its own closed question), and with their acceptance writes the fingerprint and runs the update anew;
+    // read and open keep it waiting; anything else drops it, with nothing written.
+    [TestCase("yes", false)]
+    [TestCase("yes", true)]
+    [TestCase("read", true)]
+    [TestCase("open", false)]
+    [TestCase("no", true)]
+    public async Task AnUpdateWithANewAgreementRunsOnlyWithTheirAcceptance(string answer, bool bypass)
+    {
+        const string Fingerprint = "ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12";
+        using var fake = new FakeMind();
+        fake.Script(CallsThenReplies("baxy.update", new JsonObject { ["action"] = "install" },
+            "Para actualizarme hay un acuerdo nuevo; ¿te lo leo, lo abro o lo aceptas?"));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        CoreProcessClient core = ReadyCore();
+        var sent = new List<string>();
+        core.AnswersForTests = (prepared, _) =>
+        {
+            sent.Add(prepared.InvocationId);
+            bool first = sent.Count == 1;
+            string result = first
+                ? """{"version":1,"latest":"1.5.4","agreement":{"fingerprint":""" + "\"" + Fingerprint + "\"" + ""","recorded":false,"es":"C:\\a\\BAXY-acuerdo-es.txt","en":"C:\\a\\BAXY-acuerdo-en.txt"}}"""
+                : """{"version":1,"latest":"1.5.4","installerStarted":true,"delivered":true}""";
+            return new OperationResponse(ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"), prepared.MissionId,
+                prepared.InvocationId, first ? OperationStatuses.Failed : OperationStatuses.Completed, result, !first, false,
+                JsonDocument.Parse(result).RootElement.Clone(), first ? NativeTurnLoop.AgreementCode : null);
+        };
+        var accepted = new List<string>();
+        var read = new List<string>();
+        var opened = new List<string>();
+        var steps = new List<NativeTurnStep>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = () => core,
+            Mind = () => mind,
+            Registry = static () => new RetryableOperationRegistry(),
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            StepCompleted = steps.Add,
+            AcceptAgreement = fingerprint =>
+            {
+                accepted.Add(fingerprint);
+                return null;
+            },
+            ReadAgreement = path =>
+            {
+                read.Add(path);
+                return "read_aloud";
+            },
+            OpenAgreement = path =>
+            {
+                opened.Add(path);
+                return true;
+            },
+        });
+        Baxy.Kernel.Policy.ConfirmationModeStore.Write(MemoryOperationProtector.ResolveDataRoot(),
+            bypass ? Baxy.Kernel.Policy.ConfirmationMode.Bypass : Baxy.Kernel.Policy.ConfirmationMode.Normal);
+
+        await loop.RunAsync("actualízate", Stopwatch.GetTimestamp(), CancellationToken.None);
+        NativeTurnStep held = steps.Single();
+        fake.Script(CallsThenReplies(MindStep.ConfirmationAnswer, new JsonObject { ["answer"] = answer }, "Listo."));
+        await loop.RunAsync("sí, lo acepto", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        IReadOnlyList<JsonObject> decided = fake.Requests("turn.decide");
+        JsonObject? pending = decided[^1]["pendingConfirmation"] as JsonObject;
+        Assert.Multiple(() =>
+        {
+            Assert.That(held.Status, Is.EqualTo("needs_confirmation"));
+            Assert.That(held.Observation, Does.Contain(NativeTurnLoop.AgreementCause)
+                .And.Not.Contain(Fingerprint).And.Not.Contain("acuerdo-es"));
+            Assert.That(pending?["agreement"]?.GetValue<bool>(), Is.True, "the mind reads their answer as the agreement's");
+            Assert.That(accepted, answer == "yes" ? Is.EqualTo(new[] { Fingerprint }) : Is.Empty);
+            Assert.That(sent, Has.Count.EqualTo(answer == "yes" ? 2 : 1));
+            Assert.That(sent.Distinct().Count(), Is.EqualTo(sent.Count), "the update runs again as a new invocation");
+            Assert.That(read, answer == "read" ? Has.Count.EqualTo(1) : Is.Empty);
+            Assert.That(opened, answer == "open" ? Is.EqualTo(new[] { @"C:\a\BAXY-acuerdo-es.txt" }).Or.EqualTo(new[] { @"C:\a\BAXY-acuerdo-en.txt" }) : Is.Empty);
+            Assert.That(loop.HasPendingConfirmation, Is.EqualTo(answer is "read" or "open"));
+            Assert.That(steps.Last().Observation, answer switch
+            {
+                "yes" => Does.Contain("installerStarted"),
+                "no" => Does.Contain("declined_by_person"),
+                _ => Does.Contain("needs_confirmation"),
+            });
+        });
+    }
+
+    [Test]
+    public async Task TheModelsOwnReadOrOpenIsRefusedWhenNoAgreementWaits()
+    {
+        using var fake = new FakeMind();
+        fake.Script(CallsThenReplies(MindStep.ConfirmationAnswer, new JsonObject { ["answer"] = "read" }, "Listo."));
+        await using MindSidecarClient mind = await FakeMind.StartClientAsync();
+        var steps = new List<NativeTurnStep>();
+        var loop = new NativeTurnLoop(new NativeTurnLoop.Host
+        {
+            Core = ReadyCore,
+            Mind = () => mind,
+            Registry = static () => new RetryableOperationRegistry(),
+            MemoryProtector = static () => null,
+            Publish = static (_, _) => { },
+            Fail = static _ => { },
+            Notice = static _ => { },
+            NoticeHeard = static () => false,
+            StepCompleted = steps.Add,
+        });
+
+        await loop.RunAsync("léemelo", Stopwatch.GetTimestamp(), CancellationToken.None);
+
+        Assert.That(steps.Single().Observation, Does.Contain("invalid_arguments"));
+    }
+
     // ESE6 (GUA3/ESE5 lote A, Esencial with the memory off as it is born: «Recuerda que mi perro se llama Chispo.» → «sí»
     // saved nothing in 18 of 18; ESE5's stub turned the memory's tools on in the profile and left its own switch off, so
     // the save came back memory_disabled and the 4B said «ya tengo la memoria encendida»). A memory.save off in the

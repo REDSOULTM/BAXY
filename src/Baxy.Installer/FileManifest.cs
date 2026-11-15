@@ -27,6 +27,9 @@ internal sealed record ReleaseFiles(string File, long Bytes, string Sha256);
 /// </summary>
 internal sealed partial record FileManifest(string Version, IReadOnlyList<ReleaseFile> Files)
 {
+    /// <summary>AUT2: the most of a files.json downloaded (1.3 MB for some 4,900 files): its signed size rules first.</summary>
+    internal const int Limit = 16 << 20;
+
     internal static FileManifest Parse(Stream json)
     {
         FileManifest manifest = JsonSerializer.Deserialize(json, ReleaseManifestJson.Default.FileManifest)

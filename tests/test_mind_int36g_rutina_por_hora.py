@@ -90,7 +90,8 @@ def test_turning_one_off_asks_it_by_what_it_is(tmp_path: Path) -> None:
 
 
 def test_a_new_routine_is_made_as_before(tmp_path: Path) -> None:
-    mind, server = _opened(tmp_path, [{"a": "new"}], [TIMED])
+    # RUT17: without SAVED, the same routine, which BAXY now says they have (test_mind_rut17_duplicada)
+    mind, server = _opened(tmp_path, [{"a": "new"}], [TIMED], routines=[COFFEE, HEADSET])
     asked = mind.decide(1, f"quiero que los lunes, miércoles y viernes a las 10 de la mañana me digas {TEXT}")
     assert asked["kind"] == "conversation" and "¿La guardo?" in asked["reply"]
     assert len(server.have_asked) == 1
@@ -117,7 +118,7 @@ def test_unreadable_goes_on_as_before(tmp_path: Path) -> None:
 def test_the_schema_is_closed_values_and_one_text(tmp_path: Path) -> None:
     schema = routine_fill.HAVE_SCHEMA
     assert schema["additionalProperties"] is False and schema["required"] == ["a"]
-    assert set(schema["properties"]["a"]["enum"]) == {"new", "delete", "turn_off", "turn_on", "change", "list", "other"}
+    assert set(schema["properties"]["a"]["enum"]) == {"new", "delete", "turn_off", "turn_on", "change", "list", "no", "other"}
     # the routine by its name, one of theirs or «more than one»: a closed list of values, the 4B wrote the time for a key
     body = routine_fill.have_body([SAVED, COFFEE], "borra la de las 10:00", "es", 0)
     assert body["response_format"]["json_schema"]["schema"]["properties"]["r"]["enum"] == ["10:00", "07:30", "more than one"]
@@ -137,3 +138,23 @@ def test_their_only_routine_with_no_key_is_asked_by_what_it_is(tmp_path: Path) -
     mind, _ = _opened(tmp_path, [{"a": "delete"}], routines=[SAVED])
     asked = mind.decide(1, "borra la de las 10:00")
     assert asked["reply"].startswith("¿Borro esta rutina:") and TEXT in asked["reply"]
+
+
+def test_beside_an_alarm_result_their_routines_at_a_time_are_said(tmp_path: Path) -> None:
+    """Held-out, a new conversation: «bórrame la de las nueve y media» went to the alarms, «no hay alarmas»."""
+    mind, server = _guide_mind(tmp_path, [_call("schedule_alarms", {"action": "list"}),
+                                          {"choices": [{"message": {"content": "Listo."}}]}], [SAVED, COFFEE, HEADSET])
+    mind.decide(1, "bórrame la de las 10:00")
+    mind.continue_turn(2, _receipt({"alarms": []}))
+    facts = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert "rutinas con hora" in facts and "baxy_routines" in facts and TEXT in facts and "Arriba, a desayunar" in facts
+    assert "audífonos" not in facts.split("rutinas con hora", 1)[1]   # a routine with a word has no time
+
+
+def test_beside_a_new_alarm_nothing_is_said(tmp_path: Path) -> None:
+    mind, server = _guide_mind(tmp_path, [_call("schedule_alarms", {"action": "create", "at": "07:00"}),
+                                          {"choices": [{"message": {"content": "Listo."}}]}], [SAVED])
+    mind.decide(1, "pon una alarma a las 7")
+    mind.continue_turn(2, _receipt({"created": True}))
+    facts = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert "rutinas con hora" not in facts

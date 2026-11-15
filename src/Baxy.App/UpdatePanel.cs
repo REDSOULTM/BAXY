@@ -120,6 +120,23 @@ internal sealed class UpdatePanel
         return view;
     }
 
+    /// <summary>
+    /// AUT2: what the last install said of a new license agreement it stopped for (its fingerprint and the texts' paths,
+    /// BaxyUpdateHandler.NewAgreementAsync), for Settings' buttons; null when the last install did not stop for one.
+    /// </summary>
+    internal JsonObject? Agreement
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return _installing is not { IsCompleted: false } && (string?)_installed?["error"] == "baxy_update_agreement_new"
+                    ? _installed["agreement"]?.DeepClone() as JsonObject
+                    : null;
+            }
+        }
+    }
+
     /// <summary>The install running now, or the last one; null before any.</summary>
     internal Task? Installing
     {
@@ -177,6 +194,20 @@ internal sealed class UpdatePanel
             long? total = _known?["downloadBytes"] is JsonValue size && size.TryGetValue(out long bytes) && bytes > 0 ? bytes : null;
             long? here = null;
             bool whole = false;
+            // AUT2: what changed, downloaded with BAXY open by the installer's --fetch: its own count of what this machine
+            // needs and what is here (update-progress.json), once it wrote one in this install.
+            if (DataRoot() is { } root && Fetching(root) is { } fetching)
+            {
+                return new JsonObject
+                {
+                    ["installing"] = true,
+                    ["phase"] = (string?)fetching["phase"] == "fetched" ? "checking" : "downloading",
+                    ["latest"] = (string?)fetching["version"] ?? latest,
+                    ["downloadBytes"] = fetching["total"]?.DeepClone(),
+                    ["downloadedBytes"] = fetching["done"]?.DeepClone(),
+                };
+            }
+
             if (latest is not null && DataRoot() is { } dataRoot)
             {
                 string target = UpdateInstallerFile.Target(dataRoot, latest);
@@ -273,8 +304,25 @@ internal sealed class UpdatePanel
             ? new JsonObject { ["type"] = "update", ["latest"] = known["latest"]?.DeepClone(), ["installed"] = known["installed"]?.DeepClone() }
             : null;
 
+    // AUT2: the installer's --fetch progress written since this install began; null before it wrote any.
+    private JsonObject? Fetching(string dataRoot)
+    {
+        string file = Path.Combine(UpdateInstallerFile.Folder(dataRoot), Baxy.Core.Operations.UpdateInstallerFile.Progress);
+        try
+        {
+            return File.Exists(file) && File.GetLastWriteTimeUtc(file) >= _installBegun ? UpdateProgress.Read(file) : null;
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    private DateTime _installBegun = DateTime.MaxValue;
+
     private async Task RunInstallAsync(CancellationToken cancellationToken)
     {
+        _installBegun = DateTime.UtcNow;
         // Off the caller's thread and out of its lock, as a model's download starts (TunedModel.DownloadAsync).
         await Task.Yield();
         JsonObject ended;

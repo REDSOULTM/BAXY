@@ -9,10 +9,21 @@ export const UPDATE_FAILED: Record<string, Words> = {
     es: 'La descarga del instalador se cortó; BAXY sigue como estaba. Vuelve a pulsar «Buscar actualizaciones» cuando tengas conexión',
     en: 'The installer’s download was cut off; BAXY stays as it was. Press “Check for updates” again once you’re online',
   },
-  // UPD1 (REV10 m2): the disk filled up while the installer came; what came was deleted.
+  // UPD1 (REV10 m2): the disk filled up while the installer came. AUT2: or there is no room for what changed (--fetch
+  // looks before it downloads, and keeps what came for next time), so it says neither «deleted» nor «kept».
   baxy_update_disk_full: {
-    es: 'El disco se llenó mientras bajaba el instalador: borré lo que había bajado y BAXY sigue como estaba. Libera espacio y vuelve a pulsar «Buscar actualizaciones»',
-    en: 'The disk filled up while I was downloading the installer: I deleted what I had downloaded and BAXY stays as it was. Free some space and press “Check for updates” again',
+    es: 'No hay sitio en el disco para la versión nueva: no instalé nada y BAXY sigue como estaba. Libera espacio y vuelve a pulsar «Buscar actualizaciones»',
+    en: 'There’s no room on the disk for the new version: I installed nothing and BAXY stays as it was. Free some space and press “Check for updates” again',
+  },
+  // AUT2: what changed is downloaded with BAXY open (the installer's --fetch); a cut keeps what came.
+  baxy_update_fetch_failed: {
+    es: 'No pude bajar lo que cambió en la versión nueva: no instalé nada y BAXY sigue como estaba. Lo que bajé queda guardado y la próxima vez sigo desde ahí',
+    en: 'I couldn’t download what changed in the new version: I installed nothing and BAXY stays as it was. What I downloaded is kept and next time I go on from there',
+  },
+  // AUT2: the release brings a license agreement this installation did not accept; the buttons below read it or accept it.
+  baxy_update_agreement_new: {
+    es: 'La versión nueva trae un acuerdo de licencia nuevo: para actualizarme tienes que aceptarlo. Puedes leerlo antes',
+    en: 'The new version brings a new license agreement: to update I need you to accept it. You can read it first',
   },
   baxy_update_installer_missing: {
     es: 'La versión nueva no trae instalador para Windows; BAXY sigue como estaba. Vuelve a buscar más tarde',

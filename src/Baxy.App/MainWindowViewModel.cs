@@ -192,6 +192,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 },
                 // Nobody would hear it: the mind is not asked to write a notice.
                 NoticeHeard = NoticeWouldBeHeard,
+                // AUT2: an update's new agreement, accepted by the person, read to them or opened (AgreementAcceptance).
+                AcceptAgreement = AgreementAcceptance.Write,
+                ReadAgreement = path =>
+                {
+                    if (AgreementAcceptance.Text(path) is not { } text)
+                    {
+                        return null;
+                    }
+
+                    // AddMessageCore says it only when BAXY's voice is on (Settings).
+                    AddMessageCore("BAXY", text, isUser: false);
+                    return Settings.VoiceMuted ? "shown" : "read_aloud";
+                },
+                OpenAgreement = AgreementAcceptance.Open,
                 StillReading = () => SoundUnlessMuted(Chime.StillReading),
                 StepCompleted = step =>
                 {

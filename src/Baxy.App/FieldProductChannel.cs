@@ -160,6 +160,95 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         }
     }
 
+    private async Task<JsonObject> AnswerAgreementAsync(JsonObject? body)
+    {
+        if (_updates.Agreement is not { } agreement)
+        {
+            return new JsonObject { ["ok"] = false, ["error"] = "no_agreement_waits" };
+        }
+
+        if ((string?)body?["action"] == "open")
+        {
+            string? text = (string?)agreement[UiLanguage.IsEnglish ? "en" : "es"] ?? (string?)agreement["es"];
+            return new JsonObject { ["ok"] = text is not null && AgreementAcceptance.Open(text) };
+        }
+
+        if ((string?)body?["action"] != "accept")
+        {
+            return new JsonObject { ["ok"] = false, ["error"] = "invalid_arguments" };
+        }
+
+        if ((string?)agreement["fingerprint"] is not { } fingerprint || AgreementAcceptance.Write(fingerprint) is not null)
+        {
+            return new JsonObject { ["ok"] = false, ["error"] = "agreement_not_recorded" };
+        }
+
+        JsonObject installing = await _updates.InstallAsync(_lifetimeCancellation).ConfigureAwait(true);
+        if (_updates.Installing is { IsCompleted: false } running)
+        {
+            WatchUpdateProgress(running);
+        }
+
+        return installing;
+    }
+
+    // AUT2: while an install downloads with BAXY open (the installer's --fetch), how far it is, said and shown as BAXY's
+    // own lines (UpdateProgress), read every second from the file the installer writes, until the install's step ends
+    // (or the button's install, or five minutes past the engine's own limit).
+    private CancellationTokenSource? _progressWatch;
+    private TaskCompletionSource? _progressStep;
+
+    private void WatchUpdateProgress(Task? until = null)
+    {
+        _progressWatch?.Cancel();
+        CancellationTokenSource watch = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeCancellation);
+        watch.CancelAfter(UpdatePanel.InstallTimeout + TimeSpan.FromMinutes(5));
+        _progressWatch = watch;
+        _ = TellUpdateProgressAsync(until, watch.Token);
+    }
+
+    private async Task TellUpdateProgressAsync(Task? until, CancellationToken cancellationToken)
+    {
+        string file;
+        try
+        {
+            file = Path.Combine(Baxy.Core.Operations.UpdateInstallerFile.Folder(MemoryOperationProtector.ResolveDataRoot()),
+                Baxy.Core.Operations.UpdateInstallerFile.Progress);
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException or InvalidOperationException
+            or ArgumentException)
+        {
+            return;
+        }
+
+        UpdateProgress teller = new(UiLanguage.IsEnglish);
+        DateTime begun = DateTime.UtcNow;
+        try
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                // A file an earlier install left is not this one's: only one written since this began is read.
+                JsonObject? progress = File.Exists(file) && File.GetLastWriteTimeUtc(file) >= begun ? UpdateProgress.Read(file) : null;
+                if (teller.Next(progress) is { } line)
+                {
+                    Publish(ItemEvent(_transcript.System(line)));
+                    _ = _viewModel.SayWhenFreeAsync(line, TimeSpan.FromMinutes(2), cancellationToken);
+                }
+
+                if (until is { IsCompleted: true } || (string?)progress?["phase"] is "fetched" or "failed")
+                {
+                    return;
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(true);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The install's step ended, or BAXY is closing for it.
+        }
+    }
+
     // AUT1: the installer was started and BAXY closes for it. When BAXY does not close (it stays busy), the installer
     // gives up after a minute, changes nothing and leaves that written: this BAXY, still open, is the one that tells it.
     // Looked at for two minutes; a BAXY that closed, as it should, never gets here.
@@ -467,9 +556,21 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 return Json(await CheckForUpdateAsync().ConfigureAwait(true));
             // APP1 (UPD-f): the install is a long operation the view reads, not one answer it waits for (UpdatePanel).
             case ("POST", "/update/install"):
-                return Json(await _updates.InstallAsync(_lifetimeCancellation).ConfigureAwait(true));
+            {
+                JsonObject installing = await _updates.InstallAsync(_lifetimeCancellation).ConfigureAwait(true);
+                if (_updates.Installing is { IsCompleted: false } running)
+                {
+                    WatchUpdateProgress(running);
+                }
+
+                return Json(installing);
+            }
             case ("GET", "/update/install"):
                 return Json(_updates.InstallState());
+            // AUT2: Settings' «Leer el acuerdo» and «Acepto el acuerdo: actualizar» for the agreement the last install
+            // stopped for: the button that says «Acepto» is the person's acceptance, as the installer's window was.
+            case ("POST", "/update/agreement"):
+                return Json(await AnswerAgreementAsync(ParseBody(body)).ConfigureAwait(true));
             case ("GET", "/settings/general"):
                 return Json(General());
             // Owner, 2026-11-08: the overlay that says what BAXY does while its window is behind (OverlayPresenter).
@@ -869,6 +970,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private void OnStepStarted(string id, string operation, JsonObject arguments)
     {
+        if (operation == UpdatePanel.Operation && (string?)arguments["action"] == "install")
+        {
+            _progressStep = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            WatchUpdateProgress(_progressStep.Task);
+        }
+
         JsonObject step = FieldStepProjection.Started(id, operation, arguments);
         Publish(ItemEvent(_transcript.Step(step)));
         Publish(StepEvent("start", step));
@@ -876,6 +983,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
     private void OnStepCompleted(NativeTurnStep step)
     {
+        // The watch reads the file once more and ends: the last line («Ya bajé todo») comes right before the end. A step the
+        // App stopped waiting for has not ended in the engine: the watch goes on until the download says it ended.
+        if (step.Operation == UpdatePanel.Operation && step.ErrorCode != "engine_no_answer")
+        {
+            _progressStep?.TrySetResult();
+        }
+
         if (UpdatePanel.StartedInstaller(step))
         {
             _ = TellAnUpdateThatLeftBaxyOpenAsync();

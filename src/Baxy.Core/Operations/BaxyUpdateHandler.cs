@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Baxy.Kernel.Operations;
@@ -48,6 +49,7 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
     private readonly Version _installed;
     private readonly HttpClient _http;
     private readonly Func<ProcessStartInfo, bool> _start;
+    private readonly Func<ProcessStartInfo, CancellationToken, Task<int?>> _run;
     private readonly string _exitEvent;
     private readonly TimeSpan _stall;
     private readonly TimeSpan _budget;
@@ -62,13 +64,15 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         string exitEvent = BaxyExitHandler.AppExitEventName,
         TimeSpan? stall = null,
         TimeSpan? budget = null,
-        IReadOnlyList<string>? keys = null)
+        IReadOnlyList<string>? keys = null,
+        Func<ProcessStartInfo, CancellationToken, Task<int?>>? run = null)
     {
         _dataRoot = dataRoot;
         _distribution = distribution ?? BaxyDistribution.OfCore(AppContext.BaseDirectory);
         _installed = installed ?? OwnVersion();
         _http = http ?? new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
         _start = start ?? Start;
+        _run = run ?? Run;
         _exitEvent = exitEvent;
         _stall = stall ?? Stall;
         _budget = budget ?? UpdateInstallerFile.Budget;
@@ -259,13 +263,14 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         }
 
         receipt["latest"] = latest.Version.ToString(3);
-        (ReleaseInstaller? installer, OperationOutcome? refused) = await SignedAsync(latest, receipt, cancellationToken)
+        (SignedRelease? release, OperationOutcome? refused) = await SignedReleaseAsync(latest, receipt, cancellationToken)
             .ConfigureAwait(false);
-        if (installer is null)
+        if (release is null)
         {
             return refused ?? NotSigned(receipt, "invalid");
         }
 
+        ReleaseInstaller installer = release.Installer;
         string folder = UpdateInstallerFile.Folder(dataRoot);
         string? exe;
 
@@ -273,10 +278,26 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         // installer opened: by then the download ended here, as done or as failed, and no installer starts after it.
         using CancellationTokenSource within = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         within.CancelAfter(_budget);
+
+        // AUT2: an agreement this installation did not accept is asked for by voice before anything is downloaded.
+        if (await NewAgreementAsync(release, dataRoot, receipt, within.Token).ConfigureAwait(false) is { } ask)
+        {
+            return ask;
+        }
+
+        // AUT2: the installer this BAXY already has, when the release says it is enough; else the release's own.
+        // A release published without its files.json (a step of the publishing missed) is applied by its own installer,
+        // which carries it: the installed one, given --release, would refuse it and nothing would update.
+        (string Path, string Sha256)? installed = latest.FilesListed
+            ? await InstalledInstallerAsync(release, within.Token).ConfigureAwait(false)
+            : null;
+        receipt["installerDownloaded"] = installed is null;
         try
         {
-            exe = await DownloadAsync(
-                installer, UpdateInstallerFile.Target(dataRoot, latest.Version.ToString(3)), within.Token).ConfigureAwait(false);
+            exe = installed is not null
+                ? CopyInstalled(installed.Value.Path, folder, _installed.ToString(3))
+                : await DownloadAsync(
+                    installer, UpdateInstallerFile.Target(dataRoot, latest.Version.ToString(3)), within.Token).ConfigureAwait(false);
         }
         catch (IOException full) when (IsDiskFull(full))
         {
@@ -301,7 +322,8 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         // read sharing allows (Microsoft Learn, CreateFileW, dwShareMode; measured in
         // BaxyUpdateHandlerTests.AnExeHeldOpenWithReadSharingStillStarts).
         using FileStream held = new(exe, FileMode.Open, FileAccess.Read, FileShare.Read);
-        if (Convert.ToHexStringLower(await SHA256.HashDataAsync(held, cancellationToken).ConfigureAwait(false)) != installer.Sha256)
+        string sha = Convert.ToHexStringLower(await SHA256.HashDataAsync(held, cancellationToken).ConfigureAwait(false));
+        if (sha != (installed?.Sha256 ?? installer.Sha256))
         {
             // UPD1 (REV10 m1): what the view says for this code is «I deleted it and did not open it».
             await held.DisposeAsync().ConfigureAwait(false);
@@ -309,23 +331,26 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
             return OperationOutcome.Failure("baxy_update_hash_mismatch", Json(receipt));
         }
 
-        ProcessStartInfo start = new(exe)
+        // AUT2: an older installer applies the newer release published where its parts are (--release); the release's own
+        // installer carries it.
+        string[] update = installed is null ? ["--update", "--dir", _distribution.Root]
+            : ["--update", "--dir", _distribution.Root, "--release", release.BaseUrl!];
+
+        // AUT2 (encargo: «que la bajada de los ficheros la haga BAXY abierta […] y que se cierre sólo para el cambio de
+        // carpeta»): a release that names its oldest installer has one that downloads apart (--fetch). It runs first,
+        // with BAXY open, and the App says and shows how far it is (update-progress.json); BAXY closes only after it.
+        if (release.InstallerMin is not null
+            && await FetchAsync(Started(exe, folder, [.. update, "--fetch"]), folder, receipt, within.Token).ConfigureAwait(false) is { } notFetched)
         {
-            UseShellExecute = false,
-            // Not inside the folder being replaced: Windows does not move a folder that is a process's working one.
-            WorkingDirectory = folder,
-        };
-        foreach (string argument in new[] { "--update", "--dir", _distribution.Root })
-        {
-            start.ArgumentList.Add(argument);
+            return notFetched;
         }
 
-        if (!_start(start))
+        if (!_start(Started(exe, folder, update)))
         {
             return OperationOutcome.Failure("baxy_update_installer_not_started", Json(receipt));
         }
 
-        receipt["installerSha256"] = installer.Sha256;
+        receipt["installerSha256"] = sha;
         receipt["installerStarted"] = true;
         receipt["installerBytes"] = installer.Bytes;
         receipt["updated"] = false;
@@ -401,6 +426,15 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
     private async Task<(ReleaseInstaller? Installer, OperationOutcome? Refused)> SignedAsync(
         LatestRelease latest, JsonObject receipt, CancellationToken cancellationToken)
     {
+        (SignedRelease? signed, OperationOutcome? refused) = await SignedReleaseAsync(latest, receipt, cancellationToken)
+            .ConfigureAwait(false);
+        return (signed?.Installer, refused);
+    }
+
+    /// <summary>The same, with what else the signed release.json says (AUT2: its address, oldest installer, agreement).</summary>
+    private async Task<(SignedRelease? Release, OperationOutcome? Refused)> SignedReleaseAsync(
+        LatestRelease latest, JsonObject receipt, CancellationToken cancellationToken)
+    {
         if (latest.Manifest is not { } manifestAsset || latest.Signature is not { } signatureAsset || latest.Installer is not { } listed)
         {
             return (null, NotSigned(receipt, "missing"));
@@ -430,7 +464,7 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         }
 
         return signed.Version == latest.Version && signed.Version > _installed
-            ? (signed.Installer, null)
+            ? (signed, null)
             : (null, NotSigned(receipt, "version"));
     }
 
@@ -440,8 +474,9 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
         return OperationOutcome.Failure("baxy_update_not_signed", Json(receipt));
     }
 
-    // What a signed release.json says of its version and its installer (scripts/build_github_release.py writes it).
-    private static (Version Version, ReleaseInstaller Installer)? SignedInstaller(byte[] manifest, Uri download)
+    // What a signed release.json says of its version and its installer (scripts/build_github_release.py writes it); AUT2:
+    // and where its parts are, the oldest installer that applies it and its agreement, when it says them.
+    private static SignedRelease? SignedInstaller(byte[] manifest, Uri download)
     {
         try
         {
@@ -455,13 +490,276 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
                 && file.GetString() == GitHubLatestRelease.InstallerName
                 && installer.TryGetProperty("bytes", out JsonElement bytes) && bytes.TryGetInt64(out long size) && size > 0
                 && installer.TryGetProperty("sha256", out JsonElement sha) && sha.ValueKind == JsonValueKind.String
-                && sha.GetString() is { Length: 64 } hash && hash.All(char.IsAsciiHexDigitLower)
-                    ? (number, new ReleaseInstaller(download, size, hash))
+                && sha.GetString() is { Length: 64 } hash && IsHash(hash)
+                    ? new SignedRelease(number, new ReleaseInstaller(download, size, hash), Text(root, "baseUrl"),
+                        GitHubLatestRelease.ParseVersion(Text(root, "installerMin")), Agreement(root))
                     : null;
         }
         catch (JsonException)
         {
             return null;
+        }
+    }
+
+    private static bool IsHash(string? text) => text is { Length: 64 } && text.All(char.IsAsciiHexDigitLower);
+
+    private static string? Text(JsonElement value, string name) =>
+        value.TryGetProperty(name, out JsonElement named) && named.ValueKind == JsonValueKind.String ? named.GetString() : null;
+
+    // AUT2: «agreement»: its fingerprint and, per language, the published text by size and SHA-256; null when not whole.
+    private static SignedAgreement? Agreement(JsonElement root)
+    {
+        if (!root.TryGetProperty("agreement", out JsonElement agreement) || agreement.ValueKind != JsonValueKind.Object
+            || Text(agreement, "sha256") is not { } fingerprint || !IsHash(fingerprint))
+        {
+            return null;
+        }
+
+        Dictionary<string, AgreementText> texts = [];
+        foreach (string language in SignedAgreement.Languages)
+        {
+            if (!agreement.TryGetProperty(language, out JsonElement text) || text.ValueKind != JsonValueKind.Object
+                || Text(text, "file") is not { Length: > 0 } file || file[0] == '.'
+                || !file.All(static c => char.IsAsciiLetterOrDigit(c) || c is '.' or '_' or '-')
+                || !text.TryGetProperty("bytes", out JsonElement bytes) || !bytes.TryGetInt64(out long size)
+                || size is <= 0 or > SignedAgreement.Limit || Text(text, "sha256") is not { } sha || !IsHash(sha))
+            {
+                return null;
+            }
+
+            texts[language] = new AgreementText(file, size, sha);
+        }
+
+        return new SignedAgreement(fingerprint, texts);
+    }
+
+    /// <summary>
+    /// AUT2 (encargo: «cuando una actualización trae un acuerdo cuyo texto cambió, o la instalación no tiene apuntada la
+    /// aceptación, BAXY lo dice»; norma «todo por voz»: quien no tiene manos no puede quedar frente a una ventana con un
+    /// botón). The agreement the signed release brings, when it is not the one this installation accepted (the
+    /// fingerprint the installer keeps, src/Baxy.Installer/AcceptedAgreement.cs) or none is recorded: nothing is installed,
+    /// its two texts are downloaded and checked against the signed hashes into the updates folder, and the receipt says
+    /// where, for the App to hold this call until the person's own «sí, lo acepto» (NativeTurnLoop.AgreementHeld), read it
+    /// to them or open it. Null when there is nothing to accept (or the release names no agreement: its installer asks).
+    /// </summary>
+    private async Task<OperationOutcome?> NewAgreementAsync(
+        SignedRelease release, string dataRoot, JsonObject receipt, CancellationToken cancellationToken)
+    {
+        if (release.Agreement is not { } agreement || release.BaseUrl is null
+            || AcceptedAgreement(_distribution.Root) == agreement.Sha256)
+        {
+            return null;
+        }
+
+        string kept = Path.Combine(UpdateInstallerFile.Folder(dataRoot), "acuerdo-" + release.Version.ToString(3));
+        JsonObject said = new()
+        {
+            ["fingerprint"] = agreement.Sha256,
+            ["recorded"] = AcceptedAgreement(_distribution.Root) is not null,
+        };
+        try
+        {
+            Directory.CreateDirectory(kept);
+            foreach ((string language, AgreementText text) in agreement.Texts)
+            {
+                byte[]? bytes = await SmallAsync(new Uri(new Uri(release.BaseUrl), text.File), SignedAgreement.Limit, cancellationToken)
+                    .ConfigureAwait(false);
+                if (bytes is null || bytes.LongLength != text.Bytes || Convert.ToHexStringLower(SHA256.HashData(bytes)) != text.Sha256)
+                {
+                    return NotSigned(receipt, "agreement");
+                }
+
+                string path = Path.Combine(kept, text.File);
+                await File.WriteAllBytesAsync(path, bytes, cancellationToken).ConfigureAwait(false);
+                said[language] = path;
+            }
+        }
+        catch (Exception failed) when (failed is HttpRequestException or IOException or UnauthorizedAccessException or UriFormatException
+            or OperationCanceledException && !cancellationToken.IsCancellationRequested)
+        {
+            return OperationOutcome.RetryableFailure("baxy_update_unreachable", Json(receipt));
+        }
+
+        receipt["agreement"] = said;
+        receipt["authority"] = AgreementNew;
+        return OperationOutcome.Failure("baxy_update_agreement_new", Json(receipt));
+    }
+
+    /// <summary>AUT2: the code of an update that waits for the person to accept a new agreement (nothing was installed).</summary>
+    internal const string AgreementNew = "baxy_update_agreement_new";
+
+    /// <summary>The fingerprint the installation in <paramref name="root"/> accepted, as the installer keeps it; null when none.</summary>
+    internal static string? AcceptedAgreement(string root)
+    {
+        try
+        {
+            string text = File.ReadAllText(Path.Combine(root, "licenses", AcceptedAgreementFile)).Trim();
+            return IsHash(text) ? text : null;
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>src/Baxy.Installer/AcceptedAgreement.cs, FileName.</summary>
+    internal const string AcceptedAgreementFile = "BAXY-acuerdo-aceptado.sha256";
+
+    /// <summary>The fingerprint of an agreement as the installer computes it (AcceptedAgreement.Of): both texts, LF line
+    /// endings, joined by a NUL, SHA-256 of their UTF-8.</summary>
+    internal static string AgreementFingerprint(string spanish, string english) =>
+        Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(
+            spanish.Replace("\r\n", "\n", StringComparison.Ordinal) + "\0" + english.Replace("\r\n", "\n", StringComparison.Ordinal))));
+
+    /// <summary>
+    /// AUT2 (orden del dueño: «No debe volver a descargar nada que ya exista»): the installer this BAXY already has (the
+    /// copy that uninstalls, in its folder), with its SHA-256, when it applies <paramref name="release"/> itself: at least
+    /// the oldest installer the release names, and carrying the agreement the release brings (the license texts it left
+    /// installed are that agreement), since it leaves its own texts installed. Null when the release's installer is needed.
+    /// </summary>
+    private async Task<(string Path, string Sha256)?> InstalledInstallerAsync(SignedRelease release, CancellationToken cancellationToken)
+    {
+        string path = Path.Combine(_distribution.Root, GitHubLatestRelease.InstallerName);
+        string licenses = Path.Combine(_distribution.Root, "licenses");
+        try
+        {
+            if (release.InstallerMin is not { } oldest || release.Agreement is not { } agreement || release.BaseUrl is null
+                || !File.Exists(path)
+                || GitHubLatestRelease.ParseVersion(FileVersionInfo.GetVersionInfo(path).ProductVersion) is not { } version
+                || version < oldest
+                || AgreementFingerprint(
+                    await File.ReadAllTextAsync(Path.Combine(licenses, "BAXY-licencia-es.txt"), cancellationToken).ConfigureAwait(false),
+                    await File.ReadAllTextAsync(Path.Combine(licenses, "BAXY-license-en.txt"), cancellationToken).ConfigureAwait(false))
+                    != agreement.Sha256)
+            {
+                return null;
+            }
+
+            return (path, await HashAsync(path, cancellationToken).ConfigureAwait(false));
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    // The installed installer, copied beside the profile's data as a downloaded one would be: it is not run from the
+    // folder it replaces, and the outcome it writes beside itself is where the App reads it (LastUpdate).
+    private static string CopyInstalled(string installed, string folder, string version)
+    {
+        Directory.CreateDirectory(folder);
+        string copy = Path.Combine(folder, $"{InstallerPrefix}{version}.exe");
+        File.Copy(installed, copy, overwrite: true);
+        return copy;
+    }
+
+    private static ProcessStartInfo Started(string exe, string folder, IEnumerable<string> arguments)
+    {
+        ProcessStartInfo start = new(exe)
+        {
+            UseShellExecute = false,
+            // Not inside the folder being replaced: Windows does not move a folder that is a process's working one.
+            WorkingDirectory = folder,
+        };
+        foreach (string argument in arguments)
+        {
+            start.ArgumentList.Add(argument);
+        }
+
+        return start;
+    }
+
+    /// <summary>
+    /// AUT2: the installer's --fetch, waited for with BAXY open: it downloads what this machine needs into the folder
+    /// beside the installation and writes how far it is (update-progress.json, src/Baxy.Installer/FetchProgress.cs), which
+    /// the App says and shows while this waits. Null when everything came; else why not, with what came, and nothing
+    /// installed: what was downloaded stays for the next try. Past this call's limit the download is stopped (its process,
+    /// by its handle) and the next «actualízate» goes on from there.
+    /// </summary>
+    private async Task<OperationOutcome?> FetchAsync(ProcessStartInfo start, string folder, JsonObject receipt, CancellationToken cancellationToken)
+    {
+        string progress = Path.Combine(folder, UpdateProgressFile);
+        Delete(progress);
+        int? exit;
+        try
+        {
+            exit = await _run(start, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            exit = null;
+            receipt["reason"] = "slow";
+        }
+
+        JsonObject? told = ReadProgress(progress);
+        receipt["fetched"] = new JsonObject
+        {
+            ["downloaded"] = told?["downloaded"]?.DeepClone(),
+            ["done"] = told?["done"]?.DeepClone(),
+            ["needed"] = told?["total"]?.DeepClone(),
+        };
+        if (exit == 0 && (string?)told?["phase"] == "fetched")
+        {
+            return null;
+        }
+
+        receipt["reason"] ??= (string?)told?["reason"] ?? "other";
+        // Each code written whole: the view's table of failures is checked against them (e2e/logic.spec.ts).
+        return (string?)receipt["reason"] switch
+        {
+            "network" or "slow" => OperationOutcome.RetryableFailure("baxy_update_download_failed", Json(receipt)),
+            "disk" => OperationOutcome.Failure("baxy_update_disk_full", Json(receipt)),
+            _ => OperationOutcome.Failure("baxy_update_fetch_failed", Json(receipt)),
+        };
+    }
+
+    /// <summary>src/Baxy.Installer/FetchProgress.cs, FileName: beside the installer, in the profile's updates folder.</summary>
+    internal const string UpdateProgressFile = UpdateInstallerFile.Progress;
+
+    internal static JsonObject? ReadProgress(string path)
+    {
+        try
+        {
+            return File.Exists(path) ? JsonNode.Parse(File.ReadAllText(path)) as JsonObject : null;
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return null;
+        }
+    }
+
+    // Runs the installer and waits for its end; its exit code, or null when Windows did not start it. Cancelled, it is
+    // ended by its own handle with what it started (never another process by name).
+    private static async Task<int?> Run(ProcessStartInfo start, CancellationToken cancellationToken)
+    {
+        Process? started;
+        try
+        {
+            started = Process.Start(start);
+        }
+        catch (Exception refused) when (refused is System.ComponentModel.Win32Exception or InvalidOperationException
+            or FileNotFoundException)
+        {
+            return null;
+        }
+
+        if (started is null)
+        {
+            return null;
+        }
+
+        using (started)
+        {
+            try
+            {
+                await started.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
+                return started.ExitCode;
+            }
+            catch (OperationCanceledException)
+            {
+                started.Kill(entireProcessTree: true);
+                throw;
+            }
         }
     }
 
@@ -701,3 +999,19 @@ internal sealed class BaxyUpdateHandler : IOperationHandler, IInvocationPrefligh
 
     private static OperationOutcome Success(JsonObject receipt) => OperationOutcome.Success(Json(receipt));
 }
+
+/// <summary>What a signed release.json says (FIR1; AUT2: where its parts are, its oldest installer and its agreement).</summary>
+internal sealed record SignedRelease(
+    Version Version, ReleaseInstaller Installer, string? BaseUrl, Version? InstallerMin, SignedAgreement? Agreement);
+
+/// <summary>AUT2: the agreement a release brings: its fingerprint and its published texts, per language.</summary>
+internal sealed record SignedAgreement(string Sha256, IReadOnlyDictionary<string, AgreementText> Texts)
+{
+    internal static readonly string[] Languages = ["es", "en"];
+
+    /// <summary>The most bytes of one text (each is some 15 kB).</summary>
+    internal const int Limit = 1 << 20;
+}
+
+/// <summary>AUT2: one published text of the agreement, by size and SHA-256.</summary>
+internal sealed record AgreementText(string File, long Bytes, string Sha256);

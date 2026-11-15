@@ -3455,6 +3455,28 @@ test('versión: el aviso abre General, buscar no instala y sólo «Actualizar» 
   await expect(p.getByText('BAXY se cierra y el instalador la reemplaza; tus datos se quedan')).toBeVisible();
 });
 
+// AUT2: a new license agreement stops the update until the person accepts it: here by a button that says «Acepto», and the
+// text can be read first. Nothing is accepted by «Actualizar» alone.
+test('versión: un acuerdo nuevo se lee o se acepta con su propio botón, y sólo entonces se actualiza', async () => {
+  h = await openView();
+  h.reply('/update', () => ({ body: { ok: true, channel: 'github', installed: '1.5.3', latest: '1.5.4', newer: true } }));
+  h.reply('/update/install', (c) => ({ body: c.method === 'POST'
+    ? { ok: false, error: 'baxy_update_agreement_new', channel: 'github', installed: '1.5.3', latest: '1.5.4' }
+    : { installing: false } }));
+  h.reply('/update/agreement', () => ({ body: { ok: true, installing: true, phase: 'downloading', latest: '1.5.4' } }));
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.getByRole('button', { name: 'Buscar actualizaciones' }).click();
+  await p.getByRole('button', { name: 'Actualizar a 1.5.4' }).click();
+  await expect(p.getByText(/trae un acuerdo de licencia nuevo: para actualizarme tienes que aceptarlo/)).toBeVisible();
+  expect(h.calls.filter((c) => c.path === '/update/agreement')).toHaveLength(0);
+  await p.getByRole('button', { name: 'Leer el acuerdo' }).click();
+  await expect.poll(() => h.calls.filter((c) => c.path === '/update/agreement').map((c) => JSON.stringify(c.body))).toEqual(['{"action":"open"}']);
+  await p.getByRole('button', { name: 'Acepto el acuerdo: actualizar' }).click();
+  await expect.poll(() => h.calls.filter((c) => c.path === '/update/agreement').length).toBe(2);
+  expect(JSON.stringify(h.calls.filter((c) => c.path === '/update/agreement')[1].body)).toBe('{"action":"accept"}');
+});
+
 test('versión: en Steam no se baja nada, se abre Steam', async () => {
   h = await openView();
   h.reply('/update', () => ({ body: { ok: true, channel: 'steam', installed: '1.3.2', updatedBy: 'steam', storeUpdatesItself: true } }));

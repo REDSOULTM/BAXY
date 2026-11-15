@@ -69,6 +69,12 @@ internal sealed class NativeTurnLoop
 {
     private static readonly TimeSpan OperationTimeout = TimeSpan.FromSeconds(30);
 
+    // AUT2: an update downloads what changed inside its call, with BAXY open, while the App says how far it is
+    // (FieldProductChannel, UpdateProgress); its answer is waited for as the Settings button waits for it, not 30 s, or
+    // the model would read «engine_no_answer» of an update that is going well.
+    private static TimeSpan TimeoutFor(string operation) =>
+        operation == UpdatePanel.Operation ? UpdatePanel.InstallTimeout : OperationTimeout;
+
     internal sealed class Host
     {
         internal required Func<CoreProcessClient?> Core { get; init; }
@@ -91,6 +97,19 @@ internal sealed class NativeTurnLoop
 
         /// <summary>Says the mind's notice aloud (<see cref="SilenceNotice"/>): a line that is not the turn's answer.</summary>
         internal required Action<string> Notice { get; init; }
+
+        /// <summary>
+        /// AUT2: the person accepted, in their own words, the agreement an update brings (its fingerprint): it is written
+        /// where the installer reads it (licenses\BAXY-acuerdo-aceptado.sha256). Null when written; else why not.
+        /// </summary>
+        internal Func<string, string?>? AcceptAgreement { get; init; }
+
+        /// <summary>AUT2: shows the agreement's text (that file) and says it aloud unless BAXY's voice is off: «read_aloud»
+        /// or «shown»; null when it could not.</summary>
+        internal Func<string, string?>? ReadAgreement { get; init; }
+
+        /// <summary>AUT2: opens the agreement's text (that file) with the program Windows opens it with; false when not.</summary>
+        internal Func<string, bool>? OpenAgreement { get; init; }
 
         /// <summary>Whether a notice would be heard (the owner's switch, BAXY's voice): otherwise none is asked for.</summary>
         internal required Func<bool> NoticeHeard { get; init; }
@@ -201,6 +220,8 @@ internal sealed class NativeTurnLoop
     // and its card says why (_proposalCause).
     private bool _proposalByBeat;
     private string? _proposalCause;
+    // AUT2: what the update held for a new agreement says of it (its fingerprint and the texts' paths), while it waits.
+    private JsonObject? _agreement;
     // Where the waiting call acts beside the folder the person named (SaidFolders), for its result once approved.
     private (string Key, string Note)? _waitingSaid;
     // TPV3: the call a result of this person's turn offered (memory_disabled offers memory.enable), whether the last
@@ -390,6 +411,12 @@ internal sealed class NativeTurnLoop
         if (!MemoryOperationProtector.IsMemoryOperation(prepared.OperationName))
         {
             call["arguments"] = PrivateArguments(prepared);
+        }
+
+        // AUT2: what waits is the person's acceptance of a new agreement (Mind._agreement_answer).
+        if (ReferenceEquals(prepared, _proposal) && _proposalCause == AgreementCause)
+        {
+            call["agreement"] = true;
         }
 
         return call;
@@ -1758,7 +1785,7 @@ internal sealed class NativeTurnLoop
     private async Task<string> AnswerPendingAsync(JsonObject arguments, long started, CancellationToken cancellationToken)
     {
         if (arguments["answer"] is not JsonValue value || !value.TryGetValue(out string? answer)
-            || answer is not (Yes or No or Unclear))
+            || answer is not (Yes or No or Unclear) && !(answer is ReadIt or OpenIt && WaitsForTheAgreement()))
         {
             // Ronda final: an answer that is not yes, no or unclear is not the person's «no»; the waiting call stays and
             // the model reads what it gave, as with any other call whose arguments do not fit.
@@ -1779,6 +1806,13 @@ internal sealed class NativeTurnLoop
         }
 
         bool approve = answer == Yes;
+        if (_proposal is { } held && _proposalExpiresUtc > _time.GetUtcNow() && _proposalCause == AgreementCause)
+        {
+            return answer == Unclear
+                ? AskedAgain(held, arguments, started)
+                : await AnswerAgreementAsync(held, answer, started, cancellationToken);
+        }
+
         if (_proposal is { } proposal && _proposalExpiresUtc > _time.GetUtcNow())
         {
             return answer == Unclear
@@ -1840,6 +1874,129 @@ internal sealed class NativeTurnLoop
     private const string Yes = "yes";
     private const string No = "no";
     private const string Unclear = "unclear";
+
+    /// <summary>AUT2: their answer to a held agreement, read by its own question (Mind._agreement_answer): read it aloud.</summary>
+    internal const string ReadIt = "read";
+
+    /// <summary>AUT2: or open it.</summary>
+    internal const string OpenIt = "open";
+
+    /// <summary>AUT2: the engine's code for an update that waits for a new agreement (BaxyUpdateHandler.AgreementNew).</summary>
+    internal const string AgreementCode = "baxy_update_agreement_new";
+
+    /// <summary>AUT2: the card's cause of an update held for the person's acceptance of a new agreement.</summary>
+    internal const string AgreementCause = "agreement_new";
+
+    // AUT2 (encargo: «BAXY lo dice […], lo puede leer en voz alta o abrir, y sólo con un "sí, lo acepto" de la persona
+    // […] deja apuntada la aceptación con la huella del texto y sigue sin ventana. Sin ese "sí" no se actualiza»; norma
+    // «todo por voz»). The 4B words the question from this; their answer is read apart (Mind._agreement_answer), never by
+    // the model's own confirm_pending.
+    private const string AgreementHeldNext =
+        "nothing was installed and BAXY is as it was: to update, the person must first accept BAXY's new license "
+        + "agreement. Tell them so in one short sentence and ask whether you read it to them, open it, or they accept it; "
+        + "only their own clear acceptance updates BAXY, and nothing else you or they say does; their answer goes in "
+        + "confirm_pending";
+
+    private const string AgreementReadNext =
+        "BAXY is reading the agreement aloud and it is shown in the conversation; nothing was installed: when it ends, ask "
+        + "them in one short sentence whether they accept it; their answer goes in confirm_pending";
+
+    private const string AgreementShownNext =
+        "BAXY's voice is off, so the agreement was not read aloud: its text is shown in the conversation; nothing was "
+        + "installed: ask them in one short sentence whether they accept it; their answer goes in confirm_pending";
+
+    private const string AgreementOpenedNext =
+        "the agreement is open in a window of its own for the person to read; nothing was installed: ask them in one short "
+        + "sentence whether they accept it; their answer goes in confirm_pending";
+
+    private bool WaitsForTheAgreement() =>
+        _proposal is not null && _proposalExpiresUtc > _time.GetUtcNow() && _proposalCause == AgreementCause;
+
+    // AUT2: the update the engine stopped for a new agreement waits for the person's own acceptance, in every mode (in
+    // Bypass too: accepting a license is the person's and nobody else's). What is shown to the model: that nothing was
+    // installed, whether one was accepted before (recorded), and what to ask; never the texts' paths nor the fingerprint.
+    private string AgreementHeld(PreparedOperation prepared, JsonObject arguments, long started, JsonObject agreement,
+        OperationResponse response)
+    {
+        _proposal = prepared;
+        _proposalByBeat = false;
+        _proposalCause = AgreementCause;
+        _agreement = (JsonObject)agreement.DeepClone();
+        _waitingSaid = null;
+        _proposalExpiresUtc = _time.GetUtcNow() + ProposalLifetime;
+        _askedAt = ConfirmationAsk.Unpublished;
+        var held = new JsonObject
+        {
+            ["status"] = "needs_confirmation",
+            ["cause"] = AgreementCause,
+            ["latest"] = response.Result?.TryGetProperty("latest", out System.Text.Json.JsonElement latest) == true
+                ? latest.GetString() : null,
+            ["acceptedBefore"] = agreement["recorded"]?.DeepClone(),
+            ["next"] = AgreementHeldNext,
+        };
+        return Record(UpdatePanel.Operation, arguments, started, held.ToJsonString(SaidFolders.AsWritten));
+    }
+
+    // AUT2: yes writes the acceptance with the agreement's fingerprint and runs the update anew (a fresh invocation: the
+    // one held ended in its failure); read and open keep it waiting for their answer after; anything else drops it.
+    private async Task<string> AnswerAgreementAsync(PreparedOperation held, string answer, long started,
+        CancellationToken cancellationToken)
+    {
+        JsonObject arguments = PrivateArguments(held);
+        JsonObject agreement = _agreement ?? [];
+        string? text = (string?)agreement[UiLanguage.IsEnglish ? "en" : "es"] ?? (string?)agreement["es"];
+        if (answer is ReadIt or OpenIt)
+        {
+            // Revisión ciega (AUT2): with BAXY's voice off the text is only shown, and the receipt says so.
+            string? done = text is null ? null
+                : answer == ReadIt ? _host.ReadAgreement?.Invoke(text)
+                : _host.OpenAgreement?.Invoke(text) == true ? "opened" : null;
+            _askedAt = ConfirmationAsk.Unpublished;
+            _proposalExpiresUtc = _time.GetUtcNow() + ProposalLifetime;
+            return Record(UpdatePanel.Operation, arguments, started, new JsonObject
+            {
+                ["status"] = done is not null ? "needs_confirmation" : "failed",
+                ["cause"] = AgreementCause,
+                ["agreement"] = done ?? (answer == ReadIt ? "not_read" : "not_opened"),
+                ["next"] = done switch
+                {
+                    "read_aloud" => AgreementReadNext,
+                    "shown" => AgreementShownNext,
+                    "opened" => AgreementOpenedNext,
+                    _ => AgreementHeldNext,
+                },
+            }.ToJsonString(SaidFolders.AsWritten));
+        }
+
+        _proposal = null;
+        _agreement = null;
+        Resolved(answer == Yes ? "approved" : "declined");
+        Release(held);
+        if (answer != Yes)
+        {
+            return Record(UpdatePanel.Operation, arguments, started,
+                Observation("cancelled", "declined_by_person", about: UpdatePanel.Operation));
+        }
+
+        if ((string?)agreement["fingerprint"] is not { } fingerprint
+            || _host.AcceptAgreement?.Invoke(fingerprint) is var notWritten && notWritten is not null)
+        {
+            return Record(UpdatePanel.Operation, arguments, started,
+                Observation("failed", "agreement_not_recorded", about: UpdatePanel.Operation));
+        }
+
+        CoreProcessClient? core = _host.Core();
+        if (core is not { IsReady: true })
+        {
+            return Record(UpdatePanel.Operation, arguments, started,
+                Observation("failed", "engine_unavailable", about: UpdatePanel.Operation));
+        }
+
+        PreparedOperation again = PreparedOperation.Create(UpdatePanel.Operation, arguments);
+        // As the model's own call starts it: the view's step, and the watch that says how far its download is.
+        _host.StepStarted?.Invoke(_stepId, UpdatePanel.Operation, (JsonObject)arguments.DeepClone());
+        return await SendAsync(core, again, arguments, confirmationToken: null, answered: true, started, cancellationToken);
+    }
 
     // An unclear answer: the waiting call stays as it is (its card too), and the line the model says next is its question
     // again (Publish), which the person's next words or the card answer; a turn that ends without saying one drops it
@@ -2005,6 +2162,12 @@ internal sealed class NativeTurnLoop
         long started,
         CancellationToken cancellationToken)
     {
+        // AUT2: the card's «Sí» on a held agreement is the person accepting it, by hand.
+        if (_proposalCause == AgreementCause)
+        {
+            return await AnswerAgreementAsync(proposal, approve ? Yes : No, started, cancellationToken);
+        }
+
         if (_proposalCause == ToolProfile.OffCode)
         {
             return approve && FieldStepProjection.HeldWhole(proposal.OperationName)
@@ -2066,7 +2229,7 @@ internal sealed class NativeTurnLoop
         OperationResponse response;
         try
         {
-            response = await core.SendOperationAsync(prepared, OperationTimeout, cancellationToken, confirmationToken)
+            response = await core.SendOperationAsync(prepared, TimeoutFor(operation), cancellationToken, confirmationToken)
                 ;
         }
         catch (Exception exception) when (exception is TimeoutException or System.IO.IOException
@@ -2131,6 +2294,13 @@ internal sealed class NativeTurnLoop
         }
 
         Resolve(prepared, memory);
+        if (!_beat && operation == UpdatePanel.Operation && response.ErrorCode == AgreementCode
+            && response.Result is { ValueKind: System.Text.Json.JsonValueKind.Object } agreementResult
+            && JsonNode.Parse(agreementResult.GetRawText())?["agreement"] is JsonObject agreement)
+        {
+            return AgreementHeld(prepared, arguments, started, agreement, response);
+        }
+
         if (memory && !_beat && MemoryOperationResponseProjection.OffersTheMemory(operation, response))
         {
             _offeredNow = ("memory.enable", MemoryOperationResponseProjection.MemoryOn());

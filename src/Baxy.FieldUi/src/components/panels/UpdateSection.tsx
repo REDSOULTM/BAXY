@@ -32,6 +32,11 @@ interface Found {
   downloadedBytes?: number | null;
 }
 
+/* AUT2: a release whose license agreement this installation did not accept installs nothing until the person accepts it:
+   by voice in the chat, or here, with a button that says so (POST /update/agreement: «open» shows the text the engine
+   checked against the signed release, «accept» records its fingerprint and starts the update). */
+const AGREEMENT = 'baxy_update_agreement_new';
+
 // In the view's one unit (size.ts): 2²⁰ bytes to the MB, as Windows writes them.
 const MIB = GIB / 1024;
 
@@ -83,6 +88,16 @@ export function UpdateSection({ installed, notice, onNotice, locked }: { install
     if (told?.installing) setRunning(told);
     else setFound(told && 'ok' in told ? told : { ok: false, error: 'install_unanswered' });
     setLast('install');
+    setBusy(null);
+  };
+  const agreement = async (action: 'open' | 'accept') => {
+    setBusy('install');
+    const told = await send<Found>('POST', '/update/agreement', { action });
+    if (action === 'accept') {
+      if (told?.installing) setRunning(told);
+      else setFound(told && 'ok' in told ? told : { ok: false, error: 'install_unanswered' });
+      setLast('install');
+    }
     setBusy(null);
   };
   const store = found?.channel === 'steam' ? 'Steam' : found?.channel === 'itch' ? 'itch.io' : null;
@@ -142,7 +157,12 @@ export function UpdateSection({ installed, notice, onNotice, locked }: { install
   return (
     <>
       <Row label={t('Versión', 'Version')} hint={hint || undefined}>
-        {running
+        {!running && found?.error === AGREEMENT
+          ? <>
+              <button className="panel-btn ghost" disabled={busy !== null} onClick={() => void agreement('open')}>{t('Leer el acuerdo', 'Read the agreement')}</button>
+              <button className="panel-btn" disabled={busy !== null} onClick={() => void agreement('accept')}>{t('Acepto el acuerdo: actualizar', 'I accept the agreement: update')}</button>
+            </>
+          : running
           ? <button className="panel-btn" disabled>{running.latest ? t(`Actualizando a ${running.latest}…`, `Updating to ${running.latest}…`) : t('Actualizando…', 'Updating…')}</button>
           : found?.newer && found.channel === 'github'
           ? <button className="panel-btn" disabled={busy !== null} onClick={() => void install()}>{t(`Actualizar a ${found.latest}`, `Update to ${found.latest}`)}</button>

@@ -16,7 +16,8 @@ internal sealed record ReleaseAsset(Uri Download, long Bytes);
 /// on, the release.json that names its files and that file's signature (<see cref="ReleaseSignature"/>).
 /// </summary>
 internal sealed record LatestRelease(
-    Version Version, string Tag, Uri? Page, ReleaseInstaller? Installer, ReleaseAsset? Manifest = null, ReleaseAsset? Signature = null);
+    Version Version, string Tag, Uri? Page, ReleaseInstaller? Installer, ReleaseAsset? Manifest = null, ReleaseAsset? Signature = null,
+    bool FilesListed = false);
 
 /// <summary>
 /// GitHub's latest release of a repository: «the most recent non-prerelease, non-draft release» (REST API, Get the latest
@@ -28,6 +29,9 @@ internal sealed record LatestRelease(
 internal static partial class GitHubLatestRelease
 {
     internal const string InstallerName = "BAXY-Instalador.exe";
+
+    /// <summary>AUT2: files.json, which an installer that is not this release's own reads (--release).</summary>
+    internal const string FilesName = "files.json";
 
     internal static async Task<LatestRelease?> ReadAsync(
         HttpClient http, string repository, string userAgent, CancellationToken cancellationToken)
@@ -63,10 +67,12 @@ internal static partial class GitHubLatestRelease
         ReleaseInstaller? installer = null;
         ReleaseAsset? manifest = null;
         ReleaseAsset? signature = null;
+        bool files = false;
         if (release.TryGetProperty("assets", out JsonElement assets) && assets.ValueKind == JsonValueKind.Array)
         {
             foreach (JsonElement asset in assets.EnumerateArray())
             {
+                files |= Text(asset, "name") == FilesName;
                 if (Text(asset, "name") == InstallerName
                     && Https(Text(asset, "browser_download_url")) is { } download
                     && asset.TryGetProperty("size", out JsonElement size) && size.TryGetInt64(out long bytes) && bytes > 0
@@ -90,7 +96,7 @@ internal static partial class GitHubLatestRelease
             }
         }
 
-        return new LatestRelease(version, tag, page, installer, manifest, signature);
+        return new LatestRelease(version, tag, page, installer, manifest, signature, files);
     }
 
     /// <summary>The first three numbers of a version as BAXY writes it: «v1.3.2», «1.3.2», «1.3.2+abc1234.dirty».</summary>

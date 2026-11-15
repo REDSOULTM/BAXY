@@ -69,6 +69,8 @@
    "FIELD_NOTE_UNCHECKED",
    "WRITTEN_NOTE",
    "NEXT_NOT_DONE",
+   "MESSAGE_TOLD",
+   "MESSAGE_TOLD_SUBJECT",
    "VISION_ESTIMATE",
    "READ_AFTER_NAVIGATION",
    "MEMORY_OFF_NOTE",
@@ -150,13 +152,16 @@
    "RING_WORDS_REMINDER",
    "RING_WORDS_ALARM",
    "RING_WORDS_UNTITLED",
-   "ROUTINE_SAID"
+   "ROUTINE_SAID",
+   "ROUTINES_BESIDE",
+   "ROUTINE_AT_SAID"
   ],
   "answer_check": [
    "UNCHECKED_UPDATE",
    "UPDATE_EARLY",
    "UPDATE_NOT_INSTALLED",
    "UPDATE_UP_TO_DATE",
+   "ROUTINE_NOT_DONE",
    "UPDATE_OFFERED",
    "UNREAD_VERSION",
    "UNREAD_SIZE",
@@ -448,6 +453,14 @@
   [
    "\n[Ayuda: esta llamada falló y lo que dice su next no lo hizo ella.]",
    "\n[Help: this call failed and what its next says was not done by it.]"
+  ],
+  [
+   "\n[Ayuda: el texto de esta llamada es «{text}»{subject}; al preguntarle a la persona o al contarle lo que pasó, cítalo entre comillas con esas mismas palabras («¿Le mando: \"…\"?», «Le escribí: \"…\"»), no lo cuentes con otras.]",
+   "\n[Help: the text of this call is «{text}»{subject}; when you ask the person or tell them what happened, quote it between quotation marks in those same words («Shall I send: \"…\"?», «I wrote: \"…\"»), never retell it in others.]"
+  ],
+  [
+   ", con el asunto «{subject}»",
+   ", with the subject «{subject}»"
   ],
   [
    "\n[Ayuda: esta descripción es lo que estima un modelo de visión sobre esa captura, no una lectura de la ventana: lo que da por probable o dudoso se cuenta como probable o dudoso, y sus cifras, tal cual.]",
@@ -1562,6 +1575,10 @@
    "BAXY was not updated: {told} only checked that there is a newer version ({latest}); nothing was installed"
   ],
   [
+   "en este turno ninguna llamada completada borró, desactivó ni cambió una rutina: una rutina se borra, se desactiva o se cambia con {tool}, y BAXY pregunta antes",
+   "in this turn no completed call deleted, turned off or changed a routine: a routine is deleted, turned off or changed with {tool}, and BAXY asks first"
+  ],
+  [
    "{told}: BAXY tiene instalada la {installed} y la última versión publicada es la {latest}; nada publicado es más nuevo: BAXY está al día y no hay nada que actualizar",
    "{told}: BAXY has {installed} installed and the latest version published is {latest}; nothing published is newer: BAXY is up to date and there is nothing to update"
   ],
@@ -1628,6 +1645,14 @@
   [
    "; un texto que BAXY diga sin timbre a una hora, cada día o sólo algunos días, es una rutina ({tool})",
    "; a text BAXY says with no tone at a time, every day or only on some days, is a routine ({tool})"
+  ],
+  [
+   "; la persona tiene además rutinas con hora, que no son alarmas ni recordatorios ({tool} las cambia, las desactiva y las borra, y antes se lo pregunta a la persona diciéndole cuál): {items}",
+   "; the person also has routines at a time, which are neither alarms nor reminders ({tool} changes, turns off and deletes them, and asks the person first, saying which): {items}"
+  ],
+  [
+   "; la hora que escribió la persona, {clock}, es la de su rutina «{name}»",
+   "; the time the person wrote, {clock}, is that of their routine «{name}»"
   ]
  ]
 }

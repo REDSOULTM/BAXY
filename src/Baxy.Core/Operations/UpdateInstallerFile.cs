@@ -19,4 +19,7 @@ internal static class UpdateInstallerFile
         System.IO.Path.Combine(Folder(dataRoot), $"BAXY-Instalador-{version}.exe");
 
     internal static string Partial(string target) => target + ".part";
+
+    /// <summary>AUT2: how far the installer's --fetch is, beside it (src/Baxy.Installer/FetchProgress.cs, FileName).</summary>
+    internal const string Progress = "update-progress.json";
 }

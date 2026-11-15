@@ -33,7 +33,8 @@ from .llm_server import LlmServer, Yielded
 from .protocol import whole_code_points
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
-from . import behavior, harness_language, language_id, ring_answer, routine_fill, routine_guide, routines, web_focus
+from . import behavior, harness_language, language_id, message_text, ring_answer, routine_fill, routine_guide, routines
+from . import web_focus
 from .harness_language import t as _t
 from .wire import Wires, operation_of, plain
 
@@ -357,6 +358,22 @@ RING_WORDS_REMINDER = "Recordatorio: {title}"
 RING_WORDS_ALARM = "Alarma de las {clock}: {title}"
 RING_WORDS_UNTITLED = "Recordatorio de las {clock}"
 ROUTINE_SAID = "; un texto que BAXY diga sin timbre a una hora, cada día o sólo algunos días, es una rutina ({tool})"
+# INT36G (held-out ciego, sesión nueva: «bórrame la de las nueve y media de la noche», «get rid of the 7:30 one», con
+# rutinas con hora guardadas): el 4B buscaba una alarma, leía «no hay alarmas» y decía que no había nada que borrar. Lo
+# que sí hay a una hora, junto al recibo de una alarma: sus rutinas con hora, por lo que son, y la herramienta que las
+# cambia y las borra.
+# INT37B (held-out ciego, Completo: «desactiva un tiempo la de las 16:30», «déjala de momento sin sonar»): con «las cambia y
+# las borra» el 4B ofrecía borrarla («¿Quieres que la borre?»), 2 de 6; el dato dice todo lo que la herramienta hace.
+# RUT17 (la App en Esencial, «Borra la de las 10:00.»: tras cancel a las 10:00, «No se borró porque no era una alarma, era
+# una rutina. ¿Quieres que la desactive o la borre?» 7 de 10 en INT37A): el 4B preguntaba él, sin decir cuál, lo que la
+# herramienta pregunta (Mind._routine_have: «¿Borro esta rutina: …?», y sólo su «sí» actúa); el dato lo dice.
+ROUTINES_BESIDE = ("; la persona tiene además rutinas con hora, que no son alarmas ni recordatorios ({tool} las cambia, "
+                   "las desactiva y las borra, y antes se lo pregunta a la persona diciéndole cuál): {items}")
+# INT37B (la App en Esencial, conversación nueva, «Borra la de las 10:00.» con «10:00» y «20:00» guardadas): con las dos
+# en ese dato el 4B preguntaba «¿las quieres eliminar?» por las dos, 5 de 5. Sólo forma: la hora escrita en sus palabras
+# (cifras, H:MM) que es la de una de sus rutinas se dice junto a ella; las palabras no se interpretan.
+ROUTINE_AT_SAID = "; la hora que escribió la persona, {clock}, es la de su rutina «{name}»"
+CLOCK_WRITTEN = re.compile(r"(?<![\d:])([01]?\d|2[0-3])[:.]([0-5]\d)(?![\d:])")
 # Every outcome of a completed call (the App runs the queued calls after one of these).
 COMPLETED_OUTCOMES = (*VERIFICATION.values(), OUTPUT_READ, SET_BY_SAME)
 # What the facts line adds of a result's own fields (_outcome), and what _deduplicated leaves out of it for that.
@@ -1193,6 +1210,25 @@ def written_note(observation: str, receipts: list[dict[str, Any]]) -> str:
 # Aid «next_not_done» (noche R6-NB-1, sesión larga 7db8, T5): audio_app_volume_set failed with a next naming
 # audio_volume, no call came after it, and the answer was «lo puse al 15» with the volume where it was.
 NEXT_NOT_DONE = "\n[Ayuda: esta llamada falló y lo que dice su next no lo hizo ella.]"
+
+
+# Aid «message_text_told» (MSG1, owner 2026-11-14: BAXY says the text it will send, not a summary; hub/int36h asked
+# «¿Lo envías a Marta por WhatsApp?» 33 of 36 times with no word of it): a message or an email that waits for the
+# person's yes, or that went or stayed written, carries in its line the text the call holds, word for word (as Google
+# Assistant reads a message back before «Send», support.google.com/assistant/answer/9984245).
+MESSAGE_TOLD = ("\n[Ayuda: el texto de esta llamada es «{text}»{subject}; al preguntarle a la persona o al contarle lo "
+                "que pasó, cítalo entre comillas con esas mismas palabras («¿Le mando: "
+                "\"…\"?», «Le escribí: \"…\"»), no lo cuentes con otras.]")
+MESSAGE_TOLD_SUBJECT = ", con el asunto «{subject}»"
+
+
+def message_told(arguments: Any) -> str:
+    """Aid «message_text_told»: the text and subject of a message call, as the call holds them. Empty without a text."""
+    if not isinstance(arguments, dict) or not isinstance(arguments.get("text"), str) or not arguments["text"].strip():
+        return ""
+    subject = arguments.get("subject")
+    told = MESSAGE_TOLD_SUBJECT.format(subject=subject.strip()) if isinstance(subject, str) and subject.strip() else ""
+    return MESSAGE_TOLD.format(text=arguments["text"].strip(), subject=told)
 
 
 # Aid «vision_estimate» (uso-106, F32: a vision model wrote that a program was probably open and the answer told it as a
@@ -2365,6 +2401,39 @@ THEIR_ANSWER_KINDS = {"now": "yes", "no": "no", "later": "other", "maybe": "othe
                       "different": "other", "yours": "other"}
 THEIR_ANSWER_GRAMMAR = "root ::= " + " | ".join(f'"{kind}"' for kind in THEIR_ANSWER_KINDS)
 THEIR_ANSWERS = ("yes", "no", "other")
+# AUT2 (encargo: «sólo con un "sí, lo acepto" de la persona (leído por el modelo con consulta cerrada, como el "sí" de las
+# rutinas y de SIS3; nunca un "sí" a otra cosa, nunca un borrador, nunca por defecto)»; norma «todo por voz»). An update
+# held for a new license agreement (the App says so: pending «agreement») is answered by its own closed question, of the
+# same shape as THEIR_ANSWER's (only the exchange, a grammar, kinds that each name what the words do): BAXY's question
+# offers to read it, open it or have it accepted, so the answer may also choose one of those. Only accept is their yes;
+# read and open are done by the App and the update keeps waiting; anything else is the turn as any other.
+AGREEMENT_ANSWER_SYSTEM = ("You read one exchange between a voice assistant and a person. The assistant can update itself "
+                           "only if the person accepts its new license agreement. Reply with one word: what the "
+                           "person's answer does. Only a clear, unconditional acceptance of the agreement, now, is "
+                           "accept; if there is any doubt, it is not accept.")
+AGREEMENT_ANSWER_NOTE = ("The assistant said: «{asked}»\nThe person answered: «{said}»\nWhat does the person's answer do? "
+                         "accept = they clearly accept the license agreement, now; read = they want it read to them; "
+                         "open = they want it opened or shown to them; no = they refuse it; later = they leave it for "
+                         "another time; maybe = they are not sure or do not decide; ask = they ask something; other = "
+                         "anything else: a yes or an okay to a question that offered more than accepting it (it does not "
+                         "say which), a condition, or leaving the choice to the assistant.")
+AGREEMENT_ANSWER_KINDS = {"accept": "yes", "read": "read", "open": "open", "no": "no", "later": "other",
+                          "maybe": "other", "ask": "other", "other": "other"}
+AGREEMENT_ANSWER_GRAMMAR = "root ::= " + " | ".join(f'"{kind}"' for kind in AGREEMENT_ANSWER_KINDS)
+# AUT2, held-out (tmp\AUT2\heldout, 4B on CPU, same bodies): the kinds alone read a bare «sí» or «ok» to «¿te lo leo, lo abro
+# o lo aceptas?» as accept, 2 of 20 no-acceptances (and 5 of 28 in a second held-out written after this was chosen). Five
+# rewordings of that one question kept 1 to 3 (an own kind for a bare yes, BAXY's words described instead of quoted, a second
+# question on their words alone…). What removed them is a second closed question, asked only when the first read accept,
+# on that same exchange: whether their answer says they accept it. First held-out: accepted without it 2 → 0 of 20,
+# accepted when they did 20 → 20 of 20, read/open 7 of 7, own controls 6 of 6 (a bare «sí» to «¿Lo aceptas?» alone is
+# accepting); second held-out: 5 → 0 of 28 and 20 of 20.
+AGREEMENT_SAYS_SYSTEM = "You read one exchange between a voice assistant and a person. Reply with one word: yes or no."
+AGREEMENT_SAYS_NOTE = ("The assistant said: «{asked}»\nThe person answered: «{said}»\nDoes the person's answer say that they "
+                       "accept the license agreement? yes = their words say they accept it or agree to it (as «acepto», "
+                       "«lo acepto», «I accept», «I agree»), or they answer yes to a question that asked only whether they "
+                       "accept it; no = their words do not say it: a bare yes, okay or sure after a question that also "
+                       "offered to read it or open it does not say which.")
+AGREEMENT_SAYS_GRAMMAR = 'root ::= "yes" | "no"'
 # The model's own confirm_pending yes with something waiting, when the question above did not read their words as a yes:
 # nothing ran and it still waits (the model may answer what they said and ask again, or do what they asked instead).
 NOT_THEIR_YES = json.dumps({"status": "rejected", "error": "not_their_yes",
@@ -3647,6 +3716,11 @@ class Mind:
                                           act=ordered.action, targets=tuple(routine_guide._named(r) for r in several),
                                           ids=routine_guide.keyed(several))
                 ordered = routine_guide.Order(ordered.action, ordered.lang, guide=ask)
+        if (ordered is not None and ordered.name and ordered.guide is None and self.routines
+                and ordered.action in ("delete", "disable", "enable")
+                and routine_guide.find(ordered.name, self.routines) is None
+                and not routine_guide.answering(ordered.name, self.routines)):
+            ordered = self._clock_named(ordered)
         if ordered is not None and ordered.name and ordered.action == "delete" and self.routines:
             # REM2 (REV13 B-1), INT33F: the name goes to RoutinesHandler as said, which acts on a routine's own name,
             # phrase or clock and on nothing else (a name it does not find is routine_not_found: nothing is done). A
@@ -3707,6 +3781,7 @@ class Mind:
                           "pending": self._waits(pending), "ended": self._ended(pending), "answering": bool(doubts),
                           "answering_other": any(DOUBT_OTHER_ASKED in note for note in doubts),
                           "confirming": self._confirming(pending), "pending_op": self._pending_op(pending),
+                          "agreement": bool(self._waits(pending) and pending.get("agreement")),  # type: ignore[union-attr]
                           "front": self._front_window(front), "in_front": front or {},
                           "ringing": self._rings_told(ringing), "alone": clock if order is not None else None,
                           "asked_words": str(last.get("content") or "") if asked else "",
@@ -3759,18 +3834,74 @@ class Mind:
         turn.pop("their_yes", None)
         if turn.get("pending") and turn.get("confirming"):
             started = time.perf_counter()
-            answer = self._their_answer(turn, turn.get("pending_op"))
+            # AUT2: an update held for a new agreement: accept is their yes; read and open go to the App as their answer.
+            answer = self._agreement_answer(turn) if turn.get("agreement") else self._their_answer(turn, turn.get("pending_op"))
             turn["their_answer"] = answer
-            if answer == "yes":
+            if answer in ("yes", "read", "open"):
                 call = {"id": self._new_id("call"), "wire": CONFIRM["function"]["name"], "arguments": {"answer": answer}}
                 turn["conv"].append({"role": "assistant", "content": "", "tool_calls": [{
                     "id": call["id"], "type": "function",
                     "function": {"name": call["wire"], "arguments": json.dumps(call["arguments"])}}]})
-                turn["their_yes"] = CONFIRM_OPERATION
+                # AUT2 (revisión ciega): read and open are not their yes: a confirm_pending yes of the model's after the
+                # agreement was read in this same turn is still not theirs (NOT_THEIR_YES).
+                if answer == "yes":
+                    turn["their_yes"] = CONFIRM_OPERATION
                 return self._result(request_id, turn, call, None, "turn.decide", started, "")
         elif offer and self._their_answer(turn, "memory.enable") == "yes":
             turn["their_yes"] = "memory.enable"
         return self._next(request_id, "turn.decide", turn)
+
+    def _agreement_answer(self, turn: dict[str, Any]) -> str:
+        """AUT2: what the person's last words do with the new license agreement an update waits for, as the model reads
+        them in one closed question that holds only BAXY's last words and theirs (AGREEMENT_ANSWER_NOTE): yes (they accept
+        it), read, open, no or other. Other when it cannot be read: in doubt nothing is accepted."""
+        started = time.perf_counter()
+        note = AGREEMENT_ANSWER_NOTE.format(asked=" ".join(self._asked(turn).split())[-THEIR_ANSWER_ASKED:],
+                                            said=" ".join(str(turn["text"]).split()))
+        body = {"messages": [{"role": "system", "content": AGREEMENT_ANSWER_SYSTEM}, {"role": "user", "content": note}],
+                "max_tokens": 4, "grammar": AGREEMENT_ANSWER_GRAMMAR, "chat_template_kwargs": {"enable_thinking": False},
+                "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": self.seed}
+        reply, failure = None, None
+        try:
+            reply = self.server.ask_apart(body)
+            read = str(reply["choices"][0]["message"].get("content") or "").strip()
+        except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+            read, failure = "", type(error).__name__
+        if read not in AGREEMENT_ANSWER_KINDS:
+            failure = failure or "unreadable"
+        answer = AGREEMENT_ANSWER_KINDS.get(read, "other")
+        says = None
+        if answer == "yes":
+            # Only an answer that itself says they accept it is their acceptance (AGREEMENT_SAYS_NOTE).
+            body = {**body, "messages": [{"role": "system", "content": AGREEMENT_SAYS_SYSTEM},
+                                         {"role": "user", "content": AGREEMENT_SAYS_NOTE.format(
+                                             asked=" ".join(self._asked(turn).split())[-THEIR_ANSWER_ASKED:],
+                                             said=" ".join(str(turn["text"]).split()))}],
+                    "grammar": AGREEMENT_SAYS_GRAMMAR}
+            try:
+                says = str(self.server.ask_apart(body)["choices"][0]["message"].get("content") or "").strip()
+            except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+                says, failure = "", type(error).__name__
+            if says != "yes":
+                answer = "other"
+        self._log("turn.agreement_answer", started, reply, text=None if turn.get("private") else turn["text"], kind=answer,
+                  read=read or None, says=says, operation="baxy.update", arguments=None, content=None,
+                  **({"failure": failure} if failure else {}))
+        return answer
+
+    @staticmethod
+    def _asked(turn: dict[str, Any]) -> str:
+        """BAXY's last words before the person's, as the closed questions quote them (its ask_user question if any)."""
+        for message in reversed(turn["conv"][:-1]):  # the last is the person's (their words, or the answer to ask_user)
+            if message.get("role") != "assistant":
+                continue
+            asked = next(
+                (str(json.loads(call["function"].get("arguments") or "{}").get("question") or "")
+                 for call in message.get("tool_calls") or [] if call["function"]["name"] == ASK_USER["function"]["name"]),
+                "").strip() or str(message.get("content") or "").strip()
+            if asked:
+                return asked
+        return ""
 
     def _their_answer(self, turn: dict[str, Any], operation: str | None) -> str:
         """SIS3: whether the person's last words are a yes to what BAXY asked, as the model reads them in one closed
@@ -3835,6 +3966,29 @@ class Mind:
                    if title and every is EVERY_DAY and "baxy.routines" in self.wire_to_op.values() else "")
         return RINGS_REPEAT.format(words=words, every=every) + routine
 
+    def _routines_beside(self, wire: str, arguments: Any, said: str = "") -> str:
+        """INT36G: beside the result of a schedule_alarms call that does not create one, the person's routines at a
+        time by what they are (routine_guide._item) and the tool that changes, turns off and deletes them; nothing
+        otherwise.
+        INT37B: a time written in their words (``said``, digits) that is one routine's own is said after them."""
+        if self.wire_to_op.get(wire) != RING_TOOL or "baxy.routines" not in self.wire_to_op.values():
+            return ""
+        try:
+            action = json.loads(arguments or "{}").get("action")
+        except (json.JSONDecodeError, AttributeError):
+            return ""
+        timed = [r for r in self.routines or [] if isinstance(r, dict) and isinstance(r.get("trigger"), dict)
+                 and r["trigger"].get("at")][:routine_fill.MOST_HAVE]
+        if action == "create" or not timed:
+            return ""
+        lang = routine_guide.lang_of(self.lang)
+        items = "; ".join(f"«{routine_guide._named(r)}»: {routine_guide._item(r, lang)}" for r in timed)
+        written = {f"{int(hour):02d}:{minute}" for hour, minute in CLOCK_WRITTEN.findall(said or "")}
+        at_said = [r for r in timed if r["trigger"]["at"] in written]
+        return ROUTINES_BESIDE.format(tool=self.wires.name("baxy.routines"), items=items) + (
+            ROUTINE_AT_SAID.format(clock=at_said[0]["trigger"]["at"], name=routine_guide._named(at_said[0]))
+            if len(at_said) == 1 else "")
+
     def _routine_lines(self) -> list[tuple[str, str]]:
         """RUT14: what the person and BAXY said since the last routine BAXY saved, changed or deleted (the conversation
         the routine being made is in), oldest first: their words and BAXY's, never a note «[…]» nor a result."""
@@ -3886,6 +4040,57 @@ class Mind:
         read = routine_fill.checked(fields, [words for who, words in lines if who == "user"] + [text], guide.when.days)
         self._log("turn.routine_read", started, reply, kind=read.does, lang=guide.lang)
         return read
+
+    def _message_written(self, turn: dict[str, Any], call: dict[str, Any]) -> dict[str, Any]:
+        """Aid «message_text», MSG1: a call that sends or leaves written a text for someone (message_text.WRITES) goes
+        with that text as the model writes it in one closed question apart from the decision (message_text.body),
+        asked after the conversation as the server holds it, as _routine_read asks: in direct speech, as the person
+        would write it, with nothing they did not give. A number, hour, date, name or address of it that neither the
+        person's words nor the conversation carry goes back to the model as data, once; still there, unreadable, or
+        words dictated as they go (the model's «e», or a text in quotes by form), the decision's own text goes.
+        MSG1B: off unless BAXY_MSG1_REDACTA is «1». Measured blind on 40 held-out orders (seed 0), the 4B's text here
+        was at times «yes» or «no» (an email, a reply, a message to a person) or the whole order, with BAXY's question
+        quoting another text: a send that is not what the person was asked about (INFORME_MSG1 §3)."""
+        # By wire name: a mind with no catalog yet knows only the wire (as _unsaid_file).
+        name = next((op for op in message_text.WRITES if self.wires.name(op) == call["wire"]), None)
+        text = call["arguments"].get("text")
+        if (name is None or turn.get("beat") or not isinstance(text, str) or not text.strip()
+                or os.environ.get("BAXY_MSG1_REDACTA") != "1" or not _aid_on("message_text")):
+            return call
+        said = str(turn.get("said") or turn.get("text") or "")
+        started = time.perf_counter()
+        if message_text.quoted(said, text):
+            self._log("turn.message_text", started, None, kind="quoted", operation=name)
+            return call
+        sources = [str(m.get("content") or "") for m in turn["conv"]
+                   if m.get("role") in ("user", "assistant", "tool") and isinstance(m.get("content"), str)
+                   and not (m.get("role") == "user" and str(m.get("content")).startswith("["))]
+        sources += [said, *message_text.theirs(call["arguments"])]
+        unsaid: list[str] = []
+        for _ in range(2):
+            reply, failure, written = None, None, None
+            body = message_text.body(name, call["arguments"], said, unsaid, self.seed)
+            body.update(messages=[{"role": "system", "content": self._system()}, *self._history(turn["conv"]),
+                                  *body["messages"]], tools=self.tools, tool_choice="none")
+            try:
+                reply = self.server.chat(body, timeout=ROUTINE_READ_SECONDS)
+                written = message_text.parsed(reply, name)
+            except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+                failure = type(error).__name__
+            if written is None or written.exact:
+                kind = "exact" if written is not None else "unreadable"
+                self._log("turn.message_text", started, reply, kind=kind, operation=name, failure=failure)
+                return call
+            unsaid = message_text.unsaid(f"{written.subject}\n{written.text}", sources)
+            if not unsaid:
+                arguments = {**call["arguments"], "text": written.text}
+                if name in message_text.MAIL:
+                    arguments["subject"] = written.subject
+                self._log("turn.message_text", started, reply, kind="written", operation=name)
+                return {**call, "arguments": arguments}
+        self._log("turn.message_text", started, reply, kind="unsaid", operation=name,
+                  unsaid=None if turn.get("private") else unsaid)
+        return call
 
     def _guide_read(self, guide: routine_guide.Guide, text: str) -> tuple[Any, ...] | None:
         """RUT14: the person's words to a question of the guide that makes a routine, when they are no closed form of
@@ -4017,6 +4222,7 @@ class Mind:
         self._log("turn.routine_order", started, None, action=ordered.action, lang=ordered.lang,
                   step=ordered.guide.step if ordered.guide is not None else None)
         if ordered.guide is not None:
+            ordered.guide.known = self.routines   # RUT17: a routine said in one breath that they already have is said so
             ended = ordered.guide.step == "steps_only"
             self._guide, self._guide_at = (None if ended else ordered.guide), time.monotonic()
             said = ordered.said
@@ -4101,6 +4307,9 @@ class Mind:
                   keys=[i + 1 for i in read[1]] if read else None, failure=failure or (None if read else "unreadable"))
         if read is None or read[0] in ("new", "other"):
             return None
+        if read[0] == "no":
+            # INT37B: their no to what BAXY asked: nothing of their routines is proposed (the guide's own words)
+            return routine_guide.Guide(lang=lang)._t("left"), "no"
         act, chosen = read[0], [kept[i] for i in read[1]]
         if act == "list":
             listed = json.dumps({"status": "completed", "observed": {"routines": kept, "count": len(kept)}})
@@ -4111,6 +4320,10 @@ class Mind:
         among = chosen or kept
         if len(among) == 1 and act == "change":
             guide = routine_guide.Guide.changing(among[0], lang)
+            # RUT17: what their words already say of the change (its time, days or text), read as RUT14 reads a new one
+            read = self._routine_read(guide, text, "") if guide.step == "what" else None
+            if read is not None:
+                guide.changed_by(read, kept)
         elif len(among) == 1:
             guide = routine_guide.Guide(lang=lang, step="confirm_all", mode="all", act=verb,
                                         targets=(routine_guide._named(among[0]),), ids=routine_guide.keyed(among),
@@ -4122,6 +4335,45 @@ class Mind:
         said = guide.question()
         self._guide, self._guide_at = (None if guide.step == "steps_only" else guide), time.monotonic()
         return said, act
+
+    def _clock_named(self, ordered: routine_guide.Order) -> routine_guide.Order:
+        """RUT17 (VIVO22: «Borra la rutina de las diez de la mañana.» → «No tengo ninguna rutina «diez de la mañana».»):
+        a fixed order whose name is none of their routines' by form. The time that name says, as the model reads it in
+        a closed question (routine_fill.clock_body), that is the clock of one routine of theirs and no other, makes that
+        routine the one asked about, by what it is, before anything is done (only their «sí» acts); else the order goes
+        on as it was (RoutinesHandler says it has no such routine)."""
+        started, reply, failure, clock = time.perf_counter(), None, None, None
+        body = routine_fill.clock_body(ordered.name, self.seed)
+        body.update(messages=[{"role": "system", "content": self._system()}, *self._history(self.conversation),
+                              *body["messages"]], tools=self.tools, tool_choice="none")
+        try:
+            reply = self.server.chat(body, timeout=ROUTINE_READ_SECONDS)
+            clock = routine_fill.clock_parsed(reply)
+        except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+            failure = type(error).__name__
+        self._log("turn.routine_clock", started, reply, kind=clock, failure=failure)
+        at = [r for r in self.routines if clock and isinstance(r, dict) and isinstance(r.get("trigger"), dict)
+              and r["trigger"].get("at") == clock]
+        if len(at) != 1:
+            return ordered
+        lang = routine_guide.lang_of(ordered.lang)
+        ask = routine_guide.Guide(lang=lang, step="confirm_all", mode="all", act=ordered.action,
+                                  targets=(routine_guide._named(at[0]),), ids=routine_guide.keyed(at),
+                                  about=routine_guide._item(at[0], lang))
+        return routine_guide.Order(ordered.action, ordered.lang, guide=ask)
+
+    def _asked_it(self, turn: dict[str, Any]) -> bool:
+        """RUT17 (INT37B, the App: «Borra la de las 10:00.» → the model's «¿Quieres que la borre?» → «Sí.» → «¿Borro esta
+        rutina…?» → a second «sí»): whether the person's words are already the «sí» the guide just set (_routine_have)
+        would ask for deleting, turning off or on one routine: BAXY's own last words were a question (asked_words) that
+        named that routine and no other of theirs (routine_guide.named_in: its name, phrase or clock, by form), and their
+        words are a plain «sí» to it (Guide._said_yes). Anything else, and the guide asks, saying which."""
+        guide = self._guide
+        if (guide is None or guide.step != "confirm_all" or guide.mode != "all" or len(guide.ids) != 1
+                or guide.act not in ("delete", "disable", "enable")):
+            return False
+        named = routine_guide.named_in("", str(turn.get("asked_words") or ""), self.routines)
+        return routine_guide.keyed(named) == guide.ids and guide._said_yes(str(turn["text"]))
 
     def _guide_filled(self, guide: routine_guide.Guide, text: str) -> str:
         """RUT14: a guide just opened takes what the person already said (their words of this turn and of the
@@ -4680,7 +4932,8 @@ class Mind:
         if outcome.startswith(VERIFICATION["unchanged"]) and _aid_on("same_call_closes") and _same_done(
                 turn, calling, turn.get("calling_args"), VERIFICATION["readback"]):
             outcome = SET_BY_SAME + outcome[len(VERIFICATION["unchanged"]):]
-        outcome += self._rings_said(calling, observation)
+        outcome += self._rings_said(calling, observation) + self._routines_beside(calling, turn.get("calling_args"),
+                                                                                 str(turn.get("text") or ""))
         # Aid «result_dedup» (w6-lat): what the facts line below says of this result is not said in it again.
         compact = _aid_on("result_dedup")
         body = _deduplicated(observation, outcome) if compact else observation
@@ -4741,6 +4994,12 @@ class Mind:
                 turn["field_told"] = True
                 note += field
                 aids["field_focused_next"] = field.strip()
+        if ((outcome == WAITS_FOR_YES or outcome.startswith(COMPLETED_OUTCOMES))
+                and any(self.wires.name(op) == calling for op in message_text.WRITES) and _aid_on("message_text_told")):
+            told = message_told(json.loads(turn.get("calling_args") or "{}"))
+            if told:
+                note += told
+                aids["message_text_told"] = told.strip()
         if calling == "file_write" and _aid_on("written_not_window"):
             # The receipts before this call's own (_receipt above put it last).
             written = written_note(observation, turn.get("receipts", [])[:-1])
@@ -5182,6 +5441,7 @@ class Mind:
                       call_index=calls.index(held))
             return self._next(request_id, stage, turn, final=not reread)
         if calls:
+            calls = [self._message_written(turn, call) for call in calls]
             conv.append({"role": "assistant", "content": content, "tool_calls": [
                 {"id": c["id"], "type": "function",
                  "function": {"name": c["wire"], "arguments": json.dumps(c["arguments"], ensure_ascii=False)}}
@@ -5475,7 +5735,8 @@ class Mind:
         # VER3B: and a size nothing read («Tienes 32 GB de RAM» with no call): the model may read it.
         # INT36F: and a newer version only checked while the answer asks, or tells it installed or under way: the model may
         # install it (update_offered, update_not_installed).
-        stale = opens and not denied and any(f["rule"] in ("stale_state", "unchecked_update", "unread_version",
+        # INT36G: and a routine told deleted or changed with no baxy.routines call: the model may make it (routine_not_done).
+        stale = opens and not denied and any(f["rule"] in ("stale_state", "unchecked_update", "unread_version", "routine_not_done",
                                                            "unread_size", "update_offered", "update_not_installed")
                                                            for f in findings)
         rate = opens and not denied and not stale and any(f["rule"] == "unsourced_number" for f in findings)
@@ -6029,6 +6290,8 @@ class Mind:
             content, action = self._routine_have(str(turn["text"])), None
             if content is not None:
                 content, action = content
+                if self._asked_it(turn):
+                    return self._guide_answered(request_id, turn, self._guide, str(turn["text"]), False)
             else:
                 self._guide, self._guide_at = routine_guide.Guide(lang=routine_guide.lang_of(self.lang)), time.monotonic()
                 # RUT14: the model asked for a routine because of what the person said: those words are read (typed) and

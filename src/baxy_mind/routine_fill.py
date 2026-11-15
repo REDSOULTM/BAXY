@@ -365,8 +365,10 @@ def checked(fields: dict[str, Any], said: list[str], days: tuple[int, ...] = ())
 # its name, a closed list of values of this question (numbered keys: the 4B wrote the time, «10:00», 10 of 10 in Esencial);
 # «more than one» when the words may mean several. Anthropic's structured outputs take an enum of strings
 # (platform.claude.com/docs/en/build-with-claude/structured-outputs, read 2026-11-13 by RUT14); llama.cpp puts the
-# required ``a`` first.
-HAVE_ACTS = ("new", "delete", "turn_off", "turn_on", "change", "list", "other")
+# required ``a`` first. INT37B (the App, a new conversation: BAXY asked «¿Quieres que la borre?», the person said «No.»,
+# the model called baxy_routines and this read took «No.» for turn_off 5 of 5, «¿Desactivo esta rutina…?»): a no to
+# what BAXY asked has a value of its own, and BAXY leaves their routines as they are (Mind._routine_have).
+HAVE_ACTS = ("new", "delete", "turn_off", "turn_on", "change", "list", "no", "other")
 HAVE_SEVERAL = "more than one"
 HAVE_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -379,7 +381,8 @@ HAVE_ASK = (
     "name:\n{items}\n"
     "Reply with one JSON object.\n"
     "a: what their last words ask: new (set up a new routine) | delete (one they have) | turn_off | turn_on | change "
-    "(its time, days, word, or what it says or does) | list (which routines they have) | other.\n"
+    "(its time, days, word, or what it says or does) | list (which routines they have) | no (they say no to what "
+    "BAXY asked, or want nothing done to their routines) | other.\n"
     "r: with delete, turn_off, turn_on or change, the name of the routine their words mean, by anything they say of it "
     "(its time, its days, its word, what it says or does), or «more than one» when they could mean more than one.\n"
     "The person's last words: «{last}»]")
@@ -414,3 +417,45 @@ def have_parsed(reply: Any, names: list[str]) -> tuple[str, list[int]] | None:
         return None
     named = str(written.get("r") or "")
     return str(written["a"]), [names.index(named)] if named in names[:MOST_HAVE] else []
+
+
+# RUT17 (VIVO22: «Borra la rutina de las diez de la mañana.» → «No tengo ninguna rutina «diez de la mañana».», while with
+# «10:00» it was found): a name said in a fixed order that is none of their routines' by form may be a time said in
+# words. The model writes the time those words say in a closed object (each value an enum, as HAVE_SCHEMA), and the mind
+# compares it with each routine's own clock (Mind._clock_named): no list of words reads the time.
+CLOCK_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {"h": {"type": "string", "enum": ["none", *map(str, range(24))]},
+                   "m": {"type": "string", "enum": [*map(str, range(60))]}},
+    "required": ["h"],
+    "additionalProperties": False,
+}
+CLOCK_ASK = (
+    "[The person named one of their routines by «{name}». If these words say a time of day, reply with it in one JSON "
+    'object: h, the hour 0-23 (afternoon, evening and night are 12-23), and m, its minutes (left out when 0). If they '
+    'say no time, reply {{"h": "none"}}.]')
+CLOCK_TOKENS = 16
+
+
+def clock_body(name: str, seed: int) -> dict[str, Any]:
+    """The closed question of the time a name said is."""
+    return {"messages": [{"role": "user", "content": CLOCK_ASK.format(name=" ".join(str(name).split()))}],
+            "max_tokens": CLOCK_TOKENS, "chat_template_kwargs": {"enable_thinking": False},
+            "response_format": {"type": "json_schema", "json_schema": {"name": "hora", "schema": CLOCK_SCHEMA}},
+            "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": seed}
+
+
+def clock_parsed(reply: Any) -> str | None:
+    """The clock written («HH:MM»), or None: no time, or the reply is not the object asked."""
+    try:
+        content = str(reply["choices"][0]["message"].get("content") or "").strip()
+        start, end = content.find("{"), content.rfind("}")
+        written = json.loads(content[start:end + 1]) if start >= 0 and end > start else None
+    except (KeyError, IndexError, TypeError, ValueError, AttributeError):
+        return None
+    if not isinstance(written, dict) or set(written) - {"h", "m"}:
+        return None
+    hour, minute = str(written.get("h") or ""), str(written.get("m") or "0")
+    if not hour.isdigit() or not minute.isdigit() or int(hour) > 23 or int(minute) > 59:
+        return None
+    return f"{int(hour):02d}:{int(minute):02d}"

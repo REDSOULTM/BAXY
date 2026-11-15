@@ -173,3 +173,95 @@ def test_each_step_of_the_question_apart_is_the_server_advancing(tmp_path, monke
     assert reply["choices"][0]["message"]["content"] == "other"
     assert server._within(1.0) > window / 2  # the decision after it still has its window
     assert not list(tmp_path.iterdir())
+
+
+AGREEMENT = {"operation": "baxy.update", "arguments": {"action": "install"}, "agreement": True}
+
+
+class AgreementClosed(Closed):
+    """The agreement's two closed questions: the kinds answer `verdict`, the second one (yes or no) answers `says`."""
+
+    def __init__(self, server, verdict, says="yes") -> None:
+        super().__init__(server, verdict)
+        self.says = says
+
+    def answer(self, body: dict, **kwargs) -> dict:
+        reply = super().answer(body, **kwargs)
+        if body.get("grammar") == 'root ::= "yes" | "no"':
+            reply["choices"][0]["message"]["content"] = self.says
+        return reply
+
+
+def _agreement_mind(tmp_path, replies, verdict, says="yes"):
+    """AUT2: BAXY's update waits for a new license agreement and BAXY asked to read it, open it or accept it."""
+    mind, server = _mind(tmp_path, [_call("baxy_update", {"action": "install"}),
+                                    _say("Para actualizarme hay un acuerdo nuevo; ¿te lo leo, lo abro o lo aceptas?"),
+                                    *replies])
+    mind.wire_to_op = {"baxy_update": "baxy.update"}
+    mind.decide(1, "actualízate")
+    mind.continue_turn(2, json.dumps({"status": "needs_confirmation", "cause": "agreement_new", "next": "ask"}), final=True)
+    return mind, server, AgreementClosed(server, verdict, says)
+
+
+@pytest.mark.parametrize("verdict, answer", [("accept", "yes"), ("read", "read"), ("open", "open")])
+def test_the_agreement_is_answered_by_its_own_question(tmp_path, verdict, answer) -> None:
+    # AUT2: only their acceptance, read apart from the conversation, is their yes to the agreement; read and open are what
+    # their words ask, which the App does while the update keeps waiting.
+    mind, server, closed = _agreement_mind(tmp_path, [], verdict)
+    decisions = len(server.bodies)
+    result = mind.decide(3, "sí, lo acepto", AGREEMENT)
+    assert (result["operation"], result["arguments"]) == ("confirmation.answer", {"answer": answer})
+    assert result.get("theirYes") is (True if answer == "yes" else None) and len(server.bodies) == decisions
+    body = closed.asked[0]
+    assert body["grammar"] == ('root ::= "accept" | "read" | "open" | "no" | "later" | "maybe" | "ask" | "other"')
+    assert "tools" not in body and [m["role"] for m in body["messages"]] == ["system", "user"]
+    note = body["messages"][-1]["content"]
+    assert "«Para actualizarme hay un acuerdo nuevo; ¿te lo leo, lo abro o lo aceptas?»" in note and "«sí, lo acepto»" in note
+    assert "license agreement" in body["messages"][0]["content"]
+
+
+@pytest.mark.parametrize("verdict", ["no", "later", "maybe", "ask", "other", "now", urllib.error.URLError("down")])
+def test_without_their_acceptance_the_models_yes_accepts_nothing(tmp_path, verdict) -> None:
+    # «sí» alone to three choices, «acepto, pero mañana», «lo que tú veas»: never accepted for them; and an answer of the
+    # other question's kinds (now) is not one of this one's.
+    mind, server, _ = _agreement_mind(tmp_path, [_call("confirm_pending", {"answer": "yes"}),
+                                                 _say("Vale. ¿Te lo leo, lo abro o lo aceptas?")], verdict)
+    result = mind.decide(3, "sí", AGREEMENT)
+    assert result["operation"] == "confirmation.answer" and result["arguments"] == {"answer": "unclear"}
+    said = mind.continue_turn(4, json.dumps({"status": "needs_confirmation", "operation": "baxy.update"}))
+    told = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
+    assert json.loads(told.split("\n[En este turno")[0])["error"] == "not_their_yes"
+    assert said["reply"].startswith("Vale.")
+
+
+def test_a_call_that_waits_for_its_plain_yes_is_still_read_by_the_other_question(tmp_path) -> None:
+    mind, _, closed = _asked_mind(tmp_path, [], "now")
+    mind.decide(3, "dale", PENDING)
+    assert closed.asked[0]["grammar"].startswith('root ::= "now"')
+
+
+def test_after_the_agreement_was_read_the_models_own_yes_is_still_not_theirs(tmp_path) -> None:
+    # Revisión ciega (AUT2): «léemelo» is not a yes; the model asking and answering itself in that turn accepts nothing.
+    mind, server, _ = _agreement_mind(tmp_path, [_call("confirm_pending", {"answer": "yes"}), _say("¿Lo aceptas?")], "read")
+    assert mind.decide(3, "léemelo", AGREEMENT)["arguments"] == {"answer": "read"}
+    result = mind.continue_turn(4, json.dumps({"status": "needs_confirmation", "cause": "agreement_new", "next": "ask"}))
+    assert result["operation"] == "confirmation.answer" and result["arguments"] == {"answer": "unclear"}
+
+
+@pytest.mark.parametrize("says", ["no", "maybe", urllib.error.URLError("down")])
+def test_an_accept_their_words_do_not_say_accepts_nothing(tmp_path, says) -> None:
+    # AUT2 held-out: a bare «sí» or «ok» to «¿te lo leo, lo abro o lo aceptas?» read as accept by the kinds: the second
+    # question, on the same exchange, says whether their answer itself accepts it; anything but its yes is not acceptance.
+    mind, _, closed = _agreement_mind(tmp_path, [_call("confirm_pending", {"answer": "yes"}), _say("¿Cuál de las tres?")],
+                                      "accept", says)
+    result = mind.decide(3, "sí", AGREEMENT)
+    assert result["arguments"] == {"answer": "unclear"}
+    second = closed.asked[1]
+    assert second["grammar"] == 'root ::= "yes" | "no"' and "tools" not in second
+    assert "«sí»" in second["messages"][-1]["content"] and "¿te lo leo, lo abro o lo aceptas?" in second["messages"][-1]["content"]
+
+
+def test_an_accept_their_words_say_is_asked_twice_and_taken(tmp_path) -> None:
+    mind, _, closed = _agreement_mind(tmp_path, [], "accept", "yes")
+    assert mind.decide(3, "sí, lo acepto", AGREEMENT)["arguments"] == {"answer": "yes"}
+    assert len(closed.asked) == 2
