@@ -46,6 +46,8 @@ const NEEDS: Words = {
 export const PROFILE_NAME: Record<string, Words> = {
   esencial: { es: 'Esencial', en: 'Essential' }, diario: { es: 'Diario', en: 'Everyday' },
   avanzado: { es: 'Avanzado', en: 'Advanced' }, completo: { es: 'Completo', en: 'Complete' },
+  // ARR3: the person's own Personalizado, which a start may stand in for (cardProfileText «chosen»).
+  personalizado: { es: 'Personalizado', en: 'Custom' },
 };
 
 /** VRAM4: the model's start found a card whose free video memory does not hold the profile's instructions and tools whole
@@ -109,11 +111,19 @@ export const fittingProfile = (card: FailureCard | null | undefined): string | n
     the factory's takes, the profile it took, and the ways to more tools. VRAM4C: kept for this PC as BAXY's choice (not
     the person's) until the person chooses another; the notice is said on that start only, Settings → Tools always.
     VRAM4D (REV18 R18-2): only on a card short in all; on one with room (something held its memory at that start) the
-    profile is that start's alone («thisStart»), and the next start tries the factory's again. */
-export type CardProfile = { profile: string; factory: string; freeMb: number; needMb: number; thisStart?: boolean };
+    profile is that start's alone («thisStart»), and the next start tries the factory's again. ARR3 (VIVO23): «chosen» when
+    the profile that did not fit (factory) is the person's own choice, which that start stands in for and keeps. */
+export type CardProfile = { profile: string; factory: string; freeMb: number; needMb: number; thisStart?: boolean; chosen?: boolean };
 
 export function cardProfileText(card: CardProfile, t: T): string {
   const name = (profile: string) => (PROFILE_NAME[profile] ? t.w(PROFILE_NAME[profile]) : profile);
+  if (card.chosen) {
+    // A Personalizado is not asked for by voice, and choosing it again here starts from what runs: only the next start.
+    const now = card.factory === 'personalizado' ? t('', '')
+      : t(', y también ahora si lo eliges otra vez en Ajustes → Herramientas o me lo pides', ', and so does choosing it again now in Settings → Tools or asking me');
+    return t(`Elegiste el perfil ${name(card.factory)}, pero tu tarjeta gráfica tenía ${gb(card.freeMb, t)} de memoria de vídeo libres al arrancar y ese perfil necesita unos ${gb(card.needMb, t)}: en este arranque BAXY usa el perfil ${name(card.profile)}, que sí cabe. Tu elección se guarda: cada arranque vuelve a intentar el perfil ${name(card.factory)}${now}. Si algo está usando la tarjeta gráfica (un juego, por ejemplo), ciérralo antes.`,
+      `You chose the ${name(card.factory)} profile, but your graphics card had ${gb(card.freeMb, t)} of video memory free at start and that profile needs about ${gb(card.needMb, t)}: for this start, BAXY uses the ${name(card.profile)} profile, which fits. Your choice is kept: every start tries the ${name(card.factory)} profile again${now}. If something is using the graphics card (a game, for example), close it first.`);
+  }
   if (card.thisStart) {
     return t(`Tu tarjeta gráfica tenía ${gb(card.freeMb, t)} de memoria de vídeo libres al arrancar y el perfil ${name(card.factory)} necesita unos ${gb(card.needMb, t)}: sólo en este arranque, BAXY usa el perfil ${name(card.profile)}, que sí cabe. El próximo arranque vuelve a intentar el perfil ${name(card.factory)}: para tenerlo ya, cierra lo que esté usando la tarjeta gráfica (un juego, por ejemplo) y vuelve a abrir BAXY.`,
       `Your graphics card had ${gb(card.freeMb, t)} of video memory free at start and the ${name(card.factory)} profile needs about ${gb(card.needMb, t)}: for this start only, BAXY uses the ${name(card.profile)} profile, which fits. The next start tries the ${name(card.factory)} profile again: to have it now, close what is using the graphics card (a game, for example) and open BAXY again.`);
@@ -187,6 +197,25 @@ export const TUNED_PROBLEM: Record<string, Words> = {
   ajustado_ausente: { es: 'No encontré el modelo ajustado: BAXY sigue con el modelo de serie. Instálalo otra vez para usarlo', en: 'I didn’t find the tuned model: BAXY stays on the stock model. Install it again to use it' },
   ajustado_danado: { es: 'El modelo ajustado está dañado y no lo voy a usar: BAXY sigue con el modelo de serie. Instálalo otra vez para usarlo', en: 'The tuned model is damaged and I won’t use it: BAXY stays on the stock model. Install it again to use it' },
 };
+
+/** MOD5: why BAXY runs its stock model although the person chose a GGUF of their own (LocalModel.Problem in the App). */
+export const LOCAL_PROBLEM: Record<string, Words> = {
+  local_model_missing: { es: 'No encontré el archivo del modelo que elegiste: BAXY sigue con su modelo de serie', en: 'I didn’t find the file of the model you chose: BAXY stays on its stock model' },
+  local_model_not_gguf: { es: 'El archivo que elegiste no es un modelo GGUF que pueda leer: BAXY sigue con su modelo de serie', en: 'The file you chose isn’t a GGUF model I can read: BAXY stays on its stock model' },
+  local_model_no_tools: { es: 'La plantilla de ese modelo no admite herramientas, y BAXY las necesita para hacer cosas: sigue con su modelo de serie', en: 'That model’s template doesn’t take tools, and BAXY needs them to do things: it stays on its stock model' },
+  local_model_short_context: { es: 'Ese modelo lee menos texto del que necesitan las instrucciones de BAXY: sigue con su modelo de serie', en: 'That model reads less text than BAXY’s instructions need: it stays on its stock model' },
+  local_model_failed: { es: 'El modelo que elegiste no logró arrancar en este PC: BAXY volvió a su modelo de serie. Puedes elegirlo otra vez en Ajustes → Modelo', en: 'The model you chose couldn’t start on this PC: BAXY went back to its stock model. You can choose it again in Settings → Model' },
+};
+
+/** MOD5: the same, when the mind said why that model did not come up: its memory, said as it is. */
+export const LOCAL_FAILED_CAUSE: Record<string, Words> = {
+  vram_insuficiente: { es: 'El modelo que elegiste no cabe en la memoria libre de tu tarjeta gráfica: BAXY volvió a su modelo de serie. Puedes elegirlo otra vez en Ajustes → Modelo', en: 'The model you chose doesn’t fit your graphics card’s free memory: BAXY went back to its stock model. You can choose it again in Settings → Model' },
+  ram_insuficiente: { es: 'El modelo que elegiste no cabe en la memoria libre de este PC: BAXY volvió a su modelo de serie. Puedes elegirlo otra vez en Ajustes → Modelo', en: 'The model you chose doesn’t fit this PC’s free memory: BAXY went back to its stock model. You can choose it again in Settings → Model' },
+};
+
+/** The words for a GGUF of the person's own that this start does not run (LOCAL_PROBLEM), with the mind's cause when known. */
+export const localProblemWords = (problem: string | null | undefined, cause: string | null | undefined): Words | null =>
+  problem === 'local_model_failed' && cause && LOCAL_FAILED_CAUSE[cause] ? LOCAL_FAILED_CAUSE[cause] : problem && LOCAL_PROBLEM[problem] ? LOCAL_PROBLEM[problem] : null;
 
 /** N9: a start that repeats nothing the person can act on says it once, without the count of failed starts. VRAM4B: so
     does one on a card that does not hold the profile (the host tries it once, MainWindowViewModel.RetryMindOrGiveUp). */

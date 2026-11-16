@@ -19,6 +19,10 @@ from test_mind_final import _call
 from test_mind_int36g_rutina_por_hora import _opened
 from test_mind_routine_guide import _guide_mind
 
+# RUT18 C: with its clock in digits («Borra la de las 10:00.») the cancel is held before it runs («said_routine»,
+# test_mind_rut18_rutina_dicha); this result and the yes that follows are of the words it does not hold.
+SAID = "Borra la de las diez."
+
 MORNING = "Buenos días, Leonor, que tengas un gran día"
 # RoutinesHandler's store as the App wrote it in INT37B's run (routines-store\routines.v1.json), ids and times invented
 TEN = {"id": "r-3a1d09", "name": "10:00", "active": True, "createdUtc": "2026-11-15T02:59:32Z",
@@ -35,7 +39,7 @@ def test_in_a_new_conversation_the_alarm_result_says_their_routine_at_that_time(
     mind, server = _guide_mind(tmp_path, [_call("schedule_alarms", {"action": "cancel", "at": "10:00"}),
                                           {"choices": [{"message": {"content": "Listo."}}]}], [TEN, EIGHT])
     mind.new_session([])
-    mind.decide(1, "Borra la de las 10:00.")
+    mind.decide(1, SAID)
     # what the model read before its call: nothing of the routines (the cause; INT37B's proxy, the App's request)
     first = json.dumps(server.bodies[0]["messages"], ensure_ascii=False)
     assert MORNING not in first

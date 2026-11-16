@@ -1,17 +1,18 @@
-using System.Runtime.InteropServices;
+using System.Globalization;
+using Baxy.Providers.Windows.SystemStatus;
 
 namespace Baxy.Installer;
 
-/// <summary>VRAM5 (AUD1 F7): the RAM installed in this PC, for what the installer tells before downloading
-/// (MachineGpu.WithRam).</summary>
-internal static partial class MachineRam
+/// <summary>INS2: the RAM of this PC, MiB, as BaxyRamNeed.Read gives it (installed, and free now); null where unread.</summary>
+internal sealed record MachineRam(long? InstalledMib, long? AvailableMib)
 {
-    /// <summary>MiB, as the firmware says it (GetPhysicallyInstalledSystemMemory: «the amount of RAM that is physically
-    /// installed on the computer», learn.microsoft.com, sysinfoapi.h), not what Windows can use; null when unread.</summary>
-    internal static long? InstalledMib() =>
-        GetPhysicallyInstalledSystemMemory(out ulong kib) && kib > 0 ? (long)(kib / 1024) : null;
+    internal static MachineRam Read()
+    {
+        (long? installed, long? free) = BaxyRamNeed.Read();
+        return new MachineRam(installed, free);
+    }
 
-    [LibraryImport("kernel32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool GetPhysicallyInstalledSystemMemory(out ulong totalMemoryInKilobytes);
+    /// <summary>What the log says: «RAM 4096 MB, 454 free».</summary>
+    public override string ToString() => string.Create(
+        CultureInfo.InvariantCulture, $"RAM {InstalledMib?.ToString(CultureInfo.InvariantCulture) ?? "?"} MB, {AvailableMib?.ToString(CultureInfo.InvariantCulture) ?? "?"} free");
 }

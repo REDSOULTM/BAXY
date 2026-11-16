@@ -61,6 +61,17 @@ test('un equipo que lee el modelo demasiado lento lo dice con lo medido y con qu
   // VRAM4D (REV18 R18-2): on a card with room, a start that something held the card at says it is that start's alone
   expect(cardProfileText({ profile: 'esencial', factory: 'completo', freeMb: 3400, needMb: 3880, thisStart: true }, es))
     .toBe('Tu tarjeta gráfica tenía 3,3 GB de memoria de vídeo libres al arrancar y el perfil Completo necesita unos 3,8 GB: sólo en este arranque, BAXY usa el perfil Esencial, que sí cabe. El próximo arranque vuelve a intentar el perfil Completo: para tenerlo ya, cierra lo que esté usando la tarjeta gráfica (un juego, por ejemplo) y vuelve a abrir BAXY.');
+  // ARR3 (VIVO23): the person's own Completo the card did not hold: theirs, kept, and tried again by choosing it, never «BAXY eligió»
+  const en = translator('en');
+  const theirs = { profile: 'esencial', factory: 'completo', freeMb: 3400, needMb: 5200, thisStart: true, chosen: true };
+  expect(cardProfileText(theirs, es))
+    .toBe('Elegiste el perfil Completo, pero tu tarjeta gráfica tenía 3,3 GB de memoria de vídeo libres al arrancar y ese perfil necesita unos 5,1 GB: en este arranque BAXY usa el perfil Esencial, que sí cabe. Tu elección se guarda: cada arranque vuelve a intentar el perfil Completo, y también ahora si lo eliges otra vez en Ajustes → Herramientas o me lo pides. Si algo está usando la tarjeta gráfica (un juego, por ejemplo), ciérralo antes.');
+  expect(cardProfileText(theirs, en)).toContain('You chose the Complete profile');
+  expect(cardProfileText(theirs, en)).not.toContain('BAXY chose');
+  // a Personalizado is tried again at the next start only: it is not asked for by voice
+  const custom = cardProfileText({ ...theirs, factory: 'personalizado' }, es);
+  expect(custom).toContain('cada arranque vuelve a intentar el perfil Personalizado. Si algo');
+  expect(custom).not.toContain('me lo pides');
 });
 
 test('el arranque lento dice cuánto lleva con la cuenta del servidor, y nada inventado cuando no la hay', () => {

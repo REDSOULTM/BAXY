@@ -16,6 +16,10 @@ from test_mind_int36g_rutina_por_hora import _is_have
 from test_mind_int37b_rutina_conversacion_nueva import EIGHT, MORNING, NO_CLOCK, TEN
 from test_mind_routine_guide import _guide_mind
 
+# RUT18 C: with its clock in digits («Borra la de las 10:00.») the cancel is held before it runs («said_routine»,
+# test_mind_rut18_rutina_dicha); this result and the yes that follows are of the words it does not hold.
+SAID = "Borra la de las diez."
+
 NAMED = f"No hay alarma a las 10:00, pero sí tienes una rutina que te dice «{MORNING}» los lunes, miércoles y viernes. " \
         "¿Quieres que la borre?"
 
@@ -36,7 +40,7 @@ def _asked_then(tmp_path: Path, question: str, have: dict, routines: list | None
 
     server.chat = chat
     mind.new_session([])
-    assert mind.decide(1, "Borra la de las 10:00.")["kind"] == "action"
+    assert mind.decide(1, SAID)["kind"] == "action"
     assert mind.continue_turn(2, NO_CLOCK)["reply"] == question
     return mind, server
 
@@ -108,7 +112,7 @@ def test_the_result_says_the_routines_tool_asks_them_first(tmp_path: Path) -> No
             mind, server = _guide_mind(tmp_path / lang, [_call("schedule_alarms", {"action": "cancel", "at": "10:00"}),
                                                          _say("…")], [TEN, EIGHT])
             mind.new_session([])
-            mind.decide(1, "Borra la de las 10:00.")
+            mind.decide(1, SAID)
             mind.continue_turn(2, NO_CLOCK)
             facts = [m["content"] for m in server.bodies[-1]["messages"] if m["role"] == "tool"][-1]
             assert told in facts, lang

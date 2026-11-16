@@ -118,6 +118,14 @@ public partial class App : Application
             return;
         }
 
+        // INS2 (MIN1): before the mind, the view and the helpers take the little RAM there is.
+        if (!FieldUiProbe.IsRequested(e.Args) && !StartupRam.MayStart())
+        {
+            ShellTraceSink.Record(ShellTraceScopes.Startup, "process", ShellTraceStages.ProcessTooLittleRam);
+            Shutdown(0);
+            return;
+        }
+
         try
         {
             StartWindow(e);

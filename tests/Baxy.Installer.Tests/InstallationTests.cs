@@ -470,15 +470,15 @@ internal sealed class InstallationTests
     }
 
     // VRAM5 (AUD1 F7): the installer never looked at the RAM. An 8 GB PC with a card has the 7,844 MiB BAXY and Windows
-    // need; 6 GB does not; Intel graphics only take the model from that same RAM, so 8 GB is short and 16 GB is not; an
-    // Intel card with its own memory (an Arc) is a card.
+    // need; 6 GB does not; an Intel card with its own memory (an Arc) is a card. INS2: integrated graphics are what Windows
+    // declares (MachineRamTests), so Intel graphics nobody declared stay «not measured».
     [TestCase(@"PCI\VEN_10DE&DEV_2803", 8_000_000_000L, 8192L, GpuSupport.Measured)]
     [TestCase(@"PCI\VEN_10DE&DEV_2803", 8_000_000_000L, 6144L, GpuSupport.TooLittleRam)]
-    [TestCase(@"PCI\VEN_8086&DEV_9A49", 128_000_000L, 8192L, GpuSupport.TooLittleRamIntegrated)]
+    [TestCase(@"PCI\VEN_8086&DEV_9A49", 128_000_000L, 8192L, GpuSupport.NotMeasured)]
     [TestCase(@"PCI\VEN_8086&DEV_9A49", 128_000_000L, 16384L, GpuSupport.NotMeasured)]
     [TestCase(@"PCI\VEN_8086&DEV_56A0", 16_000_000_000L, 8192L, GpuSupport.NotMeasured)]
     [TestCase(@"PCI\VEN_8086&DEV_56A0", 16_000_000_000L, 6144L, GpuSupport.TooLittleRam)]
-    [TestCase(@"PCI\VEN_10DE&DEV_1C82", 2_000_000_000L, 4096L, GpuSupport.TooLittleMemory)]
+    [TestCase(@"PCI\VEN_10DE&DEV_1C82", 2_000_000_000L, 6400L, GpuSupport.TooLittleMemory)]
     [TestCase(@"PCI\VEN_1414&DEV_008C", 0L, 4096L, GpuSupport.None)]
     [TestCase(@"PCI\VEN_10DE&DEV_2803", 8_000_000_000L, null, GpuSupport.Measured)]
     public void VRAM5_The_ram_installed_is_told_when_it_is_short(string device, long memory, long? ram, GpuSupport told)
@@ -493,8 +493,8 @@ internal sealed class InstallationTests
     {
         foreach (Texts texts in new[] { Texts.Spanish, Texts.English })
         {
-            Assert.That(string.Format(CultureInfo.InvariantCulture, texts.WarningRam, 6.0, 7.66), Does.Contain("6").And.Contain("7.7"));
-            Assert.That(string.Format(CultureInfo.InvariantCulture, texts.WarningRamIntegrated, 8.0, 11.15), Does.Contain("11.2"));
+            Assert.That(string.Format(CultureInfo.InvariantCulture, texts.WarningRam, 6.0, 7.66, 2.5, 6.03), Does.Contain("6").And.Contain("7.7").And.Contain("2.5"));
+            Assert.That(string.Format(CultureInfo.InvariantCulture, texts.WarningRamIntegrated, 8.0, 11.15, 3.1, 6.03), Does.Contain("11.2").And.Contain("3.1"));
             Assert.That(texts.WarningRamHelp, Is.Not.Empty);
         }
 

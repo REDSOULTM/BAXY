@@ -394,6 +394,15 @@ def test_a_file_write_that_failed_says_nothing_of_the_window() -> None:
     assert "«Sin título: Bloc de notas»" in written_note(WRITTEN, receipts)
 
 
+def test_their_no_to_a_held_call_is_told_as_refused_and_not_to_offer_again() -> None:
+    # MEN3 (VIVO23): «No.» to «¿Le mandas: …?» → «No se envió el mensaje. ¿Quieres que lo envíes ahora?».
+    from baxy_mind.mind import _outcome
+    declined = json.dumps({"status": "cancelled", "error": "declined_by_person", "operation": "message.send"})
+    other = json.dumps({"status": "cancelled", "error": "turn_stopped"})
+    assert _outcome(declined) == "no se hizo: la persona dijo que no; ya lo rechazó, no se lo ofrezcas de nuevo"
+    assert _outcome(other) == "cancelado por la persona"
+
+
 def test_a_message_stopped_before_it_was_written_is_never_told_as_sent() -> None:
     # Uso real 2026-10-21 (e2e del notebook): «le mandé el mensaje» after a send stopped at the person's draft.
     from baxy_mind.mind import _outcome

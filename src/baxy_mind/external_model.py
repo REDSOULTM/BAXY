@@ -59,6 +59,35 @@ _ERROR_CODE = re.compile(r"[A-Za-z0-9_.-]{1,64}")
 # An API's «this request cannot be taken as it is» (RFC 9110 §15.5: 400 Bad Request, 415 Unsupported Media Type, 422
 # Unprocessable Content): what a model with no vision answers to an image, and what any other fault of a request gets.
 NOT_TAKEN = (400, 415, 422)
+# MOD4: a closed question of the mind (the person's «sí», the agreement, the alarm that rings, the same application) holds
+# its answer to a few words by a GBNF grammar of literals, which only llama-server takes (grammars/README.md). Here the same
+# values go as the JSON schema each API does take for its output: Ollama's «format» (docs.ollama.com/capabilities/
+# structured-outputs), OpenAI's «response_format» json_schema (developers.openai.com/api/docs/guides/structured-outputs,
+# also llama-server's and Gemini's OpenAI-compatible endpoint), the Responses API's «text.format» and Claude's
+# «output_config.format» (platform.claude.com/docs/en/build-with-claude/structured-outputs), all read 2026-11-15. One that
+# refuses it (any status it answers) is asked the plain question again, and not with the schema any more if that one answers.
+_CLOSED_GRAMMAR = re.compile(r'root ::= "[^"\\]+"(?: \| "[^"\\]+")*')
+_CLOSED_VALUE = re.compile(r'"([^"\\]+)"')
+# {"answer": "different"} is about ten tokens; Ollama ends at num_predict, and the mind asks for the word's few.
+CLOSED_TOKENS = 64
+
+
+def closed_values(body: dict[str, Any]) -> list[str] | None:
+    """The values a closed question's grammar allows, when it is only a choice of literals and nothing else holds the
+    output (no tools, no response_format); None otherwise."""
+    grammar = body.get("grammar")
+    if not isinstance(grammar, str) or body.get("tools") or body.get("response_format") \
+            or not _CLOSED_GRAMMAR.fullmatch(grammar.strip()):
+        return None
+    return _CLOSED_VALUE.findall(grammar)
+
+
+def closed_format(values: list[str]) -> dict[str, Any]:
+    """The response_format of a closed question: an object of one field whose value is one of ``values`` (an object,
+    because OpenAI's strict schemas and Claude's take one at the root)."""
+    return {"type": "json_schema", "json_schema": {"name": "answer", "strict": True, "schema": {
+        "type": "object", "properties": {"answer": {"type": "string", "enum": values}}, "required": ["answer"],
+        "additionalProperties": False}}}
 
 
 def _small_png(side: int = 64) -> str:
@@ -966,6 +995,9 @@ class Compatible:
                 request["tool_choice"] = "none"
         if body.get("response_format"):
             request["response_format"] = body["response_format"]
+        # MOD4: a closed question at the temperature the mind asks (0: the most likely value), if this API takes it.
+        if body.get("closed_temperature") is not None:
+            request["temperature"] = body["closed_temperature"]
         return request
 
     def ask(self, body: dict[str, Any], names: dict[str, str]) -> dict[str, Any]:
@@ -1120,6 +1152,9 @@ class Translator:
         self.anthropic_sees: bool | None = None
         # Whether the model in use answered a request with an image: a later refusal of one is then that request's.
         self.took_image = False
+        # MOD4: what this API refused of a closed question («temperature», «format»): not asked with it again.
+        self.closed_refused: set[str] = set()
+        self._trying = threading.local()
 
     @property
     def sees(self) -> bool | None:
@@ -1189,7 +1224,7 @@ class Translator:
                 said = explain(self.compatible.provider, self.model, error.code, None)
             if self.compatible.provider == "local" and _no_memory(detail):
                 said = Refusal("memoria", f"{self.model} no cabe en la memoria de este PC: elige otro modelo o menos contexto")
-            say(said)
+            self._say(said)
             too_long = error.code == 400 and any(word in detail.lower() for word in ("context_length", "too long", "exceeds"))
             raise refused(said, too_long, upstream=error.code) from error
         except TimeoutError as error:
@@ -1222,7 +1257,53 @@ class Translator:
                     "usage": {"prompt_tokens": estimate, "completion_tokens": 1}}
         return None
 
+    def _say(self, refusal: Refusal) -> None:
+        """An API's refusal, for Settings; not said of a closed question's try that is asked again plainly (ask)."""
+        if not getattr(self._trying, "on", False):
+            say(refusal)
+
     def ask(self, body: dict[str, Any], on_text: Callable[[str], None]) -> dict[str, Any]:
+        """MOD4: a closed question (closed_values) goes with its values as the API's own output schema and, to an API of
+        chat completions, at its temperature; what the API refuses of that (a status it answers, while the plain question
+        is answered) is not sent again. Anything else goes as it came."""
+        values = closed_values(body)
+        if values is None:
+            return self._ask(body, on_text)
+        shaped = {key: value for key, value in body.items() if key != "grammar"}
+        shaped.update(response_format=closed_format(values), max_tokens=max(int(body.get("max_tokens") or 0), CLOSED_TOKENS))
+        tries = [("format", shaped)]
+        if type(self.compatible) is Compatible and body.get("temperature") is not None:
+            tries.insert(0, ("temperature", {**shaped, "closed_temperature": body["temperature"]}))
+        refused_now: list[str] = []
+        for name, attempt in tries:
+            if name in self.closed_refused:
+                continue
+            self._trying.on = True
+            try:
+                answer = self._ask(attempt, on_text)
+            except UpstreamError as refusal:
+                # Any status the API answered, not only NOT_TAKEN: llama-server b11609 behind «Otra» answers 500 «Unexpected
+                # empty grammar stack after accepting piece» to this schema with granite-4.2-3b (MOD4, pod, 2026-11-15).
+                # No status (no connection, no answer in time) is not the schema's: it fails as it would plainly.
+                if refusal.upstream is None:
+                    raise
+                refused_now.append(name)
+                continue
+            finally:
+                self._trying.on = False
+            self._learn(refused_now)
+            return answer
+        answer = self._ask(body, on_text)
+        self._learn(refused_now)
+        return answer
+
+    def _learn(self, refused: list[str]) -> None:
+        """What the API refused of a closed question that it then answered without: kept, and said in the log once."""
+        if refused:
+            self.closed_refused.update(refused)
+            print(f"{self.model}: sus preguntas cerradas van sin " + " ni ".join(refused) + ", que la API rechazó", flush=True)
+
+    def _ask(self, body: dict[str, Any], on_text: Callable[[str], None]) -> dict[str, Any]:
         if self.spend.spent:
             print(f"TOPE DE GASTO: {self.spend.total:.2f} de {self.spend.ceiling:.2f} USD. No se llama a la API.", flush=True)
             raise UpstreamError(402, "the test's spending ceiling is reached")
@@ -1240,13 +1321,13 @@ class Translator:
                 message = stream.get_final_message()
         except anthropic.BadRequestError as error:
             said = explain("anthropic", self.model, 400, error.body)
-            say(said)
+            self._say(said)
             # The mind reads a 400 as «past the context» and cuts its history: only that one goes through as a 400.
             too_long = "too long" in str(error.message).lower()
             raise refused(said, too_long, upstream=400) from error
         except anthropic.APIStatusError as error:
             said = explain("anthropic", self.model, error.status_code, error.body)
-            say(said)
+            self._say(said)
             raise refused(said, upstream=error.status_code) from error
         except anthropic.APITimeoutError as error:
             say(Refusal("lento", "Anthropic no respondió a tiempo: vuelve a pedirlo"))

@@ -7,9 +7,11 @@ import { stillIn } from '../src/still';
 /* VUL1: while the model reads what it prepares («Arrancando») the window keeps still: the avatar's clip does not play
    and the sky is not painted again, so the graphics card is the model's. They move again once it is ready. */
 
-test('sólo se queda quieta mientras el modelo se prepara', () => {
+test('sólo se queda quieta mientras el modelo se prepara o piensa', () => {
   expect(stillIn('booting')).toBe(true);
-  for (const s of ['standby', 'idle', 'listening', 'thinking', 'speaking', 'error', 'confirm'] as const) expect(stillIn(s), s).toBe(false);
+  // UIX1: while the model writes, the window leaves the CPU to it
+  expect(stillIn('thinking')).toBe(true);
+  for (const s of ['standby', 'idle', 'listening', 'speaking', 'error', 'confirm'] as const) expect(stillIn(s), s).toBe(false);
 });
 
 // ---- the avatar's clip, on its own (e2e/harness/avatar.html) ----
@@ -78,7 +80,7 @@ test('un avatar que nace arrancando muestra su fotograma sin reproducir nada, y 
 test('un estado que no se queda quieto cambia de clip y lo reproduce como siempre', async () => {
   test.setTimeout(60_000);
   const page = await avatar();
-  for (const [s, g] of [['thinking', 'pensando'], ['speaking', 'hablando'], ['listening', 'escuchando']] as const) {
+  for (const [s, g] of [['speaking', 'hablando'], ['listening', 'escuchando']] as const) {
     await page.evaluate((st) => window.bxSet(st), s);
     await page.waitForFunction((want) => document.querySelector<HTMLVideoElement>('.bx-avid video.on')?.dataset.g === want, g, { timeout: 5000 });
     expect(await played(page, 1000), s).toBeGreaterThan(0.5);
@@ -86,14 +88,10 @@ test('un estado que no se queda quieto cambia de clip y lo reproduce como siempr
   await page.close();
 });
 
-test('medición: con bx-still=thinking guardado en la vista, «Pensando» también se queda quieta', async () => {
-  // not the product's behaviour: the switch a measurement on a card flips before deciding it (still.ts)
+test('pensando, el clip del avatar se queda en su fotograma y vuelve a correr al hablar', async () => {
+  // UIX1: the window leaves the CPU to the model while it writes (still.ts)
   test.setTimeout(60_000);
-  const page = await browser.newPage();
-  await page.route('**/clips/*.mp4', (r) => r.fulfill({ path: join(ROOT, 'public', 'clips', r.request().url().split('/').pop()!), contentType: 'video/mp4' }));
-  await page.addInitScript(() => { try { localStorage.setItem('bx-still', 'thinking'); } catch { /* none */ } });
-  await page.goto(view.base + '/e2e/harness/avatar.html');
-  await page.waitForFunction(() => { const v = document.querySelector<HTMLVideoElement>('.bx-avid video.on'); return !!v && v.readyState >= 2; });
+  const page = await avatar();
   expect(await played(page, 1000), 'en reposo corre').toBeGreaterThan(0.5);
   await page.evaluate(() => window.bxSet('thinking'));
   await page.waitForFunction(() => { const v = document.querySelector<HTMLVideoElement>('.bx-avid video.on'); return v?.dataset.g === 'pensando' && v.readyState >= 2; }, undefined, { timeout: 5000 });

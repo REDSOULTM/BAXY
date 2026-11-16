@@ -65,7 +65,8 @@ def test_changing_a_routine_found_by_what_it_does_asks_before_changing(tmp_path:
     mind, server = _guide_mind(tmp_path, [], [WAKE, NIGHT])
     asked = mind.decide(1, "cambia la rutina pastillas")
     assert asked["kind"] == "conversation" and "«despertar»" in asked["reply"]
-    assert server.bodies == []
+    # RUT18 B: a name none of theirs is by form is read first (the closed question of which routine); unread, as before
+    assert [b["response_format"]["json_schema"]["name"] for b in server.bodies] == ["rutinas"]
 
 
 def test_by_name_is_its_name_or_phrase_only() -> None:

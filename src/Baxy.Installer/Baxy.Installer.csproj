@@ -41,6 +41,7 @@
     <!-- INS-2: the cards as BAXY reads them at every start (DXGI), the same source: what is downloaded is what it will look for. -->
     <Compile Include="..\Baxy.Providers.Windows\SystemStatus\WindowsGpuStatusProbe.cs" Link="Providers\WindowsGpuStatusProbe.cs" />
     <Compile Include="..\Baxy.Providers.Windows\SystemStatus\WindowsGpuVendors.cs" Link="Providers\WindowsGpuVendors.cs" />
+    <Compile Include="..\Baxy.Providers.Windows\SystemStatus\BaxyRamNeed.cs" Link="Providers\BaxyRamNeed.cs" />
   </ItemGroup>
   <!-- FIR1: the parts' hashes are used only after release.json's signature checks out, with the keys baxy-core trusts. -->
   <ItemGroup>

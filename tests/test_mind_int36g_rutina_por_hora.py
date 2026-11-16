@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 
 from baxy_mind import routine_fill
-from baxy_mind.mind import STUB_AGAIN
+from baxy_mind.call_format import CALIBRATED
 from test_mind_final import _call
 from test_mind_routine_guide import HEADSET, _guide_mind, _receipt
 from test_mind_rut14_rutinas import SAVED, TEXT, TIMED, _reading
@@ -48,7 +48,7 @@ def _opened(tmp_path: Path, have: list, reads: list | None = None, routines: lis
 def test_a_call_of_baxy_routines_is_written_once(tmp_path: Path) -> None:
     mind, server = _opened(tmp_path, [], [TIMED], routines=[])
     mind.decide(1, "que me saludes los lunes cuando llegue")
-    assert STUB_AGAIN.format(wire="baxy_routines") in server.bodies[0]["stop"]
+    assert CALIBRATED.stub_again("baxy_routines") in server.bodies[0]["stop"]
 
 
 def test_their_routine_named_by_its_time_is_asked_by_what_it_is_and_deleted_on_their_yes(tmp_path: Path) -> None:

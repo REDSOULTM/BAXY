@@ -139,6 +139,10 @@ export interface BootPieces {
   onProcessor?: boolean;
   /** QWB2: why this start runs the stock model although the person chose the tuned one (missing or damaged), or null. */
   tunedProblem?: string | null;
+  /** MOD5: why this start runs the stock model although the person chose a GGUF of their own, or null. */
+  localModelProblem?: string | null;
+  /** MOD5: the mind's cause when that model did not come up (vram_insuficiente, ram_insuficiente…), or null. */
+  localModelCause?: string | null;
   /** VRAM4B: this run started by itself in a smaller profile than the factory's, for the card's free video memory, or null. */
   cardProfile?: CardProfile | null;
 }

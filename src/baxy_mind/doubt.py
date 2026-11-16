@@ -10,18 +10,23 @@ from __future__ import annotations
 import math
 from typing import Any
 
+# Qwen3.5's call format, the one the doubt was measured on; another model's comes from its template (MOD3:
+# call_format.CallFormat.first_mark, name_open, name_stop, given by Mind._held).
 CALL = "<tool_call>"
 NAME_OPEN = "<function="
+NAME_END = ">"
 
 
 def _p(logprob: float | None) -> float:
     return math.exp(logprob) if logprob is not None else 0.0
 
 
-def read(reply: dict[str, Any] | None, nth: int = 0) -> dict[str, Any] | None:
+def read(reply: dict[str, Any] | None, nth: int = 0, call: str = CALL, name_open: str = NAME_OPEN,
+         name_end: str = NAME_END) -> dict[str, Any] | None:
     """Confidence of the decision in a chat reply with `logprobs`: for a call, p(open a call) × p(this tool's name); for
     words, 1 − p(open a call). Also the weakest name token's rivals (what else the model nearly called). None without
-    logprobs. `nth`: the reply's call read, from its own opening (P2.40: one queued behind the first)."""
+    logprobs. `nth`: the reply's call read, from its own opening (P2.40: one queued behind the first). `call`, the
+    token that opens a call, `name_open` and `name_end`, what the model writes before and after a name: its format."""
     try:
         content = (reply or {})["choices"][0]["logprobs"]["content"]
     except (KeyError, IndexError, TypeError):
@@ -30,21 +35,21 @@ def read(reply: dict[str, Any] | None, nth: int = 0) -> dict[str, Any] | None:
         return None
     # Review 2026-10-22: words written before the call («Claro,» then <tool_call>) are not the decision; the call is
     # measured from its own opening token, and a call whose opening is not in the logprobs gets no judgment.
-    opening = next(iter([i for i, token in enumerate(content) if token.get("token") == CALL][nth:]), None)
+    opening = next(iter([i for i, token in enumerate(content) if token.get("token") == call][nth:]), None)
     if opening is None and (nth or ((reply or {})["choices"][0].get("message") or {}).get("tool_calls")):
         return None
     first = content[opening or 0]
     alternatives = {a["token"]: _p(a.get("logprob")) for a in first.get("top_logprobs") or []}
-    p_call = _p(first.get("logprob")) if first.get("token") == CALL else alternatives.get(CALL, 0.0)
+    p_call = _p(first.get("logprob")) if first.get("token") == call else alternatives.get(call, 0.0)
     starts, text = [], ""
     for token in content:
         starts.append(len(text))
         text += token.get("token", "")
-    at = text.find(NAME_OPEN, starts[opening or 0])
+    at = text.find(name_open, starts[opening or 0])
     if opening is None or at < 0:
         return {"confidence": round(1.0 - p_call, 4), "p_call": round(p_call, 4)}
-    name_from = at + len(NAME_OPEN)
-    name_to = text.find(">", name_from)
+    name_from = at + len(name_open)
+    name_to = text.find(name_end, name_from)
     name_to = len(text) if name_to < 0 else name_to
     name = [i for i, s in enumerate(starts) if s + len(content[i].get("token", "")) > name_from and s < name_to]
     # Holdout v5 E023: the token that carries the end of «<function=» into the name («=input») had «=» alone as its main

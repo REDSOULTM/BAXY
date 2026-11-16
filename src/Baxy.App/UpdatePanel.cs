@@ -276,17 +276,21 @@ internal sealed class UpdatePanel
     /// AUT1: whether a baxy.update said in the chat started BAXY's installer, by its own receipt («installerStarted»):
     /// BAXY is about to close for it, and when it does not, the installer leaves written why (LastUpdate).
     /// </summary>
-    internal static bool StartedInstaller(NativeTurnStep step)
+    internal static bool StartedInstaller(NativeTurnStep step) =>
+        Receipt(step) is { } observed && StartedInstaller(observed);
+
+    /// <summary>A baxy.update step's receipt («observed»), or null for another step or one that has none.</summary>
+    internal static JsonObject? Receipt(NativeTurnStep step)
     {
         try
         {
             return step.Operation == Operation
-                && (JsonNode.Parse(step.Observation) as JsonObject)?["observed"] is JsonObject observed
-                && StartedInstaller(observed);
+                ? (JsonNode.Parse(step.Observation) as JsonObject)?["observed"] as JsonObject
+                : null;
         }
         catch (JsonException)
         {
-            return false;
+            return null;
         }
     }
 

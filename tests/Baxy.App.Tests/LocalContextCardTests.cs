@@ -51,6 +51,20 @@ public sealed class LocalContextCardTests
     }
 
     [Test]
+    public void TheMindIsToldWhenTheFirstNeedIsThePersonsOwn()
+    {
+        // ARR4 (REVX1 A3-2): a profile the person chose goes alone wherever alone it starts (llm_server.theirs_alone).
+        var context = new LocalContext(_root);
+        context.ApplyEnvironment("cuda", 43619, [30073], theirs: true);
+        Assert.That(Environment.GetEnvironmentVariable(LocalContext.NeedsVariable), Is.EqualTo("43619,30073"));
+        Assert.That(Environment.GetEnvironmentVariable(LocalContext.TheirsVariable), Is.EqualTo("1"));
+        context.ApplyEnvironment("cuda", 55034, [43619, 30073]);
+        Assert.That(Environment.GetEnvironmentVariable(LocalContext.TheirsVariable), Is.Null, "the factory's: none chosen");
+        context.ApplyEnvironment("cuda", theirs: true);
+        Assert.That(Environment.GetEnvironmentVariable(LocalContext.TheirsVariable), Is.Null, "no need, nothing");
+    }
+
+    [Test]
     public void AutomaticIsShownAsTheCellsTheMindTook()
     {
         var context = new LocalContext(_root);

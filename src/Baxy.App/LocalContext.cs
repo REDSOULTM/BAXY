@@ -60,6 +60,10 @@ internal sealed class LocalContext
     // (ToolProfile.KeptForTheCard). The mind serves it alone while the card is short (llm_server.context_kept).
     internal const string KeptVariable = "BAXY_RENEW_CTX_KEPT";
 
+    // ARR4 (REVX1 A3-2): and here «1» when the first need is a profile the person chose: the mind serves it alone, as 1.5.4
+    // did, wherever alone it starts, and the smaller ones only where it does not (llm_server.theirs_alone).
+    internal const string TheirsVariable = "BAXY_RENEW_CTX_THEIRS";
+
     /// <summary>VRAM4: what a mind found on a card that does not hold its server whole (its ready line's cardShort): the
     /// video memory free at its start, what the cells it took need, those cells, and the most cells the card holds whole
     /// (null when none of the ones it tries does). VRAM5: whether those cells are the person's own (Settings → Model →
@@ -285,8 +289,10 @@ internal sealed class LocalContext
     /// VRAM4: and what the person's profile needs (<paramref name="needed"/>, ToolProfile.NeededContext) in
     /// <see cref="NeedsVariable"/>, the floor of a context the mind fits to the card. VRAM4B: after it, only when the
     /// person never chose a profile, what each smaller ready-made one needs (<paramref name="orElse"/>, largest first):
-    /// the mind takes the first the card holds whole and says which (<see cref="CardFit"/>).</summary>
-    internal void ApplyEnvironment(string? backend = null, int? needed = null, IEnumerable<int>? orElse = null, int? kept = null)
+    /// the mind takes the first the card holds whole and says which (<see cref="CardFit"/>). ARR4: <paramref name="theirs"/>
+    /// when <paramref name="needed"/> is a profile the person chose (<see cref="TheirsVariable"/>).</summary>
+    internal void ApplyEnvironment(string? backend = null, int? needed = null, IEnumerable<int>? orElse = null, int? kept = null,
+        bool theirs = false)
     {
         lock (_sync)
         {
@@ -309,6 +315,7 @@ internal sealed class LocalContext
                 ? string.Join(',', new[] { needed.Value }.Concat(orElse ?? []).Select(static cells => cells.ToString(CultureInfo.InvariantCulture)))
                 : null);
             Environment.SetEnvironmentVariable(KeptVariable, needed is > 0 && kept is > 0 ? kept.Value.ToString(CultureInfo.InvariantCulture) : null);
+            Environment.SetEnvironmentVariable(TheirsVariable, needed is > 0 && theirs ? "1" : null);
         }
     }
 

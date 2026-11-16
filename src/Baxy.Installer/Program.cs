@@ -114,7 +114,7 @@ internal static partial class Program
 
         if (command.Quiet)
         {
-            return manifest is null ? Failure : InstallQuietly(manifest, files, paths, command.Update);
+            return manifest is null ? Failure : InstallQuietly(manifest, files, paths, command.Update, command.Force);
         }
 
         // AUT1: the update BAXY started has nothing to ask (the agreement is the one already accepted): no window.
@@ -124,9 +124,16 @@ internal static partial class Program
             return UpdateSilently(manifest, files, paths, voiceAllowed: !command.NoVoice);
         }
 
+        // ARR3 (AMD8 §3): the window an update opens (an agreement to accept), and the uninstaller's, keep quiet for a BAXY
+        // whose voice the person turned off, as the update without a window does.
         Application application = new();
         using MainWindow window = new(
-            manifest, uninstalling: command.UninstallRun, paths, voiceAllowed: !command.NoVoice, updating: command.Update, files);
+            manifest,
+            uninstalling: command.UninstallRun,
+            paths,
+            voiceAllowed: MaySpeak(command.NoVoice, Path.GetDirectoryName(Environment.ProcessPath!)!, UsualProfile()),
+            updating: command.Update,
+            files);
         application.DispatcherUnhandledException += (_, unhandled) =>
         {
             Log(unhandled.Exception.ToString());
@@ -148,8 +155,8 @@ internal static partial class Program
     /// The first line of an installation, with or without window: the cards read on this machine and what is told of
     /// them, the parts chosen for it and where it goes. It is what to look at when a machine got the wrong parts (INS-2).
     /// </summary>
-    internal static void LogMachine(ReleaseManifest forMachine, IReadOnlyList<GpuAdapter> adapters, InstallPaths paths) =>
-        Log($"{forMachine.Version}: {MachineGpu.Describe(adapters)}; {string.Join(", ", forMachine.Archives.Select(archive => archive.Name))}; {paths.Root}");
+    internal static void LogMachine(ReleaseManifest forMachine, IReadOnlyList<GpuAdapter> adapters, InstallPaths paths, MachineRam ram) =>
+        Log($"{forMachine.Version}: {MachineGpu.Describe(adapters, ram)}; {string.Join(", ", forMachine.Archives.Select(archive => archive.Name))}; {paths.Root}");
 
     internal static void Log(string line)
     {
@@ -278,19 +285,20 @@ internal static partial class Program
     }
 
     /// <summary>For installing by remote console (tests on other machines): no window, and what happened in the log.</summary>
-    private static int InstallQuietly(ReleaseManifest manifest, FileManifest? files, InstallPaths paths, bool updating = false)
+    private static int InstallQuietly(ReleaseManifest manifest, FileManifest? files, InstallPaths paths, bool updating = false, bool force = false)
     {
         using HttpClient http = new() { Timeout = Timeout.InfiniteTimeSpan };
         http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + manifest.Version);
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
         ReleaseManifest chosen = manifest.ForMachine(adapters);
-        LogMachine(chosen, adapters, paths);
+        MachineRam ram = MachineRam.Read();
+        LogMachine(chosen, adapters, paths, ram);
         Installation installation = new(chosen, paths, new PartFetcher(http), files: files, ranges: new RangeFetcher(http));
         // PRV2 (A5): --quiet shows no agreement, as always; it keeps what the installation it replaces accepted, so the
         // next update with a window asks for the agreement if it is not that one (AcceptedAgreement).
         string? accepted = AcceptedAgreement.Read(paths);
         QuietInstall quiet = new(
-            MachineGpu.Choose(adapters),
+            MachineGpu.WithRam(adapters, ram.InstalledMib),
             updating,
             Voice.BaxyIsOpen,
             async () =>
@@ -312,7 +320,12 @@ internal static partial class Program
 
                 WindowsIntegration.Register(paths, chosen.Version, chosen.InstalledBytes);
             },
-            Log);
+            Log)
+        {
+            Ram = ram,
+            Force = force,
+            Integrated = MachineGpu.Integrated(adapters),
+        };
         try
         {
             return quiet.RunAsync().GetAwaiter().GetResult();
@@ -336,7 +349,7 @@ internal static partial class Program
         http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + manifest.Version);
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
         ReleaseManifest chosen = manifest.ForMachine(adapters);
-        LogMachine(chosen, adapters, paths);
+        LogMachine(chosen, adapters, paths, MachineRam.Read());
         // The agreement is the one this installation accepted (else the window asks): it stays accepted.
         string? accepted = AcceptedAgreement.Read(paths);
         (string Version, int SizeKb)? registered = WindowsIntegration.Registered(paths);
@@ -373,7 +386,7 @@ internal static partial class Program
                 () => Open(paths),
                 // The first line comes with BAXY closed, so its own voice is free; a BAXY whose voice the person
                 // turned off is not spoken for either.
-                line => (voice ??= new Voice(voiceAllowed && !VoiceIsOff(told))).Say(CommandLine.Language, line),
+                line => (voice ??= new Voice(voiceAllowed && MaySpeak(noVoice: false, told, UsualProfile()))).Say(CommandLine.Language, line),
                 Log).RunAsync().GetAwaiter().GetResult();
         }
 #pragma warning disable CA1031 // The log is all there is: no window to tell it in.
@@ -459,7 +472,7 @@ internal static partial class Program
     {
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed();
         ReleaseManifest chosen = manifest.ForMachine(adapters);
-        LogMachine(chosen, adapters, paths);
+        LogMachine(chosen, adapters, paths, MachineRam.Read());
         FetchProgress progress = new(told, chosen.Version);
         Installation installation = new(chosen, paths, new PartFetcher(http), files: files, ranges: new RangeFetcher(http));
         try
@@ -516,13 +529,41 @@ internal static partial class Program
     /// field-settings.v1.json, «voiceMuted»): the installer runs from that profile's updates folder
     /// (UpdateInstallerFile.Folder). No file there, or one that says nothing of it, is BAXY as it comes: with voice.
     /// </summary>
-    internal static bool VoiceIsOff(string updatesFolder)
+    internal static bool VoiceIsOff(string updatesFolder) => VoiceOffIn(SettingsBeside(updatesFolder)) == true;
+
+    /// <summary>
+    /// ARR3 (AMD8 §3): whether the installer may speak, window or not. Not with --no-voice, nor for a BAXY whose voice the
+    /// person turned off: the one whose updates folder it runs from (an update BAXY started), else the usual one
+    /// (<paramref name="usualProfile"/>), which the uninstaller and an installer downloaded by hand run for. No settings
+    /// in either is a new installation: with voice, as before.
+    /// </summary>
+    internal static bool MaySpeak(bool noVoice, string installerFolder, string usualProfile) =>
+        !noVoice && (VoiceOffIn(SettingsBeside(installerFolder)) ?? VoiceOffIn(Path.Combine(usualProfile, SettingsName))) != true;
+
+    /// <summary>The profile BAXY uses when nothing says another (src/Baxy.App, MemoryOperationProtector.DataRootPath).</summary>
+    internal static string UsualProfile()
+    {
+        string? configured = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
+        return string.IsNullOrWhiteSpace(configured) ? Path.Combine(WindowsPlaces.ForThisUser.Data, "1") : configured;
+    }
+
+    private const string SettingsName = "field-settings.v1.json";
+
+    private static string SettingsBeside(string updatesFolder) =>
+        Path.Combine(Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(updatesFolder)) ?? updatesFolder, SettingsName);
+
+    // What a profile's settings say of the voice: null with no file, so another place may decide; a file that cannot
+    // be read, or says nothing of it, is BAXY as it comes.
+    private static bool? VoiceOffIn(string settings)
     {
         try
         {
-            string settings = Path.Combine(Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(updatesFolder)) ?? updatesFolder, "field-settings.v1.json");
-            return File.Exists(settings)
-                && System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(settings)) is System.Text.Json.Nodes.JsonObject values
+            if (!File.Exists(settings))
+            {
+                return null;
+            }
+
+            return System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(settings)) is System.Text.Json.Nodes.JsonObject values
                 && values["voiceMuted"] is System.Text.Json.Nodes.JsonValue muted && muted.TryGetValue(out bool off) && off;
         }
         catch (Exception unread) when (unread is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)

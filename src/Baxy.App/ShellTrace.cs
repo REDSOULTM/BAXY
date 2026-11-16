@@ -14,6 +14,8 @@ internal static class ShellTraceStages
 {
     internal const string ProcessStart = "process.start";
     internal const string ProcessYielded = "process.yielded";
+    // INS2: the person chose not to open BAXY on a PC with less RAM than it takes (StartupRam).
+    internal const string ProcessTooLittleRam = "process.too_little_ram";
     internal const string WindowCreated = "window.created";
     internal const string WindowShown = "window.shown";
     internal const string StartupBegin = "startup.begin";

@@ -116,10 +116,16 @@ public sealed class CardProfileFitTests
 
         profile.FitCard(new ToolProfile.CardFitted("esencial", 3400, 3880), shortCard: true);
 
-        Assert.That(profile.Profile, Is.EqualTo("diario"));
-        Assert.That(profile.Fitted, Is.Null);
-        Assert.That(profile.Json()["byCard"], Is.Null);
-        Assert.That(profile.CardProfileFact(), Is.Null);
+        // ARR3: a start the card cannot hold Diario in runs Esencial, as a stand-in for this start alone (VIVO23: with
+        // their profile alone, BAXY did not start); the person's file is never written.
+        Assert.That((string?)JsonNode.Parse(File.ReadAllText(ProfileFile))!["profile"], Is.EqualTo("diario"));
+        Assert.That(JsonNode.Parse(File.ReadAllText(ProfileFile))!["byCard"], Is.Null);
+        Assert.That(profile.Chosen, Is.True);
+        Assert.That(profile.Profile, Is.EqualTo("esencial"), "this start's");
+        Assert.That(profile.Fitted, Is.EqualTo(new ToolProfile.CardFitted("esencial", 3400, 3880, ThisStart: true, Factory: "diario", Theirs: true)));
+        Assert.That((bool?)profile.Json()["byCard"]?["chosen"], Is.True, "Settings says it is theirs, not BAXY's choice");
+        Assert.That((bool?)profile.CardProfileFact()?["chosen"], Is.True);
+        Assert.That(new ToolProfile(_root).Profile, Is.EqualTo("diario"), "the next start tries theirs");
     }
 
     [Test]

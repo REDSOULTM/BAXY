@@ -63,6 +63,24 @@ internal sealed class UpdateProgressTests
         Assert.That(new UpdateProgress(english: false).Next(Reading("failed", 0)), Is.Null);
     }
 
+    // MEN3 (VIVO24B): «Baxi, actualízate» closed BAXY with the turn unanswered; as it closes it says where it goes.
+    [Test]
+    public void AnInstallWhoseInstallerStartedIsSaidAsBaxyClosesWithItsVersion()
+    {
+        JsonObject started = new() { ["installerStarted"] = true, ["latest"] = "1.5.5", ["updated"] = false };
+        JsonObject failed = new() { ["installerStarted"] = false, ["latest"] = "1.5.5" };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(UpdateProgress.Leaving(started, english: false),
+                Is.EqualTo("Voy a actualizarme a la 1.5.5; me cierro y vuelvo en un momento."));
+            Assert.That(UpdateProgress.Leaving(started, english: true),
+                Is.EqualTo("I’m going to update to 1.5.5; I’ll close and be back in a moment."));
+            Assert.That(UpdateProgress.Leaving(failed, english: false), Is.Null, "nothing closes: nothing to say");
+            Assert.That(UpdateProgress.Leaving(null, english: false), Is.Null);
+        });
+    }
+
     private static JsonObject Reading(string phase, long done, long total = Total) => new()
     {
         ["version"] = "1.5.4",

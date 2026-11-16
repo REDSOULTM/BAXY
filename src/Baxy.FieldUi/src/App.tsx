@@ -12,7 +12,7 @@ import { AvatarVid } from './components/AvatarVid';
 import { useLipActive } from './lip';
 import { liveText } from './live';
 import { Globe, Icon } from './components/Icon';
-import { cardProfileText, causeText, noWakeText, TUNED_PROBLEM, type FailureMemory, type FailureRead } from './causes';
+import { cardProfileText, causeText, localProblemWords, noWakeText, TUNED_PROBLEM, type FailureMemory, type FailureRead } from './causes';
 import { refusalSaid, type Failing } from './externalErrors';
 import { draftKeys, draftTab } from './drafts';
 import { Panel } from './components/Panel';
@@ -283,11 +283,15 @@ export default function App() {
   const voiceSounds = useLipActive();
   const host: BaxyState = voiceSounds === null ? s.hostState
     : voiceSounds ? 'speaking' : s.hostState === 'speaking' ? s.hostQuiet : s.hostState;
+  // INS2 (MIN1 p1): at a first start the boot said «no model» with a failure that is only «not started yet»
+  // (failed, no breakdown), and the host's idle read «Listo» 10 s before the mind existed: idle is never said without it
+  const noMind = !!s.boot && !s.boot.model && !breakdown;
   const state: BaxyState = booting ? 'booting'
     : !powered ? 'standby'
       : voiceError ? 'error'
         : host === 'idle' && pendingCard ? 'confirm'
-          : host;
+          : host === 'idle' && noMind ? 'booting'
+            : host;
   const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
   const label = state === 'error' ? (voiceError ? t.w(LABEL.error) : apiCapped ? t('Llegaste al tope de gasto de la API', 'You reached the API spending cap') : failureLabel(s.agent.failure, s.agent.failureCause, s.agent.failureMemory, s.agent.failureRead, t, { why: s.agent.failureWhy, kind: s.agent.failureKind, failing }))
     // uso 95: written while the model starts, the message waits for it (the host answers it once it is up)
@@ -325,6 +329,9 @@ export default function App() {
   // up, for as long as that is so, as BAXY goes on with the stock model.
   const tunedProblem = s.boot?.tunedProblem;
   const tuned = tunedProblem && TUNED_PROBLEM[tunedProblem] && !!s.boot?.model && !booting ? { b: t('Modelo', 'Model'), t: t.w(TUNED_PROBLEM[tunedProblem]) } : null;
+  // MOD5: the same for a GGUF of the person's own that this start could not use or that did not come up.
+  const localWords = localProblemWords(s.boot?.localModelProblem, s.boot?.localModelCause);
+  const local = localWords && !!s.boot?.model && !booting ? { b: t('Modelo', 'Model'), t: t.w(localWords) } : null;
   // COX-1 (VIVO4 D4): the notice of a refused long request lasted 2.6 s while the request stayed in the box, so whoever
   // looked a moment later saw a request that did not go and no reason; the limit is said for as long as it is so
   const long = tooLong > 0 ? { b: 'BAXY', t: tooLongText(tooLong, t) } : null;
@@ -332,7 +339,7 @@ export default function App() {
   // said once, when the model is up, until the person's first request (Settings → Tools goes on saying it).
   const cardProfile = s.boot?.cardProfile;
   const cardNote = cardProfile && !s.cardSeen && !!s.boot?.model && !booting ? { b: t('Perfil', 'Profile'), t: cardProfileText(cardProfile, t) } : null;
-  const shownNotice = notice ?? long ?? dropped ?? noWake ?? tuned ?? cardNote;
+  const shownNotice = notice ?? long ?? dropped ?? noWake ?? local ?? tuned ?? cardNote;
 
   // ---- captions and mood follow each reply: they last as long as reading it takes, plus a pause ----
   useEffect(() => {

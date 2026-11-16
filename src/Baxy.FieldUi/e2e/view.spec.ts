@@ -1573,6 +1573,18 @@ test('VRAM4D: en una tarjeta con sitio, el perfil que cupo en un arranque se dic
   await expect(note).not.toContainText('se queda en él');
 });
 
+test('sin mente cargada nunca dice Listo, aunque el arranque traiga un fallo sin avería', async () => {
+  // INS2 (MIN1 p1): the first start of the App said «Listo» 10 s before the mind was born
+  h = await openView();
+  const label = h.page.locator('.bx-statel');
+  h.emit({ type: 'boot', stt: null, wake: null, tts: null, model: false, startedAt: 1, readyAt: null, failed: 'mind_unavailable' });
+  h.emit({ type: 'state', value: 'idle' });
+  await expect(label).toContainText('Arrancando');
+  await expect(label).not.toContainText('Listo');
+  h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: true, startedAt: 1, readyAt: 2 });
+  await expect(label).toContainText('Listo');
+});
+
 test('la avería de un equipo lento dice además que no usa tarjeta gráfica cuando no la usa', async () => {
   h = await openView();
   h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: false, startedAt: 1, readyAt: null, failed: 'mind_unavailable',
@@ -5550,4 +5562,51 @@ test('rutinas: «Nueva rutina» manda la orden fija como un pedido escrito y cie
   await panel.getByRole('button', { name: 'Nueva rutina' }).click();
   await expect.poll(() => h.calls.filter((c) => c.path === '/turn').map((c) => c.body)).toEqual([{ text: 'nueva rutina' }]);
   await expect(panel).toHaveCount(0);
+});
+
+// MOD5: a GGUF of the person's own in BAXY's engine, from Settings → Model (LocalModel in the App): its path kept and used,
+// a file the App refuses said with its cause, vision said as it is, and the note on a model that is not the stock one.
+test('modelo GGUF propio: se guarda la ruta, se usa, dice si ve y la nota de otro modelo, en español y en inglés', async () => {
+  h = await openView();
+  let host: Record<string, unknown> = { path: null, use: false, active: false, problem: null, failedCause: null, sees: null, exists: false, switching: false };
+  h.reply('/settings/local-model', (c) => {
+    if (c.method === 'PUT') {
+      const body = c.body as Record<string, unknown>;
+      if (body.use === true && String(body.path ?? host.path).endsWith('sin-herramientas.gguf')) return { status: 409, body: { error: 'local_model_no_tools' } };
+      host = { ...host, ...body, ...(body.use === true ? { active: true, sees: false } : body.use === false ? { active: false, sees: null } : {}) };
+    }
+    return { body: { ...host } };
+  });
+  const p = h.page;
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Modelo' }).click();
+  await expect(p.getByText('Un modelo GGUF tuyo en el motor de BAXY')).toBeVisible();
+  await expect(p.locator('[data-other-model-note]')).toHaveCount(0);
+  const path = p.getByRole('textbox', { name: 'Ruta del archivo GGUF' });
+  await path.fill('D:\\modelos\\sin-herramientas.gguf');
+  await p.getByRole('switch', { name: 'Usar este modelo' }).click();
+  await expect(p.getByRole('alert')).toContainText('La plantilla de ese modelo no admite herramientas');
+  await path.fill('D:\\modelos\\otro.gguf');
+  await p.getByRole('switch', { name: 'Usar este modelo' }).click();
+  await expect.poll(() => h.calls.filter((c) => c.method === 'PUT' && c.path === '/settings/local-model').map((c) => c.body))
+    .toContainEqual({ path: 'D:\\modelos\\otro.gguf', use: true });
+  await expect(p.locator('[data-local-hint]')).toContainText('Sin visión');
+  await expect(p.locator('[data-other-model-note]')).toHaveText('BAXY está medida con su modelo de serie; con otro modelo, algunas cosas pueden ir mejor o peor.');
+  await p.keyboard.press('Escape');
+  h.reply('/settings/general', () => ({ body: { language: 'en', languageInUse: 'en' } }));
+  await expect(p.locator('.bx-gear')).toHaveAttribute('aria-label', 'Settings', { timeout: 10_000 });
+  await p.locator('.bx-gear').click();
+  await p.locator('.settings-tab', { hasText: 'Model' }).click();
+  await expect(p.getByText('A GGUF model of your own in BAXY’s engine')).toBeVisible();
+  await expect(p.locator('[data-local-hint]')).toContainText('No vision');
+  await expect(p.locator('[data-other-model-note]')).toHaveText('BAXY is measured with its stock model; with another model, some things may go better or worse.');
+});
+
+test('modelo GGUF propio que no arrancó: BAXY lo dice al volver a su modelo de serie', async () => {
+  h = await openView();
+  h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: true, startedAt: 1, readyAt: 2, localModelProblem: 'local_model_failed' });
+  await expect(h.page.locator('.bx-notice')).toContainText('El modelo que elegiste no logró arrancar en este PC: BAXY volvió a su modelo de serie');
+  // with the mind's cause, the cause
+  h.emit({ type: 'boot', stt: true, wake: true, tts: true, model: true, startedAt: 1, readyAt: 2, localModelProblem: 'local_model_failed', localModelCause: 'vram_insuficiente' });
+  await expect(h.page.locator('.bx-notice')).toContainText('El modelo que elegiste no cabe en la memoria libre de tu tarjeta gráfica: BAXY volvió a su modelo de serie');
 });

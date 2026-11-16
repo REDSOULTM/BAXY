@@ -874,6 +874,15 @@ internal sealed class ExternalModel : IDisposable
         // Nothing to read ahead into: this server has no slot.
         Replace("BAXY_RENEW_PREFILL", "0");
         Replace("BAXY_RENEW_WAKE_WARM", "0");
+        // MOD4: the early decision (early.py) asks the model while the person may still be speaking, and its answer is thrown
+        // away when the words, a «sí» to what waits or the minute differ: measured with early.py's own code, a spoken turn is
+        // 1 call when it hits and 2 when it misses, and the early words were the request's in 86.5 % of clean speech (74 % at
+        // 5 dB). An API that takes a key bills each one and gets words the person had not finished, to save under 0.7 s of
+        // a decision that takes seconds there: off. Ollama and a server on this PC cost nothing per call: as with BAXY's model.
+        if (NeedsKey(provider, UrlOf(config, provider)))
+        {
+            Replace("BAXY_RENEW_EARLY", "0");
+        }
         if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("BAXY_VISION_OFF")))
         {
             Replace("BAXY_VISION_ENDPOINT", $"http://127.0.0.1:{address}/v1/chat/completions");

@@ -187,7 +187,9 @@ def test_changing_a_routine_that_is_not_there_says_the_ones_there_are(tmp_path: 
     told = mind.decide(1, "modifica la rutina de la tele")
     assert told["kind"] == "conversation"
     assert told["reply"] == "No tengo ninguna rutina «tele». Tienes: «audifonos» y «buen dia»."
-    assert mind._guide is None and server.bodies == []
+    # RUT18 B: a name none of theirs is by form is read first (the closed question of which routine); unread, as before
+    assert mind._guide is None and len(server.bodies) == 1
+    assert server.bodies[0]["response_format"]["json_schema"]["name"] == "rutinas"
 
 
 def test_cancela_leaves_a_change_with_nothing_changed(tmp_path: Path) -> None:

@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from plantillas_llamada import qwen35
 from test_mind_final import _mind, _say
 
 
@@ -176,6 +177,9 @@ class _FakeLlama:
                 path, query = urllib.parse.urlsplit(self.path)[2:4]
                 if path == "/tokenize":
                     return self._answer(200, {"tokens": [248058] if body["content"] == "<tool_call>" else [0]})
+                if path == "/apply-template":  # MOD3: the warm-up reads the call format from the template
+                    return self._answer(200, {"prompt": qwen35(body["messages"], body.get("tools") or [],
+                                                               body.get("add_generation_prompt", True))})
                 if path == "/v1/chat/completions":
                     fake.slot = json.dumps(body["messages"], ensure_ascii=False)
                     said = body["messages"][-1]["content"]
@@ -235,7 +239,9 @@ def _rows(tmp_path: Path, stage: str) -> list[dict]:
     return [row for row in rows if row["stage"] == stage]
 
 
-WARM = ["/tokenize", "/props", "/v1/chat/completions", "/slots/0?action=save"]
+# MOD3: the call format read from the template (call_format.derive: six probe renderings), then «<tool_call>».
+FORMAT = ["/apply-template"] * 6
+WARM = [*FORMAT, "/tokenize", "/props", "/v1/chat/completions", "/slots/0?action=save"]
 
 
 def test_a_start_restores_the_prefix_the_last_one_kept_instead_of_reading_it_again(tmp_path: Path) -> None:
@@ -248,7 +254,7 @@ def test_a_start_restores_the_prefix_the_last_one_kept_instead_of_reading_it_aga
     assert len(kept) == 2 and {Path(name).suffix for name in kept} == {".json", ".slot"}
     fake.calls.clear()
     again = _warmed(tmp_path, fake)  # the next start: a new server process and a new mind
-    assert fake.calls == ["/tokenize", "/props", "/slots/0?action=restore"]  # nothing read again
+    assert fake.calls == [*FORMAT, "/tokenize", "/props", "/slots/0?action=restore"]  # nothing read again
     assert again.prefix_tokens == 37000
     assert fake.files() == kept
     assert [row.get("restored") for row in _rows(tmp_path, "warm.prefix")] == [False, True]
@@ -283,7 +289,7 @@ def test_a_prefix_the_server_cannot_restore_is_read_again_and_kept_anew(tmp_path
     fake.calls.clear()
     fake.fail_restore = True
     mind = _warmed(tmp_path, fake)
-    assert fake.calls == ["/tokenize", "/props", "/slots/0?action=restore", *WARM[2:]]
+    assert fake.calls == [*FORMAT, "/tokenize", "/props", "/slots/0?action=restore", *WARM[len(FORMAT) + 2:]]
     assert mind.prefix_tokens == 37000 and fake.files() == kept
 
 

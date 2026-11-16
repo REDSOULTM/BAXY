@@ -23,11 +23,28 @@ internal sealed record QuietInstall(
     /// </summary>
     internal const int NoGraphicsCard = 1633;
 
+    /// <summary>
+    /// INS2 (MIN1): less RAM than Windows and BAXY with a model by API take, and nothing downloaded: Windows' own
+    /// ERROR_NOT_ENOUGH_MEMORY, «Not enough memory resources are available to process this command»
+    /// (https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-), as <see cref="NoGraphicsCard"/> is
+    /// Windows Installer's. <c>--force</c> installs anyway.
+    /// </summary>
+    internal const int TooLittleRam = 8;
+
     private const int RegisterAttempts = 3;
 
     internal TimeSpan Pace { get; init; } = TimeSpan.FromMilliseconds(500);
 
     internal TimeSpan RegisterRetry { get; init; } = TimeSpan.FromSeconds(2);
+
+    /// <summary>INS2: the RAM the log tells with what is told of the machine.</summary>
+    internal MachineRam Ram { get; init; } = new(null, null);
+
+    /// <summary>INS2: --force, installing where BAXY does not fit even with a model by API.</summary>
+    internal bool Force { get; init; }
+
+    /// <summary>INS2: whether Windows declares integrated the graphics the RAM is told for.</summary>
+    internal bool Integrated { get; init; }
 
     internal async Task<int> RunAsync()
     {
@@ -38,6 +55,26 @@ internal sealed record QuietInstall(
         {
             Log("no NVIDIA, AMD or Intel graphics card in this PC: BAXY does not work here, nothing was downloaded");
             return NoGraphicsCard;
+        }
+
+        // INS2 (MIN1): the window says the same and waits for «install anyway»; here --force is that choice. Nothing of the
+        // gigabytes is downloaded for a BAXY that would close before saying a word; an update comes from a BAXY already here.
+        string ram = string.Create(
+            System.Globalization.CultureInfo.InvariantCulture,
+            $"{Ram}; BAXY needs {MachineGpu.MinimumApiRamMib} MB with a model by API and {MachineGpu.MinimumRamMib(Integrated)} MB with its own");
+        if (!Updating && Support == GpuSupport.TooLittleRamEvenByApi)
+        {
+            if (!Force)
+            {
+                Log($"too little RAM: {ram}. BAXY does not fit on this PC even with a model by API: nothing was downloaded (--force installs anyway)");
+                return TooLittleRam;
+            }
+
+            Log($"too little RAM: {ram}. BAXY does not fit on this PC even with a model by API; installing because of --force");
+        }
+        else if (Support is GpuSupport.TooLittleRam or GpuSupport.TooLittleRamIntegrated)
+        {
+            Log($"little RAM: {ram}. BAXY may not start with its own model; with a model by API (Settings, Model) it fits");
         }
 
         // --update: the BAXY that started this closes itself; it is waited for a minute at most.

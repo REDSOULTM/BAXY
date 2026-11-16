@@ -19,6 +19,7 @@ internal sealed record CommandLine(
     int? Original = null,
     string? Release = null,
     bool Fetch = false,
+    bool Force = false,
     string? Error = null)
 {
     /// <summary>ERROR_INVALID_COMMAND_LINE, the code Windows Installer gives an argument it does not know.</summary>
@@ -77,6 +78,9 @@ internal sealed record CommandLine(
                 case FetchOption:
                     command = command with { Fetch = true };
                     break;
+                case "--force":
+                    command = command with { Force = true };
+                    break;
                 case "--dir" or OriginalOption or ReleaseOption:
                     string? value = inline ?? (index + 1 < arguments.Count ? arguments[++index] : null);
                     if (string.IsNullOrWhiteSpace(value))
@@ -114,6 +118,7 @@ internal sealed record CommandLine(
 
         return command.DeleteData && !command.Uninstall ? command with { Error = "--delete-data only goes with --uninstall" }
             : command.Update && command.Uninstall ? command with { Error = "--update does not go with --uninstall" }
+            : command.Force && (!command.Quiet || command.Uninstall) ? command with { Error = "--force goes with --quiet, to install" }
             : (command.Fetch || command.Release is not null) && (!command.Update || command.Quiet)
                 ? command with { Error = "--fetch and --release go with --update, without --quiet" }
             : command;
@@ -181,6 +186,8 @@ internal sealed record CommandLine(
                                update-progress.json junto a este instalador. No cambia nada ni cierra BAXY.
             --release <url>    Con --update: aplica la versión publicada en esa dirección (su release.json
                                firmado), no la que trae este instalador, si este instalador basta para ella.
+            --force            Con --quiet: instala aunque este PC no tenga la RAM que BAXY necesita ni con
+                               un modelo por API (sin --force no baja nada y sale con {QuietInstall.TooLittleRam}).
             --help, -h, /?     Muestra esta ayuda.
 
           Salida:
@@ -188,6 +195,8 @@ internal sealed record CommandLine(
             {QuietInstall.NotRegistered}      BAXY quedó instalada, pero sin acceso en Inicio o sin entrada en «Aplicaciones instaladas»:
                    Windows no dejó crearlos. Al repetir la instalación se intenta otra vez.
             {QuietInstall.NoGraphicsCard}   este PC no tiene tarjeta gráfica NVIDIA, AMD ni Intel: BAXY no funciona aquí. No se bajó nada.
+            {QuietInstall.TooLittleRam}      este PC no tiene la RAM que BAXY necesita, ni con un modelo por API: no se bajó nada.
+                   Las cifras del PC quedan en {Program.LogPath}. Con --force se instala igual.
             {NotInstalled}   --uninstall no encontró ninguna BAXY: no se tocó nada.
             {InvalidCommandLine}   una opción no vale.
             otro   no pudo terminar. El motivo queda en {Program.LogPath}.
@@ -227,6 +236,8 @@ internal sealed record CommandLine(
                                in update-progress.json beside this installer. It changes nothing and closes nothing.
             --release <url>    With --update: applies the release published at that address (its signed
                                release.json), not the one this installer brings, when this installer is enough for it.
+            --force            With --quiet: installs even though this PC lacks the RAM BAXY needs, even with
+                               a model by API (without --force nothing is downloaded and it exits with {QuietInstall.TooLittleRam}).
             --help, -h, /?     Shows this help.
 
           Exit code:
@@ -234,6 +245,8 @@ internal sealed record CommandLine(
             {QuietInstall.NotRegistered}      BAXY is installed, but has no Start menu shortcut or no entry in «Installed apps»:
                    Windows did not let it create them. Installing again tries once more.
             {QuietInstall.NoGraphicsCard}   this PC has no NVIDIA, AMD or Intel graphics card: BAXY does not work here. Nothing was downloaded.
+            {QuietInstall.TooLittleRam}      this PC does not have the RAM BAXY needs, not even with a model by API: nothing was downloaded.
+                   The PC's figures go to {Program.LogPath}. With --force it installs anyway.
             {NotInstalled}   --uninstall found no BAXY: nothing was touched.
             {InvalidCommandLine}   an option is not valid.
             other  it could not finish. The reason is in {Program.LogPath}.

@@ -106,9 +106,9 @@ public sealed class MachineGpuSourceTests
         IReadOnlyList<GpuAdapter> adapters = MachineGpu.Installed(new FakeProbe(IntelWithTheScreen, NvidiaWithNoScreen));
 
         Assert.That(
-            MachineGpu.Describe(adapters),
-            Is.EqualTo(@"Measured [PCI\VEN_8086&DEV_9A49 0.1 GB, PCI\VEN_10DE&DEV_1F99 6.4 GB]"));
-        Assert.That(MachineGpu.Describe([]), Is.EqualTo("None []"));
+            MachineGpu.Describe(adapters, new MachineRam(16384, 9000)),
+            Is.EqualTo(@"Measured [PCI\VEN_8086&DEV_9A49 0.1 GB, PCI\VEN_10DE&DEV_1F99 6.4 GB]; RAM 16384 MB, 9000 free"));
+        Assert.That(MachineGpu.Describe([], new MachineRam(null, null)), Is.EqualTo("None []; RAM ? MB, ? free"));
     }
 
     [Test]

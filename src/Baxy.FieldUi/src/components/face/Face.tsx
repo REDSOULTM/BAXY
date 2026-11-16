@@ -8,7 +8,7 @@ import { lipAt } from '../../lip';
 import { useT } from '../../i18n';
 
 /* The cartoon robot face made of firework particles, on top of the neural mesh (design face.jsx, ported almost as
-   is): static parts painted into three offscreen bitmaps while still, 30 fps at rest and 60 while it thinks or speaks,
+   is): static parts painted into three offscreen bitmaps while still, 30 fps at rest, 15 while it thinks and 60 while it speaks,
    DPR ≤ 1.25, the buffer capped at 4.5 MP. The one change: the walk through the mesh grows with the turn's real calls
    (the journey's path gets a family per call), so each new family adds a segment instead of replaying a whole flow.
    Design v5: with `overlay` the canvas sits over the video avatar (AvatarVid) and draws only the live network — mesh
@@ -183,7 +183,8 @@ function FaceView(props: FaceProps) {
       rm = calmQ.matches;
       const ADD: GlobalCompositeOperation = light ? 'source-over' : 'lighter';
       const calm = state === 'standby' || ((state === 'idle' || state === 'confirm') && !trs.some((tr) => tr.u < 1) && !fx.length && !flashes.length);
-      if (!dirty && (now - last) / 1000 < (state === 'standby' ? 0.048 : calm ? 0.031 : 0)) return;
+      // UIX1: 15 fps while it thinks (the model shares the CPU with this window, still.ts), 60 only while it speaks
+      if (!dirty && (now - last) / 1000 < (state === 'standby' ? 0.048 : state === 'thinking' ? 0.066 : calm ? 0.031 : 0)) return;
       dirty = false;
       if (!w || !h || (cv.width === 300 && cv.height === 150)) { size(); if (!w || !h) return; }
       const dt = Math.min(0.1, (now - last) / 1000); last = now;

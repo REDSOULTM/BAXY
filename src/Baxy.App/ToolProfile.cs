@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -20,6 +21,8 @@ internal sealed class ToolProfile
     internal const string Personalizado = "personalizado";
     internal const int Highest = 4;
     internal const string OffCode = "tool_off_in_profile";
+    // ARR3: why a tool was not kept on while a start stands in for the person's profile (KeepOn).
+    internal const string StoodInCode = "tool_profile_stood_in";
     private const string Invalid = "tool_profile_invalid";
 
     // The presets in their order, with the highest level each keeps.
@@ -39,11 +42,45 @@ internal sealed class ToolProfile
     // start that chose it, the only one whose view says it (SaidNow), and the profile if the folder refused the file.
     // VRAM4D: on a card that is not short, this start's alone (ThisStart), never written.
     private CardFitted? _fitted;
+    // ARR3: the person's file as it was when a start stood in for it (Theirs), put back verbatim when Settings puts back
+    // what it showed (a Personalizado keeps its list); and a retry of theirs asked while that mind still serves.
+    private string? _theirsFile;
+    private bool _tryTheirs;
 
     /// <summary>VRAM4B: the profile a start took by itself for the card (<paramref name="Profile"/>), with the video
     /// memory that was free and what the factory's profile takes, MiB. VRAM4D (REV18 R18-2): <paramref name="ThisStart"/>
-    /// on a card with room that a start found short of free memory (a game open): that start's alone, not kept.</summary>
-    internal sealed record CardFitted(string Profile, int FreeMb, int NeedMb, bool ThisStart = false);
+    /// on a card with room that a start found short of free memory (a game open): that start's alone, not kept. ARR3
+    /// (VIVO23, 4 GB and Completo chosen: BAXY did not start): <paramref name="Theirs"/> when the profile that did not fit
+    /// (<paramref name="Factory"/>) is the person's own choice, which this start stands in for and never writes.</summary>
+    internal sealed record CardFitted(
+        string Profile, int FreeMb, int NeedMb, bool ThisStart = false, string Factory = Completo, bool Theirs = false);
+
+    /// <summary>ARR3: a new start of the mind tries the person's own profile again: the one a start before stood in for
+    /// it (<see cref="CardFitted.Theirs"/>) is that start's alone.</summary>
+    internal void StartAgain()
+    {
+        lock (_sync)
+        {
+            if (_fitted is { Theirs: true })
+            {
+                _fitted = null;
+            }
+
+            _theirsFile = null;
+            _tryTheirs = false;
+        }
+    }
+
+    /// <summary>ARR3: the person asked again for the profile this start stands in for (by voice, where their file already
+    /// names it): the mind is relaunched to try it once this turn ends (<see cref="NeedsSwitch"/>), while the tools of the
+    /// one that runs stay the ones refused and shown until then.</summary>
+    internal void TryTheirsAgain()
+    {
+        lock (_sync)
+        {
+            _tryTheirs = _fitted is { Theirs: true };
+        }
+    }
 
     internal ToolProfile(string dataRoot) => _path = Path.Combine(dataRoot, Baxy.Kernel.Policy.ToolProfileStore.FileName);
 
@@ -235,8 +272,23 @@ internal sealed class ToolProfile
                 _ = Keep(null);
             }
 
-            if (fitted is null || !IsPreset(fitted.Profile) || fitted.Profile == Completo || File.Exists(_path))
+            if (fitted is null || !IsPreset(fitted.Profile) || fitted.Profile == Completo)
             {
+                return;
+            }
+
+            if (File.Exists(_path))
+            {
+                // ARR3: the person's own profile, one the card does not hold now, stood in for on this start alone: their
+                // file is never written (the cause may pass: another program on the card), and the next start tries it.
+                // A file that cannot be read this moment is the profile last read, as Read keeps it (REM1).
+                (string? named, string? text) = TheirsFile();
+                if (KeptForTheCard is null && (named ?? _lastRead?.Profile) is { } theirs && theirs != fitted.Profile)
+                {
+                    _fitted = fitted with { ThisStart = true, Factory = theirs, Theirs = true };
+                    _theirsFile = text;
+                }
+
                 return;
             }
 
@@ -264,13 +316,57 @@ internal sealed class ToolProfile
 
     private static JsonObject CardJson(CardFitted fitted)
     {
-        var json = new JsonObject { ["factory"] = Completo, ["freeMb"] = fitted.FreeMb, ["needMb"] = fitted.NeedMb };
+        var json = new JsonObject { ["factory"] = fitted.Factory, ["freeMb"] = fitted.FreeMb, ["needMb"] = fitted.NeedMb };
         if (fitted.ThisStart)
         {
             json["thisStart"] = true;
         }
 
+        if (fitted.Theirs)
+        {
+            json["chosen"] = true;
+        }
+
         return json;
+    }
+
+    // ARR3: the profile the person's file names, read without what this start stands in for, and the file's text; nulls
+    // without one.
+    private (string? Profile, string? Text) TheirsFile()
+    {
+        try
+        {
+            string text = File.ReadAllText(_path);
+            return (Parse(text)?.Profile, text);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            return (null, null);
+        }
+    }
+
+    private string? Theirs() => TheirsFile().Profile;
+
+    // ARR3: the person's own profile and its tools while a start stands in for it; null otherwise.
+    private (string Profile, HashSet<string>? On)? StoodIn()
+    {
+        lock (_sync)
+        {
+            if (_fitted is not { Theirs: true } standIn)
+            {
+                return null;
+            }
+
+            try
+            {
+                return Parse(_theirsFile ?? File.ReadAllText(_path)) is { } theirs && theirs.Profile == standIn.Factory
+                    ? theirs : (standIn.Factory, null);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+            {
+                return (standIn.Factory, null);
+            }
+        }
     }
 
     // VRAM4C: BAXY's choice for the card as a file (or Json(), put back) says it: a smaller ready-made profile and the two
@@ -280,22 +376,48 @@ internal sealed class ToolProfile
         && profile is not null && IsPreset(profile) && profile != Completo && file[ByCard] is JsonObject card
         && card["freeMb"] is JsonValue free && free.TryGetValue(out int freeMb) && freeMb > 0
         && card["needMb"] is JsonValue need && need.TryGetValue(out int needMb) && needMb > 0
-            ? new CardFitted(profile, freeMb, needMb, card["thisStart"] is JsonValue start && start.TryGetValue(out bool alone) && alone)
+            ? Theirs(new CardFitted(profile, freeMb, needMb, card["thisStart"] is JsonValue start && start.TryGetValue(out bool alone) && alone), card)
             : null;
+
+    // ARR3: a stand-in for the person's own profile (CardJson «chosen»), the one put back from Settings: never in the file.
+    private static CardFitted Theirs(CardFitted fitted, JsonObject card) =>
+        card["chosen"] is JsonValue chosen && chosen.TryGetValue(out bool theirs) && theirs
+        && card["factory"] is JsonValue named && named.TryGetValue(out string? factory)
+        && factory is not null && factory != fitted.Profile && (IsPreset(factory) || factory == Personalizado)
+            ? fitted with { ThisStart = true, Factory = factory, Theirs = true }
+            : fitted;
 
     /// <summary>VRAM4B: what the mind is told of a profile this run took for the card (catalog.configure «cardProfile»,
     /// mind.CARD_PROFILE_FACT): the two profiles as Settings → Tools names them and the two figures; null with none.
     /// VRAM4D: none for a start's alone (ThisStart): the fact says the profile is kept, and the system text stays the one
     /// a person's Esencial reads.</summary>
-    internal JsonObject? CardProfileFact() => Fitted is { ThisStart: false } fitted
-        ? new JsonObject
+    /// ARR3: and for a start that stands in for the person's own profile («chosen»), so a reply never says theirs runs.
+    internal JsonObject? CardProfileFact()
+    {
+        if (Fitted is not ({ ThisStart: false } or { Theirs: true }) || Fitted is not { } fitted)
+        {
+            return null;
+        }
+
+        var fact = new JsonObject
         {
             ["profile"] = Shown(fitted.Profile, UiLanguage.IsEnglish),
-            ["factory"] = Shown(Completo, UiLanguage.IsEnglish),
+            ["factory"] = Shown(fitted.Factory, UiLanguage.IsEnglish),
             ["freeMb"] = fitted.FreeMb,
             ["needMb"] = fitted.NeedMb,
+        };
+        if (fitted.Theirs)
+        {
+            fact["chosen"] = true;
+            if (fitted.Factory == Personalizado)
+            {
+                // Not asked for by voice (baxy.settings.set takes the ready-made ones): the next start tries it.
+                fact["again"] = false;
+            }
         }
-        : null;
+
+        return fact;
+    }
 
     /// <summary>VRAM4B: what the profile is by the card, while it is (<see cref="FitCard"/>, nothing chosen since). VRAM4C: read
     /// from the file, so every start after the one that chose it says the same (Settings → Tools, the mind's fact).</summary>
@@ -305,7 +427,7 @@ internal sealed class ToolProfile
         {
             lock (_sync)
             {
-                if (!File.Exists(_path))
+                if (!File.Exists(_path) || _fitted is { Theirs: true })
                 {
                     return _fitted;
                 }
@@ -422,12 +544,66 @@ internal sealed class ToolProfile
         // TPV1 (dueño, 10-11: everything by voice): the smallest ready-made profile that has it, switched by BAXY with the
         // person's «sí».
         string smallest = Presets.First(preset => preset.Level >= level).Name;
+        // ARR3: a tool of the person's own profile, off at this start only because the card did not hold that profile:
+        // what turns it on is trying theirs again (by voice when it is a ready-made one), never another profile over it.
+        if (StoodIn() is { } theirs && Keeps(theirs.Profile, theirs.On, operation))
+        {
+            var facts = new JsonObject
+            {
+                ["tool"] = FieldStepProjection.EnglishTitle(operation),
+                ["profile"] = Shown(profile, english),
+                ["offThisStart"] = $"the person chose the profile {Shown(theirs.Profile, english)}, which has it; at this start "
+                    + $"the graphics card's free video memory did not hold {Shown(theirs.Profile, english)}, so "
+                    + $"{Shown(profile, english)} runs. Their choice is kept, and every start tries it again",
+            };
+            if (theirs.Profile != Personalizado)
+            {
+                facts["turnOnBySpeaking"] = WireNames.Call(OwnBrakes.Operation, new() { ["setting"] = OwnBrakes.ToolProfile, ["value"] = theirs.Profile })
+                    + $" tries {Shown(theirs.Profile, english)} again now; if it still does not fit, BAXY starts in the largest profile that fits and says so";
+            }
+
+            return facts;
+        }
+
         return new JsonObject
         {
             ["tool"] = FieldStepProjection.EnglishTitle(operation),
             ["profile"] = Shown(profile, english),
             ["turnOnBySpeaking"] = WireNames.Call(OwnBrakes.Operation, new() { ["setting"] = OwnBrakes.ToolProfile, ["value"] = smallest })
                 + $" switches to the profile {Shown(smallest, english)}, which has it; BAXY asks the person's yes itself",
+        };
+    }
+
+    /// <summary>ARR3: what a profile asked for by voice (baxy.settings.set «tool_profile») is told while this start stands
+    /// in for the person's own one and that is the one asked: the engine's receipt reads their file, which already named
+    /// it («changed»: false), not what runs. Null otherwise.</summary>
+    internal JsonObject? StandInNote(JsonObject arguments)
+    {
+        ArgumentNullException.ThrowIfNull(arguments);
+        if (Fitted is not { Theirs: true } standIn
+            || arguments["setting"] is not JsonValue setting || !setting.TryGetValue(out string? name) || name != "tool_profile"
+            || arguments["value"] is not JsonValue value || !value.TryGetValue(out string? asked) || asked != standIn.Factory)
+        {
+            return null;
+        }
+
+        // MEN3 (reparo de ARR3: «pon el perfil Completo» → «ya está activo el Completo» or an invented Diario, 3 of 8
+        // held-out): the whole fact, typed, each once: which was asked, which is active, that nothing was applied, and why
+        // in figures. «alreadyChosen» and «the largest profile that fits then» are no longer said beside it.
+        bool english = UiLanguage.IsEnglish;
+        string runs = Shown(standIn.Profile, english), theirs = Shown(standIn.Factory, english);
+        double free = Math.Round(standIn.FreeMb / 1024.0, 1), need = Math.Round(standIn.NeedMb / 1024.0, 1);
+        string freeGb = free.ToString("0.0", CultureInfo.InvariantCulture), needGb = need.ToString("0.0", CultureInfo.InvariantCulture);
+        return new JsonObject
+        {
+            ["applied"] = false,
+            ["asked"] = theirs,
+            ["active"] = runs,
+            ["videoMemoryFreeGb"] = free,
+            ["askedNeedsGb"] = need,
+            ["next"] = $"Not applied: the active profile is {runs}, and it stays {runs} in this reply. {theirs} does not fit "
+                + $"in this graphics card now ({freeGb} GB of video memory free, {theirs} needs about {needGb} GB). {theirs} "
+                + "stays saved as the person's choice and BAXY tries it again when the model starts after this reply.",
         };
     }
 
@@ -464,6 +640,7 @@ internal sealed class ToolProfile
         lock (_sync)
         {
             _applied = Key(withheld);
+            _tryTheirs = false;
             _started = true;
         }
     }
@@ -476,7 +653,7 @@ internal sealed class ToolProfile
             string now = Key(Withheld(CatalogNames));
             lock (_sync)
             {
-                return _started && !string.Equals(now, _applied, StringComparison.Ordinal);
+                return _started && (_tryTheirs || !string.Equals(now, _applied, StringComparison.Ordinal));
             }
         }
     }
@@ -499,6 +676,13 @@ internal sealed class ToolProfile
         if (Keeps(profile, on, operation))
         {
             return null;
+        }
+
+        // ARR3: while a start stands in for the person's profile, a tool of theirs is off because of the card, and a tool
+        // outside theirs would be kept over their choice: nothing is written (OffFacts says how to try theirs again).
+        if (StoodIn() is not null)
+        {
+            return StoodInCode;
         }
 
         bool memory = MemoryOperationProtector.IsMemoryOperation(operation);
@@ -533,6 +717,19 @@ internal sealed class ToolProfile
             if (ByCardOf(body) is not { } card)
             {
                 return Invalid;
+            }
+
+            if (card.Theirs)
+            {
+                // ARR3: a stand-in for the person's profile: theirs back in the file as it was named, this start's still.
+                lock (_sync)
+                {
+                    string? written = Theirs() == card.Factory ? null
+                        : _theirsFile is { } text && Parse(text)?.Profile == card.Factory ? Keep(JsonNode.Parse(text) as JsonObject)
+                        : card.Factory != Personalizado ? Keep(new JsonObject { ["profile"] = card.Factory }) : null;
+                    _fitted = card;
+                    return written;
+                }
             }
 
             if (card.ThisStart)
@@ -647,9 +844,10 @@ internal sealed class ToolProfile
             return true;
         }
 
+        // ARR4: a ready-made profile with a list (TheirsOn) keeps, of its own, only those.
         return profile == Personalizado
             ? on?.Contains(operation) == true
-            : level <= Presets.First(p => p.Name == profile).Level;
+            : level <= Presets.First(p => p.Name == profile).Level && (on is null || on.Contains(operation));
     }
 
     // REM7 (REV15 D-1): with a memory call held, the mind's fact says the switch (MindSidecarClient memoryOff), so a mind
@@ -670,7 +868,10 @@ internal sealed class ToolProfile
             try
             {
                 // VRAM4B: with no choice of the person's, the factory's, or the one this run's start took for the card.
-                read = !File.Exists(_path) ? (_fitted?.Profile ?? Completo, null) : Parse(File.ReadAllText(_path));
+                // ARR3: or the one this start stands in for the person's, while it does.
+                // ARR4 (REVX1 A3-1): over a Personalizado, only what the person left on of the one that runs.
+                read = !File.Exists(_path) ? (_fitted?.Profile ?? Completo, null)
+                    : _fitted is { Theirs: true } standIn ? (standIn.Profile, TheirsOn(standIn)) : Parse(File.ReadAllText(_path));
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
             {
@@ -686,6 +887,12 @@ internal sealed class ToolProfile
             return _lastRead.Value;
         }
     }
+
+    // ARR4 (REVX1 A3-1: a Personalizado without system.power nor web.search stood in for by Esencial gave the model both, and
+    // they ran): what a person turned off never turns on by itself. A stand-in for their Personalizado keeps only the tools
+    // their list has (Keeps); null for a ready-made one, which holds every tool of a smaller one. Inside Read's lock.
+    private HashSet<string>? TheirsOn(CardFitted standIn) => standIn.Factory != Personalizado ? null
+        : Parse(_theirsFile ?? File.ReadAllText(_path)) is { Profile: Personalizado, On: { } on } ? on : [];
 
     private static (string Profile, HashSet<string>? On)? Parse(string text)
     {

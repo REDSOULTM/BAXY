@@ -138,6 +138,10 @@ internal sealed class NativeTurnLoop
         /// when it is on, or why it could not be kept. Null where no profile is kept: a call off in it is only refused.</summary>
         internal Func<string, string?>? ToolOn { get; init; }
 
+        /// <summary>ARR3: what a completed baxy.settings.set adds to its result, by its arguments (ToolProfile.StandInNote):
+        /// the profile that runs now when the start stood in for the person's; null for anything else.</summary>
+        internal Func<JsonObject, JsonObject?>? SettingNote { get; init; }
+
         /// <summary>COR1: whether one of BAXY's own brakes (OwnBrakes, by its setting) is on as the person's settings
         /// say now; null where no settings are read: it is weighed as on.</summary>
         internal Func<string, bool>? BrakeOn { get; init; }
@@ -1580,6 +1584,17 @@ internal sealed class NativeTurnLoop
 
     // Where the call acted, beside the folder the person named (SaidFolders) or the application of its place
     // (SaidApplication).
+    /// <summary>ARR3 (the live ARR3 runs: «Ya estás en el perfil Completo», «ya tengo el perfil completo activo» with
+    /// Esencial running, 3 of 4 and then 5 of 10 replies): the engine's result is about the person's file, which already
+    /// named the profile («changed»: false), and as completed it was told as done. While a start stands in for that
+    /// profile what was asked cannot run now: the result says so, with what runs and that the next start tries it. The
+    /// engine's own result stays in the journal as it came.</summary>
+    internal static string StoodIn(string observation, JsonObject standIn) => Observation(
+        "failed",
+        ToolProfile.StoodInCode,
+        standIn,
+        about: "baxy.settings.set");
+
     internal static string WithSaid(string observation, string key, string said)
     {
         try
@@ -2321,6 +2336,14 @@ internal sealed class NativeTurnLoop
         if (said is { } fact)
         {
             body = WithSaid(body, fact.Key, fact.Note);
+        }
+
+        // ARR3 (the live ARR3 run: «Cambia al perfil Completo.» → «Ya tenías el perfil Completo…» while Esencial ran): the
+        // engine reads the person's file, which already named it; what runs now is the App's to say.
+        if (operation == "baxy.settings.set" && response.Status == OperationStatuses.Completed
+            && _host.SettingNote?.Invoke(arguments) is { } standIn)
+        {
+            body = StoodIn(body, standIn);
         }
 
         if (memory && response.Status == OperationStatuses.Completed

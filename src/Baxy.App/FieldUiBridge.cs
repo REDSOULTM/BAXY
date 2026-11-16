@@ -410,6 +410,9 @@ internal sealed class FieldUiBridge : IAsyncDisposable, IFieldEventSink
         or ArgumentException
         or UnauthorizedAccessException;
 
+    /// <summary>MEN3: what has to be said before BAXY closes (FieldProductChannel.BeforeClosingAsync).</summary>
+    internal Task BeforeClosingAsync() => _channel.BeforeClosingAsync();
+
     public async ValueTask DisposeAsync()
     {
         if (_disposed)

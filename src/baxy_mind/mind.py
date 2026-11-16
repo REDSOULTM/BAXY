@@ -34,6 +34,7 @@ from .protocol import whole_code_points
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 from . import behavior, harness_language, language_id, message_text, ring_answer, routine_fill, routine_guide, routines
+from . import call_format as formats
 from . import web_focus
 from .harness_language import t as _t
 from .wire import Wires, operation_of, plain
@@ -195,8 +196,20 @@ CARD_PROFILE_FACT = ("\nEl perfil de herramientas de fábrica de BAXY es {factor
                      "volver a arrancar.")
 
 
+# ARR3 (VIVO23, 15-11-2026: with a card of 4 GB and Completo chosen by the person, BAXY did not start): the App starts in
+# the largest ready-made profile the card holds under theirs, for that start alone, and keeps their choice («chosen»).
+# What the model is told then is that, never «BAXY eligió por su cuenta»; asking for theirs again tries it.
+CARD_PROFILE_CHOSEN_FACT = ("\nLa persona eligió el perfil de herramientas {factory}, pero en este arranque la tarjeta "
+                            "gráfica de este PC tenía {free} GB de memoria de vídeo libres y el perfil {factory} necesita "
+                            "unos {need} GB: BAXY arrancó con el perfil {profile}, que sí cabe, sólo en este arranque. La "
+                            "elección de la persona sigue guardada: cada arranque vuelve a intentar el perfil {factory}{now}.")
+# ARR3: a ready-made profile is tried again now too when asked for; a Personalizado («again»: false) only at the next start.
+CARD_PROFILE_CHOSEN_NOW = (", y también ahora si la persona lo pide otra vez (en Ajustes → Herramientas o pidiéndotelo)")
+
+
 def card_profile_fact(said: object) -> str:
-    """CARD_PROFILE_FACT with what the App said (the two profiles' names and the two figures in MiB), or nothing."""
+    """CARD_PROFILE_FACT with what the App said (the two profiles' names and the two figures in MiB), or nothing.
+    ARR3: CARD_PROFILE_CHOSEN_FACT when the App says the profile that did not fit is the person's («chosen»: true)."""
     if not isinstance(said, dict):
         return ""
     profile, factory, free, need = (said.get(key) for key in ("profile", "factory", "freeMb", "needMb"))
@@ -204,6 +217,9 @@ def card_profile_fact(said: object) -> str:
             and type(free) is int and type(need) is int and free > 0 and need > 0):
         return ""
     gb = lambda mib: f"{mib / 1024:.1f}".replace(".", ",")  # noqa: E731 - as the view says it (causes.ts gb)
+    if said.get("chosen") is True:
+        return CARD_PROFILE_CHOSEN_FACT.format(profile=profile.strip(), factory=factory.strip(), free=gb(free),
+                                               need=gb(need), now="" if said.get("again") is False else CARD_PROFILE_CHOSEN_NOW)
     return CARD_PROFILE_FACT.format(profile=profile.strip(), factory=factory.strip(), free=gb(free), need=gb(need))
 # TPV1 (dueño, 10-11-2026, prueba en vivo de la 1.3.4: asked to remember a fact, BAXY said its memory was off and to
 # turn it on in Settings; «si yo le digo Baxi, activa la memoria, la tiene que activar, no tiene que delegar al usuario
@@ -257,9 +273,12 @@ MEMORY_OFF_WAY_STUB = "BAXY's memory is on: calling this turns it off now and er
 # itself does nothing, and the person's yes to it runs it.
 HELD_STUB = ("Off on this PC: calling it does nothing yet. Your call waits, with its arguments, for the person's yes; "
              "with their yes BAXY turns it on and runs exactly this call, and that result says how it went.")
-# MUS1: where a call to a stub begins after another call in the same reply (the text between calls in Qwen3.5's chat
-# template, tokenizer.chat_template of the model file); the request stops there (_next).
-STUB_AGAIN = "</tool_call>\n<tool_call>\n<function={wire}>"
+# MUS1: the request stops where a call to a stub begins after another call in the same reply (_next): the text between
+# calls in the model's chat template, Qwen3.5's «</tool_call>\n<tool_call>\n<function=NAME>». MOD3: read from each
+# model's own template (call_format.CallFormat.stub_again); a template that writes one call per reply has none.
+# Qwen3's recommended sampling (Qwen3 model card, «Best Practices», non-thinking: TopP 0.8, TopK 20, MinP 0), the one the
+# decision was measured with (Mind._sampling).
+DECIDE_SAMPLING = {"top_p": 0.8, "top_k": 20, "min_p": 0.0}
 # ALR5 (M2, uso real 09-11: with Alarmas outside the profile, one set before rang and no words stopped it; only the card's
 # buttons did, MainWindowViewModel.AnswerRingAsync): answering what already rings does not depend on the profile, as a
 # phone's ringing alarm is silenced whatever mode it is in. Kept off, schedule.alarms is shown with the part that answers
@@ -488,6 +507,11 @@ def _outcome(observation: str, read: bool = False) -> str:
     if status == "needs_confirmation":
         return WAITS_FOR_YES
     if status == "cancelled":
+        # MEN3 (VIVO23, 1.5.4: «No.» to «¿Le mandas: …?» → «No se envió el mensaje. ¿Quieres que lo envíes ahora?»; VIVO22:
+        # «No.» → «¿Quieres que te instale Sincronube?»): the App's code for their «no» (declined_by_person) says they
+        # refused this very call, which «cancelado» alone did not; another cancel keeps its words.
+        if facts.get("error") == "declined_by_person":
+            return _t("no se hizo: la persona dijo que no; ya lo rechazó, no se lo ofrezcas de nuevo")
         return _t("cancelado por la persona")
     # Uso real 2026-10-21 (e2e del notebook): a message stopped before it was written touched the client (an uncertain
     # effect) and the model told «le mandé el mensaje»; what the result knows of the message comes first.
@@ -1501,6 +1525,10 @@ CHOICE_ANSWER = "si te deja la elección a ti, elige tú, hazlo y di qué elegis
 OFFERED_NOTE = (f"[Nota interna, no la escribió la persona: tu último mensaje terminó en una pregunta. Si lo que sigue "
                 f"la contesta, sigue con eso; si pide algo completo, hazlo; si le falta un dato, pregúntalo; "
                 f"{CHOICE_ANSWER}.]")
+# MOD3: the words-only answer was a call written as text (Mind._next): told so, once, where the model reads.
+TEXT_CALL_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta fue una llamada a una herramienta escrita como "
+                  "texto; no se ejecutó y la persona no la oyó. Ahora no puedes usar herramientas: respóndele con "
+                  "palabras.]")
 OFFER_NOTE = ("[Nota interna, no la escribió la persona: {call} no se ejecutó. Usaba {values}, que sólo dijiste tú en "
               "tu pregunta; la persona no lo repitió. Si lo que dijo elige eso, vuelve a llamarla; si pide otra cosa, "
               "haz lo que pide ahora.]")
@@ -1843,6 +1871,29 @@ def ring_days_not_run(named: Collection[int], due: _dt.datetime | None, today: _
                    "hour and its minutes")
     return json.dumps({"status": "not_run", "reason": reason, "days": [DAY_NAMES_EN[day] for day in days]},
                       ensure_ascii=False)
+
+
+# Aid «said_routine», RUT18 (VIVO23 row 3 and CAL1, a new conversation with a routine at 10:00: «cambia la de las 10:00 a
+# las 11» became calendar.event.list 10 of 10 in Completo, in the 1.5.3 and the 1.5.4, opening Outlook for 70-157 s, and
+# the routine stayed as it was; in Esencial «Borra la de las 10:00.» cancelled no alarm and the 4B asked «¿la desactive o
+# la borre?» naming none): the model's first decision has nothing of the routines kept (Mind.routines only).
+# RUT19 (REVX1 R-1, R-2, R-3): held before it ran, the call was held whatever it asked («Ponme una alarma a las 10:00.»,
+# «¿Qué tengo mañana a las 10:00 en el calendario?», a cancel while that alarm rang) and the result said «the person's
+# words name a routine», which is not known; with an event at 10:00, «Cambia la reunión de las 10:00 a las 11.» went to
+# the routine and the meeting stayed (h31, 3 of 3; the 1.5.4 moved it). Now nothing is held: the call runs, and only
+# when its own result found nothing there (a calendar read with no event starting at that clock; a cancel with no alarm
+# or reminder at it) is the routine that is there said beside it, as what is known: the clock they wrote (H:MM) is that
+# routine's, or two words of four letters or more of what it says are in theirs (a routine with fewer has no words to
+# match). The model decides. Sources: SGD schema-guided dialogue (Rastogi et al., AAAI 2020, arXiv 1909.05855): the
+# system state is the services' results, not a guess of the user's intent; ReAct (Yao et al., ICLR 2023, arXiv
+# 2210.03629): the observation of the action taken is what the next decision reads.
+ROUTINE_SAID_TEXT_WORDS = 2
+ROUTINE_SAID_LETTERS = 4
+EVENT_CLOCK = re.compile(r"(\d{1,2}):(\d{2})")
+ROUTINE_NOTHING_CALENDAR = "; en lo que leyó del calendario no hay nada que empiece a las {clock}"
+ROUTINE_THERE_CLOCK = "; la hora que escribió la persona, {clock}, es la de su rutina «{name}»: {item}"
+ROUTINE_THERE_WORDS = "; {words}, que escribió la persona, están en lo que dice su rutina «{name}»: {item}"
+ROUTINE_THERE_TOOL = "; {tool} cambia, desactiva y borra una rutina, y antes se lo pregunta a la persona diciéndole cuál"
 
 
 def _alike(word: str, other: str) -> bool:
@@ -2401,6 +2452,33 @@ THEIR_ANSWER_KINDS = {"now": "yes", "no": "no", "later": "other", "maybe": "othe
                       "different": "other", "yours": "other"}
 THEIR_ANSWER_GRAMMAR = "root ::= " + " | ".join(f'"{kind}"' for kind in THEIR_ANSWER_KINDS)
 THEIR_ANSWERS = ("yes", "no", "other")
+# MOD4: what a closed answer may wrap its word in when no grammar held it to the word alone (Ollama and the APIs take
+# no GBNF: the translator asks them for a JSON schema of the same values when they take one, and «Now.», «"no"» or
+# {"answer": "now"} come back). Only the wrapping goes: the word itself must be one of the values.
+CLOSED_WRAPPING = " \t\r\n\"'`*«»“”‘’.,;:!?¡¿…"
+
+
+def closed_word(read: str, values: Collection[str]) -> str | None:
+    """MOD4: the value of a closed question's list that ``read`` is, by its shape alone: its letters' case, the quotes,
+    marks and spaces around it, and a JSON string or a JSON object of one field that holds it. Anything else, or a value
+    not in the list (another word, two words, a word of the person's language), is None: not read, so nothing runs.
+    A reasoning block before the word («</think>parar», granite-4.2-3b behind llama-server) is not taken apart: read so, it
+    let that model's «parar» for «todavía no la apagues» stop the alarm the guard held before (MOD4, pod, 1 effect more in
+    40 rows)."""
+    text = read.strip()
+    if text.startswith("```"):
+        text = text.strip("`").removeprefix("json").strip()
+    if text[:1] in ('"', "{"):
+        try:
+            value = json.loads(text)
+        except ValueError:
+            value = None
+        if isinstance(value, dict) and len(value) == 1:
+            value = next(iter(value.values()))
+        if isinstance(value, str):
+            text = value
+    word = text.strip(CLOSED_WRAPPING).casefold()
+    return word if word in values else None
 # AUT2 (encargo: «sólo con un "sí, lo acepto" de la persona (leído por el modelo con consulta cerrada, como el "sí" de las
 # rutinas y de SIS3; nunca un "sí" a otra cosa, nunca un borrador, nunca por defecto)»; norma «todo por voz»). An update
 # held for a new license agreement (the App says so: pending «agreement») is answered by its own closed question, of the
@@ -2938,6 +3016,8 @@ class Mind:
         # waits (review of NB-R1-X4: the App's session.export after every turn); None when it did not.
         self.gave_way: bool | None = None
         self._prefill_rounds = 0  # of this history (PREFILL_ROUNDS)
+        # MOD3: how this model writes a call, read from its template at the warm-up (_read_call_format).
+        self.call_format: formats.CallFormat | None = formats.CALIBRATED
         self._notice_budget = NOTICE_SECONDS  # what a notice may take on this machine (_next)
         # Uso 104 (F41, a greeting at 9.2 s with its decision at 1.1 s and nothing in the trace for the rest): when the
         # request being answered reached the mind's reader, set by the loop; its turn.decide row says how long it took to
@@ -3233,9 +3313,7 @@ class Mind:
         again is waited for while the server advances through it (LlmServer.read_prefix), each advance told to
         ``on_progress`` (the sidecar tells the App, which waits as long as it comes)."""
         started = time.perf_counter()
-        self.call_tokens = self.server.tokenize("<tool_call>")
-        if len(self.call_tokens) != 1:
-            raise RuntimeError(f"<tool_call> is not one token of this model: {self.call_tokens}")
+        self._read_call_format()
         warm = {"messages": [{"role": "system", "content": self._system()}, {"role": "user", "content": "hola"}],
                 "tools": self.tools, "max_tokens": 1, "chat_template_kwargs": {"enable_thinking": False}}
         key = self.server.prefix_key([warm])
@@ -3250,6 +3328,37 @@ class Mind:
         # conversation, so it is saved only before any turn of this process reached the model.
         saved = not self._turned and self.server.save_prefix(key, {"prefix_tokens": self.prefix_tokens})
         self._log("warm.prefix", started, None, restored=False, saved=saved)
+
+    def _read_call_format(self) -> None:
+        """MOD3 (MOD2, mind.py:3236: «<tool_call>» had to be one token, and only Qwen's vocabularies have it, so no other
+        model started): how this model writes a call, from its own template (call_format.derive), and the token that
+        opens one: the opening's first piece when it is one token of its vocabulary (Qwen3.5's «<tool_call>»), which is
+        never sampled where no call may be written (logit_bias). With no such token nothing is forbidden there, and a
+        call written as text is read by its form (_next). A server that renders no template (the translator to Ollama or
+        an API) keeps the format it had. A format other than the one the mind was measured with, or none, is said in the
+        trace («warm.format») with what it leaves off; the start goes on."""
+        started = time.perf_counter()
+        render = getattr(self.server, "render", None)
+        try:
+            fmt = formats.derive(render) if render is not None else formats.CALIBRATED
+        except formats.Unrendered:
+            fmt = formats.CALIBRATED
+        self.call_format = fmt
+        if hasattr(self.server, "call_format"):
+            self.server.call_format = fmt
+        mark = fmt.first_mark if fmt is not None else ""
+        tokens = self.server.tokenize(mark) if mark else []
+        self.call_tokens = tokens if len(tokens) == 1 else []
+        if hasattr(self.server, "text_calls_by_form"):
+            self.server.text_calls_by_form = self.text_calls_by_form()
+        if fmt != formats.CALIBRATED:
+            off = [part for part, on in (
+                ("call_bias", bool(self.call_tokens)), ("doubt", bool(self.call_tokens)),
+                ("stub_stop", fmt is not None and fmt.again is not None),
+                ("prefill", fmt is not None and bool(fmt.user_open and fmt.turn_end)),
+                ("fill", fmt is not None), ("calibrated_sampling", False)) if not on]
+            self._log("warm.format", started, None, opening=None if fmt is None else fmt.opening,
+                      bools_as_text=None if fmt is None else fmt.bools_as_text, off=off)
 
     def notice_of(self) -> str:
         """The notice of the person's turn while the App runs its call (NOTICE_ASK): the model's words for that call,
@@ -3278,6 +3387,8 @@ class Mind:
         phrase = " ".join(written.strip().strip("«»\"'“”").split())
         usable = (bool(phrase) and reply["choices"][0].get("finish_reason") != "length"
                   and "\n" not in written.strip() and "<" not in phrase
+                  and not formats.written_call(written, self.call_format, self._wires(),
+                                               self.text_calls_by_form())  # MOD3: nor a call written as JSON
                   and len(phrase) <= NOTICE_MAX_CHARS and len(phrase.split()) <= NOTICE_MAX_WORDS
                   and _words(phrase) not in {_words(s) for s in said})
         if usable:
@@ -3339,11 +3450,38 @@ class Mind:
         at = next((i for i, m in enumerate(conv) if m is alone), None) if alone is not None else None
         return conv if at is None else conv[at:]
 
-    @staticmethod
-    def _history(conv: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    def _history(self, conv: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """The conversation as a request sends it: every request and the prefill render it alike (aid
-        «calls_as_written»), or the prefill's text would not be the next prompt's start."""
-        return _as_written(conv) if _aid_on("calls_as_written") else conv
+        «calls_as_written»), or the prefill's text would not be the next prompt's start. MOD3: only for a template that
+        writes a call's boolean as Python's «True» (call_format.CallFormat.bools_as_text, Qwen3.5's «| string»); any
+        other writes it as it came."""
+        fmt = self.call_format
+        return _as_written(conv) if _aid_on("calls_as_written") and fmt is not None and fmt.bools_as_text else conv
+
+    def _sampling(self) -> dict[str, float]:
+        """MOD3: the decision's sampling past its temperature: Qwen3's recommended (DECIDE_SAMPLING), measured with the
+        4B, for a model whose template writes calls as the one it was measured on (call_format.CALIBRATED); for any
+        other, nothing, so the server's own hold: those the model file declares (general.sampling.*) when it does."""
+        return dict(DECIDE_SAMPLING) if self.call_format == formats.CALIBRATED else {}
+
+    def text_calls_by_form(self) -> bool:
+        """MOD3 (review REVX1, F1): whether a call written as text is read by its form (JSON, control tokens, a tool's
+        name as called: call_format.written_call), which only a model whose call opens with no token of its own needs:
+        nothing keeps its words from being a call. With one (Qwen3.5's «<tool_call>», never sampled where no call may be
+        written), only the marks of its opening, as the 1.5.4 read them, so a reply that explains a JSON or names
+        «<|im_end|>» is said as it was."""
+        return not getattr(self, "call_tokens", [0])
+
+    def _wires(self) -> list[str]:
+        """The names the model calls its tools by (a call written as text is told by them: call_format.written_call)."""
+        return [str((tool.get("function") or {}).get("name") or "") for tool in self.tools if isinstance(tool, dict)]
+
+    def _doubt_of(self, reply: dict[str, Any] | None, nth: int = 0) -> dict[str, Any] | None:
+        """doubt.read in this model's call format (MOD3); None with no format read. A format whose opening's first
+        piece is not one token (Llama 3.2's «{"name":», Gemma 4's «<|tool_call>call:») never matches a sampled token:
+        its calls read None and its words full confidence, so the doubt holds nothing for that model."""
+        fmt = self.call_format
+        return None if fmt is None else read_doubt(reply, nth, fmt.first_mark, fmt.name_open, fmt.name_stop)
 
     @staticmethod
     def _waits(pending: dict[str, Any] | None) -> bool:
@@ -3867,9 +4005,10 @@ class Mind:
             read = str(reply["choices"][0]["message"].get("content") or "").strip()
         except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
             read, failure = "", type(error).__name__
-        if read not in AGREEMENT_ANSWER_KINDS:
+        kind = closed_word(read, AGREEMENT_ANSWER_KINDS)
+        if kind is None:
             failure = failure or "unreadable"
-        answer = AGREEMENT_ANSWER_KINDS.get(read, "other")
+        answer = AGREEMENT_ANSWER_KINDS.get(kind or "", "other")
         says = None
         if answer == "yes":
             # Only an answer that itself says they accept it is their acceptance (AGREEMENT_SAYS_NOTE).
@@ -3882,7 +4021,7 @@ class Mind:
                 says = str(self.server.ask_apart(body)["choices"][0]["message"].get("content") or "").strip()
             except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
                 says, failure = "", type(error).__name__
-            if says != "yes":
+            if closed_word(says, ("yes", "no")) != "yes":
                 answer = "other"
         self._log("turn.agreement_answer", started, reply, text=None if turn.get("private") else turn["text"], kind=answer,
                   read=read or None, says=says, operation="baxy.update", arguments=None, content=None,
@@ -3938,9 +4077,10 @@ class Mind:
             read = str(reply["choices"][0]["message"].get("content") or "").strip()
         except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
             read, failure = "", type(error).__name__
-        if read not in THEIR_ANSWER_KINDS:
+        kind = closed_word(read, THEIR_ANSWER_KINDS)
+        if kind is None:
             failure = failure or "unreadable"
-        answer = THEIR_ANSWER_KINDS.get(read, "other")
+        answer = THEIR_ANSWER_KINDS.get(kind or "", "other")
         self._log("turn.their_answer", started, reply, text=None if private else said, kind=answer,
                   read=read or None, operation=operation, arguments=None, content=None,
                   **({"failure": failure} if failure else {}))
@@ -4136,9 +4276,10 @@ class Mind:
                 read = str(reply["choices"][0]["message"].get("content") or "").strip()
             except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
                 read, failure = "", type(error).__name__
-            if read not in RING_READ_KINDS:
-                failure, read = failure or "unreadable", "otra"
-            read = RING_READ_KINDS[read]
+            label = closed_word(read, RING_READ_KINDS)
+            if label is None:
+                failure, label = failure or "unreadable", "otra"
+            read = RING_READ_KINDS[label]
             turn["ring_read"] = read
             self._log("turn.ring_read", started, reply, text=None if turn.get("private") else turn["text"], kind=read,
                       operation=name, arguments=call["arguments"], content=None,
@@ -4194,6 +4335,15 @@ class Mind:
         lang = routine_guide.lang_of(ordered.lang)
         if ordered.action == "change" and ordered.guide is None:
             found = routine_guide.find(ordered.name, self.routines)
+            # RUT18 (CAL1: «cambia la rutina de las 10:00 a las 11» → «No tengo ninguna rutina «10 00 a las 11».» 10 of 10,
+            # with one at 10:00: the name taken was the whole rest, its new time too): a name that is none of theirs by
+            # form is read as the model's own call of baxy.routines is (_routine_have, the closed question with their
+            # routines by what they are); only what it reads as none of them is said to be no routine of theirs.
+            read = self._routine_have(str(turn["text"])) if found is None else None
+            if read is not None:
+                self._log("turn.routine_order", started, None, action="change", lang=lang, step=None, found=False,
+                          read=read[1])
+                return self._guide_said(request_id, turn, read[0], "turn.decide", started)
             if found is None:
                 names = [routine_guide._named(r) for r in self.routines if isinstance(r, dict)]
                 text = routine_guide.TEXT[lang]
@@ -4528,10 +4678,17 @@ class Mind:
         body = {"messages": [{"role": "system", "content": self._system()}, *self._history(self.conversation),
                              *after, {"role": "user", "content": PREFILL_MARK}],
                 "tools": self.tools, "chat_template_kwargs": {"enable_thinking": False}}
+        fmt = self.call_format
+        if fmt is None or not fmt.user_open or not fmt.turn_end:
+            # MOD3: a template whose turns could not be read (call_format.derive) has no place to cut.
+            self._log("warm.history", started, None, failure="unformatted", **told)
+            return False
         try:
             rendered = self.server.template(body)
-            cut = rendered.rfind("<|im_start|>user\n" + PREFILL_MARK)
-            if cut <= 0 or not rendered[:cut].endswith("<|im_end|>\n"):
+            # MOD3: where the person's message opens and the one before it ends, in this model's template (Qwen3.5:
+            # «<|im_start|>user\n», «<|im_end|>\n»).
+            cut = rendered.rfind(fmt.user_open + PREFILL_MARK)
+            if cut <= 0 or not rendered[:cut].endswith(fmt.turn_end):
                 self._log("warm.history", started, None, failure="unrendered", **told)
                 return False
             # Auditoría de la mente (w8): the slot now holds the person's conversation (a kept session's, loaded before
@@ -4932,8 +5089,9 @@ class Mind:
         if outcome.startswith(VERIFICATION["unchanged"]) and _aid_on("same_call_closes") and _same_done(
                 turn, calling, turn.get("calling_args"), VERIFICATION["readback"]):
             outcome = SET_BY_SAME + outcome[len(VERIFICATION["unchanged"]):]
-        outcome += self._rings_said(calling, observation) + self._routines_beside(calling, turn.get("calling_args"),
-                                                                                 str(turn.get("text") or ""))
+        outcome += self._rings_said(calling, observation) + (
+            self._routine_nothing_at(turn, calling, turn.get("calling_args"), observation)
+            or self._routines_beside(calling, turn.get("calling_args"), str(turn.get("text") or "")))
         # Aid «result_dedup» (w6-lat): what the facts line below says of this result is not said in it again.
         compact = _aid_on("result_dedup")
         body = _deduplicated(observation, outcome) if compact else observation
@@ -5298,7 +5456,7 @@ class Mind:
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *self._history(self._seen(turn))]
         body = {"messages": messages, "tools": self.tools, "max_tokens": DECISION_TOKENS, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
-                "temperature": self.decide_temperature, "top_p": 0.8, "top_k": 20, "min_p": 0.0,
+                "temperature": self.decide_temperature, **self._sampling(),
                 # A fixed seed: the same conversation gets the same decision, so two runs of a bench differ by the
                 # change measured, not by sampling noise (±3 of 90 without it). Review 2026-10-22: BAXY_RENEW_SEED moves
                 # it, to measure that noise (0 by default).
@@ -5310,9 +5468,12 @@ class Mind:
         if again:
             # MUS1 (VIVO13, «Lee la página …» in Esencial: the offer took 84-87 s): a stub has no arguments, and the 4B
             # wrote «web_fetch {}» 37 times over, to DECISION_TOKENS (768 tokens, 78 s). The request stops where another
-            # call to a stub would begin after a call (Qwen3.5's call format, its chat template): the first call and
-            # everything before it are as they were; a call to a tool that does nothing, again, is never written.
-            body["stop"] = [STUB_AGAIN.format(wire=wire) for wire in sorted(again)]
+            # call to a stub would begin after a call (the model's call format, its chat template: MOD3): the first call
+            # and everything before it are as they were; a call to a tool that does nothing, again, is never written.
+            stops = [stop for wire in sorted(again)
+                     if self.call_format is not None and (stop := self.call_format.stub_again(wire))]
+            if stops:
+                body["stop"] = stops
         if self._doubted(stage, turn, final):
             # The decision's own token probabilities, for its doubt (doubt.py, System One) and the trace: same call, no
             # other pass. Al máximo 9.5 (2026-10-22): only where the doubt is read; elsewhere (turn.continue, the last
@@ -5448,12 +5609,33 @@ class Mind:
                 for c in calls]})
             turn["queue"] = calls[1:]
             return self._result(request_id, turn, calls[0], reply, stage, started, content)
-        if not final and ("<tool_call>" in content or "<function=" in content):
+        if not final and formats.written_call(content, self.call_format, self._wires(), self.text_calls_by_form()):
             # Review 2026-10-22: a call llama-server could not parse stays as text in content, and it reached the person
-            # as BAXY's words. It is a failed call: the model answers in words, where a call cannot be written.
+            # as BAXY's words. It is a failed call: the model answers in words, where a call cannot be written. MOD3: by
+            # its form in this model's format (Qwen3.5: «<tool_call>», «<function=») or as JSON (call_format).
             self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="malformed_call",
                       operation=None, arguments=None, content=None)
             return self._next(request_id, stage, turn, final=True)
+        if final and self.text_calls_by_form() and formats.written_call(content, self.call_format, self._wires()):
+            # MOD3 (MOD2 «llamada en texto»: with a model whose call opening is no token of its own, nothing keeps the
+            # words-only answer from being a call written as text, and it reached the person and the voice): it is
+            # given back to the model as what it is, once (TEXT_CALL_NOTE), and it answers again in words; one written
+            # again is not said (the turn ends with no words), as a call never is.
+            again = bool(turn.get("text_call"))
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"],
+                      kind="text_call_dropped" if again else "text_call", operation=None, arguments=None, content=None)
+            if not again:
+                turn["text_call"] = True
+                note = {"role": "user", "content": TEXT_CALL_NOTE}
+                conv.append(note)
+                try:
+                    return self._next(request_id, stage, turn, final=True)
+                finally:  # read for this answer only, as DATED_NOTE: it does not stay in the conversation
+                    for index in range(len(conv) - 1, -1, -1):
+                        if conv[index] is note:
+                            del conv[index]
+                            break
+            content = ""
         if not content and not final and stage == "turn.continue" and not turn.get("beat"):
             # After a call the model wrote nothing and called nothing: an empty reply is a failed turn that never tells
             # what ran (round 2, as an empty ask_user), so it answers in words from the results.
@@ -5890,7 +6072,7 @@ class Mind:
                                              or (_aid_on("named_fact") and (turn.get("named")
                                                                             or _asked_about(turn["text"])))):
             return None
-        doubt = read_doubt(reply, nth)
+        doubt = self._doubt_of(reply, nth)
         if doubt is None:
             return None
         if call["wire"] == CONFIRM["function"]["name"]:
@@ -6152,19 +6334,20 @@ class Mind:
         names = [chosen]
         self._unread = []  # w8, P4: the rivals left out because their names could not be read, for the trace
         prompt: str | None = None  # the decision's prompt, rendered once for all of its rivals (al máximo V3)
+        fmt = self.call_format or formats.CALIBRATED  # a doubt is read only with a format (_doubt_of)
         for token, p in doubt.get("rivals") or []:
             if p < 0.01 or len(names) >= 4:
                 continue
             written = doubt.get("written", "") + token
             try:
-                if ">" not in written[written.find("<function="):]:
+                if fmt.name_stop not in written[written.find(fmt.name_open):]:
                     prompt = prompt if prompt is not None else self.server.template(body)
                     written += self.server.complete_name(prompt, written)
             except Exception as error:  # noqa: BLE001 - a rival that cannot be read is left out
                 self._unread.append({"token": token, "failed": type(error).__name__})
                 continue
-            at = written.find("<function=")
-            names.append(written[at + len("<function="):].split(">")[0].strip() if at >= 0 else "")
+            at = written.find(fmt.name_open)
+            names.append(written[at + len(fmt.name_open):].split(fmt.name_stop)[0].strip() if at >= 0 else "")
         # A rival closed on the plain name of a renamed tool (audio_volume, an older catalog's) is that tool.
         names = [self.wires.name(op) if (op := self.wires.known(n)) else n for n in names]
         options = {n: described[n] for n in dict.fromkeys(names) if n in described and n != ASK}
@@ -6633,10 +6816,11 @@ class Mind:
             read = str(reply["choices"][0]["message"].get("content") or "").strip()
         except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
             failure = type(error).__name__
+        kind = closed_word(read, ("yes", "no"))
         self._log("turn.same_app", started, reply, text=None if turn.get("private") else turn["text"],
-                  kind=read if read in ("yes", "no") else None, operation=None, arguments={"appId": app}, content=None,
-                  **({"failure": failure or "unreadable"} if read not in ("yes", "no") else {}))
-        return read == "yes"
+                  kind=kind, operation=None, arguments={"appId": app}, content=None,
+                  **({"failure": failure or "unreadable"} if kind is None else {}))
+        return kind == "yes"
 
     def _ring_days(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> str:
         """Aid «said_days» (RUT16): the result that holds a schedule.alarms create that rings on days other than the
@@ -6665,6 +6849,67 @@ class Mind:
                                                                  f"{int(twice)}:{int(twice):02}") else ""
         routines = self.wires.name("baxy.routines") if "baxy.routines" in self.wire_to_op.values() else ""
         return ring_days_not_run(named, due, self._today(), routines, twice)
+
+    def _routine_nothing_at(self, turn: dict[str, Any], wire: str, arguments: Any, observation: str) -> str:
+        """Aid «said_routine» (RUT18, RUT19): beside the result of a calendar read with no event starting at a clock
+        written in the person's words (H:MM), or of a schedule.alarms cancel that found no alarm nor reminder, the routine
+        of theirs at that clock, or whose words they wrote (two of four letters or more), and the tool that changes it;
+        nothing otherwise (any other call, an object found there, no routine). The call ran as the model made it."""
+        op = self.wire_to_op.get(wire)
+        if op not in ("calendar.event.list", RING_TOOL) or turn.get("beat") or not _aid_on("said_routine") \
+                or "baxy.routines" not in self.wire_to_op.values():
+            return ""
+        try:
+            facts, asked = json.loads(observation), json.loads(arguments or "{}")
+        except json.JSONDecodeError:
+            return ""
+        if not isinstance(facts, dict) or not isinstance(asked, dict):
+            return ""
+        words = str(turn.get("said") or turn.get("text") or "")
+        written = {f"{int(hour):02d}:{minute}" for hour, minute in CLOCK_WRITTEN.findall(words)}
+        if op == RING_TOOL:
+            # a cancel that found nothing (WindowsScheduledNotificationAdapter: notification_clock_not_found and the
+            # like); one that cancelled, or any other action, is the INT36G list (_routines_beside)
+            if asked.get("action") != "cancel" or facts.get("status") != "failed" \
+                    or not str(facts.get("error") or "").endswith("_not_found"):
+                return ""
+            nothing = ""
+        else:
+            shown = facts.get("observed") if isinstance(facts.get("observed"), dict) else {}
+            events = shown.get("events") if isinstance(shown.get("events"), list) else None
+            if facts.get("status") != "completed" or events is None:
+                return ""
+            # MicrosoftAccountAdapter.WriteHourHere writes «dddd yyyy-MM-dd HH:mm»; an ISO time reads alike
+            starts = {f"{int(hour):02d}:{minute}" for event in events if isinstance(event, dict)
+                      for hour, minute in EVENT_CLOCK.findall(str(event.get("startLocal") or ""))[:1]}
+            written -= starts
+            if not written:
+                return ""
+            nothing = ROUTINE_NOTHING_CALENDAR.format(clock=", ".join(sorted(written)))
+        seen = set(_words(words).split())
+        lang = routine_guide.lang_of(self.lang)
+        there = []
+        for routine in self.routines or []:
+            trigger = routine.get("trigger") if isinstance(routine, dict) else None
+            if not isinstance(trigger, dict) or not trigger.get("at"):
+                continue
+            named, item = routine_guide._named(routine), routine_guide._item(routine, lang)
+            if trigger["at"] in written:
+                there.append(ROUTINE_THERE_CLOCK.format(clock=trigger["at"], name=named, item=item))
+                continue
+            if op != RING_TOOL:
+                continue  # a calendar read is told only of the clock it read
+            says = " ".join(str(step.get("say")) for step in routine.get("steps") or []
+                            if isinstance(step, dict) and step.get("say"))
+            long = list(dict.fromkeys(w for w in _words(says).split() if len(w) >= ROUTINE_SAID_LETTERS))
+            shared = [w for w in long if w in seen]
+            if len(shared) >= ROUTINE_SAID_TEXT_WORDS:
+                there.append(ROUTINE_THERE_WORDS.format(words=", ".join(f"«{w}»" for w in shared), name=named,
+                                                        item=item))
+        if not there:
+            return ""
+        return nothing + "".join(there[:routine_fill.MOST_HAVE]) + ROUTINE_THERE_TOOL.format(
+            tool=self.wires.name("baxy.routines"))
 
     def _ring_due(self, arguments: dict[str, Any]) -> _dt.datetime | None:
         """When a schedule.alarms create rings, as the App reads its time (WindowsScheduledNotificationAdapter.TryDue:
@@ -6938,7 +7183,7 @@ class Mind:
             # few tokens), and a cut shows as the cache it lost.
             row.update(prompt_tokens=((reply or {}).get("usage") or {}).get("prompt_tokens"),
                        prefix_n=self.prefix_tokens)
-        doubt = read_doubt(reply, fields.get("call_index") or 0)  # P2.40: the doubt of the call held, if queued
+        doubt = self._doubt_of(reply, fields.get("call_index") or 0)  # P2.40: the doubt of the call held, if queued
         if doubt is not None:
             doubt.pop("written", None)  # the call's own text up to its weakest token: only for reading the rivals
             row["doubt"] = doubt

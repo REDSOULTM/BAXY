@@ -65,6 +65,9 @@ internal sealed partial class MainWindow : Window, IDisposable
     private readonly bool uninstalling;
     private readonly bool updating;
     private readonly GpuSupport support;
+    // INS2: what the warning tells with its figures: the RAM read once, and whether the adapter is declared integrated.
+    private readonly MachineRam ram;
+    private readonly bool integrated;
     private readonly Installation? installation;
     private Texts texts;
     private ThemeKind theme;
@@ -119,10 +122,12 @@ internal sealed partial class MainWindow : Window, IDisposable
         this.uninstalling = uninstalling;
         this.updating = updating && !uninstalling && this.manifest is not null;
         http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY-Instalador/" + (manifest?.Version ?? "0"));
-        support = MachineGpu.WithRam(adapters, MachineRam.InstalledMib());
+        ram = MachineRam.Read();
+        integrated = MachineGpu.Integrated(adapters);
+        support = MachineGpu.WithRam(adapters, ram.InstalledMib);
         if (this.manifest is not null)
         {
-            Program.LogMachine(this.manifest, adapters, paths);
+            Program.LogMachine(this.manifest, adapters, paths, ram);
             // AUT1: over a BAXY already in the folder, only the files that differ are downloaded.
             Func<PauseGate> paused = () => pause;
             installation = new Installation(
@@ -547,16 +552,23 @@ internal sealed partial class MainWindow : Window, IDisposable
         (string body, string line) = support switch
         {
             GpuSupport.NotMeasured => (texts.WarningIntel, "warningIntel"),
+            GpuSupport.Integrated => (texts.WarningIntegrated, "warningIntegrated"),
             GpuSupport.TooLittleMemory => (texts.WarningMemory, "warningMemory"),
-            GpuSupport.TooLittleRam => (RamText(texts.WarningRam, integrated: false), "warningRam"),
-            GpuSupport.TooLittleRamIntegrated => (RamText(texts.WarningRamIntegrated, integrated: true), "warningRamIntegrated"),
+            GpuSupport.TooLittleRam => (RamText(texts.WarningRam), "warningRam"),
+            GpuSupport.TooLittleRamIntegrated => (RamText(texts.WarningRamIntegrated), "warningRam"),
+            GpuSupport.TooLittleRamEvenByApi => (RamText(texts.WarningRamEvenByApi), "warningRamEvenByApi"),
             _ => (texts.WarningNone, "warningNone"),
         };
         return new ScreenView(
             Face.Sad,
-            support == GpuSupport.None ? texts.NoGpuTitle : texts.WarningTitle,
+            support switch { GpuSupport.None => texts.NoGpuTitle, GpuSupport.TooLittleRamEvenByApi => texts.NoRoomTitle, _ => texts.WarningTitle },
             body,
-            Help: support is GpuSupport.TooLittleRam or GpuSupport.TooLittleRamIntegrated ? texts.WarningRamHelp : texts.WarningHelp,
+            Help: support switch
+            {
+                GpuSupport.TooLittleRam or GpuSupport.TooLittleRamIntegrated => texts.WarningRamHelp,
+                GpuSupport.TooLittleRamEvenByApi => RamText(texts.WarningRamEvenByApiHelp),
+                _ => texts.WarningHelp,
+            },
             Hint: support == GpuSupport.None ? string.Empty : texts.LicenseNotice,
             First: new ButtonView(support == GpuSupport.None ? texts.Close : texts.NotNow, false, Close, IsDefault: true, IsCancel: true),
             Second: support == GpuSupport.None ? null : new ButtonView(texts.InstallAnyway, true, Start),
@@ -564,9 +576,16 @@ internal sealed partial class MainWindow : Window, IDisposable
             Line: line);
     }
 
-    // VRAM5 (AUD1 F7): the RAM installed and the least BAXY needs, in GB as the person reads them.
-    private static string RamText(string text, bool integrated) => string.Format(
-        CultureInfo.CurrentCulture, text, (MachineRam.InstalledMib() ?? 0) / 1024d, MachineGpu.MinimumRamMib(integrated) / 1024d);
+    // VRAM5 (AUD1 F7), INS2: the RAM installed, the least BAXY needs with its model on this machine, the RAM free now, the
+    // least with a model by API and what is downloaded, in GB as the person reads them (Texts.WarningRam).
+    private string RamText(string text) => string.Format(
+        CultureInfo.CurrentCulture,
+        text,
+        (ram.InstalledMib ?? 0) / 1024d,
+        MachineGpu.MinimumRamMib(integrated) / 1024d,
+        (ram.AvailableMib ?? 0) / 1024d,
+        MachineGpu.MinimumApiRamMib / 1024d,
+        (manifest?.Archives.Sum(static archive => archive.Bytes) ?? 0) / Gigabyte);
 
     private ScreenView LicenseScreen() => new(
         Face.Happy,

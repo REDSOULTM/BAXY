@@ -760,6 +760,12 @@ public partial class MainWindow : Window
 
     private async Task TearDownAsync()
     {
+        if (_bridge is not null)
+        {
+            // MEN3: an update's own line («Voy a actualizarme a la …») is shown and said before anything closes.
+            await _bridge.BeforeClosingAsync();
+        }
+
         _closing = true;
         StateChanged -= OnWindowPresentationChanged;
         StateChanged -= OnMinimizedToTray;

@@ -30,6 +30,12 @@ internal sealed record GgufShape(
     // A header past this is not read: the largest seen (Qwen3.5-4B's, 248k tokens and their merges) ends at 10.5 MiB.
     private const long MostHeaderBytes = 64L << 20;
 
+    /// <summary>
+    /// MOD5: whether the model's own chat template (tokenizer.chat_template) takes tools, as Settings → Model's search asks
+    /// of a model before offering it (OpenModels: its template mentions them). Read only with the tensors (Read(path)).
+    /// </summary>
+    internal bool DeclaresTools { get; init; }
+
     /// <summary>The shape a GGUF file's header gives, with its token embedding's size; null when it is not one.</summary>
     internal static GgufShape? Read(string path)
     {
@@ -109,9 +115,51 @@ internal sealed record GgufShape(
                 }
             }
 
-            return From(keys, architecture, embedding);
+            return From(keys, architecture, embedding) is { } shape
+                ? shape with
+                {
+                    DeclaresTools = keys.TryGetValue("tokenizer.chat_template", out object? template)
+                        && template is string text && text.Contains("tools", StringComparison.Ordinal),
+                }
+                : null;
         }
         catch (Exception exception) when (exception is EndOfStreamException or IOException or InvalidDataException or OverflowException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// MOD5: one number of a GGUF's header (a vision projector's «clip.vision.projection_dim»), or null when the file is not
+    /// a GGUF this reads or has no such number.
+    /// </summary>
+    internal static long? Number(string path, string key)
+    {
+        try
+        {
+            using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, 1 << 16);
+            var reader = new Reader(file);
+            if (reader.Bytes(4) is not [(byte)'G', (byte)'G', (byte)'U', (byte)'F'] || reader.U32() is < 2 or > 3)
+            {
+                return null;
+            }
+
+            _ = reader.U64();
+            ulong keyCount = reader.U64();
+            for (ulong index = 0; index < keyCount; index++)
+            {
+                string name = reader.Text();
+                object? value = reader.Value(reader.U32());
+                if (name == key)
+                {
+                    return value as long?;
+                }
+            }
+
+            return null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or EndOfStreamException
+            or InvalidDataException or OverflowException)
         {
             return null;
         }

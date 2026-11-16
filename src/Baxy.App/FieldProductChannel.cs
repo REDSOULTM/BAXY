@@ -231,6 +231,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 JsonObject? progress = File.Exists(file) && File.GetLastWriteTimeUtc(file) >= begun ? UpdateProgress.Read(file) : null;
                 if (teller.Next(progress) is { } line)
                 {
+                    _closingSaid |= (string?)progress?["phase"] == "fetched";
                     Publish(ItemEvent(_transcript.System(line)));
                     _ = _viewModel.SayWhenFreeAsync(line, TimeSpan.FromMinutes(2), cancellationToken);
                 }
@@ -247,6 +248,34 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             // The install's step ended, or BAXY is closing for it.
         }
+    }
+
+    // MEN3 (VIVO24B, 15-11-2026): the engine asks the App to exit as it starts the installer, before its receipt reaches
+    // the turn, and the App closed at once: «Baxi, actualízate» stayed unanswered until the new version spoke. Closing now
+    // waits for that receipt (a few seconds at most) and for BAXY's own line about it, shown and said; the installer waits
+    // a minute for BAXY to close (SilentUpdate), so this never stops the update. Any other exit has nothing to wait for.
+    internal static readonly TimeSpan LeavingReceipt = TimeSpan.FromSeconds(8);
+    internal static readonly TimeSpan LeavingSaid = TimeSpan.FromSeconds(12);
+    private Task _leaving = Task.CompletedTask;
+    private bool _closingSaid;
+
+    internal async Task BeforeClosingAsync()
+    {
+        if (_progressStep is { Task.IsCompleted: false } step)
+        {
+            await Task.WhenAny(step.Task, Task.Delay(LeavingReceipt)).ConfigureAwait(true);
+        }
+
+        await Task.WhenAny(_leaving, Task.Delay(LeavingSaid)).ConfigureAwait(true);
+    }
+
+    private async Task SayLeavingAsync(string line)
+    {
+        // REVX1 M3-1: the download's watch reads the file each second and would add «Ya bajé todo. Me cierro…» after this
+        // line; one closing line is said, so it stops here (both run on this dispatcher: it ends at its next wait).
+        _progressWatch?.Cancel();
+        Publish(ItemEvent(_transcript.System(line)));
+        await _viewModel.SayNowAsync(line, LeavingSaid, CancellationToken.None).ConfigureAwait(true);
     }
 
     // AUT1: the installer was started and BAXY closes for it. When BAXY does not close (it stays busy), the installer
@@ -379,6 +408,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         // VRAM4: «Automático» on a card whose free video memory does not hold the profile's cells whole: which profile, what
         // was free and what it takes, and the profile that fits whole, to say it instead of a start that only goes slow.
         state["cardShort"] = CardShort();
+        return state;
+    }
+
+    private JsonObject LocalModelJson()
+    {
+        JsonObject state = _viewModel.LocalModelState.Json();
+        state["switching"] = _viewModel.ExternalModelState.Switching;
         return state;
     }
 
@@ -662,9 +698,14 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 }
 
                 // One model at a time: turning another one on turns the tuned one off, in the same switch of the mind.
-                return _viewModel.UseModel(externalModel, profile) is { } refused
-                    ? Error(refused, 409)
-                    : Json(_viewModel.ExternalModelState.Json());
+                if (_viewModel.UseModel(externalModel, profile) is { } refused)
+                {
+                    return Error(refused, 409);
+                }
+
+                // MOD5: and the person's own GGUF too.
+                _viewModel.LocalModelGivesWay(externalModel);
+                return Json(_viewModel.ExternalModelState.Json());
             }
             case ("GET", "/settings/tuned-model"):
                 return Json(TunedModelJson());
@@ -682,9 +723,28 @@ internal sealed class FieldProductChannel : IAsyncDisposable
 
                 // One model at a time: turning the tuned one on turns another model off, in the same switch of the mind.
                 _viewModel.KeepOneModel(tunedChosen: true);
+                _viewModel.LocalModelGivesWay(tuned);
                 _viewModel.ExternalModelChanged();
                 _viewModel.TunedModelChanged();
                 return Json(TunedModelJson());
+            }
+            // MOD5: a GGUF of the person's own in BAXY's engine (LocalModel).
+            case ("GET", "/settings/local-model"):
+                return Json(LocalModelJson());
+            case ("PUT", "/settings/local-model"):
+            {
+                if (ParseBody(body) is not { } local)
+                {
+                    return Error("invalid_settings", 400);
+                }
+
+                if (_viewModel.LocalModelState.Apply(local) is { } refused)
+                {
+                    return Error(refused, 409);
+                }
+
+                _viewModel.LocalModelChosen();
+                return Json(LocalModelJson());
             }
             case ("POST", "/settings/tuned-model/install"):
                 return _viewModel.TunedModelState.Install(_lifetimeCancellation) is { } notStarted
@@ -993,6 +1053,10 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         if (UpdatePanel.StartedInstaller(step))
         {
             _ = TellAnUpdateThatLeftBaxyOpenAsync();
+            if (!_closingSaid && UpdateProgress.Leaving(UpdatePanel.Receipt(step), UiLanguage.IsEnglish) is { } line)
+            {
+                _leaving = SayLeavingAsync(line);
+            }
         }
 
         // What left the PC: a call that reaches the internet and got to its provider (the kernel let it through). An
@@ -1075,6 +1139,13 @@ internal sealed class FieldProductChannel : IAsyncDisposable
                 _viewModel.SilenceVoice();
             if (_viewModel.Settings.EchoCancel != echoCancel)
                 _ = _viewModel.ApplyEchoCancelAsync(CancellationToken.None);
+
+            // ARR3: a profile asked for by voice is tried again even when the file already named it (a start that stood
+            // in for it on a card short of memory now); another setting leaves this start as it is.
+            if (step.Arguments["setting"] is JsonValue asked && asked.TryGetValue(out string? named) && named == "tool_profile")
+            {
+                _viewModel.ToolProfileState.TryTheirsAgain();
+            }
 
             _viewModel.ToolsChangedBySpeaking();
 
@@ -2371,6 +2442,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["onProcessor"] = _viewModel.MindOnProcessor,
             // QWB2: the tuned model the person chose and this start could not use (missing or damaged).
             ["tunedProblem"] = _viewModel.TunedModelProblem,
+            // MOD5: the person's own GGUF that this start could not use, or that did not come up (BAXY runs its stock model).
+            ["localModelProblem"] = _viewModel.LocalModelProblem,
+            ["localModelCause"] = _viewModel.LocalModelState.FailedCause,
             // VRAM4B: this run started in a smaller profile than the factory's because of the card's free video memory,
             // without the person choosing it: the view says it once (profile, factory, freeMb, needMb). VRAM4C: only on
             // the start that chose it; the ones after keep it without a word (Settings → Tools and the mind say why).
@@ -2524,7 +2598,9 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             ["ggufPath"] = identity.FileName,
             ["ctxSize"] = ContextSize(),
             ["stockName"] = StockModelName,
-            ["ownIsStock"] = string.IsNullOrWhiteSpace(sha256) ? null : string.Equals(sha256.Trim(), StockModelSha256, StringComparison.OrdinalIgnoreCase),
+            // MOD5: a GGUF of the person's own is never the stock model, whatever its hash.
+            ["ownIsStock"] = _viewModel.LocalModelState.Active ? false
+                : string.IsNullOrWhiteSpace(sha256) ? null : string.Equals(sha256.Trim(), StockModelSha256, StringComparison.OrdinalIgnoreCase),
         };
     }
 

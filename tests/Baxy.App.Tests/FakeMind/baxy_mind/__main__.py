@@ -10,7 +10,7 @@ n-th object (the last one from there on), "emit" {type: [message]} writes those 
 reply, "stderr" {type: [line]} writes those lines to stderr before the reply; "delay" {"hello": seconds} holds the hello
 at start, "hello_card" {...} says that of the card in it (VRAM4C; "needs": "last" is the last need the App put in
 BAXY_RENEW_CTX_NEEDS, the smallest profile's), "hello_card_memory" {...} says that of the card's whole memory (VRAM4D), and "unoffered" [type] leaves those requests out of it (a mind with no voice does not offer voice.speak). Every request's type is appended to seen.log and the request itself to requests.jsonl, and each process
-writes its pid under pids/.
+writes its pid under pids/ and the model it was started on (BAXY_MIND_LLM_GGUF) as a line of models.log.
 """
 
 import json
@@ -120,6 +120,9 @@ def answer(message: dict) -> None:
 def main() -> None:
     os.makedirs(os.path.join(HERE, "pids"), exist_ok=True)
     open(os.path.join(HERE, "pids", str(os.getpid())), "w", encoding="utf-8").close()
+    # MOD5: the model each process was started on, one line each, in models.log.
+    with open(os.path.join(HERE, "models.log"), "a", encoding="utf-8") as models:
+        models.write(os.environ.get("BAXY_MIND_LLM_GGUF", "") + "\n")
     time.sleep(float(script().get("delay", {}).get("hello", 0)))
     unoffered = script().get("unoffered", [])
     hello = {"type": "hello", "protocol": "baxy.mind.v1", "models": {"llm": "fake"},

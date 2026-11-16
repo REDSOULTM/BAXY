@@ -20,6 +20,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from . import call_format as formats
+from . import gguf_shape
+from .gguf_shape import GgufShape
 from .memory import free_memory_mb, gpu_shared_mb, installed_memory_mb
 
 
@@ -258,8 +261,15 @@ class LlmServer:
         self.log_name = log_name
         self.server = server
         self.gpu_layers = gpu_layers
-        # The cells that fit the backend's budget with this cache (default_context) when not given.
+        # MOD5: what the model's own header says of its memory (card_mib) and its context; None when it cannot be read
+        # (a test's name, a remote server's model): the factory's lines, as before.
+        self.shape = None if _remote_port() else gguf_shape.read(gguf)
+        # The cells that fit the backend's budget with this cache (default_context) when not given; MOD5: never past the
+        # model's own context (its GGUF's <arch>.context_length), the most it was trained to read.
         self.context = context or default_context(backend, self.kv, self.output_cpu)
+        native = self.shape.context_length if self.shape is not None else 0
+        if context is None and 0 < native < self.context:
+            self.context = native
         # VRAM4: with no context given, the cells are the mind's to choose, and start fits them to the VRAM free then
         # (fit_card), on the one configuration its line was measured for: CUDA, the default cache, the output matrix in
         # RAM and every layer asked for. ``card_short`` is what start found when the server does not fit whole.
@@ -291,6 +301,12 @@ class LlmServer:
         # so several minds share one server of several slots (-np); 0 when unset, the one slot of the mind's own server.
         self.slot = _mind_slot(self.remote)
         self.port = self.remote or _pinned_port() or _free_port()
+        # MOD3: how this model writes a call (call_format.py), read from its template by Mind.warm; until then the one
+        # the mind was written with. None for a template it cannot be read from: what needs it is off (fill_call).
+        self.call_format: formats.CallFormat | None = formats.CALIBRATED
+        # MOD3: whether a call written as text is read by its form too (Mind.text_calls_by_form), or only by the marks
+        # of the opening, as for Qwen3.5.
+        self.text_calls_by_form = False
         self._process: subprocess.Popen | None = None
         self._placement: list[str] = []  # where this run's server keeps the projector (projector_placement)
         self._ready = threading.Event()
@@ -380,16 +396,16 @@ class LlmServer:
         """VRAM5 (AUD1 F4): a context the person gave is never changed, but a start whose free video memory does not hold
         it whole says so, with the most cells that fit (fitsContext), and launches no server where not even its cells
         without the margin fit (card_refused), as a ready-made profile's (VRAM4B): never a spill in silence."""
-        if free is None or card_mib(self.context, self.backend) + CARD_MARGIN_MIB <= free:
+        if free is None or card_mib(self.context, self.backend, self.shape) + CARD_MARGIN_MIB <= free:
             return
         # VRAM5B: only cells «Automático» could take (fit_card, fit_profiles): none below what the smallest profile the
         # App may start in needs (one need when the person chose a profile), so the way out the App offers starts.
         needs = context_needs_all()
         least = min(needs) if needs else CONTEXT
-        held = [cells for cells in CARD_CONTEXTS if least <= cells and card_mib(cells, self.backend) + CARD_MARGIN_MIB <= free]
-        self.card_short = {"freeMb": free, "needMb": card_mib(self.context, self.backend) + CARD_MARGIN_MIB,
+        held = [cells for cells in CARD_CONTEXTS if least <= cells and card_mib(cells, self.backend, self.shape) + CARD_MARGIN_MIB <= free]
+        self.card_short = {"freeMb": free, "needMb": card_mib(self.context, self.backend, self.shape) + CARD_MARGIN_MIB,
                            "context": self.context, "given": True, **({"fitsContext": max(held)} if held else {})}
-        self.card_refused = card_mib(self.context, self.backend) > free
+        self.card_refused = card_mib(self.context, self.backend, self.shape) > free
 
     def start(self) -> None:
         vision = _vision_args()
@@ -417,7 +433,7 @@ class LlmServer:
             if integrated:
                 free = integrated_room(free)
                 total = None if free is None else free + CARD_DESKTOP_MIB
-            short = card_short(total, self.context, needs[0] if needs else None, self.backend) if free is not None else None
+            short = card_short(total, self.context, needs[0] if needs else None, self.backend, self.shape) if free is not None else None
             if short is not None:
                 self.card_memory = {"totalMb": total, "short": short}
             # VRAM4D: the profile BAXY chose for this card before (context_kept) goes alone while the card is short, or
@@ -426,25 +442,29 @@ class LlmServer:
             kept = context_kept()
             if kept is not None and kept in needs and short is not False:
                 needs = [kept]
-            asked = fit_card(free, self.context, needs[0] if needs else None, self.backend)[0]
-            self.context, whole, served = fit_profiles(free, self.context, needs, self.backend)
+            # ARR4 (REVX1 A3-2; the leader, 15-11: where 1.5.4 started, with the margin or without it, 1.5.5 starts the
+            # same): the person's own profile goes alone, as in 1.5.4, unless alone it launches no server (theirs_alone).
+            if context_theirs():
+                needs = theirs_alone(free, self.context, needs, self.backend, self.shape)
+            asked = fit_card(free, self.context, needs[0] if needs else None, self.backend, self.shape)[0]
+            self.context, whole, served = fit_profiles(free, self.context, needs, self.backend, self.shape)
             measured = (free,) if free is not None or measured[0] is None else measured
             if served and measured[0] is not None:
                 # VRAM4B: the profile asked first does not fit and a smaller one of the App's list does: what was free,
                 # what the first one takes, and the need served, for the App to start this run in that profile.
-                self.card_fit = {"freeMb": measured[0], "needMb": card_mib(asked, self.backend) + CARD_MARGIN_MIB,
+                self.card_fit = {"freeMb": measured[0], "needMb": card_mib(asked, self.backend, self.shape) + CARD_MARGIN_MIB,
                                  "needs": needs[served], "context": self.context}
             if not whole and measured[0] is not None:
                 # What the App says to the person (LocalContext.CardShort): what was free, what these cells take, and
                 # the most cells the card holds whole, when any, for the tool profile that fits them.
-                held = [cells for cells in CARD_CONTEXTS if card_mib(cells, self.backend) + CARD_MARGIN_MIB <= measured[0]]
-                self.card_short = {"freeMb": measured[0], "needMb": card_mib(self.context, self.backend) + CARD_MARGIN_MIB,
+                held = [cells for cells in CARD_CONTEXTS if card_mib(cells, self.backend, self.shape) + CARD_MARGIN_MIB <= measured[0]]
+                self.card_short = {"freeMb": measured[0], "needMb": card_mib(self.context, self.backend, self.shape) + CARD_MARGIN_MIB,
                                    "context": self.context, **({"fitsContext": max(held)} if held else {}),
                                    **({"integrated": True} if integrated else {})}
                 # VRAM4B: the server's own memory at these cells is more than the card has free: NVIDIA's driver would
                 # give the rest from the PC's memory and the prefix would be read at tens of tokens a second for half an
                 # hour (INFORME_VRAM4.md). No server is launched: the start fails now, with what it found.
-                self.card_refused = card_mib(self.context, self.backend) > measured[0]
+                self.card_refused = card_mib(self.context, self.backend, self.shape) > measured[0]
         self._settings = [
             "-ngl", self.gpu_layers, "-c", str(self.context), *slots(self.backend), *read_batch(self.backend),
             "-fa", self.flash,
@@ -838,6 +858,7 @@ class LlmServer:
         )
         content, reasoning = "", ""
         calls: dict[int, dict[str, Any]] = {}
+        wires = [str((t.get("function") or {}).get("name") or "") for t in body.get("tools") or []]
         head: dict[str, Any] = {}
         finish: Any = None
         index = 0
@@ -887,8 +908,11 @@ class LlmServer:
                                 telling = False
                         if delta.get("content"):
                             content += delta["content"]
-                            if telling and ("<tool_call>" in content or "<function=" in content):
-                                _tell(on_text, None, True)  # a call written as text: dropped as well
+                            # MOD3: a call written as text, by its form in this model's format or as JSON
+                            # (call_format.may_be_call; Qwen3.5: «<tool_call>», «<function=»): dropped as well.
+                            if telling and formats.may_be_call(content, self.call_format, wires,
+                                                               self.text_calls_by_form):
+                                _tell(on_text, None, True)
                                 telling = False
                             elif telling:
                                 telling = not _tell(on_text, content, False)
@@ -914,12 +938,23 @@ class LlmServer:
         return self._post("/apply-template", {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")},
                           timeout)["prompt"]
 
+    def render(self, messages: list[dict[str, Any]], tools: list[dict[str, Any]], add_generation_prompt: bool,
+               timeout: float = 10.0) -> str:
+        """A conversation as this model's template writes it (/apply-template), for reading its call format
+        (call_format.derive; MOD3). Nothing is read into the slot."""
+        self.wait_ready(self._within(timeout))
+        return self._post("/apply-template", {"messages": messages, "tools": tools,
+                                              "add_generation_prompt": add_generation_prompt,
+                                              "chat_template_kwargs": {"enable_thinking": False}}, timeout)["prompt"]
+
     def complete_name(self, prompt: str, written: str, timeout: float = 10.0) -> str:
         """The rest of a tool name the model would write after `written` (its call so far), greedy, on the same slot:
-        the chat's own prompt (template) plus that text, stopped at the name's end."""
+        the chat's own prompt (template) plus that text, stopped at the name's end (the character this model's format
+        writes after a name, call_format.CallFormat.name_stop; Qwen3.5: «>»)."""
         self.resident = None
+        stop = (self.call_format or formats.CALIBRATED).name_stop
         reply = self._post("/completion", {"prompt": prompt + written, "n_predict": 24, "temperature": 0.0,
-                                           "stop": [">", "\n"], "cache_prompt": True, "id_slot": self.slot}, timeout)
+                                           "stop": [stop, "\n"], "cache_prompt": True, "id_slot": self.slot}, timeout)
         return str(reply.get("content", ""))
 
     def prefill(self, prompt: str, timeout: float = 60.0) -> dict[str, Any]:
@@ -965,8 +1000,12 @@ class LlmServer:
         tool's own parameters (llama.cpp b11609: common/sampling.cpp, common/chat.cpp, common/parsers/qwen3-coder.cpp).
         Returns the parsed call {"name", "arguments"} or None. Auditoría de la mente (w8): not the decision's token
         probabilities (logprobs, top_logprobs 10), which nothing reads of a fill; the server sorted the vocabulary at
-        every argument token for them (al máximo 9.5's cost, −20 to −100 ms expected); greedy, the same arguments."""
-        messages = [*body["messages"], {"role": "assistant", "content": f"<tool_call>\n<function={wire}>\n"}]
+        every argument token for them (al máximo 9.5's cost, −20 to −100 ms expected); greedy, the same arguments.
+        MOD3: the call is started as this model's template writes one (call_format.CallFormat.call_start; Qwen3.5:
+        «<tool_call>\n<function=NAME>\n»); with no format read, None (no fill)."""
+        if self.call_format is None:
+            return None
+        messages = [*body["messages"], {"role": "assistant", "content": self.call_format.call_start(wire)}]
         request = {**{k: v for k, v in body.items()
                       if k not in ("logit_bias", "tool_choice", "max_tokens", "logprobs", "top_logprobs")},
                    "messages": messages, "tool_choice": "required", "parallel_tool_calls": False,
@@ -1299,15 +1338,44 @@ SHARED_FITTED_MIB = {"cuda": 706, "vulkan": 648}
 VULKAN_CARD_FIXED_MIB = 5022 - 277 - 862 - 61440 * VULKAN_CARD_CELL_MIB
 
 
-def card_mib(context: int, backend: str = "cuda") -> int:
+# MOD5 (MOD2 §1, point 2): both lines were measured with the factory's model (Qwen3.5-4B Q4_K_M) alone, and another GGUF
+# in the mind's engine was given them too: «cabe» for a model that does not fit, or the other way round. Its own header
+# says what changes (gguf_shape: the weights the card keeps, the layers that keep a cache and how wide, the window of those
+# that slide, a hybrid's recurrent state, the compute buffer), so another model's line is the measured one moved by the
+# difference of the two estimates at the same cells: what llama.cpp counts the same way for both (the CUDA runtime beside
+# it, the measured part the estimate leaves out: 109 MiB on the 4060 Ti, INFORME_MOD5.md §1) stays as measured. This is the
+# header of the model the lines were measured with, as gguf_shape.read gives it: for it, and for one whose estimate differs
+# by less than a MiB (the tuned model, the same tensors), nothing changes. Validated against what four models of MOD2's
+# ladder took on a card at two contexts (INFORME_MOD5.md §1).
+MEASURED_SHAPE = GgufShape(
+    architecture="qwen35", layers=32, context_length=262144, embedding=2560, feed_forward=9216, full_cell_values=16384,
+    sliding_cell_values=0, sliding_window=0, layer_cell_values=2048, recurrent_values=13172736,
+    token_embedding_bytes=521472000, input_bytes=521472000, file_bytes=2740937888, tied=True, has_tools=True)
+
+
+def model_delta_mib(context: int, backend: str, shape: GgufShape | None) -> float:
+    """MOD5: what ``shape``'s model takes on the card at ``context`` cells beyond (or short of) the measured one's, MiB;
+    0 with no shape (a header that could not be read, a remote server) or less than a MiB apart."""
+    if shape is None:
+        return 0.0
+    in_ram = backend == "cuda"  # the output matrix: in RAM on CUDA (OUTPUT_ON_CPU), on the GPU on Vulkan (output_cpu)
+    delta = (gguf_shape.gpu_bytes(shape, context, "q8_0", in_ram)
+             - gguf_shape.gpu_bytes(MEASURED_SHAPE, context, "q8_0", in_ram)) / gguf_shape.MIB
+    return delta if abs(delta) >= 1 else 0.0
+
+
+def card_mib(context: int, backend: str = "cuda", shape: GgufShape | None = None) -> int:
     """The video memory the server takes at ``context`` cells of the default cache on ``backend`` (see CARD_FIXED_MIB;
-    VRAM5: VULKAN_CARD_FIXED_MIB on Vulkan)."""
+    VRAM5: VULKAN_CARD_FIXED_MIB on Vulkan), with the model of ``shape`` (MOD5, model_delta_mib; the measured one's
+    without it)."""
+    delta = model_delta_mib(context, backend, shape)
     if backend == "vulkan":
-        return math.ceil(VULKAN_CARD_FIXED_MIB + context * VULKAN_CARD_CELL_MIB)
-    return math.ceil(CARD_FIXED_MIB + context * CARD_CELL_MIB)
+        return math.ceil(VULKAN_CARD_FIXED_MIB + context * VULKAN_CARD_CELL_MIB + delta)
+    return math.ceil(CARD_FIXED_MIB + context * CARD_CELL_MIB + delta)
 
 
-def fit_card(free: int | None, automatic: int, needs: int | None, backend: str = "cuda") -> tuple[int, bool]:
+def fit_card(free: int | None, automatic: int, needs: int | None, backend: str = "cuda",
+             shape: GgufShape | None = None) -> tuple[int, bool]:
     """VRAM4: the cells an automatic context gets on a card with ``free`` MiB, and whether the server fits it whole.
     The automatic ones when they fit, or when the free memory is not known: nothing changes there. Else the most of
     CARD_CONTEXTS that fits and holds what the person's profile needs (``needs``; CONTEXT, which holds every profile,
@@ -1315,22 +1383,23 @@ def fit_card(free: int | None, automatic: int, needs: int | None, backend: str =
     what it found goes to the App (LlmServer.card_short), which says the profile that does not fit and the one that
     does. Layers are not shared out with the processor here: llama.cpp's own fit does not act with the output matrix
     placed by hand («tensor_buft_overrides already set by user, abort», common/fit.cpp) and no split was measured."""
-    if free is None or card_mib(automatic, backend) + CARD_MARGIN_MIB <= free:
+    if free is None or card_mib(automatic, backend, shape) + CARD_MARGIN_MIB <= free:
         return automatic, True
     holding = [cells for cells in CARD_CONTEXTS if (needs or CONTEXT) <= cells <= automatic]
-    fitting = [cells for cells in holding if card_mib(cells, backend) + CARD_MARGIN_MIB <= free]
+    fitting = [cells for cells in holding if card_mib(cells, backend, shape) + CARD_MARGIN_MIB <= free]
     if fitting:
         return max(fitting), True
     return (min(holding) if holding else automatic), False
 
 
-def card_short(total: int | None, automatic: int, factory: int | None, backend: str = "cuda") -> bool | None:
+def card_short(total: int | None, automatic: int, factory: int | None, backend: str = "cuda",
+               shape: GgufShape | None = None) -> bool | None:
     """VRAM4D: whether a card of ``total`` MiB in all is short: the factory's profile (``factory``, the first need the App
     gave) does not fit whole (fit_card) even in all of it but what the desktop keeps (CARD_DESKTOP_MIB). None when
     either is not known."""
     if total is None or factory is None:
         return None
-    return not fit_card(total - CARD_DESKTOP_MIB, automatic, factory, backend)[1]
+    return not fit_card(total - CARD_DESKTOP_MIB, automatic, factory, backend, shape)[1]
 
 
 def context_kept(environ: dict[str, str] | None = None) -> int | None:
@@ -1347,11 +1416,32 @@ def context_needs(environ: dict[str, str] | None = None) -> int | None:
 
 def context_needs_all(environ: dict[str, str] | None = None) -> list[int]:
     """VRAM4B: every figure of CONTEXT_NEEDS_VARIABLE, separated by commas: the cells the profile needs and, only when
-    the person never chose one (the factory's), the ones each smaller ready-made profile needs, largest first. Empty
+    the person never chose one (the factory's), the ones each smaller ready-made profile needs, largest first. ARR3: a
+    profile the person chose comes with the smaller ones too (the App stands in for it on that start alone). Empty
     with anything unusable in it."""
     given = (os.environ if environ is None else environ).get(CONTEXT_NEEDS_VARIABLE, "").strip()
     parts = [part.strip() for part in given.split(",")] if given else []
     return [int(part) for part in parts] if parts and all(part.isdigit() and int(part) > 0 for part in parts) else []
+
+
+# ARR4: and here «1» when the first of those needs is a profile the person chose (ToolProfile.Chosen), not the factory's.
+CONTEXT_THEIRS_VARIABLE = "BAXY_RENEW_CTX_THEIRS"
+
+
+def context_theirs(environ: dict[str, str] | None = None) -> bool:
+    """ARR4: whether CONTEXT_THEIRS_VARIABLE says the first need is the person's own profile."""
+    return (os.environ if environ is None else environ).get(CONTEXT_THEIRS_VARIABLE, "").strip() == "1"
+
+
+def theirs_alone(free: int | None, automatic: int, needs: list[int], backend: str = "cuda",
+                 shape: GgufShape | None = None) -> list[int]:
+    """ARR4 (REVX1 A3-2: with Diario chosen and 3,400 MiB free, 1.5.4 started Diario at 45,056 cells without the margin,
+    ARR3 Esencial at 32,768): the needs a start serves when the first is the person's own profile. Theirs alone, as 1.5.4
+    gave it, wherever alone it starts, whole or without the margin (fit_profiles); the smaller ones after it (ARR3,
+    VIVO23: Completo chosen on a 4 GB card, «BAXY no logra arrancar») only where alone it launches no server, its fewest
+    cells taking more than is free (card_refused)."""
+    cells = fit_profiles(free, automatic, needs[:1], backend, shape)[0]
+    return needs[:1] if free is None or card_mib(cells, backend, shape) <= free else list(needs)
 
 
 # VRAM4B: a test says here the VRAM free the start «measured», MiB, instead of asking the card (this process only; unset,
@@ -1380,7 +1470,8 @@ def integrated_room(free: int | None) -> int | None:
     return max(0, min(free, installed - WINDOWS_RAM_MIB - BAXY_RAM_MIB))
 
 
-def fit_profiles(free: int | None, automatic: int, needs: list[int], backend: str = "cuda") -> tuple[int, bool, int]:
+def fit_profiles(free: int | None, automatic: int, needs: list[int], backend: str = "cuda",
+                 shape: GgufShape | None = None) -> tuple[int, bool, int]:
     """VRAM4B (the leader's decision on what VRAM4 left open; the owner: «Tiene que caber en 4 GB»): the cells of an
     automatic context on a card with ``free`` MiB when the App gave more than one need (the person never chose a tool
     profile: the factory's first, then each smaller ready-made one), whether the server fits whole, and which need
@@ -1389,14 +1480,14 @@ def fit_profiles(free: int | None, automatic: int, needs: list[int], backend: st
     free memory, without the margin; with none of those either, the first need's, not whole: start launches nothing."""
     tried: list[int | None] = list(needs) or [None]
     for place, need in enumerate(tried):
-        cells, whole = fit_card(free, automatic, need, backend)
+        cells, whole = fit_card(free, automatic, need, backend, shape)
         if whole:
             return cells, True, place
     for place, need in enumerate(tried):
-        cells, _ = fit_card(free, automatic, need, backend)
-        if free is not None and card_mib(cells, backend) <= free:
+        cells, _ = fit_card(free, automatic, need, backend, shape)
+        if free is not None and card_mib(cells, backend, shape) <= free:
             return cells, False, place
-    return fit_card(free, automatic, tried[0], backend)[0], False, 0
+    return fit_card(free, automatic, tried[0], backend, shape)[0], False, 0
 
 
 # uso-51: a cut keeps at most this many tokens of history (Mind._fits), which the model re-reads in the decision that cut

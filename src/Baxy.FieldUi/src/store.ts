@@ -177,7 +177,7 @@ export function reduce(s: BaxyStore, ev: ServerEvent | { type: '_connected'; val
     case 'voice_wake':
       return { ...s, live: '' };
     case 'boot':
-      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null, lastFailure: ev.lastFailure ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, reading: heldReading(ev.reading ?? null, s.boot?.reading ?? null), onProcessor: !!ev.onProcessor, tunedProblem: ev.tunedProblem ?? null, cardProfile: ev.cardProfile ?? null } };
+      return { ...s, boot: { stt: ev.stt, wake: ev.wake, tts: ev.tts, model: ev.model, startedAt: ev.startedAt, readyAt: ev.readyAt, failed: ev.failed ?? null, lastFailure: ev.lastFailure ?? null, failureMemory: ev.failureMemory ?? null, failureRead: ev.failureRead ?? null, reading: heldReading(ev.reading ?? null, s.boot?.reading ?? null), onProcessor: !!ev.onProcessor, tunedProblem: ev.tunedProblem ?? null, localModelProblem: ev.localModelProblem ?? null, localModelCause: ev.localModelCause ?? null, cardProfile: ev.cardProfile ?? null } };
     case 'surfaces':
       return { ...s, surfaces: { sessions: ev.sessions, sessions_revision: ev.sessions_revision, memory: ev.memory, memory_revision: ev.memory_revision, tools: ev.tools, triggers: ev.triggers, routines: ev.routines ?? null } };
     case 'session':

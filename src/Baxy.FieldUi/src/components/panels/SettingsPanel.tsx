@@ -5,7 +5,7 @@ import { getJson, send, sendTold } from '../../api';
 import { spoken } from '../../duration';
 import { useDialogFocus, useInnerDialog } from '../../utils/dialogFocus';
 import { radioKeys, rovingIndex, tabKeys } from '../../utils/radioKeys';
-import { cardShortInSettings, cardShortText, PROFILE_NAME, TUNED_PROBLEM, type FailureCard } from '../../causes';
+import { cardShortInSettings, cardShortText, localProblemWords, PROFILE_NAME, TUNED_PROBLEM, type FailureCard } from '../../causes';
 import { useT, type LangChoice, type Words } from '../../i18n';
 import { translatorSaid } from '../../externalErrors';
 import { draftTab, forgetDraft, savesOnBlur, useDraft, useDraftKeys } from '../../drafts';
@@ -834,6 +834,83 @@ function whereNow(external: ExternalModel | null, tuned: TunedModel | null): Whe
   return tuned?.use ? 'ajustado' : 'serie';
 }
 
+/* MOD5 (MOD2 §1, path a: «la App no lo deja elegir»): a GGUF of the person's own in BAXY's engine (LocalModel in the App),
+   kept with its path, taken at a start when its template takes tools, and the stock model again when it does not come up. */
+interface LocalModelState {
+  path?: string | null; use?: boolean; active?: boolean; problem?: string | null; failedCause?: string | null;
+  sees?: boolean | null; exists?: boolean; bytes?: number | null; contextLength?: number | null; declaresTools?: boolean | null;
+  switching?: boolean;
+}
+
+/* MOD5 (4): said wherever BAXY thinks with a model that is not its stock one, with no promise and no name. */
+export function OtherModelNote() {
+  const t = useT();
+  return <div className="st-tip" data-other-model-note>{t('BAXY está medida con su modelo de serie; con otro modelo, algunas cosas pueden ir mejor o peor.', 'BAXY is measured with its stock model; with another model, some things may go better or worse.')}</div>;
+}
+
+const LOCAL_REFUSED: Record<string, Words> = {
+  local_model_missing: { es: 'No encontré ese archivo', en: 'I didn’t find that file' },
+  local_model_not_gguf: { es: 'Ese archivo no es un modelo GGUF que pueda leer', en: 'That file isn’t a GGUF model I can read' },
+  local_model_no_tools: { es: 'La plantilla de ese modelo no admite herramientas, y BAXY las necesita para hacer cosas', en: 'That model’s template doesn’t take tools, and BAXY needs them to do things' },
+  local_model_short_context: { es: 'Ese modelo lee menos texto del que necesitan las instrucciones de BAXY', en: 'That model reads less text than BAXY’s instructions need' },
+};
+
+function LocalGgufSection({ onSaved }: { onSaved: () => void }) {
+  const t = useT();
+  const [value, setValue] = useState<LocalModelState | null>(null);
+  const [path, setPath] = useState('');
+  const [refused, setRefused] = useState<string | null>(null);
+  useEffect(() => {
+    void getJson<LocalModelState>('/settings/local-model').then((v) => { if (v) { setValue(v); setPath(v.path ?? ''); } });
+  }, []);
+  const busy = !!value?.switching;
+  useEffect(() => {
+    if (!busy) return undefined;
+    const every = setInterval(() => { void getJson<LocalModelState>('/settings/local-model').then((v) => { if (v) setValue(v); }); }, 1000);
+    return () => clearInterval(every);
+  }, [busy]);
+  if (!value) return null;
+  const put = async (body: Record<string, unknown>) => {
+    const { value: answer, refused: said, code } = await sendTold<LocalModelState>('PUT', '/settings/local-model', body);
+    if (!answer || !('use' in answer)) {
+      setRefused(!said ? t('No supe si se hizo: BAXY no respondió', 'I couldn’t tell whether it was done: BAXY didn’t answer')
+        : code && LOCAL_REFUSED[code] ? t.w(LOCAL_REFUSED[code]) : t('No se pudo hacer', 'It couldn’t be done'));
+      return;
+    }
+    setRefused(null);
+    setValue(answer);
+    onSaved();
+  };
+  const [tag, now] = busy ? ['busy', t('Cambiando…', 'Switching…')] : value.active ? ['on', t('En uso', 'In use')]
+    : value.use ? ['', t('Elegido, sin usar', 'Chosen, not in use')] : ['', t('Sin usar', 'Not in use')];
+  const said = localProblemWords(value.problem, value.failedCause);
+  const hint = said ? t.w(said)
+    : value.active ? (value.sees ? t('Con visión: su proyector es de este modelo', 'With vision: its projector is this model’s')
+      : t('Sin visión: no hay un proyector de este modelo junto a él, así que BAXY no verá la pantalla ni imágenes (lee el texto de la pantalla igual)', 'No vision: there’s no projector of this model beside it, so BAXY won’t see the screen or images (it reads the screen’s text all the same)'))
+      : t('La ruta de un archivo .gguf de este PC. Su plantilla debe admitir herramientas. Si no arranca, BAXY vuelve a su modelo de serie', 'The path of a .gguf file on this PC. Its template must take tools. If it doesn’t start, BAXY goes back to its stock model');
+  return (<>
+    <div className="panel-sec-head" style={{ marginTop: 16 }}>{t('Un modelo GGUF tuyo en el motor de BAXY', 'A GGUF model of your own in BAXY’s engine')}</div>
+    <div className="bxs-row">
+      <div className="bxs-l">
+        <span><span>{t('Modelo local (GGUF)', 'Local model (GGUF)')}</span><em className={'bx-tag ' + tag} role="status">{now}</em></span>
+        <span className="h" data-local-hint>{hint}</span>
+      </div>
+      <div className="bxs-c">
+        <Toggle on={!!value.use} label={t('Usar este modelo', 'Use this model')} locked={busy || (!value.use && !path.trim())}
+          onChange={(v) => void put(v ? { path: path.trim(), use: true } : { use: false })} />
+      </div>
+    </div>
+    <div className="bxs-sub">
+      <input className="st-input" style={{ flex: 1 }} value={path} maxLength={1024} spellCheck={false} placeholder="C:\modelos\modelo.gguf"
+        aria-label={t('Ruta del archivo GGUF', 'Path of the GGUF file')} onChange={(e) => setPath(e.target.value)} />
+      <button className="panel-btn ghost" disabled={busy || !path.trim() || path.trim() === (value.path ?? '')}
+        onClick={() => void put(value.use ? { path: path.trim(), use: true } : { path: path.trim() })}>{t('Guardar', 'Save')}</button>
+    </div>
+    {value.use || value.active ? <OtherModelNote /> : null}
+    {refused ? <div className="st-tip" role="alert">{refused}</div> : null}
+  </>);
+}
+
 function ModelTab({ alias, stockName, ownIsStock, metrics, external, onExternal, tuned, onTuned, localContext, onLocalContext }: {
   alias: string | null; stockName: string; ownIsStock: boolean | null; metrics: Metrics | null; external: ExternalModel | null; onExternal: (v: ExternalModel) => void;
   tuned: TunedModel | null; onTuned: (v: TunedModel) => void; localContext: LocalContextState | null; onLocalContext: (v: LocalContextState) => void;
@@ -1116,6 +1193,9 @@ function ModelTab({ alias, stockName, ownIsStock, metrics, external, onExternal,
       </Fold>
     ) : null}
     {(where === 'local' || where === 'api') && external ? <ExternalModelSection value={external} onChange={onExternal} onSaved={() => void rereadTuned()} mode={where} /> : null}
+    {(where === 'serie' || where === 'ajustado') ? <LocalGgufSection onSaved={() => { void rereadExternal(); void rereadTuned(); }} /> : null}
+    {/* MOD5 (4): another model than the stock one runs (by Ollama or an API, or the tuned one): the same note */}
+    {other || tuned?.active ? <OtherModelNote /> : null}
     <MemoryBreakdown model={external?.active ? null : alias} />
     <div className="st-tip">{t('Si un dato no se puede leer, se muestra «—», nunca 0.', 'A reading that can’t be taken shows “—”, never 0.')}</div>
   </>);

@@ -51,12 +51,20 @@ internal sealed class Texts
     internal required string NoGpuTitle { get; init; }
     internal required string WarningHelp { get; init; }
 
-    // VRAM5 (AUD1 F7): {0} the RAM installed, {1} the least BAXY needs, both in GB (MachineGpu.MinimumRamMib).
+    // VRAM5 (AUD1 F7), INS2: {0} the RAM installed, {1} the least BAXY needs with its model, {2} the RAM free now, {3}
+    // the least it needs with a model by API, all in GB (MachineGpu.MinimumRamMib, MinimumApiRamMib).
     internal required string WarningRam { get; init; }
 
     internal required string WarningRamIntegrated { get; init; }
 
     internal required string WarningRamHelp { get; init; }
+
+    // INS2 (MIN1): integrated graphics with the RAM for the model; and a PC BAXY does not fit even with a model by API,
+    // with the same figures and {4} the GB the installation downloads.
+    internal required string WarningIntegrated { get; init; }
+    internal required string NoRoomTitle { get; init; }
+    internal required string WarningRamEvenByApi { get; init; }
+    internal required string WarningRamEvenByApiHelp { get; init; }
     internal required string InstallAnyway { get; init; }
     internal required string WorkingTitle { get; init; }
     internal required string PausedTitle { get; init; }
@@ -191,9 +199,13 @@ internal sealed class Texts
         WarningNone = "No encontré una tarjeta gráfica NVIDIA, AMD o Intel, y sin ella no puedo arrancar en este PC.",
         NoGpuTitle = "No puedo funcionar aquí.",
         WarningHelp = "Con una tarjeta NVIDIA de 4 GB funciono en el perfil Esencial. Con AMD o con gráficos Intel integrados sigo en pruebas. Con menos memoria puedes usar otro modelo (Ajustes → Modelo).",
-        WarningRam = "Tu PC tiene {0:0.#} GB de RAM. Windows 11 pide al menos 4 y yo uso unos 3,7 más: con menos de {1:0.#} GB puedo ir muy lento o no arrancar.",
-        WarningRamIntegrated = "Tu PC tiene {0:0.#} GB de RAM y sólo gráficos integrados, que usan esa misma RAM para el modelo. Con Windows, el modelo y el resto de mí necesito unos {1:0.#} GB: con menos puedo no arrancar.",
-        WarningRamHelp = "Si me instalas igual, puedo usar otro modelo: en Ajustes → Modelo, o con el botón «Usar otro modelo» si no arranco.",
+        WarningRam = "Tu PC tiene {0:0.#} GB de RAM ({2:0.#} libres ahora). Windows 11 pide al menos 4 y yo uso unos 3,7 más con mi modelo: con menos de {1:0.#} GB puedo ir muy lento o no arrancar. Con un modelo por API, que piensa en otro equipo, me bastan unos {3:0.#} GB.",
+        WarningRamIntegrated = "Tu PC tiene {0:0.#} GB de RAM ({2:0.#} libres ahora) y sólo gráficos integrados, que usan esa misma RAM para el modelo. Con Windows, el modelo y el resto de mí necesito unos {1:0.#} GB: con menos puedo no arrancar. Con un modelo por API, que piensa en otro equipo, me bastan unos {3:0.#} GB.",
+        WarningRamHelp = "Si me instalas igual, puedo pensar con un modelo por API: se elige en Ajustes → Modelo, o con el botón «Usar otro modelo» si no arranco. Todavía no puedo cambiarlo de palabra.",
+        WarningIntegrated = "Tu PC sólo tiene gráficos integrados, que usan la RAM del equipo para el modelo, y todavía no me han probado con ellos. Puedo ir muy lento o no funcionar.",
+        NoRoomTitle = "En este PC no llego.",
+        WarningRamEvenByApi = "Tu PC tiene {0:0.#} GB de RAM y ahora quedan {2:0.#} libres. Windows 11 pide al menos 4, y yo, aun pensando con un modelo por API, uso unos 2 más con la ventana, la voz y la mente: necesito al menos {3:0.#} GB, y unos {1:0.#} con mi modelo. Aquí me cerraría sin poder ayudarte, también con otro modelo.",
+        WarningRamEvenByApiHelp = "Haría falta un PC con al menos {3:0.#} GB de RAM. No he bajado nada: si me instalas igual, bajo {4:0.#} GB que en este PC no podrás usar.",
         InstallAnyway = "Instalarme i_gual",
         WorkingTitle = "Me estoy instalando.",
         PausedTitle = "En pausa.",
@@ -303,9 +315,13 @@ internal sealed class Texts
         WarningNone = "I found no NVIDIA, AMD or Intel graphics card, and I can’t start on this PC without one.",
         NoGpuTitle = "I can’t work here.",
         WarningHelp = "With a 4 GB NVIDIA card I work in the Essential profile. On AMD or integrated Intel graphics I’m still being tested. With less memory you can use another model (Settings → Model).",
-        WarningRam = "Your PC has {0:0.#} GB of RAM. Windows 11 asks for at least 4 and I use about 3.7 more: with less than {1:0.#} GB I may run very slowly or not start.",
-        WarningRamIntegrated = "Your PC has {0:0.#} GB of RAM and only integrated graphics, which use that same RAM for the model. With Windows, the model and the rest of me I need about {1:0.#} GB: with less I may not start.",
-        WarningRamHelp = "If you install me anyway, I can use another model: in Settings → Model, or with the “Use another model” button if I don’t start.",
+        WarningRam = "Your PC has {0:0.#} GB of RAM ({2:0.#} free now). Windows 11 asks for at least 4 and I use about 3.7 more with my model: with less than {1:0.#} GB I may run very slowly or not start. With a model by API, which thinks on another computer, about {3:0.#} GB is enough for me.",
+        WarningRamIntegrated = "Your PC has {0:0.#} GB of RAM ({2:0.#} free now) and only integrated graphics, which use that same RAM for the model. With Windows, the model and the rest of me I need about {1:0.#} GB: with less I may not start. With a model by API, which thinks on another computer, about {3:0.#} GB is enough for me.",
+        WarningRamHelp = "If you install me anyway, I can think with a model by API: you choose it in Settings → Model, or with the “Use another model” button if I don’t start. I can’t change it by voice yet.",
+        WarningIntegrated = "Your PC only has integrated graphics, which use the computer’s RAM for the model, and I haven’t been tested on them yet. I may be very slow or not work.",
+        NoRoomTitle = "I don’t fit on this PC.",
+        WarningRamEvenByApi = "Your PC has {0:0.#} GB of RAM and {2:0.#} is free now. Windows 11 asks for at least 4, and even thinking with a model by API I use about 2 more for the window, the voice and the mind: I need at least {3:0.#} GB, and about {1:0.#} with my model. Here I would close without being able to help you, with another model too.",
+        WarningRamEvenByApiHelp = "It would take a PC with at least {3:0.#} GB of RAM. I haven’t downloaded anything: if you install me anyway, I download {4:0.#} GB you won’t be able to use on this PC.",
         InstallAnyway = "Install me an_yway",
         WorkingTitle = "I’m installing myself.",
         PausedTitle = "Paused.",

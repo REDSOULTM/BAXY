@@ -21,6 +21,8 @@
    "VERSION_WHERE",
    "VERSION_NEWER",
    "CARD_PROFILE_FACT",
+   "CARD_PROFILE_CHOSEN_FACT",
+   "CARD_PROFILE_CHOSEN_NOW",
    "MEMORY_OFF_FACT",
    "MEMORY_HELD_FACT",
    "MEMORY_HELD_OFF",
@@ -91,6 +93,7 @@
    "ANSWERED_NOTE",
    "CHOICE_ANSWER",
    "OFFERED_NOTE",
+   "TEXT_CALL_NOTE",
    "OFFER_NOTE",
    "SAID_AGAIN_NOTE",
    "DATED_NOTE",
@@ -154,7 +157,11 @@
    "RING_WORDS_UNTITLED",
    "ROUTINE_SAID",
    "ROUTINES_BESIDE",
-   "ROUTINE_AT_SAID"
+   "ROUTINE_AT_SAID",
+   "ROUTINE_NOTHING_CALENDAR",
+   "ROUTINE_THERE_CLOCK",
+   "ROUTINE_THERE_WORDS",
+   "ROUTINE_THERE_TOOL"
   ],
   "answer_check": [
    "UNCHECKED_UPDATE",
@@ -237,6 +244,14 @@
   [
    "\nEl perfil de herramientas de fábrica de BAXY es {factory}. En este PC, BAXY eligió por su cuenta el perfil {profile} (la persona no lo eligió) porque, cuando lo eligió, la tarjeta gráfica de este PC tenía {free} GB de memoria de vídeo libres y el perfil {factory} necesita unos {need} GB. BAXY se queda en el perfil {profile} aunque otro día haya más memoria libre: sólo cambia si la persona lo pide. Para tener más herramientas, la persona puede usar otro modelo (Ajustes → Modelo), o liberar memoria de la tarjeta gráfica y pedir el perfil {factory} (en Ajustes → Herramientas o pidiéndotelo): si en ese momento cabe, se cambia; si no cabe, BAXY lo dice al volver a arrancar.",
    "\nBAXY's factory tool profile is {factory}. On this PC, BAXY chose the {profile} profile by itself (the person did not choose it) because, when it chose it, this PC's graphics card had {free} GB of video memory free and the {factory} profile needs about {need} GB. BAXY stays on the {profile} profile even if another day there is more free memory: it only changes if the person asks for it. To have more tools, the person can use another model (Settings → Model), or free memory on the graphics card and ask for the {factory} profile (in Settings → Tools or by asking you): if at that moment it fits, it is changed; if it does not fit, BAXY says so when it starts again."
+  ],
+  [
+   "\nLa persona eligió el perfil de herramientas {factory}, pero en este arranque la tarjeta gráfica de este PC tenía {free} GB de memoria de vídeo libres y el perfil {factory} necesita unos {need} GB: BAXY arrancó con el perfil {profile}, que sí cabe, sólo en este arranque. La elección de la persona sigue guardada: cada arranque vuelve a intentar el perfil {factory}{now}.",
+   "\nThe person chose the {factory} tool profile, but at this start this PC's graphics card had {free} GB of video memory free and the {factory} profile needs about {need} GB: BAXY started with the {profile} profile, which does fit, for this start only. The person's choice stays saved: every start tries the {factory} profile again{now}."
+  ],
+  [
+   ", y también ahora si la persona lo pide otra vez (en Ajustes → Herramientas o pidiéndotelo)",
+   ", and also now if the person asks for it again (in Settings → Tools or by asking you)"
   ],
   [
    "\nTu memoria (recordar, guardar y olvidar datos de la persona) está fuera del perfil de herramientas de este PC: no puedes guardar ni leer nada. La tiene el perfil Diario; si la persona quiere que recuerdes algo o que enciendas la memoria, llama {call}: le pide su sí por sí sola, y desde su próximo pedido tendrás la memoria.",
@@ -793,6 +808,10 @@
   [
    "cancelado por la persona",
    "cancelled by the person"
+  ],
+  [
+   "no se hizo: la persona dijo que no; ya lo rechazó, no se lo ofrezcas de nuevo",
+   "not done: the person said no; they already refused it, do not offer it to them again"
   ],
   [
    "lo que se busca",
@@ -1653,6 +1672,26 @@
   [
    "; la hora que escribió la persona, {clock}, es la de su rutina «{name}»",
    "; the time the person wrote, {clock}, is that of their routine «{name}»"
+  ],
+  [
+   "[Nota interna, no la escribió la persona: tu respuesta fue una llamada a una herramienta escrita como texto; no se ejecutó y la persona no la oyó. Ahora no puedes usar herramientas: respóndele con palabras.]",
+   "[Internal note, not written by the person: your answer was a tool call written as text; it was not run and the person did not hear it. You cannot use tools now: answer them in words.]"
+  ],
+  [
+   "; en lo que leyó del calendario no hay nada que empiece a las {clock}",
+   "; in what was read of the calendar nothing starts at {clock}"
+  ],
+  [
+   "; la hora que escribió la persona, {clock}, es la de su rutina «{name}»: {item}",
+   "; the time the person wrote, {clock}, is that of their routine «{name}»: {item}"
+  ],
+  [
+   "; {words}, que escribió la persona, están en lo que dice su rutina «{name}»: {item}",
+   "; {words}, which the person wrote, are in what their routine «{name}» says: {item}"
+  ],
+  [
+   "; {tool} cambia, desactiva y borra una rutina, y antes se lo pregunta a la persona diciéndole cuál",
+   "; {tool} changes, turns off and deletes a routine, and asks the person first, saying which"
   ]
  ]
 }

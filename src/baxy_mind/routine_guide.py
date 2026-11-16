@@ -984,6 +984,8 @@ class Guide:
     described: bool = False   # and the one chosen at «which» is asked so too
     # RUT17: the routines the person has, as the last answer or reading saw them (answer, fill, take), for _twin
     known: Any = field(default=None, repr=False, compare=False)
+    # RUT18 D: its time before the change of «when» asked it again (_to), kept when they say only days
+    clock_was: When | None = field(default=None, repr=False, compare=False)
 
     def _state(self) -> tuple[Any, ...]:
         return self.step, self.kind, self.phrase, self.order, self.say, self.when, self.part, self.mode
@@ -1197,6 +1199,7 @@ class Guide:
             return
         self.part, self.step = part, part
         if part == "when":
+            self.clock_was = self.when
             self.when = When(repeat=self.when.repeat, days=self.when.days)   # the hour asked again, its days kept
 
     def leaves(self, text: str, routines: Any = None, today: _dt.date | None = None) -> bool:
@@ -1434,6 +1437,11 @@ class Guide:
             if given is None:
                 return self._t("when_again") if self.when.hour is None else self.question(), None, False
             self.when = self.when.merged(given)
+            was = self.clock_was
+            if self.mode == "change" and was is not None and self.when.hour is None and given.repeat is not None:
+                # RUT18 D (RUT17's held-out k10, k14: «¿Qué cambio…?» → «los días» → «¿A qué hora?» → the days again, in a
+                # loop): days said alone, in the change of a routine at a time, keep its own time; their «sí» changes it
+                self.when = replace(self.when, hour=was.hour, minute=was.minute, meridiem=was.meridiem, fixed=was.fixed)
             return self._after_when(), None, False
         if self.step == "say":
             say = _kept(text)

@@ -69,10 +69,12 @@ public sealed class CardProfileKeptTests
             await using (app)
             await using (var view = new ChannelHarness(app))
             {
-                Assert.That(Needs, Does.Not.Contain(","), "their profile goes alone: the mind takes no other for them");
-                Assert.That(app.ToolProfileState.Profile, Is.EqualTo(ToolProfile.Completo), byVoice ? "by voice" : "in Settings");
-                Assert.That(view.Channel.BootEvent()["cardProfile"], Is.Null, "no «BAXY eligió»");
-                Assert.That(fake.Requests("catalog.configure")[^1]["cardProfile"], Is.Null);
+                // ARR3 (VIVO23: their profile alone did not start on 4 GB): what fits under it goes too, and this start
+                // stands in for theirs, said as theirs («chosen»), never «BAXY eligió»; the file stays theirs.
+                Assert.That(Needs, Does.Contain(","), "what fits under their profile goes too");
+                Assert.That(app.ToolProfileState.Profile, Is.EqualTo("esencial"), byVoice ? "by voice" : "in Settings");
+                Assert.That((bool?)view.Channel.BootEvent()["cardProfile"]?["chosen"], Is.True, "no «BAXY eligió»");
+                Assert.That((bool?)fake.Requests("catalog.configure")[^1]["cardProfile"]?["chosen"], Is.True);
                 Assert.That(JsonNode.Parse(File.ReadAllText(file))!["byCard"], Is.Null);
                 Assert.That((string?)JsonNode.Parse(File.ReadAllText(file))!["profile"], Is.EqualTo(ToolProfile.Completo));
             }

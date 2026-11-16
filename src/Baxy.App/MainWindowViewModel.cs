@@ -234,6 +234,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     ToolProfileState.Refusal(operation, arguments, _ringer is { Now.Count: > 0 })
                     ?? Settings.Refusal(operation, arguments),
                 OffFacts = ToolProfileState.OffFacts,
+                SettingNote = ToolProfileState.StandInNote,
                 ToolOn = operation =>
                 {
                     string? off = ToolProfileState.KeepOn(operation);
@@ -1852,6 +1853,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private ExternalModel? _externalModel;
     private TunedModel? _tunedModel;
+    private LocalModel? _localModel;
     private PersonBehavior? _behavior;
     private ToolProfile? _toolProfile;
     private LocalContext? _localContext;
@@ -1910,6 +1912,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             // QWB2: after the registered runtime, whose stock model it replaces only once verified.
             await TunedModelState.StartAsync(linked.Token);
 
+            // MOD5: the person's own GGUF, after the tuned one, in the place of whichever it gave (one model at a time:
+            // choosing it turns the others off, LocalModelChosen).
+            LocalModelState.Start();
+
             // After the registered runtime: it uses that interpreter and overrides the vision's address.
             if (ExternalModel.Available)
             {
@@ -1931,13 +1937,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 // goes alone from then on, as a chosen one: another day's free memory changes nothing by itself.
                 // VRAM4D (REV18 R18-2): alone while the card is short; the mind is given the list and which one it is
                 // (KeptVariable), so on a card with room the start tries the factory's again and the App drops it.
+                // ARR3 (VIVO23: 4 GB and Completo chosen, BAXY did not start; the identity: «cabe en 4 GB»): a profile the
+                // person chose goes first, and each smaller ready-made one after it, so the start takes the largest the
+                // card holds instead of failing; the person's stays theirs (ToolProfile.FitCard, Theirs), and each start
+                // tries it again.
+                ToolProfileState.StartAgain();
                 bool chosen = ToolProfileState.Chosen;
-                orElse = chosen ? [] : ToolProfile.Smaller(MindPrefixTokens, MindPrefixProfile);
+                int needed = chosen ? ExternalModelState.NeededNow : ToolProfile.NeededContext(ToolProfile.Completo, MindPrefixTokens, MindPrefixProfile);
+                orElse = [.. ToolProfile.Smaller(MindPrefixTokens, MindPrefixProfile).Where(smaller => smaller.Need < needed)];
                 string? keptName = ToolProfileState.KeptForTheCard?.Profile;
                 LocalContextState.ApplyEnvironment(MindBackend,
-                    chosen ? ExternalModelState.NeededNow : ToolProfile.NeededContext(ToolProfile.Completo, MindPrefixTokens, MindPrefixProfile),
+                    needed,
                     orElse.Select(static smaller => smaller.Need),
-                    orElse.FirstOrDefault(smaller => smaller.Profile == keptName) is { Profile: not null } keptOne ? keptOne.Need : null);
+                    orElse.FirstOrDefault(smaller => smaller.Profile == keptName) is { Profile: not null } keptOne ? keptOne.Need : null,
+                    theirs: chosen);
             }
 
             ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindVerified);
@@ -1962,7 +1975,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 WithheldNow = () => ToolProfileState.Withheld(
                     Baxy.Kernel.Operations.ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)),
                 MemoryOffNow = () => ToolProfileState.MemoryOff,
-                CardSaid = (fit, memory) => ToolProfileState.FitCard(fit is not null && ownModel && !ToolProfileState.Chosen
+                CardSaid = (fit, memory) => ToolProfileState.FitCard(fit is not null && ownModel
                     && orElse.FirstOrDefault(smaller => smaller.Need == fit.Needs) is { Profile: { } fitting }
                         ? new ToolProfile.CardFitted(fitting, fit.FreeMb, fit.NeedMb) : null, ownModel ? memory?.Short : null),
                 CardProfileNow = () => ToolProfileState.CardProfileFact(),
@@ -1981,6 +1994,18 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             _mindReading = null;
             if (!started)
             {
+                // MOD5 (3a): a start on the person's own GGUF that did not come up goes back to the model before it at
+                // once, and Settings and the start's notice say why (LocalModel.Problem): never a BAXY left without a model.
+                if (ownModel && LocalModelState.FellBack(mind.LastStartupFailure?.Cause))
+                {
+                    await mind.DisposeAsync();
+                    _mindStartupState = MindStartupState.Failed;
+                    ToolProfileState.StartAgain();
+                    _mindRetryPending = true;
+                    _ = RetryMindAfterAsync(TimeSpan.Zero);
+                    return;
+                }
+
                 RecordMindStartupFailure(mind.LastStartupFailure);
                 await mind.DisposeAsync();
                 return;
@@ -2014,7 +2039,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             LanguageState.Started(mind.ConfiguredLanguage);
             FactoryBehavior = mind.FactoryBehavior ?? FactoryBehavior;
             // MOD1 D5: what this start took to read the prefix whole, if it did, is this PC's measure from now on.
-            PrefixReadState.Ended(ownModel);
+            // MOD5: not a GGUF of the person's own: the stock model's start is what this PC is measured by.
+            PrefixReadState.Ended(ownModel && !LocalModelState.Active);
             LocalContextState.Started(ownModel, mind.Context, mind.CardShort);
             if (ownModel)
             {
@@ -2133,6 +2159,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         _mindFailureMemory = failure?.NeedMb is { } need ? (need, failure.FreeMb) : null;
         _mindFailureRead = failure is { TokensPerS: { } pace, NeedMinutes: { } minutes } ? (pace, minutes, failure.CardFull) : null;
         LocalContextState.Failed(failure?.CardShort);
+        // ARR3: a start that failed runs no profile: what it stood in for the person's is not said as running.
+        ToolProfileState.StartAgain();
         string cause = failure?.TraceLabel ?? "desconocida";
         ShellTraceSink.Record(ShellTraceScopes.Startup, "boot", ShellTraceStages.StartupMindFailed, cause);
         RetryMindOrGiveUp(cause, once: failure?.CardShort is not null);
@@ -2277,6 +2305,49 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             : TunedModelState.Apply(new JsonObject { ["use"] = false });
     }
 
+    /// <summary>
+    /// MOD5: the person chose their own GGUF in Settings → Model: one model at a time, so the tuned one and another model
+    /// go off (KeepOneModel's rule), and the mind switches to it in the same relaunch.
+    /// </summary>
+    internal void LocalModelChosen()
+    {
+        if ((bool?)LocalModelState.Json()["use"] == true)
+        {
+            if ((bool?)TunedModelState.Json()["use"] == true)
+            {
+                _ = TunedModelState.Apply(new JsonObject { ["use"] = false });
+            }
+
+            if (ExternalModel.Available && (bool?)ExternalModelState.Json()["enabled"] == true)
+            {
+                _ = ExternalModelState.Apply(new JsonObject { ["enabled"] = false });
+            }
+        }
+
+        ExternalModel model = ExternalModelState;
+        if (_isDisposed || model.Switching || !(LocalModelState.NeedsSwitch || TunedModelState.NeedsSwitch || model.NeedsSwitch))
+        {
+            return;
+        }
+
+        model.Switching = true;
+        _ = SwitchMindAsync(model);
+    }
+
+    /// <summary>
+    /// MOD5: the tuned model or another one (Ollama, an API) was just turned on: the person's own GGUF goes off, one model at
+    /// a time (KeepOneModel's rule), in the same switch of the mind.
+    /// </summary>
+    internal void LocalModelGivesWay(JsonObject asked)
+    {
+        if (((asked["use"] is JsonValue use && use.TryGetValue(out bool on) && on)
+                || (asked["enabled"] is JsonValue enabled && enabled.TryGetValue(out bool external) && external))
+            && LocalModelState.Chosen)
+        {
+            _ = LocalModelState.Apply(new JsonObject { ["use"] = false });
+        }
+    }
+
     internal void TunedModelChanged()
     {
         ExternalModel model = ExternalModelState;
@@ -2332,8 +2403,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal void ToolsChanged()
     {
         ExternalModel model = ExternalModelState;
-        if (_isDisposed || !ToolProfileState.NeedsSwitch || model.Switching)
+        if (_isDisposed || model.Switching)
         {
+            return;
+        }
+
+        if (!ToolProfileState.NeedsSwitch)
+        {
+            // ARR3 (VIVO23: Esencial chosen after a start that did not fit in 4 GB changed nothing; BAXY had to be closed
+            // and opened): with no mind up there is nothing to switch, and the profile chosen is what the next start
+            // tries, now.
+            RetryFailedMindStart();
             return;
         }
 
@@ -2389,6 +2469,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 try
                 {
                     model.Stop();
+                    // MOD5: the person's GGUF took its place after the tuned one, so it goes back first.
+                    LocalModelState.Stop();
                     TunedModelState.Stop();
                     if (_mindClient is { } running)
                     {
@@ -2431,7 +2513,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 again = !_isDisposed
                     && ((cut && _mindClient is null)
                         || ((_mindClient is not null || cut)
-                            && (model.NeedsSwitch || TunedModelState.NeedsSwitch || BehaviorState.NeedsSwitch
+                            && (model.NeedsSwitch || TunedModelState.NeedsSwitch || LocalModelState.NeedsSwitch
+                                || BehaviorState.NeedsSwitch
                                 || ToolProfileState.NeedsSwitch || LocalContextState.NeedsSwitch
                                 || LanguageState.NeedsSwitch)));
             }
@@ -2619,6 +2702,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
+    /// <summary>MOD5: a GGUF of the person's own in BAXY's engine (Settings → Model).</summary>
+    internal LocalModel LocalModelState => _localModel ??= new LocalModel(
+        MemoryOperationProtector.ResolveDataRoot(),
+        () => ToolProfile.NeededContext(ToolProfile.Completo, MindPrefixTokens, MindPrefixProfile));
+
     /// <summary>The person's own texts for how BAXY behaves (Settings → Behavior).</summary>
     internal PersonBehavior BehaviorState => _behavior ??= new PersonBehavior(MemoryOperationProtector.ResolveDataRoot());
 
@@ -2650,6 +2738,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     /// <summary>The tool profile <see cref="MindPrefixTokens"/> was read with: it scales the others' (ToolProfile.NeededContext).</summary>
     internal string? MindPrefixProfile { get; private set; }
+
+    /// <summary>MOD5: why this start does not run the person's own GGUF although they chose it, or null.</summary>
+    internal string? LocalModelProblem => _localModel?.Problem;
 
     /// <summary>Why this start runs the stock model although the person chose the tuned one, or null.</summary>
     internal string? TunedModelProblem => _tunedModel?.Problem;
@@ -2765,6 +2856,22 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         return true;
+    }
+
+    // ARR3: a start of the mind that failed is tried again at once, its count anew, as «Reintentar» does.
+    private void RetryFailedMindStart()
+    {
+        if (_mindStartupState != MindStartupState.Failed)
+        {
+            return;
+        }
+
+        _mindRetries.Reset();
+        _mindGaveUp = false;
+        _mindRetryPending = true;
+        OnPropertyChanged(nameof(Failure));
+        MindChanged();
+        _ = RetryMindAfterAsync(TimeSpan.Zero);
     }
 
     /// <summary>
@@ -3059,6 +3166,34 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         return !Settings.VoiceMuted && _mindClient is { IsVoiceAvailable: true } mind
             && await mind.VoiceSpeakAsync(words, TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(true);
+    }
+
+    /// <summary>MEN3: words said now, in the middle of a turn too, waited for until the voice has said them (at most
+    /// <paramref name="limit"/>): BAXY's line as it closes for an update, which the closing would otherwise cut.</summary>
+    internal async Task SayNowAsync(string words, TimeSpan limit, CancellationToken cancellationToken)
+    {
+        DateTimeOffset until = DateTimeOffset.UtcNow + limit;
+        if (Settings.VoiceMuted || _mindClient is not { IsVoiceAvailable: true } mind
+            || !await mind.VoiceSpeakAsync(words, TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(true))
+        {
+            return;
+        }
+
+        // Taken, it is synthesized and then sounds: the voice starts speaking, then stops.
+        bool sounded = false;
+        while (DateTimeOffset.UtcNow < until)
+        {
+            if (IsVoiceSpeaking)
+            {
+                sounded = true;
+            }
+            else if (sounded)
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken).ConfigureAwait(true);
+        }
     }
 
     /// <summary>FT/proveedores goal (review of the App): what BAXY is saying stops (a new conversation, the voice muted

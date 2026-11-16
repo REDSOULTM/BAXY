@@ -71,6 +71,17 @@ internal sealed class UpdateProgress(bool english, TimeProvider? clock = null)
         return null;
     }
 
+    /// <summary>
+    /// MEN3 (VIVO24B, 15-11-2026: to «Baxi, actualízate» BAXY closed for the update with the turn unanswered, written or
+    /// said, until the new version said «Me actualicé a la 1.5.4»): the line BAXY says as it closes for an install whose
+    /// receipt says its installer started, with the version it goes to; null for any other receipt.
+    /// </summary>
+    internal static string? Leaving(JsonObject? receipt, bool english) =>
+        receipt is not null && UpdatePanel.StartedInstaller(receipt) && (string?)receipt["latest"] is { Length: > 0 } version
+            ? UiLanguage.Say(english, $"Voy a actualizarme a la {version}; me cierro y vuelvo en un momento.",
+                $"I’m going to update to {version}; I’ll close and be back in a moment.")
+            : null;
+
     /// <summary>Reads the file as it is now; null when it is not there or not whole yet.</summary>
     internal static JsonObject? Read(string path)
     {
