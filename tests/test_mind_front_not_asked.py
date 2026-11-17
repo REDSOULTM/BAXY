@@ -78,7 +78,9 @@ def _anticipation(result: dict) -> tuple[Anticipation, list[str]]:
     anticipation._back = lambda held, reason, reread=True: put_back.append(reason)
     anticipation._discarded, anticipation._missed = 0, None
     anticipation._held = {"text": "qué dice esto", "clock": "minute", "result": result, "rows": [], "foreseen": [],
-                          "started": 0.0, "ended": 0.1}
+                          "started": 0.0, "ended": 0.1,
+                          # DIAX1: what the decision read of the request before (Anticipation.settle compares it)
+                          "kept": {"routines": [], "memory_records": None}}
     return anticipation, put_back
 
 

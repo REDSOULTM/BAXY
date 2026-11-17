@@ -239,8 +239,10 @@ def _rows(tmp_path: Path, stage: str) -> list[dict]:
     return [row for row in rows if row["stage"] == stage]
 
 
-# MOD3: the call format read from the template (call_format.derive: six probe renderings), then «<tool_call>».
-FORMAT = ["/apply-template"] * 6
+# MOD3: the call format read from the template (call_format.derive: six probe renderings), then «<tool_call>». MODX2:
+# before them, whether the template wants the turns to alternate (one rendering: alternation.required) and the mark that
+# closes its thought (two: LlmServer.thinking_close); none of them reads into the slot.
+FORMAT = ["/apply-template"] * 9
 WARM = [*FORMAT, "/tokenize", "/props", "/v1/chat/completions", "/slots/0?action=save"]
 
 

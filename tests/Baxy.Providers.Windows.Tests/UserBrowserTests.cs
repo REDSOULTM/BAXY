@@ -1179,6 +1179,39 @@ public sealed class UserBrowserTests
         });
     }
 
+    // DIAX10B (H-065, vivo en el notebook): with no YouTube account the session first names an advertisement; the receipt
+    // says the video opened by its own title, and that what plays names another one, never that it is the video.
+    [TestCase("Nuevo sérum de prueba | Anuncio", false)]
+    [TestCase("Never Gonna Give You Up", true)]
+    public async Task AYouTubeSessionThatNamesAnotherTitleIsNotSaidToBeTheVideoOpened(string sessionTitle, bool same)
+    {
+        // As in the live case: the browser was closed, so the first session of the page is taken whatever its title.
+        var platform = new FakePlatform(OperaGx)
+        {
+            WindowsBeforeOpen = [],
+            WindowsAfterOpen = [new(11, "YouTube - Opera")],
+        };
+        platform.SessionsAfterOpen =
+        [
+            [],
+            [new("Opera GXStable", sessionTitle, string.Empty, "playing")],
+        ];
+        using Harness harness = new(platform, http: YouTubePage("dQw4w9WgXcQ", "Never Gonna Give You Up"));
+
+        ExternalCapabilityReceipt receipt = await harness.Adapter.InvokeAsync(
+            "media.play.youtube", Json("""{"query":"never gonna give you up"}"""), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.Result?.GetProperty("title").GetString(), Is.EqualTo(sessionTitle));
+            Assert.That(receipt.Result?.GetProperty("openedTitle").GetString(), Is.EqualTo("Never Gonna Give You Up"));
+            Assert.That(receipt.Result?.TryGetProperty("playingIsOpenedVideo", out _), Is.EqualTo(!same));
+            Assert.That(receipt.Result?.TryGetProperty("next", out JsonElement next) == true
+                && next.GetString()!.Contains("advertisement", StringComparison.Ordinal), Is.EqualTo(!same));
+        });
+    }
+
     // Feria 2026-10-27 (caso 19): a video asked for in a named browser opens with that browser's registered executable,
     // not with the default one, and only that browser's media session verifies it: the default browser showing the
     // same title proves nothing.

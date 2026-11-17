@@ -20,10 +20,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
+from . import alternation
 from . import call_format as formats
 from . import gguf_shape
 from .gguf_shape import GgufShape
-from .memory import free_memory_mb, gpu_shared_mb, installed_memory_mb
+from .memory import card_room_mb, free_memory_mb, gpu_dedicated_mb, gpu_shared_mb, installed_memory_mb
 
 
 # Uso 95 (F9, uso real 2026-11-04 12:06): how ggml says, in the server's log, that a buffer could not be reserved. The
@@ -183,6 +184,22 @@ def _read_cost(stretches: list[tuple[float, float]], mean: float) -> tuple[float
     return statistics.median(cost - growth * middle for middle, cost in stretches), growth
 
 
+def _closes_thought(content: str, end: str | None) -> bool:
+    """MODX2: whether a reply begins with the mark that closes this model's thought (LlmServer.thought_end)."""
+    return bool(end) and content.lstrip().startswith(str(end))
+
+
+def _past_thought(content: str, end: str | None) -> str:
+    """The reply past that mark when it begins with it (_closes_thought); else the reply as it came."""
+    return content.lstrip()[len(end):].lstrip() if end and _closes_thought(content, end) else content
+
+
+def _may_close_thought(content: str, end: str | None) -> bool:
+    """While a reply streams, whether what it wrote so far is still only the beginning of that mark."""
+    begun = content.lstrip()
+    return bool(end) and len(begun) < len(str(end)) and str(end).startswith(begun)
+
+
 def _tell(on_text: Callable[[str | None, bool], bool], text: str | None, done: bool) -> bool:
     """What the model has written so far to the voice's look-ahead, which never fails the answer."""
     try:
@@ -235,6 +252,9 @@ class LlmServer:
     # and one slot: no jitter, which spreads many clients.
     SERVER_ERROR_RETRIES = 1
     SERVER_ERROR_PAUSE_S = 0.5
+    # MODX2: until Mind.warm reads the template (alternate, thought_end in __init__): neither joined nor taken off.
+    alternate = False
+    thought_end: str | None = None
     # Uso 84 (AMD RX 7600 on Vulkan, 2026-11-04): a cold start read its 45,240-token prefix at 298 tok/s in 167.5 s,
     # against a fixed 600 s here and 180 s in the App's conductor; a slower GPU (an integrated one) or a longer prefix
     # would have been taken for a failed start. The warm-up is waited for while the server advances through the prompt
@@ -252,7 +272,8 @@ class LlmServer:
         self.gguf = gguf
         # The KV cache's types (K, V): BAXY_RENEW_KV when not given (kv_types), by default q8_0 and q8_0, and the flash
         # attention that goes with them (flash_attention). ``backend`` is the folder's (declared_backend). On CUDA the
-        # output matrix is kept in RAM (OUTPUT_ON_CPU) unless BAXY_RENEW_OUTPUT_CPU=0; on Vulkan it stays on the GPU.
+        # cells are those of the output matrix in RAM (OUTPUT_ON_CPU) unless BAXY_RENEW_OUTPUT_CPU=0; VELX1: start keeps it
+        # on a card with room for it (_output_to_card), unless BAXY_RENEW_OUTPUT_CPU=1. On Vulkan it stays on the GPU.
         self.kv = kv or kv_types(os.environ.get("BAXY_RENEW_KV", ""))
         self.flash = flash_attention(backend, self.kv)
         self.backend = backend
@@ -264,6 +285,9 @@ class LlmServer:
         # MOD5: what the model's own header says of its memory (card_mib) and its context; None when it cannot be read
         # (a test's name, a remote server's model): the factory's lines, as before.
         self.shape = None if _remote_port() else gguf_shape.read(gguf)
+        # MODX2: what the model file declares of itself (its architecture, size, sampling), for its card (model_card.py);
+        # read from the file wherever it is (a bench's remote server names the copy it serves), empty with none.
+        self.declared = gguf_shape.declared(gguf)
         # The cells that fit the backend's budget with this cache (default_context) when not given; MOD5: never past the
         # model's own context (its GGUF's <arch>.context_length), the most it was trained to read.
         self.context = context or default_context(backend, self.kv, self.output_cpu)
@@ -288,6 +312,9 @@ class LlmServer:
         # VRAM4D (REV18 R18-2): the card's whole memory as start read it, and whether it is short (card_short): only a
         # short card keeps the profile a start took for it (the App's ToolProfile.FitCard). None when not read.
         self.card_memory: dict[str, int | bool] | None = None
+        # VELX2: the card's memory no process held when start read it, MiB (_card_room); None when not read.
+        self.card_room: int | None = None
+        self._closing = False  # VELX2: close() ran: no start again after it (_wait_health)
         # The most history a cut may leave for the model to read again in one decision (Mind._fits): what this cache
         # reads in time on this backend (reread_tokens).
         self.reread_tokens = reread_tokens(backend, self.kv)
@@ -307,6 +334,12 @@ class LlmServer:
         # MOD3: whether a call written as text is read by its form too (Mind.text_calls_by_form), or only by the marks
         # of the opening, as for Qwen3.5.
         self.text_calls_by_form = False
+        # MODX2: whether this model's template wants the person's and the model's messages to alternate (alternation.py),
+        # read from it by Mind.warm; then every conversation sent is joined as it wants (_alternated).
+        self.alternate = False
+        # MODX2: the mark that closes this model's thought (call_format.thought_end), read from its template by Mind.warm;
+        # a reply that begins with it closes an empty thought, and the reply is what follows it (_after_thought).
+        self.thought_end: str | None = None
         self._process: subprocess.Popen | None = None
         self._placement: list[str] = []  # where this run's server keeps the projector (projector_placement)
         self._ready = threading.Event()
@@ -323,6 +356,9 @@ class LlmServer:
         # state a vision question sets aside (BAXY_VISION_SLOT_DIR, the same folder).
         self.slot_dir = _slot_dir()
         self._settings: list[str] = []  # the server's arguments but its address, set by start (part of the prefix key)
+        # VELX1: and the same with the output matrix where its line puts it, set by start too: the prefix's key.
+        self._keyed_settings: list[str] | None = None
+        self.output_on_card = False  # VELX1: whether start kept the output matrix on the card (_output_to_card)
         # Al máximo, palancas 2 y 5 (early.py): the text the last prefill left in the slot, while no other call of this
         # mind has used the slot since; None otherwise. A prefill of that same text is not sent again: with the slot
         # already holding all of it, a hybrid model must go back to a checkpoint to read its last token again.
@@ -392,6 +428,64 @@ class LlmServer:
         said = os.environ.get(CARD_INTEGRATED_TEST_VARIABLE, "").strip()
         return said == "1" if said else device_integrated(self.server)
 
+    def _card_room(self) -> int | None:
+        """VELX2: the memory of the card the listing chose (chosen_device) that no process holds now, as Windows counts it
+        (card_room_mb); None on an integrated GPU or when unread. A test that says the free memory says this too
+        (CARD_ROOM_TEST_VARIABLE), or it is not known, as before VELX2."""
+        said = os.environ.get(CARD_ROOM_TEST_VARIABLE, "").strip()
+        if said.isdigit():
+            return int(said)
+        if os.environ.get(CARD_FREE_TEST_VARIABLE, "").strip():
+            return None
+        device = chosen_device(_LISTED_DEVICES.get(self.server, []))
+        if device is None or device.integrated or not device.description:
+            return None
+        return card_room_mb(device.description)
+
+    def _room_free(self, free: int | None, room: int | None) -> int | None:
+        """VELX2: the free memory a start fits the cells and the profile to. What the listing says (CUDA's on Windows is the
+        budget the OS gives that process less its own use: blind to what every other process holds, and on a GTX 1650 of
+        4 GB 3,292 MiB where 3,900 are there) is never more than the card's memory no process holds (``room``), so a desktop
+        on the same card counts. The factory's model keeps the listing's figure below that: its profile and cells on every
+        card were chosen and measured with it (VRAM4B, VRAM4D), and they are its prefix. A model whose own header gives
+        another estimate (MOD5, model_delta_mib) fits what the card has: on that GTX 1650, Llama-3.2-3B and Granite-4.2-3B
+        were refused at 32,768 cells and ran alone in 3,777 and 3,589 MiB (C1650Y §20)."""
+        if free is None or room is None:
+            return free
+        return room if model_delta_mib(CONTEXT, self.backend, self.shape) != 0 else min(free, room)
+
+    def _held_on_card(self) -> int | None:
+        """VELX2: the card's own memory this run's server holds, MiB (gpu_dedicated_mb); None when unread. A test says it
+        here (CARD_HELD_TEST_VARIABLE)."""
+        said = os.environ.get(CARD_HELD_TEST_VARIABLE, "").strip()
+        if said.isdigit():
+            return int(said)
+        if self._process is None or os.environ.get(CARD_FREE_TEST_VARIABLE, "").strip():
+            return None
+        return gpu_dedicated_mb(self._process.pid)
+
+    def _spilled(self) -> bool:
+        """VELX2: whether the server, once up, holds on the card less than its estimate by more than CARD_SPILL_MIB: what
+        NVIDIA's driver on Windows did not fit went to the PC's memory in silence («CUDA Sysmem Fallback Policy», see
+        CARD_FIXED_MIB). Only on CUDA, where the estimate was measured against what Windows counts for the process, on a
+        dedicated card whose memory start read (card_room) and with the projector off it. Told
+        to the App the same way as a card short at start (card_short): a server that holds all of it on the card is not
+        short, whatever the estimate said before it ran; one that does not is, with what it holds."""
+        if (self.backend != "cuda" or self.remote or not self._checks_card or self.card_room is None
+                or "--mmproj-offload" in self._placement):
+            return False
+        held = self._held_on_card()
+        if held is None:
+            return False
+        need = card_mib(self.context, self.backend, self.shape) + (output_mib(self.shape) if self.output_on_card else 0)
+        if held >= need - CARD_SPILL_MIB:
+            self.card_short = None
+            return False
+        # What this run needs, with the output matrix where it is now: a start again with it in RAM is told its own figure.
+        self.card_short = {**(self.card_short or {}), "freeMb": self.card_room, "needMb": need + CARD_MARGIN_MIB,
+                           "context": self.context}
+        return True
+
     def _card_given(self, free: int | None) -> None:
         """VRAM5 (AUD1 F4): a context the person gave is never changed, but a start whose free video memory does not hold
         it whole says so, with the most cells that fit (fitsContext), and launches no server where not even its cells
@@ -407,15 +501,44 @@ class LlmServer:
                            "context": self.context, "given": True, **({"fitsContext": max(held)} if held else {})}
         self.card_refused = card_mib(self.context, self.backend, self.shape) > free
 
+    def _output_to_card(self, measured: tuple[int | None] | None, integrated: bool, projector_on_card: bool) -> bool:
+        """VELX1: whether this start keeps the output matrix on the card instead of in RAM (OUTPUT_ON_CPU): on CUDA, with
+        its line's placement asked (output_cpu) and not held in RAM by hand (BAXY_RENEW_OUTPUT_CPU=1), a dedicated card
+        whose free memory this start read (``measured``) and that holds these cells whole with the margin (no card_short)
+        holds the output matrix too (output_mib) beside them, and beside the projector when it goes there
+        (``projector_on_card``: what it needs with the server, vision_gpu_needs_mib): the cells and the projector are
+        placed first, as in 1.5.5, and nothing else moves. Elsewhere it stays in RAM, as in 1.5.5.
+
+        C1650Y (15-11-2026, GTX 1650 4 GB, i5-9300H, INFORME_C1650Y.md §3): with it in RAM each written token reads its
+        497 MiB from the PC's memory, 30.2 → 50.5 ms; uso-51 (INFORME_51.md) put it there on every CUDA card for 24k more
+        cells inside 4 GB, and a card of 6 GB or more paid it with room to spare. Without source: own measurement."""
+        if (self.backend != "cuda" or not self.output_cpu or not self._checks_card or self.remote or integrated
+                or os.environ.get("BAXY_RENEW_OUTPUT_CPU", "").strip() == "1"):
+            return False
+        if measured is None or measured[0] is None or self.card_short is not None or self.card_refused:
+            return False
+        held = vision_gpu_needs_mib() if projector_on_card else card_mib(self.context, self.backend, self.shape) + CARD_MARGIN_MIB
+        # VELX2: against the card's memory no process holds when it was read (card_room), not the listing's budget: on a
+        # GTX 1650 the factory's Esencial and its output matrix take 3,493 MiB alone, 30.4 tokens/s against 18.9 with it
+        # in RAM (C1650Y §16, M0), past the 3,292 the listing says and inside the 3,900 there.
+        room = self.card_room if self.card_room is not None else measured[0]
+        return held + output_mib(self.shape) <= room
+
     def start(self) -> None:
         vision = _vision_args()
         measured: tuple[int | None] | None = None
+        integrated = False
         if self._checks_card and not self._fits_card and not self.remote:
             free = self._card_free()
             total = self._card_total()
             free = free if free is not None and free > 0 and (total is None or free <= total) else None
             integrated = free is not None and self._card_integrated()
             free = integrated_room(free) if integrated else free
+            self.card_room = None if integrated else self._card_room()
+            free = free if integrated else self._room_free(free, self.card_room)
+            if (self.card_room is not None and free is not None and free < self.card_room
+                    and card_mib(self.context, self.backend, self.shape) + CARD_MARGIN_MIB > free):
+                free = self.card_room  # VELX2: the budget fell below what the card has (see the automatic context's)
             measured = (free,)
             self._card_given(free)
             if self.card_short is not None and integrated:
@@ -433,6 +556,9 @@ class LlmServer:
             if integrated:
                 free = integrated_room(free)
                 total = None if free is None else free + CARD_DESKTOP_MIB
+            else:
+                self.card_room = self._card_room()
+                free = self._room_free(free, self.card_room)
             short = card_short(total, self.context, needs[0] if needs else None, self.backend, self.shape) if free is not None else None
             if short is not None:
                 self.card_memory = {"totalMb": total, "short": short}
@@ -442,6 +568,13 @@ class LlmServer:
             kept = context_kept()
             if kept is not None and kept in needs and short is not False:
                 needs = [kept]
+            # VELX2: the listing's budget falls when other processes fill the card (C1650Y, GTX 1650: 2,963 and 2,763
+            # listed with 400 and 600 MiB held by another process, where 3,500 and 3,300 are there, and the factory's
+            # Esencial with its output matrix in RAM ran whole in both, 17.3 tokens/s): where it holds no profile whole, the
+            # card's memory decides, so a start neither refuses nor calls short what fits.
+            if (self.card_room is not None and free is not None and free < self.card_room
+                    and not fit_profiles(free, self.context, needs, self.backend, self.shape)[1]):
+                free = self.card_room
             # ARR4 (REVX1 A3-2; the leader, 15-11: where 1.5.4 started, with the margin or without it, 1.5.5 starts the
             # same): the person's own profile goes alone, as in 1.5.4, unless alone it launches no server (theirs_alone).
             if context_theirs():
@@ -465,7 +598,11 @@ class LlmServer:
                 # give the rest from the PC's memory and the prefix would be read at tens of tokens a second for half an
                 # hour (INFORME_VRAM4.md). No server is launched: the start fails now, with what it found.
                 self.card_refused = card_mib(self.context, self.backend, self.shape) > measured[0]
-        self._settings = [
+        # VELX1: the cells are chosen above with the output matrix in RAM, as their line was measured, and the projector
+        # is placed as before; the output matrix goes on the card only with room for it beside both (_output_to_card).
+        placement = [] if self.remote or self.card_refused else projector_placement(self.server, self.backend, measured)
+        self.output_on_card = self._output_to_card(measured, integrated, "--mmproj-offload" in placement)
+        common = [
             "-ngl", self.gpu_layers, "-c", str(self.context), *slots(self.backend), *read_batch(self.backend),
             "-fa", self.flash,
             "-ctk", self.kv[0], "-ctv", self.kv[1], "--jinja", "--reasoning", "off", "--reasoning-budget", "0",
@@ -483,7 +620,15 @@ class LlmServer:
             # (every 512 tokens cost ~46 ms per decision and 55 MiB of VRAM, decision2 d6 vs d6b, 2026-10-15). Watch
             # «erasing old context checkpoint» with n_tokens ≈ the prefix in llama-server.log: it should stay at 0.
             "-cram", "0", "-ctxcp", "10",
-        ] + (["-ot", OUTPUT_ON_CPU] if self.output_cpu else []) + vision +["--slot-save-path", str(self.slot_dir)] + self.extra_args
+        ]
+        rest = vision + ["--slot-save-path", str(self.slot_dir)] + self.extra_args
+        in_ram = ["-ot", OUTPUT_ON_CPU] if self.output_cpu else []
+        self._settings = common + ([] if self.output_on_card else in_ram) + rest
+        # The prefix's key (prefix_key) is of the settings with the output matrix where its line puts it: where it is
+        # changes no cell of the slot's state (the token embedding is read in RAM either way, and the output matrix only
+        # turns the last layer into the token's probabilities), so a card whose free memory moves around the line keeps
+        # the prefix it saved, and a start that keeps it in RAM keeps 1.5.5's key.
+        self._keyed_settings = common + in_ram + rest
         if self.remote:
             # Only the kept prefix's facts are written here (restore_prefix): its state is on the server's disk.
             self.slot_dir.mkdir(parents=True, exist_ok=True)
@@ -496,7 +641,7 @@ class LlmServer:
         if self.card_refused:
             self._failure = "the card's free video memory does not hold the model's server"
             return
-        self._launch(projector_placement(self.server, self.backend, measured))
+        self._launch(placement)
         threading.Thread(target=self._wait_health, daemon=True).start()
 
     def _launch(self, placement: list[str]) -> None:
@@ -535,8 +680,13 @@ class LlmServer:
             if self._process is not None and self._process.poll() is not None:
                 # Uso-125: the VRAM counted free went to something else, or the driver cannot run the projector: a
                 # slower vision, not a BAXY that does not start.
-                if self._placement == ["--mmproj-offload"]:
-                    self._launch(["--no-mmproj-offload"])
+                # VELX1: and the output matrix back in RAM with it, in the same second start, with the settings its line
+                # was measured with: the start they had before VELX1.
+                if self._placement == ["--mmproj-offload"] or (self.output_on_card and self._keyed_settings is not None):
+                    if self.output_on_card and self._keyed_settings is not None:
+                        self.output_on_card = False
+                        self._settings = list(self._keyed_settings)
+                    self._launch(["--no-mmproj-offload"] if self._placement else [])
                     continue
                 self._failure = f"llama-server exited with {self._process.returncode}"
                 return
@@ -544,6 +694,19 @@ class LlmServer:
                 with urllib.request.urlopen(self._get("/health"), timeout=2) as reply:
                     if reply.status == 200:
                         self._failure = self._slot_missing()
+                        if (self._failure is None and self._spilled() and self.output_on_card
+                                and self._keyed_settings is not None and self._process is not None and not self._closing):
+                            # VELX2: the output matrix did not fit beside the rest after all: the start of 1.5.5, with
+                            # it in RAM, once the server that spilled is closed (its own process, by its handle), on a
+                            # port of its own unless one is pinned (the closed one's may not be free to bind at once).
+                            self._process.kill()
+                            self._process.wait(30)
+                            self.output_on_card = False
+                            self._settings = list(self._keyed_settings)
+                            if not self._closing:
+                                self.port = _pinned_port() or _free_port()
+                                self._launch(self._placement)
+                            continue
                         if self._failure is None:
                             self._ready.set()
                         return
@@ -619,7 +782,10 @@ class LlmServer:
         on a shared memory unread."""
         if self._process is None or self.remote or not self._checks_card or self._card_integrated():
             return {}
-        free = self._card_free()
+        # VELX2: the card's memory no process holds now, where it can be read: the listing's figure is the budget Windows
+        # gives the asking process, the same with the server loaded (C1650Y §16: 3,292 both ways).
+        room = self._card_room() if self.card_room is not None else None
+        free = room if room is not None else self._card_free()
         if free is None or free >= CARD_MARGIN_MIB:
             return {}
         shared = gpu_shared_mb(self._process.pid)
@@ -671,6 +837,7 @@ class LlmServer:
     def _chat(self, body: dict[str, Any], timeout: float, on_text: Callable[[str | None, bool], bool] | None,
               gives_way: bool = False) -> dict[str, Any]:
         self.wait_ready(self._within(timeout))
+        body = self._alternated(body)
         self.resident = None
         if gives_way:
             request = urllib.request.Request(
@@ -679,7 +846,7 @@ class LlmServer:
                 headers=self._headers(),
             )
             with self._open(request, timeout, self._aside) as reply:
-                return json.loads(reply.read())
+                return self._after_thought(json.loads(reply.read()))
         # Only a request someone waits for (``advanced``) lasts while the server advances, and not a call with a time of
         # its own, shorter than the request's (a notice).
         patient = self.advanced is not None and timeout > self.REQUEST_SECONDS
@@ -701,7 +868,29 @@ class LlmServer:
             headers=self._headers(),
         )
         with self._open(request, timeout, self._answer if patient else None) as reply:
-            return json.loads(reply.read())
+            return self._after_thought(json.loads(reply.read()))
+
+    def _after_thought(self, reply: dict[str, Any]) -> dict[str, Any]:
+        """MODX2: the reply with the mark that closes an empty thought taken off its beginning (``thought_end``, read from
+        this model's template), as llama.cpp's reasoning parser takes it when the prompt left a thought open; nothing else
+        of its words changes. Any other reply, the same."""
+        for choice in reply.get("choices") or []:
+            message = choice.get("message") or {}
+            content = message.get("content")
+            if isinstance(content, str) and _closes_thought(content, self.thought_end):
+                message["content"] = _past_thought(content, self.thought_end)
+        return reply
+
+    def thinking_close(self, timeout: float = 10.0) -> str | None:
+        """MODX2: the mark that closes this model's thought (call_format.thought_end), from the generation prompt its
+        template writes for one message of the person with thinking on and off (/apply-template; nothing is read into the
+        slot). None when the template does not write one so."""
+        self.wait_ready(self._within(timeout))
+        asked = [{"role": "user", "content": alternation.FIRST}]
+        on, off = (self._post("/apply-template", {"messages": asked, "add_generation_prompt": True,
+                                                  "chat_template_kwargs": {"enable_thinking": thinking}},
+                              timeout)["prompt"] for thinking in (True, False))
+        return formats.thought_end(on, off)
 
     def _waited(self) -> _Advance:
         """The watch of a turn's stream: its window (REQUEST_SECONDS) from each advance, within the request's ceiling. Not
@@ -809,7 +998,14 @@ class LlmServer:
                 on_progress(done, total)
 
         watch = _Advance(self.PREFIX_STALL_S, self.PREFIX_CEILING_S, advanced)
-        return self._stream(body, self.PREFIX_STALL_S, lambda _text, _done: True, watch)
+        return self._stream(self._alternated(body), self.PREFIX_STALL_S, lambda _text, _done: True, watch)
+
+    def _alternated(self, body: dict[str, Any]) -> dict[str, Any]:
+        """MODX2: the request's conversation as this model's template takes it (alternation.fold, when it wants the two
+        sides to alternate: ``alternate``); any other request, the same object."""
+        if not self.alternate or not isinstance(body.get("messages"), list):
+            return body
+        return {**body, "messages": alternation.fold(body["messages"])}
 
     def _open(self, request: urllib.request.Request, timeout: float, send: Callable[..., Any] | None = None) -> Any:
         """``urlopen`` of one request to the server (or ``send``'s), asked again after a 5xx (SERVER_ERROR_RETRIES), each
@@ -914,11 +1110,13 @@ class LlmServer:
                                                                self.text_calls_by_form):
                                 _tell(on_text, None, True)
                                 telling = False
-                            elif telling:
-                                telling = not _tell(on_text, content, False)
+                            elif telling and not _may_close_thought(content, self.thought_end):
+                                # MODX2: what may still be the mark that closes an empty thought is not told yet.
+                                telling = not _tell(on_text, _past_thought(content, self.thought_end), False)
                     self._within(timeout)  # the request's budget holds while the answer is written
             except (ValueError, http.client.HTTPException, ConnectionError) as error:
                 raise _StreamBroken(repr(error)) from error
+        content = _past_thought(content, self.thought_end)
         if telling:
             _tell(on_text, content, True)
         message: dict[str, Any] = {"role": "assistant", "content": content}
@@ -935,6 +1133,7 @@ class LlmServer:
         decision, for all of its rivals (complete_name); each rival rendered the whole prompt again (decisions with
         System One took 1.5-2.75 s against 1.1-1.4 s)."""
         self.wait_ready(self._within(timeout))
+        body = self._alternated(body)
         return self._post("/apply-template", {k: body[k] for k in ("messages", "tools", "chat_template_kwargs")},
                           timeout)["prompt"]
 
@@ -943,6 +1142,7 @@ class LlmServer:
         """A conversation as this model's template writes it (/apply-template), for reading its call format
         (call_format.derive; MOD3). Nothing is read into the slot."""
         self.wait_ready(self._within(timeout))
+        messages = alternation.fold(messages) if self.alternate else messages
         return self._post("/apply-template", {"messages": messages, "tools": tools,
                                               "add_generation_prompt": add_generation_prompt,
                                               "chat_template_kwargs": {"enable_thinking": False}}, timeout)["prompt"]
@@ -1005,7 +1205,8 @@ class LlmServer:
         «<tool_call>\n<function=NAME>\n»); with no format read, None (no fill)."""
         if self.call_format is None:
             return None
-        messages = [*body["messages"], {"role": "assistant", "content": self.call_format.call_start(wire)}]
+        messages = [*self._alternated(body)["messages"],
+                    {"role": "assistant", "content": self.call_format.call_start(wire)}]
         request = {**{k: v for k, v in body.items()
                       if k not in ("logit_bias", "tool_choice", "max_tokens", "logprobs", "top_logprobs")},
                    "messages": messages, "tool_choice": "required", "parallel_tool_calls": False,
@@ -1044,7 +1245,8 @@ class LlmServer:
         except (OSError, ValueError, http.client.HTTPException):
             saved = 0
         try:
-            reply = self._post("/v1/chat/completions", {**body, "id_slot": self.slot, "cache_prompt": False}, timeout)
+            reply = self._post("/v1/chat/completions",
+                               {**self._alternated(body), "id_slot": self.slot, "cache_prompt": False}, timeout)
             self._advance()
             return reply
         finally:
@@ -1096,7 +1298,8 @@ class LlmServer:
         except (OSError, ValueError, http.client.HTTPException):
             props = {}
         props = props if isinstance(props, dict) else {}
-        identity = {"settings": self._settings, "gguf": _stamp(self.gguf), "server": _stamp(self.server),
+        keyed = self._settings if self._keyed_settings is None else self._keyed_settings
+        identity = {"settings": keyed, "gguf": _stamp(self.gguf), "server": _stamp(self.server),
                     "gguf_sha256": os.environ.get("BAXY_MIND_LLM_GGUF_SHA256", "").strip(),
                     "build": str(props.get("build_info") or ""), "warm": warm}
         if self.remote:
@@ -1202,6 +1405,7 @@ class LlmServer:
         return True
 
     def close(self) -> None:
+        self._closing = True
         if self._process is not None and self._process.poll() is None:
             self._process.terminate()
             try:
@@ -1364,6 +1568,15 @@ def model_delta_mib(context: int, backend: str, shape: GgufShape | None) -> floa
     return delta if abs(delta) >= 1 else 0.0
 
 
+def output_mib(shape: GgufShape | None = None) -> int:
+    """VELX1: what the card takes more on CUDA with the output matrix on it than in RAM (OUTPUT_ON_CPU), MiB: a model that
+    ties its output to the token embedding keeps a copy of it there (gguf_shape.gpu_bytes), the measured one's without a
+    header (MEASURED_SHAPE: 498 by its header; 496 measured, INFORME_51.md and INFORME_C1650Y.md §3). None more for a
+    model with an output matrix of its own: it is on the card either way."""
+    shape = shape or MEASURED_SHAPE
+    return math.ceil((shape.token_embedding_bytes or 0) / gguf_shape.MIB) if shape.tied else 0
+
+
 def card_mib(context: int, backend: str = "cuda", shape: GgufShape | None = None) -> int:
     """The video memory the server takes at ``context`` cells of the default cache on ``backend`` (see CARD_FIXED_MIB;
     VRAM5: VULKAN_CARD_FIXED_MIB on Vulkan), with the model of ``shape`` (MOD5, model_delta_mib; the measured one's
@@ -1451,6 +1664,15 @@ CARD_FREE_TEST_VARIABLE = "BAXY_TEST_VRAM_FREE_MIB"
 CARD_TOTAL_TEST_VARIABLE = "BAXY_TEST_VRAM_TOTAL_MIB"
 # VRAM5: and here «1» for an integrated GPU (LlmServer._card_integrated), «0» for a dedicated one.
 CARD_INTEGRATED_TEST_VARIABLE = "BAXY_TEST_VRAM_INTEGRATED"
+# VELX2: and here the card's memory no process holds (LlmServer._card_room), and what the started server holds on it
+# (LlmServer._held_on_card). With the free memory said and these not, neither is known: start goes as before VELX2.
+CARD_ROOM_TEST_VARIABLE = "BAXY_TEST_VRAM_ROOM_MIB"
+CARD_HELD_TEST_VARIABLE = "BAXY_TEST_VRAM_HELD_MIB"
+# VELX2: a server holds all its estimate on the card unless it holds less by more than this (LlmServer._spilled). The
+# estimate errs high by 57-98 MiB for the models measured on a GTX 1650 (C1650Y §20) and 66-77 for the factory's (2,987-
+# 2,998 against 3,064); a buffer that went to the PC's memory is the cache, the weights or the compute buffer, hundreds of
+# MiB. Without source: own measurement.
+CARD_SPILL_MIB = 256
 # VRAM5 (AUD1 F5): an integrated GPU's memory is the PC's RAM, which Windows and the rest of BAXY use too. What they keep:
 # Windows 11's own minimum, «RAM: 4 gigabyte (GB) or greater» (Microsoft, Windows 11 specifications,
 # https://www.microsoft.com/windows/windows-11-specifications, read 2026-11-13), and all of BAXY's processes but the
@@ -1546,15 +1768,26 @@ def read_batch(backend: str) -> list[str]:
 # branch comes first). From b12236 it looks for Resizable BAR itself, card by card (ggml-org/llama.cpp#31658, merged
 # 2026-11-06): the variable goes out in the change that brings that engine, where it would still force every card.
 VULKAN_PLAIN_VIDEO_MEMORY = "GGML_VK_DISABLE_HOST_VISIBLE_VIDMEM"
+# VELX1: the packaged llama-server's CPU code is built with OpenMP (libomp.dll beside it), and ggml sets KMP_BLOCKTIME to
+# 200 ms when nobody did (ggml/src/ggml-cpu/ggml-cpu.c:3907-3920 at b11609): after each piece of CPU work its threads go
+# on spinning that long before they sleep («KMP_BLOCKTIME: Sets the time that a thread should wait, after completing the
+# execution of a parallel region, before sleeping. Default: 200 milliseconds», https://openmp.llvm.org/design/Runtimes.html,
+# read 2026-11-16). On a GPU a token has a piece of CPU work every 30-60 ms, so they never sleep and spin beside the view
+# and the mind while the card works (ggml-org/llama.cpp discussion #3210: threads at 100 % with every layer offloaded).
+# --poll does nothing in this build (only the threadpool without OpenMP reads it, ggml-cpu.c:3176-3312).
+OMP_BLOCKTIME_VARIABLE = "KMP_BLOCKTIME"
+GPU_BLOCKTIME = "0"
 
 
 def server_environment(key: str, backend: str, environ: dict[str, str] | None = None) -> dict[str, str]:
     """The environment a llama-server of BAXY starts with (LlmServer._launch, external_model.Engine): this process's,
-    and its key; on Vulkan also VULKAN_PLAIN_VIDEO_MEMORY, unless the person's environment already has it: theirs is
-    left as it is."""
+    and its key; on Vulkan also VULKAN_PLAIN_VIDEO_MEMORY, and on a GPU (VELX1) OpenMP's threads sleeping as soon as their
+    work is done (GPU_BLOCKTIME), unless the person's environment already has them: theirs is left as it is."""
     environment = {**(os.environ if environ is None else environ), "LLAMA_API_KEY": key}
     if backend == "vulkan":
         environment.setdefault(VULKAN_PLAIN_VIDEO_MEMORY, "1")
+    if backend in ("cuda", "vulkan"):
+        environment.setdefault(OMP_BLOCKTIME_VARIABLE, GPU_BLOCKTIME)
     return environment
 
 
@@ -1616,13 +1849,16 @@ class Device:
     integrated: bool = False
     # Whether its kind is known: a Vulkan device's only from ggml-vulkan's own line (CUDA lists no integrated ones).
     known: bool = True
+    # VELX2: its description as listed («NVIDIA GeForce GTX 1650»), the name Windows gives the same card (card_room_mb).
+    description: str = ""
 
 
 def listed_devices(listed: str) -> list[Device]:
     """VRAM5: every device of a --list-devices output (with its -v log), in its order."""
     kinds = {f"Vulkan{index}": uma == "1" for index, uma in _VULKAN_UMA.findall(listed)}
-    return [Device(name, int(total), int(free), kinds.get(name, False), name in kinds or not name.startswith("Vulkan"))
-            for name, _, total, free in _DEVICE_LINE.findall(listed)]
+    return [Device(name, int(total), int(free), kinds.get(name, False), name in kinds or not name.startswith("Vulkan"),
+                   description.strip())
+            for name, description, total, free in _DEVICE_LINE.findall(listed)]
 
 
 def chosen_device(devices: list[Device]) -> Device | None:
@@ -1635,7 +1871,7 @@ def chosen_device(devices: list[Device]) -> Device | None:
     if any(not device.known for device in devices):
         # and the least total too, so a card short in all is never taken for one with room (card_short)
         least = min(devices, key=lambda device: device.free)
-        return Device(least.name, min(device.total for device in devices), least.free, False, False)
+        return Device(least.name, min(device.total for device in devices), least.free, False, False, least.description)
     dedicated = [device for device in devices if not device.integrated] or devices
     return max(dedicated, key=lambda device: device.total) if dedicated else None
 

@@ -19,10 +19,14 @@ internal sealed record MemoryMutationWireResult(
     bool Changed,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool Sensitive = false);
 
+// DIAX10B (H-062): Kept (written only for a forget by name that matched nothing, with the memory on) names what is saved,
+// as an exact recall that matched nothing shows it; KeptTotal counts every saved memory, sensitive ones included.
 internal sealed record MemoryForgetWireResult(
     int Version,
     int DeletedCount,
-    bool Replayed);
+    bool Replayed,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<string>? Kept = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? KeptTotal = null);
 
 internal sealed record MemoryExportWireResult(
     int Version,

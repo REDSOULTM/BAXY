@@ -429,11 +429,12 @@ def test_the_owners_timed_example_in_one_breath(tmp_path: Path) -> None:
                                   "whenever I say your name my cat runs away, it is so funny"])
 def test_a_one_breath_phrase_that_does_not_split_cleanly_opens_the_guide_at_its_first_question(tmp_path: Path,
                                                                                                said: str) -> None:
+    # DIAX1 (the owner's F4): by this form a routine of a word; with no reading of the model, its word is asked first.
     mind, server = _guide_mind(tmp_path, [])
     asked = mind.decide(1, said)
-    first = "With a word of yours or at a time?" if "i say" in said.lower() else "¿Con una palabra tuya o a una hora?"
+    first = "What word will you say?" if "i say" in said.lower() else "¿Qué palabra vas a decir?"
     assert asked["kind"] == "conversation" and asked["reply"] == first
-    assert mind._guide.step == "kind" and server.bodies == []
+    assert mind._guide.step == "phrase" and mind._guide.kind == "word" and server.bodies == []
 
 
 @pytest.mark.parametrize("said", [
@@ -451,14 +452,20 @@ def test_other_words_are_the_models_as_always(tmp_path: Path, said: str) -> None
     assert server.bodies[0]["messages"][-1] == {"role": "user", "content": said}
 
 
-def test_after_a_question_of_baxy_the_one_breath_form_is_its_answer_and_a_closed_order_still_is_one(tmp_path: Path) -> None:
-    mind, server = _guide_mind(tmp_path, [_say("¿Qué quieres hacer?"), _say("Entendido."), _say("¿Algo más?")])
+def test_after_a_question_of_baxy_the_one_breath_form_and_a_closed_order_still_are_the_guides(tmp_path: Path) -> None:
+    # DIAX1 (the owner's F2 and F4 with a conversation before): after any «?» of BAXY («…¿Quieres algo más?») the
+    # one-breath form went to the model, which with the 1.5.5 opened the guide 3 times of 20: 7 it saved it in its memory
+    # and said «cuando digas tiempo, pausaré…» (nothing runs it), 6 it changed a setting nobody asked for
+    # (baxy_settings_set), 2 nothing. The guide only repeats it and asks «¿La guardo?»: nothing is saved without a «sí».
+    mind, server = _guide_mind(tmp_path, [_say("¿Qué quieres hacer?"), _say("¿Algo más?")])
     mind.decide(1, "hola")
-    assert mind.decide(2, "cuando te diga pantalla, apaga la izquierda")["reply"] == "Entendido."
-    assert mind._guide is None
-    mind.decide(3, "bien")
-    assert mind.decide(4, "crea una rutina")["reply"] == "¿Con una palabra tuya o a una hora?"
-    assert len(server.bodies) == 3
+    assert mind.decide(2, "cuando te diga pantalla, apaga la izquierda")["reply"] == (
+        "Cuando digas «pantalla»: «apaga la izquierda». ¿La guardo?")
+    assert mind._guide is not None and len(server.bodies) == 1
+    assert mind.decide(3, "no")["kind"] == "conversation" and mind._guide is None
+    mind.decide(4, "bien")
+    assert mind.decide(5, "crea una rutina")["reply"] == "¿Con una palabra tuya o a una hora?"
+    assert len(server.bodies) == 2
 
 
 # ---------------------------------------------------------------------------------------------------------------------

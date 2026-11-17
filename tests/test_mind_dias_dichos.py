@@ -78,7 +78,7 @@ def test_what_the_days_said_allow_runs(tmp_path: Path, monkeypatch) -> None:
             ("recuérdame mañana a las 9 que el viernes es el cumpleaños de Ana", {"at": "09:00"}),
             ("ponme una alarma a las 8", {"at": "08:00", "recurrence": "daily"}),
             ("avísame cada hora los lunes", {"inMinutes": 60, "recurrence": "hourly"}),
-            ("every Saturday at 9 remind me", {"inMinutes": 1440})):
+            ("on Saturday at 9 remind me", {"inMinutes": 1440})):
         mind, _ = _mind(tmp_path, [_call("schedule_alarms", {"action": "create", "kind": "reminder", **args})])
         assert mind.decide(1, said)["kind"] == "action", said
         assert _not_run(mind) == [], said
@@ -99,3 +99,17 @@ def test_without_the_aid_it_runs(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_AYUDAS", "none")
     mind, _ = _mind(tmp_path, [_call("schedule_alarms", {"action": "create", "at": "10:10", "recurrence": "daily"})])
     assert mind.decide(1, OWNER)["arguments"]["recurrence"] == "daily"
+
+
+def test_once_on_a_day_said_as_every_week_goes_back(tmp_path: Path, monkeypatch) -> None:
+    # DIAX20 (la 1650, 16-11): «todos los lunes a las 10» → un aviso el lunes siguiente y «cada lunes», o uno por lunes.
+    _at_friday(monkeypatch)
+    for said, at in (("quiero que todos los lunes a las 10 de la mañana digas hola", "2026-11-16T10:00"),
+                     ("cada martes a las 8 recuérdame regar", "2026-11-17T08:00"),
+                     ("los sábados a las 9 dime que salga a correr", "2026-11-14T09:00"),
+                     ("every Saturday at 9 remind me", "2026-11-14T09:00")):
+        mind, _ = _mind(tmp_path, [_call("schedule_alarms", {"action": "create", "kind": "reminder", "at": at}),
+                                   _say("¿Lo hago como rutina?")])
+        assert mind.decide(1, said)["kind"] != "action", said
+        told = _not_run(mind)
+        assert len(told) == 1 and "as every week" in told[0]["reason"] and "is a routine" in told[0]["reason"], said

@@ -1671,9 +1671,13 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         bool foreground,
         CancellationToken cancellationToken)
     {
-        // The front is asked for only when the person asked for it (app.open «foreground»).
+        // The front is asked for only when the person asked for it (app.open «foreground»). DIAX10B (H-013, vivo en la
+        // Radeon: «abre la Calculadora» with hers minimized): a minimized window reused without the front is shown behind
+        // the person's window; opening it left it minimized, out of sight, and said open.
         if (foreground)
             await RequestForegroundWithinBudgetAsync(candidate.WindowHandle, cancellationToken).ConfigureAwait(false);
+        else
+            _ = _platform.ShowMinimizedBehind(candidate.WindowHandle);
         InstalledApplicationObservation? Observe(bool requireForeground) =>
             _platform.Inventory(entry).FirstOrDefault(item =>
                 item.ProcessId == candidate.ProcessId
@@ -2001,6 +2005,10 @@ internal interface IInstalledApplicationPlatform : IOpeningFront
         FileActivation.Outcome.NotListed;
 
     void RequestForeground(long windowHandle);
+
+    // DIAX10B (H-013): a reused window that is minimized is shown at its place without the front (it stays behind the
+    // window the person has in front); nothing happens to one that is not minimized. True when it was shown.
+    bool ShowMinimizedBehind(long windowHandle) => false;
 
     // cu-v3-documento-nuevo: the application's New command (Ctrl+N) given to this window inside a burst of the foreground
     // lease (after the person's pause with no modifier down, while this window holds the front, the front handed back
@@ -2979,6 +2987,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
         Dictionary<uint, nint>? hostedFrames = null;
+        List<nint>? minimizedFrames = null;
         // Renew al máximo (rendimiento): read once, the first time a process's main window is asked for.
         Dictionary<uint, nint>? mainWindows = null;
         // The processes running the launched image's name, and who started whom: a helper they started may draw the
@@ -3031,6 +3040,21 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         // its process is what the person sees, so opening is verified there.
                         hostedFrames ??= External.VisibleControlSurface.HostedFrames();
                         usable = hostedFrames.TryGetValue(unchecked((uint)process.Id), out frame);
+                        // DIAX10B (H-013, vivo en la Radeon: «abre la Calculadora» with hers minimized opened another
+                        // one, 2 of 2). A minimized UWP app's window leaves its frame: the frame stays, minimized and
+                        // empty, and the app's CoreWindow becomes a top-level window the shell cloaks (read on this PC,
+                        // 16-11: cloak 2, no CoreWindow child in the frame). Neither counted, so the opening launched
+                        // another copy. The minimized frame that declares the application's id is the application's
+                        // when it is the only one and this process's own window is that cloaked one.
+                        if (!usable && window != 0 && IsCloaked(window))
+                        {
+                            minimizedFrames ??= External.VisibleControlSurface.MinimizedFrames(entry.AppUserModelId);
+                            if (minimizedFrames.Count == 1)
+                            {
+                                frame = minimizedFrames[0];
+                                usable = true;
+                            }
+                        }
                     }
 
                     bool hostedByTerminal = false;
@@ -3960,6 +3984,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         int length = GetWindowText(checked((nint)windowHandle), buffer, capacity);
         return length > 0 ? new string(buffer, 0, length) : string.Empty;
     }
+
+    public bool ShowMinimizedBehind(long windowHandle) =>
+        External.VisibleControlSurface.ShowBehind(checked((nint)windowHandle));
 
     public void RequestForeground(long windowHandle)
     {

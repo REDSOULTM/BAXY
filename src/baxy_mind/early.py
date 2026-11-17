@@ -109,6 +109,20 @@ def _same(pending: Any, guessed: Any) -> bool:
     return json.dumps(pending or None, sort_keys=True) == json.dumps(guessed, sort_keys=True)
 
 
+def told(message: dict[str, Any]) -> dict[str, Any]:
+    """What a turn.decide tells the mind for its turn, as the Mind attributes the sidecar sets before deciding: RUT1, the
+    person's routines (none sent is none kept); MEM8C, the memory's records (none sent, not known); ALR4, the language
+    (only when sent)."""
+    records = message.get("memoryRecords")
+    facts: dict[str, Any] = {
+        "routines": message["routines"] if isinstance(message.get("routines"), list) else [],
+        "memory_records": records if isinstance(records, int) and not isinstance(records, bool) and records >= 0
+        else None}
+    if message.get("lang") in ("es", "en"):
+        facts["lang"] = message["lang"]
+    return facts
+
+
 class Anticipation:
     """Palancas 2 and 5 on the mind's request loop (__main__): every call is made on that one thread, so an early
     decision never runs beside a request; only ``cancel`` comes from the voice's thread."""
@@ -225,7 +239,12 @@ class Anticipation:
                   # And one made without the note of the windows the words name (NAMED_NOTE).
                   else "named" if message.get("named")
                   # ALR1: or without the note of what rings now (RINGING_NOTE).
-                  else "ringing" if message.get("ringing") else None)
+                  else "ringing" if message.get("ringing")
+                  # DIAX1 (the owner's F2, 16-11): or with the routines, memory or language the request before told
+                  # (the sidecar sets them from each request, after this): «Tiempo.», said 11 s after the request that
+                  # saved its routine, was decided early without it, and the model's answer took the routine's place.
+                  else next((key for key, value in told(message).items() if json.dumps(value, sort_keys=True)
+                             != json.dumps(held["kept"].get(key), sort_keys=True)), None))
         if reason is not None:
             self._back(held, reason, reread=False)
             return None

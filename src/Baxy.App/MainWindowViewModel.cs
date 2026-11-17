@@ -259,6 +259,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 MemorySwitched = MemorySwitched,
                 MemoryOff = () => ToolProfileState.MemoryOff,
                 MemoryRecords = () => ToolProfileState.MemoryRecords,
+                Listening = () => NativeTurnLoop.ListeningOf(IsMicAvailable, IsWakeListening),
                 InProfile = ToolProfileState.InProfile,
                 ForgotEverything = () =>
                 {

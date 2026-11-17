@@ -190,6 +190,48 @@ def test_a_request_that_differs_is_decided_as_always(tmp_path: Path, monkeypatch
     assert rows[-1]["early"] == {"hit": False, "reason": change, "discarded": 1}
 
 
+TIEMPO = {"id": "r-0d41c2", "name": "descanso", "trigger": {"phrase": "descanso"}, "active": True, "steps": [],
+          "order": "quiero que detengas o sigas la película que tengo puesta"}
+
+
+@pytest.mark.parametrize("change", ["routines", "memory", "lang"])
+def test_a_request_that_tells_other_routines_memory_or_language_is_decided_with_them(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch, change: str) -> None:
+    # DIAX1 (the owner's F2, 16-11, 1.5.4): the phrase of a routine, said 11 s after it was saved, was decided early with
+    # the routines the request before had told (none: it was the one that saved it), and that decision was used: the
+    # model's media_status and a question back, where the person's own phrase runs its order (made-up phrases here).
+    mind, server = _mind(tmp_path, _replies(_say("¿Quieres que lo detenga o que siga?"),
+                                            _call("media_control", {"action": "toggle"}), _say("Listo.")), monkeypatch)
+    mind.wire_to_op = {**mind.wire_to_op, "baxy_routines": "baxy.routines", "media_control": "media.control"}
+    _before(mind)
+    mind.memory_records = 3
+    anticipation = Anticipation(mind)
+    assert anticipation.speculate(1, "Descanso.") is True
+    told = {"routines": {"routines": [TIEMPO]}, "memory": {"memoryRecords": 0}, "lang": {"lang": "en"}}[change]
+    message = {"type": "turn.decide", "id": 3, "text": "Descanso.", "lang": "es", "memoryRecords": 3, **told}
+    assert anticipation.settle("turn.decide", message, time.perf_counter()) is None
+    if change == "routines":
+        mind.routines = [TIEMPO]  # as the sidecar does after settle
+        real = anticipation.decide(3, "Descanso.", None)
+        assert real["kind"] == "action" and real["operation"] == "media.control"
+        assert server.bodies[-1]["messages"][-1] == {"role": "user", "content": TIEMPO["order"]}
+        rows = _rows(tmp_path)
+        assert [r["stage"] for r in rows[-2:]] == ["turn.routine_phrase", "turn.decide"]
+        assert rows[-1]["early"] == {"hit": False, "reason": "routines", "discarded": 1}
+
+
+def test_a_request_that_tells_the_same_routines_memory_and_language_uses_the_early_decision(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    mind, server = _mind(tmp_path, _replies(_say("Sí, Paint está abierto.")), monkeypatch)
+    _before(mind)
+    mind.routines, mind.memory_records = [TIEMPO], 3
+    anticipation = Anticipation(mind)
+    assert anticipation.speculate(1, "¿ya lo abriste?") is True
+    message = {"type": "turn.decide", "id": 3, "text": "¿ya lo abriste?", "lang": "es", "memoryRecords": 3,
+               "routines": [json.loads(json.dumps(TIEMPO))]}
+    assert anticipation.settle("turn.decide", message, time.perf_counter())["reply"] == "Sí, Paint está abierto."
+
+
 def test_nothing_is_decided_early_while_a_call_waits_or_a_heartbeat_is_open(tmp_path: Path,
                                                                            monkeypatch: pytest.MonkeyPatch) -> None:
     mind, server = _mind(tmp_path, [_call("app_open", {"appId": "Paint"})], monkeypatch)

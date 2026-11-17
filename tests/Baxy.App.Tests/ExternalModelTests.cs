@@ -42,6 +42,7 @@ public sealed class ExternalModelTests
             MindSidecarClient.PythonPathEnvironmentVariable, "BAXY_MIND_LLAMA_REMOTE",
             MindSidecarClient.TurnSecondsVariable, "BAXY_RENEW_PREFILL", "BAXY_RENEW_WAKE_WARM", "BAXY_RENEW_EARLY", "BAXY_VISION_ENDPOINT",
             ExternalModel.NoCheckVariable, ExternalModel.CeilingVariable, "BAXY_RENEW_CTX", "BAXY_MIND_LLAMA_PORT", "OLLAMA_HOST", "HTTPS_PROXY",
+            ExternalModel.MindModelVariable,
         })
         {
             Environment.SetEnvironmentVariable(name, null);
@@ -972,6 +973,8 @@ public sealed class ExternalModelTests
             port = int.Parse(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_REMOTE")!, System.Globalization.CultureInfo.InvariantCulture);
             Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_REMOTE"), Is.EqualTo(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_PORT")));
             Assert.That((bool?)model.Json()["activeLocal"], Is.EqualTo(provider == "local"));
+            // MODX1: the mind is told which model it thinks with.
+            Assert.That(Environment.GetEnvironmentVariable(ExternalModel.MindModelVariable), Is.EqualTo($"{name}|{(provider == "local" ? "ollama" : "api")}"));
             using var http = new HttpClient();
             Assert.That(await http.GetStringAsync(new Uri($"http://127.0.0.1:{port}/props")), Does.Contain(name));
             Assert.That(Environment.GetEnvironmentVariable(MindSidecarClient.TurnSecondsVariable), Is.EqualTo(provider == "local" ? "300" : "90"));
@@ -992,6 +995,7 @@ public sealed class ExternalModelTests
             Assert.That(Environment.GetEnvironmentVariable("BAXY_MIND_LLAMA_REMOTE"), Is.Null);
             Assert.That(Environment.GetEnvironmentVariable(MindSidecarClient.TurnSecondsVariable), Is.Null);
             Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_CTX"), Is.Null);
+            Assert.That(Environment.GetEnvironmentVariable(ExternalModel.MindModelVariable), Is.Null);
             Assert.That(Environment.GetEnvironmentVariable("BAXY_RENEW_EARLY"), Is.Null);
             Assert.That(Environment.GetEnvironmentVariable("BAXY_VISION_ENDPOINT"), Is.EqualTo("http://local-vision/"));
             Assert.That(MindSidecarClient.TurnRequestTimeout, Is.EqualTo(TimeSpan.FromSeconds(30)));

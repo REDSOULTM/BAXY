@@ -14,6 +14,7 @@ import difflib
 import hashlib
 import http.client
 import json
+import math
 import os
 import re
 import threading
@@ -34,6 +35,7 @@ from .protocol import whole_code_points
 from .speech_text import cardinal, cardinal_en
 from .system_one import ANSWER, ASK, OPTION_TEXT, SystemOne, short
 from . import behavior, harness_language, language_id, message_text, ring_answer, routine_fill, routine_guide, routines
+from . import alternation, model_card
 from . import call_format as formats
 from . import web_focus
 from .harness_language import t as _t
@@ -227,6 +229,25 @@ def card_profile_fact(said: object) -> str:
 # VIVO1 F8: with stubs the 4B claimed to have saved), so the model had nothing that said it is off nor what turns it on.
 # A fact of this PC, as the version is: what is off and the call that switches it on, which waits for the person's «sí»
 # by itself (OwnBrakes). Diario is the smallest profile with it (operation-labels «p»: 2, test_mente_tpv1).
+# MODX1 (dueño, 16-11-2026: «que cualquier usuario pueda conectarle cualquier modelo»; en vivo, Gemma-4-12B por API contestó
+# «Estoy utilizando el modelo de serie por defecto de BAXY» a «¿Qué modelo estás usando?»): a model the person chose in place of
+# BAXY's own is told which one it is, as a fact of this PC (the card's profile is said so too). The App says it when it starts
+# the mind on it (BAXY_MIND_MODEL_IN_USE, «model|ollama», «model|api», or «file|gguf» for the person's own GGUF in BAXY's engine);
+# with BAXY's own model nothing is said and its prefix
+# is the same as before.
+MODEL_IN_USE_FACT = ("\nAhora piensas con el modelo {model} ({where}), que la persona eligió en lugar del modelo de serie de "
+                     "BAXY. Si te preguntan qué modelo eres o con cuál piensas, es ese.")
+MODEL_IN_USE_WHERE = {"ollama": "en Ollama, en este PC", "api": "por API", "gguf": "en el motor de BAXY, en este PC"}
+
+
+def model_in_use_fact(environ: dict[str, str] | None = None) -> str:
+    """MODEL_IN_USE_FACT with the model the App started the mind on, in the language in use; nothing when it is BAXY's own."""
+    model, _, where = (os.environ if environ is None else environ).get("BAXY_MIND_MODEL_IN_USE", "").rpartition("|")
+    if not model.strip() or where not in MODEL_IN_USE_WHERE:
+        return ""
+    return MODEL_IN_USE_FACT.format(model=model.strip(), where=MODEL_IN_USE_WHERE[where])
+
+
 MEMORY_OFF_FACT = ("\nTu memoria (recordar, guardar y olvidar datos de la persona) está fuera del perfil de herramientas de "
                    "este PC: no puedes guardar ni leer nada. La tiene el perfil Diario; si la persona quiere que recuerdes "
                    "algo o que enciendas la memoria, llama {call}: le pide su sí por sí sola, y desde su próximo pedido "
@@ -814,10 +835,92 @@ def _names_left_out(text: str, arguments: Any) -> list[str]:
         return []
     asked = {_fold(word) for word in _WORDS.findall(query)}
     said = {_fold(word) for word in _WORDS.findall(text)}
-    names = [word for sentence in _SENTENCES.split(text) for word in _WORDS.findall(sentence)[1:] if word[0].isupper()]
+    # DIAX6: a search engine of BAXY's table named as where to search («búscalo en Google») is no name to search for:
+    # held as one, its next sent the model to web_search «Google» and it searched the web again (H-032, «said_engine»).
+    names = [word for sentence in _SENTENCES.split(text) for word in _WORDS.findall(sentence)[1:]
+             if word[0].isupper() and _fold(word) not in SEARCH_ENGINES]
     if not names or {_fold(name) for name in names} & asked or {word for word in said & asked if len(word) >= 4}:
         return []
     return list(dict.fromkeys(names))
+
+
+# Aid «said_engine», DIAX6 (CASX1 H-032, «búscame en Google un top 3 de películas de terror» and then «búscalo en
+# Google»: web_search 6 of 9 on the 1.5.5 and the 1.5.4, the owner asked twice; browser_navigate's description already
+# says «búscalo en google» is opening the results page there, and web_search's that opening a results page is not its
+# own): the person names a search engine as where to search and the call is web_search, which asks its own source
+# (answeredBy) and opens nothing. Only the form is compared, as «query_left_name» does: a word of the person's words of
+# this turn is the name of an engine of BAXY's table (search_addresses.v1.json, the label before its domain: google,
+# bing, duckduckgo…) and the search is of the web. Held once in a turn and the result says so, as data, with the address
+# of that engine's results page for the same query, built from the table (never an address of the model's); the same
+# call again runs as written: the model decides. How the next is worded decided whether the model called or only said it
+# would (H-032 on the model of the series): «<call> opens … for that query» answered «Abro Google con esa búsqueda en tu
+# navegador.» with no call 3 of 10 (bench); replayed on the turn that did so, 10 seeds: «call <call> now: …» called 9
+# of 10 (p(call) 0.45), «call <call> now, with no words before it: …, and its result says whether it arrived» 10 of 10
+# (0.76). On the prefix with DIAX6's other changes that last one still answered in words 3 of 50 (bench) and 2 of 20
+# (single turn, replayed); without «theirWords» and «reason», the next alone saying why: 20 of 20, p(call) 0.84-0.91.
+ENGINE_SAID_REFUSED = "no se ejecutó: la persona nombró dónde buscar"
+
+
+def _search_engines() -> dict[str, tuple[str, str, str]]:
+    """The engines of BAXY's table by the label before their domain (google.com → google, search.brave.com → brave):
+    their host, results path and the parameter that carries what is searched."""
+    try:
+        data = json.loads((_DATA / "search_addresses.v1.json").read_bytes())
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return {engine["host"].split(".")[-2]: (engine["host"], (engine.get("paths") or ["/"])[0] or "/", engine["param"])
+            for engine in data.get("engines") or [] if engine.get("host") and engine.get("param")}
+
+
+SEARCH_ENGINES = _search_engines()
+
+
+# DIAX6B (REVX2 D6-1, D6-2): an engine or a store their words name is where only when the model did not take it as what
+# to search for. «busca quién fundó Google», «¿quién hizo de Chandler Bing?», «busca Epic Mickey en la tienda»: the query
+# or title the model wrote carries the name as many times as their words do (the reviewer's 13 probes, 13 of 13), and
+# «búscame en Google un top 3…», «busca Montaña Rota en Epic» leave it out (DIAX6's bench, 316 holds of 316); «busca en
+# Google qué es Google Gemini» names it once more than its query «qué es Google Gemini»: also where. A name the model
+# shortened is the same name: in «búscame en la tienda el juego Epic Lluvia de Cobre» it wrote «Lluvia de Cobre», as the
+# 1.5.5 does, and «Epic» is glued to a capitalized word of that title (blind held-out, 20 launchers opened of 70 without
+# this; 0 of the other 582 holds of DIAX6 and DIAX6B change). Only the form is compared, word for word and by the capital
+# letter that query_left_name already reads as a name; the model's call says which it took.
+def _named_beyond(label: str, said: str, written: str) -> bool:
+    """Whether the person's words name «label» as a whole word more times than what the model wrote for the call carries
+    it, and more times than it sits next to a capitalized word of what the model wrote."""
+    said_words = re.findall(r"[^\W_]+", said)
+    mine = _words(written).split()
+    named = [n for n, word in enumerate(said_words) if _fold(word) == label]
+    glued = [n for n in named if any(0 <= k < len(said_words) and said_words[k][0].isupper()
+                                     and _fold(said_words[k]) != label and _fold(said_words[k]) in mine
+                                     for k in (n - 1, n + 1))]
+    return len(named) > max(mine.count(label), len(glued))
+
+
+def _engine_said(text: str, query: str = "") -> str | None:
+    """The engine of BAXY's table the person's words name as a whole word more times than the query carries it (the
+    first, by its label), or None."""
+    return next((label for label in SEARCH_ENGINES if _named_beyond(label, text, query)), None)
+
+
+# DIAX6C (D6-5, INT42 SD6-2): the held result stayed in the conversation after its turn, and with it «call it again
+# only if they want you to find the answer yourself»; two turns later «busca cuánto dura» searched and then opened a
+# results page to read it 5 of 20 (the 1.5.5 0 of 9); with T1 alike (Google opened and read 20 of 20) and the result gone
+# from the conversation, 0 of 20. It is dropped when the next turn starts (Mind._drop_engine_held),
+# as a result already acted on (Anthropic, «Context editing», clearing old tool results; Shi et al. 2023, «Large Language
+# Models Can Be Easily Distracted by Irrelevant Context», arXiv:2302.00093). Told by its own opening, which only it has.
+ENGINE_HELD_START = '{"status": "not_run", "error": "engine_named"'
+
+
+def engine_said_not_run(wire: str, engine: str, query: str, open_wire: str) -> str:
+    """The result of a web_search held by «said_engine»: the engine they named and its results page for the query."""
+    host, path, param = SEARCH_ENGINES[engine]
+    address = f"https://{host}{path}?{urllib.parse.urlencode({param: query})}"
+    call = json.dumps({"url": address}, ensure_ascii=False, separators=(",", ":"))
+    return json.dumps({"status": "not_run", "error": "engine_named", "engineNamed": engine,
+                       "next": f"call {open_wire} {call} now: their words name {engine} as where to search, and that "
+                               f"call opens {engine}'s results page for the query in their browser; {wire} asks its "
+                               "own source and opens no window, so call it again only if they want you to find the "
+                               "answer yourself"}, ensure_ascii=False)
 
 
 # Aid «exit_unnamed» (R4A, c129-R4: after «No pude cerrar Velmora», «ya, una vez más» went to baxy_exit 9 of 10 seeds with
@@ -868,29 +971,95 @@ def _names_baxy(text: str) -> bool:
 # BAXY can); naming what to talk about («an application, a window…; say nothing of the computer») 3 and «No cerré
 # Clevanto porque no lo encontré» twice; «go on as if this call had never been made» 11; «say nothing of turning the
 # computer off: they did not ask for it» 1, the rest «No apagué el PC, porque no pediste que se apague» and a question.
+# DIAX5 (CASX1, Notion H-049 «apágalo y vuelve a prenderlo» with Spotify in front, 1.5.5 and 1.5.4 alike): held, the 4B
+# called the same shutdown again 6 of 6 and it ran, as «…y vuelve a prenderlo» read to it as the computer; and once the
+# description says that off and on again is a restart, a restart nobody named is the same unasked loss of their unsaved
+# work. So what ends the session (POWER_ENDS, RiskPolicy.EndsTheSession: not lock nor sleep) is held, and in the turn it
+# does not run at all while the form does not change: called again, it is held again and the model answers in words
+# (_close_repeat), as the person can name the computer in their next words, or answer BAXY's question that names it
+# (_exchange). The result carries the window in front when they spoke (turn «front», as FRONT_NOT_ASKED tells it), the
+# datum the model lacked to ask «¿el PC o Spotify?» (AskBench, arXiv 2602.11199: ask only for what is missing).
+# A name of the computer the ear spelled one letter off («conputador») is still that name (_power_named).
 POWER_UNNAMED_REFUSED = "no se ejecutó"
 POWER_NAMES = ("pc", "computadora", "computador", "ordenador", "equipo", "compu", "maquina", "laptop", "portatil",
                "notebook", "sesion", "computer", "session", "windows")
+POWER_ENDS = ("shutdown", "restart", "signout")
 
 
-def power_unnamed_not_run(wire: str, words: str, before: str) -> str:
-    """The result of a system_power held by «power_unnamed», with the person's words, as said."""
+def power_unnamed_not_run(wire: str, words: str, before: str, front: str = "") -> str:
+    """The result of a system_power held by «power_unnamed», with the person's words, as said, and the window in front
+    when they spoke."""
     held = {"status": "not_run", "error": "computer_not_named", "computerStillOn": True,
             "reason": f"nothing ran: {wire} shuts down, restarts or signs out of the whole computer, and the person's "
                       "words in this turn and their turn before name no computer or session",
             "theirWords": words}
     if before:
         held["theirWordsBefore"] = before
+    if front:
+        held["windowInFront"] = front
     held["next"] = (f"their words name no computer: do what they ask of what they named, with its tool, and say nothing "
-                    f"of turning the computer off: they did not ask for it. Call {wire} again only if they asked "
-                    f"to turn off the computer itself")
+                    f"of turning the computer off: they did not ask for it. In this turn {wire} does not run while "
+                    f"their words name no computer; if you cannot tell what they want turned off or restarted, ask "
+                    f"them in a short question")
     return json.dumps(held, ensure_ascii=False)
+
+
+# The same system_power called again in that turn: held again, and the model answers in words (NO_MORE_CALLS). As POW1
+# found for the first hold, what to say is said: told only to ask, the 4B answered «No, no puedo apagar el PC porque no me
+# diste una orden clara» (a blind judge: false, BAXY can) in 5 of 25 samples of DIAX5's bench.
+POWER_UNNAMED_AGAIN = json.dumps({"status": "not_run", "error": "computer_not_named", "computerStillOn": True,
+                                  "reason": "nothing ran again: the person's words still name no computer or session",
+                                  "next": "answer only with a short question of what they want turned off or "
+                                          "restarted; BAXY can turn the computer off or restart it once they name it, "
+                                          "so never say it cannot, and say nothing of this call"})
+
+
+# Aid «power_on_again», DIAX5 (CASX1: «apaga el computador y vuelve a prenderlo» → system_power shutdown 3 of 3, never
+# restart; DIAX5's held-out «apaga el pc y vuelve a encenderlo», «apaga la laptop y la vuelves a prender» 10 of 10: the
+# 4B writes the action of the first verb, and the PC would stay off). A sentence in the description (action restart for
+# off and on again) gave restart 2 of 10 on two of those phrases and moved other rows (HO-08 to system_process_list 5
+# of 5), as the prefix does. So before a shutdown runs, the model is asked apart, in a closed question of its own (as
+# INT36G's SAME_APP_*), which of the two the person's words ask for the computer; «reiniciar» holds it once with what
+# restart does, and the same call again runs as written: the model decides. Asked as yes or no («¿piden que vuelva a
+# encenderse?») the 4B said yes to 4 of 6 phrases of mine that ask it and to «apaga el computador y vuelve a prenderlo»
+# none of 5 times in the bench; asked to choose a word for each (as ALR9 asks «parar» or «posponer»), 6 of 6, and none of
+# 8 that do not (w\sonda_reinicio.py; DIAX5's held-out left out of it).
+POWER_AGAIN_SYSTEM = ("Lees lo que una persona le pidió a un asistente de voz de Windows sobre el equipo. Contesta con "
+                      "una palabra: apagar o reiniciar.")
+POWER_AGAIN_NOTE = ("{before}La persona dijo: «{said}»\n¿Qué pide para el equipo? apagar = que se apague y quede "
+                    "apagado; reiniciar = que se apague y vuelva a encenderse.")
+POWER_AGAIN_GRAMMAR = 'root ::= "apagar" | "reiniciar"'
+POWER_AGAIN_BEFORE = "Antes la persona dijo: «{before}»\nBAXY le contestó: «{baxy}»\n"
+POWER_AGAIN_REFUSED = "no se ejecutó: apagaba el equipo y pedían volver a encenderlo"
+
+
+def power_on_again_not_run(wire: str) -> str:
+    """The result of a system_power shutdown held by «power_on_again»: what restart does."""
+    return json.dumps({"status": "not_run", "error": "turn_on_again_asked", "computerStillOn": True,
+                       "reason": "nothing ran: their words ask for the computer to come back on after it turns off, "
+                                 "and action shutdown leaves it off",
+                       "next": f"action restart turns the computer off and on again: call {wire} "
+                               "{\"action\":\"restart\"}. If they want it left off, the same shutdown again runs"},
+                      ensure_ascii=False)
 
 
 def _names_power(text: str) -> bool:
     """Whether words name the computer or the session anywhere: a word that begins with one of POWER_NAMES («compus»,
-    «pcs»). Not alike in spelling, as _alike reads four letters: «completito» was taken for «compu» (PA-03)."""
-    return any(word.startswith(name) for word in _words(text).split() for name in POWER_NAMES)
+    «pcs»), or, for a name of six letters or more, one the ear spelled a letter off («conputador»: DIAX5). Not alike as
+    _alike reads it, four letters alike: «completito» was taken for «compu» (PA-03)."""
+    return any(word.startswith(name) or (len(word) >= len(name) >= 6 and _one_letter_off(word[:len(name) + 1], name))
+               for word in _words(text).split() for name in POWER_NAMES)
+
+
+def _one_letter_off(word: str, name: str) -> bool:
+    """Whether ``word`` is ``name`` with one letter changed, added or left out (Damerau's single-error spelling, «A
+    technique for computer detection and correction of spelling errors», CACM 1964: most misspellings are one)."""
+    if abs(len(word) - len(name)) > 1:
+        return False
+    i = 0
+    while i < min(len(word), len(name)) and word[i] == name[i]:
+        i += 1
+    return word[i + 1:] == name[i + 1:] or word[i:] == name[i + 1:] or word[i + 1:] == name[i:]
 
 
 # Aid «person_folder_sentence» (lever 8): one sentence of fact at the end of a tool's description
@@ -1311,6 +1480,17 @@ def _memory_off(observation: str) -> bool:
     return isinstance(facts, dict) and facts.get("error") == "memory_disabled"
 
 
+def _status_fields(observation: str) -> str:
+    """RAN_LAST: a result's own state fields (its observed «…Status» keys) as it gave them, or nothing."""
+    try:
+        facts = json.loads(observation)
+    except json.JSONDecodeError:
+        return ""
+    observed = facts.get("observed") if isinstance(facts, dict) and isinstance(facts.get("observed"), dict) else {}
+    states = {key: value for key, value in observed.items() if key.lower().endswith("status")}
+    return json.dumps(states, ensure_ascii=False) if states else ""
+
+
 def _has_next(observation: str) -> bool:
     """Whether a result carries a next of its own (in observed or beside it), whatever it says."""
     try:
@@ -1468,6 +1648,14 @@ RING_READ_NOTE = ("Suena ahora: {rings}\n{asked}La persona dijo: «{said}»\n¿Q
 RING_READ_ASKED = "El asistente había preguntado: «{asked}»\n"
 RING_READ_KINDS = {"parar": "stop", "posponer": "snooze", "seguir": "keep", "otra": "other"}
 RING_READ_GRAMMAR = "root ::= " + " | ".join(f'"{label}"' for label in RING_READ_KINDS)
+# DIAX13: whether words that stop the routine being made ask for something else too (Mind._asks_more).
+MORE_READ_SYSTEM = ("Lees lo que una persona le dijo a un asistente de voz mientras creaba con él una rutina, y que deja "
+                    "esa rutina sin crear. Contesta con una palabra: si además pide otra cosa.")
+MORE_READ_NOTE = ("La persona dijo: «{said}»\nAdemás de dejar la rutina, ¿pide otra cosa? otra = sí: una orden, una "
+                  "pregunta o algo que hacer o contestar, aparte de la rutina; nada = sólo deja la rutina (cancela, "
+                  "olvídalo, déjalo, ya no quiero, mejor no).")
+MORE_READ_KINDS = ("otra", "nada")
+MORE_READ_GRAMMAR = "root ::= " + " | ".join(f'"{label}"' for label in MORE_READ_KINDS)
 RING_NOT_ASKED = json.dumps({"status": "rejected", "error": "not_asked_of_what_rings",
                              "reason": "their words do not ask to stop or snooze what rings: nothing was stopped or "
                                        "snoozed and it still rings",
@@ -1525,6 +1713,20 @@ CHOICE_ANSWER = "si te deja la elección a ti, elige tú, hazlo y di qué elegis
 OFFERED_NOTE = (f"[Nota interna, no la escribió la persona: tu último mensaje terminó en una pregunta. Si lo que sigue "
                 f"la contesta, sigue con eso; si pide algo completo, hazlo; si le falta un dato, pregúntalo; "
                 f"{CHOICE_ANSWER}.]")
+# H-020 (DIAX12 F3, DIAX14): «pon <canción> en YouTube» → the video plays, BAXY asks «¿Te gustaría que busque otra
+# canción?» → «para la canción»: read beside that note, «para» answered the question and the video was played again 15 of
+# 30 (6 bodies of the mind × 5 seeds, Qwen3.5-4B; 9 of 20 in DIAX12), once with «Lo he pausado» while it played; without
+# the note it paused 30 of 30, but the note is what the batteries above need. Other wordings measured on the same bodies
+# lost more (with «puede contestarla o ser un pedido nuevo que no tiene que ver»: 30 of 30 played again; quoting the
+# question: 10 of 30). What the question followed is told beside it instead: the call that ran last in its turn and the
+# state fields of its result (the receipt's own «…Status» keys), as the result gave them: 0 of 30 played again, every one
+# a media_control pause or stop. Only a result that gives such a state: told after any call that completed (the bare
+# name, «Lo último que corrió: app_close.»), a «Sí.» to «¿Necesitas algo más?» after closing an app started a new
+# conversation 6 of 6 where the note alone asked what else (CIE4's sequence and its held-out, DIAX14). Dialogue state tracking keeps the system's last act and the state it left as slots read
+# with the user's next turn (Schema-Guided Dialogue, arXiv 1909.05855, §3; MultiWOZ, arXiv 1810.00278). A question with no
+# call in its turn (the greetings and open questions the note was measured on) reads the note byte for byte as before.
+OFFERED_HEAD = "tu último mensaje terminó en una pregunta."
+RAN_LAST = " Lo último que corrió: {call} ({states})."
 # MOD3: the words-only answer was a call written as text (Mind._next): told so, once, where the model reads.
 TEXT_CALL_NOTE = ("[Nota interna, no la escribió la persona: tu respuesta fue una llamada a una herramienta escrita como "
                   "texto; no se ejecutó y la persona no la oyó. Ahora no puedes usar herramientas: respóndele con "
@@ -1546,6 +1748,59 @@ SAID_AGAIN_NOTE = ("[Nota interna, no la escribió la persona: ibas a responder 
 DATED_NOTE = ("[Nota interna, no la escribió la persona: pide un dato concreto (de un año, una curiosidad o algo con "
               "nombre propio), y esos datos de memoria se confunden. Búscalo con web_search y responde con lo que "
               "encuentres.]")
+# Aid «unsure_fact» (DIAX3, F1 of the owner's use 2026-11-16: «quién es X?» of a cartoon → a character, a series and its
+# author made up, with no call, twice; its doubt read 1.0 because it reads only whether to call, p(call) 0.000). The
+# decision's own token probabilities, asked for its doubt (no other pass), tell what the model chose among others nearly
+# as likely: a figure, or a name (a capital past the start of a sentence), written with p < UNSURE_FACT_P is a datum it
+# did not know. Such low-confidence concepts carry the hallucinations; validating them by retrieval cut GPT-3.5's from
+# 47.5 % to 14.5 % (Varshney et al. 2023, «A Stitch in Time Saves Nine», arXiv 2307.03987), and token probability is
+# SelfCheckGPT's grey-box baseline (Manakul et al. 2023, arXiv 2303.08896). So an answer in words with such a datum, in a
+# turn that read nothing, is not said: the model writes a web_search itself (_look_up_first, as «dated_search») and
+# answers from what it brings. Only the shape of the words is read, never what was asked. Told those words in a note
+# instead, the model wrote another made-up answer 5 times of 5 and searched none (INFORME_DIAX3.md, F1). The named_fact
+# aid for these answers waits for System One, which the App does not start (MindRuntimeDiscovery): it never ran.
+UNSURE_FACT_P = 0.2
+UNSURE_FACT_WORDS = 4
+_OPENS_SENTENCE = re.compile(r"(?:^|[.!?¡¿:;\n\"«(*])\s*$")
+
+
+def unsure_fact_words(reply: dict[str, Any] | None) -> list[str]:
+    """Aid «unsure_fact»: the words of a reply in words that hold a token written with p < UNSURE_FACT_P and shaped as a
+    datum (a figure, or a capital past the start of a sentence), whole and once each, at most UNSURE_FACT_WORDS; none
+    without the reply's token probabilities."""
+    try:
+        content = reply["choices"][0]["logprobs"]["content"]  # type: ignore[index]
+    except (KeyError, IndexError, TypeError):
+        return []
+    text, spots = "", []
+    for token in content or []:
+        piece = str(token.get("token", ""))
+        word = piece.strip()
+        logprob = token.get("logprob")
+        if word and logprob is not None and math.exp(logprob) < UNSURE_FACT_P:
+            begins = piece[:1].isspace() or not text or not text[-1].isalnum()
+            before = text.rstrip() if piece[:1].isspace() else text
+            if any(ch.isdigit() for ch in word) or (begins and word[0].isupper() and not _OPENS_SENTENCE.search(before)):
+                spots.append(len(text) + len(piece) - len(piece.lstrip()))
+        text += piece
+    words: list[str] = []
+    for at in spots:
+        found = next((m.group(0) for m in re.finditer(r"[^\W_][\w'-]*", text) if m.start() <= at < m.end()), "")
+        if found and found not in words:
+            words.append(found)
+    return words[:UNSURE_FACT_WORDS]
+
+
+def _named_back(text: str, content: str) -> set[str]:
+    """Aid «unsure_fact»: the person's words (folded, four letters or more) that the answer writes with a capital in a
+    sentence that is not a question, at a sentence's start too: the answer tells something of a name the person said
+    («pancracio» → «Pancracio es…»). A story or a joke asked for names others (DIAX3 control: «inventa un cuento…» made
+    up its characters, 0 of 5 with this, 3 of 5 searched without it)."""
+    said = {_fold(word) for word in _WORDS.findall(text) if len(word) >= 4}
+    told = " ".join(sentence for sentence in _TOLD.findall(content) if not sentence.rstrip().endswith("?"))
+    return said & {_fold(word) for word in _WORDS.findall(told) if word[0].isupper()}
+
+
 _YEAR_ALONE = re.compile(r"^\D*(?<!\d)(?:1[5-9]|20)\d\d(?!\d)\D*$")
 # A curiosity asked for (feria 2026-10-27, «cuéntame un dato curioso…» from memory: «el estribo, en el pie»).
 _CURIOUS = re.compile(r"\b(?:datos? curios[oa]s?|curiosidad(?:es)? (?:de|del|sobre|acerca)|algo curioso|fun facts?)\b")
@@ -1807,6 +2062,48 @@ def app_unsaid_not_run(wire: str, app: str, words: str) -> str:
                                "says whether it is installed. Do not tell them about this call"}, ensure_ascii=False)
 
 
+# Aid «said_store», DIAX6 (CASX1 H-051, H-053: «busca Montaña Rota en Epic» → game_store_search 10 of 10 on the 1.5.5,
+# which opens Steam's store; «abre la página de Montaña Rota en la app de Epic» → game_store_page, Steam's page). The two
+# store operations open the store of the launcher whose data name a game catalog (Steam); another launcher's store has
+# its own places (app_places.v1.json, «store» and «places»), reached only by app_open. A «store» argument on the two
+# operations did it (9 of 10 → 30 of 30) but moved a control: «ábreme la página de Ruta Polar en la tienda de Steam» went
+# to a made-up store address in the browser 23 of 30 (39 of 40 on the 1.5.5), and the prefix with it. As «said_engine»:
+# only the form is compared, a word of the person's words of this turn that is another launcher's «store» while theirs
+# do not name the operations' own; the call is held once and goes back as data with the app_open of that launcher's
+# place for the same words; the same call again runs as written. No prefix change. How the result is worded decided
+# it (H-051 held, replayed 10 seeds): «call app_open … now: …; game_store_search opens steam's store, so call it again
+# only if they want steam's» → game_store_search again 10 of 10; «app_open … is the call that searches epic's store, in
+# its own launcher; game_store_search searches only steam's store. Call app_open now» → app_open 10 of 10, p 0.93.
+STORE_SAID_REFUSED = "no se ejecutó: la persona nombró otra tienda"
+STORE_PLACES = {"game.store.search": "results", "game.store.page": "game"}
+
+
+def _store_launchers() -> tuple[str | None, dict[str, tuple[str, set[str]]]]:
+    """The store the game store operations open (that of the launcher whose data name a game catalog) and every other
+    launcher's: its store word → (its name, its places)."""
+    try:
+        data = json.loads((_DATA / "app_places.v1.json").read_bytes())
+    except (OSError, json.JSONDecodeError):
+        return None, {}
+    apps = {name: body for name, body in (data.get("applications") or {}).items() if isinstance(body, dict)}
+    own = next((body.get("store") for body in apps.values() if body.get("gameCatalog") and body.get("store")), None)
+    return own, {body["store"]: (name, set(body.get("places") or {})) for name, body in apps.items()
+                 if body.get("store") and body.get("store") != own}
+
+
+OWN_STORE, OTHER_STORES = _store_launchers()
+
+
+def store_said_not_run(wire: str, store: str, open_wire: str, arguments: dict[str, Any], search: bool) -> str:
+    """The result of a game store call held by «said_store»: the store they named and the app_open of its place."""
+    call = json.dumps(arguments, ensure_ascii=False, separators=(",", ":"))
+    act = (f"searches {store}'s store", f"searches only {OWN_STORE}'s store") if search else (
+        f"opens that game's page in {store}'s store", f"opens only {OWN_STORE}'s store")
+    return json.dumps({"status": "not_run", "error": "store_named", "storeNamed": store,
+                       "next": f"{open_wire} {call} is the call that {act[0]}, in its own launcher; {wire} {act[1]}. "
+                               f"Call {open_wire} now"}, ensure_ascii=False)
+
+
 # The same aid for app_close, INT36F (BAN2 b2p-41: «cierra la calculadora y el bloc de notas» became app_close {appId:
 # "Command Prompt"} 6 of 10 on int36c, the 1.5.2 and int36b 0 of 10: a near-tie of the joined prefix; an application
 # nobody named closed, its unsaved work with it, and the answer said the calculator was closed). Beside what was said
@@ -1836,6 +2133,87 @@ def app_unclosed_not_run(wire: str, app: str, words: str) -> str:
                       ensure_ascii=False)
 
 
+# Aid «said_process», DIAX5 (CASX1, Notion H-049: «se pegó, apágalo y préndelo» with Spotify in front became
+# system_process_terminate_named {name: "chrome.exe"} 3 of 3 on the 1.5.5 and the 1.5.4, and «está pegado, reinícialo»
+# with nothing in front 3 of 3: a program nobody named, killed with its unsaved work, unasked in Bypass, RiskPolicy). As
+# «said_app» compares an app_close, the form is compared: the program (its executable name without «.exe») has no word
+# in the person's words of the conversation, in BAXY's own nor in any result, not even alike in spelling or by another
+# of its names (names_app), and the model, asked apart as INT36G asks it (SAME_APP_*), does not read it as one their
+# words name («el navegador» for chrome.exe). Unlike a graceful close, the window in front does not name it: H-049's
+# complaint was «cerró Spotify sin preguntar», Spotify in front; told chrome.exe was held with Spotify in front, the 4B
+# killed Spotify 2 of 3 (DIAX5). Nothing is ended; the result says so with the window in front, to ask about, and in
+# that turn it does not run while the form does not change: called again, it is held again and the model answers in
+# words.
+PROCESS_UNSAID_REFUSED = "no se ejecutó: cerraba a la fuerza un programa que nadie nombró"
+TERMINATE_OPS = ("system.process.terminate.named", "system_process_terminate_named")
+
+
+def process_unsaid_not_run(wire: str, program: str, words: str, front: str) -> str:
+    """The result of a system_process_terminate_named held by «said_process»: the program nobody named, the person's
+    words, as said, and the window in front when they spoke."""
+    held = {"status": "not_run", "error": "program_not_named", "name": program,
+            "reason": f"nothing was ended: «{program}» is not in the person's words, in BAXY's nor in any result of "
+                      "this conversation",
+            "theirWords": words}
+    if front:
+        held["windowInFront"] = front
+    held["next"] = (f"if their words name another program, call {wire} with its executable name; else ask them in a "
+                    f"short question which program they mean. In this turn a program nobody named, the one in front "
+                    f"too, is not ended")
+    return json.dumps(held, ensure_ascii=False)
+
+
+PROCESS_UNSAID_AGAIN = json.dumps({"status": "not_run", "error": "program_not_named",
+                                   "reason": "nothing was ended again: nobody named this program",
+                                   "next": "answer only with a short question of which program they mean; say nothing "
+                                           "of this call"})
+
+
+# Aid «said_scope», DIAX16 (DIAX12's bench, 1.5.5 and diax5 alike, the 4B ×10: «Cierra Opera entero, que no quede nada
+# abierto atrás» → window_close_all 2 of 10, every window of the desktop and the unsaved work of other applications;
+# «Termina Steam, ya terminé de jugar» → game_install_cancel_active 10 of 10, «game» 0.57 against «app» 0.30 for its
+# first token: a download in progress cancelled when the person asked to close a program). Both calls reach past what
+# was named: all the windows of every application, or something running that nobody mentioned. As «power_on_again»
+# does, before one runs the model is asked apart, in a closed question of its own on the person's words (and on BAXY's
+# question and their turn before when BAXY had just asked), which of the two their words ask: the call's whole reach or
+# closing one application; the second holds it with what the call does and the tool that closes one application, and in
+# that turn it does not run again while the words do not change (as «said_process»: told once and allowed again, the 4B
+# repeats the call, DIAX5). Asked to choose between two words (todas/una, descargas/cerrar, as DIAX5 asks apagar or
+# reiniciar), the 4B read «ciérrame el Chrome del todo» and «con todas sus ventanas» as «todas» (held-out A01, A05 2 of 2
+# with the call run) and no wording of eight did better on DIAX16's own phrases (w\sonda.py: 6-8 of 8 one application
+# read right, and 2-6 of 6 the whole reach); asked to write the application they ask to close, or the call's word when
+# they ask for its reach (as a slot is filled, not a judgement), 8 of 8 and 5 of 6 («cierra todas las ventanas menos
+# Spotify» wrote Spotify: held, nothing runs), and 9 of 10 for the launcher and the downloads (w\sonda3.py, sonda4.py).
+SCOPE_SYSTEM = ("Lees lo que una persona le pidió a un asistente de voz de Windows. Contesta sólo con el nombre de una "
+                "aplicación o con la palabra {w}.")
+SCOPE_NOTE = ("{before}La persona dijo: «{said}»\n¿Qué aplicación pide cerrar? Escribe su nombre. Si no pide cerrar una "
+              "aplicación sino {what}, escribe {w}.")
+SCOPE_NOTES = {
+    "window.close.all": ("todas", "todo lo abierto en el escritorio"),
+    "game.install.cancel.active": ("descargas", "cancelar o parar las descargas o instalaciones de juegos en curso"),
+}
+SCOPE_REACH = {"window.close.all": "closes every open window of the desktop, of every application",
+               "game.install.cancel.active": "cancels the game downloads and installs in progress"}
+SCOPE_UNSAID_REFUSED = "no se ejecutó: llegaba más allá de la aplicación que pedían cerrar"
+
+
+def scope_unsaid_not_run(wire: str, reach: str, words: str) -> str:
+    """The result of a call held by «said_scope»: what it would have done and the person's words, as said."""
+    return json.dumps({"status": "not_run", "error": "scope_not_asked",
+                       "reason": f"nothing ran: {wire} {reach}, and the person's words ask to close one application",
+                       "theirWords": words,
+                       "next": f"to close the application their words name, with all its windows, call app_close with "
+                               f"its appId. In this turn {wire} does not run while their words ask to close one "
+                               f"application; if you cannot tell what they want closed, ask them in a short question"},
+                      ensure_ascii=False)
+
+
+SCOPE_UNSAID_AGAIN = json.dumps({"status": "not_run", "error": "scope_not_asked",
+                                 "reason": "nothing ran again: the person's words ask to close one application",
+                                 "next": "close the application they named with app_close, or answer with a short "
+                                         "question of what they want closed; say nothing of this call"})
+
+
 # Aid «said_days», RUT16 (RUT15's owner phrase, «todos los lunes, miércoles y viernes a las 10 10 de la mañana digas
 # Buenos días…», in Esencial: 7 of 10 a reminder at 10:10 with recurrence daily, 2 of 10 three reminders once each, on
 # Saturday, Sunday and Monday at the time it was said). An alarm or reminder rings once, every day or every hour
@@ -1859,9 +2237,11 @@ def ring_days_not_run(named: Collection[int], due: _dt.datetime | None, today: _
                   "of the week: nothing was set")
     else:
         nexts = [today + _dt.timedelta(days=(day - today.weekday()) % 7 or 7) for day in days]
-        reason = (f"this rings once, on {DAY_NAMES_EN[due.weekday()]} {due:%Y-%m-%d} at {due:%H:%M}, a day the "
-                  f"person's words do not name (they name {said}): nothing was set. "
-                  + "; ".join(f"The next {DAY_NAMES_EN[after.weekday()]} is {after:%Y-%m-%d}" for after in nexts))
+        reason = ((f"this rings once, on {DAY_NAMES_EN[due.weekday()]} {due:%Y-%m-%d} at {due:%H:%M} only, and the "
+                   f"person's words name {said} as every week: nothing was set" if due.weekday() in named else
+                   f"this rings once, on {DAY_NAMES_EN[due.weekday()]} {due:%Y-%m-%d} at {due:%H:%M}, a day the "
+                   f"person's words do not name (they name {said}): nothing was set. "
+                   + "; ".join(f"The next {DAY_NAMES_EN[after.weekday()]} is {after:%Y-%m-%d}" for after in nexts)))
     reason += (". An alarm or reminder rings once, every day or every hour, never only on some days of the week; a text "
                "BAXY says at an hour on some days of every week is a routine" + (f" ({routines})" if routines else "")
                + ". If what they asked is what this call sets, the same call again sets it")
@@ -2761,6 +3141,16 @@ CALCULATIONS = 4  # a turn's calculations; the next decision after the last is i
 # cap, not a length: a short answer still ends at its own end. Measured on the notebook (NB-L): ~36 tokens/s, ~2 tokens
 # a word; 768 is ~21 s, inside the App's 30 s for a decision (TurnRequestTimeout) with room for the prefix.
 DECISION_TOKENS = 768
+# DIAX18 (CASX1 caso 23: «un documento de 500 palabras» never came out): a call that reaches DECISION_TOKENS is cut, its
+# JSON ends mid-sentence, and the kernel's receipt blamed its arguments («not an argument of this tool»), so the model
+# wrote the same call again and was cut again (139 s, no document). A decision cut there while it writes a call is asked
+# again once with this budget, and only then: a decision that ends before DECISION_TOKENS is asked as it always was. A
+# cap, not a length (OpenAI «max_tokens»; llama.cpp server README «n_predict»): the context's cells are taken at load
+# (-c), so a larger cap costs time while it writes, not memory. ~2 tokens a word: about 1,500 words fit in one call.
+LONG_CALL_TOKENS = 3072
+# What the model reads for a call cut at its token cap: nothing ran, the reason is the call's length, not its arguments.
+CUT_CALL = ("this call was cut where one answer ends ({tokens} tokens) before its arguments were complete, so nothing "
+            "ran; the arguments written were not wrong. A call this long does not fit: write it again with less in it")
 # P0.10 (noche 27-10, NB-R1-X5 on the notebook's trace): the mind trusted the kernel's 8 KiB per result, but a process
 # list, a console's output or an OCR reach 48,000 characters, and some turn.continue re-read 10-12k tokens (>2000 tokens
 # in 0.7 % of the results, p50 3.8 s each). One result takes at most the room the history leaves for it beside the reply.
@@ -2892,7 +3282,7 @@ def _model_schema(schema: Any, constants: dict[str, Any] | None = None) -> Any:
     return out
 
 
-def _as_written(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _as_written(messages: list[dict[str, Any]], nulls: bool = True) -> list[dict[str, Any]]:
     """Aid «calls_as_written» (w6-lat, 2026-10-23): the conversation's calls with each boolean argument as the model
     writes it. Under the call grammar llama-server makes from the tools' schemas the model writes «true» / «false»
     (JSON), and Qwen3.5's template writes a call's top-level value with Jinja's «| string», «True» / «False»: the request
@@ -2900,7 +3290,11 @@ def _as_written(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     tokens before the decision's end and re-read those tokens, the call and the result (CPU probe, b11609, ft c2e1:
     audio_mute {state: true} 54 → 23 tokens, app_open {foreground: true} 65 → 23; 52 of 278 calls of the practice e2e
     have one). Given as the text «true» / «false», the template writes it as it came; objects and lists it already writes
-    with tojson, strings and numbers as given. Only the request changes: the conversation keeps its calls as they were."""
+    with tojson, strings and numbers as given. Only the request changes: the conversation keeps its calls as they were.
+    DIAX2 (casos del dueño 16-11, F11/F12): with ``nulls``, a top-level null as the text «null» too. The template wrote
+    it as Python's «None», the model read its own call back so and wrote «None» in the calls after it, which
+    llama-server reads as the text "None": on the owner's PC every click after the first null of the conversation was
+    refused (invalid_arguments, 9 of 9), «No guardar» of Word's dialog and a favourite in the browser among them."""
     written: list[dict[str, Any]] = []
     for message in messages:
         calls = message.get("tool_calls") if message.get("role") == "assistant" else None
@@ -2914,10 +3308,12 @@ def _as_written(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 arguments = json.loads(function.get("arguments") or "{}")
             except (json.JSONDecodeError, TypeError):
                 arguments = None
-            if not isinstance(arguments, dict) or not any(isinstance(v, bool) for v in arguments.values()):
+            if not isinstance(arguments, dict) or not any(
+                    isinstance(v, bool) or nulls and v is None for v in arguments.values()):
                 told.append(call)
                 continue
-            arguments = {k: ("true" if v else "false") if isinstance(v, bool) else v for k, v in arguments.items()}
+            arguments = {k: ("true" if v else "false") if isinstance(v, bool) else "null" if nulls and v is None else v
+                         for k, v in arguments.items()}
             told.append({**call, "function": {**function, "arguments": json.dumps(arguments, ensure_ascii=False)}})
         written.append({**message, "tool_calls": told})
     return written
@@ -2986,6 +3382,8 @@ class Mind:
         self._described = ""  # the harness language those texts were read for (_describe)
         self._describe()
         self.decide_temperature = _env_float("BAXY_RENEW_DECIDE_TEMPERATURE", 0.2)
+        # MODX2: the model's card (model_card.py), read at warm-up from what its file declares; none until then.
+        self.card = model_card.NONE
         self.seed = int(_env_float("BAXY_RENEW_SEED", 0))
         # PLAN_GENERAL C1: the long addresses results carried, by the short reference the model saw, and back.
         self._refs: dict[str, str] = {}
@@ -3003,6 +3401,7 @@ class Mind:
         # Aid «answer_check»: every call of the session as (operation, completed, read_only), for the check of the final
         # answer; None when the session is not known whole (one kept before the aid).
         self._calls: list[tuple[str, bool, bool]] | None = []
+        self._last_completed: tuple[str, str] | None = None  # RAN_LAST: the last completed result and its states
         # Aid «check_stale_state» (encargo 56): the session's last calls as the answer check reads a receipt, with only
         # the scalar fields of their result (its state, name, bytes, next): the conversation leaves their bodies out
         # once it is trimmed (uso real 03-11: context_shrunk, then «Ya está instalado» over a result that read «queued»).
@@ -3037,6 +3436,10 @@ class Mind:
         # last answered: after GUIDE_SILENCE_S of nothing it is dropped and their words are a turn as any other.
         self._guide: routine_guide.Guide | None = None
         self._guide_at = 0.0
+        # DIAX13 (the owner's F5): where the turn that opened the guide began and the guide's first words (those very
+        # messages), and whether it ended unsaved in its own words: its exchange is folded at the next turn.
+        self._guide_mark: tuple[dict[str, Any] | None, dict[str, Any]] | None = None
+        self._guide_unsaved: dict[str, Any] | None = None
         # RUT11 (REV11 B-4): the person's words of the last turn, for «bórrala» (routine_guide.named_in).
         self._heard_last = ""
         # Al máximo, palanca 2 (early.py): while a decision is made early, its trace rows are held here (the thread that
@@ -3288,6 +3691,7 @@ class Mind:
                           call=wires.name("baxy.update")) if "baxy.update" in wire_to_op.values() else "")
                           if "assistant.status" in wire_to_op.values() else "")
                        + card_profile_fact(message.get("cardProfile"))
+                       + model_in_use_fact()
                        + (MEMORY_HELD_FACT.format(call=wires.name(MEMORY_TOOL), state=MEMORY_HELD_PROFILE
                                                   if message.get("memoryOff") is False else MEMORY_HELD_OFF)
                           + "".join(sentence.format(call=wires.name(tool), save=wires.name(MEMORY_TOOL))
@@ -3339,6 +3743,19 @@ class Mind:
         trace («warm.format») with what it leaves off; the start goes on."""
         started = time.perf_counter()
         render = getattr(self.server, "render", None)
+        # MODX2 (MOD2: Ministral-3-8B, 500 «conversation roles must alternate» on every turn): a template that wants the
+        # two sides to alternate is read first, so the probes below and every request after are joined as it wants.
+        if render is not None and hasattr(self.server, "alternate"):
+            self.server.alternate = alternation.required(render)
+        if hasattr(self.server, "thinking_close"):
+            try:
+                self.server.thought_end = self.server.thinking_close()
+            except Exception:  # noqa: BLE001 - no mark read: replies come as the 1.5.5 had them, nothing taken off
+                self.server.thought_end = None
+        self.card = model_card.card_for(getattr(self.server, "declared", None) or {})
+        if self.card.decide or self.card.thinking_budget or self.card.doubt is not None:
+            self._log("warm.card", started, None, card=self.card.name, decide=self.card.decide,
+                      thinking_budget=self.card.thinking_budget, doubt=self.card.doubt)
         try:
             fmt = formats.derive(render) if render is not None else formats.CALIBRATED
         except formats.Unrendered:
@@ -3358,7 +3775,9 @@ class Mind:
                 ("prefill", fmt is not None and bool(fmt.user_open and fmt.turn_end)),
                 ("fill", fmt is not None), ("calibrated_sampling", False)) if not on]
             self._log("warm.format", started, None, opening=None if fmt is None else fmt.opening,
-                      bools_as_text=None if fmt is None else fmt.bools_as_text, off=off)
+                      bools_as_text=None if fmt is None else fmt.bools_as_text,
+                      nulls_as_text=None if fmt is None else fmt.nulls_as_text, off=off,
+                      alternate=bool(getattr(self.server, "alternate", False)))
 
     def notice_of(self) -> str:
         """The notice of the person's turn while the App runs its call (NOTICE_ASK): the model's words for that call,
@@ -3453,16 +3872,44 @@ class Mind:
     def _history(self, conv: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """The conversation as a request sends it: every request and the prefill render it alike (aid
         «calls_as_written»), or the prefill's text would not be the next prompt's start. MOD3: only for a template that
-        writes a call's boolean as Python's «True» (call_format.CallFormat.bools_as_text, Qwen3.5's «| string»); any
-        other writes it as it came."""
+        writes a call's boolean as Python's «True» (call_format.CallFormat.bools_as_text, Qwen3.5's «| string»), or its
+        null as «None» (DIAX2, nulls_as_text); any other writes it as it came."""
         fmt = self.call_format
-        return _as_written(conv) if _aid_on("calls_as_written") and fmt is not None and fmt.bools_as_text else conv
+        on = _aid_on("calls_as_written") and fmt is not None and (fmt.bools_as_text or fmt.nulls_as_text)
+        return _as_written(conv, nulls=fmt.nulls_as_text) if on and fmt is not None else conv
 
     def _sampling(self) -> dict[str, float]:
         """MOD3: the decision's sampling past its temperature: Qwen3's recommended (DECIDE_SAMPLING), measured with the
         4B, for a model whose template writes calls as the one it was measured on (call_format.CALIBRATED); for any
         other, nothing, so the server's own hold: those the model file declares (general.sampling.*) when it does."""
         return dict(DECIDE_SAMPLING) if self.call_format == formats.CALIBRATED else {}
+
+    def _decide_sampling(self) -> dict[str, Any]:
+        """MODX2: the decision's sampling: the model's card's (model_card.Card.decide, its temperature the one
+        BAXY_RENEW_DECIDE_TEMPERATURE sets when a bench's arm sets it), or, with none, what the mind always sent: its
+        temperature and _sampling."""
+        if not self.card.decide:
+            return {"temperature": self.decide_temperature, **self._sampling()}
+        sampling = {"temperature": self.decide_temperature, **self.card.decide}
+        if os.environ.get("BAXY_RENEW_DECIDE_TEMPERATURE", "").strip():
+            sampling["temperature"] = self.decide_temperature
+        return sampling
+
+    def _thinking(self, body: dict[str, Any]) -> None:
+        """MODX2: a card that lets the model reason before it decides (model_card.Card.thinking_budget): its template's
+        thinking on and llama-server's budget of thinking tokens for this request (thinking_budget_tokens, which a
+        request sets over the server's --reasoning-budget 0: measured on b11609), on top of the decision's own."""
+        if self.card.thinking_budget:
+            body["chat_template_kwargs"] = {"enable_thinking": True}
+            body["thinking_budget_tokens"] = self.card.thinking_budget
+            body["max_tokens"] = int(body.get("max_tokens") or DECISION_TOKENS) + self.card.thinking_budget
+
+    def _doubt_threshold(self) -> float:
+        """MODX2: layer 0's threshold: BAXY_S1_DOUBT when set (a bench's arm), else the model's card's (None: the
+        mind's own, _threshold); none with the owner's switch off."""
+        if self.card.doubt is not None and os.environ.get("BAXY_S1_DOUBT") is None and not system_one_off():
+            return max(0.0, min(1.0, self.card.doubt))
+        return _threshold("BAXY_S1_DOUBT")
 
     def text_calls_by_form(self) -> bool:
         """MOD3 (review REVX1, F1): whether a call written as text is read by its form (JSON, control tokens, a tool's
@@ -3595,9 +4042,11 @@ class Mind:
         self._refs, self._ref_of, self._ids, self._ref_count = {}, {}, 0, 0
         self._ran, self._ran_ids, self._ran_count = [], [], 0
         self._calls = []
+        self._last_completed = None
         self._states = []
         self._memory_was_off = False
         self._guide = None
+        self._guide_mark, self._guide_unsaved = None, None
         self._heard_last = ""
         self.conversation = [{"role": m["role"], "content": m["content"]} for m in history or []
                              if m.get("role") in {"user", "assistant"} and str(m.get("content") or "").strip()]
@@ -3716,6 +4165,18 @@ class Mind:
         process = str((front or {}).get("process") or "").strip()
         return f"«{title}»" + (f" ({process})" if process else "")
 
+    def _ran_last(self) -> str:
+        """H-020 (RAN_LAST): what ran last before BAXY's question, when that question closed the turn of a call that
+        completed and whose result gave a state of its own: the call as the model wrote it and the result's «…Status»
+        fields as it gave them. A result with no such field has nothing to tell here, and the note stays as it was."""
+        result = self.conversation[-2] if len(self.conversation) >= 3 else {}
+        if result.get("role") != "tool" or not self._last_completed or self._last_completed[0] != result.get("tool_call_id"):
+            return ""
+        call = next((c["function"]["name"] for m in reversed(self.conversation[:-2]) for c in m.get("tool_calls") or []
+                     if c.get("id") == result.get("tool_call_id")), "")
+        states = self._last_completed[1]
+        return RAN_LAST.format(call=call, states=states) if call and states else ""
+
     @classmethod
     def _named_note(cls, named: list[dict[str, Any]] | None) -> str:
         windows = [cls._front_window(window) for window in named or []]
@@ -3799,13 +4260,10 @@ class Mind:
                 raise
         self._close_open_calls()
         self._age_bodies()
+        if self._guide is None and self._guide_unsaved is not None:
+            self._fold_guide(ended=True)
         doubts = [note for note in (str(m.get("content") or "") for m in self.conversation[-2:])
                   if note.startswith(DOUBT_ASKED)]
-        last = self.conversation[-1] if self.conversation else {}
-        # Which question BAXY asked is not read from its words: only that its last ones had a «?».
-        asked = (last.get("role") == "assistant" and not last.get("tool_calls")
-                 and "?" in str(last.get("content") or ""))
-        offered = _aid_on("choice_left") and asked
         # RUT6 (RUTINAS.md §5 c, the person's own shortcut): with nothing of BAXY waiting for these words and nothing
         # ringing, a turn that is, whole, the phrase of a routine kept as an order is that order: the words the person
         # saved take the turn's place and the model decides them as any other request (form only: the phrase compared).
@@ -3821,7 +4279,11 @@ class Mind:
         if self._guide is not None and (pending or doubts or not own
                                         or time.monotonic() - self._guide_at > GUIDE_SILENCE_S):
             left = "" if pending or doubts or not own else routine_guide.SILENT_NOTE
+            dropped = self._guide.dropped()
             self._guide = None
+            if left:
+                self._fold_guide(closing=dropped)
+            self._guide_mark = None
         elif self._guide is not None and not unsure:
             # RUT14: what is no closed form of the step is read by the model (typed, apart from the conversation);
             # unreadable, the reader decides as before. RUT14B: with something ringing, the reader decides as in the
@@ -3831,15 +4293,30 @@ class Mind:
             if taken[4] if taken is not None else self._guide.leaves(text, self.routines, self._today()):
                 self._log("turn.routine_guide", time.perf_counter(), None, step=self._guide.step, next=None, saved=False,
                           lang=self._guide.lang, left=True)
-                self._guide, left, taken = None, self._guide.left_note(), None
+                # DIAX13: «cancela» and another request in the same words (_asks_more): the request is this turn.
+                note = routine_guide.CANCEL_LEFT_NOTE if taken is not None and taken[5] else self._guide.left_note()
+                # DIAX13B (INT42's 3 red REM8 tests): leaving a «¿La borro?» or a change, this turn's note already says
+                # nothing was deleted or changed (REM8): one note, not two
+                creating = self._guide.mode == "create"
+                self._guide, left, taken = None, note, None
+                self._fold_guide(noted=creating)
         guide = self._guide
+        last = self.conversation[-1] if self.conversation else {}
+        # Which question BAXY asked is not read from its words: only that its last ones had a «?». DIAX13 (REVX2 DX1-1):
+        # read once the guide left is folded, so a question of BAXY from before the guide is never the one asked.
+        asked = (last.get("role") == "assistant" and not last.get("tool_calls")
+                 and "?" in str(last.get("content") or ""))
+        offered = _aid_on("choice_left") and asked
+        offered_note = OFFERED_NOTE.replace(OFFERED_HEAD, OFFERED_HEAD + self._ran_last(), 1) if offered else ""
         free = guide is None and not self._rings_told(ringing) and not pending and not doubts and not unsure and own
         # REM6 (REV15 B-1): the turn that left the guide answered its question: no routine's phrase fires in it.
         order = routines.ordered(text, self.routines) if free and not asked and not left else None
         # RUT7: the fixed orders about the routines themselves («crea una rutina», «qué rutinas tengo», «borra la
-        # rutina X») are the App's, whole turn only; the one-breath forms («cuando diga X, …») not after a question of
-        # BAXY, where they may be its answer.
-        ordered = routine_guide.heard(text, self.lang, whole=asked) if free and order is None else None
+        # rutina X») are the App's, whole turn only; the one-breath forms («cuando diga X, …») too. DIAX1: also after a
+        # question of BAXY (RUT7 left them to the model there, as they might be its answer): after «…¿Quieres algo
+        # más?» the 4B opened the guide 3 times of 20, saved the routine in its memory 7 (and promised to do it when
+        # the word is said: nothing runs it) and changed a setting nobody asked for 6; the guide saves only with their «sí».
+        ordered = routine_guide.heard(text, self.lang) if free and order is None else None
         said_before, self._heard_last = self._heard_last, text
         if ordered is not None and ordered.it:
             # RUT11 (REV11 B-4): «bórrala», «borra la rutina»: the one routine the last exchange named.
@@ -3884,6 +4361,7 @@ class Mind:
             self._log("turn.routine_phrase", time.perf_counter(), None, routine=order[0], order=True)
             text = order[2]
         self._captures_kept = self._waits(pending)  # CAPTURE_GONE: the App keeps them while a call waits for the «sí»
+        self._drop_engine_held()
         clock = {"role": "user", "content": self._clock()}
         self.conversation.append(clock)
         # Noche 2026-10-27 (P0, P0.8): what only this turn knows (the call waiting for the «sí», the words the ear was
@@ -3891,7 +4369,7 @@ class Mind:
         # the slot (prefill) without it; as a note («[») it stays out of what the person said (_said, _gist, _founded).
         # Aid «choice_left»: and that they follow BAXY's own question in words (OFFERED_NOTE).
         opened, self._opened_places = self._opened_places, ""
-        notes = (("\n" + OFFERED_NOTE if offered else "") + ("\n" + opened if opened else "")
+        notes = (("\n" + offered_note if offered else "") + ("\n" + opened if opened else "")
                  + self._pending_note(pending) + self._capture_note() + self._unsure_note(unsure or []) + self._named_note(named)
                  + self._ringing_note(ringing, asked) + ("\n" + left if left else ""))
         if offered and self._memory_was_off and _aid_on("memory_off_next") and "memory.enable" in self.wire_to_op.values():
@@ -3923,7 +4401,7 @@ class Mind:
                           "front": self._front_window(front), "in_front": front or {},
                           "ringing": self._rings_told(ringing), "alone": clock if order is not None else None,
                           "asked_words": str(last.get("content") or "") if asked else "",
-                          "ring_ids": self._ring_ids(ringing), "asked_while": was_ringing}
+                          "ring_ids": self._ring_ids(ringing), "asked_while": was_ringing, "began": clock}
             # ALR4 (owner's exception, ring_answer): with something ringing and nothing of BAXY waiting for these words
             # (a «sí» or one that just went unanswered, its doubt's question), and no word the ear was unsure of, a short
             # acknowledgement answers what rings before the model is asked. ALR5 (M1, REV_MENTE): nor after a question in
@@ -3953,6 +4431,44 @@ class Mind:
             self._take_back(self.conversation, clock)
             self._turn = None
             raise
+
+    def _fold_guide(self, ended: bool = False, noted: bool = True, closing: str = "") -> None:
+        """DIAX13 (the owner's F5, 16-11; REVX2 DX1-1): a guide that ends unsaved leaves in the conversation what
+        happened, not its exchange. BAXY's fixed questions, which the model never wrote, read as its own words: with
+        them in front of it the 4B answered four requests for a new conversation with the routine (DIAX1, 0 of 10), and
+        with the words that opened it still there it said «Nuevo chat iniciado» with no call (DIAX13 v2, 0 of 8). So
+        the conversation goes back to before the turn that opened it (DIAX1, 386f8050c), unless a call of that turn
+        ran (REVX2 DX1-2): then from the guide's first words on. When what BAXY said right before that turn was a
+        question («¿Quieres que los borre?»), the person's words that set it aside stay too, and those that ended the
+        guide: cut with the turn, a «sí» to «Listo, lo dejo…» was read as that question's yes (the folder emptied 5 of 5,
+        v3), and a note saying it was left unanswered had «sí sí» answered «Publicaré la reseña…» (v4). ENDED_NOTE takes
+        the exchange's place, so that question is never the last thing BAXY said when the person speaks (DIAX1 cut
+        there and the note of BAXY's own question followed: DX1-1). Left by other words or by its silence, this turn's
+        note says too that it was not saved; ended in its own words («cancela», «no» to «¿La guardo?»), the sentence
+        the person heard then stays BAXY's last words. Dropped by its silence (REVX2 D13-1), nobody heard an end and no
+        sentence of BAXY followed the fold: the offer before the guide was again its last words, and a late «sí» read
+        after it. So `closing`, the guide's sentence of what it did («Lo dejé sin terminar…»), true then, takes that
+        place. `noted` False: this turn's own note says it already (REM8's «no se borró nada»), so ENDED_NOTE is left
+        out and the model reads one note, not two."""
+        mark, ending, self._guide_mark, self._guide_unsaved = self._guide_mark, self._guide_unsaved, None, None
+        began, first = mark if mark is not None else (None, None)
+        at = next((i for i, m in enumerate(self.conversation) if m is first), None)
+        if at is None:
+            return
+        start = next((i for i, m in enumerate(self.conversation[:at]) if m is began), at)
+        own = self.wires.name("baxy.routines")
+        ran = any(call["function"]["name"] != own for m in self.conversation[start:at] for call in m.get("tool_calls") or [])
+        above = self.conversation[start - 1] if start > 0 else {}
+        asked = above.get("role") == "assistant" and not above.get("tool_calls") and "?" in str(above.get("content") or "")
+        said = [m for m in self.conversation[at:] if m.get("role") == "assistant" and not m.get("tool_calls")]
+        words = [m for m in self.conversation[at:] if m is ending]
+        del self.conversation[at if ran or asked else start:]
+        if noted:
+            self.conversation.append({"role": "user", "content": routine_guide.ENDED_NOTE})
+        if ended and len(said) > 1:
+            self.conversation += [*(words if asked else []), said[-1]]
+        elif closing:
+            self.conversation.append({"role": "assistant", "content": closing})
 
     @staticmethod
     def _take_back(conv: list[dict[str, Any]], first: dict[str, Any]) -> None:
@@ -4247,7 +4763,31 @@ class Mind:
         said, arguments, ended, left = after.take(
             read, self.routines, self._today(),
             lambda: self._answer_read(asked, text, "baxy.routines", False, time.perf_counter()))
-        return after, said, arguments, ended, left
+        more = read.does == "cancel" and ended and arguments is None and not left and self._asks_more(text)
+        if more:
+            said, left = "", True
+        return after, said, arguments, ended, left, more
+
+    def _asks_more(self, text: str) -> bool:
+        """DIAX13 (the owner's F5; DIAX1's held-out: «Cancela eso. Oye, ¿qué hora es?», «Ya no, cancela, mejor ábreme la
+        calculadora» → «Listo, lo dejo…» and the request lost, 6 of 14): words the guide's reading calls a cancel, in
+        more words than its closed form, may ask for something else too. Whether they do is read by the model in a
+        closed question of its own, on those words alone (as ALR9 reads what rings): «otra» leaves the guide and the
+        turn is the model's, with every tool; «nada» or unreadable, the guide ends in its own words as before. Sending
+        every such cancel to the model instead, it cleared the session's memory for «ya no quiero, olvídalo» 3 of 3."""
+        started, reply, failure = time.perf_counter(), None, None
+        note = MORE_READ_NOTE.format(said=" ".join(str(text).split()))
+        body = {"messages": [{"role": "system", "content": MORE_READ_SYSTEM}, {"role": "user", "content": note}],
+                "max_tokens": 4, "grammar": MORE_READ_GRAMMAR, "chat_template_kwargs": {"enable_thinking": False},
+                "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": self.seed}
+        try:
+            reply = self.server.ask_apart(body)
+            read = str(reply["choices"][0]["message"].get("content") or "").strip()
+        except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+            read, failure = "", type(error).__name__
+        label = closed_word(read, MORE_READ_KINDS)
+        self._log("turn.routine_more", started, reply, kind=label, failure=failure or (None if label else "unreadable"))
+        return label == "otra"
 
     def _ring_not_asked(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> bool:
         """ALR9: whether the model's stop or snooze of what rings is held because the person's words, read in their own
@@ -4376,11 +4916,12 @@ class Mind:
             ended = ordered.guide.step == "steps_only"
             self._guide, self._guide_at = (None if ended else ordered.guide), time.monotonic()
             said = ordered.said
-            if (ordered.action == "new" and ordered.guide.kind is None and not said
+            if (ordered.action == "new" and (ordered.guide.kind is None or ordered.guide.after) and not said
                     and routine_guide.heard(str(turn["text"]), ordered.lang, whole=True) is None):
                 # RUT14: a routine said in one breath that its form did not split («…abre el guiado desde la primera
                 # pregunta»): what they already said is read by the model, and BAXY asks only what is missing. A
                 # closed order alone («crea una rutina») says nothing to read: its first question, as before.
+                # DIAX1: one of a word its form did not split, where the word ends and the order begins.
                 said = self._guide_filled(ordered.guide, str(turn["text"]))
             return self._guide_said(request_id, turn, said or ordered.guide.question(), "turn.decide", started)
         arguments = {"action": ordered.action, **({"name": ordered.name} if ordered.name else {})}
@@ -4407,6 +4948,12 @@ class Mind:
             said, arguments, ended = guide.answer(text, self.routines, unsure, self._today())
         # RUT9 (REV9 H4): an answer that answered nothing does not put the silence off.
         self._guide = None if ended else guide
+        if ended:
+            # DIAX13: a routine made and not saved is folded at the next turn; one saved keeps its exchange (RUT10)
+            unsaved = arguments is None and guide.mode == "create" and self._guide_mark is not None
+            # the person's words that ended it (the message this turn appended last), kept when the fold keeps theirs
+            self._guide_unsaved = turn["conv"][-1] if unsaved and turn["conv"] else None
+            self._guide_mark = self._guide_mark if unsaved else None
         self._guide_at = self._guide_at if (guide.misses or guide.unread) and not ended else time.monotonic()
         self._log("turn.routine_guide", started, None, step=was, next=None if ended else guide.step,
                   saved=arguments is not None, lang=guide.lang)
@@ -4535,7 +5082,10 @@ class Mind:
     def _guide_said(self, request_id: Any, turn: dict[str, Any], said: str, stage: str,
                     started: float) -> dict[str, Any]:
         """RUT7: a fixed sentence of the guide as BAXY's words of this turn."""
-        turn["conv"].append({"role": "assistant", "content": said})
+        message = {"role": "assistant", "content": said}
+        turn["conv"].append(message)
+        if self._guide is not None and self._guide_mark is None:
+            self._guide_mark = turn.get("began"), message   # DIAX13: where its exchange begins (_fold_guide)
         if self.foresee is not None:
             try:
                 self.foresee(said, True)  # its voice is made while the App publishes it, as _next's words
@@ -5231,6 +5781,8 @@ class Mind:
         line = _said_once(done) if _aid_on("facts_once") else done
         conv.append({"role": "tool", "tool_call_id": turn["awaiting"],
                      "content": shown + _t("\n[En este turno: ") + "; ".join(line) + "]" + note})
+        # RAN_LAST: the result's «…Status» fields as the App gave them, kept for a question that may close the turn.
+        self._last_completed = (answered, _status_fields(received)) if outcome.startswith(COMPLETED_OUTCOMES) else None
         turn["awaiting"] = None
         if aids:
             # What the aids told the model, a row of its own: the model's decision after it is the next row.
@@ -5456,11 +6008,12 @@ class Mind:
         messages = [{"role": "system", "content": self._system(bool(turn.get("beat")))}, *self._history(self._seen(turn))]
         body = {"messages": messages, "tools": self.tools, "max_tokens": DECISION_TOKENS, "parallel_tool_calls": True,
                 "chat_template_kwargs": {"enable_thinking": False},
-                "temperature": self.decide_temperature, **self._sampling(),
+                **self._decide_sampling(),
                 # A fixed seed: the same conversation gets the same decision, so two runs of a bench differ by the
                 # change measured, not by sampling noise (±3 of 90 without it). Review 2026-10-22: BAXY_RENEW_SEED moves
                 # it, to measure that noise (0 by default).
                 "seed": self.seed}
+        self._thinking(body)
         # INT36G (VIVO21: «borra la de las 10:00» took ~70 s): baxy.routines has no arguments either (RUT7), and the 4B
         # wrote «baxy_routines {}» over and over to DECISION_TOKENS (768 tokens, ~20 s on the PC); only the first call
         # opens the guide, the ones after it are not run.
@@ -5511,8 +6064,21 @@ class Mind:
         # (53,245 + 3 tokens: the person got «Listo,»). Room is made as for the 400 and it is written again; what the
         # voice foresaw of the cut answer is dropped.
         usage = reply.get("usage") or {}
+        if not final and self._cut_call(reply, DECISION_TOKENS):
+            # DIAX18: the decision was writing a call when it reached its cap. It is asked again with more room, once,
+            # within what the context leaves; what the voice foresaw of the first is dropped (a call says nothing).
+            room = LONG_CALL_TOKENS
+            if self.server.context and usage.get("prompt_tokens"):
+                room = min(room, int(self.server.context) - int(usage["prompt_tokens"]) - 1)
+            if room > DECISION_TOKENS:
+                if streams:
+                    self.foresee(None, True)
+                self._log(stage, started, reply, kind="call_cut_longer", operation=None, arguments=None, content=None)
+                body = {**body, "max_tokens": room}
+                reply = self.server.chat(body)
+                usage = reply.get("usage") or {}
         if (reply["choices"][0].get("finish_reason") == "length"
-                and 0 <= int(usage.get("completion_tokens", DECISION_TOKENS)) < DECISION_TOKENS
+                and 0 <= int(usage.get("completion_tokens", body["max_tokens"])) < body["max_tokens"]
                 and self._make_room(conv, final)):
             if streams:
                 self.foresee(None, True)
@@ -5546,6 +6112,22 @@ class Mind:
                 # Not an object: it travels as written, so the rejection says what the model gave.
                 arguments = {"unparsedArguments": raw}
             calls.append({"id": call.get("id") or self._new_id("call"), "wire": wire, "arguments": arguments})
+        if calls and not final and self._cut_call(reply, body["max_tokens"]):
+            # DIAX18: still cut with the larger budget (or no room for it). Nothing of this reply runs, and the model
+            # reads why where a result goes: the kernel would blame the arguments of a call that only ended too soon.
+            # A second cut in the turn ends it in words.
+            conv.append({"role": "assistant", "content": content, "tool_calls": [
+                {"id": c["id"], "type": "function",
+                 "function": {"name": c["wire"], "arguments": json.dumps(c["arguments"], ensure_ascii=False)}}
+                for c in calls]})
+            cut = json.dumps({"status": "not_run", "error": "call_cut_at_length",
+                              "observed": {"next": CUT_CALL.format(tokens=body["max_tokens"])}}, ensure_ascii=False)
+            for c in calls:
+                conv.append({"role": "tool", "tool_call_id": c["id"], "content": cut})
+            turn["cut"] = turn.get("cut", 0) + 1
+            self._log(stage, started, reply, text=None if turn.get("private") else turn["text"], kind="call_cut",
+                      operation=self.wire_to_op.get(calls[-1]["wire"], calls[-1]["wire"]), arguments=None, content=None)
+            return self._next(request_id, stage, turn, final=turn["cut"] >= 2)
         if calls and not final and (offered := self._offered(turn, calls)):
             # G10 (aid «offer_unanswered»): nothing of this reply runs; the model decides again, told why (OFFER_NOTE).
             wire, values = offered
@@ -5653,6 +6235,13 @@ class Mind:
             looked = self._named_fact(request_id, stage, turn, body, reply, started)
             if looked is not None:
                 return looked
+        if (content and stage == "turn.decide" and not final and not turn.get("beat") and not turn.get("answering")
+                and not turn.get("unsure_fact") and not turn.get("receipts") and not turn.get("private")
+                and _aid_on("unsure_fact") and "web.search" in self.wire_to_op.values()
+                and (unsure := unsure_fact_words(reply)) and self._unkept(_named_back(turn["text"], content))):
+            turn["unsure_fact"] = True
+            self._log("turn.unsure", started, None, words=len(unsure))
+            return self._look_up_first(request_id, stage, turn, body, reply, started)
         if (content and not turn.get("beat") and not turn.get("said_again")
                 and not any(r.get("completed") for r in turn.get("receipts") or [])
                 and _aid_on("say_once") and self._said_last(conv, content, turn.get("unheard") or ())):
@@ -6040,11 +6629,11 @@ class Mind:
                 tries.append((self.wire_to_op.get(wire, wire), results.get(call.get("id"), "unknown")))
         return tries
 
-    @staticmethod
-    def _doubted(stage: str, turn: dict[str, Any], final: bool) -> bool:
+    def _doubted(self, stage: str, turn: dict[str, Any], final: bool) -> bool:
         """Whether this call's decision is read for its doubt: a person's turn deciding, not its last answer, a
-        continuation or a heartbeat."""
-        return stage == "turn.decide" and not final and not turn.get("beat")
+        continuation or a heartbeat. MODX2: not a decision the model reasons before (its first tokens are its thinking,
+        not the opening doubt.read weighs)."""
+        return stage == "turn.decide" and not final and not turn.get("beat") and not self.card.thinking_budget
 
     def _held(self, stage: str, turn: dict[str, Any], final: bool, call: dict[str, Any], reply: dict | None,
               body: dict[str, Any], nth: int = 0) -> str | dict[str, Any] | object | None:
@@ -6094,7 +6683,7 @@ class Mind:
         fresh = turn.get("reread") and _bypass() and not turn.get("answering") \
             and (call["wire"], _call_key(call["arguments"])) not in weighs
         unweighed = UNSURE if len(weighs) < UNSURE_WEIGHS else DOUBT_NOTE.format(call=call["wire"])
-        if doubt["confidence"] < _threshold("BAXY_S1_DOUBT") and not turn.get("answering") \
+        if doubt["confidence"] < self._doubt_threshold() and not turn.get("answering") \
                 and (unasked or not turn.get("reread") or fresh) and risk != "low_reversible" \
                 and not (risk == "recoverable_delete" and self._kernel_confirms(call["wire"])):
             if unasked:
@@ -6166,6 +6755,15 @@ class Mind:
                     if isinstance(question, str) and question.strip():
                         said.append({"role": "assistant", "content": question})
         return said
+
+    @staticmethod
+    def _cut_call(reply: dict[str, Any], cap: int) -> bool:
+        """DIAX18: the reply was writing a call when it reached the cap asked for: llama-server ends it at «length»
+        with all the tokens allowed (a fill of the context ends before them: Mind._next makes room for that one)."""
+        choice = reply["choices"][0]
+        return (choice.get("finish_reason") == "length"
+                and int((reply.get("usage") or {}).get("completion_tokens") or 0) >= cap
+                and bool((choice.get("message") or {}).get("tool_calls")))
 
     def _offered(self, turn: dict[str, Any], calls: list[dict[str, Any]]) -> tuple[str, list[str]] | None:
         """G10 (OFFER_NOTE): the first call with an effect of the catalog (any risk but read_only) whose text or number
@@ -6476,11 +7074,23 @@ class Mind:
                 if self._asked_it(turn):
                     return self._guide_answered(request_id, turn, self._guide, str(turn["text"]), False)
             else:
-                self._guide, self._guide_at = routine_guide.Guide(lang=routine_guide.lang_of(self.lang)), time.monotonic()
+                # DIAX1 (the owner's F4 after a question of BAXY, where the one-breath form is not taken by itself):
+                # the model asked for the routine, and its words are still split by their form when they have it
+                # («cuando te diga X …»: a routine of a word, its order the words after it).
+                formed = routine_guide.heard(str(turn["text"]), self.lang)
+                guide = (formed.guide if formed is not None and formed.action == "new" and formed.guide is not None
+                         and formed.guide.kind == "word" else routine_guide.Guide(lang=routine_guide.lang_of(self.lang)))
+                guide.known = self.routines
+                self._guide, self._guide_at = guide, time.monotonic()
                 # RUT14: the model asked for a routine because of what the person said: those words are read (typed) and
                 # BAXY asks only what they did not say, or repeats the whole routine for their «sí».
-                content = self._guide_filled(self._guide, str(turn["text"])) or self._guide.question()
-            turn["conv"].append({"role": "assistant", "content": content})
+                read = guide.kind is None or bool(guide.after)
+                content = ((formed.said if formed is not None and formed.guide is guide else "")
+                           or (self._guide_filled(guide, str(turn["text"])) if read else "") or guide.question())
+            message = {"role": "assistant", "content": content}
+            turn["conv"].append(message)
+            if self._guide is not None and self._guide_mark is None:
+                self._guide_mark = turn.get("began"), message   # DIAX13: where its exchange begins (_fold_guide)
             if self.foresee is not None:
                 try:
                     self.foresee(content, True)
@@ -6534,11 +7144,21 @@ class Mind:
                 turn["app_told"] = True
                 return self._held_back(request_id, turn, call, reply, stage, started, unsaid,
                                        APP_UNCLOSED_REFUSED if name in CLOSE_OPS else APP_UNSAID_REFUSED, "said_app")
+            other = self._store_said(turn, name, call)
+            if other:
+                turn["store_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started, other, STORE_SAID_REFUSED,
+                                       "said_store")
             unsaid = self._ring_days(turn, name, call)
             if unsaid:
                 turn["days_told"] = True
                 return self._held_back(request_id, turn, call, reply, stage, started, unsaid, RING_DAYS_REFUSED,
                                        "said_days")
+            engine = self._engine_said(turn, name, call)
+            if engine is not None:
+                turn["engine_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started, engine, ENGINE_SAID_REFUSED,
+                                       "said_engine")
             left_out =self._left_out(turn, name, call)
             if left_out:
                 return self._left_out_back(request_id, turn, call, reply, stage, started, left_out)
@@ -6548,11 +7168,35 @@ class Mind:
                 return self._held_back(request_id, turn, call, reply, stage, started, exit_unnamed_not_run(unnamed),
                                        EXIT_UNNAMED_REFUSED, "exit_unnamed")
             unnamed_power = self._power_unnamed(turn, name, call)
+            if unnamed_power is not None and turn.get("power_told"):
+                return self._close_repeat(request_id, turn, call, reply, stage, started, "power_unnamed",
+                                          POWER_UNNAMED_AGAIN, POWER_UNNAMED_REFUSED)
             if unnamed_power is not None:
                 turn["power_told"] = True
                 return self._held_back(request_id, turn, call, reply, stage, started,
-                                       power_unnamed_not_run(call["wire"], *unnamed_power), POWER_UNNAMED_REFUSED,
-                                       "power_unnamed")
+                                       power_unnamed_not_run(call["wire"], *unnamed_power, turn.get("front") or ""),
+                                       POWER_UNNAMED_REFUSED, "power_unnamed")
+            if self._power_on_again(turn, name, call):
+                turn["power_again_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started,
+                                       power_on_again_not_run(call["wire"]), POWER_AGAIN_REFUSED, "power_on_again")
+            unsaid = self._unsaid_process(turn, name, call)
+            if unsaid and turn.get("process_told"):
+                return self._close_repeat(request_id, turn, call, reply, stage, started, "said_process",
+                                          PROCESS_UNSAID_AGAIN, PROCESS_UNSAID_REFUSED)
+            if unsaid:
+                turn["process_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started, unsaid, PROCESS_UNSAID_REFUSED,
+                                       "said_process")
+            if self._scope_unsaid(turn, name, call):
+                if turn.get("scope_told"):
+                    return self._close_repeat(request_id, turn, call, reply, stage, started, "said_scope",
+                                              SCOPE_UNSAID_AGAIN, SCOPE_UNSAID_REFUSED)
+                turn["scope_told"] = True
+                return self._held_back(request_id, turn, call, reply, stage, started,
+                                       scope_unsaid_not_run(call["wire"], SCOPE_REACH[self._scope_op(name)],
+                                                            str(turn.get("said") or turn.get("text") or "")),
+                                       SCOPE_UNSAID_REFUSED, "said_scope")
             cut_address = self._cut_address(turn, call)
             if cut_address is not None:
                 return self._cut_address_back(request_id, turn, call, reply, stage, started, cut_address)
@@ -6802,6 +7446,26 @@ class Mind:
             return ""
         return (app_unclosed_not_run if name in CLOSE_OPS else app_unsaid_not_run)(call["wire"], app, words)
 
+    def _store_said(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> str:
+        """Aid «said_store»: the result that holds a game_store_search or game_store_page in a turn whose words name
+        another launcher's store and not the operations' own; empty, it runs. Said once in a turn, and only when
+        app_open is in the catalog and that launcher declares the place."""
+        op = name if "." in name else self.wire_to_op.get(name, operation_of(name))
+        open_wire = self.wires.name("app.open")
+        if op not in STORE_PLACES or turn.get("beat") or turn.get("store_told") or not _aid_on("said_store")                 or open_wire not in self.wire_to_op:
+            return ""
+        said = str(turn.get("said") or turn.get("text") or "")
+        if OWN_STORE and f" {OWN_STORE} " in _words(said):
+            return ""
+        argument = "query" if op == "game.store.search" else "title"
+        value = str(call["arguments"].get(argument) or "").strip()
+        for store, (application, places) in OTHER_STORES.items():
+            if _named_beyond(store, said, value) and STORE_PLACES[op] in places and value:
+                return store_said_not_run(call["wire"], store, open_wire, {
+                    "appId": application, "place": STORE_PLACES[op], "placeValue": value, "foreground": True,
+                    "forControl": True}, op == "game.store.search")
+        return ""
+
     def _same_app(self, turn: dict[str, Any], app: str, words: str) -> bool:
         """INT36G (cn-18): whether the model, asked apart in a closed question (SAME_APP_*), reads «app» as an
         application the person's words name, in another language or by another name; unreadable is no."""
@@ -6822,6 +7486,95 @@ class Mind:
                   **({"failure": failure or "unreadable"} if kind is None else {}))
         return kind == "yes"
 
+    def _power_on_again(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> bool:
+        """Aid «power_on_again» (DIAX5): whether this system_power shutdown is held because the model, asked apart in a
+        closed question (POWER_AGAIN_*) on the person's words of the turn (and, when BAXY's last words asked them
+        something, their turn before and that question), reads them as asking a restart. Once in a turn; unreadable is
+        a shutdown."""
+        if name not in ("system.power", "system_power") or turn.get("beat") or turn.get("power_again_told") \
+                or call["arguments"].get("action") != "shutdown" \
+                or self.risk.get(call["wire"]) == "read_only" or not _aid_on("power_on_again"):
+            return False
+        words, baxy, before = Mind._exchange(turn)
+        lead = POWER_AGAIN_BEFORE.format(before=" ".join(before.split()), baxy=" ".join(baxy.split())) \
+            if before and "?" in baxy else ""
+        started = time.perf_counter()
+        body = {"messages": [{"role": "system", "content": POWER_AGAIN_SYSTEM},
+                             {"role": "user", "content": POWER_AGAIN_NOTE.format(before=lead, said=" ".join(words.split()))}],
+                "max_tokens": 4, "grammar": POWER_AGAIN_GRAMMAR, "chat_template_kwargs": {"enable_thinking": False},
+                "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": self.seed}
+        reply, failure, read = None, None, ""
+        try:
+            reply = self.server.ask_apart(body)
+            read = str(reply["choices"][0]["message"].get("content") or "").strip()
+        except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+            failure = type(error).__name__
+        kind = closed_word(read, ("apagar", "reiniciar"))
+        self._log("turn.power_again", started, reply, text=None if turn.get("private") else turn["text"],
+                  kind=kind, operation=None, arguments=None, content=None,
+                  **({"failure": failure or "unreadable"} if kind is None else {}))
+        return kind == "reiniciar"
+
+    def _unsaid_process(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> str:
+        """Aid «said_process» (DIAX5): the result that holds a system_process_terminate_named whose program neither the
+        person's words of the conversation, BAXY's own nor any of its results show, not even alike in spelling or by
+        another of its names, and that the model, asked apart (_same_app), does not read as one their words name;
+        empty, it runs. Every such call of the turn."""
+        if name not in TERMINATE_OPS or turn.get("beat") or not _aid_on("said_process"):
+            return ""
+        written = str(call["arguments"].get("name") or "").strip()
+        program = re.sub(r"\.exe$", "", written, flags=re.IGNORECASE)
+        words = str(turn.get("said") or turn.get("text") or "")
+        shown = " ".join([str(m.get("content") or "") for m in turn["conv"] if m.get("role") in ("user", "assistant")
+                          and not str(m.get("content") or "").startswith("[")]
+                         + [str(m.get("content") or "") for m in turn["conv"] if m.get("role") == "tool"
+                            and not str(m.get("content") or "").startswith(NOT_RUN_MARK)]
+                         + [words])
+        if not _words(program).strip() or not words.strip() or not _latin_only(program + shown) \
+                or names_app(program, shown) or self._same_app(turn, program, words):
+            return ""
+        return process_unsaid_not_run(call["wire"], written, words, turn.get("front") or "")
+
+    def _scope_op(self, name: str) -> str:
+        """The operation of a wire or operation name, as SCOPE_NOTES keys it (a wire the catalog does not map is its
+        operation with dots, as both forms of TERMINATE_OPS)."""
+        return self.wire_to_op.get(name) or name.replace("_", ".")
+
+    def _scope_unsaid(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> bool:
+        """Aid «said_scope» (DIAX16): whether this window_close_all or game_install_cancel_active is held because the
+        model, asked apart in a closed question (SCOPE_*) on the person's words of the turn (and, when BAXY's last words
+        asked them something, their turn before and that question), reads them as asking to close one application.
+        Asked once in a turn, its reading kept for the calls after it; unreadable runs as written."""
+        op = self._scope_op(name)
+        if op not in SCOPE_NOTES or turn.get("beat") or not _aid_on("said_scope"):
+            return False
+        if "scope_read" not in turn:
+            whole, what = SCOPE_NOTES[op]
+            words, baxy, before = Mind._exchange(turn)
+            lead = POWER_AGAIN_BEFORE.format(before=" ".join(before.split()), baxy=" ".join(baxy.split())) \
+                if before and "?" in baxy else ""
+            started = time.perf_counter()
+            body = {"messages": [{"role": "system", "content": SCOPE_SYSTEM.format(w=whole)},
+                                 {"role": "user", "content": SCOPE_NOTE.format(before=lead, said=" ".join(words.split()),
+                                                                               what=what, w=whole)}],
+                    "max_tokens": 8, "grammar": f'root ::= "{whole}" | [^\\n]{{1,30}}',
+                    "chat_template_kwargs": {"enable_thinking": False},
+                    "temperature": 0.0, "top_p": 0.8, "top_k": 20, "min_p": 0.0, "seed": self.seed}
+            reply, failure, read = None, None, ""
+            try:
+                reply = self.server.ask_apart(body)
+                read = str(reply["choices"][0]["message"].get("content") or "").strip()
+            except (urllib.error.URLError, OSError, KeyError, IndexError, TypeError, ValueError) as error:
+                failure = type(error).__name__
+            # The call's word, or an application's name written in its place; nothing written is unreadable.
+            kind = None if not _words(read).strip() else "reach" if _words(read).split()[0] == whole else "application"
+            self._log("turn.scope", started, reply, text=None if turn.get("private") else turn["text"],
+                      kind=kind, operation=op, arguments=None, content=None,
+                      **({"failure": failure or "unreadable"} if kind is None else {}))
+            turn["scope_read"] = (op, kind == "application")
+        read_op, held = turn["scope_read"]
+        return held and read_op == op
+
     def _ring_days(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> str:
         """Aid «said_days» (RUT16): the result that holds a schedule.alarms create that rings on days other than the
         days of the week the person's words of the turn name (ring_days_not_run); empty, it runs. Said once in a
@@ -6839,7 +7592,9 @@ class Mind:
             if any(when.offset is not None for when, _ in routine_fill._times([" ".join(words)], [])):
                 return ""   # «mañana», «hoy»: the day is the one they said, whatever days they name besides
             due = self._ring_due(arguments)
-            if due is None or due.weekday() in named:
+            # DIAX20: once on a day they name is theirs only when their words say that day once («el lunes»), not
+            # every week («todos los lunes»: the 4B wrote the next Monday and said «cada lunes», or one per Monday).
+            if due is None or due.weekday() in named and not routine_fill._weekly(words):
                 return ""
         elif recurrence != "daily" or len(named) == 7:
             return ""
@@ -7050,11 +7805,12 @@ class Mind:
         return None if any(_names_baxy(words) for words in said) else before
 
     def _power_unnamed(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> tuple[str, str] | None:
-        """Aid «power_unnamed»: a system_power that shuts the computer down in a turn where neither the person's words,
-        BAXY's words before them nor the person's turn before name the computer or the session: their words and those
-        before; None, it runs (and when the catalog says that tool only reads: test_mind_doubt_policy's stand-in)."""
-        if name not in ("system.power", "system_power") or turn.get("beat") or turn.get("power_told") \
-                or call["arguments"].get("action") != "shutdown" \
+        """Aid «power_unnamed»: a system_power that shuts the computer down, restarts it or signs out (POWER_ENDS) in a
+        turn where neither the person's words, BAXY's words before them nor the person's turn before name the computer
+        or the session: their words and those before; None, it runs (and when the catalog says that tool only reads:
+        test_mind_doubt_policy's stand-in). Every such call of the turn, not only the first (DIAX5)."""
+        if name not in ("system.power", "system_power") or turn.get("beat") \
+                or call["arguments"].get("action") not in POWER_ENDS \
                 or self.risk.get(call["wire"]) == "read_only" or not _aid_on("power_unnamed"):
             return None
         words, baxy, before = Mind._exchange(turn)
@@ -7091,6 +7847,39 @@ class Mind:
         before = theirs[-2] if len(theirs) > 1 else ""
         said = baxy[-2] if theirs else baxy[-1]
         return str(turn.get("said") or turn.get("text") or ""), " ".join(said), before
+
+    def _drop_engine_held(self) -> None:
+        """DIAX6C (D6-5): a web_search held by «said_engine» in a turn already over leaves the conversation, its result
+        and its call (the nearest before it with that id: ids may repeat); what ran and its receipts stay."""
+        conv = [dict(m) for m in self.conversation]
+        drop = set()
+        for i, message in enumerate(conv):
+            if message.get("role") != "tool" or not str(message.get("content") or "").startswith(ENGINE_HELD_START):
+                continue
+            drop.add(i)
+            for asked in reversed(conv[:i]):
+                calls = asked.get("tool_calls") or []
+                if any(c.get("id") == message.get("tool_call_id") for c in calls):
+                    at = max(n for n, c in enumerate(calls) if c.get("id") == message.get("tool_call_id"))
+                    asked["tool_calls"] = calls[:at] + calls[at + 1:]
+                    break
+        if not drop:
+            return
+        self.conversation[:] = [m for n, m in enumerate(conv) if n not in drop
+                                and not (m.get("role") == "assistant" and "tool_calls" in m and not m["tool_calls"]
+                                         and not m.get("content"))]
+
+    def _engine_said(self, turn: dict[str, Any], name: str, call: dict[str, Any]) -> str | None:
+        """Aid «said_engine»: when this web_search of the web is held because the person's words of this turn name a
+        search engine as where to search, its result (with that engine's results page for the query); None, it runs.
+        Said once in a turn, and only when browser_navigate is in the catalog to open it."""
+        open_wire = self.wires.name("browser.navigate")
+        if name != "web.search" or turn.get("beat") or turn.get("engine_told") or not _aid_on("said_engine")                 or open_wire not in self.wire_to_op or call["arguments"].get("source") not in (None, "web"):
+            return None
+        words = str(turn.get("said") or turn.get("text") or "")
+        query = str(call["arguments"].get("query") or "").strip()
+        engine = _engine_said(words, query)
+        return engine_said_not_run(call["wire"], engine, query, open_wire) if engine and query else None
 
     @staticmethod
     def _left_out(turn: dict[str, Any], name: str, call: dict[str, Any]) -> list[str]:

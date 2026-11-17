@@ -193,6 +193,34 @@ public sealed class AppCloseByApplicationTests
         });
     }
 
+    // DIAX12 (H-021, vivo NB 2 de 2): «cierra Edge» closed its only window and left seven windowless msedge processes that
+    // did not quit when asked; the failure app_running_in_background made the model say «Edge se quedó abierto» and offer
+    // to force it. Every window the person had is closed: that is done, and what stays in the background is said as fact.
+    [Test]
+    public async Task EveryWindowClosedWithOnlyWindowlessProcessesLeftIsDoneAndSaysWhatStays()
+    {
+        var windows = new FakeWindows([Frame("win_a", 100, "Nueva pestaña")])
+        {
+            Background = [100, 101],
+            Quit = new(true, "navegador", [new RemainingProcess(100, "navegador"), new RemainingProcess(101, "navegador")]),
+        };
+
+        OperationOutcome outcome = await new AppCloseHandler(windows).ExecuteAsync(
+            Invocation("{\"appId\":\"Navegador\"}"), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded && outcome.Verified, Is.True, "its windows are what the person sees");
+            Assert.That(outcome.ErrorCode, Is.Null);
+            Assert.That(outcome.Result!.Value.GetProperty("closedWindows").GetInt32(), Is.EqualTo(1));
+            Assert.That(outcome.Result!.Value.GetProperty("openWindows").GetInt32(), Is.EqualTo(0));
+            Assert.That(outcome.Result!.Value.GetProperty("applicationExited").GetBoolean(), Is.False);
+            Assert.That(outcome.Result!.Value.GetProperty("stillRunning").GetArrayLength(), Is.EqualTo(2));
+            Assert.That(outcome.Result!.Value.GetProperty("background").GetString(), Does.Contain("no window"));
+            Assert.That(outcome.Result!.Value.TryGetProperty("next", out _), Is.False, "nothing to force: it was closed");
+        });
+    }
+
     // Controls: a dialog of its own stops everything, and one window asked by its id only ever concerns that window.
     [Test]
     public async Task AWindowAskingToSaveIsNeverFollowedByTheQuit()

@@ -391,11 +391,55 @@ internal sealed class MemoryOperationHandler : IOperationHandler
             return Failure("verification_failed", effectMayHaveOccurred: true);
         }
 
+        // DIAX10B (H-062, vivo en la GTX 1650): «olvida el color de mi bicicleta» sent the name the model made up
+        // («color de mi bicicleta») with the memory saved as «color de la bicicleta»; nothing matched, and the result
+        // said only that nothing matched, so BAXY told the person «no había nada guardado» with the memory still there
+        // (2 of 2). A forget by name that matches nothing says what is saved, as an exact recall that matches nothing
+        // does, and the model tells which one the person meant.
+        (IReadOnlyList<string>? kept, int? keptTotal) = result.DeletedCount == 0
+            && !result.Replayed
+            && request.Scope is MemoryForgetScope.Exact or MemoryForgetScope.Topic
+                ? SavedNames(opened.SessionId)
+                : (null, null);
         return Success(
             invocation,
             opened.SessionId,
-            new MemoryForgetWireResult(PayloadVersion, result.DeletedCount, result.Replayed),
+            new MemoryForgetWireResult(PayloadVersion, result.DeletedCount, result.Replayed, kept, keptTotal),
             MemoryHandlersJsonContext.Default.MemoryForgetWireResult);
+    }
+
+    // The names of what is saved and visible to this session, as a recall shows them (their labels; the first
+    // RecallMissShown, newest first, as a list's view shows them; a sensitive or secret one is counted, never named), or
+    // nothing with the memory off: a forget runs with the memory off, and then it names nothing.
+    private (IReadOnlyList<string>? Kept, int? KeptTotal) SavedNames(string sessionId)
+    {
+        try
+        {
+            _ = _store.BeginSession(new MemoryBeginSessionRequest(sessionId));
+            if (!_store.Status(new MemoryStatusRequest(sessionId)).Enabled)
+            {
+                return (null, null);
+            }
+
+            MemoryRecord[] all = _store.List(new MemoryListRequest(
+                sessionId,
+                MaximumResults: LocalMemoryStore.MaximumListResults)).Records.ToArray();
+            string[] named = all.Take(RecallMissShown)
+                .Where(static record => record.Sensitivity is not (MemorySensitivity.Sensitive or MemorySensitivity.Secret))
+                .Select(static record => record.Label)
+                .ToArray();
+            return (named, all.Length);
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException
+            or CryptographicException
+            or MemoryStoreException
+            or ProtectedPayloadException
+            or JsonException)
+        {
+            // Nothing was deleted and that stands; what is saved is only left unsaid.
+            return (null, null);
+        }
     }
 
     private OperationOutcome ClearSession(

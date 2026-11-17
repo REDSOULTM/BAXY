@@ -265,3 +265,39 @@ def test_words_after_an_open_question_are_attended_as_a_request(tmp_path: Path) 
     note = server.bodies[-1]["messages"][-2]["content"]
     assert note == OFFERED_NOTE and "contestarla" not in note and "pedido nuevo" not in note
     assert "si le falta un dato, pregúntalo" in note
+
+
+@pytest.mark.parametrize("result, told", [
+    # H-020 (DIAX12 F3, DIAX14): «pon <canción> en YouTube» → the video plays and BAXY asks «¿Te gustaría que busque otra
+    # canción?» → «para la canción»: with the note alone the model played the video again 15 of 30 (6 bodies × 5 seeds,
+    # Qwen3.5-4B); with what had last run beside it, 0 of 30, every one a media_control pause or stop.
+    ({"status": "completed", "observed": {"version": 1, "title": "Marta Vega - CHEMTRAILS", "playbackStatus": "playing"}},
+     ' Lo último que corrió: media_play_youtube ({"playbackStatus": "playing"}).'),
+    # A result with no state field of its own, or a call that did not complete: the note is the one it always was (with
+    # the bare name of the call, «Sí.» to «¿Necesitas algo más?» after closing an app started a new conversation 6/6).
+    ({"status": "completed", "observed": {"version": 1, "title": "Marta Vega - CHEMTRAILS"}}, ""),
+    ({"status": "failed", "error": "youtube_unreachable"}, "")])
+def test_the_note_after_a_question_that_followed_a_call_says_what_ran_last(tmp_path: Path, monkeypatch, result: dict,
+                                                                         told: str) -> None:
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("media_play_youtube", {"query": "Luz de Invierno"}),
+                                    _say("El que suena es otro. ¿Te gustaría que busque otra canción?"), _say("Listo.")])
+    assert mind.decide(1, "pon Luz de Invierno en YouTube")["kind"] == "action"
+    assert mind.continue_turn(2, json.dumps(result))["kind"] == "conversation"
+    mind.decide(3, "para la canción")
+    note = server.bodies[-1]["messages"][-2]["content"]
+    head = "tu último mensaje terminó en una pregunta."
+    assert note == OFFERED_NOTE.replace(head, head + told)
+
+
+def test_the_note_after_a_question_with_no_call_before_it_is_unchanged(tmp_path: Path, monkeypatch) -> None:
+    # The cases the note was measured on (tras_saludo, tras_pregunta_abierta: a question in words with no call in its
+    # turn) read it byte for byte as before; and a call of an earlier turn is not «what ran last» before this question.
+    monkeypatch.delenv("BAXY_AYUDAS", raising=False)
+    mind, server = _mind(tmp_path, [_call("media_play_youtube", {"query": "Luz de Invierno"}), _say("Ya suena."),
+                                    _say("Buenas, ¿qué más hacemos?"), _say("Listo.")])
+    assert mind.decide(1, "pon Luz de Invierno en YouTube")["kind"] == "action"
+    mind.continue_turn(2, json.dumps({"status": "completed", "observed": {"version": 1, "playbackStatus": "playing"}}))
+    mind.decide(3, "hola")
+    mind.decide(4, "para la canción")
+    assert server.bodies[-1]["messages"][-2]["content"] == OFFERED_NOTE

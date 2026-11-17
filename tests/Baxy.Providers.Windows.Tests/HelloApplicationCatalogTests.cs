@@ -49,6 +49,41 @@ public sealed class HelloApplicationCatalogTests
         });
     }
 
+    // DIAX17: the installed games were read inside the hello with no limit; a game library on a drive that takes 30 s
+    // to answer held the hello past the App's 10 s and the start failed. The hello waits for them only within its
+    // budget, then goes with the game list unverified.
+    [Test]
+    public async Task AGameReadThatTakesThirtySecondsDoesNotHoldTheHello()
+    {
+        Task<External.InstalledGameCatalogSnapshot> slow = Task.Delay(TimeSpan.FromSeconds(30))
+            .ContinueWith(static _ => new External.InstalledGameCatalogSnapshot(true, true, []), TaskScheduler.Default);
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        External.InstalledGameCatalogSnapshot hello = await HelloCatalogWait.GamesWithinAsync(
+            slow, TimeSpan.Zero, CancellationToken.None);
+        clock.Stop();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(clock.Elapsed, Is.LessThan(CoreStartupBudget.HelloTimeout - TimeSpan.FromSeconds(2)));
+            Assert.That(clock.Elapsed, Is.GreaterThanOrEqualTo(CoreStartupBudget.HelloCatalogWait - TimeSpan.FromSeconds(1)));
+            Assert.That(hello.Verified, Is.False);
+            Assert.That(hello.Entries, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task AGameReadWithinTheBudgetIsCarried()
+    {
+        var read = new External.InstalledGameCatalogSnapshot(
+            true, true, [new External.InstalledGameCatalogEntry("steam", "367520", "Hollow Knight")]);
+
+        External.InstalledGameCatalogSnapshot hello = await HelloCatalogWait.GamesWithinAsync(
+            Task.FromResult(read), CoreStartupBudget.HelloCatalogWait, CancellationToken.None);
+
+        Assert.That(hello, Is.SameAs(read));
+    }
+
     [Test]
     public async Task AFirstStartWhoseReadIsLateCarriesNoList()
     {

@@ -216,6 +216,14 @@ LEFT_NOTES = {
               "contestaba su pregunta, así que no se hizo nada con ninguna: siguen como estaban. Dile en pocas palabras "
               "que no se hizo y atiende lo que dijo.]"),
 }
+# DIAX13: a routine being made that the person stopped in their own words and asked something else (Mind._asks_more).
+CANCEL_LEFT_NOTE = ("[Nota interna, no la escribió la persona: la persona dejó sin guardar la rutina que BAXY estaba "
+                    "creando con ella y pidió algo más. Dile en pocas palabras que no se guardó y atiende lo demás que "
+                    "dijo.]")
+# DIAX13 (the owner's F5): what the model reads in place of the exchange of a guide that ended unsaved
+# (Mind._fold_guide), before the sentence BAXY ended it with, if it did.
+ENDED_NOTE = ("[Nota interna, no la escribió la persona: aquí BAXY le hizo a la persona preguntas sobre sus rutinas y "
+              "la persona lo dejó sin terminar: no se hizo nada con sus rutinas y no queda nada pendiente de eso.]")
 # RUT9 (second blind review, REV9 S1): the guide dropped after GUIDE_SILENCE_S with its question still in the
 # conversation: a late «sí» would reach the model, which has nothing to save with.
 SILENT_NOTE = ("[Nota interna, no la escribió la persona: la rutina que BAXY estaba creando con la persona quedó sin "
@@ -290,6 +298,18 @@ def _span(text: Any) -> tuple[list[str], int]:
             if len(words) > size and tuple(words[-size:]) == piece:
                 words, changed = words[:-size], True
     return words, front
+
+
+def _fillers_only(text: Any) -> bool:
+    """DIAX1: whether these words are only fillers (FILLERS), one after the other."""
+    words = _words(text)
+    pieces = sorted((tuple(f.split()) for f in FILLERS), key=len, reverse=True)
+    while words:
+        piece = next((piece for piece in pieces if tuple(words[:len(piece)]) == piece), None)
+        if piece is None:
+            return False
+        words = words[len(piece):]
+    return True
 
 
 def _core(text: Any) -> str:
@@ -548,6 +568,7 @@ TEXT = {
         "confirm_again": "Di «sí» para guardarla o «no» para dejarla. {confirm}",
         "unsure": "No te oí bien. {question}",
         "cancelled": "Listo, lo dejo: no guardé ninguna rutina.",
+        "dropped": "Lo dejé sin terminar: no hice nada con tus rutinas.",
         "not_saved": "No la guardé.",
         "saved_word": "Guardada. Cuando digas «{phrase}», hago lo que pediste. Ahora no hice nada de eso.",
         "saved_time": ("Guardada. {when} te lo digo, sin alarma; si BAXY está cerrada, te sale un aviso de Windows. La "
@@ -641,6 +662,7 @@ TEXT = {
         "confirm_again": "Say «yes» to save it or «no» to leave it. {confirm}",
         "unsure": "I didn't hear you well. {question}",
         "cancelled": "Okay, leaving it: I didn't save any routine.",
+        "dropped": "I left it unfinished: I didn't do anything with your routines.",
         "not_saved": "I didn't save it.",
         "saved_word": "Saved. When you say «{phrase}», I'll do what you asked. I haven't done any of it now.",
         "saved_time": ("Saved. {when} I'll tell you, with no alarm; if BAXY is closed, you get a Windows notification "
@@ -783,6 +805,17 @@ def _kept(text: Any) -> str:
     if close and len(ends) > 2 and ends.endswith(close) and close not in ends[1:-1]:
         return ends[1:-1].strip()
     return kept.strip(" \t«»\"“”")
+
+
+def _follows(after: str, phrase: str) -> str:
+    """DIAX1: the words of ``after`` that follow ``phrase`` when it is, word by word (folded), how they begin, kept as
+    they were said (an order: _kept, bounded as the comma's split); else nothing."""
+    said = list(re.finditer(r"[^\W_]+", after or ""))
+    want = fold(phrase).split()
+    if not want or len(said) <= len(want) or [fold(word.group(0)) for word in said[:len(want)]] != want:
+        return ""
+    order = _kept(after[said[len(want) - 1].end():].lstrip(" ,;:.-")).rstrip(".").strip()
+    return order if fold(order) and len(order) <= MOST_ORDER else ""
 
 
 def _is(text: str, pieces: tuple[str, ...]) -> bool:
@@ -986,6 +1019,9 @@ class Guide:
     known: Any = field(default=None, repr=False, compare=False)
     # RUT18 D: its time before the change of «when» asked it again (_to), kept when they say only days
     clock_was: When | None = field(default=None, repr=False, compare=False)
+    # DIAX1 (the owner's F4): the person's words after «cuando te diga» of a one-breath routine its form did not split
+    # (no comma after the word): a routine of a word by that form, whose order is what follows the word (_follows)
+    after: str = field(default="", repr=False, compare=False)
 
     def _state(self) -> tuple[Any, ...]:
         return self.step, self.kind, self.phrase, self.order, self.say, self.when, self.part, self.mode
@@ -1049,12 +1085,15 @@ class Guide:
         reason, refused = "", ""
         self.known = routines
         bare = not (self.phrase or self.order or self.say or self.when.hour is not None or self.when.repeat)
-        if read.kind and (self.kind is None or self.step == "kind" or bare):
-            self.kind = read.kind
         new = read.when
+        # DIAX1 (the owner's F4): the kind their words' form gave («cuando te diga X …») changes only with a time said
+        # (the 4B read «tiempo» as «time» and BAXY asked «¿A qué hora, y qué días?» of a routine of a word)
+        formed = bool(self.after) and self.kind is not None and read.kind != self.kind and new is None
+        if read.kind and (self.kind is None or self.step == "kind" or bare) and not formed:
+            self.kind = read.kind
         if self.kind is None and new is not None and new.hour is not None:
             self.kind = "time"   # an hour said is its kind, as at «¿Con una palabra tuya o a una hora?»
-        same = read.kind in (None, self.kind)   # a text read for the other kind of routine is not this one's
+        same = read.kind in (None, self.kind) or formed   # a text read for the other kind of routine is not this one's
         if self.kind == "time":
             if new is not None and new.hour is not None and (
                     new.clock() != self.when.clock() if new.clock() is not None
@@ -1071,7 +1110,16 @@ class Guide:
                 self.taken = bool(reason) and _taken(read.phrase, routines, but=self.target)
                 self.phrase = self.phrase if reason else read.phrase
                 refused = "phrase" if reason else ""
-            if read.text and len(read.text) <= MOST_ORDER and read.text != self.order and (read.fresh or not self.order):
+            follows = _follows(self.after, self.phrase) if not self.order else ""
+            if follows:
+                # DIAX1: their own words after the word, as the comma would have split them (the 4B wrote the order in
+                # its words, «aprieta…», and the check of theirs refused it: the order said first was lost)
+                if about_routines(follows):
+                    reason = reason or self._t("order_mine", phrase=self.phrase)
+                    refused = refused or "order"
+                else:
+                    self.order = follows
+            elif read.text and len(read.text) <= MOST_ORDER and read.text != self.order and (read.fresh or not self.order):
                 if about_routines(read.text):
                     reason = reason or self._t("order_mine", phrase=self.phrase or read.phrase)
                     refused = refused or "order"
@@ -1094,6 +1142,10 @@ class Guide:
         leave it at once, as Guide.leaves did by their form (RUT9, REV9 H4). An answer that adds nothing is asked again
         once, saying what there is so far; a second one in a row is the model's turn: nobody is kept in the guide by
         words it does not understand."""
+        if read.does == "cancel":
+            # DIAX13: words that stop it fill nothing in («olvídalo, abre una conversación nueva» at «¿Qué quieres que
+            # haga…?» was kept as the order: DIAX1's held-out hc02, hx06)
+            return self._t("cancelled"), None, True, False
         before = self._state()
         reason = self.fill(read, routines)
         if self._state() != before:
@@ -1101,8 +1153,6 @@ class Guide:
             return reason or self.question(), None, False, False
         if reason and self.taken:
             return reason, None, False, False   # REM6 (REV15 B-1): a phrase taken is said so, never left with
-        if read.does == "cancel":
-            return self._t("cancelled"), None, True, False
         if self.step == "confirm" and read.does == "no":
             return self._t("not_saved"), None, True, False
         if (self.step == "confirm" and (read.does == "yes" or (read.does == "answer" and read.bare))
@@ -1239,6 +1289,10 @@ class Guide:
             return LEFT_NOTE
         act = "change" if self.mode == "change" else self.act
         return LEFT_NOTES.get(act, LEFT_NOTES["other"])
+
+    def dropped(self) -> str:
+        """DIAX13B (REVX2 D13-1): what BAXY did when this guide fell silent, for what the model reads after it."""
+        return self._t("dropped")
 
     def id_of(self, name: str) -> str:
         """REM6 (REV15 B-2): the id of the routine asked about by this name (the name itself if it had none)."""
@@ -1563,7 +1617,9 @@ def _one_breath(text: str, lang: str) -> Order | None:
             continue
         rest = _SAID_WORD.sub("", match.group(3).strip())
         stated = fold(match.group(2)) == "digo"   # «cada vez que digo X…» tells what happens as often as it asks for it
-        aside = re.search(r"[,:;]\s*$", match.group(1)) is not None or fold(match.group(1)) in LEAD_INS
+        # DIAX1 (held-out): fillers alone in front («Eh cuando te diga…», no comma after them) ask nothing else either
+        aside = (re.search(r"[,:;]\s*$", match.group(1)) is not None or fold(match.group(1)) in LEAD_INS
+                 or _fillers_only(match.group(1)))
         if match.group(1) and (stated or len(_words(rest)) < LEAST_AFTER or not aside):
             continue   # «no me escuchas cuando te digo…», «¿qué pasa cuando te diga X?», «escribe cuando…»: the model's
         split = _QUOTED.match(rest) or _COMMA.match(rest)
@@ -1587,7 +1643,9 @@ def _one_breath(text: str, lang: str) -> Order | None:
                 or len(order) > MOST_ORDER or mine(phrase) or everyday(phrase)):
             if stated:
                 continue
-            return Order("new", said_in, guide=Guide(lang=said_in))
+            # DIAX1 (the owner's F4): a routine of a word all the same, by this form; the model reads where the word
+            # ends (Mind._guide_filled) and what follows it is the order (Guide.after)
+            return Order("new", said_in, guide=Guide(lang=said_in, kind="word", step="phrase", after=rest))
         return Order("new", said_in, guide=Guide(lang=said_in, step="confirm", kind="word", phrase=phrase, order=order))
     for pattern, said_in in _TELL:
         match = pattern.search(text)

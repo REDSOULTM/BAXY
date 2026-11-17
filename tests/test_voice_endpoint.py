@@ -310,3 +310,30 @@ def test_silero_is_reset_only_while_no_request_is_open() -> None:
     ("Hola, ¿qué hora es?", "Hola, ¿qué hora es?")])
 def test_the_call_is_never_part_of_the_request(heard: str, asked: str) -> None:
     assert voice.without_call(heard) == asked
+
+
+@pytest.mark.parametrize(("tokens", "timestamps", "asked"), [
+    # DIAX4: «Baxi sí» in one breath, written glued to the call («Baxisi.») and wholly before the cut: the reply stays
+    ([" Bax", "is", "i", "."], [1.3, 1.45, 1.6, 1.7], "si."),
+    ([" Bak", "s", "isi", ",", " bor", "rala", "."], [1.3, 1.4, 1.5, 1.7, 1.8, 1.9, 2.1], "si, borrala."),
+    # the call alone, however it was written, is still nothing; the call with a request after it, the request
+    ([" Bax", "is", "."], [1.3, 1.45, 1.6], ""),
+    ([" Ba", "xi", ",", " abre", " Ste", "am", "."], [1.4, 1.6, 1.8, 2.1, 2.4, 2.5, 2.7], "abre Steam."),
+    # a word before the call that does not begin with its sound is never taken back
+    ([" Hola", ".", " Bag", "si", "."], [0.3, 0.6, 1.4, 1.6, 1.7], ""),
+])
+def test_a_reply_glued_to_the_call_is_not_cut_with_it(tokens: list[str], timestamps: list[float], asked: str) -> None:
+    listening = object.__new__(Voice)
+    listening._hotwords = ""
+    listening._recognizer = _Recognizer(tokens, timestamps)
+    heard = listening._transcribe(numpy.full(BLOCK * 30, 0.1, numpy.float32), 2.0)
+    assert heard.text == asked
+    assert [word for word, _ in heard.words] == asked.split()  # how sure each word is still travels with it
+
+
+def test_a_glued_reply_is_as_sure_as_the_word_it_was_written_in() -> None:
+    listening = object.__new__(Voice)
+    listening._hotwords = ""
+    listening._recognizer = _Recognizer([" Bax", "is", "i", "."], [1.3, 1.45, 1.6, 1.7])
+    listening._recognizer.result.ys_log_probs = [0.0, math.log(0.2), 0.0, 0.0]
+    assert listening._transcribe(numpy.full(BLOCK * 30, 0.1, numpy.float32), 2.0).unsure() == [("si.", pytest.approx(0.2))]

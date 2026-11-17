@@ -58,3 +58,31 @@ def gemma4(messages: list[dict[str, Any]], tools: list[dict[str, Any]], add_gene
             content += f"<|tool_call>call:{call['function']['name']}{{{args}}}<tool_call|>"
         out += f"<|turn>{role}\n{content}<turn|>\n"
     return out + ("<|turn>model\n" if add_generation_prompt else "")
+
+
+def ministral3(messages: list[dict[str, Any]], tools: list[dict[str, Any]], add_generation_prompt: bool = True) -> str:
+    """Ministral 3's template (MODX2: rendered with jinja2 from tokenizer.chat_template of Ministral-3-8B-Instruct-2512,
+    16-11-2026): «[TOOL_CALLS]NAME[ARGS]{…}», and the person's messages and the model's replies in words must alternate
+    (calls and results are not counted): two of one side in a row raise, as the real template does."""
+    out = "<s>"
+    count = 0
+    for m in messages[1:] if messages and messages[0]["role"] == "system" else messages:
+        if m["role"] == "user" or (m["role"] == "assistant" and not m.get("tool_calls")):
+            if (m["role"] == "user") != (count % 2 == 0):
+                raise ValueError("After the optional system message, conversation roles must alternate user and "
+                                 "assistant roles except for tool calls and results.")
+            count += 1
+    for m in messages:
+        content = m.get("content") or ""
+        if m["role"] == "system":
+            out += f"[SYSTEM_PROMPT]{content}[/SYSTEM_PROMPT]" + (f"[AVAILABLE_TOOLS]{json.dumps(tools)}[/AVAILABLE_TOOLS]"
+                                                                  if tools else "")
+        elif m["role"] == "user":
+            out += f"[INST]{content}[/INST]"
+        elif m["role"] == "tool":
+            out += f"[TOOL_RESULTS]{content}[/TOOL_RESULTS]"
+        else:
+            calls = "".join(f"[TOOL_CALLS]{c['function']['name']}[ARGS]{json.dumps(_arguments(c))}"
+                            for c in m.get("tool_calls") or [])
+            out += f"{content}{calls}</s>"
+    return out

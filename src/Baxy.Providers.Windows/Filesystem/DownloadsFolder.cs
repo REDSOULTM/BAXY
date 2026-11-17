@@ -12,11 +12,15 @@ internal static partial class DownloadsFolder
 {
     private static readonly Guid Downloads = new("374de290-123f-4565-9164-39c4925e467b");
 
+    // DIAX17: KF_FLAG_DONT_VERIFY. Resolved while the core starts; verifying a Downloads redirected to a drive or share
+    // that does not answer waits on it. A folder not there is said so when it is used.
+    private const uint DontVerify = 0x00004000;
+
     internal static string Path()
     {
         try
         {
-            if (SHGetKnownFolderPath(in Downloads, 0, 0, out nint path) == 0)
+            if (SHGetKnownFolderPath(in Downloads, DontVerify, 0, out nint path) == 0)
             {
                 try
                 {
@@ -34,7 +38,7 @@ internal static partial class DownloadsFolder
         {
         }
 
-        return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify), "Downloads");
     }
 
     [LibraryImport("shell32.dll")]

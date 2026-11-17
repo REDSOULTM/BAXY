@@ -108,7 +108,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new WindowsGameInstallationAdapter(),
             new WindowsDeviceControlAdapter(
                 root,
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY"))
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify), "BAXY"))
             {
                 Scripts = uia,
             },
@@ -505,6 +505,57 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             adapter.InstalledExecutables = applications.RunningExecutablesAsync;
             adapter.InstalledName = applications.NamesInstalledApplicationAsync;
         }
+    }
+
+    /// <summary>
+    /// DIAX11 (privacidad), at the core's start: the own Edge profile a 1.5.x BAXY left signed in with the person's
+    /// account is closed and discarded, once (<see cref="OwnBrowserProfile.DiscardSignedInProfiles"/>); how many. Null
+    /// when the shared profiles are not this data root's to check (<see cref="OwnBrowserProfile.SharedRootOwnedBy"/>:
+    /// they are the installed BAXY's). Nothing here may stop the start: a profile that could not be discarded is tried
+    /// again at the next one.
+    /// </summary>
+    public static int? DiscardOwnBrowserProfilesWithAnAccount(string dataRoot) =>
+        DiscardOwnBrowserProfilesWithAnAccount(dataRoot, OwnBrowserProfile.SharedRoot(dataRoot),
+            OwnBrowserProfile.InstalledDataRoot(), closeBrowsers: null);
+
+    internal static int? DiscardOwnBrowserProfilesWithAnAccount(string dataRoot, string? sharedRoot,
+        string? installedDataRoot, Func<string, int>? closeBrowsers)
+    {
+        if (sharedRoot is null)
+            return 0;
+        try
+        {
+            return OwnBrowserProfile.SharedRootOwnedBy(dataRoot, sharedRoot, installedDataRoot) is { } root
+                ? OwnBrowserProfile.DiscardSignedInProfiles(root, closeBrowsers).Count
+                : null;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
+            or InvalidOperationException or ArgumentException or NotSupportedException
+            or System.ComponentModel.Win32Exception)
+        {
+            return 0;
+        }
+    }
+
+    /// <summary>DIAX11: the own browsers whose profile was discarded (<see cref="DiscardOwnBrowserProfilesWithAnAccount(string)"/>)
+    /// and not yet told to the person; the App says it once, then <see cref="ForgetOwnBrowserAccountNotice(string)"/>.</summary>
+    public static IReadOnlyList<string> OwnBrowserAccountNotice(string dataRoot) =>
+        OwnBrowserAccountNotice(dataRoot, OwnBrowserProfile.SharedRoot(dataRoot), OwnBrowserProfile.InstalledDataRoot());
+
+    internal static IReadOnlyList<string> OwnBrowserAccountNotice(string dataRoot, string? sharedRoot,
+        string? installedDataRoot) =>
+        OwnBrowserProfile.SharedRootOwnedBy(dataRoot, sharedRoot, installedDataRoot) is { } root
+            ? OwnBrowserProfile.ReadNotice(root)
+            : [];
+
+    /// <summary>DIAX11: the notice was told.</summary>
+    public static void ForgetOwnBrowserAccountNotice(string dataRoot) =>
+        ForgetOwnBrowserAccountNotice(dataRoot, OwnBrowserProfile.SharedRoot(dataRoot), OwnBrowserProfile.InstalledDataRoot());
+
+    internal static void ForgetOwnBrowserAccountNotice(string dataRoot, string? sharedRoot, string? installedDataRoot)
+    {
+        if (OwnBrowserProfile.SharedRootOwnedBy(dataRoot, sharedRoot, installedDataRoot) is { } root)
+            OwnBrowserProfile.ForgetNotice(root);
     }
 
     public void Prewarm()

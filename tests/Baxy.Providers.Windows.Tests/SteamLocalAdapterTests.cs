@@ -129,15 +129,43 @@ public sealed class SteamLocalAdapterTests
             "game.catalog.list", Json("""{"query":"carreras"}"""), CancellationToken.None);
         ExternalCapabilityReceipt known = await whole.InvokeAsync(
             "game.entitlement.named", Json("""{"title":"Portal 2"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt part = await new SteamLocalAdapter(
+            () => new SteamLocalAdapter.InstalledCatalog([.. Catalog], 1)).InvokeAsync(
+            "game.catalog.list", Json("""{}"""), CancellationToken.None);
 
         Assert.Multiple(() =>
         {
-            Assert.That(list.Result!.Value.GetProperty("count").GetInt32(), Is.Zero);
+            // DIAX17B: nothing found with a library unread is a read that failed (no count 0 that reads as «none»).
+            Assert.That(list.ErrorCode, Is.EqualTo("game_library_unreadable"));
+            Assert.That(list.Result!.Value.TryGetProperty("count", out _), Is.False);
             Assert.That(list.Result!.Value.GetProperty("librariesUnread").GetInt32(), Is.EqualTo(1));
-            Assert.That(list.Result!.Value.GetProperty("readInPart").GetBoolean(), Is.True);
+            Assert.That(named.ErrorCode, Is.EqualTo("game_library_unreadable"));
             Assert.That(named.Result!.Value.GetProperty("readInPart").GetBoolean(), Is.True);
+            // Some games read with a library unread: what was read, and that it is a part.
+            Assert.That(part.ErrorCode, Is.Null);
+            Assert.That(part.Result!.Value.GetProperty("count").GetInt32(), Is.GreaterThan(0));
+            Assert.That(part.Result!.Value.GetProperty("readInPart").GetBoolean(), Is.True);
             Assert.That(listed.Result!.Value.TryGetProperty("readInPart", out _), Is.False);
             Assert.That(known.Result!.Value.TryGetProperty("readInPart", out _), Is.False);
+        });
+    }
+
+    // DIAX17: Steam's library list on a drive that stopped answering threw out of every catalog read. It is a library
+    // unread now, so what is listed is said read in part, never «no games».
+    [Test]
+    public void ALibraryListThatCannotBeReadIsAnUnreadLibrary()
+    {
+        (string root, string[] libraries, bool listUnread) = SteamLocalAdapter.SteamRoots(
+            @"Q:\Steam", _ => true, _ => throw new IOException("gone", unchecked((int)0x80070037)));
+        IReadOnlyList<SteamLocalGame> catalog = SteamLocalAdapter.ReadInstalledCatalog(
+            libraries, librariesUnread: listUnread ? 1 : 0);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(root, Is.EqualTo(@"Q:\Steam"));
+            Assert.That(libraries, Is.EqualTo(new[] { @"Q:\Steam" }));
+            Assert.That(listUnread, Is.True);
+            Assert.That(((SteamLocalAdapter.InstalledCatalog)catalog).UnreadLibraries, Is.EqualTo(2));
         });
     }
 

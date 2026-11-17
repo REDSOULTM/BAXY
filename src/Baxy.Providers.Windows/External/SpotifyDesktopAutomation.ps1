@@ -324,7 +324,9 @@ function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]
     $playCandidate=$null
     $playCandidateLeft=[double]::PositiveInfinity
     # SP3: how many play controls of this search passed those filters (the detail of a search that picked nothing).
+    # DIAX7: and which (Get-BaxySpotifyRowKey), to tell a page that stopped drawing.
     $shown=0
+    $shownKeys=New-Object 'System.Collections.Generic.List[string]'
     foreach($element in $results){try{
         if($element.Type -ne $button -or $element.Offscreen){continue}
         $rect=$element.Rect
@@ -332,6 +334,7 @@ function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]
         $matches=if($Mode -eq 'query'){$name.StartsWith('reproducir ') -or $name.StartsWith('play ')}else{Test-BaxySpotifyPlaysTitle $name $Title}
         if(-not ($rect.Width -gt 0 -and $rect.Height -gt 0 -and $matches -and $rect.Top -gt ($SearchRect.Top+20) -and $rect.Top -lt ($SearchRect.Top+600) -and $rect.Left -ge $WindowRect.Left -and $rect.Right -le $WindowRect.Right)){continue}
         $shown++
+        $shownKeys.Add((Get-BaxySpotifyRowKey $element))
         # BAXY Renew audit 2026-10-15 (S1): both modes take the first of these controls by position, the leftmost; the
         # query mode plays the first result of Spotify's own search for the text it was given, and no result is ranked
         # by the words it shares with that text (the receipt says which control was pressed and what plays).
@@ -355,7 +358,79 @@ function Select-BaxySpotifySearchResult($Rows,$PageBefore,[string]$Mode,[string]
         foreach($element in $Rows){try{$rect=$element.Rect;$name=$element.Fold;if($element.Type -eq [Windows.Automation.ControlType]::Hyperlink -and $name -and $name -ne $Title -and $rect.Left -ge $candidateRect.Left -and $rect.Right -le $candidateRect.Right -and $rect.Top -ge $candidateRect.Top -and $rect.Bottom -le $candidateRect.Bottom){$candidateIdentity=$name;break}}catch{}}
         foreach($element in $Rows){try{$rect=$element.Rect;$name=$element.Fold;if($element.Type -eq $button -and -not $element.Offscreen -and $rect.Width -gt 0 -and $rect.Height -gt 0 -and $name -in @('reproducir','play') -and $rect.Left -ge $candidateRect.Left -and $rect.Right -le $candidateRect.Right -and $rect.Top -ge $candidateRect.Top -and $rect.Bottom -le $candidateRect.Bottom){$playCandidate=$element;break}}catch{}}
     }
-    return [pscustomobject]@{Play=$playCandidate;Card=$candidate;Identity=$candidateIdentity;Shown=$shown}
+    return [pscustomobject]@{Play=$playCandidate;Card=$candidate;Identity=$candidateIdentity;Shown=$shown;Keys=($shownKeys -join ',')}
+}
+function Get-BaxySpotifySearchLook($Rows,$PageBefore,[string]$Mode,[string]$Title,$SearchRect,$WindowRect,[string]$CandidateBefore,[double]$StableMs){
+    # One look at the search page: what it offers (Select-BaxySpotifySearchResult) and whether it is this search's page.
+    # BAXY Renew audit 2026-10-15 (S1; read on the notebook's client): the results page is the one whose content group
+    # the client names «Spotify – Buscar» («Spotify – Search» in English; Home is «Spotify - Reproductor web: …»). Until
+    # it shows, play controls are not results: a cold client draws Home and library rows after the page before was read
+    # (fin2: «reproducir descubrimiento semanal»). Uso real («los Bunkers» after «búnkers»): with the box already holding
+    # the query no page before is set aside, and the leftmost play control in the window was the library sidebar's
+    # «Reproducir Tus Me Gusta». Results are bound to the results page's own view when it shows (the sidebar is outside it).
+    $resultsGroup=@($Rows|Where-Object {$_.Type -eq [Windows.Automation.ControlType]::Group -and $_.Fold -in @('spotify buscar','spotify search')})[0]
+    $resultsRect=if($null -ne $resultsGroup -and $resultsGroup.Rect.Width -gt 0){$resultsGroup.Rect}else{$WindowRect}
+    $choice=Select-BaxySpotifySearchResult $Rows $PageBefore $Mode $Title $SearchRect $resultsRect
+    # The play controls of this search it showed (Keys) and whether the one it would press is named as one of the page
+    # before: a row of that page drawn again under another runtime id.
+    $namedBefore=$false
+    if($null -ne $choice.Play){foreach($key in $PageBefore){if($key.Substring($key.IndexOf('|')+1) -eq $choice.Play.Fold){$namedBefore=$true;break}}}
+    # DIAX7B: the control it would press names the request, or it is the bare play control of the card titled as the
+    # request (only Select-BaxySpotifySearchResult's binding to that card chooses a bare «reproducir» in query mode).
+    $namesRequest=$null -ne $choice.Play -and (($null -ne $choice.Card -and $choice.Play.Fold -in @('reproducir','play')) -or (Test-BaxySpotifyResultNamesRequest $Title (Get-BaxySpotifyPressedResult $choice.Play.Fold '')))
+    $resultsShown=Test-BaxySpotifyResultsShown $Mode ($null -ne $resultsGroup) (Test-BaxySpotifyPageBeforeLeft $Rows $PageBefore) $choice.Keys $CandidateBefore $StableMs $namedBefore $namesRequest
+    return [pscustomobject]@{Choice=$choice;Key=$choice.Keys;Ready=$resultsShown -and ($null -ne $choice.Play -or $null -ne $choice.Card)}
+}
+function Test-BaxySpotifyPageBeforeLeft($Rows,$PageBefore){
+    # Whether the page shown before the search left: a play control of it (Get-BaxySpotifyRowKey) no longer shows. With
+    # no page before set aside (the box already held the query: that page was this search's) nothing tells it left.
+    if($PageBefore.Count -eq 0){return $false}
+    $now=New-Object 'System.Collections.Generic.HashSet[string]'
+    foreach($row in $Rows){[void]$now.Add((Get-BaxySpotifyRowKey $row))}
+    foreach($key in $PageBefore){
+        $fold=$key.Substring($key.IndexOf('|')+1)
+        if(($fold.StartsWith('reproducir ') -or $fold.StartsWith('play ')) -and -not $now.Contains($key)){return $true}
+    }
+    return $false
+}
+function Test-BaxySpotifyResultNamesRequest([string]$Request,[string]$Result){
+    # Whether a result (folded, after its play word) is named as the request, by form, word by word as
+    # Test-BaxySpotifyPlayingRelatesTo compares («andamio» in «andamios»): every word of four letters or more of the
+    # request is in the result (an artist asked by name, its card); or every such word of the result is in the request
+    # and they are at least half of the request's (a song asked with its artist: the top result card names the song
+    # alone, «Reproducir {0}» in the client's language files, its rows «Reproducir {0}, de {1}»). A request with no such
+    # word, all its words are words of the result.
+    $long=@(($Request -split ' ')|Where-Object {$_.Length -ge 4})
+    if($long.Count -eq 0){return Test-BaxySpotifyPlayingRelatesTo $Request @($Result)}
+    $named=@($long|Where-Object {Test-BaxySpotifyPlayingRelatesTo $_ @($Result)}).Count
+    if($named -eq $long.Count){return $true}
+    $own=@(($Result -split ' ')|Where-Object {$_.Length -ge 4})
+    if($own.Count -eq 0 -or 2*$named -lt $long.Count){return $false}
+    foreach($word in $own){if(-not (Test-BaxySpotifyPlayingRelatesTo $word @($Request))){return $false}}
+    return $true
+}
+function Test-BaxySpotifyResultsShown([string]$Mode,[bool]$TitledPage,[bool]$PageBeforeLeft,[string]$Shown,[string]$ShownBefore,[double]$StableMs,[bool]$NamedBefore,[bool]$NamesRequest){
+    # DIAX7 (F13, uso real 16-11, 01:03 and 01:10: 24,6 s and 23,0 s inside media.play.query; the client's own log drew
+    # the results about 3 s after the search and took the press 17-18 s later): the client updated itself at 00:24 and
+    # its search page no longer names its content «Spotify – Buscar» (search.page-title left its language files and its
+    # search route), so every search waited for that name until its 20 s horizon and re-issued itself at 8 s. A titled
+    # page still counts at its first look. Without one, the page is this search's when the page under the box was
+    # replaced (a play control of the page before left: Test-BaxySpotifyPageBeforeLeft), the play controls it shows
+    # (Select-BaxySpotifySearchResult: never of the page before) stood the same for a second (a page drawn in parts,
+    # its songs before its top result, is not taken half drawn), and the one it would press is not named as a control
+    # of the page before (that page drawn again under new runtime ids). The box holding the query tells nothing here:
+    # it does 1.3 s after the search, 2-4 s before the results, while Home rows a client draws late are not of the
+    # page before (fin2). Otherwise (a page before with no play control of its own, only the library's; the same
+    # search again) the search waits the horizon as before. Held-out (20 simulated pages written blind, DIAX7): the same
+    # control pressed as before in all 20, the mean wait from 11.2 s to 8.4 s.
+    # DIAX7B (REVX2, D7-1): those three also hold with no result at all: Home drawn again under other ids while one of
+    # its rows, or the library's sidebar, draws late («Reproducir Descubrimiento Semanal», «Reproducir Tus Me Gusta»
+    # pressed at 2.4 s, the results due at 4.5 s). Nothing in the tree tells this search's page by form without its
+    # title (no dump of the new client's search page in the repo; its other labels are words of each language), so the
+    # page is also taken early only when the control it would press is named as the request
+    # (Test-BaxySpotifyResultNamesRequest); a result named otherwise waits the horizon, as the 1.5.5 does.
+    if($Mode -ne 'query' -or $TitledPage){return $true}
+    return $PageBeforeLeft -and $Shown -ne '' -and $Shown -eq $ShownBefore -and $StableMs -ge 1000 -and -not $NamedBefore -and $NamesRequest
 }
 function Get-BaxySpotifyNotFoundDetail($Rows,$PageBefore,[int]$Shown,[int]$Searches,[bool]$ColdStart,[bool]$BoxHoldsQuery,[bool]$Iconic,[bool]$Front,[string]$CoveredBy){
     # SP3 (tandas n9/n10 del notebook, t1-c07 and t2-c01: played in n9, «spotify_exact_result_not_found» after 24 s in
@@ -484,8 +559,11 @@ try {
     $searchPageDeadline=$searchedAt.AddSeconds(12)
     $searchPageReady=$false
     $searchObservationError=$null
+    $lookBefore=''
+    $lookSince=Get-Date
     do {
         try {
+            $lookAt=Get-Date
             $root=[Windows.Automation.AutomationElement]::FromHandle($process.MainWindowHandle)
             $all=Get-BaxySpotifySnapshot $root
             $searchRect=$search.Current.BoundingRectangle
@@ -494,12 +572,9 @@ try {
             foreach($element in $all){try{if($element.Type -eq [Windows.Automation.ControlType]::Button -and $element.Fold -in @('pausar','pause')){$alreadyPausedControl=$true;break}}catch{}}
             $beforeNowPlaying=''
             foreach($element in $all){try{if($script:BaxySpotifyPlayingLabel.IsMatch($element.Name)){$beforeNowPlaying=Get-BaxySpotifyPlayingLine $element.Name;break}}catch{}}
-            $resultsGroup=@($all|Where-Object {$_.Type -eq [Windows.Automation.ControlType]::Group -and $_.Fold -in @('spotify buscar','spotify search')})[0]
-            # Uso real («los Bunkers» after «búnkers»): with the box already holding the query no page before is set
-            # aside, and the leftmost play control in the window was the library sidebar's «Reproducir Tus Me Gusta».
-            # Results are bound to the results page's own view when it shows (the sidebar is outside it).
-            $resultsRect=if($null -ne $resultsGroup -and $resultsGroup.Rect.Width -gt 0){$resultsGroup.Rect}else{$windowRect}
-            $choice=Select-BaxySpotifySearchResult $all $pageBefore $Mode $foldTitle $searchRect $resultsRect
+            $look=Get-BaxySpotifySearchLook $all $pageBefore $Mode $foldTitle $searchRect $windowRect $lookBefore ($lookAt-$lookSince).TotalMilliseconds
+            if($look.Key -ne $lookBefore){$lookBefore=$look.Key;$lookSince=$lookAt}
+            $choice=$look.Choice
             $playCandidate=$choice.Play
             $candidate=$choice.Card
             $candidateIdentity=$choice.Identity
@@ -510,19 +585,15 @@ try {
                 # and no effect ($effect is still false), never the requested title as the one seen.
                 [pscustomobject]@{ok=$true;effectObserved=$effect;alreadyPlaying=$true;error=$null;title=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle;observedNowPlaying=$beforeNowPlaying;processId=$process.Id}|ConvertTo-Json -Compress;exit 0
             }
-            # BAXY Renew audit 2026-10-15 (S1; read on the notebook's client): the results page is the one whose
-            # content group the client names «Spotify – Buscar» («Spotify – Search» in English; Home is «Spotify -
-            # Reproductor web: …»). Until it shows, play controls are not results: a cold client draws Home and library
-            # rows after the page before was read (fin2: «reproducir descubrimiento semanal»). At the horizon the last
-            # observation is taken as it is.
-            $resultsShown=$Mode -ne 'query' -or $null -ne $resultsGroup
-            $searchPageReady=$resultsShown -and ($null -ne $playCandidate -or $null -ne $candidate)
+            # Get-BaxySpotifySearchLook tells whether this is the search's page; at the horizon the last observation is
+            # taken as it is.
+            $searchPageReady=$look.Ready
             $searchObservationError=$null
         } catch {
             $searchPageReady=$false
             $searchObservationError=$_
         }
-        if($searchPageReady){break}
+        if($searchPageReady){Add-BaxySpotifyMark 'results';break}
         if($null -eq $searchObservationError){
             $searchPageDeadline=$searchedAt.AddSeconds(20)
             if(Test-BaxySpotifyResearch $searches (((Get-Date)-$searchedAt).TotalMilliseconds)){
@@ -651,7 +722,11 @@ try {
     if(-not $verified -and $null -ne $playObservationError){throw $playObservationError}
     $failure=if($verified){$null}elseif($resumedOnly){'spotify_query_result_not_confirmed'}else{'spotify_'+$stage+'_not_verified'}
     $observedTitle=(Get-Process -Id $process.Id -ErrorAction Stop).MainWindowTitle
-    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;pressedResult=$pressedResult;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;playbackEvidence=$(if($Mode -eq 'query' -and $verified){$evidence}else{$null});processId=$process.Id}|ConvertTo-Json -Compress
+    # DIAX3 (F13, uso real 16-11: 24,6 s y 23,0 s dentro de media.play.query sin saber en qué etapa): the stage times
+    # also on success, for a measurement that runs the script, as stageTimings: the adapter copies only ObservedFields
+    # to a receipt, and a failure the adapter makes of a success (WithDiagnostic) copies «timings», not this.
+    Add-BaxySpotifyMark 'verified'
+    [pscustomobject]@{ok=$verified;effectObserved=$effect;error=$failure;title=$observedTitle;selectedControl=$selectedControlName;pressedResult=$pressedResult;beforeNowPlaying=$beforeNowPlaying;observedNowPlaying=$observedNowPlaying;playbackEvidence=$(if($Mode -eq 'query' -and $verified){$evidence}else{$null});processId=$process.Id;stageTimings=$timings}|ConvertTo-Json -Compress
 } catch {
     Add-BaxySpotifyMark
     $cause=$_.Exception.Message

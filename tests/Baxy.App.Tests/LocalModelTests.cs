@@ -40,6 +40,7 @@ public sealed class LocalModelTests
         Environment.SetEnvironmentVariable(TunedModel.GgufVariable, null);
         Environment.SetEnvironmentVariable(MindRuntimeDiscovery.GgufSha256Variable, null);
         Environment.SetEnvironmentVariable(Projector, null);
+        Environment.SetEnvironmentVariable(ExternalModel.MindModelVariable, null);
         Directory.Delete(_root, recursive: true);
     }
 
@@ -79,6 +80,8 @@ public sealed class LocalModelTests
             Assert.That(Environment.GetEnvironmentVariable(Projector), Is.Null);
             Assert.That(local.Sees, Is.False);
             Assert.That((bool?)local.Json()["sees"], Is.False);
+            // MODX1: the mind is told which model it thinks with.
+            Assert.That(Environment.GetEnvironmentVariable(ExternalModel.MindModelVariable), Is.EqualTo("Qwen3.5-9B-Q4_K_M.gguf|gguf"));
         });
 
         local.Stop();
@@ -87,6 +90,7 @@ public sealed class LocalModelTests
             Assert.That(Environment.GetEnvironmentVariable(TunedModel.GgufVariable), Is.EqualTo(Stock));
             Assert.That(Environment.GetEnvironmentVariable(MindRuntimeDiscovery.GgufSha256Variable), Is.EqualTo(StockSha256));
             Assert.That(Environment.GetEnvironmentVariable(Projector), Is.EqualTo(_stockProjector));
+            Assert.That(Environment.GetEnvironmentVariable(ExternalModel.MindModelVariable), Is.Null);
         });
     }
 

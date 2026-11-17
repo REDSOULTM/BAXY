@@ -183,6 +183,13 @@ HOTWORDS_SCORE = 1.5
 # opened, the person called Maxi. The call is how the request is addressed, never part of it: the words at its start
 # that sound like it go, and a request that was only the call is not told.
 CALL_WORDS = re.compile(r"^(?:[\W_]*[bpvm]a(?:x|ks|cs|k|c)s?[iíy]\b)+[\W_]*", re.IGNORECASE)
+# DIAX4 (the owner's real use, 2026-11-16: «¿Borro esta rutina…?» answered «Baxi, sí» four times before one was heard):
+# a short reply said in one breath with the call is written glued to it, in one word («Baxisi.», «Baksisi, borrala.»)
+# that began with the call, so the cut by time (Voice._transcribe) took it whole as the call and the reply was lost.
+# The call's own form at the start of that word (CALL_WORDS' sound, with no word boundary) is the call; what follows it,
+# if a word's worth (CALL_REST letters), is the reply's first word. Form only, on BAXY's own name.
+CALL_HEAD = re.compile(r"^[\W_]*[bpvm]a(?:x|ks|cs|k|c)s?[iíy][\W_]*", re.IGNORECASE)
+CALL_REST = 2
 
 
 def without_call(text: str) -> str:
@@ -1531,8 +1538,19 @@ class Voice:
                 words.append([at, []])
             words[-1][1].append(index)
         kept = [index for at, indices in words if at >= wake_at - CALL_LEAD_S for index in indices]
-        return Heard.of("".join(tokens[i] for i in kept).strip(), [tokens[i] for i in kept],
-                        [log_probs[i] for i in kept] if len(log_probs) == len(tokens) else [])
+        heard = Heard.of("".join(tokens[i] for i in kept).strip(), [tokens[i] for i in kept],
+                         [log_probs[i] for i in kept] if len(log_probs) == len(tokens) else [])
+        cut = [indices for at, indices in words if at < wake_at - CALL_LEAD_S]
+        glued = "".join(tokens[i] for i in cut[-1]).strip() if cut else ""
+        head = CALL_HEAD.match(glued)
+        rest = glued[head.end():] if head else ""
+        if sum(c.isalnum() for c in rest) < CALL_REST:
+            return heard
+        # The reply glued to the call (CALL_HEAD), as sure as the least sure token of the word it was written in.
+        sure = (min((math.exp(log_probs[i]) for i in cut[-1] if re.search(r"[^\W_]", tokens[i])), default=1.0)
+                if len(log_probs) == len(tokens) else None)
+        told = ((rest, sure), *heard.words) if sure is not None and (heard.words or not heard.text) else ()
+        return Heard(f"{rest} {heard.text}".strip(), told)
 
     # --- events ---------------------------------------------------------------------------------------------------
 

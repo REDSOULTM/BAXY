@@ -40,6 +40,9 @@ internal sealed class ExternalModel : IDisposable
     private const string OllamaHostVariable = "OLLAMA_HOST";
     private const int DefaultOllamaPort = 11434;
     private const string DefaultOllama = "http://127.0.0.1:11434";
+
+    /// <summary>MODX1: the model the mind thinks with in place of BAXY's own, «model|ollama» or «model|api» (mind.model_in_use_fact).</summary>
+    internal const string MindModelVariable = "BAXY_MIND_MODEL_IN_USE";
     // What the translator gives Ollama when the person chose nothing (external_model.OLLAMA_CONTEXT).
     internal const int DefaultLocalContext = 78000;
     // The context sizes offered for a model on this PC (external_model.OLLAMA_CHOICES), each up to what it declares.
@@ -869,6 +872,9 @@ internal sealed class ExternalModel : IDisposable
         _activeContext = context;
         string address = port.ToString(CultureInfo.InvariantCulture);
         Replace("BAXY_MIND_LLAMA_REMOTE", address);
+        // MODX1 (en vivo: Gemma-4-12B por API dijo «Estoy utilizando el modelo de serie» a «¿Qué modelo estás usando?»): the mind
+        // tells the model which one it is (mind.MODEL_IN_USE_FACT); with BAXY's own model the variable is not there.
+        Replace(MindModelVariable, $"{model}|{(provider == Local ? "ollama" : "api")}");
         Replace("BAXY_RENEW_CTX", provider == Local ? context.ToString(CultureInfo.InvariantCulture) : Context);
         Replace(MindSidecarClient.TurnSecondsVariable, provider == Local ? LocalTurnSeconds : "90");
         // Nothing to read ahead into: this server has no slot.

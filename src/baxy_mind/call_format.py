@@ -52,6 +52,7 @@ class CallFormat:
     turn_end: str | None  # what ends a message before the next one: «<|im_end|>\n»
     user_open: str | None  # what opens the person's message: «<|im_start|>user\n»
     bools_as_text: bool  # the template writes a call's boolean as Python's «True»: given as text «true» it is unchanged
+    nulls_as_text: bool = False  # DIAX2: and a call's null as Python's «None»: given as text «null» it is unchanged
 
     @property
     def name_stop(self) -> str:
@@ -86,7 +87,8 @@ class CallFormat:
 # The format the mind was written and measured with: Qwen3.5's template (the 4B of the package, MOD2 §2), what derive
 # reads from it. Before the warm-up reads the model's own, and for the parts calibrated on it (the decision's sampling).
 CALIBRATED = CallFormat(opening="<tool_call>\n<function=", name_end=">\n", again="</tool_call>\n<tool_call>\n<function=",
-                        turn_end="<|im_end|>\n", user_open="<|im_start|>user\n", bools_as_text=True)
+                        turn_end="<|im_end|>\n", user_open="<|im_start|>user\n", bools_as_text=True,
+                        nulls_as_text=True)
 
 
 def _common(a: str, b: str) -> int:
@@ -197,11 +199,29 @@ def derive(render: Render) -> CallFormat | None:
         own = own if own and between.startswith(own) else between[:_common(between, after_one)]
         closed = own.rstrip("\n")
         again = closed[closed.rfind("\n") + 1:] + between[len(closed):] if closed else None
-    flagged = probe(lambda: called([_call(FIRST, {"flag": True})]))
+    # DIAX2: the same probe writes a null, so the warm-up asks the server no more than before.
+    flagged = probe(lambda: called([_call(FIRST, {"flag": True, "word": None})]))
     written = flagged[flagged.find(FIRST, asked_at):] if flagged is not None and flagged.find(FIRST, asked_at) >= 0 else ""
     bools_as_text = "True" in written and "true" not in written
+    nulls_as_text = "None" in written and "null" not in written
     return CallFormat(opening=opening, name_end=name_end, again=again, turn_end=turn_end, user_open=user_open,
-                      bools_as_text=bools_as_text)
+                      bools_as_text=bools_as_text, nulls_as_text=nulls_as_text)
+
+
+def thought_end(thinking: str, plain: str) -> str | None:
+    """MODX2: the mark that closes this model's thought, from the generation prompt its template writes with thinking on
+    (``thinking``) and off (``plain``), the same conversation: what the prompt off adds past their common part when that
+    is one mark (Granite 4.2: on «…assistant\n<think>\n», off «…assistant\n<think></think>» → «</think>»; Qwen3.5: off
+    «…<think>\n\n</think>\n\n» → «</think>»). None when the two do not differ so (a template that writes the thought
+    elsewhere, Gemma 4's «<|think|>» in the system turn, or none). MOD3: Granite 4.2 begins most replies with that mark
+    again after its prompt's empty thought, and it reached the person; a reply that begins with it closes an empty
+    thought, as llama.cpp's reasoning parser reads a prompt whose thought is open (common/chat.cpp at b11609,
+    thinking_forced_open), so what follows it is the reply (LlmServer._after_thought)."""
+    common = _common(thinking, plain)
+    mark = plain[common:].strip()
+    if not mark or any(c.isspace() for c in mark) or not mark.startswith("<") or not mark.endswith(">"):
+        return None
+    return mark if thinking[common:].strip() == "" else None
 
 
 def _arguments(value: Any) -> bool:

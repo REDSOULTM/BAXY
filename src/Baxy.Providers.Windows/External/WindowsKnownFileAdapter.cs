@@ -1889,11 +1889,11 @@ if __name__ == "__main__":
 
     private static Dictionary<string, string[]> DefaultRoots() => new(StringComparer.Ordinal)
     {
-        ["desktop"] = [Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)],
-        ["documents"] = [Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)],
+        ["desktop"] = [Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory, Environment.SpecialFolderOption.DoNotVerify)],
+        ["documents"] = [Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify)],
         ["downloads"] = [Baxy.Providers.Windows.Filesystem.DownloadsFolder.Path()],
-        ["home"] = [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)],
-        ["pictures"] = [Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)],
+        ["home"] = [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify)],
+        ["pictures"] = [Environment.GetFolderPath(Environment.SpecialFolder.MyPictures, Environment.SpecialFolderOption.DoNotVerify)],
     };
 
     // The folder inside each known folder that subdirectory (a path's part inside it, PersonFolders.Place) names,

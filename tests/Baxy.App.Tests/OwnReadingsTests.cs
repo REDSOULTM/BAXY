@@ -65,6 +65,63 @@ public sealed class OwnReadingsTests
         });
     }
 
+    // DIAX15 (DIAX12: «¿en qué perfil estás?» → this scope 30 of 30, «¿qué modelo usas?» 20 of 20, and neither was in it):
+    // BAXY's own settings go with the model's memory, so the catalog and the model's prefix stay as they were.
+    [Test]
+    public void TheModelScopeSaysTheModelTheProfileTheLanguageAndTheVoice()
+    {
+        JsonElement receipt = Completed(OwnReadings.Model(new FieldMetricSnapshot(12, 30, 55, 2.3456, 0.71),
+            new OwnReadings.Settings("Qwen3.5-4B-Q4_K_M", "completo", English: false, VoiceMuted: true)));
+        JsonElement english = Completed(OwnReadings.Model(new FieldMetricSnapshot(12, 30, 55, 2.3456, 0.71),
+            new OwnReadings.Settings(null, null, English: true, VoiceMuted: false)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.GetProperty("model").GetString(), Is.EqualTo("Qwen3.5-4B-Q4_K_M"));
+            Assert.That(receipt.GetProperty("toolProfile").GetString(), Is.EqualTo("completo"));
+            Assert.That(receipt.GetProperty("language").GetString(), Is.EqualTo("español"));
+            Assert.That(receipt.GetProperty("voice").GetString(), Is.EqualTo("muted"));
+            Assert.That(receipt.GetProperty("videoMemory").GetProperty("value").GetDouble(), Is.EqualTo(2.35));
+            // What the App does not hold is left out, never guessed.
+            Assert.That(english.TryGetProperty("model", out _), Is.False);
+            Assert.That(english.TryGetProperty("toolProfile", out _), Is.False);
+            Assert.That(english.GetProperty("language").GetString(), Is.EqualTo("English"));
+            Assert.That(english.GetProperty("voice").GetString(), Is.EqualTo("on"));
+        });
+    }
+
+    // DIAX15: with the settings, memory the PC did not give is said beside them (the view's «—»), never a zero nor a failure.
+    [Test]
+    public void WithTheSettingsUnreadableMemoryIsSaidBesideThem()
+    {
+        JsonElement receipt = Completed(OwnReadings.Model(new FieldMetricSnapshot(1, 1, 1, null, double.NaN),
+            new OwnReadings.Settings("Qwen3.5-4B-Q4_K_M", "diario", English: false, VoiceMuted: false)));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.GetProperty("memory").GetString(), Is.EqualTo("unreadable"));
+            Assert.That(receipt.TryGetProperty("videoMemory", out _), Is.False);
+            Assert.That(receipt.GetProperty("toolProfile").GetString(), Is.EqualTo("diario"));
+        });
+    }
+
+    // DIAX15 (DIAX12: «¿me estás escuchando?» → audio.microphone.status 20 of 20, Windows' microphone only): BAXY's own
+    // listening goes beside it, as the view shows it; the rest of the result is kept as it came.
+    [Test]
+    public void TheMicrophoneResultSaysHowBaxyItselfListens()
+    {
+        const string windows = "{\"status\":\"completed\",\"result\":{\"version\":1,\"muted\":false}}";
+        JsonNode told = JsonNode.Parse(NativeTurnLoop.WithListening(windows, NativeTurnLoop.ListeningOf(true, false)))!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)told["baxyListening"], Is.EqualTo(NativeTurnLoop.ListensOnTheButton));
+            Assert.That((bool?)told["result"]!["muted"], Is.False);
+            Assert.That(NativeTurnLoop.ListeningOf(true, true), Is.EqualTo(NativeTurnLoop.ListensForBaxy));
+            Assert.That(NativeTurnLoop.ListeningOf(false, true), Is.EqualTo(NativeTurnLoop.ListensNot));
+        });
+    }
+
     // A reading the PC did not give is left out (the view's «—»), never a zero; with neither, the call fails.
     [Test]
     public void AReadingThePcDidNotGiveIsLeftOutNeverZero()

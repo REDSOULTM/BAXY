@@ -159,6 +159,11 @@ internal sealed class NativeTurnLoop
         /// No call is made for it: memory.status could hold the turn ~72 s and drop the engine (CoreProcessClient).</summary>
         internal Func<int?>? MemoryRecords { get; init; }
 
+        /// <summary>DIAX15: how BAXY itself listens, as the view shows it (<see cref="ListensForBaxy"/>,
+        /// <see cref="ListensOnTheButton"/> or <see cref="ListensNot"/>), told beside Windows' microphone in
+        /// audio.microphone.status's result; null: not said.</summary>
+        internal Func<string>? Listening { get; init; }
+
         /// <summary>REM8 (REV16 M-4): whether the tool profile keeps this operation on (ToolProfile.InProfile); null where
         /// none is kept: weighed as off.</summary>
         internal Func<string, bool>? InProfile { get; init; }
@@ -1595,6 +1600,26 @@ internal sealed class NativeTurnLoop
         standIn,
         about: "baxy.settings.set");
 
+    /// <summary>DIAX15: BAXY waits for «Baxy» (its voice's wake mode).</summary>
+    internal const string ListensForBaxy = "waits_for_baxy";
+
+    /// <summary>DIAX15: BAXY does not wait for «Baxy»: it hears the person only when they press its microphone button.</summary>
+    internal const string ListensOnTheButton = "only_when_its_microphone_button_is_pressed";
+
+    /// <summary>DIAX15: BAXY cannot listen (no microphone it can use).</summary>
+    internal const string ListensNot = "off";
+
+    internal const string MicrophoneStatus = "audio.microphone.status";
+
+    /// <summary>DIAX15: how BAXY listens, as the view shows it. After a request its voice goes back to what it was doing
+    /// (voice.py: «wake» or «off»), so in a turn this is the person's own switch, not the moment.</summary>
+    internal static string ListeningOf(bool micAvailable, bool wakeListening) =>
+        !micAvailable ? ListensNot : wakeListening ? ListensForBaxy : ListensOnTheButton;
+
+    /// <summary>DIAX15: audio.microphone.status's result with BAXY's own listening beside Windows' microphone.</summary>
+    internal static string WithListening(string observation, string listening) =>
+        WithSaid(observation, "baxyListening", listening);
+
     internal static string WithSaid(string observation, string key, string said)
     {
         try
@@ -2344,6 +2369,14 @@ internal sealed class NativeTurnLoop
             && _host.SettingNote?.Invoke(arguments) is { } standIn)
         {
             body = StoodIn(body, standIn);
+        }
+
+        // DIAX15 (DIAX12: «¿me estás escuchando?», «¿tienes el micrófono activo?» → audio.microphone.status 20 of 20, which
+        // reads Windows' microphone and not whether BAXY listens): BAXY's own listening goes beside it, as the view shows it.
+        if (operation == MicrophoneStatus && response.Status == OperationStatuses.Completed
+            && _host.Listening?.Invoke() is { } listening)
+        {
+            body = WithListening(body, listening);
         }
 
         if (memory && response.Status == OperationStatuses.Completed

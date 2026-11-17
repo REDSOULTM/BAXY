@@ -2757,6 +2757,9 @@ internal class CdpBrowserSession : IDisposable
             // local model, over the 3800 MiB budget). Pages and video still render in software; a person who
             // keeps it open for hours of video pays CPU, not the model's VRAM. Owner's call to change.
             "--disable-gpu",
+            // DIAX11 (privacidad): the profile is BAXY's own, never the person's account: no sign-in with the
+            // Windows account and no sync (OwnBrowserProfile.AccountSwitches).
+            .. OwnBrowserProfile.AccountSwitches,
             "--user-data-dir=" + profile,
             "about:blank",
         ];

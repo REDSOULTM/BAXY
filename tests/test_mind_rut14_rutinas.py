@@ -408,10 +408,11 @@ def test_a_word_routine_said_naturally_is_repeated_whole(tmp_path: Path) -> None
     mind, server = _guide_mind(tmp_path, [])
     _reading(server, [_read(trigger="word", word="hora de trabajar", text="abras el correo y subas el volumen")])
     told = mind.decide(1, "cuando yo diga hora de trabajar quiero que abras el correo y subas el volumen")
-    assert told["reply"] == "Cuando digas «hora de trabajar»: «abras el correo y subas el volumen». ¿La guardo?"
+    # DIAX1: the order is the person's words after the word read, whole, as the comma's split keeps them
+    assert told["reply"] == "Cuando digas «hora de trabajar»: «quiero que abras el correo y subas el volumen». ¿La guardo?"
     saved = mind.decide(2, "sí")
     assert saved["arguments"] == {"action": "create", "phrase": "hora de trabajar",
-                                  "order": "abras el correo y subas el volumen"}
+                                  "order": "quiero que abras el correo y subas el volumen"}
     assert server.bodies == []
 
 

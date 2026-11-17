@@ -24,9 +24,10 @@ import { RoutinesPanel } from './components/panels/RoutinesPanel';
 import { SettingsPanel, type A11y, type SettingsTab } from './components/panels/SettingsPanel';
 import type { BaxyState, GeneralSettings, Metrics, MicMode, ProposalSettings } from './types';
 import { CHAT_WIDTH, keepLook, readLook, REPLY_PX, RING_SPEED, YOU_PX, type Look } from './look';
-import { stillIn } from './still';
+import { SAVING, stillIn, useCalm, useFocused } from './still';
 import { LangContext, systemLang, translator, type Lang, type LangChoice, type T, type Words } from './i18n';
 import { enterApproves } from './approval';
+import { frameLoop } from './frameLoop';
 
 /* BAXY v4/v5 (design_handoff_baxy): rail · face and neural network · conversation, over the cosmos, inside the frame's
    travelling ring. Everything shown comes from Baxy.App; this file only composes it and sends what the person does. */
@@ -292,6 +293,13 @@ export default function App() {
         : host === 'idle' && pendingCard ? 'confirm'
           : host === 'idle' && noMind ? 'booting'
             : host;
+  // UIX1: what keeps still now (still.ts); «hush» (not while it boots) also stops the ring and the marks, and slows the face
+  const focused = useFocused();
+  // UIX2: calm at rest (still.ts useCalm): everything keeps still but the avatar, which rests between its clips
+  const calm = useCalm(state), held = stillIn(state, SAVING, focused);
+  const still = held || calm, hush = still && state !== 'booting';
+  // UIX2: still at rest, the face does not draw at all (thinking, it draws its walk through the network 8 times a second)
+  const frozen = hush && (state === 'idle' || state === 'standby');
   const gState = state === 'confirm' ? 'idle' : state === 'booting' ? 'standby' : state;
   const label = state === 'error' ? (voiceError ? t.w(LABEL.error) : apiCapped ? t('Llegaste al tope de gasto de la API', 'You reached the API spending cap') : failureLabel(s.agent.failure, s.agent.failureCause, s.agent.failureMemory, s.agent.failureRead, t, { why: s.agent.failureWhy, kind: s.agent.failureKind, failing }))
     // uso 95: written while the model starts, the message waits for it (the host answers it once it is up)
@@ -387,7 +395,8 @@ export default function App() {
   // ---- the frame's ring: turns with the state (1.5× and a second comet in bypass), stops at rest ----
   // Personalización: the ring runs, stays still or is off, at the person's speed
   const R = useRef({ powered, bypass, runs: true, speed: 1 });
-  useEffect(() => { R.current = { powered, bypass, runs: look.ring === 'on', speed: RING_SPEED[look.ringSpeed] }; }, [powered, bypass, look.ring, look.ringSpeed]);
+  const wakeRing = useRef(() => {});
+  useEffect(() => { R.current = { powered, bypass, runs: look.ring === 'on' && !hush, speed: RING_SPEED[look.ringSpeed] }; wakeRing.current(); }, [powered, bypass, look.ring, look.ringSpeed, hush]);
   useEffect(() => {
     const frame = document.querySelector<HTMLElement>('.app-frame');
     if (!frame) return;
@@ -395,22 +404,22 @@ export default function App() {
     // final 4, accesibilidad: with prefers-reduced-motion the ring stays still, as the sky and the face do (its colours
     // still tell the state)
     const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-    let raf = 0, last = performance.now(), acc = 0, angle = 0, speed = 1;
-    const loop = (now: number) => {
-      raf = requestAnimationFrame(loop);
+    let last = performance.now(), acc = 0, angle = 0, speed = 1;
+    const tick = (now: number): number | void => {
       acc += now - last; last = now;
       if (acc < 32 || document.hidden) return; // 30 fps is enough for a slow ring
       const dt = Math.min(0.05, acc / 1000); acc = 0;
       const tg = R.current.powered && R.current.runs && !calm?.matches ? (R.current.bypass ? 1.5 : 1) * R.current.speed : 0;
       speed += (tg - speed) * Math.min(1, dt * 2.6);
       if (tg === 0 && speed < 0.012) speed = 0;
-      if (speed === 0) return;
+      if (speed === 0) return 1000; // stopped: no frame asked for (frameLoop.ts) until it may run again
       angle = (angle + speed * (360 / 3.4) * dt) % 360;
       const tr = 'rotate(' + angle.toFixed(2) + 'deg)';
       spins.forEach((el) => { el.style.transform = tr; });
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    const loop = frameLoop(tick);
+    wakeRing.current = loop.wake;
+    return loop.stop;
   }, []);
   useEffect(() => {
     const frame = document.querySelector<HTMLElement>('.app-frame');
@@ -422,7 +431,8 @@ export default function App() {
     frame.classList.toggle('bx-bypass', bypass);
     frame.classList.toggle('bx-standby', gState === 'standby');
     frame.classList.toggle('bx-ring-off', look.ring === 'off');
-  }, [gState, bypass, look.ring]);
+    frame.classList.toggle('bx-hush', hush);
+  }, [gState, bypass, look.ring, hush]);
 
   // ---- actions ----
   const submit = useCallback(async (text: string) => {
@@ -688,15 +698,15 @@ export default function App() {
       <div className="shell">
         <div ref={bx2} className={'bx2' + (chatShown ? '' : ' chat-off') + (narrow ? ' narrow' : '')}
           style={{ '--rail': RAIL + 'px', '--chatw': chatVisible ? CHATW + 'px' : '0px', '--chatfull': CHATW + 'px' } as CSSProperties}>
-          <Cosmos state={gState} light={theme === 'light'} focusX={focusX} still={stillIn(state)} />
+          <Cosmos state={gState} light={theme === 'light'} focusX={focusX} still={still} />
           <Rail api={api} apiPast={!!apiPast} other={api ?? otherLocal} state={state} powered={powered} onPower={togglePower} metrics={metrics} net={netShown}
             gauges={look.gauges} counts={counts} quiet={quiet} onPanel={openPanel} version={general?.version} />
           <div className="bx-center">
             {/* Uso real 03-11: a click here opened the ear as if the space were held; the wake word, the held space and the
                 microphone button are what open it */}
             <div className="bx-graph">
-              {AVATAR !== 'live' && theme !== 'light' ? <AvatarVid state={state} expr={expr} onReady={setVidOk} /> : null}
-              <Face overlay={AVATAR !== 'live' && vidOk && theme !== 'light'} state={gState} expr={expr} talking={state === 'speaking'} journey={s.journey} hold={state === 'confirm'} light={theme === 'light'} net={!!netShown} />
+              {AVATAR !== 'live' && theme !== 'light' ? <AvatarVid state={state} expr={expr} onReady={setVidOk} still={held} calm={calm} /> : null}
+              <Face overlay={AVATAR !== 'live' && vidOk && theme !== 'light'} state={gState} expr={expr} talking={state === 'speaking'} journey={s.journey} hold={state === 'confirm'} light={theme === 'light'} net={!!netShown} hush={hush} freeze={frozen} />
             </div>
             <div className="bx-ctop pywebview-drag-region">
               <span className="bx-ctl">

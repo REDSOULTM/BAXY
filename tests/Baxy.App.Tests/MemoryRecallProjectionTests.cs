@@ -344,6 +344,67 @@ public sealed class MemoryRecallProjectionTests
         });
     }
 
+    // DIAX10B (H-062, vivo en la GTX 1650): the name sent («color de mi bicicleta») was not the one saved, and «keeps no
+    // saved memory that matches it» read as «no había nada guardado», said to the person with the memory still there.
+    // A forget by name that matched nothing with memories saved says that name is not one of them and names them.
+    [Test]
+    public void AForgetThatMatchedNothingNamesWhatIsSaved()
+    {
+        using JsonDocument payload = JsonDocument.Parse(
+            """{"version":1,"deletedCount":0,"replayed":false,"kept":["color de la bicicleta"],"keptTotal":2}""");
+        using JsonDocument arguments = JsonDocument.Parse(
+            """{"version":1,"scope":"exact","selector":"color de mi bicicleta","confirmationRequired":true}""");
+
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.forget", payload.RootElement,
+            out MemoryOperationResponseProjection? projection, privateArguments: arguments.RootElement), Is.True);
+        JsonObject facts = JsonNode.Parse(projection!.Message)!.AsObject();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)facts["status"], Is.EqualTo("failed"));
+            Assert.That((string?)facts["error"], Is.EqualTo("memory_forget_no_such_name"));
+            Assert.That((int?)facts["deletedCount"], Is.EqualTo(0));
+            Assert.That((bool?)facts["changed"], Is.False);
+            Assert.That((string?)facts["name"], Is.EqualTo("color de mi bicicleta"));
+            Assert.That((int?)facts["savedCount"], Is.EqualTo(2));
+            Assert.That(facts["saved"]!.AsArray().Select(static name => (string?)name),
+                Is.EqualTo(new[] { "color de la bicicleta" }));
+            Assert.That((int?)facts["notNamed"], Is.EqualTo(1));
+            Assert.That((string?)facts["next"], Is.EqualTo(
+                "nothing was deleted and nothing changed: no saved memory is named «color de mi bicicleta». BAXY still "
+                + "keeps 2 saved memories: «color de la bicicleta» and 1 sensitive one not named. To forget one of them, "
+                + "memory_forget with scope exact and its name"));
+        });
+    }
+
+    // With nothing saved, the names say nothing new: it reads as before.
+    [Test]
+    public void AForgetThatMatchedNothingWithNothingSavedReadsAsBefore()
+    {
+        using JsonDocument payload = JsonDocument.Parse(
+            """{"version":1,"deletedCount":0,"replayed":false,"kept":[],"keptTotal":0}""");
+
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.forget", payload.RootElement,
+            out MemoryOperationResponseProjection? projection), Is.True);
+        JsonObject facts = JsonNode.Parse(projection!.Message)!.AsObject();
+        Assert.Multiple(() =>
+        {
+            Assert.That((string?)facts["error"], Is.EqualTo("memory_forget_empty"));
+            Assert.That(facts.ContainsKey("saved"), Is.False);
+            Assert.That((string?)facts["next"], Does.StartWith("nothing was deleted: BAXY keeps no saved memory"));
+        });
+    }
+
+    // More names than memories, or a name that is not text, is not a forget's result.
+    [TestCase("""{"version":1,"deletedCount":0,"replayed":false,"kept":["a","b"],"keptTotal":1}""")]
+    [TestCase("""{"version":1,"deletedCount":0,"replayed":false,"kept":[1],"keptTotal":1}""")]
+    [TestCase("""{"version":1,"deletedCount":0,"replayed":false,"kept":["a"]}""")]
+    public void AForgetWithBadNamesIsRefused(string json)
+    {
+        using JsonDocument payload = JsonDocument.Parse(json);
+        Assert.That(MemoryOperationResponseProjection.TryCreateCompleted("memory.forget", payload.RootElement,
+            out _), Is.False);
+    }
+
     [Test]
     public void AForgetThatDeletedSaysHowManyAsBefore()
     {

@@ -180,6 +180,8 @@ internal sealed class LocalModel
         // The registration's hash is the stock model's: another file has none.
         Replace(MindRuntimeDiscovery.GgufSha256Variable, null);
         Replace(ProjectorVariable, projector);
+        // MODX1: the mind tells the model which one it is (mind.MODEL_IN_USE_FACT), as for a model of Ollama or an API.
+        Replace(ExternalModel.MindModelVariable, System.IO.Path.GetFileName(path) + "|gguf");
         Sees = projector is not null;
         Active = true;
     }

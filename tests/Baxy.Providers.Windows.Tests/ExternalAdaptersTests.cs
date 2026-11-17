@@ -2048,8 +2048,11 @@ public sealed class ExternalAdaptersTests
             Assert.That(found.ErrorCode, Is.Null);
             Assert.That(found.Result?.GetProperty("installed").GetBoolean(), Is.True);
             Assert.That(found.Result?.GetProperty("manifestsUnread").GetInt32(), Is.EqualTo(1));
-            Assert.That(other.ErrorCode, Is.Null);
+            // DIAX17B: nothing found with a manifest unread is a read that failed, never «completed, 0 games».
+            Assert.That(other.ErrorCode, Is.EqualTo("game_library_unreadable"));
+            Assert.That(other.Verified, Is.False);
             Assert.That(other.Result?.GetProperty("state").GetString(), Is.EqualTo("install_state_not_read"));
+            Assert.That(other.Result!.Value.TryGetProperty("matchCount", out _), Is.False);
         });
     }
 
@@ -2071,6 +2074,116 @@ public sealed class ExternalAdaptersTests
             "game.installed.named", Json("""{"provider":"any","title":"assassins creed origins"}"""), CancellationToken.None);
 
         Assert.That(receipt.Result?.GetProperty("installed").GetBoolean(), Is.True);
+    }
+
+    // DIAX17: Steam's library list on a drive that stopped answering (File.Exists true from the cache, the read throws)
+    // killed the core at every start, from this adapter's constructor. Each way the read fails leaves that library unread
+    // and named with its drive and why; the other store is still read and no game is said absent.
+    private static readonly Exception[] UnreadableLibraryFailures =
+    [
+        new IOException("Se ha especificado un dispositivo que no existe.", unchecked((int)0x80070037)),
+        new IOException("El dispositivo no está listo.", unchecked((int)0x80070015)),
+        new DirectoryNotFoundException("gone"),
+        new UnauthorizedAccessException("denied"),
+    ];
+
+    [TestCaseSource(nameof(UnreadableLibraryFailures))]
+    public async Task ASteamLibraryListThatCannotBeReadIsSaidUnreadWithItsDrive(Exception failure)
+    {
+        using TemporaryDirectory temporary = new();
+        string epicManifests = Path.Combine(temporary.Path, "epic");
+        string epicInstall = Path.Combine(temporary.Path, "Fortnite");
+        Directory.CreateDirectory(epicManifests);
+        Directory.CreateDirectory(epicInstall);
+        await File.WriteAllTextAsync(
+            Path.Combine(epicManifests, "fortnite.item"),
+            JsonSerializer.Serialize(new { DisplayName = "Fortnite", InstallLocation = epicInstall, CatalogItemId = "f" }));
+        string deadSteam = @"Q:\Juegos\Steam";
+
+        WindowsGameInstallationAdapter.SteamLibraries libraries = WindowsGameInstallationAdapter.DiscoverSteamLibraries(
+            [deadSteam], _ => true, _ => throw failure);
+        var adapter = new WindowsGameInstallationAdapter(() => libraries, [epicManifests]);
+        ExternalCapabilityReceipt steam = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"Hollow Knight"}"""), CancellationToken.None);
+        ExternalCapabilityReceipt epic = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"any","title":"Fortnite"}"""), CancellationToken.None);
+
+        string reason = failure is UnauthorizedAccessException ? "access_denied" : "drive_not_responding";
+        Assert.Multiple(() =>
+        {
+            Assert.That(libraries.Unread.Select(library => (library.Path, library.Reason)),
+                Is.EqualTo(new[] { (deadSteam, reason) }));
+            // DIAX17B (CNBW, en vivo 3 de 3: «completed, matchCount 0, games []» told «no lo tienes instalado»): the read
+            // failed, with the drive and why, and no count or empty list that reads as an answer.
+            Assert.That(steam.ErrorCode, Is.EqualTo("game_library_unreadable"));
+            Assert.That(steam.Verified, Is.False);
+            Assert.That(steam.Result?.GetProperty("state").GetString(), Is.EqualTo("install_state_not_read"));
+            Assert.That(steam.Result!.Value.TryGetProperty("matchCount", out _), Is.False);
+            Assert.That(steam.Result!.Value.TryGetProperty("games", out _), Is.False);
+            JsonElement unread = steam.Result!.Value.GetProperty("steamLibrariesUnread")[0];
+            Assert.That(unread.GetProperty("drive").GetString(), Is.EqualTo(@"Q:\"));
+            Assert.That(unread.GetProperty("reason").GetString(), Is.EqualTo(reason));
+            Assert.That(epic.Result?.GetProperty("installed").GetBoolean(), Is.True);
+        });
+    }
+
+    // DIAX17B (CNBW): the same Steam named by the user's registry («d:/steam») and the machine's («D:\Steam») was said
+    // unread twice; it is one library.
+    [Test]
+    public async Task OneLibraryNamedTwoWaysIsSaidUnreadOnce()
+    {
+        WindowsGameInstallationAdapter.SteamLibraries libraries = WindowsGameInstallationAdapter.DiscoverSteamLibraries(
+            ["q:/steam", @"Q:\Steam"], _ => true, _ => throw new IOException("gone", unchecked((int)0x80070037)));
+        var adapter = new WindowsGameInstallationAdapter(() => libraries, []);
+        ExternalCapabilityReceipt steam = await adapter.InvokeAsync(
+            "game.installed.named", Json("""{"provider":"steam","title":"Hollow Knight"}"""), CancellationToken.None);
+
+        Assert.That(steam.Result!.Value.GetProperty("steamLibrariesUnread").GetArrayLength(), Is.EqualTo(1));
+    }
+
+    // DIAX17: one Steam install whose list cannot be read leaves the other installs' libraries read.
+    [Test]
+    public void AnUnreadableSteamListLeavesTheOtherInstallsLibrariesRead()
+    {
+        WindowsGameInstallationAdapter.SteamLibraries libraries = WindowsGameInstallationAdapter.DiscoverSteamLibraries(
+            [@"Q:\Steam", @"C:\Steam"],
+            _ => true,
+            path => path.StartsWith(@"Q:\", StringComparison.OrdinalIgnoreCase)
+                ? throw new IOException("not ready", unchecked((int)0x80070015))
+                : "\"libraryfolders\" { \"1\" { \"path\" \"E:\\\\Biblioteca\" } }");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(libraries.SteamAppsRoots, Is.EquivalentTo(new[]
+            {
+                @"Q:\Steam\steamapps", @"C:\Steam\steamapps", @"E:\Biblioteca\steamapps",
+            }));
+            Assert.That(libraries.Unread.Single().Path, Is.EqualTo(@"Q:\Steam"));
+        });
+    }
+
+    // DIAX17: the adapter is built while the core starts; a library read that takes 30 s (a drive that does not answer)
+    // happens only when a game is asked about, never in the constructor.
+    [Test]
+    public void BuildingTheAdapterReadsNoLibrary()
+    {
+        bool read = false;
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        _ = new WindowsGameInstallationAdapter(
+            () =>
+            {
+                read = true;
+                Thread.Sleep(TimeSpan.FromSeconds(30));
+                return new WindowsGameInstallationAdapter.SteamLibraries([], []);
+            },
+            []);
+        clock.Stop();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(read, Is.False);
+            Assert.That(clock.Elapsed, Is.LessThan(TimeSpan.FromSeconds(1)));
+        });
     }
 
     // Renew al máximo (auditoría de flujos, decision2): a name no manifest bears exactly names the closest ones read.

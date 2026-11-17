@@ -144,6 +144,84 @@ public sealed class MemoryRecallScopeTests
             corrects ? Is.Null : Is.EqualTo("memory_conflict"));
     }
 
+    // DIAX10B (H-062, vivo en la GTX 1650): «olvida el color de mi bicicleta» sent «color de mi bicicleta» with the memory
+    // saved as «color de la bicicleta»; nothing matched and the result said only that, so BAXY told the person «no
+    // había nada guardado» with the memory still there. A forget by name that matches nothing names what is saved.
+    [TestCase("exact")]
+    [TestCase("topic")]
+    public async Task AForgetByANameThatMatchesNothingNamesWhatIsSaved(string scope)
+    {
+        using var temporary = new Temporary();
+        temporary.Remember("color de la bicicleta", "verde");
+        JsonObject forgotten = await temporary.RunOpenedAsync("memory.forget", new JsonObject
+        {
+            ["version"] = 1, ["scope"] = scope, ["selector"] = "color de mi bicicleta", ["confirmationRequired"] = true,
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That((int?)forgotten["deletedCount"], Is.EqualTo(0));
+            Assert.That(forgotten["kept"]!.AsArray().Select(static name => (string?)name),
+                Is.EqualTo(new[] { "color de la bicicleta" }));
+            Assert.That((int?)forgotten["keptTotal"], Is.EqualTo(1));
+            Assert.That(forgotten.ToJsonString(), Does.Not.Contain("verde"));
+            Assert.That(temporary.Count(), Is.EqualTo(1));
+        });
+    }
+
+    // A sensitive or secret memory is counted, never named, as a listing shows it.
+    [Test]
+    public async Task AForgetThatMatchesNothingCountsASensitiveMemoryWithoutNamingIt()
+    {
+        using var temporary = new Temporary();
+        temporary.Remember("color de la bicicleta", "verde");
+        temporary.Remember("clave del portal", "4321", MemorySensitivity.Sensitive, "save-2");
+        JsonObject forgotten = await temporary.RunOpenedAsync("memory.forget", new JsonObject
+        {
+            ["version"] = 1, ["scope"] = "exact", ["selector"] = "mi bici", ["confirmationRequired"] = true,
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That(forgotten["kept"]!.AsArray().Select(static name => (string?)name),
+                Is.EqualTo(new[] { "color de la bicicleta" }));
+            Assert.That((int?)forgotten["keptTotal"], Is.EqualTo(2));
+            Assert.That(forgotten.ToJsonString(), Does.Not.Contain("portal").And.Not.Contain("4321"));
+        });
+    }
+
+    // A forget that deleted, and one with the memory off, read as before: no names.
+    [Test]
+    public async Task AForgetThatDeletesNamesNothing()
+    {
+        using var temporary = new Temporary();
+        temporary.Remember("color de la bicicleta", "verde");
+        JsonObject forgotten = await temporary.RunOpenedAsync("memory.forget", new JsonObject
+        {
+            ["version"] = 1, ["scope"] = "exact", ["selector"] = "Color de la bicicleta", ["confirmationRequired"] = true,
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That((int?)forgotten["deletedCount"], Is.EqualTo(1));
+            Assert.That(forgotten.ContainsKey("kept"), Is.False);
+            Assert.That(forgotten.ContainsKey("keptTotal"), Is.False);
+            Assert.That(temporary.Count(), Is.EqualTo(0));
+        });
+    }
+
+    [Test]
+    public async Task AForgetWithTheMemoryOffNamesNothing()
+    {
+        using var temporary = new Temporary();
+        JsonObject forgotten = await temporary.RunOpenedAsync("memory.forget", new JsonObject
+        {
+            ["version"] = 1, ["scope"] = "exact", ["selector"] = "mi bici", ["confirmationRequired"] = true,
+        });
+        Assert.Multiple(() =>
+        {
+            Assert.That((int?)forgotten["deletedCount"], Is.EqualTo(0));
+            Assert.That(forgotten.ContainsKey("kept"), Is.False);
+        });
+    }
+
     private sealed class Temporary : IDisposable
     {
         private readonly string _path = Path.Combine(Path.GetTempPath(), "baxy-memory-recall-" + Guid.NewGuid().ToString("N"));
@@ -159,11 +237,17 @@ public sealed class MemoryRecallScopeTests
             _codec = new BoundProtectedJsonCodec(_protector);
         }
 
-        internal void Remember(string selector, string value, MemorySensitivity sensitivity = MemorySensitivity.Normal)
+        internal void Remember(
+            string selector,
+            string value,
+            MemorySensitivity sensitivity = MemorySensitivity.Normal,
+            string invocation = "save-1")
         {
             _store.Configure(new MemoryConfigureRequest("enable-1", Enabled: true));
-            _store.Save(new MemorySaveRequest("save-1", selector, selector, value, Sensitivity: sensitivity));
+            _store.Save(new MemorySaveRequest(invocation, selector, selector, value, Sensitivity: sensitivity));
         }
+
+        internal int Count() => _store.Status(new MemoryStatusRequest()).TotalRecords;
 
         internal async Task<OperationOutcome> RunAsync(string operation, JsonObject payload)
         {

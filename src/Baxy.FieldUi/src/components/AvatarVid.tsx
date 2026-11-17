@@ -4,7 +4,8 @@ import { LIB, MOUTH_BOX, MOUTH_LEVELS, NEXT, SLEEP_END, clip, groupFor, mouthLev
 import { lipAt } from '../lip';
 import { cutMouths } from './mouths';
 import { LipMouth, type MouthBlend } from './mouthBlend';
-import { stillIn } from '../still';
+import { BREATH_S, stillIn } from '../still';
+import { frameLoop } from '../frameLoop';
 
 /* BAXY's avatar in video (design v5, app.jsx BxAvatarVid): a library of Higgsfield clips in public/clips. Every clip
    starts and ends on the same master frame (the «dormido» ones on the sleep frame), so any clip can follow any other
@@ -16,19 +17,23 @@ import { stillIn } from '../still';
    While BAXY's voice sounds, the clip's own mouth is covered and a mouth chosen by the voice's loudness at that instant
    is drawn in its place (lip.ts, avatarClips.ts MOUTH_*): the mouth moves with what is heard, never with the clip.
    VUL1: in a state that keeps still (still.ts) the clip on screen does not play: it holds the frame it is on (the
-   master frame, for a clip that comes in then) and plays on from there once the state lets it. */
+   master frame, for a clip that comes in then) and plays on from there once the state lets it.
+   UIX2: while the window is calm (still.ts useCalm) the clip plays to its end, the master frame, rests there BREATH_S
+   seconds and the next one plays; once it is not calm, a clip resting at its end goes on at once. */
 
 interface Clip extends HTMLVideoElement { _t?: number }
 
-export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: string; onReady: (ok: boolean) => void }) {
+export function AvatarVid({ state, expr, onReady, still: keep, calm }: { state: BaxyState; expr: string; onReady: (ok: boolean) => void; still?: boolean; calm?: boolean }) {
   const wrap = useRef<HTMLDivElement>(null);
   const want = useRef<Group>('reposo');
   const ready = useRef(onReady);
   const still = useRef(false);
+  const rest = useRef(false);
   const api = useRef<{ nudge: () => void } | null>(null);
   useEffect(() => {
     want.current = groupFor(state, expr);
-    still.current = stillIn(state);
+    still.current = keep ?? stillIn(state);
+    rest.current = !!calm;
     ready.current = onReady;
   });
 
@@ -37,7 +42,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     let dead = false, front: Clip | null = null, cur: Group | null = null, pose: 'M' | 'S' = 'M';
     const hist: Partial<Record<Group, number[]>> = {};
     const warm: Partial<Record<Group, Clip>> = {};
-    let pending: { v: Clip } | null = null;
+    let pending: { v: Clip } | null = null, breath = 0;
 
     const pick = (g: Group) => {
       const n = LIB[g], h = hist[g] ?? [];
@@ -55,7 +60,7 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       v.setAttribute('aria-hidden', 'true');
       v.src = clip(g, pick(g));
       v.dataset.g = g;
-      v.addEventListener('ended', () => { if (v === front) advance(false); });
+      v.addEventListener('ended', () => { if (v === front) { if (rest.current) breathe(); else advance(false); } });
       v.addEventListener('error', () => { if (v === front) window.setTimeout(() => advance(false), 1000); });
       el.appendChild(v);
       v.load();
@@ -103,10 +108,13 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       }
       swap(v, g, fade);
     };
-    const advance = (fade: boolean) => { if (!dead) show(target(), fade); };
+    const advance = (fade: boolean) => { window.clearTimeout(breath); breath = 0; if (!dead) show(target(), fade); };
+    // calm: the clip that ended rests on its last frame, the master frame, before the next one plays
+    const breathe = () => { window.clearTimeout(breath); breath = window.setTimeout(() => { breath = 0; if (!dead && front?.ended) advance(false); }, BREATH_S * 1000); };
     api.current = {
       nudge: () => {
         if (dead || !front) return;
+        if (front.ended && !rest.current) { advance(false); return; }
         if (front.paused !== still.current && !front.ended) run(front);
         const g = target();
         if (g === cur) return;
@@ -154,10 +162,11 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     };
     cutLater(1500);
     const lipMouth = new LipMouth(MOUTH_LEVELS);
-    let lipOn = false, raf = 0;
-    const mouth = () => {
-      raf = requestAnimationFrame(mouth);
+    let lipOn = false;
+    const mouth = (): number | void => {
       const L = lipAt(), t = performance.now();
+      // UIX2: no voice on a speaking clip, nothing to compose: no frame asked for, a look again in 0.1 s (frameLoop.ts)
+      if (!lipOn && !(L.known && L.active && cur === 'hablando')) return 100;
       // only with one clip on screen: during a 0.35 s cut two heads mix (a thinking clip moves its head) and no mouth
       // fits both; meanwhile the speaking clip's own mouth shows
       let shown = 0;
@@ -174,11 +183,11 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
       lctx.putImageData(blend!.compose(gctx.getImageData(0, 0, MW, MH).data, m), 0, 0);
       el.dataset.mouth = String(lipMouth.level);
     };
-    raf = requestAnimationFrame(mouth);
+    const lipLoop = frameLoop(mouth);
     advance(false);
     return () => {
       dead = true;
-      cancelAnimationFrame(raf); window.clearTimeout(cutting);
+      lipLoop.stop(); window.clearTimeout(cutting); window.clearTimeout(breath);
       document.removeEventListener('visibilitychange', onVis);
       window.clearInterval(watchReady); window.clearInterval(watchdog);
       el.querySelectorAll<Clip>('video').forEach(drop); lip.remove();
@@ -193,6 +202,6 @@ export function AvatarVid({ state, expr, onReady }: { state: BaxyState; expr: st
     [...el.classList].forEach((c) => { if (c.startsWith('s-') && c !== 's-' + state) el.classList.remove(c); });
     el.classList.add('s-' + state);
     api.current?.nudge();
-  }, [state, expr]);
+  }, [state, expr, keep, calm]);
   return <div ref={wrap} className="bx-avid nf" aria-hidden="true"></div>;
 }

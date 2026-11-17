@@ -290,6 +290,49 @@ def _wire_name(name: str) -> str:
     return _ID.sub("__", name)
 
 
+def _speaks(message: dict[str, Any]) -> str | None:
+    """Who speaks in a turn as a template that wants turns in alternation counts it: the person, or the model in words. A
+    call the model made and its result are neither (Ministral 3's own template, «conversation roles must alternate user and
+    assistant roles except for tool calls and results»)."""
+    role = message.get("role")
+    return "user" if role == "user" else "assistant" if role == "assistant" and not message.get("tool_calls") else None
+
+
+def _joined(first: Any, then: Any) -> Any:
+    """Two contents as one, in their order: text after text, and a content of parts (text and images) kept as its parts."""
+    if isinstance(first, str) and isinstance(then, str):
+        return f"{first}\n\n{then}" if first and then else first or then
+
+    def parts(content: Any) -> list[Any]:
+        return list(content) if isinstance(content, list) else [{"type": "text", "text": str(content or "")}]
+
+    return parts(first) + [{"type": "text", "text": "\n\n"}] + parts(then)
+
+
+def alternated(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """MOD2 §4 / MODX1: the same conversation with no two turns of the person (or of the model in words) in a row, for a model
+    whose own template refuses that (Ministral 3: a 500 «conversation roles must alternate» to the mind's clock note and the
+    person's words, two user messages). Nothing is left out or reordered: a turn joins the one before it of the same speaker;
+    one that comes after a call's result joins that result, the message right before it. Only the form is changed."""
+    out: list[dict[str, Any]] = []
+    last: str | None = None
+    for message in messages:
+        speaker = _speaks(message)
+        if out and speaker is not None and speaker == last and out[-1].get("role") in (message.get("role"), "tool"):
+            out[-1] = {**out[-1], "content": _joined(out[-1].get("content"), message.get("content"))}
+            continue
+        out.append(dict(message))
+        if speaker is not None:
+            last = speaker
+    return out
+
+
+def _in_a_row(messages: list[dict[str, Any]]) -> bool:
+    """Whether two turns of the same speaker come in a row (calls and results between them do not count)."""
+    speakers = [speaker for speaker in map(_speaks, messages) if speaker is not None]
+    return any(a == b for a, b in zip(speakers, speakers[1:]))
+
+
 def _tool(tool: dict[str, Any]) -> dict[str, Any]:
     function = tool.get("function") or tool
     schema = function.get("parameters") or {"type": "object", "properties": {}}
@@ -433,6 +476,8 @@ class Ollama:
     A model that does not fit still runs if the person chose it, and the log says so."""
 
     provider = "local"
+    # MODX1: a template that refuses two turns of the same speaker in a row gets them joined (alternated; Translator learns it).
+    alternate = False
 
     def __init__(self, url: str, model: str, context: int = 0) -> None:
         self.url, self.model = url.rstrip("/"), model
@@ -512,6 +557,8 @@ class Ollama:
             messages.append({"role": "user", "content": "Answer in words now. Call no tool."})
         options: dict[str, Any] = {"num_ctx": self.num_ctx, "num_predict": int(body.get("max_tokens") or 768)}
         options.update({k: body[k] for k in ("temperature", "top_p", "top_k", "seed") if body.get(k) is not None})
+        if self.alternate:
+            messages = alternated(messages)
         request: dict[str, Any] = {"model": self.model, "messages": messages, "stream": False, "keep_alive": "30m", "options": options}
         if self.thinks:
             request["think"] = False
@@ -952,6 +999,8 @@ class Compatible:
         self.open = _opener(direct)
         self.extras: dict[str, dict[str, Any]] = {}
         self.calls: dict[str, str] = {}
+        # MODX1: as Ollama's (alternated), once a server's template refused two turns of the same speaker in a row.
+        self.alternate = False
 
     @property
     def unreachable(self) -> str:
@@ -983,6 +1032,8 @@ class Compatible:
                     calls.append({**call, **self.extras.get(str(call.get("id")), {}),
                                   "function": {**function, "name": _wire_name(str(function.get("name")))}})
                 sent[-1] = {**message, "tool_calls": calls}
+        if self.alternate:
+            sent = alternated(sent)
         request: dict[str, Any] = {"model": self.model, "messages": sent, "max_tokens": max(int(body.get("max_tokens") or 0), MIN_MAX_TOKENS)}
         tools = [{"type": "function", "function": {
             **(tool.get("function") or tool), "name": _wire_name(str((tool.get("function") or tool)["name"]))}}
@@ -1215,7 +1266,7 @@ class Translator:
     def _ask_compatible(self, body: dict[str, Any], names: dict[str, str], on_text: Callable[[str], None]) -> dict[str, Any]:
         started = time.monotonic()
         try:
-            answer = self.compatible.ask(body, names)
+            answer = self._ask_alternating(body, names)
         except urllib.error.HTTPError as error:
             detail = error.read().decode("utf-8", "replace")
             try:
@@ -1243,6 +1294,28 @@ class Translator:
             on_text(text)
         self.took_image = self.took_image or self.images(body)
         return answer
+
+    def _ask_alternating(self, body: dict[str, Any], names: dict[str, str]) -> dict[str, Any]:
+        """MOD2 §4 / MODX1: a server whose model's template refuses two turns of the same speaker in a row answers 500 to the
+        mind's conversation (Ministral 3 in Ollama 0.40.16 and in llama-server b11609: «conversation roles must alternate…»,
+        each turn). A 500 to a conversation with such turns is asked once more with them joined (alternated); if that is
+        answered, this model's conversations go so from then on, and the log says it once. Any other refusal, or one to a
+        conversation with none in a row, is the server's as before."""
+        backend = self.compatible
+        assert backend is not None
+        try:
+            return backend.ask(body, names)
+        except urllib.error.HTTPError as error:
+            if getattr(backend, "alternate", True) or error.code != 500 or not _in_a_row(list(body.get("messages") or [])):
+                raise
+            backend.alternate = True
+            try:
+                answer = backend.ask(body, names)
+            except (urllib.error.HTTPError, OSError, http.client.HTTPException, ValueError):
+                backend.alternate = False
+                raise error from None
+            print(f"{self.model}: su plantilla no admite dos turnos seguidos de la misma voz; BAXY los junta en uno, en su orden", flush=True)
+            return answer
 
     def local(self, body: dict[str, Any]) -> dict[str, Any] | None:
         """A reply that costs nothing, for what is not a decision: the warm-up (one token, to read the prompt into a slot

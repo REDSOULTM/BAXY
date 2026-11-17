@@ -119,9 +119,12 @@ internal static class ApplicationWindowCloser
         ApplicationQuitResult quit = await windows.QuitApplicationAsync(processes, cancellationToken).ConfigureAwait(false);
         if (!quit.Asked)
             return closing;
+        // DIAX12 (H-021, vivo NB 2 de 2): every window the person had closed and only windowless processes stayed (a browser
+        // that keeps running in the background): what they see is closed, so it is done, and the receipt says what stays.
+        // Windows that only hid keep it «running in the background» (the notification area shows it).
         return closing with
         {
-            ErrorCode = quit.Exited ? null : AppRunningInBackground,
+            ErrorCode = quit.Exited || closedAndClear ? null : AppRunningInBackground,
             ProcessIds = processes,
             EffectMayHaveOccurred = closing.EffectMayHaveOccurred || quit.Exited,
             Quit = quit,

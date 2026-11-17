@@ -8,21 +8,35 @@ namespace Baxy.Providers.Windows.External;
 
 internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
 {
-    private readonly string[] _steamAppsRoots;
+    private readonly Func<SteamLibraries> _steamLibraries;
     private readonly string[] _epicManifestRoots;
 
+    // DIAX17: the libraries are found when a game is asked about, never while the core starts. Read in this constructor,
+    // a Steam folder on a drive that stopped answering (File.Exists true from the cache, the read an IOException)
+    // stopped the core at every start: «BAXY no logra arrancar» for a game library nobody asked about.
     internal WindowsGameInstallationAdapter()
-        : this(DiscoverSteamAppsRoots(), DiscoverEpicManifestRoots())
+        : this(
+            static () => DiscoverSteamLibraries(DiscoverSteamRoots(), File.Exists, File.ReadAllText),
+            DiscoverEpicManifestRoots())
     {
     }
 
     internal WindowsGameInstallationAdapter(
         IEnumerable<string> steamAppsRoots,
         IEnumerable<string> epicManifestRoots)
+        : this(Known(new SteamLibraries(CanonicalRoots(steamAppsRoots), [])), epicManifestRoots)
     {
-        _steamAppsRoots = CanonicalRoots(steamAppsRoots);
+    }
+
+    internal WindowsGameInstallationAdapter(
+        Func<SteamLibraries> steamLibraries,
+        IEnumerable<string> epicManifestRoots)
+    {
+        _steamLibraries = steamLibraries ?? throw new ArgumentNullException(nameof(steamLibraries));
         _epicManifestRoots = CanonicalRoots(epicManifestRoots);
     }
+
+    private static Func<SteamLibraries> Known(SteamLibraries libraries) => () => libraries;
 
     public bool CanHandle(string operation) => operation == "game.installed.named";
 
@@ -53,8 +67,15 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
             // Renew al máximo (w8): one manifest that could not be read (locked while its store rewrites it, a corrupt
             // .item) failed game_installation_inventory_failed for every title, both stores; it is left aside and counted.
             var unread = new List<string>();
+            // DIAX17: a library that cannot be read now is named with its drive and why, never «no game by that name».
+            var librariesUnread = new List<UnreadLibrary>();
             if (provider is "any" or "steam")
-                matches.AddRange(ReadSteamGames(foldedTitle, read, unread));
+            {
+                SteamLibraries libraries = _steamLibraries();
+                librariesUnread.AddRange(libraries.Unread);
+                matches.AddRange(ReadSteamGames(
+                    libraries.SteamAppsRoots, foldedTitle, read, unread, librariesUnread));
+            }
             if (provider is "any" or "epic")
                 matches.AddRange(ReadEpicGames(foldedTitle, read, unread));
 
@@ -64,6 +85,29 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 .OrderBy(game => game.Provider, StringComparer.Ordinal)
                 .ThenBy(game => game.Title, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
+            // DIAX17B (CNBW 10:19, 3 de 3 en vivo): «completed, matchCount 0, games []» beside install_state_not_read was
+            // told «no lo tienes instalado, ¿lo instalo?». Nothing found with a library or a manifest unread is a read
+            // that failed, as every other read that fails for an outside cause: a failure with its code and what was
+            // and was not read, never a completed read with no game.
+            if (distinct.Length == 0 && (unread.Count > 0 || librariesUnread.Count > 0))
+            {
+                return ValueTask.FromResult(ExternalJson.Failure(operation, LibraryUnreadable) with
+                {
+                    Result = ExternalJson.Create(writer =>
+                    {
+                        writer.WriteStartObject();
+                        writer.WriteNumber("version", 1);
+                        writer.WriteString("query", title);
+                        writer.WriteString("provider", provider);
+                        writer.WriteString("state", "install_state_not_read");
+                        WriteUnread(writer, unread, librariesUnread);
+                        writer.WriteString("next", "whether this game is installed is not known: "
+                            + "a game library could not be read now (see steamLibrariesUnread: its drive and why). "
+                            + "Nothing was installed or changed");
+                        writer.WriteEndObject();
+                    }),
+                });
+            }
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
@@ -80,15 +124,14 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 else if (distinct.Length > 0)
                     writer.WriteString("state", "install_not_finished");
                 // A manifest not read may be the game's: with one, no name found is not said.
-                else if (unread.Count > 0)
+                else if (unread.Count > 0 || librariesUnread.Count > 0)
                     writer.WriteString("state", "install_state_not_read");
                 else
                 {
                     writer.WriteString("state", "no_steam_or_epic_manifest_with_that_name");
                     SteamLocalAdapter.WriteClosest(writer, SteamLocalAdapter.ClosestTitles(title, read));
                 }
-                if (unread.Count > 0)
-                    writer.WriteNumber("manifestsUnread", unread.Count);
+                WriteUnread(writer, unread, librariesUnread);
                 writer.WriteNumber("matchCount", distinct.Length);
                 writer.WriteStartArray("games");
                 foreach (InstalledGame game in distinct)
@@ -119,6 +162,31 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         }
     }
 
+    // DIAX17B: the error code of a games read that found nothing with a library or manifest unread (SteamLocalAdapter too).
+    internal const string LibraryUnreadable = "game_library_unreadable";
+
+    // What was not read: the manifests counted, each library once with its drive and why. One Steam named by both the
+    // user's and the machine's registry («d:/steam», «D:\Steam») is one library, so it is said once.
+    private static void WriteUnread(Utf8JsonWriter writer, List<string> unread, List<UnreadLibrary> librariesUnread)
+    {
+        if (unread.Count > 0)
+            writer.WriteNumber("manifestsUnread", unread.Count);
+        UnreadLibrary[] libraries = [.. librariesUnread.DistinctBy(
+            static library => library.Path.Replace('/', '\\').TrimEnd('\\'),StringComparer.OrdinalIgnoreCase)];
+        if (libraries.Length == 0)
+            return;
+        writer.WriteStartArray("steamLibrariesUnread");
+        foreach (UnreadLibrary library in libraries)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("drive", Path.GetPathRoot(library.Path) ?? library.Path);
+            writer.WriteString("path", library.Path);
+            writer.WriteString("reason", library.Reason);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
+
     // One manifest's text, or null (counted in «unread») when it cannot be read now.
     private static string? ReadManifest(string manifest, List<string> unread)
     {
@@ -133,12 +201,26 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         }
     }
 
-    private IEnumerable<InstalledGame> ReadSteamGames(string foldedTitle, List<string> read, List<string> unread)
+    private static IEnumerable<InstalledGame> ReadSteamGames(
+        string[] steamAppsRoots,
+        string foldedTitle,
+        List<string> read,
+        List<string> unread,
+        List<UnreadLibrary> librariesUnread)
     {
-        foreach (string steamAppsRoot in _steamAppsRoots.Where(Directory.Exists))
+        foreach (string steamAppsRoot in steamAppsRoots.Where(Directory.Exists))
         {
-            foreach (string manifest in Directory.EnumerateFiles(
-                steamAppsRoot, "appmanifest_*.acf", SearchOption.TopDirectoryOnly))
+            string[] manifests;
+            try
+            {
+                manifests = Directory.GetFiles(steamAppsRoot, "appmanifest_*.acf", SearchOption.TopDirectoryOnly);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                librariesUnread.Add(new UnreadLibrary(steamAppsRoot, UnreadReason(exception)));
+                continue;
+            }
+            foreach (string manifest in manifests)
             {
                 if (ReadManifest(manifest, unread) is not { } content)
                     continue;
@@ -223,20 +305,44 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
         }
     }
 
-    private static string[] DiscoverSteamAppsRoots()
+    private static string[] DiscoverSteamRoots()
     {
         var steamRoots = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         AddRegistrySteamRoot(steamRoots, Registry.CurrentUser, @"Software\Valve\Steam");
         AddRegistrySteamRoot(steamRoots, Registry.LocalMachine, @"SOFTWARE\WOW6432Node\Valve\Steam");
         string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
         if (programFiles.Length > 0) steamRoots.Add(Path.Combine(programFiles, "Steam"));
+        return [.. steamRoots];
+    }
 
-        var libraryRoots = new HashSet<string>(steamRoots, StringComparer.OrdinalIgnoreCase);
-        foreach (string steamRoot in steamRoots.ToArray())
+    // DIAX17: a library list that cannot be read now (its drive gone or not answering, access refused) leaves that
+    // library unread and named; every other library is still read.
+    internal static SteamLibraries DiscoverSteamLibraries(
+        IEnumerable<string> steamRoots,
+        Func<string, bool> exists,
+        Func<string, string> readText)
+    {
+        string[] roots = [.. steamRoots.Where(root => !string.IsNullOrWhiteSpace(root))];
+        var libraryRoots = new HashSet<string>(roots, StringComparer.OrdinalIgnoreCase);
+        var unreadLibraries = new List<UnreadLibrary>();
+        foreach (string steamRoot in roots)
         {
             string libraryFile = Path.Combine(steamRoot, "steamapps", "libraryfolders.vdf");
-            if (!File.Exists(libraryFile)) continue;
-            string content = File.ReadAllText(libraryFile);
+            string content;
+            try
+            {
+                if (!exists(libraryFile)) continue;
+                content = readText(libraryFile);
+            }
+            catch (FileNotFoundException)
+            {
+                continue;
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                unreadLibraries.Add(new UnreadLibrary(steamRoot, UnreadReason(exception)));
+                continue;
+            }
             foreach (Match match in Regex.Matches(
                 content, "\\\"path\\\"\\s+\\\"([^\\\"]+)\\\"",
                 RegexOptions.CultureInvariant))
@@ -244,8 +350,28 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
                 libraryRoots.Add(match.Groups[1].Value.Replace("\\\\", "\\"));
             }
         }
-        return libraryRoots.Select(root => Path.Combine(root, "steamapps")).ToArray();
+        return new SteamLibraries(
+            CanonicalRoots(libraryRoots.Select(root => Path.Combine(root, "steamapps"))),
+            [.. unreadLibraries]);
     }
+
+    // Why a library was not read, from the Windows error under the exception (System Error Codes): its drive gone or not
+    // answering, access refused, the file held while Steam rewrites it, or another read failure.
+    internal static string UnreadReason(Exception exception) => exception switch
+    {
+        UnauthorizedAccessException => "access_denied",
+        DirectoryNotFoundException or DriveNotFoundException => "drive_not_responding",
+        IOException io => (io.HResult & 0xFFFF) switch
+        {
+            // ERROR_SHARING_VIOLATION, ERROR_LOCK_VIOLATION
+            32 or 33 => "file_in_use",
+            // ERROR_NOT_READY, ERROR_CRC, ERROR_BAD_NETPATH, ERROR_DEV_NOT_EXIST, ERROR_NETNAME_DELETED, ERROR_SEM_TIMEOUT,
+            // ERROR_NO_SUCH_DEVICE, ERROR_IO_DEVICE, ERROR_DEVICE_NOT_CONNECTED
+            21 or 23 or 53 or 55 or 64 or 121 or 433 or 1117 or 1167 => "drive_not_responding",
+            _ => "read_failed",
+        },
+        _ => "read_failed",
+    };
 
     private static string[] DiscoverEpicManifestRoots()
     {
@@ -300,6 +426,10 @@ internal sealed class WindowsGameInstallationAdapter : IExternalOperationAdapter
 
     private static string Sha256File(string path) => Convert.ToHexStringLower(
         SHA256.HashData(File.ReadAllBytes(path)));
+
+    internal sealed record SteamLibraries(string[] SteamAppsRoots, UnreadLibrary[] Unread);
+
+    internal sealed record UnreadLibrary(string Path, string Reason);
 
     private sealed record InstalledGame(
         string Provider,

@@ -195,6 +195,29 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         // Uso real 03-11 (G9): a search nothing installed bears was said «not in your library»; what the account's
         // library cache says of that title goes beside it.
         JsonElement? entitlement = matching.Length == 0 && !string.IsNullOrWhiteSpace(query) ? EntitlementOf(query) : null;
+        // DIAX17B: no game with a library unread was «count 0, games []» beside readInPart, told «no tienes ninguno»: a
+        // read that failed, as game.installed.named says it (its code, the libraries unread, what the cache said).
+        if (matching.Length == 0 && unreadLibraries > 0)
+        {
+            return ExternalJson.Failure(operation, WindowsGameInstallationAdapter.LibraryUnreadable) with
+            {
+                Result = ExternalJson.Create(writer =>
+                {
+                    writer.WriteStartObject(); writer.WriteNumber("version", 1);
+                    writer.WriteString("source", "steam_local_appmanifests");
+                    writer.WriteString("scope", InstalledScope);
+                    if (entitlement is { } owned)
+                    {
+                        writer.WritePropertyName("entitlement");
+                        owned.WriteTo(writer);
+                    }
+                    writer.WriteNumber("librariesUnread", unreadLibraries);
+                    writer.WriteString("next", "which games are installed is not known: a Steam library could not be "
+                        + "read now. Nothing was installed or changed");
+                    writer.WriteEndObject();
+                }),
+            };
+        }
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -243,7 +266,8 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             writer.WriteStartObject(); writer.WriteString("title", title); writer.WriteEndObject();
         }));
-        return read.Verified ? read.Result : null;
+        // DIAX17B: with a library unread the read fails, and what the library cache said still goes beside the list.
+        return read.Verified || read.ErrorCode == WindowsGameInstallationAdapter.LibraryUnreadable ? read.Result : null;
     }
 
     // INSTALL1617 «Descarga Worms Rumble en Steam»: before any download the
@@ -331,7 +355,10 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 ? "steam_local_appmanifest" : "steam_authenticated_library_cache");
             writer.WriteEndObject();
         });
-        return ExternalJson.Success(operation, result, effectObserved: false);
+        // DIAX17B: not found installed with a library unread is not known; what was read (the cache) goes with the failure.
+        return !installed && librariesUnread
+            ? ExternalJson.Failure(operation, WindowsGameInstallationAdapter.LibraryUnreadable) with { Result = result }
+            : ExternalJson.Success(operation, result, effectObserved: false);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> InstallNamedAsync(
@@ -1495,7 +1522,11 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         }
     }
 
-    private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog() => ReadInstalledCatalog(SteamRoots().Libraries);
+    private static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog()
+    {
+        (_, string[] libraries, bool listUnread) = SteamRoots();
+        return ReadInstalledCatalog(libraries, librariesUnread: listUnread ? 1 : 0);
+    }
 
     // Revisión de calidad (nb-q-apps): one manifest that cannot be read no longer fails the whole catalog. Steam deletes
     // a manifest at the end of an uninstall and rewrites it while it downloads, and the catalog is read every 500 ms
@@ -1503,11 +1534,12 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     // there); one that is there and refuses its read leaves its library unread, as a library not found does.
     internal static IReadOnlyList<SteamLocalGame> ReadInstalledCatalog(
         IEnumerable<string> libraries,
-        Func<string, byte[]>? read = null)
+        Func<string, byte[]>? read = null,
+        int librariesUnread = 0)
     {
         read ??= File.ReadAllBytes;
         var result = new Dictionary<string, SteamLocalGame>(StringComparer.Ordinal);
-        int unread = 0;
+        int unread = librariesUnread;
         foreach (string library in libraries)
         {
             string steamApps = Path.Combine(library, "steamapps");
@@ -1578,7 +1610,20 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
     // Auditoría final (regla 3): ownership is the account's library cache alone (an installed manifest may be a shared
     // or free game), and no cache read at all is null, never an empty library. Feria (NB-W5): a PC where two accounts
     // signed in keeps a cache for each, so only the signed-in account's counts; every cache only when there is none.
+    // DIAX17: a cache on a drive that stopped answering is a cache not read (null), never an exception out of the call.
     internal static IReadOnlySet<string>? ReadOwnedAppIds(string userdata, string? account)
+    {
+        try
+        {
+            return ReadOwnedAppIdsFrom(userdata, account);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    private static HashSet<string>? ReadOwnedAppIdsFrom(string userdata, string? account)
     {
         var result = new HashSet<string>(StringComparer.Ordinal);
         bool cacheRead = false;
@@ -1604,21 +1649,42 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         return cacheRead ? result : null;
     }
 
-    private static (string Root, string[] Libraries) SteamRoots()
+    private static (string Root, string[] Libraries, bool ListUnread) SteamRoots()
     {
         using RegistryKey? steamKey = Registry.CurrentUser.OpenSubKey(@"Software\Valve\Steam");
         string root = steamKey?.GetValue("SteamPath") as string
             ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Steam");
+        return SteamRoots(root, File.Exists, path => File.ReadAllText(path, Encoding.UTF8));
+    }
+
+    // DIAX17: Steam's library list on a drive that stopped answering (File.Exists true from the cache, the read an
+    // IOException) is a list not read now, counted as an unread library, never an exception out of the catalog.
+    internal static (string Root, string[] Libraries, bool ListUnread) SteamRoots(
+        string root,
+        Func<string, bool> exists,
+        Func<string, string> readText)
+    {
         var libraries = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { root };
         string libraryFile = Path.Combine(root, "steamapps", "libraryfolders.vdf");
-        if (File.Exists(libraryFile))
+        string content;
+        try
         {
-            foreach (Match match in LibraryPathRegex().Matches(File.ReadAllText(libraryFile, Encoding.UTF8)))
-            {
-                libraries.Add(match.Groups[1].Value.Replace("\\\\", "\\", StringComparison.Ordinal));
-            }
+            if (!exists(libraryFile)) return (root, libraries.ToArray(), false);
+            content = readText(libraryFile);
         }
-        return (root, libraries.ToArray());
+        catch (FileNotFoundException)
+        {
+            return (root, libraries.ToArray(), false);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            return (root, libraries.ToArray(), true);
+        }
+        foreach (Match match in LibraryPathRegex().Matches(content))
+        {
+            libraries.Add(match.Groups[1].Value.Replace("\\\\", "\\", StringComparison.Ordinal));
+        }
+        return (root, libraries.ToArray(), false);
     }
 
     // The account Steam signs in with (its userdata folder's name), which Steam keeps once it has quit; null when it

@@ -322,6 +322,7 @@ internal sealed class FieldProductChannel : IAsyncDisposable
             if (_viewModel.CoreClient is { IsReady: true })
             {
                 await TellLastUpdateAsync(cancellationToken).ConfigureAwait(true);
+                await TellStartRepairsAsync(cancellationToken).ConfigureAwait(true);
             }
 
             if (_viewModel.CoreClient is { IsReady: true } && _viewModel.Settings.UpdateNotice)
@@ -333,6 +334,31 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             // BAXY is closing: there is nothing to tell.
         }
+    }
+
+    // DIAX11: with the core started, what it set right at its start (a half-done journal write set aside, an own browser
+    // profile that had taken the person's account discarded) is told once, as the update's outcome is (StartRepairs).
+    private async Task TellStartRepairsAsync(CancellationToken cancellationToken)
+    {
+        string dataRoot;
+        try
+        {
+            dataRoot = MemoryOperationProtector.ResolveDataRoot();
+        }
+        catch (Exception unread) when (unread is IOException or UnauthorizedAccessException or InvalidOperationException
+            or ArgumentException)
+        {
+            return;
+        }
+
+        if (StartRepairs.OnStart(dataRoot, UiLanguage.IsEnglish, out Action told) is not { } line)
+        {
+            return;
+        }
+
+        Publish(ItemEvent(_transcript.System(line)));
+        told();
+        _ = await _viewModel.SayWhenFreeAsync(line, TimeSpan.FromMinutes(5), cancellationToken).ConfigureAwait(true);
     }
 
     // AUT1: this BAXY opened after an update. With its engine ready it says so to the installer that waits (which then
@@ -448,7 +474,12 @@ internal sealed class FieldProductChannel : IAsyncDisposable
         {
             "confirmation" => OwnReadings.Confirmation(
                 ConfirmationModeStore.TryRead(MemoryOperationProtector.ResolveDataRoot(), out ConfirmationMode mode) ? mode : null),
-            "model" => OwnReadings.Model(await _telemetry.SampleAsync(cancellationToken).ConfigureAwait(true)),
+            // DIAX15: with the model BAXY thinks with, its tool profile, its language and its voice (Ajustes › Modelo,
+            // Herramientas, General y Voz): the scope the model already reads when asked about any of them (DIAX12: «¿en qué
+            // perfil estás?» 30 of 30, «¿qué modelo usas?» 20 of 20), so the catalog and its prefix stay the same.
+            "model" => OwnReadings.Model(await _telemetry.SampleAsync(cancellationToken).ConfigureAwait(true),
+                new OwnReadings.Settings(ModelInUse(), _viewModel.ToolProfileState.Profile, UiLanguage.IsEnglish,
+                    _viewModel.Settings.VoiceMuted)),
             "internet" => OwnReadings.Internet(_transcript.Items),
             "version" => OwnReadings.Version(UpdatePanel.Installed),
             _ => Baxy.Kernel.Operations.OperationOutcome.Failure(OwnReadings.UnknownScope),
@@ -2527,6 +2558,17 @@ internal sealed class FieldProductChannel : IAsyncDisposable
     }
 
     // ---- model, voice inventory, metrics ----------------------------------------------------------------------------
+
+    // DIAX15: the model the mind thinks with, by the name the person chose it by: one of Ollama or an API, or their own
+    // GGUF (BAXY_MIND_MODEL_IN_USE, «model|where», MODX1), else the file BAXY's own engine loads (Ajustes › Modelo).
+    private static string ModelInUse()
+    {
+        string chosen = Environment.GetEnvironmentVariable(ExternalModel.MindModelVariable) ?? string.Empty;
+        int bar = chosen.LastIndexOf('|');
+        return bar > 0 && !string.IsNullOrWhiteSpace(chosen[..bar])
+            ? chosen[..bar].Trim()
+            : ResolveModelIdentity(Environment.GetEnvironmentVariable("BAXY_MIND_LLM_GGUF")).Alias;
+    }
 
     internal static FieldModelIdentity ResolveModelIdentity(string? modelPath)
     {

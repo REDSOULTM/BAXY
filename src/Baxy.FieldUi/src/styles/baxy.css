@@ -372,3 +372,7 @@ html.lt .bxs.settings-panel{box-shadow:0 0 24px rgba(184,58,74,.14),0 20px 60px 
 
 /* a model that did not connect says so in red, not as connecting */
 .bx-fact .st.bad{color:var(--bad)}
+
+/* UIX1, while the window keeps still (still.ts): the state's pulsing marks stand in their resting look (each one repaints the window
+   at the screen's rate) */
+.bx-hush .bx-statel.live i,.bx-hush .bx-c-think i,.bx-hush .bx-step .txt,.bx-hush .bx-tag.busy::before,.bx-hush .bx-live::after,.bx-hush .bx-mic.on.breath::before,.bx-hush .bx-wait .ar{animation:none}

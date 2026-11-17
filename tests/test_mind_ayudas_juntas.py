@@ -37,12 +37,14 @@ def test_a_screen_call_runs_as_written_again(tmp_path: Path, monkeypatch) -> Non
     assert step["kind"] == "action" and step["operation"] == "display_monitor_set" and _held(mind) == []
 
 
-def test_after_a_shutdown_held_the_same_call_again_runs_and_nothing_loops(tmp_path: Path, monkeypatch) -> None:
+def test_after_a_shutdown_held_the_same_call_again_is_held_and_nothing_loops(tmp_path: Path, monkeypatch) -> None:
+    # DIAX5: in the turn it does not run while their words name no computer; the second hold ends the turn in words.
     monkeypatch.delenv("BAXY_AYUDAS", raising=False)
-    mind, server = _mind(tmp_path, [_call("system_power", SHUTDOWN), _call("system_power", SHUTDOWN)])
+    mind, server = _mind(tmp_path, [_call("system_power", SHUTDOWN), _call("system_power", SHUTDOWN),
+                                    _say("¿Quieres que apague el PC o que cierre Clevanto?")])
     mind.new_session(FAILED)
-    assert mind.decide(1, "pues apágalo ahí abajo")["operation"] == "system_power"
-    assert len(_held(mind)) == 1 and len(server.bodies) == 2
+    assert mind.decide(1, "pues apágalo ahí abajo")["kind"] != "action"
+    assert len(_held(mind)) == 2 and len(server.bodies) == 3 and server.bodies[-1].get("tool_choice") == "none"
 
 
 def test_a_shutdown_and_an_alarm_on_some_days_in_one_phrase(tmp_path: Path, monkeypatch) -> None:

@@ -592,6 +592,13 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                     effectObserved: false);
             }
 
+            if (NotOffered(operation, command, OfferedControls.Of(session.GetPlaybackInfo().Controls),
+                    session.SourceAppUserModelId, before.Title, before.Artist, StatusName(action, beforeStatus),
+                    insteadOfCurrent) is { } refused)
+            {
+                return refused;
+            }
+
             effectBoundaryCrossed = true;
             bool dispatched = command switch
             {
@@ -674,6 +681,78 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
                 "smtc_control_observation_failed",
                 effectBoundaryCrossed);
         }
+    }
+
+    /// <summary>
+    /// The commands a session offers now, as the app publishes them on its playback controls (IsNextEnabled and the
+    /// rest; a browser publishes «next» only when the page has a next track). A play or a pause also goes through the
+    /// play/pause key when the app publishes only that.
+    /// </summary>
+    internal sealed record OfferedControls(bool Play, bool Pause, bool Stop, bool Next, bool Previous, bool Toggle)
+    {
+        private static readonly string[] Commands = ["play", "pause", "stop", "next", "previous"];
+
+        internal static OfferedControls Of(GlobalSystemMediaTransportControlsSessionPlaybackControls controls) =>
+            new(controls.IsPlayEnabled, controls.IsPauseEnabled, controls.IsStopEnabled, controls.IsNextEnabled,
+                controls.IsPreviousEnabled, controls.IsPlayPauseToggleEnabled);
+
+        internal bool Offers(string command) => command switch
+        {
+            "play" => Play || Toggle,
+            "pause" => Pause || Toggle,
+            "stop" => Stop,
+            "next" => Next,
+            "previous" => Previous,
+            _ => false,
+        };
+
+        internal IReadOnlyList<string> Names => Commands.Where(Offers).ToArray();
+    }
+
+    /// <summary>
+    /// DIAX19 (H-081, caso 21 del 16-11): a command the session does not offer is not sent, and the failure is certain
+    /// (media_action_not_offered, nothing happened) with the session, what it plays and the commands it does offer;
+    /// null when it offers the command. A single YouTube video in Edge said IsNextEnabled = false, the skip was sent
+    /// anyway, nothing changed and the receipt read «pudo o no ocurrir»: the model then told «ya suena la siguiente».
+    /// </summary>
+    internal static ExternalCapabilityReceipt? NotOffered(
+        string operation,
+        string command,
+        OfferedControls offered,
+        string sourceAppUserModelId,
+        string title,
+        string artist,
+        string status,
+        string? insteadOfCurrent) =>
+        offered.Offers(command)
+            ? null
+            : new(operation, false, false, ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("sourceAppUserModelId", sourceAppUserModelId);
+                writer.WriteString("title", title);
+                writer.WriteString("artist", artist);
+                writer.WriteString("playbackStatus", status);
+                writer.WriteString("actionNotOffered", command);
+                WriteActionsOffered(writer, offered.Names);
+                writer.WriteString("authority", "windows_smtc");
+                if (insteadOfCurrent is not null)
+                {
+                    writer.WriteString("sessionFrom", "only_playing_session");
+                    writer.WriteString("currentSourceAppUserModelId", insteadOfCurrent);
+                }
+                writer.WriteEndObject();
+            }), "media_action_not_offered");
+
+    private static void WriteActionsOffered(Utf8JsonWriter writer, IReadOnlyList<string> offered)
+    {
+        writer.WriteStartArray("actionsOffered");
+        foreach (string command in offered)
+        {
+            writer.WriteStringValue(command);
+        }
+        writer.WriteEndArray();
     }
 
     // Owner's test 2026-09-21 (turn 148): a session that closed on «stop» is the stopped playback, not «nothing was
@@ -768,7 +847,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
             }
 
             JsonElement result = StatusResult(session.SourceAppUserModelId, properties.Title, properties.Artist,
-                properties.AlbumTitle, status.ToString().ToLowerInvariant(), othersRead);
+                properties.AlbumTitle, status.ToString().ToLowerInvariant(), othersRead,
+                OfferedControls.Of(session.GetPlaybackInfo().Controls).Names);
             return ExternalJson.Success(operation, result, effectObserved: false);
         }
         catch when (!cancellationToken.IsCancellationRequested)
@@ -788,7 +868,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         string artist,
         string? album,
         string playbackStatus,
-        IReadOnlyList<UserMediaSession> others) => ExternalJson.Create(writer =>
+        IReadOnlyList<UserMediaSession> others,
+        IReadOnlyList<string>? offered = null) => ExternalJson.Create(writer =>
     {
         writer.WriteStartObject();
         writer.WriteNumber("version", 1);
@@ -803,6 +884,12 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter
         }
 
         writer.WriteString("playbackStatus", playbackStatus);
+        // DIAX19: the commands media.control can send to it (the same list a refused one names).
+        if (offered is not null)
+        {
+            WriteActionsOffered(writer, offered);
+        }
+
         WriteOtherSessions(writer, others);
         writer.WriteString("authority", "windows_smtc_current_session_read");
         writer.WriteEndObject();

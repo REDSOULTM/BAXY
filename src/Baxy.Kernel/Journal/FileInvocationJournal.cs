@@ -823,6 +823,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         JournalAnchorPosition? positionBeforeLastRecord = null;
         bool incompleteTail = false;
         bool missingFinalNewline = false;
+        bool damagedTail = false;
         try
         {
             int read;
@@ -839,14 +840,23 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                         continue;
                     }
 
-                    AppendLineBytes(line, buffer.AsSpan(segmentStart, index - segmentStart));
-                    if (line.WrittenCount == 0)
+                    try
                     {
-                        throw new JournalIntegrityException("Journal contains an empty record.");
+                        AppendLineBytes(line, buffer.AsSpan(segmentStart, index - segmentStart));
+                        if (line.WrittenCount == 0)
+                        {
+                            throw new JournalIntegrityException("Journal contains an empty record.");
+                        }
+
+                        LoadRecord(line.WrittenSpan);
+                    }
+                    catch (JournalIntegrityException) when (EndsAtCommittedAnchor(anchor, position))
+                    {
+                        damagedTail = true;
+                        break;
                     }
 
                     positionBeforeLastRecord = position;
-                    LoadRecord(line.WrittenSpan);
                     completeLength = chunkOffset + index + 1;
                     position = new JournalAnchorPosition(
                         _sequence,
@@ -856,13 +866,32 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                     segmentStart = index + 1;
                 }
 
-                AppendLineBytes(line, buffer.AsSpan(segmentStart, read - segmentStart));
+                if (damagedTail)
+                {
+                    break;
+                }
+
+                try
+                {
+                    AppendLineBytes(line, buffer.AsSpan(segmentStart, read - segmentStart));
+                }
+                catch (JournalIntegrityException) when (EndsAtCommittedAnchor(anchor, position))
+                {
+                    damagedTail = true;
+                    break;
+                }
             }
         }
         finally
         {
             CryptographicOperations.ZeroMemory(buffer);
             ArrayPool<byte>.Shared.Return(buffer);
+        }
+
+        if (damagedTail)
+        {
+            line.Clear();
+            incompleteTail = true;
         }
 
         if (line.WrittenCount > 0)
@@ -884,13 +913,21 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                         "Journal has no room to repair its missing final newline.");
                 }
 
-                positionBeforeLastRecord = position;
-                LoadRecord(line.WrittenSpan);
-                position = new JournalAnchorPosition(
-                    _sequence,
-                    _lastTag,
-                    checked(_stream.Length + 1));
-                missingFinalNewline = true;
+                try
+                {
+                    LoadRecord(line.WrittenSpan);
+                    positionBeforeLastRecord = position;
+                    position = new JournalAnchorPosition(
+                        _sequence,
+                        _lastTag,
+                        checked(_stream.Length + 1));
+                    missingFinalNewline = true;
+                }
+                catch (JournalIntegrityException) when (EndsAtCommittedAnchor(anchor, position))
+                {
+                    // Valid JSON that is not this journal's next record, unterminated after the committed end.
+                    incompleteTail = true;
+                }
             }
 
         }
@@ -1025,6 +1062,7 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
                 throw new JournalIntegrityException("Journal tail recovery length is invalid.");
             }
 
+            await SetAsideTailAsync(completeLength, cancellationToken).ConfigureAwait(false);
             _stream.SetLength(completeLength);
             _stream.Flush(flushToDisk: true);
         }
@@ -1048,6 +1086,107 @@ public sealed class FileInvocationJournal : IInvocationJournal, IAsyncDisposable
         }
 
         _stream.Position = _stream.Length;
+    }
+
+    /// <summary>The file a damaged tail is set aside in, beside the journal: «missions.jsonl.damaged-…».</summary>
+    public const string DamagedTailMarker = ".damaged-";
+
+    /// <summary>Ends the mark left beside the journal when the damaged tail could not be copied aside.</summary>
+    public const string NotKeptSuffix = ".not-kept";
+
+    /// <summary>
+    /// DIAX11 (vivo Radeon H-012: «{{{» appended to the journal and BAXY no longer started, «Tus datos guardados no se
+    /// pueden abrir»): the records read so far end exactly where the authenticated anchor says the committed journal
+    /// ends, so whatever follows was never committed —a write a power cut or a full disk interrupted, or bytes that are
+    /// not this journal's— and is set aside instead of refusing the whole journal. Damage before that end, a rollback
+    /// to an older prefix or a modified record, still fails closed.
+    /// </summary>
+    private static bool EndsAtCommittedAnchor(JournalAnchorPayload anchor, JournalAnchorPosition position) =>
+        string.Equals(anchor.Phase, JournalAnchorPhases.Committed, StringComparison.Ordinal)
+        && PositionsEqual(position, anchor.Current);
+
+    /// <summary>
+    /// The bytes after <paramref name="committedLength"/>, copied as they are to a file of their own beside the
+    /// journal (nothing is deleted) before the journal is cut back to its committed end; the diagnostics say where.
+    /// When the copy cannot be written, the tail is cut back without it and a «.not-kept» mark says so.
+    /// </summary>
+    private async ValueTask SetAsideTailAsync(long committedLength, CancellationToken cancellationToken)
+    {
+        string stem = string.Concat(
+            _path,
+            DamagedTailMarker,
+            _time.GetUtcNow().ToString("yyyyMMddHHmmssfff", CultureInfo.InvariantCulture));
+        string target = stem;
+        for (int n = 2; File.Exists(target); n++)
+        {
+            target = string.Concat(stem, "-", n.ToString(CultureInfo.InvariantCulture));
+        }
+
+        long length = _stream.Length - committedLength;
+        _stream.Position = committedLength;
+        bool created = false;
+        try
+        {
+            await using var copy = new FileStream(
+                target,
+                new FileStreamOptions
+                {
+                    Mode = FileMode.CreateNew,
+                    Access = FileAccess.Write,
+                    Share = FileShare.None,
+                    Options = FileOptions.WriteThrough,
+                });
+            created = true;
+            await _stream.CopyToAsync(copy, cancellationToken).ConfigureAwait(false);
+            copy.Flush(flushToDisk: true);
+        }
+        catch (Exception refused) when (refused is IOException or UnauthorizedAccessException)
+        {
+            // REVX2 DX11-2: a copy that cannot be written (a full disk, a folder without permission, an antivirus) does
+            // not stop the start, as it never did when the 1.5.5 cut such a tail back: the tail is cut back without it,
+            // no partial copy is left, and a mark says so for the App to tell.
+            NoteTailNotKept(target, created, length, refused);
+            return;
+        }
+
+        _diagnostics?.Invoke(string.Concat(
+            "journal tail after its committed end set aside (",
+            length.ToString(CultureInfo.InvariantCulture),
+            " bytes): ",
+            Path.GetFileName(target)));
+    }
+
+    private void NoteTailNotKept(string target, bool created, long length, Exception refused)
+    {
+        if (created)
+        {
+            try
+            {
+                File.Delete(target);
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // A partial copy stays: it holds what could be written of the tail.
+            }
+        }
+
+        try
+        {
+            File.WriteAllText(
+                target + NotKeptSuffix,
+                string.Concat(length.ToString(CultureInfo.InvariantCulture), " bytes not kept: ", refused.GetType().Name));
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            // Not even the mark: the diagnostics below are all that says it.
+        }
+
+        _diagnostics?.Invoke(string.Concat(
+            "journal tail after its committed end (",
+            length.ToString(CultureInfo.InvariantCulture),
+            " bytes) cut back: could not keep a copy of it (",
+            refused.GetType().Name,
+            ")"));
     }
 
     private static JournalAnchorPosition InitialPosition() =>

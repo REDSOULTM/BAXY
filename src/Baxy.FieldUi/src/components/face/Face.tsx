@@ -5,10 +5,11 @@ import {
 } from './geometry';
 import type { Journey } from '../../store';
 import { lipAt } from '../../lip';
+import { frameLoop } from '../../frameLoop';
 import { useT } from '../../i18n';
 
 /* The cartoon robot face made of firework particles, on top of the neural mesh (design face.jsx, ported almost as
-   is): static parts painted into three offscreen bitmaps while still, 30 fps at rest, 15 while it thinks and 60 while it speaks,
+   is): static parts painted into three offscreen bitmaps while still, 30 fps at rest and 60 while it speaks (8 while the window keeps still, still.ts),
    DPR ≤ 1.25, the buffer capped at 4.5 MP. The one change: the walk through the mesh grows with the turn's real calls
    (the journey's path gets a family per call), so each new family adds a segment instead of replaying a whole flow.
    Design v5: with `overlay` the canvas sits over the video avatar (AvatarVid) and draws only the live network — mesh
@@ -58,19 +59,27 @@ export interface FaceProps {
   light: boolean;
   net: boolean;
   overlay?: boolean;
+  /** UIX1: the window keeps still (still.ts): 8 frames a second */
+  hush?: boolean;
+  /** UIX2: the window keeps still at rest: the face keeps the frame it shows until it moves again */
+  freeze?: boolean;
 }
+
+// UIX1: seconds between frames while the window keeps still; `VITE_BX_CARA_FPS` at build time only to measure another rate
+const HUSH_S = 1 / (Number(import.meta.env?.VITE_BX_CARA_FPS) || 8);
 
 function FaceView(props: FaceProps) {
   const ref = useRef<HTMLCanvasElement>(null);
   const P = useRef(props);
-  useEffect(() => { P.current = props; });
+  const wake = useRef(() => {});
+  useEffect(() => { P.current = props; wake.current(); });
   // the hubs' words follow the interface's language without restarting the drawing
   const t = useT();
   const W = useRef(t);
   useEffect(() => { W.current = t; });
   useEffect(() => {
     const cv = ref.current!, ctx = cv.getContext('2d')!;
-    let dpr = 1, refW = 0, dirty = true, w = 0, h = 0, raf = 0, last = performance.now();
+    let dpr = 1, refW = 0, dirty = true, w = 0, h = 0, last = performance.now(), loop: ReturnType<typeof frameLoop> | null = null;
     const mkG = (n: number, kind: Group['kind'], closed: number, k: number): Group => ({
       kind, closed, closedT: closed, k, pts: Array.from({ length: n }, () => ({ x: 0, y: -0.1, vx: 0, vy: 0, tx: 0, ty: 0, big: Math.random() < 0.22 })),
     });
@@ -123,7 +132,7 @@ function FaceView(props: FaceProps) {
       }
       const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
       if (cv.width !== bw || cv.height !== bh) { cv.width = bw; cv.height = bh; }
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); dirty = true; cache.key = '';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); dirty = true; cache.key = ''; loop?.wake();
     };
     let sizeQ = 0;
     const sizeSoon = () => { if (!sizeQ) sizeQ = requestAnimationFrame(() => { sizeQ = 0; size(); }); };
@@ -177,14 +186,16 @@ function FaceView(props: FaceProps) {
       g.beginPath(); pts.forEach((p, i) => (i ? g.lineTo(X(p.x), Y(p.y)) : g.moveTo(X(p.x), Y(p.y)))); if (closed) g.closePath();
     };
 
-    const tick = (now: number) => {
-      raf = requestAnimationFrame(tick);
-      const { state, expr, talking, journey, hold, light, net } = P.current;
+    const tick = (now: number): number | void => {
+      const { state, expr, talking, journey, hold, light, net, hush, freeze } = P.current;
+      // UIX2: frozen, it asks for no frame (frameLoop.ts); keeping still, only for its next one
+      if (freeze && !dirty) { last = now; return 1000; }
       rm = calmQ.matches;
       const ADD: GlobalCompositeOperation = light ? 'source-over' : 'lighter';
       const calm = state === 'standby' || ((state === 'idle' || state === 'confirm') && !trs.some((tr) => tr.u < 1) && !fx.length && !flashes.length);
-      // UIX1: 15 fps while it thinks (the model shares the CPU with this window, still.ts), 60 only while it speaks
-      if (!dirty && (now - last) / 1000 < (state === 'standby' ? 0.048 : state === 'thinking' ? 0.066 : calm ? 0.031 : 0)) return;
+      const gap = hush ? HUSH_S : state === 'standby' ? 0.048 : calm ? 0.031 : 0;
+      const wait = (gap - (now - last) / 1000) * 1000;
+      if (!dirty && wait > 0) return hush ? wait : undefined; // keeping still, a nap until its next frame is due
       dirty = false;
       if (!w || !h || (cv.width === 300 && cv.height === 150)) { size(); if (!w || !h) return; }
       const dt = Math.min(0.1, (now - last) / 1000); last = now;
@@ -733,9 +744,10 @@ function FaceView(props: FaceProps) {
       NOR();
       ctx.restore();
     };
-    raf = requestAnimationFrame(tick);
+    loop = frameLoop(tick);
+    wake.current = () => loop?.wake();
     return () => {
-      cancelAnimationFrame(raf); cancelAnimationFrame(sizeQ); ro.disconnect(); dense?.removeEventListener('change', onDense);
+      loop?.stop(); cancelAnimationFrame(sizeQ); ro.disconnect(); dense?.removeEventListener('change', onDense);
       window.removeEventListener('pointermove', onMove); window.removeEventListener('resize', sizeSoon); window.removeEventListener('bx-scale', size); document.removeEventListener('visibilitychange', onVis);
     };
   }, []);

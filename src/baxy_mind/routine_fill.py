@@ -239,6 +239,20 @@ def _anywhere(words: list[str], pieces: tuple[str, ...]) -> bool:
     return any(forms._seq(words, at, pieces) for at in range(len(words)))
 
 
+SINGULAR_ENDS_S = ("lunes", "martes", "miercoles", "jueves", "viernes")
+
+
+def _weekly(words: list[str]) -> bool:
+    """DIAX20: whether these words name days of the week as every week, by their form: a day after «los», «cada» or
+    «every» («todos los lunes», «cada martes»), a plural day («los sábados», «on Mondays») or a group of days («de lunes
+    a viernes», «los fines de semana»); «el lunes» is one day."""
+    for at, word in enumerate(words):
+        if word in forms.DAY_WORDS and ((at and words[at - 1] in ("los", "cada", "every"))
+                                        or (word.endswith("s") and word not in SINGULAR_ENDS_S)):
+            return True
+    return _anywhere(words, forms.WEEKDAYS) or _anywhere(words, forms.WEEKEND)
+
+
 def _count(value: Any, most: int) -> int | None:
     """A number of the reply (its digits, or a number), when it is one from 0 to ``most``."""
     written = str(value).strip() if isinstance(value, (str, int)) and not isinstance(value, bool) else ""

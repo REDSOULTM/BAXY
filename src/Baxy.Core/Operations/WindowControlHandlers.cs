@@ -404,7 +404,7 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             }
 
             if (closing.Quit is { } quit)
-                WriteQuit(writer, quit);
+                WriteQuit(writer, quit, windowsClosed: closing.ErrorCode is null && closing.ClosedWindows > 0);
 
             writer.WriteEndObject();
         }
@@ -414,8 +414,16 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
 
     // uso-129: what asking the application to quit came to, read from its processes afterwards: whether it exited, how,
     // what of it still runs and, when its main process stayed, the one call left. Forcing asks the person's yes.
-    private static void WriteQuit(Utf8JsonWriter writer, ApplicationQuitResult quit)
+    private static void WriteQuit(Utf8JsonWriter writer, ApplicationQuitResult quit, bool windowsClosed)
     {
+        if (windowsClosed && !quit.Exited)
+        {
+            // DIAX12 (H-021): its windows closed and its processes stayed with none («Edge se quedó abierto», and an offer to
+            // force it, with the window gone): said as a fact, with nothing to force.
+            writer.WriteNumber("openWindows", 0);
+            writer.WriteString("background", "its windows closed; it keeps processes running in the background with no window");
+        }
+
         writer.WriteBoolean("applicationExited", quit.Exited);
         writer.WriteString("askedToQuitBy", "windows_session_end_request");
         writer.WriteBoolean("forced", false);
@@ -432,7 +440,7 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
             writer.WriteEndArray();
         }
 
-        if (quit.MainProcessName is { } main)
+        if (quit.MainProcessName is { } main && !windowsClosed)
         {
             writer.WriteBoolean("mainStillRunning", true);
             writer.WriteString("mainProcessName", main);

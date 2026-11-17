@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "about": "MODX2: la ficha de cada familia de modelos (model_card.py). Cada entrada casa con lo que declara el GGUF (general.architecture, general.size_label, general.basename; un texto que acaba en * casa por su comienzo) y dice el muestreo de la decisión (decide; vacío = el de siempre: temperatura 0,2 y, con el formato de Qwen3.5, top_p 0,8, top_k 20, min_p 0), cuántas fichas puede razonar antes de decidir (thinking_budget) y el umbral de su duda (doubt), con su fuente. La primera que casa gana; un fichero propio (BAXY_MODEL_CARDS: una lista de entradas) va antes. Sin entrada: lo de siempre. Medido en MODX2 (16-11-2026, puerta fija de 120 casos × 2 semillas y 264 filas held-out): el muestreo que recomienda cada fabricante resta en BAXY o no suma sin más acciones no pedidas, así que ninguna familia lo lleva; Granite decide en codicioso (temperatura 0), lo único que subió también en el held-out sin más falsedades ni acciones no pedidas; razonar antes de decidir (thinking_budget 256) sube Gemma-4-E4B 62 → 72 de 85 filas pero multiplica por 13 lo que tarda cada decisión: se deja para quien lo quiera en su propio fichero.",
+  "cards": [
+    {"name": "qwen3.5", "match": {"general.architecture": "qwen35"}, "decide": {},
+     "source": "Medido con el 4B de serie (la mente se escribió y calibró con él: temperatura 0,2 y top_p 0,8, top_k 20, min_p 0 de las «Best Practices» de Qwen3, https://huggingface.co/Qwen/Qwen3-4B). MODX2: la ficha de Qwen3.5 sin razonar (temp 0,7, presence 1,5; https://huggingface.co/Qwen/Qwen3.5-9B) bajó el 9B de 160 a 151 y el 2B de 133 a 129 de 240."},
+    {"name": "gemma4", "match": {"general.architecture": "gemma4"}, "decide": {},
+     "source": "MODX2: la ficha de Gemma 4 (temp 1,0, top_p 0,95, top_k 64; https://huggingface.co/google/gemma-4-12b-it, y lo que declara su GGUF) bajó el E4B de 160 a 144 de 240 y dejó el 12B en 176 frente a 177; Nemotron-3.5-Bolt-E4B (misma arquitectura) 54 frente a 52 de 85."},
+    {"name": "granite", "match": {"general.architecture": "granite"}, "decide": {"temperature": 0.0},
+     "source": "Sin fuente de la ficha: medición propia (MODX2). La ficha de Granite 4.2 (temp 1,0 y top_p 0,95 «en todos los modos»; https://huggingface.co/ibm-granite/granite-4.2-3b) bajó el 3B de 137 a 128 de 240 y razonar 256 fichas, 43 frente a 51 de 85; codicioso (temperatura 0) lo subió de 137 a 141 de 240 en la puerta fija y de 186 a 190 de 264 en el held-out, con las mismas falsedades (jueces ciegos 25·22 frente a 25·22 en las 504 filas) y dos acciones no pedidas menos."},
+    {"name": "llama3", "match": {"general.architecture": "llama", "general.basename": "Llama-3*"}, "decide": {},
+     "source": "MODX2: el generation_config.json de Llama 3.2 Instruct (temp 0,6, top_p 0,9) subió el 3B de 109 a 117 de 240 en la puerta fija y de 149 a 150 de 264 en el held-out, pero con 6 acciones no pedidas más en las 504 filas: regla de corte, fuera."},
+    {"name": "mistral3", "match": {"general.architecture": "mistral3"}, "decide": {},
+     "source": "MODX2: la ficha de Ministral 3 pide temperatura por debajo de 0,1 (https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512); con 0,05 el 8B dio 148 frente a 149 de 240 con la de siempre."}
+  ]
+}

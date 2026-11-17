@@ -20,11 +20,11 @@ you turn that off in Settings.
 ### Download
 
 Get the installer from the [releases page](https://github.com/REDSOULTM/BAXY/releases) (the latest is
-[BAXY 1.5.5](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.5)): download `BAXY-Instalador.exe` and open it. It
+[BAXY 1.5.6](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.6)): download `BAXY-Instalador.exe` and open it. It
 checks your PC, downloads the list of parts (it refuses it unless it carries BAXY's signature), verifies each part's
 SHA-256 and leaves BAXY in the Start menu. The installer itself is not code-signed, so SmartScreen may warn you. If
-you have BAXY 1.5.0, 1.5.1, 1.5.2, 1.5.3 or 1.5.4, BAXY offers the update itself. If you have BAXY 1.3.1, its
-"Update" button does not take you to 1.5.5: download the new installer and run it over it (the release notes say which updates were tried
+you have BAXY 1.5.0, 1.5.1, 1.5.2, 1.5.3, 1.5.4 or 1.5.5, BAXY offers the update itself. If you have BAXY 1.3.1,
+its "Update" button does not take you to 1.5.6: download the new installer and run it over it (the release notes say which updates were tried
 without losing data).
 
 ### What you need to run it
@@ -39,12 +39,12 @@ without losing data).
 ### Not tested or not supported
 
 - BAXY's own model on the CPU alone is not supported.
-- The 4 GB figures of 1.5.5 were measured on a real 4 GB NVIDIA card (a GTX 1650 laptop); those of earlier
-  versions, on a larger card made to look like a 4 GB one.
+- The 4 GB figures of 1.5.5 and 1.5.6 were measured on a real 4 GB NVIDIA card (a GTX 1650 laptop; for 1.5.6, with
+  a test build); those of earlier versions, on a larger card made to look like a 4 GB one.
 - A freshly formatted Windows without the Visual C++ runtime or WebView2 was not tested (the installer installs both
   from Microsoft).
-- The 1.5.5 package was installed as an update over 1.5.4 and used on one AMD Radeon RX 7600 (8 GB); no Intel card
-  was tried (the release notes say what was measured).
+- 1.5.5 was installed as an update over 1.5.4 and used on one AMD Radeon RX 7600 (8 GB), and a test build of 1.5.6
+  was installed over 1.5.5 on it; no Intel card was tried (the release notes say what was measured).
 - "Another model" (Settings → Model) is optional and off by default. With a company's API, what you give BAXY goes to
   that company. OpenAI and Google were not tested with a real key; other models were measured against BAXY's tuned model (an
   optional extra since 1.3.2) and did worse.
@@ -122,11 +122,11 @@ en Ajustes.
 ### Descargar
 
 Baja el instalador de la [página de versiones](https://github.com/REDSOULTM/BAXY/releases) (la última es
-[BAXY 1.5.5](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.5)): descarga `BAXY-Instalador.exe` y ábrelo. Revisa
+[BAXY 1.5.6](https://github.com/REDSOULTM/BAXY/releases/tag/v1.5.6)): descarga `BAXY-Instalador.exe` y ábrelo. Revisa
 tu PC, baja la lista de partes (la rechaza si no lleva la firma de BAXY), comprueba el SHA-256 de cada parte y deja a
 BAXY en el menú Inicio. El instalador en sí no va firmado, así que SmartScreen puede avisar. Si tienes la BAXY 1.5.0,
-la 1.5.1, la 1.5.2, la 1.5.3 o la 1.5.4, la actualización te la ofrece la propia BAXY. Si tienes la BAXY 1.3.1, su
-botón «Actualizar» no te lleva a la 1.5.5: baja el instalador nuevo y ejecútalo encima (las notas de la versión dicen qué saltos se probaron
+la 1.5.1, la 1.5.2, la 1.5.3, la 1.5.4 o la 1.5.5, la actualización te la ofrece la propia BAXY. Si tienes la BAXY
+1.3.1, su botón «Actualizar» no te lleva a la 1.5.6: baja el instalador nuevo y ejecútalo encima (las notas de la versión dicen qué saltos se probaron
 sin perder datos).
 
 ### Qué necesitas para usarlo
@@ -141,12 +141,12 @@ sin perder datos).
 ### Sin probar o sin soporte
 
 - El modelo propio de BAXY con la CPU sola no tiene soporte.
-- Las cifras de 4 GB de la 1.5.5 se midieron en una NVIDIA de 4 GB real (un portátil con una GTX 1650); las de
-  versiones anteriores, en una más grande haciéndola pasar por una de 4 GB.
+- Las cifras de 4 GB de la 1.5.5 y la 1.5.6 se midieron en una NVIDIA de 4 GB real (un portátil con una GTX 1650; la
+  1.5.6, con una versión de prueba); las de versiones anteriores, en una más grande haciéndola pasar por una de 4 GB.
 - Un Windows recién formateado sin el runtime de Visual C++ ni WebView2 no se probó (el instalador pone los dos desde
   Microsoft).
-- El paquete de la 1.5.5 se instaló como actualización sobre la 1.5.4 y se usó en una AMD Radeon RX 7600 (8 GB);
-  ninguna Intel (las notas de la versión dicen qué se midió).
+- La 1.5.5 se instaló como actualización sobre la 1.5.4 y se usó en una AMD Radeon RX 7600 (8 GB), y una versión de
+  prueba de la 1.5.6 se instaló encima de la 1.5.5 en ella; ninguna Intel (las notas de la versión dicen qué se midió).
 - «Otro modelo» (Ajustes → Modelo) es opcional y viene apagado. Con la API de una empresa, lo que le pases a BAXY va a
   esa empresa. OpenAI y Google no se probaron con una clave real; otros modelos se midieron frente al modelo ajustado a BAXY
   (un extra opcional desde la 1.3.2) y rindieron peor.

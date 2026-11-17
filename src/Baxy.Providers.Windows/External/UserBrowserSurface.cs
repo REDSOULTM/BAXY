@@ -537,6 +537,22 @@ internal sealed partial class UserBrowserSurface
                 writer.WriteString("title", playing.Title);
             else
                 writer.WriteString("requestedTitle", video.Title);
+            // DIAX10B (H-065, vivo en el notebook, sin sesión de YouTube): the session named the advertisement that
+            // plays before the video («Eucerin…»), and with only that title BAXY told «lo que pediste no salió, se abrió
+            // un video de Eucerin» while the video opened played after it. The video opened is said by its own title,
+            // and a session that names another one is said as not known to be it.
+            if (playing.Title.Length > 0 && video.Title.Length > 0)
+            {
+                writer.WriteString("openedTitle", video.Title);
+                if (!TitlesMatch(playing.Title, video.Title))
+                {
+                    writer.WriteBoolean("playingIsOpenedVideo", false);
+                    writer.WriteString("next", $"what plays now is titled «{playing.Title}», not «{video.Title}», "
+                        + "the video BAXY opened: YouTube often plays an advertisement before a video, so this may be "
+                        + "one and the video opened may play after it; neither that it is an advertisement nor that the "
+                        + "video opened did not play is known");
+                }
+            }
             writer.WriteString("openedUrl", video.WatchUri.AbsoluteUri);
             writer.WriteString("browser", browser.DisplayName);
             writer.WriteString("sourceAppUserModelId", playing.SourceAppUserModelId);

@@ -38,6 +38,29 @@ internal static partial class VisibleControlSurface
         return found;
     }
 
+    /// <summary>
+    /// DIAX10B (H-013): the minimized frames of the packaged application <paramref name="appUserModelId"/>. A minimized
+    /// UWP app's window leaves its frame (read on this PC, 16-11: the Calculator's frame minimized, with no window of the
+    /// app inside, and the app's CoreWindow a top-level window the shell cloaks), so the frame is the application's only
+    /// by the identity Windows gives it (its property store's AppUserModelID), as for an empty frame.
+    /// </summary>
+    internal static List<nint> MinimizedFrames(string appUserModelId)
+    {
+        var frames = new List<nint>();
+        if (string.IsNullOrWhiteSpace(appUserModelId))
+            return frames;
+        EnumWindowsProc callback = (window, _) =>
+        {
+            if (IsVisibleFrame(window) && IsIconic(window) && !FrameHosts(window, static _ => true)
+                && string.Equals(WindowApplicationId(window), appUserModelId, StringComparison.OrdinalIgnoreCase))
+                frames.Add(window);
+            return true;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        GC.KeepAlive(callback);
+        return frames;
+    }
+
     /// <summary>The AppUserModelID of a window's property store (a packaged application's frame carries its
     /// application's), or null when it has none or it cannot be read.</summary>
     internal static unsafe string? WindowApplicationId(nint window)

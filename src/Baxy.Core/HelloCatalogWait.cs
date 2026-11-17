@@ -1,5 +1,6 @@
 using Baxy.Contracts;
 using Baxy.Providers.Windows.Applications;
+using Baxy.Providers.Windows.External;
 
 namespace Baxy.Core;
 
@@ -23,27 +24,55 @@ internal static class HelloCatalogWait
     {
         ArgumentNullException.ThrowIfNull(read);
         ArgumentNullException.ThrowIfNull(kept);
-        TimeSpan remaining = CoreStartupBudget.HelloCatalogWait - elapsedSinceStart;
-        if (remaining < TimeSpan.Zero)
-        {
-            remaining = TimeSpan.Zero;
-        }
-
         try
         {
-            InstalledApplicationCatalogSnapshot live = await read.WaitAsync(remaining, cancellationToken).ConfigureAwait(false);
+            InstalledApplicationCatalogSnapshot live = await read.WaitAsync(Remaining(elapsedSinceStart), cancellationToken)
+                .ConfigureAwait(false);
             return live.Verified ? live : kept() ?? live;
         }
         catch (TimeoutException)
         {
-            _ = read.ContinueWith(
-                static finished => _ = finished.Exception,
-                CancellationToken.None,
-                TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
-                TaskScheduler.Default);
+            ObserveLateFault(read);
             return kept() ?? None;
         }
     }
+
+    /// <summary>
+    /// DIAX17: the installed games, read beside the application catalog and waited for within the same budget. Read
+    /// inside the hello with no limit, a game library on a drive that answers slowly (or never) held the hello past the
+    /// App's <see cref="CoreStartupBudget.HelloTimeout"/>; now the hello's game list is unverified, and each game
+    /// operation reads the libraries again when it is asked.
+    /// </summary>
+    internal static async Task<InstalledGameCatalogSnapshot> GamesWithinAsync(
+        Task<InstalledGameCatalogSnapshot> read,
+        TimeSpan elapsedSinceStart,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(read);
+        try
+        {
+            return await read.WaitAsync(Remaining(elapsedSinceStart), cancellationToken).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            ObserveLateFault(read);
+            return NoGames;
+        }
+    }
+
+    private static readonly InstalledGameCatalogSnapshot NoGames = new(false, false, Array.Empty<InstalledGameCatalogEntry>());
+
+    private static TimeSpan Remaining(TimeSpan elapsedSinceStart)
+    {
+        TimeSpan remaining = CoreStartupBudget.HelloCatalogWait - elapsedSinceStart;
+        return remaining < TimeSpan.Zero ? TimeSpan.Zero : remaining;
+    }
+
+    private static void ObserveLateFault(Task read) => _ = read.ContinueWith(
+        static finished => _ = finished.Exception,
+        CancellationToken.None,
+        TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+        TaskScheduler.Default);
 
     /// <summary>
     /// Ajuste c3 (humos del 31-10): what the App is sent once the read ends after the hello: the read, when it is

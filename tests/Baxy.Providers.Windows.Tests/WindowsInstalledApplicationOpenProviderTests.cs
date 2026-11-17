@@ -1266,6 +1266,26 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         });
     }
 
+    // DIAX10B (H-013, vivo en la Radeon: «abre la Calculadora» with hers minimized): a window reused without the front is
+    // shown if it is minimized (behind the person's window); left minimized, it was said open out of sight.
+    [TestCase(false, new long[] { 73 })]
+    [TestCase(true, new long[0])]
+    public async Task AReusedWindowNotAskedInFrontIsShownBehindIfMinimized(bool foreground, long[] shown)
+    {
+        var platform = new FakePlatform(Catalog) { Observations = [Observation(foreground: false)] };
+        var provider = new WindowsInstalledApplicationOpenProvider(platform);
+
+        ApplicationOpenResult result = await provider.OpenAsync(Request("Steam", foreground), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.Receipt.ReusedExisting, Is.True);
+            Assert.That(platform.ActivateCalls, Is.Zero);
+            Assert.That(platform.ShownBehind, Is.EqualTo(shown));
+        });
+    }
+
     // Auditoría D1: a name that is no installed application opens nothing and says the closest installed names.
     [Test]
     public async Task AnOpeningOfANameNotInstalledOpensNothingAndSaysTheClosest()
@@ -3999,6 +4019,14 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
         public int ForegroundHangsAfter { get; init; } = int.MaxValue;
 
         public ManualResetEventSlim ForegroundReleased { get; } = new(false);
+
+        public List<long> ShownBehind { get; } = [];
+
+        public bool ShowMinimizedBehind(long windowHandle)
+        {
+            ShownBehind.Add(windowHandle);
+            return true;
+        }
 
         public void RequestForeground(long windowHandle)
         {

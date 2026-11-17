@@ -88,11 +88,15 @@
    "SAME_APP_NOTE",
    "RING_READ_NOTE",
    "RING_READ_ASKED",
+   "MORE_READ_SYSTEM",
+   "MORE_READ_NOTE",
    "RING_NOT_ASKED_REFUSED",
    "NAMED_NOTE",
    "ANSWERED_NOTE",
    "CHOICE_ANSWER",
    "OFFERED_NOTE",
+   "OFFERED_HEAD",
+   "RAN_LAST",
    "TEXT_CALL_NOTE",
    "OFFER_NOTE",
    "SAID_AGAIN_NOTE",
@@ -108,6 +112,15 @@
    "PLACE_UNSAID_REFUSED",
    "APP_UNSAID_REFUSED",
    "APP_UNCLOSED_REFUSED",
+   "PROCESS_UNSAID_REFUSED",
+   "POWER_AGAIN_SYSTEM",
+   "POWER_AGAIN_NOTE",
+   "POWER_AGAIN_BEFORE",
+   "POWER_AGAIN_REFUSED",
+   "SCOPE_SYSTEM",
+   "SCOPE_NOTE",
+   "SCOPE_NOTES",
+   "SCOPE_UNSAID_REFUSED",
    "RING_DAYS_REFUSED",
    "NO_MORE_CALLS",
    "_WEEKDAYS",
@@ -161,7 +174,9 @@
    "ROUTINE_NOTHING_CALENDAR",
    "ROUTINE_THERE_CLOCK",
    "ROUTINE_THERE_WORDS",
-   "ROUTINE_THERE_TOOL"
+   "ROUTINE_THERE_TOOL",
+   "MODEL_IN_USE_FACT",
+   "MODEL_IN_USE_WHERE"
   ],
   "answer_check": [
    "UNCHECKED_UPDATE",
@@ -182,13 +197,31 @@
   "routine_guide": [
    "LEFT_NOTE",
    "LEFT_NOTES",
-   "SILENT_NOTE"
+   "SILENT_NOTE",
+   "CANCEL_LEFT_NOTE",
+   "ENDED_NOTE"
   ],
   "routine_fill": [
    "EXAMPLES"
   ]
  },
  "texts": [
+  [
+   "Lees lo que una persona le dijo a un asistente de voz mientras creaba con él una rutina, y que deja esa rutina sin crear. Contesta con una palabra: si además pide otra cosa.",
+   "You read what a person said to a voice assistant while making a routine with it, words that leave that routine unmade. Answer with one word: whether they ask for something else too."
+  ],
+  [
+   "La persona dijo: «{said}»\nAdemás de dejar la rutina, ¿pide otra cosa? otra = sí: una orden, una pregunta o algo que hacer o contestar, aparte de la rutina; nada = sólo deja la rutina (cancela, olvídalo, déjalo, ya no quiero, mejor no).",
+   "The person said: «{said}»\nBesides leaving the routine, do they ask for something else? otra = yes: an order, a question or something to do or answer, apart from the routine; nada = they only leave the routine (cancel, forget it, leave it, I don't want it anymore, better not)."
+  ],
+  [
+   "[Nota interna, no la escribió la persona: la persona dejó sin guardar la rutina que BAXY estaba creando con ella y pidió algo más. Dile en pocas palabras que no se guardó y atiende lo demás que dijo.]",
+   "[Internal note, not written by the person: the person left unsaved the routine BAXY was making with them and asked for something more. Tell them in a few words that it was not saved and attend to the rest of what they said.]"
+  ],
+  [
+   "[Nota interna, no la escribió la persona: aquí BAXY le hizo a la persona preguntas sobre sus rutinas y la persona lo dejó sin terminar: no se hizo nada con sus rutinas y no queda nada pendiente de eso.]",
+   "[Internal note, not written by the person: here BAXY asked the person questions about their routines and the person left it unfinished: nothing was done with their routines and nothing of it is pending.]"
+  ],
   [
    "Eres BAXY y sólo BAXY: un compañero tipo Jarvis que vive en el PC de la persona y hace lo que te pide usando herramientas. Eres un él.",
    "You are BAXY and only BAXY: a Jarvis-like companion who lives on the person's PC and does what they ask you using tools. You are a he."
@@ -1622,6 +1655,46 @@
    "not run: it would have closed an application nobody named"
   ],
   [
+   "no se ejecutó: cerraba a la fuerza un programa que nadie nombró",
+   "not run: it would have force-closed a program nobody named"
+  ],
+  [
+   "Lees lo que una persona le pidió a un asistente de voz de Windows sobre el equipo. Contesta con una palabra: apagar o reiniciar.",
+   "You read what a person asked a Windows voice assistant about the computer. Answer with one word: apagar or reiniciar."
+  ],
+  [
+   "{before}La persona dijo: «{said}»\n¿Qué pide para el equipo? apagar = que se apague y quede apagado; reiniciar = que se apague y vuelva a encenderse.",
+   "{before}The person said: «{said}»\nWhat do they ask for the computer? apagar = turn it off and leave it off; reiniciar = turn it off and on again."
+  ],
+  [
+   "Antes la persona dijo: «{before}»\nBAXY le contestó: «{baxy}»\n",
+   "Before, the person said: «{before}»\nBAXY answered: «{baxy}»\n"
+  ],
+  [
+   "no se ejecutó: apagaba el equipo y pedían volver a encenderlo",
+   "not run: it would have shut the computer down and they asked for it to come back on"
+  ],
+  [
+   "Lees lo que una persona le pidió a un asistente de voz de Windows. Contesta sólo con el nombre de una aplicación o con la palabra {w}.",
+   "You read what a person asked a Windows voice assistant. Answer only with the name of an application or with the word {w}."
+  ],
+  [
+   "{before}La persona dijo: «{said}»\n¿Qué aplicación pide cerrar? Escribe su nombre. Si no pide cerrar una aplicación sino {what}, escribe {w}.",
+   "{before}The person said: «{said}»\nWhich application do they ask to close? Write its name. If they do not ask to close an application but {what}, write {w}."
+  ],
+  [
+   "todo lo abierto en el escritorio",
+   "everything open on the desktop"
+  ],
+  [
+   "cancelar o parar las descargas o instalaciones de juegos en curso",
+   "cancel or stop the game downloads or installs in progress"
+  ],
+  [
+   "no se ejecutó: llegaba más allá de la aplicación que pedían cerrar",
+   "not run: it reached past the application they asked to close"
+  ],
+  [
    "Lees lo que una persona le pidió a un asistente de voz de Windows y el nombre de una aplicación instalada. Contesta con una palabra: yes o no.",
    "You read what a person asked a Windows voice assistant and the name of an installed application. Answer with one word: yes or no."
   ],
@@ -1692,6 +1765,30 @@
   [
    "; {tool} cambia, desactiva y borra una rutina, y antes se lo pregunta a la persona diciéndole cuál",
    "; {tool} changes, turns off and deletes a routine, and asks the person first, saying which"
+  ],
+  [
+   "\nAhora piensas con el modelo {model} ({where}), que la persona eligió en lugar del modelo de serie de BAXY. Si te preguntan qué modelo eres o con cuál piensas, es ese.",
+   "\nYou now think with the model {model} ({where}), which the person chose in place of BAXY's stock model. If you are asked which model you are or think with, it is that one."
+  ],
+  [
+   "en Ollama, en este PC",
+   "in Ollama, on this PC"
+  ],
+  [
+   "por API",
+   "through an API"
+  ],
+  [
+   "en el motor de BAXY, en este PC",
+   "in BAXY's engine, on this PC"
+  ],
+  [
+   "tu último mensaje terminó en una pregunta.",
+   "your last message ended in a question."
+  ],
+  [
+   " Lo último que corrió: {call} ({states}).",
+   " The last thing that ran: {call} ({states})."
   ]
  ]
 }

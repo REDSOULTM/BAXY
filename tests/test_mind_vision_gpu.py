@@ -83,12 +83,13 @@ def test_a_server_without_a_gpu_backend_does_not_offload(tmp_path: Path, monkeyp
 
 def test_where_the_projector_runs_is_not_in_the_prefix_key(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """The slot's state does not depend on it: a day with less VRAM free does not throw away the kept prefix. (VRAM4:
-    while the cells still fit whole; a card that no longer holds them starts with fewer, test_mind_vram_libre.)"""
+    while the cells still fit whole; a card that no longer holds them starts with fewer, test_mind_vram_libre. VELX1: nor
+    where the output matrix is, which the larger card keeps on it, test_mind_velx1_salida.)"""
     monkeypatch.delenv("BAXY_VISION_OFFLOAD", raising=False)
     _, _, on_gpu = _start(tmp_path, monkeypatch, CUDA)
     _, _, on_cpu = _start(tmp_path, monkeypatch, NO_PROJECTOR)
-    assert on_gpu._settings == on_cpu._settings
-    assert "--mmproj" in on_gpu._settings
+    assert on_gpu._keyed_settings == on_cpu._keyed_settings
+    assert "--mmproj" in on_gpu._settings and on_gpu.output_on_card and not on_cpu.output_on_card
 
 
 def test_a_server_that_dies_with_the_projector_on_the_gpu_starts_again_with_it_on_the_cpu(

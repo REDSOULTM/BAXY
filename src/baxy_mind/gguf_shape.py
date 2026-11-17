@@ -121,6 +121,32 @@ def read(path: str) -> GgufShape | None:
         return None
 
 
+# MODX2: what a model file says of itself that the mind reads to pick its card (model_card.py): its architecture, size and
+# name, and the sampling its makers wrote into it (general.sampling.*, which llama-server applies by its own when a
+# request does not send them: llama.cpp src/llama-model.cpp at b11609, LLM_KV_GENERAL_SAMPLING_*).
+DECLARED_TEXTS = ("general.architecture", "general.size_label", "general.basename", "general.name")
+
+
+def declared(path: str) -> dict[str, object]:
+    """The keys of DECLARED_TEXTS and general.sampling.* a GGUF file's header has (only its key-value pairs are read);
+    empty when there is no such file or it is not one this reads."""
+    try:
+        with open(path, "rb") as file:
+            reader = _Reader(file)
+            if reader.bytes(4) != b"GGUF" or reader.u32() not in (2, 3):
+                return {}
+            reader.u64()
+            keys: dict[str, object] = {}
+            for _ in range(reader.u64()):
+                key = reader.text()
+                value = reader.value(reader.u32(), keep_text=key in DECLARED_TEXTS)
+                if value is not None and (key in DECLARED_TEXTS or key.startswith("general.sampling.")):
+                    keys[key] = value
+            return keys
+    except (OSError, ValueError, EOFError, OverflowError, struct.error):
+        return {}
+
+
 def _read(stream: BinaryIO, file_bytes: int) -> GgufShape | None:
     reader = _Reader(stream)
     if reader.bytes(4) != b"GGUF" or reader.u32() not in (2, 3):

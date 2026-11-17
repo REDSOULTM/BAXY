@@ -1,12 +1,16 @@
 import { memo, useEffect, useRef } from 'react';
 import { seededRng } from '../utils/seededRng';
+import { frameLoop } from '../frameLoop';
 import type { BaxyState } from '../types';
 
 /* Full-window starfield + travelling comets (design cosmos.jsx, ported as is): batched draws at 30 fps, the nebula
    painted at a third of the size and cached, the same sky on every rebuild (seed 707), the buffer capped at 4 MP and
    DPR ≤ 1.25. With prefers-reduced-motion the sky stays still: no turning, no twinkle, no comets (its colours still
-   follow the state). VUL1: with `still` (still.ts) it is that same still sky, painted once and not again until its
-   state, theme or size change: the window does not spend the graphics card on it while the model reads. */
+   follow the state). VUL1: with `still` (still.ts) the sky is not painted again until its state, theme or size
+   change: the window does not spend the graphics card on it while the model reads. UIX2: a still sky keeps the frame
+   it showed (its stars where they were, a comet where it was) and its own clock stops with it, so it goes on from that
+   same frame when it moves again: keeping still at rest while the window has no focus never shows a jump. While it
+   keeps still it does not ask for frames either (frameLoop.ts): it looks once a second, or at once on a change. */
 
 type SkyState = 'standby' | 'idle' | 'listening' | 'thinking' | 'speaking';
 const NEB: Record<SkyState, [string, string]> = {
@@ -34,11 +38,12 @@ function sky(state: BaxyState): SkyState {
 function CosmosView({ state, focusX, light, still = false }: { state: BaxyState; focusX: number; light: boolean; still?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const S = useRef({ state: sky(state), focusX, light, still });
-  useEffect(() => { S.current = { state: sky(state), focusX, light, still }; }, [state, focusX, light, still]);
+  const wake = useRef(() => {});
+  useEffect(() => { S.current = { state: sky(state), focusX, light, still }; wake.current(); }, [state, focusX, light, still]);
   useEffect(() => {
     const cv = ref.current!, ctx = cv.getContext('2d')!;
     let dpr = 1, rnd: () => number;
-    let w = 0, h = 0, raf = 0, last = performance.now(), acc = 0;
+    let w = 0, h = 0, last = performance.now(), acc = 0, clock = 0, loop: ReturnType<typeof frameLoop> | null = null;
     let stars: Star[] = [], comets: Comet[] = [], spawn = 0, rot = 0, vis = 1, nebKey = '', held = '';
     const neb = document.createElement('canvas');
     const calmQ = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -53,7 +58,7 @@ function CosmosView({ state, focusX, light, still = false }: { state: BaxyState;
       const bw = Math.round(w * dpr), bh = Math.round(h * dpr);
       if (cv.width !== bw || cv.height !== bh) { cv.width = bw; cv.height = bh; }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      nebKey = ''; held = '';
+      nebKey = ''; held = ''; loop?.wake();
       if (!resize) return;
       rnd = seededRng(707); /* same sky every rebuild */
       const reach = Math.hypot(w, h) * 0.62, n = Math.round((w * h) / 1500);
@@ -82,21 +87,24 @@ function CosmosView({ state, focusX, light, still = false }: { state: BaxyState;
       comets.push({ sx, sy, tx, ty, mx: (sx + tx) / 2 + (ty - sy) * bend, my: (sy + ty) / 2 - (tx - sx) * bend, t: 0, dur: 2.4 + Math.random() * 2.6, col: conf.cols[Math.floor(Math.random() * conf.cols.length)], inward });
     };
     const at = (c: Comet, t: number): [number, number] => { const u = 1 - t; return [u * u * c.sx + 2 * u * t * c.mx + t * t * c.tx, u * u * c.sy + 2 * u * t * c.my + t * t * c.ty]; };
-    const tick = (now: number) => {
-      raf = requestAnimationFrame(tick);
+    const tick = (now: number): number | void => {
       acc += now - last; last = now;
       if (acc < 32) return;
       const dt = Math.min(0.08, acc / 1000); acc = 0;
       if (!w || !h) { build(); if (!w || !h) return; }
-      const st = S.current.state, T = now / 1000, hold = S.current.still, rm = calmQ.matches || hold;
+      const st = S.current.state, hold = S.current.still, rm = calmQ.matches;
       if (hold) {
-        // what the still sky shows: painted once, with its brightness where it would settle
+        // a still sky is painted again only when what it shows changes, from the same instant, with its brightness
+        // where it would settle
         const key = st + S.current.light + S.current.focusX;
-        if (key === held) return;
+        if (key === held) return 1000;
         held = key; vis = st === 'standby' ? 0.35 : 1;
       } else held = '';
-      vis += ((st === 'standby' ? 0.35 : 1) - vis) * Math.min(1, dt * 1.5);
-      if (!rm) rot += dt * (st === 'standby' ? 0.002 : st === 'thinking' ? 0.012 : 0.005);
+      const run = hold ? 0 : dt; // the sky's own time: it stops while the sky keeps still
+      clock += run;
+      const T = clock;
+      vis += ((st === 'standby' ? 0.35 : 1) - vis) * Math.min(1, run * 1.5);
+      if (!rm) rot += run * (st === 'standby' ? 0.002 : st === 'thinking' ? 0.012 : 0.005);
       if (nebKey !== st + S.current.light) { paintNebula(st); nebKey = st + S.current.light; }
       ctx.clearRect(0, 0, w, h);
       ctx.globalAlpha = vis; ctx.drawImage(neb, 0, 0, w, h);
@@ -113,11 +121,11 @@ function CosmosView({ state, focusX, light, still = false }: { state: BaxyState;
         ctx.fill();
       }
       if (rm) { comets = []; spawn = 0; }
-      else spawn += dt * COMET[st].rate;
+      else spawn += run * COMET[st].rate;
       while (spawn >= 1) { spawn -= 1; if (comets.length < 14) newComet(st); }
       comets = comets.filter((c) => c.t < 1.08);
       for (const c of comets) {
-        c.t += dt / c.dur;
+        c.t += run / c.dur;
         const head = Math.min(1, c.t), fade = c.inward ? Math.min(1, (1 - head) * 6 + 0.15) : 1;
         ctx.fillStyle = c.col;
         for (let k = 0; k < 10; k++) {
@@ -138,9 +146,10 @@ function CosmosView({ state, focusX, light, still = false }: { state: BaxyState;
     watchDense();
     const ro = new ResizeObserver(buildSoon); ro.observe(cv);
     window.addEventListener('resize', buildSoon); window.addEventListener('bx-scale', build); document.addEventListener('visibilitychange', onVis);
-    raf = requestAnimationFrame(tick);
+    loop = frameLoop(tick);
+    wake.current = () => loop?.wake();
     return () => {
-      cancelAnimationFrame(raf); cancelAnimationFrame(bq); ro.disconnect(); dense?.removeEventListener('change', onDense);
+      loop?.stop(); cancelAnimationFrame(bq); ro.disconnect(); dense?.removeEventListener('change', onDense);
       window.removeEventListener('resize', buildSoon); window.removeEventListener('bx-scale', build); document.removeEventListener('visibilitychange', onVis);
     };
   }, []);

@@ -133,7 +133,7 @@ internal sealed class MicrosoftAccountAdapter : IExternalOperationAdapter
 
     internal MicrosoftAccountAdapter()
         : this(
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "BAXY"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify), "BAXY"),
             new ExternalProcessRunner(),
             requireOutlookProfileProbe: true)
     {

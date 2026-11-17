@@ -70,8 +70,9 @@ def test_a_phrase_that_is_only_the_name_or_a_sound_is_never_saved(tmp_path: Path
     # REV9 H2/H7: nothing could fire it (the name is taken off every turn), or anything the ear hears would.
     mind, server = _guide_mind(tmp_path, [])
     asked = mind.decide(1, said)
-    assert asked["reply"] == "¿Con una palabra tuya o a una hora?"
-    assert mind._guide.step == "kind" and server.bodies == []
+    # DIAX1: by its form a routine of a word, whose word is asked again
+    assert asked["reply"] == "¿Qué palabra vas a decir?"
+    assert mind._guide.step == "phrase" and not mind._guide.phrase and server.bodies == []
 
 
 @pytest.mark.parametrize("word", ["baxy", "Baxi", "a", "eh", "Baxy, a"])

@@ -437,10 +437,10 @@ internal sealed class WindowsKnownBackupAdapter : IExternalOperationAdapter
 
     private static Dictionary<string, string[]> DefaultRoots()
     {
-        string profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        string pictures = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-        string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+        string profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify);
+        string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify);
+        string pictures = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures, Environment.SpecialFolderOption.DoNotVerify);
+        string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory, Environment.SpecialFolderOption.DoNotVerify);
         return new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
             ["documents"] = [documents],

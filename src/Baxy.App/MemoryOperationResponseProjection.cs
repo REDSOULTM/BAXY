@@ -337,7 +337,13 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         JsonElement? privateArguments = null)
     {
         message = string.Empty;
-        if (!HasExactProperties(payload, ["version", "deletedCount", "replayed"])
+        bool saysKept = payload.ValueKind == JsonValueKind.Object && payload.TryGetProperty("kept", out _);
+        int keptTotal = 0;
+        if (!HasExactProperties(
+                payload,
+                saysKept
+                    ? ["version", "deletedCount", "replayed", "kept", "keptTotal"]
+                    : ["version", "deletedCount", "replayed"])
             || !HasVersionOne(payload)
             || !TryGetInt32(
                 payload,
@@ -345,9 +351,30 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                 minimum: 0,
                 maximum: MaximumRecordCount,
                 out int deleted)
-            || !TryGetBoolean(payload, "replayed", out bool replayed))
+            || !TryGetBoolean(payload, "replayed", out bool replayed)
+            || (saysKept && !TryGetInt32(payload, "keptTotal", 0, MaximumRecordCount, out keptTotal)))
         {
             return false;
+        }
+
+        var kept = new JsonArray();
+        if (saysKept)
+        {
+            JsonElement names = payload.GetProperty("kept");
+            if (names.ValueKind != JsonValueKind.Array || names.GetArrayLength() > keptTotal)
+            {
+                return false;
+            }
+
+            foreach (JsonElement name in names.EnumerateArray())
+            {
+                if (name.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(name.GetString()))
+                {
+                    return false;
+                }
+
+                kept.Add(TruncateText(name.GetString()!, 160, "…"));
+            }
         }
 
         var observed = new JsonObject { ["deletedCount"] = deleted };
@@ -364,6 +391,55 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         // Encargo 92 (banco diag-b1e7, F13 turno 3): a forget that matched nothing (a datum never saved, the memory off)
         // came back as memory_forget_empty alone, and 2 of 6 answers said «la memoria sigue con ese dato» or «Borré…
         // pero no quedó nada». What the store said goes with it: nothing matched, nothing was deleted, nothing changed.
+        // DIAX10B (H-062, vivo en la GTX 1650): the name the model sent («color de mi bicicleta») was not the one saved
+        // («color de la bicicleta»), and «keeps no saved memory that matches it» read as «no había nada guardado», said
+        // to the person with the memory still there (2 of 2). A forget by name that matched nothing, with memories
+        // saved, says that name is not one of them and names them, in its own code: with the names apart and a next
+        // that only pointed at them, the bench (5 seeds) still said «no había guardado ese dato» 4 of 5, and «Ya olvidé»
+        // 3 of 5 after the «sí»; with the name sent and the names saved in the next, 0 of 10.
+        if (deleted == 0 && keptTotal > 0 && operationName != "memory.session.clear")
+        {
+            string? sent = privateArguments is { ValueKind: JsonValueKind.Object } given
+                && given.TryGetProperty("selector", out JsonElement selector)
+                && selector.ValueKind == JsonValueKind.String
+                && !string.IsNullOrWhiteSpace(selector.GetString())
+                    ? TruncateText(selector.GetString()!, 160, "…")
+                    : null;
+            var facts = new JsonObject
+            {
+                ["deletedCount"] = 0,
+                ["changed"] = false,
+            };
+            if (sent is not null)
+            {
+                facts["name"] = sent;
+            }
+
+            facts["savedCount"] = keptTotal;
+            facts["saved"] = kept;
+            int notNamed = keptTotal - kept.Count;
+            if (notNamed > 0)
+            {
+                facts["notNamed"] = notNamed;
+            }
+
+            string names = string.Join(", ", kept.Select(static name => "«" + (string?)name + "»"));
+            if (notNamed > 0)
+            {
+                names += (names.Length > 0 ? " and " : string.Empty)
+                    + notNamed.ToString(CultureInfo.InvariantCulture)
+                    + (notNamed == 1 ? " sensitive one not named" : " sensitive ones not named");
+            }
+
+            facts["next"] = "nothing was deleted and nothing changed: no saved memory is named "
+                + (sent is null ? "as the call said" : "«" + sent + "»") + ". BAXY still keeps "
+                + keptTotal.ToString(CultureInfo.InvariantCulture) + " saved "
+                + (keptTotal == 1 ? "memory" : "memories") + ": " + names
+                + ". To forget one of them, memory_forget with scope exact and its name";
+            message = TurnVisibleFacts.Failure("memory_forget_no_such_name", facts);
+            return true;
+        }
+
         message = deleted == 0 && operationName != "memory.session.clear"
             ? TurnVisibleFacts.Failure("memory_forget_empty", new JsonObject
             {

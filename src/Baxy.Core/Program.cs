@@ -99,6 +99,13 @@ internal static class Program
     private static async Task<int> RunAsync(string dataRoot, CancellationToken cancellationToken)
     {
         BaxyUpdateHandler.RemoveSpentInstallers(dataRoot);
+        // DIAX11 (privacidad): the own Edge profile a 1.5.x BAXY left signed in with the person's account goes, once; only
+        // at the start of the installed BAXY, whose profiles they are (REVX2 DX11-3).
+        if (WindowsExternalCapabilityProvider.DiscardOwnBrowserProfilesWithAnAccount(dataRoot) is null)
+        {
+            Console.Error.WriteLine(
+                "BAXY core: own browser profiles not checked: they are the installed BAXY's, and this data profile is not.");
+        }
         var noteStore = new LocalNoteStore(Path.Combine(dataRoot, "notes-store"));
         var taskStore = new LocalTaskStore(Path.Combine(dataRoot, "tasks-store"));
         var clipboardProvider = new WindowsClipboardProvider();
@@ -482,6 +489,9 @@ internal static class Program
     {
         ArgumentNullException.ThrowIfNull(applicationCatalogRead);
         ArgumentNullException.ThrowIfNull(externalCapabilityProvider);
+        // DIAX17: the installed games are read beside the application catalog, within the same budget (HelloCatalogWait).
+        Task<InstalledGameCatalogSnapshot> gameCatalogRead = Task.Run(
+            externalCapabilityProvider.GetInstalledGameCatalogSnapshot, cancellationToken);
         ProductCatalog.ValidateAgainst(registry);
         OperationDescriptor[] capabilities = registry.ToolDescriptors.ToArray();
         Version? version = typeof(Program).Assembly.GetName().Version;
@@ -520,8 +530,10 @@ internal static class Program
         GameCatalogSnapshot gameCatalog;
         try
         {
-            InstalledGameCatalogSnapshot providerSnapshot =
-                externalCapabilityProvider.GetInstalledGameCatalogSnapshot();
+            InstalledGameCatalogSnapshot providerSnapshot = await HelloCatalogWait.GamesWithinAsync(
+                gameCatalogRead,
+                System.Diagnostics.Stopwatch.GetElapsedTime(StartedAt),
+                cancellationToken).ConfigureAwait(false);
             gameCatalog = new GameCatalogSnapshot(
                 GameCatalogContract.CurrentVersion,
                 providerSnapshot.Verified,
@@ -533,6 +545,10 @@ internal static class Program
                         entry.Name))
                     .ToArray());
             ContractValidator.Validate(gameCatalog);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception)
         {

@@ -35,19 +35,41 @@ internal static class OwnReadings
     /// <summary>A scope the catalog does not list (the schema is checked before).</summary>
     internal const string UnknownScope = "unknown_scope";
 
+    /// <summary>DIAX15: BAXY's own settings as the view shows them: the model it thinks with (Ajustes › Modelo), its tool
+    /// profile (Herramientas), whether its language is English (General) and whether its voice is muted (Voz).</summary>
+    internal sealed record Settings(string? Model, string? Profile, bool English, bool VoiceMuted);
+
     /// <summary>The model's video memory and RAM in GB, each left out when the PC did not give it (the view's «—»);
-    /// neither readable is a failure, never a zero.</summary>
-    internal static OperationOutcome Model(FieldMetricSnapshot metrics)
+    /// neither readable is a failure, never a zero. DIAX15: with <paramref name="settings"/>, BAXY's own settings too (the
+    /// model by name, the tool profile, the language and the voice), and then memory that could not be read is said
+    /// (memory «unreadable») beside them instead of failing the reading.</summary>
+    internal static OperationOutcome Model(FieldMetricSnapshot metrics, Settings? settings = null)
     {
         ArgumentNullException.ThrowIfNull(metrics);
         double? video = Gigabytes(metrics.ModelVramGb);
         double? memory = Gigabytes(metrics.ModelRamGb);
-        if (video is null && memory is null)
+        if (video is null && memory is null && settings is null)
         {
             return OperationOutcome.Failure(ModelUnreadable);
         }
 
         var receipt = new JsonObject { ["version"] = 1, ["scope"] = "model" };
+        if (settings is not null)
+        {
+            if (!string.IsNullOrWhiteSpace(settings.Model))
+            {
+                receipt["model"] = settings.Model.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.Profile))
+            {
+                receipt["toolProfile"] = settings.Profile.Trim();
+            }
+
+            receipt["language"] = settings.English ? "English" : "español";
+            receipt["voice"] = settings.VoiceMuted ? "muted" : "on";
+        }
+
         if (video is not null)
         {
             receipt["videoMemory"] = new JsonObject { ["value"] = video, ["unit"] = "GB" };
@@ -56,6 +78,11 @@ internal static class OwnReadings
         if (memory is not null)
         {
             receipt["ram"] = new JsonObject { ["value"] = memory, ["unit"] = "GB" };
+        }
+
+        if (video is null && memory is null)
+        {
+            receipt["memory"] = "unreadable";
         }
 
         return Success(receipt);

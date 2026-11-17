@@ -218,7 +218,8 @@ def test_a_slow_read_with_the_card_not_full_says_nothing_of_it(tmp_path, monkeyp
     assert failure["cause"] == "lectura_lenta" and "cardFull" not in failure
 
 
-# NVIDIA with memory to spare: the same command as before.
+# NVIDIA with memory to spare: the same command as before, but for the output matrix, on the card (VELX1,
+# test_mind_velx1_salida).
 
 def test_nvidia_with_room_has_the_same_command(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("BAXY_RENEW_CTX_NEEDS", FACTORY)
@@ -227,5 +228,5 @@ def test_nvidia_with_room_has_the_same_command(tmp_path, monkeypatch) -> None:
     assert command[command.index("-ngl"):] == [
         "-ngl", "99", "-c", "77824", "-np", "1", "-fa", "on", "-ctk", "q8_0", "-ctv", "q8_0", "--jinja",
         "--reasoning", "off", "--reasoning-budget", "0", "--load-mode", "none", "-cram", "0", "-ctxcp", "10",
-        "-ot", r"token_embd\.weight=CPU", "--slot-save-path", str(tmp_path / "BAXY" / "renew" / "slots")]
+        "--slot-save-path", str(tmp_path / "BAXY" / "renew" / "slots")]
     assert COMPLETO < 77824

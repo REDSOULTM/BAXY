@@ -46,7 +46,9 @@ def test_a_server_that_does_not_compute_on_vulkan_gets_the_minds_environment_as_
     # Since PRV1 (PRIV-04) every server gets a copy with its key; besides the key it is the mind's environment as it is.
     environment = _launched(tmp_path, monkeypatch, backend)["env"]
     assert VARIABLE not in environment
-    assert {name: value for name, value in environment.items() if name != "LLAMA_API_KEY"} == dict(os.environ)
+    # VELX1: and on CUDA OpenMP's threads sleeping once their work is done (test_mind_velx1_hilos).
+    added = {"LLAMA_API_KEY"} | ({llm_server.OMP_BLOCKTIME_VARIABLE} if backend == "cuda" else set())
+    assert {name: value for name, value in environment.items() if name not in added} == dict(os.environ)
 
 
 @pytest.mark.parametrize("theirs", ["0", "1", "si"])
