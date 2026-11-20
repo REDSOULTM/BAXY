@@ -80,6 +80,13 @@ Then `py -3.12 -m pytest tests` runs its tests. Some tests in
 - **Internal notes, benchmarks and measurement data.** They hold personal data and private paths, so they are not
   published. Some code comments cite documents or benchmark scripts that are not here; the code does not need them.
 
+### Support development
+
+BAXY is built by one person, in Chile. If it helps you, you can support it on
+[GitHub Sponsors](https://github.com/sponsors/REDSOULTM) or [Ko-fi](https://ko-fi.com/redsoultm), or by paying more
+than the minimum when you buy it on [itch.io](https://redsoultm.itch.io/baxy). It does not buy features or dates; it
+pays for hours of work. The code will stay MIT and free.
+
 ### License
 
 BAXY's own code is under the [MIT license](LICENSE). Third-party components, models and data keep their own licenses:
@@ -181,6 +188,13 @@ pruebas de `tests\Baxy.Providers.Windows.Tests` manejan el escritorio real: cór
   Cada modelo conserva su licencia: ver `THIRD_PARTY_NOTICES.md`.
 - **Notas internas, bancos y datos de medición.** Llevan datos personales y rutas privadas, por eso no se publican.
   Algunos comentarios del código citan documentos o scripts de medición que no están aquí; el código no los necesita.
+
+### Apoya el desarrollo
+
+BAXY lo hace una sola persona, en Chile. Si te sirve, puedes apoyarlo en
+[GitHub Sponsors](https://github.com/sponsors/REDSOULTM) o [Ko-fi](https://ko-fi.com/redsoultm), o pagando más del
+mínimo al comprarlo en [itch.io](https://redsoultm.itch.io/baxy). No compra funciones ni fechas: paga horas de trabajo.
+El código seguirá siendo MIT y gratis.
 
 ### Licencia
 
